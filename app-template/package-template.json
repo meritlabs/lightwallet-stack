@@ -116,7 +116,7 @@
     "clean-all":              "git clean -dfx"
   },
   "devDependencies": {
-    "cordova": "^6.3.1",
+    "cordova": "^6.5.0",
     "grunt": "^1.0.1",
     "ionic": "^3.6.0",
     "trash-cli": "^1.4.0",
