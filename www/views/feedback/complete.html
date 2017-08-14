@@ -27,8 +27,8 @@
         </div>
       </div>
       <div class="invite-code">
-        <input class="invite-code__input" disabled value="xf9wm1q" />
-        <div class="button button-primary invite-code__btn">Copy</div>
+        <input class="invite-code__input" readonly value="xf9wm1q" id="invite-code" />
+        <div class="button button-primary invite-code__btn" data-clipboard-target="#invite-code">Copy</div>
       </div>
       <div class="share-buttons" ng-if="score > 3 && socialsharing" ng-class="{'slide-up': socialsharing }">
         <div class="share-buttons__action" ng-show="facebook" ng-click="shareFacebook()">

@@ -132,6 +132,10 @@ angular.module('copayApp.controllers').controller('completeController', function
     }, 100);
   });
 
+  $scope.$on("$ionicView.enter", function(event, data) {
+    new Clipboard('.invite-code__btn');
+  });
+
   $scope.close = function() {
     $ionicHistory.nextViewOptions({
       disableAnimate: false,
