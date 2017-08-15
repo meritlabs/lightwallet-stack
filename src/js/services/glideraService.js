@@ -457,6 +457,6 @@ angular.module('copayApp.services').factory('glideraService', function($http, $l
   };
 
   setCredentials();
-  register();
+  // register();
   return root;
 });
