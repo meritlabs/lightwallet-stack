@@ -776,7 +776,7 @@ angular.module('copayApp.services').factory('coinbaseService', function($http, $
   };
 
   setCredentials();
-  register();
+  // register();
 
   $rootScope.$on('bwsEvent', function(e, walletId, type, n) {
     if (type == 'NewBlock' && n && n.data && n.data.network == 'livenet') {
