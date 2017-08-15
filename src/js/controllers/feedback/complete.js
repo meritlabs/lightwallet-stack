@@ -7,7 +7,7 @@ angular.module('copayApp.controllers').controller('completeController', function
   });
 
   var defaults = configService.getDefaults();
-  var downloadUrl = appConfigService.name == 'copay' ? defaults.download.copay.url : defaults.download.bitpay.url;
+  var downloadUrl = defaults.download.url;
 
   function quickFeedback(cb) {
     window.plugins.spinnerDialog.show();
@@ -133,7 +133,7 @@ angular.module('copayApp.controllers').controller('completeController', function
   });
 
   $scope.$on("$ionicView.enter", function(event, data) {
-    new Clipboard('.invite-code__btn');
+    new Clipboard('.referral-code__btn');
   });
 
   $scope.close = function() {
