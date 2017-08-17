@@ -54,7 +54,6 @@
   }
   .share-buttons {
     padding: 50px 10px 30px;
-    background-color: $v-subtle-gray;
     text-align: center;
     -webkit-transform: translateY(100%);
     transform: translateY(100%);
@@ -72,6 +71,32 @@
     width: 90px;
     height: 90px;
     margin-bottom: 20px;
+  }
+
+  .referral-code {
+    padding: 20px 0;
+    background-color: $v-subtle-gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-items: stretch;
+  }
+
+  .referral-code__input {
+    width: 114px;
+    margin-right: 10px;
+    padding: 0 10px;
+    border: none;
+    background-color: #eee;
+    color: #999;
+    border-radius: 3px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+  }
+
+  .referral-code__btn {
+    min-height: auto;
+    line-height: 36px;
   }
 }
 
