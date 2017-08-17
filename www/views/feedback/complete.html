@@ -27,10 +27,10 @@
         </div>
       </div>
       <div class="referral-code">
-        <input class="referral-code__input" readonly value="xf9wm1q" id="referral-code" />
-        <div class="button button-primary referral-code__btn" data-clipboard-target="#referral-code">Copy</div>
+        <input class="referral-code__input" readonly value="{{referralCode}}" id="referral-code" />
+        <button class="button button-primary referral-code__btn" ng-class="{'_enabled': copyEnabled }" ng-disabled="!copyEnabled" data-clipboard-target="#referral-code">Copy</button>
       </div>
-      <div class="share-buttons" ng-if="score > 3 && socialsharing" ng-class="{'slide-up': socialsharing }">
+      <div class="share-buttons" ng-if="score > 3 && socialsharing && copyEnabled" ng-class="{'slide-up': socialsharing }">
         <div class="share-buttons__action" ng-show="facebook" ng-click="shareFacebook()">
           <i class="icon socialsharing-icon">
             <img src="img/social-icons/ico-social-facebook.svg"/>
