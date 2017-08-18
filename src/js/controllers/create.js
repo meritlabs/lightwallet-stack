@@ -130,6 +130,7 @@ angular.module('copayApp.controllers').controller('createController',
 
       var opts = {
         name: $scope.formData.walletName,
+        referralCode: $scope.formData.referralCode,
         m: $scope.formData.requiredCopayers,
         n: $scope.formData.totalCopayers,
         myName: $scope.formData.totalCopayers > 1 ? $scope.formData.myName : null,
