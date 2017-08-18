@@ -14,8 +14,15 @@
           placeholder="{{'Family vacation funds'|translate}}"
           ng-model="formData.walletName"
           ng-required="true"
-          ng-focus="formFocus('wallet-name')"
-          ng-blur="formFocus(false)"
+          required>
+        </label>
+
+        <label class="item item-input item-stacked-label">
+          <span class="input-label" translate>Invite code</span>
+          <input type="text"
+          placeholder="{{'Paste invite code here'|translate}}"
+          ng-model="formData.referralCode"
+          ng-required="true"
           required>
         </label>
 
