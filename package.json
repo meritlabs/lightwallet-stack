@@ -1,21 +1,21 @@
 {
   "//": "        Modify it in the app-template directory",
-  "name": "copay",
-  "description": "A Secure Bitcoin Wallet",
+  "name": "Merit",
+  "description": "Merit Wallet",
   "author": "BitPay",
   "version": "3.7.1",
   "keywords": [
     "bitcoin",
     "wallet",
     "bitpay",
-    "copay",
+    "merit",
     "multisignature",
     "bitcore"
   ],
   "main": "www/index.html",
   "title": "Copay",
   "window": {
-    "title": "Copay - Copay Bitcoin Wallet",
+    "title": "Merit Wallet",
     "icon": "www/img/app/icon.png",
     "toolbar": false,
     "show": true,
@@ -37,14 +37,14 @@
   },
   "dom_storage_quota": 200,
   "id": "jid1-x7bV5evAaI1P9Q",
-  "homepage": "https://copay.io",
+  "homepage": "https://merit.me",
   "license": "MIT",
   "repository": {
-    "url": "git://github.com/bitpay/copay.git",
+    "url": "git://github.com/meritlabs/merit-mobile.git",
     "type": "git"
   },
   "bugs": {
-    "url": "https://github.com/bitpay/copay/issues"
+    "url": "https://github.com/meritlabs/merit-mobile/issues"
   },
   "engines": {
     "node": "6",
@@ -111,8 +111,7 @@
     "run:android-release": "cordova run android --device --release",
     "log:android": "adb logcat | grep chromium",
     "sign:android": "rm -f platforms/android/build/outputs/apk/android-release-signed-aligned.apk; jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ../copay.keystore -signedjar platforms/android/build/outputs/apk/android-release-signed.apk  platforms/android/build/outputs/apk/android-release-unsigned.apk copay_play && ../android-sdk-macosx/build-tools/25.0.3/zipalign -v 4 platforms/android/build/outputs/apk/android-release-signed.apk platforms/android/build/outputs/apk/android-release-signed-aligned.apk",
-    "apply:copay": "npm i fs-extra && cd app-template && node apply.js copay && npm i && cordova prepare",
-    "apply:bitpay": "npm i fs-extra && cd app-template && node apply.js bitpay && npm i && cordova prepare",
+    "apply": "cd app-template && node apply.js && cordova prepare",
     "test": "echo \"no package tests configured\"",
     "clean": "trash platforms && trash plugins && cordova prepare",
     "clean-all": "git clean -dfx"
@@ -120,6 +119,7 @@
   "devDependencies": {
     "@ionic/cli-plugin-ionic1": "2.1.1",
     "cordova": "^6.5.0",
+    "fs-extra": "^0.30.0",
     "grunt": "^1.0.1",
     "ionic": "^3.6.0",
     "lodash": "^4.17.4",
