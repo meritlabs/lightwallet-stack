@@ -1,0 +1,17 @@
+{
+  "network": "testnet",
+  "port": 3001,
+  "services": [
+    "bitcoind",
+    "insight-api",
+    "web"
+  ],
+  "servicesConfig": {
+    "bitcoind": {
+      "spawn": {
+        "datadir": "./data-1",
+        "exec": "/home/adil/Development/src/github.com/meritlabs/merit-bitcoin-referrals/src/bitcoind"
+      }
+    }
+  }
+}
