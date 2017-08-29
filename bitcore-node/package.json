@@ -1,0 +1,67 @@
+{
+  "name": "bitcore-node",
+  "description": "Full node with extended capabilities using bitcore and Bitcoin Core",
+  "version": "0.1.0",
+  "author": "BitPay <dev@bitpay.com>",
+  "repository": "git://github.com/bitpay/bitcore-node.git",
+  "contributors": [
+    {
+      "name": "Manuel Araoz",
+      "email": "manuelaraoz@gmail.com"
+    },
+    {
+      "name": "Yemel Jardi",
+      "email": "angel.jardi@gmail.com"
+    },
+    {
+      "name": "Esteban Ordano",
+      "email": "eordano@gmail.com"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/bitpay/bitcore-node/issues"
+  },
+  "homepage": "https://github.com/bitpay/bitcore-node",
+  "license": "MIT",
+  "keywords": [
+    "bitcoin",
+    "bitcore"
+  ],
+  "scripts": {
+    "start": "node index.js",
+    "test": "./node_modules/.bin/mocha"
+  },
+  "dependencies": {
+    "async": "0.9.0",
+    "bitcoind-rpc": "^0.2.1",
+    "bitcore": "^0.12.0",
+    "bitcore-p2p": "^0.15.0",
+    "bluebird": "^2.9.12",
+    "body-parser": "^1.12.0",
+    "bufferput": "bitpay/node-bufferput",
+    "compression": "^1.4.1",
+    "config": "^1.12.0",
+    "cors": "^2.5.3",
+    "eventemitter2": "^0.4.14",
+    "express": "4.11.1",
+    "glob": "*",
+    "js-yaml": "^3.2.7",
+    "leveldown": "git://github.com/Level/leveldown#657b5c",
+    "levelup": "git://github.com/Level/levelup#202ee1",
+    "memdown": "^1.0.0",
+    "moment": "~2.5.0",
+    "morgan": "^1.5.1",
+    "request": "^2.48.0",
+    "socket.io": "1.0.6",
+    "winston": "*"
+  },
+  "devDependencies": {
+    "bitcore-build": "bitpay/bitcore-build",
+    "chai": "^2.1.1",
+    "gulp": "^3.8.10",
+    "mocha": "^2.2.1",
+    "should": "^5.1.0",
+    "sinon": "^1.13.0",
+    "supertest": "^0.15.0"
+  }
+}
