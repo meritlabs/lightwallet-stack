@@ -23,7 +23,7 @@
     "url": "https://github.com/meritlabs/bitcore-message.git"
   },
   "dependencies": {
-    "bitcore-lib": "^0.14.0"
+    "bitcore-lib": "file:../bitcore-lib"
   },
   "devDependencies": {
     "bitcore-build": "bitpay/bitcore-build",
