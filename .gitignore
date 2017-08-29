@@ -1,0 +1,12 @@
+# Node 
+node_modules/
+
+# Blockchain
+data-and-logs/data-1/*
+data-and-logs/data-2/*
+data-and-logs/data-3/*
+!bitcoin.conf
+hosts.json
+
+# Idea
+
