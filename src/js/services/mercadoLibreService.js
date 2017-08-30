@@ -171,8 +171,6 @@ angular.module('copayApp.services').factory('mercadoLibreService', function($htt
     storageService.getMercadoLibreGiftCards(root.getNetwork(), function(err, giftCards) {
       if (giftCards) {
         homeIntegrationsService.register(homeItem);
-      } else {
-        nextStepsService.register(nextStepItem);
       }
     });
   };

@@ -29,6 +29,6 @@
   "_enabledExtensions": {
     "coinbase": false,
     "glidera": false,
-    "amazon": true
+    "amazon": false
   }
 }
