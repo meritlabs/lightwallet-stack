@@ -2112,7 +2112,7 @@ Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
   var self = this;
 
   if (typeof referralCode === 'string' || referralCode instanceof String) {
-    this.client.validatereferralcode(referralCode, function(err, response) {
+    self.client.validatereferralcode(referralCode, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
@@ -2127,6 +2127,30 @@ Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
     return callback(self._wrapRPCError(err));
   }
 };
+
+/*
+ * Sets the referral/invite code and issues the referral transaction to unlock the wallet
+ * @param {String} referralCode
+ * @param {Function} callback
+ */
+Bitcoin.prototype.setReferralCode = function(referralCode, callback) {
+  var self = this;
+  if (typeof referralCode === 'string' || referralCode instanceof String) {
+    self.client.setreferralcode(referralCode, function(err, response) {
+      if (err) {
+        return callback(self._wrapRPCError(err));
+      } else {
+        // ToDo validate response from the daemon
+        callback(null, response.result);
+      }
+    });
+  } else {
+    var err = new errors.RPCError('Invite code could not be set');
+    err.code = -8;
+
+    return callback(self._wrapRPCError(err));
+  }
+}
 
 /**
  * Called by Node to stop the service.

@@ -208,9 +208,7 @@ Insight.prototype.initSocket = function() {
 };
 
 Insight.prototype.validateReferralCode = function(referralCode, cb) {
-  //cb('Invalid Referral Code');
-
-  // @todo
+  console.log('referral code: ', referralCode);
   var self = this;
 
   var args = {
