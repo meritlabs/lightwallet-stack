@@ -9,7 +9,7 @@
   "servicesConfig": {
     "bitcoind": {
       "spawn": {
-        "datadir": "./data-1",
+        "datadir": "./data-and-logs/data-1",
         "exec": "../merit-bitcoin/src/bitcoind"
       }
     }

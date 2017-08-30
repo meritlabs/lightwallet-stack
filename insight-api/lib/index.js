@@ -20,8 +20,6 @@ var _ = bitcore.deps._;
 var $ = bitcore.util.preconditions;
 var Transaction = bitcore.Transaction;
 var EventEmitter = require('events').EventEmitter;
-var path = require('path');
-var fs = require('fs');
 
 /**
  * A service for Bitcore to enable HTTP routes to query information about the blockchain.
@@ -144,9 +142,7 @@ InsightAPI.prototype.setupRoutes = function(app) {
     return self.getRemoteAddress(req);
   });
   var logFormat = ':remote-forward-addr ":method :url" :status :res[content-length] :response-time ":user-agent" ';
-  //var logStream = this.createLogInfoStream();
-  //var logStream = fs.createWriteStream(path.join(__dirname, '../data-and-logs/insight.log'), {flags: 'a'});
-  var logStream = fs.createWriteStream('/Users/eugene/insight.log', {flags: 'a'});
+  var logStream = this.createLogInfoStream();
   app.use(morgan(logFormat, {stream: logStream}));
 
   //Enable compression

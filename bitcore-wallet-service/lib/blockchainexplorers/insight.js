@@ -208,7 +208,6 @@ Insight.prototype.initSocket = function() {
 };
 
 Insight.prototype.validateReferralCode = function(referralCode, cb) {
-  console.log('referral code: ', referralCode);
   var self = this;
 
   var args = {
@@ -219,7 +218,6 @@ Insight.prototype.validateReferralCode = function(referralCode, cb) {
 
   this._doRequest(args, function(err, res, body) {
     if (err || res.statusCode !== 200) {
-      console.log('failed to validate code: ', res.statusCode, err);
       return cb(_parseErr(err, res));
     }
     return cb(null, body.tx);
