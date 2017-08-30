@@ -2116,6 +2116,7 @@ Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
+        // ToDo validate response from the daemon
         callback(null, response.result);
       }
     });

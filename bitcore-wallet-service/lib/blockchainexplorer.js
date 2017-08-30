@@ -9,8 +9,8 @@ var Insight = require('./blockchainexplorers/insight');
 
 var PROVIDERS = {
   'insight': {
-    'livenet': 'https://insight.bitpay.com:443',
-    'testnet': 'https://test-insight.bitpay.com:443',
+    'livenet': 'http://127.0.0.1:3001',
+    'testnet': 'http://127.0.0.1:3001',
   },
 };
 
