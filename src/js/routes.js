@@ -392,6 +392,15 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
+      .state('tabs.unit', {
+        url: '/unit',
+        views: {
+          'tab-settings@tabs': {
+            controller: 'preferencesUnitController',
+            templateUrl: 'views/preferencesUnit.html'
+          }
+        }
+      })
       .state('tabs.altCurrency', {
         url: '/altCurrency',
         views: {
