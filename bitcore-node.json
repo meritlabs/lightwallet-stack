@@ -10,7 +10,7 @@
     "bitcoind": {
       "spawn": {
         "datadir": "./data-1",
-        "exec": "/home/adil/Development/src/github.com/meritlabs/merit-bitcoin-referrals/src/bitcoind"
+        "exec": "../merit-bitcoin/src/bitcoind"
       }
     }
   }
