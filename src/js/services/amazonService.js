@@ -162,8 +162,6 @@ angular.module('copayApp.services').factory('amazonService', function($http, $lo
     storageService.getAmazonGiftCards(root.getNetwork(), function(err, giftCards) {
       if (giftCards) {
         homeIntegrationsService.register(homeItem);
-      } else {
-        nextStepsService.register(nextStepItem);
       }
     });
   };

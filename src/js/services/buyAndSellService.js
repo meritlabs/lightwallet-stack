@@ -21,14 +21,7 @@ angular.module('copayApp.services').factory('buyAndSellService', function($log, 
 
     $log.debug('buyAndSell Service, updating nextSteps. linked/total: ' + linkedServices.length + '/' + services.length);
 
-    if (linkedServices.length == 0) {
-      nextStepsService.register({
-        title: 'Buy or Sell Bitcoin',
-        name: 'buyandsell',
-        icon: 'icon-buy-bitcoin',
-        sref: 'tabs.buyandsell',
-      });
-    } else {
+    if (linkedServices.length != 0) {
       nextStepsService.unregister({
         name: 'buyandsell',
       });
