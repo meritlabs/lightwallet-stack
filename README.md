@@ -44,16 +44,16 @@ cd copay
 Ensure you have [Node](https://nodejs.org/) installed, then install and start Merit:
 
 ```sh
-npm run apply
-npm start
+yarn apply
+yarn start
 ```
 
 Visit [`localhost:8100`](http://localhost:8100/) to view the app.
 
-A watch task is also available to rebuild components of the app as changes are made. This task can be run in a separate process – while the server started by `npm start` is running – to quickly test changes.
+A watch task is also available to rebuild components of the app as changes are made. This task can be run in a separate process – while the server started by `yarn start` is running – to quickly test changes.
 
 ```
-npm run watch
+yarn watch
 ```
 
 ## Testing on Real Devices
@@ -64,22 +64,22 @@ It's recommended that all final testing be done on a real device – both to ass
 
 Follow the [Cordova Android Platform Guide](https://cordova.apache.org/docs/en/latest/guide/platforms/android/) to set up your development environment.
 
-When your developement enviroment is ready, run the `start:android` npm package script.
+When your developement enviroment is ready, run the `start:android` yarn package script.
 
 ```sh
-npm run apply
-npm run start:android
+yarn apply
+yarn start:android
 ```
 
 ### iOS
 
 Follow the [Cordova iOS Platform Guide](https://cordova.apache.org/docs/en/latest/guide/platforms/ios/) to set up your development environment.
 
-When your developement enviroment is ready, run the `start:ios` npm package script.
+When your developement enviroment is ready, run the `start:ios` yarn package script.
 
 ```sh
-npm run apply
-npm run start:ios
+yarn apply
+yarn start:ios
 ```
 
 ### Windows Phone
@@ -98,9 +98,9 @@ and then enable this one:
 ```
 - Run:
 ```sh
-npm run clean-all
-npm run apply
-npm run start:windows
+yarn clean-all
+yarn apply
+yarn start:windows
 ```
 - Then open the project file with VS inside cordova/platform/windows/
 
@@ -108,11 +108,11 @@ npm run start:windows
 
 The desktop version of Copay currently uses NW.js, an app runtime based on Chromium. To get started, first install NW.js on your system from [the NW.js website](https://nwjs.io/).
 
-When NW.js is installed, run the `start:desktop` npm package script.
+When NW.js is installed, run the `start:desktop` yarn package script.
 
 ```sh
-npm run apply
-npm run start:desktop
+yarn apply
+yarn start:desktop
 ```
 
 ## Build Copay App Bundles
@@ -124,17 +124,17 @@ The `final` commands build the production version of the app, and bundle it with
 ### Android
 
 ```sh
-npm run clean-all
-npm run apply
-npm run final:android
+yarn clean-all
+yarn apply
+yarn final:android
 ```
 
 ### iOS
 
 ```sh
-npm run clean-all
-npm run apply
-npm run final:ios
+yarn clean-all
+yarn apply
+yarn final:ios
 ```
 
 ### Windows Phone
@@ -150,18 +150,18 @@ and then enable this one:
 ```
 - Run:
 ```sh
-npm run clean-all
-npm run apply
-npm run final:windows
+yarn clean-all
+yarn apply
+yarn final:windows
 ```
 - Then open the project file with VS inside cordova/platform/windows/
 
 ### Desktop (Linux, macOS, and Windows)
 
 ```sh
-npm run clean-all
-npm run apply
-npm run final:desktop
+yarn clean-all
+yarn apply
+yarn final:desktop
 ```
 
 ### Google Chrome App
@@ -169,7 +169,7 @@ npm run final:desktop
 > cd chrome-app/
 
 ```sh
-npm run apply
+yarn apply
 grunt
 make
 ```
@@ -183,9 +183,9 @@ On success, the Chrome extension will be located at: `browser-extensions/chrome/
 To enable external services, set the `COPAY_EXTERNAL_SERVICES_CONFIG_LOCATION` or `BITPAY_EXTERNAL_SERVICES_CONFIG_LOCATION` environment variable to the location of your configuration before running the `apply` task.
 
 ```sh
-COPAY_EXTERNAL_SERVICES_CONFIG_LOCATION="~/.copay/externalServices.json" npm run apply
+COPAY_EXTERNAL_SERVICES_CONFIG_LOCATION="~/.copay/externalServices.json" yarn apply
 # or
-BITPAY_EXTERNAL_SERVICES_CONFIG_LOCATION="~/.bitpay/externalServices.json" npm run apply:bitpay
+BITPAY_EXTERNAL_SERVICES_CONFIG_LOCATION="~/.bitpay/externalServices.json" yarn apply:bitpay
 ```
 
 ## About Copay
