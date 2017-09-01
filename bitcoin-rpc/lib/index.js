@@ -220,6 +220,7 @@ RpcClient.callspec = {
   // Merit RPC
   validatereferralcode: 'str',
   generatereferralcode: '',
+  setreferralcode: 'str',
 };
 
 var slice = function(arr, start, end) {
