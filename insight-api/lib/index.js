@@ -241,6 +241,7 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.get('/referral', referral.generateReferralCode.bind(referral));
 
   app.get('/referral/:code/validate', referral.validateReferralCode.bind(referral));
+  app.get('/referral/:code/set', referral.setReferralCode.bind(referral));
   app.param('code', referral.validateReferralCode.bind(referral));
 
   // Not Found
