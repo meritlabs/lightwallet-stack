@@ -1,0 +1,10 @@
+{
+  "bitcore-lib": {
+    "path": "/Users/demetriouswilson/Documents/merit-labs/lightwallet-stack/bitcore-lib",
+    "watch": true
+  },
+  "bitcore-wallet-service": {
+    "path": "/Users/demetriouswilson/Documents/merit-labs/lightwallet-stack/bitcore-wallet-service",
+    "watch": true
+  }
+}
