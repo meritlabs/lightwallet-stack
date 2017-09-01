@@ -9,8 +9,8 @@
   "servicesConfig": {
     "bitcoind": {
       "spawn": {
-        "datadir": "./data-1",
-        "exec": "/home/adil/Development/src/github.com/meritlabs/merit-bitcoin-referrals/src/bitcoind"
+        "datadir": "./data-and-logs/data-1",
+        "exec": "../merit-bitcoin/src/bitcoind"
       }
     }
   }
