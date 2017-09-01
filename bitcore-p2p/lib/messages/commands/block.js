@@ -26,17 +26,10 @@ function BlockMessage(arg, options) {
 inherits(BlockMessage, Message);
 
 BlockMessage.prototype.setPayload = function(payload) {
-  if (this.Block.prototype.fromRaw) {
-    this.block = this.Block.fromRaw(payload);
-  } else {
-    this.block = this.Block.fromBuffer(payload);
-  }
+  this.block = this.Block.fromBuffer(payload);
 };
 
 BlockMessage.prototype.getPayload = function() {
-  if (this.Block.prototype.toRaw) {
-    return this.block.toRaw();
-  }
   return this.block.toBuffer();
 };
 

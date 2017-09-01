@@ -12,18 +12,37 @@ The lightwallet development environment consists of:
 Make sure the following conditions are met
 
 - GNU/Linux x86_32/x86_64, or OSX 64bit *(for bitcoind distributed binaries)*
-- Node.js v8
 - ZeroMQ *(libzmq3-dev for Ubuntu/Debian or zeromq on OSX)*
+- GNU Make version 4.2.1
+- The lightwallet-stack stably tested on Node.js >= v4.8.4
 
-* MacOS USERS WILL NEED INSTALL THE LATEST XCODE AND ALL UPDATES*
+### MacOS Users
+* MacOS USERS WILL NEED INSTALL THE LATEST XCODE AND ALL UPDATES
 
-This is stably tested on Node v4.8.4
+Read [https://github.com/meritlabs/merit-bitcoin/blob/master/doc/build-osx.md](https://github.com/meritlabs/merit-bitcoin/blob/master/doc/build-osx.md) for the necessary MacOS specifics.
 
-```bash
-$ npm install
+- Install `gmake` [http://braumeister.org/repos/Homebrew/homebrew-core/formula/make](http://braumeister.org/repos/Homebrew/homebrew-core/formula/make)
+
+```sh
+brew install make
 ```
 
+- Alias your system `make` to use `gmake` or add `gmake` to your path.
 
+```sh
+# ~/.bash_profile
+
+alias make='/usr/local/Cellar/make/4.2.1_1/bin/gmake'
+```
+
+### Install The Latest NPM V4
+
+You will encounter errors when trying to install local node package dependencies when using `file: ../some-local-package` in your `package.json` files unless you downgrade to NPM v4
+
+
+```
+npm install -g npm@latest-4
+```
 
 ### Installing Bitcore Wallet Service
 
@@ -44,8 +63,6 @@ $ npm install
 
 Bitcore Wallet Service uses MongoDB 
 
-MacOS Install Instructions
-
 ```bash
 $ brew install mongodb
 $ sudo mkdir -p /data/db
@@ -53,12 +70,13 @@ $ sudo chmod 0755 /data/db && sudo chown $USER /data/db
 $ sudo chmod 0755 /data/ && sudo chown $USER /data/
 ```
 
-You should be able to start the mongodb daemon without any errors or superuser.
+### Starting and Stopping MongoDB
 
-```bash
-$ mongod
+```sh
+cd merit-labs/lightwallet-stack/
+make start-mongo
+make stop-mongo
 ```
-
 
 ## Getting Everything Running
 
