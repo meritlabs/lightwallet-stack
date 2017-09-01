@@ -356,6 +356,13 @@ angular.module('copayApp.controllers').controller('walletDetailsController', fun
     $scope.walletId = data.stateParams.walletId;
     $scope.wallet = profileService.getWallet($scope.walletId);
     if (!$scope.wallet) return;
+
+    if (!$scope.wallet.unlockWarnShown && $scope.wallet.locked) {
+      return $state.go('tabs.wallet.unlockWarning', {
+        walletId: $scope.wallet.credentials.walletId
+      });
+    }
+
     $scope.requiresMultipleSignatures = $scope.wallet.credentials.m > 1;
 
     addressbookService.list(function(err, ab) {
