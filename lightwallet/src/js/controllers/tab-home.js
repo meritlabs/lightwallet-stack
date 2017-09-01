@@ -221,7 +221,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
 
             $log.error(err);
             if (wallet.error === 'LOCKED') {
-              wallet.color = '#ccc';
+              wallet.color = '#f88';
               wallet.locked = true;
             }
           } else {

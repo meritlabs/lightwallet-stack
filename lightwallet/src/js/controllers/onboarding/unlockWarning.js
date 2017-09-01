@@ -1,13 +1,14 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('unlockWarningController', function($scope, $state, $stateParams) {
+angular.module('copayApp.controllers').controller('unlockWarningController', function($scope, $state, $stateParams, profileService) {
+  var wallet = profileService.getWallet($stateParams.walletId);
 
-  $scope.walletId = $stateParams.walletId;
-  $scope.fromState = $stateParams.from == 'onboarding' ? $stateParams.from + '.backupRequest' : $stateParams.from;
+  // @todo move that logic to service
+  wallet.unlockWarnShown = true;
 
   $scope.goBack = function() {
-    $state.go($scope.fromState, {
-      walletId: $scope.walletId
+    $state.go('tabs.wallet', {
+      walletId: $stateParams.walletId
     });
   };
 
