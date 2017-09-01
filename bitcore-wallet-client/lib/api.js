@@ -1296,7 +1296,7 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
     network: network,
     singleAddress: !!opts.singleAddress,
     id: opts.id,
-    referralCode: opts.referralCode,
+    beacon: opts.beacon,
   };
   self._doPostRequest('/v2/wallets/', args, function(err, res) {
     if (err) return cb(err);
