@@ -9,5 +9,10 @@ data-and-logs/data-3/*
 hosts.json
 bitcore-node/mynode/
 
+# Yarn
+.yarnclean*
+yarn-error.log*
+yarn-debug.log*
+
 # Idea
 

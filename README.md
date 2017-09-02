@@ -35,15 +35,6 @@ brew install make
 alias make='/usr/local/Cellar/make/4.2.1_1/bin/gmake'
 ```
 
-### Install The Latest NPM V4
-
-You will encounter errors when trying to install local node package dependencies when using `file: ../some-local-package` in your `package.json` files unless you downgrade to NPM v4
-
-
-```
-npm install -g npm@latest-4
-```
-
 ### Installing Bitcore Wallet Service
 
 Go back to the directory where you created the folder `merit-middle-ware`
