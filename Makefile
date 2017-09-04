@@ -2,15 +2,12 @@
 
 .PHONY: prepare-lightwallet-app
 prepare-lightwallet-app:
-	cd ./lightwallet
-	yarn apply
-	yarn
+	cd ./lightwallet && yarn
+	cd ./lightwallet && yarn apply
 
 .PHONY: start-lightwallet-app
 start-lightwallet-app: prepare-lightwallet-app
-	cd ./lightwallet
-	yarn start
-	cd ..
+	cd ./lightwallet && yarn start
 
 ### lightwallet-stack ###
 
