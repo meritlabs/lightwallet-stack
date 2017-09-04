@@ -1,18 +1,18 @@
-.PHONY: prepare
-prepare:
-	cd ./bitcore-wallet-client
-	npm i
-	cd ..
+### lightwallet-app ###
+
+.PHONY: prepare-lightwallet-app
+prepare-lightwallet-app:
 	cd ./lightwallet
 	yarn apply
 	yarn
-	cd ..
 
-.PHONY: start
-start: prepare
+.PHONY: start-lightwallet-app
+start-lightwallet-app: prepare-lightwallet-app
 	cd ./lightwallet
 	yarn start
 	cd ..
+
+### lightwallet-stack ###
 
 .PHONY: start-mongo
 start-mongo:
@@ -22,13 +22,32 @@ start-mongo:
 stop-mongo:
 	kill `pgrep mongo`
 
+# Symlink the Bitcoin bitcoind
+# See https://github.com/meritlabs/lightwallet-stack/blob/master/bitcore-node/docs/development.md
+.PHONY: symlink-bitcore-node
+symlink-bitcore-node:
+	cd ./bitcore-node/bin && ln -sf ../../../merit-bitcoin/src/bitcoind
+
+# Create `devnode` directory, copy over settings and symlink services
+# See https://github.com/meritlabs/lightwallet-stack/blob/master/bitcore-node/docs/development.md
+.PHONY: prepare-bitcore-node-devnode
+prepare-bitcore-node-devnode:
+	rm -Rf ./bitcore-node/devnode
+	mkdir ./bitcore-node/devnode
+	mkdir ./bitcore-node/devnode/node_modules
+	mkdir ./bitcore-node/devnode/data/
+	cp bitcore-node-json2.json ./bitcore-node/devnode/bitcore-node.json
+	cp bitcore-node-devnode-data-bitcoin.conf ./bitcore-node/devnode/data/bitcoin.conf
+	touch ./bitcore-node/devnode/package.json
+	cd ./bitcore-node/devnode/node_modules/ && ln -sf ../../../bitcore-lib
+	cd ./bitcore-node/devnode/node_modules/ && ln -sf ../../../bitcore-node
+	cd ./bitcore-node/devnode/node_modules/ && ln -sf ../../../insight-api
+	cd ./bitcore-node/devnode/node_modules/ && ln -sf ../../../insight-ui
+
+# Within the devnode directory with the configuration file, start the node:
 .PHONY: start-bitcore-node
 start-bitcore-node:
-	#todo
-
-.PHONY: stop-bitcore-node
-stop-bitcore-node:
-	#todo
+	cd ./bitcore-node/devnode && ../bin/bitcore-node start
 
 .PHONY: start-bitcore-wallet-service
 start-bitcore-wallet-service:
@@ -42,7 +61,7 @@ stop-bitcore-wallet-service:
 clean-yarn: 
 	yarn cache clean
 
-# Preperation Order is based on dependencies
+## Preperation Order is based on dependencies ##
 .PHONY: prepare-bitcore-lib
 prepare-bitcore-lib:
 	cd ./bitcore-lib/ && yarn
@@ -85,3 +104,6 @@ prepare-bitcore-payment-protocol:
 
 .PHONY: prepare-lightwallet-stack
 prepare-lightwallet-stack: clean-yarn prepare-bitcore-lib prepare-bitcoin-rpc prepare-bitcore-mnemonic prepare-insight-api prepare-bitcore-wallet-service prepare-bitcore-wallet-client prepare-bitcore-p2p prepare-bitcore-node prepare-bitcore-message prepare-bitcore-payment-protocol
+
+.PHONY: start-lightwallet-stack
+start-lightwallet-stack: start-mongo start-bitcore-node start-bitcore-wallet-service
