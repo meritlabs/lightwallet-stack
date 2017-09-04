@@ -7,7 +7,7 @@ data-and-logs/data-2/*
 data-and-logs/data-3/*
 !bitcoin.conf
 hosts.json
-bitcore-node/mynode/
+bitcore-node/devnode/
 
 # Yarn
 .yarnclean*
