@@ -44,11 +44,15 @@ prepare-bitcore-node-devnode:
 # Within the devnode directory with the configuration file, start the node:
 .PHONY: start-bitcore-node
 start-bitcore-node:
-	cd ./bitcore-node/devnode && ../bin/bitcore-node start
+	cd ./bitcore-node/devnode && ../bin/bitcore-node start &
 
 .PHONY: start-bitcore-wallet-service
 start-bitcore-wallet-service:
-	cd ./bitcore-wallet-service/ && sh start.sh
+	cd ./bitcore-wallet-service/ && node locker/locker.js & \
+	cd ./bitcore-wallet-service/ && node messagebroker/messagebroker.js & \
+	cd ./bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
+	cd ./bitcore-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
+	cd ./bitcore-wallet-service/ && node bws.js
 
 .PHONY: stop-bitcore-wallet-service
 stop-bitcore-wallet-service:
@@ -75,6 +79,11 @@ prepare-bitcore-mnemonic:
 prepare-insight-api:
 	cd ./insight-api/ && yarn
 
+.PHONY: prepare-insight-ui
+prepare-insight-ui:
+	cd ./insight-ui/ && yarn
+	cd ./insight-ui/ && yarn run build
+
 .PHONY: prepare-bitcore-wallet-service
 prepare-bitcore-wallet-service:
 	cd ./bitcore-wallet-service/ && yarn
@@ -100,7 +109,20 @@ prepare-bitcore-payment-protocol:
 	cd ./bitcore-payment-protocol/ && yarn
 
 .PHONY: prepare-lightwallet-stack
-prepare-lightwallet-stack: clean-yarn prepare-bitcore-lib prepare-bitcoin-rpc prepare-bitcore-mnemonic prepare-insight-api prepare-bitcore-wallet-service prepare-bitcore-wallet-client prepare-bitcore-p2p prepare-bitcore-node prepare-bitcore-message prepare-bitcore-payment-protocol
+prepare-lightwallet-stack: clean-yarn \
+	prepare-bitcore-lib \
+	prepare-bitcoin-rpc \
+	prepare-bitcore-mnemonic \
+	prepare-insight-api \
+	prepare-insight-ui \
+	prepare-bitcore-wallet-service \
+	prepare-bitcore-wallet-client \
+	prepare-bitcore-p2p \
+	prepare-bitcore-node \
+	prepare-bitcore-message \
+	prepare-bitcore-payment-protocol
 
 .PHONY: start-lightwallet-stack
-start-lightwallet-stack: start-mongo start-bitcore-node start-bitcore-wallet-service
+start-lightwallet-stack: start-bitcore-node \
+	start-bitcore-wallet-service
+	
