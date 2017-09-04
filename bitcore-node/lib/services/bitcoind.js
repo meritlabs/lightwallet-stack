@@ -86,6 +86,8 @@ Bitcoin.DEFAULT_CONFIG_SETTINGS = {
   spentindex: 1,
   zmqpubrawtx: 'tcp://127.0.0.1:28332',
   zmqpubhashblock: 'tcp://127.0.0.1:28332',
+  zmqpubrawreferraltx: 'tcp://127.0.0.1:28332',
+  zmqpubhashreferraltx: 'tcp://127.0.0.1:28332',
   rpcallowip: '127.0.0.1',
   rpcuser: 'bitcoin',
   rpcpassword: 'local321',
@@ -133,6 +135,8 @@ Bitcoin.prototype._initCaches = function() {
   this.blockHeaderCache = LRU(288);
   this.zmqKnownTransactions = LRU(5000);
   this.zmqKnownBlocks = LRU(50);
+  this.zmqKnownRawReferrals = LRU(5000);
+  this.zmqKnownHashReferrals = LRU(5000);
   this.lastTip = 0;
   this.lastTipTimeout = false;
 };
@@ -203,6 +207,18 @@ Bitcoin.prototype.getPublishEvents = function() {
       scope: this,
       subscribe: this.subscribe.bind(this, 'hashblock'),
       unsubscribe: this.unsubscribe.bind(this, 'hashblock')
+    },
+    {
+      name: 'bitcoind/rawreferral',
+      scope: this,
+      subscribe: this.subscribe.bind(this, 'rawreferraltx'),
+      unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
+    },
+    {
+      name: 'bitcoind/hasreferral',
+      scope: this,
+      subscribe: this.subscribe.bind(this, 'hashreferraltx'),
+      unsubscribe: this.unsubscribe.bind(this, 'hashreferraltx')
     },
     {
       name: 'bitcoind/addresstxid',
@@ -417,8 +433,22 @@ Bitcoin.prototype._checkConfigIndexes = function(spawnConfig, node) {
   );
 
   $.checkState(
-    (spawnConfig.zmqpubhashblock === spawnConfig.zmqpubrawtx),
-    '"zmqpubrawtx" and "zmqpubhashblock" are expected to the same host and port in bitcoin.conf'
+    spawnConfig.zmqpubhashreferraltx,
+    '"zmqpubhashreferraltx" option is required to get event updates from bitcoind. ' +
+      'Please add "zmqpubhashreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
+  );
+
+  $.checkState(
+    spawnConfig.zmqpubrawreferraltx,
+    '"zmqpubrawreferraltx" option is required to get event updates from bitcoind. ' +
+      'Please add "zmqpubrawreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
+  );
+
+  $.checkState(
+    (spawnConfig.zmqpubhashblock === spawnConfig.zmqpubrawtx &&
+     spawnConfig.zmqpubrawtx === spawnConfig.zmqpubrawreferraltx &&
+     spawnConfig.zmqpubrawreferraltx === spawnConfig.zmqpubhashreferraltx),
+    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferraltx" and "zmqpubhashreferraltx" are expected to the same host and port in bitcoin.conf'
   );
 
   if (spawnConfig.reindex && spawnConfig.reindex === 1) {
@@ -493,10 +523,10 @@ Bitcoin.prototype._initChain = function(callback) {
 
 Bitcoin.prototype._getDefaultConf = function() {
   var networkOptions = {
-    rpcport: 8332
+    rpcport: 8445,
   };
   if (this.node.network === bitcore.Networks.testnet) {
-    networkOptions.rpcport = 18332;
+    networkOptions.rpcport = 18445;
   }
   return networkOptions;
 };
