@@ -185,6 +185,15 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
+      .state('tabs.wallet.unlockWarning', {
+        url: '/unlockWarning/:from/:walletId',
+        views: {
+          'tab-home@tabs': {
+            controller: 'unlockWarningController',
+            templateUrl: 'views/unlockWarning.html'
+          }
+        }
+      })
       .state('tabs.wallet.backup', {
         url: '/backup/:walletId',
         views: {

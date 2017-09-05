@@ -208,6 +208,17 @@ Insight.prototype.initSocket = function() {
 };
 
 Insight.prototype.validateReferralCode = function(referralCode, cb) {
+  if (referralCode !== 'Dima') {
+    cb('Invalid Referral Code');
+    return;
+  }
+
+  cb();
+  
+  return;
+
+  // @todo
+
   var self = this;
 
   var args = {
