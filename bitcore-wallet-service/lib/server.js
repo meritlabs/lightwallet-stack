@@ -504,12 +504,6 @@ WalletService.prototype.getStatus = function(opts, cb) {
         }
         status.wallet = wallet;
 
-        // @todo remove from here and handle it via insight-api/mongo
-        if (wallet.id === '1677b9ae-2071-4a10-b82c-80921d76e0a9') {
-          next('LOCKED');
-          return;
-        }
-
         next();
       });
     },

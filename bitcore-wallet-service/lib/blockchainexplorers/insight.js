@@ -208,16 +208,11 @@ Insight.prototype.initSocket = function() {
 };
 
 Insight.prototype.validateReferralCode = function(referralCode, cb) {
-  if (referralCode !== 'Dima') {
-    cb('Invalid Referral Code');
-    return;
-  }
-
   cb();
   
   return;
 
-  // @todo
+  // @TODO: Handle Insight-API referralCode action
 
   var self = this;
 
