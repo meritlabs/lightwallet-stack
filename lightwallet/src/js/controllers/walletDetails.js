@@ -356,6 +356,13 @@ angular.module('copayApp.controllers').controller('walletDetailsController', fun
     $scope.walletId = data.stateParams.walletId;
     $scope.wallet = profileService.getWallet($scope.walletId);
     if (!$scope.wallet) return;
+
+    if (!$scope.wallet.unlockWarnShown && $scope.wallet.locked) {
+      return $state.go('tabs.wallet.unlockWarning', {
+        walletId: $scope.wallet.credentials.walletId
+      });
+    }
+
     $scope.requiresMultipleSignatures = $scope.wallet.credentials.m > 1;
 
     addressbookService.list(function(err, ab) {
@@ -397,7 +404,7 @@ angular.module('copayApp.controllers').controller('walletDetailsController', fun
   function setAndroidStatusBarColor() {
     var SUBTRACT_AMOUNT = 15;
     var walletColor;
-    if (!$scope.wallet.color) walletColor = appConfigService.name == 'copay' ? '#019477' : '#4a90e2';
+    if (!$scope.wallet.color) walletColor = '#30afe6';
     else walletColor = $scope.wallet.color;
     var rgb = hexToRgb(walletColor);
     var keys = Object.keys(rgb);

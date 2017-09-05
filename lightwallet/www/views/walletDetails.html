@@ -28,7 +28,7 @@
 
         <div ng-show="updateStatusError">
           <span class="size-12 db m10">{{updateStatusError}}</span>
-          <a class="button button-outline button-light button-small" ng-click='updateAll(true)' translate>Tap to retry</a>
+          <a class="button button-outline button-light button-small wallet-retry" ng-class="{_locked: wallet.locked}" ng-click='updateAll(true)' translate>Tap to retry</a>
         </div>
 
         <div ng-show="walletNotRegistered">
@@ -152,6 +152,10 @@
         <span ng-include="'views/includes/walletInfo.html'"></span>
       </div>
     </div> <!-- oh -->
+
+    <a class="wallet-not-unlocked-warning" ng-if="wallet.locked" ui-sref="tabs.wallet.unlockWarning({from: 'tabs.wallet'})" translate>
+      Wallet is not unlocked yet
+    </a>
 
     <a class="wallet-not-backed-up-warning" ng-if="wallet.needsBackup" ui-sref="tabs.wallet.backupWarning({from: 'tabs.wallet'})" translate>
       Wallet not backed up

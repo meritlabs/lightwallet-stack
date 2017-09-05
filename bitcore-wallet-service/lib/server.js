@@ -351,7 +351,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
     function(acb) {
       var bc = self._getBlockchainExplorer(opts.network);
       
-      bc.validateReferralCode(opts.referralCode, function(errMsg) {
+      bc.validateReferralCode(opts.beacon, function(errMsg) {
         if (errMsg) return acb(new ClientError(errMsg));
 
         return acb(null);
@@ -377,7 +377,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
         singleAddress: !!opts.singleAddress,
         derivationStrategy: derivationStrategy,
         addressType: addressType,
-        referralCode: opts.referralCode,
+        beacon: opts.beacon,
       });
       self.storage.storeWallet(wallet, function(err) {
         log.debug('Wallet created', wallet.id, opts.network);
@@ -503,6 +503,13 @@ WalletService.prototype.getStatus = function(opts, cb) {
           });
         }
         status.wallet = wallet;
+
+        // @todo remove from here and handle it via insight-api/mongo
+        if (wallet.id === '1677b9ae-2071-4a10-b82c-80921d76e0a9') {
+          next('LOCKED');
+          return;
+        }
+
         next();
       });
     },
