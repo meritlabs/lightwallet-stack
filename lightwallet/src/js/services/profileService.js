@@ -35,6 +35,13 @@ angular.module('copayApp.services')
         wallet.name = (config.aliasFor && config.aliasFor[wallet.id]) || wallet.credentials.walletName;
         wallet.color = (config.colorFor && config.colorFor[wallet.id]);
         wallet.email = config.emailFor && config.emailFor[wallet.id];
+
+        // @todo move from here
+        if (wallet.error === 'LOCKED') {
+          wallet.color = '#ccc';
+          wallet.locked = true;
+          wallet.error = 'Wallet is not unlocked';
+        }
       });
     }
 
@@ -392,7 +399,7 @@ angular.module('copayApp.services')
             network: opts.networkName,
             singleAddress: opts.singleAddress,
             walletPrivKey: opts.walletPrivKey,
-            referralCode: opts.referralCode,
+            beacon: opts.beacon,
           }, function(err, secret) {
             if (err) return bwcError.cb(err, gettextCatalog.getString('Error creating wallet'), cb);
             return cb(null, walletClient, secret);
