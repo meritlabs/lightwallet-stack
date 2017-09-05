@@ -218,9 +218,9 @@ RpcClient.callspec = {
   walletPassphraseChange: '',
 
   // Merit RPC
-  validatereferralcode: 'str',
   generatereferralcode: '',
-  setreferralcode: 'str',
+  unlockwallet: 'str',
+  validatereferralcode: 'str',
 };
 
 var slice = function(arr, start, end) {
