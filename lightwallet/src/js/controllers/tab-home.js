@@ -220,8 +220,13 @@ angular.module('copayApp.controllers').controller('tabHomeController',
             wallet.error = (err === 'WALLET_NOT_REGISTERED') ? gettextCatalog.getString('Wallet not registered') : bwcError.msg(err);
 
             $log.error(err);
+            if (wallet.error === 'LOCKED') {
+              wallet.color = '#f88';
+              wallet.locked = true;
+            }
           } else {
-            wallet.error = null;
+            // wallet.error = null; // @todo return back
+
             wallet.status = status;
 
             // TODO service refactor? not in profile service

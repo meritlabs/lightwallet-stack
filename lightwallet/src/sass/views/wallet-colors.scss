@@ -17,6 +17,14 @@ $default-wallet-color: map-get( map-get($v-wallet-color-map, $v-default-wallet-c
   color: $default-wallet-color;
 }
 
+.wallet-background-color-locked {
+  background-color: #999;
+}
+
+.wallet-retry._locked {
+  color: white !important;
+}
+
 /* generate classes for all colors */
 @each $id, $map in $v-wallet-color-map {
   .wallet-color-#{$id} {
