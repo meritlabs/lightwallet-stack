@@ -215,7 +215,7 @@ Bitcoin.prototype.getPublishEvents = function() {
       unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
     },
     {
-      name: 'bitcoind/hasreferral',
+      name: 'bitcoind/hashreferral',
       scope: this,
       subscribe: this.subscribe.bind(this, 'hashreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'hashreferraltx')
@@ -686,6 +686,49 @@ Bitcoin.prototype._zmqTransactionHandler = function(node, message) {
   }
 };
 
+Bitcoin.prototype._zmqRawReferralsHandler = function(node, message) {
+  var self = this;
+  var hash = bitcore.crypto.Hash.sha256sha256(message);
+  var id = hash.toString('binary');
+  if (!self.zmqKnownRawReferrals.get(id)) {
+    self.zmqKnownRawReferrals.set(id, true);
+    self.emit('rawreferraltx', message);
+
+    // Notify transaction subscribers
+    for (var i = 0; i < this.subscriptions.rawtransaction.length; i++) {
+      this.subscriptions.rawreferraltx[i].emit('bitcoind/rawreferral', message.toString('hex'));
+    }
+
+/*    var tx = bitcore.Transaction();
+    tx.fromString(message);
+    var txid = bitcore.util.buffer.reverse(hash).toString('hex');
+    self._notifyAddressTxidSubscribers(txid, tx);
+*/
+  }
+};
+
+Bitcoin.prototype._zmqHashReferralsHandler = function(node, message) {
+  var self = this;
+  var hash = bitcore.crypto.Hash.sha256sha256(message);
+  var id = hash.toString('binary');
+  if (!self.zmqKnownHashReferrals.get(id)) {
+    self.zmqKnownHashReferrals.set(id, true);
+    self.emit('hashreferraltx', message);
+
+    // Notify transaction subscribers
+    for (var i = 0; i < this.subscriptions.hashreferral.length; i++) {
+      this.subscriptions.hashreferraltx[i].emit('bitcoind/hashreferral', message.toString('hex'));
+    }
+
+/*    var tx = bitcore.Transaction();
+    tx.fromString(message);
+    var txid = bitcore.util.buffer.reverse(hash).toString('hex');
+    self._notifyAddressTxidSubscribers(txid, tx);
+*/
+  }
+};
+
+
 Bitcoin.prototype._checkSyncedAndSubscribeZmqEvents = function(node) {
   var self = this;
   var interval;
@@ -739,16 +782,32 @@ Bitcoin.prototype._checkSyncedAndSubscribeZmqEvents = function(node) {
 };
 
 Bitcoin.prototype._subscribeZmqEvents = function(node) {
-  var self = this;
+  const self = this;
   node.zmqSubSocket.subscribe('hashblock');
   node.zmqSubSocket.subscribe('rawtx');
+  node.zmqSubSocket.subscribe('rawreferrals');
+  node.zmqSubSocket.subscribe('hashreferrals');
   node.zmqSubSocket.on('message', function(topic, message) {
-    var topicString = topic.toString('utf8');
-    if (topicString === 'rawtx') {
+    const topicString = topic.toString('utf8');
+    switch(topicString) {
+    case 'rawtx':
       self._zmqTransactionHandler(node, message);
-    } else if (topicString === 'hashblock') {
+      break;
+    case 'hashblock':
       self._zmqBlockHandler(node, message);
-    }
+      break;
+    case 'rawreferrals':
+      log.debug('rawreferrals');
+      self._zmqRawReferralsHandler(node, message);
+      break;
+    case 'hashreferrals':
+      log.debug('hashreferrals');
+      self._zmqHashReferralsHandler(node, message);
+      break;
+    default:
+      log.error('Error in ZMQ message parsing: cannot determine topic.')
+      break;
+    };
   });
 };
 
