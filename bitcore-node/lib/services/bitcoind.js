@@ -195,6 +195,7 @@ Bitcoin.prototype.getAPIMethods = function() {
  * Called by the Bus to determine the available events.
  */
 Bitcoin.prototype.getPublishEvents = function() {
+  log.info('get publish events called');
   return [
     {
       name: 'bitcoind/rawtransaction',
@@ -782,6 +783,7 @@ Bitcoin.prototype._checkSyncedAndSubscribeZmqEvents = function(node) {
 };
 
 Bitcoin.prototype._subscribeZmqEvents = function(node) {
+  log.info('Subscribung to ZMQ events');
   const self = this;
   node.zmqSubSocket.subscribe('hashblock');
   node.zmqSubSocket.subscribe('rawtx');
@@ -789,6 +791,7 @@ Bitcoin.prototype._subscribeZmqEvents = function(node) {
   node.zmqSubSocket.subscribe('hashreferrals');
   node.zmqSubSocket.on('message', function(topic, message) {
     const topicString = topic.toString('utf8');
+    log.info(`message received in topic: ${topicString}`);
     switch(topicString) {
     case 'rawtx':
       self._zmqTransactionHandler(node, message);
@@ -797,11 +800,11 @@ Bitcoin.prototype._subscribeZmqEvents = function(node) {
       self._zmqBlockHandler(node, message);
       break;
     case 'rawreferrals':
-      log.debug('rawreferrals');
+      log.info('rawreferrals');
       self._zmqRawReferralsHandler(node, message);
       break;
     case 'hashreferrals':
-      log.debug('hashreferrals');
+      log.info('hashreferrals');
       self._zmqHashReferralsHandler(node, message);
       break;
     default:
