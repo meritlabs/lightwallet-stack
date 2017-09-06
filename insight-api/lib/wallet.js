@@ -8,7 +8,16 @@ function WalletController(node) {
 }
 
 WalletController.prototype.unlock = function(req, res) {
-  // TODO: Handle Unlock RPC call and response
+  var self = this;
+  var code = req.params.code;
+
+  self.node.services.bitcoind.unlockWallet(code, function(err, result) {
+    if(err) {
+      return self.common.handleErrors(err, res);
+    }
+
+    res.json(result);
+  });
 };
 
 module.exports = WalletController;
