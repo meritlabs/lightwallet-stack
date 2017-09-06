@@ -2093,13 +2093,15 @@ Bitcoin.prototype.generateBlock = function(num, callback) {
  * @param {Function} callback
  */
 Bitcoin.prototype.generateReferralCode = function(callback) {
+  log.info('generateReferralCode Called: ');
   var self = this;
 
   self.client.generatereferralcode(function(err, response) {
     if (err) {
       return callback(self._wrapRPCError(err));
     } else {
-      callback(null, response.result);
+      log.info('generatereferralCode Response: ', response);
+      callback(null, response);
     }
   });
 };
@@ -2110,6 +2112,7 @@ Bitcoin.prototype.generateReferralCode = function(callback) {
  * @param {Function} callback
  */
 Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
+  log.info('validateReferralCode Called: ', referralCode);
   var self = this;
 
   if (typeof referralCode === 'string' || referralCode instanceof String) {
@@ -2117,8 +2120,8 @@ Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
-        // TODO: validate response from the daemon
-        callback(null, response.result);
+        log.info('validateReferralCode Response: ', response);
+        callback(null, response);
       }
     });
   } else {
@@ -2136,6 +2139,7 @@ Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
  * @param {Function} callback
  */
 Bitcoin.prototype.unlockWallet = function(code, callback) {
+  log.info('unlockWallet Called: ', code);
   var self = this;
 
   if (typeof code === 'string' || code instanceof String) {
@@ -2143,7 +2147,8 @@ Bitcoin.prototype.unlockWallet = function(code, callback) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
-        callback(null, response.result);
+        log.info('unlockWallet Response: ', response);
+        callback(null, response);
       }
     });
   } else {

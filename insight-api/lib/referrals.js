@@ -15,7 +15,7 @@ ReferralController.prototype.generateReferralCode = function(req, res) {
       return self.common.handleErrors(err, res);
     }
 
-    res.json({'referralCode': result});
+    res.jsonp(result);
   });
 };
 
@@ -27,7 +27,7 @@ ReferralController.prototype.validateReferralCode = function(req, res) {
     if (err) {
       return self.common.handleErrors(err, res);
     }
-    res.json({'isValid': result});
+    res.jsonp(result);
   });
 };
 

@@ -16,7 +16,7 @@ WalletController.prototype.unlock = function(req, res) {
       return self.common.handleErrors(err, res);
     }
 
-    res.json(result);
+    res.jsonp(result);
   });
 };
 

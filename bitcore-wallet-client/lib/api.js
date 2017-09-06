@@ -1298,6 +1298,8 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
     id: opts.id,
     beacon: opts.beacon,
   };
+
+  // Create wallet
   self._doPostRequest('/v2/wallets/', args, function(err, res) {
     if (err) return cb(err);
 

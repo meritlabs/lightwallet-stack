@@ -60,7 +60,6 @@ Run these in the order listed.
 
 ```sh
 make prepare-lightwallet-stack
-make prepare-bitcore-node-devnode
 make symlink-bitcore-node
 make start-lightwallet-stack
 ```
