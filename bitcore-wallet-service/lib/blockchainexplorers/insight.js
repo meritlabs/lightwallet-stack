@@ -208,12 +208,6 @@ Insight.prototype.initSocket = function() {
 };
 
 Insight.prototype.validateReferralCode = function(referralCode, cb) {
-  cb();
-  
-  return;
-
-  // @TODO: Handle Insight-API referralCode action
-
   var self = this;
 
   var args = {

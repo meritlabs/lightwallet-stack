@@ -25,26 +25,10 @@ stop-mongo:
 symlink-bitcore-node:
 	cd ./bitcore-node/bin && ln -sf ../../../merit-bitcoin/src/bitcoind
 
-# Create `devnode` directory, copy over settings and symlink services
-# See https://github.com/meritlabs/lightwallet-stack/blob/master/bitcore-node/docs/development.md
-.PHONY: prepare-bitcore-node-devnode
-prepare-bitcore-node-devnode:
-	rm -Rf ./bitcore-node/devnode
-	mkdir ./bitcore-node/devnode
-	mkdir ./bitcore-node/devnode/node_modules
-	mkdir ./bitcore-node/devnode/data/
-	cp bitcore-node-json2.json ./bitcore-node/devnode/bitcore-node.json
-	cp bitcore-node-devnode-data-bitcoin.conf ./bitcore-node/devnode/data/bitcoin.conf
-	touch ./bitcore-node/devnode/package.json
-	cd ./bitcore-node/devnode/node_modules/ && ln -sf ../../../bitcore-lib
-	cd ./bitcore-node/devnode/node_modules/ && ln -sf ../../../bitcore-node
-	cd ./bitcore-node/devnode/node_modules/ && ln -sf ../../../insight-api
-	cd ./bitcore-node/devnode/node_modules/ && ln -sf ../../../insight-ui
-
 # Within the devnode directory with the configuration file, start the node:
 .PHONY: start-bitcore-node
 start-bitcore-node:
-	cd ./bitcore-node/devnode && ../bin/bitcore-node start &
+	./bitcore-node/bin/bitcore-node start
 
 .PHONY: start-bitcore-wallet-service
 start-bitcore-wallet-service:
