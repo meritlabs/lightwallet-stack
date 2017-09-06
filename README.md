@@ -69,3 +69,19 @@ make start-lightwallet-stack
 ```sh
 make start-lightwallet-app
 ```
+
+### Start Bitcore Individually
+
+```sh
+make start-bitcore-node
+```
+
+## Send an RPC call to the Lightwallet bitcore-node
+
+- `make start-bitcore-node` should be running
+- `make symlink-bitcore-node` should be symlinked
+
+```sh
+cd merit-labs/lightwallet-stack/
+./bitcore-node/bitcore-node/bin/bitcore-node call {bitcore-node/lib/services/bitcoind.js rpc_command_here}
+```
