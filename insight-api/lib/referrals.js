@@ -31,16 +31,4 @@ ReferralController.prototype.validateReferralCode = function(req, res) {
   });
 };
 
-ReferralController.prototype.setReferralCode = function(req, res) {
-  var self = this;
-  var referralCode = req.params.code;
-
-  self.node.services.bitcoind.setReferralCode(referralCode, function(err, result) {
-    if (err) {
-      return self.common.handleErrors(err, res);
-    }
-    res.json({'isSet': result});
-  });
-};
-
 module.exports = ReferralController;
