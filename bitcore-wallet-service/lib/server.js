@@ -351,8 +351,9 @@ WalletService.prototype.createWallet = function(opts, cb) {
     function(acb) {
       var bc = self._getBlockchainExplorer(opts.network);
       
-      bc.validateReferralCode(opts.beacon, function(errMsg) {
+      bc.validateReferralCode(opts.beacon, function(errMsg, validation) {
         if (errMsg) return acb(new ClientError(errMsg));
+        if (false == validation.result) return acb(new ClientError('Invalid unlock code!'));
 
         return acb(null);
       });
@@ -503,12 +504,6 @@ WalletService.prototype.getStatus = function(opts, cb) {
           });
         }
         status.wallet = wallet;
-
-        // @todo remove from here and handle it via insight-api/mongo
-        if (wallet.id === '1677b9ae-2071-4a10-b82c-80921d76e0a9') {
-          next('LOCKED');
-          return;
-        }
 
         next();
       });
