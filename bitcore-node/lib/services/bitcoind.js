@@ -700,17 +700,11 @@ Bitcoin.prototype._zmqRawReferralsHandler = function(node, message) {
     self.emit('rawreferraltx', message);
 
     // Notify rawreferraltx subscribers
-    log.warn(this.subscriptions.rawreferraltx.length);
+    log.info('rawreferraltx subscribers: ', this.subscriptions.rawreferraltx.length);
     for (var i = 0; i < this.subscriptions.rawreferraltx.length; i++) {
-      log.warn('rawreferraltx message:', message.toString('hex'));
+      log.warn('rawreferraltx sending message:', message.toString('hex'));
       this.subscriptions.rawreferraltx[i].emit('bitcoind/rawreferraltx', message.toString('hex'));
     }
-
-/*    var tx = bitcore.Transaction();
-    tx.fromString(message);
-    var txid = bitcore.util.buffer.reverse(hash).toString('hex');
-    self._notifyAddressTxidSubscribers(txid, tx);
-*/
   }
 };
 
@@ -723,17 +717,11 @@ Bitcoin.prototype._zmqHashReferralsHandler = function(node, message) {
     self.emit('hashreferraltx', message);
 
     // Notify hashreferraltx subscribers
-    log.warn(this.subscriptions.hashreferraltx.length);
+    log.info('hashreferraltx subscribers: ', this.subscriptions.hashreferraltx.length);
     for (var i = 0; i < this.subscriptions.hashreferraltx.length; i++) {
-      log.warn('hashreferraltx message:', message.toString('hex'));
+      log.warn('hashreferraltx sending message:', message.toString('hex'));
       this.subscriptions.hashreferraltx[i].emit('bitcoind/hashreferraltx', message.toString('hex'));
     }
-
-/*    var tx = bitcore.Transaction();
-    tx.fromString(message);
-    var txid = bitcore.util.buffer.reverse(hash).toString('hex');
-    self._notifyAddressTxidSubscribers(txid, tx);
-*/
   }
 };
 
@@ -808,11 +796,9 @@ Bitcoin.prototype._subscribeZmqEvents = function(node) {
       self._zmqBlockHandler(node, message);
       break;
     case 'rawreferraltx':
-      log.info('rawreferraltx');
       self._zmqRawReferralsHandler(node, message);
       break;
     case 'hashreferraltx':
-      log.info('hashreferraltx');
       self._zmqHashReferralsHandler(node, message);
       break;
     default:
