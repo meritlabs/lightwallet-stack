@@ -16,12 +16,15 @@ function MessageBroker(opts) {
 
     this.remote = true;
     this.mq = require('socket.io-client').connect(url);
-    this.mq.on('connect', function() {});
+    this.mq.on('connect', function() {
+      console.log('connection made');
+    });
     this.mq.on('connect_error', function() {
       log.warn('Error connecting to message broker server @ ' + url);
     });
 
     this.mq.on('msg', function(data) {
+      console.log('MQ on message', data);
       self.emit('msg', data);
     });
 
@@ -33,13 +36,16 @@ nodeutil.inherits(MessageBroker, events.EventEmitter);
 
 MessageBroker.prototype.send = function(data) {
   if (this.remote) {
+    console.log('broker: send remote', data);
     this.mq.emit('msg', data);
   } else {
+    console.log('broker: send local', data);
     this.emit('msg', data);
   }
 };
 
 MessageBroker.prototype.onMessage = function(handler) {
+  console.log('handler registered', handler);
   this.on('msg', handler);
 };
 

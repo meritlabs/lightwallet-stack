@@ -87,6 +87,11 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
   });
   socket.on('tx', _.bind(self._handleIncomingTx, self));
   socket.on('block', _.bind(self._handleNewBlock, self, network));
+  socket.on('referral', _.bind(self._handleReferral, self));
+};
+
+BlockchainMonitor.prototype._handleReferral = function(data) {
+  console.log('referral message received', data);
 };
 
 BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, processIt) {

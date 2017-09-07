@@ -138,6 +138,7 @@ WalletService.initialize = function(opts, cb) {
       initStorage(next);
     },
     function(next) {
+      console.log(next);
       initMessageBroker(next);
     },
     function(next) {
@@ -350,7 +351,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
   async.series([
     function(acb) {
       var bc = self._getBlockchainExplorer(opts.network);
-      
+
       bc.validateReferralCode(opts.referralCode, function(errMsg) {
         if (errMsg) return acb(new ClientError(errMsg));
 
