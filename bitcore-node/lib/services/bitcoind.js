@@ -231,6 +231,7 @@ Bitcoin.prototype.getPublishEvents = function() {
 };
 
 Bitcoin.prototype.subscribe = function(name, emitter) {
+  log.info('Subscribing ', name, emitter);
   this.subscriptions[name].push(emitter);
   log.info(emitter.remoteAddress, 'subscribe:', 'bitcoind/' + name, 'total:', this.subscriptions[name].length);
 };
@@ -783,7 +784,7 @@ Bitcoin.prototype._checkSyncedAndSubscribeZmqEvents = function(node) {
 };
 
 Bitcoin.prototype._subscribeZmqEvents = function(node) {
-  log.info('Subscribung to ZMQ events');
+  log.info('Subscribing to ZMQ events');
   const self = this;
   node.zmqSubSocket.subscribe('hashblock');
   node.zmqSubSocket.subscribe('rawtx');
