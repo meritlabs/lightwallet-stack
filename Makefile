@@ -117,3 +117,63 @@ prepare-lightwallet-stack: clean-yarn \
 start-lightwallet-stack: start-bitcore-wallet-service \
 	start-bitcore-node
 	
+
+# Clean 
+## Preperation Order is based on dependencies ##
+.PHONY: clean-bitcore-lib
+clean-bitcore-lib:
+	rm -rf ./packages/bitcore-lib/node_modules
+
+.PHONY: clean-bitcoin-rpc
+clean-bitcoin-rpc:
+	rm -rf ./packages/bitcoin-rpc/node_modules
+
+.PHONY: clean-bitcore-mnemonic
+clean-bitcore-mnemonic:
+	rm -rf ./packages/bitcore-mnemonic/node_modules
+
+.PHONY: clean-insight-api
+clean-insight-api:
+	rm -rf ./packages/insight-api/node_modules
+
+.PHONY: clean-insight-ui
+clean-insight-ui:
+	rm -rf ./packages/insight-ui/node_modules
+
+.PHONY: clean-bitcore-wallet-service
+clean-bitcore-wallet-service:
+	rm -rf ./packages/bitcore-wallet-service/node_modules
+
+.PHONY: clean-bitcore-wallet-client
+clean-bitcore-wallet-client:
+	rm -rf ./packages/bitcore-wallet-client/node_modules
+
+.PHONY: clean-bitcore-p2p
+clean-bitcore-p2p:
+	rm -rf ./packages/bitcore-p2p/node_modules
+
+.PHONY: clean-bitcore-node
+clean-bitcore-node:
+	rm -rf ./packages/bitcore-node/node_modules
+
+.PHONY: clean-bitcore-message
+clean-bitcore-message:
+	rm -rf ./packages/bitcore-message/node_modules
+
+.PHONY: clean-bitcore-payment-protocol
+clean-bitcore-payment-protocol:
+	rm -rf ./packages/bitcore-payment-protocol/node_modules
+
+.PHONY: clean-lightwallet-stack
+clean-lightwallet-stack: clean-yarn \
+	clean-bitcore-lib \
+	clean-bitcoin-rpc \
+	clean-bitcore-mnemonic \
+	clean-insight-api \
+	clean-insight-ui \
+	clean-bitcore-wallet-service \
+	clean-bitcore-wallet-client \
+	clean-bitcore-p2p \
+	clean-bitcore-node \
+	clean-bitcore-message \
+	clean-bitcore-payment-protocol
