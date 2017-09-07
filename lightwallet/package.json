@@ -47,7 +47,7 @@
     "url": "https://github.com/meritlabs/merit-mobile/issues"
   },
   "engines": {
-    "node": "6",
+    "node": "8",
     "npm": "3"
   },
   "dependencies": {

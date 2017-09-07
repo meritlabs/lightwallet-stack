@@ -4,7 +4,5 @@
   "license": "MIT",
   "readme": "README.md",
   "dependencies": {
-    "bitcore-node": "file:./bitcore-node",
-    "insight-api": "file:./insight-api"
   }
 }
