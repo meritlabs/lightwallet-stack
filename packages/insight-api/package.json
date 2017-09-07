@@ -61,8 +61,8 @@
   "bitcoreNode": "lib",
   "dependencies": {
     "async": "*",
-    "bitcore-lib": "file:../bitcore-lib",
-    "bitcore-message": "file:../bitcore-message",
+    "bitcore-lib": "^0.14.0",
+    "bitcore-message": "^1.0.4",
     "body-parser": "^1.13.3",
     "compression": "^1.6.1",
     "lodash": "^2.4.1",
