@@ -167,7 +167,7 @@ function loadModule(req, service) {
  */
 function setupServices(req, servicesPath, config) {
 
-  module.paths.push(path.resolve(servicesPath, './node_modules'));
+  module.paths.push(path.resolve(servicesPath));
 
   var services = [];
   if (config.services) {
