@@ -208,30 +208,19 @@ Insight.prototype.initSocket = function() {
 };
 
 Insight.prototype.validateReferralCode = function(referralCode, cb) {
-  if (referralCode !== 'Dima') {
-    cb('Invalid Referral Code');
-    return;
-  }
-
-  cb();
-  
-  return;
-
-  // @todo
-
   var self = this;
 
   var args = {
     method: 'GET',
     path: `${this.apiPrefix}/referral/${referralCode}/validate`,
-    json: true,
+    json: true, // Return as json object if true else will return stringify
   };
 
   this._doRequest(args, function(err, res, body) {
     if (err || res.statusCode !== 200) {
       return cb(_parseErr(err, res));
     }
-    return cb(null, body.tx);
+    return cb(null, body);
   });
 };
 

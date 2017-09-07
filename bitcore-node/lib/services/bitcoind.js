@@ -181,8 +181,9 @@ Bitcoin.prototype.getAPIMethods = function() {
     ['generateBlock', this, this.generateBlock, 1],
 
     // Merit Specific RPC
-    ['generatereferralcode', this, this.generateReferralCode, 0],
-    ['validatereferralcode', this, this.validateReferralCode, 1]
+    ['generatereferralcode',  this, this.generateReferralCode, 0],
+    ['unlockwallet',          this, this.unlockWallet,         1],
+    ['validatereferralcode',  this, this.validateReferralCode, 1]
   ];
   return methods;
 };
@@ -2092,13 +2093,15 @@ Bitcoin.prototype.generateBlock = function(num, callback) {
  * @param {Function} callback
  */
 Bitcoin.prototype.generateReferralCode = function(callback) {
+  log.info('generateReferralCode Called: ');
   var self = this;
 
-  this.client.generatereferralcode(function(err, response) {
+  self.client.generatereferralcode(function(err, response) {
     if (err) {
       return callback(self._wrapRPCError(err));
     } else {
-      callback(null, response.result);
+      log.info('generatereferralCode Response: ', response);
+      callback(null, response);
     }
   });
 };
@@ -2109,6 +2112,7 @@ Bitcoin.prototype.generateReferralCode = function(callback) {
  * @param {Function} callback
  */
 Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
+  log.info('validateReferralCode Called: ', referralCode);
   var self = this;
 
   if (typeof referralCode === 'string' || referralCode instanceof String) {
@@ -2116,8 +2120,8 @@ Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
-        // ToDo validate response from the daemon
-        callback(null, response.result);
+        log.info('validateReferralCode Response: ', response);
+        callback(null, response);
       }
     });
   } else {
@@ -2129,23 +2133,26 @@ Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
 };
 
 /*
- * Sets the referral/invite code and issues the referral transaction to unlock the wallet
- * @param {String} referralCode
+ * Updates the wallet with referral code and beacons first key with associated referral
+ * Returns an object containing various wallet state info.
+ * @param {String} code, The code needed to unlock the wallet
  * @param {Function} callback
  */
-Bitcoin.prototype.setReferralCode = function(referralCode, callback) {
+Bitcoin.prototype.unlockWallet = function(code, callback) {
+  log.info('unlockWallet Called: ', code);
   var self = this;
-  if (typeof referralCode === 'string' || referralCode instanceof String) {
-    self.client.setreferralcode(referralCode, function(err, response) {
+
+  if (typeof code === 'string' || code instanceof String) {
+    self.client.unlockwallet(code, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
-        // ToDo validate response from the daemon
-        callback(null, response.result);
+        log.info('unlockWallet Response: ', response);
+        callback(null, response);
       }
     });
   } else {
-    var err = new errors.RPCError('Invite code could not be set');
+    var err = new errors.RPCError('Unlock code was incorrect');
     err.code = -8;
 
     return callback(self._wrapRPCError(err));

@@ -7,6 +7,13 @@ data-and-logs/data-2/*
 data-and-logs/data-3/*
 !bitcoin.conf
 hosts.json
+bitcore-node/devnode/
+insight-ui/public/*
+
+# Yarn
+.yarnclean*
+yarn-error.log*
+yarn-debug.log*
 
 # Idea
 

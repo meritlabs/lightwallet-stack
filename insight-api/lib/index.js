@@ -13,6 +13,7 @@ var MessagesController = require('./messages');
 var UtilsController = require('./utils');
 var CurrencyController = require('./currency');
 var ReferralController = require('./referrals');
+var WalletController = require('./wallet');
 var RateLimiter = require('./ratelimiter');
 var morgan = require('morgan');
 var bitcore = require('bitcore-lib');
@@ -241,8 +242,13 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.get('/referral', referral.generateReferralCode.bind(referral));
 
   app.get('/referral/:code/validate', referral.validateReferralCode.bind(referral));
-  app.get('/referral/:code/set', referral.setReferralCode.bind(referral));
   app.param('code', referral.validateReferralCode.bind(referral));
+
+  // Wallet
+  var wallet = new WalletController(this.node);
+
+  app.get('/wallet/:code/unlock', wallet.unlock.bind(wallet));
+  app.param('code', wallet.unlock.bind(wallet));
 
   // Not Found
   app.use(function(req, res) {
