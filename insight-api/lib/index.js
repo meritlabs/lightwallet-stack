@@ -93,7 +93,7 @@ InsightAPI.prototype.getRoutePrefix = function() {
 InsightAPI.prototype.start = function(callback) {
   this.node.services.bitcoind.on('tx', this.transactionEventHandler.bind(this));
   this.node.services.bitcoind.on('block', this.blockEventHandler.bind(this));
-  this.node.services.bitcoind.on('referral', this.referralEventHandler.bind(this));
+  this.node.services.bitcoind.on('rawreferraltx', this.referralEventHandler.bind(this));
   setImmediate(callback);
 };
 
@@ -263,7 +263,7 @@ InsightAPI.prototype.getPublishEvents = function() {
       scope: this,
       subscribe: this.subscribe.bind(this),
       unsubscribe: this.unsubscribe.bind(this),
-      extraEvents: ['tx', 'block', 'referral']
+      extraEvents: ['tx', 'block', 'rawreferraltx', 'hashreferraltx']
     }
   ];
 };
@@ -288,7 +288,7 @@ InsightAPI.prototype.referralEventHandler = function(referralBuffer) {
   console.log('referral handler', referralBuffer);
 
   for (var i = 0; i < this.subscriptions.inv.length; i++) {
-    this.subscriptions.inv[i].emit('referral', referralBuffer);
+    this.subscriptions.inv[i].emit('rawreferraltx', referralBuffer);
   }
 }
 
