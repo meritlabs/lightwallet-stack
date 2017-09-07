@@ -212,13 +212,13 @@ Bitcoin.prototype.getPublishEvents = function() {
       unsubscribe: this.unsubscribe.bind(this, 'hashblock')
     },
     {
-      name: 'bitcoind/rawreferral',
+      name: 'bitcoind/rawreferraltx',
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
     },
     {
-      name: 'bitcoind/hashreferral',
+      name: 'bitcoind/hashreferraltx',
       scope: this,
       subscribe: this.subscribe.bind(this, 'hashreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'hashreferraltx')
@@ -699,9 +699,11 @@ Bitcoin.prototype._zmqRawReferralsHandler = function(node, message) {
     self.zmqKnownRawReferrals.set(id, true);
     self.emit('rawreferraltx', message);
 
-    // Notify transaction subscribers
-    for (var i = 0; i < this.subscriptions.rawtransaction.length; i++) {
-      this.subscriptions.rawreferraltx[i].emit('bitcoind/rawreferral', message.toString('hex'));
+    // Notify rawreferraltx subscribers
+    log.warn(this.subscriptions.rawreferraltx.length);
+    for (var i = 0; i < this.subscriptions.rawreferraltx.length; i++) {
+      log.warn('rawreferraltx message:', message.toString('hex'));
+      this.subscriptions.rawreferraltx[i].emit('bitcoind/rawreferraltx', message.toString('hex'));
     }
 
 /*    var tx = bitcore.Transaction();
@@ -720,9 +722,11 @@ Bitcoin.prototype._zmqHashReferralsHandler = function(node, message) {
     self.zmqKnownHashReferrals.set(id, true);
     self.emit('hashreferraltx', message);
 
-    // Notify transaction subscribers
-    for (var i = 0; i < this.subscriptions.hashreferral.length; i++) {
-      this.subscriptions.hashreferraltx[i].emit('bitcoind/hashreferral', message.toString('hex'));
+    // Notify hashreferraltx subscribers
+    log.warn(this.subscriptions.hashreferraltx.length);
+    for (var i = 0; i < this.subscriptions.hashreferraltx.length; i++) {
+      log.warn('hashreferraltx message:', message.toString('hex'));
+      this.subscriptions.hashreferraltx[i].emit('bitcoind/hashreferraltx', message.toString('hex'));
     }
 
 /*    var tx = bitcore.Transaction();
@@ -791,8 +795,8 @@ Bitcoin.prototype._subscribeZmqEvents = function(node) {
   const self = this;
   node.zmqSubSocket.subscribe('hashblock');
   node.zmqSubSocket.subscribe('rawtx');
-  node.zmqSubSocket.subscribe('rawreferrals');
-  node.zmqSubSocket.subscribe('hashreferrals');
+  node.zmqSubSocket.subscribe('rawreferraltx');
+  node.zmqSubSocket.subscribe('hashreferraltx');
   node.zmqSubSocket.on('message', function(topic, message) {
     const topicString = topic.toString('utf8');
     log.info(`message received in topic: ${topicString}`);
@@ -803,12 +807,12 @@ Bitcoin.prototype._subscribeZmqEvents = function(node) {
     case 'hashblock':
       self._zmqBlockHandler(node, message);
       break;
-    case 'rawreferrals':
-      log.info('rawreferrals');
+    case 'rawreferraltx':
+      log.info('rawreferraltx');
       self._zmqRawReferralsHandler(node, message);
       break;
-    case 'hashreferrals':
-      log.info('hashreferrals');
+    case 'hashreferraltx':
+      log.info('hashreferraltx');
       self._zmqHashReferralsHandler(node, message);
       break;
     default:
