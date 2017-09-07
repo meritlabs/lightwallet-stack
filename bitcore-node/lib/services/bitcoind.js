@@ -47,6 +47,8 @@ function Bitcoin(options) {
   this.subscriptions.rawtransaction = [];
   this.subscriptions.hashblock = [];
   this.subscriptions.address = {};
+  this.subscriptions.rawreferraltx = [];
+  this.subscriptions.hashreferraltx = [];
 
   // set initial settings
   this._initDefaults(options);
@@ -237,6 +239,7 @@ Bitcoin.prototype.subscribe = function(name, emitter) {
 };
 
 Bitcoin.prototype.unsubscribe = function(name, emitter) {
+  console.log('name', name);
   var index = this.subscriptions[name].indexOf(emitter);
   if (index > -1) {
     this.subscriptions[name].splice(index, 1);
