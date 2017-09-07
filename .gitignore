@@ -17,3 +17,6 @@ yarn-debug.log*
 
 # Idea
 
+# Lerna
+lerna-debug.log
+
