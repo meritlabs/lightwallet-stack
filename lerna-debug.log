@@ -1,0 +1,1881 @@
+0 silly input []
+1 silly flags { _: [ 'bootstrap' ], args: [] }
+2 verbose rootPath /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack
+3 info version 2.1.2
+4 silly existsSync /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/VERSION
+5 silly initialize attempt
+6 silly initialize success
+7 silly execute attempt
+8 info Bootstrapping 11 packages
+9 info lifecycle preinstall
+10 silly runScript preinstall bitcoind-rpc
+11 silly bitcoind-rpc
+12 silly runScript preinstall bitcore-lib
+13 silly bitcore-lib
+14 silly runScript preinstall bitcore-message
+15 silly bitcore-message
+16 silly runScript preinstall bitcore-mnemonic
+17 silly bitcore-mnemonic
+18 silly runScript preinstall bitcore-node
+19 silly bitcore-node
+20 silly runScript preinstall bitcore-p2p
+21 silly bitcore-p2p
+22 silly runScript preinstall bitcore-payment-protocol
+23 silly bitcore-payment-protocol
+24 silly runScript preinstall bitcore-wallet-client
+25 silly bitcore-wallet-client
+26 silly runScript preinstall bitcore-wallet-service
+27 silly bitcore-wallet-service
+28 silly runScript preinstall insight-api
+29 silly insight-api
+30 silly runScript preinstall insight-ui
+31 silly insight-ui
+32 silly hasDependencyInstalled bitcoind-rpc async
+33 silly dependencyIsSatisfied [ 'async',
+33 silly dependencyIsSatisfied   '^0.9.0',
+33 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/node_modules' ]
+34 verbose dependencyIsSatisfied async false
+35 silly hasDependencyInstalled bitcore-wallet-client async
+36 silly dependencyIsSatisfied [ 'async',
+36 silly dependencyIsSatisfied   '^0.9.0',
+36 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+37 verbose dependencyIsSatisfied async false
+38 silly hasDependencyInstalled bitcore-node async
+39 silly dependencyIsSatisfied [ 'async',
+39 silly dependencyIsSatisfied   '^1.3.0',
+39 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+40 verbose dependencyIsSatisfied async false
+41 silly hasDependencyInstalled bitcore-wallet-service async
+42 silly dependencyIsSatisfied [ 'async',
+42 silly dependencyIsSatisfied   '^0.9.2',
+42 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+43 verbose dependencyIsSatisfied async false
+44 silly hasDependencyInstalled insight-api async
+45 silly dependencyIsSatisfied [ 'async',
+45 silly dependencyIsSatisfied   '*',
+45 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+46 verbose dependencyIsSatisfied async false
+47 silly hasDependencyInstalled bitcoind-rpc chai
+48 silly dependencyIsSatisfied [ 'chai',
+48 silly dependencyIsSatisfied   '^1.10.0',
+48 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/node_modules' ]
+49 verbose dependencyIsSatisfied chai false
+50 silly hasDependencyInstalled bitcore-lib chai
+51 silly dependencyIsSatisfied [ 'chai',
+51 silly dependencyIsSatisfied   '^1.10.0',
+51 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules' ]
+52 verbose dependencyIsSatisfied chai false
+53 silly hasDependencyInstalled bitcore-mnemonic chai
+54 silly dependencyIsSatisfied [ 'chai',
+54 silly dependencyIsSatisfied   '^1.10.0',
+54 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-mnemonic/node_modules' ]
+55 verbose dependencyIsSatisfied chai false
+56 silly hasDependencyInstalled bitcore-message chai
+57 silly dependencyIsSatisfied [ 'chai',
+57 silly dependencyIsSatisfied   '~1.10.0',
+57 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-message/node_modules' ]
+58 verbose dependencyIsSatisfied chai false
+59 silly hasDependencyInstalled bitcore-p2p chai
+60 silly dependencyIsSatisfied [ 'chai',
+60 silly dependencyIsSatisfied   '~1.10.0',
+60 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-p2p/node_modules' ]
+61 verbose dependencyIsSatisfied chai false
+62 silly hasDependencyInstalled bitcore-payment-protocol chai
+63 silly dependencyIsSatisfied [ 'chai',
+63 silly dependencyIsSatisfied   '~1.10.0',
+63 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-payment-protocol/node_modules' ]
+64 verbose dependencyIsSatisfied chai false
+65 silly hasDependencyInstalled bitcore-node chai
+66 silly dependencyIsSatisfied [ 'chai',
+66 silly dependencyIsSatisfied   '^3.5.0',
+66 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+67 verbose dependencyIsSatisfied chai false
+68 silly hasDependencyInstalled insight-api chai
+69 silly dependencyIsSatisfied [ 'chai',
+69 silly dependencyIsSatisfied   '^3.5.0',
+69 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+70 verbose dependencyIsSatisfied chai false
+71 silly hasDependencyInstalled bitcore-wallet-client chai
+72 silly dependencyIsSatisfied [ 'chai',
+72 silly dependencyIsSatisfied   '^1.9.1',
+72 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+73 verbose dependencyIsSatisfied chai false
+74 silly hasDependencyInstalled bitcore-wallet-service chai
+75 silly dependencyIsSatisfied [ 'chai',
+75 silly dependencyIsSatisfied   '^1.9.1',
+75 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+76 verbose dependencyIsSatisfied chai false
+77 silly hasDependencyInstalled bitcoind-rpc coveralls
+78 silly dependencyIsSatisfied [ 'coveralls',
+78 silly dependencyIsSatisfied   '^2.11.2',
+78 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/node_modules' ]
+79 verbose dependencyIsSatisfied coveralls false
+80 silly hasDependencyInstalled bitcore-wallet-client coveralls
+81 silly dependencyIsSatisfied [ 'coveralls',
+81 silly dependencyIsSatisfied   '^2.11.2',
+81 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+82 verbose dependencyIsSatisfied coveralls false
+83 silly hasDependencyInstalled bitcore-wallet-service coveralls
+84 silly dependencyIsSatisfied [ 'coveralls',
+84 silly dependencyIsSatisfied   '^2.11.2',
+84 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+85 verbose dependencyIsSatisfied coveralls false
+86 silly hasDependencyInstalled bitcore-node coveralls
+87 silly dependencyIsSatisfied [ 'coveralls',
+87 silly dependencyIsSatisfied   '^2.11.9',
+87 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+88 verbose dependencyIsSatisfied coveralls false
+89 silly hasDependencyInstalled bitcoind-rpc istanbul
+90 silly dependencyIsSatisfied [ 'istanbul',
+90 silly dependencyIsSatisfied   '^0.3.5',
+90 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/node_modules' ]
+91 verbose dependencyIsSatisfied istanbul false
+92 silly hasDependencyInstalled bitcore-node istanbul
+93 silly dependencyIsSatisfied [ 'istanbul',
+93 silly dependencyIsSatisfied   '^0.4.3',
+93 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+94 verbose dependencyIsSatisfied istanbul false
+95 silly hasDependencyInstalled bitcore-wallet-client istanbul
+96 silly dependencyIsSatisfied [ 'istanbul',
+96 silly dependencyIsSatisfied   '*',
+96 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+97 verbose dependencyIsSatisfied istanbul false
+98 silly hasDependencyInstalled bitcore-wallet-service istanbul
+99 silly dependencyIsSatisfied [ 'istanbul',
+99 silly dependencyIsSatisfied   '*',
+99 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+100 verbose dependencyIsSatisfied istanbul false
+101 silly hasDependencyInstalled bitcoind-rpc mocha
+102 silly dependencyIsSatisfied [ 'mocha',
+102 silly dependencyIsSatisfied   '^2.1.0',
+102 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/node_modules' ]
+103 verbose dependencyIsSatisfied mocha false
+104 silly hasDependencyInstalled bitcore-mnemonic mocha
+105 silly dependencyIsSatisfied [ 'mocha',
+105 silly dependencyIsSatisfied   '^2.2.5',
+105 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-mnemonic/node_modules' ]
+106 verbose dependencyIsSatisfied mocha false
+107 silly hasDependencyInstalled bitcore-node mocha
+108 silly dependencyIsSatisfied [ 'mocha',
+108 silly dependencyIsSatisfied   '^2.4.5',
+108 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+109 verbose dependencyIsSatisfied mocha false
+110 silly hasDependencyInstalled insight-api mocha
+111 silly dependencyIsSatisfied [ 'mocha',
+111 silly dependencyIsSatisfied   '^2.4.5',
+111 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+112 verbose dependencyIsSatisfied mocha false
+113 silly hasDependencyInstalled bitcore-wallet-client mocha
+114 silly dependencyIsSatisfied [ 'mocha',
+114 silly dependencyIsSatisfied   '^1.18.2',
+114 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+115 verbose dependencyIsSatisfied mocha false
+116 silly hasDependencyInstalled bitcore-wallet-service mocha
+117 silly dependencyIsSatisfied [ 'mocha',
+117 silly dependencyIsSatisfied   '^1.18.2',
+117 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+118 verbose dependencyIsSatisfied mocha false
+119 silly hasDependencyInstalled bitcoind-rpc sinon
+120 silly dependencyIsSatisfied [ 'sinon',
+120 silly dependencyIsSatisfied   '^1.12.2',
+120 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/node_modules' ]
+121 verbose dependencyIsSatisfied sinon false
+122 silly hasDependencyInstalled bitcore-p2p sinon
+123 silly dependencyIsSatisfied [ 'sinon',
+123 silly dependencyIsSatisfied   '^1.12.2',
+123 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-p2p/node_modules' ]
+124 verbose dependencyIsSatisfied sinon false
+125 silly hasDependencyInstalled bitcore-lib sinon
+126 silly dependencyIsSatisfied [ 'sinon',
+126 silly dependencyIsSatisfied   '^1.13.0',
+126 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules' ]
+127 verbose dependencyIsSatisfied sinon false
+128 silly hasDependencyInstalled bitcore-node sinon
+129 silly dependencyIsSatisfied [ 'sinon',
+129 silly dependencyIsSatisfied   '^1.15.4',
+129 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+130 verbose dependencyIsSatisfied sinon false
+131 silly hasDependencyInstalled bitcore-payment-protocol sinon
+132 silly dependencyIsSatisfied [ 'sinon',
+132 silly dependencyIsSatisfied   '^1.17.3',
+132 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-payment-protocol/node_modules' ]
+133 verbose dependencyIsSatisfied sinon false
+134 silly hasDependencyInstalled bitcore-wallet-client sinon
+135 silly dependencyIsSatisfied [ 'sinon',
+135 silly dependencyIsSatisfied   '^1.10.3',
+135 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+136 verbose dependencyIsSatisfied sinon false
+137 silly hasDependencyInstalled insight-api sinon
+138 silly dependencyIsSatisfied [ 'sinon',
+138 silly dependencyIsSatisfied   '^1.10.3',
+138 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+139 verbose dependencyIsSatisfied sinon false
+140 silly hasDependencyInstalled bitcore-wallet-service sinon
+141 silly dependencyIsSatisfied [ 'sinon',
+141 silly dependencyIsSatisfied   '1.10.3',
+141 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+142 verbose dependencyIsSatisfied sinon false
+143 silly hasDependencyInstalled bitcore-lib bitcore-build
+144 silly dependencyIsSatisfied [ 'bitcore-build',
+144 silly dependencyIsSatisfied   'bitpay/bitcore-build',
+144 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules' ]
+145 verbose dependencyIsSatisfied bitcore-build false
+146 silly hasDependencyInstalled bitcore-message bitcore-build
+147 silly dependencyIsSatisfied [ 'bitcore-build',
+147 silly dependencyIsSatisfied   'bitpay/bitcore-build',
+147 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-message/node_modules' ]
+148 verbose dependencyIsSatisfied bitcore-build false
+149 silly hasDependencyInstalled bitcore-mnemonic bitcore-build
+150 silly dependencyIsSatisfied [ 'bitcore-build',
+150 silly dependencyIsSatisfied   'git://github.com/bitpay/bitcore-build.git',
+150 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-mnemonic/node_modules' ]
+151 verbose dependencyIsSatisfied bitcore-build false
+152 silly hasDependencyInstalled bitcore-p2p bitcore-build
+153 silly dependencyIsSatisfied [ 'bitcore-build',
+153 silly dependencyIsSatisfied   'git://github.com/bitpay/bitcore-build.git',
+153 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-p2p/node_modules' ]
+154 verbose dependencyIsSatisfied bitcore-build false
+155 silly hasDependencyInstalled bitcore-payment-protocol bitcore-build
+156 silly dependencyIsSatisfied [ 'bitcore-build',
+156 silly dependencyIsSatisfied   'git://github.com/bitpay/bitcore-build.git',
+156 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-payment-protocol/node_modules' ]
+157 verbose dependencyIsSatisfied bitcore-build false
+158 silly hasDependencyInstalled bitcore-lib brfs
+159 silly dependencyIsSatisfied [ 'brfs',
+159 silly dependencyIsSatisfied   '^1.2.0',
+159 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules' ]
+160 verbose dependencyIsSatisfied brfs false
+161 silly hasDependencyInstalled bitcore-mnemonic brfs
+162 silly dependencyIsSatisfied [ 'brfs',
+162 silly dependencyIsSatisfied   '^1.2.0',
+162 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-mnemonic/node_modules' ]
+163 verbose dependencyIsSatisfied brfs false
+164 silly hasDependencyInstalled bitcore-p2p brfs
+165 silly dependencyIsSatisfied [ 'brfs',
+165 silly dependencyIsSatisfied   '^1.2.0',
+165 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-p2p/node_modules' ]
+166 verbose dependencyIsSatisfied brfs false
+167 silly hasDependencyInstalled bitcore-payment-protocol brfs
+168 silly dependencyIsSatisfied [ 'brfs',
+168 silly dependencyIsSatisfied   '^1.2.0',
+168 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-payment-protocol/node_modules' ]
+169 verbose dependencyIsSatisfied brfs false
+170 silly hasDependencyInstalled bitcore-message brfs
+171 silly dependencyIsSatisfied [ 'brfs',
+171 silly dependencyIsSatisfied   '^1.3.0',
+171 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-message/node_modules' ]
+172 verbose dependencyIsSatisfied brfs false
+173 silly hasDependencyInstalled bitcore-lib gulp
+174 silly dependencyIsSatisfied [ 'gulp',
+174 silly dependencyIsSatisfied   '^3.8.10',
+174 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules' ]
+175 verbose dependencyIsSatisfied gulp false
+176 silly hasDependencyInstalled bitcore-message gulp
+177 silly dependencyIsSatisfied [ 'gulp',
+177 silly dependencyIsSatisfied   '^3.8.10',
+177 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-message/node_modules' ]
+178 verbose dependencyIsSatisfied gulp false
+179 silly hasDependencyInstalled bitcore-mnemonic gulp
+180 silly dependencyIsSatisfied [ 'gulp',
+180 silly dependencyIsSatisfied   '^3.8.10',
+180 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-mnemonic/node_modules' ]
+181 verbose dependencyIsSatisfied gulp false
+182 silly hasDependencyInstalled bitcore-payment-protocol gulp
+183 silly dependencyIsSatisfied [ 'gulp',
+183 silly dependencyIsSatisfied   '^3.8.10',
+183 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-payment-protocol/node_modules' ]
+184 verbose dependencyIsSatisfied gulp false
+185 silly hasDependencyInstalled bitcore-p2p gulp
+186 silly dependencyIsSatisfied [ 'gulp',
+186 silly dependencyIsSatisfied   '^3.9.1',
+186 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-p2p/node_modules' ]
+187 verbose dependencyIsSatisfied gulp false
+188 silly hasDependencyInstalled bitcore-lib bn.js
+189 silly dependencyIsSatisfied [ 'bn.js',
+189 silly dependencyIsSatisfied   '=2.0.4',
+189 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules' ]
+190 verbose dependencyIsSatisfied bn.js false
+191 silly hasDependencyInstalled bitcore-lib bs58
+192 silly dependencyIsSatisfied [ 'bs58',
+192 silly dependencyIsSatisfied   '=2.0.0',
+192 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules' ]
+193 verbose dependencyIsSatisfied bs58 false
+194 silly hasDependencyInstalled bitcore-lib buffer-compare
+195 silly dependencyIsSatisfied [ 'buffer-compare',
+195 silly dependencyIsSatisfied   '=1.0.0',
+195 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules' ]
+196 verbose dependencyIsSatisfied buffer-compare false
+197 silly hasDependencyInstalled bitcore-lib elliptic
+198 silly dependencyIsSatisfied [ 'elliptic',
+198 silly dependencyIsSatisfied   '=3.0.3',
+198 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules' ]
+199 verbose dependencyIsSatisfied elliptic false
+200 silly hasDependencyInstalled bitcore-lib inherits
+201 silly dependencyIsSatisfied [ 'inherits',
+201 silly dependencyIsSatisfied   '=2.0.1',
+201 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules' ]
+202 verbose dependencyIsSatisfied inherits false
+203 silly hasDependencyInstalled bitcore-wallet-service inherits
+204 silly dependencyIsSatisfied [ 'inherits',
+204 silly dependencyIsSatisfied   '^2.0.1',
+204 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+205 verbose dependencyIsSatisfied inherits false
+206 silly hasDependencyInstalled bitcore-lib lodash
+207 silly dependencyIsSatisfied [ 'lodash',
+207 silly dependencyIsSatisfied   '=3.10.1',
+207 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules' ]
+208 verbose dependencyIsSatisfied lodash false
+209 silly hasDependencyInstalled bitcore-wallet-client lodash
+210 silly dependencyIsSatisfied [ 'lodash',
+210 silly dependencyIsSatisfied   '^3.3.1',
+210 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+211 verbose dependencyIsSatisfied lodash false
+212 silly hasDependencyInstalled bitcore-wallet-service lodash
+213 silly dependencyIsSatisfied [ 'lodash',
+213 silly dependencyIsSatisfied   '^3.10.1',
+213 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+214 verbose dependencyIsSatisfied lodash false
+215 silly hasDependencyInstalled insight-api lodash
+216 silly dependencyIsSatisfied [ 'lodash',
+216 silly dependencyIsSatisfied   '^2.4.1',
+216 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+217 verbose dependencyIsSatisfied lodash false
+218 silly hasDependencyInstalled bitcore-message local-dependencies
+219 silly dependencyIsSatisfied [ 'local-dependencies',
+219 silly dependencyIsSatisfied   '^1.0.0-beta3',
+219 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-message/node_modules' ]
+220 verbose dependencyIsSatisfied local-dependencies false
+221 silly hasDependencyInstalled bitcore-node local-dependencies
+222 silly dependencyIsSatisfied [ 'local-dependencies',
+222 silly dependencyIsSatisfied   '^1.0.0-beta3',
+222 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+223 verbose dependencyIsSatisfied local-dependencies false
+224 silly hasDependencyInstalled bitcore-p2p local-dependencies
+225 silly dependencyIsSatisfied [ 'local-dependencies',
+225 silly dependencyIsSatisfied   '^1.0.0-beta3',
+225 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-p2p/node_modules' ]
+226 verbose dependencyIsSatisfied local-dependencies false
+227 silly hasDependencyInstalled bitcore-wallet-client local-dependencies
+228 silly dependencyIsSatisfied [ 'local-dependencies',
+228 silly dependencyIsSatisfied   '^1.0.0-beta3',
+228 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+229 verbose dependencyIsSatisfied local-dependencies false
+230 silly hasDependencyInstalled bitcore-wallet-service local-dependencies
+231 silly dependencyIsSatisfied [ 'local-dependencies',
+231 silly dependencyIsSatisfied   '^1.0.0-beta3',
+231 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+232 verbose dependencyIsSatisfied local-dependencies false
+233 silly hasDependencyInstalled bitcore-message bitcore-lib
+234 silly dependencyIsSatisfied [ 'bitcore-lib',
+234 silly dependencyIsSatisfied   'file:../bitcore-lib',
+234 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-message/node_modules' ]
+235 verbose dependencyIsSatisfied bitcore-lib false
+236 silly hasDependencyInstalled bitcore-mnemonic bitcore-lib
+237 silly dependencyIsSatisfied [ 'bitcore-lib',
+237 silly dependencyIsSatisfied   'file:../bitcore-lib',
+237 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-mnemonic/node_modules' ]
+238 verbose dependencyIsSatisfied bitcore-lib false
+239 silly hasDependencyInstalled bitcore-node bitcore-lib
+240 silly dependencyIsSatisfied [ 'bitcore-lib',
+240 silly dependencyIsSatisfied   'file:../bitcore-lib',
+240 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+241 verbose dependencyIsSatisfied bitcore-lib false
+242 silly hasDependencyInstalled bitcore-p2p bitcore-lib
+243 silly dependencyIsSatisfied [ 'bitcore-lib',
+243 silly dependencyIsSatisfied   'file:../bitcore-lib',
+243 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-p2p/node_modules' ]
+244 verbose dependencyIsSatisfied bitcore-lib false
+245 silly hasDependencyInstalled bitcore-payment-protocol bitcore-lib
+246 silly dependencyIsSatisfied [ 'bitcore-lib',
+246 silly dependencyIsSatisfied   'file:../bitcore-lib',
+246 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-payment-protocol/node_modules' ]
+247 verbose dependencyIsSatisfied bitcore-lib false
+248 silly hasDependencyInstalled bitcore-wallet-client bitcore-lib
+249 silly dependencyIsSatisfied [ 'bitcore-lib',
+249 silly dependencyIsSatisfied   'file:../bitcore-lib',
+249 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+250 verbose dependencyIsSatisfied bitcore-lib false
+251 silly hasDependencyInstalled bitcore-wallet-service bitcore-lib
+252 silly dependencyIsSatisfied [ 'bitcore-lib',
+252 silly dependencyIsSatisfied   'file:../bitcore-lib',
+252 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+253 verbose dependencyIsSatisfied bitcore-lib false
+254 silly hasDependencyInstalled insight-api bitcore-lib
+255 silly dependencyIsSatisfied [ 'bitcore-lib',
+255 silly dependencyIsSatisfied   'file:../bitcore-lib',
+255 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+256 verbose dependencyIsSatisfied bitcore-lib false
+257 silly hasDependencyInstalled bitcore-mnemonic assert
+258 silly dependencyIsSatisfied [ 'assert',
+258 silly dependencyIsSatisfied   '^1.1.2',
+258 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-mnemonic/node_modules' ]
+259 verbose dependencyIsSatisfied assert false
+260 silly hasDependencyInstalled bitcore-mnemonic unorm
+261 silly dependencyIsSatisfied [ 'unorm',
+261 silly dependencyIsSatisfied   '^1.3.3',
+261 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-mnemonic/node_modules' ]
+262 verbose dependencyIsSatisfied unorm false
+263 silly hasDependencyInstalled bitcore-node benchmark
+264 silly dependencyIsSatisfied [ 'benchmark',
+264 silly dependencyIsSatisfied   '1.0.0',
+264 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+265 verbose dependencyIsSatisfied benchmark false
+266 silly hasDependencyInstalled bitcore-node bitcore-p2p
+267 silly dependencyIsSatisfied [ 'bitcore-p2p',
+267 silly dependencyIsSatisfied   'file:../bitcore-p2p',
+267 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+268 verbose dependencyIsSatisfied bitcore-p2p false
+269 silly hasDependencyInstalled bitcore-node jshint
+270 silly dependencyIsSatisfied [ 'jshint',
+270 silly dependencyIsSatisfied   '^2.9.2',
+270 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+271 verbose dependencyIsSatisfied jshint false
+272 silly hasDependencyInstalled bitcore-node jshint-stylish
+273 silly dependencyIsSatisfied [ 'jshint-stylish',
+273 silly dependencyIsSatisfied   '^2.1.0',
+273 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+274 verbose dependencyIsSatisfied jshint-stylish false
+275 silly hasDependencyInstalled bitcore-node proxyquire
+276 silly dependencyIsSatisfied [ 'proxyquire',
+276 silly dependencyIsSatisfied   '^1.3.1',
+276 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+277 verbose dependencyIsSatisfied proxyquire false
+278 silly hasDependencyInstalled bitcore-wallet-service proxyquire
+279 silly dependencyIsSatisfied [ 'proxyquire',
+279 silly dependencyIsSatisfied   '^1.7.2',
+279 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+280 verbose dependencyIsSatisfied proxyquire false
+281 silly hasDependencyInstalled insight-api proxyquire
+282 silly dependencyIsSatisfied [ 'proxyquire',
+282 silly dependencyIsSatisfied   '^1.7.2',
+282 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+283 verbose dependencyIsSatisfied proxyquire false
+284 silly hasDependencyInstalled bitcore-node rimraf
+285 silly dependencyIsSatisfied [ 'rimraf',
+285 silly dependencyIsSatisfied   '^2.4.2',
+285 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+286 verbose dependencyIsSatisfied rimraf false
+287 silly hasDependencyInstalled bitcore-node bitcoind-rpc
+288 silly dependencyIsSatisfied [ 'bitcoind-rpc',
+288 silly dependencyIsSatisfied   'file:../bitcoin-rpc',
+288 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+289 verbose dependencyIsSatisfied bitcoind-rpc false
+290 silly hasDependencyInstalled bitcore-node body-parser
+291 silly dependencyIsSatisfied [ 'body-parser',
+291 silly dependencyIsSatisfied   '^1.13.3',
+291 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+292 verbose dependencyIsSatisfied body-parser false
+293 silly hasDependencyInstalled insight-api body-parser
+294 silly dependencyIsSatisfied [ 'body-parser',
+294 silly dependencyIsSatisfied   '^1.13.3',
+294 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+295 verbose dependencyIsSatisfied body-parser false
+296 silly hasDependencyInstalled bitcore-wallet-service body-parser
+297 silly dependencyIsSatisfied [ 'body-parser',
+297 silly dependencyIsSatisfied   '^1.11.0',
+297 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+298 verbose dependencyIsSatisfied body-parser false
+299 silly hasDependencyInstalled bitcore-node colors
+300 silly dependencyIsSatisfied [ 'colors',
+300 silly dependencyIsSatisfied   '^1.1.2',
+300 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+301 verbose dependencyIsSatisfied colors false
+302 silly hasDependencyInstalled bitcore-node commander
+303 silly dependencyIsSatisfied [ 'commander',
+303 silly dependencyIsSatisfied   '^2.8.1',
+303 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+304 verbose dependencyIsSatisfied commander false
+305 silly hasDependencyInstalled bitcore-node errno
+306 silly dependencyIsSatisfied [ 'errno',
+306 silly dependencyIsSatisfied   '^0.1.4',
+306 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+307 verbose dependencyIsSatisfied errno false
+308 silly hasDependencyInstalled bitcore-node express
+309 silly dependencyIsSatisfied [ 'express',
+309 silly dependencyIsSatisfied   '^4.13.3',
+309 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+310 verbose dependencyIsSatisfied express false
+311 silly hasDependencyInstalled bitcore-wallet-service express
+312 silly dependencyIsSatisfied [ 'express',
+312 silly dependencyIsSatisfied   '^4.10.0',
+312 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+313 verbose dependencyIsSatisfied express false
+314 silly hasDependencyInstalled bitcore-node liftoff
+315 silly dependencyIsSatisfied [ 'liftoff',
+315 silly dependencyIsSatisfied   '^2.2.0',
+315 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+316 verbose dependencyIsSatisfied liftoff false
+317 silly hasDependencyInstalled bitcore-node lru-cache
+318 silly dependencyIsSatisfied [ 'lru-cache',
+318 silly dependencyIsSatisfied   '^4.0.1',
+318 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+319 verbose dependencyIsSatisfied lru-cache false
+320 silly hasDependencyInstalled insight-api lru-cache
+321 silly dependencyIsSatisfied [ 'lru-cache',
+321 silly dependencyIsSatisfied   '^4.0.1',
+321 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+322 verbose dependencyIsSatisfied lru-cache false
+323 silly hasDependencyInstalled bitcore-node mkdirp
+324 silly dependencyIsSatisfied [ 'mkdirp',
+324 silly dependencyIsSatisfied   '0.5.0',
+324 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+325 verbose dependencyIsSatisfied mkdirp false
+326 silly hasDependencyInstalled bitcore-node path-is-absolute
+327 silly dependencyIsSatisfied [ 'path-is-absolute',
+327 silly dependencyIsSatisfied   '^1.0.0',
+327 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+328 verbose dependencyIsSatisfied path-is-absolute false
+329 silly hasDependencyInstalled bitcore-node semver
+330 silly dependencyIsSatisfied [ 'semver',
+330 silly dependencyIsSatisfied   '^5.0.1',
+330 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+331 verbose dependencyIsSatisfied semver false
+332 silly hasDependencyInstalled bitcore-node socket.io
+333 silly dependencyIsSatisfied [ 'socket.io',
+333 silly dependencyIsSatisfied   '^1.4.5',
+333 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+334 verbose dependencyIsSatisfied socket.io false
+335 silly hasDependencyInstalled bitcore-wallet-service socket.io
+336 silly dependencyIsSatisfied [ 'socket.io',
+336 silly dependencyIsSatisfied   '^1.3.5',
+336 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+337 verbose dependencyIsSatisfied socket.io false
+338 silly hasDependencyInstalled bitcore-node socket.io-client
+339 silly dependencyIsSatisfied [ 'socket.io-client',
+339 silly dependencyIsSatisfied   '^1.4.5',
+339 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+340 verbose dependencyIsSatisfied socket.io-client false
+341 silly hasDependencyInstalled bitcore-wallet-service socket.io-client
+342 silly dependencyIsSatisfied [ 'socket.io-client',
+342 silly dependencyIsSatisfied   '^1.3.5',
+342 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+343 verbose dependencyIsSatisfied socket.io-client false
+344 silly hasDependencyInstalled bitcore-node zmq
+345 silly dependencyIsSatisfied [ 'zmq',
+345 silly dependencyIsSatisfied   '^2.14.0',
+345 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/node_modules' ]
+346 verbose dependencyIsSatisfied zmq false
+347 silly hasDependencyInstalled bitcore-p2p bloom-filter
+348 silly dependencyIsSatisfied [ 'bloom-filter',
+348 silly dependencyIsSatisfied   '^0.2.0',
+348 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-p2p/node_modules' ]
+349 verbose dependencyIsSatisfied bloom-filter false
+350 silly hasDependencyInstalled bitcore-p2p buffers
+351 silly dependencyIsSatisfied [ 'buffers',
+351 silly dependencyIsSatisfied   'bitpay/node-buffers#v0.1.2-bitpay',
+351 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-p2p/node_modules' ]
+352 verbose dependencyIsSatisfied buffers false
+353 silly hasDependencyInstalled bitcore-p2p socks5-client
+354 silly dependencyIsSatisfied [ 'socks5-client',
+354 silly dependencyIsSatisfied   '^0.3.6',
+354 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-p2p/node_modules' ]
+355 verbose dependencyIsSatisfied socks5-client false
+356 silly hasDependencyInstalled bitcore-payment-protocol asn1.js
+357 silly dependencyIsSatisfied [ 'asn1.js',
+357 silly dependencyIsSatisfied   '=4.5.2',
+357 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-payment-protocol/node_modules' ]
+358 verbose dependencyIsSatisfied asn1.js false
+359 silly hasDependencyInstalled bitcore-payment-protocol jsrsasign
+360 silly dependencyIsSatisfied [ 'jsrsasign',
+360 silly dependencyIsSatisfied   '=5.0.10',
+360 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-payment-protocol/node_modules' ]
+361 verbose dependencyIsSatisfied jsrsasign false
+362 silly hasDependencyInstalled bitcore-payment-protocol protobufjs
+363 silly dependencyIsSatisfied [ 'protobufjs',
+363 silly dependencyIsSatisfied   '=5.0.1',
+363 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-payment-protocol/node_modules' ]
+364 verbose dependencyIsSatisfied protobufjs false
+365 silly hasDependencyInstalled bitcore-wallet-client bitcore-wallet-service
+366 silly dependencyIsSatisfied [ 'bitcore-wallet-service',
+366 silly dependencyIsSatisfied   'file:../bitcore-wallet-service',
+366 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+367 verbose dependencyIsSatisfied bitcore-wallet-service false
+368 silly hasDependencyInstalled bitcore-wallet-client browserify
+369 silly dependencyIsSatisfied [ 'browserify',
+369 silly dependencyIsSatisfied   '^13.1.0',
+369 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+370 verbose dependencyIsSatisfied browserify false
+371 silly hasDependencyInstalled bitcore-wallet-client grunt
+372 silly dependencyIsSatisfied [ 'grunt',
+372 silly dependencyIsSatisfied   '~0.4.0',
+372 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+373 verbose dependencyIsSatisfied grunt false
+374 silly hasDependencyInstalled insight-ui grunt
+375 silly dependencyIsSatisfied [ 'grunt',
+375 silly dependencyIsSatisfied   '~0.4.2',
+375 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+376 verbose dependencyIsSatisfied grunt false
+377 silly hasDependencyInstalled bitcore-wallet-client grunt-jsdox
+378 silly dependencyIsSatisfied [ 'grunt-jsdox',
+378 silly dependencyIsSatisfied   '^0.1.7',
+378 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+379 verbose dependencyIsSatisfied grunt-jsdox false
+380 silly hasDependencyInstalled bitcore-wallet-client supertest
+381 silly dependencyIsSatisfied [ 'supertest',
+381 silly dependencyIsSatisfied   '^3.0.0',
+381 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+382 verbose dependencyIsSatisfied supertest false
+383 silly hasDependencyInstalled bitcore-wallet-service supertest
+384 silly dependencyIsSatisfied [ 'supertest',
+384 silly dependencyIsSatisfied   '*',
+384 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+385 verbose dependencyIsSatisfied supertest false
+386 silly hasDependencyInstalled bitcore-wallet-client tingodb
+387 silly dependencyIsSatisfied [ 'tingodb',
+387 silly dependencyIsSatisfied   '^0.3.4',
+387 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+388 verbose dependencyIsSatisfied tingodb false
+389 silly hasDependencyInstalled bitcore-wallet-service tingodb
+390 silly dependencyIsSatisfied [ 'tingodb',
+390 silly dependencyIsSatisfied   '^0.3.4',
+390 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+391 verbose dependencyIsSatisfied tingodb false
+392 silly hasDependencyInstalled bitcore-wallet-client uglify
+393 silly dependencyIsSatisfied [ 'uglify',
+393 silly dependencyIsSatisfied   '^0.1.1',
+393 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+394 verbose dependencyIsSatisfied uglify false
+395 silly hasDependencyInstalled bitcore-wallet-client uuid
+396 silly dependencyIsSatisfied [ 'uuid',
+396 silly dependencyIsSatisfied   '^2.0.1',
+396 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+397 verbose dependencyIsSatisfied uuid false
+398 silly hasDependencyInstalled bitcore-wallet-service uuid
+399 silly dependencyIsSatisfied [ 'uuid',
+399 silly dependencyIsSatisfied   '*',
+399 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+400 verbose dependencyIsSatisfied uuid false
+401 silly hasDependencyInstalled bitcore-wallet-client bip38
+402 silly dependencyIsSatisfied [ 'bip38',
+402 silly dependencyIsSatisfied   '^1.3.0',
+402 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+403 verbose dependencyIsSatisfied bip38 false
+404 silly hasDependencyInstalled bitcore-wallet-client bitcore-mnemonic
+405 silly dependencyIsSatisfied [ 'bitcore-mnemonic',
+405 silly dependencyIsSatisfied   'file:../bitcore-mnemonic',
+405 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+406 verbose dependencyIsSatisfied bitcore-mnemonic false
+407 silly hasDependencyInstalled bitcore-wallet-client bitcore-payment-protocol
+408 silly dependencyIsSatisfied [ 'bitcore-payment-protocol',
+408 silly dependencyIsSatisfied   'file:../bitcore-payment-protocol',
+408 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+409 verbose dependencyIsSatisfied bitcore-payment-protocol false
+410 silly hasDependencyInstalled bitcore-wallet-client json-stable-stringify
+411 silly dependencyIsSatisfied [ 'json-stable-stringify',
+411 silly dependencyIsSatisfied   '^1.0.0',
+411 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+412 verbose dependencyIsSatisfied json-stable-stringify false
+413 silly hasDependencyInstalled bitcore-wallet-service json-stable-stringify
+414 silly dependencyIsSatisfied [ 'json-stable-stringify',
+414 silly dependencyIsSatisfied   '^1.0.0',
+414 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+415 verbose dependencyIsSatisfied json-stable-stringify false
+416 silly hasDependencyInstalled bitcore-wallet-client preconditions
+417 silly dependencyIsSatisfied [ 'preconditions',
+417 silly dependencyIsSatisfied   '^1.0.8',
+417 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+418 verbose dependencyIsSatisfied preconditions false
+419 silly hasDependencyInstalled bitcore-wallet-service preconditions
+420 silly dependencyIsSatisfied [ 'preconditions',
+420 silly dependencyIsSatisfied   '^1.0.7',
+420 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+421 verbose dependencyIsSatisfied preconditions false
+422 silly hasDependencyInstalled bitcore-wallet-client sjcl
+423 silly dependencyIsSatisfied [ 'sjcl',
+423 silly dependencyIsSatisfied   '1.0.3',
+423 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+424 verbose dependencyIsSatisfied sjcl false
+425 silly hasDependencyInstalled bitcore-wallet-service sjcl
+426 silly dependencyIsSatisfied [ 'sjcl',
+426 silly dependencyIsSatisfied   '^1.0.2',
+426 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+427 verbose dependencyIsSatisfied sjcl false
+428 silly hasDependencyInstalled bitcore-wallet-client superagent
+429 silly dependencyIsSatisfied [ 'superagent',
+429 silly dependencyIsSatisfied   '^3.4.1',
+429 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/node_modules' ]
+430 verbose dependencyIsSatisfied superagent false
+431 silly hasDependencyInstalled bitcore-wallet-service jsdoc
+432 silly dependencyIsSatisfied [ 'jsdoc',
+432 silly dependencyIsSatisfied   '^3.3.0-beta1',
+432 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+433 verbose dependencyIsSatisfied jsdoc false
+434 silly hasDependencyInstalled bitcore-wallet-service memdown
+435 silly dependencyIsSatisfied [ 'memdown',
+435 silly dependencyIsSatisfied   '^1.0.0',
+435 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+436 verbose dependencyIsSatisfied memdown false
+437 silly hasDependencyInstalled bitcore-wallet-service compression
+438 silly dependencyIsSatisfied [ 'compression',
+438 silly dependencyIsSatisfied   '^1.6.2',
+438 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+439 verbose dependencyIsSatisfied compression false
+440 silly hasDependencyInstalled insight-api compression
+441 silly dependencyIsSatisfied [ 'compression',
+441 silly dependencyIsSatisfied   '^1.6.1',
+441 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+442 verbose dependencyIsSatisfied compression false
+443 silly hasDependencyInstalled bitcore-wallet-service email-validator
+444 silly dependencyIsSatisfied [ 'email-validator',
+444 silly dependencyIsSatisfied   '^1.0.1',
+444 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+445 verbose dependencyIsSatisfied email-validator false
+446 silly hasDependencyInstalled bitcore-wallet-service express-rate-limit
+447 silly dependencyIsSatisfied [ 'express-rate-limit',
+447 silly dependencyIsSatisfied   '^2.6.0',
+447 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+448 verbose dependencyIsSatisfied express-rate-limit false
+449 silly hasDependencyInstalled bitcore-wallet-service locker
+450 silly dependencyIsSatisfied [ 'locker',
+450 silly dependencyIsSatisfied   '^0.1.0',
+450 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+451 verbose dependencyIsSatisfied locker false
+452 silly hasDependencyInstalled bitcore-wallet-service locker-server
+453 silly dependencyIsSatisfied [ 'locker-server',
+453 silly dependencyIsSatisfied   '^0.1.3',
+453 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+454 verbose dependencyIsSatisfied locker-server false
+455 silly hasDependencyInstalled bitcore-wallet-service mocha-lcov-reporter
+456 silly dependencyIsSatisfied [ 'mocha-lcov-reporter',
+456 silly dependencyIsSatisfied   '0.0.1',
+456 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+457 verbose dependencyIsSatisfied mocha-lcov-reporter false
+458 silly hasDependencyInstalled bitcore-wallet-service moment
+459 silly dependencyIsSatisfied [ 'moment',
+459 silly dependencyIsSatisfied   '^2.10.3',
+459 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+460 verbose dependencyIsSatisfied moment false
+461 silly hasDependencyInstalled bitcore-wallet-service mongodb
+462 silly dependencyIsSatisfied [ 'mongodb',
+462 silly dependencyIsSatisfied   '^2.0.27',
+462 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+463 verbose dependencyIsSatisfied mongodb false
+464 silly hasDependencyInstalled bitcore-wallet-service morgan
+465 silly dependencyIsSatisfied [ 'morgan',
+465 silly dependencyIsSatisfied   '*',
+465 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+466 verbose dependencyIsSatisfied morgan false
+467 silly hasDependencyInstalled insight-api morgan
+468 silly dependencyIsSatisfied [ 'morgan',
+468 silly dependencyIsSatisfied   '^1.7.0',
+468 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+469 verbose dependencyIsSatisfied morgan false
+470 silly hasDependencyInstalled bitcore-wallet-service mustache
+471 silly dependencyIsSatisfied [ 'mustache',
+471 silly dependencyIsSatisfied   '^2.1.0',
+471 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+472 verbose dependencyIsSatisfied mustache false
+473 silly hasDependencyInstalled bitcore-wallet-service nodemailer
+474 silly dependencyIsSatisfied [ 'nodemailer',
+474 silly dependencyIsSatisfied   '^1.3.4',
+474 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+475 verbose dependencyIsSatisfied nodemailer false
+476 silly hasDependencyInstalled bitcore-wallet-service nodemailer-sendgrid-transport
+477 silly dependencyIsSatisfied [ 'nodemailer-sendgrid-transport',
+477 silly dependencyIsSatisfied   '^0.2.0',
+477 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+478 verbose dependencyIsSatisfied nodemailer-sendgrid-transport false
+479 silly hasDependencyInstalled bitcore-wallet-service npmlog
+480 silly dependencyIsSatisfied [ 'npmlog',
+480 silly dependencyIsSatisfied   '^0.1.1',
+480 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+481 verbose dependencyIsSatisfied npmlog false
+482 silly hasDependencyInstalled bitcore-wallet-service read
+483 silly dependencyIsSatisfied [ 'read',
+483 silly dependencyIsSatisfied   '^1.0.5',
+483 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+484 verbose dependencyIsSatisfied read false
+485 silly hasDependencyInstalled bitcore-wallet-service request
+486 silly dependencyIsSatisfied [ 'request',
+486 silly dependencyIsSatisfied   '^2.53.0',
+486 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+487 verbose dependencyIsSatisfied request false
+488 silly hasDependencyInstalled insight-api request
+489 silly dependencyIsSatisfied [ 'request',
+489 silly dependencyIsSatisfied   '^2.64.0',
+489 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+490 verbose dependencyIsSatisfied request false
+491 silly hasDependencyInstalled bitcore-wallet-service secp256k1
+492 silly dependencyIsSatisfied [ 'secp256k1',
+492 silly dependencyIsSatisfied   '^3.1.0',
+492 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+493 verbose dependencyIsSatisfied secp256k1 false
+494 silly hasDependencyInstalled bitcore-wallet-service sticky-session
+495 silly dependencyIsSatisfied [ 'sticky-session',
+495 silly dependencyIsSatisfied   '^0.1.0',
+495 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/node_modules' ]
+496 verbose dependencyIsSatisfied sticky-session false
+497 silly hasDependencyInstalled insight-api should
+498 silly dependencyIsSatisfied [ 'should',
+498 silly dependencyIsSatisfied   '^8.3.1',
+498 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+499 verbose dependencyIsSatisfied should false
+500 silly hasDependencyInstalled insight-api bitcore-message
+501 silly dependencyIsSatisfied [ 'bitcore-message',
+501 silly dependencyIsSatisfied   'file:../bitcore-message',
+501 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules' ]
+502 verbose dependencyIsSatisfied bitcore-message false
+503 silly hasDependencyInstalled insight-ui bower
+504 silly dependencyIsSatisfied [ 'bower',
+504 silly dependencyIsSatisfied   '~1.8.0',
+504 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+505 verbose dependencyIsSatisfied bower false
+506 silly hasDependencyInstalled insight-ui grunt-angular-gettext
+507 silly dependencyIsSatisfied [ 'grunt-angular-gettext',
+507 silly dependencyIsSatisfied   '^0.2.15',
+507 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+508 verbose dependencyIsSatisfied grunt-angular-gettext false
+509 silly hasDependencyInstalled insight-ui grunt-cli
+510 silly dependencyIsSatisfied [ 'grunt-cli',
+510 silly dependencyIsSatisfied   '~0.1.11',
+510 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+511 verbose dependencyIsSatisfied grunt-cli false
+512 silly hasDependencyInstalled insight-ui grunt-contrib-concat
+513 silly dependencyIsSatisfied [ 'grunt-contrib-concat',
+513 silly dependencyIsSatisfied   '~0.3.0',
+513 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+514 verbose dependencyIsSatisfied grunt-contrib-concat false
+515 silly hasDependencyInstalled insight-ui grunt-contrib-jshint
+516 silly dependencyIsSatisfied [ 'grunt-contrib-jshint',
+516 silly dependencyIsSatisfied   '~0.8.0',
+516 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+517 verbose dependencyIsSatisfied grunt-contrib-jshint false
+518 silly hasDependencyInstalled insight-ui grunt-contrib-uglify
+519 silly dependencyIsSatisfied [ 'grunt-contrib-uglify',
+519 silly dependencyIsSatisfied   '~0.3.2',
+519 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+520 verbose dependencyIsSatisfied grunt-contrib-uglify false
+521 silly hasDependencyInstalled insight-ui grunt-contrib-watch
+522 silly dependencyIsSatisfied [ 'grunt-contrib-watch',
+522 silly dependencyIsSatisfied   '*',
+522 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+523 verbose dependencyIsSatisfied grunt-contrib-watch false
+524 silly hasDependencyInstalled insight-ui grunt-css
+525 silly dependencyIsSatisfied [ 'grunt-css',
+525 silly dependencyIsSatisfied   '~0.5.4',
+525 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+526 verbose dependencyIsSatisfied grunt-css false
+527 silly hasDependencyInstalled insight-ui grunt-macreload
+528 silly dependencyIsSatisfied [ 'grunt-macreload',
+528 silly dependencyIsSatisfied   '*',
+528 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+529 verbose dependencyIsSatisfied grunt-macreload false
+530 silly hasDependencyInstalled insight-ui grunt-markdown
+531 silly dependencyIsSatisfied [ 'grunt-markdown',
+531 silly dependencyIsSatisfied   '~0.5.0',
+531 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+532 verbose dependencyIsSatisfied grunt-markdown false
+533 silly hasDependencyInstalled insight-ui grunt-replace
+534 silly dependencyIsSatisfied [ 'grunt-replace',
+534 silly dependencyIsSatisfied   '^1.0.1',
+534 silly dependencyIsSatisfied   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-ui/node_modules' ]
+535 verbose dependencyIsSatisfied grunt-replace false
+536 silly root dependencies []
+537 silly leaf dependencies {
+537 silly leaf dependencies   "bitcoind-rpc": [
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "async@^0.9.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "chai@^1.10.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "coveralls@^2.11.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "istanbul@^0.3.5",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "mocha@^2.1.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "sinon@^1.12.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     }
+537 silly leaf dependencies   ],
+537 silly leaf dependencies   "bitcore-wallet-client": [
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "async@^0.9.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "chai@^1.9.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "coveralls@^2.11.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "istanbul@*",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "mocha@^1.18.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "sinon@^1.10.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "lodash@^3.3.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "local-dependencies@^1.0.0-beta3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-lib@file:../bitcore-lib",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-wallet-service@file:../bitcore-wallet-service",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "browserify@^13.1.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt@~0.4.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt-jsdox@^0.1.7",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "supertest@^3.0.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "tingodb@^0.3.4",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "uglify@^0.1.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "uuid@^2.0.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bip38@^1.3.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-mnemonic@file:../bitcore-mnemonic",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-payment-protocol@file:../bitcore-payment-protocol",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "json-stable-stringify@^1.0.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "preconditions@^1.0.8",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "sjcl@1.0.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "superagent@^3.4.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     }
+537 silly leaf dependencies   ],
+537 silly leaf dependencies   "bitcore-node": [
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "async@^1.3.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "chai@^3.5.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "coveralls@^2.11.9",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "istanbul@^0.4.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "mocha@^2.4.5",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "sinon@^1.15.4",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "local-dependencies@^1.0.0-beta3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-lib@file:../bitcore-lib",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "benchmark@1.0.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-p2p@file:../bitcore-p2p",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "jshint@^2.9.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "jshint-stylish@^2.1.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "proxyquire@^1.3.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "rimraf@^2.4.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcoind-rpc@file:../bitcoin-rpc",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "body-parser@^1.13.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "colors@^1.1.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "commander@^2.8.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "errno@^0.1.4",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "express@^4.13.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "liftoff@^2.2.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "lru-cache@^4.0.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "mkdirp@0.5.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "path-is-absolute@^1.0.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "semver@^5.0.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "socket.io@^1.4.5",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "socket.io-client@^1.4.5",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "zmq@^2.14.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     }
+537 silly leaf dependencies   ],
+537 silly leaf dependencies   "bitcore-wallet-service": [
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "async@^0.9.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "chai@^1.9.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "coveralls@^2.11.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "istanbul@*",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "mocha@^1.18.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "sinon@1.10.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "inherits@^2.0.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "lodash@^3.10.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "local-dependencies@^1.0.0-beta3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-lib@file:../bitcore-lib",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "proxyquire@^1.7.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "body-parser@^1.11.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "express@^4.10.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "socket.io@^1.3.5",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "socket.io-client@^1.3.5",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "supertest@*",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "tingodb@^0.3.4",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "uuid@*",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "json-stable-stringify@^1.0.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "preconditions@^1.0.7",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "sjcl@^1.0.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "jsdoc@^3.3.0-beta1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "memdown@^1.0.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "compression@^1.6.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "email-validator@^1.0.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "express-rate-limit@^2.6.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "locker@^0.1.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "locker-server@^0.1.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "mocha-lcov-reporter@0.0.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "moment@^2.10.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "mongodb@^2.0.27",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "morgan@*",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "mustache@^2.1.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "nodemailer@^1.3.4",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "nodemailer-sendgrid-transport@^0.2.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "npmlog@^0.1.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "read@^1.0.5",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "request@^2.53.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "secp256k1@^3.1.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "sticky-session@^0.1.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     }
+537 silly leaf dependencies   ],
+537 silly leaf dependencies   "insight-api": [
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "async@*",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "chai@^3.5.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "mocha@^2.4.5",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "sinon@^1.10.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "lodash@^2.4.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-lib@file:../bitcore-lib",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "proxyquire@^1.7.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "body-parser@^1.13.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "lru-cache@^4.0.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "compression@^1.6.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "morgan@^1.7.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "request@^2.64.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "should@^8.3.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-message@file:../bitcore-message",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     }
+537 silly leaf dependencies   ],
+537 silly leaf dependencies   "bitcore-lib": [
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "chai@^1.10.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "sinon@^1.13.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-build@bitpay/bitcore-build",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "brfs@^1.2.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "gulp@^3.8.10",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bn.js@=2.0.4",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bs58@=2.0.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "buffer-compare@=1.0.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "elliptic@=3.0.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "inherits@=2.0.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "lodash@=3.10.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     }
+537 silly leaf dependencies   ],
+537 silly leaf dependencies   "bitcore-mnemonic": [
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "chai@^1.10.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "mocha@^2.2.5",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-build@git://github.com/bitpay/bitcore-build.git",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "brfs@^1.2.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "gulp@^3.8.10",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-lib@file:../bitcore-lib",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "assert@^1.1.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "unorm@^1.3.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     }
+537 silly leaf dependencies   ],
+537 silly leaf dependencies   "bitcore-message": [
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "chai@~1.10.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-build@bitpay/bitcore-build",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "brfs@^1.3.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "gulp@^3.8.10",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "local-dependencies@^1.0.0-beta3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-lib@file:../bitcore-lib",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     }
+537 silly leaf dependencies   ],
+537 silly leaf dependencies   "bitcore-p2p": [
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "chai@~1.10.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "sinon@^1.12.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-build@git://github.com/bitpay/bitcore-build.git",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "brfs@^1.2.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "gulp@^3.9.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "local-dependencies@^1.0.0-beta3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-lib@file:../bitcore-lib",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bloom-filter@^0.2.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "buffers@bitpay/node-buffers#v0.1.2-bitpay",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "socks5-client@^0.3.6",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     }
+537 silly leaf dependencies   ],
+537 silly leaf dependencies   "bitcore-payment-protocol": [
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "chai@~1.10.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "sinon@^1.17.3",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-build@git://github.com/bitpay/bitcore-build.git",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "brfs@^1.2.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "gulp@^3.8.10",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bitcore-lib@file:../bitcore-lib",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "asn1.js@=4.5.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "jsrsasign@=5.0.10",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "protobufjs@=5.0.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     }
+537 silly leaf dependencies   ],
+537 silly leaf dependencies   "insight-ui": [
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt@~0.4.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "bower@~1.8.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt-angular-gettext@^0.2.15",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt-cli@~0.1.11",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt-contrib-concat@~0.3.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt-contrib-jshint@~0.8.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt-contrib-uglify@~0.3.2",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt-contrib-watch@*",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt-css@~0.5.4",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt-macreload@*",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt-markdown@~0.5.0",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     },
+537 silly leaf dependencies     {
+537 silly leaf dependencies       "dependency": "grunt-replace@^1.0.1",
+537 silly leaf dependencies       "isSatisfied": false
+537 silly leaf dependencies     }
+537 silly leaf dependencies   ]
+537 silly leaf dependencies }
+538 info Installing external dependencies
+539 verbose actions 11 actions, concurrency 4
+540 silly installInDir bitcoin-rpc [ 'async@^0.9.0',
+540 silly installInDir   'chai@^1.10.0',
+540 silly installInDir   'coveralls@^2.11.2',
+540 silly installInDir   'istanbul@^0.3.5',
+540 silly installInDir   'mocha@^2.1.0',
+540 silly installInDir   'sinon@^1.12.2' ]
+541 silly installInDir backup /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/package.json
+542 silly rename [ '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/package.json',
+542 silly rename   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/package.json.lerna_backup' ]
+543 silly installInDir bitcore-wallet-client [ 'async@^0.9.0',
+543 silly installInDir   'chai@^1.9.1',
+543 silly installInDir   'coveralls@^2.11.2',
+543 silly installInDir   'istanbul@*',
+543 silly installInDir   'mocha@^1.18.2',
+543 silly installInDir   'sinon@^1.10.3',
+543 silly installInDir   'lodash@^3.3.1',
+543 silly installInDir   'local-dependencies@^1.0.0-beta3',
+543 silly installInDir   'bitcore-lib@file:../bitcore-lib',
+543 silly installInDir   'bitcore-wallet-service@file:../bitcore-wallet-service',
+543 silly installInDir   'browserify@^13.1.0',
+543 silly installInDir   'grunt@~0.4.0',
+543 silly installInDir   'grunt-jsdox@^0.1.7',
+543 silly installInDir   'supertest@^3.0.0',
+543 silly installInDir   'tingodb@^0.3.4',
+543 silly installInDir   'uglify@^0.1.1',
+543 silly installInDir   'uuid@^2.0.1',
+543 silly installInDir   'bip38@^1.3.0',
+543 silly installInDir   'bitcore-mnemonic@file:../bitcore-mnemonic',
+543 silly installInDir   'bitcore-payment-protocol@file:../bitcore-payment-protocol',
+543 silly installInDir   'json-stable-stringify@^1.0.0',
+543 silly installInDir   'preconditions@^1.0.8',
+543 silly installInDir   'sjcl@1.0.3',
+543 silly installInDir   'superagent@^3.4.1' ]
+544 silly installInDir backup /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/package.json
+545 silly rename [ '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/package.json',
+545 silly rename   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client/package.json.lerna_backup' ]
+546 silly installInDir bitcore-node [ 'async@^1.3.0',
+546 silly installInDir   'chai@^3.5.0',
+546 silly installInDir   'coveralls@^2.11.9',
+546 silly installInDir   'istanbul@^0.4.3',
+546 silly installInDir   'mocha@^2.4.5',
+546 silly installInDir   'sinon@^1.15.4',
+546 silly installInDir   'local-dependencies@^1.0.0-beta3',
+546 silly installInDir   'bitcore-lib@file:../bitcore-lib',
+546 silly installInDir   'benchmark@1.0.0',
+546 silly installInDir   'bitcore-p2p@file:../bitcore-p2p',
+546 silly installInDir   'jshint@^2.9.2',
+546 silly installInDir   'jshint-stylish@^2.1.0',
+546 silly installInDir   'proxyquire@^1.3.1',
+546 silly installInDir   'rimraf@^2.4.2',
+546 silly installInDir   'bitcoind-rpc@file:../bitcoin-rpc',
+546 silly installInDir   'body-parser@^1.13.3',
+546 silly installInDir   'colors@^1.1.2',
+546 silly installInDir   'commander@^2.8.1',
+546 silly installInDir   'errno@^0.1.4',
+546 silly installInDir   'express@^4.13.3',
+546 silly installInDir   'liftoff@^2.2.0',
+546 silly installInDir   'lru-cache@^4.0.1',
+546 silly installInDir   'mkdirp@0.5.0',
+546 silly installInDir   'path-is-absolute@^1.0.0',
+546 silly installInDir   'semver@^5.0.1',
+546 silly installInDir   'socket.io@^1.4.5',
+546 silly installInDir   'socket.io-client@^1.4.5',
+546 silly installInDir   'zmq@^2.14.0' ]
+547 silly installInDir backup /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/package.json
+548 silly rename [ '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/package.json',
+548 silly rename   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node/package.json.lerna_backup' ]
+549 silly installInDir bitcore-wallet-service [ 'async@^0.9.2',
+549 silly installInDir   'chai@^1.9.1',
+549 silly installInDir   'coveralls@^2.11.2',
+549 silly installInDir   'istanbul@*',
+549 silly installInDir   'mocha@^1.18.2',
+549 silly installInDir   'sinon@1.10.3',
+549 silly installInDir   'inherits@^2.0.1',
+549 silly installInDir   'lodash@^3.10.1',
+549 silly installInDir   'local-dependencies@^1.0.0-beta3',
+549 silly installInDir   'bitcore-lib@file:../bitcore-lib',
+549 silly installInDir   'proxyquire@^1.7.2',
+549 silly installInDir   'body-parser@^1.11.0',
+549 silly installInDir   'express@^4.10.0',
+549 silly installInDir   'socket.io@^1.3.5',
+549 silly installInDir   'socket.io-client@^1.3.5',
+549 silly installInDir   'supertest@*',
+549 silly installInDir   'tingodb@^0.3.4',
+549 silly installInDir   'uuid@*',
+549 silly installInDir   'json-stable-stringify@^1.0.0',
+549 silly installInDir   'preconditions@^1.0.7',
+549 silly installInDir   'sjcl@^1.0.2',
+549 silly installInDir   'jsdoc@^3.3.0-beta1',
+549 silly installInDir   'memdown@^1.0.0',
+549 silly installInDir   'compression@^1.6.2',
+549 silly installInDir   'email-validator@^1.0.1',
+549 silly installInDir   'express-rate-limit@^2.6.0',
+549 silly installInDir   'locker@^0.1.0',
+549 silly installInDir   'locker-server@^0.1.3',
+549 silly installInDir   'mocha-lcov-reporter@0.0.1',
+549 silly installInDir   'moment@^2.10.3',
+549 silly installInDir   'mongodb@^2.0.27',
+549 silly installInDir   'morgan@*',
+549 silly installInDir   'mustache@^2.1.0',
+549 silly installInDir   'nodemailer@^1.3.4',
+549 silly installInDir   'nodemailer-sendgrid-transport@^0.2.0',
+549 silly installInDir   'npmlog@^0.1.1',
+549 silly installInDir   'read@^1.0.5',
+549 silly installInDir   'request@^2.53.0',
+549 silly installInDir   'secp256k1@^3.1.0',
+549 silly installInDir   'sticky-session@^0.1.0' ]
+550 silly installInDir backup /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/package.json
+551 silly rename [ '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/package.json',
+551 silly rename   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service/package.json.lerna_backup' ]
+552 silly installInDir writing tempJson { dependencies:
+552 silly installInDir    { async: '^0.9.0',
+552 silly installInDir      chai: '^1.10.0',
+552 silly installInDir      coveralls: '^2.11.2',
+552 silly installInDir      istanbul: '^0.3.5',
+552 silly installInDir      mocha: '^2.1.0',
+552 silly installInDir      sinon: '^1.12.2' } }
+553 silly installInDir writing tempJson { dependencies:
+553 silly installInDir    { async: '^0.9.0',
+553 silly installInDir      chai: '^1.9.1',
+553 silly installInDir      coveralls: '^2.11.2',
+553 silly installInDir      istanbul: '*',
+553 silly installInDir      mocha: '^1.18.2',
+553 silly installInDir      sinon: '^1.10.3',
+553 silly installInDir      lodash: '^3.3.1',
+553 silly installInDir      'local-dependencies': '^1.0.0-beta3',
+553 silly installInDir      'bitcore-lib': 'file:../bitcore-lib',
+553 silly installInDir      'bitcore-wallet-service': 'file:../bitcore-wallet-service',
+553 silly installInDir      browserify: '^13.1.0',
+553 silly installInDir      grunt: '~0.4.0',
+553 silly installInDir      'grunt-jsdox': '^0.1.7',
+553 silly installInDir      supertest: '^3.0.0',
+553 silly installInDir      tingodb: '^0.3.4',
+553 silly installInDir      uglify: '^0.1.1',
+553 silly installInDir      uuid: '^2.0.1',
+553 silly installInDir      bip38: '^1.3.0',
+553 silly installInDir      'bitcore-mnemonic': 'file:../bitcore-mnemonic',
+553 silly installInDir      'bitcore-payment-protocol': 'file:../bitcore-payment-protocol',
+553 silly installInDir      'json-stable-stringify': '^1.0.0',
+553 silly installInDir      preconditions: '^1.0.8',
+553 silly installInDir      sjcl: '1.0.3',
+553 silly installInDir      superagent: '^3.4.1' } }
+554 silly installInDir writing tempJson { dependencies:
+554 silly installInDir    { async: '^1.3.0',
+554 silly installInDir      chai: '^3.5.0',
+554 silly installInDir      coveralls: '^2.11.9',
+554 silly installInDir      istanbul: '^0.4.3',
+554 silly installInDir      mocha: '^2.4.5',
+554 silly installInDir      sinon: '^1.15.4',
+554 silly installInDir      'local-dependencies': '^1.0.0-beta3',
+554 silly installInDir      'bitcore-lib': 'file:../bitcore-lib',
+554 silly installInDir      benchmark: '1.0.0',
+554 silly installInDir      'bitcore-p2p': 'file:../bitcore-p2p',
+554 silly installInDir      jshint: '^2.9.2',
+554 silly installInDir      'jshint-stylish': '^2.1.0',
+554 silly installInDir      proxyquire: '^1.3.1',
+554 silly installInDir      rimraf: '^2.4.2',
+554 silly installInDir      'bitcoind-rpc': 'file:../bitcoin-rpc',
+554 silly installInDir      'body-parser': '^1.13.3',
+554 silly installInDir      colors: '^1.1.2',
+554 silly installInDir      commander: '^2.8.1',
+554 silly installInDir      errno: '^0.1.4',
+554 silly installInDir      express: '^4.13.3',
+554 silly installInDir      liftoff: '^2.2.0',
+554 silly installInDir      'lru-cache': '^4.0.1',
+554 silly installInDir      mkdirp: '0.5.0',
+554 silly installInDir      'path-is-absolute': '^1.0.0',
+554 silly installInDir      semver: '^5.0.1',
+554 silly installInDir      'socket.io': '^1.4.5',
+554 silly installInDir      'socket.io-client': '^1.4.5',
+554 silly installInDir      zmq: '^2.14.0' } }
+555 silly installInDir writing tempJson { dependencies:
+555 silly installInDir    { async: '^0.9.2',
+555 silly installInDir      chai: '^1.9.1',
+555 silly installInDir      coveralls: '^2.11.2',
+555 silly installInDir      istanbul: '*',
+555 silly installInDir      mocha: '^1.18.2',
+555 silly installInDir      sinon: '1.10.3',
+555 silly installInDir      inherits: '^2.0.1',
+555 silly installInDir      lodash: '^3.10.1',
+555 silly installInDir      'local-dependencies': '^1.0.0-beta3',
+555 silly installInDir      'bitcore-lib': 'file:../bitcore-lib',
+555 silly installInDir      proxyquire: '^1.7.2',
+555 silly installInDir      'body-parser': '^1.11.0',
+555 silly installInDir      express: '^4.10.0',
+555 silly installInDir      'socket.io': '^1.3.5',
+555 silly installInDir      'socket.io-client': '^1.3.5',
+555 silly installInDir      supertest: '*',
+555 silly installInDir      tingodb: '^0.3.4',
+555 silly installInDir      uuid: '*',
+555 silly installInDir      'json-stable-stringify': '^1.0.0',
+555 silly installInDir      preconditions: '^1.0.7',
+555 silly installInDir      sjcl: '^1.0.2',
+555 silly installInDir      jsdoc: '^3.3.0-beta1',
+555 silly installInDir      memdown: '^1.0.0',
+555 silly installInDir      compression: '^1.6.2',
+555 silly installInDir      'email-validator': '^1.0.1',
+555 silly installInDir      'express-rate-limit': '^2.6.0',
+555 silly installInDir      locker: '^0.1.0',
+555 silly installInDir      'locker-server': '^0.1.3',
+555 silly installInDir      'mocha-lcov-reporter': '0.0.1',
+555 silly installInDir      moment: '^2.10.3',
+555 silly installInDir      mongodb: '^2.0.27',
+555 silly installInDir      morgan: '*',
+555 silly installInDir      mustache: '^2.1.0',
+555 silly installInDir      nodemailer: '^1.3.4',
+555 silly installInDir      'nodemailer-sendgrid-transport': '^0.2.0',
+555 silly installInDir      npmlog: '^0.1.1',
+555 silly installInDir      read: '^1.0.5',
+555 silly installInDir      request: '^2.53.0',
+555 silly installInDir      secp256k1: '^3.1.0',
+555 silly installInDir      'sticky-session': '^0.1.0' } }
+556 silly getExecOpts { cwd: '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc' }
+557 silly installInDir [ 'npm', [ 'install' ] ]
+558 silly getExecOpts { cwd: '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-node' }
+559 silly installInDir [ 'npm', [ 'install' ] ]
+560 silly getExecOpts { cwd: '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-service' }
+561 silly installInDir [ 'npm', [ 'install' ] ]
+562 silly getExecOpts { cwd: '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-wallet-client' }
+563 silly installInDir [ 'npm', [ 'install' ] ]
+564 silly installInDir cleanup /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/package.json
+565 silly renameSync [ '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/package.json.lerna_backup',
+565 silly renameSync   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcoin-rpc/package.json' ]
+566 verbose installed leaf bitcoind-rpc
+567 silly installInDir insight-api [ 'async@*',
+567 silly installInDir   'chai@^3.5.0',
+567 silly installInDir   'mocha@^2.4.5',
+567 silly installInDir   'sinon@^1.10.3',
+567 silly installInDir   'lodash@^2.4.1',
+567 silly installInDir   'bitcore-lib@file:../bitcore-lib',
+567 silly installInDir   'proxyquire@^1.7.2',
+567 silly installInDir   'body-parser@^1.13.3',
+567 silly installInDir   'lru-cache@^4.0.1',
+567 silly installInDir   'compression@^1.6.1',
+567 silly installInDir   'morgan@^1.7.0',
+567 silly installInDir   'request@^2.64.0',
+567 silly installInDir   'should@^8.3.1',
+567 silly installInDir   'bitcore-message@file:../bitcore-message' ]
+568 silly installInDir backup /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/package.json
+569 silly rename [ '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/package.json',
+569 silly rename   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/package.json.lerna_backup' ]
+570 silly installInDir writing tempJson { dependencies:
+570 silly installInDir    { async: '*',
+570 silly installInDir      chai: '^3.5.0',
+570 silly installInDir      mocha: '^2.4.5',
+570 silly installInDir      sinon: '^1.10.3',
+570 silly installInDir      lodash: '^2.4.1',
+570 silly installInDir      'bitcore-lib': 'file:../bitcore-lib',
+570 silly installInDir      proxyquire: '^1.7.2',
+570 silly installInDir      'body-parser': '^1.13.3',
+570 silly installInDir      'lru-cache': '^4.0.1',
+570 silly installInDir      compression: '^1.6.1',
+570 silly installInDir      morgan: '^1.7.0',
+570 silly installInDir      request: '^2.64.0',
+570 silly installInDir      should: '^8.3.1',
+570 silly installInDir      'bitcore-message': 'file:../bitcore-message' } }
+571 silly getExecOpts { cwd: '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api' }
+572 silly installInDir [ 'npm', [ 'install' ] ]
+573 silly installInDir cleanup /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/package.json
+574 silly renameSync [ '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/package.json.lerna_backup',
+574 silly renameSync   '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/package.json' ]
+575 verbose installed leaf insight-api
+576 error execute Error: Command failed: npm install
+576 error execute npm WARN deprecated jade@0.26.3: Jade has been renamed to pug, please install the latest version of pug instead of jade
+576 error execute npm WARN deprecated to-iso-string@0.0.2: to-iso-string has been deprecated, use @segment/to-iso-string instead.
+576 error execute npm WARN deprecated minimatch@0.3.0: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue
+576 error execute npm WARN /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules/bn.js is not a child of /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api
+576 error execute npm ERR! path /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules/.staging/bn.js-68246df2
+576 error execute npm ERR! code ENOENT
+576 error execute npm ERR! errno -2
+576 error execute npm ERR! syscall rename
+576 error execute npm ERR! enoent ENOENT: no such file or directory, rename '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules/.staging/bn.js-68246df2' -> '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules/bn.js'
+576 error execute npm ERR! enoent This is related to npm not being able to find a file.
+576 error execute npm ERR! enoent
+576 error execute
+576 error execute npm ERR! A complete log of this run can be found in:
+576 error execute npm ERR!     /Users/adilwali/.npm/_logs/2017-09-07T02_29_26_285Z-debug.log
+576 error execute
+576 error execute     at Promise.all.then.arr (/Users/adilwali/n/lib/node_modules/lerna/node_modules/execa/index.js:236:11)
+576 error execute     at <anonymous>
+576 error execute     at process._tickCallback (internal/process/next_tick.js:188:7)
+576 error execute  callback with error
+576 error execute  { Error: Command failed: npm install
+576 error execute npm WARN deprecated jade@0.26.3: Jade has been renamed to pug, please install the latest version of pug instead of jade
+576 error execute npm WARN deprecated to-iso-string@0.0.2: to-iso-string has been deprecated, use @segment/to-iso-string instead.
+576 error execute npm WARN deprecated minimatch@0.3.0: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue
+576 error execute npm WARN /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules/bn.js is not a child of /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api
+576 error execute npm ERR! path /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules/.staging/bn.js-68246df2
+576 error execute npm ERR! code ENOENT
+576 error execute npm ERR! errno -2
+576 error execute npm ERR! syscall rename
+576 error execute npm ERR! enoent ENOENT: no such file or directory, rename '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules/.staging/bn.js-68246df2' -> '/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules/bn.js'
+576 error execute npm ERR! enoent This is related to npm not being able to find a file.
+576 error execute npm ERR! enoent
+576 error execute
+576 error execute npm ERR! A complete log of this run can be found in:
+576 error execute npm ERR!     /Users/adilwali/.npm/_logs/2017-09-07T02_29_26_285Z-debug.log
+576 error execute
+576 error execute     at Promise.all.then.arr (/Users/adilwali/n/lib/node_modules/lerna/node_modules/execa/index.js:236:11)
+576 error execute     at <anonymous>
+576 error execute     at process._tickCallback (internal/process/next_tick.js:188:7)
+576 error execute   stack: 'Error: Command failed: npm install\nnpm WARN deprecated jade@0.26.3: Jade has been renamed to pug, please install the latest version of pug instead of jade\nnpm WARN deprecated to-iso-string@0.0.2: to-iso-string has been deprecated, use @segment/to-iso-string instead.\nnpm WARN deprecated minimatch@0.3.0: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue\nnpm WARN /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules/bn.js is not a child of /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api\nnpm ERR! path /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules/.staging/bn.js-68246df2\nnpm ERR! code ENOENT\nnpm ERR! errno -2\nnpm ERR! syscall rename\nnpm ERR! enoent ENOENT: no such file or directory, rename \'/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules/.staging/bn.js-68246df2\' -> \'/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules/bn.js\'\nnpm ERR! enoent This is related to npm not being able to find a file.\nnpm ERR! enoent \n\nnpm ERR! A complete log of this run can be found in:\nnpm ERR!     /Users/adilwali/.npm/_logs/2017-09-07T02_29_26_285Z-debug.log\n\n    at Promise.all.then.arr (/Users/adilwali/n/lib/node_modules/lerna/node_modules/execa/index.js:236:11)\n    at <anonymous>\n    at process._tickCallback (internal/process/next_tick.js:188:7)',
+576 error execute   code: 254,
+576 error execute   killed: false,
+576 error execute   stdout: '',
+576 error execute   stderr: 'npm WARN deprecated jade@0.26.3: Jade has been renamed to pug, please install the latest version of pug instead of jade\nnpm WARN deprecated to-iso-string@0.0.2: to-iso-string has been deprecated, use @segment/to-iso-string instead.\nnpm WARN deprecated minimatch@0.3.0: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue\nnpm WARN /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules/bn.js is not a child of /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api\nnpm ERR! path /Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules/.staging/bn.js-68246df2\nnpm ERR! code ENOENT\nnpm ERR! errno -2\nnpm ERR! syscall rename\nnpm ERR! enoent ENOENT: no such file or directory, rename \'/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/insight-api/node_modules/.staging/bn.js-68246df2\' -> \'/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/bitcore-lib/node_modules/bn.js\'\nnpm ERR! enoent This is related to npm not being able to find a file.\nnpm ERR! enoent \n\nnpm ERR! A complete log of this run can be found in:\nnpm ERR!     /Users/adilwali/.npm/_logs/2017-09-07T02_29_26_285Z-debug.log\n',
+576 error execute   failed: true,
+576 error execute   signal: null,
+576 error execute   cmd: 'npm install',
+576 error execute   timedOut: false }
