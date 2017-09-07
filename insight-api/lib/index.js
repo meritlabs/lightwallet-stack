@@ -93,6 +93,7 @@ InsightAPI.prototype.getRoutePrefix = function() {
 InsightAPI.prototype.start = function(callback) {
   this.node.services.bitcoind.on('tx', this.transactionEventHandler.bind(this));
   this.node.services.bitcoind.on('block', this.blockEventHandler.bind(this));
+  this.node.services.bitcoind.on('referral', this.referralEventHandler.bind(this));
   setImmediate(callback);
 };
 
@@ -262,7 +263,7 @@ InsightAPI.prototype.getPublishEvents = function() {
       scope: this,
       subscribe: this.subscribe.bind(this),
       unsubscribe: this.unsubscribe.bind(this),
-      extraEvents: ['tx', 'block']
+      extraEvents: ['tx', 'block', 'referral']
     }
   ];
 };
@@ -273,6 +274,7 @@ InsightAPI.prototype.blockEventHandler = function(hashBuffer) {
     this.subscriptions.inv[i].emit('block', hashBuffer.toString('hex'));
   }
 };
+
 InsightAPI.prototype.transactionEventHandler = function(txBuffer) {
   var tx = new Transaction().fromBuffer(txBuffer);
   var result = this.txController.transformInvTransaction(tx);
@@ -281,6 +283,10 @@ InsightAPI.prototype.transactionEventHandler = function(txBuffer) {
     this.subscriptions.inv[i].emit('tx', result);
   }
 };
+
+InsightAPI.prototype.referralEventHandler = function(referralBuffer) {
+  console.log('referral handler', referralBuffer);
+}
 
 InsightAPI.prototype.subscribe = function(emitter) {
   $.checkArgument(emitter instanceof EventEmitter, 'First argument is expected to be an EventEmitter');
