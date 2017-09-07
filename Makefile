@@ -36,7 +36,7 @@ start-bitcore-wallet-service:
 	cd ./bitcore-wallet-service/ && node messagebroker/messagebroker.js & \
 	cd ./bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
 	cd ./bitcore-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
-	cd ./bitcore-wallet-service/ && node bws.js
+	cd ./bitcore-wallet-service/ && node bws.js &
 
 .PHONY: stop-bitcore-wallet-service
 stop-bitcore-wallet-service:
@@ -107,6 +107,6 @@ prepare-lightwallet-stack: clean-yarn \
 	prepare-bitcore-payment-protocol
 
 .PHONY: start-lightwallet-stack
-start-lightwallet-stack: start-bitcore-node \
-	start-bitcore-wallet-service
+start-lightwallet-stack: start-bitcore-wallet-service \
+	start-bitcore-node
 	

@@ -351,8 +351,9 @@ WalletService.prototype.createWallet = function(opts, cb) {
     function(acb) {
       var bc = self._getBlockchainExplorer(opts.network);
       
-      bc.validateReferralCode(opts.beacon, function(errMsg) {
+      bc.validateReferralCode(opts.beacon, function(errMsg, validation) {
         if (errMsg) return acb(new ClientError(errMsg));
+        if (validation.result == false) return acb(new ClientError('Invalid unlock code'));
 
         return acb(null);
       });

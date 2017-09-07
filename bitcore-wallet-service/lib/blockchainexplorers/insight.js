@@ -213,14 +213,14 @@ Insight.prototype.validateReferralCode = function(referralCode, cb) {
   var args = {
     method: 'GET',
     path: `${this.apiPrefix}/referral/${referralCode}/validate`,
-    json: true,
+    json: false,
   };
 
   this._doRequest(args, function(err, res, body) {
     if (err || res.statusCode !== 200) {
       return cb(_parseErr(err, res));
     }
-    return cb(null, body.tx);
+    return cb(null, body);
   });
 };
 
