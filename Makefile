@@ -1,5 +1,12 @@
-### lightwallet-app ###
+### pre-requisites ###
+.PHONY: prepare-prereqs
+prepare-prereqs:
+	npm install -g yarn
+	npm install -g lerna
+	npm install -g grunt
 
+
+### lightwallet-app ###
 .PHONY: prepare-lightwallet-app
 prepare-lightwallet-app:
 	cd ./lightwallet && yarn
