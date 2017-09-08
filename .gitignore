@@ -17,3 +17,6 @@ yarn-debug.log*
 
 # Idea
 
+# VS Code
+.vscode
+
