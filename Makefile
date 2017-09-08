@@ -1,5 +1,11 @@
-### lightwallet-app ###
+### pre-requisites ###
+.PHONY: prepare-prereqs
+prepare-prereqs:
+	npm install -g yarn
+	npm install -g lerna
+	npm install -g grunt
 
+### lightwallet-app ###
 .PHONY: prepare-lightwallet-app
 prepare-lightwallet-app:
 	cd ./lightwallet && yarn
@@ -10,7 +16,6 @@ start-lightwallet-app: prepare-lightwallet-app
 	cd ./lightwallet && yarn start
 
 ### lightwallet-stack ###
-
 .PHONY: start-mongo
 start-mongo:
 	mongod --fork --syslog
@@ -110,3 +115,95 @@ prepare-lightwallet-stack: clean-yarn \
 start-lightwallet-stack: start-bitcore-wallet-service \
 	start-bitcore-node
 	
+
+# Clean 
+## Preperation Order is based on dependencies ##
+.PHONY: clean-bitcore-lib
+clean-bitcore-lib:
+	rm -rf ./bitcore-lib/node_modules 
+	rm ./bitcore-lib/package-lock.json
+	rm ./bitcore-lib/yarn.lock
+
+.PHONY: clean-bitcoin-rpc
+clean-bitcoin-rpc:
+	rm -rf ./bitcoin-rpc/node_modules
+	rm ./bitcore-rpc/package-lock.json
+	rm ./bitcore-rpc/yarn.lock
+
+
+.PHONY: clean-bitcore-mnemonic
+clean-bitcore-mnemonic:
+	rm -rf ./bitcore-mnemonic/node_modules
+	rm ./bitcore-mnemonic/package-lock.json
+	rm ./bitcore-mnemonic/yarn.lock
+
+
+.PHONY: clean-insight-api
+clean-insight-api:
+	rm -rf ./insight-api/node_modules
+	rm ./insight-api/package-lock.json
+	rm ./insight-api/yarn.lock
+
+
+.PHONY: clean-insight-ui
+clean-insight-ui:
+	rm -rf ./insight-ui/node_modules
+	rm ./insight-ui/package-lock.json
+	rm ./insight-ui/yarn.lock
+
+
+.PHONY: clean-bitcore-wallet-service
+clean-bitcore-wallet-service:
+	rm -rf ./bitcore-wallet-service/node_modules
+	rm ./bitcore-wallet-service/package-lock.json
+	rm ./bitcore-wallet-service/yarn.lock
+
+
+.PHONY: clean-bitcore-wallet-client
+clean-bitcore-wallet-client:
+	rm -rf ./bitcore-wallet-client/node_modules
+	rm ./bitcore-wallet-client/package-lock.json
+	rm ./bitcore-wallet-client/yarn.lock
+
+
+.PHONY: clean-bitcore-p2p
+clean-bitcore-p2p:
+	rm -rf ./bitcore-p2p/node_modules
+	rm ./bitcore-p2p/package-lock.json
+	rm ./bitcore-p2p/yarn.lock
+
+
+.PHONY: clean-bitcore-node
+clean-bitcore-node:
+	rm -rf ./bitcore-node/node_modules
+	rm ./bitcore-node/package-lock.json
+	rm ./bitcore-node/yarn.lock
+
+
+.PHONY: clean-bitcore-message
+clean-bitcore-message:
+	rm -rf ./bitcore-message/node_modules
+	rm ./bitcore-message/package-lock.json
+	rm ./bitcore-message/yarn.lock
+
+
+.PHONY: clean-bitcore-payment-protocol
+clean-bitcore-payment-protocol:
+	rm -rf ./bitcore-payment-protocol/node_modules
+	rm ./bitcore-payment-protocol/package-lock.json
+	rm ./bitcore-payment-protocol/yarn.lock
+
+
+.PHONY: clean-lightwallet-stack
+clean-lightwallet-stack: clean-yarn \
+	clean-bitcore-lib \
+	clean-bitcoin-rpc \
+	clean-bitcore-mnemonic \
+	clean-insight-api \
+	clean-insight-ui \
+	clean-bitcore-wallet-service \
+	clean-bitcore-wallet-client \
+	clean-bitcore-p2p \
+	clean-bitcore-node \
+	clean-bitcore-message \
+	clean-bitcore-payment-protocol
