@@ -2430,6 +2430,19 @@ API.prototype.txConfirmationUnsubscribe = function(txid, cb) {
   this._doDeleteRequest(url, cb);
 };
 
+API.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
+  var url = '/v1/referraltxconfirmations/';
+  this._doPostRequest(url, opts, function(err, response) {
+    if (err) return cb(err);
+    return cb(null, response);
+  });
+};
+
+API.prototype.referralTxConfirmationUnsubscribe = function(txid, cb) {
+  var url = '/v1/referraltxconfirmations/' + txid;
+  this._doDeleteRequest(url, cb);
+};
+
 /**
  * Returns send max information.
  * @param {String} opts
