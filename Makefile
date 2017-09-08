@@ -7,7 +7,7 @@ prepare-prereqs:
 
 .PHONY: set-node-path
 set-node-path:
-	export NODE_PATH=${CURDIR}
+	export NODE_PATH=${CURDIR}/libs 
 
 ### lightwallet-app ###
 .PHONY: prepare-lightwallet-app
@@ -17,7 +17,6 @@ prepare-lightwallet-app:
 
 .PHONY: start-lightwallet-app
 start-lightwallet-app: prepare-lightwallet-app
-	set-node-path
 	cd ./lightwallet && yarn start
 
 ### lightwallet-stack ###
@@ -37,7 +36,7 @@ symlink-bitcore-node:
 
 # Within the devnode directory with the configuration file, start the node:
 .PHONY: start-bitcore-node
-start-bitcore-node: symlink-bitcore-node
+start-bitcore-node: set-node-path symlink-bitcore-node
 	./libs/bitcore-node/bin/bitcore-node start
 
 .PHONY: start-bitcore-wallet-service
@@ -53,7 +52,7 @@ stop-bitcore-wallet-service:
 	cd ./libs/bitcore-wallet-service/ && sh stop.sh
 
 
-.PHONY: start-lightwallet-stack
+.PHONY .ONESHELL: start-lightwallet-stack
 start-lightwallet-stack: set-node-path start-bitcore-wallet-service start-bitcore-node
 	
 
