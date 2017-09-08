@@ -39,6 +39,8 @@ var FIELDS = [
   'addressType',
   'hwInfo',
   'entropySourcePath',
+  'beacon',
+  'unlocked',
 ];
 
 function Credentials() {
@@ -296,11 +298,13 @@ Credentials.prototype.addWalletPrivateKey = function(walletPrivKey) {
   this.sharedEncryptingKey = Utils.privateKeyToAESKey(walletPrivKey);
 };
 
-Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copayerName) {
+Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copayerName, opts) {
   this.walletId = walletId;
   this.walletName = walletName;
   this.m = m;
   this.n = n;
+  this.beacon = opts.beacon;
+  this.unlocked = opts.unlocked;
 
   if (copayerName)
     this.copayerName = copayerName;
