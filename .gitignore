@@ -20,3 +20,5 @@ yarn-debug.log*
 # Lerna
 lerna-debug.log
 
+# VS Code
+.vscode
