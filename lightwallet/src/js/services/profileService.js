@@ -37,7 +37,7 @@ angular.module('copayApp.services')
         wallet.email = config.emailFor && config.emailFor[wallet.id];
 
         // @todo move from here
-        if (wallet.error === 'LOCKED') {
+        if (wallet.credentials.unlocked === false || wallet.error === 'LOCKED') {
           wallet.color = '#ccc';
           wallet.locked = true;
           wallet.error = 'Wallet is not unlocked';
@@ -400,6 +400,7 @@ angular.module('copayApp.services')
             singleAddress: opts.singleAddress,
             walletPrivKey: opts.walletPrivKey,
             beacon: opts.beacon,
+            unlocked: opts.unlocked,
           }, function(err, secret) {
             if (err) return bwcError.cb(err, gettextCatalog.getString('Error creating wallet'), cb);
             return cb(null, walletClient, secret);

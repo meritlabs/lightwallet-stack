@@ -1255,6 +1255,7 @@ API.prototype._checkKeyDerivation = function() {
  * @param {string} opts.singleAddress[=false] - The wallet will only ever have one address.
  * @param {String} opts.walletPrivKey - set a walletPrivKey (instead of random)
  * @param {String} opts.id - set a id for wallet (instead of server given)
+ * @param {Boolean} opts.unlocked
  * @param cb
  * @return {undefined}
  */
@@ -1297,6 +1298,7 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
     singleAddress: !!opts.singleAddress,
     id: opts.id,
     beacon: opts.beacon,
+    unlocked: opts.unlocked,
   };
 
   // Create wallet
@@ -1304,7 +1306,7 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
     if (err) return cb(err);
 
     var walletId = res.walletId;
-    c.addWalletInfo(walletId, walletName, m, n, copayerName);
+    c.addWalletInfo(walletId, walletName, m, n, copayerName, opts);
     var secret = API._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
     self._doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {},
