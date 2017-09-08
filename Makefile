@@ -5,6 +5,10 @@ prepare-prereqs:
 	npm install -g lerna
 	npm install -g grunt
 
+.PHONY: set-node-path
+set-node-path:
+	export NODE_PATH=${CURDIR}
+
 ### lightwallet-app ###
 .PHONY: prepare-lightwallet-app
 prepare-lightwallet-app:
@@ -33,14 +37,12 @@ symlink-bitcore-node:
 
 # Within the devnode directory with the configuration file, start the node:
 .PHONY: start-bitcore-node
-start-bitcore-node:
-	symlink-bitcore-node \ 
-	NODE_PATH=./ 
+start-bitcore-node: symlink-bitcore-node
 	./bitcore-node/bin/bitcore-node start
 
 .PHONY: start-bitcore-wallet-service
 start-bitcore-wallet-service:
-	NODE_PATH=../  
+	NODE_PATH=/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack  
 	cd ./bitcore-wallet-service/ && node locker/locker.js & \
 	cd ./bitcore-wallet-service/ && node messagebroker/messagebroker.js & \
 	cd ./bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
@@ -50,6 +52,13 @@ start-bitcore-wallet-service:
 .PHONY: stop-bitcore-wallet-service
 stop-bitcore-wallet-service:
 	cd ./bitcore-wallet-service/ && sh stop.sh
+
+
+.PHONY: start-lightwallet-stack
+start-lightwallet-stack: set-node-path
+	start-bitcore-wallet-service
+	start-bitcore-node
+	
 
 .PHONY: clean-yarn
 clean-yarn: 
@@ -114,11 +123,6 @@ prepare-lightwallet-stack: clean-yarn \
 	prepare-bitcore-node \
 	prepare-bitcore-message \
 	prepare-bitcore-payment-protocol
-
-.PHONY: start-lightwallet-stack
-start-lightwallet-stack: start-bitcore-wallet-service \
-	start-bitcore-node
-	
 
 # Clean 
 ## Preperation Order is based on dependencies ##
