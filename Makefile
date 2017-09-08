@@ -17,7 +17,7 @@ prepare-lightwallet-app:
 
 .PHONY: start-lightwallet-app
 start-lightwallet-app: prepare-lightwallet-app
-	NODE_PATH=../
+	set-node-path
 	cd ./lightwallet && yarn start
 
 ### lightwallet-stack ###
@@ -41,8 +41,7 @@ start-bitcore-node: symlink-bitcore-node
 	./bitcore-node/bin/bitcore-node start
 
 .PHONY: start-bitcore-wallet-service
-start-bitcore-wallet-service:
-	NODE_PATH=/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack  
+start-bitcore-wallet-service: set-node-path
 	cd ./bitcore-wallet-service/ && node locker/locker.js & \
 	cd ./bitcore-wallet-service/ && node messagebroker/messagebroker.js & \
 	cd ./bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
@@ -55,9 +54,7 @@ stop-bitcore-wallet-service:
 
 
 .PHONY: start-lightwallet-stack
-start-lightwallet-stack: set-node-path
-	start-bitcore-wallet-service
-	start-bitcore-node
+start-lightwallet-stack: set-node-path start-bitcore-wallet-service start-bitcore-node
 	
 
 .PHONY: clean-yarn
