@@ -38,7 +38,6 @@
     "mocha": "^2.2.5"
   },
   "dependencies": {
-    "bitcore-lib": "file:../bitcore-lib",
     "unorm": "^1.3.3"
   }
 }

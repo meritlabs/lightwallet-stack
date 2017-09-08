@@ -358,7 +358,7 @@ bindings@1.2.x, bindings@~1.2.1:
 "bitcore-p2p@file:../bitcore-p2p":
   version "1.1.2"
   dependencies:
-    bitcore-lib "file:../bitcore-lib"
+    bitcore-lib "file:../../../../../../Library/Caches/Yarn/v1/bitcore-lib"
     bloom-filter "^0.2.0"
     buffers bitpay/node-buffers#v0.1.2-bitpay
     socks5-client "^0.3.6"
