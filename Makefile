@@ -215,7 +215,7 @@ clean-lightwallet-stack: clean-yarn \
 
 # Clean 
 .PHONY: clean-lightwallet-app
-clean-bitcore-lib:
+clean-lightwallet-app:
 	rm -rf ./lightwallet/node_modules 
 	rm -f ./lightwallet/package-lock.json
 	rm -f ./lightwallet/yarn.lock
