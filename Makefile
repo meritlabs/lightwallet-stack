@@ -121,77 +121,77 @@ start-lightwallet-stack: start-bitcore-wallet-service \
 .PHONY: clean-bitcore-lib
 clean-bitcore-lib:
 	rm -rf ./bitcore-lib/node_modules 
-	rm ./bitcore-lib/package-lock.json
-	rm ./bitcore-lib/yarn.lock
+	rm -f ./bitcore-lib/package-lock.json
+	rm -f ./bitcore-lib/yarn.lock
 
 .PHONY: clean-bitcoin-rpc
 clean-bitcoin-rpc:
 	rm -rf ./bitcoin-rpc/node_modules
-	rm ./bitcore-rpc/package-lock.json
-	rm ./bitcore-rpc/yarn.lock
+	rm -f ./bitcore-rpc/package-lock.json
+	rm -f ./bitcore-rpc/yarn.lock
 
 
 .PHONY: clean-bitcore-mnemonic
 clean-bitcore-mnemonic:
 	rm -rf ./bitcore-mnemonic/node_modules
-	rm ./bitcore-mnemonic/package-lock.json
-	rm ./bitcore-mnemonic/yarn.lock
+	rm -f ./bitcore-mnemonic/package-lock.json
+	rm -f ./bitcore-mnemonic/yarn.lock
 
 
 .PHONY: clean-insight-api
 clean-insight-api:
 	rm -rf ./insight-api/node_modules
-	rm ./insight-api/package-lock.json
-	rm ./insight-api/yarn.lock
+	rm -f ./insight-api/package-lock.json
+	rm -f ./insight-api/yarn.lock
 
 
 .PHONY: clean-insight-ui
 clean-insight-ui:
 	rm -rf ./insight-ui/node_modules
-	rm ./insight-ui/package-lock.json
-	rm ./insight-ui/yarn.lock
+	rm -f ./insight-ui/package-lock.json
+	rm -f ./insight-ui/yarn.lock
 
 
 .PHONY: clean-bitcore-wallet-service
 clean-bitcore-wallet-service:
 	rm -rf ./bitcore-wallet-service/node_modules
-	rm ./bitcore-wallet-service/package-lock.json
-	rm ./bitcore-wallet-service/yarn.lock
+	rm -f ./bitcore-wallet-service/package-lock.json
+	rm -f ./bitcore-wallet-service/yarn.lock
 
 
 .PHONY: clean-bitcore-wallet-client
 clean-bitcore-wallet-client:
 	rm -rf ./bitcore-wallet-client/node_modules
-	rm ./bitcore-wallet-client/package-lock.json
-	rm ./bitcore-wallet-client/yarn.lock
+	rm -f ./bitcore-wallet-client/package-lock.json
+	rm -f ./bitcore-wallet-client/yarn.lock
 
 
 .PHONY: clean-bitcore-p2p
 clean-bitcore-p2p:
 	rm -rf ./bitcore-p2p/node_modules
-	rm ./bitcore-p2p/package-lock.json
-	rm ./bitcore-p2p/yarn.lock
+	rm -f ./bitcore-p2p/package-lock.json
+	rm -f ./bitcore-p2p/yarn.lock
 
 
 .PHONY: clean-bitcore-node
 clean-bitcore-node:
 	rm -rf ./bitcore-node/node_modules
-	rm ./bitcore-node/package-lock.json
-	rm ./bitcore-node/yarn.lock
+	rm -f ./bitcore-node/package-lock.json
+	rm -f ./bitcore-node/yarn.lock
 
 
 .PHONY: clean-bitcore-message
 clean-bitcore-message:
 	rm -rf ./bitcore-message/node_modules
-	rm ./bitcore-message/package-lock.json
-	rm ./bitcore-message/yarn.lock
+	rm -f ./bitcore-message/package-lock.json
+	rm -f ./bitcore-message/yarn.lock
 
 
 .PHONY: clean-bitcore-payment-protocol
 clean-bitcore-payment-protocol:
 	rm -rf ./bitcore-payment-protocol/node_modules
-	rm ./bitcore-payment-protocol/package-lock.json
-	rm ./bitcore-payment-protocol/yarn.lock
+	rm -f ./bitcore-payment-protocol/package-lock.json
+	rm -f ./bitcore-payment-protocol/yarn.lock
 
 
 .PHONY: clean-lightwallet-stack
