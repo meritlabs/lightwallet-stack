@@ -39,7 +39,6 @@
     "grunt": "~0.4.0",
     "grunt-jsdox": "^0.1.7",
     "istanbul": "*",
-    "local-dependencies": "^1.0.0-beta3",
     "mocha": "^1.18.2",
     "sinon": "^1.10.3",
     "supertest": "^3.0.0",
@@ -52,9 +51,7 @@
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --reporter spec test",
     "test": "./node_modules/.bin/mocha",
     "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "docs": "./node_modules/.bin/jsdox lib/* lib/common lib/errors -o docs && cat README.header.md  docs/*.md LICENSE > README.md",
-    "configure-dependencies": "configure-local-dependencies",
-    "install-dependencies": "install-local-dependencies"
+    "docs": "./node_modules/.bin/jsdox lib/* lib/common lib/errors -o docs && cat README.header.md  docs/*.md LICENSE > README.md"
   },
   "contributors": [
     {

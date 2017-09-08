@@ -26,8 +26,7 @@
     "bitcore-build": "bitpay/bitcore-build",
     "brfs": "^1.3.0",
     "chai": "~1.10.0",
-    "gulp": "^3.8.10",
-    "local-dependencies": "^1.0.0-beta3"
+    "gulp": "^3.8.10"
   },
   "license": "MIT"
 }
