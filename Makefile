@@ -13,6 +13,7 @@ prepare-lightwallet-app:
 
 .PHONY: start-lightwallet-app
 start-lightwallet-app: prepare-lightwallet-app
+	NODE_PATH=../
 	cd ./lightwallet && yarn start
 
 ### lightwallet-stack ###
@@ -33,10 +34,13 @@ symlink-bitcore-node:
 # Within the devnode directory with the configuration file, start the node:
 .PHONY: start-bitcore-node
 start-bitcore-node:
+	symlink-bitcore-node \ 
+	NODE_PATH=./ 
 	./bitcore-node/bin/bitcore-node start
 
 .PHONY: start-bitcore-wallet-service
 start-bitcore-wallet-service:
+	NODE_PATH=../  
 	cd ./bitcore-wallet-service/ && node locker/locker.js & \
 	cd ./bitcore-wallet-service/ && node messagebroker/messagebroker.js & \
 	cd ./bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
