@@ -3247,5 +3247,27 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
   self.storage.removeTxConfirmationSub(self.copayerId, opts.txid, cb);
 };
 
+WalletService.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
+  if (!checkRequired(opts, ['hashCode'], cb)) return;
+
+  var self = this;
+
+  var sub = Model.RefertalTxConfirmationSub.create({
+    copayerId: self.copayerId,
+    walletId: self.walletId,
+    hashCode: opts.hashCode,
+  });
+
+  self.storage.storeReferralTxConfirmationSub(sub, cb);
+};
+
+WalletService.prototype.referralTxConfirmationUnsubscribe = function(opts, cb) {
+  if (!checkRequired(opts, ['hashCode'], cb)) return;
+
+  var self = this;
+
+  self.storage.removeReferralTxConfirmationSub(self.copayerId, opts.hashCode, cb);
+};
+
 module.exports = WalletService;
 module.exports.ClientError = ClientError;

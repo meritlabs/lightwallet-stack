@@ -26,6 +26,7 @@ var collections = {
   SESSIONS: 'sessions',
   PUSH_NOTIFICATION_SUBS: 'push_notification_subs',
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
+  REFERRAL_TX_CONFIRMATION_SUBS: 'referral_tx_confirmation_subs',
 };
 
 var Storage = function(opts) {
@@ -85,6 +86,10 @@ Storage.prototype._createIndexes = function() {
   });
   this.db.collection(collections.SESSIONS).createIndex({
     copayerId: 1
+  });
+  this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).createIndex({
+    copayerId: 1,
+    codeHash: 1,
   });
 };
 
@@ -628,7 +633,7 @@ Storage.prototype.storeActiveAddresses = function(walletId, addresses, cb) {
 };
 
 // --------         ---------------------------  Total
-//           > Time >                  
+//           > Time >
 //                       ^to     <=  ^from
 //                       ^fwdIndex  =>  ^end
 Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {
@@ -981,6 +986,25 @@ Storage.prototype.removeTxConfirmationSub = function(copayerId, txid, cb) {
   }, cb);
 };
 
+Storage.prototype.storeReferralTxConfirmationSub = function(referralConfirmationSub, cb) {
+  this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).update({
+    copayerId: referralConfirmationSub.copayerId,
+    codeHash: referralConfirmationSub.codeHash,
+  }, referralConfirmationSub, {
+    w: 1,
+    upsert: true,
+  }, cb);
+}
+
+Storage.prototype.removeReferralTxConfirmationSub = function(copayerId, codeHash, cb) {
+  this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).remove({
+    copayerId: copayerId,
+    codeHash: codeHash,
+  }, {
+    w: 1,
+    upsert: true,
+  }, cb);
+}
 
 Storage.prototype._dump = function(cb, fn) {
   fn = fn || console.log;
