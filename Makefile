@@ -1,7 +1,7 @@
 ### pre-requisites ###
 .PHONY: prepare-prereqs
 prepare-prereqs:
-	npm install -g yarn
+	npm install -g npm
 	npm install -g lerna
 	npm install -g grunt
 
@@ -9,12 +9,12 @@ prepare-prereqs:
 ### lightwallet-app ###
 .PHONY: prepare-lightwallet-app
 prepare-lightwallet-app:
-	cd ./lightwallet && yarn
-	cd ./lightwallet && yarn apply
+	cd ./lightwallet && npm install 
+	cd ./lightwallet && npm run apply
 
 .PHONY: start-lightwallet-app
-start-lightwallet-app: prepare-lightwallet-app
-	cd ./lightwallet && yarn start
+start-lightwallet-app: 
+	cd ./lightwallet && npm run apply && npm start
 
 ### lightwallet-stack ###
 
@@ -49,58 +49,58 @@ start-bitcore-wallet-service:
 stop-bitcore-wallet-service:
 	cd ./packages/bitcore-wallet-service/ && sh stop.sh
 
-.PHONY: clean-yarn
-clean-yarn: 
-	yarn cache clean
+.PHONY: clean-npm
+clean-npm: 
+	npm cache clean
 
 ## Preperation Order is based on dependencies ##
 .PHONY: prepare-bitcore-lib
 prepare-bitcore-lib:
-	cd ./packages/bitcore-lib/ && yarn
+	cd ./packages/bitcore-lib/ && npm install
 
 .PHONY: prepare-bitcoin-rpc
 prepare-bitcoin-rpc:
-	cd ./packages/bitcoin-rpc/ && yarn
+	cd ./packages/bitcoin-rpc/ && npm install
 
 .PHONY: prepare-bitcore-mnemonic
 prepare-bitcore-mnemonic:
-	cd ./packages/bitcore-mnemonic/ && yarn
+	cd ./packages/bitcore-mnemonic/ && npm install
 
 .PHONY: prepare-insight-api
 prepare-insight-api:
-	cd ./packages/insight-api/ && yarn
+	cd ./packages/insight-api/ && npm install
 
 .PHONY: prepare-insight-ui
 prepare-insight-ui:
-	cd ./packages/insight-ui/ && yarn
-	cd ./packages/insight-ui/ && yarn run build
+	cd ./packages/insight-ui/ && npm install
+	cd ./packages/insight-ui/ && npm run build
 
 .PHONY: prepare-bitcore-wallet-service
 prepare-bitcore-wallet-service:
-	cd ./packages/bitcore-wallet-service/ && yarn
+	cd ./packages/bitcore-wallet-service/ && npm install
 
 .PHONY: prepare-bitcore-wallet-client
 prepare-bitcore-wallet-client:
-	cd ./packages/bitcore-wallet-client/ && yarn
+	cd ./packages/bitcore-wallet-client/ && npm install
 
 .PHONY: prepare-bitcore-p2p
 prepare-bitcore-p2p:
-	cd ./packages/bitcore-p2p/ && yarn
+	cd ./packages/bitcore-p2p/ && npm install
 
 .PHONY: prepare-bitcore-node
 prepare-bitcore-node:
-	cd ./packages/bitcore-node/ && yarn
+	cd ./packages/bitcore-node/ && npm install
 
 .PHONY: prepare-bitcore-message
 prepare-bitcore-message:
-	cd ./packages/bitcore-message/ && yarn
+	cd ./packages/bitcore-message/ && npm install
 
 .PHONY: prepare-bitcore-payment-protocol
 prepare-bitcore-payment-protocol:
-	cd ./packages/bitcore-payment-protocol/ && yarn
+	cd ./packages/bitcore-payment-protocol/ && npm install
 
 .PHONY: prepare-lightwallet-stack
-prepare-lightwallet-stack: clean-yarn \
+prepare-lightwallet-stack: clean-npm \
 	prepare-bitcore-lib \
 	prepare-bitcoin-rpc \
 	prepare-bitcore-mnemonic \
@@ -165,7 +165,7 @@ clean-bitcore-payment-protocol:
 	rm -rf ./packages/bitcore-payment-protocol/node_modules
 
 .PHONY: clean-lightwallet-stack
-clean-lightwallet-stack: clean-yarn \
+clean-lightwallet-stack: clean-npm \
 	clean-bitcore-lib \
 	clean-bitcoin-rpc \
 	clean-bitcore-mnemonic \
