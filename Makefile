@@ -16,6 +16,11 @@ prepare-lightwallet-app:
 start-lightwallet-app: 
 	cd ./lightwallet && npm run apply && npm start
 
+.PHONY: clean-lightwallet-app
+clean-lightwallet-app: 
+	rm -rf ./lightwallet/node_modules
+
+
 ### lightwallet-stack ###
 
 .PHONY: start-mongo
@@ -51,7 +56,7 @@ stop-bitcore-wallet-service:
 
 .PHONY: clean-npm
 clean-npm: 
-	npm cache clean
+	npm cache verify
 
 ## Preperation Order is based on dependencies ##
 .PHONY: prepare-bitcore-lib
@@ -114,8 +119,7 @@ prepare-lightwallet-stack: clean-npm \
 	prepare-bitcore-payment-protocol
 
 .PHONY: start-lightwallet-stack
-start-lightwallet-stack: start-bitcore-wallet-service \
-	start-bitcore-node
+start-lightwallet-stack: symlink-bitcore-node start-bitcore-wallet-service start-bitcore-node
 	
 
 # Clean 
