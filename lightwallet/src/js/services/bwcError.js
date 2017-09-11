@@ -142,6 +142,9 @@ angular.module('copayApp.services')
           case 'EXCEEDED_DAILY_LIMIT':
             body = gettextCatalog.getString('Exceeded daily limit of $500 per user');
             break;
+          case 'UNLOCK_CODE_INVALID':
+            body = gettextCatalog.getString('That Unlock Code is not valid');
+            break;
           case 'ERROR':
             body = (err.message || err.error);
             break;

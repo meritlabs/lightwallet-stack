@@ -98,7 +98,8 @@ ExpressApp.prototype.start = function(opts, cb) {
   function returnError(err, res, req) {
     if (err instanceof WalletService.ClientError) {
 
-      var status = (err.code == 'NOT_AUTHORIZED') ? 401 : 400;
+      // Return a 401 if the unlock code is not valid, or the request is broadly unauthorized.
+      var status = (err.code.match(/^(NOT_AUTHORIZED|UNLOCK_CODE_INVALID)$/)) ? 401 : 400;
       if (!opts.disableLogs)
         log.info('Client Err: ' + status + ' ' + req.url + ' ' + JSON.stringify(err));
 

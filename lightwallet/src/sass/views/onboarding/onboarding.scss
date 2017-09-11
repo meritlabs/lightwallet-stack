@@ -55,8 +55,21 @@
     padding: 1.5rem;
     input {
       line-height: 2rem;
+      text-align: center;
     }
-  }
+   
+    .failed {
+      background: darkred;
+      color: white; 
+      border: 3px indianred dotted;
+    }
+
+    .succeeded {
+      background: darkgreen;
+      color: white; 
+      border: 3px green dotted;
+    }
+  }  
 
   svg#alert-icon g {
     stroke: $v-onboarding-backup-alert-icon-color;

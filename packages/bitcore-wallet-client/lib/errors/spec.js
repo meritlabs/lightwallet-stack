@@ -64,6 +64,9 @@ var errorSpec = [{
   name: 'TX_NOT_FOUND',
   message: 'Transaction proposal not found.'
 }, {
+  name: 'UNLOCK_CODE_INVALID',
+  message: 'Invalid unlock code.'
+}, {
   name: 'MAIN_ADDRESS_GAP_REACHED',
   message: 'Maximum number of consecutive addresses without activity reached.'
 }];
