@@ -56,14 +56,12 @@ angular.module('copayApp.controllers').controller('tourController',
     $scope.triggerUnlockFailure = function() {
       $scope.unlockFailed = true;
       $scope.unlockSuceeded = false;
-      //$scope.unlockCodeClass = "failed";
       focus('unlockCode');
     }
 
     $scope.triggerUnlockSuccess = function() {
       $scope.unlockFailed = false;
       $scope.unlockSucceeded = true;
-      //$scope.unlockCodeClass = "succeeded";
     }
 
     var retryCount = 0;
@@ -73,17 +71,9 @@ angular.module('copayApp.controllers').controller('tourController',
       $timeout(function() {
         profileService.createDefaultWallet(unlockCode, function(err, walletClient) {
           if (err) {
-            $log.warn(err);
-            $log.warn("ERR NAME");
-            $log.warn(err.name);
-            $log.warn("ERR MESSAGE");
-            $log.warn(err.message);
-
-          
 
             return $timeout(function() {
               if (err.match("That Unlock Code is not valid")) {
-                console.log("DKDKDK!");
                 ongoingProcess.set('creatingWallet', false);
                 popupService.showAlert(
                   gettextCatalog.getString('Unlock code is invalid.'), 
@@ -109,7 +99,7 @@ angular.module('copayApp.controllers').controller('tourController',
             }
             }, 2000);
           };
-          return $scope.unlockSuceeded();
+          return $scope.triggerUnlockSuccess();
           var wallet = walletClient;
           var walletId = wallet.credentials.walletId;
 
