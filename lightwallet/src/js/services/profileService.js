@@ -401,6 +401,7 @@ angular.module('copayApp.services')
             walletPrivKey: opts.walletPrivKey,
             beacon: opts.beacon,
           }, function(err, secret) {
+            // TODO insert status codes to make reading this easier throughout the app.
             if (err) return bwcError.cb(err, gettextCatalog.getString('Error creating wallet'), cb);
             return cb(null, walletClient, secret);
           });
@@ -693,7 +694,7 @@ angular.module('copayApp.services')
       opts.n = 1;
       opts.beacon = unlockCode;
       opts.bwsurl = configService.getDefaults().bws.url;
-      opts.networkName = 'livenet';
+      opts.networkName = 'testnet';
       root.createWallet(opts, cb);
     };
 
