@@ -687,10 +687,11 @@ angular.module('copayApp.services')
       });
     };
 
-    root.createDefaultWallet = function(cb) {
+    root.createDefaultWallet = function(unlockCode = "", cb) {
       var opts = {};
       opts.m = 1;
       opts.n = 1;
+      opts.beacon = unlockCode;
       opts.bwsurl = configService.getDefaults().bws.url;
       opts.networkName = 'livenet';
       root.createWallet(opts, cb);
