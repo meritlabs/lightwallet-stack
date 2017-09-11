@@ -1,6 +1,6 @@
 'use strict';
 angular.module('copayApp.controllers').controller('tourController',
-  function($scope, $state, $log, $timeout, $filter, ongoingProcess, profileService, rateService, popupService, gettextCatalog) {
+  function($scope, $state, $log, $timeout, $filter, ongoingProcess, profileService, rateService, popupService, gettextCatalog, focus) {
 
     $scope.data = {
       index: 0
@@ -8,6 +8,8 @@ angular.module('copayApp.controllers').controller('tourController',
 
     $scope.$on("$ionicView.beforeEnter", function(event, data) {
       $scope.tourFormData = {};
+      $scope.unlockFailed = false;
+      $scope.unlockSucceeded = false;
     });
 
     $scope.options = {
@@ -40,6 +42,30 @@ angular.module('copayApp.controllers').controller('tourController',
       });
     });
 
+    // TODO: Implement the more modern angular way of doing this
+    $scope.unlockCodeClass = function () {
+      if ($scope.unlockSuceeded) {
+        return "succeeded";
+      } 
+      if ($scope.unlockFailed) {
+        return "failed";
+      }
+      return "";
+    }
+
+    $scope.triggerUnlockFailure = function() {
+      $scope.unlockFailed = true;
+      $scope.unlockSuceeded = false;
+      //$scope.unlockCodeClass = "failed";
+      focus('unlockCode');
+    }
+
+    $scope.triggerUnlockSuccess = function() {
+      $scope.unlockFailed = false;
+      $scope.unlockSucceeded = true;
+      //$scope.unlockCodeClass = "succeeded";
+    }
+
     var retryCount = 0;
     $scope.createDefaultWallet = function() {
       ongoingProcess.set('creatingWallet', true);
@@ -48,8 +74,26 @@ angular.module('copayApp.controllers').controller('tourController',
         profileService.createDefaultWallet(unlockCode, function(err, walletClient) {
           if (err) {
             $log.warn(err);
+            $log.warn("ERR NAME");
+            $log.warn(err.name);
+            $log.warn("ERR MESSAGE");
+            $log.warn(err.message);
+
+          
 
             return $timeout(function() {
+              if (err.match("That Unlock Code is not valid")) {
+                console.log("DKDKDK!");
+                ongoingProcess.set('creatingWallet', false);
+                popupService.showAlert(
+                  gettextCatalog.getString('Unlock code is invalid.'), 
+                  "Please re-check it and submit it again.",
+                  function() {
+                    return $scope.triggerUnlockFailure();
+                  }, 
+                  gettextCatalog.getString('Got it')
+                );
+            } else { 
               $log.warn('Retrying to create default wallet.....:' + ++retryCount);
               if (retryCount > 3) {
                 ongoingProcess.set('creatingWallet', false);
@@ -57,14 +101,15 @@ angular.module('copayApp.controllers').controller('tourController',
                   gettextCatalog.getString('Cannot Create Wallet'), err,
                   function() {
                     retryCount = 0;
-                    return $scope.createDefaultWallet();
+                    return $scope.triggerUnlockSuccess();
                   }, gettextCatalog.getString('Retry'));
               } else {
                 return $scope.createDefaultWallet();
               }
+            }
             }, 2000);
           };
-          ongoingProcess.set('creatingWallet', false);
+          return $scope.unlockSuceeded();
           var wallet = walletClient;
           var walletId = wallet.credentials.walletId;
 
