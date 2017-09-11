@@ -356,8 +356,8 @@ WalletService.prototype.createWallet = function(opts, cb) {
       var bc = self._getBlockchainExplorer(opts.network);
       
       bc.validateReferralCode(opts.beacon, function(errMsg, validation) {
-        if (errMsg) return acb(new ClientError(errMsg));
-        if (false == validation.result) return acb(new ClientError('Invalid unlock code!'));
+        if (errMsg) return acb(new ClientError('Unable to check merit network for invite code.'));
+        if (false == validation.result) return acb(Errors.UNLOCK_CODE_INVALID);
 
         return acb(null);
       });
