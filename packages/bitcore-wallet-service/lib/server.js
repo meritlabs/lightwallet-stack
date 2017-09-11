@@ -327,6 +327,10 @@ WalletService.prototype.createWallet = function(opts, cb) {
 
   if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey'], cb)) return;
 
+  // We should short-circuit the request if there is no unlock code.  
+  // This belt-and-suspenders check will save time and latency.
+  if (_.isEmpty(opts.beacon)) return cb(Errors.UNLOCK_CODE_INVALID);
+
   if (_.isEmpty(opts.name)) return cb(new ClientError('Invalid wallet name'));
   if (!Wallet.verifyCopayerLimits(opts.m, opts.n))
     return cb(new ClientError('Invalid combination of required copayers / total copayers'));
