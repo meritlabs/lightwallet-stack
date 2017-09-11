@@ -353,7 +353,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
       
       bc.validateReferralCode(opts.beacon, function(errMsg, validation) {
         if (errMsg) return acb(new ClientError(errMsg));
-        if (validation.result == false) return acb(new ClientError('Invalid unlock code'));
+        if (false == validation.result) return acb(new ClientError('Invalid unlock code!'));
 
         return acb(null);
       });
