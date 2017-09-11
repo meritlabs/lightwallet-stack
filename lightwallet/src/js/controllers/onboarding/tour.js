@@ -6,6 +6,10 @@ angular.module('copayApp.controllers').controller('tourController',
       index: 0
     };
 
+    $scope.$on("$ionicView.beforeEnter", function(event, data) {
+      $scope.tourFormData = {};
+    });
+
     $scope.options = {
       loop: false,
       effect: 'flip',
@@ -39,8 +43,9 @@ angular.module('copayApp.controllers').controller('tourController',
     var retryCount = 0;
     $scope.createDefaultWallet = function() {
       ongoingProcess.set('creatingWallet', true);
+      var unlockCode = $scope.tourFormData.beacon;
       $timeout(function() {
-        profileService.createDefaultWallet(function(err, walletClient) {
+        profileService.createDefaultWallet(unlockCode, function(err, walletClient) {
           if (err) {
             $log.warn(err);
 
@@ -82,7 +87,7 @@ angular.module('copayApp.controllers').controller('tourController',
     }
 
     $scope.slideNext = function() {
-      if ($scope.data.index != 2) $scope.slider.slideNext();
+      if ($scope.data.index != 3) $scope.slider.slideNext();
       else $state.go('onboarding.welcome');
     }
   });
