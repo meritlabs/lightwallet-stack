@@ -35,6 +35,14 @@ brew install make
 alias make='/usr/local/Cellar/make/4.2.1_1/bin/gmake'
 ```
 
+### Install Lerna
+
+You need Lerna to manage cross dependencies while still allowing us to publish packages.
+```bash
+npm install -g lerna
+```
+
+
 ### Install MongoDB
 
 Bitcore Wallet Service uses MongoDB 
@@ -59,7 +67,7 @@ make stop-mongo
 Run these in the order listed. 
 
 ```sh
-make prepare-lightwallet-stack
+lerna bootstrap
 make symlink-bitcore-node
 make start-lightwallet-stack
 ```
