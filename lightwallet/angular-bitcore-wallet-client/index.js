@@ -33,12 +33,14 @@ bwcModule.provider("bwcService", function() {
       opts = opts || {};
 
       //note opts use `bwsurl` all lowercase;
+      //setting a backup-backup bwsUrl because this module won't have access to the configService
       var bwc = new Client({
-        baseUrl: opts.bwsurl || 'https://bws.bitpay.com/bws/api',
+        baseUrl: opts.bwsurl || 'https://mws.merit.me/mws/api',
         verbose: opts.verbose,
         timeout: 100000,
         transports: ['polling'],
       });
+
       if (walletData)
         bwc.import(walletData, opts);
       return bwc;

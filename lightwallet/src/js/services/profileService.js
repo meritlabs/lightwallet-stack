@@ -691,6 +691,7 @@ angular.module('copayApp.services')
       var opts = {};
       opts.m = 1;
       opts.n = 1;
+      opts.bwsurl = configService.getDefaults().bws.url;
       opts.networkName = 'livenet';
       root.createWallet(opts, cb);
     };
