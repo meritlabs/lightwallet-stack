@@ -693,7 +693,7 @@ angular.module('copayApp.services')
       opts.n = 1;
       opts.beacon = unlockCode;
       opts.bwsurl = configService.getDefaults().bws.url;
-      opts.networkName = 'livenet';
+      opts.networkName = 'testnet';
       root.createWallet(opts, cb);
     };
 
