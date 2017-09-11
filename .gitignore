@@ -17,3 +17,8 @@ yarn-debug.log*
 
 # Idea
 
+# Lerna
+lerna-debug.log
+
+# VS Code
+.vscode

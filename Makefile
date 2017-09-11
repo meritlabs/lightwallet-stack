@@ -1,13 +1,25 @@
-### lightwallet-app ###
+### pre-requisites ###
+.PHONY: prepare-prereqs
+prepare-prereqs:
+	npm install -g npm
+	npm install -g lerna
+	npm install -g grunt
 
+
+### lightwallet-app ###
 .PHONY: prepare-lightwallet-app
 prepare-lightwallet-app:
-	cd ./lightwallet && yarn
-	cd ./lightwallet && yarn apply
+	cd ./lightwallet && npm install 
+	cd ./lightwallet && npm run apply
 
 .PHONY: start-lightwallet-app
-start-lightwallet-app: prepare-lightwallet-app
-	cd ./lightwallet && yarn start
+start-lightwallet-app: 
+	cd ./lightwallet && npm run apply && npm start
+
+.PHONY: clean-lightwallet-app
+clean-lightwallet-app: 
+	rm -rf ./lightwallet/node_modules
+
 
 ### lightwallet-stack ###
 
@@ -23,77 +35,77 @@ stop-mongo:
 # See https://github.com/meritlabs/lightwallet-stack/blob/master/bitcore-node/docs/development.md
 .PHONY: symlink-bitcore-node
 symlink-bitcore-node:
-	cd ./bitcore-node/bin && ln -sf ../../../merit-bitcoin/src/bitcoind
+	cd ./packages/bitcore-node/bin && ln -sf ../../../merit-bitcoin/src/bitcoind
 
 # Within the devnode directory with the configuration file, start the node:
 .PHONY: start-bitcore-node
 start-bitcore-node:
-	./bitcore-node/bin/bitcore-node start
+	./packages/bitcore-node/bin/bitcore-node start
 
 .PHONY: start-bitcore-wallet-service
 start-bitcore-wallet-service:
-	cd ./bitcore-wallet-service/ && node locker/locker.js & \
-	cd ./bitcore-wallet-service/ && node messagebroker/messagebroker.js & \
-	cd ./bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
-	cd ./bitcore-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
-	cd ./bitcore-wallet-service/ && node bws.js &
+	cd ./packages/bitcore-wallet-service/ && node locker/locker.js & \
+	cd ./packages/bitcore-wallet-service/ && node messagebroker/messagebroker.js & \
+	cd ./packages/bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
+	cd ./packages/bitcore-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
+	cd ./packages/bitcore-wallet-service/ && node bws.js &
 
 .PHONY: stop-bitcore-wallet-service
 stop-bitcore-wallet-service:
-	cd ./bitcore-wallet-service/ && sh stop.sh
+	cd ./packages/bitcore-wallet-service/ && sh stop.sh
 
-.PHONY: clean-yarn
-clean-yarn: 
-	yarn cache clean
+.PHONY: clean-npm
+clean-npm: 
+	npm cache verify
 
 ## Preperation Order is based on dependencies ##
 .PHONY: prepare-bitcore-lib
 prepare-bitcore-lib:
-	cd ./bitcore-lib/ && yarn
+	cd ./packages/bitcore-lib/ && npm install
 
 .PHONY: prepare-bitcoin-rpc
 prepare-bitcoin-rpc:
-	cd ./bitcoin-rpc/ && yarn
+	cd ./packages/bitcoin-rpc/ && npm install
 
 .PHONY: prepare-bitcore-mnemonic
 prepare-bitcore-mnemonic:
-	cd ./bitcore-mnemonic/ && yarn
+	cd ./packages/bitcore-mnemonic/ && npm install
 
 .PHONY: prepare-insight-api
 prepare-insight-api:
-	cd ./insight-api/ && yarn
+	cd ./packages/insight-api/ && npm install
 
 .PHONY: prepare-insight-ui
 prepare-insight-ui:
-	cd ./insight-ui/ && yarn
-	cd ./insight-ui/ && yarn run build
+	cd ./packages/insight-ui/ && npm install
+	cd ./packages/insight-ui/ && npm run build
 
 .PHONY: prepare-bitcore-wallet-service
 prepare-bitcore-wallet-service:
-	cd ./bitcore-wallet-service/ && yarn
+	cd ./packages/bitcore-wallet-service/ && npm install
 
 .PHONY: prepare-bitcore-wallet-client
 prepare-bitcore-wallet-client:
-	cd ./bitcore-wallet-client/ && yarn
+	cd ./packages/bitcore-wallet-client/ && npm install
 
 .PHONY: prepare-bitcore-p2p
 prepare-bitcore-p2p:
-	cd ./bitcore-p2p/ && yarn
+	cd ./packages/bitcore-p2p/ && npm install
 
 .PHONY: prepare-bitcore-node
 prepare-bitcore-node:
-	cd ./bitcore-node/ && yarn
+	cd ./packages/bitcore-node/ && npm install
 
 .PHONY: prepare-bitcore-message
 prepare-bitcore-message:
-	cd ./bitcore-message/ && yarn
+	cd ./packages/bitcore-message/ && npm install
 
 .PHONY: prepare-bitcore-payment-protocol
 prepare-bitcore-payment-protocol:
-	cd ./bitcore-payment-protocol/ && yarn
+	cd ./packages/bitcore-payment-protocol/ && npm install
 
 .PHONY: prepare-lightwallet-stack
-prepare-lightwallet-stack: clean-yarn \
+prepare-lightwallet-stack: clean-npm \
 	prepare-bitcore-lib \
 	prepare-bitcoin-rpc \
 	prepare-bitcore-mnemonic \
@@ -107,6 +119,65 @@ prepare-lightwallet-stack: clean-yarn \
 	prepare-bitcore-payment-protocol
 
 .PHONY: start-lightwallet-stack
-start-lightwallet-stack: start-bitcore-wallet-service \
-	start-bitcore-node
+start-lightwallet-stack: symlink-bitcore-node start-bitcore-wallet-service start-bitcore-node
 	
+
+# Clean 
+## Preperation Order is based on dependencies ##
+.PHONY: clean-bitcore-lib
+clean-bitcore-lib:
+	rm -rf ./packages/bitcore-lib/node_modules
+
+.PHONY: clean-bitcoin-rpc
+clean-bitcoin-rpc:
+	rm -rf ./packages/bitcoin-rpc/node_modules
+
+.PHONY: clean-bitcore-mnemonic
+clean-bitcore-mnemonic:
+	rm -rf ./packages/bitcore-mnemonic/node_modules
+
+.PHONY: clean-insight-api
+clean-insight-api:
+	rm -rf ./packages/insight-api/node_modules
+
+.PHONY: clean-insight-ui
+clean-insight-ui:
+	rm -rf ./packages/insight-ui/node_modules
+
+.PHONY: clean-bitcore-wallet-service
+clean-bitcore-wallet-service:
+	rm -rf ./packages/bitcore-wallet-service/node_modules
+
+.PHONY: clean-bitcore-wallet-client
+clean-bitcore-wallet-client:
+	rm -rf ./packages/bitcore-wallet-client/node_modules
+
+.PHONY: clean-bitcore-p2p
+clean-bitcore-p2p:
+	rm -rf ./packages/bitcore-p2p/node_modules
+
+.PHONY: clean-bitcore-node
+clean-bitcore-node:
+	rm -rf ./packages/bitcore-node/node_modules
+
+.PHONY: clean-bitcore-message
+clean-bitcore-message:
+	rm -rf ./packages/bitcore-message/node_modules
+
+.PHONY: clean-bitcore-payment-protocol
+clean-bitcore-payment-protocol:
+	rm -rf ./packages/bitcore-payment-protocol/node_modules
+
+.PHONY: clean-lightwallet-stack
+clean-lightwallet-stack: clean-npm \
+	clean-bitcore-lib \
+	clean-bitcoin-rpc \
+	clean-bitcore-mnemonic \
+	clean-insight-api \
+	clean-insight-ui \
+	clean-bitcore-wallet-service \
+	clean-bitcore-wallet-client \
+	clean-bitcore-p2p \
+	clean-bitcore-node \
+	clean-bitcore-message \
+	clean-bitcore-payment-protocol
