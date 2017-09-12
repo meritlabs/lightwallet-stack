@@ -211,9 +211,11 @@ Insight.prototype.validateReferralCode = function(referralCode, cb) {
   var self = this;
 
   var args = {
-    method: 'GET',
-    path: `${this.apiPrefix}/referral/${referralCode}/validate`,
-    json: true, // Return as json object if true else will return stringify
+    method: 'POST',
+    path: `${this.apiPrefix}/referral/validate`,
+    json: {
+      unlockCode: referralCode
+    }
   };
 
   this._doRequest(args, function(err, res, body) {
