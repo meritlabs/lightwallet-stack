@@ -21,8 +21,9 @@ ReferralController.prototype.generateReferralCode = function(req, res) {
 
 ReferralController.prototype.validateReferralCode = function(req, res) {
   var self = this;
-  var referralCode = req.params.code;
 
+  var referralCode = req.body.unlockCode;
+  
   self.node.services.bitcoind.validateReferralCode(referralCode, function(err, result) {
     if (err) {
       return self.common.handleErrors(err, res);
