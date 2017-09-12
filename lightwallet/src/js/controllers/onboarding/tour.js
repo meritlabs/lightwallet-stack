@@ -56,12 +56,14 @@ angular.module('copayApp.controllers').controller('tourController',
     $scope.triggerUnlockFailure = function() {
       $scope.unlockFailed = true;
       $scope.unlockSuceeded = false;
+      ongoingProcess.set('creatingWallet', false);
       focus('unlockCode');
     }
 
     $scope.triggerUnlockSuccess = function() {
       $scope.unlockFailed = false;
       $scope.unlockSucceeded = true;
+      ongoingProcess.set('creatingWallet', false);
     }
 
     var retryCount = 0;
@@ -99,7 +101,7 @@ angular.module('copayApp.controllers').controller('tourController',
             }
             }, 2000);
           };
-          return $scope.triggerUnlockSuccess();
+          $scope.triggerUnlockSuccess();
           var wallet = walletClient;
           var walletId = wallet.credentials.walletId;
 
