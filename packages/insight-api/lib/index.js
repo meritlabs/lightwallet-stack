@@ -241,7 +241,7 @@ InsightAPI.prototype.setupRoutes = function(app) {
 
   app.get('/referral', referral.generateReferralCode.bind(referral));
 
-  app.get('/referral/:code/validate', referral.validateReferralCode.bind(referral));
+  app.post('/referral/validate', referral.validateReferralCode.bind(referral));
   app.param('code', referral.validateReferralCode.bind(referral));
 
   // Wallet
