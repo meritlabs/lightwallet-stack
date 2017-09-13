@@ -53,7 +53,7 @@ Block._from = function _from(arg) {
  * @private
  */
 Block._fromObject = function _fromObject(data) {
-  var transactions = [];
+  const transactions = [];
   data.transactions.forEach(function(tx) {
     if (tx instanceof Transaction) {
       transactions.push(tx);
@@ -61,9 +61,14 @@ Block._fromObject = function _fromObject(data) {
       transactions.push(Transaction().fromObject(tx));
     }
   });
+  const referrals = [];
+  data.referrals.forEach(function(ref) {
+    referrals.push(ref);
+  });
   var info = {
     header: BlockHeader.fromObject(data.header),
-    transactions: transactions
+    transactions: transactions,
+    referrals: referrals,
   };
   return info;
 };
@@ -91,6 +96,9 @@ Block._fromBufferReader = function _fromBufferReader(br) {
   for (var i = 0; i < transactions; i++) {
     info.transactions.push(Transaction().fromBufferReader(br));
   }
+  info.referrals = [];
+  // ToDo: read referrals
+  console.log('from buffer');
   return info;
 };
 
@@ -140,12 +148,17 @@ Block.fromRawBlock = function fromRawBlock(data) {
  */
 Block.prototype.toObject = Block.prototype.toJSON = function toObject() {
   var transactions = [];
+  var referrals = [];
   this.transactions.forEach(function(tx) {
     transactions.push(tx.toObject());
   });
+  this.referrals.forEach(function(ref) {
+    referrals.push(ref);
+  });
   return {
     header: this.header.toObject(),
-    transactions: transactions
+    transactions: transactions,
+    referrals: referrals,
   };
 };
 
