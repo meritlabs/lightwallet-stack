@@ -1,10 +1,10 @@
 basedir=`echo $PWD/${1##*/}`
-cd ../merit-bitcoin/src
-./bitcoind -conf=${basedir}data-and-logs/data-1/bitcoin.conf -datadir=${basedir}data-and-logs/data-1/ 
-# & ./bitcoind -conf=${basedir}data-and-logs/data-3/bitcoin.conf -datadir=${basedir}data-and-logs/data-3/ && fg
-# & ./bitcoind -conf=${basedir}data-and-logs/data-2/bitcoin.conf -datadir=${basedir}data-and-logs/data-2/ 
+cd ../merit/src
+./meritd -conf=${basedir}data-and-logs/data-1/merit.conf -datadir=${basedir}data-and-logs/data-1/ 
+# & ./meritd -conf=${basedir}data-and-logs/data-3/merit.conf -datadir=${basedir}data-and-logs/data-3/ && fg
+# & ./meritd -conf=${basedir}data-and-logs/data-2/merit.conf -datadir=${basedir}data-and-logs/data-2/ 
 
-alias bc1=./src/bitcoin-cli -conf=-conf=${basedir}data-and-logs/data-1/bitcoin.conf 
-alias bc2=./src/bitcoin-cli -conf=-conf=${basedir}data-and-logs/data-2/bitcoin.conf 
-alias bc3=./src/bitcoin-cli -conf=-conf=${basedir}data-and-logs/data-3/bitcoin.conf 
+alias bc1=./src/merit-cli -conf=-conf=${basedir}data-and-logs/data-1/merit.conf 
+alias bc2=./src/merit-cli -conf=-conf=${basedir}data-and-logs/data-2/merit.conf 
+alias bc3=./src/merit-cli -conf=-conf=${basedir}data-and-logs/data-3/merit.conf 
 
