@@ -29,6 +29,9 @@ angular.module('copayApp.controllers').controller('collectEmailController', func
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
     walletId = data.stateParams.walletId;
     wallet = profileService.getWallet(walletId);
+    $scope.shareCode = wallet.shareCode;
+    
+    
     $scope.data.accept = true;
   });
 

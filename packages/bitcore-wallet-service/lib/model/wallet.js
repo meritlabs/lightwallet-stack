@@ -37,6 +37,8 @@ Wallet.create = function(opts) {
   x.derivationStrategy = opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP45;
   x.addressType = opts.addressType || Constants.SCRIPT_TYPES.P2SH;
   x.beacon = opts.beacon;
+  x.unlocked = opts.unlocked;
+  x.shareCode = opts.shareCode;
 
   x.addressManager = AddressManager.create({
     derivationStrategy: x.derivationStrategy,
@@ -71,6 +73,8 @@ Wallet.fromObj = function(obj) {
   x.addressManager = AddressManager.fromObj(obj.addressManager);
   x.scanStatus = obj.scanStatus;
   x.beacon = obj.beacon;
+  x.unlocked = obj.unlocked;
+  x.shareCode = obj.shareCode;
 
   return x;
 };

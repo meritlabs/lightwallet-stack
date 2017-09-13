@@ -716,7 +716,7 @@ API.prototype.openWallet = function(cb) {
       var me = _.find(wallet.copayers, {
         id: self.credentials.copayerId
       });
-      self.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name);
+      self.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.shareCode);
     }
 
     if (wallet.status != 'complete')
@@ -1297,6 +1297,8 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
     singleAddress: !!opts.singleAddress,
     id: opts.id,
     beacon: opts.beacon,
+    unlocked: opts.unlocked,
+    shareCode: opts.shareCode
   };
 
   // Create wallet
@@ -1304,7 +1306,9 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
     if (err) return cb(err);
 
     var walletId = res.walletId;
-    c.addWalletInfo(walletId, walletName, m, n, copayerName);
+    var walletShareCode = res.shareCode;
+    c.addWalletInfo(walletId, walletName, m, n, copayerName, walletShareCode);
+    
     var secret = API._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
     self._doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {},
@@ -1316,7 +1320,7 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
 };
 
 /**
- * Join an existent wallet
+ * Join an existing wallet
  *
  * @param {String} secret
  * @param {String} copayerName
@@ -1356,7 +1360,7 @@ API.prototype.joinWallet = function(secret, copayerName, opts, cb) {
   }, function(err, wallet) {
     if (err) return cb(err);
     if (!opts.dryRun) {
-      self.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName);
+      self.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.shareCode);
     }
     return cb(null, wallet);
   });
