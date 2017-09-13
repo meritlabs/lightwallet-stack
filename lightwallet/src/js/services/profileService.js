@@ -95,7 +95,9 @@ angular.module('copayApp.services')
       wallet.network = wallet.credentials.network;
       wallet.copayerId = wallet.credentials.copayerId;
       wallet.m = wallet.credentials.m;
-      wallet.n = wallet.credentials.n;
+      wallet.n = wallet.credentials.n;    
+      wallet.unlocked = wallet.credentials.unlocked;
+      wallet.shareCode = wallet.credentials.shareCode;
 
       root.updateWalletSettings(wallet);
       root.wallet[walletId] = wallet;

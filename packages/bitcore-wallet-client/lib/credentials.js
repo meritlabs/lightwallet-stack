@@ -39,6 +39,8 @@ var FIELDS = [
   'addressType',
   'hwInfo',
   'entropySourcePath',
+  'unlocked', 
+  'shareCode'
 ];
 
 function Credentials() {
@@ -296,11 +298,16 @@ Credentials.prototype.addWalletPrivateKey = function(walletPrivKey) {
   this.sharedEncryptingKey = Utils.privateKeyToAESKey(walletPrivKey);
 };
 
-Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copayerName) {
+Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copayerName, shareCode) {
   this.walletId = walletId;
   this.walletName = walletName;
   this.m = m;
   this.n = n;
+   
+  if (shareCode) {
+    this.shareCode = shareCode;
+    this.unlocked = true;
+  }
 
   if (copayerName)
     this.copayerName = copayerName;
@@ -431,6 +438,7 @@ Credentials.prototype.clearMnemonic = function() {
 };
 
 
+// TODO: Remove this
 Credentials.fromOldCopayWallet = function(w) {
   function walletPrivKeyFromOldCopayWallet(w) {
     // IN BWS, the master Pub Keys are not sent to the server, 
