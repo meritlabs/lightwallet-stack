@@ -47,6 +47,8 @@ function Bitcoin(options) {
   this.subscriptions.rawtransaction = [];
   this.subscriptions.hashblock = [];
   this.subscriptions.address = {};
+  this.subscriptions.rawreferraltx = [];
+  this.subscriptions.hashreferraltx = [];
 
   // set initial settings
   this._initDefaults(options);
@@ -86,8 +88,10 @@ Bitcoin.DEFAULT_CONFIG_SETTINGS = {
   spentindex: 1,
   zmqpubrawtx: 'tcp://127.0.0.1:28332',
   zmqpubhashblock: 'tcp://127.0.0.1:28332',
+  zmqpubrawreferraltx: 'tcp://127.0.0.1:28332',
+  zmqpubhashreferraltx: 'tcp://127.0.0.1:28332',
   rpcallowip: '127.0.0.1',
-  rpcuser: 'bitcoin',
+  rpcuser: 'merit',
   rpcpassword: 'local321',
   uacomment: 'bitcore'
 };
@@ -133,6 +137,8 @@ Bitcoin.prototype._initCaches = function() {
   this.blockHeaderCache = LRU(288);
   this.zmqKnownTransactions = LRU(5000);
   this.zmqKnownBlocks = LRU(50);
+  this.zmqKnownRawReferrals = LRU(5000);
+  this.zmqKnownHashReferrals = LRU(5000);
   this.lastTip = 0;
   this.lastTipTimeout = false;
 };
@@ -210,7 +216,19 @@ Bitcoin.prototype.getPublishEvents = function() {
       scope: this,
       subscribe: this.subscribeAddress.bind(this),
       unsubscribe: this.unsubscribeAddress.bind(this)
-    }
+    },
+    {
+      name: 'bitcoind/rawreferral',
+      scope: this,
+      subscribe: this.subscribe.bind(this, 'rawreferraltx'),
+      unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
+    },
+    {
+      name: 'bitcoind/hashreferral',
+      scope: this,
+      subscribe: this.subscribe.bind(this, 'hashreferraltx'),
+      unsubscribe: this.unsubscribe.bind(this, 'hashreferraltx')
+    },
   ];
 };
 
@@ -344,9 +362,9 @@ Bitcoin.prototype._loadSpawnConfiguration = function(node) {
   this._expandRelativeDatadir();
 
   var spawnOptions = this.options.spawn;
-  var configPath = path.resolve(spawnOptions.datadir, './bitcoin.conf');
+  var configPath = path.resolve(spawnOptions.datadir, './merit.conf');
 
-  log.info('Using bitcoin config file:', configPath);
+  log.info('Using Merit config file:', configPath);
 
   this.spawn = {};
   this.spawn.datadir = this.options.spawn.datadir;
@@ -418,8 +436,22 @@ Bitcoin.prototype._checkConfigIndexes = function(spawnConfig, node) {
   );
 
   $.checkState(
-    (spawnConfig.zmqpubhashblock === spawnConfig.zmqpubrawtx),
-    '"zmqpubrawtx" and "zmqpubhashblock" are expected to the same host and port in bitcoin.conf'
+    spawnConfig.zmqpubhashreferraltx,
+    '"zmqpubhashreferraltx" option is required to get event updates from bitcoind. ' +
+      'Please add "zmqpubhashreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
+  );
+
+  $.checkState(
+    spawnConfig.zmqpubrawreferraltx,
+    '"zmqpubrawreferraltx" option is required to get event updates from bitcoind. ' +
+      'Please add "zmqpubrawreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
+  );
+
+  $.checkState(
+    (spawnConfig.zmqpubhashblock === spawnConfig.zmqpubrawtx &&
+     spawnConfig.zmqpubrawtx === spawnConfig.zmqpubrawreferraltx &&
+     spawnConfig.zmqpubrawreferraltx === spawnConfig.zmqpubhashreferraltx),
+    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferraltx" and "zmqpubhashreferraltx" are expected to the same host and port in bitcoin.conf'
   );
 
   if (spawnConfig.reindex && spawnConfig.reindex === 1) {
@@ -494,10 +526,10 @@ Bitcoin.prototype._initChain = function(callback) {
 
 Bitcoin.prototype._getDefaultConf = function() {
   var networkOptions = {
-    rpcport: 8332
+    rpcport: 8445
   };
   if (this.node.network === bitcore.Networks.testnet) {
-    networkOptions.rpcport = 18332;
+    networkOptions.rpcport = 18445;
   }
   return networkOptions;
 };
@@ -657,6 +689,40 @@ Bitcoin.prototype._zmqTransactionHandler = function(node, message) {
   }
 };
 
+Bitcoin.prototype._zmqRawReferralsHandler = function(node, message) {
+  const self = this;
+  const hash = bitcore.crypto.Hash.sha256sha256(message);
+  const id = hash.toString('binary');
+  if (!self.zmqKnownRawReferrals.get(id)) {
+    self.zmqKnownRawReferrals.set(id, true);
+    self.emit('rawreferraltx', message);
+
+    // Notify rawreferraltx subscribers
+    log.info('rawreferraltx subscribers: ', this.subscriptions.rawreferraltx.length);
+    for (let i = 0; i < this.subscriptions.rawreferraltx.length; i++) {
+      log.warn('rawreferraltx sending message:', message.toString('hex'));
+      this.subscriptions.rawreferraltx[i].emit('bitcoind/rawreferraltx', message.toString('hex'));
+    }
+  }
+};
+
+Bitcoin.prototype._zmqHashReferralsHandler = function(node, message) {
+  const self = this;
+  const hash = bitcore.crypto.Hash.sha256sha256(message);
+  const id = hash.toString('binary');
+  if (!self.zmqKnownHashReferrals.get(id)) {
+    self.zmqKnownHashReferrals.set(id, true);
+    self.emit('hashreferraltx', message);
+
+    // Notify hashreferraltx subscribers
+    log.info('hashreferraltx subscribers: ', this.subscriptions.hashreferraltx.length);
+    for (let i = 0; i < this.subscriptions.hashreferraltx.length; i++) {
+      log.warn('hashreferraltx sending message:', message.toString('hex'));
+      this.subscriptions.hashreferraltx[i].emit('bitcoind/hashreferraltx', message.toString('hex'));
+    }
+  }
+};
+
 Bitcoin.prototype._checkSyncedAndSubscribeZmqEvents = function(node) {
   var self = this;
   var interval;
@@ -710,16 +776,32 @@ Bitcoin.prototype._checkSyncedAndSubscribeZmqEvents = function(node) {
 };
 
 Bitcoin.prototype._subscribeZmqEvents = function(node) {
-  var self = this;
+  const self = this;
   node.zmqSubSocket.subscribe('hashblock');
   node.zmqSubSocket.subscribe('rawtx');
+  node.zmqSubSocket.subscribe('rawreferraltx');
+  node.zmqSubSocket.subscribe('hashreferraltx');
+
   node.zmqSubSocket.on('message', function(topic, message) {
-    var topicString = topic.toString('utf8');
-    if (topicString === 'rawtx') {
+    const topicString = topic.toString('utf8');
+    log.info(`message received in topic: ${topicString}`);
+    switch(topicString) {
+    case 'rawtx':
       self._zmqTransactionHandler(node, message);
-    } else if (topicString === 'hashblock') {
+      break;
+    case 'hashblock':
       self._zmqBlockHandler(node, message);
-    }
+      break;
+    case 'rawreferraltx':
+      self._zmqRawReferralsHandler(node, message);
+      break;
+    case 'hashreferraltx':
+      self._zmqHashReferralsHandler(node, message);
+      break;
+    default:
+      log.error('Error in ZMQ message parsing: cannot determine topic.')
+      break;
+    };
   });
 };
 
