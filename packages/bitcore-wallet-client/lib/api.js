@@ -1305,25 +1305,14 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
   self._doPostRequest('/v2/wallets/', args, function(err, res) {
     if (err) return cb(err);
 
-    console.log("My name is Api.Js");
-    console.log(res);
-    console.log(res.unlocked);
-    console.log(res.shareCode);
-    
-    
-    
-
     var walletId = res.walletId;
     var walletShareCode = res.shareCode;
-    console.log("API.JS -- 1111");
     c.addWalletInfo(walletId, walletName, m, n, copayerName, walletShareCode);
-    console.log("API.JS -- 2222");
     
     var secret = API._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
     self._doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {},
       function(err, wallet) {
-        console.log("API.JS -- 3333");        
         if (err) return cb(err);
         return cb(null, n > 1 ? secret : null);
       });

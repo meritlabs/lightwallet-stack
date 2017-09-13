@@ -361,8 +361,10 @@ WalletService.prototype.createWallet = function(opts, cb) {
         
         if (errMsg)  {
           // TODO: Use Error codes instead of string matching.
+          // TODO: Even sooner, we should have more descriptive error states coming back 
+          // from the blockchain explorer.
           if (errMsg == "Error querying the blockchain") {
-            return acb(Errors.UNLOCK_IN_PROGRESS)
+            return acb(Errors.UNLOCK_STILL_PENDING)
           } else {
             return acb(Errors.UNLOCK_CODE_INVALID);
           }
