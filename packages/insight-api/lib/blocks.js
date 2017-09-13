@@ -119,6 +119,7 @@ BlockController.prototype.transformBlock = function(block, info) {
   var transactionIds = blockObj.transactions.map(function(tx) {
     return tx.hash;
   });
+  console.log(blockObj);
   return {
     hash: block.hash,
     size: block.toBuffer().length,
@@ -126,6 +127,7 @@ BlockController.prototype.transformBlock = function(block, info) {
     version: blockObj.header.version,
     merkleroot: blockObj.header.merkleRoot,
     tx: transactionIds,
+    referrals: [],
     time: blockObj.header.time,
     nonce: blockObj.header.nonce,
     bits: blockObj.header.bits.toString(16),
