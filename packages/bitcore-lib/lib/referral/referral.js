@@ -54,6 +54,11 @@ Referral.prototype.toBuffer = function() {
 };
 
 Referral.prototype.toBufferWriter = function(writer) {
+  writer.writeInt32LE(this.version);
+  writer.writeUInt32LE(this.previousReferral);
+  writer.writeUInt32LE(this.cKeyId);
+  writer.writeUInt32LE(this.codeHash);
+  writer.writeUInt32LE(this.nLockTime);
   // ToDo: Implement me
   return writer;
 };
@@ -66,6 +71,11 @@ Referral.prototype.fromBuffer = function(buffer) {
 Referral.prototype.fromBufferReader = function(reader) {
   $.checkArgument(!reader.finished(), 'No referral data received');
 
+  this.version = reader.readInt32LE();
+  this.previousReferral = reader.readUInt32LE();
+  this.cKeyId = reader.readUInt32LE();
+  this.codeHash = reader.readUInt32LE();
+  this.nLockTime = reader.readUInt32LE();
   // ToDo: Implement me
 
   return this;
