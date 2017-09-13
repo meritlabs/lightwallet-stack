@@ -31,9 +31,13 @@ function Referral(serialized) {
       throw new errors.InvalidArgument('Must provide an object or string to deserialize a referral');
     }
   } else {
-    return this._newReferral();
+    this._newReferral();
   }
+  return null;
 }
+
+const CURRENT_VERSION = 1;
+const DEFAULT_NLOCKTIME = 0;
 
 Referral.shallowCopy = function(transaction) {
   const copy = new Referral(transaction.toBuffer());
@@ -89,8 +93,8 @@ Referral.prototype.fromString = function(string) {
 };
 
 Referral.prototype._newReferral = function() {
-  // ToDo: implement me
-  return this;
+  this.version = CURRENT_VERSION;
+  this.nLockTime = DEFAULT_NLOCKTIME;
 };
 
 Referral.prototype.serialize = function(unsafe) {
