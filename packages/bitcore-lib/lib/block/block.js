@@ -1,14 +1,15 @@
 'use strict';
 
-var _ = require('lodash');
-var BlockHeader = require('./blockheader');
-var BN = require('../crypto/bn');
-var BufferUtil = require('../util/buffer');
-var BufferReader = require('../encoding/bufferreader');
-var BufferWriter = require('../encoding/bufferwriter');
-var Hash = require('../crypto/hash');
-var Transaction = require('../transaction');
-var $ = require('../util/preconditions');
+const _ = require('lodash');
+const BlockHeader = require('./blockheader');
+const BN = require('../crypto/bn');
+const BufferUtil = require('../util/buffer');
+const BufferReader = require('../encoding/bufferreader');
+const BufferWriter = require('../encoding/bufferwriter');
+const Hash = require('../crypto/hash');
+const Transaction = require('../transaction');
+const Referral = require('../referral');
+const $ = require('../util/preconditions');
 
 /**
  * Instantiate a Block from a Buffer, JSON object, or Object with
@@ -91,13 +92,16 @@ Block._fromBufferReader = function _fromBufferReader(br) {
   var info = {};
   $.checkState(!br.finished(), 'No block data received');
   info.header = BlockHeader.fromBufferReader(br);
-  var transactions = br.readVarintNum();
+  const transactions = br.readVarintNum();
+  const referrals = br.readVarintNum();
   info.transactions = [];
-  for (var i = 0; i < transactions; i++) {
+  for (let i = 0; i < transactions; i++) {
     info.transactions.push(Transaction().fromBufferReader(br));
   }
   info.referrals = [];
-  // ToDo: read referrals
+  for (let i = 0; i < referrals; i++) {
+    info.referrals.push(Referral().fromBufferReader(br));
+  }
   console.log('from buffer');
   return info;
 };

@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const $ = require('../util/preconditions');
 const buffer = require('buffer');
 
 const errors = require('../errors');
@@ -30,7 +31,7 @@ function Referral(serialized) {
       throw new errors.InvalidArgument('Must provide an object or string to deserialize a referral');
     }
   } else {
-    this._newRefferal();
+    return this._newReferral();
   }
 }
 
@@ -89,4 +90,29 @@ Referral.prototype.fromString = function(string) {
 
 Referral.prototype._newReferral = function() {
   // ToDo: implement me
+  return this;
 };
+
+Referral.prototype.serialize = function(unsafe) {
+  if (true === unsafe || unsafe && unsafe.disableAll) {
+    return this.uncheckedSerialize();
+  } else {
+    return this.checkedSerialize(unsafe);
+  }
+};
+
+Referral.prototype.uncheckedSerialize = Referral.prototype.toString = function() {
+  return this.toBuffer().toString('hex');
+};
+
+Referral.prototype.checkedSerialize = function(opts) {
+  const serializationError = this.getSerializationError(opts);
+  if (serializationError) {
+    serializationError.message += ' - For more information please see: ' +
+      'https://bitcore.io/api/lib/referrals#serialization-checks';
+    throw serializationError;
+  }
+  return this.uncheckedSerialize();
+};
+
+module.exports = Referral;
