@@ -87,6 +87,12 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
   });
   socket.on('tx', _.bind(self._handleIncomingTx, self));
   socket.on('block', _.bind(self._handleNewBlock, self, network));
+  socket.on('rawreferraltx', _.bind(self._handleReferral, self));
+};
+
+BlockchainMonitor.prototype._handleReferral = function(data) {
+  const self = this;
+  if (!data) return;
 };
 
 BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, processIt) {
@@ -279,9 +285,21 @@ BlockchainMonitor.prototype._handleTxConfirmations = function(network, hash) {
   });
 };
 
+BlockchainMonitor.prototype._handleReferralConfiramtions = function(network, hash) {
+  const self = this;
+
+  const explorer = self.explorers[network];
+  if (!explorer) return;
+
+  explorer.getReferralsInBlock(hash, function(err, referrals) {
+    log.warn(referrals);
+  });
+};
+
 BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
   this._notifyNewBlock(network, hash);
   this._handleTxConfirmations(network, hash);
+  this._handleReferralConfiramtions(network, hash);
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {
