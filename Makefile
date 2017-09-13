@@ -56,67 +56,15 @@ stop-bitcore-wallet-service:
 
 .PHONY: clean-npm
 clean-npm: 
-	npm cache verify
-
-## Preperation Order is based on dependencies ##
-.PHONY: prepare-bitcore-lib
-prepare-bitcore-lib:
-	cd ./packages/bitcore-lib/ && npm install
-
-.PHONY: prepare-bitcoin-rpc
-prepare-bitcoin-rpc:
-	cd ./packages/bitcoin-rpc/ && npm install
-
-.PHONY: prepare-bitcore-mnemonic
-prepare-bitcore-mnemonic:
-	cd ./packages/bitcore-mnemonic/ && npm install
-
-.PHONY: prepare-insight-api
-prepare-insight-api:
-	cd ./packages/insight-api/ && npm install
-
-.PHONY: prepare-insight-ui
-prepare-insight-ui:
-	cd ./packages/insight-ui/ && npm install
-	cd ./packages/insight-ui/ && npm run build
-
-.PHONY: prepare-bitcore-wallet-service
-prepare-bitcore-wallet-service:
-	cd ./packages/bitcore-wallet-service/ && npm install
-
-.PHONY: prepare-bitcore-wallet-client
-prepare-bitcore-wallet-client:
-	cd ./packages/bitcore-wallet-client/ && npm install
-
-.PHONY: prepare-bitcore-p2p
-prepare-bitcore-p2p:
-	cd ./packages/bitcore-p2p/ && npm install
-
-.PHONY: prepare-bitcore-node
-prepare-bitcore-node:
-	cd ./packages/bitcore-node/ && npm install
-
-.PHONY: prepare-bitcore-message
-prepare-bitcore-message:
-	cd ./packages/bitcore-message/ && npm install
-
-.PHONY: prepare-bitcore-payment-protocol
-prepare-bitcore-payment-protocol:
-	cd ./packages/bitcore-payment-protocol/ && npm install
+	npm cache clean --force
 
 .PHONY: prepare-lightwallet-stack
 prepare-lightwallet-stack: clean-npm \
-	prepare-bitcore-lib \
-	prepare-bitcoin-rpc \
-	prepare-bitcore-mnemonic \
-	prepare-insight-api \
-	prepare-insight-ui \
-	prepare-bitcore-wallet-service \
-	prepare-bitcore-wallet-client \
-	prepare-bitcore-p2p \
-	prepare-bitcore-node \
-	prepare-bitcore-message \
-	prepare-bitcore-payment-protocol
+	use-lerna
+
+.PHONY: use-lerna
+use-lerna: 
+	lerna bootstrap
 
 .PHONY: start-lightwallet-stack
 start-lightwallet-stack: symlink-bitcore-node start-bitcore-wallet-service start-bitcore-node
