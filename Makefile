@@ -35,7 +35,7 @@ stop-mongo:
 # See https://github.com/meritlabs/lightwallet-stack/blob/master/bitcore-node/docs/development.md
 .PHONY: symlink-bitcore-node
 symlink-bitcore-node:
-	cd ./packages/bitcore-node/bin && ln -sf ../../../merit-bitcoin/src/bitcoind
+	cd ./packages/bitcore-node/bin && ln -sf ../../../merit-bitcoin/src/meritd
 
 # Within the devnode directory with the configuration file, start the node:
 .PHONY: start-bitcore-node
