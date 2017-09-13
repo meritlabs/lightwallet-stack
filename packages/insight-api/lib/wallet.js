@@ -9,9 +9,9 @@ function WalletController(node) {
 
 WalletController.prototype.unlock = function(req, res) {
   var self = this;
-  var code = req.params.code;
+  var unlockCode = req.body.unlockCode;
 
-  self.node.services.bitcoind.unlockWallet(code, function(err, result) {
+  self.node.services.bitcoind.unlockWallet(unlockCode, function(err, result) {
     if(err) {
       return self.common.handleErrors(err, res);
     }

@@ -20,6 +20,17 @@ $relish-success: 1.3s;
   #success-message {
     font-size: 3vh;
   }
+
+  #success-share-code {
+    margin-top: 3rem;
+    font-size: 2.5vh;
+    color: darkblue;
+
+    & strong { 
+      color: white;
+    }
+  }
+
   .collect-overlay {
     position: absolute;
     top:0;

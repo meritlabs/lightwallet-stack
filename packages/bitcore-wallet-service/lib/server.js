@@ -351,18 +351,32 @@ WalletService.prototype.createWallet = function(opts, cb) {
   };
 
   var newWallet;
+  var unlocked = false;
+  var shareCode = "";
   async.series([
     function(acb) {
       var bc = self._getBlockchainExplorer(opts.network);
-      
-      bc.validateReferralCode(opts.beacon, function(errMsg, validation) {
-        if (errMsg) return acb(new ClientError('Unable to check merit network for invite code.'));
-        if (false == validation.result) return acb(Errors.UNLOCK_CODE_INVALID);
+
+      bc.unlockWallet(opts.beacon, function(errMsg, result) {
+        
+        if (errMsg)  {
+          // TODO: Use Error codes instead of string matching.
+          if (errMsg == "Error querying the blockchain") {
+            return acb(Errors.UNLOCK_IN_PROGRESS)
+          } else {
+            return acb(Errors.UNLOCK_CODE_INVALID);
+          }
+        }
+        
+        
+        unlocked = true;
+        shareCode = result.result.referralcode;
 
         return acb(null);
       });
     },
     function(acb) {
+      
       if (!opts.id)
         return acb();
 
@@ -372,6 +386,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
       });
     },
     function(acb) {
+   
       var wallet = Wallet.create({
         id: opts.id,
         name: opts.name,
@@ -383,6 +398,8 @@ WalletService.prototype.createWallet = function(opts, cb) {
         derivationStrategy: derivationStrategy,
         addressType: addressType,
         beacon: opts.beacon,
+        unlocked: unlocked,
+        shareCode: shareCode
       });
       self.storage.storeWallet(wallet, function(err) {
         log.debug('Wallet created', wallet.id, opts.network);
@@ -391,7 +408,9 @@ WalletService.prototype.createWallet = function(opts, cb) {
       });
     }
   ], function(err) {
-    return cb(err, newWallet ? newWallet.id : null);
+    var newWalletId = newWallet ? newWallet.id : null;
+    var newWalletShareCode = newWallet ? newWallet.shareCode : null;
+    return cb(err, newWalletId, newWalletShareCode);
   });
 };
 
