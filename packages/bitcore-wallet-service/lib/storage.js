@@ -1032,6 +1032,24 @@ Storage.prototype.removeTxConfirmationSub = function(copayerId, txid, cb) {
   }, cb);
 };
 
+Storage.prototype.storeReferralTxConfirmationSub = function(referralConfirmationSub, cb) {
+  this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).update({
+    codeHash: referralConfirmationSub.codeHash,
+  }, referralConfirmationSub, {
+    w: 1,
+    upsert: true,
+  }, cb);
+};
+
+Storage.prototype.removeReferralTxConfirmationSub = function(copayerId, codeHash, cb) {
+  this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).remove({
+    codeHash: codeHash,
+  }, {
+    w: 1,
+    upsert: true,
+  }, cb);
+};
+
 
 Storage.prototype._dump = function(cb, fn) {
   fn = fn || console.log;
