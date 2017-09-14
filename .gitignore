@@ -22,3 +22,6 @@ lerna-debug.log
 
 # VS Code
 .vscode
+
+# Merit Daemon
+packages/bitcore-node/bin/meritd
