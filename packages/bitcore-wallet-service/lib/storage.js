@@ -27,6 +27,7 @@ var collections = {
   SESSIONS: 'sessions',
   PUSH_NOTIFICATION_SUBS: 'push_notification_subs',
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
+  REFERRAL_CONFIRMATION_SUBS: 'referral_confirmation_subs',
 };
 
 var Storage = function(opts) {
@@ -87,6 +88,9 @@ Storage.prototype._createIndexes = function() {
     copayerId: 1,
     txid: 1,
   });
+  this.db.collection(collections.REFERRAL_CONFIRMATION_SUBS).createIndex({
+    hashCode: 1,
+  })
   this.db.collection(collections.SESSIONS).createIndex({
     copayerId: 1
   });
@@ -985,6 +989,25 @@ Storage.prototype.fetchActiveTxConfirmationSubs = function(copayerId, cb) {
 
       var subs = _.map([].concat(result), function(r) {
         return Model.TxConfirmationSub.fromObj(r);
+      });
+      return cb(null, subs);
+    });
+};
+
+
+Storage.prototype.fetchActiveReferralConfirmationSubs = function(cb) {
+  const filter = {
+    isActive: true
+  };
+
+  this.db.collection(collections.REFERRAL_CONFIRMATION_SUBS).find(filter)
+    .toArray(function(err, result) {
+      if (err) return cb(err);
+
+      if (!result) return cb();
+
+      const subs = _.map([].concat(result), function(r) {
+        return Model.ReferralConfirmationSub.fromObj(r);
       });
       return cb(null, subs);
     });
