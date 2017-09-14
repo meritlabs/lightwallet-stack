@@ -1253,6 +1253,7 @@ API.prototype._checkKeyDerivation = function() {
  * @param {object} opts (optional: advanced options)
  * @param {string} opts.network[='livenet']
  * @param {string} opts.singleAddress[=false] - The wallet will only ever have one address.
+ * @param {string} opts.beacon - A required unlock code to enable this address on the network.
  * @param {String} opts.walletPrivKey - set a walletPrivKey (instead of random)
  * @param {String} opts.id - set a id for wallet (instead of server given)
  * @param cb
