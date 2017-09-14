@@ -15,6 +15,7 @@ var Model = require('./model');
 var collections = {
   WALLETS: 'wallets',
   TXS: 'txs',
+  REFERRALS: 'referrals',
   ADDRESSES: 'addresses',
   NOTIFICATIONS: 'notifications',
   COPAYERS_LOOKUP: 'copayers_lookup',
@@ -52,6 +53,9 @@ Storage.prototype._createIndexes = function() {
   this.db.collection(collections.TXS).createIndex({
     walletId: 1,
     createdOn: -1,
+  });
+  this.db.collection(collections.REFERRALS).createIndex({
+    codeHash: 1,
   });
   this.db.collection(collections.NOTIFICATIONS).createIndex({
     walletId: 1,
@@ -346,6 +350,21 @@ Storage.prototype.fetchBroadcastedTxs = function(walletId, opts, cb) {
   });
 };
 
+Storage.fetchReferralByCodeHash = function(codeHash, cb) {
+  const self = this;
+
+  const filter = {
+    codeHash,
+  };
+
+  self.db.collection(collections.REFERRALS).find(filter, function(err, result) {
+    if (err) return cb(err);
+    if (!result) return cb();
+
+    return result;
+  });
+};
+
 /**
  * Retrieves notifications after a specific id or from a given ts (whichever is more recent).
  *
@@ -628,7 +647,7 @@ Storage.prototype.storeActiveAddresses = function(walletId, addresses, cb) {
 };
 
 // --------         ---------------------------  Total
-//           > Time >                  
+//           > Time >
 //                       ^to     <=  ^from
 //                       ^fwdIndex  =>  ^end
 Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {
