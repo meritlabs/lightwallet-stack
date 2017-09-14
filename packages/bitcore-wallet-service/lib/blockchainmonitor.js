@@ -97,7 +97,27 @@ BlockchainMonitor.prototype._handleReferral = function(data) {
   if (!data) return;
 
   log.warn('referral: ', data);
+  self.storage.fetchReferralByCodeHash(data.codeHash, function(err, rtx) {
+    console.log(err, rtx);
+    if (err) {
+      log.error('Could not fetch referral from the db');
+      return;
+    }
 
+    if (!rtx) return;
+
+    self.storage.storeReferral(data, function(err) {
+      if (err) log.error('Could not store referral');
+
+      const args = data;
+
+      const notification = Notification.create({
+        type: 'NewIncomingReferralTx',
+        data: args,
+      });
+      self._storeAndBroadcastNotification(notification);
+    });
+  });
 };
 
 BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, processIt) {
