@@ -55,11 +55,11 @@ Referral.prototype.toBuffer = function() {
 
 Referral.prototype.toBufferWriter = function(writer) {
   writer.writeInt32LE(this.version);
-  writer.writeUInt32LE(this.previousReferral);
+  writer.writeUInt64LEBN(this.previousReferral);
   writer.writeUInt32LE(this.cKeyId);
-  writer.writeUInt32LE(this.codeHash);
+  writer.writeUInt64LEBN(this.codeHash);
   writer.writeUInt32LE(this.nLockTime);
-  // ToDo: Implement me
+  // ToDo: Implement me correctly
   return writer;
 };
 
@@ -72,19 +72,23 @@ Referral.prototype.fromBufferReader = function(reader) {
   $.checkArgument(!reader.finished(), 'No referral data received');
 
   this.version = reader.readInt32LE();
-  this.previousReferral = reader.readUInt32LE();
+  this.previousReferral = reader.readUInt64LEBN();
   this.cKeyId = reader.readUInt32LE();
-  this.codeHash = reader.readUInt32LE();
+  this.codeHash = reader.readUInt64LEBN();
   this.nLockTime = reader.readUInt32LE();
-  // ToDo: Implement me
+  // ToDo: Implement me correctly
 
   return this;
 };
 
 Referral.prototype.toObject = Referral.prototype.toJSON = function toObject() {
-  const obj = {};
-
-  // ToDo: implement me
+  const obj = {
+    version: this.version,
+    previousReferral: this.previousReferral,
+    cKeyId: this.cKeyId,
+    codeHash: this.codeHash,
+    nLockTime: this.nLockTime,
+  };
 
   return obj;
 };
@@ -93,7 +97,19 @@ Referral.prototype.fromObject = function fromObject(arg) {
   $.checkArgument(_.isObject(arg) || arg instanceof Referral);
   var self = this;
 
-  // ToDo: implement me
+  let referral = {};
+  if (arg instanceof Referral) {
+    referral = referral.toObject();
+  } else {
+    referral = arg;
+  }
+
+  this.version = referral.version;
+  this.previousReferral = referral.previousReferral;
+  this.cKeyId = referral.cKeyId;
+  this.codeHash = referral.codeHash;
+  this.nLockTime = referral.nLockTime;
+
   return this;
 };
 
