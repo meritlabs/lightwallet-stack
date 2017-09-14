@@ -2501,6 +2501,19 @@ API.prototype.getStatusByIdentifier = function(opts, cb) {
 };
 
 
+API.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
+  const url = '/v1/referraltxconfirmations/';
+  this._doPostRequest(url, opts, function(err, response) {
+    if (err) return cb(err);
+    return cb(null, response);
+  });
+};
+
+API.prototype.referralTxConfirmationUnsubscribe = function(codeHash, cb) {
+  const url = '/v1/referraltxconfirmations/' + codeHash;
+  this._doDeleteRequest(url, cb);
+};
+
 /*
  *
  * Compatibility Functions

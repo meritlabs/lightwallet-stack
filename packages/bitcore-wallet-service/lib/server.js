@@ -328,7 +328,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
 
   if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey'], cb)) return;
 
-  // We should short-circuit the request if there is no unlock code.  
+  // We should short-circuit the request if there is no unlock code.
   // This belt-and-suspenders check will save time and latency.
   if (_.isEmpty(opts.beacon)) return cb(Errors.UNLOCK_CODE_INVALID);
 
@@ -376,7 +376,6 @@ WalletService.prototype.createWallet = function(opts, cb) {
             return acb(Errors.UNLOCK_CODE_INVALID);
           }
         }
-        
         
         unlocked = true;
         shareCode = result.result.referralcode;
@@ -3278,6 +3277,26 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
   var self = this;
 
   self.storage.removeTxConfirmationSub(self.copayerId, opts.txid, cb);
+};
+
+WalletService.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
+  if (!checkRequired(opts, ['hashCode'], cb)) return;
+
+  const self = this;
+
+  const sub = Model.RefertalTxConfirmationSub.create({
+    hashCode: opts.hashCode,
+  });
+
+  self.storage.storeReferralTxConfirmationSub(sub, cb);
+};
+
+WalletService.prototype.referralTxConfirmationUnsubscribe = function(opts, cb) {
+  if (!checkRequired(opts, ['hashCode'], cb)) return;
+
+  const self = this;
+
+  self.storage.removeReferralTxConfirmationSub(self.copayerId, opts.hashCode, cb);
 };
 
 module.exports = WalletService;
