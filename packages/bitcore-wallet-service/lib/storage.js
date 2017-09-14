@@ -350,7 +350,7 @@ Storage.prototype.fetchBroadcastedTxs = function(walletId, opts, cb) {
   });
 };
 
-Storage.fetchReferralByCodeHash = function(codeHash, cb) {
+Storage.prototype.fetchReferralByCodeHash = function(codeHash, cb) {
   const self = this;
 
   const filter = {
@@ -361,8 +361,17 @@ Storage.fetchReferralByCodeHash = function(codeHash, cb) {
     if (err) return cb(err);
     if (!result) return cb();
 
-    return result;
+    return cb(null, result);
   });
+};
+
+Storage.prototype.storeReferral = function(referral, cb) {
+  this.db.collection(collections.REFERRALS).update({
+    codeHash: referral.codeHash,
+  }, referral, {
+    w: 1,
+    upsert: true,
+  }, cb);
 };
 
 /**
