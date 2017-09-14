@@ -54,6 +54,7 @@ bitcore.PrivateKey = require('./lib/privatekey');
 bitcore.PublicKey = require('./lib/publickey');
 bitcore.Script = require('./lib/script');
 bitcore.Transaction = require('./lib/transaction');
+bitcore.Referral = require('./lib/referral');
 bitcore.URI = require('./lib/uri');
 bitcore.Unit = require('./lib/unit');
 
