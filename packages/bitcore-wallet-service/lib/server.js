@@ -323,7 +323,8 @@ WalletService.prototype.logout = function(opts, cb) {
  */
 WalletService.prototype.createWallet = function(opts, cb) {
   var self = this,
-    pubKey;
+    pubKey,
+    unlockAddress;
 
   if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey'], cb)) return;
 
@@ -350,6 +351,12 @@ WalletService.prototype.createWallet = function(opts, cb) {
     return cb(new ClientError('Invalid public key'));
   };
 
+  try { 
+    unlockAddress = new Bitcore.Address(pubKey, opts.network);
+  } catch (ex) {
+    return cb(new ClientError('Unable to get address from public key'));
+  };
+
   var newWallet;
   var unlocked = false;
   var shareCode = "";
@@ -357,7 +364,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
     function(acb) {
       var bc = self._getBlockchainExplorer(opts.network);
 
-      bc.unlockWallet(opts.beacon, function(errMsg, result) {
+      bc.unlockWallet(opts.beacon, unlockAddress.toString(), function(errMsg, result) {
         
         if (errMsg)  {
           // TODO: Use Error codes instead of string matching.
