@@ -209,8 +209,7 @@ Insight.prototype.getReferralsInBlock = function(blockHash, cb) {
 
   this._doRequest(args, function(err, res, body) {
     if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
-    console.log(body);
-    return cb(null, body);
+    return cb(null, body.referrals);
   });
 };
 

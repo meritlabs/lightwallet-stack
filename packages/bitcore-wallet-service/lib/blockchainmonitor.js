@@ -317,7 +317,29 @@ BlockchainMonitor.prototype._handleReferralConfiramtions = function(network, has
   if (!explorer) return;
 
   explorer.getReferralsInBlock(hash, function(err, referrals) {
-    log.warn(referrals);
+    if (err) {
+      log.error('Could not fetch referrals for block');
+      return;
+    }
+    self.storage.fetchActiveReferralConfirmationSubs(function (err, subs) {
+      if (err) {
+        log.error('Could not fetch referral confirmation subscriptions');
+        return;
+      }
+
+      if (_.isEmpty(referrals)) return;
+
+      const indexedSubs = _.indexBy(subs, 'codeHash');
+      const triggered = _.reduce(referrals, function(acc, reftx) {
+        if (!indexedSubs[reftx]) return acc;
+
+        acc.push(reftx);
+        return acc;
+      }, []);
+
+      console.log(triggered);
+    });
+    log.warn('Received block with referrals: ', referrals);
   });
 };
 
