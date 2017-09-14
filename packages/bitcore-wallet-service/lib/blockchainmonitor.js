@@ -92,9 +92,12 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
 
 BlockchainMonitor.prototype._handleReferral = function(data) {
   const self = this;
+  log.warn('referral received');
+
   if (!data) return;
 
-  log.warn('referral received');
+  log.warn('referral: ', data);
+
 };
 
 BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, processIt) {

@@ -218,13 +218,13 @@ Bitcoin.prototype.getPublishEvents = function() {
       unsubscribe: this.unsubscribeAddress.bind(this)
     },
     {
-      name: 'bitcoind/rawreferral',
+      name: 'bitcoind/rawreferraltx',
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
     },
     {
-      name: 'bitcoind/hashreferral',
+      name: 'bitcoind/hashreferraltx',
       scope: this,
       subscribe: this.subscribe.bind(this, 'hashreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'hashreferraltx')
