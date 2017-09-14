@@ -220,6 +220,7 @@ RpcClient.callspec = {
   // Merit RPC
   generatereferralcode: '',
   unlockwallet: 'str',
+  unlockwalletwithaddress: 'str str',
   validatereferralcode: 'str',
 };
 

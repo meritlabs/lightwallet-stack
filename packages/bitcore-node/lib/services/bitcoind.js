@@ -188,7 +188,7 @@ Bitcoin.prototype.getAPIMethods = function() {
 
     // Merit Specific RPC
     ['generatereferralcode',  this, this.generateReferralCode, 0],
-    ['unlockwallet',          this, this.unlockWallet,         1],
+    ['unlockwallet',          this, this.unlockWallet,         2],
     ['validatereferralcode',  this, this.validateReferralCode, 1]
   ];
   return methods;
@@ -1230,6 +1230,8 @@ Bitcoin.prototype.getAddressUnspentOutputs = function(addressArg, options, callb
       });
     } else {
       self.client.getAddressUtxos({addresses: addresses}, function(err, response) {
+        console.log("got and address");
+        console.log(response);
         if (err) {
           return callback(self._wrapRPCError(err));
         }
@@ -2220,12 +2222,13 @@ Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
  * @param {String} code, The code needed to unlock the wallet
  * @param {Function} callback
  */
-Bitcoin.prototype.unlockWallet = function(code, callback) {
+Bitcoin.prototype.unlockWallet = function(code, address, callback) {
   log.info('unlockWallet Called: ', code);
+  log.info('unlockWallet Called: ', address);
   var self = this;
 
-  if (typeof code === 'string' || code instanceof String) {
-    self.client.unlockwallet(code, function(err, response) {
+  if ((typeof code === 'string' || code instanceof String) && (typeof address === 'string' || address instanceof String)) {
+    self.client.unlockwalletwithaddress(address, code, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
