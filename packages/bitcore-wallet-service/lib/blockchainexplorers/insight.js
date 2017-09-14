@@ -226,14 +226,15 @@ Insight.prototype.validateReferralCode = function(referralCode, cb) {
   });
 };
 
-Insight.prototype.unlockWallet = function(referralCode, cb) {
+Insight.prototype.unlockWallet = function(referralCode, unlockAddress, cb) {
   var self = this;
 
   var args = {
     method: 'POST',
     path: `${this.apiPrefix}/wallet/unlock`,
     json: {
-      unlockCode: referralCode
+      unlockCode: referralCode,
+      unlockAddress: unlockAddress
     }
   };
 
