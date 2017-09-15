@@ -1034,6 +1034,7 @@ Storage.prototype.removeTxConfirmationSub = function(copayerId, txid, cb) {
 
 Storage.prototype.storeReferralTxConfirmationSub = function(referralConfirmationSub, cb) {
   this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).update({
+    copayerId: referralConfirmationSub.copayerId,
     codeHash: referralConfirmationSub.codeHash,
   }, referralConfirmationSub, {
     w: 1,
