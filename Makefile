@@ -9,15 +9,15 @@ prepare-prereqs:
 ### lightwallet-app ###
 .PHONY: prepare-lightwallet-app
 prepare-lightwallet-app:
-	cd ./lightwallet && npm install 
+	cd ./lightwallet && npm install
 	cd ./lightwallet && npm run apply
 
 .PHONY: start-lightwallet-app
-start-lightwallet-app: 
+start-lightwallet-app:
 	cd ./lightwallet && npm run apply && npm start
 
 .PHONY: clean-lightwallet-app
-clean-lightwallet-app: 
+clean-lightwallet-app:
 	rm -rf ./lightwallet/node_modules
 
 
@@ -48,14 +48,15 @@ start-bitcore-wallet-service:
 	cd ./packages/bitcore-wallet-service/ && node messagebroker/messagebroker.js & \
 	cd ./packages/bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
 	cd ./packages/bitcore-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
-	cd ./packages/bitcore-wallet-service/ && node bws.js &
+	cd ./packages/bitcore-wallet-service/ && node bws.js & \
+	cd ./packages/bitcore-wallet-service/ && node pushnotificationsservice/pushnotificationsservice.js
 
 .PHONY: stop-bitcore-wallet-service
 stop-bitcore-wallet-service:
 	cd ./packages/bitcore-wallet-service/ && sh stop.sh
 
 .PHONY: clean-npm
-clean-npm: 
+clean-npm:
 	npm cache verify
 
 ## Preperation Order is based on dependencies ##
@@ -120,9 +121,9 @@ prepare-lightwallet-stack: clean-npm \
 
 .PHONY: start-lightwallet-stack
 start-lightwallet-stack: symlink-bitcore-node start-bitcore-wallet-service start-bitcore-node
-	
 
-# Clean 
+
+# Clean
 ## Preperation Order is based on dependencies ##
 .PHONY: clean-bitcore-lib
 clean-bitcore-lib:

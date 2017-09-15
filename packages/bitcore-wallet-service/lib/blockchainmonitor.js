@@ -98,7 +98,6 @@ BlockchainMonitor.prototype._handleReferral = function(data) {
 
   log.warn('referral: ', data);
   self.storage.fetchReferralByCodeHash(data.codeHash, function(err, rtx) {
-    console.log(err, rtx);
     if (err) {
       log.error('Could not fetch referral from the db');
       return;
@@ -337,9 +336,27 @@ BlockchainMonitor.prototype._handleReferralConfiramtions = function(network, has
         return acc;
       }, []);
 
-      console.log(triggered);
+      async.each(triggered, function(sub) {
+        log.info('New referral confirmation ' + sub.codeHash);
+        sub.isActive = false;
+        self.storage.storeTxConfirmationSub(sub, function(err) {
+          if (err) {
+            log.error(`Could not update confirmation with codeHash: ${sub.codeHash}`);
+            return;
+          }
+
+          const notification = Notification.create({
+            type: 'ReferralConfirmation',
+            data: {
+              codeHash: sub.codeHash,
+            },
+          });
+          self._storeAndBroadcastNotification(notification, function () {
+            log.info(`Referral confirmation with code ${sub.codeHash} successfully sent`);
+          });
+        });
+      });
     });
-    log.warn('Received block with referrals: ', referrals);
   });
 };
 
