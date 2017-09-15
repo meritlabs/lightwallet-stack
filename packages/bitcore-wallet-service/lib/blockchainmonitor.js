@@ -347,9 +347,8 @@ BlockchainMonitor.prototype._handleReferralConfiramtions = function(network, has
 
           const notification = Notification.create({
             type: 'ReferralConfirmation',
-            data: {
-              codeHash: sub.codeHash,
-            },
+            creatorId: sub.copayerId,
+            data: sub,
           });
           self._storeAndBroadcastNotification(notification, function () {
             log.info(`Referral confirmation with code ${sub.codeHash} successfully sent`);

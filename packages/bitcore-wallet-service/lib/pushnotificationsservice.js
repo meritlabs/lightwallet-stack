@@ -39,7 +39,6 @@ var PUSHNOTIFICATIONS_TYPES = {
   },
   'NewIncomingReferralTx': {
     filename: 'new_incoming_referral',
-    notifyCreatorOnly: true,
   },
   'ReferralConfirmation': {
     filename: 'referral_confirmation',
@@ -129,6 +128,10 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
 
     self._getRecipientsList(notification, notifType, function(err, recipientsList) {
       if (err) return cb(err);
+      if (!recipientsList) {
+        log.warn('Recipient list is empty, skipping notifications.');
+        return cb();
+      }
 
       async.waterfall([
 
@@ -209,6 +212,7 @@ PushNotificationsService.prototype._getRecipientsList = function(notification, n
 
   self.storage.fetchWallet(notification.walletId, function(err, wallet) {
     if (err) return cb(err);
+    if (!wallet) return cb();
 
     self.storage.fetchPreferences(notification.walletId, null, function(err, preferences) {
 
