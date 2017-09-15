@@ -37,6 +37,18 @@ var PUSHNOTIFICATIONS_TYPES = {
     filename: 'tx_confirmation',
     notifyCreatorOnly: true,
   },
+  'NewIncomingReferralTx': {
+    filename: 'new_incoming_referral',
+    notifyCreatorOnly: true,
+  },
+  'ReferralConfirmation': {
+    filename: 'referral_confirmation',
+    notifyCreatorOnly: true,
+  },
+  'ReferralWasRejected': {
+    filename: 'referral_rejected',
+    notifyCreatorOnly: true,
+  }
 };
 
 function PushNotificationsService() {};

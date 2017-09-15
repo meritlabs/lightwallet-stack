@@ -122,7 +122,6 @@ BlockController.prototype.transformBlock = function(block, info) {
   const referralCodes = blockObj.referrals.map(function (ref) {
     return ref.codeHash;
   });
-  console.log(blockObj);
   const result = {
     hash: block.hash,
     size: block.toBuffer().length,
@@ -143,7 +142,6 @@ BlockController.prototype.transformBlock = function(block, info) {
     isMainChain: (info.confirmations !== -1),
     poolInfo: this.getPoolInfo(block)
   };
-  console.log(result);
   return result;
 };
 
