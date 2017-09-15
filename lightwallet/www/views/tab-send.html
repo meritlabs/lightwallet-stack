@@ -17,6 +17,19 @@
       </div>
     </div>
 
+    <div>
+      <div class="send-header-wrapper">
+        <div class="item item-heading send-heading"><span translate>{{escrow || "no escrow"}}</span></div>
+        <div class="item input search-wrapper" ng-class="{'focus': searchFocus}">
+          <i class="icon icon-svg abs-v-center"><img class="svg" src="img/icon-bitcoin-symbol.svg"></i>
+          <div class="item-icon-right">
+            <input type="text" class="search-input" placeholder="{{'Search or enter bitcoin address' | translate}}" ng-model="formData.escrowAddress" ng-change="findContact(formData.escrowAddress)" ng-model-onblur ng-focus="searchInFocus()" ng-blur="searchBlurred()">
+            <i class="icon icon-svg qr abs-v-center separator-left" on-tap="addNewEscrowAddress()"><img src="img/scan-ico.svg"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div ng-if="!checkingBalance && (!hasFunds || !hasWallets)">
       <div class="list card sendTip">
         <div class="item item-icon-right item-heading"></div>

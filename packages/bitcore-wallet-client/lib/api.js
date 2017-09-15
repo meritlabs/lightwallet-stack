@@ -2564,4 +2564,18 @@ API.prototype.createWalletFromOldCopay = function(username, password, blob, cb) 
   this.recreateWallet(cb);
 };
 
+/**
+ * Create an escrow address
+ *
+ * @return {Object}
+ */
+API.prototype.createEscrowAddress = function() {
+  var privateKey = new Bitcore.PrivateKey(null, 'testnet');
+  return {
+    privateKey: privateKey.toString(),
+    publicKey: privateKey.toPublicKey().toString(),
+    address: privateKey.toPublicKey().toAddress().toString(),
+  };
+};
+
 module.exports = API;
