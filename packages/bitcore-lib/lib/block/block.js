@@ -102,7 +102,6 @@ Block._fromBufferReader = function _fromBufferReader(br) {
   for (let i = 0; i < referrals; i++) {
     info.referrals.push(Referral().fromBufferReader(br));
   }
-  console.log('from buffer');
   return info;
 };
 
