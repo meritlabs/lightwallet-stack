@@ -17,9 +17,9 @@ getvariables () {
 }
 
 writealiases() {
-    echo alias m1="${meritdir}/src/merit-cli -conf=-conf=${lwsdir}data-and-logs/data-1/merit.conf" >> $aliasfile
-    echo alias m2="${meritdir}/src/merit-cli -conf=-conf=${lwsdir}data-and-logs/data-2/merit.conf" >> $aliasfile
-    echo alias m3="${meritdir}/src/merit-cli -conf=-conf=${lwsdir}data-and-logs/data-3/merit.conf" >> $aliasfile
+    echo alias m1=\"${meritdir}/merit-cli -conf=${lwsdir}/data-and-logs/data-1/merit.conf\" >> $aliasfile
+    echo alias m2=\"${meritdir}/merit-cli -conf=${lwsdir}/data-and-logs/data-2/merit.conf\" >> $aliasfile
+    echo alias m3=\"${meritdir}/merit-cli -conf=${lwsdir}/data-and-logs/data-3/merit.conf\" >> $aliasfile
     echo "Aliased M1, M2, and M3 for convenience."
     echo "Source ${aliasfile} or open a new shell"
 }
