@@ -1,4 +1,4 @@
-# Node 
+# Node
 node_modules/
 
 # Blockchain
@@ -9,6 +9,7 @@ data-and-logs/data-3/*
 hosts.json
 bitcore-node/devnode/
 insight-ui/public/*
+package-lock.json
 
 # Yarn
 .yarnclean*
