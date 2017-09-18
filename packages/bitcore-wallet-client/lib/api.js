@@ -1821,7 +1821,6 @@ API.prototype.getBalance = function(opts, cb) {
     log.warn('DEPRECATED WARN: getBalance should receive 2 parameters.')
   }
 
-  var self = this;
   opts = opts || {};
 
   $.checkState(this.credentials && this.credentials.isComplete());
@@ -2016,7 +2015,6 @@ API.prototype.signTxProposalFromAirGapped = function(txp, encryptedPkr, m, n, pa
  * @return {Object} txp - Return transaction
  */
 API.signTxProposalFromAirGapped = function(key, txp, unencryptedPkr, m, n, opts) {
-  var self = this;
   opts = opts || {}
 
   var publicKeyRing = JSON.parse(unencryptedPkr);
@@ -2553,7 +2551,6 @@ API.prototype.getWalletIdsFromOldCopay = function(username, password, blob) {
  * @return {undefined}
  */
 API.prototype.createWalletFromOldCopay = function(username, password, blob, cb) {
-  var self = this;
   var w = this._oldCopayDecrypt(username, password, blob);
   if (!w) return cb(new Error('Could not decrypt'));
 
@@ -2571,11 +2568,28 @@ API.prototype.createWalletFromOldCopay = function(username, password, blob, cb) 
  */
 API.prototype.createEscrowAddress = function() {
   var privateKey = new Bitcore.PrivateKey(null, 'testnet');
-  return {
+  var escrow = {
     privateKey: privateKey.toString(),
     publicKey: privateKey.toPublicKey().toString(),
     address: privateKey.toPublicKey().toAddress().toString(),
+    unlocked: false,
+    shareCode: null,
   };
+  var c = this.credentials;
+  var opts = {
+    address: escrow.address,
+    network: c.network,
+    unlockCode: c.shareCode,
+  };
+  this._doPostRequest('/v2/wallets/' + c.walletId + '/escrowaddresses', opts, function(err, res) {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    escrow.unlocked = res.unlocked;
+    escrow.shareCode = res.shareCode;
+  });
+  return escrow;
 };
 
 module.exports = API;
