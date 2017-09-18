@@ -44,6 +44,21 @@ killmerit() {
 } 
 
 
+if [ command -v m1 >/dev/null 2>&1 ] || [ type m1 >/dev/null 2>&1 ]
+then 
+    echo "Aliases M1-M3 exist, moving on..."
+else 
+
+    while true; do
+        read -p "No aliases exist.  Do you want to create them? [Y/N]: " yn
+        case $yn in
+            [Yy]* ) createaliases; break;;
+            [Nn]* ) break;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+fi 
+
 if pgrep -x "meritd" > /dev/null
 then
     echo "Merit is already running Running.."
@@ -55,30 +70,16 @@ then
                 * ) echo "Please answer yes or no.";;
             esac
         done
+fi 
+ 
+echo "Starting MeritD..."    
+getvariables
+${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-1/merit.conf -datadir=${lwsdir}/data-and-logs/data-1/ & 
+${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-2/merit.conf -datadir=${lwsdir}/data-and-logs/data-2/ &
+# & ${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-3/merit.conf -datadir=${lwsdir}/data-and-logs/data-3/ && fg
+echo "Meritd started with following PIDs"    
+pgrep -x "meritd"
 
-    if command -v m1 >/dev/null 2>&1 || command -v m2 >/dev/null 2>&1 || command -v m2 >/dev/null 2>&1
-    then 
-        echo "Aliases M1-M3 exist, moving on..."
-    else 
-
-        while true; do
-            read -p "No aliases exist.  Do you want to create them? [Y/N]: " yn
-            case $yn in
-                [Yy]* ) createaliases; break;;
-                [Nn]* ) exit;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
-    fi 
-else
-    echo "Starting MeritD..."    
-    getvariables
-    ${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-1/merit.conf -datadir=${lwsdir}/data-and-logs/data-1/ & 
-    ${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-2/merit.conf -datadir=${lwsdir}/data-and-logs/data-2/ &
-    # & ${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-3/merit.conf -datadir=${lwsdir}/data-and-logs/data-3/ && fg
-    echo "Meritd started with following PIDs"    
-    pgrep -x "meritd"
-fi
 
 
 
