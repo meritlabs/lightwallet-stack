@@ -309,6 +309,58 @@ WalletService.prototype.logout = function(opts, cb) {
   self.storage.removeSession(self.copayerId, cb);
 };
 
+WalletService.prototype.registerEscrowAddress = function(opts, cb) {
+  var self = this;
+
+  opts.network = opts.network || 'livenet';
+  if (!_.contains(['livenet', 'testnet'], opts.network))
+    return cb(new ClientError('Invalid network'));
+
+  var unlockAddress = opts.address;
+  var unlockCode = "";
+  var unlocked = false;
+  var shareCode = "";
+  async.series([
+    function(acb) {
+      if (opts.unlockCode) {
+        unlockCode = opts.unlockCode;
+        return acb();
+      }
+      self.storage.fetchWallet(opts.walletId, function(err, wallet) {
+        if (wallet) unlockCode = wallet.shareCode;
+        return acb(err);
+      });
+    },
+    function(acb) {
+      var bc = self._getBlockchainExplorer(opts.network);
+
+      bc.unlockWallet(unlockCode, unlockAddress.toString(), function(errMsg, result) {
+        
+        if (errMsg)  {
+          // TODO: Use Error codes instead of string matching.
+          // TODO: Even sooner, we should have more descriptive error states coming back 
+          // from the blockchain explorer.
+          if (errMsg == "Error querying the blockchain") {
+            return acb(Errors.UNLOCK_STILL_PENDING)
+          } else {
+            return acb(Errors.UNLOCK_CODE_INVALID);
+          }
+        }
+        
+        unlocked = true;
+        shareCode = result.result.referralcode;
+
+        return acb(null);
+      });
+    },
+  ], function(err) {
+    return cb(err, {
+      unlocked: unlocked,
+      shareCode: shareCode,
+    });
+  });
+}
+
 /**
  * Creates a new wallet.
  * @param {Object} opts

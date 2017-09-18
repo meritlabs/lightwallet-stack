@@ -102,6 +102,14 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
       wallet.cachedTxps.isValid = false;
   };
 
+  root.addNewEscrowAddress = function(wallet, cb) {
+    var escrow = wallet.createEscrowAddress();
+    // generate share code
+    // beacon escrow
+    // add escrow to wallet
+    cb(escrow);
+  };
+
   root.getStatus = function(wallet, opts, cb) {
     opts = opts || {};
 
@@ -1010,7 +1018,6 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
       return cb('WALLET_NEEDS_BACKUP');
     return cb();
   };
-
 
   // An alert dialog
   var askPassword = function(name, title, cb) {

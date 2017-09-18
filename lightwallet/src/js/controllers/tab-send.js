@@ -136,6 +136,17 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     });
   };
 
+  $scope.escrow = null;
+  $scope.addNewEscrowAddress = function() {
+    if (hasWallets) {
+      walletService.addNewEscrowAddress($scope.wallets[0], function(escrow) {
+        $scope.escrow = escrow;
+      });
+    } else {
+      $scope.escrow = {'error': 'you dont have a wallet'};
+    }
+  };
+
   $scope.showMore = function() {
     currentContactsPage++;
     updateWalletsList();
@@ -208,7 +219,8 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
     $scope.checkingBalance = true;
     $scope.formData = {
-      search: null
+      search: null,
+      escrowAddress: null
     };
     originalList = [];
     CONTACTS_SHOW_LIMIT = 10;

@@ -75,6 +75,7 @@ Wallet.fromObj = function(obj) {
   x.beacon = obj.beacon;
   x.unlocked = obj.unlocked;
   x.shareCode = obj.shareCode;
+  x.escrowAddresses = obj.escrowAddresses;
 
   return x;
 };
@@ -162,5 +163,10 @@ Wallet.prototype.createAddress = function(isChange) {
   return address;
 };
 
+Wallet.prototype.addEscrow = function(escrow) {
+  var self = this;
+
+  self.escrowAddresses.push(escrow);
+}
 
 module.exports = Wallet;

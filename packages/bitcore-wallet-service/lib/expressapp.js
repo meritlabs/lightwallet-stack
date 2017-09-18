@@ -286,6 +286,20 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.post('/v2/wallets/:id/escrowaddresses', function(req, res) {
+    req.body.walletId = req.params['id'];
+    var server;
+    try {
+      server = getServer(req, res);
+    } catch (ex) {
+      return returnError(ex, res, req);
+    }
+    server.registerEscrowAddress(req.body, function(err, result) {
+      if (err) returnError(err, res, req);
+      res.json(result);
+    });
+  });
+
   // DEPRECATED
   router.get('/v1/wallets/', function(req, res) {
     logDeprecated(req);
