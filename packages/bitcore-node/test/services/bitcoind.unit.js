@@ -4646,7 +4646,7 @@ describe('Bitcoin Service', function() {
         /* jshint maxstatements: 30 */
         should.exist(tx);
         should.not.exist(tx.coinbase);
-        should.equal(tx.hex, txBuffer.toString('hex'));
+        should.exist(tx.size);
         should.equal(tx.blockHash, '00000000000ec715852ea2ecae4dc8563f62d603c820f81ac284cd5be0a944d6');
         should.equal(tx.height, 530482);
         should.equal(tx.blockTimestamp, 1439559434000);
