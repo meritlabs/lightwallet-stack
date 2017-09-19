@@ -403,7 +403,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
         n: opts.n,
         network: opts.network,
         pubKey: pubKey.toString(),
-        singleAddress: !!opts.singleAddress,
+        singleAddress: true, // Defaulting all wallets to single address for now.
         derivationStrategy: derivationStrategy,
         addressType: addressType,
         beacon: opts.beacon,
