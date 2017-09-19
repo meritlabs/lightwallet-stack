@@ -7,16 +7,16 @@ prepare-prereqs:
 
 
 ### lightwallet-app ###
-.PHONY: prepare-lightwallet-app
+.PHONY: prepare-lightwallet
 prepare-lightwallet-app:
 	cd ./lightwallet && npm install 
 	cd ./lightwallet && npm run apply
 
-.PHONY: start-lightwallet-app
+.PHONY: start-lightwallet
 start-lightwallet-app: 
 	cd ./lightwallet && npm run apply && npm start
 
-.PHONY: clean-lightwallet-app
+.PHONY: clean-lightwallet
 clean-lightwallet-app: 
 	rm -rf ./lightwallet/node_modules
 
@@ -66,7 +66,7 @@ prepare-lightwallet-stack: clean-npm \
 use-lerna: 
 	lerna bootstrap
 
-.PHONY: start-lightwallet-stack
+.PHONY: start-stack
 start-lightwallet-stack: symlink-bitcore-node start-bitcore-wallet-service start-bitcore-node
 	
 
