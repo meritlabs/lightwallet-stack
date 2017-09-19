@@ -55,9 +55,9 @@ Referral.prototype.toBuffer = function() {
 
 Referral.prototype.toBufferWriter = function(writer) {
   writer.writeInt32LE(this.version);
-  writer.writeUInt64LEBN(this.previousReferral);
-  writer.writeUInt32LE(this.cKeyId);
-  writer.writeUInt64LEBN(this.codeHash);
+  writer.writeString(this.previousReferral);
+  writer.writeString(this.cKeyId);
+  writer.writeString(this.codeHash);
   writer.writeUInt32LE(this.nLockTime);
   // ToDo: Implement me correctly
   return writer;
@@ -71,11 +71,11 @@ Referral.prototype.fromBuffer = function(buffer) {
 Referral.prototype.fromBufferReader = function(reader) {
   $.checkArgument(!reader.finished(), 'No referral data received');
 
-  this.version = reader.readInt32LE();
-  this.previousReferral = reader.readUInt64LEBN().toString('hex');
-  this.cKeyId = reader.readUInt32LE();
-  this.codeHash = reader.readUInt64LEBN().toString('hex');
-  this.nLockTime = reader.readUInt32LE();
+  //this.version = reader.readInt32LE();
+  this.previousReferral = reader.read(32).toString('hex').match(/.{1,2}/g).reverse().join('');
+  this.cKeyId = reader.read(20);
+  this.codeHash = reader.read(32).toString('hex').match(/.{1,2}/g).reverse().join('');
+  //this.nLockTime = reader.readUInt32LE();
   // ToDo: Implement me correctly
 
   return this;
