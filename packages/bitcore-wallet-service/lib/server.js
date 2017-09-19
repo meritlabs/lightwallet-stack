@@ -351,7 +351,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
     return cb(new ClientError('Invalid public key'));
   };
 
-  try { 
+  try {
     unlockAddress = new Bitcore.Address(pubKey, opts.network);
   } catch (ex) {
     return cb(new ClientError('Unable to get address from public key'));
@@ -365,10 +365,10 @@ WalletService.prototype.createWallet = function(opts, cb) {
       var bc = self._getBlockchainExplorer(opts.network);
 
       bc.unlockWallet(opts.beacon, unlockAddress.toString(), function(errMsg, result) {
-        
+
         if (errMsg)  {
           // TODO: Use Error codes instead of string matching.
-          // TODO: Even sooner, we should have more descriptive error states coming back 
+          // TODO: Even sooner, we should have more descriptive error states coming back
           // from the blockchain explorer.
           if (errMsg == "Error querying the blockchain") {
             return acb(Errors.UNLOCK_STILL_PENDING)
@@ -376,15 +376,17 @@ WalletService.prototype.createWallet = function(opts, cb) {
             return acb(Errors.UNLOCK_CODE_INVALID);
           }
         }
-        
+
         unlocked = true;
         shareCode = result.result.referralcode;
+
+        self.referralTxConfirmationSubscribe({ codeHash: result.result.codehash }, _.noop);
 
         return acb(null);
       });
     },
     function(acb) {
-      
+
       if (!opts.id)
         return acb();
 
@@ -394,7 +396,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
       });
     },
     function(acb) {
-   
+
       var wallet = Wallet.create({
         id: opts.id,
         name: opts.name,
@@ -3280,23 +3282,25 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
 };
 
 WalletService.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
-  if (!checkRequired(opts, ['hashCode'], cb)) return;
+  if (!checkRequired(opts, ['codeHash'], cb)) return;
 
   const self = this;
 
-  const sub = Model.RefertalTxConfirmationSub.create({
-    hashCode: opts.hashCode,
+  const sub = Model.ReferralTxConfirmationSub.create({
+    copayerId: self.copayerId,
+    walletId: self.walletId,
+    codeHash: opts.codeHash,
   });
 
   self.storage.storeReferralTxConfirmationSub(sub, cb);
 };
 
 WalletService.prototype.referralTxConfirmationUnsubscribe = function(opts, cb) {
-  if (!checkRequired(opts, ['hashCode'], cb)) return;
+  if (!checkRequired(opts, ['codeHash'], cb)) return;
 
   const self = this;
 
-  self.storage.removeReferralTxConfirmationSub(self.copayerId, opts.hashCode, cb);
+  self.storage.removeReferralTxConfirmationSub(self.copayerId, opts.codeHash, cb);
 };
 
 module.exports = WalletService;

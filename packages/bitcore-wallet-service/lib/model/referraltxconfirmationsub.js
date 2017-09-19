@@ -11,7 +11,7 @@ ReferralTxConfirmationSub.create = function (opts) {
   rtx.createdOn = Math.floor(Date.now() / 1000);
   rtx.walletId = opts.walletId;
   rtx.copayerId = opts.copayerId;
-  rtx.hashCode = opts.hashCode;
+  rtx.codeHash = opts.codeHash;
   rtx.isActive = true;
 
   return rtx;
@@ -24,7 +24,7 @@ ReferralTxConfirmationSub.fromObj = function (obj) {
   rtx.createdOn = obj.createdOn;
   rtx.walletId = obj.walletId;
   rtx.copayerId = obj.copayerId;
-  rtx.hashCode = obj.hashCode;
+  rtx.codeHash = obj.codeHash;
   rtx.isActive = obj.isActive;
 
   return rtx;
