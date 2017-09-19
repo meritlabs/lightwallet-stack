@@ -32,12 +32,13 @@ createaliases() {
 
     echo "Creating your aliases now...."
     # echo -n "Enter where you want your aliasfile and press [ENTER]: (default): "
-    read -e -p "Enter the location to write aliases to:" -i "$HOME/.bash.local" aliasfile
+    # TODO: find a way to version-check for a bash that supports 'read -i', because it's better
+    read -p "Enter the location to write aliases to: (default: ~/.bash.local): " aliasfile
+    if [ -z ${aliasfile} ]
+    then
+        aliasfile=$HOME/.bash.local 
+    fi 
     writealiases
-    # if [ -z ${aliasfile+x} ]
-    # then
-    #     aliasfile=$HOME/.bash.local 
-    # fi 
 } 
 
 killmerit() {
