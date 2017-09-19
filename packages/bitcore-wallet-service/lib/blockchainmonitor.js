@@ -95,6 +95,7 @@ BlockchainMonitor.prototype._handleReferral = function(data) {
 
   if (!data) return;
 
+  console.log(data);
   self.storage.fetchReferralByCodeHash(data.codeHash, function(err, rtx) {
     if (err) {
       log.error('Could not fetch referral from the db');
@@ -307,7 +308,7 @@ BlockchainMonitor.prototype._handleTxConfirmations = function(network, hash) {
   });
 };
 
-BlockchainMonitor.prototype._handleReferralConfiramtions = function(network, hash) {
+BlockchainMonitor.prototype._handleReferralConfirmations = function(network, hash) {
   const self = this;
 
   const explorer = self.explorers[network];
@@ -360,7 +361,7 @@ BlockchainMonitor.prototype._handleReferralConfiramtions = function(network, has
 BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
   this._notifyNewBlock(network, hash);
   this._handleTxConfirmations(network, hash);
-  this._handleReferralConfiramtions(network, hash);
+  this._handleReferralConfirmations(network, hash);
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {
