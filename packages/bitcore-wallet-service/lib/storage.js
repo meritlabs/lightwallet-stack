@@ -1000,14 +1000,15 @@ Storage.prototype.fetchActiveReferralConfirmationSubs = function(cb) {
     isActive: true
   };
 
-  this.db.collection(collections.REFERRAL_CONFIRMATION_SUBS).find(filter)
+  this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).find(filter)
     .toArray(function(err, result) {
       if (err) return cb(err);
 
       if (!result) return cb();
 
       const subs = _.map([].concat(result), function(r) {
-        return Model.ReferralConfirmationSub.fromObj(r);
+        console.log(r);
+        return Model.ReferralTxConfirmationSub.fromObj(r);
       });
       return cb(null, subs);
     });

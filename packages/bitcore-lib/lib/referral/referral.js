@@ -72,9 +72,9 @@ Referral.prototype.fromBufferReader = function(reader) {
   $.checkArgument(!reader.finished(), 'No referral data received');
 
   this.version = reader.readInt32LE();
-  this.previousReferral = reader.readUInt64LEBN();
+  this.previousReferral = reader.readUInt64LEBN().toString('hex');
   this.cKeyId = reader.readUInt32LE();
-  this.codeHash = reader.readUInt64LEBN();
+  this.codeHash = reader.readUInt64LEBN().toString('hex');
   this.nLockTime = reader.readUInt32LE();
   // ToDo: Implement me correctly
 
