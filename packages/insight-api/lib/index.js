@@ -244,13 +244,11 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.get('/referral', referral.generateReferralCode.bind(referral));
 
   app.post('/referral/validate', referral.validateReferralCode.bind(referral));
-  app.param('code', referral.validateReferralCode.bind(referral));
 
   // Wallet
   var wallet = new WalletController(this.node);
 
-  app.get('/wallet/:code/unlock', wallet.unlock.bind(wallet));
-  app.param('code', wallet.unlock.bind(wallet));
+  app.post('/wallet/unlock', wallet.unlock.bind(wallet));
 
   // Not Found
   app.use(function(req, res) {

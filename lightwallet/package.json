@@ -56,7 +56,7 @@
     "bower": "^1.7.9",
     "clipboard": "^1.7.1",
     "com.verso.cordova.clipboard": "https://github.com/Visigo/CordovaClipboard",
-    "cordova-android": "5.1.1",
+    "cordova-android": "^6.2.3",
     "cordova-custom-config": "^3.0.14",
     "cordova-ios": "^4.4.0",
     "cordova-ios-requires-fullscreen": "~0.0.2",
@@ -151,6 +151,7 @@
   "cordova": {
     "platforms": [
       "android",
+      "ios",
       "windows"
     ],
     "plugins": {

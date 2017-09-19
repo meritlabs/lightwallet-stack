@@ -241,4 +241,24 @@ Insight.prototype.validateReferralCode = function(referralCode, cb) {
   });
 };
 
+Insight.prototype.unlockWallet = function(referralCode, unlockAddress, cb) {
+  var self = this;
+
+  var args = {
+    method: 'POST',
+    path: `${this.apiPrefix}/wallet/unlock`,
+    json: {
+      unlockCode: referralCode,
+      unlockAddress: unlockAddress
+    }
+  };
+
+  this._doRequest(args, function(err, res, body) {
+    if (err || res.statusCode !== 200) {
+      return cb(_parseErr(err, res));
+    }
+    return cb(null, body);
+  });
+};
+
 module.exports = Insight;
