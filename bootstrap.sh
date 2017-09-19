@@ -1,3 +1,5 @@
+#!/bin/bash
+
 getvariables () {
     source $HOME/.meritenv
 
@@ -43,6 +45,24 @@ killmerit() {
     killall -9 meritd
 } 
 
+cleardataaction() {
+    echo "Clearing data directories..."
+    sh ./clean.sh
+}
+
+
+cleardataprompt() {
+    while true; do
+        read -p "Would you like to RESET your Meritd data as well? [Y/N]: " yn
+        case $yn in
+            [Yy]* ) cleardataaction; break;;
+            [Nn]* ) break;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+
+}
+
 
 if [ command -v m1 >/dev/null 2>&1 ] || [ type m1 >/dev/null 2>&1 ]
 then 
@@ -65,7 +85,7 @@ then
         while true; do
             read -p "Would you like to stop the merit daemons running? [Y/N]: " yn
             case $yn in
-                [Yy]* ) killmerit; break;;
+                [Yy]* ) killmerit; cleardataprompt; break;;
                 [Nn]* ) break;;
                 * ) echo "Please answer yes or no.";;
             esac
