@@ -739,6 +739,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
+
       /*
        *
        * Onboarding
@@ -836,6 +837,18 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         },
       })
 
+      // DEEPLINK INTO ONBOARDING FLOW
+      .state('onboarding.fromEasySend', {
+        templateUrl: 'views/onboarding/welcome-easysend.html',
+        controller: 'welcomeController',
+        params: {
+          inviteCode: null,
+          amount: null,
+          secret: null
+        }
+      })
+      
+      
       /*
        *
        * Feedback
@@ -1186,7 +1199,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         }
       });
   })
-  .run(function($rootScope, $state, $location, $log, $timeout, startupService, ionicToast, fingerprintService, $ionicHistory, $ionicPlatform, $window, appConfigService, lodash, platformInfo, profileService, uxLanguage, gettextCatalog, openURLService, storageService, scannerService, configService, emailService, /* plugins START HERE => */ coinbaseService, glideraService, amazonService, bitpayCardService, applicationService, mercadoLibreService, deepLinkService) {
+  .run(function($rootScope, $state, $location, $log, $timeout, startupService, ionicToast, fingerprintService, $ionicHistory, $ionicPlatform, $window, appConfigService, lodash, platformInfo, profileService, uxLanguage, gettextCatalog, openURLService, storageService, scannerService, configService, emailService, $routeParams, /* plugins START HERE => */ coinbaseService, glideraService, amazonService, bitpayCardService, applicationService, mercadoLibreService, deepLinkService) {
 
     uxLanguage.init();
 
