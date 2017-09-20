@@ -1,7 +1,10 @@
 #!/bin/bash
 
 getvariables () {
-    source $HOME/.meritenv
+    if [ -f $HOME/.meritenv ]; then
+        source $HOME/.meritenv    
+    fi
+    
 
     if [ -z ${meritdir+x} ]
     then 
