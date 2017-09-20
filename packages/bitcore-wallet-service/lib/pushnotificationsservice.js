@@ -39,6 +39,7 @@ var PUSHNOTIFICATIONS_TYPES = {
   },
   'NewIncomingReferralTx': {
     filename: 'new_incoming_referral',
+    notifyCreatorOnly: true,
   },
   'ReferralConfirmation': {
     filename: 'referral_confirmation',
@@ -235,8 +236,14 @@ PushNotificationsService.prototype._getRecipientsList = function(notification, n
       }));
 
       recipientPreferences = _.indexBy(recipientPreferences, 'copayerId');
+      console.log(recipientPreferences);
 
       var recipientsList = _.compact(_.map(wallet.copayers, function(copayer) {
+        console.log(copayer);
+        console.log(notification);
+        console.log(notificationType);
+        console.log(copayer.id == notification.creatorId);
+        console.log(notificationType.notifyCreatorOnly);
         if ((copayer.id == notification.creatorId && notificationType.notifyCreatorOnly) ||
           (copayer.id != notification.creatorId && !notificationType.notifyCreatorOnly)) {
           var p = recipientPreferences[copayer.id] || {};
@@ -247,6 +254,7 @@ PushNotificationsService.prototype._getRecipientsList = function(notification, n
           }
         }
       }));
+      console.log(recipientsList);
 
       return cb(null, recipientsList);
     });
