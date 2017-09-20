@@ -16,7 +16,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
 
   // THIS is ONLY to show the 'buy bitcoins' message
-  // does not has any other function.
+  // It does not have any other function.
 
   var updateHasFunds = function() {
 
