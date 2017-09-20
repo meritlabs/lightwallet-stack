@@ -329,6 +329,7 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
       console.log(referrals);
       console.log('subs', subs);
 
+      /*
       const indexedSubs = _.indexBy(subs, 'codeHash');
       const triggered = _.reduce(referrals, function(acc, reftx) {
         console.log('in reduce');
@@ -339,6 +340,8 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
         acc.push(indexedSubs[reftx]);
         return acc;
       }, []);
+      */
+      const triggered = subs;
 
       console.log('triggered', triggered);
 
