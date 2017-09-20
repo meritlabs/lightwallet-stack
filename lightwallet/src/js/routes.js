@@ -1186,7 +1186,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         }
       });
   })
-  .run(function($rootScope, $state, $location, $log, $timeout, startupService, ionicToast, fingerprintService, $ionicHistory, $ionicPlatform, $window, appConfigService, lodash, platformInfo, profileService, uxLanguage, gettextCatalog, openURLService, storageService, scannerService, configService, emailService, /* plugins START HERE => */ coinbaseService, glideraService, amazonService, bitpayCardService, applicationService, mercadoLibreService) {
+  .run(function($rootScope, $state, $location, $log, $timeout, startupService, ionicToast, fingerprintService, $ionicHistory, $ionicPlatform, $window, appConfigService, lodash, platformInfo, profileService, uxLanguage, gettextCatalog, openURLService, storageService, scannerService, configService, emailService, /* plugins START HERE => */ coinbaseService, glideraService, amazonService, bitpayCardService, applicationService, mercadoLibreService, deepLinkService) {
 
     uxLanguage.init();
 
@@ -1252,8 +1252,14 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
 
       $ionicPlatform.on('resume', function() {
         applicationService.appLockModal('check');
+        deepLinkService.branchInit();
       });
 
+      $ionicPlatform.on('deviceReady', function() {
+        deepLinkService.branchInit();
+      });
+
+    
       $ionicPlatform.on('menubutton', function() {
         window.location = '#/preferences';
       });
