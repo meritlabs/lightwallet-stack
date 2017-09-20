@@ -38,10 +38,10 @@ var config = {
     },
   },
   blockchainExplorerOpts: {
-    livenet: {
-      provider: 'insight',
-      url: 'http://127.0.0.1:3001',
-    },
+    // livenet: {
+    //   provider: 'insight',
+    //   url: 'http://127.0.0.1:3131', //Does not exist for now.
+    // },
     testnet: {
       provider: 'insight',
       url: 'http://localhost:3001',

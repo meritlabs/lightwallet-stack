@@ -436,7 +436,7 @@ describe('Bitcoind Functionality', function() {
         should.exist(tx.blockHash);
         tx.coinbase.should.equal(true);
         tx.version.should.equal(1);
-        tx.hex.should.be.a('string');
+        should.exist(tx.size);
         tx.locktime.should.equal(0);
         tx.feeSatoshis.should.equal(0);
         tx.outputSatoshis.should.equal(50 * 1e8);
