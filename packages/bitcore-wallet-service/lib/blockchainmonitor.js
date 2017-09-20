@@ -26,7 +26,7 @@ BlockchainMonitor.prototype.start = function(opts, cb) {
 
     function(done) {
       self.explorers = {};
-      _.map(['livenet', 'testnet'], function(network) {
+      _.map(['testnet'], function(network) {
         var explorer;
         if (opts.blockchainExplorers) {
           explorer = opts.blockchainExplorers[network];
