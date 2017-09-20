@@ -61,7 +61,6 @@
     "coveralls": "^2.11.9",
     "express": "^4.11.2",
     "fs": "0.0.2",
-    "fs-extra": "^0.30.0",
     "grunt-angular-gettext": "^2.2.3",
     "grunt-browserify": "^5.0.0",
     "grunt-cli": "^1.2.0",
