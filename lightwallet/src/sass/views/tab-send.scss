@@ -1,5 +1,13 @@
 #tab-send {
   @extend .deflash-blue;
+  .card {
+      margin-top: 0;
+      margin-bottom: 0;
+
+      &:first-child {
+          margin-top: 14px;
+      }
+  }
   .input {
     input {
       width: 100%;
