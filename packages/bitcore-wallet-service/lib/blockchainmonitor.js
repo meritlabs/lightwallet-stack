@@ -95,7 +95,6 @@ BlockchainMonitor.prototype._handleReferral = function(data) {
 
   if (!data) return;
 
-  console.log(data);
   self.storage.fetchReferralByCodeHash(data.codeHash, function(err, rtx) {
     if (err) {
       log.error('Could not fetch referral from the db');
@@ -319,21 +318,29 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
       log.error('Could not fetch referrals for block');
       return;
     }
+    if (_.isEmpty(referrals)) return;
+
     self.storage.fetchActiveReferralConfirmationSubs(function (err, subs) {
       if (err) {
         log.error('Could not fetch referral confirmation subscriptions');
         return;
       }
 
-      if (_.isEmpty(referrals)) return;
+      console.log(referrals);
+      console.log('subs', subs);
 
       const indexedSubs = _.indexBy(subs, 'codeHash');
       const triggered = _.reduce(referrals, function(acc, reftx) {
+        console.log('in reduce');
+        console.log(reftx);
+        console.log(acc);
         if (!indexedSubs[reftx]) return acc;
 
-        acc.push(reftx);
+        acc.push(indexedSubs[reftx]);
         return acc;
       }, []);
+
+      console.log('triggered', triggered);
 
       async.each(triggered, function(sub) {
         log.info('New referral confirmation ' + sub.codeHash);
@@ -347,6 +354,7 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
           const notification = Notification.create({
             type: 'ReferralConfirmation',
             creatorId: sub.copayerId,
+            walletId: sub.walletId,
             data: sub,
           });
           self._storeAndBroadcastNotification(notification, function () {
