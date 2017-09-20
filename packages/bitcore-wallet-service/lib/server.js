@@ -360,6 +360,11 @@ WalletService.prototype.createWallet = function(opts, cb) {
   var newWallet;
   var unlocked = false;
   var shareCode = "";
+  var codeHash = "";
+
+  console.log(self);
+  console.log('referral tx subs', self.copayerId, self.walletId);
+
   async.series([
     function(acb) {
       var bc = self._getBlockchainExplorer(opts.network);
@@ -379,8 +384,8 @@ WalletService.prototype.createWallet = function(opts, cb) {
 
         unlocked = true;
         shareCode = result.result.referralcode;
-
-        self.referralTxConfirmationSubscribe({ codeHash: result.result.codehash }, _.noop);
+        codeHash = result.result.codehash;
+        //self.referralTxConfirmationSubscribe({ codeHash: result.result.codehash }, _.noop);
 
         return acb(null);
       });
@@ -420,7 +425,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
   ], function(err) {
     var newWalletId = newWallet ? newWallet.id : null;
     var newWalletShareCode = newWallet ? newWallet.shareCode : null;
-    return cb(err, newWalletId, newWalletShareCode);
+    return cb(err, newWalletId, newWalletShareCode, codeHash);
   });
 };
 
@@ -3285,6 +3290,8 @@ WalletService.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
   if (!checkRequired(opts, ['codeHash'], cb)) return;
 
   const self = this;
+
+  console.log('referral tx subs', self.copayerId, self.walletId);
 
   const sub = Model.ReferralTxConfirmationSub.create({
     copayerId: self.copayerId,

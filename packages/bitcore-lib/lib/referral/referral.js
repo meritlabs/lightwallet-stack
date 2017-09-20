@@ -54,12 +54,12 @@ Referral.prototype.toBuffer = function() {
 };
 
 Referral.prototype.toBufferWriter = function(writer) {
-  writer.writeInt32LE(this.version);
+  //writer.writeInt32LE(this.version);
   writer.writeString(this.previousReferral);
   writer.writeString(this.cKeyId);
   writer.writeString(this.codeHash);
-  writer.writeUInt32LE(this.nLockTime);
-  // ToDo: Implement me correctly
+  //writer.writeUInt32LE(this.nLockTime);
+
   return writer;
 };
 
@@ -73,10 +73,9 @@ Referral.prototype.fromBufferReader = function(reader) {
 
   //this.version = reader.readInt32LE();
   this.previousReferral = reader.read(32).toString('hex').match(/.{1,2}/g).reverse().join('');
-  this.cKeyId = reader.read(20);
+  this.cKeyId = reader.read(20).toString('hex'); // this produces garbage, but saves correctly
   this.codeHash = reader.read(32).toString('hex').match(/.{1,2}/g).reverse().join('');
   //this.nLockTime = reader.readUInt32LE();
-  // ToDo: Implement me correctly
 
   return this;
 };
