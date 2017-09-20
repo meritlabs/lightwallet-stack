@@ -39,7 +39,7 @@ var FIELDS = [
   'addressType',
   'hwInfo',
   'entropySourcePath',
-  'unlocked', 
+  'unlocked',
   'shareCode'
 ];
 
@@ -210,7 +210,7 @@ Credentials.prototype._expand = function() {
   }
 
   // requests keys from mnemonics, but using a xPubkey
-  // This is only used when importing mnemonics FROM 
+  // This is only used when importing mnemonics FROM
   // an hwwallet, in which xPriv was not available when
   // the wallet was created.
   if (this.entropySourcePath) {
@@ -298,15 +298,16 @@ Credentials.prototype.addWalletPrivateKey = function(walletPrivKey) {
   this.sharedEncryptingKey = Utils.privateKeyToAESKey(walletPrivKey);
 };
 
-Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copayerName, shareCode) {
+Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copayerName, shareCode, codeHash) {
   this.walletId = walletId;
   this.walletName = walletName;
   this.m = m;
   this.n = n;
-   
+
   if (shareCode) {
     this.shareCode = shareCode;
     this.unlocked = true;
+    this.codeHash = codeHash;
   }
 
   if (copayerName)
@@ -441,7 +442,7 @@ Credentials.prototype.clearMnemonic = function() {
 // TODO: Remove this
 Credentials.fromOldCopayWallet = function(w) {
   function walletPrivKeyFromOldCopayWallet(w) {
-    // IN BWS, the master Pub Keys are not sent to the server, 
+    // IN BWS, the master Pub Keys are not sent to the server,
     // so it is safe to use them as seed for wallet's shared secret.
     var seed = w.publicKeyRing.copayersExtPubKeys.sort().join('');
     var seedBuf = new Buffer(seed);
@@ -467,7 +468,7 @@ Credentials.fromOldCopayWallet = function(w) {
       requestDerivation = (new Bitcore.HDPrivateKey(credentials.xPrivKey))
         .deriveChild(path).hdPublicKey;
     } else {
-      // this 
+      // this
       var path = Constants.PATHS.REQUEST_KEY_AUTH;
       requestDerivation = (new Bitcore.HDPublicKey(xPubStr)).deriveChild(path);
     }

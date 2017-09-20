@@ -1299,7 +1299,7 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
     id: opts.id,
     beacon: opts.beacon,
     unlocked: opts.unlocked,
-    shareCode: opts.shareCode
+    shareCode: opts.shareCode,
   };
 
   // Create wallet
@@ -1308,8 +1308,9 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
 
     var walletId = res.walletId;
     var walletShareCode = res.shareCode;
-    c.addWalletInfo(walletId, walletName, m, n, copayerName, walletShareCode);
-    
+    var walletCodeHash = res.codeHash;
+    c.addWalletInfo(walletId, walletName, m, n, copayerName, walletShareCode, walletCodeHash);
+
     var secret = API._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
     self._doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {},
