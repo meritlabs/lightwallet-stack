@@ -1,4 +1,5 @@
 {
   "name": "*USERVISIBLENAME*",
-  "app_id": "merit"
+  "app_id": "merit",
+  "type": "ionic1"
 }
