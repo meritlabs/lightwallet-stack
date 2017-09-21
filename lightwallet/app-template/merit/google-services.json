@@ -1,27 +1,47 @@
 {
   "project_info": {
-    "project_number": "149194066736",
-    "firebase_url": "https://bitpay-wallet.firebaseio.com",
-    "project_id": "bitpay-wallet",
-    "storage_bucket": "bitpay-wallet.appspot.com"
+    "project_number": "953682058057",
+    "firebase_url": "https://foxcomm-staging.firebaseio.com",
+    "project_id": "foxcomm-staging",
+    "storage_bucket": "foxcomm-staging.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:149194066736:android:6de8942b48fea047",
+        "mobilesdk_app_id": "1:953682058057:android:c60e95c518bea670",
         "android_client_info": {
-          "package_name": "com.bitpay.copay"
+          "package_name": "me.merit.LightWallet"
         }
       },
       "oauth_client": [
         {
-          "client_id": "149194066736-1gf0d9nk288dke5jdiuj8unkplhl8nco.apps.googleusercontent.com",
+          "client_id": "953682058057-72lb5f8a6i6ama12ssqa4g098f2gmij8.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "953682058057-vdvl4th434n68d2afj6vdm77v038fcld.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "953682058057-8vr427rf4c7ji64trbbtovoc8vto637j.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "953682058057-trm1gl4qpa6c9c8av6b42e4p766bloa7.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "953682058057-o21m80u2d7raoq71fetp8u21k8306a7p.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "953682058057-cse9mkmr1ot9ps79o3qrut39kjrhd6da.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCZ8nyjRBe-0Lyur0LjO-SOkjv32uNQKy0"
+          "current_key": "AIzaSyBKvzaqVhRcdzr0fc2OpJ3OJblJ4Dov6Us"
         }
       ],
       "services": {
