@@ -86,7 +86,7 @@
     "angular-clipboard": "^1.4.2",
     "angular-md5": "^0.1.10",
     "ngtouch": "^1.0.1",
-    "angular-route": "1.6.6"
+    "angular-route": "1.4.6"
   },
   "scripts": {
     "start": "npm run build:www && ionic serve --nolivereload --nogulp -s --address 0.0.0.0",

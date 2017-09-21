@@ -137,6 +137,7 @@ module.exports = function(grunt) {
           'node_modules/angular-md5/angular-md5.js',
           'node_modules/angular-mocks/angular-mocks.js',
           'node_modules/ngtouch/src/ngTouch.js',
+          'node_modules/angular-route/angular-route.js',
           'angular-bitauth/angular-bitauth.js',
           'angular-bitcore-wallet-client/angular-bitcore-wallet-client.js'
         ],
