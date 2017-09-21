@@ -17,6 +17,10 @@ prepare-lightwallet:
 start-lightwallet:
 	cd ./lightwallet && npm run apply && npm run livestart
 
+.PHONY: livestart-lightwallet
+livestart-lightwallet:
+	cd ./lightwallet && npm run apply && npm run livestart
+
 .PHONY: clean-lightwallet
 clean-lightwallet:
 	rm -rf ./lightwallet/node_modules
