@@ -4,94 +4,95 @@
   </ion-nav-bar>
   <ion-content>
 
-      <div class="list">
-    <div ng-if="!checkingBalance && (!hasFunds || !hasWallets)">
-      <div class="card sendTip">
-        <div class="item item-icon-right item-heading"></div>
-        <div>
-          <i class="icon zero-state-icon">
+    <div class="list">
+      <div ng-if="!checkingBalance && (!hasFunds || !hasWallets)">
+        <div class="card sendTip">
+          <div class="item item-icon-right item-heading"></div>
+          <div>
+            <i class="icon zero-state-icon">
             <img src="img/tab-icons/ico-send-selected.svg"/>
           </i>
-        </div>
-        <div class="title" translate>
-          Start sending merit
-        </div>
-        <div class="subtitle">
-          <span ng-show="hasWallets" translate>To get started, buy merit or share your address. You can receive merit from any wallet or service.</span>
-          <span ng-show="!hasWallets" translate>To get started, you'll need to create a merit wallet and get some merit.</span>
-          <div class="padding">
-            <button class="button button-standard button-primary" ng-click="buyBitcoin()" ng-show="hasWallets" translate>Buy Merit</button>
-            <button class="button button-standard button-primary" ng-click="createWallet()" ng-show="!hasWallets" translate>Create merit wallet</button>
-            <button class="button button-standard button-secondary" ui-sref="tabs.receive" ng-show="hasWallets" translate>Show merit address</button>
+          </div>
+          <div class="title" translate>
+            Start sending merit
+          </div>
+          <div class="subtitle">
+            <span ng-show="hasWallets" translate>To get started, buy merit or share your address. You can receive merit from any wallet or service.</span>
+            <span ng-show="!hasWallets" translate>To get started, you'll need to create a merit wallet and get some merit.</span>
+            <div class="padding">
+              <button class="button button-standard button-primary" ng-click="buyBitcoin()" ng-show="hasWallets" translate>Buy Merit</button>
+              <button class="button button-standard button-primary" ng-click="createWallet()" ng-show="!hasWallets" translate>Create merit wallet</button>
+              <button class="button button-standard button-secondary" ui-sref="tabs.receive" ng-show="hasWallets" translate>Show merit address</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div ng-if="hasFunds && hasWallets">
-      <div class="card sendTip">
-        <div class="item item-icon-right item-heading"></div>
-        <div>
-          <i class="icon zero-state-icon">
+      <div ng-if="hasFunds && hasWallets">
+        <div class="card sendTip">
+          <div class="item item-icon-right item-heading"></div>
+          <div>
+            <i class="icon zero-state-icon">
             <img src="img/tab-icons/ico-send-selected.svg"/>
           </i>
-        </div>
-        <div class="title" translate>
-          Start sending merit
+          </div>
+          <div class="title" translate>
+            Start sending merit
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="card" ng-if="hasContacts && hasWallets">
-      <a class="item item-icon-left item-icon-right" ng-click="openScanner()">
+      <div class="card" ng-if="hasContacts && hasWallets">
+        <a class="item item-icon-left item-icon-right" ng-click="openScanner()">
         <i class="icon big-icon-svg">
           <img src="img/icon-address-book.svg" class="bg">
         </i>
         <span translate>Contacts</span>
       </a>
-    </div>
+      </div>
 
-    <div class="card" ng-if="hasWallets">
-      <a class="item item-icon-left item-icon-right" ng-click="openScanner()">
+      <div class="card" ng-if="hasWallets">
+        <a class="item item-icon-left item-icon-right" ng-click="openScanner()">
         <i class="icon big-icon-svg">
           <img src="img/scan-ico.svg" class="bg">
         </i>
         <span translate>Scan QR Code</span>
       </a>
-    </div>
+      </div>
 
-    <div class="card" ng-if="hasWallets">
-      <a class="item item-icon-left item-icon-right" ng-click="goToEmail()">
+      <div class="card" ng-if="hasWallets">
+        <a class="item item-icon-left item-icon-right" ng-click="goToEmail()">
         <i class="icon big-icon-svg">
           <img src="img/icon-email.svg" class="bg">
         </i>
         <span translate>Email</span>
       </a>
-    </div>
+      </div>
 
-    <div class="card" ng-if="hasWallets">
-      <a class="item item-icon-left item-icon-right" ng-click="goToSMS()">
+      <div class="card" ng-if="hasWallets">
+        <a class="item item-icon-left item-icon-right" ng-click="goToSMS()">
         <i class="icon big-icon-svg">
           <img src="img/icon-language.svg" class="bg">
         </i>
         <span translate>SMS</span>
       </a>
-    </div>
-
-    <div class="card" ng-if="showTransferCard && hasFunds">
-      <div class="item item-heading">
-        <span translate>Transfer to Wallet</span>
       </div>
-      <div class="list">
-        <a class="item item-icon-left item-icon-right" ng-repeat="item in list" ng-if="hasWallets && item.recipientType == 'wallet'" ng-click="goToAmount(item)">
+
+      <div class="card" ng-if="showTransferCard && hasFunds">
+        <div class="item item-heading">
+          <span translate>Transfer to Wallet</span>
+        </div>
+        <div class="list">
+          <a class="item item-icon-left item-icon-right" ng-repeat="item in list" ng-if="hasWallets && item.recipientType == 'wallet'"
+            ng-click="goToAmount(item)">
           <i class="icon big-icon-svg" ng-if="item.recipientType == 'wallet'">
             <img src="img/icon-wallet.svg" ng-class="{'wallet-background-color-default': !item.color}" ng-style="{'background-color': item.color}" class="bg"/>
           </i>
           {{item.name}}
           <i class="icon bp-arrow-right"></i>
         </a>
+        </div>
       </div>
     </div>
-      </div>
 
   </ion-content>
 </ion-view>
