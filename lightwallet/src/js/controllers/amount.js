@@ -31,36 +31,46 @@ angular.module('copayApp.controllers').controller('amountController', function($
     $scope.showAlternativeAmount = !!$scope.nextStep;
     $scope.toColor = data.stateParams.toColor;
     $scope.showSendMax = false;
+    $scope.search = {
+      email: null,
+      phoneNumber: null
+    };
 
-    if (!$scope.nextStep && !data.stateParams.toAddress) {
-      $log.error('Bad params at amount')
-      throw ('bad params');
-    }
+    // if (!$scope.nextStep && !data.stateParams.toAddress) {
+    //   $log.error('Bad params at amount')
+    //   throw ('bad params');
+    // }
 
     var reNr = /^[1234567890\.]$/;
     var reOp = /^[\*\+\-\/]$/;
 
-    var disableKeys = angular.element($window).on('keydown', function(e) {
-      if (!e.key) return;
-      if (e.which === 8) { // you can add others here inside brackets.
-        e.preventDefault();
-        $scope.removeDigit();
-      }
+    $scope.disableKeys = function() {
+      angular.element($window).on('keydown', function(e) {
+        if (!e.key) return;
+        if (e.which === 8) { // you can add others here inside brackets.
+          e.preventDefault();
+          $scope.removeDigit();
+        }
 
-      if (e.key.match(reNr)) {
-        $scope.pushDigit(e.key);
-      } else if (e.key.match(reOp)) {
-        $scope.pushOperator(e.key);
-      } else if (e.keyCode === 86) {
-        if (e.ctrlKey || e.metaKey)
-          processClipboard();
-      } else if (e.keyCode === 13)
-        $scope.finish();
+        if (e.key.match(reNr)) {
+          $scope.pushDigit(e.key);
+        } else if (e.key.match(reOp)) {
+          $scope.pushOperator(e.key);
+        } else if (e.keyCode === 86) {
+          if (e.ctrlKey || e.metaKey)
+            processClipboard();
+        } else if (e.keyCode === 13)
+          $scope.finish();
 
-      $timeout(function() {
-        $scope.$apply();
+        $timeout(function() {
+          $scope.$apply();
+        });
       });
-    });
+    };
+
+    $scope.enableKeys = function() {
+      angular.element($window).off('keydown');
+    };
 
     var config = configService.getSync().wallet.settings;
     $scope.unitName = config.unitName;
@@ -76,6 +86,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
     satToBtc = 1 / 100000000;
     unitDecimals = config.unitDecimals;
 
+    $scope.disableKeys();
     $scope.resetAmount();
 
     // in SAT ALWAYS
@@ -103,6 +114,8 @@ angular.module('copayApp.controllers').controller('amountController', function($
     var value = nodeWebkitService.readFromClipboard();
     if (value && evaluate(value) > 0) paste(evaluate(value));
   };
+
+  $scope.log = console.log;
 
   $scope.showSendMaxMenu = function() {
     $scope.showSendMax = true;

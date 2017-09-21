@@ -27,6 +27,30 @@
           </i>
           <gravatar ng-if="!isChromeApp" class="send-gravatar" name="{{toName}}" height="30" width="30" email="{{toEmail}}"></gravatar>
         </span>
+        <div ng-if="recipientType == 'email'">
+          <input type="text"
+                 class="search-input"
+                 id="email"
+                 placeholder="{{'name@example.com' | translate}}"
+                 name="email"
+                 ng-model-onblur
+                 ng-focus="enableKeys()"
+                 ng-blur="disableKeys()"
+                 ng-change="log(search.email)"
+                 ng-model="search.email">
+        </div>
+        <span ng-if="recipientType == 'sms'">
+          <input type="text"
+                 class="search-input"
+                 id="email"
+                 placeholder="{{'+1-234-567-1234' | translate}}"
+                 name="phone-number"
+                 ng-model-onblur
+                 ng-focus="enableKeys()"
+                 ng-blur="disableKeys()"
+                 ng-change="log(search.phoneNumber)"
+                 ng-model="search.phoneNumber">
+        </span>
         <span ng-if="!recipientType">
           <i class="icon big-icon-svg">
             <img src="img/contact-placeholder.svg" class="bg"/>
