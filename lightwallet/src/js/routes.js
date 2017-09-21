@@ -756,7 +756,12 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         views: {
           'onboarding': {
             templateUrl: 'views/onboarding/welcome.html',
-            controller: 'welcomeController'
+            controller: 'welcomeController', 
+            params: {
+              inviteCode: null,
+              amount: null,
+              secret: null
+            }
           }
         }
       })
@@ -839,12 +844,17 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
 
       // DEEPLINK INTO ONBOARDING FLOW
       .state('onboarding.fromEasySend', {
-        templateUrl: 'views/onboarding/welcome-easysend.html',
-        controller: 'welcomeController',
-        params: {
-          inviteCode: null,
-          amount: null,
-          secret: null
+        url: '/easysend',
+        views: {
+          'onboarding': {
+            templateUrl: 'views/onboarding/welcome-easysend.html',
+            controller: 'tourController',
+            params: {
+              inviteCode: null,
+              amount: null,
+              secret: null
+            }
+          }
         }
       })
       
