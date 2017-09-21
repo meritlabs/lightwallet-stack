@@ -2,6 +2,10 @@
 angular.module('copayApp.controllers').controller('tourController',
   function($scope, $state, $log, $timeout, $filter, ongoingProcess, profileService, rateService, popupService, gettextCatalog, focus, $routeParams) {
 
+    angular.element(document).ready(function() {
+      $scope.checkInviteCode();
+    });      
+    
     $scope.data = {
       index: 0
     };
