@@ -1,2 +1,2 @@
-window.TREZOR_CHROME_URL = './bower_components/trezor-connect/chrome/wrapper.html';
+window.TREZOR_CHROME_URL = './node_modules/trezor-connect/chrome/wrapper.html';
 
