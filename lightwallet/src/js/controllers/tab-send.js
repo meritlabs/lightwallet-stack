@@ -192,6 +192,18 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     });
   };
 
+  $scope.goToEmail = function() {
+    return $state.transitionTo('tabs.send.amount', {
+      recipientType: 'email',
+    });
+  };
+
+  $scope.goToSMS = function() {
+    return $state.transitionTo('tabs.send.amount', {
+      recipientType: 'sms',
+    });
+  };
+
   // This could probably be enhanced refactoring the routes abstract states
   $scope.createWallet = function() {
     $state.go('tabs.home').then(function() {
