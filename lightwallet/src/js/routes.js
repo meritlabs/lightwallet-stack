@@ -253,12 +253,12 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
-      .state('tabs.scan', {
-        url: '/scan',
+      .state('tabs.network', {
+        url: '/network',
         views: {
-          'tab-scan': {
-            controller: 'tabScanController',
-            templateUrl: 'views/tab-scan.html',
+          'tab-network': {
+            controller: 'tabNetworkController',
+            templateUrl: 'views/tab-network.html',
           }
         }
       })
