@@ -33,6 +33,12 @@
     &.ico-send-selected {
       background-image: $v-tab-send-selected-icon;
     }
+    &.ico-network {
+      background-image: $v-tab-network-icon;
+    }
+    &.ico-network-selected {
+      background-image: $v-tab-network-selected-icon;
+    }
   }
 }
 
