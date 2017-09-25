@@ -1,4 +1,4 @@
-<ion-view id="txp-details" hide-tabs>
+<ion-view id="network-details" hide-tabs>
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>
       {{title}}
@@ -9,7 +9,48 @@
 
   <ion-content class="tx-details-content">
     <div class="card">
-      Network Details
+      <div class="header">
+        <i class="icon big-icon-svg">
+          <img src="img/icon-users.svg" class="bg" />
+        </i>
+      </div>
+
+      <div ng-if="wallet">
+        <div class="item item-sub item-icon-left item-big-icon-left item-icon-right wallet">
+          <i class="icon big-icon-svg">
+          <img src="img/icon-wallet.svg" ng-class="{'wallet-background-color-default': !wallet.color, 'wallet-background-color-locked': wallet.locked}" ng-style="{'background-color': wallet.color}" class="bg wallet"/>
+        </i>
+          <span>{{wallet.name || wallet.id}}</span>
+          <p>
+            <span ng-if="wallet.isComplete()">
+            <span class="assertive" ng-if="wallet.error">{{wallet.error}}</span>
+            </span>
+          </p>
+        </div>
+
+        <div class="item item-info item-icon-left item-icon-right">
+          <i class="icon big-icon-svg">
+            <img src="img/icon-user.svg" class="bg"/>
+          </i>
+          <span translate>Users in Your Network</span>
+        </div>
+
+        <div class="item item-info item-icon-left item-icon-right">
+          <i class="icon big-icon-svg">
+            <img src="img/merit.svg" class="bg"/>
+          </i>
+          <span translate>Value of Your Network</span>
+        </div>
+
+        <div class="item item-info item-icon-left item-icon-right">
+          <i class="icon big-icon-svg">
+            <img src="img/cup.svg" class="bg"/>
+          </i>
+          <span translate>Rewards</span>
+        </div>
+
+      </div>
+
     </div>
 
   </ion-content>

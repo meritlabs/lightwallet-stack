@@ -1,0 +1,32 @@
+#network-details {
+  .header {
+    text-align: center;
+    .icon {
+      display: inline-block;
+      margin: 10px auto;
+      .bg {
+        height: 60px;
+        width: 60px;
+      }
+    }
+  }
+  .item {
+    padding-top: 24px;
+    padding-bottom: 25px;
+
+    &:first-child {
+      border-bottom: 2px solid $item-default-border;
+    }
+  }
+  .item.item-info {
+    padding-left: 74px;
+    border: none;
+    .bg {
+      border: 2px solid #293D50;
+      padding: 5px;
+    }
+  }
+  .bg {
+    box-shadow: none;
+  }
+}

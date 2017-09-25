@@ -44,6 +44,14 @@ angular
       $scope.showWallets = true;
     };
 
+    $scope.openNetworkDetails = function(wallet) {
+      if (wallet) {
+        $state.transitionTo('tabs.network.details', {
+          walletId: wallet.id
+        });
+      }
+    }
+
     $scope.canGoBack = function() {
       return $state.params.passthroughMode;
     };
