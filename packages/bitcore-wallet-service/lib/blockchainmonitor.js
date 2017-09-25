@@ -326,8 +326,7 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
         return;
       }
 
-      console.log(referrals);
-      console.log('subs', subs);
+      console.log('referrals',  referrals);
 
       /*
       const indexedSubs = _.indexBy(subs, 'codeHash');
@@ -343,7 +342,7 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
       */
       const triggered = subs;
 
-      console.log('triggered', triggered);
+      console.log('triggered', _.map(triggered, t => t.codeHash));
 
       async.each(triggered, function(sub) {
         log.info('New referral confirmation ' + sub.codeHash);

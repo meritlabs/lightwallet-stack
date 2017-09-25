@@ -1773,6 +1773,7 @@ Bitcoin.prototype.getBlock = function(blockArg, callback) {
           if (err) {
             return done(self._wrapRPCError(err));
           }
+          console.log('response.result: ', response);
           var blockObj = bitcore.Block.fromString(response.result);
           self.blockCache.set(blockhash, blockObj);
           done(null, blockObj);

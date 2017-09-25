@@ -362,9 +362,6 @@ WalletService.prototype.createWallet = function(opts, cb) {
   var shareCode = "";
   var codeHash = "";
 
-  console.log(self);
-  console.log('referral tx subs', self.copayerId, self.walletId);
-
   async.series([
     function(acb) {
       var bc = self._getBlockchainExplorer(opts.network);
@@ -385,7 +382,6 @@ WalletService.prototype.createWallet = function(opts, cb) {
         unlocked = true;
         shareCode = result.result.referralcode;
         codeHash = result.result.codehash;
-        //self.referralTxConfirmationSubscribe({ codeHash: result.result.codehash }, _.noop);
 
         return acb(null);
       });
@@ -414,7 +410,8 @@ WalletService.prototype.createWallet = function(opts, cb) {
         addressType: addressType,
         beacon: opts.beacon,
         unlocked: unlocked,
-        shareCode: shareCode
+        shareCode: shareCode,
+        codeHash: codeHash,
       });
       self.storage.storeWallet(wallet, function(err) {
         log.debug('Wallet created', wallet.id, opts.network);
@@ -3291,15 +3288,23 @@ WalletService.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
 
   const self = this;
 
-  console.log('referral tx subs', self.copayerId, self.walletId);
+  self.storage.fetchReferralByCodeHash(opts.codeHash, function(err, rtx) {
+    if (err) {
+      log.error('Could not fetch referral from the db');
+      return;
+    }
 
-  const sub = Model.ReferralTxConfirmationSub.create({
-    copayerId: self.copayerId,
-    walletId: self.walletId,
-    codeHash: opts.codeHash,
+    if (!rtx) return;
+
+    console.log(rtx);
+    const sub = Model.ReferralTxConfirmationSub.create({
+      copayerId: self.copayerId,
+      walletId: self.walletId,
+      codeHash: opts.codeHash,
+    });
+
+    self.storage.storeReferralTxConfirmationSub(sub, cb);
   });
-
-  self.storage.storeReferralTxConfirmationSub(sub, cb);
 };
 
 WalletService.prototype.referralTxConfirmationUnsubscribe = function(opts, cb) {

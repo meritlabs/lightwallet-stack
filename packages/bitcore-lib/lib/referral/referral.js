@@ -9,6 +9,7 @@ const BufferUtil = require('../util/buffer');
 const JSUtil = require('../util/js');
 const BufferReader = require('../encoding/bufferreader');
 const BufferWriter = require('../encoding/bufferwriter');
+const Hash = require('../crypto/hash');
 
 function Referral(serialized) {
   if (!(this instanceof Referral)) {
@@ -17,6 +18,7 @@ function Referral(serialized) {
 
   this.previousReferral = '';
   this.codeHash = '';
+  this.cKeyId = '';
 
   if (serialized) {
     if (serialized instanceof Referral) {
@@ -33,11 +35,29 @@ function Referral(serialized) {
   } else {
     this._newReferral();
   }
+
+  console.log('Referral hash:', this._getHash());
+
   return null;
 }
 
 const CURRENT_VERSION = 1;
 const DEFAULT_NLOCKTIME = 0;
+
+const hashProperty = {
+  configurable: false,
+  enumerable: true,
+  get: function() {
+    return new BufferReader(this._getHash()).readReverse().toString('hex');
+  }
+};
+Object.defineProperty(Referral.prototype, 'hash', hashProperty);
+Object.defineProperty(Referral.prototype, 'id', hashProperty);
+
+
+Referral.prototype._getHash = function() {
+  return Hash.sha256sha256(this.toBuffer());
+};
 
 Referral.shallowCopy = function(transaction) {
   const copy = new Referral(transaction.toBuffer());

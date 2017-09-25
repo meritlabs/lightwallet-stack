@@ -89,7 +89,7 @@ Storage.prototype._createIndexes = function() {
     txid: 1,
   });
   this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).createIndex({
-    hashCode: 1,
+    codeHash: 1,
   })
   this.db.collection(collections.SESSIONS).createIndex({
     copayerId: 1
@@ -546,7 +546,6 @@ Storage.prototype.fetchAddress = function(address, cb) {
   }, function(err, result) {
     if (err) return cb(err);
     if (!result) return cb();
-
     return cb(null, Model.Address.fromObj(result));
   });
 };
