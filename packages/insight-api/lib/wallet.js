@@ -21,4 +21,17 @@ WalletController.prototype.unlock = function(req, res) {
   });
 };
 
+WalletController.prototype.getANV = function(req, res) {
+  var self = this;
+  var keys = req.body.keys;
+
+  self.node.services.bitcoind.getANV(keys, function(err, result) {
+    if(err) {
+      return self.common.handleErrors(err, res);
+    }
+
+    res.jsonp(result);
+  });
+};
+
 module.exports = WalletController;

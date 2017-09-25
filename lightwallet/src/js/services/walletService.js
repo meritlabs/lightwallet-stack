@@ -1236,5 +1236,11 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
     });
   };
 
+  root.getANV = function(wallet, cb) {
+    wallet.getANV(function(err, res) {
+      return cb(err, res);
+    });
+  }
+
   return root;
 });

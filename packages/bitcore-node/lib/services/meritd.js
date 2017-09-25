@@ -191,7 +191,8 @@ Merit.prototype.getAPIMethods = function() {
     ['generatereferralcode',  this, this.generateReferralCode, 0],
     ['unlockwallet',          this, this.unlockWallet,         2],
     ['validatereferralcode',  this, this.validateReferralCode, 1],
-    ['getInputForEasySend', this, this.getInputForEasySend, 1]
+    ['getInputForEasySend', this, this.getInputForEasySend, 1],
+    ['getanv',                this, this.getANV, 1],
   ];
   return methods;
 };
@@ -2276,7 +2277,6 @@ Merit.prototype.validateAddress = function(address, callback) {
  * Checks if an easyScript is on the blockChain.
  * @param {String} easyScript - The full easyScript value.
  */
-
  Merit.prototype.getInputForEasySend = function(easyScript, callback) {
    log.info('ValidateEasyScript RPC called: ', easyScript);
 
@@ -2290,7 +2290,7 @@ Merit.prototype.validateAddress = function(address, callback) {
       } else {
         log.info('getInputForEasySend Response: ', response);
         callback(null, response);
-}
+      }
     });
    } else {
      var err = new errors.RPCError('EasyScript was missing or incorrect');
@@ -2298,6 +2298,30 @@ Merit.prototype.validateAddress = function(address, callback) {
      return callback(self._wrapRPCError(err));
    }
  };
+
+/**
+ * Get ANV for array of keys
+ * @param {Array} keys
+ * @param {Function} callback
+ */
+Bitcoin.prototype.getANV = function(keys, callback) {
+  var self = this;
+
+  if (typeof referralCode === 'string' || referralCode instanceof String) {
+    keys = [keys];
+  }
+
+  log.info('getANV Called: ', keys.join('; '));
+
+  self.client.getanv(keys, function(err, response) {
+    if (err) {
+      return callback(self._wrapRPCError(err));
+    } else {
+      log.info('getANV Response: ', response);
+      callback(null, response.result);
+    }
+  });
+}
 
 /**
  * Called by Node to stop the service.
