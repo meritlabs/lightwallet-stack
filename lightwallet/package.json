@@ -81,9 +81,11 @@
     "ng-csv": "~0.3.6",
     "ng-lodash": "0.2.3",
     "ngtouch": "^1.0.1",
+    "node-version-compare": "^1.0.1",
     "qrcode-decoder-js": "https://github.com/colkito/qrcode-decoder-js",
     "shelljs": "^0.3.0",
-    "trezor-connect": "git@github.com:meritlabs/trezor-connect"
+    "trezor-connect": "git@github.com:meritlabs/trezor-connect",
+    "xml2js": "^0.4.19"
   },
   "scripts": {
     "start": "npm run build:www && ionic serve --nolivereload --nogulp -s --address 0.0.0.0",
