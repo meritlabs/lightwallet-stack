@@ -2,6 +2,7 @@
 
 var modules = [
   'angularMoment',
+  'ngRoute',
   'monospaced.qrcode',
   'gettext',
   'ionic',
