@@ -830,6 +830,21 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/anv/', function(req, res) {
+    var opts = {
+      network: req.query.network || 'testnet',
+      keys: req.query.keys.split(','),
+    };
+
+    getServerWithAuth(req, res, function(server) {
+      server.getANV(opts, function(err, response) {
+        if (err) return returnError(err, res, req);
+
+        res.json(response);
+      });
+    });
+  });
+
   this.app.use(opts.basePath || '/bws/api', router);
 
   // Pass bitcore node to th walletService to initialize it.  

@@ -1640,6 +1640,19 @@ API.prototype.getStatus = function(opts, cb) {
   });
 };
 
+API.prototype.getANV = function(cb) {
+  $.checkState(this.credentials);
+
+  var self = this;
+  var keys = [this.credentials.xPubKey];
+
+  self._doGetRequest('/v1/anv/?network=testnet&keys=' + keys.join(','), function(err, result) {
+    if (err) return cb(err);
+
+    return cb(err, result);
+  });
+}
+
 /**
  * Get copayer preferences
  *
@@ -2578,7 +2591,7 @@ API.prototype.validateAddress = function(address, network, cb) {
     if (err || !result) return cb(err);
     return cb(null, result);
   });
-}; 
+};
 
 
 API.prototype.referralTxConfirmationSubscribe = function(opts, cb) {

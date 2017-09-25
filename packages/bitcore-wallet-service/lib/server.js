@@ -432,6 +432,21 @@ WalletService.prototype.createWallet = function(opts, cb) {
 };
 
 /**
+ * Get ANV for keys
+ * @param {Object} opts
+ * @returns {Number} anv
+ */
+WalletService.prototype.getANV = function(opts, cb) {
+  opts.network = opts.network || 'livenet';
+
+  var bc = this._getBlockchainExplorer(opts.network);
+
+  bc.getANV(opts.keys, function(err, result) {
+    cb(err, result);
+  });
+};
+
+/**
  * Retrieves a wallet from storage.
  * @param {Object} opts
  * @returns {Object} wallet
