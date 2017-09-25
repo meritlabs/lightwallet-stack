@@ -756,12 +756,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         views: {
           'onboarding': {
             templateUrl: 'views/onboarding/welcome.html',
-            controller: 'welcomeController', 
-            params: {
-              inviteCode: null,
-              amount: null,
-              secret: null
-            }
+            controller: 'welcomeController'
           }
         }
       })
@@ -843,17 +838,12 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
       })
 
       // DEEPLINK INTO ONBOARDING FLOW
-      .state('onboarding.fromEasySend', {
-        url: '/easysend',
+      .state('onboarding.easyreceive', {
+        url: '/easyreceive?inviteCode&amount&secret',
         views: {
           'onboarding': {
-            templateUrl: 'views/onboarding/welcome-easysend.html',
+            templateUrl: 'views/onboarding/welcome-easyreceive.html',
             controller: 'tourController',
-            params: {
-              inviteCode: null,
-              amount: null,
-              secret: null
-            }
           }
         }
       })
@@ -1300,7 +1290,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           } else if (err.message && err.message.match('NONAGREEDDISCLAIMER')) {
             if (lodash.isEmpty(profileService.getWallets())) {
               $log.debug('No wallets and no disclaimer... redirecting');
-              $state.go('onboarding.welcome');
+              //$state.go('onboarding.welcome');
             } else {
               $log.debug('Display disclaimer... redirecting');
               $state.go('onboarding.disclaimer', {
