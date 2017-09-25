@@ -1,17 +1,23 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('welcomeController', function($scope, $state, $timeout, $ionicConfig, $log, profileService, startupService, storageService, $routeParams) {
+angular.module('copayApp.controllers').controller('welcomeController', function($scope, $state, $timeout, $ionicConfig, $log, profileService, startupService, storageService, $routeParams, $stateParams) {
 
   angular.element(document).ready(function() {
     $scope.checkInviteCode();
   });      
   
   $scope.checkInviteCode = function() {
-    console.log("let's check the invite code!");
+    console.log("let's check the invite code in routeparams!");
     if ($routeParams.inviteCode && $routeParams.secret) {
       console.log("INVITE CODE IS HERE");
       console.alert("hi");
       $state.go('onboarding.fromEasySend');
+    }
+
+
+    console.log("Let's check the invite code in state params.");
+    if ($stateParams.inviteCode) {
+      console.log("INVITE CODE IS in THE STATE PARAMS");
     }
   }
 
