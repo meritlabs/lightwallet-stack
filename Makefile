@@ -19,6 +19,10 @@ start-lightwallet:
 .PHONY: clean-lightwallet
 clean-lightwallet:
 	rm -rf ./lightwallet/node_modules
+	rm -rf ./lightwallet/plugins
+	rm -rf ./lightwallet/platforms/ios
+	rm -rf ./lightwallet/platforms/windows
+	rm -rf ./lightwallet/platforms/android
 
 
 ### lightwallet-stack ###
