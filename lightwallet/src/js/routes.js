@@ -263,7 +263,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         }
       })
       .state('tabs.network.details', {
-        url: '/network-details',
+        url: '/:walletId/details',
         views: {
           'tab-network@tabs': {
             controller: 'networkDetailsController',
