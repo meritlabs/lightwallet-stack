@@ -3296,7 +3296,6 @@ WalletService.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
 
     if (!rtx) return;
 
-    console.log(rtx);
     const sub = Model.ReferralTxConfirmationSub.create({
       copayerId: self.copayerId,
       walletId: self.walletId,

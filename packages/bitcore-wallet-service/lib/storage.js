@@ -1006,7 +1006,6 @@ Storage.prototype.fetchActiveReferralConfirmationSubs = function(cb) {
       if (!result) return cb();
 
       const subs = _.map([].concat(result), function(r) {
-        console.log(r);
         return Model.ReferralTxConfirmationSub.fromObj(r);
       });
       return cb(null, subs);
