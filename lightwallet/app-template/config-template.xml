@@ -81,6 +81,14 @@
       <ios-team-release value="PW4Q8885U7" />
     </branch-config>
 
+    <!-- Branch -->
+    <plugin name="branch-cordova-sdk" spec="^2.6.0" />
+    <branch-config>
+      <branch-key value="key_live_edqKoEEX0yip4cpCBjbnXlpkqBmai2VN" />
+      <uri-scheme value="merit" />
+      <link-domain value="c213.app.link" />
+      <ios-team-release value="PW4Q8885U7" />
+    </branch-config>
 
     <!--  Delete cordova-plugin-qrscanner plugin and enable phonegap-plugin-barcodescanner to build cordova windows-->
     <!-- <plugin name="phonegap-plugin-barcodescanner" spec="https://github.com/phonegap/phonegap-plugin-barcodescanner.git" /> -->
