@@ -2062,7 +2062,7 @@ Bitcoin.prototype.getDetailedTransaction = function(txid, callback) {
         }
         var result = response.result;
         var tx = {
-          hex: result.hex,
+          size: result.size,
           blockHash: result.blockhash,
           height: result.height ? result.height : -1,
           blockTimestamp: result.time,

@@ -1,7 +1,7 @@
 {
   "packageName": "merit",
   "packageDescription": "Merit Wallet",
-  "packageNameId": "com.bitpay.copay",
+  "packageNameId": "me.merit.LightWallet",
   "statusBarColor": "#192c3a",
   "userVisibleName": "Merit",
   "purposeLine": "Merit Wallet",
