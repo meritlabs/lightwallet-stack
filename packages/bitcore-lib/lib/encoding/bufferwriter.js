@@ -41,7 +41,7 @@ BufferWriter.prototype.writeString = function(str) {
   var buf = Buffer.from(str);
   this.bufs.push(buf);
   return this;
-}
+};
 
 BufferWriter.prototype.writeUInt8 = function(n) {
   var buf = new Buffer(1);

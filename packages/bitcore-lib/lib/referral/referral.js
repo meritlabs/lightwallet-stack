@@ -37,7 +37,7 @@ function Referral(serialized) {
   }
 
   return null;
-}
+};
 
 const CURRENT_VERSION = 1;
 const DEFAULT_NLOCKTIME = 0;

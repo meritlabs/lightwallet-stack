@@ -407,10 +407,9 @@ angular.module('copayApp.services')
             if (err) return bwcError.cb(err, gettextCatalog.getString('Error creating wallet'), cb);
 
             var codeHash = walletClient.credentials.codeHash;
-            console.log(codeHash);
 
             walletClient.referralTxConfirmationSubscribe({ codeHash: codeHash }, function() {
-              console.log('creating referral tx subscription');
+              $log.debug('creating referral tx subscription');
             });
 
             return cb(null, walletClient, secret);
@@ -512,8 +511,6 @@ angular.module('copayApp.services')
         return cb(gettextCatalog.getString('Could not access wallet'));
 
       var walletId = client.credentials.walletId;
-
-      console.log(client.credentials);
 
       if (!root.profile.addWallet(JSON.parse(client.export())))
         return cb(gettextCatalog.getString("Wallet already in {{appName}}", {
