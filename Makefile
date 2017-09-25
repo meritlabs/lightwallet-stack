@@ -7,17 +7,17 @@ prepare-prereqs:
 
 
 ### lightwallet-app ###
-.PHONY: prepare-lightwallet-app
-prepare-lightwallet-app:
+.PHONY: prepare-lightwallet
+prepare-lightwallet:
 	cd ./lightwallet && npm install
 	cd ./lightwallet && npm run apply
 
-.PHONY: start-lightwallet-app
-start-lightwallet-app:
+.PHONY: start-lightwallet
+start-lightwallet:
 	cd ./lightwallet && npm run apply && npm start
 
-.PHONY: clean-lightwallet-app
-clean-lightwallet-app:
+.PHONY: clean-lightwallet
+clean-lightwallet:
 	rm -rf ./lightwallet/node_modules
 
 
@@ -35,7 +35,7 @@ stop-mongo:
 # See https://github.com/meritlabs/lightwallet-stack/blob/master/bitcore-node/docs/development.md
 .PHONY: symlink-bitcore-node
 symlink-bitcore-node:
-	cd ./packages/bitcore-node/bin && ln -sf ../../../merit-bitcoin/src/meritd
+	cd ./packages/bitcore-node/bin && ln -sf ../../../merit/src/meritd
 
 # Within the devnode directory with the configuration file, start the node:
 .PHONY: start-bitcore-node
@@ -56,19 +56,19 @@ stop-bitcore-wallet-service:
 	cd ./packages/bitcore-wallet-service/ && sh stop.sh
 
 .PHONY: clean-npm
-clean-npm: 
+clean-npm:
 	npm cache clean --force
 
-.PHONY: prepare-lightwallet-stack
-prepare-lightwallet-stack: clean-npm \
+.PHONY: prepare-stack
+prepare-stack: clean-npm \
 	use-lerna
 
 .PHONY: use-lerna
-use-lerna: 
+use-lerna:
 	lerna bootstrap
 
-.PHONY: start-lightwallet-stack
-start-lightwallet-stack: symlink-bitcore-node start-bitcore-wallet-service start-bitcore-node
+.PHONY: start-stack
+start-stack: symlink-bitcore-node start-bitcore-wallet-service start-bitcore-node
 
 
 # Clean

@@ -9,7 +9,7 @@ var Insight = require('./blockchainexplorers/insight');
 
 var PROVIDERS = {
   'insight': {
-    'livenet': 'http://127.0.0.1:3001',
+    //'livenet': 'http://127.0.0.1:3131', //Does not exist for now.
     'testnet': 'http://127.0.0.1:3001',
   },
 };
@@ -18,7 +18,7 @@ function BlockChainExplorer(opts) {
   $.checkArgument(opts);
 
   var provider = opts.provider || 'insight';
-  var network = opts.network || 'livenet';
+  var network = opts.network || 'testnet';
 
   $.checkState(PROVIDERS[provider], 'Provider ' + provider + ' not supported');
   $.checkState(_.contains(_.keys(PROVIDERS[provider]), network), 'Network ' + network + ' not supported by this provider');
