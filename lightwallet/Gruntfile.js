@@ -15,7 +15,7 @@ module.exports = function(grunt) {
         command: 'node ./util/buildExternalServices.js'
       },
       clean: {
-        command: 'rm -Rf bower_components node_modules'
+        command: 'rm -Rf node_modules'
       },
       cordovaclean: {
         command: 'make -C cordova clean'
@@ -124,19 +124,20 @@ module.exports = function(grunt) {
       },
       angular: {
         src: [
-          'bower_components/qrcode-generator/js/qrcode.js',
-          'bower_components/qrcode-generator/js/qrcode_UTF8.js',
-          'bower_components/moment/min/moment-with-locales.js',
-          'bower_components/angular-moment/angular-moment.js',
-          'bower_components/ng-lodash/build/ng-lodash.js',
-          'bower_components/angular-qrcode/angular-qrcode.js',
-          'bower_components/angular-gettext/dist/angular-gettext.js',
-          'bower_components/ng-csv/build/ng-csv.js',
-          'bower_components/ionic-toast/dist/ionic-toast.bundle.min.js',
-          'bower_components/angular-clipboard/angular-clipboard.js',
-          'bower_components/angular-md5/angular-md5.js',
-          'bower_components/angular-mocks/angular-mocks.js',
-          'bower_components/ngtouch/src/ngTouch.js',
+          'node_modules/qrcode-generator/js/qrcode.js',
+          'node_modules/qrcode-generator/js/qrcode_UTF8.js',
+          'node_modules/moment/min/moment-with-locales.js',
+          'node_modules/angular-moment/angular-moment.js',
+          'node_modules/ng-lodash/build/ng-lodash.js',
+          'node_modules/angular-qrcode/angular-qrcode.js',
+          'node_modules/angular-gettext/dist/angular-gettext.js',
+          'node_modules/ng-csv/build/ng-csv.js',
+          'node_modules/ionic-toast/dist/ionic-toast.bundle.min.js',
+          'node_modules/angular-clipboard/angular-clipboard.js',
+          'node_modules/angular-md5/angular-md5.js',
+          'node_modules/angular-mocks/angular-mocks.js',
+          'node_modules/ngtouch/src/ngTouch.js',
+          'node_modules/angular-route/angular-route.js',
           'angular-bitauth/angular-bitauth.js',
           'angular-bitcore-wallet-client/angular-bitcore-wallet-client.js'
         ],
@@ -156,7 +157,7 @@ module.exports = function(grunt) {
           'src/js/externalServices.js',
           'src/js/init.js',
           'src/js/trezor-url.js',
-          'bower_components/trezor-connect/connect.js',
+          'node_modules/trezor-connect/connect.js',
           'node_modules/bezier-easing/dist/bezier-easing.min.js',
           'node_modules/cordova-plugin-qrscanner/dist/cordova-plugin-qrscanner-lib.min.js',
           'node_modules/clipboard/dist/clipboard.min.js'
@@ -202,13 +203,13 @@ module.exports = function(grunt) {
       ionic_fonts: {
         expand: true,
         flatten: true,
-        src: 'bower_components/ionic/release/fonts/ionicons.*',
+        src: 'node_modules/ionic-v1/release/fonts/ionicons.*',
         dest: 'www/fonts/'
       },
       ionic_js: {
         expand: true,
         flatten: true,
-        src: 'bower_components/ionic/release/js/ionic.bundle.min.js',
+        src: 'node_modules/ionic-v1/release/js/ionic.bundle.min.js',
         dest: 'www/lib/'
       },
       linux: {
