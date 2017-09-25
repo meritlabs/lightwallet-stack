@@ -262,6 +262,15 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
+      .state('tabs.network.details', {
+        url: '/network-details',
+        views: {
+          'tab-network@tabs': {
+            controller: 'networkDetailsController',
+            templateUrl: 'views/network-details.html',
+          }
+        }
+      })
       .state('scanner', {
         url: '/scanner',
         params: {
