@@ -1,11 +1,7 @@
 'use strict';
 angular.module('copayApp.controllers').controller('tourController',
-  function($scope, $state, $log, $timeout, $filter, ongoingProcess, profileService, rateService, popupService, gettextCatalog, focus, $routeParams) {
+  function($scope, $state, $log, $timeout, $filter, ongoingProcess, profileService, rateService, popupService, gettextCatalog, focus, $stateParams) {
 
-    angular.element(document).ready(function() {
-      $scope.checkInviteCode();
-    });      
-    
     $scope.data = {
       index: 0
     };
@@ -14,7 +10,6 @@ angular.module('copayApp.controllers').controller('tourController',
       $scope.tourFormData = {};
       $scope.unlockFailed = false;
       $scope.unlockSucceeded = false;
-      $scope.checkInviteCode();
     });
 
     $scope.options = {
@@ -49,8 +44,6 @@ angular.module('copayApp.controllers').controller('tourController',
           $scope.$apply();
         })
       });
-
-      $scope.checkInviteCode();
     });
 
     // TODO: Implement the more modern angular way of doing this
@@ -66,9 +59,9 @@ angular.module('copayApp.controllers').controller('tourController',
 
     $scope.checkInviteCode = function() {
       console.log("let's check the invite code!");
-      if ($routeParams.inviteCode && $routeParams.secret) {
-        console.log("INVITE CODE IS HERE");
-        $state.go('onboarding.fromEasySend');
+      if ($stateParams.inviteCode) {
+        $log.debug("Received inviteCode from URL param.  Storing for later...")
+        $scope.inviteCode = $routeParams.inviteCode;
       }
     }
 
