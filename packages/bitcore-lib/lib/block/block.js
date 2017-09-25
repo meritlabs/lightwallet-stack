@@ -65,10 +65,8 @@ Block._fromObject = function _fromObject(data) {
   const referrals = [];
   data.referrals.forEach(function(ref) {
     if (ref instanceof Referral) {
-      console.log(`Referral from block is referral object: ${ref}`);
       referrals.push(ref);
     } else {
-      console.log(`Referral is POJSO: ${ref}`);
       referrals.push(Referral().fromObject(ref));
     }
   });
@@ -106,9 +104,7 @@ Block._fromBufferReader = function _fromBufferReader(br) {
   const referrals = br.readVarintNum();
   info.referrals = [];
   for (let i = 0; i < referrals; i++) {
-    const ref = Referral().fromBufferReader(br);
-    info.referrals.push(ref);
-    console.log('referral from reader', ref);
+    info.referrals.push(Referral().fromBufferReader(br));
   }
   return info;
 };

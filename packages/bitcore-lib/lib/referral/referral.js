@@ -36,8 +36,6 @@ function Referral(serialized) {
     this._newReferral();
   }
 
-  console.log('Referral hash:', this._getHash());
-
   return null;
 }
 
@@ -93,7 +91,7 @@ Referral.prototype.fromBufferReader = function(reader) {
 
   //this.version = reader.readInt32LE();
   this.previousReferral = reader.read(32).toString('hex').match(/.{1,2}/g).reverse().join('');
-  this.cKeyId = reader.read(20).toString('hex'); // this produces garbage, but saves correctly
+  this.cKeyId = reader.read(20).toString('hex'); 
   this.codeHash = reader.read(32).toString('hex').match(/.{1,2}/g).reverse().join('');
   //this.nLockTime = reader.readUInt32LE();
 

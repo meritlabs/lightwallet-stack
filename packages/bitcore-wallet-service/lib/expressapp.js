@@ -232,7 +232,6 @@ ExpressApp.prototype.start = function(opts, cb) {
     // that other users can use to unlock their wallets.
     server.createWallet(req.body, function(err, walletId, shareCode, codeHash) {
       if (err) return returnError(err, res, req);
-      console.log('code hash is: ', codeHash);
       res.json({
         walletId: walletId,
         shareCode: shareCode,

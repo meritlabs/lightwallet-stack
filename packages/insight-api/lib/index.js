@@ -291,7 +291,6 @@ InsightAPI.prototype.transactionEventHandler = function(txBuffer) {
 
 InsightAPI.prototype.referralEventHandler = function(referralBuffer) {
   var rtx = new Referral().fromBuffer(referralBuffer);
-//  var result = this.txController.transformInvTransaction(tx);
 
   for (var i = 0; i < this.subscriptions.inv.length; i++) {
     this.subscriptions.inv[i].emit('rawreferraltx', rtx);
