@@ -64,7 +64,13 @@ Block._fromObject = function _fromObject(data) {
   });
   const referrals = [];
   data.referrals.forEach(function(ref) {
-    referrals.push(ref);
+    if (ref instanceof Referral) {
+      console.log(`Referral from block is referral object: ${ref}`);
+      referrals.push(ref);
+    } else {
+      console.log(`Referral is POJSO: ${ref}`);
+      referrals.push(Referral().fromObject(ref));
+    }
   });
   var info = {
     header: BlockHeader.fromObject(data.header),
@@ -93,14 +99,16 @@ Block._fromBufferReader = function _fromBufferReader(br) {
   $.checkState(!br.finished(), 'No block data received');
   info.header = BlockHeader.fromBufferReader(br);
   const transactions = br.readVarintNum();
-  const referrals = br.readVarintNum();
   info.transactions = [];
   for (let i = 0; i < transactions; i++) {
     info.transactions.push(Transaction().fromBufferReader(br));
   }
+  const referrals = br.readVarintNum();
   info.referrals = [];
   for (let i = 0; i < referrals; i++) {
-    info.referrals.push(Referral().fromBufferReader(br));
+    const ref = Referral().fromBufferReader(br);
+    info.referrals.push(ref);
+    console.log('referral from reader', ref);
   }
   return info;
 };

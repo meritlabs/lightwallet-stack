@@ -97,7 +97,7 @@ angular.module('copayApp.services')
       wallet.m = wallet.credentials.m;
       wallet.n = wallet.credentials.n;
       wallet.unlocked = wallet.credentials.unlocked;
-      wallet.shareCode = wallet.credentials.shareCode
+      wallet.shareCode = wallet.credentials.shareCode;
 
       root.updateWalletSettings(wallet);
       root.wallet[walletId] = wallet;
@@ -406,14 +406,14 @@ angular.module('copayApp.services')
             // TODO insert status codes to make reading this easier throughout the app.
             if (err) return bwcError.cb(err, gettextCatalog.getString('Error creating wallet'), cb);
 
-            console.log(walletClient);
             var codeHash = walletClient.credentials.codeHash;
             console.log(codeHash);
 
             walletClient.referralTxConfirmationSubscribe({ codeHash: codeHash }, function() {
               console.log('creating referral tx subscription');
-              return cb(null, walletClient, secret);
             });
+
+            return cb(null, walletClient, secret);
           });
         });
       }, 50);

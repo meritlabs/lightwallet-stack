@@ -120,6 +120,8 @@ BlockController.prototype.transformBlock = function(block, info) {
     return tx.hash;
   });
   const referralCodes = blockObj.referrals.map(function (ref) {
+    console.log('transform block');
+    console.log(ref.codeHash);
     return ref.codeHash;
   });
   const result = {

@@ -13,6 +13,7 @@ ReferralTxConfirmationSub.create = function (opts) {
   rtx.copayerId = opts.copayerId;
   rtx.codeHash = opts.codeHash;
   rtx.isActive = true;
+  rtx.txHash = opts.txHash;
 
   return rtx;
 };
@@ -26,6 +27,7 @@ ReferralTxConfirmationSub.fromObj = function (obj) {
   rtx.copayerId = obj.copayerId;
   rtx.codeHash = obj.codeHash;
   rtx.isActive = obj.isActive;
+  rtx.txHash = obj.txHash;
 
   return rtx;
 };
