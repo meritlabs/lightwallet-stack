@@ -91,7 +91,7 @@ Utils._tryVerifyMessage = function(hash, sig, publicKeyBuffer) {
 
 Utils.formatAmount = function(satoshis, unit, opts) {
   var UNITS = {
-    btc: {
+    mrt: {
       toSatoshis: 100000000,
       maxDecimals: 6,
       minDecimals: 2,
@@ -134,10 +134,10 @@ Utils.formatAmount = function(satoshis, unit, opts) {
 };
 
 Utils.formatAmountInBtc = function(amount) {
-  return Utils.formatAmount(amount, 'btc', {
+  return Utils.formatAmount(amount, 'mrt', {
     minDecimals: 8,
     maxDecimals: 8,
-  }) + 'btc';
+  }) + 'mrt';
 };
 
 Utils.formatUtxos = function(utxos) {

@@ -13,12 +13,12 @@ To understand the need of using the `Unit` class when dealing with unit conversi
 ```
 
 ## Supported units
-The supported units are BTC, mBTC, bits (micro BTCs, uBTC) and satoshis. The codes for each unit can be found as members of the Unit class.
+The supported units are MRT, mMRT, bits (micro MRTs, uMRT) and satoshis. The codes for each unit can be found as members of the Unit class.
 
 ```javascript
-var btcCode = Unit.BTC;
-var mbtcCode = Unit.mBTC;
-var ubtcCode = Unit.uBTC;
+var btcCode = Unit.MRT;
+var mbtcCode = Unit.mMRT;
+var ubtcCode = Unit.uMRT;
 var bitsCode = Unit.bits;
 var satsCode = Unit.satoshis;
 ```
@@ -31,7 +31,7 @@ var unit;
 var amount = 100;
 
 // using a unit code
-var unitPreference = Unit.BTC;
+var unitPreference = Unit.MRT;
 unit = new Unit(amount, unitPreference);
 
 // using a known unit
@@ -48,7 +48,7 @@ Once you have a unit instance, you can check its representation in all the avail
 var unit;
 
 // using a unit code
-var unitPreference = Unit.BTC;
+var unitPreference = Unit.MRT;
 value = Unit.fromSatoshis(amount).to(unitPreference);
 
 // using a known unit
@@ -58,14 +58,14 @@ value = Unit.fromBTC(amount).toBits();
 value = Unit.fromBTC(amount).toSatoshis();
 
 // using accessors
-value = Unit.fromBTC(amount).BTC;
-value = Unit.fromBTC(amount).mBTC;
+value = Unit.fromBTC(amount).MRT;
+value = Unit.fromBTC(amount).mMRT;
 value = Unit.fromBTC(amount).bits;
 value = Unit.fromBTC(amount).satoshis;
 ```
 
 ## Using a fiat currency
-The unit class also provides a convenient alternative to create an instance from a fiat amount and the corresponding BTC/fiat exchange rate. Any unit instance can be converted to a fiat amount by providing the current exchange rate. Check the example below:
+The unit class also provides a convenient alternative to create an instance from a fiat amount and the corresponding MRT/fiat exchange rate. Any unit instance can be converted to a fiat amount by providing the current exchange rate. Check the example below:
 
 ```javascript
 var unit, fiat;
