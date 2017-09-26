@@ -48,7 +48,7 @@ angular
           }
 
           $timeout(function() {
-            wallet.anv = txFormatService.parseAmount(anv);
+            wallet.anv = txFormatService.parseAmount(anv, 'sat');
           });
         });
       }

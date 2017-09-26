@@ -25,7 +25,7 @@ angular
         }
 
         $timeout(function() {
-          $scope.anv = txFormatService.parseAmount(anv);
+          $scope.anv = txFormatService.parseAmount(anv, 'sat');
         });
       });
     });
