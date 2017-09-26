@@ -16,9 +16,9 @@ To understand the need of using the `Unit` class when dealing with unit conversi
 The supported units are MRT, mMRT, bits (micro MRTs, uMRT) and satoshis. The codes for each unit can be found as members of the Unit class.
 
 ```javascript
-var btcCode = Unit.MRT;
-var mbtcCode = Unit.mMRT;
-var ubtcCode = Unit.uMRT;
+var mrtCode = Unit.MRT;
+var mmrtCode = Unit.mMRT;
+var umrtCode = Unit.uMRT;
 var bitsCode = Unit.bits;
 var satsCode = Unit.satoshis;
 ```
@@ -35,7 +35,7 @@ var unitPreference = Unit.MRT;
 unit = new Unit(amount, unitPreference);
 
 // using a known unit
-unit = Unit.fromBTC(amount);
+unit = Unit.fromMRT(amount);
 unit = Unit.fromMilis(amount);
 unit = Unit.fromBits(amount);
 unit = Unit.fromSatoshis(amount);
@@ -52,16 +52,16 @@ var unitPreference = Unit.MRT;
 value = Unit.fromSatoshis(amount).to(unitPreference);
 
 // using a known unit
-value = Unit.fromBTC(amount).toBTC();
-value = Unit.fromBTC(amount).toMilis();
-value = Unit.fromBTC(amount).toBits();
-value = Unit.fromBTC(amount).toSatoshis();
+value = Unit.fromMRT(amount).toMRT();
+value = Unit.fromMRT(amount).toMilis();
+value = Unit.fromMRT(amount).toBits();
+value = Unit.fromMRT(amount).toSatoshis();
 
 // using accessors
-value = Unit.fromBTC(amount).MRT;
-value = Unit.fromBTC(amount).mMRT;
-value = Unit.fromBTC(amount).bits;
-value = Unit.fromBTC(amount).satoshis;
+value = Unit.fromMRT(amount).MRT;
+value = Unit.fromMRT(amount).mMRT;
+value = Unit.fromMRT(amount).bits;
+value = Unit.fromMRT(amount).satoshis;
 ```
 
 ## Using a fiat currency

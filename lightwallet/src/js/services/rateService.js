@@ -17,8 +17,8 @@ var RateService = function(opts) {
   self.httprequest = opts.httprequest; // || request;
   self.lodash = opts.lodash;
 
-  self.SAT_TO_BTC = 1 / 1e8;
-  self.BTC_TO_SAT = 1e8;
+  self.SAT_TO_MRT = 1 / 1e8;
+  self.MRT_TO_SAT = 1e8;
   self.UNAVAILABLE_ERROR = 'Service is not available - check for service.isAvailable() or use service.whenAvailable()';
   self.UNSUPPORTED_CURRENCY_ERROR = 'Currency not supported';
 
@@ -101,14 +101,14 @@ RateService.prototype.toFiat = function(satoshis, code) {
     return null;
   }
 
-  return satoshis * this.SAT_TO_BTC * this.getRate(code);
+  return satoshis * this.SAT_TO_MRT * this.getRate(code);
 };
 
 RateService.prototype.fromFiat = function(amount, code) {
   if (!this.isAvailable()) {
     return null;
   }
-  return amount / this.getRate(code) * this.BTC_TO_SAT;
+  return amount / this.getRate(code) * this.MRT_TO_SAT;
 };
 
 RateService.prototype.listAlternatives = function(sort) {

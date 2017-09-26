@@ -41,12 +41,12 @@ angular.module('copayApp.controllers').controller('customAmountController', func
         // Convert to MRT
         var config = configService.getSync().wallet.settings;
         var amountUnit = txFormatService.satToUnit(parsedAmount.amountSat);
-        var btcParsedAmount = txFormatService.parseAmount(amountUnit, config.unitName);
+        var mrtParsedAmount = txFormatService.parseAmount(amountUnit, config.unitName);
 
-        $scope.amountBtc = btcParsedAmount.amount;
-        $scope.altAmountStr = btcParsedAmount.amountUnitStr;
+        $scope.amountMrt = mrtParsedAmount.amount;
+        $scope.altAmountStr = mrtParsedAmount.amountUnitStr;
       } else {
-        $scope.amountBtc = amount; // MRT
+        $scope.amountMrt = amount; // MRT
         $scope.altAmountStr = txFormatService.formatAlternativeStr(parsedAmount.amountSat);
       }
     });
@@ -61,12 +61,12 @@ angular.module('copayApp.controllers').controller('customAmountController', func
 
   $scope.shareAddress = function() {
     if (!platformInfo.isCordova) return;
-    var data = 'bitcoin:' + $scope.address + '?amount=' + $scope.amountBtc;
+    var data = 'bitcoin:' + $scope.address + '?amount=' + $scope.amountMrt;
     window.plugins.socialsharing.share(data, null, null, null);
   }
 
   $scope.copyToClipboard = function() {
-    return 'bitcoin:' + $scope.address + '?amount=' + $scope.amountBtc;
+    return 'bitcoin:' + $scope.address + '?amount=' + $scope.amountMrt;
   };
 
 });

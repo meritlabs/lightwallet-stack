@@ -164,9 +164,9 @@ angular.module('copayApp.controllers').controller('topUpController', function($s
           return cb({message: gettextCatalog.getString('Insufficient funds for fee')});
         }
 
-        var maxAmountBtc = Number((maxValues.amount / 100000000).toFixed(8));
+        var maxAmountMrt = Number((maxValues.amount / 100000000).toFixed(8));
 
-        createInvoice({amount: maxAmountBtc, currency: 'MRT'}, function(err, inv) {
+        createInvoice({amount: maxAmountMrt, currency: 'MRT'}, function(err, inv) {
           if (err) return cb(err);
 
           var invoiceFeeSat = parseInt((inv.buyerPaidBtcMinerFee * 100000000).toFixed());

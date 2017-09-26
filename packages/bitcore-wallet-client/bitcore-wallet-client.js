@@ -6256,7 +6256,7 @@ Interpreter.prototype.checkLockTime = function(nLockTime) {
   return true;
 }
 
-/** 
+/**
  * Based on the inner loop of bitcoind's EvalScript function
  * bitcoind commit: b5d1b1092998bc95313856d535c632ea5a8f9104
  */
@@ -10715,7 +10715,7 @@ function UnspentOutput(data) {
   var script = new Script(data.scriptPubKey || data.script);
   $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.satoshis),
                   'Must provide an amount for the output');
-  var amount = !_.isUndefined(data.amount) ? new Unit.fromBTC(data.amount).toSatoshis() : data.satoshis;
+  var amount = !_.isUndefined(data.amount) ? new Unit.fromMRT(data.amount).toSatoshis() : data.satoshis;
   $.checkArgument(_.isNumber(amount), 'Amount must be a number');
   JSUtil.defineImmutable(this, {
     address: address,
@@ -10762,7 +10762,7 @@ UnspentOutput.prototype.toObject = UnspentOutput.prototype.toJSON = function toO
     txid: this.txId,
     vout: this.outputIndex,
     scriptPubKey: this.script.toBuffer().toString('hex'),
-    amount: Unit.fromSatoshis(this.satoshis).toBTC()
+    amount: Unit.fromSatoshis(this.satoshis).toMRT()
   };
 };
 
@@ -10787,7 +10787,7 @@ var UNITS = {
 /**
  * Utility for handling and converting bitcoins units. The supported units are
  * MRT, mMRT, bits (also named uMRT) and satoshis. A unit instance can be created with an
- * amount and a unit code, or alternatively using static methods like {fromBTC}.
+ * amount and a unit code, or alternatively using static methods like {fromMRT}.
  * It also allows to be created from a fiat amount and the exchange rate, or
  * alternatively using the {fromFiat} static method.
  * You can consult for different representation of a unit instance using it's
@@ -10797,7 +10797,7 @@ var UNITS = {
  *
  * @example
  * ```javascript
- * var sats = Unit.fromBTC(1.3).toSatoshis();
+ * var sats = Unit.fromMRT(1.3).toSatoshis();
  * var mili = Unit.fromBits(1.3).to(Unit.mMRT);
  * var bits = Unit.fromFiat(1.3, 350).bits;
  * var mrt = new Unit(1.3, Unit.bits).MRT;
@@ -10856,7 +10856,7 @@ Unit.fromObject = function fromObject(data){
  * @param {Number} amount - The amount in MRT
  * @returns {Unit} A Unit instance
  */
-Unit.fromBTC = function(amount) {
+Unit.fromMRT = function(amount) {
   return new Unit(amount, Unit.MRT);
 };
 
@@ -10935,7 +10935,7 @@ Unit.prototype.to = function(code) {
  *
  * @returns {Number} The value converted to MRT
  */
-Unit.prototype.toBTC = function() {
+Unit.prototype.toMRT = function() {
   return this.to(Unit.MRT);
 };
 
@@ -11179,7 +11179,7 @@ URI.prototype._parseAmount = function(amount) {
   if (isNaN(amount)) {
     throw new TypeError('Invalid amount');
   }
-  return Unit.fromBTC(amount).toSatoshis();
+  return Unit.fromMRT(amount).toSatoshis();
 };
 
 URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
@@ -11202,7 +11202,7 @@ URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
 URI.prototype.toString = function() {
   var query = {};
   if (this.amount) {
-    query.amount = Unit.fromSatoshis(this.amount).toBTC();
+    query.amount = Unit.fromSatoshis(this.amount).toMRT();
   }
   if (this.message) {
     query.message = this.message;
@@ -13980,7 +13980,7 @@ module.exports = function(cmp,to){
   var c = 0;
   for(var i=0;i<cmp.length;++i){
     if(i == to.length) break;
-    c = cmp[i] < to[i]?-1:cmp[i] > to[i]?1:0;    
+    c = cmp[i] < to[i]?-1:cmp[i] > to[i]?1:0;
     if(c != 0) break;
   }
   if(c == 0){
@@ -32127,7 +32127,7 @@ PaymentProtocol.prototype.x509Verify = function(returnTrust) {
   pem = KJUR.asn1.ASN1Util.getPEMStringFromHex(der, 'CERTIFICATE');
   var caName = RootCerts.getTrusted(pem);
 
-  if (!caName) 
+  if (!caName)
     caName = PaymentProtocol.completeChainAndGetCA(chain);
 
   if (chain.length === 1 && !caName) {
@@ -52477,7 +52477,7 @@ var FIELDS = [
   'addressType',
   'hwInfo',
   'entropySourcePath',
-  'unlocked', 
+  'unlocked',
   'shareCode'
 ];
 
@@ -52648,7 +52648,7 @@ Credentials.prototype._expand = function() {
   }
 
   // requests keys from mnemonics, but using a xPubkey
-  // This is only used when importing mnemonics FROM 
+  // This is only used when importing mnemonics FROM
   // an hwwallet, in which xPriv was not available when
   // the wallet was created.
   if (this.entropySourcePath) {
@@ -52741,7 +52741,7 @@ Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copay
   this.walletName = walletName;
   this.m = m;
   this.n = n;
-   
+
   if (shareCode) {
     this.shareCode = shareCode;
     this.unlocked = true;
@@ -52879,7 +52879,7 @@ Credentials.prototype.clearMnemonic = function() {
 // TODO: Remove this
 Credentials.fromOldCopayWallet = function(w) {
   function walletPrivKeyFromOldCopayWallet(w) {
-    // IN BWS, the master Pub Keys are not sent to the server, 
+    // IN BWS, the master Pub Keys are not sent to the server,
     // so it is safe to use them as seed for wallet's shared secret.
     var seed = w.publicKeyRing.copayersExtPubKeys.sort().join('');
     var seedBuf = new Buffer(seed);
@@ -52905,7 +52905,7 @@ Credentials.fromOldCopayWallet = function(w) {
       requestDerivation = (new Bitcore.HDPrivateKey(credentials.xPrivKey))
         .deriveChild(path).hdPublicKey;
     } else {
-      // this 
+      // this
       var path = Constants.PATHS.REQUEST_KEY_AUTH;
       requestDerivation = (new Bitcore.HDPublicKey(xPubStr)).deriveChild(path);
     }
@@ -69185,26 +69185,26 @@ var at, // The index of the current character
             text:    text
         };
     },
-    
+
     next = function (c) {
         // If a c parameter is provided, verify that it matches the current character.
         if (c && c !== ch) {
             error("Expected '" + c + "' instead of '" + ch + "'");
         }
-        
+
         // Get the next character. When there are no more characters,
         // return the empty string.
-        
+
         ch = text.charAt(at);
         at += 1;
         return ch;
     },
-    
+
     number = function () {
         // Parse a number value.
         var number,
             string = '';
-        
+
         if (ch === '-') {
             string = '-';
             next('-');
@@ -69238,14 +69238,14 @@ var at, // The index of the current character
             return number;
         }
     },
-    
+
     string = function () {
         // Parse a string value.
         var hex,
             i,
             string = '',
             uffff;
-        
+
         // When parsing for string values, we must look for " and \ characters.
         if (ch === '"') {
             while (next()) {
@@ -69402,7 +69402,7 @@ value = function () {
 
 module.exports = function (source, reviver) {
     var result;
-    
+
     text = source;
     at = 0;
     ch = ' ';
@@ -69457,7 +69457,7 @@ function quote(string) {
     // backslash characters, then we can safely slap some quotes around it.
     // Otherwise we must also replace the offending characters with safe escape
     // sequences.
-    
+
     escapable.lastIndex = 0;
     return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
         var c = meta[a];
@@ -69475,47 +69475,47 @@ function str(key, holder) {
         mind = gap,
         partial,
         value = holder[key];
-    
+
     // If the value has a toJSON method, call it to obtain a replacement value.
     if (value && typeof value === 'object' &&
             typeof value.toJSON === 'function') {
         value = value.toJSON(key);
     }
-    
+
     // If we were called with a replacer function, then call the replacer to
     // obtain a replacement value.
     if (typeof rep === 'function') {
         value = rep.call(holder, key, value);
     }
-    
+
     // What happens next depends on the value's type.
     switch (typeof value) {
         case 'string':
             return quote(value);
-        
+
         case 'number':
             // JSON numbers must be finite. Encode non-finite numbers as null.
             return isFinite(value) ? String(value) : 'null';
-        
+
         case 'boolean':
         case 'null':
             // If the value is a boolean or null, convert it to a string. Note:
             // typeof null does not produce 'null'. The case is included here in
             // the remote chance that this gets fixed someday.
             return String(value);
-            
+
         case 'object':
             if (!value) return 'null';
             gap += indent;
             partial = [];
-            
+
             // Array.isArray
             if (Object.prototype.toString.apply(value) === '[object Array]') {
                 length = value.length;
                 for (i = 0; i < length; i += 1) {
                     partial[i] = str(i, value) || 'null';
                 }
-                
+
                 // Join all of the elements together, separated with commas, and
                 // wrap them in brackets.
                 v = partial.length === 0 ? '[]' : gap ?
@@ -69524,7 +69524,7 @@ function str(key, holder) {
                 gap = mind;
                 return v;
             }
-            
+
             // If the replacer is an array, use it to select the members to be
             // stringified.
             if (rep && typeof rep === 'object') {
@@ -69550,7 +69550,7 @@ function str(key, holder) {
                     }
                 }
             }
-            
+
         // Join all of the member texts together, separated with commas,
         // and wrap them in braces.
 
@@ -69566,7 +69566,7 @@ module.exports = function (value, replacer, space) {
     var i;
     gap = '';
     indent = '';
-    
+
     // If the space parameter is a number, make an indent string containing that
     // many spaces.
     if (typeof space === 'number') {
@@ -69586,7 +69586,7 @@ module.exports = function (value, replacer, space) {
     && (typeof replacer !== 'object' || typeof replacer.length !== 'number')) {
         throw new Error('JSON.stringify');
     }
-    
+
     // Make a fake root object containing our value under the key of ''.
     // Return the result of stringifying the value.
     return str('', {'': value});
@@ -78251,7 +78251,7 @@ module.exports = function privateDecrypt(private_key, enc, reverse) {
   } else {
     padding = 4;
   }
-  
+
   var key = parseKeys(private_key);
   var k = key.modulus.byteLength();
   if (enc.length > k || new bn(enc).cmp(key.modulus) >= 0) {
@@ -83768,7 +83768,7 @@ var IncomingMessage = exports.IncomingMessage = function (xhr, response, mode) {
 		self.url = response.url
 		self.statusCode = response.status
 		self.statusMessage = response.statusText
-		
+
 		response.headers.forEach(function(header, key){
 			self.headers[key.toLowerCase()] = header
 			self.rawHeaders.push(key, header)
@@ -83856,7 +83856,7 @@ IncomingMessage.prototype._onXHRProgress = function () {
 				self.push(new Buffer(response))
 				break
 			}
-			// Falls through in IE8	
+			// Falls through in IE8
 		case 'text':
 			try { // This will fail when readyState = 3 in IE9. Switch mode and wait for readyState = 4
 				response = xhr.responseText
@@ -87419,13 +87419,13 @@ Script.prototype.runInContext = function (context) {
     if (!(context instanceof Context)) {
         throw new TypeError("needs a 'context' argument.");
     }
-    
+
     var iframe = document.createElement('iframe');
     if (!iframe.style) iframe.style = {};
     iframe.style.display = 'none';
-    
+
     document.body.appendChild(iframe);
-    
+
     var win = iframe.contentWindow;
     var wEval = win.eval, wExecScript = win.execScript;
 
@@ -87434,7 +87434,7 @@ Script.prototype.runInContext = function (context) {
         wExecScript.call(win, 'null');
         wEval = win.eval;
     }
-    
+
     forEach(Object_keys(context), function (key) {
         win[key] = context[key];
     });
@@ -87443,11 +87443,11 @@ Script.prototype.runInContext = function (context) {
             win[key] = context[key];
         }
     });
-    
+
     var winKeys = Object_keys(win);
 
     var res = wEval.call(win, this.code);
-    
+
     forEach(Object_keys(win), function (key) {
         // Avoid copying circular objects like `top` and `window` by only
         // updating existing context properties or new properties in the `win`
@@ -87462,9 +87462,9 @@ Script.prototype.runInContext = function (context) {
             defineProp(context, key, win[key]);
         }
     });
-    
+
     document.body.removeChild(iframe);
-    
+
     return res;
 };
 
