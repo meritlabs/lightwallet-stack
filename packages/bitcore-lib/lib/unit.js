@@ -6,30 +6,30 @@ var errors = require('./errors');
 var $ = require('./util/preconditions');
 
 var UNITS = {
-  'BTC'      : [1e8, 8],
-  'mBTC'     : [1e5, 5],
-  'uBTC'     : [1e2, 2],
+  'MRT'      : [1e8, 8],
+  'mMRT'     : [1e5, 5],
+  'uMRT'     : [1e2, 2],
   'bits'     : [1e2, 2],
   'satoshis' : [1, 0]
 };
 
 /**
  * Utility for handling and converting bitcoins units. The supported units are
- * BTC, mBTC, bits (also named uBTC) and satoshis. A unit instance can be created with an
+ * MRT, mMRT, bits (also named uMRT) and satoshis. A unit instance can be created with an
  * amount and a unit code, or alternatively using static methods like {fromBTC}.
  * It also allows to be created from a fiat amount and the exchange rate, or
  * alternatively using the {fromFiat} static method.
  * You can consult for different representation of a unit instance using it's
  * {to} method, the fixed unit methods like {toSatoshis} or alternatively using
  * the unit accessors. It also can be converted to a fiat amount by providing the
- * corresponding BTC/fiat exchange rate.
+ * corresponding MRT/fiat exchange rate.
  *
  * @example
  * ```javascript
  * var sats = Unit.fromBTC(1.3).toSatoshis();
- * var mili = Unit.fromBits(1.3).to(Unit.mBTC);
+ * var mili = Unit.fromBits(1.3).to(Unit.mMRT);
  * var bits = Unit.fromFiat(1.3, 350).bits;
- * var btc = new Unit(1.3, Unit.bits).BTC;
+ * var mrt = new Unit(1.3, Unit.bits).MRT;
  * ```
  *
  * @param {Number} amount - The amount to be represented
@@ -42,13 +42,13 @@ function Unit(amount, code) {
     return new Unit(amount, code);
   }
 
-  // convert fiat to BTC
+  // convert fiat to MRT
   if (_.isNumber(code)) {
     if (code <= 0) {
       throw new errors.Unit.InvalidRate(code);
     }
     amount = amount / code;
-    code = Unit.BTC;
+    code = Unit.MRT;
   }
 
   this._value = this._from(amount, code);
@@ -80,23 +80,23 @@ Unit.fromObject = function fromObject(data){
 };
 
 /**
- * Returns a Unit instance created from an amount in BTC
+ * Returns a Unit instance created from an amount in MRT
  *
- * @param {Number} amount - The amount in BTC
+ * @param {Number} amount - The amount in MRT
  * @returns {Unit} A Unit instance
  */
 Unit.fromBTC = function(amount) {
-  return new Unit(amount, Unit.BTC);
+  return new Unit(amount, Unit.MRT);
 };
 
 /**
- * Returns a Unit instance created from an amount in mBTC
+ * Returns a Unit instance created from an amount in mMRT
  *
- * @param {Number} amount - The amount in mBTC
+ * @param {Number} amount - The amount in mMRT
  * @returns {Unit} A Unit instance
  */
 Unit.fromMillis = Unit.fromMilis = function(amount) {
-  return new Unit(amount, Unit.mBTC);
+  return new Unit(amount, Unit.mMRT);
 };
 
 /**
@@ -123,7 +123,7 @@ Unit.fromSatoshis = function(amount) {
  * Returns a Unit instance created from a fiat amount and exchange rate.
  *
  * @param {Number} amount - The amount in fiat
- * @param {Number} rate - The exchange rate BTC/fiat
+ * @param {Number} rate - The exchange rate MRT/fiat
  * @returns {Unit} A Unit instance
  */
 Unit.fromFiat = function(amount, rate) {
@@ -148,7 +148,7 @@ Unit.prototype.to = function(code) {
     if (code <= 0) {
       throw new errors.Unit.InvalidRate(code);
     }
-    return parseFloat((this.BTC * code).toFixed(2));
+    return parseFloat((this.MRT * code).toFixed(2));
   }
 
   if (!UNITS[code]) {
@@ -160,21 +160,21 @@ Unit.prototype.to = function(code) {
 };
 
 /**
- * Returns the value represented in BTC
+ * Returns the value represented in MRT
  *
- * @returns {Number} The value converted to BTC
+ * @returns {Number} The value converted to MRT
  */
 Unit.prototype.toBTC = function() {
-  return this.to(Unit.BTC);
+  return this.to(Unit.MRT);
 };
 
 /**
- * Returns the value represented in mBTC
+ * Returns the value represented in mMRT
  *
- * @returns {Number} The value converted to mBTC
+ * @returns {Number} The value converted to mMRT
  */
 Unit.prototype.toMillis = Unit.prototype.toMilis = function() {
-  return this.to(Unit.mBTC);
+  return this.to(Unit.mMRT);
 };
 
 /**
@@ -198,7 +198,7 @@ Unit.prototype.toSatoshis = function() {
 /**
  * Returns the value represented in fiat
  *
- * @param {string} rate - The exchange rate between BTC/currency
+ * @param {string} rate - The exchange rate between MRT/currency
  * @returns {Number} The value converted to satoshis
  */
 Unit.prototype.atRate = function(rate) {
@@ -221,8 +221,8 @@ Unit.prototype.toString = function() {
  */
 Unit.prototype.toObject = Unit.prototype.toJSON = function toObject() {
   return {
-    amount: this.BTC,
-    code: Unit.BTC
+    amount: this.MRT,
+    code: Unit.MRT
   };
 };
 

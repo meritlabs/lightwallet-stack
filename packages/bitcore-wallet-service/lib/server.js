@@ -881,7 +881,7 @@ WalletService.prototype.savePreferences = function(opts, cb) {
   }, {
     name: 'unit',
     isValid: function(value) {
-      return _.isString(value) && _.contains(['btc', 'bit'], value.toLowerCase());
+      return _.isString(value) && _.contains(['mrt', 'bit'], value.toLowerCase());
     },
   }];
 

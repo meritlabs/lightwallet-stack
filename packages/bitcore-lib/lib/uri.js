@@ -157,9 +157,9 @@ URI.prototype._fromObject = function(obj) {
 };
 
 /**
- * Internal function to transform a BTC string amount into satoshis
+ * Internal function to transform a MRT string amount into satoshis
  *
- * @param {string} amount - Amount BTC string
+ * @param {string} amount - Amount MRT string
  * @throws {TypeError} Invalid amount
  * @returns {Object} Amount represented in satoshis
  */
