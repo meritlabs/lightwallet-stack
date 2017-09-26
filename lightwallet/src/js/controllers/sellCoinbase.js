@@ -37,8 +37,8 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
   var checkTransaction = lodash.throttle(function(count, txp) {
     $log.warn('Check if transaction has been received by Coinbase. Try ' + count + '/5');
     // TX amount in MRT
-    var satToBtc = 1 / 100000000;
-    var amountBTC = (txp.amount * satToBtc).toFixed(8);
+    var satToMrt = 1 / 100000000;
+    var amountMRT = (txp.amount * satToMrt).toFixed(8);
     coinbaseService.init(function(err, res) {
       if (err) {
         $log.error(err);
@@ -69,7 +69,7 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
           var ctx;
           for(var i = 0; i < coinbaseTransactions.length; i++) {
             ctx = coinbaseTransactions[i];
-            if (ctx.type == 'send' && ctx.from && ctx.amount.amount == amountBTC ) {
+            if (ctx.type == 'send' && ctx.from && ctx.amount.amount == amountMRT ) {
               $log.warn('Transaction found!', ctx);
               txFound = true;
               $log.debug('Saving transaction to process later...');

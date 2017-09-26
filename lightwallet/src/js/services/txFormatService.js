@@ -182,7 +182,7 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
 
   root.parseAmount = function(amount, currency) {
     var config = configService.getSync().wallet.settings;
-    var satToBtc = 1 / 100000000;
+    var satToMrt = 1 / 100000000;
     var unitToSatoshi = config.unitToSatoshi;
     var amountUnitStr;
     var amountSat;
@@ -196,13 +196,13 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
       amountSat = amount;
       amountUnitStr = root.formatAmountStr(amountSat);
       // convert sat to MRT
-      amount = (amountSat * satToBtc).toFixed(8);
+      amount = (amountSat * satToMrt).toFixed(8);
       currency = 'MRT';
     } else {
       amountSat = parseInt((amount * unitToSatoshi).toFixed(0));
       amountUnitStr = root.formatAmountStr(amountSat);
       // convert unit to MRT
-      amount = (amountSat * satToBtc).toFixed(8);
+      amount = (amountSat * satToMrt).toFixed(8);
       currency = 'MRT';
     }
 

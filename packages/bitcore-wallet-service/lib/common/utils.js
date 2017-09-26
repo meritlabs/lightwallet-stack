@@ -133,7 +133,7 @@ Utils.formatAmount = function(satoshis, unit, opts) {
   return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u.minDecimals);
 };
 
-Utils.formatAmountInBtc = function(amount) {
+Utils.formatAmountInMrt = function(amount) {
   return Utils.formatAmount(amount, 'mrt', {
     minDecimals: 8,
     maxDecimals: 8,
@@ -143,7 +143,7 @@ Utils.formatAmountInBtc = function(amount) {
 Utils.formatUtxos = function(utxos) {
   if (_.isEmpty(utxos)) return 'none';
   return _.map([].concat(utxos), function(i) {
-    var amount = Utils.formatAmountInBtc(i.satoshis);
+    var amount = Utils.formatAmountInMrt(i.satoshis);
     var confirmations = i.confirmations ? i.confirmations + 'c' : 'u';
     return amount + '/' + confirmations;
   }).join(', ');

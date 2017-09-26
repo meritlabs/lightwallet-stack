@@ -16,7 +16,7 @@ var UNITS = {
 /**
  * Utility for handling and converting bitcoins units. The supported units are
  * MRT, mMRT, bits (also named uMRT) and satoshis. A unit instance can be created with an
- * amount and a unit code, or alternatively using static methods like {fromBTC}.
+ * amount and a unit code, or alternatively using static methods like {fromMRT}.
  * It also allows to be created from a fiat amount and the exchange rate, or
  * alternatively using the {fromFiat} static method.
  * You can consult for different representation of a unit instance using it's
@@ -26,7 +26,7 @@ var UNITS = {
  *
  * @example
  * ```javascript
- * var sats = Unit.fromBTC(1.3).toSatoshis();
+ * var sats = Unit.fromMRT(1.3).toSatoshis();
  * var mili = Unit.fromBits(1.3).to(Unit.mMRT);
  * var bits = Unit.fromFiat(1.3, 350).bits;
  * var mrt = new Unit(1.3, Unit.bits).MRT;
@@ -85,7 +85,7 @@ Unit.fromObject = function fromObject(data){
  * @param {Number} amount - The amount in MRT
  * @returns {Unit} A Unit instance
  */
-Unit.fromBTC = function(amount) {
+Unit.fromMRT = function(amount) {
   return new Unit(amount, Unit.MRT);
 };
 
@@ -164,7 +164,7 @@ Unit.prototype.to = function(code) {
  *
  * @returns {Number} The value converted to MRT
  */
-Unit.prototype.toBTC = function() {
+Unit.prototype.toMRT = function() {
   return this.to(Unit.MRT);
 };
 

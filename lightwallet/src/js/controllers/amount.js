@@ -5,7 +5,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
   var unitToSatoshi;
   var satToUnit;
   var unitDecimals;
-  var satToBtc;
+  var satToMrt;
   var SMALL_FONT_SIZE_LIMIT = 10;
   var LENGTH_EXPRESSION_LIMIT = 19;
   var isNW = platformInfo.isNW;
@@ -73,7 +73,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
     $scope.isCordova = platformInfo.isCordova;
     unitToSatoshi = config.unitToSatoshi;
     satToUnit = 1 / unitToSatoshi;
-    satToBtc = 1 / 100000000;
+    satToMrt = 1 / 100000000;
     unitDecimals = config.unitDecimals;
 
     $scope.resetAmount();
