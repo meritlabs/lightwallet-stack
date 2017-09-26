@@ -194,13 +194,13 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
 
   $scope.goToEmail = function() {
     return $state.transitionTo('tabs.send.amount', {
-      recipientType: 'email',
+      easyMethod: 'email',
     });
   };
 
   $scope.goToSMS = function() {
     return $state.transitionTo('tabs.send.amount', {
-      recipientType: 'sms',
+      easyMethod: 'sms',
     });
   };
 
