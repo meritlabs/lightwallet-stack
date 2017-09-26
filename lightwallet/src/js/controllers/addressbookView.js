@@ -8,6 +8,7 @@ angular.module('copayApp.controllers').controller('addressbookViewController', f
   $scope.addressbookEntry.address = $stateParams.address;
 
   $scope.sendTo = function() {
+    console.log('sendTo');
     $ionicHistory.removeBackView();
     $state.go('tabs.send');
     $timeout(function() {
@@ -31,7 +32,7 @@ angular.module('copayApp.controllers').controller('addressbookViewController', f
         }
         $ionicHistory.goBack();
       });
-    }); 
+    });
   };
 
 });
