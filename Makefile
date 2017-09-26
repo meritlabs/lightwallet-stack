@@ -18,7 +18,7 @@ start-lightwallet:
 
 .PHONY: clean-lightwallet
 clean-lightwallet:
-	cd ./lightwallet && npm run clean-all
+	rm -rf ./lightwallet/node_modules
 
 
 ### lightwallet-stack ###
