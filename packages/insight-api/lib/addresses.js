@@ -110,27 +110,7 @@ AddressController.prototype.check = function(req, res, next, addresses) {
 
   for(var i = 0; i < addresses.length; i++) {
     try {
-      const addr = addresses[i];
-      var a = new bitcore.Address(addr);
-      this.node.validateAddress(addr, function(err, response) {
-        let error = null;
-        if (err) {
-          error = Error(`Address ${addr} cannot be validated: ${err.message}`);
-        } else if (!response.result || !response.result.isvalid) {
-          error = Error(`Address ${addr} is not valid`);
-        } else if (!response.result || !response.result.isbeaconed) {
-          error = Error(`Address ${addr} was not beaconed yet`);
-        }
-
-        if (error) {
-          return self.common.handleErrors({
-            message: 'Invalid address: ' + error.message,
-            code: 1
-          }, res);
-        }
-
-        next();
-      });
+      var a = new bitcore.Address(addresses[i]);
     } catch(e) {
       return self.common.handleErrors({
         message: 'Invalid address: ' + e.message,
@@ -138,6 +118,41 @@ AddressController.prototype.check = function(req, res, next, addresses) {
       }, res);
     }
   }
+
+  next();
+};
+
+AddressController.prototype.validateAddress = function(req, res, next, addresses) {
+  if(!addresses.length || !addresses[0]) {
+    return self.common.handleErrors({
+      message: 'Must include address',
+      code: 1
+    }, res);
+  }
+
+  const result = addresses.map(function(addr) {
+    this.node.validateAddress(addr, function(err, response) {
+      let error = null;
+      if (err) {
+        error = Error(`Address ${addr} cannot be validated: ${err.message}`);
+      } else if (!response.result || !response.result.isvalid) {
+        error = Error(`Address ${addr} is not valid`);
+      } else if (!response.result || !response.result.isbeaconed) {
+        error = Error(`Address ${addr} was not beaconed yet`);
+      }
+
+      if (error) {
+        return self.common.handleErrors({
+          message: 'Invalid address: ' + error.message,
+          code: 1
+        }, res);
+      }
+
+      return true;
+    });
+  });
+
+  return res.jsonp(result);
 };
 
 AddressController.prototype.utxo = function(req, res) {
