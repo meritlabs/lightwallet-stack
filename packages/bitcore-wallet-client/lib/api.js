@@ -2501,6 +2501,14 @@ API.prototype.getStatusByIdentifier = function(opts, cb) {
   });
 };
 
+API.prototype.validateAddress = function(address, network, cb) {
+  const url = `/v1/addresses/${address}/validate/${network}`;
+  self._doGetRequest(url, function(err, result) {
+    if (err || !result || !result.wallet) return cb(err);
+    return cb(err, result);
+  });
+}; 
+
 
 /*
  *
