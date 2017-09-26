@@ -244,7 +244,7 @@ Insight.prototype.unlockWallet = function(referralCode, unlockAddress, cb) {
   });
 };
 
-Insight.prototype.validateAddress = function(address) {
+Insight.prototype.validateAddress = function(address, cb) {
   const args = {
     method: 'GET',
     path: `${this.apiPrefix}/addr/${address}/validate`,
