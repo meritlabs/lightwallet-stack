@@ -1,6 +1,6 @@
 'use strict';
 angular.module('copayApp.controllers').controller('tourController',
-  function($scope, $state, $log, $timeout, $filter, ongoingProcess, profileService, rateService, popupService, gettextCatalog, focus, $stateParams) {
+  function($scope, $state, $log, $timeout, $filter, ongoingProcess, profileService, rateService, popupService, gettextCatalog, focus, lodash, $stateParams, easyReceiveService) {
 
     $scope.data = {
       index: 0
@@ -10,8 +10,10 @@ angular.module('copayApp.controllers').controller('tourController',
       $scope.tourFormData = {};
       $scope.unlockFailed = false;
       $scope.unlockSucceeded = false;
-      $scope.validateAndLoadParams();
-      
+      if (!lodash.isEmpty($stateParams)) {
+        $scope.processEasyReceiveParams();
+      }
+      $scope.loadEasyReceipt();
     });
 
     $scope.options = {
@@ -55,33 +57,49 @@ angular.module('copayApp.controllers').controller('tourController',
       return "";
     }
 
-    $scope.validateAndLoadParams = function() {
+    $scope.loadEasyReceipt = function() {
+      easyReceiveService.getEasyReceipt(function(err, receipt) {
+        if (err || lodash.isEmpty(receipt)) {
+          $log.debug("Unable to load easyReceipt.");
+        } else {
+          $log.debug("Loading easyReceipt into memory.");  
+          $scope.easyReceipt = receipt;
+        }
+      });
+    };
+
+    $scope.processEasyReceiveParams = function () {
       //TODO: Do relevant validation.
       $log.debug("Parsing params that have been deeplinked in.");
       $log.debug($stateParams);
+      var paramsToStore = {};
       if ($stateParams.inviteCode) {
         $log.debug("Received inviteCode from URL param.  Storing for later...")
-        $scope.inviteCode = $stateParams.inviteCode;
+        paramsToStore.inviteCode = $stateParams.inviteCode;
       }
-
+      
       if ($stateParams.senderName) {
         $log.debug("Received senderName from URL param.  Storing for later...")
-        $scope.senderName = $stateParams.senderName;
+        paramsToStore.senderName = $stateParams.senderName;
       }
-
+      
       if ($stateParams.amount) {
         $log.debug("Received amount from URL param.  Storing for later...")
-        $scope.amount = $stateParams.amount;
+        paramsToStore.amount = $stateParams.amount;
       }
-
+      
       if ($stateParams.secret) {
-        $scope.secret = $stateParams.secret;
+        paramsToStore.secret = $stateParams.secret;
       }
-
+      
       if ($stateParams.sentToAddress) {
-        $scope.sentToAddress = $stateParams.sentToAddress;
+        paramsToStore.sentToAddress = $stateParams.sentToAddress;
       }
-    }
+      if (!lodash.isEmpty(paramsToStore)) {
+        easyReceiveService.validateAndSaveParams(paramsToStore);
+        $log.debug("Storing easySend params to the easySend service.")
+      }
+    };
 
     $scope.triggerUnlockFailure = function() {
       $scope.unlockFailed = true;
