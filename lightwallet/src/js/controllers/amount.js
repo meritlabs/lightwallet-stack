@@ -2,7 +2,7 @@
 
 angular.module('copayApp.controllers').controller('amountController', function($scope, $filter, $timeout, $ionicScrollDelegate, $ionicHistory, gettextCatalog, platformInfo, lodash, configService, rateService, $stateParams, $window, $state, $log, txFormatService, ongoingProcess, popupService, bwcError, payproService, profileService, bitcore, amazonService, nodeWebkitService) {
   var _id;
-  var unitToSatoshi;
+  var unitToMicro;
   var satToUnit;
   var unitDecimals;
   var satToMrt;
@@ -71,8 +71,8 @@ angular.module('copayApp.controllers').controller('amountController', function($
     }
     $scope.specificAmount = $scope.specificAlternativeAmount = '';
     $scope.isCordova = platformInfo.isCordova;
-    unitToSatoshi = config.unitToSatoshi;
-    satToUnit = 1 / unitToSatoshi;
+    unitToMicro = config.unitToMicro;
+    satToUnit = 1 / unitToMicro;
     satToMrt = 1 / 100000000;
     unitDecimals = config.unitDecimals;
 
@@ -181,7 +181,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
     if (lodash.isNumber(result)) {
       $scope.globalResult = isExpression($scope.amount) ? '= ' + processResult(result) : '';
       $scope.amountResult = $filter('formatFiatAmount')(toFiat(result));
-      $scope.alternativeResult = txFormatService.formatAmount(fromFiat(result) * unitToSatoshi, true);
+      $scope.alternativeResult = txFormatService.formatAmount(fromFiat(result) * unitToMicro, true);
     }
   };
 
@@ -189,7 +189,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
     if ($scope.showAlternativeAmount)
       return $filter('formatFiatAmount')(val);
     else
-      return txFormatService.formatAmount(val.toFixed(unitDecimals) * unitToSatoshi, true);
+      return txFormatService.formatAmount(val.toFixed(unitDecimals) * unitToMicro, true);
   };
 
   function fromFiat(val) {
@@ -197,7 +197,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
   };
 
   function toFiat(val) {
-    return parseFloat((rateService.toFiat(val * unitToSatoshi, $scope.alternativeIsoCode)).toFixed(2));
+    return parseFloat((rateService.toFiat(val * unitToMicro, $scope.alternativeIsoCode)).toFixed(2));
   };
 
   function evaluate(val) {
@@ -234,7 +234,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
       var amount = $scope.showAlternativeAmount ? fromFiat(_amount) : _amount;
       $state.transitionTo('tabs.send.confirm', {
         recipientType: $scope.recipientType,
-        toAmount: $scope.useSendMax ? null : (amount * unitToSatoshi).toFixed(0),
+        toAmount: $scope.useSendMax ? null : (amount * unitToMicro).toFixed(0),
         toAddress: $scope.toAddress,
         toName: $scope.toName,
         toEmail: $scope.toEmail,

@@ -96,12 +96,12 @@ RateService.prototype.whenAvailable = function(callback) {
   }
 };
 
-RateService.prototype.toFiat = function(satoshis, code) {
+RateService.prototype.toFiat = function(micros, code) {
   if (!this.isAvailable()) {
     return null;
   }
 
-  return satoshis * this.SAT_TO_MRT * this.getRate(code);
+  return micros * this.SAT_TO_MRT * this.getRate(code);
 };
 
 RateService.prototype.fromFiat = function(amount, code) {

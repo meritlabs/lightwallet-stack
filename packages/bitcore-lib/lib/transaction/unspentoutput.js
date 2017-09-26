@@ -21,7 +21,7 @@ var Unit = require('../unit');
  * @param {string|Script} data.scriptPubKey the script that must be resolved to release the funds
  * @param {string|Script=} data.script alias for `scriptPubKey`
  * @param {number} data.amount amount of bitcoins associated
- * @param {number=} data.satoshis alias for `amount`, but expressed in satoshis (1 MRT = 1e8 satoshis)
+ * @param {number=} data.micros alias for `amount`, but expressed in micros (1 MRT = 1e8 micros)
  * @param {string|Address=} data.address the associated address to the script, if provided
  */
 function UnspentOutput(data) {
@@ -44,16 +44,16 @@ function UnspentOutput(data) {
   $.checkArgument(!_.isUndefined(data.scriptPubKey) || !_.isUndefined(data.script),
                   'Must provide the scriptPubKey for that output!');
   var script = new Script(data.scriptPubKey || data.script);
-  $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.satoshis),
+  $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.micros),
                   'Must provide an amount for the output');
-  var amount = !_.isUndefined(data.amount) ? new Unit.fromMRT(data.amount).toSatoshis() : data.satoshis;
+  var amount = !_.isUndefined(data.amount) ? new Unit.fromMRT(data.amount).toMicros() : data.micros;
   $.checkArgument(_.isNumber(amount), 'Amount must be a number');
   JSUtil.defineImmutable(this, {
     address: address,
     txId: txId,
     outputIndex: outputIndex,
     script: script,
-    satoshis: amount
+    micros: amount
   });
 }
 
@@ -63,7 +63,7 @@ function UnspentOutput(data) {
  */
 UnspentOutput.prototype.inspect = function() {
   return '<UnspentOutput: ' + this.txId + ':' + this.outputIndex +
-         ', satoshis: ' + this.satoshis + ', address: ' + this.address + '>';
+         ', micros: ' + this.micros + ', address: ' + this.address + '>';
 };
 
 /**
@@ -93,7 +93,7 @@ UnspentOutput.prototype.toObject = UnspentOutput.prototype.toJSON = function toO
     txid: this.txId,
     vout: this.outputIndex,
     scriptPubKey: this.script.toBuffer().toString('hex'),
-    amount: Unit.fromSatoshis(this.satoshis).toMRT()
+    amount: Unit.fromMicros(this.micros).toMRT()
   };
 };
 

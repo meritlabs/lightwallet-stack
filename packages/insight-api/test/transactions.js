@@ -103,9 +103,9 @@ describe('Transactions', function() {
         blockHash: '0000000000000afa0c3c0afd450c793a1e300ec84cbe9555166e06132f19a8f7',
         height: 533974,
         blockTimestamp: 1440987503,
-        inputSatoshis: 34955390,
-        outputSatoshis: 34925390,
-        feeSatoshis: 30000,
+        inputMicros: 34955390,
+        outputMicros: 34925390,
+        feeMicros: 30000,
         inputs: [
           {
             address: 'mqdofsXHpePPGBFXuwwypAqCcXi48Xhb2f',
@@ -114,7 +114,7 @@ describe('Transactions', function() {
             sequence: 4294967295,
             script: '4830450221008e5df62719cd92d7b137d00bbd27f153f2909bcad3a300960bc1020ec6d5e961022039df51600ff4fb5da5a794d1648c6b47c1f7d277fd5877fb5e52a730a3595f8c014104eb1e0ccd9afcac42229348dd776e991c69551ae3474340fada12e787e51758397e1d3afdba360d6374261125ea3b6ea079a5f202c150dfd729e1062d9176a307',
             scriptAsm: '30450221008e5df62719cd92d7b137d00bbd27f153f2909bcad3a300960bc1020ec6d5e961022039df51600ff4fb5da5a794d1648c6b47c1f7d277fd5877fb5e52a730a3595f8c01 04eb1e0ccd9afcac42229348dd776e991c69551ae3474340fada12e787e51758397e1d3afdba360d6374261125ea3b6ea079a5f202c150dfd729e1062d9176a307',
-            satoshis: 18535505,
+            micros: 18535505,
           },
           {
             address: 'mqdofsXHpePPGBFXuwwypAqCcXi48Xhb2f',
@@ -123,19 +123,19 @@ describe('Transactions', function() {
             sequence: 4294967295,
             script: '4730440220761464d7bab9515d92260762a97af82a9b25d202d8f7197b1aaec81b6fed541f022059f99606de6b06e17b2cd102dceb3807ebdd9e777a5b77c9a0b3672f5eabcb31014104eb1e0ccd9afcac42229348dd776e991c69551ae3474340fada12e787e51758397e1d3afdba360d6374261125ea3b6ea079a5f202c150dfd729e1062d9176a307',
             scriptAsm: '30440220761464d7bab9515d92260762a97af82a9b25d202d8f7197b1aaec81b6fed541f022059f99606de6b06e17b2cd102dceb3807ebdd9e777a5b77c9a0b3672f5eabcb3101 04eb1e0ccd9afcac42229348dd776e991c69551ae3474340fada12e787e51758397e1d3afdba360d6374261125ea3b6ea079a5f202c150dfd729e1062d9176a307',
-            satoshis: 16419885,
+            micros: 16419885,
           }
         ],
         outputs: [
           {
-            satoshis: 21247964,
+            micros: 21247964,
             script: '76a9144b7b335f978f130269fe661423258ae9642df8a188ac',
             scriptAsm: 'OP_DUP OP_HASH160 4b7b335f978f130269fe661423258ae9642df8a1 OP_EQUALVERIFY OP_CHECKSIG',
             address: 'mnQ4ZaGessNgdxmWPxbTHcfx4b8R6eUr1X'
           },
           {
             address: 'mqdofsXHpePPGBFXuwwypAqCcXi48Xhb2f',
-            satoshis: 13677426,
+            micros: 13677426,
             scriptAsm: 'OP_DUP OP_HASH160 6efcf883b4b6f9997be9a0600f6c095fe2bd2d92 OP_EQUALVERIFY OP_CHECKSIG',
             script: '76a9146efcf883b4b6f9997be9a0600f6c095fe2bd2d9288ac',
             spentTxId: spentTxId,
@@ -228,9 +228,9 @@ describe('Transactions', function() {
           blockTimestamp: 1440987503,
           blockHash: '0000000000000afa0c3c0afd450c793a1e300ec84cbe9555166e06132f19a8f7',
           height: 533974,
-          inputSatoshis: 0,
-          outputSatoshis: 1250040000,
-          feeSatoshis: 0,
+          inputMicros: 0,
+          outputMicros: 1250040000,
+          feeMicros: 0,
           locktime: 0,
           hash: '25a988e54b02e0e5df146a0f8fa7b9db56210533a9f04bdfda5f4ceb6f77aadd',
           inputs: [
@@ -244,15 +244,15 @@ describe('Transactions', function() {
               address: 'mq4oDPjmNWnBxbzx7qouzhpCSTMePUtYDF',
               script: '76a91468bedce8982d25c3b6b03f6238cbad00378b8ead88ac',
               scriptAsm: 'OP_DUP OP_HASH160 68bedce8982d25c3b6b03f6238cbad00378b8ead OP_EQUALVERIFY OP_CHECKSIG',
-              satoshis: 1250040000
+              micros: 1250040000
             }
           ]
         },
         'b85334bf2df35c6dd5b294efe92ffc793a78edff75a2ca666fc296ffb04bbba0': {
           hex: '0100000002ad5a14ae9d0f3221b790c4fc590fddceea1456e5692d8c4bf1ff7175f2b0c987000000008b4830450221008e5df62719cd92d7b137d00bbd27f153f2909bcad3a300960bc1020ec6d5e961022039df51600ff4fb5da5a794d1648c6b47c1f7d277fd5877fb5e52a730a3595f8c014104eb1e0ccd9afcac42229348dd776e991c69551ae3474340fada12e787e51758397e1d3afdba360d6374261125ea3b6ea079a5f202c150dfd729e1062d9176a307ffffffff9621ac65bc22ea593ca9a61a8d63e461bf3d3f277989df5d3bd33ddfae0aa1d8000000008a4730440220761464d7bab9515d92260762a97af82a9b25d202d8f7197b1aaec81b6fed541f022059f99606de6b06e17b2cd102dceb3807ebdd9e777a5b77c9a0b3672f5eabcb31014104eb1e0ccd9afcac42229348dd776e991c69551ae3474340fada12e787e51758397e1d3afdba360d6374261125ea3b6ea079a5f202c150dfd729e1062d9176a307ffffffff02dc374401000000001976a9144b7b335f978f130269fe661423258ae9642df8a188ac72b3d000000000001976a9146efcf883b4b6f9997be9a0600f6c095fe2bd2d9288ac00000000',
-          inputSatoshis: 34955390,
-          outputSatoshis: 34925390,
-          feeSatoshis: 30000,
+          inputMicros: 34955390,
+          outputMicros: 34925390,
+          feeMicros: 30000,
           version: 1,
           hash: 'b85334bf2df35c6dd5b294efe92ffc793a78edff75a2ca666fc296ffb04bbba0',
           blockTimestamp: 1440987503,
@@ -261,7 +261,7 @@ describe('Transactions', function() {
           locktime: 0,
           inputs: [
             {
-              satoshis: 18535505,
+              micros: 18535505,
               address: 'mqdofsXHpePPGBFXuwwypAqCcXi48Xhb2f',
               script: '4830450221008e5df62719cd92d7b137d00bbd27f153f2909bcad3a300960bc1020ec6d5e961022039df51600ff4fb5da5a794d1648c6b47c1f7d277fd5877fb5e52a730a3595f8c014104eb1e0ccd9afcac42229348dd776e991c69551ae3474340fada12e787e51758397e1d3afdba360d6374261125ea3b6ea079a5f202c150dfd729e1062d9176a307',
               scriptAsm: '30450221008e5df62719cd92d7b137d00bbd27f153f2909bcad3a300960bc1020ec6d5e961022039df51600ff4fb5da5a794d1648c6b47c1f7d277fd5877fb5e52a730a3595f8c01 04eb1e0ccd9afcac42229348dd776e991c69551ae3474340fada12e787e51758397e1d3afdba360d6374261125ea3b6ea079a5f202c150dfd729e1062d9176a307',
@@ -273,7 +273,7 @@ describe('Transactions', function() {
               address: 'mqdofsXHpePPGBFXuwwypAqCcXi48Xhb2f',
               script: '4730440220761464d7bab9515d92260762a97af82a9b25d202d8f7197b1aaec81b6fed541f022059f99606de6b06e17b2cd102dceb3807ebdd9e777a5b77c9a0b3672f5eabcb31014104eb1e0ccd9afcac42229348dd776e991c69551ae3474340fada12e787e51758397e1d3afdba360d6374261125ea3b6ea079a5f202c150dfd729e1062d9176a307',
               scriptAsm: '30440220761464d7bab9515d92260762a97af82a9b25d202d8f7197b1aaec81b6fed541f022059f99606de6b06e17b2cd102dceb3807ebdd9e777a5b77c9a0b3672f5eabcb3101 04eb1e0ccd9afcac42229348dd776e991c69551ae3474340fada12e787e51758397e1d3afdba360d6374261125ea3b6ea079a5f202c150dfd729e1062d9176a307',
-              satoshis: 16419885,
+              micros: 16419885,
               sequence: 4294967295,
               prevTxId: 'd8a10aaedf3dd33b5ddf8979273f3dbf61e4638d1aa6a93c59ea22bc65ac2196',
               outputIndex: 0
@@ -284,13 +284,13 @@ describe('Transactions', function() {
               address: 'mnQ4ZaGessNgdxmWPxbTHcfx4b8R6eUr1X',
               script: '76a9144b7b335f978f130269fe661423258ae9642df8a188ac',
               scriptAsm: 'OP_DUP OP_HASH160 4b7b335f978f130269fe661423258ae9642df8a1 OP_EQUALVERIFY OP_CHECKSIG',
-              satoshis: 21247964
+              micros: 21247964
             },
             {
               script: '76a9146efcf883b4b6f9997be9a0600f6c095fe2bd2d9288ac',
               scriptAsm: 'OP_DUP OP_HASH160 6efcf883b4b6f9997be9a0600f6c095fe2bd2d92 OP_EQUALVERIFY OP_CHECKSIG',
               address: 'mqdofsXHpePPGBFXuwwypAqCcXi48Xhb2f',
-              satoshis: 13677426,
+              micros: 13677426,
               spentTxId: '614fe1708825f9c21732394e4784cc6808ac1d8b939736bfdead970567561eec',
               spentIndex: 1,
               spentHeight: 200
@@ -303,15 +303,15 @@ describe('Transactions', function() {
           blockTimestamp: 1440987503,
           height: 533974,
           locktime: 533963,
-          inputSatoshis: 2950000,
-          outputSatoshis: 2940000,
-          feeSatoshis: 10000,
+          inputMicros: 2950000,
+          outputMicros: 2940000,
+          feeMicros: 10000,
           version: 1,
           hash: '2e01c7a4a0e335112236b711c4aaddd02e8dc59ba2cda416e8f80ff06dddd7e1',
           inputs: [
             {
               address: 'mgZK8zpudWoAaAwpLQSgc9t9PJJyEBpBdJ',
-              satoshis: 990000,
+              micros: 990000,
               script: '483045022100f67cffc0ae23adb236ff3edb4a9736e277605db30cc7708dfab8cf1e1483bbce022052396aa5d664ec1cb65992c423fd9a17e94dc7af328d2d559e90746dd195ca5901210346134da14907581d8190d3980caaf46d95e4eb9c1ca8e70f1fc6007fefb1909d',
               scriptAsm: '3045022100f67cffc0ae23adb236ff3edb4a9736e277605db30cc7708dfab8cf1e1483bbce022052396aa5d664ec1cb65992c423fd9a17e94dc7af328d2d559e90746dd195ca5901 0346134da14907581d8190d3980caaf46d95e4eb9c1ca8e70f1fc6007fefb1909d',
               sequence: 4294967294,
@@ -320,7 +320,7 @@ describe('Transactions', function() {
             },
             {
               address: 'n4oM7bPuC4ZPdCEDvtw9xGYQC7jmi5S6F4',
-              satoshis: 1960000,
+              micros: 1960000,
               script: '473044022077222a91cda23af69179377c62d84a176fb12caff6c5cbf6ae9e5957ff3b1afe0220768edead76819228dcba18cca3c9a5a5d4c32919720f21df21a297ba375bbe5c012103371ea5a4dfe356b3ea4042a537d7ab7ee0faabd43e21b6cc076fda2240629eee',
               scriptAsm: '3044022077222a91cda23af69179377c62d84a176fb12caff6c5cbf6ae9e5957ff3b1afe0220768edead76819228dcba18cca3c9a5a5d4c32919720f21df21a297ba375bbe5c01 03371ea5a4dfe356b3ea4042a537d7ab7ee0faabd43e21b6cc076fda2240629eee',
               prevTxId: 'ba2f7e668b571bf5080b7c274e6358226f6e16745c2a2e72dbfbcf63828a2d7b',
@@ -333,7 +333,7 @@ describe('Transactions', function() {
               spentTxId: '9a213b879da9073a9a30606f9046f35f36f268cbf03f6242993a97c4c07c00b9',
               spentIndex: 1,
               spentHeight: 200,
-              satoshis: 1940000,
+              micros: 1940000,
               script: '76a9148e451eec7ca0a1764b4ab119274efdd2727b3c8588ac',
               scriptAsm: 'OP_DUP OP_HASH160 8e451eec7ca0a1764b4ab119274efdd2727b3c85 OP_EQUALVERIFY OP_CHECKSIG',
               address: 'mtVD3tdifBNujYzZ5N7PgXfKk4Bc85tDKA'
@@ -345,7 +345,7 @@ describe('Transactions', function() {
               script: '76a914d0fce8f064cd1059a6a11501dd66fe42368572b088ac',
               scriptAsm: 'OP_DUP OP_HASH160 d0fce8f064cd1059a6a11501dd66fe42368572b0 OP_EQUALVERIFY OP_CHECKSIG',
               address: 'mzZypShcs1B35udnkqeYeJy8rUdgHDDvKG',
-              satoshis: 1000000
+              micros: 1000000
             }
           ]
         }
@@ -649,27 +649,27 @@ describe('Transactions', function() {
                 sequence: 4294967294,
                 script: '483045022100f4d169783bef70e3943d2a617cce55d9fe4e33fc6f9880b8277265e2f619a97002201238648abcdf52960500664e969046d41755f7fc371971ebc78002fc418465a6012103acdcd31d51272403ce0829447e59e2ac9e08ed0bf92011cbf7420addf24534e6',
                 scriptAsm: '3045022100f4d169783bef70e3943d2a617cce55d9fe4e33fc6f9880b8277265e2f619a97002201238648abcdf52960500664e969046d41755f7fc371971ebc78002fc418465a601 03acdcd31d51272403ce0829447e59e2ac9e08ed0bf92011cbf7420addf24534e6',
-                satoshis: 2796764565,
+                micros: 2796764565,
                 address: 'msyjRQQ88MabQmyafpKCjBHUwuJ49tVjcb'
               }
             ],
             outputs: [
               {
-                satoshis: 2782729129,
+                micros: 2782729129,
                 address: 'mkPvAKZ2rar6qeG3KjBtJHHMSP1wFZH7Er',
                 script: '76a9143583efb5e64a4668c6c54bb5fcc30af4417b4f2d88ac',
                 scriptAsm: 'OP_DUP OP_HASH160 3583efb5e64a4668c6c54bb5fcc30af4417b4f2d OP_EQUALVERIFY OP_CHECKSIG'
               },
               {
-                satoshis: 14000000,
+                micros: 14000000,
                 address: 'muHmEsjhjmATf9i3T9gHyeQoce9LXe2dWz',
                 script: '76a9149713201957f42379e574d7c70d506ee49c2c8ad688ac',
                 scriptAsm: 'OP_DUP OP_HASH160 9713201957f42379e574d7c70d506ee49c2c8ad6 OP_EQUALVERIFY OP_CHECKSIG'
               }
             ],
-            inputSatoshis: 2796764565,
-            outputSatoshis: 2796729129,
-            feeSatoshis: 35436,
+            inputMicros: 2796764565,
+            outputMicros: 2796729129,
+            feeMicros: 35436,
             locktime: 534089
           }
         },
@@ -685,28 +685,28 @@ describe('Transactions', function() {
                 sequence: 4294967294,
                 script: '47304402201ee69281db6b95bb1aa3074059b67581635b719e8f64e4c2694db6ec56ad9447022011e91528996ea459b1fb2c0b59363fecbefe4bc2ca90f7b2382bdaa358f2d5640121034cc057b12a68ee79df998004b9a1341bbb18b17ea4939bebaa3bac001e940f24',
                 scriptAsm: '304402201ee69281db6b95bb1aa3074059b67581635b719e8f64e4c2694db6ec56ad9447022011e91528996ea459b1fb2c0b59363fecbefe4bc2ca90f7b2382bdaa358f2d56401 034cc057b12a68ee79df998004b9a1341bbb18b17ea4939bebaa3bac001e940f24',
-                satoshis: 2782729129,
+                micros: 2782729129,
                 address: 'mkPvAKZ2rar6qeG3KjBtJHHMSP1wFZH7Er'
               }
             ],
             outputs: [
               {
-                satoshis: 2764693692,
+                micros: 2764693692,
                 address: 'moSPsU4p2C2gssiniJ1JNH4fB9xs633tLv',
                 script: '76a91456e446bc3489543d8324c6d0271524c0bd0506dd88ac',
                 scriptAsm: 'OP_DUP OP_HASH160 56e446bc3489543d8324c6d0271524c0bd0506dd OP_EQUALVERIFY OP_CHECKSIG'
               },
               {
-                satoshis: 18000000,
+                micros: 18000000,
                 scriptAsm: 'OP_DUP OP_HASH160 011d2963b619186a318f768dddfd98cd553912a0 OP_EQUALVERIFY OP_CHECKSIG',
                 script: '76a914011d2963b619186a318f768dddfd98cd553912a088ac',
                 address: 'mfcquSAitCkUKXaYRZTRZQDfUegnL3kDew',
                 spentTxId: '71a9e60c0341c9c258367f1a6d4253276f16e207bf84f41ff7412d8958a81bed'
               }
             ],
-            inputSatoshis: 2782729129,
-            outputSatoshis: 2782693692,
-            feeSatoshis: 35437,
+            inputMicros: 2782729129,
+            outputMicros: 2782693692,
+            feeMicros: 35437,
             locktime: 534099
           }
         }

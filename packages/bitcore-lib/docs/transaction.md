@@ -12,12 +12,12 @@ Let's take a look at some very simple transactions:
 ```javascript
 var transaction = new Transaction()
     .from(utxos)          // Feed information about what unspent outputs one can use
-    .to(address, amount)  // Add an output with the given amount of satoshis
+    .to(address, amount)  // Add an output with the given amount of micros
     .change(address)      // Sets up a change address where the rest of the funds will go
     .sign(privkeySet)     // Signs all the inputs it can
 ```
 
-You can obtain the input and output total amounts of the transaction in satoshis by accessing the fields `inputAmount` and `outputAmount`.
+You can obtain the input and output total amounts of the transaction in micros by accessing the fields `inputAmount` and `outputAmount`.
 
 Now, this could just be serialized to hexadecimal ASCII values (`transaction.serialize()`) and sent over to the bitcoind reference client.
 
@@ -25,7 +25,7 @@ Now, this could just be serialized to hexadecimal ASCII values (`transaction.ser
 bitcoin-cli sendrawtransaction <serialized transaction>
 ```
 
-You can also override the fee estimation with another amount, specified in satoshis:
+You can also override the fee estimation with another amount, specified in micros:
 
 ```javascript
 var transaction = new Transaction().fee(5430); // Minimum non-dust amount
@@ -144,9 +144,9 @@ When serializing, the bitcore library performs a series of checks. These can be 
 - `disableMoreOutputThanInput` avoids checking that the sum of the output amounts is less than or equal to the sum of the amounts for the outputs being spent in the transaction
 
 These are the current default values in the bitcore library involved on these checks:
-- `Transaction.FEE_PER_KB`: `10000` (satoshis per kilobyte)
+- `Transaction.FEE_PER_KB`: `10000` (micros per kilobyte)
 - `Transaction.FEE_SECURITY_MARGIN`: `15`
-- `Transaction.DUST_AMOUNT`: `546` (satoshis)
+- `Transaction.DUST_AMOUNT`: `546` (micros)
 
 ## Fee calculation
 When outputs' value don't sum up to the same amount that inputs, the difference in bitcoins goes to the miner of the block that includes this transaction. The concept of a "change address" usually is associated with this: an output with an address that can be spent by the creator of the transaction.

@@ -17,7 +17,7 @@ function Output(args) {
     return new Output(args);
   }
   if (_.isObject(args)) {
-    this.satoshis = args.satoshis;
+    this.micros = args.micros;
     if (bufferUtil.isBuffer(args.script)) {
       this._scriptBuffer = args.script;
     } else {
@@ -48,42 +48,42 @@ Object.defineProperty(Output.prototype, 'script', {
   }
 });
 
-Object.defineProperty(Output.prototype, 'satoshis', {
+Object.defineProperty(Output.prototype, 'micros', {
   configurable: false,
   enumerable: true,
   get: function() {
-    return this._satoshis;
+    return this._micros;
   },
   set: function(num) {
     if (num instanceof BN) {
-      this._satoshisBN = num;
-      this._satoshis = num.toNumber();
+      this._microsBN = num;
+      this._micros = num.toNumber();
     } else if (_.isString(num)) {
-      this._satoshis = parseInt(num);
-      this._satoshisBN = BN.fromNumber(this._satoshis);
+      this._micros = parseInt(num);
+      this._microsBN = BN.fromNumber(this._micros);
     } else {
       $.checkArgument(
         JSUtil.isNaturalNumber(num),
-        'Output satoshis is not a natural number'
+        'Output micros is not a natural number'
       );
-      this._satoshisBN = BN.fromNumber(num);
-      this._satoshis = num;
+      this._microsBN = BN.fromNumber(num);
+      this._micros = num;
     }
     $.checkState(
-      JSUtil.isNaturalNumber(this._satoshis),
-      'Output satoshis is not a natural number'
+      JSUtil.isNaturalNumber(this._micros),
+      'Output micros is not a natural number'
     );
   }
 });
 
-Output.prototype.invalidSatoshis = function() {
-  if (this._satoshis > MAX_SAFE_INTEGER) {
-    return 'transaction txout satoshis greater than max safe integer';
+Output.prototype.invalidMicros = function() {
+  if (this._micros > MAX_SAFE_INTEGER) {
+    return 'transaction txout micros greater than max safe integer';
   }
-  if (this._satoshis !== this._satoshisBN.toNumber()) {
-    return 'transaction txout satoshis has corrupted value';
+  if (this._micros !== this._microsBN.toNumber()) {
+    return 'transaction txout micros has corrupted value';
   }
-  if (this._satoshis < 0) {
+  if (this._micros < 0) {
     return 'transaction txout negative';
   }
   return false;
@@ -91,7 +91,7 @@ Output.prototype.invalidSatoshis = function() {
 
 Output.prototype.toObject = Output.prototype.toJSON = function toObject() {
   var obj = {
-    satoshis: this.satoshis
+    micros: this.micros
   };
   obj.script = this._scriptBuffer.toString('hex');
   return obj;
@@ -139,12 +139,12 @@ Output.prototype.inspect = function() {
   } else {
     scriptStr = this._scriptBuffer.toString('hex');
   }
-  return '<Output (' + this.satoshis + ' sats) ' + scriptStr + '>';
+  return '<Output (' + this.micros + ' sats) ' + scriptStr + '>';
 };
 
 Output.fromBufferReader = function(br) {
   var obj = {};
-  obj.satoshis = br.readUInt64LEBN();
+  obj.micros = br.readUInt64LEBN();
   var size = br.readVarintNum();
   if (size !== 0) {
     obj.script = br.read(size);
@@ -158,7 +158,7 @@ Output.prototype.toBufferWriter = function(writer) {
   if (!writer) {
     writer = new BufferWriter();
   }
-  writer.writeUInt64LEBN(this._satoshisBN);
+  writer.writeUInt64LEBN(this._microsBN);
   var script = this._scriptBuffer;
   writer.writeVarintNum(script.length);
   writer.write(script);

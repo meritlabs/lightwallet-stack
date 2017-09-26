@@ -6,27 +6,27 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
   root.Utils = bwcService.getUtils();
 
 
-  root.formatAmount = function(satoshis, fullPrecision) {
+  root.formatAmount = function(micros, fullPrecision) {
     var config = configService.getSync().wallet.settings;
-    if (config.unitCode == 'sat') return satoshis;
+    if (config.unitCode == 'sat') return micros;
 
     //TODO : now only works for english, specify opts to change thousand separator and decimal separator
     var opts = {
       fullPrecision: !!fullPrecision
     };
-    return this.Utils.formatAmount(satoshis, config.unitCode, opts);
+    return this.Utils.formatAmount(micros, config.unitCode, opts);
   };
 
-  root.formatAmountStr = function(satoshis) {
-    if (isNaN(satoshis)) return;
+  root.formatAmountStr = function(micros) {
+    if (isNaN(micros)) return;
     var config = configService.getSync().wallet.settings;
-    return root.formatAmount(satoshis) + ' ' + config.unitName;
+    return root.formatAmount(micros) + ' ' + config.unitName;
   };
 
-  root.toFiat = function(satoshis, code, cb) {
-    if (isNaN(satoshis)) return;
+  root.toFiat = function(micros, code, cb) {
+    if (isNaN(micros)) return;
     var val = function() {
-      var v1 = rateService.toFiat(satoshis, code);
+      var v1 = rateService.toFiat(micros, code);
       if (!v1) return null;
 
       return v1.toFixed(2);
@@ -43,10 +43,10 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
     };
   };
 
-  root.formatToUSD = function(satoshis, cb) {
-    if (isNaN(satoshis)) return;
+  root.formatToUSD = function(micros, cb) {
+    if (isNaN(micros)) return;
     var val = function() {
-      var v1 = rateService.toFiat(satoshis, 'USD');
+      var v1 = rateService.toFiat(micros, 'USD');
       if (!v1) return null;
 
       return v1.toFixed(2);
@@ -63,12 +63,12 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
     };
   };
 
-  root.formatAlternativeStr = function(satoshis, cb) {
-    if (isNaN(satoshis)) return;
+  root.formatAlternativeStr = function(micros, cb) {
+    if (isNaN(micros)) return;
     var config = configService.getSync().wallet.settings;
 
     var val = function() {
-      var v1 = parseFloat((rateService.toFiat(satoshis, config.alternativeIsoCode)).toFixed(2));
+      var v1 = parseFloat((rateService.toFiat(micros, config.alternativeIsoCode)).toFixed(2));
       v1 = $filter('formatFiatAmount')(v1);
       if (!v1) return null;
 
@@ -183,7 +183,7 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
   root.parseAmount = function(amount, currency) {
     var config = configService.getSync().wallet.settings;
     var satToMrt = 1 / 100000000;
-    var unitToSatoshi = config.unitToSatoshi;
+    var unitToMicro = config.unitToMicro;
     var amountUnitStr;
     var amountSat;
     var alternativeIsoCode = config.alternativeIsoCode;
@@ -199,7 +199,7 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
       amount = (amountSat * satToMrt).toFixed(8);
       currency = 'MRT';
     } else {
-      amountSat = parseInt((amount * unitToSatoshi).toFixed(0));
+      amountSat = parseInt((amount * unitToMicro).toFixed(0));
       amountUnitStr = root.formatAmountStr(amountSat);
       // convert unit to MRT
       amount = (amountSat * satToMrt).toFixed(8);
@@ -217,8 +217,8 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
 
   root.satToUnit = function(amount) {
     var config = configService.getSync().wallet.settings;
-    var unitToSatoshi = config.unitToSatoshi;
-    var satToUnit = 1 / unitToSatoshi;
+    var unitToMicro = config.unitToMicro;
+    var satToUnit = 1 / unitToMicro;
     var unitDecimals = config.unitDecimals;
     return parseFloat((amount * satToUnit).toFixed(unitDecimals));
   };

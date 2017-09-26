@@ -10,23 +10,23 @@ var UNITS = {
   'mMRT'     : [1e5, 5],
   'uMRT'     : [1e2, 2],
   'bits'     : [1e2, 2],
-  'satoshis' : [1, 0]
+  'micros' : [1, 0]
 };
 
 /**
  * Utility for handling and converting bitcoins units. The supported units are
- * MRT, mMRT, bits (also named uMRT) and satoshis. A unit instance can be created with an
+ * MRT, mMRT, bits (also named uMRT) and micros. A unit instance can be created with an
  * amount and a unit code, or alternatively using static methods like {fromMRT}.
  * It also allows to be created from a fiat amount and the exchange rate, or
  * alternatively using the {fromFiat} static method.
  * You can consult for different representation of a unit instance using it's
- * {to} method, the fixed unit methods like {toSatoshis} or alternatively using
+ * {to} method, the fixed unit methods like {toMicros} or alternatively using
  * the unit accessors. It also can be converted to a fiat amount by providing the
  * corresponding MRT/fiat exchange rate.
  *
  * @example
  * ```javascript
- * var sats = Unit.fromMRT(1.3).toSatoshis();
+ * var sats = Unit.fromMRT(1.3).toMicros();
  * var mili = Unit.fromBits(1.3).to(Unit.mMRT);
  * var bits = Unit.fromFiat(1.3, 350).bits;
  * var mrt = new Unit(1.3, Unit.bits).MRT;
@@ -110,13 +110,13 @@ Unit.fromMicros = Unit.fromBits = function(amount) {
 };
 
 /**
- * Returns a Unit instance created from an amount in satoshis
+ * Returns a Unit instance created from an amount in micros
  *
- * @param {Number} amount - The amount in satoshis
+ * @param {Number} amount - The amount in micros
  * @returns {Unit} A Unit instance
  */
-Unit.fromSatoshis = function(amount) {
-  return new Unit(amount, Unit.satoshis);
+Unit.fromMicros = function(amount) {
+  return new Unit(amount, Unit.micros);
 };
 
 /**
@@ -187,31 +187,31 @@ Unit.prototype.toMicros = Unit.prototype.toBits = function() {
 };
 
 /**
- * Returns the value represented in satoshis
+ * Returns the value represented in micros
  *
- * @returns {Number} The value converted to satoshis
+ * @returns {Number} The value converted to micros
  */
-Unit.prototype.toSatoshis = function() {
-  return this.to(Unit.satoshis);
+Unit.prototype.toMicros = function() {
+  return this.to(Unit.micros);
 };
 
 /**
  * Returns the value represented in fiat
  *
  * @param {string} rate - The exchange rate between MRT/currency
- * @returns {Number} The value converted to satoshis
+ * @returns {Number} The value converted to micros
  */
 Unit.prototype.atRate = function(rate) {
   return this.to(rate);
 };
 
 /**
- * Returns a the string representation of the value in satoshis
+ * Returns a the string representation of the value in micros
  *
- * @returns {string} the value in satoshis
+ * @returns {string} the value in micros
  */
 Unit.prototype.toString = function() {
-  return this.satoshis + ' satoshis';
+  return this.micros + ' micros';
 };
 
 /**
@@ -229,7 +229,7 @@ Unit.prototype.toObject = Unit.prototype.toJSON = function toObject() {
 /**
  * Returns a string formatted for the console
  *
- * @returns {string} the value in satoshis
+ * @returns {string} the value in micros
  */
 Unit.prototype.inspect = function() {
   return '<Unit: ' + this.toString() + '>';

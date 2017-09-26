@@ -22,7 +22,7 @@ angular.module('copayApp.controllers').controller('preferencesUnitController', f
       wallet: {
         settings: {
           unitName: newUnit.shortName,
-          unitToSatoshi: newUnit.value,
+          unitToMicro: newUnit.value,
           unitDecimals: newUnit.decimals,
           unitCode: newUnit.code,
         }
