@@ -6,7 +6,7 @@ var https = require('https');
 function RpcClient(opts) {
   opts = opts || {};
   this.host = opts.host || '127.0.0.1';
-  this.port = opts.port || 8332;
+  this.port = opts.port || 8445;
   this.user = opts.user || 'user';
   this.pass = opts.pass || 'pass';
   this.protocol = opts.protocol === 'http' ? http : https;

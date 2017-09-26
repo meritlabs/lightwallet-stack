@@ -78,7 +78,9 @@ describe('Bitcoin Service', function() {
       bitcoind.subscriptions.should.deep.equal({
         address: {},
         rawtransaction: [],
-        hashblock: []
+        hashblock: [],
+        hashreferraltx: [],
+        rawreferraltx: []
       });
     });
   });
@@ -104,7 +106,7 @@ describe('Bitcoin Service', function() {
       var bitcoind = new BitcoinService(baseConfig);
       var methods = bitcoind.getAPIMethods();
       should.exist(methods);
-      methods.length.should.equal(21);
+      methods.length.should.equal(24);
     });
   });
 
@@ -113,7 +115,7 @@ describe('Bitcoin Service', function() {
       var bitcoind = new BitcoinService(baseConfig);
       var events = bitcoind.getPublishEvents();
       should.exist(events);
-      events.length.should.equal(3);
+      events.length.should.equal(5);
       events[0].name.should.equal('bitcoind/rawtransaction');
       events[0].scope.should.equal(bitcoind);
       events[0].subscribe.should.be.a('function');
@@ -381,7 +383,7 @@ describe('Bitcoin Service', function() {
         port: 20000,
         rpcport: 50001,
         rpcallowip: '127.0.0.1',
-        rpcuser: 'bitcoin',
+        rpcuser: 'merit',
         rpcpassword: 'local321',
         server: 1,
         spentindex: 1,
@@ -390,7 +392,9 @@ describe('Bitcoin Service', function() {
         upnp: 0,
         whitelist: '127.0.0.1',
         zmqpubhashblock: 'tcp://127.0.0.1:28332',
-        zmqpubrawtx: 'tcp://127.0.0.1:28332'
+        zmqpubrawtx: 'tcp://127.0.0.1:28332',
+        zmqpubrawreferraltx: 'tcp://127.0.0.1:28332',
+        zmqpubhashreferraltx: 'tcp://127.0.0.1:28332',
       });
     });
     it('will expand relative datadir to absolute path', function() {
@@ -489,6 +493,8 @@ describe('Bitcoin Service', function() {
         server: 1,
         zmqpubrawtx: 1,
         zmqpubhashblock: 1,
+        zmqpubrawreferraltx: 1,
+        zmqpubhashreferraltx: 1,
         reindex: 1
       };
       var node = {};
@@ -505,12 +511,14 @@ describe('Bitcoin Service', function() {
         server: 1,
         zmqpubrawtx: 'tcp://127.0.0.1:28332',
         zmqpubhashblock: 'tcp://127.0.0.1:28331',
+        zmqpubrawreferraltx: 'tcp://127.0.0.1:28331',
+        zmqpubhashreferraltx: 'tcp://127.0.0.1:28331',
         reindex: 1
       };
       var node = {};
       (function() {
         bitcoind._checkConfigIndexes(config, node);
-      }).should.throw('"zmqpubrawtx" and "zmqpubhashblock"');
+      }).should.throw('"zmqpubrawtx", "zmqpubhashblock"');
     });
   });
 
@@ -769,7 +777,7 @@ describe('Bitcoin Service', function() {
         }
       };
       var bitcoind = new BitcoinService(config);
-      bitcoind._getDefaultConf().rpcport.should.equal(8332);
+      bitcoind._getDefaultConf().rpcport.should.equal(8445);
     });
     it('will get default rpc port for testnet', function() {
       var config = {
@@ -782,7 +790,7 @@ describe('Bitcoin Service', function() {
         }
       };
       var bitcoind = new BitcoinService(config);
-      bitcoind._getDefaultConf().rpcport.should.equal(18332);
+      bitcoind._getDefaultConf().rpcport.should.equal(18445);
     });
     it('will get default rpc port for regtest', function() {
       bitcore.Networks.enableRegtest();
@@ -796,7 +804,7 @@ describe('Bitcoin Service', function() {
         }
       };
       var bitcoind = new BitcoinService(config);
-      bitcoind._getDefaultConf().rpcport.should.equal(18332);
+      bitcoind._getDefaultConf().rpcport.should.equal(18445);
     });
   });
 
@@ -1353,7 +1361,7 @@ describe('Bitcoin Service', function() {
         }
       };
       bitcoind._subscribeZmqEvents(node);
-      node.zmqSubSocket.subscribe.callCount.should.equal(2);
+      node.zmqSubSocket.subscribe.callCount.should.equal(4);
       node.zmqSubSocket.subscribe.args[0][0].should.equal('hashblock');
       node.zmqSubSocket.subscribe.args[1][0].should.equal('rawtx');
     });
@@ -4646,7 +4654,6 @@ describe('Bitcoin Service', function() {
         /* jshint maxstatements: 30 */
         should.exist(tx);
         should.not.exist(tx.coinbase);
-        should.exist(tx.size);
         should.equal(tx.blockHash, '00000000000ec715852ea2ecae4dc8563f62d603c820f81ac284cd5be0a944d6');
         should.equal(tx.height, 530482);
         should.equal(tx.blockTimestamp, 1439559434000);
