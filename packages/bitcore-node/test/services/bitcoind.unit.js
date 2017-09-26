@@ -1098,7 +1098,7 @@ describe('Bitcoin Service', function() {
         outputIndex: 0,
         script: bitcore.Script(inputAddress),
         address: inputAddress.toString(),
-        satoshis: 5000000000
+        micros: 5000000000
       });
       tx.to(outputAddress, 5000000000);
       tx.sign(privkey);
@@ -1116,12 +1116,12 @@ describe('Bitcoin Service', function() {
         outputIndex: 1,
         output: {
           script: bitcore.Script('OP_TRUE'),
-          satoshis: 5000000000
+          micros: 5000000000
         }
       }));
       tx.addOutput(bitcore.Transaction.Output({
         script: bitcore.Script('OP_TRUE'),
-        satoshis: 5000000000
+        micros: 5000000000
       }));
       var addresses = bitcoind._getAddressesFromTransaction(tx);
       addresses.length.should.equal(0);
@@ -1131,7 +1131,7 @@ describe('Bitcoin Service', function() {
       var tx = bitcore.Transaction();
       tx.addOutput(bitcore.Transaction.Output({
         script: new Buffer('4c', 'hex'),
-        satoshis: 5000000000
+        micros: 5000000000
       }));
       var addresses = bitcoind._getAddressesFromTransaction(tx);
       addresses.length.should.equal(0);
@@ -1142,11 +1142,11 @@ describe('Bitcoin Service', function() {
       var address = bitcore.Address('2N2JD6wb56AfK4tfmM6PwdVmoYk2dCKf4Br');
       tx.addOutput(bitcore.Transaction.Output({
         script: bitcore.Script(address),
-        satoshis: 5000000000
+        micros: 5000000000
       }));
       tx.addOutput(bitcore.Transaction.Output({
         script: bitcore.Script(address),
-        satoshis: 5000000000
+        micros: 5000000000
       }));
       var addresses = bitcoind._getAddressesFromTransaction(tx);
       addresses.length.should.equal(1);
@@ -2283,7 +2283,7 @@ describe('Bitcoin Service', function() {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
-          satoshis: 7679241,
+          micros: 7679241,
           height: 207111
         }
       ];
@@ -2315,7 +2315,7 @@ describe('Bitcoin Service', function() {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
-          satoshis: 7679241,
+          micros: 7679241,
           height: 207111
         }
       ];
@@ -2353,7 +2353,7 @@ describe('Bitcoin Service', function() {
       var deltas = [
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: -7679241,
+          micros: -7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
           timestamp: 1461342707725,
@@ -2362,14 +2362,14 @@ describe('Bitcoin Service', function() {
         },
         {
           txid: 'f637384e9f81f18767ea50e00bce58fc9848b6588a1130529eebba22a410155f',
-          satoshis: 100000,
+          micros: 100000,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
           timestamp: 1461342833133
         },
         {
           txid: 'f71bccef3a8f5609c7f016154922adbfe0194a96fb17a798c24077c18d0a9345',
-          satoshis: 400000,
+          micros: 400000,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 1,
           timestamp: 1461342954813
@@ -2382,7 +2382,7 @@ describe('Bitcoin Service', function() {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
-          satoshis: 7679241,
+          micros: 7679241,
           height: 207111
         }
       ];
@@ -2390,7 +2390,7 @@ describe('Bitcoin Service', function() {
         {
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           outputIndex: 1,
-          satoshis: 400000,
+          micros: 400000,
           script: '76a914809dc14496f99b6deb722cf46d89d22f4beb8efd88ac',
           timestamp: 1461342954813,
           txid: 'f71bccef3a8f5609c7f016154922adbfe0194a96fb17a798c24077c18d0a9345'
@@ -2398,7 +2398,7 @@ describe('Bitcoin Service', function() {
         {
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           outputIndex: 0,
-          satoshis: 100000,
+          micros: 100000,
           script: '76a914809dc14496f99b6deb722cf46d89d22f4beb8efd88ac',
           timestamp: 1461342833133,
           txid: 'f637384e9f81f18767ea50e00bce58fc9848b6588a1130529eebba22a410155f'
@@ -2431,7 +2431,7 @@ describe('Bitcoin Service', function() {
       var deltas = [
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: -7679241,
+          micros: -7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
           timestamp: 1461342707725,
@@ -2440,7 +2440,7 @@ describe('Bitcoin Service', function() {
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: -7679241,
+          micros: -7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 1,
           timestamp: 1461342707725,
@@ -2455,7 +2455,7 @@ describe('Bitcoin Service', function() {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
-          satoshis: 7679241,
+          micros: 7679241,
           height: 207111
         },
         {
@@ -2463,7 +2463,7 @@ describe('Bitcoin Service', function() {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
           outputIndex: 2,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
-          satoshis: 7679241,
+          micros: 7679241,
           height: 207111
         }
       ];
@@ -2493,7 +2493,7 @@ describe('Bitcoin Service', function() {
       var deltas = [
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: -7679241,
+          micros: -7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
           timestamp: 1461342707725,
@@ -2502,7 +2502,7 @@ describe('Bitcoin Service', function() {
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: -7679241,
+          micros: -7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
           timestamp: 1461342707725,
@@ -2511,7 +2511,7 @@ describe('Bitcoin Service', function() {
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: -7679241,
+          micros: -7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 1,
           timestamp: 1461342707725,
@@ -2520,7 +2520,7 @@ describe('Bitcoin Service', function() {
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: 100000,
+          micros: 100000,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 1,
           script: '76a914809dc14496f99b6deb722cf46d89d22f4beb8efd88ac',
@@ -2534,7 +2534,7 @@ describe('Bitcoin Service', function() {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
           outputIndex: 0,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
-          satoshis: 7679241,
+          micros: 7679241,
           height: 207111
         },
         {
@@ -2542,7 +2542,7 @@ describe('Bitcoin Service', function() {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
-          satoshis: 7679241,
+          micros: 7679241,
           height: 207111
         },
         {
@@ -2550,7 +2550,7 @@ describe('Bitcoin Service', function() {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
           outputIndex: 2,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
-          satoshis: 7679241,
+          micros: 7679241,
           height: 207111
         }
       ];
@@ -2580,28 +2580,28 @@ describe('Bitcoin Service', function() {
       var deltas = [
         {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          satoshis: 7679241,
+          micros: 7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
           timestamp: 1461342707724
         },
         {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          satoshis: 7679241,
+          micros: 7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 1,
           timestamp: 1461342707724
         },
         {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          satoshis: 7679241,
+          micros: 7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           timestamp: 1461342707724,
           index: 2,
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: -7679241,
+          micros: -7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
           timestamp: 1461342707725,
@@ -2610,7 +2610,7 @@ describe('Bitcoin Service', function() {
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: -7679241,
+          micros: -7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
           timestamp: 1461342707725,
@@ -2619,7 +2619,7 @@ describe('Bitcoin Service', function() {
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: -7679241,
+          micros: -7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 1,
           timestamp: 1461342707725,
@@ -2628,7 +2628,7 @@ describe('Bitcoin Service', function() {
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: 100000,
+          micros: 100000,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 1,
           timestamp: 1461342833133
@@ -2667,7 +2667,7 @@ describe('Bitcoin Service', function() {
       var deltas = [
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: 0,
+          micros: 0,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
           timestamp: 1461342707725,
@@ -2682,7 +2682,7 @@ describe('Bitcoin Service', function() {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
-          satoshis: 0,
+          micros: 0,
           height: 207111
         }
       ];
@@ -2712,7 +2712,7 @@ describe('Bitcoin Service', function() {
       var deltas = [
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
-          satoshis: 10000,
+          micros: 10000,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
           timestamp: 1461342707725
@@ -2725,7 +2725,7 @@ describe('Bitcoin Service', function() {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
-          satoshis: 0,
+          micros: 0,
           height: 207111
         }
       ];
@@ -2785,17 +2785,17 @@ describe('Bitcoin Service', function() {
   });
 
   describe('#_getBalanceFromMempool', function() {
-    it('will sum satoshis', function() {
+    it('will sum micros', function() {
       var bitcoind = new BitcoinService(baseConfig);
       var deltas = [
         {
-          satoshis: -1000,
+          micros: -1000,
         },
         {
-          satoshis: 2000,
+          micros: 2000,
         },
         {
-          satoshis: -10,
+          micros: -10,
         }
       ];
       var sum = bitcoind._getBalanceFromMempool(deltas);
@@ -3145,7 +3145,7 @@ describe('Bitcoin Service', function() {
       var result = {};
       bitcoind._getAddressDetailsForInput({}, 0, result, []);
       should.not.exist(result.addresses);
-      should.not.exist(result.satoshis);
+      should.not.exist(result.micros);
     });
     it('will only add address if it matches', function() {
       var bitcoind = new BitcoinService(baseConfig);
@@ -3154,7 +3154,7 @@ describe('Bitcoin Service', function() {
         address: 'address1'
       }, 0, result, ['address2']);
       should.not.exist(result.addresses);
-      should.not.exist(result.satoshis);
+      should.not.exist(result.micros);
     });
     it('will instantiate if outputIndexes not defined', function() {
       var bitcoind = new BitcoinService(baseConfig);
@@ -3191,7 +3191,7 @@ describe('Bitcoin Service', function() {
       var result = {};
       bitcoind._getAddressDetailsForOutput({}, 0, result, []);
       should.not.exist(result.addresses);
-      should.not.exist(result.satoshis);
+      should.not.exist(result.micros);
     });
     it('will only add address if it matches', function() {
       var bitcoind = new BitcoinService(baseConfig);
@@ -3200,7 +3200,7 @@ describe('Bitcoin Service', function() {
         address: 'address1'
       }, 0, result, ['address2']);
       should.not.exist(result.addresses);
-      should.not.exist(result.satoshis);
+      should.not.exist(result.micros);
     });
     it('will instantiate if outputIndexes not defined', function() {
       var bitcoind = new BitcoinService(baseConfig);
@@ -3237,29 +3237,29 @@ describe('Bitcoin Service', function() {
       var tx = {
         inputs: [
           {
-            satoshis: 1000000000,
+            micros: 1000000000,
             address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
           }
         ],
         outputs: [
           {
-            satoshis: 100000000,
+            micros: 100000000,
             address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
           },
           {
-            satoshis: 200000000,
+            micros: 200000000,
             address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
           },
           {
-            satoshis: 50000000,
+            micros: 50000000,
             address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
           },
           {
-            satoshis: 300000000,
+            micros: 300000000,
             address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
           },
           {
-            satoshis: 349990000,
+            micros: 349990000,
             address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
           }
         ],
@@ -3273,7 +3273,7 @@ describe('Bitcoin Service', function() {
       details.addresses['mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'].outputIndexes.should.deep.equal([
         0, 1, 2, 3, 4
       ]);
-      details.satoshis.should.equal(-10000);
+      details.micros.should.equal(-10000);
       done();
     });
   });
@@ -3290,14 +3290,14 @@ describe('Bitcoin Service', function() {
       var addresses = {};
       bitcoind._getAddressDetailsForTransaction = sinon.stub().returns({
         addresses: addresses,
-        satoshis: 1000,
+        micros: 1000,
       });
       bitcoind._getAddressDetailedTransaction(txid, {}, function(err, details) {
         if (err) {
           return done(err);
         }
         details.addresses.should.equal(addresses);
-        details.satoshis.should.equal(1000);
+        details.micros.should.equal(1000);
         details.confirmations.should.equal(281);
         details.tx.should.equal(tx);
         done();
@@ -3541,11 +3541,11 @@ describe('Bitcoin Service', function() {
             result: [
               {
                 txid: memtxid1,
-                satoshis: -1000000
+                micros: -1000000
               },
               {
                 txid: memtxid2,
-                satoshis: 99999
+                micros: 99999
               }
             ]
           })
@@ -3587,11 +3587,11 @@ describe('Bitcoin Service', function() {
             result: [
               {
                 txid: memtxid1,
-                satoshis: -1000000
+                micros: -1000000
               },
               {
                 txid: memtxid2,
-                satoshis: 99999
+                micros: 99999
               }
             ]
           })
@@ -3621,11 +3621,11 @@ describe('Bitcoin Service', function() {
             result: [
               {
                 txid: memtxid1,
-                satoshis: -1000000
+                micros: -1000000
               },
               {
                 txid: memtxid2,
-                satoshis: 99999
+                micros: 99999
               }
             ]
           })
@@ -4652,20 +4652,20 @@ describe('Bitcoin Service', function() {
         should.equal(tx.blockTimestamp, 1439559434000);
         should.equal(tx.version, 1);
         should.equal(tx.locktime, 411451);
-        should.equal(tx.feeSatoshis, 10);
-        should.equal(tx.inputSatoshis, 110);
-        should.equal(tx.outputSatoshis, 100);
+        should.equal(tx.feeMicros, 10);
+        should.equal(tx.inputMicros, 110);
+        should.equal(tx.outputMicros, 100);
         should.equal(tx.hash, txid);
         var input = tx.inputs[0];
         should.equal(input.prevTxId, '3d003413c13eec3fa8ea1fe8bbff6f40718c66facffe2544d7516c9e2900cac2');
         should.equal(input.outputIndex, 0);
-        should.equal(input.satoshis, 110);
+        should.equal(input.micros, 110);
         should.equal(input.sequence, 0xFFFFFFFF);
         should.equal(input.script, 'scriptSigHex');
         should.equal(input.scriptAsm, 'scriptSigAsm');
         should.equal(input.address, 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW');
         var output = tx.outputs[0];
-        should.equal(output.satoshis, 100);
+        should.equal(output.micros, 100);
         should.equal(output.script, '76a9140b2f0a0c31bfe0406b0ccc1381fdbe311946dadc88ac');
         should.equal(output.scriptAsm, 'OP_DUP OP_HASH160 0b2f0a0c31bfe0406b0ccc1381fdbe311946dadc OP_EQUALVERIFY OP_CHECKSIG');
         should.equal(output.address, 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW');

@@ -205,11 +205,11 @@ helpers.randomTXID = function() {
   return Bitcore.crypto.Hash.sha256(new Buffer(Math.random() * 100000)).toString('hex');;
 };
 
-helpers.toSatoshi = function(btc) {
-  if (_.isArray(btc)) {
-    return _.map(btc, helpers.toSatoshi);
+helpers.toMicro = function(mrt) {
+  if (_.isArray(mrt)) {
+    return _.map(mrt, helpers.toMicro);
   } else {
-    return Utils.strip(btc * 1e8);
+    return Utils.strip(mrt * 1e8);
   }
 };
 
@@ -221,7 +221,7 @@ helpers._parseAmount = function(str) {
 
   if (_.isNumber(str)) str = str.toString();
 
-  var re = /^((?:\d+c)|u)?\s*([\d\.]+)\s*(btc|bit|sat)?$/;
+  var re = /^((?:\d+c)|u)?\s*([\d\.]+)\s*(mrt|bit|sat)?$/;
   var match = str.match(re);
 
   if (!match) throw new Error('Could not parse amount ' + str);
@@ -233,7 +233,7 @@ helpers._parseAmount = function(str) {
 
   switch (match[3]) {
     default:
-    case 'btc':
+    case 'mrt':
       result.amount = Utils.strip(+match[2] * 1e8);
       break;
     case 'bit':
@@ -288,7 +288,7 @@ helpers.stubUtxos = function(server, wallet, amounts, opts, cb) {
         return {
           txid: helpers.randomTXID(),
           vout: _.random(0, 10),
-          satoshis: parsed.amount,
+          micros: parsed.amount,
           scriptPubKey: scriptPubKey.toBuffer().toString('hex'),
           address: address.address,
           confirmations: parsed.confirmations,

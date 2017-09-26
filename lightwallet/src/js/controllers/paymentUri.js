@@ -20,8 +20,8 @@ angular.module('copayApp.controllers').controller('paymentUriController',
 
       if (uri && uri.address) {
         var config = configService.getSync().wallet.settings;
-        var unitToSatoshi = config.unitToSatoshi;
-        var satToUnit = 1 / unitToSatoshi;
+        var unitToMicro = config.unitToMicro;
+        var satToUnit = 1 / unitToMicro;
         var unitName = config.unitName;
 
         if (uri.amount) {

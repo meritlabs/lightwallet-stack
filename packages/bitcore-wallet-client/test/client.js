@@ -32,11 +32,11 @@ var Errors = require('../lib/errors');
 
 var helpers = {};
 
-helpers.toSatoshi = function(btc) {
-  if (_.isArray(btc)) {
-    return _.map(btc, helpers.toSatoshi);
+helpers.toMicro = function(mrt) {
+  if (_.isArray(mrt)) {
+    return _.map(mrt, helpers.toMicro);
   } else {
-    return parseFloat((btc * 1e8).toPrecision(12));
+    return parseFloat((mrt * 1e8).toPrecision(12));
   }
 };
 
@@ -93,7 +93,7 @@ helpers.generateUtxos = function(scriptType, publicKeyRing, path, requiredSignat
     var obj = {
       txid: Bitcore.crypto.Hash.sha256(new Buffer(i)).toString('hex'),
       vout: 100,
-      satoshis: helpers.toSatoshi(amount),
+      micros: helpers.toMicro(amount),
       scriptPubKey: scriptPubKey.toBuffer().toString('hex'),
       address: address.address,
       path: path,
@@ -512,7 +512,7 @@ describe('client API', function() {
         var t2 = new Bitcore.Transaction(t);
         t2.inputs.length.should.equal(2);
         t2.outputs.length.should.equal(2);
-        t2.outputs[0].satoshis.should.equal(1200);
+        t2.outputs[0].micros.should.equal(1200);
       });
       it('should build a tx correctly (BIP44)', function() {
         var toAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
@@ -611,7 +611,7 @@ describe('client API', function() {
             to: sinon.stub(),
             change: sinon.stub(),
             outputs: [{
-              satoshis: 1000,
+              micros: 1000,
             }],
             fee: sinon.stub(),
           }
@@ -697,11 +697,11 @@ describe('client API', function() {
         should.not.exist(bitcoreError);
         t.outputs.length.should.equal(4);
         t.outputs[0].script.toHex().should.equal(txp.outputs[0].script);
-        t.outputs[0].satoshis.should.equal(txp.outputs[0].amount);
+        t.outputs[0].micros.should.equal(txp.outputs[0].amount);
         t.outputs[1].script.toHex().should.equal(txp.outputs[1].script);
-        t.outputs[1].satoshis.should.equal(txp.outputs[1].amount);
+        t.outputs[1].micros.should.equal(txp.outputs[1].amount);
         t.outputs[2].script.toHex().should.equal(txp.outputs[2].script);
-        t.outputs[2].satoshis.should.equal(txp.outputs[2].amount);
+        t.outputs[2].micros.should.equal(txp.outputs[2].amount);
         var changeScript = Bitcore.Script.fromAddress(txp.changeAddress.address).toHex();
         t.outputs[3].script.toHex().should.equal(changeScript);
       });
@@ -1540,7 +1540,7 @@ describe('client API', function() {
         clients[0].getUtxos(opts, function(err, utxos) {
           should.not.exist(err);
           utxos.length.should.equal(2);
-          _.sum(utxos, 'satoshis').should.equal(2 * 1e8);
+          _.sum(utxos, 'micros').should.equal(2 * 1e8);
           done();
         });
       });
@@ -1759,11 +1759,11 @@ describe('client API', function() {
       clients[0].getSendMaxInfo(opts, function(err, result) {
         should.not.exist(err);
         result.inputs.length.should.not.equal(0);
-        var totalSatoshis = 0;
+        var totalMicros = 0;
         _.each(result.inputs, function(i) {
-          totalSatoshis = totalSatoshis + i.satoshis;
+          totalMicros = totalMicros + i.micros;
         });
-        result.amount.should.be.equal(totalSatoshis - result.fee);
+        result.amount.should.be.equal(totalMicros - result.fee);
         done();
       });
     });
@@ -5027,7 +5027,7 @@ describe('client API', function() {
           should.exist(tx);
           tx.outputs.length.should.equal(1);
           var output = tx.outputs[0];
-          output.satoshis.should.equal(123 * 1e8 - 10000);
+          output.micros.should.equal(123 * 1e8 - 10000);
           var script = new Bitcore.Script.buildPublicKeyHashOut(Bitcore.Address.fromString('1GG3JQikGC7wxstyavUBDoCJ66bWLLENZC'));
           output.script.toString('hex').should.equal(script.toString('hex'));
           done();
@@ -5087,15 +5087,15 @@ describe('client API', function() {
         }],
         expected: '0.01',
       }, {
-        args: [1, 'btc'],
+        args: [1, 'mrt'],
         expected: '0.00',
       }, {
-        args: [1, 'btc', {
+        args: [1, 'mrt', {
           fullPrecision: true
         }],
         expected: '0.00000001',
       }, {
-        args: [1234567899999, 'btc', {
+        args: [1234567899999, 'mrt', {
           thousandsSeparator: ' ',
           decimalSeparator: ','
         }],

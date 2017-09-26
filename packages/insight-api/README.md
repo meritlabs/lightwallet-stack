@@ -24,7 +24,7 @@ The API endpoints will be available by default at: `http://localhost:3001/insigh
 
 ## Notes on Upgrading from v0.3
 
-The unspent outputs format now has `satoshis` and `height`:
+The unspent outputs format now has `micros` and `height`:
 ```
 [
   {
@@ -33,7 +33,7 @@ The unspent outputs format now has `satoshis` and `height`:
     "vout":0,
     "scriptPubKey":"76a91453c0307d6851aa0ce7825ba883c6bd9ad242b48688ac",
     "amount":0.000006,
-    "satoshis":600,
+    "micros":600,
     "confirmations":0,
     "ts":1461349425
   },
@@ -43,7 +43,7 @@ The unspent outputs format now has `satoshis` and `height`:
     "vout": 1,
     "scriptPubKey": "76a91453c0307d6851aa0ce7825ba883c6bd9ad242b48688ac",
     "amount": 0.12345678,
-    "satoshis: 12345678,
+    "micros: 12345678,
     "confirmations": 1,
     "height": 300001
   }
@@ -119,7 +119,7 @@ Or disabled entirely with:
     }
   }
   ```
-  
+
 
 ## API HTTP Endpoints
 
@@ -215,7 +215,7 @@ Example response:
   /insight-api/addr/[:addr]/totalSent
   /insight-api/addr/[:addr]/unconfirmedBalance
 ```
-The response contains the value in Satoshis.
+The response contains the value in Micros.
 
 ### Unspent Outputs
 ```
@@ -230,7 +230,7 @@ Sample return:
     "vout":0,
     "scriptPubKey":"76a91453c0307d6851aa0ce7825ba883c6bd9ad242b48688ac",
     "amount":0.000006,
-    "satoshis":600,
+    "micros":600,
     "confirmations":0,
     "ts":1461349425
   },
@@ -240,7 +240,7 @@ Sample return:
     "vout": 1,
     "scriptPubKey": "76a91453c0307d6851aa0ce7825ba883c6bd9ad242b48688ac",
     "amount": 0.12345678,
-    "satoshis: 12345678,
+    "micros: 12345678,
     "confirmations": 1,
     "height": 300001
   }

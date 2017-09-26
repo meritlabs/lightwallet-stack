@@ -139,7 +139,7 @@ angular.module('copayApp.controllers').controller('buyMercadoLibreController', f
 
     var outputs = [];
     var toAddress = invoice.bitcoinAddress;
-    var amountSat = parseInt((invoice.btcDue * 100000000).toFixed(0)); // MRT to Satoshi
+    var amountSat = parseInt((invoice.btcDue * 100000000).toFixed(0)); // MRT to Micro
 
     outputs.push({
       'toAddress': toAddress,

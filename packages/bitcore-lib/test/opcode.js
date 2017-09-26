@@ -64,7 +64,7 @@ describe('Opcode', function() {
       Opcode.fromString('OP_0').num.should.equal(0);
     });
     it('should fail for invalid string', function() {
-      Opcode.fromString.bind(null, 'OP_SATOSHI').should.throw('Invalid opcodestr');
+      Opcode.fromString.bind(null, 'OP_MICRO').should.throw('Invalid opcodestr');
       Opcode.fromString.bind(null, 'BANANA').should.throw('Invalid opcodestr');
     });
     it('should fail for non-string', function() {

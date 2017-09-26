@@ -644,7 +644,7 @@ API.prototype.getBalanceFromPrivateKey = function(privateKey, cb) {
     addresses: address.toString(),
   }, function(err, utxos) {
     if (err) return cb(err);
-    return cb(null, _.sum(utxos, 'satoshis'));
+    return cb(null, _.sum(utxos, 'micros'));
   });
 };
 
@@ -669,7 +669,7 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
       if (!_.isArray(utxos) || utxos.length == 0) return next(new Error('No utxos found'));
 
       var fee = opts.fee || 10000;
-      var amount = _.sum(utxos, 'satoshis') - fee;
+      var amount = _.sum(utxos, 'micros') - fee;
       if (amount <= 0) return next(new Errors.INSUFFICIENT_FUNDS);
 
       var tx;
@@ -1309,7 +1309,7 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
     var walletId = res.walletId;
     var walletShareCode = res.shareCode;
     c.addWalletInfo(walletId, walletName, m, n, copayerName, walletShareCode);
-    
+
     var secret = API._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
     self._doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {},
@@ -1666,11 +1666,11 @@ API.prototype._getCreateTxProposalArgs = function(opts) {
  * @param {string} opts.txProposalId - Optional. If provided it will be used as this TX proposal ID. Should be unique in the scope of the wallet.
  * @param {Array} opts.outputs - List of outputs.
  * @param {string} opts.outputs[].toAddress - Destination address.
- * @param {number} opts.outputs[].amount - Amount to transfer in satoshi.
+ * @param {number} opts.outputs[].amount - Amount to transfer in micro.
  * @param {string} opts.outputs[].message - A message to attach to this output.
  * @param {string} opts.message - A message to attach to this transaction.
  * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level for this TX ('priority', 'normal', 'economy', 'superEconomy').
- * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in satoshi).
+ * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in micro).
  * @param {string} opts.changeAddress - Optional. Use this address as the change address for the tx. The address should belong to the wallet. In the case of singleAddress wallets, the first main address will be used.
  * @param {Boolean} opts.sendMax - Optional. Send maximum amount of funds that make sense under the specified fee/feePerKb conditions. (defaults to false).
  * @param {string} opts.payProUrl - Optional. Paypro URL for peers to verify TX
@@ -2441,7 +2441,7 @@ API.prototype.txConfirmationUnsubscribe = function(txid, cb) {
  * Returns send max information.
  * @param {String} opts
  * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level ('priority', 'normal', 'economy', 'superEconomy').
- * @param {number} opts.feePerKb - Optional. Specify the fee per KB (in satoshi).
+ * @param {number} opts.feePerKb - Optional. Specify the fee per KB (in micro).
  * @param {Boolean} opts.excludeUnconfirmedUtxos - Indicates it if should use (or not) the unconfirmed utxos
  * @param {Boolean} opts.returnInputs - Indicates it if should return (or not) the inputs
  * @return {Callback} cb - Return error (if exists) and object result

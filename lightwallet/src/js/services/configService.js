@@ -43,7 +43,7 @@ angular.module('copayApp.services').factory('configService', function(storageSer
       idleDurationMin: 4,
       settings: {
         unitName: 'MRT',
-        unitToSatoshi: 100000000,
+        unitToMicro: 100000000,
         unitDecimals: 8,
         unitCode: 'mrt',
         alternativeName: 'US Dollar',
