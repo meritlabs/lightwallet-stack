@@ -6,6 +6,7 @@ angular
     $rootScope,
     $log,
     $scope,
+    $timeout,
     lodash,
     gettextCatalog,
     txFormatService,
@@ -23,7 +24,9 @@ angular
           $scope.error = err;
         }
 
-        $scope.anv = txFormatService.parseAmount(anv);
+        $timeout(function() {
+          $scope.anv = txFormatService.parseAmount(anv);
+        });
       });
     });
   });

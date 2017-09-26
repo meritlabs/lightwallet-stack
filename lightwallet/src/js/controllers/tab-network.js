@@ -7,6 +7,7 @@ angular
     $scope,
     $log,
     $state,
+    $timeout,
     $ionicHistory,
     gettextCatalog,
     lodash,
@@ -46,7 +47,9 @@ angular
             $scope.error = err;
           }
 
-          wallet.anv = txFormatService.parseAmount(anv);
+          $timeout(function() {
+            wallet.anv = txFormatService.parseAmount(anv);
+          });
         });
       }
     };
