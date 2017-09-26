@@ -10,6 +10,7 @@ angular
     $ionicHistory,
     gettextCatalog,
     lodash,
+    txFormatService,
     profileService,
     walletService
   ) {
@@ -36,6 +37,18 @@ angular
 
     $scope.onWalletSelect = function(wallet) {
       $scope.wallet = wallet;
+
+      if (wallet.anv === void 0) {
+        walletService.getANV($scope.wallet, function(err, anv) {
+          $scope.fetchingAnv = false;
+
+          if (err) {
+            $scope.error = err;
+          }
+
+          wallet.anv = txFormatService.parseAmount(anv);
+        });
+      }
     };
 
     $scope.showWalletSelector = function() {
@@ -47,10 +60,10 @@ angular
     $scope.openNetworkDetails = function(wallet) {
       if (wallet) {
         $state.transitionTo('tabs.network.details', {
-          walletId: wallet.id
+          walletId: wallet.id,
         });
       }
-    }
+    };
 
     $scope.canGoBack = function() {
       return $state.params.passthroughMode;

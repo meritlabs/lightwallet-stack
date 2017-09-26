@@ -1640,13 +1640,12 @@ API.prototype.getStatus = function(opts, cb) {
   });
 };
 
-API.prototype.getANV = function(cb) {
+API.prototype.getANV = function(addr, cb) {
   $.checkState(this.credentials);
 
-  var self = this;
-  var keys = [this.credentials.xPubKey];
+  var keys = [addr];
 
-  self._doGetRequest('/v1/anv/?network=testnet&keys=' + keys.join(','), function(err, result) {
+  this._doGetRequest('/v1/anv/?network=testnet&keys=' + keys.join(','), function(err, result) {
     if (err) return cb(err);
 
     return cb(err, result);

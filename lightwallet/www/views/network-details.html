@@ -27,7 +27,7 @@
             <span ng-if="wallet.isComplete()">
               <ion-spinner class="spinner-dark" icon="crescent" ng-show="fetchingAnv"></ion-spinner>
 
-              <span ng-show="!fetchingAnv">ANV: {{anv}} MRT</span>
+              <span ng-show="!fetchingAnv">ANV: {{anv.amount}} MRT</span>
               <span class="assertive" ng-if="wallet.error">{{wallet.error}}</span>
             </span>
           </p>
