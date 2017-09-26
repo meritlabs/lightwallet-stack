@@ -1,6 +1,6 @@
 'use strict';
 angular.module('copayApp.controllers').controller('tourController',
-  function($scope, $state, $log, $timeout, $filter, ongoingProcess, profileService, rateService, popupService, gettextCatalog, focus) {
+  function($scope, $state, $log, $timeout, $filter, ongoingProcess, profileService, rateService, popupService, gettextCatalog, focus, $routeParams) {
 
     $scope.data = {
       index: 0
@@ -10,6 +10,7 @@ angular.module('copayApp.controllers').controller('tourController',
       $scope.tourFormData = {};
       $scope.unlockFailed = false;
       $scope.unlockSucceeded = false;
+      $scope.checkInviteCode();
     });
 
     $scope.options = {
@@ -18,6 +19,10 @@ angular.module('copayApp.controllers').controller('tourController',
       speed: 500,
       spaceBetween: 100
     }
+
+    $scope.$on("$viewContentLoaded", function(event, data) {
+      $scope.checkInviteCode();
+    })
 
     $scope.$on("$ionicSlides.sliderInitialized", function(event, data) {
       $scope.slider = data.slider;
@@ -40,6 +45,8 @@ angular.module('copayApp.controllers').controller('tourController',
           $scope.$apply();
         })
       });
+
+      $scope.checkInviteCode();
     });
 
     // TODO: Implement the more modern angular way of doing this
@@ -51,6 +58,14 @@ angular.module('copayApp.controllers').controller('tourController',
         return "failed";
       }
       return "";
+    }
+
+    $scope.checkInviteCode = function() {
+      console.log("let's check the invite code!");
+      if ($routeParams.inviteCode && $routeParams.secret) {
+        console.log("INVITE CODE IS HERE");
+        $state.go('onboarding.fromEasySend');
+      }
     }
 
     $scope.triggerUnlockFailure = function() {

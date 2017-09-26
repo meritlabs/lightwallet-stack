@@ -1,4 +1,5 @@
 {
   "name": "*USERVISIBLENAME*",
-  "app_id": "me.merit.LightWallet"
+  "app_id": "me.merit.LightWallet",
+  "type": "ionic1"
 }
