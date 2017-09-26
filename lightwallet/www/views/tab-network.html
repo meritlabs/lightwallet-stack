@@ -13,7 +13,10 @@
       <div class="card">
         <div class="code">
           <span class="code-title">Aggregate Network Value</span>
-          <span class="code-value">0 MRT</span>
+
+          <ion-spinner class="spinner-dark" icon="crescent" ng-show="wallet.anv === undefined"></ion-spinner>
+
+          <span ng-show="wallet.anv !== undefined">{{wallet.anv.amount}} MRT</span>
         </div>
 
         <div class="code">
@@ -23,7 +26,7 @@
       </div>
 
       <div class="card">
-        <div class="actions">
+        <div class="actions" copy-to-clipboard="wallet.shareCode">
           <div class="item item-icon-left item-icon-right">
             <i class="icon big-icon-svg">
             <img src="img/icon-import.svg" class="bg"/>

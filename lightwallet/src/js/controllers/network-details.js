@@ -2,8 +2,16 @@
 
 angular
   .module('copayApp.controllers')
-  .controller('networkDetailsController', function($rootScope, $log, $scope, lodash, gettextCatalog, profileService, walletService) {
-
+  .controller('networkDetailsController', function(
+    $rootScope,
+    $log,
+    $scope,
+    lodash,
+    gettextCatalog,
+    txFormatService,
+    profileService,
+    walletService
+  ) {
     $scope.$on('$ionicView.beforeEnter', function(event, data) {
       $scope.wallet = profileService.getWallet(data.stateParams.walletId);
       $scope.fetchingAnv = true;
@@ -15,8 +23,7 @@ angular
           $scope.error = err;
         }
 
-        $scope.anv = anv;
+        $scope.anv = txFormatService.parseAmount(anv);
       });
     });
-
   });
