@@ -47,6 +47,7 @@ angular.module('copayApp.services').factory('incomingData', function($log, $stat
     }
 
     function goSend(addr, amount, message) {
+      console.log('goSend');
       $state.go('tabs.send', {}, {
         'reload': true,
         'notify': $state.current.name == 'tabs.send' ? false : true
