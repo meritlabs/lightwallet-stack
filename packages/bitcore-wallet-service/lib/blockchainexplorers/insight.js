@@ -227,9 +227,7 @@ Insight.prototype.validateReferralCode = function(referralCode, cb) {
 };
 
 Insight.prototype.unlockWallet = function(referralCode, unlockAddress, cb) {
-  var self = this;
-
-  var args = {
+  const args = {
     method: 'POST',
     path: `${this.apiPrefix}/wallet/unlock`,
     json: {
@@ -244,6 +242,22 @@ Insight.prototype.unlockWallet = function(referralCode, unlockAddress, cb) {
     }
     return cb(null, body);
   });
+};
+
+Insight.prototype.validateAddress = function(address) {
+  const args = {
+    method: 'GET',
+    path: `${this.apiPrefix}/addr/${address}/validate`,
+  };
+
+  this._doRequest(args, function(err, res, body) {
+    if (err || res.statusCode !== 200) {
+      return cb(_parseErr(err, res));
+    }
+
+    return cb(null, body);
+  });
+
 };
 
 module.exports = Insight;
