@@ -3213,6 +3213,23 @@ WalletService.prototype.getFiatRate = function(opts, cb) {
   });
 };
 
+WalletService.prototype.validateAddress = function(address, network, cb) {
+  network = network || 'livenet';
+  if (!_.contains(['livenet', 'testnet'], network)) {
+    return cb(new ClientError('Invalid network'));
+  }
+
+  try {
+    const bc = this._getBlockchainExplorer(network);
+    bc.validateAddress(address, function(err, result) {
+      if (err) return cb(null, false);
+      return cb(null, result);
+    });
+  } catch(e) {
+    return cb(new ClientError(`Invalid network: ${e.message}`));
+  }
+};
+
 /**
  * Subscribe this copayer to the Push Notifications service using the specified token.
  * @param {Object} opts
