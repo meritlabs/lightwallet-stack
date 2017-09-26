@@ -839,7 +839,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
 
       // DEEPLINK INTO ONBOARDING FLOW
       .state('onboarding.easyreceive', {
-        url: '/easyreceive?inviteCode&amount&secret',
+        url: '/easyreceive?inviteCode&amount&senderName&sentToAddress&secret',
         views: {
           'onboarding': {
             templateUrl: 'views/onboarding/welcome-easyreceive.html',
