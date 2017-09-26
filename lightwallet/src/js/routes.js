@@ -296,7 +296,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
        */
 
       .state('tabs.send.amount', {
-        url: '/amount/:recipientType/:toAddress/:toName/:toEmail/:toColor',
+        url: '/amount/:recipientType/:toAddress/:toName/:toEmail/:toColor/:easyMethod',
         views: {
           'tab-send@tabs': {
             controller: 'amountController',
@@ -322,6 +322,15 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           'tab-send@tabs': {
             templateUrl: 'views/addressbook.add.html',
             controller: 'addressbookAddController'
+          }
+        }
+      })
+      .state('tabs.send.easysend', {
+        url: '/easysend/:method/:recipient',
+        views: {
+          'tab-send@tabs': {
+            controller: 'easySendController',
+            templateUrl: 'views/easysend.html',
           }
         }
       })

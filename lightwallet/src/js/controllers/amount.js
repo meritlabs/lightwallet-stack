@@ -28,23 +28,27 @@ angular.module('copayApp.controllers').controller('amountController', function($
     $scope.toAddress = data.stateParams.toAddress;
     $scope.toName = data.stateParams.toName;
     $scope.toEmail = data.stateParams.toEmail;
+    $scope.easyMethod = data.stateParams.easyMethod;
     $scope.showAlternativeAmount = !!$scope.nextStep;
     $scope.toColor = data.stateParams.toColor;
     $scope.showSendMax = false;
     $scope.search = {
       email: null,
-      phoneNumber: null
+      phoneNumber: null,
     };
 
-    // if (!$scope.nextStep && !data.stateParams.toAddress) {
-    //   $log.error('Bad params at amount')
-    //   throw ('bad params');
-    // }
+    if (!$scope.nextStep && !$scope.easyMethod && !data.stateParams.toAddress) {
+      $log.error('Bad params at amount');
+      throw ('bad params');
+    }
 
     var reNr = /^[1234567890\.]$/;
     var reOp = /^[\*\+\-\/]$/;
 
+    $scope.keysEnabled = true;
+
     $scope.disableKeys = function() {
+      $scope.keysEnabled = false;
       angular.element($window).on('keydown', function(e) {
         if (!e.key) return;
         if (e.which === 8) { // you can add others here inside brackets.
@@ -69,6 +73,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
     };
 
     $scope.enableKeys = function() {
+      $scope.keysEnabled = true;
       angular.element($window).off('keydown');
     };
 
@@ -114,8 +119,6 @@ angular.module('copayApp.controllers').controller('amountController', function($
     var value = nodeWebkitService.readFromClipboard();
     if (value && evaluate(value) > 0) paste(evaluate(value));
   };
-
-  $scope.log = console.log;
 
   $scope.showSendMaxMenu = function() {
     $scope.showSendMax = true;
@@ -236,12 +239,17 @@ angular.module('copayApp.controllers').controller('amountController', function($
   $scope.finish = function() {
     var _amount = evaluate(format($scope.amount));
 
-    if ($scope.nextStep) {
+    if ($scope.easyMethod) {
+      $state.transitionTo('tabs.send.easysend', {
+        method: $scope.easyMethod,
+        recipient: $scope.search.email ? $scope.search.email : $scope.search.phoneNumber
+      });
+    } else if ($scope.nextStep) {
       $state.transitionTo($scope.nextStep, {
         id: _id,
         amount: $scope.useSendMax ? null : _amount,
         currency: $scope.showAlternativeAmount ? $scope.alternativeIsoCode : $scope.unitName,
-        useSendMax: $scope.useSendMax
+        useSendMax: $scope.useSendMax,
       });
     } else {
       var amount = $scope.showAlternativeAmount ? fromFiat(_amount) : _amount;
