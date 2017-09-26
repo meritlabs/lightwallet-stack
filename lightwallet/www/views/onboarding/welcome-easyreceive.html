@@ -2,7 +2,9 @@
     <ion-content ng-controller="welcomeController" scroll="false">
       <div id="logo-tagline">
           <img src='img/app/logo-negative.svg' id="logo" />
-          <p id="lead" translate>Awesome!  You've been invited to Merit!.</p>
+          <p id="easy-lead" translate>You've got Merit!</p>
+          <p id="easy-details">{{senderName ? senderName : 'Someone'}} sent you <strong>{{amount ? amount : ''}}</strong> Merit.</p>
+          <p id="easy-nextsteps">All you have to do is setup an account, and you'll be able to accept it into your Merit wallet.</p>
       </div>
       <div id="cta-buttons">
           <button class="button button-standard button-primary" id="get-started" href ui-sref="onboarding.tour" translate-context="button" translate>Get started</button>

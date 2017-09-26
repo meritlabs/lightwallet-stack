@@ -6,10 +6,12 @@ angular.module('copayApp.controllers').controller('tourController',
       index: 0
     };
 
-    $scope.$on("$ionicView.beforeEnter", function(event, data) {
+    $scope.$on("$ionicView.beforeEnter", function(event, data) {      
       $scope.tourFormData = {};
       $scope.unlockFailed = false;
       $scope.unlockSucceeded = false;
+      $scope.validateAndLoadParams();
+      
     });
 
     $scope.options = {
@@ -18,10 +20,6 @@ angular.module('copayApp.controllers').controller('tourController',
       speed: 500,
       spaceBetween: 100
     }
-
-    $scope.$on("$viewContentLoaded", function(event, data) {
-      $scope.checkInviteCode();
-    })
 
     $scope.$on("$ionicSlides.sliderInitialized", function(event, data) {
       $scope.slider = data.slider;
@@ -57,11 +55,31 @@ angular.module('copayApp.controllers').controller('tourController',
       return "";
     }
 
-    $scope.checkInviteCode = function() {
-      console.log("let's check the invite code!");
+    $scope.validateAndLoadParams = function() {
+      //TODO: Do relevant validation.
+      $log.debug("Parsing params that have been deeplinked in.");
+      $log.debug($stateParams);
       if ($stateParams.inviteCode) {
         $log.debug("Received inviteCode from URL param.  Storing for later...")
-        $scope.inviteCode = $routeParams.inviteCode;
+        $scope.inviteCode = $stateParams.inviteCode;
+      }
+
+      if ($stateParams.senderName) {
+        $log.debug("Received senderName from URL param.  Storing for later...")
+        $scope.senderName = $stateParams.senderName;
+      }
+
+      if ($stateParams.amount) {
+        $log.debug("Received amount from URL param.  Storing for later...")
+        $scope.amount = $stateParams.amount;
+      }
+
+      if ($stateParams.secret) {
+        $scope.secret = $stateParams.secret;
+      }
+
+      if ($stateParams.sentToAddress) {
+        $scope.sentToAddress = $stateParams.sentToAddress;
       }
     }
 

@@ -33,4 +33,19 @@
     @extend %cta-buttons;
     padding-bottom: 4vw;
   }
+  #easy-lead {
+    line-height: 2rem;
+    font-size: 1.5rem;
+  }
+  #easy-details {
+    line-height: 2rem;
+    font-size: 2rem;
+    strong {
+      color: $v-success-color;
+    }
+  }
+  #easy-nextsteps {
+    line-height: 2rem;
+    font-size: 1.25rem;
+  }
 }

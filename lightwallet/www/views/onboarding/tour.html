@@ -63,7 +63,7 @@
           <div class="onboarding-tldr" translate>You'll need an unlock code from a friend or colleague.</div>
           <div class="onboarding-input" translate>
             <input 
-            placeholder="Unlock Code"
+            placeholder="{{inviteCode ? inviteCode : 'Unlock Code'}}"
             focus-on="unlockCode"
             ng-class="unlockCodeClass()"
             ng-model="tourFormData.beacon">
