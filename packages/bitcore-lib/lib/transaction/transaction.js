@@ -193,7 +193,7 @@ Transaction.prototype.getSerializationError = function(opts) {
   opts = opts || {};
 
   if (this.invalidMicros()) {
-    return new errors.Transaction.invalidMicros();
+    return new errors.Transaction.InvalidMicros();
   }
 
   var unspent = this._getUnspentValue();
