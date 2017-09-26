@@ -122,37 +122,28 @@ AddressController.prototype.check = function(req, res, next, addresses) {
   next();
 };
 
-AddressController.prototype.validateAddress = function(req, res, next, addresses) {
-  if(!addresses.length || !addresses[0]) {
-    return self.common.handleErrors({
-      message: 'Must include address',
-      code: 1
-    }, res);
-  }
+AddressController.prototype.validateAddresses = function(req, res) {
+  const address = req.addr;
 
-  const result = addresses.map(function(addr) {
-    this.node.validateAddress(addr, function(err, response) {
-      let error = null;
-      if (err) {
-        error = Error(`Address ${addr} cannot be validated: ${err.message}`);
-      } else if (!response.result || !response.result.isvalid) {
-        error = Error(`Address ${addr} is not valid`);
-      } else if (!response.result || !response.result.isbeaconed) {
-        error = Error(`Address ${addr} was not beaconed yet`);
-      }
+  this.node.validateAddress(address, function(err, response) {
+    let error = null;
+    if (err) {
+      error = Error(`Address ${addr} cannot be validated: ${err.message}`);
+    } else if (!response.result || !response.result.isvalid) {
+      error = Error(`Address ${addr} is not valid`);
+    } else if (!response.result || !response.result.isbeaconed) {
+      error = Error(`Address ${addr} was not beaconed yet`);
+    }
 
-      if (error) {
-        return self.common.handleErrors({
-          message: 'Invalid address: ' + error.message,
-          code: 1
-        }, res);
-      }
+    if (error) {
+      return self.common.handleErrors({
+        message: 'Invalid address: ' + error.message,
+        code: 1
+      }, res);
+    }
 
-      return true;
-    });
-  });
-
-  return res.jsonp(result);
+    return res.jsonp(true);
+  });  
 };
 
 AddressController.prototype.utxo = function(req, res) {
