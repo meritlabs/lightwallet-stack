@@ -62,8 +62,15 @@ angular.module('copayApp.controllers').controller('tourController',
         if (err || lodash.isEmpty(receipt)) {
           $log.debug("Unable to load easyReceipt.");
         } else {
-          $log.debug("Loading easyReceipt into memory.");  
+          $log.debug("Loading easyReceipt into memory.", receipt);  
           $scope.easyReceipt = receipt;
+
+          //Set the value of the invite code input to the inviteCode in the easyReceipt.
+          $log.debug("EasyReceipt Situation");
+          if (!$scope.tourFormData.unlockCode) {
+            $log.debug("TourFormData unlockCode is empty!!");
+            //$scope.tourFormData.unlockCode = $scope.easyReceipt.inviteCode;
+          }
         }
       });
     };
@@ -117,7 +124,7 @@ angular.module('copayApp.controllers').controller('tourController',
     var retryCount = 0;
     $scope.createDefaultWallet = function() {
       ongoingProcess.set('creatingWallet', true);
-      var unlockCode = $scope.tourFormData.beacon;
+      var unlockCode = $scope.tourFormData.unlockCode;
       $timeout(function() {
         profileService.createDefaultWallet(unlockCode, function(err, walletClient) {
           if (err) {

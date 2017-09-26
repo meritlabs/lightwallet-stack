@@ -2,7 +2,7 @@
 angular.module('copayApp.services')
   .factory('easyReceiveService', function easyReceiveServiceFactory($rootScope, $timeout, $log, $state, lodash, storageService) {
     
-    service = {};
+    var service = {};
     service.easyReceipt = {};
 
     // TODO: Support having multiple easyReceipts in local storage, so that user can accept them all.
@@ -32,13 +32,18 @@ angular.module('copayApp.services')
         service.easyReceipt.sentToAddress = params.sentToAddress;
       }
       if (!lodash.isEmpty(service.easyReceipt)) {
-        storageService.storeEasyReceipt();
+        var receiptToStore = EasyReceipt.fromObj(service.easyReceipt);
+        storageService.storeEasyReceipt(receiptToStore, function(err) {
+          if (err) {
+            $log.debug("Could not save the easyReceipt:", err);
+          }
+        });
       }
-      $log.debug("Did we reset the invite code?.");
-      $log.debug(service.easyReceipt.inviteCode);
     };
 
-  service.getEasyReceipt = function (cb) {
-    return storageService.getEasyReceipt(cb);
-  }
+    service.getEasyReceipt = function (cb) {
+      return storageService.getEasyReceipt(cb);
+    }
+
+    return service;
 });
