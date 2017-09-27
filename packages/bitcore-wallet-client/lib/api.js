@@ -716,7 +716,7 @@ API.prototype.openWallet = function(cb) {
       var me = _.find(wallet.copayers, {
         id: self.credentials.copayerId
       });
-      self.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.shareCode);
+      self.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode);
     }
 
     if (wallet.status != 'complete')
@@ -1308,7 +1308,7 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
 
     var walletId = res.walletId;
     var walletShareCode = res.shareCode;
-    c.addWalletInfo(walletId, walletName, m, n, copayerName, walletShareCode);
+    c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode);
 
     var secret = API._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
@@ -1361,7 +1361,7 @@ API.prototype.joinWallet = function(secret, copayerName, opts, cb) {
   }, function(err, wallet) {
     if (err) return cb(err);
     if (!opts.dryRun) {
-      self.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.shareCode);
+      self.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.beacon, wallet.shareCode);
     }
     return cb(null, wallet);
   });
@@ -1403,6 +1403,7 @@ API.prototype.recreateWallet = function(cb) {
       network: c.network,
       id: walletId,
       supportBIP44AndP2PKH: supportBIP44AndP2PKH,
+      beacon: c.beacon
     };
 
     self._doPostRequest('/v2/wallets/', args, function(err, body) {
