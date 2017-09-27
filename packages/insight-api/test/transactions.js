@@ -89,7 +89,6 @@ describe('Transactions', function() {
         'time': 1440987503,
         'blocktime': 1440987503,
         'valueOut': 0.3492539,
-        'size': 437,
         'valueIn': 0.3495539,
         'fees': 0.0003
       };
@@ -405,7 +404,8 @@ describe('Transactions', function() {
             'blocktime': 1440987503,
             'isCoinBase': true,
             'valueOut': 12.5004,
-            'size': 120
+            'fees': 0,
+            'valueIn': 0,
           },
           {
             'txid': 'b85334bf2df35c6dd5b294efe92ffc793a78edff75a2ca666fc296ffb04bbba0',
@@ -482,7 +482,6 @@ describe('Transactions', function() {
             'time': 1440987503,
             'blocktime': 1440987503,
             'valueOut': 0.3492539,
-            'size': 437,
             'valueIn': 0.3495539,
             'fees': 0.0003
           },
@@ -562,7 +561,6 @@ describe('Transactions', function() {
             'time': 1440987503,
             'blocktime': 1440987503,
             'valueOut': 0.0294,
-            'size': 373,
             'valueIn': 0.0295,
             'fees': 0.0001
           }
@@ -811,7 +809,6 @@ describe('Transactions', function() {
             'time': 1441068774,
             'blocktime': 1441068774,
             'valueOut': 27.96729129,
-            'size': 226,
             'valueIn': 27.96764565,
             'fees': 0.00035436
           },
@@ -877,7 +874,6 @@ describe('Transactions', function() {
             'time': 1441072817,
             'blocktime': 1441072817,
             'valueOut': 27.82693692,
-            'size': 225,
             'valueIn': 27.82729129,
             'fees': 0.00035437
           }

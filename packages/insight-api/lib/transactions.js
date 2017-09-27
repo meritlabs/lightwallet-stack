@@ -91,7 +91,6 @@ TxController.prototype.transformTransaction = function(transaction, options, cal
   }
 
   transformed.valueOut = transaction.outputMicros / 1e8;
-  transformed.size = transaction.size; // in bytes
   transformed.valueIn = transaction.inputMicros / 1e8;
   transformed.fees = transaction.feeMicros / 1e8;
 
