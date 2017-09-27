@@ -54,10 +54,16 @@ helpers.before = function(cb) {
 };
 
 helpers.beforeEach = function(cb) {
+
   if (!storage.db) return cb();
   storage.db.dropDatabase(function(err) {
     if (err) return cb(err);
     blockchainExplorer = sinon.stub();
+
+    blockchainExplorer.unlockWallet = function(a, b, cb) {
+      return cb(null, { result: { referralcode: 'code' } });
+    }
+
     var opts = {
       storage: storage,
       blockchainExplorer: blockchainExplorer,
@@ -163,6 +169,7 @@ helpers.createAndJoinWallet = function(m, n, opts, cb) {
     name: 'a wallet',
     m: m,
     n: n,
+    beacon: 'code',
     pubKey: TestData.keyPair.pub,
     singleAddress: !!opts.singleAddress,
   };

@@ -283,6 +283,7 @@ describe('Wallet service', function() {
         name: 'my wallet',
         m: 2,
         n: 3,
+        beacon: 'code',
         pubKey: TestData.keyPair.pub,
       };
       server.createWallet(opts, function(err, walletId) {
@@ -301,6 +302,7 @@ describe('Wallet service', function() {
         name: 'my wallet',
         m: 2,
         n: 3,
+        beacon: 'code',
         pubKey: TestData.keyPair.pub,
         id: '1234',
       };
@@ -320,6 +322,7 @@ describe('Wallet service', function() {
         name: 'my wallet',
         m: 2,
         n: 3,
+        beacon: 'code',
         pubKey: TestData.keyPair.pub,
         id: '1234',
       };
@@ -336,6 +339,7 @@ describe('Wallet service', function() {
         name: '',
         m: 2,
         n: 3,
+        beacon: 'code',
         pubKey: TestData.keyPair.pub,
       };
       server.createWallet(opts, function(err, walletId) {
@@ -399,6 +403,7 @@ describe('Wallet service', function() {
       var opts = {
         id: '123',
         name: 'my wallet',
+        beacon: 'code',
         pubKey: TestData.keyPair.pub,
       };
       async.each(pairs, function(pair, cb) {
@@ -423,6 +428,7 @@ describe('Wallet service', function() {
         name: 'my wallet',
         m: 2,
         n: 3,
+        beacon: 'code',
         pubKey: 'dummy',
       };
       server.createWallet(opts, function(err, walletId) {
@@ -443,6 +449,7 @@ describe('Wallet service', function() {
           name: 'my wallet',
           m: 1,
           n: 1,
+          beacon: 'code',
           pubKey: TestData.keyPair.pub,
         };
         server.createWallet(walletOpts, function(err, wid) {
@@ -460,6 +467,7 @@ describe('Wallet service', function() {
           name: 'my wallet',
           m: 1,
           n: 1,
+          beacon: 'code',
           pubKey: TestData.keyPair.pub,
           supportBIP44AndP2PKH: false,
         };
@@ -478,6 +486,7 @@ describe('Wallet service', function() {
           name: 'my wallet',
           m: 2,
           n: 3,
+          beacon: 'code',
           pubKey: TestData.keyPair.pub,
         };
         server.createWallet(walletOpts, function(err, wid) {
@@ -495,6 +504,7 @@ describe('Wallet service', function() {
           name: 'my wallet',
           m: 2,
           n: 3,
+          beacon: 'code',
           pubKey: TestData.keyPair.pub,
           supportBIP44AndP2PKH: false,
         };
@@ -521,6 +531,7 @@ describe('Wallet service', function() {
           name: 'my wallet',
           m: 1,
           n: 2,
+          beacon: 'code',
           pubKey: TestData.keyPair.pub,
         };
         server.createWallet(walletOpts, function(err, wId) {
@@ -691,6 +702,7 @@ describe('Wallet service', function() {
             name: 'my other wallet',
             m: 1,
             n: 1,
+            beacon: 'code',
             pubKey: TestData.keyPair.pub,
           };
           server.createWallet(walletOpts, function(err, walletId) {
@@ -812,6 +824,7 @@ describe('Wallet service', function() {
           name: 'my wallet',
           m: 1,
           n: 2,
+          beacon: 'code',
           pubKey: TestData.keyPair.pub,
           supportBIP44AndP2PKH: false,
         };
@@ -837,6 +850,7 @@ describe('Wallet service', function() {
           name: 'my wallet',
           m: 1,
           n: 2,
+          beacon: 'code',
           pubKey: TestData.keyPair.pub,
         };
         server.createWallet(walletOpts, function(err, walletId) {
@@ -1171,7 +1185,8 @@ describe('Wallet service', function() {
         });
       });
 
-      it('should create many addresses on simultaneous requests', function(done) {
+      // skip for singleAddress = true
+      it.skip('should create many addresses on simultaneous requests', function(done) {
         var N = 5;
         async.mapSeries(_.range(N), function(i, cb) {
           server.createAddress({}, cb);
@@ -1219,7 +1234,8 @@ describe('Wallet service', function() {
         });
       });
 
-      it('should create many addresses on simultaneous requests', function(done) {
+      // skip for singleAddress = true
+      it.skip('should create many addresses on simultaneous requests', function(done) {
         var N = 5;
         async.mapSeries(_.range(N), function(i, cb) {
           server.createAddress({}, cb);
@@ -1286,7 +1302,9 @@ describe('Wallet service', function() {
         });
       });
 
-      it('should create many addresses on simultaneous requests', function(done) {
+
+      // skip for singleAddress = true
+      it.skip('should create many addresses on simultaneous requests', function(done) {
         var N = 5;
         async.mapSeries(_.range(N), function(i, cb) {
           server.createAddress({}, cb);
@@ -1302,7 +1320,8 @@ describe('Wallet service', function() {
         });
       });
 
-      it('should fail to create more consecutive addresses with no activity than allowed', function(done) {
+      // skip for singleAddress = true
+      it.skip('should fail to create more consecutive addresses with no activity than allowed', function(done) {
         var MAX_MAIN_ADDRESS_GAP_old = Defaults.MAX_MAIN_ADDRESS_GAP;
         Defaults.MAX_MAIN_ADDRESS_GAP = 2;
         helpers.stubAddressActivity([]);
@@ -1338,7 +1357,8 @@ describe('Wallet service', function() {
         });
       });
 
-      it('should cache address activity', function(done) {
+      // skip for singleAddress = true
+      it.skip('should cache address activity', function(done) {
         var MAX_MAIN_ADDRESS_GAP_old = Defaults.MAX_MAIN_ADDRESS_GAP;
         Defaults.MAX_MAIN_ADDRESS_GAP = 2;
         helpers.stubAddressActivity([]);
@@ -1575,7 +1595,7 @@ describe('Wallet service', function() {
     });
     it('should get UTXOs for specific addresses', function(done) {
       helpers.stubUtxos(server, wallet, [1, 2, 3], function(utxos) {
-        _.uniq(utxos, 'address').length.should.be.above(1);
+        // _.uniq(utxos, 'address').length.should.be.above(1); // for singleAddress = true
         var address = utxos[0].address;
         var amount = _.sum(_.filter(utxos, {
           address: address
@@ -1785,26 +1805,26 @@ describe('Wallet service', function() {
     });
 
     it('should get balance', function(done) {
-      helpers.stubUtxos(server, wallet, [1, 'u2', 3], function() {
+      // helpers.stubUtxos(server, wallet, [1, 'u2', 3], function() {
+      helpers.stubUtxos(server, wallet, [1, 3], function() {
         server.getBalance({}, function(err, balance) {
           should.not.exist(err);
           should.exist(balance);
-          balance.totalAmount.should.equal(helpers.toMicro(6));
+          balance.totalAmount.should.equal(helpers.toMicro(4));
           balance.lockedAmount.should.equal(0);
-          balance.availableAmount.should.equal(helpers.toMicro(6));
+          balance.availableAmount.should.equal(helpers.toMicro(4));
 
           balance.totalConfirmedAmount.should.equal(helpers.toMicro(4));
           balance.lockedConfirmedAmount.should.equal(0);
           balance.availableConfirmedAmount.should.equal(helpers.toMicro(4));
 
           should.exist(balance.byAddress);
-          balance.byAddress.length.should.equal(2);
+          balance.byAddress.length.should.equal(1);
           balance.byAddress[0].amount.should.equal(helpers.toMicro(4));
-          balance.byAddress[1].amount.should.equal(helpers.toMicro(2));
           server.getMainAddresses({}, function(err, addresses) {
             should.not.exist(err);
             var addresses = _.uniq(_.pluck(addresses, 'address'));
-            _.intersection(addresses, _.pluck(balance.byAddress, 'address')).length.should.equal(2);
+            _.intersection(addresses, _.pluck(balance.byAddress, 'address')).length.should.equal(1);
             done();
           });
         });
@@ -1884,24 +1904,26 @@ describe('Wallet service', function() {
     });
 
     it('should get balance', function(done) {
-      helpers.stubUtxos(server, wallet, [1, 'u2', 3], function() {
+      // helpers.stubUtxos(server, wallet, [1, 'u2', 3], function() {
+      helpers.stubUtxos(server, wallet, [1, 3], function() {
         server.getBalance({
           twoStep: true
         }, function(err, balance) {
           should.not.exist(err);
           should.exist(balance);
-          balance.totalAmount.should.equal(helpers.toMicro(6));
+          balance.totalAmount.should.equal(helpers.toMicro(4));
           balance.lockedAmount.should.equal(0);
-          balance.availableAmount.should.equal(helpers.toMicro(6));
+          balance.availableAmount.should.equal(helpers.toMicro(4));
 
           balance.totalConfirmedAmount.should.equal(helpers.toMicro(4));
           balance.lockedConfirmedAmount.should.equal(0);
           balance.availableConfirmedAmount.should.equal(helpers.toMicro(4));
 
           should.exist(balance.byAddress);
-          balance.byAddress.length.should.equal(2);
+          // balance.byAddress.length.should.equal(2);
+          balance.byAddress.length.should.equal(1);
           balance.byAddress[0].amount.should.equal(helpers.toMicro(4));
-          balance.byAddress[1].amount.should.equal(helpers.toMicro(2));
+          // balance.byAddress[1].amount.should.equal(helpers.toMicro(2));
           setTimeout(done, 100);
         });
       });
@@ -2351,6 +2373,7 @@ describe('Wallet service', function() {
         name: 'my wallet',
         m: 2,
         n: 3,
+        beacon: 'code',
         pubKey: TestData.keyPair.pub,
       };
       server.createWallet(walletOpts, function(err, walletId) {
@@ -2382,6 +2405,7 @@ describe('Wallet service', function() {
         name: 'my wallet',
         m: 2,
         n: 3,
+        beacon: 'code',
         pubKey: TestData.keyPair.pub,
       };
       server.createWallet(walletOpts, function(err, walletId) {
@@ -2567,7 +2591,9 @@ describe('Wallet service', function() {
             });
           });
         });
-        it('should be able to specify change address', function(done) {
+
+      // skip for singleAddress = true
+        it.skip('should be able to specify change address', function(done) {
           helpers.stubUtxos(server, wallet, [1, 2], function(utxos) {
             var txOpts = {
               outputs: [{
@@ -2586,6 +2612,7 @@ describe('Wallet service', function() {
             });
           });
         });
+
         it('should be able to specify inputs & absolute fee', function(done) {
           helpers.stubUtxos(server, wallet, [1, 2], function(utxos) {
             var txOpts = {
@@ -3049,7 +3076,9 @@ describe('Wallet service', function() {
           });
         });
       });
-      it('should generate new change address for each created tx', function(done) {
+
+      // skip for singleAddress = true
+      it.skip('should generate new change address for each created tx', function(done) {
         helpers.stubUtxos(server, wallet, [1, 2], function() {
           var txOpts = {
             outputs: [{
@@ -3070,6 +3099,7 @@ describe('Wallet service', function() {
           });
         });
       });
+
       it('should support creating a tx with no change address', function(done) {
         helpers.stubUtxos(server, wallet, [1, 2], function() {
           var max = 3e8 - 7000; // Fees for this tx at 100bits/kB = 7000 sat
@@ -5640,7 +5670,8 @@ describe('Wallet service', function() {
       server.getNotifications({}, function(err, notifications) {
         should.not.exist(err);
         var types = _.pluck(notifications, 'type');
-        types.should.deep.equal(['NewCopayer', 'NewAddress', 'NewAddress', 'NewTxProposal', 'NewTxProposal', 'NewTxProposal']);
+        // types.should.deep.equal(['NewCopayer', 'NewAddress', 'NewAddress', 'NewTxProposal', 'NewTxProposal', 'NewTxProposal']);
+        types.should.deep.equal(['NewCopayer', 'NewAddress', 'NewTxProposal', 'NewTxProposal', 'NewTxProposal']); // for singleAddress = true
         var walletIds = _.uniq(_.pluck(notifications, 'walletId'));
         walletIds.length.should.equal(1);
         walletIds[0].should.equal(wallet.id);
@@ -6874,8 +6905,8 @@ describe('Wallet service', function() {
               var paths = _.pluck(addresses, 'path');
               _.difference(paths, expectedPaths).length.should.equal(0);
               server.createAddress({}, function(err, address) {
-                should.not.exist(err);
-                address.path.should.equal('m/0/3');
+                // address.path.should.equal('m/0/3');
+                address.path.should.equal('m/0/0'); // it takes first address in case singleAddress = true
                 done();
               });
             });
@@ -6907,12 +6938,14 @@ describe('Wallet service', function() {
               _.difference(paths, expectedPaths).length.should.equal(0);
               server.createAddress({}, function(err, address) {
                 should.not.exist(err);
-                address.path.should.equal('m/0/3');
+                // address.path.should.equal('m/0/5');
+                address.path.should.equal('m/0/0'); // it takes first address in case singleAddress = true
                 // A rescan should see the m/0/5 address initially beyond the gap
                 server.scan({}, function(err) {
                   server.createAddress({}, function(err, address) {
                     should.not.exist(err);
-                    address.path.should.equal('m/0/6');
+                    // address.path.should.equal('m/0/6');
+                    address.path.should.equal('m/0/0'); // it takes first address in case singleAddress = true
                     done();
                   });
                 });
@@ -6957,7 +6990,8 @@ describe('Wallet service', function() {
               wallet.addressManager.changeAddressIndex.should.equal(0);
               server.createAddress({}, function(err, address) {
                 should.not.exist(err);
-                address.path.should.equal('m/0/1');
+                // address.path.should.equal('m/0/1');
+                address.path.should.equal('m/0/0'); // it takes first address in case singleAddress = true
                 done();
               });
             });
@@ -7067,7 +7101,8 @@ describe('Wallet service', function() {
               _.difference(paths, expectedPaths).length.should.equal(0);
               server.createAddress({}, function(err, address) {
                 should.not.exist(err);
-                address.path.should.equal('m/2147483647/0/3');
+                // address.path.should.equal('m/2147483647/0/3');
+                address.path.should.equal('m/2147483647/0/0'); // it takes first address in case singleAddress = true
                 done();
               });
             });
@@ -7149,7 +7184,8 @@ describe('Wallet service', function() {
               _.difference(paths, expectedPaths).length.should.equal(0);
               server.createAddress({}, function(err, address) {
                 should.not.exist(err);
-                address.path.should.equal('m/2147483647/0/3');
+                // address.path.should.equal('m/2147483647/0/3');
+                address.path.should.equal('m/2147483647/0/0'); // it takes first address in case singleAddress = true
                 done();
               });
             })
@@ -7194,6 +7230,7 @@ describe('Wallet service', function() {
         name: 'second wallet',
         m: 1,
         n: 1,
+        beacon: 'code',
         pubKey: TestData.keyPair.pub,
       };
       server2.createWallet(opts, function(err, walletId) {
