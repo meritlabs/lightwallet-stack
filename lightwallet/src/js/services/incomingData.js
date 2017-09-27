@@ -47,7 +47,6 @@ angular.module('copayApp.services').factory('incomingData', function($log, $stat
     }
 
     function goSend(addr, amount, message) {
-      console.log('goSend');
       $state.go('tabs.send', {}, {
         'reload': true,
         'notify': $state.current.name == 'tabs.send' ? false : true
@@ -126,6 +125,7 @@ angular.module('copayApp.services').factory('incomingData', function($log, $stat
           type: 'bitcoinAddress'
         });
       } else {
+        // ToDo: validate address with meritd and return something as a feedback in case of failed check
         goToAmountPage(data);
       }
     } else if (data && data.indexOf(appConfigService.name + '://glidera') === 0) {
