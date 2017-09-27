@@ -69,7 +69,7 @@ angular.module('copayApp.controllers').controller('tourController',
           $log.debug("EasyReceipt Situation");
           if (!$scope.tourFormData.unlockCode) {
             $log.debug("TourFormData unlockCode is empty!!");
-            //$scope.tourFormData.unlockCode = $scope.easyReceipt.inviteCode;
+            $scope.tourFormData.unlockCode = $scope.easyReceipt.inviteCode;
           }
         }
       });
