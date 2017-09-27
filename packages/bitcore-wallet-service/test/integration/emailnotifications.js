@@ -368,7 +368,7 @@ describe('Email notifications', function() {
       server.savePreferences({
         email: 'copayer1@domain.com',
         language: 'es',
-        unit: 'btc',
+        unit: 'mrt',
       }, function(err) {
         server.createAddress({}, function(err, address) {
           should.not.exist(err);
@@ -390,7 +390,7 @@ describe('Email notifications', function() {
               });
               spanish.from.should.equal('bws@dummy.net');
               spanish.subject.should.contain('Nuevo pago recibido');
-              spanish.text.should.contain('0.123 BTC');
+              spanish.text.should.contain('0.123 MRT');
               var english = _.find(emails, {
                 to: 'copayer2@domain.com'
               });

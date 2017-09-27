@@ -154,8 +154,8 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
     txid: utxoArg.txid,
     vout: utxoArg.outputIndex,
     scriptPubKey: utxoArg.script,
-    amount: utxoArg.satoshis / 1e8,
-    satoshis: utxoArg.satoshis
+    amount: utxoArg.micros / 1e8,
+    micros: utxoArg.micros
   };
   if (utxoArg.height && utxoArg.height > 0) {
     utxo.height = utxoArg.height;

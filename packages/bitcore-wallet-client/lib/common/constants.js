@@ -21,8 +21,8 @@ Constants.PATHS = {
 Constants.BIP45_SHARED_INDEX = 0x80000000 - 1;
 
 Constants.UNITS = {
-  btc: {
-    toSatoshis: 100000000,
+  mrt: {
+    toMicros: 100000000,
     full: {
       maxDecimals: 8,
       minDecimals: 8,
@@ -33,7 +33,7 @@ Constants.UNITS = {
     }
   },
   bit: {
-    toSatoshis: 100,
+    toMicros: 100,
     full: {
       maxDecimals: 2,
       minDecimals: 2,

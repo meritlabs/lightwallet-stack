@@ -129,3 +129,55 @@ clean-lightwallet-stack: clean-npm \
 	clean-bitcore-node \
 	clean-bitcore-message \
 	clean-bitcore-payment-protocol
+
+.PHONY: test-bitcoin-rpc
+test-bitcoin-rpc:
+	cd packages/bitcoin-rpc && npm test
+
+.PHONY: test-bitcore-lib
+test-bitcore-lib:
+	cd packages/bitcore-lib && npm test
+
+.PHONY: test-bitcore-message
+test-bitcore-message:
+	cd packages/bitcore-message && npm test
+
+.PHONY: test-bitcore-mnemonic
+test-bitcore-mnemonic:
+	cd packages/bitcore-mnemonic && npm test
+
+.PHONY: test-bitcore-node
+test-bitcore-node:
+	cd packages/bitcore-node && npm test
+
+.PHONY: test-bitcore-p2p
+test-bitcore-p2p:
+	cd packages/bitcore-p2p && npm test
+
+.PHONY: test-bitcore-payment-protocol
+test-bitcore-payment-protocol:
+	cd packages/bitcore-payment-protocol && npm test
+
+.PHONY: test-bitcore-wallet-service
+test-bitcore-wallet-service:
+	cd packages/bitcore-wallet-service && npm test
+
+.PHONY: test-bitcore-wallet-client
+test-bitcore-wallet-client:
+	cd packages/bitcore-wallet-client && npm test
+
+.PHONY: test-insight-api
+test-insight-api:
+	cd packages/insight-api && npm test
+
+.PHONY: test-all
+test-all: test-bitcoin-rpc \
+	test-bitcore-lib \
+	test-bitcore-message \
+	test-bitcore-mnemonic \
+	test-bitcore-node \
+	test-bitcore-p2p \
+	test-bitcore-payment-protocol \
+	test-bitcore-wallet-service \
+	test-bitcore-wallet-client \
+	test-insight-api
