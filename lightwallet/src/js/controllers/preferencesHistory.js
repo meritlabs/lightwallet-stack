@@ -43,7 +43,7 @@ angular.module('copayApp.controllers').controller('preferencesHistory',
         }
         $log.debug('Wallet Transaction History Length:', txs.length);
 
-        $scope.satToUnit = 1 / $scope.unitToMicro;
+        $scope.microToUnit = 1 / $scope.unitToMicro;
         var data = txs;
         var satToMrt = 1 / 100000000;
         $scope.csvContent = [];

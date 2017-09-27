@@ -13,7 +13,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
   var walletConfig = config.wallet;
   var unitToMicro = walletConfig.settings.unitToMicro;
   var unitDecimals = walletConfig.settings.unitDecimals;
-  var satToUnit = 1 / unitToMicro;
+  var microToUnit = 1 / unitToMicro;
   var configFeeLevel = walletConfig.settings.feeLevel ? walletConfig.settings.feeLevel : 'normal';
 
 

@@ -215,12 +215,12 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
     };
   };
 
-  root.satToUnit = function(amount) {
+  root.microToUnit = function(amount) {
     var config = configService.getSync().wallet.settings;
     var unitToMicro = config.unitToMicro;
-    var satToUnit = 1 / unitToMicro;
+    var microToUnit = 1 / unitToMicro;
     var unitDecimals = config.unitDecimals;
-    return parseFloat((amount * satToUnit).toFixed(unitDecimals));
+    return parseFloat((amount * microToUnit).toFixed(unitDecimals));
   };
 
   return root;

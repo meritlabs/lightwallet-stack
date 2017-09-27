@@ -3,7 +3,7 @@
 angular.module('copayApp.controllers').controller('amountController', function($scope, $filter, $timeout, $ionicScrollDelegate, $ionicHistory, gettextCatalog, platformInfo, lodash, configService, rateService, $stateParams, $window, $state, $log, txFormatService, ongoingProcess, popupService, bwcError, payproService, profileService, bitcore, amazonService, nodeWebkitService) {
   var _id;
   var unitToMicro;
-  var satToUnit;
+  var microToUnit;
   var unitDecimals;
   var satToMrt;
   var SMALL_FONT_SIZE_LIMIT = 10;
@@ -72,7 +72,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
     $scope.specificAmount = $scope.specificAlternativeAmount = '';
     $scope.isCordova = platformInfo.isCordova;
     unitToMicro = config.unitToMicro;
-    satToUnit = 1 / unitToMicro;
+    microToUnit = 1 / unitToMicro;
     satToMrt = 1 / 100000000;
     unitDecimals = config.unitDecimals;
 
@@ -80,7 +80,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
 
     // in SAT ALWAYS
     if ($stateParams.toAmount) {
-      $scope.amount = (($stateParams.toAmount) * satToUnit).toFixed(unitDecimals);
+      $scope.amount = (($stateParams.toAmount) * microToUnit).toFixed(unitDecimals);
     }
 
     processAmount();
@@ -193,7 +193,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
   };
 
   function fromFiat(val) {
-    return parseFloat((rateService.fromFiat(val, $scope.alternativeIsoCode) * satToUnit).toFixed(unitDecimals));
+    return parseFloat((rateService.fromFiat(val, $scope.alternativeIsoCode) * microToUnit).toFixed(unitDecimals));
   };
 
   function toFiat(val) {

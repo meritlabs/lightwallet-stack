@@ -40,7 +40,7 @@ angular.module('copayApp.controllers').controller('customAmountController', func
       if (currency != 'MRT') {
         // Convert to MRT
         var config = configService.getSync().wallet.settings;
-        var amountUnit = txFormatService.satToUnit(parsedAmount.amountSat);
+        var amountUnit = txFormatService.microToUnit(parsedAmount.amountSat);
         var mrtParsedAmount = txFormatService.parseAmount(amountUnit, config.unitName);
 
         $scope.amountMrt = mrtParsedAmount.amount;
