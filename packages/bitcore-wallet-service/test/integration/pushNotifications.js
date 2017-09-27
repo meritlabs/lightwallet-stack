@@ -461,6 +461,7 @@ describe('Push notifications', function() {
           name: 'my wallet',
           m: 1,
           n: 3,
+          beacon: 'beacon',
           pubKey: TestData.keyPair.pub,
         };
         server.createWallet(walletOpts, function(err, wId) {
