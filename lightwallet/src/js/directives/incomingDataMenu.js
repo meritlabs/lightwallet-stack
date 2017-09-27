@@ -28,7 +28,6 @@ angular.module('copayApp.directives')
           externalLinkService.open(url);
         };
         scope.sendPaymentToAddress = function(bitcoinAddress) {
-          console.log('sendPaymentToAddress');
           scope.showMenu = false;
           $state.go('tabs.send').then(function() {
             $timeout(function() {

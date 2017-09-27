@@ -142,29 +142,23 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
 
   $scope.searchInFocus = function() {
-    console.log('search focused');
     $scope.searchFocus = true;
   };
 
   $scope.searchBlurred = function() {
-    console.log('search blurred');
     if ($scope.formData.search == null || $scope.formData.search.length == 0) {
       $scope.searchFocus = false;
     }
   };
 
   $scope.findContact = function(search) {
-    console.log('searching', search);
-
     if (incomingData.redir(search)) {
-      console.log('incomingData.redir(search)');
       return;
     }
 
     if (!search || search.length < 2) {
       $scope.list = originalList;
       $timeout(function() {
-        console.log('$scope.$apply');
         $scope.$apply();
       });
       return;
@@ -181,7 +175,6 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
 
   $scope.goToAmount = function(item) {
     $timeout(function() {
-      console.log('gotoamout');
       item.getAddress(function(err, addr) {
         if (err || !addr) {
           //Error is already formated
