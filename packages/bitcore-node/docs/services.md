@@ -68,7 +68,7 @@ Now that you've loaded your services you can access them via `myNode.services.<s
 
 ```js
 myNode.services.bitcoind.getAddressBalance('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', false, function(err, total) {
-  console.log(total.balance); //Satoshi amount of this address
+  console.log(total.balance); //Micro amount of this address
 });
 ```
 

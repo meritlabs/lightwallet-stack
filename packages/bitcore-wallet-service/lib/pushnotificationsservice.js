@@ -61,7 +61,7 @@ PushNotificationsService.prototype.start = function(opts, cb) {
 
   self.templatePath = path.normalize((opts.pushNotificationsOpts.templatePath || (__dirname + '/templates')) + '/');
   self.defaultLanguage = opts.pushNotificationsOpts.defaultLanguage || 'en';
-  self.defaultUnit = opts.pushNotificationsOpts.defaultUnit || 'btc';
+  self.defaultUnit = opts.pushNotificationsOpts.defaultUnit || 'mrt';
   self.subjectPrefix = opts.pushNotificationsOpts.subjectPrefix || '';
   self.pushServerUrl = opts.pushNotificationsOpts.pushServerUrl;
   self.authorizationKey = opts.pushNotificationsOpts.authorizationKey;
@@ -274,7 +274,7 @@ PushNotificationsService.prototype._readAndApplyTemplates = function(notificatio
 PushNotificationsService.prototype._getDataForTemplate = function(notification, recipient, cb) {
   var self = this;
   var UNIT_LABELS = {
-    btc: 'BTC',
+    mrt: 'MRT',
     bit: 'bits'
   };
 

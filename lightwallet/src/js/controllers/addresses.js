@@ -5,8 +5,8 @@ angular.module('copayApp.controllers').controller('addressesController', functio
   var BALANCE_ADDRESS_LIMIT = 5;
   var config = configService.getSync().wallet.settings;
   var unitName = config.unitName;
-  var unitToSatoshi = config.unitToSatoshi;
-  var satToUnit = 1 / unitToSatoshi;
+  var unitToMicro = config.unitToMicro;
+  var microToUnit = 1 / unitToMicro;
   var unitDecimals = config.unitDecimals;
   var withBalance, cachedWallet;
 
@@ -82,13 +82,13 @@ angular.module('copayApp.controllers').controller('addressesController', functio
         if (resp.allUtxos && resp.allUtxos.length) {
 
 
-          var allSum = lodash.sum(resp.allUtxos || 0, 'satoshis');
+          var allSum = lodash.sum(resp.allUtxos || 0, 'micros');
           var per = (resp.minFee / allSum) * 100;
 
           $scope.lowWarning = resp.warning;
           $scope.lowUtxosNb = resp.lowUtxos.length;
           $scope.allUtxosNb = resp.allUtxos.length;
-          $scope.lowUtxosSum = txFormatService.formatAmountStr(lodash.sum(resp.lowUtxos || 0, 'satoshis'));
+          $scope.lowUtxosSum = txFormatService.formatAmountStr(lodash.sum(resp.lowUtxos || 0, 'micros'));
           $scope.allUtxosSum = txFormatService.formatAmountStr(allSum);
           $scope.minFee = txFormatService.formatAmountStr(resp.minFee || 0);
           $scope.minFeePer = per.toFixed(2) + '%';

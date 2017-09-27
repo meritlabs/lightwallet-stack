@@ -1,5 +1,5 @@
 # Unit
-Unit is a utility for handling and converting bitcoin units. We strongly recommend to always use satoshis to represent amount inside your application and only convert them to other units in the front-end.
+Unit is a utility for handling and converting bitcoin units. We strongly recommend to always use micros to represent amount inside your application and only convert them to other units in the front-end.
 
 To understand the need of using the `Unit` class when dealing with unit conversions, see this example:
 
@@ -8,19 +8,19 @@ To understand the need of using the `Unit` class when dealing with unit conversi
 8198999.999999999
 > var bitcore = require('bitcore');
 > var Unit = bitcore.Unit;
-> Unit.fromMilis(81.99).toSatoshis() // correct
+> Unit.fromMilis(81.99).toMicros() // correct
 8199000
 ```
 
 ## Supported units
-The supported units are BTC, mBTC, bits (micro BTCs, uBTC) and satoshis. The codes for each unit can be found as members of the Unit class.
+The supported units are MRT, mMRT, bits (micro MRTs, uMRT) and micros. The codes for each unit can be found as members of the Unit class.
 
 ```javascript
-var btcCode = Unit.BTC;
-var mbtcCode = Unit.mBTC;
-var ubtcCode = Unit.uBTC;
+var mrtCode = Unit.MRT;
+var mmrtCode = Unit.mMRT;
+var umrtCode = Unit.uMRT;
 var bitsCode = Unit.bits;
-var satsCode = Unit.satoshis;
+var satsCode = Unit.micros;
 ```
 
 ## Creating units
@@ -31,41 +31,41 @@ var unit;
 var amount = 100;
 
 // using a unit code
-var unitPreference = Unit.BTC;
+var unitPreference = Unit.MRT;
 unit = new Unit(amount, unitPreference);
 
 // using a known unit
-unit = Unit.fromBTC(amount);
+unit = Unit.fromMRT(amount);
 unit = Unit.fromMilis(amount);
 unit = Unit.fromBits(amount);
-unit = Unit.fromSatoshis(amount);
+unit = Unit.fromMicros(amount);
 ```
 
 ## Conversion
-Once you have a unit instance, you can check its representation in all the available units. For your convenience the classes expose three ways to accomplish this. Using the `.to(unitCode)` method, using a fixed unit like `.toSatoshis()` or by using the accessors.
+Once you have a unit instance, you can check its representation in all the available units. For your convenience the classes expose three ways to accomplish this. Using the `.to(unitCode)` method, using a fixed unit like `.toMicros()` or by using the accessors.
 
 ```javascript
 var unit;
 
 // using a unit code
-var unitPreference = Unit.BTC;
-value = Unit.fromSatoshis(amount).to(unitPreference);
+var unitPreference = Unit.MRT;
+value = Unit.fromMicros(amount).to(unitPreference);
 
 // using a known unit
-value = Unit.fromBTC(amount).toBTC();
-value = Unit.fromBTC(amount).toMilis();
-value = Unit.fromBTC(amount).toBits();
-value = Unit.fromBTC(amount).toSatoshis();
+value = Unit.fromMRT(amount).toMRT();
+value = Unit.fromMRT(amount).toMilis();
+value = Unit.fromMRT(amount).toBits();
+value = Unit.fromMRT(amount).toMicros();
 
 // using accessors
-value = Unit.fromBTC(amount).BTC;
-value = Unit.fromBTC(amount).mBTC;
-value = Unit.fromBTC(amount).bits;
-value = Unit.fromBTC(amount).satoshis;
+value = Unit.fromMRT(amount).MRT;
+value = Unit.fromMRT(amount).mMRT;
+value = Unit.fromMRT(amount).bits;
+value = Unit.fromMRT(amount).micros;
 ```
 
 ## Using a fiat currency
-The unit class also provides a convenient alternative to create an instance from a fiat amount and the corresponding BTC/fiat exchange rate. Any unit instance can be converted to a fiat amount by providing the current exchange rate. Check the example below:
+The unit class also provides a convenient alternative to create an instance from a fiat amount and the corresponding MRT/fiat exchange rate. Any unit instance can be converted to a fiat amount by providing the current exchange rate. Check the example below:
 
 ```javascript
 var unit, fiat;

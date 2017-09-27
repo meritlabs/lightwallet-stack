@@ -2421,8 +2421,8 @@ msgid "Set up a password"
 msgstr "Configurar una contraseña"
 
 #: src/js/controllers/preferencesFee.js:84
-msgid "Set your own fee in satoshis/byte"
-msgstr "Establecer su propia comisión en satoshis/byte"
+msgid "Set your own fee in micros/byte"
+msgstr "Establecer su propia comisión en micros/byte"
 
 #: www/views/tab-settings.html:3
 #: www/views/tabs.html:19
@@ -3229,8 +3229,8 @@ msgid "You control your bitcoin."
 msgstr "Controlas tus bitcoins."
 
 #: www/views/modals/chooseFeeLevel.html:63
-msgid "You should not set a fee higher than {{maxFeeRecommended}} satoshis/byte."
-msgstr "No debería elegir una comisión superior a {{maxFeeRecommended}} satoshis/byte."
+msgid "You should not set a fee higher than {{maxFeeRecommended}} micros/byte."
+msgstr "No debería elegir una comisión superior a {{maxFeeRecommended}} micros/byte."
 
 #: www/views/modals/bitpay-card-confirmation.html:5
 msgid "You will need to log back for fill in your BitPay Card."

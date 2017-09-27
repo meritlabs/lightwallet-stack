@@ -628,7 +628,7 @@ Storage.prototype.storeActiveAddresses = function(walletId, addresses, cb) {
 };
 
 // --------         ---------------------------  Total
-//           > Time >                  
+//           > Time >
 //                       ^to     <=  ^from
 //                       ^fwdIndex  =>  ^end
 Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {

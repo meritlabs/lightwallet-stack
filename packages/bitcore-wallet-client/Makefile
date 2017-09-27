@@ -15,4 +15,4 @@ bitcore-wallet-client.min.js: bitcore-wallet-client.js
 	uglify  -s $<  -o $@
 
 cover:
-	./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --reporter spec test
+	${BIN_PATH}istanbul cover ${BIN_PATH}_mocha -- --reporter spec test

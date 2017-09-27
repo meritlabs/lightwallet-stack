@@ -11,9 +11,9 @@ angular.module('copayApp.controllers').controller('confirmController', function(
   // Config Related values
   var config = configService.getSync();
   var walletConfig = config.wallet;
-  var unitToSatoshi = walletConfig.settings.unitToSatoshi;
+  var unitToMicro = walletConfig.settings.unitToMicro;
   var unitDecimals = walletConfig.settings.unitDecimals;
-  var satToUnit = 1 / unitToSatoshi;
+  var microToUnit = 1 / unitToMicro;
   var configFeeLevel = walletConfig.settings.feeLevel ? walletConfig.settings.feeLevel : 'normal';
 
 
