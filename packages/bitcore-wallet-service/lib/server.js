@@ -326,7 +326,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
     pubKey,
     unlockAddress;
 
-  if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey'], cb)) return;
+  if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey', 'beacon'], cb)) return;
 
   // We should short-circuit the request if there is no unlock code.
   // This belt-and-suspenders check will save time and latency.
@@ -403,7 +403,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
         n: opts.n,
         network: opts.network,
         pubKey: pubKey.toString(),
-        singleAddress: true, // Defaulting all wallets to single address for now.
+        singleAddress: true , // Defaulting all wallets to single address for now.
         derivationStrategy: derivationStrategy,
         addressType: addressType,
         beacon: opts.beacon,
