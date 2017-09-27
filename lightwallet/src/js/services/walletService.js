@@ -212,7 +212,7 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
 
       // Selected unit
       cache.unitToMicro = config.settings.unitToMicro;
-      cache.satToUnit = 1 / cache.unitToMicro;
+      cache.microToUnit = 1 / cache.unitToMicro;
       cache.unitName = config.settings.unitName;
 
       //STR

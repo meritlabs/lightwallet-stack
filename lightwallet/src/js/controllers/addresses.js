@@ -6,7 +6,7 @@ angular.module('copayApp.controllers').controller('addressesController', functio
   var config = configService.getSync().wallet.settings;
   var unitName = config.unitName;
   var unitToMicro = config.unitToMicro;
-  var satToUnit = 1 / unitToMicro;
+  var microToUnit = 1 / unitToMicro;
   var unitDecimals = config.unitDecimals;
   var withBalance, cachedWallet;
 
