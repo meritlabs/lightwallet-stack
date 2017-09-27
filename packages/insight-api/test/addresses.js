@@ -515,7 +515,6 @@ describe('Addresses', function() {
             'time': 1441116143,
             'blocktime': 1441116143,
             'valueOut': 0.53829829,
-            'size': 470,
             'valueIn': 0.53839829,
             'fees': 0.0001,
             'firstSeenTs': 1441108193
@@ -652,7 +651,6 @@ describe('Addresses', function() {
             'time': 1441116143,
             'blocktime': 1441116143,
             'valueOut': 0.53829829,
-            'size': 470,
             'valueIn': 0.53839829,
             'fees': 0.0001,
             'firstSeenTs': 1441108193
