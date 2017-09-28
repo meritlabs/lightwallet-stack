@@ -169,7 +169,6 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
       return lodash.includes(val.toLowerCase(), search.toLowerCase());
     });
 
-    console.log(result);
     $scope.list = result;
   };
 
