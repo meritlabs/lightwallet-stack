@@ -2,8 +2,8 @@
 
 angular.module('copayApp.services').factory('walletService', function($log, $timeout, lodash, trezor, ledger, intelTEE, storageService, configService, rateService, uxLanguage, $filter, gettextCatalog, bwcError, $ionicPopup, fingerprintService, ongoingProcess, gettext, $rootScope, txFormatService, $ionicModal, $state, bwcService, bitcore, popupService) {
 
-  // Ratio low amount warning (fee/amount) in incoming TX 
-  var LOW_AMOUNT_RATIO = 0.15; 
+  // Ratio low amount warning (fee/amount) in incoming TX
+  var LOW_AMOUNT_RATIO = 0.15;
 
   // Ratio of "many utxos" warning in total balance (fee/amount)
   var TOTAL_LOW_WARNING_RATIO = .3;
@@ -211,8 +211,8 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
       }
 
       // Selected unit
-      cache.unitToSatoshi = config.settings.unitToSatoshi;
-      cache.satToUnit = 1 / cache.unitToSatoshi;
+      cache.unitToMicro = config.settings.unitToMicro;
+      cache.microToUnit = 1 / cache.unitToMicro;
       cache.unitName = config.settings.unitName;
 
       //STR
@@ -922,7 +922,7 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
   };
 
 
-  // Approx utxo amount, from which the uxto is economically redeemable  
+  // Approx utxo amount, from which the uxto is economically redeemable
   root.getMinFee = function(wallet, feeLevels, nbOutputs) {
     var lowLevelRate = (lodash.find(feeLevels[wallet.network], {
       level: 'normal',
@@ -933,7 +933,7 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
   };
 
 
-  // Approx utxo amount, from which the uxto is economically redeemable  
+  // Approx utxo amount, from which the uxto is economically redeemable
   root.getLowAmount = function(wallet, feeLevels, nbOutputs) {
     var minFee = root.getMinFee(wallet,feeLevels, nbOutputs);
     return parseInt( minFee / LOW_AMOUNT_RATIO);
@@ -948,15 +948,15 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
 
       var minFee = root.getMinFee(wallet, levels, resp.length);
 
-      var balance = lodash.sum(resp, 'satoshis');
+      var balance = lodash.sum(resp, 'micros');
 
       // for 2 outputs
       var lowAmount = root.getLowAmount(wallet, levels);
       var lowUtxos = lodash.filter(resp, function(x) {
-        return x.satoshis < lowAmount;
+        return x.micros < lowAmount;
       });
 
-      var totalLow = lodash.sum(lowUtxos, 'satoshis');
+      var totalLow = lodash.sum(lowUtxos, 'micros');
 
       return cb(err, {
         allUtxos:  resp || [],

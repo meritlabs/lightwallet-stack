@@ -55,7 +55,7 @@ angular.module('copayApp.directives')
         link: function(scope, element, attrs, ctrl) {
           var val = function(value) {
             var settings = configService.getSync().wallet.settings;
-            var vNum = Number((value * settings.unitToSatoshi).toFixed(0));
+            var vNum = Number((value * settings.unitToMicro).toFixed(0));
             if (typeof value == 'undefined' || value == 0) {
               ctrl.$pristine = true;
             }

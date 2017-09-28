@@ -326,7 +326,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
     pubKey,
     unlockAddress;
 
-  if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey'], cb)) return;
+  if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey', 'beacon'], cb)) return;
 
   // We should short-circuit the request if there is no unlock code.
   // This belt-and-suspenders check will save time and latency.
@@ -405,7 +405,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
         n: opts.n,
         network: opts.network,
         pubKey: pubKey.toString(),
-        singleAddress: true, // Defaulting all wallets to single address for now.
+        singleAddress: true , // Defaulting all wallets to single address for now.
         derivationStrategy: derivationStrategy,
         addressType: addressType,
         beacon: opts.beacon,
@@ -884,7 +884,7 @@ WalletService.prototype.savePreferences = function(opts, cb) {
   }, {
     name: 'unit',
     isValid: function(value) {
-      return _.isString(value) && _.contains(['btc', 'bit'], value.toLowerCase());
+      return _.isString(value) && _.contains(['mrt', 'bit'], value.toLowerCase());
     },
   }];
 
@@ -1091,10 +1091,10 @@ WalletService.prototype._getUtxos = function(addresses, cb) {
     if (err) return cb(err);
 
     var utxos = _.map(utxos, function(utxo) {
-      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'satoshis', 'confirmations']);
+      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations']);
       u.confirmations = u.confirmations || 0;
       u.locked = false;
-      u.satoshis = _.isNumber(u.satoshis) ? +u.satoshis : Utils.strip(u.amount * 1e8);
+      u.micros = _.isNumber(u.micros) ? +u.micros : Utils.strip(u.amount * 1e8);
       delete u.amount;
       return u;
     });
@@ -1207,10 +1207,10 @@ WalletService.prototype.getUtxos = function(opts, cb) {
 
 WalletService.prototype._totalizeUtxos = function(utxos) {
   var balance = {
-    totalAmount: _.sum(utxos, 'satoshis'),
-    lockedAmount: _.sum(_.filter(utxos, 'locked'), 'satoshis'),
-    totalConfirmedAmount: _.sum(_.filter(utxos, 'confirmations'), 'satoshis'),
-    lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'satoshis'),
+    totalAmount: _.sum(utxos, 'micros'),
+    lockedAmount: _.sum(_.filter(utxos, 'locked'), 'micros'),
+    totalConfirmedAmount: _.sum(_.filter(utxos, 'confirmations'), 'micros'),
+    lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
   };
   balance.availableAmount = balance.totalAmount - balance.lockedAmount;
   balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
@@ -1238,7 +1238,7 @@ WalletService.prototype._getBalanceFromAddresses = function(addresses, cb) {
     });
 
     _.each(utxos, function(utxo) {
-      byAddress[utxo.address].amount += utxo.satoshis;
+      byAddress[utxo.address].amount += utxo.micros;
     });
 
     balance.byAddress = _.values(byAddress);
@@ -1356,7 +1356,7 @@ WalletService.prototype.getBalance = function(opts, cb) {
  * Return info needed to send all funds in the wallet
  * @param {Object} opts
  * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level for this TX ('priority', 'normal', 'economy', 'superEconomy') as defined in Defaults.FEE_LEVELS.
- * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in satoshi).
+ * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in micro).
  * @param {string} opts.excludeUnconfirmedUtxos[=false] - Optional. Do not use UTXOs of unconfirmed transactions as inputs
  * @param {string} opts.returnInputs[=false] - Optional. Return the list of UTXOs that would be included in the tx.
  * @returns {Object} sendMaxInfo
@@ -1411,7 +1411,7 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         inputs = _.filter(inputs, 'confirmations');
       }
       inputs = _.sortBy(inputs, function(input) {
-        return -input.satoshis;
+        return -input.micros;
       });
 
       if (_.isEmpty(inputs)) return cb(null, info);
@@ -1435,18 +1435,18 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         var feePerInput = sizePerInput * txp.feePerKb / 1000.;
 
         var partitionedByAmount = _.partition(inputs, function(input) {
-          return input.satoshis > feePerInput;
+          return input.micros > feePerInput;
         });
 
         info.utxosBelowFee = partitionedByAmount[1].length;
-        info.amountBelowFee = _.sum(partitionedByAmount[1], 'satoshis');
+        info.amountBelowFee = _.sum(partitionedByAmount[1], 'micros');
         inputs = partitionedByAmount[0];
 
         _.each(inputs, function(input, i) {
           var sizeInKb = (baseTxpSize + (i + 1) * sizePerInput) / 1000.;
           if (sizeInKb > Defaults.MAX_TX_SIZE_IN_KB) {
             info.utxosAboveMaxSize = inputs.length - i;
-            info.amountAboveMaxSize = _.sum(_.slice(inputs, i), 'satoshis');
+            info.amountAboveMaxSize = _.sum(_.slice(inputs, i), 'micros');
             return false;
           }
           txp.inputs.push(input);
@@ -1455,7 +1455,7 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         if (_.isEmpty(txp.inputs)) return cb(null, info);
 
         var fee = txp.getEstimatedFee();
-        var amount = _.sum(txp.inputs, 'satoshis') - fee;
+        var amount = _.sum(txp.inputs, 'micros') - fee;
 
         if (amount < Defaults.MIN_OUTPUT_AMOUNT) return cb(null, info);
 
@@ -1505,7 +1505,7 @@ WalletService.prototype._sampleFeeLevels = function(network, points, cb) {
  * Returns fee levels for the current state of the network.
  * @param {Object} opts
  * @param {string} [opts.network = 'livenet'] - The Bitcoin network to estimate fee levels from.
- * @returns {Object} feeLevels - A list of fee levels & associated amount per kB in satoshi.
+ * @returns {Object} feeLevels - A list of fee levels & associated amount per kB in micro.
  */
 WalletService.prototype.getFeeLevels = function(opts, cb) {
   var self = this;
@@ -1628,7 +1628,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
     return _.filter(utxos, function(utxo) {
       if (utxo.locked) return false;
-      if (utxo.satoshis <= feePerInput) return false;
+      if (utxo.micros <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
       if (excludeIndex[utxo.txid + ":" + utxo.vout]) return false;
       return true;
@@ -1644,28 +1644,28 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
   };
 
   function select(utxos, cb) {
-    var totalValueInUtxos = _.sum(utxos, 'satoshis');
+    var totalValueInUtxos = _.sum(utxos, 'micros');
     var netValueInUtxos = totalValueInUtxos - baseTxpFee - (utxos.length * feePerInput);
 
     if (totalValueInUtxos < txpAmount) {
-      log.debug('Total value in all utxos (' + Utils.formatAmountInBtc(totalValueInUtxos) + ') is insufficient to cover for txp amount (' + Utils.formatAmountInBtc(txpAmount) + ')');
+      log.debug('Total value in all utxos (' + Utils.formatAmountInMrt(totalValueInUtxos) + ') is insufficient to cover for txp amount (' + Utils.formatAmountInMrt(txpAmount) + ')');
       return cb(Errors.INSUFFICIENT_FUNDS);
     }
     if (netValueInUtxos < txpAmount) {
-      log.debug('Value after fees in all utxos (' + Utils.formatAmountInBtc(netValueInUtxos) + ') is insufficient to cover for txp amount (' + Utils.formatAmountInBtc(txpAmount) + ')');
+      log.debug('Value after fees in all utxos (' + Utils.formatAmountInMrt(netValueInUtxos) + ') is insufficient to cover for txp amount (' + Utils.formatAmountInMrt(txpAmount) + ')');
       return cb(Errors.INSUFFICIENT_FUNDS_FOR_FEE);
     }
 
     var bigInputThreshold = txpAmount * Defaults.UTXO_SELECTION_MAX_SINGLE_UTXO_FACTOR + (baseTxpFee + feePerInput);
-    log.debug('Big input threshold ' + Utils.formatAmountInBtc(bigInputThreshold));
+    log.debug('Big input threshold ' + Utils.formatAmountInMrt(bigInputThreshold));
 
     var partitions = _.partition(utxos, function(utxo) {
-      return utxo.satoshis > bigInputThreshold;
+      return utxo.micros > bigInputThreshold;
     });
 
-    var bigInputs = _.sortBy(partitions[0], 'satoshis');
+    var bigInputs = _.sortBy(partitions[0], 'micros');
     var smallInputs = _.sortBy(partitions[1], function(utxo) {
-      return -utxo.satoshis;
+      return -utxo.micros;
     });
 
     log.debug('Considering ' + bigInputs.length + ' big inputs (' + Utils.formatUtxos(bigInputs) + ')');
@@ -1680,19 +1680,19 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     _.each(smallInputs, function(input, i) {
       log.debug('Input #' + i + ': ' + Utils.formatUtxos(input));
 
-      var netInputAmount = input.satoshis - feePerInput;
+      var netInputAmount = input.micros - feePerInput;
 
-      log.debug('The input contributes ' + Utils.formatAmountInBtc(netInputAmount));
+      log.debug('The input contributes ' + Utils.formatAmountInMrt(netInputAmount));
 
       selected.push(input);
 
-      total += input.satoshis;
+      total += input.micros;
       netTotal += netInputAmount;
 
       var txpSize = baseTxpSize + selected.length * sizePerInput;
       fee = Math.round(baseTxpFee + selected.length * feePerInput);
 
-      log.debug('Tx size: ' + Utils.formatSize(txpSize) + ', Tx fee: ' + Utils.formatAmountInBtc(fee));
+      log.debug('Tx size: ' + Utils.formatSize(txpSize) + ', Tx fee: ' + Utils.formatAmountInMrt(fee));
 
       var feeVsAmountRatio = fee / txpAmount;
       var amountVsUtxoRatio = netInputAmount / txpAmount;
@@ -1714,7 +1714,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
         if (feeVsAmountRatio > Defaults.UTXO_SELECTION_MAX_FEE_VS_TX_AMOUNT_FACTOR) {
           var feeVsSingleInputFeeRatio = fee / (baseTxpFee + feePerInput);
-          log.debug('Fee/Single-input fee: ' + Utils.formatRatio(feeVsSingleInputFeeRatio) + ' (max: ' + Utils.formatRatio(Defaults.UTXO_SELECTION_MAX_FEE_VS_SINGLE_UTXO_FEE_FACTOR) + ')' + ' loses wrt single-input tx: ' + Utils.formatAmountInBtc((selected.length - 1) * feePerInput));
+          log.debug('Fee/Single-input fee: ' + Utils.formatRatio(feeVsSingleInputFeeRatio) + ' (max: ' + Utils.formatRatio(Defaults.UTXO_SELECTION_MAX_FEE_VS_SINGLE_UTXO_FEE_FACTOR) + ')' + ' loses wrt single-input tx: ' + Utils.formatAmountInMrt((selected.length - 1) * feePerInput));
           if (feeVsSingleInputFeeRatio > Defaults.UTXO_SELECTION_MAX_FEE_VS_SINGLE_UTXO_FEE_FACTOR) {
             log.debug('Breaking because fee is too significant compared to tx amount and it is too expensive compared to using single input');
             return false;
@@ -1722,15 +1722,15 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         }
       }
 
-      log.debug('Cumuled total so far: ' + Utils.formatAmountInBtc(total) + ', Net total so far: ' + Utils.formatAmountInBtc(netTotal));
+      log.debug('Cumuled total so far: ' + Utils.formatAmountInMrt(total) + ', Net total so far: ' + Utils.formatAmountInMrt(netTotal));
 
       if (netTotal >= txpAmount) {
         var changeAmount = Math.round(total - txpAmount - fee);
-        log.debug('Tx change: ', Utils.formatAmountInBtc(changeAmount));
+        log.debug('Tx change: ', Utils.formatAmountInMrt(changeAmount));
 
         var dustThreshold = Math.max(Defaults.MIN_OUTPUT_AMOUNT, Bitcore.Transaction.DUST_AMOUNT);
         if (changeAmount > 0 && changeAmount <= dustThreshold) {
-          log.debug('Change below dust threshold (' + Utils.formatAmountInBtc(dustThreshold) + '). Incrementing fee to remove change.');
+          log.debug('Change below dust threshold (' + Utils.formatAmountInMrt(dustThreshold) + '). Incrementing fee to remove change.');
           // Remove dust change by incrementing fee
           fee += changeAmount;
         }
@@ -1740,13 +1740,13 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     });
 
     if (netTotal < txpAmount) {
-      log.debug('Could not reach Txp total (' + Utils.formatAmountInBtc(txpAmount) + '), still missing: ' + Utils.formatAmountInBtc(txpAmount - netTotal));
+      log.debug('Could not reach Txp total (' + Utils.formatAmountInMrt(txpAmount) + '), still missing: ' + Utils.formatAmountInMrt(txpAmount - netTotal));
 
       selected = [];
       if (!_.isEmpty(bigInputs)) {
         var input = _.first(bigInputs);
         log.debug('Using big input: ', Utils.formatUtxos(input));
-        total = input.satoshis;
+        total = input.micros;
         fee = Math.round(baseTxpFee + feePerInput);
         netTotal = total - fee;
         selected = [input];
@@ -1761,7 +1761,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     return cb(null, selected, fee);
   };
 
-  log.debug('Selecting inputs for a ' + Utils.formatAmountInBtc(txp.getTotalAmount()) + ' txp');
+  log.debug('Selecting inputs for a ' + Utils.formatAmountInMrt(txp.getTotalAmount()) + ' txp');
 
   self._getUtxosForCurrentWallet(null, function(err, utxos) {
     if (err) return cb(err);
@@ -1826,7 +1826,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         fee = selectedFee;
 
         log.debug('Selected inputs from this group: ' + Utils.formatUtxos(inputs));
-        log.debug('Fee for this selection: ' + Utils.formatAmountInBtc(fee));
+        log.debug('Fee for this selection: ' + Utils.formatAmountInMrt(fee));
 
         return next();
       });
@@ -1840,8 +1840,8 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       var err = self._checkTx(txp);
 
       if (!err) {
-        var change = _.sum(txp.inputs, 'satoshis') - _.sum(txp.outputs, 'amount') - txp.fee;
-        log.debug('Successfully built transaction. Total fees: ' + Utils.formatAmountInBtc(txp.fee) + ', total change: ' + Utils.formatAmountInBtc(change));
+        var change = _.sum(txp.inputs, 'micros') - _.sum(txp.outputs, 'amount') - txp.fee;
+        log.debug('Successfully built transaction. Total fees: ' + Utils.formatAmountInMrt(txp.fee) + ', total change: ' + Utils.formatAmountInMrt(change));
       } else {
         log.warn('Error building transaction', err);
       }
@@ -2010,11 +2010,11 @@ WalletService.prototype._getFeePerKb = function(wallet, opts, cb) {
  * @param {string} opts.txProposalId - Optional. If provided it will be used as this TX proposal ID. Should be unique in the scope of the wallet.
  * @param {Array} opts.outputs - List of outputs.
  * @param {string} opts.outputs[].toAddress - Destination address.
- * @param {number} opts.outputs[].amount - Amount to transfer in satoshi.
+ * @param {number} opts.outputs[].amount - Amount to transfer in micro.
  * @param {string} opts.outputs[].message - A message to attach to this output.
  * @param {string} opts.message - A message to attach to this transaction.
  * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level for this TX ('priority', 'normal', 'economy', 'superEconomy') as defined in Defaults.FEE_LEVELS.
- * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in satoshi).
+ * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in micro).
  * @param {string} opts.changeAddress - Optional. Use this address as the change address for the tx. The address should belong to the wallet. In the case of singleAddress wallets, the first main address will be used.
  * @param {Boolean} opts.sendMax - Optional. Send maximum amount of funds that make sense under the specified fee/feePerKb conditions. (defaults to false).
  * @param {string} opts.payProUrl - Optional. Paypro URL for peers to verify TX
