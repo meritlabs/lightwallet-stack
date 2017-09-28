@@ -1,0 +1,21 @@
+<ion-view id="onboard-unlock" class="onboarding">
+  <ion-content id="onboard-tour-invite" scroll="false">
+    <div class="onboarding-topic" translate>Merit is an invite-only network.</div>
+    <div class="onboarding-description" translate>Merit is controlling its growth and looking out for the long-term.</div>
+    <div class="onboarding-illustration-control"></div>
+    <div class="cta-buttons">
+      <div class="onboarding-tldr" translate>You'll need an unlock code from a friend or colleague.</div>
+      <div class="onboarding-input" translate>
+        <input 
+        ng-attr-placeholder="{{easyReceipt.inviteCode ? undefined : 'Invite Code'}}"
+        ng-attr-value="{{easyReceipt.inviteCode ? easyReceipt.inviteCode : undefined}}"
+        focus-on="unlockCode"
+        ng-class="unlockCodeClass()"
+        ng-model="tourFormData.beacon">
+      </div>
+      <button class="button button-standard button-primary" ng-click="createDefaultWallet()" translate>
+        Create merit wallet
+      </button>
+    </div>
+  </ion-content>
+</ion-view>
