@@ -2505,7 +2505,7 @@ API.prototype.validateAddress = function(address, network, cb) {
   const url = `/v1/addresses/${address}/validate/${network}`;
   this._doGetRequest(url, function(err, result) {
     if (err || !result) return cb(err);
-    return cb(err, result);
+    return cb(null, result);
   });
 }; 
 
