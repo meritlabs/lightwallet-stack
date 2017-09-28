@@ -42,14 +42,14 @@ angular.module('copayApp.controllers').controller('buyCoinbaseController', funct
   });
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
-    $scope.isFiat = data.stateParams.currency != 'bits' && data.stateParams.currency != 'BTC' ? true : false;
+    $scope.isFiat = data.stateParams.currency != 'bits' && data.stateParams.currency != 'MRT' ? true : false;
     var parsedAmount = txFormatService.parseAmount(
       data.stateParams.amount,
       data.stateParams.currency);
 
-    // Buy always in BTC
-    amount = (parsedAmount.amountSat / 100000000).toFixed(8);
-    currency = 'BTC';
+    // Buy always in MRT
+    amount = (parsedAmount.amountMicros / 100000000).toFixed(8);
+    currency = 'MRT';
 
     $scope.amountUnitStr = parsedAmount.amountUnitStr;
 

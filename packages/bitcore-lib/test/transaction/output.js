@@ -18,7 +18,7 @@ var errors = bitcore.errors;
 describe('Output', function() {
 
   var output = new Output({
-    satoshis: 0,
+    micros: 0,
     script: Script.empty()
   });
 
@@ -28,62 +28,62 @@ describe('Output', function() {
     }).should.throw(TypeError);
   });
 
-  it('can be assigned a satoshi amount in big number', function() {
+  it('can be assigned a micro amount in big number', function() {
     var newOutput = new Output({
-      satoshis: new BN(100),
+      micros: new BN(100),
       script: Script.empty()
     });
-    newOutput.satoshis.should.equal(100);
+    newOutput.micros.should.equal(100);
   });
 
-  it('can be assigned a satoshi amount with a string', function() {
+  it('can be assigned a micro amount with a string', function() {
     var newOutput = new Output({
-      satoshis: '100',
+      micros: '100',
       script: Script.empty()
     });
-    newOutput.satoshis.should.equal(100);
+    newOutput.micros.should.equal(100);
   });
 
   describe('will error if output is not a positive integer', function() {
     it('-100', function() {
       (function() {
         var newOutput = new Output({
-          satoshis: -100,
+          micros: -100,
           script: Script.empty()
         });
-      }).should.throw('Output satoshis is not a natural number');
+      }).should.throw('Output micros is not a natural number');
     });
 
     it('1.1', function() {
       (function() {
         var newOutput = new Output({
-          satoshis: 1.1,
+          micros: 1.1,
           script: Script.empty()
         });
-      }).should.throw('Output satoshis is not a natural number');
+      }).should.throw('Output micros is not a natural number');
     });
 
     it('NaN', function() {
       (function() {
         var newOutput = new Output({
-          satoshis: NaN,
+          micros: NaN,
           script: Script.empty()
         });
-      }).should.throw('Output satoshis is not a natural number');
+      }).should.throw('Output micros is not a natural number');
     });
 
     it('Infinity', function() {
       (function() {
         var newOutput = new Output({
-          satoshis: Infinity,
+          micros: Infinity,
           script: Script.empty()
         });
-      }).should.throw('Output satoshis is not a natural number');
+      }).should.throw('Output micros is not a natural number');
     });
   });
 
   var expectEqualOutputs = function(a, b) {
-    a.satoshis.should.equal(b.satoshis);
+    a.micros.should.equal(b.micros);
     a.script.toString().should.equal(b.script.toString());
   };
 
@@ -102,15 +102,15 @@ describe('Output', function() {
   it('can set a script from a buffer', function() {
     var newOutput = new Output(output.toObject());
     newOutput.setScript(Script().add(0).toBuffer());
-    newOutput.inspect().should.equal('<Output (0 sats) <Script: OP_0>>');
+    newOutput.inspect().should.equal('<Output (0 micros) <Script: OP_0>>');
   });
 
   it('has a inspect property', function() {
-    output.inspect().should.equal('<Output (0 sats) <Script: >>');
+    output.inspect().should.equal('<Output (0 micros) <Script: >>');
   });
 
   var output2 = new Output({
-    satoshis: 1100000000,
+    micros: 1100000000,
     script: new Script('OP_2 21 0x038282263212c609d9ea2a6e3e172de238d8c39' +
       'cabd5ac1ca10646e23fd5f51508 21 0x038282263212c609d9ea2a6e3e172de23' +
       '8d8c39cabd5ac1ca10646e23fd5f51508 OP_2 OP_CHECKMULTISIG OP_EQUAL')
@@ -125,7 +125,7 @@ describe('Output', function() {
 
   it('roundtrips to/from object', function() {
     var newOutput = new Output({
-      satoshis: 50,
+      micros: 50,
       script: new Script().add(0)
     });
     var otherOutput = new Output(newOutput.toObject());
@@ -157,7 +157,7 @@ describe('Output', function() {
     var invalidOutputScript = new Buffer('0100000000000000014c', 'hex');
     var br = new bitcore.encoding.BufferReader(invalidOutputScript);
     var output = Output.fromBufferReader(br);
-    output.inspect().should.equal('<Output (1 sats) 4c>');
+    output.inspect().should.equal('<Output (1 micros) 4c>');
   });
 
   it('roundtrips to/from JSON', function() {
@@ -173,7 +173,7 @@ describe('Output', function() {
 
   it('sets script to null if it is an InvalidBuffer', function() {
     var output = new Output({
-      satoshis: 1000,
+      micros: 1000,
       script: new Buffer('4c', 'hex')
     });
     should.equal(output.script, null);
@@ -181,7 +181,7 @@ describe('Output', function() {
 
   it('should throw an error if Script throws an error that is not InvalidBuffer', function() {
     var output = Output({
-      satoshis: 1000,
+      micros: 1000,
       script: new Script()
     });
     (function() {

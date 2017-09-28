@@ -11,9 +11,9 @@ angular.module('copayApp.controllers').controller('confirmController', function(
   // Config Related values
   var config = configService.getSync();
   var walletConfig = config.wallet;
-  var unitToSatoshi = walletConfig.settings.unitToSatoshi;
+  var unitToMicro = walletConfig.settings.unitToMicro;
   var unitDecimals = walletConfig.settings.unitDecimals;
-  var satToUnit = 1 / unitToSatoshi;
+  var microToUnit = 1 / unitToMicro;
   var configFeeLevel = walletConfig.settings.feeLevel ? walletConfig.settings.feeLevel : 'normal';
 
 
@@ -96,10 +96,10 @@ angular.module('copayApp.controllers').controller('confirmController', function(
             walletsUpdated++;
             w.status = status;
 
-            if (!status.availableBalanceSat)
+            if (!status.availableBalanceMicros)
               $log.debug('No balance available in: ' + w.name);
 
-            if (status.availableBalanceSat > minAmount) {
+            if (status.availableBalanceMicros > minAmount) {
               filteredWallets.push(w);
             }
           }
@@ -570,7 +570,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
     if (usingCustomFee) {
       scope.customFeePerKB = tx.feeRate;
-      scope.feePerSatByte = tx.feeRate / 1000;
+      scope.feePerMicrosByte = tx.feeRate / 1000;
     }
 
     $ionicModal.fromTemplateUrl('views/modals/chooseFeeLevel.html', {

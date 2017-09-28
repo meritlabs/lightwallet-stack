@@ -15,7 +15,7 @@ var Unit = require('./unit');
  *
  * All standard parameters can be found as members of the class, the address
  * is represented using an {Address} instance and the amount is represented in
- * satoshis. Any other non-standard parameters can be found under the extra member.
+ * micros. Any other non-standard parameters can be found under the extra member.
  *
  * @example
  * ```javascript
@@ -157,18 +157,18 @@ URI.prototype._fromObject = function(obj) {
 };
 
 /**
- * Internal function to transform a BTC string amount into satoshis
+ * Internal function to transform a MRT string amount into micros
  *
- * @param {string} amount - Amount BTC string
+ * @param {string} amount - Amount MRT string
  * @throws {TypeError} Invalid amount
- * @returns {Object} Amount represented in satoshis
+ * @returns {Object} Amount represented in micros
  */
 URI.prototype._parseAmount = function(amount) {
   amount = Number(amount);
   if (isNaN(amount)) {
     throw new TypeError('Invalid amount');
   }
-  return Unit.fromBTC(amount).toSatoshis();
+  return Unit.fromMRT(amount).toMicros();
 };
 
 URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
@@ -191,7 +191,7 @@ URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
 URI.prototype.toString = function() {
   var query = {};
   if (this.amount) {
-    query.amount = Unit.fromSatoshis(this.amount).toBTC();
+    query.amount = Unit.fromMicros(this.amount).toMRT();
   }
   if (this.message) {
     query.message = this.message;

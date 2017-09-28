@@ -21,6 +21,7 @@ function findConfig(cwd) {
       return false;
     }
   }
+  console.log(directory);
   return {
     path: directory,
     config: require(path.resolve(directory, 'bitcore-node.json'))
