@@ -20,7 +20,7 @@ var mrtCode = Unit.MRT;
 var mmrtCode = Unit.mMRT;
 var umrtCode = Unit.uMRT;
 var bitsCode = Unit.bits;
-var satsCode = Unit.micros;
+var microsCode = Unit.micros;
 ```
 
 ## Creating units

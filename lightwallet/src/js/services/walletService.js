@@ -193,18 +193,18 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
       cache.balanceByAddress = balance.byAddress;
 
       // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
-      cache.totalBalanceSat = balance.totalAmount;
+      cache.totalBalanceMicros = balance.totalAmount;
 
       // Spend unconfirmed funds
       if (config.spendUnconfirmed) {
-        cache.lockedBalanceSat = balance.lockedAmount;
-        cache.availableBalanceSat = balance.availableAmount;
+        cache.lockedBalanceMicros = balance.lockedAmount;
+        cache.availableBalanceMicros = balance.availableAmount;
         cache.totalBytesToSendMax = balance.totalBytesToSendMax;
         cache.pendingAmount = 0;
         cache.spendableAmount = balance.totalAmount - balance.lockedAmount;
       } else {
-        cache.lockedBalanceSat = balance.lockedConfirmedAmount;
-        cache.availableBalanceSat = balance.availableConfirmedAmount;
+        cache.lockedBalanceMicros = balance.lockedConfirmedAmount;
+        cache.availableBalanceMicros = balance.availableConfirmedAmount;
         cache.totalBytesToSendMax = balance.totalBytesToSendConfirmedMax;
         cache.pendingAmount = balance.totalAmount - balance.totalConfirmedAmount;
         cache.spendableAmount = balance.totalConfirmedAmount - balance.lockedAmount;
@@ -216,9 +216,9 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
       cache.unitName = config.settings.unitName;
 
       //STR
-      cache.totalBalanceStr = txFormatService.formatAmount(cache.totalBalanceSat) + ' ' + cache.unitName;
-      cache.lockedBalanceStr = txFormatService.formatAmount(cache.lockedBalanceSat) + ' ' + cache.unitName;
-      cache.availableBalanceStr = txFormatService.formatAmount(cache.availableBalanceSat) + ' ' + cache.unitName;
+      cache.totalBalanceStr = txFormatService.formatAmount(cache.totalBalanceMicros) + ' ' + cache.unitName;
+      cache.lockedBalanceStr = txFormatService.formatAmount(cache.lockedBalanceMicros) + ' ' + cache.unitName;
+      cache.availableBalanceStr = txFormatService.formatAmount(cache.availableBalanceMicros) + ' ' + cache.unitName;
       cache.spendableBalanceStr = txFormatService.formatAmount(cache.spendableAmount) + ' ' + cache.unitName;
       cache.pendingBalanceStr = txFormatService.formatAmount(cache.pendingAmount) + ' ' + cache.unitName;
 
@@ -238,9 +238,9 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
 
       rateService.whenAvailable(function() {
 
-        var totalBalanceAlternative = rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
+        var totalBalanceAlternative = rateService.toFiat(cache.totalBalanceMicros, cache.alternativeIsoCode);
         var pendingBalanceAlternative = rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode);
-        var lockedBalanceAlternative = rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
+        var lockedBalanceAlternative = rateService.toFiat(cache.lockedBalanceMicros, cache.alternativeIsoCode);
         var spendableBalanceAlternative = rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode);
         var alternativeConversionRate = rateService.toFiat(100000000, cache.alternativeIsoCode);
 
@@ -269,7 +269,7 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
     };
 
     function walletStatusHash(status) {
-      return status ? status.balance.totalAmount : wallet.totalBalanceSat;
+      return status ? status.balance.totalAmount : wallet.totalBalanceMicros;
     };
 
     function _getStatus(initStatusHash, tries, cb) {
