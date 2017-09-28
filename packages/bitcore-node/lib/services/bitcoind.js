@@ -185,6 +185,7 @@ Bitcoin.prototype.getAPIMethods = function() {
     ['getAddressHistory', this, this.getAddressHistory, 2],
     ['getAddressSummary', this, this.getAddressSummary, 1],
     ['generateBlock', this, this.generateBlock, 1],
+    ['validateAddress', this, this.validateAddress, 1],
 
     // Merit Specific RPC
     ['generatereferralcode',  this, this.generateReferralCode, 0],
@@ -2242,7 +2243,29 @@ Bitcoin.prototype.unlockWallet = function(code, address, callback) {
 
     return callback(self._wrapRPCError(err));
   }
-}
+};
+
+Bitcoin.prototype.validateAddress = function(address, callback) {
+  log.info('validateAddress called: ', address);
+
+  const self = this;
+
+  if (typeof address === 'string' || address instanceof String) {
+    self.client.validateaddress(address, function(err, response) {
+      if (err) {
+        return callback(self._wrapRPCError(err));
+      } else {
+        log.info('validateAddress Response: ', response);
+        callback(null, response);
+      }
+    });
+  } else {
+    var err = new errors.RPCError('Address was missing or incorrect');
+    err.code = -8;
+
+    return callback(self._wrapRPCError(err));
+  }
+};
 
 /**
  * Called by Node to stop the service.

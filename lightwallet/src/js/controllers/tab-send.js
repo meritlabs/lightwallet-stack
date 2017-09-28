@@ -152,7 +152,6 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
 
   $scope.findContact = function(search) {
-
     if (incomingData.redir(search)) {
       return;
     }

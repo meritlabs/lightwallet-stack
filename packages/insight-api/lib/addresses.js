@@ -122,6 +122,22 @@ AddressController.prototype.check = function(req, res, next, addresses) {
   next();
 };
 
+AddressController.prototype.validateAddresses = function(req, res) {
+  const self = this;
+  const address = req.addr;
+
+  this.node.validateAddress(address, function(err, response) {
+    if (err || !response.result)  {
+      return self.common.handleErrors({
+        message: 'Invalid address: ' + err.message,
+        code: 1
+      }, res);
+    } 
+
+    return res.jsonp({ isValid: response.result.isvalid, isBeaconed: response.result.isbeaconed });
+  });  
+};
+
 AddressController.prototype.utxo = function(req, res) {
   var self = this;
 
