@@ -4600,7 +4600,7 @@ describe('Bitcoin Service', function() {
       time: info.timestamp,
       vin: [
         {
-          valueSat: 110,
+          valueMicros: 110,
           address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW',
           txid: '3d003413c13eec3fa8ea1fe8bbff6f40718c66facffe2544d7516c9e2900cac2',
           sequence: 0xFFFFFFFF,
@@ -4616,7 +4616,7 @@ describe('Bitcoin Service', function() {
           spentTxId: '4316b98e7504073acd19308b4b8c9f4eeb5e811455c54c0ebfe276c0b1eb6315',
           spentIndex: 2,
           spentHeight: 100,
-          valueSat: 100,
+          valueMicros: 100,
           scriptPubKey: {
             hex: '76a9140b2f0a0c31bfe0406b0ccc1381fdbe311946dadc88ac',
             asm: 'OP_DUP OP_HASH160 0b2f0a0c31bfe0406b0ccc1381fdbe311946dadc OP_EQUALVERIFY OP_CHECKSIG',

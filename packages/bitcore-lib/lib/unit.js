@@ -26,7 +26,7 @@ var UNITS = {
  *
  * @example
  * ```javascript
- * var sats = Unit.fromMRT(1.3).toMicros();
+ * var micros = Unit.fromMRT(1.3).toMicros();
  * var mili = Unit.fromBits(1.3).to(Unit.mMRT);
  * var bits = Unit.fromFiat(1.3, 350).bits;
  * var mrt = new Unit(1.3, Unit.bits).MRT;

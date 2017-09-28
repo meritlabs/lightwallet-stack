@@ -59,7 +59,7 @@ angular.module('copayApp.controllers').controller('sellGlideraController', funct
       onlyComplete: true,
       network: $scope.network,
       hasFunds: true,
-      minAmount: parsedAmount.amountSat
+      minAmount: parsedAmount.amountMicros
     });
 
     if (lodash.isEmpty($scope.wallets)) {
