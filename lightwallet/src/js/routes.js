@@ -838,7 +838,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
       })
 
       // DEEPLINK INTO ONBOARDING FLOW
-      .state('onboarding.easyreceive', {
+      .state('onboarding.easyReceive', {
         url: '/easyreceive?inviteCode&amount&senderName&sentToAddress&secret',
         views: {
           'onboarding': {
@@ -1280,17 +1280,14 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
       // Currently, we have to set a timeout until the $stateProvider is ready
       // TODO: Refactor this whole approach when updating Angular.  
       var handleInitialStateTransition = function (currentState) {
-        $timeout( () => { 
-
           console.log(`What is the current state name: ${$state.current.name}`);
-          if ($state.current.name == 'onboarding.easyreceive') {
+          if ($state.is('onboarding.easyReceive')) {
             $log.debug("Current state is easyReceive; not making changes...");
             // Do nothing
           } else {
             // Our default position is to go to the welcome screen.
             $state.go('onboarding.welcome');
           }
-        }, 100);
       }
 
       $log.info('Init profile...');
