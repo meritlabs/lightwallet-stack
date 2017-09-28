@@ -10,7 +10,7 @@ var UNITS = {
   'mMRT'     : [1e5, 5],
   'uMRT'     : [1e2, 2],
   'bits'     : [1e2, 2],
-  'micros' : [1, 0]
+  'micros'   : [1, 0]
 };
 
 /**
