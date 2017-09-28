@@ -1,6 +1,6 @@
 'use strict';
 angular.module('copayApp.controllers').controller('tourController',
-  function($scope, $state, $log, $timeout, $filter, ongoingProcess, profileService, rateService, popupService, gettextCatalog, focus, lodash, $stateParams, easyReceiveService) {
+  function($scope, $state, $log, $timeout, $filter, ongoingProcess, profileService, rateService, popupService, gettextCatalog, $stateParams, easyReceiveService) {
 
     $scope.data = {
       index: 0
@@ -10,10 +10,11 @@ angular.module('copayApp.controllers').controller('tourController',
       $scope.tourFormData = {};
       $scope.unlockFailed = false;
       $scope.unlockSucceeded = false;
-      if (!lodash.isEmpty($stateParams)) {
-        $scope.processEasyReceiveParams();
+
+      // If we are sending them back to a specific spot in the tour flow.
+      if ($stateParams.goToIndex) {
+        $scope.data.index = $stateParams.GoToIndex;
       }
-      $scope.loadEasyReceipt();
     });
 
     $scope.options = {
@@ -46,114 +47,7 @@ angular.module('copayApp.controllers').controller('tourController',
       });
     });
 
-    // TODO: Implement the more modern angular way of doing this
-    $scope.unlockCodeClass = function () {
-      if ($scope.unlockSuceeded) {
-        return "succeeded";
-      } 
-      if ($scope.unlockFailed) {
-        return "failed";
-      }
-      return "";
-    }
-
-    $scope.loadEasyReceipt = function() {
-      easyReceiveService.getEasyReceipt(function(err, receipt) {
-        if (err || lodash.isEmpty(receipt)) {
-          $log.debug("Unable to load easyReceipt.", err);
-          $scope.skipEasyReceiveView();
-        } else {
-          $log.debug("Loading easyReceipt into memory.", receipt);  
-          $scope.easyReceipt = receipt;
-
-          //Set the value of the invite code input to the inviteCode in the easyReceipt.
-          $log.debug("EasyReceipt Situation");
-          if (!$scope.tourFormData.unlockCode) {
-            $log.debug("TourFormData unlockCode is empty!!");
-            $scope.tourFormData.unlockCode = $scope.easyReceipt.inviteCode;
-          }
-        }
-      });
-    };
-
-    $scope.skipEasyReceiveView = function () {
-      if ($state.is('onboarding.easyReceive')){
-        $log.debug("Redirecting to welcome view.");
-        $state.go('onboarding.welcome');
-      }
-    };
-
-    $scope.processEasyReceiveParams = function () {
-      if (!lodash.isEmpty($stateParams)) {
-        easyReceiveService.validateAndSaveParams($stateParams);
-      }
-    };
-
-    $scope.triggerUnlockFailure = function() {
-      $scope.unlockFailed = true;
-      $scope.unlockSuceeded = false;
-      ongoingProcess.set('creatingWallet', false);
-      focus('unlockCode');
-    }
-
-    $scope.triggerUnlockSuccess = function() {
-      $scope.unlockFailed = false;
-      $scope.unlockSucceeded = true;
-      ongoingProcess.set('creatingWallet', false);
-    }
-
-    var retryCount = 0;
-    $scope.createDefaultWallet = function() {
-      ongoingProcess.set('creatingWallet', true);
-      var unlockCode = $scope.tourFormData.unlockCode;
-      $timeout(function() {
-        profileService.createDefaultWallet(unlockCode, function(err, walletClient) {
-          if (err) {
-
-            return $timeout(function() {
-              if (err.match("That Unlock Code is not valid")) {
-                ongoingProcess.set('creatingWallet', false);
-                popupService.showAlert(
-                  gettextCatalog.getString('Unlock code is invalid.'), 
-                  "Please re-check it and submit it again.",
-                  function() {
-                    return $scope.triggerUnlockFailure();
-                  }, 
-                  gettextCatalog.getString('Got it')
-                );
-            } else { 
-              $log.warn('Retrying to create default wallet.....:' + ++retryCount);
-              if (retryCount > 3) {
-                ongoingProcess.set('creatingWallet', false);
-                popupService.showAlert(
-                  gettextCatalog.getString('Cannot Create Wallet'), err,
-                  function() {
-                    retryCount = 0;
-                    return $scope.triggerUnlockSuccess();
-                  }, gettextCatalog.getString('Retry'));
-              } else {
-                return $scope.createDefaultWallet();
-              }
-            }
-            }, 2000);
-          };
-          $scope.triggerUnlockSuccess();
-          var wallet = walletClient;
-          var walletId = wallet.credentials.walletId;
-
-          $state.go('onboarding.collectEmail', {
-            walletId: walletId
-          });
-
-            /*
-          $state.go('onboarding.backupRequest', {
-            walletId: walletId
-          });
-            */
-        });
-      }, 300);
-    };
-
+  
     $scope.goBack = function() {
       if ($scope.data.index != 0) $scope.slider.slidePrev();
       else $state.go('onboarding.welcome');

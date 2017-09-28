@@ -760,12 +760,32 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
+
+      // DEEPLINK INTO ONBOARDING FLOW
+      .state('onboarding.easyReceive', {
+        url: '/easyreceive?inviteCode&amount&senderName&sentToAddress&secret',
+        views: {
+          'onboarding': {
+            templateUrl: 'views/onboarding/welcome-easyreceive.html',
+            controller: 'welcomeController',
+          }
+        }
+      })
       .state('onboarding.tour', {
         url: '/tour',
         views: {
           'onboarding': {
             templateUrl: 'views/onboarding/tour.html',
             controller: 'tourController'
+          }
+        }
+      })
+      .state('onboarding.unlock', {
+        url: '/unlock',
+        views: {
+          'onboarding': {
+            templateUrl: 'views/onboarding/unlock.html',
+            controller: 'unlockController'
           }
         }
       })
@@ -835,17 +855,6 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           code: null,
           fromOnboarding: null
         },
-      })
-
-      // DEEPLINK INTO ONBOARDING FLOW
-      .state('onboarding.easyReceive', {
-        url: '/easyreceive?inviteCode&amount&senderName&sentToAddress&secret',
-        views: {
-          'onboarding': {
-            templateUrl: 'views/onboarding/welcome-easyreceive.html',
-            controller: 'tourController',
-          }
-        }
       })
       
       
