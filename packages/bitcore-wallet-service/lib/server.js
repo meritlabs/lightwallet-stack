@@ -2682,7 +2682,7 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
     var inputs = _.map(tx.vin, function(item) {
       return {
         address: item.addr,
-        amount: item.valueSat,
+        amount: item.valueMicros,
       }
     });
 

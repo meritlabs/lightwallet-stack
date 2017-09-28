@@ -37,7 +37,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
           // the 'buy bitcoins' message.
 
           $scope.hasFunds = true;
-        } else if (status.availableBalanceSat > 0) {
+        } else if (status.availableBalanceMicros > 0) {
           $scope.hasFunds = true;
           $rootScope.everHasFunds = true;
         }

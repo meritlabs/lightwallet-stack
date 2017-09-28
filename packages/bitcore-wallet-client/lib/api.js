@@ -2139,7 +2139,7 @@ API.prototype.broadcastTxProposal = function(txp, cb) {
       PayPro.send({
         http: self.payProHttp,
         url: txp.payProUrl,
-        amountSat: txp.amount,
+        amountMicros: txp.amount,
         refundAddr: txp.changeAddress.address,
         merchant_data: paypro.merchant_data,
         rawTx: t.serialize({
