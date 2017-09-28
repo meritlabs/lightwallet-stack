@@ -63,20 +63,20 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
     }
   };
 
-  var satToFiat = function(sat, cb) {
-    txFormatService.toFiat(sat, $scope.currencyIsoCode, function(value) {
+  var microsToFiat = function(micros, cb) {
+    txFormatService.toFiat(micros, $scope.currencyIsoCode, function(value) {
       return cb(value);
     });
   };
 
-  var setTotalAmount = function(amountSat, invoiceFeeSat, networkFeeSat) {
-    satToFiat(amountSat, function(a) {
+  var setTotalAmount = function(amountMicros, invoiceFeeMicors, networkFeeMicros) {
+    microsToFiat(amountMicros, function(a) {
       $scope.amount = Number(a);
 
-      satToFiat(invoiceFeeSat, function(i) {
+      microsToFiat(invoiceFeeMicors, function(i) {
         $scope.invoiceFee = Number(i);
 
-        satToFiat(networkFeeSat, function(n) {
+        microsToFiat(networkFeeMicros, function(n) {
           $scope.networkFee = Number(n);
           $scope.totalAmount = $scope.amount + $scope.invoiceFee + $scope.networkFee;
           $timeout(function() {
@@ -139,17 +139,17 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
 
     var outputs = [];
     var toAddress = invoice.bitcoinAddress;
-    var amountSat = parseInt((invoice.btcDue * 100000000).toFixed(0)); // BTC to Satoshi
+    var amountMicros = parseInt((invoice.btcDue * 100000000).toFixed(0)); // MRT to Micro
 
     outputs.push({
       'toAddress': toAddress,
-      'amount': amountSat,
+      'amount': amountMicros,
       'message': message
     });
 
     var txp = {
       toAddress: toAddress,
-      amount: amountSat,
+      amount: amountMicros,
       outputs: outputs,
       message: message,
       payProUrl: payProUrl,
@@ -233,7 +233,7 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
       }
       // Sometimes API does not return this element;
       invoice['buyerPaidBtcMinerFee'] = invoice.buyerPaidBtcMinerFee || 0;
-      var invoiceFeeSat = (invoice.buyerPaidBtcMinerFee * 100000000).toFixed();
+      var invoiceFeeMicors = (invoice.buyerPaidBtcMinerFee * 100000000).toFixed();
 
       message = gettextCatalog.getString("{{amountStr}} for Amazon.com Gift Card", {
         amountStr: $scope.amountUnitStr
@@ -261,7 +261,7 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
           invoiceTime: invoice.invoiceTime
         };
         $scope.totalAmountStr = txFormatService.formatAmountStr(ctxp.amount);
-        setTotalAmount(parsedAmount.amountSat, invoiceFeeSat, ctxp.fee);
+        setTotalAmount(parsedAmount.amountMicros, invoiceFeeMicors, ctxp.fee);
       });
     });
   };

@@ -35,8 +35,8 @@ angular.module('copayApp.controllers').controller('topUpController', function($s
     popupService.showAlert(title, msg, cb);
   };
 
-  var satToFiat = function(sat, cb) {
-    txFormatService.toFiat(sat, $scope.currencyIsoCode, function(value) {
+  var microsToFIat = function(micros, cb) {
+    txFormatService.toFiat(micros, $scope.currencyIsoCode, function(value) {
       return cb(value);
     });
   };
@@ -66,14 +66,14 @@ angular.module('copayApp.controllers').controller('topUpController', function($s
     }
   };
 
-  var setTotalAmount = function(amountSat, invoiceFeeSat, networkFeeSat) {
-    satToFiat(amountSat, function(a) {
+  var setTotalAmount = function(amountMicros, invoiceFeeMicros, networkFeeMicros) {
+    microsToFIat(amountMicros, function(a) {
       $scope.amount = Number(a);
 
-      satToFiat(invoiceFeeSat, function(i) {
+      microsToFIat(invoiceFeeMicros, function(i) {
         $scope.invoiceFee = Number(i);
 
-        satToFiat(networkFeeSat, function(n) {
+        microsToFIat(networkFeeMicros, function(n) {
           $scope.networkFee = Number(n);
           $scope.totalAmount = $scope.amount + $scope.invoiceFee + $scope.networkFee;
           $timeout(function() {
@@ -117,17 +117,17 @@ angular.module('copayApp.controllers').controller('topUpController', function($s
 
     var outputs = [];
     var toAddress = invoice.bitcoinAddress;
-    var amountSat = parseInt((invoice.btcDue * 100000000).toFixed(0)); // BTC to Satoshi
+    var amountMicros = parseInt((invoice.btcDue * 100000000).toFixed(0)); // MRT to Micro
 
     outputs.push({
       'toAddress': toAddress,
-      'amount': amountSat,
+      'amount': amountMicros,
       'message': message
     });
 
     var txp = {
       toAddress: toAddress,
-      amount: amountSat,
+      amount: amountMicros,
       outputs: outputs,
       message: message,
       payProUrl: payProUrl,
@@ -164,19 +164,19 @@ angular.module('copayApp.controllers').controller('topUpController', function($s
           return cb({message: gettextCatalog.getString('Insufficient funds for fee')});
         }
 
-        var maxAmountBtc = Number((maxValues.amount / 100000000).toFixed(8));
+        var maxAmountMrt = Number((maxValues.amount / 100000000).toFixed(8));
 
-        createInvoice({amount: maxAmountBtc, currency: 'BTC'}, function(err, inv) {
+        createInvoice({amount: maxAmountMrt, currency: 'MRT'}, function(err, inv) {
           if (err) return cb(err);
 
-          var invoiceFeeSat = parseInt((inv.buyerPaidBtcMinerFee * 100000000).toFixed());
-          var newAmountSat = maxValues.amount - invoiceFeeSat;
+          var invoiceFeeMicros = parseInt((inv.buyerPaidBtcMinerFee * 100000000).toFixed());
+          var newAmountMicros = maxValues.amount - invoiceFeeMicros;
 
-          if (newAmountSat <= 0) {
+          if (newAmountMicros <= 0) {
             return cb({message: gettextCatalog.getString('Insufficient funds for fee')});
           }
 
-          return cb(null, newAmountSat, 'sat');
+          return cb(null, newAmountMicros, 'micros');
         });
       });
     } else {
@@ -200,7 +200,7 @@ angular.module('copayApp.controllers').controller('topUpController', function($s
 
       // Sometimes API does not return this element;
       invoice['buyerPaidBtcMinerFee'] = invoice.buyerPaidBtcMinerFee || 0;
-      var invoiceFeeSat = (invoice.buyerPaidBtcMinerFee * 100000000).toFixed();
+      var invoiceFeeMicros = (invoice.buyerPaidBtcMinerFee * 100000000).toFixed();
 
       message = gettextCatalog.getString("Top up {{amountStr}} to debit card ({{cardLastNumber}})", {
         amountStr: $scope.amountUnitStr,
@@ -220,7 +220,7 @@ angular.module('copayApp.controllers').controller('topUpController', function($s
 
         $scope.totalAmountStr = txFormatService.formatAmountStr(ctxp.amount);
 
-        setTotalAmount(parsedAmount.amountSat, invoiceFeeSat, ctxp.fee);
+        setTotalAmount(parsedAmount.amountMicros, invoiceFeeMicros, ctxp.fee);
 
       });
 

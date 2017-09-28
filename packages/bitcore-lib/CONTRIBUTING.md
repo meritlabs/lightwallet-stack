@@ -64,9 +64,9 @@ Avoid constants in the code as much as possible. Magic strings are also magic nu
 
 If a class has a `publicKey` member, for instance, that should be a `PublicKey` instance.
 
-#### G3 - Internal Amounts Must be Integers Representing Satoshis
+#### G3 - Internal Amounts Must be Integers Representing Micros
 
-Avoid representation errors by always dealing with satoshis. For conversion for frontends, use the `Unit` class.
+Avoid representation errors by always dealing with micros. For conversion for frontends, use the `Unit` class.
 
 #### G4 - Internal Network References Must be Network Instances
 
