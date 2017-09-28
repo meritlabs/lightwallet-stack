@@ -123,16 +123,17 @@ AddressController.prototype.check = function(req, res, next, addresses) {
 };
 
 AddressController.prototype.validateAddresses = function(req, res) {
+  const self = this;
   const address = req.addr;
 
   this.node.validateAddress(address, function(err, response) {
     let error = null;
     if (err) {
-      error = Error(`Address ${addr} cannot be validated: ${err.message}`);
+      error = Error(`Address ${address} cannot be validated: ${err.message}`);
     } else if (!response.result || !response.result.isvalid) {
-      error = Error(`Address ${addr} is not valid`);
+      error = Error(`Address ${address} is not valid`);
     } else if (!response.result || !response.result.isbeaconed) {
-      error = Error(`Address ${addr} was not beaconed yet`);
+      error = Error(`Address ${address} was not beaconed yet`);
     }
 
     if (error) {
