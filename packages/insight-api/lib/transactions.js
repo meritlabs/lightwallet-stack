@@ -116,7 +116,7 @@ TxController.prototype.transformInput = function(options, input, index) {
   }
 
   transformed.addr = input.address;
-  transformed.valueSat = input.micros;
+  transformed.valueMicros = input.micros;
   transformed.value = input.micros / 1e8;
   transformed.doubleSpentTxID = null; // TODO
   //transformed.isConfirmed = null; // TODO

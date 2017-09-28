@@ -445,7 +445,7 @@ helpers.historyCacheTest = function(items) {
       vout: 0,
       n: 0,
       addr: "2NAVFnsHqy5JvqDJydbHPx393LFqFFBQ89V",
-      valueSat: 45753,
+      valueMicros: 45753,
       value: 0.00045753,
     }],
     vout: [{
