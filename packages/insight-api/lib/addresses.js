@@ -154,9 +154,9 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
     txid: utxoArg.txid,
     vout: utxoArg.outputIndex,
     scriptPubKey: utxoArg.script,
-    amount: utxoArg.micros / 1e8,
-    micros: utxoArg.micros
-  };
+    amount: utxoArg.satoshis / 1e8,
+    micros: utxoArg.satoshis 
+  }; // ToDo: update after changes in meritd
   if (utxoArg.height && utxoArg.height > 0) {
     utxo.height = utxoArg.height;
     utxo.confirmations = this.node.services.bitcoind.height - utxoArg.height + 1;
