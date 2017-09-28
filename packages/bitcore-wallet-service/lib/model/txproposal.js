@@ -157,7 +157,7 @@ TxProposal.prototype._buildTx = function() {
     if (o.script) {
       t.addOutput(new Bitcore.Transaction.Output({
         script: o.script,
-        satoshis: o.amount
+        micros: o.amount
       }));
     } else {
       t.to(o.toAddress, o.amount);
@@ -184,8 +184,8 @@ TxProposal.prototype._buildTx = function() {
   }
 
   // Validate actual inputs vs outputs independently of Bitcore
-  var totalInputs = _.sum(t.inputs, 'output.satoshis');
-  var totalOutputs = _.sum(t.outputs, 'satoshis');
+  var totalInputs = _.sum(t.inputs, 'output.micros');
+  var totalOutputs = _.sum(t.outputs, 'micros');
 
   $.checkState(totalInputs > 0 && totalOutputs > 0 && totalInputs >= totalOutputs);
   $.checkState(totalInputs - totalOutputs <= Defaults.MAX_TX_FEE);

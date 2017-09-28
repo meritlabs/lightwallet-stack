@@ -37,10 +37,10 @@ angular.module('copayApp.controllers').controller('tourController',
     $scope.$on("$ionicView.enter", function(event, data) {
       rateService.whenAvailable(function() {
         var localCurrency = 'USD';
-        var btcAmount = 1;
-        var rate = rateService.toFiat(btcAmount * 1e8, localCurrency);
+        var mrtAmount = 1;
+        var rate = rateService.toFiat(mrtAmount * 1e8, localCurrency);
         $scope.localCurrencySymbol = '$';
-        $scope.localCurrencyPerBtc = $filter('formatFiatAmount')(parseFloat(rate.toFixed(2), 10));
+        $scope.localCurrencyPerMrt = $filter('formatFiatAmount')(parseFloat(rate.toFixed(2), 10));
         $timeout(function() {
           $scope.$apply();
         })
@@ -53,7 +53,7 @@ angular.module('copayApp.controllers').controller('tourController',
     $scope.unlockCodeClass = function () {
       if ($scope.unlockSuceeded) {
         return "succeeded";
-      } 
+      }
       if ($scope.unlockFailed) {
         return "failed";
       }
@@ -93,14 +93,14 @@ angular.module('copayApp.controllers').controller('tourController',
               if (err.match("That Unlock Code is not valid")) {
                 ongoingProcess.set('creatingWallet', false);
                 popupService.showAlert(
-                  gettextCatalog.getString('Unlock code is invalid.'), 
+                  gettextCatalog.getString('Unlock code is invalid.'),
                   "Please re-check it and submit it again.",
                   function() {
                     return $scope.triggerUnlockFailure();
-                  }, 
+                  },
                   gettextCatalog.getString('Got it')
                 );
-            } else { 
+            } else {
               $log.warn('Retrying to create default wallet.....:' + ++retryCount);
               if (retryCount > 3) {
                 ongoingProcess.set('creatingWallet', false);

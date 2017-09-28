@@ -1180,7 +1180,7 @@ Bitcoin.prototype.getAddressUnspentOutputs = function(addressArg, options, callb
       txid: delta.txid,
       outputIndex: delta.index,
       script: script.toHex(),
-      satoshis: delta.satoshis,
+      micros: delta.micros,
       timestamp: delta.timestamp
     };
   }
@@ -1196,7 +1196,7 @@ Bitcoin.prototype.getAddressUnspentOutputs = function(addressArg, options, callb
 
     for (var i = 0; i < mempoolDeltas.length; i++) {
       var delta = mempoolDeltas[i];
-      if (delta.prevtxid && delta.satoshis <= 0) {
+      if (delta.prevtxid && delta.micros <= 0) {
         if (!spentOutputs[delta.prevtxid]) {
           spentOutputs[delta.prevtxid] = [delta.prevout];
         } else {
@@ -1256,11 +1256,11 @@ Bitcoin.prototype.getAddressUnspentOutputs = function(addressArg, options, callb
 };
 
 Bitcoin.prototype._getBalanceFromMempool = function(deltas) {
-  var satoshis = 0;
+  var micros = 0;
   for (var i = 0; i < deltas.length; i++) {
-    satoshis += deltas[i].satoshis;
+    micros += deltas[i].micros;
   }
-  return satoshis;
+  return micros;
 };
 
 Bitcoin.prototype._getTxidsFromMempool = function(deltas) {
@@ -1392,7 +1392,7 @@ Bitcoin.prototype._getAddressDetailsForInput = function(input, inputIndex, resul
     } else {
       result.addresses[address].inputIndexes.push(inputIndex);
     }
-    result.satoshis -= input.satoshis;
+    result.micros -= input.micros;
   }
 };
 
@@ -1410,14 +1410,14 @@ Bitcoin.prototype._getAddressDetailsForOutput = function(output, outputIndex, re
     } else {
       result.addresses[address].outputIndexes.push(outputIndex);
     }
-    result.satoshis += output.satoshis;
+    result.micros += output.micros;
   }
 };
 
 Bitcoin.prototype._getAddressDetailsForTransaction = function(transaction, addressStrings) {
   var result = {
     addresses: {},
-    satoshis: 0
+    micros: 0
   };
 
   for (var inputIndex = 0; inputIndex < transaction.inputs.length; inputIndex++) {
@@ -1430,7 +1430,7 @@ Bitcoin.prototype._getAddressDetailsForTransaction = function(transaction, addre
     this._getAddressDetailsForOutput(output, outputIndex, result, addressStrings);
   }
 
-  $.checkState(Number.isFinite(result.satoshis));
+  $.checkState(Number.isFinite(result.micros));
 
   return result;
 };
@@ -1454,7 +1454,7 @@ Bitcoin.prototype._getAddressDetailedTransaction = function(txid, options, next)
 
       var details = {
         addresses: addressDetails.addresses,
-        satoshis: addressDetails.satoshis,
+        micros: addressDetails.micros,
         confirmations: self._getConfirmationsDetail(transaction),
         tx: transaction
       };
@@ -1974,12 +1974,12 @@ Bitcoin.prototype.getTransaction = function(txid, callback) {
  *       script: [hexString],
  *       scriptAsm: [asmString],
  *       address: '1LCTmj15p7sSXv3jmrPfA6KGs6iuepBiiG',
- *       satoshis: 771146
+ *       micros: 771146
  *     }
  *   ],
  *   outputs: [
  *     {
- *       satoshis: 811146,
+ *       micros: 811146,
  *       script: '76a914d2955017f4e3d6510c57b427cf45ae29c372c99088ac',
  *       scriptAsm: 'OP_DUP OP_HASH160 d2955017f4e3d6510c57b427cf45ae29c372c990 OP_EQUALVERIFY OP_CHECKSIG',
  *       address: '1LCTmj15p7sSXv3jmrPfA6KGs6iuepBiiG',
@@ -1988,9 +1988,9 @@ Bitcoin.prototype.getTransaction = function(txid, callback) {
  *       spentHeight: 100
  *     }
  *   ],
- *   inputSatoshis: 771146,
- *   outputSatoshis: 811146,
- *   feeSatoshis: 40000
+ *   inputMicros: 771146,
+ *   outputMicros: 811146,
+ *   feeMicros: 40000
  * };
  *
  * @param {String} txid - The hex string of the transaction
@@ -2002,11 +2002,11 @@ Bitcoin.prototype.getDetailedTransaction = function(txid, callback) {
 
   function addInputsToTx(tx, result) {
     tx.inputs = [];
-    tx.inputSatoshis = 0;
+    tx.inputMicros = 0;
     for(var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
       var input = result.vin[inputIndex];
       if (!tx.coinbase) {
-        tx.inputSatoshis += input.valueSat;
+        tx.inputMicros += input.valueSat;
       }
       var script = null;
       var scriptAsm = null;
@@ -2023,23 +2023,23 @@ Bitcoin.prototype.getDetailedTransaction = function(txid, callback) {
         scriptAsm: scriptAsm || null,
         sequence: input.sequence,
         address: input.address || null,
-        satoshis: _.isUndefined(input.valueSat) ? null : input.valueSat
+        micros: _.isUndefined(input.valueSat) ? null : input.valueSat
       });
     }
   }
 
   function addOutputsToTx(tx, result) {
     tx.outputs = [];
-    tx.outputSatoshis = 0;
+    tx.outputMicros = 0;
     for(var outputIndex = 0; outputIndex < result.vout.length; outputIndex++) {
       var out = result.vout[outputIndex];
-      tx.outputSatoshis += out.valueSat;
+      tx.outputMicros += out.valueSat;
       var address = null;
       if (out.scriptPubKey && out.scriptPubKey.addresses && out.scriptPubKey.addresses.length === 1) {
         address = out.scriptPubKey.addresses[0];
       }
       tx.outputs.push({
-        satoshis: out.valueSat,
+        micros: out.valueSat,
         script: out.scriptPubKey.hex,
         scriptAsm: out.scriptPubKey.asm,
         spentTxId: out.spentTxId,
@@ -2079,9 +2079,9 @@ Bitcoin.prototype.getDetailedTransaction = function(txid, callback) {
         addOutputsToTx(tx, result);
 
         if (!tx.coinbase) {
-          tx.feeSatoshis = tx.inputSatoshis - tx.outputSatoshis;
+          tx.feeMicros = tx.inputMicros - tx.outputMicros;
         } else {
-          tx.feeSatoshis = 0;
+          tx.feeMicros = 0;
         }
 
         self.transactionDetailedCache.set(txid, tx);

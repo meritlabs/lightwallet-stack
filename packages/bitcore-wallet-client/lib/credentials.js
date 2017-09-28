@@ -40,6 +40,7 @@ var FIELDS = [
   'hwInfo',
   'entropySourcePath',
   'unlocked',
+  'beacon',
   'shareCode'
 ];
 
@@ -298,13 +299,14 @@ Credentials.prototype.addWalletPrivateKey = function(walletPrivKey) {
   this.sharedEncryptingKey = Utils.privateKeyToAESKey(walletPrivKey);
 };
 
-Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copayerName, shareCode, codeHash) {
+Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copayerName, beacon, shareCode, codeHash) {
   this.walletId = walletId;
   this.walletName = walletName;
   this.m = m;
   this.n = n;
 
   if (shareCode) {
+    this.beacon = beacon;
     this.shareCode = shareCode;
     this.unlocked = true;
     this.codeHash = codeHash;
