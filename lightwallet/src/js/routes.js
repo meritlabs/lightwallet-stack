@@ -1300,14 +1300,10 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         });
         if (err) {
           if (err.message && err.message.match('NOPROFILE')) {
-            //console.log("What is the current state name early?" + $state.curent.name)
             $log.debug('No profile... redirecting');
             handleInitialStateTransition($state);
           } else if (err.message && err.message.match('NONAGREEDDISCLAIMER')) {
             if (lodash.isEmpty(profileService.getWallets())) {
-              //console.log("What is the current state name early?");
-             // console.log($state);
-              
               $log.debug('No wallets and no disclaimer... redirecting');
               handleInitialStateTransition($state);
             } else {
