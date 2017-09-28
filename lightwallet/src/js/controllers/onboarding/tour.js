@@ -84,35 +84,8 @@ angular.module('copayApp.controllers').controller('tourController',
     };
 
     $scope.processEasyReceiveParams = function () {
-      //TODO: Do relevant validation.
-      $log.debug("Parsing params that have been deeplinked in.");
-      $log.debug($stateParams);
-      var paramsToStore = {};
-      if ($stateParams.inviteCode) {
-        $log.debug("Received inviteCode from URL param.  Storing for later...")
-        paramsToStore.inviteCode = $stateParams.inviteCode;
-      }
-      
-      if ($stateParams.senderName) {
-        $log.debug("Received senderName from URL param.  Storing for later...")
-        paramsToStore.senderName = $stateParams.senderName;
-      }
-      
-      if ($stateParams.amount) {
-        $log.debug("Received amount from URL param.  Storing for later...")
-        paramsToStore.amount = $stateParams.amount;
-      }
-      
-      if ($stateParams.secret) {
-        paramsToStore.secret = $stateParams.secret;
-      }
-      
-      if ($stateParams.sentToAddress) {
-        paramsToStore.sentToAddress = $stateParams.sentToAddress;
-      }
-      if (!lodash.isEmpty(paramsToStore)) {
-        easyReceiveService.validateAndSaveParams(paramsToStore);
-        $log.debug("Storing easySend params to the easySend service.")
+      if (!lodash.isEmpty($stateParams)) {
+        easyReceiveService.validateAndSaveParams($stateParams);
       }
     };
 
