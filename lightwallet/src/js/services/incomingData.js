@@ -123,7 +123,6 @@ angular.module('copayApp.services').factory('incomingData', function($log, $stat
 
       walletClient.validateAddress(data, 'testnet', function(err, result) {
         if (err || !result) {
-          console.log('net error');
           popupService.showAlert(gettextCatalog.getString('Error'), err.message);
         } else {
           const isAddressBeaconed = result.valid;
