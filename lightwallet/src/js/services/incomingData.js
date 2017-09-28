@@ -82,6 +82,30 @@ angular.module('copayApp.services').factory('incomingData', function($log, $stat
 
     data = sanitizeUri(data);
 
+    const checkAndProcessAddress = function(data, network) {
+      const walletClient = bwcService.getClient();
+
+      walletClient.validateAddress(data, network, function(err, result) {
+        if (err || !result) {
+          popupService.showAlert(gettextCatalog.getString('Error'), err.message);
+        } else {
+          const isAddressBeaconed = result.isValid && result.isBeaconed;
+          if (isAddressBeaconed) {
+            if ($state.includes('tabs.scan')) {
+              root.showMenu({
+                data: data,
+                type: 'bitcoinAddress'
+              });
+            } else {
+              goToAmountPage(data);
+            }
+          } else {
+            popupService.showAlert(gettextCatalog.getString('Error'), 'This address was not beaconed yet!');
+          }
+        }
+      });
+    };
+
     // BIP21
     if (bitcore.URI.isValid(data)) {
       var parsed = new bitcore.URI(data);
@@ -118,28 +142,10 @@ angular.module('copayApp.services').factory('incomingData', function($log, $stat
         return true;
       });
       // Plain Address
-    } else if (bitcore.Address.isValid(data, 'livenet') || bitcore.Address.isValid(data, 'testnet')) {
-      const walletClient = bwcService.getClient();
-
-      walletClient.validateAddress(data, 'testnet', function(err, result) {
-        if (err || !result) {
-          popupService.showAlert(gettextCatalog.getString('Error'), err.message);
-        } else {
-          const isAddressBeaconed = result.valid;
-          if (isAddressBeaconed) {
-            if ($state.includes('tabs.scan')) {
-              root.showMenu({
-                data: data,
-                type: 'bitcoinAddress'
-              });
-            } else {
-              goToAmountPage(data);
-            }
-          } else {
-            popupService.showAlert(gettextCatalog.getString('Error'), 'This address was not beaconed yet!');
-          }
-        }
-      });
+    } else if (bitcore.Address.isValid(data, 'livenet')) {
+      checkAndProcessAddress(data, 'livenet');
+    } else if (bitcore.Address.isValid(data, 'testnet')) {
+      checkAndProcessAddress(data, 'testnet');
     } else if (data && data.indexOf(appConfigService.name + '://glidera') === 0) {
       var code = getParameterByName('code', data);
       $ionicHistory.nextViewOptions({

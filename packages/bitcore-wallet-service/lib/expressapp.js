@@ -609,7 +609,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       if (err) {
         return returnError(err, res, req);
       }
-      res.json({ valid: result });
+      res.json(result);
       res.end();
     });
   });

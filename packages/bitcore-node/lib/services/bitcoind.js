@@ -2260,7 +2260,7 @@ Bitcoin.prototype.validateAddress = function(address, callback) {
       }
     });
   } else {
-    var err = new errors.RPCError('Address was missing orincorrect');
+    var err = new errors.RPCError('Address was missing or incorrect');
     err.code = -8;
 
     return callback(self._wrapRPCError(err));
