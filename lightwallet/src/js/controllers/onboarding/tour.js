@@ -157,10 +157,14 @@ angular.module('copayApp.controllers').controller('tourController',
     $scope.goBack = function() {
       if ($scope.data.index != 0) $scope.slider.slidePrev();
       else $state.go('onboarding.welcome');
-    }
+    };
 
     $scope.slideNext = function() {
-      if ($scope.data.index != 3) $scope.slider.slideNext();
+      if ($scope.data.index != 2) $scope.slider.slideNext();
       else $state.go('onboarding.welcome');
-    }
+    };
+
+    $scope.goToUnlock = function () {
+      $state.go('onboarding.unlock');
+    };
   });
