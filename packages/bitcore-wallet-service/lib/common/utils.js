@@ -101,7 +101,7 @@ Utils.formatAmount = function(micros, unit, opts) {
       maxDecimals: 0,
       minDecimals: 0,
     },
-    sat: {
+    micros: {
       toMicros: 1,
       maxDecimals: 0,
       minDecimals: 0,

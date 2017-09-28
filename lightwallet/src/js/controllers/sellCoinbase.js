@@ -37,8 +37,8 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
   var checkTransaction = lodash.throttle(function(count, txp) {
     $log.warn('Check if transaction has been received by Coinbase. Try ' + count + '/5');
     // TX amount in MRT
-    var satToMrt = 1 / 100000000;
-    var amountMRT = (txp.amount * satToMrt).toFixed(8);
+    var microsToMrt = 1 / 100000000;
+    var amountMRT = (txp.amount * microsToMrt).toFixed(8);
     coinbaseService.init(function(err, res) {
       if (err) {
         $log.error(err);
@@ -143,7 +143,7 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
       onlyComplete: true,
       network: $scope.network,
       hasFunds: true,
-      minAmount: parsedAmount.amountSat
+      minAmount: parsedAmount.amountMicros
     });
 
     if (lodash.isEmpty($scope.wallets)) {
@@ -258,18 +258,18 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
           }
           var outputs = [];
           var toAddress = data.data.address;
-          var amountSat = parseInt(($scope.sellRequestInfo.amount.amount * 100000000).toFixed(0));
+          var amountMicros = parseInt(($scope.sellRequestInfo.amount.amount * 100000000).toFixed(0));
           var comment = 'Sell bitcoin (Coinbase)';
 
           outputs.push({
             'toAddress': toAddress,
-            'amount': amountSat,
+            'amount': amountMicros,
             'message': comment
           });
 
           var txp = {
             toAddress: toAddress,
-            amount: amountSat,
+            amount: amountMicros,
             outputs: outputs,
             message: comment,
             payProUrl: null,

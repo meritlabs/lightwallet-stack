@@ -63,14 +63,14 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
     }
   };
 
-  var satToFiat = function(sat, cb) {
-    txFormatService.toFiat(sat, $scope.currencyIsoCode, function(value) {
+  var satToFiat = function(micros, cb) {
+    txFormatService.toFiat(micros, $scope.currencyIsoCode, function(value) {
       return cb(value);
     });
   };
 
-  var setTotalAmount = function(amountSat, invoiceFeeSat, networkFeeSat) {
-    satToFiat(amountSat, function(a) {
+  var setTotalAmount = function(amountMicros, invoiceFeeSat, networkFeeSat) {
+    satToFiat(amountMicros, function(a) {
       $scope.amount = Number(a);
 
       satToFiat(invoiceFeeSat, function(i) {
@@ -139,17 +139,17 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
 
     var outputs = [];
     var toAddress = invoice.bitcoinAddress;
-    var amountSat = parseInt((invoice.btcDue * 100000000).toFixed(0)); // MRT to Micro
+    var amountMicros = parseInt((invoice.btcDue * 100000000).toFixed(0)); // MRT to Micro
 
     outputs.push({
       'toAddress': toAddress,
-      'amount': amountSat,
+      'amount': amountMicros,
       'message': message
     });
 
     var txp = {
       toAddress: toAddress,
-      amount: amountSat,
+      amount: amountMicros,
       outputs: outputs,
       message: message,
       payProUrl: payProUrl,
@@ -261,7 +261,7 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
           invoiceTime: invoice.invoiceTime
         };
         $scope.totalAmountStr = txFormatService.formatAmountStr(ctxp.amount);
-        setTotalAmount(parsedAmount.amountSat, invoiceFeeSat, ctxp.fee);
+        setTotalAmount(parsedAmount.amountMicros, invoiceFeeSat, ctxp.fee);
       });
     });
   };

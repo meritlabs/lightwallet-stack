@@ -3102,7 +3102,7 @@ describe('Wallet service', function() {
 
       it('should support creating a tx with no change address', function(done) {
         helpers.stubUtxos(server, wallet, [1, 2], function() {
-          var max = 3e8 - 7000; // Fees for this tx at 100bits/kB = 7000 sat
+          var max = 3e8 - 7000; // Fees for this tx at 100bits/kB = 7000 micros
           var txOpts = {
             outputs: [{
               toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
@@ -3913,7 +3913,7 @@ describe('Wallet service', function() {
         });
       });
       it('should correct fee if resulting change would be below threshold', function(done) {
-        helpers.stubUtxos(server, wallet, ['200bit', '500sat'], function() {
+        helpers.stubUtxos(server, wallet, ['200bit', '500micros'], function() {
           var txOpts = {
             outputs: [{
               toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
