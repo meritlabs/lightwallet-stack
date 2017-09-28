@@ -14,7 +14,7 @@ prepare-lightwallet:
 
 .PHONY: start-lightwallet
 start-lightwallet:
-	cd ./lightwallet && npm run apply && npm start
+	cd ./lightwallet && npm run apply && npm run livestart
 
 .PHONY: clean-lightwallet
 clean-lightwallet:
