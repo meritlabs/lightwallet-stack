@@ -127,23 +127,14 @@ AddressController.prototype.validateAddresses = function(req, res) {
   const address = req.addr;
 
   this.node.validateAddress(address, function(err, response) {
-    let error = null;
-    if (err) {
-      error = Error(`Address ${address} cannot be validated: ${err.message}`);
-    } else if (!response.result || !response.result.isvalid) {
-      error = Error(`Address ${address} is not valid`);
-    } else if (!response.result || !response.result.isbeaconed) {
-      error = Error(`Address ${address} was not beaconed yet`);
-    }
-
-    if (error) {
+    if (err || !response.result)  {
       return self.common.handleErrors({
-        message: 'Invalid address: ' + error.message,
+        message: 'Invalid address: ' + err.message,
         code: 1
       }, res);
-    }
+    } 
 
-    return res.jsonp(true);
+    return res.jsonp({ isValid: response.result.isvalid, isBeaconed: response.result.isbeaconed });
   });  
 };
 

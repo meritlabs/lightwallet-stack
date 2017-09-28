@@ -255,7 +255,7 @@ Insight.prototype.validateAddress = function(address, cb) {
       return cb(_parseErr(err, res));
     }
 
-    return cb(null, body);
+    return cb(null, JSON.parse(body));
   });
 
 };
