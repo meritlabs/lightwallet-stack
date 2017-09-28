@@ -60,7 +60,8 @@ angular.module('copayApp.controllers').controller('tourController',
     $scope.loadEasyReceipt = function() {
       easyReceiveService.getEasyReceipt(function(err, receipt) {
         if (err || lodash.isEmpty(receipt)) {
-          $log.debug("Unable to load easyReceipt.");
+          $log.debug("Unable to load easyReceipt.", err);
+          $scope.skipEasyReceiveView();
         } else {
           $log.debug("Loading easyReceipt into memory.", receipt);  
           $scope.easyReceipt = receipt;
@@ -73,6 +74,13 @@ angular.module('copayApp.controllers').controller('tourController',
           }
         }
       });
+    };
+
+    $scope.skipEasyReceiveView = function () {
+      if ($state.is('onboarding.easyReceive')){
+        $log.debug("Redirecting to welcome view.");
+        $state.go('onboarding.welcome');
+      }
     };
 
     $scope.processEasyReceiveParams = function () {

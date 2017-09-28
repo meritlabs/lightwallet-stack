@@ -33,11 +33,15 @@ angular.module('copayApp.services')
       }
       if (!lodash.isEmpty(service.easyReceipt)) {
         var receiptToStore = EasyReceipt.fromObj(service.easyReceipt);
-        storageService.storeEasyReceipt(receiptToStore, function(err) {
-          if (err) {
-            $log.debug("Could not save the easyReceipt:", err);
-          }
-        });
+        if (receiptToStore.isValid()) {
+          storageService.storeEasyReceipt(receiptToStore, function(err) {
+            if (err) {
+              $log.debug("Could not save the easyReceipt:", err);
+            }
+          });
+        } else {
+          $log.debug("EasyReceipt params are invalid; not storing.");
+        }
       }
     };
 

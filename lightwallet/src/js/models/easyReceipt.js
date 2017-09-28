@@ -25,7 +25,7 @@ EasyReceipt.create = function (opts) {
   receipt.active = true;
   
   return receipt;
-}
+};
 
 EasyReceipt.fromObj = function(obj) {
   var receipt = new EasyReceipt();
@@ -38,12 +38,22 @@ EasyReceipt.fromObj = function(obj) {
   obj.sentToAddress = obj.sentToAddress;
 
   return receipt;
-}
+};
 
 EasyReceipt.prototype.toObj = function() {
   return JSON.stringify(this);
-}
+};
+
+EasyReceipt.prototype.isValid = function() {
+  // An easyReceip must have an amount, a secret, and an inviteCode
+  if (this.inviteCode && this.amount && this.secret) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 EasyReceipt.fromString = function(str) {
   return EasyReceipt.fromObj(JSON.parse(str));
-}
+};
+
