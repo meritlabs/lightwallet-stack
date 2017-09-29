@@ -14,11 +14,15 @@ prepare-lightwallet:
 
 .PHONY: start-lightwallet
 start-lightwallet:
-	cd ./lightwallet && npm run apply && npm start
+	cd ./lightwallet && npm run apply && npm run livestart
 
 .PHONY: clean-lightwallet
 clean-lightwallet:
 	rm -rf ./lightwallet/node_modules
+	rm -rf ./lightwallet/plugins
+	rm -rf ./lightwallet/platforms/ios
+	rm -rf ./lightwallet/platforms/windows
+	rm -rf ./lightwallet/platforms/android
 
 
 ### lightwallet-stack ###
