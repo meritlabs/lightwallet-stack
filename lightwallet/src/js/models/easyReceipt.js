@@ -46,11 +46,8 @@ EasyReceipt.prototype.toObj = function() {
 
 EasyReceipt.prototype.isValid = function() {
   // An easyReceip must have an amount, a secret, and an inviteCode
-  if (this.inviteCode && this.amount && this.secret) {
-    return true;
-  } else {
-    return false;
-  }
+  // TODO: Actually validate that these are in the right format
+  return (this.unlockCode && this.senderPublicKey && this.secret && this.blockTimeout);
 };
 
 EasyReceipt.fromString = function(str) {

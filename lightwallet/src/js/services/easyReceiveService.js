@@ -9,32 +9,33 @@ angular.module('copayApp.services')
     service.validateAndSaveParams = function(params) {
       $log.debug("Parsing params that have been deeplinked in.");
       $log.debug(params);
-      if (params.inviteCode) {
-        $log.debug("Received inviteCode from URL param.  Storing for later...")
-        service.easyReceipt.inviteCode = params.inviteCode;
+      if (params.uc) {
+        $log.debug("Received unlock code from URL param.  Storing for later...")
+        service.easyReceipt.unlockCode = params.uc;
       }
       
-      if (params.senderName) {
-        $log.debug("Received senderName from URL param.  Storing for later...")
-        service.easyReceipt.senderName = params.senderName;
+      if (params.sn) {
+        $log.debug("Received sender name from URL param.  Storing for later...")
+        service.easyReceipt.senderName = params.sn;
       }
       
-      if (params.amount) {
-        $log.debug("Received amount from URL param.  Storing for later...")
-        service.easyReceipt.amount = params.amount;
+      if (params.se) {
+        service.easyReceipt.secret = params.se;
       }
       
-      if (params.secret) {
-        service.easyReceipt.secret = params.secret;
+      if (params.sk) {
+        service.easyReceipt.senderPublicKey = params.sk;
       }
-      
-      if (params.sentToAddress) {
-        service.easyReceipt.sentToAddress = params.sentToAddress;
+
+      if (params.bt) {
+        service.easyReceipt.blockTimeout = params.bt;
       }
+
       if (!lodash.isEmpty(service.easyReceipt)) {
         var receiptToStore = EasyReceipt.fromObj(service.easyReceipt);
         if (receiptToStore.isValid()) {
-          storageService.storeEasyReceipt(receiptToStore, function(err) {
+          // We are storing the easyReceipt into localStorage, 
+          storageService.storePendingEasyReceipt(receiptToStore, function(err) {
             if (err) {
               $log.debug("Could not save the easyReceipt:", err);
             }
@@ -56,6 +57,16 @@ angular.module('copayApp.services')
           cb(err, receipt);
         }
       });
+    }
+
+    service.validateEasyScriptOnBlockchain = function (cb) {
+      // Check if it's on the blockchain.... 
+      var easyReceipt = {};
+      easyReceipt.onBlockChain = true;
+    }
+
+    service._generateEasyScript = function () {
+      
     }
 
     return service;
