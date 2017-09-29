@@ -2008,7 +2008,7 @@ Bitcoin.prototype.getDetailedTransaction = function(txid, callback) {
     for(var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
       var input = result.vin[inputIndex];
       if (!tx.coinbase) {
-        tx.inputMicros += input.valueMicros;
+        tx.inputMicros += input.valueSat; // TODO: rename sat
       }
       var script = null;
       var scriptAsm = null;
@@ -2025,7 +2025,7 @@ Bitcoin.prototype.getDetailedTransaction = function(txid, callback) {
         scriptAsm: scriptAsm || null,
         sequence: input.sequence,
         address: input.address || null,
-        micros: _.isUndefined(input.valueMicros) ? null : input.valueMicros
+        micros: _.isUndefined(input.valueSat) ? null : input.valueSat // TODO: rename sat
       });
     }
   }
@@ -2035,13 +2035,13 @@ Bitcoin.prototype.getDetailedTransaction = function(txid, callback) {
     tx.outputMicros = 0;
     for(var outputIndex = 0; outputIndex < result.vout.length; outputIndex++) {
       var out = result.vout[outputIndex];
-      tx.outputMicros += out.valueMicros;
+      tx.outputMicros += out.valueSat; // TODO: rename sat
       var address = null;
       if (out.scriptPubKey && out.scriptPubKey.addresses && out.scriptPubKey.addresses.length === 1) {
         address = out.scriptPubKey.addresses[0];
       }
       tx.outputs.push({
-        micros: out.valueMicros,
+        micros: out.valueSat, // TODO: rename sat
         script: out.scriptPubKey.hex,
         scriptAsm: out.scriptPubKey.asm,
         spentTxId: out.spentTxId,
