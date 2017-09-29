@@ -761,9 +761,17 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         }
       })
 
-      // DEEPLINK INTO ONBOARDING FLOW
+      /* DEEPLINK INTO ONBOARDING FLOW
+      * Parameters are shortened to save space.
+      * Params available:
+      * se - secret
+      * sk - sender public key
+      * sn - sender name 
+      * uc - unlock code
+      - bt - block timeout
+      */ 
       .state('onboarding.easyReceive', {
-        url: '/easyreceive?inviteCode&amount&senderName&sentToAddress&secret',
+        url: '/easy?se&sk&sn&uc&bt',
         views: {
           'onboarding': {
             templateUrl: 'views/onboarding/welcome-easyreceive.html',
