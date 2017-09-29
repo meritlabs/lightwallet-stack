@@ -6,7 +6,6 @@ angular.module('copayApp.controllers').controller('welcomeController', function(
     if (!lodash.isEmpty($stateParams)) {
       $scope.processEasyReceiveParams();
       $scope.loadEasyReceipt();
-      
     }
 
   });
