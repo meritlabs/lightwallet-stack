@@ -779,6 +779,25 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  /*
+  * EasySend Routes
+  * Used to process easySend and seasyReceive actions
+  * These are all namespaced to v5 to differentiate from coPay versioning
+  */
+
+  router.post('/v5/easyreceive/valdate', function(req, res) {
+    var opts = {
+      easyReceiptScript: req.params['easyReceiptScript']
+    };
+
+    getServerWithAuth(req, res, function(server) {
+      server.validateEasyReceipt(opts, function(err, response) {
+        if (err) return returnError(err, res, req);
+        res.json(response);
+      });
+    });
+  });
+
   this.app.use(opts.basePath || '/bws/api', router);
 
   WalletService.initialize(opts, cb);

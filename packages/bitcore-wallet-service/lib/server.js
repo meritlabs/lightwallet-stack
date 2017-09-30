@@ -3297,5 +3297,25 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
   self.storage.removeTxConfirmationSub(self.copayerId, opts.txid, cb);
 };
 
+/**
+ * Validate that an EasyScript is on the blockchain, and that it can be unlocked.
+ */
+WalletService.prototype.validateEasyReceipt = function(opts, cb) {
+  try {
+    easyScript = new Bitcore.EasyScript.fromString(opts.easyReceiptScript);
+  } catch (ex) {
+    return cb(new ClientError('Invalid easyReceive script!'));
+  };
+
+  var bc = self._getBlockchainExplorer(opts.network);
+  bc.validateEasyReceipt(easyScript, function(errMsg, result) {
+    if (errMsg) {
+      return cb("Could not find easyScript on BlockChain.")
+    }
+
+    return cb(errMsg, result);
+  });
+};
+
 module.exports = WalletService;
 module.exports.ClientError = ClientError;

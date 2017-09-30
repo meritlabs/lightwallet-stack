@@ -2573,4 +2573,25 @@ API.prototype.createWalletFromOldCopay = function(username, password, blob, cb) 
   this.recreateWallet(cb);
 };
 
+/**
+ *
+ * Checks the blockChain for a valid EasySend transaction that can be unlocked.
+ * @param {String} EasyReceiptScript The script of the easySend, generated client side
+ * @param cb Callback or handler to manage response from BWS
+ * @return {undefined}
+ */
+API.prototype.validateEasyReceipt = function(easyReceiptScript, cb) {
+  var self = this;
+
+  var args = {
+    easyReceiptScript: easyReceiptScript
+  };
+  var url = '/v5/easyreceive/validate';
+  this._doPostRequest(url, args, function(err, body) {
+    if (err) return cb(err);
+    return cb(null, body);
+  });
+
+};
+
 module.exports = API;
