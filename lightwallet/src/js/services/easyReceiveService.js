@@ -1,6 +1,6 @@
 'use string';
 angular.module('copayApp.services')
-  .factory('easyReceiveService', function easyReceiveServiceFactory($rootScope, $timeout, $log, $state, lodash, storageService) {
+  .factory('easyReceiveService', function easyReceiveServiceFactory($rootScope, $timeout, $log, $state, lodash, storageService, bwcService, bwcError) {
     
     var service = {};
     service.easyReceipt = {};
@@ -46,8 +46,8 @@ angular.module('copayApp.services')
       }
     };
 
-    service.getEasyReceipt = function (cb) {
-      storageService.getEasyReceipt(function(err, receipt) {
+    service.getPendingEasyReceipt = function (cb) {
+      storageService.getPendingEasyReceipt(function(err, receipt) {
         // If the receipt is not valid, we should add an error here, and not return it.  
         if (receipt && !receipt.isValid()) {
           var newError = new Error("EasyReceipt failed validation: " + receipt);
@@ -59,14 +59,32 @@ angular.module('copayApp.services')
       });
     }
 
-    service.validateEasyScriptOnBlockchain = function (cb) {
-      // Check if it's on the blockchain.... 
-      var easyReceipt = {};
-      easyReceipt.onBlockChain = true;
+    /* TODO: consider splitting this up into multiple methods
+    * One to search the blockchain for the script. 
+    * The other to actually unlock it. 
+    */
+    service.validateEasyReceiptOnBlockchain = function (receipt, cb) {
+      // Check if the easyScript is on the blockchain.
+      var walletClient = bwcService.getClient(null, opts);
+      receipt.onBlockChain = false;
+
+      
+
     }
 
+    service.acceptEasyReceipt = function(easyScript, cb) {
+      //Accept the EasyReceipt
+    };
+    
+    service.rejectEasyReceipt = function(cb) {
+      //Reject the EasyReceipt
+    };
+
+
+
     service._generateEasyScript = function () {
-      
+      // Generate the easyScript per the EasySend standard as outlined <TODO: here>
+      return "abc123";
     }
 
     return service;

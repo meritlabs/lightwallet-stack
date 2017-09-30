@@ -21,13 +21,38 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       $scope.handleEasyReceive();
     });
 
+    var easyReceiveAcceptanceHandler = function(receipt) {
+      // Accept the EasyReceipt into this wallet.
+      easyReceiveService.validateEasyScriptOnBlockchain(receipt, function(isValid, easyScript) {
+        if (isValid) {
+          // Accept the easySend into this wallet.
+          easyReceiveService.acceptEasyReceipt(easyScript, function(err, acceptanceTx){
+
+          });
+
+        } else {
+          // If we can't find the script on the blockchain, it's likely because it was password protected. 
+          // TODO: Implement password prompt logic.
+          // TODO: Investigate a way to delineate between an actual not-found ER and one that is PW-protected.
+          popupService.showAlert("Oops!", "We cannot seem to find this easySend.", function(){}, "I'll Contact Sender");
+        }
+      });
+    };
+
+    // TODO: Consider moving this from the home screen to anywhere in the flow, using event emitters 
+    // and listeners.
     $scope.handleEasyReceive = function () {
-      easyReceiveService.getEasyReceipt(function(err, receipt) {
+      easyReceiveService.getPendingEasyReceipt(function(err, receipt) {
         if (err || lodash.isEmpty(receipt)) {
-          $log.debug("Unable to load easyReceipt.");
+          $log.debug("Unable to load pending easyReceipt.");
         } else {
           $log.debug("Loading easyReceipt into memory.", receipt);  
-          popupService.showConfirm("You've got Merit!", "Someone sent you Merit", "I'll Take It", "Nah", function(){});
+          popupService.showConfirm("You've got Merit!", "Someone sent you Merit", "I'll Take It", "Nah", function(ok, cancel){
+            if (ok) 
+              easyReceiveAcceptanceHandler(receipt);
+            if (cancel) 
+              easyReceiveRejectionHandler(receipt);
+          });
         }
       });
     };
