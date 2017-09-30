@@ -18,7 +18,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
 
     $scope.$on("$ionicView.afterEnter", function() {
       startupService.ready();
-      $scope.handleEasyReceive();
+      $scope.handlePendingEasyReceive();
     });
 
     var easyReceiveAcceptanceHandler = function(receipt) {
@@ -27,7 +27,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
         if (isValid) {
           // Accept the easySend into this wallet.
           easyReceiveService.acceptEasyReceipt(easyScript, function(err, acceptanceTx){
-
+            
           });
 
         } else {
@@ -41,7 +41,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
 
     // TODO: Consider moving this from the home screen to anywhere in the flow, using event emitters 
     // and listeners.
-    $scope.handleEasyReceive = function () {
+    $scope.handlePendingEasyReceive = function () {
       easyReceiveService.getPendingEasyReceipt(function(err, receipt) {
         if (err || lodash.isEmpty(receipt)) {
           $log.debug("Unable to load pending easyReceipt.");
