@@ -389,57 +389,26 @@ Script.prototype.isScriptHashOut = function() {
 };
 
 /**
- * @returns {boolean} if this is a p2sh input script
- * Note that these are frequently indistinguishable from pubkeyhashin
+ * @returns {boolean} if this is a pay to EasySend input script
  */
-Script.prototype.isScriptHashIn = function() {
-  if (this.chunks.length <= 1) {
-    return false;
-  }
-  var redeemChunk = this.chunks[this.chunks.length - 1];
-  var redeemBuf = redeemChunk.buf;
-  if (!redeemBuf) {
-    return false;
-  }
-
-  var redeemScript;
-  try {
-    redeemScript = Script.fromBuffer(redeemBuf);
-  } catch (e) {
-    if (e instanceof errors.Script.InvalidBuffer) {
-      return false;
+Script.prototype.isEasySendIn = function() {
+  if (this.chunks.length === 1) {
+    var signatureBuf = this.chunks[0].buf;
+    if (signatureBuf &&
+        signatureBuf.length &&
+        signatureBuf[0] === 0x30) {
+      return true;
     }
-    throw e;
   }
-  var type = redeemScript.classify();
-  return type !== Script.types.UNKNOWN;
+  return false;
 };
 
 /**
- * @returns {boolean} if this is a mutlsig output script
+ * @returns {boolean} if this is a EasySend output script
  */
-Script.prototype.isMultisigOut = function() {
-  return (this.chunks.length > 3 &&
-    Opcode.isSmallIntOp(this.chunks[0].opcodenum) &&
-    this.chunks.slice(1, this.chunks.length - 2).every(function(obj) {
-      return obj.buf && BufferUtil.isBuffer(obj.buf);
-    }) &&
-    Opcode.isSmallIntOp(this.chunks[this.chunks.length - 2].opcodenum) &&
-    this.chunks[this.chunks.length - 1].opcodenum === Opcode.OP_CHECKMULTISIG);
-};
-
-
-/**
- * @returns {boolean} if this is a multisig input script
- */
-Script.prototype.isMultisigIn = function() {
-  return this.chunks.length >= 2 &&
-    this.chunks[0].opcodenum === 0 &&
-    this.chunks.slice(1, this.chunks.length).every(function(obj) {
-      return obj.buf &&
-        BufferUtil.isBuffer(obj.buf) &&
-        Signature.isTxDER(obj.buf);
-    });
+Script.prototype.isEasySendOut = function() {
+  var buf = this.toBuffer();
+  return (buf.length >= 1 && buf[buf.length - 1] === Opcode.OP_EASYSEND);
 };
 
 /**
@@ -741,6 +710,40 @@ Script.buildMultisigIn = function(pubkeys, threshold, signatures, opts) {
     // TODO: allow signatures to be an array of Signature objects
     s.add(signature);
   });
+  return s;
+};
+
+/**
+ * @returns {Script} a new EasySend output script for given public keys,
+ * requiring m of those public keys to spend
+ * @param {PublicKey[]} publicKeys - list of all public keys controlling the output
+ * @param {number} blockTimeout - amount of blocks the transaction can be buried under 
+ *                                until it isn't redeemable anymore.
+ */
+Script.buildEasySendOut = function(publicKeys, blockTimeout) {
+  $.checkArgument(publicKeys.length >= 2,
+    'Number of required public keys must be two or more');
+
+  var script = new Script();
+  script.add(Opcode.toNumber(blockTimeout));
+  publicKeys = _.map(publicKeys, PublicKey);
+  for (var i = 0; i < publicKeys.length; i++) {
+    script.add(publicKeys[i].toBuffer());
+  }
+  script.add(Opcode.smallInt(publicKeys.length));
+  script.add(Opcode.OP_EASYSEND);
+  return script;
+};
+
+/**
+ * A new EasySend input script for the given signature, The signature should
+ * be one of the public keys used in the easysend out script.
+ * @param {buffer} signature to be append to the script
+ * @returns {Script}
+ */
+Script.buildEasySendIn = function(signature) {
+  var s = new Script();
+  s.add(signature);
   return s;
 };
 
