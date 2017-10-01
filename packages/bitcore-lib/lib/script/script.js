@@ -389,6 +389,60 @@ Script.prototype.isScriptHashOut = function() {
 };
 
 /**
+ * @returns {boolean} if this is a p2sh input script
+ * Note that these are frequently indistinguishable from pubkeyhashin
+ */
+Script.prototype.isScriptHashIn = function() {
+  if (this.chunks.length <= 1) {
+    return false;
+  }
+  var redeemChunk = this.chunks[this.chunks.length - 1];
+  var redeemBuf = redeemChunk.buf;
+  if (!redeemBuf) {
+    return false;
+  }
+
+  var redeemScript;
+  try {
+    redeemScript = Script.fromBuffer(redeemBuf);
+  } catch (e) {
+    if (e instanceof errors.Script.InvalidBuffer) {
+      return false;
+    }
+    throw e;
+  }
+  var type = redeemScript.classify();
+  return type !== Script.types.UNKNOWN;
+};
+
+/**
+ * @returns {boolean} if this is a mutlsig output script
+ */
+Script.prototype.isMultisigOut = function() {
+  return (this.chunks.length > 3 &&
+    Opcode.isSmallIntOp(this.chunks[0].opcodenum) &&
+    this.chunks.slice(1, this.chunks.length - 2).every(function(obj) {
+      return obj.buf && BufferUtil.isBuffer(obj.buf);
+    }) &&
+    Opcode.isSmallIntOp(this.chunks[this.chunks.length - 2].opcodenum) &&
+    this.chunks[this.chunks.length - 1].opcodenum === Opcode.OP_CHECKMULTISIG);
+};
+
+
+/**
+ * @returns {boolean} if this is a multisig input script
+ */
+Script.prototype.isMultisigIn = function() {
+  return this.chunks.length >= 2 &&
+    this.chunks[0].opcodenum === 0 &&
+    this.chunks.slice(1, this.chunks.length).every(function(obj) {
+      return obj.buf &&
+        BufferUtil.isBuffer(obj.buf) &&
+        Signature.isTxDER(obj.buf);
+    });
+};
+
+/**
  * @returns {boolean} if this is a pay to EasySend input script
  */
 Script.prototype.isEasySendIn = function() {
@@ -714,6 +768,34 @@ Script.buildMultisigIn = function(pubkeys, threshold, signatures, opts) {
 };
 
 /**
+ * A new P2SH Multisig input script for the given public keys, requiring m of those public keys to spend
+ *
+ * @param {PublicKey[]} pubkeys list of all public keys controlling the output
+ * @param {number} threshold amount of required signatures to spend the output
+ * @param {Array} signatures and array of signature buffers to append to the script
+ * @param {Object=} opts
+ * @param {boolean=} opts.noSorting don't sort the given public keys before creating the script (false by default)
+ * @param {Script=} opts.cachedMultisig don't recalculate the redeemScript
+ *
+ * @returns {Script}
+ */
+Script.buildP2SHMultisigIn = function(pubkeys, threshold, signatures, opts) {
+  $.checkArgument(_.isArray(pubkeys));
+  $.checkArgument(_.isNumber(threshold));
+  $.checkArgument(_.isArray(signatures));
+  opts = opts || {};
+  var s = new Script();
+  s.add(Opcode.OP_0);
+  _.each(signatures, function(signature) {
+    $.checkArgument(BufferUtil.isBuffer(signature), 'Signatures must be an array of Buffers');
+    // TODO: allow signatures to be an array of Signature objects
+    s.add(signature);
+  });
+  s.add((opts.cachedMultisig || Script.buildMultisigOut(pubkeys, threshold, opts)).toBuffer());
+  return s;
+};
+
+/**
  * @returns {Script} a new EasySend output script for given public keys,
  * requiring m of those public keys to spend
  * @param {PublicKey[]} publicKeys - list of all public keys controlling the output
@@ -744,34 +826,6 @@ Script.buildEasySendOut = function(publicKeys, blockTimeout) {
 Script.buildEasySendIn = function(signature) {
   var s = new Script();
   s.add(signature);
-  return s;
-};
-
-/**
- * A new P2SH Multisig input script for the given public keys, requiring m of those public keys to spend
- *
- * @param {PublicKey[]} pubkeys list of all public keys controlling the output
- * @param {number} threshold amount of required signatures to spend the output
- * @param {Array} signatures and array of signature buffers to append to the script
- * @param {Object=} opts
- * @param {boolean=} opts.noSorting don't sort the given public keys before creating the script (false by default)
- * @param {Script=} opts.cachedMultisig don't recalculate the redeemScript
- *
- * @returns {Script}
- */
-Script.buildP2SHMultisigIn = function(pubkeys, threshold, signatures, opts) {
-  $.checkArgument(_.isArray(pubkeys));
-  $.checkArgument(_.isNumber(threshold));
-  $.checkArgument(_.isArray(signatures));
-  opts = opts || {};
-  var s = new Script();
-  s.add(Opcode.OP_0);
-  _.each(signatures, function(signature) {
-    $.checkArgument(BufferUtil.isBuffer(signature), 'Signatures must be an array of Buffers');
-    // TODO: allow signatures to be an array of Signature objects
-    s.add(signature);
-  });
-  s.add((opts.cachedMultisig || Script.buildMultisigOut(pubkeys, threshold, opts)).toBuffer());
   return s;
 };
 
