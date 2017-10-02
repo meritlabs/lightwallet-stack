@@ -881,7 +881,7 @@ Merit.prototype._loadTipFromNode = function(node, callback) {
   });
 };
 
-Merit.prototype._stopSpawnedBitcoin = function(callback) {
+Merit.prototype._stopSpawnedMerit = function(callback) {
   var self = this;
   var spawnOptions = this.options.spawn;
   var pidPath = spawnOptions.datadir + '/bitcoind.pid';
@@ -941,7 +941,7 @@ Merit.prototype._spawnChildProcess = function(callback) {
     options.push(self._getNetworkOption());
   }
 
-  self._stopSpawnedBitcoin(function(err) {
+  self._stopSpawnedMerit(function(err) {
     if (err) {
       return callback(err);
     }

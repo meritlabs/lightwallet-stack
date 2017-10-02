@@ -24,7 +24,7 @@ var MeritService = proxyquire('../../lib/services/meritd', {
     readFileSync: readFileSync
   }
 });
-var defaultBitcoinConf = fs.readFileSync(path.resolve(__dirname, '../data/default.merit.conf'), 'utf8');
+var defaultMeritConf = fs.readFileSync(path.resolve(__dirname, '../data/default.merit.conf'), 'utf8');
 
 describe('Merit Service', function() {
   var txhex = '01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000';
@@ -347,7 +347,7 @@ describe('Merit Service', function() {
     it('will generate config file from defaults', function() {
       var meritd = new MeritService(baseConfig);
       var config = meritd._getDefaultConfig();
-      config.should.equal(defaultBitcoinConf);
+      config.should.equal(defaultMeritConf);
     });
   });
 
@@ -360,7 +360,7 @@ describe('Merit Service', function() {
       sandbox.restore();
     });
     it('will parse a merit.com file', function() {
-      var TestBitcoin = proxyquire('../../lib/services/meritd', {
+      var TestMerit = proxyquire('../../lib/services/meritd', {
         fs: {
           readFileSync: readFileSync,
           existsSync: sinon.stub().returns(true),
@@ -370,7 +370,7 @@ describe('Merit Service', function() {
           sync: sinon.stub()
         }
       });
-      var meritd = new TestBitcoin(baseConfig);
+      var meritd = new TestMerit(baseConfig);
       meritd.options.spawn.datadir = '/tmp/.merit';
       var node = {};
       meritd._loadSpawnConfiguration(node);
@@ -398,7 +398,7 @@ describe('Merit Service', function() {
       });
     });
     it('will expand relative datadir to absolute path', function() {
-      var TestBitcoin = proxyquire('../../lib/services/meritd', {
+      var TestMerit = proxyquire('../../lib/services/meritd', {
         fs: {
           readFileSync: readFileSync,
           existsSync: sinon.stub().returns(true),
@@ -418,14 +418,14 @@ describe('Merit Service', function() {
           exec: 'testpath'
         }
       };
-      var meritd = new TestBitcoin(config);
+      var meritd = new TestMerit(config);
       meritd.options.spawn.datadir = './data';
       var node = {};
       meritd._loadSpawnConfiguration(node);
       meritd.options.spawn.datadir.should.equal('/tmp/.bitcore/data');
     });
     it('should throw an exception if txindex isn\'t enabled in the configuration', function() {
-      var TestBitcoin = proxyquire('../../lib/services/meritd', {
+      var TestMerit = proxyquire('../../lib/services/meritd', {
         fs: {
           readFileSync: sinon.stub().returns(fs.readFileSync(__dirname + '/../data/badmerit.conf')),
           existsSync: sinon.stub().returns(true),
@@ -434,16 +434,16 @@ describe('Merit Service', function() {
           sync: sinon.stub()
         }
       });
-      var meritd = new TestBitcoin(baseConfig);
+      var meritd = new TestMerit(baseConfig);
       (function() {
         meritd._loadSpawnConfiguration({datadir: './test'});
       }).should.throw(bitcore.errors.InvalidState);
     });
     it('should NOT set https options if node https options are set', function() {
       var writeFileSync = function(path, config) {
-        config.should.equal(defaultBitcoinConf);
+        config.should.equal(defaultMeritConf);
       };
-      var TestBitcoin = proxyquire('../../lib/services/meritd', {
+      var TestMerit = proxyquire('../../lib/services/meritd', {
         fs: {
           writeFileSync: writeFileSync,
           readFileSync: readFileSync,
@@ -469,7 +469,7 @@ describe('Merit Service', function() {
           exec: 'testexec'
         }
       };
-      var meritd = new TestBitcoin(config);
+      var meritd = new TestMerit(config);
       meritd.options.spawn.datadir = '/tmp/.merit';
       var node = {};
       meritd._loadSpawnConfiguration(node);
@@ -1598,16 +1598,16 @@ describe('Merit Service', function() {
       var error = new Error('Test error');
       error.code = 'ENOENT';
       readFile.onCall(1).callsArgWith(2, error);
-      var TestBitcoinService = proxyquire('../../lib/services/meritd', {
+      var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
           readFile: readFile
         }
       });
-      var meritd = new TestBitcoinService(baseConfig);
+      var meritd = new TestMeritService(baseConfig);
       meritd.spawnStopTime = 1;
       meritd._process = {};
       meritd._process.kill = sinon.stub();
-      meritd._stopSpawnedBitcoin(function(err) {
+      meritd._stopSpawnedMerit(function(err) {
         if (err) {
           return done(err);
         }
@@ -1622,18 +1622,18 @@ describe('Merit Service', function() {
       var error = new Error('Test error');
       error.code = 'ENOENT';
       readFile.onCall(1).callsArgWith(2, error);
-      var TestBitcoinService = proxyquire('../../lib/services/meritd', {
+      var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
           readFile: readFile
         }
       });
-      var meritd = new TestBitcoinService(baseConfig);
+      var meritd = new TestMeritService(baseConfig);
       meritd.spawnStopTime = 1;
       meritd._process = {};
       var error2 = new Error('Test error');
       error2.code = 'ESRCH';
       meritd._process.kill = sinon.stub().throws(error2);
-      meritd._stopSpawnedBitcoin(function(err) {
+      meritd._stopSpawnedMerit(function(err) {
         if (err) {
           return done(err);
         }
@@ -1645,16 +1645,16 @@ describe('Merit Service', function() {
     it('it will attempt to kill process with NaN', function(done) {
       var readFile = sandbox.stub();
       readFile.onCall(0).callsArgWith(2, null, '     ');
-      var TestBitcoinService = proxyquire('../../lib/services/meritd', {
+      var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
           readFile: readFile
         }
       });
-      var meritd = new TestBitcoinService(baseConfig);
+      var meritd = new TestMeritService(baseConfig);
       meritd.spawnStopTime = 1;
       meritd._process = {};
       meritd._process.kill = sinon.stub();
-      meritd._stopSpawnedBitcoin(function(err) {
+      meritd._stopSpawnedMerit(function(err) {
         if (err) {
           return done(err);
         }
@@ -1664,16 +1664,16 @@ describe('Merit Service', function() {
     it('it will attempt to kill process without pid', function(done) {
       var readFile = sandbox.stub();
       readFile.onCall(0).callsArgWith(2, null, '');
-      var TestBitcoinService = proxyquire('../../lib/services/meritd', {
+      var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
           readFile: readFile
         }
       });
-      var meritd = new TestBitcoinService(baseConfig);
+      var meritd = new TestMeritService(baseConfig);
       meritd.spawnStopTime = 1;
       meritd._process = {};
       meritd._process.kill = sinon.stub();
-      meritd._stopSpawnedBitcoin(function(err) {
+      meritd._stopSpawnedMerit(function(err) {
         if (err) {
           return done(err);
         }
@@ -1702,10 +1702,10 @@ describe('Merit Service', function() {
         done();
       });
     });
-    it('will give error from stopSpawnedBitcoin', function() {
+    it('will give error from stopSpawnedMerit', function() {
       var meritd = new MeritService(baseConfig);
       meritd._loadSpawnConfiguration = sinon.stub();
-      meritd._stopSpawnedBitcoin = sinon.stub().callsArgWith(0, new Error('test'));
+      meritd._stopSpawnedMerit = sinon.stub().callsArgWith(0, new Error('test'));
       meritd._spawnChildProcess(function(err) {
         err.should.be.instanceOf(Error);
         err.message.should.equal('test');
@@ -1723,7 +1723,7 @@ describe('Merit Service', function() {
       };
       var process = new EventEmitter();
       var spawn = sinon.stub().returns(process);
-      var TestBitcoinService = proxyquire('../../lib/services/meritd', {
+      var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
           readFileSync: readFileSync
         },
@@ -1731,10 +1731,10 @@ describe('Merit Service', function() {
           spawn: spawn
         }
       });
-      var meritd = new TestBitcoinService(config);
+      var meritd = new TestMeritService(config);
       meritd.spawn = {};
       meritd._loadSpawnConfiguration = sinon.stub();
-      meritd._stopSpawnedBitcoin = sinon.stub().callsArgWith(0, null);
+      meritd._stopSpawnedMerit = sinon.stub().callsArgWith(0, null);
       meritd.node.stopping = true;
       meritd._spawnChildProcess(function(err) {
         err.should.be.instanceOf(Error);
@@ -1744,7 +1744,7 @@ describe('Merit Service', function() {
     it('will include network with spawn command and init zmq/rpc on node', function(done) {
       var process = new EventEmitter();
       var spawn = sinon.stub().returns(process);
-      var TestBitcoinService = proxyquire('../../lib/services/meritd', {
+      var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
           readFileSync: readFileSync
         },
@@ -1752,7 +1752,7 @@ describe('Merit Service', function() {
           spawn: spawn
         }
       });
-      var meritd = new TestBitcoinService(baseConfig);
+      var meritd = new TestMeritService(baseConfig);
 
       meritd._loadSpawnConfiguration = sinon.stub();
       meritd.spawn = {};
@@ -1761,7 +1761,7 @@ describe('Merit Service', function() {
       meritd.spawn.datadir = 'testdir';
       meritd.spawn.config = {};
       meritd.spawn.config.rpcport = 20001;
-      meritd.spawn.config.rpcuser = 'bitcoin';
+      meritd.spawn.config.rpcuser = 'merit';
       meritd.spawn.config.rpcpassword = 'password';
       meritd.spawn.config.zmqpubrawtx = 'tcp://127.0.0.1:30001';
 
@@ -1795,7 +1795,7 @@ describe('Merit Service', function() {
     it('will respawn meritd spawned process', function(done) {
       var process = new EventEmitter();
       var spawn = sinon.stub().returns(process);
-      var TestBitcoinService = proxyquire('../../lib/services/meritd', {
+      var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
           readFileSync: readFileSync
         },
@@ -1803,19 +1803,19 @@ describe('Merit Service', function() {
           spawn: spawn
         }
       });
-      var meritd = new TestBitcoinService(baseConfig);
+      var meritd = new TestMeritService(baseConfig);
       meritd._loadSpawnConfiguration = sinon.stub();
       meritd.spawn = {};
       meritd.spawn.exec = 'meritd';
-      meritd.spawn.datadir = '/tmp/bitcoin';
-      meritd.spawn.configPath = '/tmp/bitcoin/merit.com';
+      meritd.spawn.datadir = '/tmp/merit';
+      meritd.spawn.configPath = '/tmp/merit/merit.com';
       meritd.spawn.config = {};
       meritd.spawnRestartTime = 1;
       meritd._loadTipFromNode = sinon.stub().callsArg(1);
       meritd._initZmqSubSocket = sinon.stub();
       meritd._checkReindex = sinon.stub().callsArg(1);
       meritd._checkSyncedAndSubscribeZmqEvents = sinon.stub();
-      meritd._stopSpawnedBitcoin = sinon.stub().callsArg(0);
+      meritd._stopSpawnedMerit = sinon.stub().callsArg(0);
       sinon.spy(meritd, '_spawnChildProcess');
       meritd._spawnChildProcess(function(err) {
         if (err) {
@@ -1833,7 +1833,7 @@ describe('Merit Service', function() {
     it('will emit error during respawn', function(done) {
       var process = new EventEmitter();
       var spawn = sinon.stub().returns(process);
-      var TestBitcoinService = proxyquire('../../lib/services/meritd', {
+      var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
           readFileSync: readFileSync
         },
@@ -1841,19 +1841,19 @@ describe('Merit Service', function() {
           spawn: spawn
         }
       });
-      var meritd = new TestBitcoinService(baseConfig);
+      var meritd = new TestMeritService(baseConfig);
       meritd._loadSpawnConfiguration = sinon.stub();
       meritd.spawn = {};
       meritd.spawn.exec = 'meritd';
-      meritd.spawn.datadir = '/tmp/bitcoin';
-      meritd.spawn.configPath = '/tmp/bitcoin/merit.com';
+      meritd.spawn.datadir = '/tmp/merit';
+      meritd.spawn.configPath = '/tmp/merit/merit.com';
       meritd.spawn.config = {};
       meritd.spawnRestartTime = 1;
       meritd._loadTipFromNode = sinon.stub().callsArg(1);
       meritd._initZmqSubSocket = sinon.stub();
       meritd._checkReindex = sinon.stub().callsArg(1);
       meritd._checkSyncedAndSubscribeZmqEvents = sinon.stub();
-      meritd._stopSpawnedBitcoin = sinon.stub().callsArg(0);
+      meritd._stopSpawnedMerit = sinon.stub().callsArg(0);
       sinon.spy(meritd, '_spawnChildProcess');
       meritd._spawnChildProcess(function(err) {
         if (err) {
@@ -1871,7 +1871,7 @@ describe('Merit Service', function() {
     it('will NOT respawn meritd spawned process if shutting down', function(done) {
       var process = new EventEmitter();
       var spawn = sinon.stub().returns(process);
-      var TestBitcoinService = proxyquire('../../lib/services/meritd', {
+      var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
           readFileSync: readFileSync
         },
@@ -1888,19 +1888,19 @@ describe('Merit Service', function() {
           exec: 'testpath'
         }
       };
-      var meritd = new TestBitcoinService(config);
+      var meritd = new TestMeritService(config);
       meritd._loadSpawnConfiguration = sinon.stub();
       meritd.spawn = {};
       meritd.spawn.exec = 'meritd';
-      meritd.spawn.datadir = '/tmp/bitcoin';
-      meritd.spawn.configPath = '/tmp/bitcoin/merit.com';
+      meritd.spawn.datadir = '/tmp/merit';
+      meritd.spawn.configPath = '/tmp/merit/merit.com';
       meritd.spawn.config = {};
       meritd.spawnRestartTime = 1;
       meritd._loadTipFromNode = sinon.stub().callsArg(1);
       meritd._initZmqSubSocket = sinon.stub();
       meritd._checkReindex = sinon.stub().callsArg(1);
       meritd._checkSyncedAndSubscribeZmqEvents = sinon.stub();
-      meritd._stopSpawnedBitcoin = sinon.stub().callsArg(0);
+      meritd._stopSpawnedMerit = sinon.stub().callsArg(0);
       sinon.spy(meritd, '_spawnChildProcess');
       meritd._spawnChildProcess(function(err) {
         if (err) {
@@ -1919,7 +1919,7 @@ describe('Merit Service', function() {
     it('will give error after 60 retries', function(done) {
       var process = new EventEmitter();
       var spawn = sinon.stub().returns(process);
-      var TestBitcoinService = proxyquire('../../lib/services/meritd', {
+      var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
           readFileSync: readFileSync
         },
@@ -1927,7 +1927,7 @@ describe('Merit Service', function() {
           spawn: spawn
         }
       });
-      var meritd = new TestBitcoinService(baseConfig);
+      var meritd = new TestMeritService(baseConfig);
       meritd.startRetryInterval = 1;
       meritd._loadSpawnConfiguration = sinon.stub();
       meritd.spawn = {};
@@ -1936,7 +1936,7 @@ describe('Merit Service', function() {
       meritd.spawn.datadir = 'testdir';
       meritd.spawn.config = {};
       meritd.spawn.config.rpcport = 20001;
-      meritd.spawn.config.rpcuser = 'bitcoin';
+      meritd.spawn.config.rpcuser = 'merit';
       meritd.spawn.config.rpcpassword = 'password';
       meritd.spawn.config.zmqpubrawtx = 'tcp://127.0.0.1:30001';
       meritd._loadTipFromNode = sinon.stub().callsArgWith(1, new Error('test'));
@@ -1949,7 +1949,7 @@ describe('Merit Service', function() {
     it('will give error from check reindex', function(done) {
       var process = new EventEmitter();
       var spawn = sinon.stub().returns(process);
-      var TestBitcoinService = proxyquire('../../lib/services/meritd', {
+      var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
           readFileSync: readFileSync
         },
@@ -1957,7 +1957,7 @@ describe('Merit Service', function() {
           spawn: spawn
         }
       });
-      var meritd = new TestBitcoinService(baseConfig);
+      var meritd = new TestMeritService(baseConfig);
 
       meritd._loadSpawnConfiguration = sinon.stub();
       meritd.spawn = {};
@@ -1966,7 +1966,7 @@ describe('Merit Service', function() {
       meritd.spawn.datadir = 'testdir';
       meritd.spawn.config = {};
       meritd.spawn.config.rpcport = 20001;
-      meritd.spawn.config.rpcuser = 'bitcoin';
+      meritd.spawn.config.rpcuser = 'merit';
       meritd.spawn.config.rpcpassword = 'password';
       meritd.spawn.config.zmqpubrawtx = 'tcp://127.0.0.1:30001';
 
@@ -2046,7 +2046,7 @@ describe('Merit Service', function() {
       meritd.options = {};
       meritd.start(function(err) {
         err.should.be.instanceof(Error);
-        err.message.should.match(/Bitcoin configuration options/);
+        err.message.should.match(/Merit configuration options/);
       });
       done();
     });

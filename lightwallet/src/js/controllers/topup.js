@@ -116,7 +116,7 @@ angular.module('copayApp.controllers').controller('topUpController', function($s
     }
 
     var outputs = [];
-    var toAddress = invoice.bitcoinAddress;
+    var toAddress = invoice.meritAddress;
     var amountMicros = parseInt((invoice.btcDue * 100000000).toFixed(0)); // MRT to Micro
 
     outputs.push({
