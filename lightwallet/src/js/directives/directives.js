@@ -16,7 +16,7 @@ angular.module('copayApp.directives')
             }
 
             // Bip21 uri
-            if (/^bitcoin:/.test(value)) {
+            if (/^merit:/.test(value)) {
               var uri, isAddressValidLivenet, isAddressValidTestnet;
               var isUriValid = URI.isValid(value);
               if (isUriValid) {

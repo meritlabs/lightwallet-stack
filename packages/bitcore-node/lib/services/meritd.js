@@ -9,7 +9,7 @@ var bitcore = require('bitcore-lib');
 var zmq = require('zmq');
 var async = require('async');
 var LRU = require('lru-cache');
-var BitcoinRPC = require('bitcoind-rpc');
+var MeritRPC = require('bitcoind-rpc');
 var $ = bitcore.util.preconditions;
 var _  = bitcore.deps._;
 var Transaction = bitcore.Transaction;
@@ -21,17 +21,17 @@ var utils = require('../utils');
 var Service = require('../service');
 
 /**
- * Provides a friendly event driven API to bitcoind in Node.js. Manages starting and
- * stopping bitcoind as a child process for application support, as well as connecting
- * to multiple bitcoind processes for server infrastructure. Results are cached in an
+ * Provides a friendly event driven API to meritd in Node.js. Manages starting and
+ * stopping meritd as a child process for application support, as well as connecting
+ * to multiple meritd processes for server infrastructure. Results are cached in an
  * LRU cache for improved performance and methods added for common queries.
  *
  * @param {Object} options
  * @param {Node} options.node - A reference to the node
  */
-function Bitcoin(options) {
-  if (!(this instanceof Bitcoin)) {
-    return new Bitcoin(options);
+function Merit(options) {
+  if (!(this instanceof Merit)) {
+    return new Merit(options);
   }
 
   Service.call(this, options);
@@ -39,7 +39,7 @@ function Bitcoin(options) {
 
   this._initCaches();
 
-  // bitcoind child process
+  // meritd child process
   this.spawn = false;
 
   // event subscribers
@@ -53,7 +53,7 @@ function Bitcoin(options) {
   // set initial settings
   this._initDefaults(options);
 
-  // available bitcoind nodes
+  // available meritd nodes
   this._initClients();
 
   // for testing purposes
@@ -63,23 +63,23 @@ function Bitcoin(options) {
     log.error(err.stack);
   });
 }
-util.inherits(Bitcoin, Service);
+util.inherits(Merit, Service);
 
-Bitcoin.dependencies = [];
+Merit.dependencies = [];
 
-Bitcoin.DEFAULT_MAX_TXIDS = 1000;
-Bitcoin.DEFAULT_MAX_HISTORY = 50;
-Bitcoin.DEFAULT_SHUTDOWN_TIMEOUT = 15000;
-Bitcoin.DEFAULT_ZMQ_SUBSCRIBE_PROGRESS = 0.9999;
-Bitcoin.DEFAULT_MAX_ADDRESSES_QUERY = 10000;
-Bitcoin.DEFAULT_SPAWN_RESTART_TIME = 5000;
-Bitcoin.DEFAULT_SPAWN_STOP_TIME = 10000;
-Bitcoin.DEFAULT_TRY_ALL_INTERVAL = 1000;
-Bitcoin.DEFAULT_REINDEX_INTERVAL = 10000;
-Bitcoin.DEFAULT_START_RETRY_INTERVAL = 5000;
-Bitcoin.DEFAULT_TIP_UPDATE_INTERVAL = 15000;
-Bitcoin.DEFAULT_TRANSACTION_CONCURRENCY = 5;
-Bitcoin.DEFAULT_CONFIG_SETTINGS = {
+Merit.DEFAULT_MAX_TXIDS = 1000;
+Merit.DEFAULT_MAX_HISTORY = 50;
+Merit.DEFAULT_SHUTDOWN_TIMEOUT = 15000;
+Merit.DEFAULT_ZMQ_SUBSCRIBE_PROGRESS = 0.9999;
+Merit.DEFAULT_MAX_ADDRESSES_QUERY = 10000;
+Merit.DEFAULT_SPAWN_RESTART_TIME = 5000;
+Merit.DEFAULT_SPAWN_STOP_TIME = 10000;
+Merit.DEFAULT_TRY_ALL_INTERVAL = 1000;
+Merit.DEFAULT_REINDEX_INTERVAL = 10000;
+Merit.DEFAULT_START_RETRY_INTERVAL = 5000;
+Merit.DEFAULT_TIP_UPDATE_INTERVAL = 15000;
+Merit.DEFAULT_TRANSACTION_CONCURRENCY = 5;
+Merit.DEFAULT_CONFIG_SETTINGS = {
   server: 1,
   whitelist: '127.0.0.1',
   txindex: 1,
@@ -96,31 +96,31 @@ Bitcoin.DEFAULT_CONFIG_SETTINGS = {
   uacomment: 'bitcore'
 };
 
-Bitcoin.prototype._initDefaults = function(options) {
+Merit.prototype._initDefaults = function(options) {
   /* jshint maxcomplexity: 15 */
 
   // limits
-  this.maxTxids = options.maxTxids || Bitcoin.DEFAULT_MAX_TXIDS;
-  this.maxTransactionHistory = options.maxTransactionHistory || Bitcoin.DEFAULT_MAX_HISTORY;
-  this.maxAddressesQuery = options.maxAddressesQuery || Bitcoin.DEFAULT_MAX_ADDRESSES_QUERY;
-  this.shutdownTimeout = options.shutdownTimeout || Bitcoin.DEFAULT_SHUTDOWN_TIMEOUT;
+  this.maxTxids = options.maxTxids || Merit.DEFAULT_MAX_TXIDS;
+  this.maxTransactionHistory = options.maxTransactionHistory || Merit.DEFAULT_MAX_HISTORY;
+  this.maxAddressesQuery = options.maxAddressesQuery || Merit.DEFAULT_MAX_ADDRESSES_QUERY;
+  this.shutdownTimeout = options.shutdownTimeout || Merit.DEFAULT_SHUTDOWN_TIMEOUT;
 
   // spawn restart setting
-  this.spawnRestartTime = options.spawnRestartTime || Bitcoin.DEFAULT_SPAWN_RESTART_TIME;
-  this.spawnStopTime = options.spawnStopTime || Bitcoin.DEFAULT_SPAWN_STOP_TIME;
+  this.spawnRestartTime = options.spawnRestartTime || Merit.DEFAULT_SPAWN_RESTART_TIME;
+  this.spawnStopTime = options.spawnStopTime || Merit.DEFAULT_SPAWN_STOP_TIME;
 
   // try all interval
-  this.tryAllInterval = options.tryAllInterval || Bitcoin.DEFAULT_TRY_ALL_INTERVAL;
-  this.startRetryInterval = options.startRetryInterval || Bitcoin.DEFAULT_START_RETRY_INTERVAL;
+  this.tryAllInterval = options.tryAllInterval || Merit.DEFAULT_TRY_ALL_INTERVAL;
+  this.startRetryInterval = options.startRetryInterval || Merit.DEFAULT_START_RETRY_INTERVAL;
 
   // rpc limits
-  this.transactionConcurrency = options.transactionConcurrency || Bitcoin.DEFAULT_TRANSACTION_CONCURRENCY;
+  this.transactionConcurrency = options.transactionConcurrency || Merit.DEFAULT_TRANSACTION_CONCURRENCY;
 
   // sync progress level when zmq subscribes to events
-  this.zmqSubscribeProgress = options.zmqSubscribeProgress || Bitcoin.DEFAULT_ZMQ_SUBSCRIBE_PROGRESS;
+  this.zmqSubscribeProgress = options.zmqSubscribeProgress || Merit.DEFAULT_ZMQ_SUBSCRIBE_PROGRESS;
 };
 
-Bitcoin.prototype._initCaches = function() {
+Merit.prototype._initCaches = function() {
   // caches valid until there is a new block
   this.utxosCache = LRU(50000);
   this.txidsCache = LRU(50000);
@@ -143,7 +143,7 @@ Bitcoin.prototype._initCaches = function() {
   this.lastTipTimeout = false;
 };
 
-Bitcoin.prototype._initClients = function() {
+Merit.prototype._initClients = function() {
   var self = this;
   this.nodes = [];
   this.nodesIndex = 0;
@@ -161,9 +161,9 @@ Bitcoin.prototype._initClients = function() {
 /**
  * Called by Node to determine the available API methods.
  */
-Bitcoin.prototype.getAPIMethods = function() {
+Merit.prototype.getAPIMethods = function() {
   var methods = [
-    // Bitcoin RPC
+    // Merit RPC
     ['getBlock', this, this.getBlock, 1],
     ['getRawBlock', this, this.getRawBlock, 1],
     ['getBlockHeader', this, this.getBlockHeader, 1],
@@ -198,34 +198,34 @@ Bitcoin.prototype.getAPIMethods = function() {
 /**
  * Called by the Bus to determine the available events.
  */
-Bitcoin.prototype.getPublishEvents = function() {
+Merit.prototype.getPublishEvents = function() {
   return [
     {
-      name: 'bitcoind/rawtransaction',
+      name: 'meritd/rawtransaction',
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawtransaction'),
       unsubscribe: this.unsubscribe.bind(this, 'rawtransaction')
     },
     {
-      name: 'bitcoind/hashblock',
+      name: 'meritd/hashblock',
       scope: this,
       subscribe: this.subscribe.bind(this, 'hashblock'),
       unsubscribe: this.unsubscribe.bind(this, 'hashblock')
     },
     {
-      name: 'bitcoind/addresstxid',
+      name: 'meritd/addresstxid',
       scope: this,
       subscribe: this.subscribeAddress.bind(this),
       unsubscribe: this.unsubscribeAddress.bind(this)
     },
     {
-      name: 'bitcoind/rawreferral',
+      name: 'meritd/rawreferral',
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
     },
     {
-      name: 'bitcoind/hashreferral',
+      name: 'meritd/hashreferral',
       scope: this,
       subscribe: this.subscribe.bind(this, 'hashreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'hashreferraltx')
@@ -233,20 +233,20 @@ Bitcoin.prototype.getPublishEvents = function() {
   ];
 };
 
-Bitcoin.prototype.subscribe = function(name, emitter) {
+Merit.prototype.subscribe = function(name, emitter) {
   this.subscriptions[name].push(emitter);
-  log.info(emitter.remoteAddress, 'subscribe:', 'bitcoind/' + name, 'total:', this.subscriptions[name].length);
+  log.info(emitter.remoteAddress, 'subscribe:', 'meritd/' + name, 'total:', this.subscriptions[name].length);
 };
 
-Bitcoin.prototype.unsubscribe = function(name, emitter) {
+Merit.prototype.unsubscribe = function(name, emitter) {
   var index = this.subscriptions[name].indexOf(emitter);
   if (index > -1) {
     this.subscriptions[name].splice(index, 1);
   }
-  log.info(emitter.remoteAddress, 'unsubscribe:', 'bitcoind/' + name, 'total:', this.subscriptions[name].length);
+  log.info(emitter.remoteAddress, 'unsubscribe:', 'meritd/' + name, 'total:', this.subscriptions[name].length);
 };
 
-Bitcoin.prototype.subscribeAddress = function(emitter, addresses) {
+Merit.prototype.subscribeAddress = function(emitter, addresses) {
   var self = this;
 
   function addAddress(addressStr) {
@@ -267,10 +267,10 @@ Bitcoin.prototype.subscribeAddress = function(emitter, addresses) {
     }
   }
 
-  log.info(emitter.remoteAddress, 'subscribe:', 'bitcoind/addresstxid', 'total:', _.size(this.subscriptions.address));
+  log.info(emitter.remoteAddress, 'subscribe:', 'meritd/addresstxid', 'total:', _.size(this.subscriptions.address));
 };
 
-Bitcoin.prototype.unsubscribeAddress = function(emitter, addresses) {
+Merit.prototype.unsubscribeAddress = function(emitter, addresses) {
   var self = this;
   if(!addresses) {
     return this.unsubscribeAddressAll(emitter);
@@ -293,7 +293,7 @@ Bitcoin.prototype.unsubscribeAddress = function(emitter, addresses) {
     }
   }
 
-  log.info(emitter.remoteAddress, 'unsubscribe:', 'bitcoind/addresstxid', 'total:', _.size(this.subscriptions.address));
+  log.info(emitter.remoteAddress, 'unsubscribe:', 'meritd/addresstxid', 'total:', _.size(this.subscriptions.address));
 };
 
 /**
@@ -301,7 +301,7 @@ Bitcoin.prototype.unsubscribeAddress = function(emitter, addresses) {
  * @param {String} name - The name of the event
  * @param {EventEmitter} emitter - An instance of an event emitter
  */
-Bitcoin.prototype.unsubscribeAddressAll = function(emitter) {
+Merit.prototype.unsubscribeAddressAll = function(emitter) {
   for(var hashHex in this.subscriptions.address) {
     var emitters = this.subscriptions.address[hashHex];
     var index = emitters.indexOf(emitter);
@@ -312,19 +312,19 @@ Bitcoin.prototype.unsubscribeAddressAll = function(emitter) {
       delete this.subscriptions.address[hashHex];
     }
   }
-  log.info(emitter.remoteAddress, 'unsubscribe:', 'bitcoind/addresstxid', 'total:', _.size(this.subscriptions.address));
+  log.info(emitter.remoteAddress, 'unsubscribe:', 'meritd/addresstxid', 'total:', _.size(this.subscriptions.address));
 };
 
-Bitcoin.prototype._getDefaultConfig = function() {
+Merit.prototype._getDefaultConfig = function() {
   var config = '';
-  var defaults = Bitcoin.DEFAULT_CONFIG_SETTINGS;
+  var defaults = Merit.DEFAULT_CONFIG_SETTINGS;
   for(var key in defaults) {
     config += key + '=' + defaults[key] + '\n';
   }
   return config;
 };
 
-Bitcoin.prototype._parseBitcoinConf = function(configPath) {
+Merit.prototype._parseBitcoinConf = function(configPath) {
   var options = {};
   var file = fs.readFileSync(configPath);
   var unparsed = file.toString().split('\n');
@@ -344,7 +344,7 @@ Bitcoin.prototype._parseBitcoinConf = function(configPath) {
   return options;
 };
 
-Bitcoin.prototype._expandRelativeDatadir = function() {
+Merit.prototype._expandRelativeDatadir = function() {
   if (!utils.isAbsolutePath(this.options.spawn.datadir)) {
     $.checkState(this.node.configPath);
     $.checkState(utils.isAbsolutePath(this.node.configPath));
@@ -353,12 +353,12 @@ Bitcoin.prototype._expandRelativeDatadir = function() {
   }
 };
 
-Bitcoin.prototype._loadSpawnConfiguration = function(node) {
+Merit.prototype._loadSpawnConfiguration = function(node) {
   /* jshint maxstatements: 25 */
 
-  $.checkArgument(this.options.spawn, 'Please specify "spawn" in bitcoind config options');
-  $.checkArgument(this.options.spawn.datadir, 'Please specify "spawn.datadir" in bitcoind config options');
-  $.checkArgument(this.options.spawn.exec, 'Please specify "spawn.exec" in bitcoind config options');
+  $.checkArgument(this.options.spawn, 'Please specify "spawn" in meritd config options');
+  $.checkArgument(this.options.spawn.datadir, 'Please specify "spawn.datadir" in meritd config options');
+  $.checkArgument(this.options.spawn.exec, 'Please specify "spawn.exec" in meritd config options');
 
   this._expandRelativeDatadir();
 
@@ -396,7 +396,7 @@ Bitcoin.prototype._loadSpawnConfiguration = function(node) {
 
 };
 
-Bitcoin.prototype._checkConfigIndexes = function(spawnConfig, node) {
+Merit.prototype._checkConfigIndexes = function(spawnConfig, node) {
   $.checkState(
     spawnConfig.txindex && spawnConfig.txindex === 1,
     '"txindex" option is required in order to use transaction query features of bitcore-node. ' +
@@ -420,31 +420,31 @@ Bitcoin.prototype._checkConfigIndexes = function(spawnConfig, node) {
 
   $.checkState(
     spawnConfig.server && spawnConfig.server === 1,
-    '"server" option is required to communicate to bitcoind from bitcore. ' +
+    '"server" option is required to communicate to meritd from bitcore. ' +
       'Please add "server=1" to your configuration and restart'
   );
 
   $.checkState(
     spawnConfig.zmqpubrawtx,
-    '"zmqpubrawtx" option is required to get event updates from bitcoind. ' +
+    '"zmqpubrawtx" option is required to get event updates from meritd. ' +
       'Please add "zmqpubrawtx=tcp://127.0.0.1:<port>" to your configuration and restart'
   );
 
   $.checkState(
     spawnConfig.zmqpubhashblock,
-    '"zmqpubhashblock" option is required to get event updates from bitcoind. ' +
+    '"zmqpubhashblock" option is required to get event updates from meritd. ' +
       'Please add "zmqpubhashblock=tcp://127.0.0.1:<port>" to your configuration and restart'
   );
 
   $.checkState(
     spawnConfig.zmqpubhashreferraltx,
-    '"zmqpubhashreferraltx" option is required to get event updates from bitcoind. ' +
+    '"zmqpubhashreferraltx" option is required to get event updates from meritd. ' +
       'Please add "zmqpubhashreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
   );
 
   $.checkState(
     spawnConfig.zmqpubrawreferraltx,
-    '"zmqpubrawreferraltx" option is required to get event updates from bitcoind. ' +
+    '"zmqpubrawreferraltx" option is required to get event updates from meritd. ' +
       'Please add "zmqpubrawreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
   );
 
@@ -452,11 +452,11 @@ Bitcoin.prototype._checkConfigIndexes = function(spawnConfig, node) {
     (spawnConfig.zmqpubhashblock === spawnConfig.zmqpubrawtx &&
      spawnConfig.zmqpubrawtx === spawnConfig.zmqpubrawreferraltx &&
      spawnConfig.zmqpubrawreferraltx === spawnConfig.zmqpubhashreferraltx),
-    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferraltx" and "zmqpubhashreferraltx" are expected to the same host and port in bitcoin.conf'
+    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferraltx" and "zmqpubhashreferraltx" are expected to the same host and port in merit.conf'
   );
 
   if (spawnConfig.reindex && spawnConfig.reindex === 1) {
-    log.warn('Reindex option is currently enabled. This means that bitcoind is undergoing a reindex. ' +
+    log.warn('Reindex option is currently enabled. This means that meritd is undergoing a reindex. ' +
              'The reindex flag will start the index from beginning every time the node is started, so it ' +
              'should be removed after the reindex has been initiated. Once the reindex is complete, the rest ' +
              'of bitcore-node services will start.');
@@ -464,7 +464,7 @@ Bitcoin.prototype._checkConfigIndexes = function(spawnConfig, node) {
   }
 };
 
-Bitcoin.prototype._resetCaches = function() {
+Merit.prototype._resetCaches = function() {
   this.transactionDetailedCache.reset();
   this.utxosCache.reset();
   this.txidsCache.reset();
@@ -473,7 +473,7 @@ Bitcoin.prototype._resetCaches = function() {
   this.blockOverviewCache.reset();
 };
 
-Bitcoin.prototype._tryAllClients = function(func, callback) {
+Merit.prototype._tryAllClients = function(func, callback) {
   var self = this;
   var nodesIndex = this.nodesIndex;
   var retry = function(done) {
@@ -484,13 +484,13 @@ Bitcoin.prototype._tryAllClients = function(func, callback) {
   async.retry({times: this.nodes.length, interval: this.tryAllInterval || 1000}, retry, callback);
 };
 
-Bitcoin.prototype._wrapRPCError = function(errObj) {
+Merit.prototype._wrapRPCError = function(errObj) {
   var err = new errors.RPCError(errObj.message);
   err.code = errObj.code;
   return err;
 };
 
-Bitcoin.prototype._initChain = function(callback) {
+Merit.prototype._initChain = function(callback) {
   var self = this;
 
   self.client.getBestBlockHash(function(err, response) {
@@ -516,7 +516,7 @@ Bitcoin.prototype._initChain = function(callback) {
           }
           self.genesisBuffer = blockBuffer;
           self.emit('ready');
-          log.info('Bitcoin Daemon Ready');
+          log.info('Merit Daemon Ready');
           callback();
         });
       });
@@ -525,7 +525,7 @@ Bitcoin.prototype._initChain = function(callback) {
   });
 };
 
-Bitcoin.prototype._getDefaultConf = function() {
+Merit.prototype._getDefaultConf = function() {
   var networkOptions = {
     rpcport: 8445
   };
@@ -535,18 +535,18 @@ Bitcoin.prototype._getDefaultConf = function() {
   return networkOptions;
 };
 
-Bitcoin.prototype._getNetworkConfigPath = function() {
+Merit.prototype._getNetworkConfigPath = function() {
   var networkPath;
   if (this.node.network === bitcore.Networks.testnet) {
-    networkPath = 'testnet3/bitcoin.conf';
+    networkPath = 'testnet3/merit.conf';
     if (this.node.network.regtestEnabled) {
-      networkPath = 'regtest/bitcoin.conf';
+      networkPath = 'regtest/merit.conf';
     }
   }
   return networkPath;
 };
 
-Bitcoin.prototype._getNetworkOption = function() {
+Merit.prototype._getNetworkOption = function() {
   var networkOption;
   if (this.node.network === bitcore.Networks.testnet) {
     networkOption = '--testnet';
@@ -557,7 +557,7 @@ Bitcoin.prototype._getNetworkOption = function() {
   return networkOption;
 };
 
-Bitcoin.prototype._zmqBlockHandler = function(node, message) {
+Merit.prototype._zmqBlockHandler = function(node, message) {
   var self = this;
 
   // Update the current chain tip
@@ -570,13 +570,13 @@ Bitcoin.prototype._zmqBlockHandler = function(node, message) {
     self.emit('block', message);
 
     for (var i = 0; i < this.subscriptions.hashblock.length; i++) {
-      this.subscriptions.hashblock[i].emit('bitcoind/hashblock', message.toString('hex'));
+      this.subscriptions.hashblock[i].emit('meritd/hashblock', message.toString('hex'));
     }
   }
 
 };
 
-Bitcoin.prototype._rapidProtectedUpdateTip = function(node, message) {
+Merit.prototype._rapidProtectedUpdateTip = function(node, message) {
   var self = this;
 
   // Prevent a rapid succession of tip updates
@@ -591,7 +591,7 @@ Bitcoin.prototype._rapidProtectedUpdateTip = function(node, message) {
   }
 };
 
-Bitcoin.prototype._updateTip = function(node, message) {
+Merit.prototype._updateTip = function(node, message) {
   var self = this;
 
   var hex = message.toString('hex');
@@ -620,14 +620,14 @@ Bitcoin.prototype._updateTip = function(node, message) {
           if (Math.round(percentage) >= 100) {
             self.emit('synced', self.height);
           }
-          log.info('Bitcoin Height:', self.height, 'Percentage:', percentage.toFixed(2));
+          log.info('Merit Height:', self.height, 'Percentage:', percentage.toFixed(2));
         }
       });
     }
   }
 };
 
-Bitcoin.prototype._getAddressesFromTransaction = function(transaction) {
+Merit.prototype._getAddressesFromTransaction = function(transaction) {
   var addresses = [];
 
   for (var i = 0; i < transaction.inputs.length; i++) {
@@ -653,14 +653,14 @@ Bitcoin.prototype._getAddressesFromTransaction = function(transaction) {
   return _.uniq(addresses);
 };
 
-Bitcoin.prototype._notifyAddressTxidSubscribers = function(txid, transaction) {
+Merit.prototype._notifyAddressTxidSubscribers = function(txid, transaction) {
   var addresses = this._getAddressesFromTransaction(transaction);
   for (var i = 0; i < addresses.length; i++) {
     var address = addresses[i];
     if(this.subscriptions.address[address]) {
       var emitters = this.subscriptions.address[address];
       for(var j = 0; j < emitters.length; j++) {
-        emitters[j].emit('bitcoind/addresstxid', {
+        emitters[j].emit('meritd/addresstxid', {
           address: address,
           txid: txid
         });
@@ -669,7 +669,7 @@ Bitcoin.prototype._notifyAddressTxidSubscribers = function(txid, transaction) {
   }
 };
 
-Bitcoin.prototype._zmqTransactionHandler = function(node, message) {
+Merit.prototype._zmqTransactionHandler = function(node, message) {
   var self = this;
   var hash = bitcore.crypto.Hash.sha256sha256(message);
   var id = hash.toString('binary');
@@ -679,7 +679,7 @@ Bitcoin.prototype._zmqTransactionHandler = function(node, message) {
 
     // Notify transaction subscribers
     for (var i = 0; i < this.subscriptions.rawtransaction.length; i++) {
-      this.subscriptions.rawtransaction[i].emit('bitcoind/rawtransaction', message.toString('hex'));
+      this.subscriptions.rawtransaction[i].emit('meritd/rawtransaction', message.toString('hex'));
     }
 
     var tx = bitcore.Transaction();
@@ -690,7 +690,7 @@ Bitcoin.prototype._zmqTransactionHandler = function(node, message) {
   }
 };
 
-Bitcoin.prototype._zmqRawReferralsHandler = function(node, message) {
+Merit.prototype._zmqRawReferralsHandler = function(node, message) {
   const self = this;
   const hash = bitcore.crypto.Hash.sha256sha256(message);
   const id = hash.toString('binary');
@@ -707,7 +707,7 @@ Bitcoin.prototype._zmqRawReferralsHandler = function(node, message) {
   }
 };
 
-Bitcoin.prototype._zmqHashReferralsHandler = function(node, message) {
+Merit.prototype._zmqHashReferralsHandler = function(node, message) {
   const self = this;
   const hash = bitcore.crypto.Hash.sha256sha256(message);
   const id = hash.toString('binary');
@@ -724,7 +724,7 @@ Bitcoin.prototype._zmqHashReferralsHandler = function(node, message) {
   }
 };
 
-Bitcoin.prototype._checkSyncedAndSubscribeZmqEvents = function(node) {
+Merit.prototype._checkSyncedAndSubscribeZmqEvents = function(node) {
   var self = this;
   var interval;
 
@@ -770,13 +770,13 @@ Bitcoin.prototype._checkSyncedAndSubscribeZmqEvents = function(node) {
             log.error(err);
           }
         });
-      }, node._tipUpdateInterval || Bitcoin.DEFAULT_TIP_UPDATE_INTERVAL);
+      }, node._tipUpdateInterval || Merit.DEFAULT_TIP_UPDATE_INTERVAL);
     }
   });
 
 };
 
-Bitcoin.prototype._subscribeZmqEvents = function(node) {
+Merit.prototype._subscribeZmqEvents = function(node) {
   const self = this;
   node.zmqSubSocket.subscribe('hashblock');
   node.zmqSubSocket.subscribe('rawtx');
@@ -806,7 +806,7 @@ Bitcoin.prototype._subscribeZmqEvents = function(node) {
   });
 };
 
-Bitcoin.prototype._initZmqSubSocket = function(node, zmqUrl) {
+Merit.prototype._initZmqSubSocket = function(node, zmqUrl) {
   node.zmqSubSocket = zmq.socket('sub');
 
   node.zmqSubSocket.on('connect', function(fd, endPoint) {
@@ -832,7 +832,7 @@ Bitcoin.prototype._initZmqSubSocket = function(node, zmqUrl) {
   node.zmqSubSocket.connect(zmqUrl);
 };
 
-Bitcoin.prototype._checkReindex = function(node, callback) {
+Merit.prototype._checkReindex = function(node, callback) {
   var self = this;
   var interval;
   function finish(err) {
@@ -847,20 +847,20 @@ Bitcoin.prototype._checkReindex = function(node, callback) {
         }
         var percentSynced = response.result.verificationprogress * 100;
 
-        log.info('Bitcoin Core Daemon Reindex Percentage: ' + percentSynced.toFixed(2));
+        log.info('Merit Core Daemon Reindex Percentage: ' + percentSynced.toFixed(2));
 
         if (Math.round(percentSynced) >= 100) {
           node._reindex = false;
           finish();
         }
       });
-    }, node._reindexWait || Bitcoin.DEFAULT_REINDEX_INTERVAL);
+    }, node._reindexWait || Merit.DEFAULT_REINDEX_INTERVAL);
   } else {
     callback();
   }
 };
 
-Bitcoin.prototype._loadTipFromNode = function(node, callback) {
+Merit.prototype._loadTipFromNode = function(node, callback) {
   var self = this;
   node.client.getBestBlockHash(function(err, response) {
     if (err && err.code === -28) {
@@ -881,7 +881,7 @@ Bitcoin.prototype._loadTipFromNode = function(node, callback) {
   });
 };
 
-Bitcoin.prototype._stopSpawnedBitcoin = function(callback) {
+Merit.prototype._stopSpawnedBitcoin = function(callback) {
   var self = this;
   var spawnOptions = this.options.spawn;
   var pidPath = spawnOptions.datadir + '/bitcoind.pid';
@@ -919,7 +919,7 @@ Bitcoin.prototype._stopSpawnedBitcoin = function(callback) {
   stopProcess();
 };
 
-Bitcoin.prototype._spawnChildProcess = function(callback) {
+Merit.prototype._spawnChildProcess = function(callback) {
   var self = this;
 
   var node = {};
@@ -946,7 +946,7 @@ Bitcoin.prototype._spawnChildProcess = function(callback) {
       return callback(err);
     }
 
-    log.info('Starting bitcoin process');
+    log.info('Starting Meritd process');
     self.spawn.process = spawn(self.spawn.exec, options, {stdio: 'inherit'});
 
     self.spawn.process.on('error', function(err) {
@@ -955,14 +955,14 @@ Bitcoin.prototype._spawnChildProcess = function(callback) {
 
     self.spawn.process.once('exit', function(code) {
       if (!self.node.stopping) {
-        log.warn('Bitcoin process unexpectedly exited with code:', code);
-        log.warn('Restarting bitcoin child process in ' + self.spawnRestartTime + 'ms');
+        log.warn('Merit process unexpectedly exited with code:', code);
+        log.warn('Restarting Merit child process in ' + self.spawnRestartTime + 'ms');
         setTimeout(function() {
           self._spawnChildProcess(function(err) {
             if (err) {
               return self.emit('error', err);
             }
-            log.warn('Bitcoin process restarted');
+            log.warn('Merit process restarted');
           });
         }, self.spawnRestartTime);
       }
@@ -976,7 +976,7 @@ Bitcoin.prototype._spawnChildProcess = function(callback) {
         return done();
       }
 
-      node.client = new BitcoinRPC({
+      node.client = new MeritRPC({
         protocol: 'http',
         host: '127.0.0.1',
         port: self.spawn.config.rpcport,
@@ -991,7 +991,7 @@ Bitcoin.prototype._spawnChildProcess = function(callback) {
         return callback(err);
       }
       if (exitShutdown) {
-        return callback(new Error('Stopping while trying to spawn bitcoind.'));
+        return callback(new Error('Stopping while trying to spawn meritd.'));
       }
 
       self._initZmqSubSocket(node, self.spawn.config.zmqpubrawtx);
@@ -1010,7 +1010,7 @@ Bitcoin.prototype._spawnChildProcess = function(callback) {
 
 };
 
-Bitcoin.prototype._connectProcess = function(config, callback) {
+Merit.prototype._connectProcess = function(config, callback) {
   var self = this;
   var node = {};
   var exitShutdown = false;
@@ -1021,7 +1021,7 @@ Bitcoin.prototype._connectProcess = function(config, callback) {
       return done();
     }
 
-    node.client = new BitcoinRPC({
+    node.client = new MeritRPC({
       protocol: config.rpcprotocol || 'http',
       host: config.rpchost || '127.0.0.1',
       port: config.rpcport,
@@ -1051,7 +1051,7 @@ Bitcoin.prototype._connectProcess = function(config, callback) {
  * Called by Node to start the service
  * @param {Function} callback
  */
-Bitcoin.prototype.start = function(callback) {
+Merit.prototype.start = function(callback) {
   var self = this;
 
   async.series([
@@ -1088,7 +1088,7 @@ Bitcoin.prototype.start = function(callback) {
       return callback(err);
     }
     if (self.nodes.length === 0) {
-      return callback(new Error('Bitcoin configuration options "spawn" or "connect" are expected'));
+      return callback(new Error('Merit configuration options "spawn" or "connect" are expected'));
     }
     self._initChain(callback);
   });
@@ -1099,7 +1099,7 @@ Bitcoin.prototype.start = function(callback) {
  * Helper to determine the state of the database.
  * @param {Function} callback
  */
-Bitcoin.prototype.isSynced = function(callback) {
+Merit.prototype.isSynced = function(callback) {
   this.syncPercentage(function(err, percentage) {
     if (err) {
       return callback(err);
@@ -1116,7 +1116,7 @@ Bitcoin.prototype.isSynced = function(callback) {
  * Helper to determine the progress of the database.
  * @param {Function} callback
  */
-Bitcoin.prototype.syncPercentage = function(callback) {
+Merit.prototype.syncPercentage = function(callback) {
   var self = this;
   this.client.getBlockchainInfo(function(err, response) {
     if (err) {
@@ -1127,7 +1127,7 @@ Bitcoin.prototype.syncPercentage = function(callback) {
   });
 };
 
-Bitcoin.prototype._normalizeAddressArg = function(addressArg) {
+Merit.prototype._normalizeAddressArg = function(addressArg) {
   var addresses = [addressArg];
   if (Array.isArray(addressArg)) {
     addresses = addressArg;
@@ -1141,7 +1141,7 @@ Bitcoin.prototype._normalizeAddressArg = function(addressArg) {
  * @param {Object} options
  * @param {Function} callback
  */
-Bitcoin.prototype.getAddressBalance = function(addressArg, options, callback) {
+Merit.prototype.getAddressBalance = function(addressArg, options, callback) {
   var self = this;
   var addresses = self._normalizeAddressArg(addressArg);
   var cacheKey = addresses.join('');
@@ -1167,7 +1167,7 @@ Bitcoin.prototype.getAddressBalance = function(addressArg, options, callback) {
  * @param {Object} options
  * @param {Function} callback
  */
-Bitcoin.prototype.getAddressUnspentOutputs = function(addressArg, options, callback) {
+Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callback) {
   var self = this;
   var queryMempool = _.isUndefined(options.queryMempool) ? true : options.queryMempool;
   var addresses = self._normalizeAddressArg(addressArg);
@@ -1256,7 +1256,7 @@ Bitcoin.prototype.getAddressUnspentOutputs = function(addressArg, options, callb
 
 };
 
-Bitcoin.prototype._getBalanceFromMempool = function(deltas) {
+Merit.prototype._getBalanceFromMempool = function(deltas) {
   var micros = 0;
   for (var i = 0; i < deltas.length; i++) {
     micros += deltas[i].micros;
@@ -1264,7 +1264,7 @@ Bitcoin.prototype._getBalanceFromMempool = function(deltas) {
   return micros;
 };
 
-Bitcoin.prototype._getTxidsFromMempool = function(deltas) {
+Merit.prototype._getTxidsFromMempool = function(deltas) {
   var mempoolTxids = [];
   var mempoolTxidsKnown = {};
   for (var i = 0; i < deltas.length; i++) {
@@ -1277,7 +1277,7 @@ Bitcoin.prototype._getTxidsFromMempool = function(deltas) {
   return mempoolTxids;
 };
 
-Bitcoin.prototype._getHeightRangeQuery = function(options, clone) {
+Merit.prototype._getHeightRangeQuery = function(options, clone) {
   if (options.start >= 0 && options.end >= 0) {
     if (options.end > options.start) {
       throw new TypeError('"end" is expected to be less than or equal to "start"');
@@ -1298,7 +1298,7 @@ Bitcoin.prototype._getHeightRangeQuery = function(options, clone) {
  * @param {Object} options
  * @param {Function} callback
  */
-Bitcoin.prototype.getAddressTxids = function(addressArg, options, callback) {
+Merit.prototype.getAddressTxids = function(addressArg, options, callback) {
   /* jshint maxstatements: 20 */
   var self = this;
   var queryMempool = _.isUndefined(options.queryMempool) ? true : options.queryMempool;
@@ -1367,7 +1367,7 @@ Bitcoin.prototype.getAddressTxids = function(addressArg, options, callback) {
 
 };
 
-Bitcoin.prototype._getConfirmationsDetail = function(transaction) {
+Merit.prototype._getConfirmationsDetail = function(transaction) {
   $.checkState(this.height > 0, 'current height is unknown');
   var confirmations = 0;
   if (transaction.height >= 0) {
@@ -1379,7 +1379,7 @@ Bitcoin.prototype._getConfirmationsDetail = function(transaction) {
   return Math.max(0, confirmations);
 };
 
-Bitcoin.prototype._getAddressDetailsForInput = function(input, inputIndex, result, addressStrings) {
+Merit.prototype._getAddressDetailsForInput = function(input, inputIndex, result, addressStrings) {
   if (!input.address) {
     return;
   }
@@ -1397,7 +1397,7 @@ Bitcoin.prototype._getAddressDetailsForInput = function(input, inputIndex, resul
   }
 };
 
-Bitcoin.prototype._getAddressDetailsForOutput = function(output, outputIndex, result, addressStrings) {
+Merit.prototype._getAddressDetailsForOutput = function(output, outputIndex, result, addressStrings) {
   if (!output.address) {
     return;
   }
@@ -1415,7 +1415,7 @@ Bitcoin.prototype._getAddressDetailsForOutput = function(output, outputIndex, re
   }
 };
 
-Bitcoin.prototype._getAddressDetailsForTransaction = function(transaction, addressStrings) {
+Merit.prototype._getAddressDetailsForTransaction = function(transaction, addressStrings) {
   var result = {
     addresses: {},
     micros: 0
@@ -1438,10 +1438,10 @@ Bitcoin.prototype._getAddressDetailsForTransaction = function(transaction, addre
 
 /**
  * Will expand into a detailed transaction from a txid
- * @param {Object} txid - A bitcoin transaction id
+ * @param {Object} txid - A merit transaction id
  * @param {Function} callback
  */
-Bitcoin.prototype._getAddressDetailedTransaction = function(txid, options, next) {
+Merit.prototype._getAddressDetailedTransaction = function(txid, options, next) {
   var self = this;
 
   self.getDetailedTransaction(
@@ -1464,7 +1464,7 @@ Bitcoin.prototype._getAddressDetailedTransaction = function(txid, options, next)
   );
 };
 
-Bitcoin.prototype._getAddressStrings = function(addresses) {
+Merit.prototype._getAddressStrings = function(addresses) {
   var addressStrings = [];
   for (var i = 0; i < addresses.length; i++) {
     var address = addresses[i];
@@ -1479,7 +1479,7 @@ Bitcoin.prototype._getAddressStrings = function(addresses) {
   return addressStrings;
 };
 
-Bitcoin.prototype._paginateTxids = function(fullTxids, fromArg, toArg) {
+Merit.prototype._paginateTxids = function(fullTxids, fromArg, toArg) {
   var txids;
   var from = parseInt(fromArg);
   var to = parseInt(toArg);
@@ -1494,7 +1494,7 @@ Bitcoin.prototype._paginateTxids = function(fullTxids, fromArg, toArg) {
  * @param {Object} options
  * @param {Function} callback
  */
-Bitcoin.prototype.getAddressHistory = function(addressArg, options, callback) {
+Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
   var self = this;
   var addresses = self._normalizeAddressArg(addressArg);
   if (addresses.length > this.maxAddressesQuery) {
@@ -1554,7 +1554,7 @@ Bitcoin.prototype.getAddressHistory = function(addressArg, options, callback) {
  * @param {Object} options
  * @param {Function} callback
  */
-Bitcoin.prototype.getAddressSummary = function(addressArg, options, callback) {
+Merit.prototype.getAddressSummary = function(addressArg, options, callback) {
   var self = this;
   var summary = {};
   var queryMempool = _.isUndefined(options.queryMempool) ? true : options.queryMempool;
@@ -1649,7 +1649,7 @@ Bitcoin.prototype.getAddressSummary = function(addressArg, options, callback) {
 
 };
 
-Bitcoin.prototype._maybeGetBlockHash = function(blockArg, callback) {
+Merit.prototype._maybeGetBlockHash = function(blockArg, callback) {
   var self = this;
   if (_.isNumber(blockArg) || (blockArg.length < 40 && /^[0-9]+$/.test(blockArg))) {
     self._tryAllClients(function(client, done) {
@@ -1670,7 +1670,7 @@ Bitcoin.prototype._maybeGetBlockHash = function(blockArg, callback) {
  * @param {String|Number} block - A block hash or block height number
  * @param {Function} callback
  */
-Bitcoin.prototype.getRawBlock = function(blockArg, callback) {
+Merit.prototype.getRawBlock = function(blockArg, callback) {
   // TODO apply performance patch to the RPC method for raw data
   var self = this;
 
@@ -1705,7 +1705,7 @@ Bitcoin.prototype.getRawBlock = function(blockArg, callback) {
  * @param {String|Number} block - A block hash or block height number
  * @param {Function} callback
  */
-Bitcoin.prototype.getBlockOverview = function(blockArg, callback) {
+Merit.prototype.getBlockOverview = function(blockArg, callback) {
   var self = this;
 
   function queryBlock(err, blockhash) {
@@ -1755,7 +1755,7 @@ Bitcoin.prototype.getBlockOverview = function(blockArg, callback) {
  * @param {String|Number} block - A block hash or block height number
  * @param {Function} callback
  */
-Bitcoin.prototype.getBlock = function(blockArg, callback) {
+Merit.prototype.getBlock = function(blockArg, callback) {
   // TODO apply performance patch to the RPC method for raw data
   var self = this;
 
@@ -1791,7 +1791,7 @@ Bitcoin.prototype.getBlock = function(blockArg, callback) {
  * @param {Number} low - The older timestamp in seconds
  * @param {Function} callback
  */
-Bitcoin.prototype.getBlockHashesByTimestamp = function(high, low, options, callback) {
+Merit.prototype.getBlockHashesByTimestamp = function(high, low, options, callback) {
   var self = this;
   if (_.isFunction(options)) {
     callback = options;
@@ -1825,7 +1825,7 @@ Bitcoin.prototype.getBlockHashesByTimestamp = function(high, low, options, callb
  * @param {String|Number} block - A block hash or block height
  * @param {Function} callback
  */
-Bitcoin.prototype.getBlockHeader = function(blockArg, callback) {
+Merit.prototype.getBlockHeader = function(blockArg, callback) {
   var self = this;
 
   function queryHeader(err, blockhash) {
@@ -1866,7 +1866,7 @@ Bitcoin.prototype.getBlockHeader = function(blockArg, callback) {
  * @param {Number} blocks - The number of blocks for the transaction to be confirmed.
  * @param {Function} callback
  */
-Bitcoin.prototype.estimateFee = function(blocks, callback) {
+Merit.prototype.estimateFee = function(blocks, callback) {
   var self = this;
   this.client.estimateFee(blocks, function(err, response) {
     if (err) {
@@ -1883,7 +1883,7 @@ Bitcoin.prototype.estimateFee = function(blocks, callback) {
  * @param {Boolean=} options.allowAbsurdFees - Enable large fees
  * @param {Function} callback
  */
-Bitcoin.prototype.sendTransaction = function(tx, options, callback) {
+Merit.prototype.sendTransaction = function(tx, options, callback) {
   var self = this;
   var allowAbsurdFees = false;
   if (_.isFunction(options) && _.isUndefined(callback)) {
@@ -1906,7 +1906,7 @@ Bitcoin.prototype.sendTransaction = function(tx, options, callback) {
  * @param {String} txid - The transaction hash
  * @param {Function} callback
  */
-Bitcoin.prototype.getRawTransaction = function(txid, callback) {
+Merit.prototype.getRawTransaction = function(txid, callback) {
   var self = this;
   var tx = self.rawTransactionCache.get(txid);
   if (tx) {
@@ -1933,7 +1933,7 @@ Bitcoin.prototype.getRawTransaction = function(txid, callback) {
  * @param {Boolean} queryMempool - Include the mempool
  * @param {Function} callback
  */
-Bitcoin.prototype.getTransaction = function(txid, callback) {
+Merit.prototype.getTransaction = function(txid, callback) {
   var self = this;
   var tx = self.transactionCache.get(txid);
   if (tx) {
@@ -1997,7 +1997,7 @@ Bitcoin.prototype.getTransaction = function(txid, callback) {
  * @param {String} txid - The hex string of the transaction
  * @param {Function} callback
  */
-Bitcoin.prototype.getDetailedTransaction = function(txid, callback) {
+Merit.prototype.getDetailedTransaction = function(txid, callback) {
   var self = this;
   var tx = self.transactionDetailedCache.get(txid);
 
@@ -2097,7 +2097,7 @@ Bitcoin.prototype.getDetailedTransaction = function(txid, callback) {
  * Will get the best block hash for the chain.
  * @param {Function} callback
  */
-Bitcoin.prototype.getBestBlockHash = function(callback) {
+Merit.prototype.getBestBlockHash = function(callback) {
   var self = this;
   this.client.getBestBlockHash(function(err, response) {
     if (err) {
@@ -2111,7 +2111,7 @@ Bitcoin.prototype.getBestBlockHash = function(callback) {
  * Will give the txid and inputIndex that spent an output
  * @param {Function} callback
  */
-Bitcoin.prototype.getSpentInfo = function(options, callback) {
+Merit.prototype.getSpentInfo = function(options, callback) {
   var self = this;
   this.client.getSpentInfo(options, function(err, response) {
     if (err && err.code === -5) {
@@ -2139,7 +2139,7 @@ Bitcoin.prototype.getSpentInfo = function(options, callback) {
  * }
  * @param {Function} callback
  */
-Bitcoin.prototype.getInfo = function(callback) {
+Merit.prototype.getInfo = function(callback) {
   var self = this;
   this.client.getInfo(function(err, response) {
     if (err) {
@@ -2163,7 +2163,7 @@ Bitcoin.prototype.getInfo = function(callback) {
   });
 };
 
-Bitcoin.prototype.generateBlock = function(num, callback) {
+Merit.prototype.generateBlock = function(num, callback) {
   var self = this;
   this.client.generate(num, function(err, response) {
     if (err) {
@@ -2177,7 +2177,7 @@ Bitcoin.prototype.generateBlock = function(num, callback) {
  * Generate new ReferralCode to be shared
  * @param {Function} callback
  */
-Bitcoin.prototype.generateReferralCode = function(callback) {
+Merit.prototype.generateReferralCode = function(callback) {
   log.info('generateReferralCode Called: ');
   var self = this;
 
@@ -2196,7 +2196,7 @@ Bitcoin.prototype.generateReferralCode = function(callback) {
  * @param {String} referralCode
  * @param {Function} callback
  */
-Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
+Merit.prototype.validateReferralCode = function(referralCode, callback) {
   log.info('validateReferralCode Called: ', referralCode);
   var self = this;
 
@@ -2223,7 +2223,7 @@ Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
  * @param {String} code, The code needed to unlock the wallet
  * @param {Function} callback
  */
-Bitcoin.prototype.unlockWallet = function(code, address, callback) {
+Merit.prototype.unlockWallet = function(code, address, callback) {
   log.info('unlockWallet Called: ', code);
   log.info('unlockWallet Called: ', address);
   var self = this;
@@ -2245,7 +2245,7 @@ Bitcoin.prototype.unlockWallet = function(code, address, callback) {
   }
 };
 
-Bitcoin.prototype.validateAddress = function(address, callback) {
+Merit.prototype.validateAddress = function(address, callback) {
   log.info('validateAddress called: ', address);
 
   const self = this;
@@ -2271,14 +2271,14 @@ Bitcoin.prototype.validateAddress = function(address, callback) {
  * Called by Node to stop the service.
  * @param {Function} callback
  */
-Bitcoin.prototype.stop = function(callback) {
+Merit.prototype.stop = function(callback) {
   if (this.spawn && this.spawn.process) {
     var exited = false;
     this.spawn.process.once('exit', function(code) {
       if (!exited) {
         exited = true;
         if (code !== 0) {
-          var error = new Error('bitcoind spawned process exited with status code: ' + code);
+          var error = new Error('meritd spawned process exited with status code: ' + code);
           error.code = code;
           return callback(error);
         } else {
@@ -2290,7 +2290,7 @@ Bitcoin.prototype.stop = function(callback) {
     setTimeout(function() {
       if (!exited) {
         exited = true;
-        return callback(new Error('bitcoind process did not exit'));
+        return callback(new Error('meritd process did not exit'));
       }
     }, this.shutdownTimeout).unref();
   } else {
@@ -2298,4 +2298,4 @@ Bitcoin.prototype.stop = function(callback) {
   }
 };
 
-module.exports = Bitcoin;
+module.exports = Merit;

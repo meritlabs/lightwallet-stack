@@ -118,7 +118,7 @@ describe('#start', function() {
         return internal;
       };
       var config = {
-        services: ['bitcoind']
+        services: ['meritd']
       };
       (function() {
         setupServices(testRequire, cwd, config);
