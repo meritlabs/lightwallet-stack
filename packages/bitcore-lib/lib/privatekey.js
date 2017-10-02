@@ -51,7 +51,7 @@ function PrivateKey(data, network) {
   if (!info.bn || info.bn.cmp(new BN(0)) === 0){
     throw new TypeError('Number can not be equal to zero, undefined, null or false');
   }
-  if (!info.bn.lt(Point.getN())) {
+  if (!PrivateKey._isValidBN(info.bn)) {
     throw new TypeError('Number must be less than N');
   }
   if (typeof(info.network) === 'undefined') {
@@ -114,20 +114,49 @@ PrivateKey.prototype._classifyArguments = function(data, network) {
 };
 
 /**
+ * Validates that a BN is valid for generating a key.
+ */
+PrivatKey._isValidBN = function(bn) {
+  return bn.lt(Point.getN());
+}
+
+
+/**
  * Internal function to get a random Big Number (BN)
  *
  * @returns {BN} A new randomly generated BN
  * @private
  */
 PrivateKey._getRandomBN = function(){
-  var condition;
   var bn;
   do {
     var privbuf = Random.getRandomBuffer(32);
     bn = BN.fromBuffer(privbuf);
-    condition = bn.lt(Point.getN());
-  } while (!condition);
+  } while (!PrivatKey._isValidBN(bn));
   return bn;
+};
+
+/**
+ * Internal function to get a random Big Number (BN)
+ * Combined with an optional password
+ *
+ * @returns {BN} A new randomly generated BN
+ * @private
+ */
+PrivateKey._getRandomBNWithPassword = function(optionalPassword){
+  var bn;
+  var secret;
+  do {
+    secret = Random.getRandomBuffer(16);
+    var mixedsecret = secret + optionalPassword;
+    var hash = Hash.sha256(Buffer.from(mixedsecret));
+    bn = BN.fromBuffer(hash);
+  } while (!PrivatKey._isValidBN(bn));
+
+  return {
+    secret: secret,
+    bn: bn
+  };
 };
 
 /**
@@ -256,6 +285,14 @@ PrivateKey.fromRandom = function(network) {
   var bn = PrivateKey._getRandomBN();
   return new PrivateKey(bn, network);
 };
+
+PrivateKey.fromRandomWithPassword(optionalPassword, network) {
+  var pair = PrivateKey._getRandomBNWithPassword(optionalPassword);
+  return { 
+    secret: pair.secret,
+    key: new PrivateKey(pair.bn, network);
+  };
+}
 
 /**
  * Check if there would be any errors when initializing a PrivateKey
