@@ -22,7 +22,7 @@ EasyReceipt.create = function (opts) {
 
   var receipt = new EasyReceipt();
   receipt.createdOn = Date.now();
-  receipt.active = true;
+  receipt.status = 'pending';
   
   return receipt;
 };
@@ -33,9 +33,10 @@ EasyReceipt.fromObj = function(obj) {
   receipt.createdOn = obj.createdOn || Date.now();
   receipt.amount = obj.amount; 
   receipt.senderName = obj.senderName;
-  receipt.inviteCode = obj.inviteCode;
+  receipt.senderPublicKey = obj.senderPublicKey;
+  receipt.blockTimeout = obj.blockTimeout;
+  receipt.unlockCode = obj.unlockCode;
   receipt.secret = obj.secret;
-  obj.sentToAddress = obj.sentToAddress;
 
   return receipt;
 };
