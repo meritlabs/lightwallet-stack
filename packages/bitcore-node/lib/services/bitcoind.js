@@ -2278,14 +2278,15 @@ Bitcoin.prototype.validateAddress = function(address, callback) {
 
    const self = this;
 
-   if (typeof easyScript == 'string' || easyScript instanceof String) {
-     self.client.getInputForEasySend(easyScript, function(err, response) {
+  if (typeof easyScript == 'string' || easyScript instanceof String) {
+    self.client.getInputForEasySend(easyScript, function(err, response) {
+      log.info("Juicy results: ", response); 
       if (err) {
         return callback(self._wrapRPCError(err));
       } else { 
         log.info('getInputForEasySend Response: ', response);
         callback(null, response);
-      }
+}
     });
    } else { 
      var err = new errors.RPCError('EasyScript was missing or incorrect');
