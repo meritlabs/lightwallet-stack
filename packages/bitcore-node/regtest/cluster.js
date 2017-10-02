@@ -24,7 +24,7 @@ describe('Merit Cluster', function() {
     {
       datadir: path.resolve(__dirname, './data/node1'),
       conf: path.resolve(__dirname, './data/node1/merit.conf'),
-      rpcuser: 'bitcoin',
+      rpcuser: 'merit',
       rpcpassword: 'local321',
       rpcport: 30521,
       zmqpubrawtx: 'tcp://127.0.0.1:30611',
@@ -33,7 +33,7 @@ describe('Merit Cluster', function() {
     {
       datadir: path.resolve(__dirname, './data/node2'),
       conf: path.resolve(__dirname, './data/node2/merit.conf'),
-      rpcuser: 'bitcoin',
+      rpcuser: 'merit',
       rpcpassword: 'local321',
       rpcport: 30522,
       zmqpubrawtx: 'tcp://127.0.0.1:30622',
@@ -42,7 +42,7 @@ describe('Merit Cluster', function() {
     {
       datadir: path.resolve(__dirname, './data/node3'),
       conf: path.resolve(__dirname, './data/node3/merit.conf'),
-      rpcuser: 'bitcoin',
+      rpcuser: 'merit',
       rpcpassword: 'local321',
       rpcport: 30523,
       zmqpubrawtx: 'tcp://127.0.0.1:30633',
@@ -109,21 +109,21 @@ describe('Merit Cluster', function() {
               {
                 rpchost: '127.0.0.1',
                 rpcport: 30521,
-                rpcuser: 'bitcoin',
+                rpcuser: 'merit',
                 rpcpassword: 'local321',
                 zmqpubrawtx: 'tcp://127.0.0.1:30611'
               },
               {
                 rpchost: '127.0.0.1',
                 rpcport: 30522,
-                rpcuser: 'bitcoin',
+                rpcuser: 'merit',
                 rpcpassword: 'local321',
                 zmqpubrawtx: 'tcp://127.0.0.1:30622'
               },
               {
                 rpchost: '127.0.0.1',
                 rpcport: 30523,
-                rpcuser: 'bitcoin',
+                rpcuser: 'merit',
                 rpcpassword: 'local321',
                 zmqpubrawtx: 'tcp://127.0.0.1:30633'
               }

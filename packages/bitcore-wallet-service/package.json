@@ -1,11 +1,11 @@
 {
   "name": "bitcore-wallet-service",
-  "description": "A service for Mutisig HD Bitcoin Wallets",
+  "description": "A service for Mutisig HD Merit Wallets",
   "author": "BitPay Inc",
   "version": "1.18.0",
   "licence": "MIT",
   "keywords": [
-    "bitcoin",
+    "merit",
     "copay",
     "multisig",
     "wallet",

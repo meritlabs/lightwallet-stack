@@ -94,7 +94,7 @@ angular.module('copayApp.services').factory('incomingData', function($log, $stat
             if ($state.includes('tabs.scan')) {
               root.showMenu({
                 data: data,
-                type: 'bitcoinAddress'
+                type: 'meritAddress'
               });
             } else {
               goToAmountPage(data);
