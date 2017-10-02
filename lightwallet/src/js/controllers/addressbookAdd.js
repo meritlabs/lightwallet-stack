@@ -7,7 +7,8 @@ angular.module('copayApp.controllers').controller('addressbookAddController', fu
   $scope.addressbookEntry = {
     'address': $stateParams.addressbookEntry || '',
     'name': '',
-    'email': ''
+    'email': '',
+    'phoneNumber': ''
   };
 
   $scope.onQrCodeScannedAddressBook = function(data, addressbookForm) {

@@ -17,6 +17,19 @@
       </div>
     </div>
     <div class="list">
+      <a class="item item-icon-left item-icon-right" ng-repeat="item in list" ng-if="!item.isWallet && item.recipientType != 'wallet'" ng-click="goToAmount(item)">
+        <i class="icon big-icon-svg">
+          <img src="img/contact-placeholder.svg" class="bg" ng-if="isChromeApp">
+          <gravatar class="send-gravatar" name="{{item.name}}" width="30" email="{{item.email}}" ng-if="!isChromeApp"></gravatar>
+        </i>
+        {{item.name}}
+        <i class="icon bp-arrow-right"></i>
+      </a>
+      <div class="show-more" ng-if="contactsShowMore" ng-click="showMore()" translate>
+        Show more
+      </div>
+    </div>
+    <div class="list">
       <div ng-if="!checkingBalance && (!hasFunds || !hasWallets)">
         <div class="card sendTip">
           <div class="item item-icon-right item-heading"></div>

@@ -85,35 +85,37 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     }
   }
 
-  var updateContactsList = function(cb) {
+  var addressBookToContactList = function(ab) {
+    return lodash.map(ab, function(v, k) {
+      return {
+        name: lodash.isObject(v) ? v.name : v,
+        address: k,
+        email: lodash.isObject(v) ? v.email : null,
+        phoneNumber: lodash.isObject(v) ? v.phoneNumber : null,
+        recipientType: 'contact',
+        getAddress: function(cb) {
+          return cb(null, k);
+        },
+      };
+    });
+  };
+
+  var initContactsList = function(cb) {
     addressbookService.list(function(err, ab) {
       if (err) $log.error(err);
 
       $scope.hasContacts = lodash.isEmpty(ab) ? false : true;
       if (!$scope.hasContacts) return cb();
 
-      var completeContacts = [];
-      lodash.each(ab, function(v, k) {
-        completeContacts.push({
-          name: lodash.isObject(v) ? v.name : v,
-          address: k,
-          email: lodash.isObject(v) ? v.email : null,
-          phoneNumber: lodash.isObject(v) ? v.phoneNumber : null,
-          recipientType: 'contact',
-          getAddress: function(cb) {
-            return cb(null, k);
-          },
-        });
-      });
-      var contacts = completeContacts.slice(0, (currentContactsPage + 1) * CONTACTS_SHOW_LIMIT);
-      $scope.contactsShowMore = completeContacts.length > contacts.length;
-      originalList = originalList.concat(contacts);
+      var completeContacts = addressBookToContactList(ab);
+      originalList = originalList.concat(completeContacts);
+      $scope.contactsShowMore = completeContacts.length > CONTACTS_SHOW_LIMIT;
       return cb();
     });
   };
 
-  var updateList = function() {
-    $scope.list = lodash.clone(originalList);
+  var initList = function() {
+    $scope.list = [];
     $timeout(function() {
       $ionicScrollDelegate.resize();
       $scope.$apply();
@@ -154,12 +156,8 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
 
   $scope.findContact = function(search) {
 
-    if (incomingData.redir(search)) {
-      return;
-    }
-
-    if (!search || search.length < 2) {
-      $scope.list = originalList;
+    if (!search || search.length < 1) {
+      $scope.list = [];
       $timeout(function() {
         $scope.$apply();
       });
@@ -167,7 +165,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     }
 
     var result = lodash.filter(originalList, function(item) {
-      var val = item.name;
+      var val = item.name + item.email + item.phoneNumber;
       return lodash.includes(val.toLowerCase(), search.toLowerCase());
     });
 
@@ -237,8 +235,8 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     }
     updateHasFunds();
     updateWalletsList();
-    updateContactsList(function() {
-      updateList();
+    initContactsList(function() {
+      initList();
     });
   });
 });
