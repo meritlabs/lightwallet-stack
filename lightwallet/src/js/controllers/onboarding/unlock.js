@@ -15,7 +15,7 @@ angular.module('copayApp.controllers').controller('unlockController',
         } else {
           $log.debug("Loading easyReceipt into memory.", receipt);  
           $scope.easyReceipt = receipt;
-          $scope.formData.unlockCode = $scope.easyReceipt.inviteCode;
+          $scope.formData.unlockCode = $scope.easyReceipt.unlockCode;
 
         }
       });
