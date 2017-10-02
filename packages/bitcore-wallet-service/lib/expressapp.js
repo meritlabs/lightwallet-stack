@@ -17,9 +17,17 @@ var Stats = require('./stats');
 
 log.disableColor();
 log.debug = log.verbose;
-log.level = 'info';
+log.level = 'verbose';
 
-var ExpressApp = function() {
+var ExpressApp = function(node) {
+  // BWS now relies on bitcore-node in order to have direct access to meritd.
+  // If bitcore node isn't here, then you probably didn't run BWS from bitcore-node.
+
+  if (!node) {
+    throw new Error("Bitcore node not detected; shutting down...");
+  }
+  
+  this.node = node;
   this.app = express();
 };
 
@@ -156,10 +164,12 @@ ExpressApp.prototype.start = function(opts, cb) {
     opts = opts || {};
 
     var credentials = getCredentials(req);
-    if (!credentials)
+    if (!credentials) {
+      log.debug("NO CREDENTIALS SUPPLIED TO BWS");
       return returnError(new WalletService.ClientError({
         code: 'NOT_AUTHORIZED'
       }), res, req);
+    }
 
     var auth = {
       copayerId: credentials.copayerId,
@@ -785,21 +795,26 @@ ExpressApp.prototype.start = function(opts, cb) {
   * These are all namespaced to v5 to differentiate from coPay versioning
   */
 
-  router.post('/v5/easyreceive/valdate', function(req, res) {
+  router.post('/v5/easyreceive/validate', function(req, res) {
     var opts = {
       easyReceiptScript: req.params['easyReceiptScript']
     };
 
-    getServerWithAuth(req, res, function(server) {
-      server.validateEasyReceipt(opts, function(err, response) {
-        if (err) return returnError(err, res, req);
-        res.json(response);
-      });
+    var server = getServer(req, res); 
+    server.validateEasyReceipt(opts, function(err, response) {
+      if (err) {
+        log.debug("Called Validate EasyReceipt in BWS: ", err);
+        return returnError(err, res, req);
+      }
+      res.json(response);
     });
+  
   });
 
   this.app.use(opts.basePath || '/bws/api', router);
 
+  opts.node = this.node;
+  log.debug("What is the Node in express app?", this.node);
   WalletService.initialize(opts, cb);
 
 };

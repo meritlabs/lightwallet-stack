@@ -8,6 +8,7 @@ var config = require('../config');
 
 log.debug = log.verbose;
 log.disableColor();
+
 var EmailValidator = require('email-validator');
 var Stringify = require('json-stable-stringify');
 
@@ -93,7 +94,8 @@ WalletService.initialize = function(opts, cb) {
   lock = opts.lock || new Lock(opts.lockOpts);
   blockchainExplorer = opts.blockchainExplorer;
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
-  localMeritDaemon = new LocalDaemon(this.node);
+  log.debug("Setting LocalMeritDeamon up with node: ", opts.node);
+  localMeritDaemon = new LocalDaemon(opts.node);
   if (opts.request)
     request = opts.request;
 
@@ -3306,13 +3308,17 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
  */
 WalletService.prototype.validateEasyReceipt = function(opts, cb) {
   try {
-    easyScript = new Bitcore.EasyScript.fromString(opts.easyReceiptScript);
+    //easyScript = new Bitcore.Script.buildEasySendOut();
+    var easyScript = "abc123";
   } catch (ex) {
     return cb(new ClientError('Invalid easyReceive script!'));
   };
 
   //var bc = self._getBlockchainExplorer(opts.network);
-  localMeritDaemon.validateEasyReceipt(easyScript, function(errMsg, result) {
+  log.debug("About to call localMeritDaemon");
+  localMeritDaemon.getInputForEasySend(easyScript, function(errMsg, result) {
+    log.debug("Called LocalMerit Daemon with result: ", result);
+    log.debug("Called LocalMerit Daemon with errMsg: ", errMsg);
     if (errMsg) {
       return cb("Could not find easyScript on BlockChain.")
     }

@@ -1,6 +1,6 @@
 'use string';
 angular.module('copayApp.services')
-  .factory('easyReceiveService', function easyReceiveServiceFactory($rootScope, $timeout, $log, $state, lodash, storageService, bwcService, bwcError) {
+  .factory('easyReceiveService', function easyReceiveServiceFactory($rootScope, $timeout, $log, $state, lodash, storageService, bwcService, bwcError, configService) {
     
     var service = {};
     service.easyReceipt = {};
@@ -65,6 +65,10 @@ angular.module('copayApp.services')
     */
     service.validateEasyReceiptOnBlockchain = function (receipt, cb) {
       // Check if the easyScript is on the blockchain.
+
+      // Get the bwsUrl from the configService.  
+      var opts = {};
+      opts.bwsurl = configService.getDefaults().bws.url;
       var walletClient = bwcService.getClient(null, opts);
       receipt.onBlockChain = false;
 

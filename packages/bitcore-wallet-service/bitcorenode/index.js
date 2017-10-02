@@ -108,7 +108,7 @@ Service.prototype._getConfiguration = function() {
  */
 Service.prototype._startWalletService = function(config, next) {
   var self = this;
-  var expressApp = new ExpressApp();
+  var expressApp = new ExpressApp(this.node);
 
   if (self.https) {
     var serverOpts = self._readHttpsOptions();

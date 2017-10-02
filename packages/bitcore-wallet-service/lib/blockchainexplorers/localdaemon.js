@@ -18,10 +18,10 @@ function LocalDaemon(node) {
   this.node = node;
 };
 
-LocalDaemon.prototype.validateEasyReceipt = function(easyScript, cb) {
+LocalDaemon.prototype.getInputForEasySend = function(easyScript, cb) {
   var self = this;
   
-  this.node.validateEasyReceipt(easyScript, function(err, easyReceipt) {
+  this.node.getInputForEasySend(easyScript, function(err, easyReceipt) {
     if (err) {
       return new Error("Could not validate easyReceipt: " + err);
     }
