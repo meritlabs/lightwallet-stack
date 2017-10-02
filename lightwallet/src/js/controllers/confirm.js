@@ -135,6 +135,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       recipientType: data.stateParams.recipientType || null,
       toName: data.stateParams.toName,
       toEmail: data.stateParams.toEmail,
+      toPhoneNumber: data.stateParams.toPhoneNumber,
       toColor: data.stateParams.toColor,
       network: (new bitcore.Address(data.stateParams.toAddress)).network.name,
       txp: {},

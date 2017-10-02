@@ -4,6 +4,18 @@
   </ion-nav-bar>
   <ion-content>
 
+    <div ng-if="hasFunds">
+      <div class="send-header-wrapper">
+        <div class="item item-heading send-heading"><span translate>Recipient</span></div>
+        <div class="item input search-wrapper" ng-class="{'focus': searchFocus}">
+          <i class="icon icon-svg abs-v-center"><img class="svg" src="img/icon-bitcoin-symbol.svg"></i>
+          <div class="item-icon-right">
+            <input type="text" class="search-input" placeholder="{{'Search' | translate}}" ng-model="formData.search" ng-change="findContact(formData.search)" ng-model-onblur ng-focus="searchInFocus()" ng-blur="searchBlurred()">
+            <i class="icon icon-svg qr abs-v-center separator-left" on-tap="openScanner()"><img src="img/scan-ico.svg"></i>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="list">
       <div ng-if="!checkingBalance && (!hasFunds || !hasWallets)">
         <div class="card sendTip">
@@ -39,42 +51,6 @@
             Start sending merit
           </div>
         </div>
-      </div>
-
-      <div class="card" ng-if="hasContacts && hasWallets">
-        <a class="item item-icon-left item-icon-right" ng-click="openScanner()">
-        <i class="icon big-icon-svg">
-          <img src="img/icon-address-book.svg" class="bg">
-        </i>
-        <span translate>Contacts</span>
-      </a>
-      </div>
-
-      <div class="card" ng-if="hasWallets">
-        <a class="item item-icon-left item-icon-right" ng-click="openScanner()">
-        <i class="icon big-icon-svg">
-          <img src="img/scan-ico.svg" class="bg">
-        </i>
-        <span translate>Scan QR Code</span>
-      </a>
-      </div>
-
-      <div class="card" ng-if="hasWallets">
-        <a class="item item-icon-left item-icon-right" ng-click="goToEmail()">
-        <i class="icon big-icon-svg">
-          <img src="img/icon-email.svg" class="bg">
-        </i>
-        <span translate>Email</span>
-      </a>
-      </div>
-
-      <div class="card" ng-if="hasWallets">
-        <a class="item item-icon-left item-icon-right" ng-click="goToSMS()">
-        <i class="icon big-icon-svg">
-          <img src="img/icon-language.svg" class="bg">
-        </i>
-        <span translate>SMS</span>
-      </a>
       </div>
 
       <div class="card" ng-if="showTransferCard && hasFunds">

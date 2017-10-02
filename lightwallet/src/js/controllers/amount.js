@@ -28,6 +28,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
     $scope.toAddress = data.stateParams.toAddress;
     $scope.toName = data.stateParams.toName;
     $scope.toEmail = data.stateParams.toEmail;
+    $scope.toPhoneNumber = data.stateParams.toPhoneNumber;
     $scope.easyMethod = data.stateParams.easyMethod;
     $scope.showAlternativeAmount = !!$scope.nextStep;
     $scope.toColor = data.stateParams.toColor;
@@ -259,6 +260,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
         toAddress: $scope.toAddress,
         toName: $scope.toName,
         toEmail: $scope.toEmail,
+        toPhoneNumber: $scope.toPhoneNumber,
         toColor: $scope.toColor,
         useSendMax: $scope.useSendMax
       });
