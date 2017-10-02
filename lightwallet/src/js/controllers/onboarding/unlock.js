@@ -9,7 +9,7 @@ angular.module('copayApp.controllers').controller('unlockController',
     });
 
     $scope.loadEasyReceipt = function() {
-      easyReceiveService.getEasyReceipt(function(err, receipt) {
+      easyReceiveService.getPendingEasyReceipt(function(err, receipt) {
         if (err || lodash.isEmpty(receipt)) {
           $log.debug("Unable to load easyReceipt.", err);
         } else {

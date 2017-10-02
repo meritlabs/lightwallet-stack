@@ -68,8 +68,17 @@ angular.module('copayApp.services')
       var walletClient = bwcService.getClient(null, opts);
       receipt.onBlockChain = false;
 
-      
+      var easyReceiptScript = service._generateEasyScript(receipt);
+      walletClient.validateEasyReceipt(easyReceiptScript, function(err, easyScript){
+        if (err) {
+          $log.debug("Could not validate easyScript on the blockchain.");
+        }
 
+        //Easy Receipt is on the blockchain; let's pass it back.
+        if (err == null && easyScript) {
+          cb(true, easyScript);
+        }
+      });
     }
 
     service.acceptEasyReceipt = function(easyScript, cb) {
@@ -82,7 +91,7 @@ angular.module('copayApp.services')
 
 
 
-    service._generateEasyScript = function () {
+    service._generateEasyScript = function (receipt) {
       // Generate the easyScript per the EasySend standard as outlined <TODO: here>
       return "abc123";
     }

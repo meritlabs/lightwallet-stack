@@ -23,7 +23,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
 
     var easyReceiveAcceptanceHandler = function(receipt) {
       // Accept the EasyReceipt into this wallet.
-      easyReceiveService.validateEasyScriptOnBlockchain(receipt, function(isValid, easyScript) {
+      easyReceiveService.validateEasyReceiptOnBlockchain(receipt, function(isValid, easyScript) {
         if (isValid) {
           // Accept the easySend into this wallet.
           easyReceiveService.acceptEasyReceipt(easyScript, function(err, acceptanceTx){
