@@ -43,7 +43,7 @@
   ],
   "dependencies": {
     "async": "^1.3.0",
-    "bitcoind-rpc": "^0.7.0",
+    "meritd-rpc": "^0.7.0",
     "bitcore-lib": "^0.14.0",
     "body-parser": "^1.13.3",
     "colors": "^1.1.2",

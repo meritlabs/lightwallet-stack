@@ -1,12 +1,20 @@
 {
-  "name": "bitcoind-rpc",
-  "description": "Bitcoin Client Library to connect to Bitcoin Core via RPC",
+  "name": "meritd-rpc",
+  "description": "Merit Client Library to connect to Merit Core via RPC",
   "version": "0.7.0",
   "author": {
-    "name": "Stephen Pair",
-    "email": "stephen@bitpay.com"
+    "name": "MeritLabs Team",
+    "email": "support@merit.me"
   },
   "contributors": [
+    {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    },
+    {
+      "name": "Stephen Pair",
+      "email": "stephen@bitpay.com"
+    },
     {
       "name": "Jeff Garzik",
       "email": "jgarzik@bitpay.com"
@@ -25,12 +33,13 @@
     }
   ],
   "keywords": [
-    "bitcoin",
+    "merit",
+    "meritd",
     "rpc"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bitpay/bitcoind-rpc"
+    "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "license": "MIT",
   "main": "lib/index.js",
@@ -47,7 +56,7 @@
     "sinon": "^1.12.2"
   },
   "bugs": {
-    "url": "https://github.com/bitpay/bitcoind-rpc/issues"
+    "url": "https://github.com/meritlabs/lightwallet-stack/issues"
   },
-  "homepage": "https://github.com/bitpay/bitcoind-rpc"
+  "homepage": "https://github.com/meritlabs/lightwallet-stack"
 }
