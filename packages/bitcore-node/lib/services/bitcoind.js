@@ -2217,7 +2217,7 @@ Bitcoin.prototype.validateReferralCode = function(referralCode, callback) {
   }
 };
 
-/*
+/**
  * Updates the wallet with referral code and beacons first key with associated referral
  * Returns an object containing various wallet state info.
  * @param {String} code, The code needed to unlock the wallet
@@ -2266,6 +2266,32 @@ Bitcoin.prototype.validateAddress = function(address, callback) {
     return callback(self._wrapRPCError(err));
   }
 };
+
+/**
+ * Checks if an easyScript is on the blockChain.
+ * @param {String} easyScript - The full easyScript value.  
+ */
+
+ Bitcoin.prototype.validateEasyScript = function(easyScript, callback) {
+   log.info('ValidateEasyScript RPC called: ', easyScript);
+
+   const self = this;
+
+   if (typeof easyScript == 'string' || easyScript instanceof String) {
+     self.client.validateEasyScript(easyScript, function(err, response) {
+      if (err) {
+        return callback(self._wrapRPCError(err));
+      } else { 
+        log.info('ValidateEasyScript Response: ', response);
+        callback(null, response);
+      }
+    });
+   } else { 
+     var err = new errors.RPCError('EasyScript was missing or incorrect');
+     err.code = -8;
+     return callback(self._wrapRPCError(err));
+   }
+ };
 
 /**
  * Called by Node to stop the service.
