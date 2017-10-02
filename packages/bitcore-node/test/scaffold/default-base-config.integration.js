@@ -12,10 +12,10 @@ describe('#defaultBaseConfig', function() {
     info.path.should.equal(cwd);
     info.config.network.should.equal('livenet');
     info.config.port.should.equal(3001);
-    info.config.services.should.deep.equal(['bitcoind', 'web']);
-    var bitcoind = info.config.servicesConfig.bitcoind;
-    bitcoind.spawn.datadir.should.equal(home + '/.bitcoin');
-    bitcoind.spawn.exec.should.equal(path.resolve(__dirname, '../../bin/bitcoind'));
+    info.config.services.should.deep.equal(['meritd', 'web']);
+    var meritd = info.config.servicesConfig.meritd;
+    meritd.spawn.datadir.should.equal(home + '/.meritd');
+    meritd.spawn.exec.should.equal(path.resolve(__dirname, '../../bin/meritd'));
   });
   it('be able to specify a network', function() {
     var info = defaultBaseConfig({network: 'testnet'});
@@ -23,6 +23,6 @@ describe('#defaultBaseConfig', function() {
   });
   it('be able to specify a datadir', function() {
     var info = defaultBaseConfig({datadir: './data2', network: 'testnet'});
-    info.config.servicesConfig.bitcoind.spawn.datadir.should.equal('./data2');
+    info.config.servicesConfig.meritd.spawn.datadir.should.equal('./data2');
   });
 });
