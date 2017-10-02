@@ -15,11 +15,11 @@ var node;
 
 var should = chai.should();
 
-var BitcoinRPC = require('bitcoind-rpc');
+var MeritRPC = require('bitcoind-rpc');
 var index = require('..');
 var Transaction = bitcore.Transaction;
 var BitcoreNode = index.Node;
-var BitcoinService = index.services.Bitcoin;
+var MeritService = index.services.Merit;
 var testWIF = 'cSdkPxkAjA4HDr5VHgsebAPDEh9Gyub4HK8UJr2DFGGqKKy4K5sG';
 var testKey;
 var client;
@@ -49,7 +49,7 @@ describe('Node Functionality', function() {
         services: [
           {
             name: 'meritd',
-            module: BitcoinService,
+            module: MeritService,
             config: {
               spawn: {
                 datadir: datadir,
@@ -74,7 +74,7 @@ describe('Node Functionality', function() {
           return done(err);
         }
 
-        client = new BitcoinRPC({
+        client = new MeritRPC({
           protocol: 'http',
           host: '127.0.0.1',
           port: 30331,
