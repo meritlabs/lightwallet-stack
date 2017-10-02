@@ -26,6 +26,7 @@ var Storage = require('./storage');
 var MessageBroker = require('./messagebroker');
 var BlockchainExplorer = require('./blockchainexplorer');
 var FiatRateService = require('./fiatrateservice');
+var LocalDaemon = require('./blockchainexplorers/localdaemon');
 
 var request = require('request');
 
@@ -41,6 +42,7 @@ var blockchainExplorerOpts;
 var messageBroker;
 var fiatRateService;
 var serviceVersion;
+var localMeritDaemon;
 
 /**
  * Creates an instance of the Bitcore Wallet Service.
@@ -57,6 +59,7 @@ function WalletService() {
   this.messageBroker = messageBroker;
   this.fiatRateService = fiatRateService;
   this.notifyTicker = 0;
+  this.localMeritDaemon = localMeritDaemon;
 };
 
 function checkRequired(obj, args, cb) {
@@ -90,6 +93,7 @@ WalletService.initialize = function(opts, cb) {
   lock = opts.lock || new Lock(opts.lockOpts);
   blockchainExplorer = opts.blockchainExplorer;
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
+  localMeritDaemon = new LocalDaemon(this.node);
   if (opts.request)
     request = opts.request;
 
@@ -3307,8 +3311,8 @@ WalletService.prototype.validateEasyReceipt = function(opts, cb) {
     return cb(new ClientError('Invalid easyReceive script!'));
   };
 
-  var bc = self._getBlockchainExplorer(opts.network);
-  bc.validateEasyReceipt(easyScript, function(errMsg, result) {
+  //var bc = self._getBlockchainExplorer(opts.network);
+  localMeritDaemon.validateEasyReceipt(easyScript, function(errMsg, result) {
     if (errMsg) {
       return cb("Could not find easyScript on BlockChain.")
     }

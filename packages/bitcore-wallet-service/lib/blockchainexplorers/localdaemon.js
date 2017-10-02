@@ -8,11 +8,27 @@
  */
 'use strict';
 
+var bitcore = require('bitcore-lib');
+var _ = bitcore.deps._;
+var $ = bitcore.util.preconditions;
+var async = require('async');
 var _ = require('lodash');
-var $ = require('preconditions').singleton();
-var log = require('npmlog');
-log.debug = log.verbose;
-var io = require('socket.io-client');
-var requestList = require('./request-list');
 
-function Insight(opts) {}
+function LocalDaemon(node) {
+  this.node = node;
+};
+
+LocalDaemon.prototype.validateEasyReceipt = function(easyScript, cb) {
+  var self = this;
+  
+  this.node.validateEasyReceipt(easyScript, function(err, easyReceipt) {
+    if (err) {
+      return new Error("Could not validate easyReceipt: " + err);
+    }
+
+    // If there is no receipt, then the easyReceipt is valid.  Let's send it to callback.
+    return cb(err, easyReceipt);
+  });
+};
+
+module.exports = LocalDaemon;
