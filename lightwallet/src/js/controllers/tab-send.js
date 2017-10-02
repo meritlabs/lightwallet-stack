@@ -169,6 +169,20 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
       return lodash.includes(val.toLowerCase(), search.toLowerCase());
     });
 
+    console.log('About to check address book');
+    addressbookService.searchContacts($scope.search, function(contacts) {
+      $scope.list = result.concat(lodash.map(contacts), function(contact) {
+        return {
+          name: contact.displayName,
+          email: contact.emails.shift().value, // TODO: get matching email from search
+          phoneNumber: contact.phoneNumbers.shift().value, // TODO: get matching phoneNumber from search
+          address: '',
+          getAddress: function() { return ''; }
+        };
+        return;
+      });
+    });
+
     $scope.list = result;
   };
 
