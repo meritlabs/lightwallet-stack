@@ -4,7 +4,8 @@
   "services": [
     "bitcoind",
     "insight-api",
-    "web"
+    "web",
+    "bitcore-wallet-service"
   ],
   "servicesConfig": {
     "bitcoind": {
