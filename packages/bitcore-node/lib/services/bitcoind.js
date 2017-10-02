@@ -190,7 +190,8 @@ Bitcoin.prototype.getAPIMethods = function() {
     // Merit Specific RPC
     ['generatereferralcode',  this, this.generateReferralCode, 0],
     ['unlockwallet',          this, this.unlockWallet,         2],
-    ['validatereferralcode',  this, this.validateReferralCode, 1]
+    ['validatereferralcode',  this, this.validateReferralCode, 1],
+    ['getInputForEasySend', this, this.getInputForEasySend, 1]
   ];
   return methods;
 };
@@ -2272,17 +2273,17 @@ Bitcoin.prototype.validateAddress = function(address, callback) {
  * @param {String} easyScript - The full easyScript value.  
  */
 
- Bitcoin.prototype.validateEasyScript = function(easyScript, callback) {
+ Bitcoin.prototype.getInputForEasySend = function(easyScript, callback) {
    log.info('ValidateEasyScript RPC called: ', easyScript);
 
    const self = this;
 
    if (typeof easyScript == 'string' || easyScript instanceof String) {
-     self.client.validateEasyScript(easyScript, function(err, response) {
+     self.client.getInputForEasySend(easyScript, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else { 
-        log.info('ValidateEasyScript Response: ', response);
+        log.info('getInputForEasySend Response: ', response);
         callback(null, response);
       }
     });
