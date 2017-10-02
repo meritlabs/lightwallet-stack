@@ -26,6 +26,7 @@ angular.module('copayApp.services').factory('deepLinkService', function($ionicPl
     deeplink.branchInit = function() {
         // Initialize Branch for deeplinking
         Branch.initSession(function(data) {
+            console.log("Initializing Branch SDK!");
             if(data['+clicked_branch_link']) {
                 // read the deep link data upon click
                 alert('Deep Link Data:' + JSON.stringify(data));
