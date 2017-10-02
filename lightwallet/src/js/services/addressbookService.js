@@ -34,6 +34,14 @@ angular.module('copayApp.services').factory('addressbookService', function(bitco
     });
   };
 
+  root.searchContacts = function(term, cb) {
+    var contacts = $navigator.contacts;
+    var options = {filter: term};
+    return contacts.find(["*"], cb, function(err) {
+        console.log('error');
+    }, options);
+  }
+
   root.add = function(entry, cb) {
     var network = (new bitcore.Address(entry.address)).network.name;
     storageService.getAddressbook(network, function(err, ab) {

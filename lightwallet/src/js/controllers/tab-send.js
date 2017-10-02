@@ -98,6 +98,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
           name: lodash.isObject(v) ? v.name : v,
           address: k,
           email: lodash.isObject(v) ? v.email : null,
+          phoneNumber: lodash.isObject(v) ? v.phoneNumber : null,
           recipientType: 'contact',
           getAddress: function(cb) {
             return cb(null, k);
@@ -186,6 +187,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
           toAddress: addr,
           toName: item.name,
           toEmail: item.email,
+          toPhoneNumber: item.PhoneNumber,
           toColor: item.color
         })
       });
