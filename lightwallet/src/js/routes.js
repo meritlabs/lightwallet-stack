@@ -856,8 +856,8 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           fromOnboarding: null
         },
       })
-      
-      
+
+
       /*
        *
        * Feedback
@@ -916,7 +916,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
 
       /*
        *
-       * Buy or Sell Bitcoin
+       * Buy or Sell Merit
        *
        */
 
@@ -1281,15 +1281,15 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         deepLinkService.branchInit();
       });
 
-    
+
       $ionicPlatform.on('menubutton', function() {
         window.location = '#/preferences';
       });
 
       // Currently, we have to set a timeout until the $stateProvider is ready
-      // TODO: Refactor this whole approach when updating Angular.  
+      // TODO: Refactor this whole approach when updating Angular.
       var handleInitialStateTransition = function (currentState) {
-        $timeout( () => { 
+        $timeout( () => {
           console.log(`What is the current state name: ${$state.current.name}`);
           if ($state.is('onboarding.easyReceive')) {
             $log.debug("Current state is easyReceive; not making changes...");

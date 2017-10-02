@@ -1,6 +1,6 @@
 {
-  "description": "A full Bitcoin node build with Bitcore",
-  "repository": "https://github.com/user/project",
+  "description": "A full Merit node build with Bitcore",
+  "repository": "https://github.com/meritlabs/lightwallet-stack",
   "license": "MIT",
   "readme": "README.md",
   "dependencies": {

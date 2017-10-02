@@ -35,7 +35,7 @@ bwcModule.provider("bwcService", function() {
       //note opts use `bwsurl` all lowercase;
       //setting a backup-backup bwsUrl because this module won't have access to the configService
       var bwc = new Client({
-        baseUrl: opts.bwsurl || 'https://mws.merit.me/mws/api',
+        baseUrl: opts.bwsurl || 'http://192.168.80.141:3232/bws/api',
         verbose: opts.verbose,
         timeout: 100000,
         transports: ['polling'],
