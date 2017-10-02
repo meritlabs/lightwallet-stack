@@ -15,7 +15,7 @@ var node;
 
 var should = chai.should();
 
-var MeritRPC = require('bitcoind-rpc');
+var MeritRPC = require('meritd-rpc');
 var index = require('..');
 var Transaction = bitcore.Transaction;
 var BitcoreNode = index.Node;
