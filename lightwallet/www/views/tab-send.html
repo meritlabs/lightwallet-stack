@@ -32,7 +32,7 @@
           <span ng-show="hasWallets" translate>To get started, buy merit or share your address. You can receive merit from any wallet or service.</span>
           <span ng-show="!hasWallets" translate>To get started, you'll need to create a merit wallet and get some merit.</span>
           <div class="padding">
-            <button class="button button-standard button-primary" ng-click="buyBitcoin()" ng-show="hasWallets" translate>Buy Merit</button>
+            <button class="button button-standard button-primary" ng-click="buyMerit()" ng-show="hasWallets" translate>Buy Merit</button>
             <button class="button button-standard button-primary" ng-click="createWallet()" ng-show="!hasWallets" translate>Create merit wallet</button>
             <button class="button button-standard button-secondary" ui-sref="tabs.receive" ng-show="hasWallets" translate>Show merit address</button>
           </div>

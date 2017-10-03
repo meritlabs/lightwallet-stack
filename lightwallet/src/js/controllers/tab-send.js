@@ -198,7 +198,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     });
   };
 
-  $scope.buyBitcoin = function() {
+  $scope.buyMerit = function() {
     $state.go('tabs.home').then(function() {
       $state.go('tabs.buyandsell');
     });

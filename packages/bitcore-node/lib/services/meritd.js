@@ -324,7 +324,7 @@ Merit.prototype._getDefaultConfig = function() {
   return config;
 };
 
-Merit.prototype._parseBitcoinConf = function(configPath) {
+Merit.prototype._parseMeritConf = function(configPath) {
   var options = {};
   var file = fs.readFileSync(configPath);
   var unparsed = file.toString().split('\n');
@@ -383,11 +383,11 @@ Merit.prototype._loadSpawnConfiguration = function(node) {
   }
 
   _.extend(this.spawn.config, this._getDefaultConf());
-  _.extend(this.spawn.config, this._parseBitcoinConf(configPath));
+  _.extend(this.spawn.config, this._parseMeritConf(configPath));
 
   var networkConfigPath = this._getNetworkConfigPath();
   if (networkConfigPath && fs.existsSync(networkConfigPath)) {
-    _.extend(this.spawn.config, this._parseBitcoinConf(networkConfigPath));
+    _.extend(this.spawn.config, this._parseMeritConf(networkConfigPath));
   }
 
   var spawnConfig = this.spawn.config;
@@ -702,7 +702,7 @@ Merit.prototype._zmqRawReferralsHandler = function(node, message) {
     log.info('rawreferraltx subscribers: ', this.subscriptions.rawreferraltx.length);
     for (let i = 0; i < this.subscriptions.rawreferraltx.length; i++) {
       log.warn('rawreferraltx sending message:', message.toString('hex'));
-      this.subscriptions.rawreferraltx[i].emit('bitcoind/rawreferraltx', message.toString('hex'));
+      this.subscriptions.rawreferraltx[i].emit('meritd/rawreferraltx', message.toString('hex'));
     }
   }
 };
@@ -719,7 +719,7 @@ Merit.prototype._zmqHashReferralsHandler = function(node, message) {
     log.info('hashreferraltx subscribers: ', this.subscriptions.hashreferraltx.length);
     for (let i = 0; i < this.subscriptions.hashreferraltx.length; i++) {
       log.warn('hashreferraltx sending message:', message.toString('hex'));
-      this.subscriptions.hashreferraltx[i].emit('bitcoind/hashreferraltx', message.toString('hex'));
+      this.subscriptions.hashreferraltx[i].emit('meritd/hashreferraltx', message.toString('hex'));
     }
   }
 };
@@ -884,7 +884,7 @@ Merit.prototype._loadTipFromNode = function(node, callback) {
 Merit.prototype._stopSpawnedMerit = function(callback) {
   var self = this;
   var spawnOptions = this.options.spawn;
-  var pidPath = spawnOptions.datadir + '/bitcoind.pid';
+  var pidPath = spawnOptions.datadir + '/meritd.pid';
 
   function stopProcess() {
     fs.readFile(pidPath, 'utf8', function(err, pid) {
@@ -900,11 +900,11 @@ Merit.prototype._stopSpawnedMerit = function(callback) {
         return callback(null);
       }
       try {
-        log.warn('Stopping existing spawned bitcoin process with pid: ' + pid);
+        log.warn('Stopping existing spawned merit process with pid: ' + pid);
         self._process.kill(pid, 'SIGINT');
       } catch(err) {
         if (err && err.code === 'ESRCH') {
-          log.warn('Unclean bitcoin process shutdown, process not found with pid: ' + pid);
+          log.warn('Unclean merit process shutdown, process not found with pid: ' + pid);
           return callback(null);
         } else if(err) {
           return callback(err);
@@ -1037,7 +1037,7 @@ Merit.prototype._connectProcess = function(config, callback) {
       return callback(err);
     }
     if (exitShutdown) {
-      return callback(new Error('Stopping while trying to connect to bitcoind.'));
+      return callback(new Error('Stopping while trying to connect to meritd.'));
     }
 
     self._initZmqSubSocket(node, config.zmqpubrawtx);

@@ -155,7 +155,7 @@ function loadModule(req, service) {
  *   {
  *     name: 'meritd',
  *     config: {},
- *     module: BitcoinService
+ *     module: MeritService
  *   }
  * ]
  * @param {Function} req - The require function to use
