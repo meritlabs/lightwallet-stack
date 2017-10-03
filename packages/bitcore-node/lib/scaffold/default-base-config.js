@@ -7,7 +7,7 @@ var path = require('path');
  * or default locations.
  * @param {Object} options
  * @param {String} options.network - "testnet" or "livenet"
- * @param {String} options.datadir - Absolute path to bitcoin database directory
+ * @param {String} options.datadir - Absolute path to merit database directory
  */
 function getDefaultBaseConfig(options) {
   if (!options) {
@@ -18,12 +18,12 @@ function getDefaultBaseConfig(options) {
     config: {
       network: options.network || 'livenet',
       port: 3001,
-      services: ['bitcoind', 'web'],
+      services: ['meritd', 'web'],
       servicesConfig: {
-        bitcoind: {
+        meritd: {
           spawn: {
-            datadir: options.datadir || path.resolve(process.env.HOME, '.bitcoin'),
-            exec: path.resolve(__dirname, '../../bin/bitcoind')
+            datadir: options.datadir || path.resolve(process.env.HOME, '.merit'),
+            exec: path.resolve(__dirname, '../../bin/meritd')
           }
         }
       }

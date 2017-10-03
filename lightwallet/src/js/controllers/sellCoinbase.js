@@ -80,7 +80,7 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
               ctx['sell_price_currency'] = sellPrice ? sellPrice.currency : 'USD';
               ctx['description'] = appConfigService.nameCase + ' Wallet: ' + $scope.wallet.name;
               coinbaseService.savePendingTransaction(ctx, null, function(err) {
-                ongoingProcess.set('sellingBitcoin', false, statusChangeHandler);
+                ongoingProcess.set('sellingMerit', false, statusChangeHandler);
                 if (err) $log.debug(err);
               });
               return;
@@ -92,7 +92,7 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
             if (count < 5) {
               checkTransaction(count + 1, txp);
             } else {
-              ongoingProcess.set('sellingBitcoin', false, statusChangeHandler);
+              ongoingProcess.set('sellingMerit', false, statusChangeHandler);
               showError('No transaction found');
               return;
             }
@@ -106,7 +106,7 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
 
   var statusChangeHandler = function (processName, showName, isOn) {
     $log.debug('statusChangeHandler: ', processName, showName, isOn);
-    if ( processName == 'sellingBitcoin' && !isOn) {
+    if ( processName == 'sellingMerit' && !isOn) {
       $scope.sendStatus = 'success';
       $timeout(function() {
         $scope.$digest();
@@ -231,16 +231,16 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
     var configWallet = config.wallet;
     var walletSettings = configWallet.settings;
 
-    var message = 'Selling bitcoin for ' + amount + ' ' + currency;
+    var message = 'Selling merit for ' + amount + ' ' + currency;
     var okText = 'Confirm';
     var cancelText = 'Cancel';
     popupService.showConfirm(null, message, okText, cancelText, function(ok) {
       if (!ok) return;
 
-      ongoingProcess.set('sellingBitcoin', true, statusChangeHandler);
+      ongoingProcess.set('sellingMerit', true, statusChangeHandler);
       coinbaseService.init(function(err, res) {
         if (err) {
-          ongoingProcess.set('sellingBitcoin', false, statusChangeHandler);
+          ongoingProcess.set('sellingMerit', false, statusChangeHandler);
           showError(err);
           return;
         }
@@ -252,14 +252,14 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
         };
         coinbaseService.createAddress(accessToken, accountId, dataSrc, function(err, data) {
           if (err) {
-            ongoingProcess.set('sellingBitcoin', false, statusChangeHandler);
+            ongoingProcess.set('sellingMerit', false, statusChangeHandler);
             showError(err);
             return;
           }
           var outputs = [];
           var toAddress = data.data.address;
           var amountMicros = parseInt(($scope.sellRequestInfo.amount.amount * 100000000).toFixed(0));
-          var comment = 'Sell bitcoin (Coinbase)';
+          var comment = 'Sell merit (Coinbase)';
 
           outputs.push({
             'toAddress': toAddress,
@@ -279,14 +279,14 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
 
           walletService.createTx($scope.wallet, txp, function(err, ctxp) {
             if (err) {
-              ongoingProcess.set('sellingBitcoin', false, statusChangeHandler);
+              ongoingProcess.set('sellingMerit', false, statusChangeHandler);
               showError(err);
               return;
             }
             $log.debug('Transaction created.');
             publishAndSign($scope.wallet, ctxp, function() {}, function(err, txSent) {
               if (err) {
-                ongoingProcess.set('sellingBitcoin', false, statusChangeHandler);
+                ongoingProcess.set('sellingMerit', false, statusChangeHandler);
                 showError(err);
                 return;
               }

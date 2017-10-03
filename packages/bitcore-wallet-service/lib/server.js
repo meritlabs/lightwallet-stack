@@ -318,7 +318,7 @@ WalletService.prototype.logout = function(opts, cb) {
  * @param {number} opts.n - Total copayers.
  * @param {string} opts.pubKey - Public key to verify copayers joining have access to the wallet secret.
  * @param {string} opts.singleAddress[=false] - The wallet will only ever have one address.
- * @param {string} opts.network[='livenet'] - The Bitcoin network for this wallet.
+ * @param {string} opts.network[='livenet'] - The Merit network for this wallet.
  * @param {string} opts.supportBIP44AndP2PKH[=true] - Client supports BIP44 & P2PKH for new wallets.
  */
 WalletService.prototype.createWallet = function(opts, cb) {
@@ -861,7 +861,7 @@ WalletService.prototype.joinWallet = function(opts, cb) {
  * @param {Object} opts
  * @param {string} opts.email - Email address for notifications.
  * @param {string} opts.language - Language used for notifications.
- * @param {string} opts.unit - Bitcoin unit used to format amounts in notifications.
+ * @param {string} opts.unit - Merit unit used to format amounts in notifications.
  */
 WalletService.prototype.savePreferences = function(opts, cb) {
   var self = this;
@@ -1501,7 +1501,7 @@ WalletService.prototype._sampleFeeLevels = function(network, points, cb) {
 /**
  * Returns fee levels for the current state of the network.
  * @param {Object} opts
- * @param {string} [opts.network = 'livenet'] - The Bitcoin network to estimate fee levels from.
+ * @param {string} [opts.network = 'livenet'] - The Merit network to estimate fee levels from.
  * @returns {Object} feeLevels - A list of fee levels & associated amount per kB in micro.
  */
 WalletService.prototype.getFeeLevels = function(opts, cb) {
@@ -2369,7 +2369,7 @@ WalletService.prototype._broadcastRawTx = function(network, raw, cb) {
 /**
  * Broadcast a raw transaction.
  * @param {Object} opts
- * @param {string} [opts.network = 'livenet'] - The Bitcoin network for this transaction.
+ * @param {string} [opts.network = 'livenet'] - The Merit network for this transaction.
  * @param {string} opts.rawTx - Raw tx data.
  */
 WalletService.prototype.broadcastRawTx = function(opts, cb) {

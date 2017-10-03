@@ -14,8 +14,8 @@ var defaultBaseConfig = require('./default-base-config');
 var version = '^' + packageFile.version;
 
 var BASE_PACKAGE = {
-  description: 'A full Bitcoin node build with Bitcore',
-  repository: 'https://github.com/user/project',
+  description: 'A full Merit node build with Bitcore',
+  repository: 'https://github.com/meritlabs/lightwallet-stack',
   license: 'MIT',
   readme: 'README.md',
   dependencies: {
@@ -25,11 +25,11 @@ var BASE_PACKAGE = {
 };
 
 /**
- * Will create a directory and bitcoin.conf file for Bitcoin.
+ * Will create a directory and merit.conf file for Merit.
  * @param {String} dataDir - The absolute path
  * @param {Function} done - The callback function called when finished
  */
-function createBitcoinDirectory(datadir, done) {
+function createMeritDirectory(datadir, done) {
   mkdirp(datadir, function(err) {
     if (err) {
       throw err;
@@ -45,7 +45,7 @@ function createBitcoinDirectory(datadir, done) {
  * Will create a base Bitcore Node configuration directory and files.
  * @param {Object} options
  * @param {String} options.network - "testnet" or "livenet"
- * @param {String} options.datadir - The bitcoin database directory
+ * @param {String} options.datadir - The merit database directory
  * @param {String} configDir - The absolute path
  * @param {Boolean} isGlobal - If the configuration depends on globally installed node services.
  * @param {Function} done - The callback function called when finished
@@ -75,12 +75,12 @@ function createConfigDirectory(options, configDir, isGlobal, done) {
 
 /**
  * Will setup a directory with a Bitcore Node directory, configuration file,
- * bitcoin configuration, and will install all necessary dependencies.
+ * merit configuration, and will install all necessary dependencies.
  *
  * @param {Object} options
  * @param {String} options.cwd - The current working directory
  * @param {String} options.dirname - The name of the bitcore node configuration directory
- * @param {String} options.datadir - The path to the bitcoin datadir
+ * @param {String} options.datadir - The path to the merit datadir
  * @param {Function} done - A callback function called when finished
  */
 function create(options, done) {
@@ -115,9 +115,9 @@ function create(options, done) {
       }
     },
     function(next) {
-      // Setup the bitcoin directory and configuration
+      // Setup the merit directory and configuration
       if (!fs.existsSync(absDataDir)) {
-        createBitcoinDirectory(absDataDir, next);
+        createMeritDirectory(absDataDir, next);
       } else {
         next();
       }

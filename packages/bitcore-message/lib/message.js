@@ -28,7 +28,7 @@ var Message = function Message(message) {
   return this;
 };
 
-Message.MAGIC_BYTES = new Buffer('Bitcoin Signed Message:\n');
+Message.MAGIC_BYTES = new Buffer('Merit Signed Message:\n');
 
 Message.prototype.magicHash = function magicHash() {
   var prefix1 = BufferWriter.varintBufNum(Message.MAGIC_BYTES.length);
@@ -53,7 +53,7 @@ Message.prototype._sign = function _sign(privateKey) {
 };
 
 /**
- * Will sign a message with a given bitcoin private key.
+ * Will sign a message with a given merit private key.
  *
  * @param {PrivateKey} privateKey - An instance of PrivateKey
  * @returns {String} A base64 encoded compact signature
@@ -75,19 +75,19 @@ Message.prototype._verify = function _verify(publicKey, signature) {
 };
 
 /**
- * Will return a boolean of the signature is valid for a given bitcoin address.
+ * Will return a boolean of the signature is valid for a given merit address.
  * If it isn't the specific reason is accessible via the "error" member.
  *
- * @param {Address|String} bitcoinAddress - A bitcoin address
+ * @param {Address|String} meritAddress - A merit address
  * @param {String} signatureString - A base64 encoded compact signature
  * @returns {Boolean}
  */
-Message.prototype.verify = function verify(bitcoinAddress, signatureString) {
-  $.checkArgument(bitcoinAddress);
+Message.prototype.verify = function verify(meritAddress, signatureString) {
+  $.checkArgument(meritAddress);
   $.checkArgument(signatureString && _.isString(signatureString));
 
-  if (_.isString(bitcoinAddress)) {
-    bitcoinAddress = Address.fromString(bitcoinAddress);
+  if (_.isString(meritAddress)) {
+    meritAddress = Address.fromString(meritAddress);
   }
   var signature = Signature.fromCompact(new Buffer(signatureString, 'base64'));
 
@@ -97,10 +97,10 @@ Message.prototype.verify = function verify(bitcoinAddress, signatureString) {
   ecdsa.sig = signature;
   var publicKey = ecdsa.toPublicKey();
 
-  var signatureAddress = Address.fromPublicKey(publicKey, bitcoinAddress.network);
+  var signatureAddress = Address.fromPublicKey(publicKey, meritAddress.network);
 
   // check that the recovered address and specified address match
-  if (bitcoinAddress.toString() !== signatureAddress.toString()) {
+  if (meritAddress.toString() !== signatureAddress.toString()) {
     this.error = 'The signature did not match the message digest';
     return false;
   }

@@ -10,7 +10,7 @@ var Signature = require('../crypto/signature');
 var PublicKey = require('../publickey');
 
 /**
- * Bitcoin transactions contain scripts. Each input has a script called the
+ * Merit transactions contain scripts. Each input has a script called the
  * scriptSig, and each output has a script called the scriptPubkey. To validate
  * an input, the input's script is concatenated with the referenced output script,
  * and the result is executed. If at the end of execution the stack contains a
@@ -42,7 +42,7 @@ var Interpreter = function Interpreter(obj) {
  * @param {number} nin - index of the transaction input containing the scriptSig verified.
  * @param {number} flags - evaluation flags. See Interpreter.SCRIPT_* constants
  *
- * Translated from bitcoind's VerifyScript
+ * Translated from meritd's VerifyScript
  */
 Interpreter.prototype.verify = function(scriptSig, scriptPubkey, tx, nin, flags) {
   var Transaction = require('../transaction');
@@ -187,8 +187,8 @@ Interpreter.MAX_SCRIPT_ELEMENT_SIZE = 520;
 Interpreter.LOCKTIME_THRESHOLD = 500000000;
 Interpreter.LOCKTIME_THRESHOLD_BN = new BN(Interpreter.LOCKTIME_THRESHOLD);
 
-// flags taken from bitcoind
-// bitcoind commit: b5d1b1092998bc95313856d535c632ea5a8f9104
+// flags taken from meritd
+// meritd commit: b5d1b1092998bc95313856d535c632ea5a8f9104
 Interpreter.SCRIPT_VERIFY_NONE = 0;
 
 // Evaluate P2SH subscripts (softfork safe, BIP16).
@@ -246,7 +246,7 @@ Interpreter.castToBool = function(buf) {
 };
 
 /**
- * Translated from bitcoind's CheckSignatureEncoding
+ * Translated from meritd's CheckSignatureEncoding
  */
 Interpreter.prototype.checkSignatureEncoding = function(buf) {
   var sig;
@@ -270,7 +270,7 @@ Interpreter.prototype.checkSignatureEncoding = function(buf) {
 };
 
 /**
- * Translated from bitcoind's CheckPubKeyEncoding
+ * Translated from meritd's CheckPubKeyEncoding
  */
 Interpreter.prototype.checkPubkeyEncoding = function(buf) {
   if ((this.flags & Interpreter.SCRIPT_VERIFY_STRICTENC) !== 0 && !PublicKey.isValid(buf)) {
@@ -281,9 +281,9 @@ Interpreter.prototype.checkPubkeyEncoding = function(buf) {
 };
 
 /**
- * Based on bitcoind's EvalScript function, with the inner loop moved to
+ * Based on meritd's EvalScript function, with the inner loop moved to
  * Interpreter.prototype.step()
- * bitcoind commit: b5d1b1092998bc95313856d535c632ea5a8f9104
+ * meritd commit: b5d1b1092998bc95313856d535c632ea5a8f9104
  */
 Interpreter.prototype.evaluate = function() {
   if (this.script.toBuffer().length > 10000) {
@@ -322,7 +322,7 @@ Interpreter.prototype.evaluate = function() {
  * There are two times of nLockTime: lock-by-blockheight and lock-by-blocktime,
  * distinguished by whether nLockTime < LOCKTIME_THRESHOLD = 500000000
  *
- * See the corresponding code on bitcoin core:
+ * See the corresponding code on merit core:
  * https://github.com/bitcoin/bitcoin/blob/ffd75adce01a78b3461b3ff05bcc2b530a9ce994/src/script/interpreter.cpp#L1129
  *
  * @param {BN} nLockTime the locktime read from the script
@@ -365,8 +365,8 @@ Interpreter.prototype.checkLockTime = function(nLockTime) {
 }
 
 /** 
- * Based on the inner loop of bitcoind's EvalScript function
- * bitcoind commit: b5d1b1092998bc95313856d535c632ea5a8f9104
+ * Based on the inner loop of meritd's EvalScript function
+ * meritd commit: b5d1b1092998bc95313856d535c632ea5a8f9104
  */
 Interpreter.prototype.step = function() {
 
