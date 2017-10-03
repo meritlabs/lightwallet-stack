@@ -298,6 +298,15 @@ PrivateKey.fromRandom = function(network) {
   return new PrivateKey(bn, network);
 };
 
+/**
+ * Instantiate a new PrivateKey to be used for receiving an EasySend
+ * transaction.
+ *
+ * @param {string=} optionalPassword - An optional password to further secure
+ *  the transaction.
+ * @param {string=} network - Either "livenet" or "testnet"
+ * @returns {PrivateKey} A new valid instance of PrivateKey
+ */
 PrivateKey.forNewEasySend(optionalPassword, network) {
   var pair = PrivateKey._getNewBNForEasySend(optionalPassword);
   return { 
@@ -306,6 +315,17 @@ PrivateKey.forNewEasySend(optionalPassword, network) {
   };
 }
 
+/**
+ * Instantiate a PrivateKey to be used for receiving an EasySend
+ * transaction given a secret generated from forNewEasySend.
+ *
+ * @param {string=} secret - Random secret used to seed the private key generation.
+ *  Should match what was generated from forNewEasySend.
+ * @param {string=} optionalPassword - An optional password to further secure
+ *  the transaction. Should match one sent to forNewEasySend.
+ * @param {string=} network - Either "livenet" or "testnet"
+ * @returns {PrivateKey} A new valid instance of PrivateKey
+ */
 PrivateKey.forEasySend(secret, optionalPassword, network) {
   var bn = PrivateKey._getBNForEasySend(secret, optionalPassword);
   return new PrivateKey(bn, network);
