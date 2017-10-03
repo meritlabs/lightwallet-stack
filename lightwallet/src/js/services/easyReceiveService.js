@@ -36,14 +36,10 @@ angular.module('copayApp.services')
         if (receiptToStore.isValid()) {
           // We are storing the easyReceipt into localStorage, 
           storageService.storePendingEasyReceipt(receiptToStore, function(err) {
-            if (err) {
-              $log.debug("Could not save the easyReceipt:", err);
-            }
             cb(err, receiptToStore);            
           });
         } else {
-          $log.debug("EasyReceipt params are invalid; not storing.");
-          var err = new Error("EasyReceipt is not valid!");
+          var err = new Error("EasyReceipt is not valid; not storing.");
           cb(err, null);          
         }
       }
