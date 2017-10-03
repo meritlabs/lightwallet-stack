@@ -32,8 +32,11 @@ angular.module('copayApp.controllers').controller('welcomeController', function(
         $log.debug("Loading easyReceipt into memory.", receipt);  
         $scope.easyReceipt = receipt;
         
-        //We want to create a profile if the easyReceive is loaded into memory properly.
-        $scope.createProfile();
+        if ($state.is('onboarding.easyReceive')) {
+          // We want to create a profile if the easyReceive is loaded into memory properly, 
+          // And we didn't already create one on the welcome view.
+          $scope.createProfile();
+        } 
       }
     });
   };
@@ -45,7 +48,8 @@ angular.module('copayApp.controllers').controller('welcomeController', function(
     });
   };
 
-
+  // Relevant if you were deeplinked into the webapp, but your 
+  // easySend params are invalid.  
   $scope.skipEasyReceiveView = function () {
     if ($state.is('onboarding.easyReceive')){
       $log.debug("Redirecting to welcome view.");
@@ -55,7 +59,10 @@ angular.module('copayApp.controllers').controller('welcomeController', function(
 
   $scope.processEasyReceiveParams = function () {
     if (!lodash.isEmpty($stateParams)) {
-      easyReceiveService.validateAndSaveParams($stateParams);
+      easyReceiveService.validateAndSaveParams($stateParams, function(err, easyReceipt) {
+        if (err || !easyReceipt) 
+          $log.debug("Could not save the easyReceipt from WelcomeController: ", err);      
+      });
     }
   };
 
