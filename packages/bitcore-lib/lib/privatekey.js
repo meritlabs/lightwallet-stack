@@ -116,9 +116,9 @@ PrivateKey.prototype._classifyArguments = function(data, network) {
 /**
  * Validates that a BN is valid for generating a key.
  */
-PrivatKey._isValidBN = function(bn) {
+PrivateKey._isValidBN = function(bn) {
   return bn.lt(Point.getN());
-}
+};
 
 
 /**
@@ -307,13 +307,13 @@ PrivateKey.fromRandom = function(network) {
  * @param {string=} network - Either "livenet" or "testnet"
  * @returns {PrivateKey} A new valid instance of PrivateKey
  */
-PrivateKey.forNewEasySend(optionalPassword, network) {
+PrivateKey.forNewEasySend = function(optionalPassword, network) {
   var pair = PrivateKey._getNewBNForEasySend(optionalPassword);
   return { 
     secret: pair.secret,
-    key: new PrivateKey(pair.bn, network);
+    key: new PrivateKey(pair.bn, network)
   };
-}
+};
 
 /**
  * Instantiate a PrivateKey to be used for receiving an EasySend
@@ -326,10 +326,10 @@ PrivateKey.forNewEasySend(optionalPassword, network) {
  * @param {string=} network - Either "livenet" or "testnet"
  * @returns {PrivateKey} A new valid instance of PrivateKey
  */
-PrivateKey.forEasySend(secret, optionalPassword, network) {
+PrivateKey.forEasySend = function(secret, optionalPassword, network) {
   var bn = PrivateKey._getBNForEasySend(secret, optionalPassword);
   return new PrivateKey(bn, network);
-}
+};
 
 /**
  * Check if there would be any errors when initializing a PrivateKey
