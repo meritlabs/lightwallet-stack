@@ -143,7 +143,7 @@ PrivateKey._getRandomBN = function(){
  * @returns {BN} A new randomly generated BN
  * @private
  */
-PrivateKey._getRandomBNWithPassword = function(optionalPassword){
+PrivateKey._getNewBNForEasySend = function(optionalPassword){
   var bn;
   var secret;
   do {
@@ -157,6 +157,18 @@ PrivateKey._getRandomBNWithPassword = function(optionalPassword){
     secret: secret,
     bn: bn
   };
+};
+
+PrivateKey._getBNForEasySend = function(secret, optionalPassword){
+  var mixedsecret = secret + optionalPassword;
+  var hash = Hash.sha256(Buffer.from(mixedsecret));
+  var bn = BN.fromBuffer(hash);
+
+  $.checkArgument(
+    PrivateKey._isValidBN(bn),
+    'The secret and password do not create a valid private key');
+
+  return bn;
 };
 
 /**
@@ -286,12 +298,17 @@ PrivateKey.fromRandom = function(network) {
   return new PrivateKey(bn, network);
 };
 
-PrivateKey.fromRandomWithPassword(optionalPassword, network) {
-  var pair = PrivateKey._getRandomBNWithPassword(optionalPassword);
+PrivateKey.forNewEasySend(optionalPassword, network) {
+  var pair = PrivateKey._getNewBNForEasySend(optionalPassword);
   return { 
     secret: pair.secret,
     key: new PrivateKey(pair.bn, network);
   };
+}
+
+PrivateKey.forEasySend(secret, optionalPassword, network) {
+  var bn = PrivateKey._getBNForEasySend(secret, optionalPassword);
+  return new PrivateKey(bn, network);
 }
 
 /**
