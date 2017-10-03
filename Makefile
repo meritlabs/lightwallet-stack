@@ -71,7 +71,7 @@ use-lerna:
 	lerna bootstrap
 
 .PHONY: start-stack
-start-stack: symlink-bitcore-node start-bitcore-wallet-service start-bitcore-node
+start-stack: symlink-bitcore-node start-bitcore-node
 
 
 # Clean

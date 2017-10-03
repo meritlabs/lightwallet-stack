@@ -6,7 +6,7 @@ angular.module('copayApp.services')
     service.easyReceipt = {};
 
     // TODO: Support having multiple easyReceipts in local storage, so that user can accept them all.
-    service.validateAndSaveParams = function(params) {
+    service.validateAndSaveParams = function(params, cb) { 
       $log.debug("Parsing params that have been deeplinked in.");
       $log.debug(params);
       if (params.uc) {
@@ -39,9 +39,12 @@ angular.module('copayApp.services')
             if (err) {
               $log.debug("Could not save the easyReceipt:", err);
             }
+            cb(err, receiptToStore);            
           });
         } else {
           $log.debug("EasyReceipt params are invalid; not storing.");
+          var err = new Error("EasyReceipt is not valid!");
+          cb(err, null);          
         }
       }
     };
