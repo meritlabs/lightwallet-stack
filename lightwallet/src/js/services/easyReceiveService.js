@@ -32,7 +32,7 @@ angular.module('copayApp.services')
       }
 
       if (!lodash.isEmpty(service.easyReceipt)) {
-        var receiptToStore = EasyReceipt.fromObj(service.easyReceipt);
+        var receiptToStore = asyReceipt.fromObj(service.easyReceipt);
         if (receiptToStore.isValid()) {
           // We are storing the easyReceipt into localStorage, 
           storageService.storePendingEasyReceipt(receiptToStore, function(err) {
@@ -97,7 +97,16 @@ angular.module('copayApp.services')
 
     service._generateEasyScript = function (receipt) {
       // Generate the easyScript per the EasySend standard as outlined <TODO: here>
-      return "abc123";
+      var optionalPassword = ""; // TODO get from user
+      var receivePrv = PrivateKey.forEasySend(receipt.secret, optionalPassword);
+      var receivePub = PublicKey.fromPrivateKey(receivePrv);
+
+      var publicKeys = [
+        receivePub.toBuffer(),
+        parseHex(senderPublicKey, 0, receipt.senderPublicKey.length)
+      ];
+
+      return Script.buildEasySendOut(publicKeys, receipt.blockTimeout);
     }
 
     return service;
