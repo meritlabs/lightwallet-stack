@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 
-<widget id="me.merit.LightWallet"
+<widget id="me.merit.LightWalletTest"
   version="*VERSION*"
   android-versionCode="*ANDROIDVERSION*"
   ios-CFBundleVersion="*VERSION*">
@@ -78,7 +78,7 @@
       <branch-key value="key_live_edqKoEEX0yip4cpCBjbnXlpkqBmai2VN" />
       <uri-scheme value="merit" />
       <link-domain value="c213.app.link" />
-      <ios-team-release value="PW4Q8885U7" />
+      <ios-team-release value="MLJ7SU96NS" />
     </branch-config>
 
     <!--  Delete cordova-plugin-qrscanner plugin and enable phonegap-plugin-barcodescanner to build cordova windows-->
