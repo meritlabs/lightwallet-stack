@@ -1450,7 +1450,6 @@ Merit.prototype._getAddressDetailedTransaction = function(txid, options, next) {
       if (err) {
         return next(err);
       }
-
       var addressDetails = self._getAddressDetailsForTransaction(transaction, options.addressStrings);
 
       var details = {
@@ -2001,6 +2000,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
   var self = this;
   var tx = self.transactionDetailedCache.get(txid);
 
+  // ToDo: valueSat must be valueXXX after renaming in merit-cli
   function addInputsToTx(tx, result) {
     tx.inputs = [];
     tx.inputMicros = 0;
