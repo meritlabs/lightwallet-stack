@@ -132,7 +132,7 @@ PrivateKey._getRandomBN = function(){
   do {
     var privbuf = Random.getRandomBuffer(32);
     bn = BN.fromBuffer(privbuf);
-  } while (!PrivatKey._isValidBN(bn));
+  } while (!PrivateKey._isValidBN(bn));
   return bn;
 };
 
@@ -151,7 +151,7 @@ PrivateKey._getNewBNForEasySend = function(optionalPassword){
     var mixedsecret = secret + optionalPassword;
     var hash = Hash.sha256(Buffer.from(mixedsecret));
     bn = BN.fromBuffer(hash);
-  } while (!PrivatKey._isValidBN(bn));
+  } while (!PrivateKey._isValidBN(bn));
 
   return {
     secret: secret,
