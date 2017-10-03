@@ -2,7 +2,7 @@
   "name": "bitcore-payment-protocol",
   "version": "1.2.2",
   "description": "Payment Protocol (BIP70 and related) support for bitcore",
-  "author": "BitPay <dev@bitpay.com>",
+  "author": "MeritLabs inc.",
   "main": "index.js",
   "scripts": {
     "lint": "gulp lint",
@@ -39,7 +39,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bitpay/bitcore-payment-protocol.git"
+    "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "browser": "lib/browser.js",
   "dependencies": {

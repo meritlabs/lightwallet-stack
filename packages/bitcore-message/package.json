@@ -2,7 +2,7 @@
   "name": "bitcore-message",
   "version": "1.0.4",
   "description": "Merit Messages for Bitcore",
-  "author": "BitPay <dev@bitpay.com>",
+  "author": "MeritLabs Inc.",
   "main": "index.js",
   "scripts": {
     "lint": "gulp lint",
