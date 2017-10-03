@@ -59,7 +59,7 @@ BlockController.prototype.block = function(req, res, next) {
   var blockCached = self.blockCache.get(hash);
 
   if (blockCached) {
-    blockCached.confirmations = self.node.services.bitcoind.height - blockCached.height + 1;
+    blockCached.confirmations = self.node.services.meritd.height - blockCached.height + 1;
     req.block = blockCached;
     next();
   } else {
@@ -69,7 +69,7 @@ BlockController.prototype.block = function(req, res, next) {
       } else if(err) {
         return self.common.handleErrors(err, res);
       }
-      self.node.services.bitcoind.getBlockHeader(hash, function(err, info) {
+      self.node.services.meritd.getBlockHeader(hash, function(err, info) {
         if (err) {
           return self.common.handleErrors(err, res);
         }
@@ -158,7 +158,7 @@ BlockController.prototype.showRaw = function(req, res) {
 BlockController.prototype.blockIndex = function(req, res) {
   var self = this;
   var height = req.params.height;
-  this.node.services.bitcoind.getBlockHeader(parseInt(height), function(err, info) {
+  this.node.services.meritd.getBlockHeader(parseInt(height), function(err, info) {
     if (err) {
       return self.common.handleErrors(err, res);
     }
@@ -183,7 +183,7 @@ BlockController.prototype._getBlockSummary = function(hash, moreTimestamp, next)
   if (summaryCache) {
     finish(summaryCache);
   } else {
-    self.node.services.bitcoind.getRawBlock(hash, function(err, blockBuffer) {
+    self.node.services.meritd.getRawBlock(hash, function(err, blockBuffer) {
       if (err) {
         return next(err);
       }
@@ -201,7 +201,7 @@ BlockController.prototype._getBlockSummary = function(hash, moreTimestamp, next)
       var txlength = br.readVarintNum();
       info.transactions = [bitcore.Transaction().fromBufferReader(br)];
 
-      self.node.services.bitcoind.getBlockHeader(hash, function(err, blockHeader) {
+      self.node.services.meritd.getBlockHeader(hash, function(err, blockHeader) {
         if (err) {
           return next(err);
         }
@@ -216,7 +216,7 @@ BlockController.prototype._getBlockSummary = function(hash, moreTimestamp, next)
           poolInfo: self.getPoolInfo(info)
         };
 
-        var confirmations = self.node.services.bitcoind.height - height + 1;
+        var confirmations = self.node.services.meritd.height - height + 1;
         if (confirmations >= self.blockCacheConfirmations) {
           self.blockSummaryCache.set(hash, summary);
         }
@@ -259,7 +259,7 @@ BlockController.prototype.list = function(req, res) {
   var more = false;
   var moreTimestamp = lte;
 
-  self.node.services.bitcoind.getBlockHashesByTimestamp(lte, gte, function(err, hashes) {
+  self.node.services.meritd.getBlockHashesByTimestamp(lte, gte, function(err, hashes) {
     if(err) {
       return self.common.handleErrors(err, res);
     }

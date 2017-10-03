@@ -20,7 +20,7 @@ var errors = require('./errors');
  * The array of services should have the format:
  * ```js
  * {
- *   name: 'bitcoind',
+ *   name: 'meritd',
  *   config: {}, // options to pass into constructor
  *   module: ServiceConstructor
  * }

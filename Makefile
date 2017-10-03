@@ -35,7 +35,7 @@ start-mongo:
 stop-mongo:
 	kill `pgrep mongo`
 
-# Symlink the Bitcoin bitcoind
+# Symlink the Merit meritd
 # See https://github.com/meritlabs/lightwallet-stack/blob/master/bitcore-node/docs/development.md
 .PHONY: symlink-bitcore-node
 symlink-bitcore-node:

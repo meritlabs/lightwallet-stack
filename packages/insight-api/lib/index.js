@@ -63,7 +63,7 @@ var InsightAPI = function(options) {
   this.txController = new TxController(this.node);
 };
 
-InsightAPI.dependencies = ['bitcoind', 'web'];
+InsightAPI.dependencies = ['meritd', 'web'];
 
 inherits(InsightAPI, BaseService);
 
@@ -92,8 +92,8 @@ InsightAPI.prototype.getRoutePrefix = function() {
 };
 
 InsightAPI.prototype.start = function(callback) {
-  this.node.services.bitcoind.on('tx', this.transactionEventHandler.bind(this));
-  this.node.services.bitcoind.on('block', this.blockEventHandler.bind(this));
+  this.node.services.meritd.on('tx', this.transactionEventHandler.bind(this));
+  this.node.services.meritd.on('block', this.blockEventHandler.bind(this));
   setImmediate(callback);
 };
 
