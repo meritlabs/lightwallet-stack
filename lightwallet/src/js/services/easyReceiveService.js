@@ -1,6 +1,6 @@
 'use string';
 angular.module('copayApp.services')
-  .factory('easyReceiveService', function easyReceiveServiceFactory($rootScope, $timeout, $log, $state, lodash, storageService, bwcService, bwcError, configService) {
+  .factory('easyReceiveService', function easyReceiveServiceFactory($rootScope, $timeout, $log, $state, bitcore, lodash, storageService, bwcService, bwcError, configService, ledger) {
     
     var service = {};
     service.easyReceipt = {};
@@ -28,7 +28,7 @@ angular.module('copayApp.services')
       }
 
       if (params.bt) {
-        service.easyReceipt.blockTimeout = params.bt;
+        service.easyReceipt.blockTimeout = parseInt(params.bt, 10);
       }
 
       if (!lodash.isEmpty(service.easyReceipt)) {
@@ -101,16 +101,19 @@ angular.module('copayApp.services')
     service._generateEasyScript = function (receipt) {
       // Generate the easyScript per the EasySend standard as outlined <TODO: here>
       var optionalPassword = ""; // TODO get from user
-      var bitcore = bwcService.getBitcore();
       var receivePrv = bitcore.PrivateKey.forEasySend(receipt.secret, optionalPassword);
-      var receivePub = bitcore.PublicKey.fromPrivateKey(receivePrv);
+      var receivePub = bitcore.PublicKey.fromPrivateKey(receivePrv).toBuffer();
+      var senderPubKey = ledger.hexToArray(receipt.senderPublicKey);
 
       var publicKeys = [
-        receivePub.toBuffer(),
-        parseHex(senderPublicKey, 0, receipt.senderPublicKey.length)
+        receivePub,
+        senderPubKey
       ];
 
-      return Script.buildEasySendOut(publicKeys, receipt.blockTimeout);
+      var script = bitcore.Script.buildEasySendOut(publicKeys, receipt.blockTimeout);
+      console.log("SCRIPT");
+      console.log(bitcore.Address.payingTo(script, 'testnet'));
+      return script;
     }
 
     return service;

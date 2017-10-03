@@ -4,6 +4,7 @@ var Address = require('../address');
 var BufferReader = require('../encoding/bufferreader');
 var BufferWriter = require('../encoding/bufferwriter');
 var Hash = require('../crypto/hash');
+var BN = require('../crypto/bn');
 var Opcode = require('../opcode');
 var PublicKey = require('../publickey');
 var Signature = require('../crypto/signature');
@@ -128,6 +129,8 @@ Script.prototype.toBuffer = function() {
     }
   }
 
+  console.log("BW");
+  console.log(bw);
   return bw.concat();
 };
 
@@ -280,10 +283,6 @@ Script.prototype.toString = function() {
 
 Script.prototype.toHex = function() {
   return this.toBuffer().toString('hex');
-};
-
-Script.prototype.toId = function() {
-  return Hash.sha256ripemd160(this.toBuffer());
 };
 
 Script.prototype.inspect = function() {
@@ -651,7 +650,7 @@ Script.prototype._addByType = function(obj, prepend) {
   } else if (typeof obj === 'object') {
     this._insertAtPosition(obj, prepend);
   } else {
-    throw new Error('Invalid script chunk');
+    throw new Error('Invalid script chunk: ' + obj);
   }
 };
 
@@ -802,7 +801,8 @@ Script.buildP2SHMultisigIn = function(pubkeys, threshold, signatures, opts) {
 /**
  * @returns {Script} a new EasySend output script for given public keys,
  * requiring m of those public keys to spend
- * @param {PublicKey[]} publicKeys - list of all public keys controlling the output
+ * @param {PublicKey[]} publicKeys - list of all public keys controlling the output.
+ *                                This is the key encoded as straight bytes.
  * @param {number} blockTimeout - amount of blocks the transaction can be buried under 
  *                                until it isn't redeemable anymore.
  */
@@ -810,14 +810,27 @@ Script.buildEasySendOut = function(publicKeys, blockTimeout) {
   $.checkArgument(publicKeys.length >= 2,
     'Number of required public keys must be two or more');
 
+  blockTimeout = parseInt(blockTimeout, 10);
+  console.log("EASY");
+  console.log(publicKeys);
+  console.log(blockTimeout);
+  console.log(publicKeys.length);
+
   var script = new Script();
-  script.add(Opcode.toNumber(blockTimeout));
-  publicKeys = _.map(publicKeys, PublicKey);
+  script.chunks = [];
+
+  var blockTimeoutBN = BN.fromNumber(blockTimeout);
+  console.log(blockTimeoutBN);
+  script.add(blockTimeoutBN.toScriptNumBuffer());
   for (var i = 0; i < publicKeys.length; i++) {
-    script.add(publicKeys[i].toBuffer());
+    console.log("KEY");
+    console.log(publicKeys[i]);
+    script.add(publicKeys[i]);
   }
+  /*
   script.add(Opcode.smallInt(publicKeys.length));
   script.add(Opcode.OP_EASYSEND);
+  */
   return script;
 };
 
@@ -896,7 +909,7 @@ Script.buildScriptHashOut = function(script) {
     (script instanceof Address && script.isPayToScriptHash()));
   var s = new Script();
   s.add(Opcode.OP_HASH160)
-    .add(script instanceof Address ? script.hashBuffer : script.toId())
+    .add(script instanceof Address ? script.hashBuffer : Hash.sha256ripemd160(this.toBuffer()))
     .add(Opcode.OP_EQUAL);
 
   s._network = script._network || script.network;

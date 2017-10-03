@@ -7,6 +7,7 @@ var BN = require('./crypto/bn');
 var JSUtil = require('./util/js');
 var Networks = require('./networks');
 var Point = require('./crypto/point');
+var Hash = require('./crypto/hash');
 var PublicKey = require('./publickey');
 var Random = require('./crypto/random');
 var $ = require('./util/preconditions');
