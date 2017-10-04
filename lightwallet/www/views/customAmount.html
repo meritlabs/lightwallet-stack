@@ -19,9 +19,9 @@
     </ion-nav-buttons>
   </ion-nav-bar>
   <ion-content scroll="false">
-    <div class="address" ng-if="address && amountBtc">
+    <div class="address" ng-if="address && amountMrt">
       <div class="qr-code" copy-to-clipboard="copyToClipboard()">
-        <qrcode size="220" data="bitcoin:{{address + '?amount=' + amountBtc}}" color="#334"></qrcode>
+        <qrcode size="220" data="merit:{{address + '?amount=' + amountMrt}}" color="#334"></qrcode>
       </div>
       <div class="info">
         <div class="item single-line" copy-to-clipboard="address">

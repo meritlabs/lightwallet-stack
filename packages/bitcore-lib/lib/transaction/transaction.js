@@ -68,7 +68,7 @@ Transaction.DUST_AMOUNT = 546;
 // Margin of error to allow fees in the vecinity of the expected value but doesn't allow a big difference
 Transaction.FEE_SECURITY_MARGIN = 150;
 
-// max amount of satoshis in circulation
+// max amount of micros in circulation
 Transaction.MAX_MONEY = 21000000 * 1e8;
 
 // nlocktime limit to be considered block height rather than a timestamp
@@ -77,7 +77,7 @@ Transaction.NLOCKTIME_BLOCKHEIGHT_LIMIT = 5e8;
 // Max value for an unsigned 32 bit value
 Transaction.NLOCKTIME_MAX_VALUE = 4294967295;
 
-// Value used for fee estimation (satoshis per kilobyte)
+// Value used for fee estimation (micros per kilobyte)
 Transaction.FEE_PER_KB = 100000;
 
 // Safe upper bound for change address script size in bytes
@@ -130,7 +130,7 @@ Transaction.prototype._getHash = function() {
 };
 
 /**
- * Retrieve a hexa string that can be used with bitcoind's CLI interface
+ * Retrieve a hexa string that can be used with meritd's CLI interface
  * (decoderawtransaction, sendrawtransaction)
  *
  * @param {Object|boolean=} unsafe if true, skip all tests. if it's an object,
@@ -140,7 +140,7 @@ Transaction.prototype._getHash = function() {
  * * `disableLargeFees`: disable checking for fees that are too large
  * * `disableIsFullySigned`: disable checking if all inputs are fully signed
  * * `disableDustOutputs`: disable checking if there are no outputs that are dust amounts
- * * `disableMoreOutputThanInput`: disable checking if the transaction spends more bitcoins than the sum of the input amounts
+ * * `disableMoreOutputThanInput`: disable checking if the transaction spends more merits than the sum of the input amounts
  * @return {string}
  */
 Transaction.prototype.serialize = function(unsafe) {
@@ -156,7 +156,7 @@ Transaction.prototype.uncheckedSerialize = Transaction.prototype.toString = func
 };
 
 /**
- * Retrieve a hexa string that can be used with bitcoind's CLI interface
+ * Retrieve a hexa string that can be used with meritd's CLI interface
  * (decoderawtransaction, sendrawtransaction)
  *
  * @param {Object} opts allows to skip certain tests. {@see Transaction#serialize}
@@ -172,10 +172,10 @@ Transaction.prototype.checkedSerialize = function(opts) {
   return this.uncheckedSerialize();
 };
 
-Transaction.prototype.invalidSatoshis = function() {
+Transaction.prototype.invalidMicros = function() {
   var invalid = false;
   for (var i = 0; i < this.outputs.length; i++) {
-    if (this.outputs[i].invalidSatoshis()) {
+    if (this.outputs[i].invalidMicros()) {
       invalid = true;
     }
   }
@@ -192,8 +192,8 @@ Transaction.prototype.invalidSatoshis = function() {
 Transaction.prototype.getSerializationError = function(opts) {
   opts = opts || {};
 
-  if (this.invalidSatoshis()) {
-    return new errors.Transaction.InvalidSatoshis();
+  if (this.invalidMicros()) {
+    return new errors.Transaction.InvalidMicros();
   }
 
   var unspent = this._getUnspentValue();
@@ -254,7 +254,7 @@ Transaction.prototype._hasDustOutputs = function(opts) {
   var index, output;
   for (index in this.outputs) {
     output = this.outputs[index];
-    if (output.satoshis < Transaction.DUST_AMOUNT && !output.script.isDataOut()) {
+    if (output.micros < Transaction.DUST_AMOUNT && !output.script.isDataOut()) {
       return new errors.Transaction.DustOutputs();
     }
   }
@@ -489,14 +489,14 @@ Transaction.prototype._newTransaction = function() {
  * @property {string} prevTxId
  * @property {number} outputIndex
  * @property {(Buffer|string|Script)} script
- * @property {number} satoshis
+ * @property {number} micros
  */
 
 /**
  * Add an input to this transaction. This is a high level interface
  * to add an input, for more control, use @{link Transaction#addInput}.
  *
- * Can receive, as output information, the output of bitcoind's `listunspent` command,
+ * Can receive, as output information, the output of meritd's `listunspent` command,
  * and a slightly fancier format recognized by bitcore:
  *
  * ```
@@ -505,7 +505,7 @@ Transaction.prototype._newTransaction = function() {
  *  txId: 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
  *  outputIndex: 0,
  *  script: Script.empty(),
- *  satoshis: 1020000
+ *  micros: 1020000
  * }
  * ```
  * Where `address` can be either a string or a bitcore Address object. The
@@ -518,14 +518,14 @@ Transaction.prototype._newTransaction = function() {
  * ```javascript
  * var transaction = new Transaction();
  *
- * // From a pay to public key hash output from bitcoind's listunspent
+ * // From a pay to public key hash output from meritd's listunspent
  * transaction.from({'txid': '0000...', vout: 0, amount: 0.1, scriptPubKey: 'OP_DUP ...'});
  *
  * // From a pay to public key hash output
- * transaction.from({'txId': '0000...', outputIndex: 0, satoshis: 1000, script: 'OP_DUP ...'});
+ * transaction.from({'txId': '0000...', outputIndex: 0, micros: 1000, script: 'OP_DUP ...'});
  *
  * // From a multisig P2SH output
- * transaction.from({'txId': '0000...', inputIndex: 0, satoshis: 1000, script: '... OP_HASH'},
+ * transaction.from({'txId': '0000...', inputIndex: 0, micros: 1000, script: '... OP_HASH'},
  *                  ['03000...', '02000...'], 2);
  * ```
  *
@@ -569,7 +569,7 @@ Transaction.prototype._fromNonP2SH = function(utxo) {
   this.addInput(new clazz({
     output: new Output({
       script: utxo.script,
-      satoshis: utxo.satoshis
+      micros: utxo.micros
     }),
     prevTxId: utxo.txId,
     outputIndex: utxo.outputIndex,
@@ -592,7 +592,7 @@ Transaction.prototype._fromMultisigUtxo = function(utxo, pubkeys, threshold) {
   this.addInput(new clazz({
     output: new Output({
       script: utxo.script,
-      satoshis: utxo.satoshis
+      micros: utxo.micros
     }),
     prevTxId: utxo.txId,
     outputIndex: utxo.outputIndex,
@@ -603,24 +603,24 @@ Transaction.prototype._fromMultisigUtxo = function(utxo, pubkeys, threshold) {
 /**
  * Add an input to this transaction. The input must be an instance of the `Input` class.
  * It should have information about the Output that it's spending, but if it's not already
- * set, two additional parameters, `outputScript` and `satoshis` can be provided.
+ * set, two additional parameters, `outputScript` and `micros` can be provided.
  *
  * @param {Input} input
  * @param {String|Script} outputScript
- * @param {number} satoshis
+ * @param {number} micros
  * @return Transaction this, for chaining
  */
-Transaction.prototype.addInput = function(input, outputScript, satoshis) {
+Transaction.prototype.addInput = function(input, outputScript, micros) {
   $.checkArgumentType(input, Input, 'input');
-  if (!input.output && (_.isUndefined(outputScript) || _.isUndefined(satoshis))) {
-    throw new errors.Transaction.NeedMoreInfo('Need information about the UTXO script and satoshis');
+  if (!input.output && (_.isUndefined(outputScript) || _.isUndefined(micros))) {
+    throw new errors.Transaction.NeedMoreInfo('Need information about the UTXO script and micros');
   }
-  if (!input.output && outputScript && !_.isUndefined(satoshis)) {
+  if (!input.output && outputScript && !_.isUndefined(micros)) {
     outputScript = outputScript instanceof Script ? outputScript : new Script(outputScript);
-    $.checkArgumentType(satoshis, 'number', 'satoshis');
+    $.checkArgumentType(micros, 'number', 'micros');
     input.output = new Output({
       script: outputScript,
-      satoshis: satoshis
+      micros: micros
     });
   }
   return this.uncheckedAddInput(input);
@@ -657,7 +657,7 @@ Transaction.prototype.hasAllUtxoInfo = function() {
  * for inputs (in further versions, SIGHASH_SINGLE or SIGHASH_NONE signatures will not
  * be reset).
  *
- * @param {number} amount satoshis to be sent
+ * @param {number} amount micros to be sent
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.fee = function(amount) {
@@ -672,7 +672,7 @@ Transaction.prototype.fee = function(amount) {
  * for inputs (in further versions, SIGHASH_SINGLE or SIGHASH_NONE signatures will not
  * be reset).
  *
- * @param {number} amount satoshis per KB to be sent
+ * @param {number} amount micros per KB to be sent
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.feePerKb = function(amount) {
@@ -714,7 +714,7 @@ Transaction.prototype.getChangeOutput = function() {
 /**
  * @typedef {Object} Transaction~toObject
  * @property {(string|Address)} address
- * @property {number} satoshis
+ * @property {number} micros
  */
 
 /**
@@ -724,14 +724,14 @@ Transaction.prototype.getChangeOutput = function() {
  * SIGHASH_SINGLE or SIGHASH_NONE signatures will not be reset).
  *
  * @param {(string|Address|Array.<Transaction~toObject>)} address
- * @param {number} amount in satoshis
+ * @param {number} amount in micros
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.to = function(address, amount) {
   if (_.isArray(address)) {
     var self = this;
     _.each(address, function(to) {
-      self.to(to.address, to.satoshis);
+      self.to(to.address, to.micros);
     });
     return this;
   }
@@ -742,7 +742,7 @@ Transaction.prototype.to = function(address, amount) {
   );
   this.addOutput(new Output({
     script: Script(new Address(address)),
-    satoshis: amount
+    micros: amount
   }));
   return this;
 };
@@ -760,7 +760,7 @@ Transaction.prototype.to = function(address, amount) {
 Transaction.prototype.addData = function(value) {
   this.addOutput(new Output({
     script: Script.buildDataOut(value),
-    satoshis: 0
+    micros: 0
   }));
   return this;
 };
@@ -802,7 +802,7 @@ Transaction.prototype._addOutput = function(output) {
 
 
 /**
- * Calculates or gets the total output amount in satoshis
+ * Calculates or gets the total output amount in micros
  *
  * @return {Number} the transaction total output amount
  */
@@ -811,7 +811,7 @@ Transaction.prototype._getOutputAmount = function() {
     var self = this;
     this._outputAmount = 0;
     _.each(this.outputs, function(output) {
-      self._outputAmount += output.satoshis;
+      self._outputAmount += output.micros;
     });
   }
   return this._outputAmount;
@@ -819,7 +819,7 @@ Transaction.prototype._getOutputAmount = function() {
 
 
 /**
- * Calculates or gets the total input amount in satoshis
+ * Calculates or gets the total input amount in micros
  *
  * @return {Number} the transaction total input amount
  */
@@ -831,7 +831,7 @@ Transaction.prototype._getInputAmount = function() {
       if (_.isUndefined(input.output)) {
         throw new errors.Transaction.Input.MissingPreviousOutput();
       }
-      self._inputAmount += input.output.satoshis;
+      self._inputAmount += input.output.micros;
     });
   }
   return this._inputAmount;
@@ -852,7 +852,7 @@ Transaction.prototype._updateChangeOutput = function() {
     this._changeIndex = this.outputs.length;
     this._addOutput(new Output({
       script: this._changeScript,
-      satoshis: changeAmount
+      micros: changeAmount
     }));
   } else {
     this._changeIndex = undefined;
@@ -874,7 +874,7 @@ Transaction.prototype._updateChangeOutput = function() {
  * If there's no fee set and no change address,
  * estimate the fee based on size.
  *
- * @return {Number} fee of this transaction in satoshis
+ * @return {Number} fee of this transaction in micros
  */
 Transaction.prototype.getFee = function() {
   if (this.isCoinbase()) {
@@ -957,7 +957,7 @@ Transaction.prototype.sort = function() {
   this.sortOutputs(function(outputs) {
     var copy = Array.prototype.concat.apply([], outputs);
     copy.sort(function(first, second) {
-      return first.satoshis - second.satoshis
+      return first.micros - second.micros
         || compare(first.script.toBuffer(), second.script.toBuffer());
     });
     return copy;
@@ -1128,7 +1128,7 @@ Transaction.prototype.verifySignature = function(sig, pubkey, nin, subscript) {
 /**
  * Check that a transaction passes basic sanity tests. If not, return a string
  * describing the error. This function contains the same logic as
- * CheckTransaction in bitcoin core.
+ * CheckTransaction in merit core.
  */
 Transaction.prototype.verify = function() {
   // Basic checks that don't depend on any context
@@ -1145,13 +1145,13 @@ Transaction.prototype.verify = function() {
   for (var i = 0; i < this.outputs.length; i++) {
     var txout = this.outputs[i];
 
-    if (txout.invalidSatoshis()) {
-      return 'transaction txout ' + i + ' satoshis is invalid';
+    if (txout.invalidMicros()) {
+      return 'transaction txout ' + i + ' micros is invalid';
     }
-    if (txout._satoshisBN.gt(new BN(Transaction.MAX_MONEY, 10))) {
+    if (txout._microsBN.gt(new BN(Transaction.MAX_MONEY, 10))) {
       return 'transaction txout ' + i + ' greater than MAX_MONEY';
     }
-    valueoutbn = valueoutbn.add(txout._satoshisBN);
+    valueoutbn = valueoutbn.add(txout._microsBN);
     if (valueoutbn.gt(new BN(Transaction.MAX_MONEY))) {
       return 'transaction txout ' + i + ' total output greater than MAX_MONEY';
     }
@@ -1191,7 +1191,7 @@ Transaction.prototype.verify = function() {
 };
 
 /**
- * Analogous to bitcoind's IsCoinBase function in transaction.h
+ * Analogous to meritd's IsCoinBase function in transaction.h
  */
 Transaction.prototype.isCoinbase = function() {
   return (this.inputs.length === 1 && this.inputs[0].isNull());

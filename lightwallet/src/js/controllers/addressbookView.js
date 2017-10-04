@@ -33,7 +33,7 @@ angular.module('copayApp.controllers').controller('addressbookViewController', f
         }
         $ionicHistory.goBack();
       });
-    }); 
+    });
   };
 
 });

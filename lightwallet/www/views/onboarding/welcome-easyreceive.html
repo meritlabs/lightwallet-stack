@@ -1,0 +1,15 @@
+<ion-view id="onboard-welcome" class="onboarding">
+    <ion-content ng-controller="welcomeController" scroll="false">
+      <div id="logo-tagline">
+          <img src='img/app/logo-negative.svg' id="logo" />
+          <p id="easy-lead" translate>You've got Merit!</p>
+          <p id="easy-details">{{easyReceipt.senderName ? easyReceipt.senderName : 'Someone'}} sent you <strong>{{easyReceipt.amount ? easyReceipt.amount : ''}}</strong> Merit.</p>
+          <p id="easy-nextsteps">All you have to do is setup an account, and you'll be able to accept it into your Merit wallet.</p>
+      </div>
+      <div id="cta-buttons">
+          <button class="button button-standard button-primary" id="get-started" href ui-sref="onboarding.tour" translate-context="button" translate>Get started</button>
+          <button class="button button-standard button-secondary button-clear" id="restore" translate href ui-sref="onboarding.import({'fromOnboarding':true})">Restore from backup</button>
+      </div>
+    </ion-content>
+  </ion-view>
+  

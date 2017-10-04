@@ -1,10 +1,10 @@
 <ion-modal-view id="choose-fee-level" ng-controller="feeLevelsController">
   <ion-header-bar align-title="center" class="bar-royal">
     <div class="title">
-      {{'Bitcoin Network Fee Policy'|translate}}
+      {{'Merit Network Fee Policy'|translate}}
     </div>
     <button
-      ng-disabled="customFeePerKB && !customSatPerByte.value"
+      ng-disabled="customFeePerKB && !customMicrosPerByte.value"
       class="button button-clear" ng-click="ok()" translate>
       OK
     </button>
@@ -26,8 +26,8 @@
       <div class="col rate" ng-class="{'separator': !customFeePerKB}">
         <div ng-if="!customFeePerKB">
           <div class="value">
-            <span ng-if="feePerSatByte && !loadingFee">
-              {{feePerSatByte}} sat/byte
+            <span ng-if="feePerMicrosByte && !loadingFee">
+              {{feePerMicrosByte}} micros/byte
             </span>
             <span ng-if="loadingFee">...</span>
           </div>
@@ -43,10 +43,10 @@
               ng-max="maxFeeAllowed"
               min="minFeeRecommended"
               max="maxFeeRecommended"
-              ng-change="checkFees(customSatPerByte.value)"
-              ng-model="customSatPerByte.value"
+              ng-change="checkFees(customMicrosPerByte.value)"
+              ng-model="customMicrosPerByte.value"
               ng-required="customFeePerKB">
-              <span class="unit">sat/byte</span>
+              <span class="unit">micros/byte</span>
             </label>
           </div>
           <div class="error-fee">
@@ -62,7 +62,7 @@
                 Your fee is lower than recommended.
               </span>
               <span ng-if="showMaxWarning" translate>
-                You should not set a fee higher than {{maxFeeRecommended}} satoshis/byte.
+                You should not set a fee higher than {{maxFeeRecommended}} micros/byte.
               </span>
             </div>
           </div>

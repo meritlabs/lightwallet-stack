@@ -1,15 +1,15 @@
 'use strict';
 
 var benchmark = require('benchmark');
-var bitcoin = require('bitcoin');
+var merit = require('merit');
 var async = require('async');
 var maxTime = 20;
 
-console.log('Bitcoin Service native interface vs. Bitcoin JSON RPC interface');
+console.log('Merit Service native interface vs. Merit JSON RPC interface');
 console.log('----------------------------------------------------------------------');
 
 // To run the benchmarks a fully synced Bitcore Core directory is needed. The RPC comands
-// can be modified to match the settings in bitcoin.conf.
+// can be modified to match the settings in merit.conf.
 
 var fixtureData = {
   blockHashes: [
@@ -26,34 +26,34 @@ var fixtureData = {
   ]
 };
 
-var bitcoind = require('../').services.Bitcoin({
+var meritd = require('../').services.Merit({
   node: {
-    datadir: process.env.HOME + '/.bitcoin',
+    datadir: process.env.HOME + '/.merit',
     network: {
       name: 'testnet'
     }
   }
 });
 
-bitcoind.on('error', function(err) {
+meritd.on('error', function(err) {
   console.error(err.message);
 });
 
-bitcoind.start(function(err) {
+meritd.start(function(err) {
   if (err) {
     throw err;
   }
-  console.log('Bitcoin Core started');
+  console.log('Merit Core started');
 });
 
-bitcoind.on('ready', function() {
+meritd.on('ready', function() {
 
-  console.log('Bitcoin Core ready');
+  console.log('Merit Core ready');
 
-  var client = new bitcoin.Client({
+  var client = new merit.Client({
     host: 'localhost',
-    port: 18332,
-    user: 'bitcoin',
+    port: 18445,
+    user: 'merit',
     pass: 'local321'
   });
 
@@ -64,12 +64,12 @@ bitcoind.on('ready', function() {
       var hashesLength = fixtureData.blockHashes.length;
       var txLength = fixtureData.txHashes.length;
 
-      function bitcoindGetBlockNative(deffered) {
+      function meritdGetBlockNative(deffered) {
         if (c >= hashesLength) {
           c = 0;
         }
         var hash = fixtureData.blockHashes[c];
-        bitcoind.getBlock(hash, function(err, block) {
+        meritd.getBlock(hash, function(err, block) {
           if (err) {
             throw err;
           }
@@ -78,7 +78,7 @@ bitcoind.on('ready', function() {
         c++;
       }
 
-      function bitcoindGetBlockJsonRpc(deffered) {
+      function meritdGetBlockJsonRpc(deffered) {
         if (c >= hashesLength) {
           c = 0;
         }
@@ -92,12 +92,12 @@ bitcoind.on('ready', function() {
         c++;
       }
 
-      function bitcoinGetTransactionNative(deffered) {
+      function meritGetTransactionNative(deffered) {
         if (c >= txLength) {
           c = 0;
         }
         var hash = fixtureData.txHashes[c];
-        bitcoind.getTransaction(hash, true, function(err, tx) {
+        meritd.getTransaction(hash, true, function(err, tx) {
           if (err) {
             throw err;
           }
@@ -106,7 +106,7 @@ bitcoind.on('ready', function() {
         c++;
       }
 
-      function bitcoinGetTransactionJsonRpc(deffered) {
+      function meritGetTransactionJsonRpc(deffered) {
         if (c >= txLength) {
           c = 0;
         }
@@ -122,22 +122,22 @@ bitcoind.on('ready', function() {
 
       var suite = new benchmark.Suite();
 
-      suite.add('bitcoind getblock (native)', bitcoindGetBlockNative, {
+      suite.add('meritd getblock (native)', meritdGetBlockNative, {
         defer: true,
         maxTime: maxTime
       });
 
-      suite.add('bitcoind getblock (json rpc)', bitcoindGetBlockJsonRpc, {
+      suite.add('meritd getblock (json rpc)', meritdGetBlockJsonRpc, {
         defer: true,
         maxTime: maxTime
       });
 
-      suite.add('bitcoind gettransaction (native)', bitcoinGetTransactionNative, {
+      suite.add('meritd gettransaction (native)', meritGetTransactionNative, {
         defer: true,
         maxTime: maxTime
       });
 
-      suite.add('bitcoind gettransaction (json rpc)', bitcoinGetTransactionJsonRpc, {
+      suite.add('meritd gettransaction (json rpc)', meritGetTransactionJsonRpc, {
         defer: true,
         maxTime: maxTime
       });
@@ -158,7 +158,7 @@ bitcoind.on('ready', function() {
       throw err;
     }
     console.log('Finished');
-    bitcoind.stop(function(err) {
+    meritd.stop(function(err) {
       if (err) {
         console.error('Fail to stop services: ' + err);
         process.exit(1);

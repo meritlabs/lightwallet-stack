@@ -182,7 +182,7 @@ PayPro._getPayProRefundOutputs = function(addrStr, amount) {
 };
 
 
-PayPro._createPayment = function(merchant_data, rawTx, refundAddr, amountSat) {
+PayPro._createPayment = function(merchant_data, rawTx, refundAddr, amountMicros) {
   var pay = new BitcorePayPro();
   pay = pay.makePayment();
 
@@ -194,7 +194,7 @@ PayPro._createPayment = function(merchant_data, rawTx, refundAddr, amountSat) {
   var txBuf = new Buffer(rawTx, 'hex');
   pay.set('transactions', [txBuf]);
 
-  var refund_outputs = this._getPayProRefundOutputs(refundAddr, amountSat);
+  var refund_outputs = this._getPayProRefundOutputs(refundAddr, amountMicros);
   if (refund_outputs)
     pay.set('refund_to', refund_outputs);
 
@@ -217,9 +217,9 @@ PayPro.send = function(opts, cb) {
     .checkArgument(opts.url)
     .checkArgument(opts.rawTx)
     .checkArgument(opts.refundAddr)
-    .checkArgument(opts.amountSat);
+    .checkArgument(opts.amountMicros);
 
-  var payment = PayPro._createPayment(opts.merchant_data, opts.rawTx, opts.refundAddr, opts.amountSat);
+  var payment = PayPro._createPayment(opts.merchant_data, opts.rawTx, opts.refundAddr, opts.amountMicros);
 
   var http = getHttp(opts);
   opts.method = 'POST';

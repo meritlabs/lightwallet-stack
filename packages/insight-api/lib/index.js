@@ -1,26 +1,27 @@
 'use strict';
 
-var Writable = require('stream').Writable;
-var bodyParser = require('body-parser');
-var compression = require('compression');
-var BaseService = require('./service');
-var inherits = require('util').inherits;
-var BlockController = require('./blocks');
-var TxController = require('./transactions');
-var AddressController = require('./addresses');
-var StatusController = require('./status');
-var MessagesController = require('./messages');
-var UtilsController = require('./utils');
-var CurrencyController = require('./currency');
-var ReferralController = require('./referrals');
-var WalletController = require('./wallet');
-var RateLimiter = require('./ratelimiter');
-var morgan = require('morgan');
-var bitcore = require('bitcore-lib');
-var _ = bitcore.deps._;
-var $ = bitcore.util.preconditions;
-var Transaction = bitcore.Transaction;
-var EventEmitter = require('events').EventEmitter;
+const Writable = require('stream').Writable;
+const bodyParser = require('body-parser');
+const compression = require('compression');
+const BaseService = require('./service');
+const inherits = require('util').inherits;
+const BlockController = require('./blocks');
+const TxController = require('./transactions');
+const AddressController = require('./addresses');
+const StatusController = require('./status');
+const MessagesController = require('./messages');
+const UtilsController = require('./utils');
+const CurrencyController = require('./currency');
+const ReferralController = require('./referrals');
+const WalletController = require('./wallet');
+const RateLimiter = require('./ratelimiter');
+const morgan = require('morgan');
+const bitcore = require('bitcore-lib');
+const _ = bitcore.deps._;
+const $ = bitcore.util.preconditions;
+const Transaction = bitcore.Transaction;
+const Referral = bitcore.Referral;
+const EventEmitter = require('events').EventEmitter;
 
 /**
  * A service for Bitcore to enable HTTP routes to query information about the blockchain.
@@ -63,7 +64,7 @@ var InsightAPI = function(options) {
   this.txController = new TxController(this.node);
 };
 
-InsightAPI.dependencies = ['bitcoind', 'web'];
+InsightAPI.dependencies = ['meritd', 'web'];
 
 inherits(InsightAPI, BaseService);
 
@@ -92,8 +93,9 @@ InsightAPI.prototype.getRoutePrefix = function() {
 };
 
 InsightAPI.prototype.start = function(callback) {
-  this.node.services.bitcoind.on('tx', this.transactionEventHandler.bind(this));
-  this.node.services.bitcoind.on('block', this.blockEventHandler.bind(this));
+  this.node.services.meritd.on('tx', this.transactionEventHandler.bind(this));
+  this.node.services.meritd.on('block', this.blockEventHandler.bind(this));
+  this.node.services.meritd.on('rawreferraltx', this.referralEventHandler.bind(this));
   setImmediate(callback);
 };
 
@@ -212,6 +214,7 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.get('/addr/:addr/totalReceived', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.totalReceived.bind(addresses));
   app.get('/addr/:addr/totalSent', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.totalSent.bind(addresses));
   app.get('/addr/:addr/unconfirmedBalance', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.unconfirmedBalance.bind(addresses));
+  app.get('/addr/:addr/validate', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.validateAddresses.bind(addresses));
 
   // Status route
   var status = new StatusController(this.node);
@@ -266,7 +269,7 @@ InsightAPI.prototype.getPublishEvents = function() {
       scope: this,
       subscribe: this.subscribe.bind(this),
       unsubscribe: this.unsubscribe.bind(this),
-      extraEvents: ['tx', 'block']
+      extraEvents: ['tx', 'block', 'rawreferraltx']
     }
   ];
 };
@@ -277,12 +280,21 @@ InsightAPI.prototype.blockEventHandler = function(hashBuffer) {
     this.subscriptions.inv[i].emit('block', hashBuffer.toString('hex'));
   }
 };
+
 InsightAPI.prototype.transactionEventHandler = function(txBuffer) {
   var tx = new Transaction().fromBuffer(txBuffer);
   var result = this.txController.transformInvTransaction(tx);
 
   for (var i = 0; i < this.subscriptions.inv.length; i++) {
     this.subscriptions.inv[i].emit('tx', result);
+  }
+};
+
+InsightAPI.prototype.referralEventHandler = function(referralBuffer) {
+  var rtx = new Referral().fromBuffer(referralBuffer);
+
+  for (var i = 0; i < this.subscriptions.inv.length; i++) {
+    this.subscriptions.inv[i].emit('rawreferraltx', rtx);
   }
 };
 

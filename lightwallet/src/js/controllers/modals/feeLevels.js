@@ -29,7 +29,7 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
   };
 
   $scope.ok = function() {
-    $scope.customFeePerKB = $scope.customFeePerKB ? ($scope.customSatPerByte.value * 1000).toFixed() : null;
+    $scope.customFeePerKB = $scope.customFeePerKB ? ($scope.customMicrosPerByte.value * 1000).toFixed() : null;
     $scope.hideModal($scope.feeLevel, $scope.customFeePerKB);
   };
 
@@ -40,8 +40,8 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
     $scope.maxFeeAllowed = $scope.maxFeeRecommended * FEE_MULTIPLIER;
   };
 
-  $scope.checkFees = function(feePerSatByte) {
-    var fee = Number(feePerSatByte);
+  $scope.checkFees = function(feePerMicrosByte) {
+    var fee = Number(feePerMicrosByte);
 
     if (fee <= $scope.minFeeAllowed) $scope.showError = true;
     else $scope.showError = false;
@@ -61,17 +61,17 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
     // If no custom fee
     if (value) {
       $scope.customFeePerKB = null;
-      $scope.feePerSatByte = (value.feePerKB / 1000).toFixed();
+      $scope.feePerMicrosByte = (value.feePerKB / 1000).toFixed();
       $scope.avgConfirmationTime = value.nbBlocks * 10;
     } else {
       $scope.avgConfirmationTime = null;
-      $scope.customSatPerByte = { value: Number($scope.feePerSatByte) };
-      $scope.customFeePerKB = ($scope.feePerSatByte * 1000).toFixed();
+      $scope.customMicrosPerByte = { value: Number($scope.feePerMicrosByte) };
+      $scope.customFeePerKB = ($scope.feePerMicrosByte * 1000).toFixed();
     }
 
     // Warnings
     $scope.setFeesRecommended();
-    $scope.checkFees($scope.feePerSatByte);
+    $scope.checkFees($scope.feePerMicrosByte);
 
     $timeout(function() {
       $scope.$apply();
@@ -95,7 +95,7 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
   //
   // IF usingCustomFee
   // $scope.customFeePerKB
-  // $scope.feePerSatByte
+  // $scope.feePerMicrosByte
 
   if (lodash.isEmpty($scope.feeLevel)) showErrorAndClose(null, gettextCatalog.getString('Fee level is not defined') );
   $scope.selectedFee = { value: $scope.feeLevel };

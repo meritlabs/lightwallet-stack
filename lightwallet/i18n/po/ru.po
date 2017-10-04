@@ -173,11 +173,11 @@ msgid "All Addresses"
 msgstr "Все адреса"
 
 #: www/views/modals/wallet-balance.html:18
-msgid "All of your bitcoin wallet balance may not be available for immediate spending."
+msgid "All of your merit wallet balance may not be available for immediate spending."
 msgstr "В данный момент весь баланс вашего кошелька может быть недоступен для совершения платежей."
 
 #: www/views/tab-receive.html:25
-msgid "All signing devices must be added to this multisig wallet before bitcoin addresses can be created."
+msgid "All signing devices must be added to this multisig wallet before merit addresses can be created."
 msgstr "Все совладельцы должны быть добавлены в этот общий кошелек, прежде чем можно будет получать переводы."
 
 #: www/views/tab-scan.html:21
@@ -224,11 +224,11 @@ msgid "An update to this app is available. For your security, please update to t
 msgstr "Доступно обновление. Для вашей же безопасности, пожалуйста, обновитесь до последней версии."
 
 #: www/views/backupWarning.html:14
-msgid "Anyone with your backup phrase can access or spend your bitcoin."
+msgid "Anyone with your backup phrase can access or spend your merit."
 msgstr "Любой, у кого есть доступ к вашему ключевому словосочетанию, может потратить ваши биткойны."
 
 #: www/views/addresses.html:94
-msgid "Approximate Bitcoin network fee to transfer wallet's balance (with normal priority)"
+msgid "Approximate Merit network fee to transfer wallet's balance (with normal priority)"
 msgstr ""
 
 #: www/views/backupWarning.html:10
@@ -236,7 +236,7 @@ msgid "Are you being watched?"
 msgstr "За вами сейчас кто-нибудь смотрит?"
 
 #: src/js/controllers/preferencesExternal.js:15
-msgid "Are you being watched? Anyone with your recovery phrase can access or spend your bitcoin."
+msgid "Are you being watched? Anyone with your recovery phrase can access or spend your merit."
 msgstr "За вами подглядывают? Любой у кого есть ваша фраза восстановления может получить или потратить ваши биткойны."
 
 #: src/js/controllers/copayers.js:56
@@ -344,34 +344,34 @@ msgstr "BitPay Visa® картыllllll"
 
 #: www/views/addressbook.add.html:38
 #: www/views/includes/incomingDataMenu.html:29
-msgid "Bitcoin Address"
+msgid "Merit Address"
 msgstr "Биткойн-адрес"
 
 #: www/views/modals/chooseFeeLevel.html:4
 #: www/views/preferencesFee.html:4
 #: www/views/tab-settings.html:85
-msgid "Bitcoin Network Fee Policy"
+msgid "Merit Network Fee Policy"
 msgstr "Политика комиссии сети Биткойн"
 
 #: www/views/tab-settings.html:63
-msgid "Bitcoin Unit"
+msgid "Merit Unit"
 msgstr "Единица измерения"
 
 #: www/views/onboarding/tour.html:31
-msgid "Bitcoin is a currency."
+msgid "Merit is a currency."
 msgstr "Биткойн - это валюта."
 
 #: www/views/onboarding/disclaimer.html:15
-msgid "Bitcoin is different &ndash; it cannot be safely held with a bank or web service."
-msgstr "Bitcoin is different &ndash; it cannot be safely held with a bank or web service."
+msgid "Merit is different &ndash; it cannot be safely held with a bank or web service."
+msgstr "Merit is different &ndash; it cannot be safely held with a bank or web service."
 
 #: www/views/onboarding/tour.html:18
-msgid "Bitcoin is secure,<br>digital money."
-msgstr "Биткойн это безопасные,<br>цифровые деньги."
+msgid "Merit is secure,<br>digital money."
+msgstr "Merit это безопасные,<br>цифровые деньги."
 
 #: www/views/preferencesFee.html:11
-msgid "Bitcoin transactions include a fee collected by miners on the network."
-msgstr "Bitcoin transactions include a fee collected by miners on the network."
+msgid "Merit transactions include a fee collected by miners on the network."
+msgstr "Merit transactions include a fee collected by miners on the network."
 
 #: www/views/buyAmazon.html:108
 msgid "Bought {{amountUnitStr}}"
@@ -399,20 +399,20 @@ msgid "Buy"
 msgstr ""
 
 #: www/views/includes/buyAndSellCard.html:3
-msgid "Buy &amp; Sell Bitcoin"
-msgstr "Купить &amp; продать биткойн"
+msgid "Buy &amp; Sell Merit"
+msgstr "Купить &amp; продать Merit"
 
 #: www/views/tab-send.html:35
-msgid "Buy Bitcoin"
-msgstr "Купить биткойн"
+msgid "Buy Merit"
+msgstr "Купить Merit"
 
 #: src/js/controllers/buyAmazon.js:332
 msgid "Buy from"
 msgstr ""
 
 #: src/js/services/onGoingProcess.js:40
-msgid "Buying Bitcoin..."
-msgstr "Покупка биткойн..."
+msgid "Buying Merit..."
+msgstr "Покупка Merit..."
 
 #: src/js/services/onGoingProcess.js:12
 msgid "Calculating fee"
@@ -751,8 +751,8 @@ msgstr "Создать общий кошелёк"
 #: www/views/onboarding/tour.html:51
 #: www/views/tab-home.html:77
 #: www/views/tab-send.html:36
-msgid "Create bitcoin wallet"
-msgstr "Создать биткойн-кошелёк"
+msgid "Create Merit wallet"
+msgstr "Создать Merit-кошелёк"
 
 #: www/views/tab-create-personal.html:129
 msgid "Create new wallet"
@@ -866,8 +866,8 @@ msgid "Download"
 msgstr "Скачать"
 
 #: www/views/addresses.html:19
-msgid "Each bitcoin wallet can generate billions of addresses from your 12-word backup. A new address is automatically generated and shown each time you receive a payment."
-msgstr "Любой биткойн-кошелёк может создать миллиарды адресов из вашей ключевой фразы. Новый адрес автоматически генерируется каждый раз, когда вы получаете платеж."
+msgid "Each merit wallet can generate billions of addresses from your 12-word backup. A new address is automatically generated and shown each time you receive a payment."
+msgstr "Любой Merit-кошелёк может создать миллиарды адресов из вашей ключевой фразы. Новый адрес автоматически генерируется каждый раз, когда вы получаете платеж."
 
 #: src/js/services/feeService.js:13
 msgid "Economy"
@@ -1359,8 +1359,8 @@ msgid "I understand"
 msgstr "Я понимаю"
 
 #: www/views/onboarding/disclaimer.html:21
-msgid "I understand that if this app is moved to another device or deleted, my bitcoin can only be recovered with the backup phrase."
-msgstr "Я осознаю, что если {{appName}} будет перемещён на другое устройство, или удален, мои биткойны будут восстановимы только с помощью ключевого словосочетания."
+msgid "I understand that if this app is moved to another device or deleted, my merit can only be recovered with the backup phrase."
+msgstr "Я осознаю, что если {{appName}} будет перемещён на другое устройство, или удален, мои Merit будут восстановимы только с помощью ключевого словосочетания."
 
 #: www/views/onboarding/disclaimer.html:18
 msgid "I understand that my funds are held securely on this device, not by a company."
@@ -1506,8 +1506,8 @@ msgid "Is this email address correct?"
 msgstr "Это правильный email?"
 
 #: www/views/addresses.html:25
-msgid "It's a good idea to avoid reusing addresses - this both protects your privacy and keeps your bitcoins secure against hypothetical attacks by quantum computers."
-msgstr "Не используйте адреса повторно - это защитит вашу конфиденциальность и сохранит ваши биткойны в безопасности от возможных атак на квантовых компьютерах."
+msgid "It's a good idea to avoid reusing addresses - this both protects your privacy and keeps your merits secure against hypothetical attacks by quantum computers."
+msgstr "Не используйте адреса повторно - это защитит вашу конфиденциальность и сохранит ваш Merit в безопасности от возможных атак на квантовых компьютерах."
 
 #: src/js/controllers/backup.js:76
 msgid "It's important that you write your backup phrase down correctly. If something happens to your wallet, you'll need this backup to recover your money. Please review your backup and try again."
@@ -1695,8 +1695,8 @@ msgid "No access key defined"
 msgstr ""
 
 #: www/views/onboarding/backupRequest.html:5
-msgid "No backup, no bitcoin."
-msgstr "Нет резервной копии - нет биткойнов."
+msgid "No backup, no merit."
+msgstr "Нет резервной копии - нет Merit."
 
 #: www/views/addressbook.html:19
 msgid "No contacts yet"
@@ -1775,8 +1775,8 @@ msgid "Note"
 msgstr "Примечание"
 
 #: www/views/modals/wallets.html:25
-msgid "Notice: only 1-1 (single signature) wallets can be used for sell bitcoin"
-msgstr "Внимание: только 1-1 кошельки (требующие одной подписи) могут быть использованы для продажи биткойн"
+msgid "Notice: only 1-1 (single signature) wallets can be used for sell merit"
+msgstr "Внимание: только 1-1 кошельки (требующие одной подписи) могут быть использованы для продажи Merit"
 
 #: www/views/preferencesNotifications.html:3
 #: www/views/tab-settings.html:46
@@ -1902,8 +1902,8 @@ msgid "Paste the backup plain text code"
 msgstr "Вставьте код резервной копии обычным текстом"
 
 #: www/views/bitpayCardIntro.html:28
-msgid "Pay 0% fees to turn bitcoin into dollars."
-msgstr "Платите нулевую комиссию за конвертацию биткойн в доллары США."
+msgid "Pay 0% fees to turn merit into dollars."
+msgstr "Платите нулевую комиссию за конвертацию Merit в доллары США."
 
 #: www/views/modals/paypro.html:18
 msgid "Pay To"
@@ -2286,8 +2286,8 @@ msgid "Search Transactions"
 msgstr "Поиск транзакций"
 
 #: www/views/tab-send.html:13
-msgid "Search or enter bitcoin address"
-msgstr "Найти или ввести биткойн-адрес"
+msgid "Search or enter merit address"
+msgstr "Найти или ввести Merit-адрес"
 
 #: www/views/modals/search.html:16
 msgid "Search transactions"
@@ -2314,7 +2314,7 @@ msgid "Self-signed Certificate"
 msgstr "Самозаверенные сертификат"
 
 #: src/js/services/onGoingProcess.js:41
-msgid "Selling Bitcoin..."
+msgid "Selling Merit..."
 msgstr "Продажа биткойн..."
 
 #: www/views/feedback/send.html:13
@@ -2421,7 +2421,7 @@ msgid "Set up a password"
 msgstr "Задайте пароль"
 
 #: src/js/controllers/preferencesFee.js:84
-msgid "Set your own fee in satoshis/byte"
+msgid "Set your own fee in micros/byte"
 msgstr ""
 
 #: www/views/tab-settings.html:3
@@ -2466,8 +2466,8 @@ msgid "Show advanced options"
 msgstr "Показать дополнительные параметры"
 
 #: www/views/tab-send.html:37
-msgid "Show bitcoin address"
-msgstr "Показать биткойн-адрес"
+msgid "Show merit address"
+msgstr "Показать Merit-адрес"
 
 #: www/views/tab-send.html:59
 msgid "Show more"
@@ -2521,12 +2521,12 @@ msgid "Spending Password needed"
 msgstr "Необходим платёжный пароль"
 
 #: www/views/walletDetails.html:162
-msgid "Spending this balance will need significant Bitcoin network fees"
+msgid "Spending this balance will need significant Merit network fees"
 msgstr ""
 
 #: www/views/tab-send.html:28
-msgid "Start sending bitcoin"
-msgstr "Начать отправку bitcoin"
+msgid "Start sending merit"
+msgstr "Начать отправку merit"
 
 #: www/views/lockSetup.html:3
 msgid "Startup Lock"
@@ -2558,8 +2558,8 @@ msgid "THIS ACTION CANNOT BE REVERSED"
 msgstr "ЭТО ДЕЙСТВИЕ НЕ МОЖЕТ БЫТЬ ОТМЕНЕНО"
 
 #: www/views/onboarding/welcome.html:5
-msgid "Take control of your money,<br>get started with bitcoin."
-msgstr "Возьмите ваши финансы под контроль,<br>начните пользоваться Биткойн."
+msgid "Take control of your money,<br>get started with merit."
+msgstr "Возьмите ваши финансы под контроль,<br>начните пользоваться Merit."
 
 #: www/views/walletDetails.html:140
 #: www/views/walletDetails.html:60
@@ -2611,16 +2611,16 @@ msgid "The Ledger Chrome application is not installed"
 msgstr "Приложение Ledger для Chrome не установлено"
 
 #: www/views/modals/wallet-balance.html:55
-msgid "The amount of bitcoin immediately spendable from this wallet."
-msgstr "Сумма биткойнов доступных для совершения платежей."
+msgid "The amount of merit immediately spendable from this wallet."
+msgstr "Сумма Merit доступных для совершения платежей."
 
 #: www/views/modals/wallet-balance.html:93
-msgid "The amount of bitcoin stored in this wallet that is allocated as inputs to your pending transaction proposals. The amount is determined using unspent transaction outputs associated with this wallet and may be more than the actual amounts associated with your pending transaction proposals."
-msgstr "Сумма биткойнов, выделенных в качестве входов для ожидающих рассмотрения платежей. Сумма определяется непотраченными выходами, ассоциированными с этим кошельком, и может превышать сумму, ассоциированную с предложенными платежами."
+msgid "The amount of merit stored in this wallet that is allocated as inputs to your pending transaction proposals. The amount is determined using unspent transaction outputs associated with this wallet and may be more than the actual amounts associated with your pending transaction proposals."
+msgstr "Сумма Merit, выделенных в качестве входов для ожидающих рассмотрения платежей. Сумма определяется непотраченными выходами, ассоциированными с этим кошельком, и может превышать сумму, ассоциированную с предложенными платежами."
 
 #: www/views/modals/wallet-balance.html:74
-msgid "The amount of bitcoin stored in this wallet with less than 1 blockchain confirmation."
-msgstr "Сумма биткойнов с менее, чем одним подтверждением."
+msgid "The amount of merit stored in this wallet with less than 1 blockchain confirmation."
+msgstr "Сумма Merit с менее, чем одним подтверждением."
 
 #: www/views/tab-import-phrase.html:5
 msgid "The derivation path"
@@ -2674,7 +2674,7 @@ msgid "The spend proposal is not pending"
 msgstr "Предложенный платёж больше не на рассмотрении"
 
 #: www/views/modals/wallet-balance.html:36
-msgid "The total amount of bitcoin stored in this wallet."
+msgid "The total amount of merit stored in this wallet."
 msgstr "Сумма биткойнов в этом кошельке."
 
 #: www/views/preferencesHistory.html:27
@@ -2705,11 +2705,11 @@ msgid "This app is fantastic!"
 msgstr "Замечательное приложение!"
 
 #: www/views/onboarding/tour.html:47
-msgid "This app stores your bitcoin with cutting-edge security."
+msgid "This app stores your merit with cutting-edge security."
 msgstr ""
 
 #: src/js/controllers/confirm.js:468
-msgid "This bitcoin payment request has expired."
+msgid "This merit payment request has expired."
 msgstr "Этот запрос платежа истёк."
 
 #: www/views/join.html:130
@@ -2723,7 +2723,7 @@ msgid "This recovery phrase was created with a password. To recover this wallet 
 msgstr "Это ключевое словосочетание было создано с паролем. Для восстановления кошелька необходимо ключевое словосочетание и его пароль."
 
 #: www/views/tx-details.html:93
-msgid "This transaction amount is too small compared to current Bitcoin network fees. Spending these funds will need a Bitcoin network fee cost comparable to the funds itself."
+msgid "This transaction amount is too small compared to current Merit network fees. Spending these funds will need a Merit network fee cost comparable to the funds itself."
 msgstr ""
 
 #: www/views/tx-details.html:89
@@ -2750,12 +2750,12 @@ msgid "To"
 msgstr "Кому"
 
 #: www/views/tab-send.html:32
-msgid "To get started, buy bitcoin or share your address. You can receive bitcoin from any wallet or service."
-msgstr "Чтобы начать работу, купите биткойн или поделитесь вашим адресом. Вы можете получать биткойны из любого кошелька или сервиса."
+msgid "To get started, buy merit or share your address. You can receive merit from any wallet or service."
+msgstr "Чтобы начать работу, купите Merit или поделитесь вашим адресом. Вы можете получать Merit из любого кошелька или сервиса."
 
 #: www/views/tab-send.html:33
-msgid "To get started, you'll need to create a bitcoin wallet and get some bitcoin."
-msgstr "Чтобы начать работу, вам нужно создать кошелёк и получить биткойн."
+msgid "To get started, you'll need to create a merit wallet and get some merit."
+msgstr "Чтобы начать работу, вам нужно создать кошелёк и получить Merit."
 
 #: src/js/services/bitpayAccountService.js:73
 msgid "To {{reason}} you must first add your BitPay account - {{email}}"
@@ -2844,7 +2844,7 @@ msgid "Try again in {{expires}}"
 msgstr "Попробуйте снова через {{expires}}"
 
 #: www/views/bitpayCardIntro.html:18
-msgid "Turn bitcoin into dollars, swipe anywhere Visa<sup>&reg;</sup> is accepted."
+msgid "Turn merit into dollars, swipe anywhere Visa<sup>&reg;</sup> is accepted."
 msgstr "Превращайте биткойны в доллары США - платите везде, где принимают карты Visa<sup>&reg;</sup>."
 
 #: www/views/tab-import-phrase.html:17
@@ -3205,7 +3205,7 @@ msgid "You can make contributions by signing up on our Crowdin community transla
 msgstr ""
 
 #: www/views/tab-scan.html:16
-msgid "You can scan bitcoin addresses, payment requests, paper wallets, and more."
+msgid "You can scan merit addresses, payment requests, paper wallets, and more."
 msgstr "Вы можете сканировать биткойн-адреса, запросы платежей, бумажные кошельки, и многое другое."
 
 #: src/js/controllers/preferencesAbout.js:14
@@ -3213,7 +3213,7 @@ msgid "You can see the latest developments and contribute to this open source ap
 msgstr ""
 
 #: www/views/onboarding/tour.html:19
-msgid "You can spend bitcoin at millions of websites and stores worldwide."
+msgid "You can spend merit at millions of websites and stores worldwide."
 msgstr ""
 
 #: www/views/backup.html:12
@@ -3225,11 +3225,11 @@ msgid "You can trade it for other currencies like US Dollars, Euros, or Pounds."
 msgstr ""
 
 #: www/views/onboarding/tour.html:46
-msgid "You control your bitcoin."
-msgstr "Вы контролируете Ваши bitcoin-ы."
+msgid "You control your merit."
+msgstr "Вы контролируете Ваш Merit."
 
 #: www/views/modals/chooseFeeLevel.html:63
-msgid "You should not set a fee higher than {{maxFeeRecommended}} satoshis/byte."
+msgid "You should not set a fee higher than {{maxFeeRecommended}} micros/byte."
 msgstr ""
 
 #: www/views/modals/bitpay-card-confirmation.html:5
@@ -3245,11 +3245,11 @@ msgid "Your BitPay Card is ready. Add funds to your card to start using it at st
 msgstr ""
 
 #: www/views/includes/confirmBackupPopup.html:6
-msgid "Your bitcoin wallet is backed up!"
+msgid "Your merit wallet is backed up!"
 msgstr "Резервная копия кошелька создана!"
 
 #: www/views/tab-home.html:36
-msgid "Your bitcoin wallet is ready!"
+msgid "Your merit wallet is ready!"
 msgstr "Ваш кошелёк готов!"
 
 #: www/views/modals/chooseFeeLevel.html:60
@@ -3341,7 +3341,7 @@ msgid "{{appName}} depends on Bitcore Wallet Service (BWS) for blockchain inform
 msgstr "{{appName}} требует Bitcore для координации совладельцев и получения информации из блокчейна. По-умолчанию используется сервер https://bws.bitpay.com (публичный сервер Bitcore компании BitPay)."
 
 #: src/js/controllers/confirm.js:358
-msgid "{{fee}} will be deducted for bitcoin networking fees."
+msgid "{{fee}} will be deducted for merit networking fees."
 msgstr "{{fee}} будет использовано для оплаты комиссии."
 
 #: www/views/confirm.html:87

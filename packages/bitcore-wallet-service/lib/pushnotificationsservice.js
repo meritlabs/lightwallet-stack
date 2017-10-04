@@ -37,6 +37,18 @@ var PUSHNOTIFICATIONS_TYPES = {
     filename: 'tx_confirmation',
     notifyCreatorOnly: true,
   },
+  'NewIncomingReferralTx': {
+    filename: 'new_incoming_referral',
+    notifyCreatorOnly: true,
+  },
+  'ReferralConfirmation': {
+    filename: 'referral_confirmation',
+    notifyCreatorOnly: true,
+  },
+  'ReferralWasRejected': {
+    filename: 'referral_rejected',
+    notifyCreatorOnly: true,
+  }
 };
 
 function PushNotificationsService() {};
@@ -61,7 +73,7 @@ PushNotificationsService.prototype.start = function(opts, cb) {
 
   self.templatePath = path.normalize((opts.pushNotificationsOpts.templatePath || (__dirname + '/templates')) + '/');
   self.defaultLanguage = opts.pushNotificationsOpts.defaultLanguage || 'en';
-  self.defaultUnit = opts.pushNotificationsOpts.defaultUnit || 'btc';
+  self.defaultUnit = opts.pushNotificationsOpts.defaultUnit || 'mrt';
   self.subjectPrefix = opts.pushNotificationsOpts.subjectPrefix || '';
   self.pushServerUrl = opts.pushNotificationsOpts.pushServerUrl;
   self.authorizationKey = opts.pushNotificationsOpts.authorizationKey;
@@ -117,6 +129,10 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
 
     self._getRecipientsList(notification, notifType, function(err, recipientsList) {
       if (err) return cb(err);
+      if (!recipientsList) {
+        log.warn('Recipient list is empty, skipping notifications.');
+        return cb();
+      }
 
       async.waterfall([
 
@@ -197,6 +213,7 @@ PushNotificationsService.prototype._getRecipientsList = function(notification, n
 
   self.storage.fetchWallet(notification.walletId, function(err, wallet) {
     if (err) return cb(err);
+    if (!wallet) return cb();
 
     self.storage.fetchPreferences(notification.walletId, null, function(err, preferences) {
 
@@ -274,7 +291,7 @@ PushNotificationsService.prototype._readAndApplyTemplates = function(notificatio
 PushNotificationsService.prototype._getDataForTemplate = function(notification, recipient, cb) {
   var self = this;
   var UNIT_LABELS = {
-    btc: 'BTC',
+    mrt: 'MRT',
     bit: 'bits'
   };
 

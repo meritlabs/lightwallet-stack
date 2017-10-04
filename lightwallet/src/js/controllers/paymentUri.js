@@ -5,27 +5,27 @@ angular.module('copayApp.controllers').controller('paymentUriController',
       return (parseFloat(number.toPrecision(12)));
     };
 
-    // Build bitcoinURI with querystring
+    // Build meritURI with querystring
     this.init = function() {
       var query = [];
-      this.bitcoinURI = $stateParams.url;
+      this.meritURI = $stateParams.url;
 
       var URI = bitcore.URI;
-      var isUriValid = URI.isValid(this.bitcoinURI);
-      if (!URI.isValid(this.bitcoinURI)) {
+      var isUriValid = URI.isValid(this.meritURI);
+      if (!URI.isValid(this.meritURI)) {
         this.error = true;
         return;
       }
-      var uri = new URI(this.bitcoinURI);
+      var uri = new URI(this.meritURI);
 
       if (uri && uri.address) {
         var config = configService.getSync().wallet.settings;
-        var unitToSatoshi = config.unitToSatoshi;
-        var satToUnit = 1 / unitToSatoshi;
+        var unitToMicro = config.unitToMicro;
+        var microToUnit = 1 / unitToMicro;
         var unitName = config.unitName;
 
         if (uri.amount) {
-          uri.amount = strip(uri.amount * satToUnit) + ' ' + unitName;
+          uri.amount = strip(uri.amount * microToUnit) + ' ' + unitName;
         }
         uri.network = uri.address.network.name;
         this.uri = uri;
@@ -50,7 +50,7 @@ angular.module('copayApp.controllers').controller('paymentUriController',
       $ionicHistory.removeBackView();
       $state.go('tabs.home');
       $timeout(function() {
-        $rootScope.$emit('paymentUri', self.bitcoinURI);
+        $rootScope.$emit('paymentUri', self.meritURI);
       }, 1000);
     };
   });
