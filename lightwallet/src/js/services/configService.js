@@ -7,6 +7,9 @@ angular.module('copayApp.services').factory('configService', function(storageSer
   var isWindowsPhoneApp = platformInfo.isCordova && platformInfo.isWP;
 
   // Check Environment Variable for Environment-Specific Parameters:
+  console.log("Getting the envVars!");
+  console.log(envVarsService.getVars());
+  
   var bwsUrl = envVarsService.getVars().bwsUrl || 'http://adil.merit.me:3232/bws/api';
   //var bwsUrl = 'http://adil.merit.me:3232/bws/api';
 
