@@ -14,7 +14,7 @@ var UNITS = {
 };
 
 /**
- * Utility for handling and converting bitcoins units. The supported units are
+ * Utility for handling and converting merits units. The supported units are
  * MRT, mMRT, bits (also named uMRT) and micros. A unit instance can be created with an
  * amount and a unit code, or alternatively using static methods like {fromMRT}.
  * It also allows to be created from a fiat amount and the exchange rate, or

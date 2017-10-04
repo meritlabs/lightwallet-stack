@@ -324,7 +324,7 @@ WalletService.prototype.logout = function(opts, cb) {
  * @param {number} opts.n - Total copayers.
  * @param {string} opts.pubKey - Public key to verify copayers joining have access to the wallet secret.
  * @param {string} opts.singleAddress[=false] - The wallet will only ever have one address.
- * @param {string} opts.network[='livenet'] - The Bitcoin network for this wallet.
+ * @param {string} opts.network[='livenet'] - The Merit network for this wallet.
  * @param {string} opts.supportBIP44AndP2PKH[=true] - Client supports BIP44 & P2PKH for new wallets.
  */
 WalletService.prototype.createWallet = function(opts, cb) {
@@ -366,6 +366,8 @@ WalletService.prototype.createWallet = function(opts, cb) {
   var newWallet;
   var unlocked = false;
   var shareCode = "";
+  var codeHash = "";
+
   async.series([
     function(acb) {
       var bc = self._getBlockchainExplorer(opts.network);
@@ -383,9 +385,9 @@ WalletService.prototype.createWallet = function(opts, cb) {
           }
         }
 
-
         unlocked = true;
         shareCode = result.result.referralcode;
+        codeHash = result.result.codehash;
 
         return acb(null);
       });
@@ -414,7 +416,8 @@ WalletService.prototype.createWallet = function(opts, cb) {
         addressType: addressType,
         beacon: opts.beacon,
         unlocked: unlocked,
-        shareCode: shareCode
+        shareCode: shareCode,
+        codeHash: codeHash,
       });
       self.storage.storeWallet(wallet, function(err) {
         log.debug('Wallet created', wallet.id, opts.network);
@@ -425,7 +428,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
   ], function(err) {
     var newWalletId = newWallet ? newWallet.id : null;
     var newWalletShareCode = newWallet ? newWallet.shareCode : null;
-    return cb(err, newWalletId, newWalletShareCode);
+    return cb(err, newWalletId, newWalletShareCode, codeHash);
   });
 };
 
@@ -867,7 +870,7 @@ WalletService.prototype.joinWallet = function(opts, cb) {
  * @param {Object} opts
  * @param {string} opts.email - Email address for notifications.
  * @param {string} opts.language - Language used for notifications.
- * @param {string} opts.unit - Bitcoin unit used to format amounts in notifications.
+ * @param {string} opts.unit - Merit unit used to format amounts in notifications.
  */
 WalletService.prototype.savePreferences = function(opts, cb) {
   var self = this;
@@ -1507,7 +1510,7 @@ WalletService.prototype._sampleFeeLevels = function(network, points, cb) {
 /**
  * Returns fee levels for the current state of the network.
  * @param {Object} opts
- * @param {string} [opts.network = 'livenet'] - The Bitcoin network to estimate fee levels from.
+ * @param {string} [opts.network = 'livenet'] - The Merit network to estimate fee levels from.
  * @returns {Object} feeLevels - A list of fee levels & associated amount per kB in micro.
  */
 WalletService.prototype.getFeeLevels = function(opts, cb) {
@@ -2375,7 +2378,7 @@ WalletService.prototype._broadcastRawTx = function(network, raw, cb) {
 /**
  * Broadcast a raw transaction.
  * @param {Object} opts
- * @param {string} [opts.network = 'livenet'] - The Bitcoin network for this transaction.
+ * @param {string} [opts.network = 'livenet'] - The Merit network for this transaction.
  * @param {string} opts.rawTx - Raw tx data.
  */
 WalletService.prototype.broadcastRawTx = function(opts, cb) {
@@ -3325,6 +3328,37 @@ WalletService.prototype.validateEasyReceipt = function(opts, cb) {
 
     return cb(errMsg, result);
   });
+};
+
+WalletService.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
+  if (!checkRequired(opts, ['codeHash'], cb)) return;
+
+  const self = this;
+
+  self.storage.fetchReferralByCodeHash(opts.codeHash, function(err, rtx) {
+    if (err) {
+      log.error('Could not fetch referral from the db');
+      return;
+    }
+
+    if (!rtx) return;
+
+    const sub = Model.ReferralTxConfirmationSub.create({
+      copayerId: self.copayerId,
+      walletId: self.walletId,
+      codeHash: opts.codeHash,
+    });
+
+    self.storage.storeReferralTxConfirmationSub(sub, cb);
+  });
+};
+
+WalletService.prototype.referralTxConfirmationUnsubscribe = function(opts, cb) {
+  if (!checkRequired(opts, ['codeHash'], cb)) return;
+
+  const self = this;
+
+  self.storage.removeReferralTxConfirmationSub(self.copayerId, opts.codeHash, cb);
 };
 
 module.exports = WalletService;

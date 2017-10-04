@@ -6,6 +6,7 @@ angular.module('copayApp.controllers').controller('addressbookViewController', f
   $scope.addressbookEntry.name = $stateParams.name;
   $scope.addressbookEntry.email = $stateParams.email;
   $scope.addressbookEntry.address = $stateParams.address;
+  $scope.addressbookEntry.phoneNumber = $stateParams.phoneNumber;
 
   $scope.sendTo = function() {
     $ionicHistory.removeBackView();
@@ -14,7 +15,8 @@ angular.module('copayApp.controllers').controller('addressbookViewController', f
       $state.transitionTo('tabs.send.amount', {
         toAddress: $scope.addressbookEntry.address,
         toName: $scope.addressbookEntry.name,
-        toEmail: $scope.addressbookEntry.email
+        toEmail: $scope.addressbookEntry.email,
+        toPhoneNumber: $scope.addressbookEntry.phoneNumber
       });
     }, 100);
   };

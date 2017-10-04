@@ -6,7 +6,7 @@
   "authors": ["BitPay Inc"],
   "description": "Client for bitcore-wallet-service",
   "keywords": [
-    "bitcoin",
+    "merit",
     "copay",
     "multisig",
     "wallet",

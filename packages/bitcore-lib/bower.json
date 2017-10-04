@@ -6,14 +6,14 @@
   "authors": [
     "BitPay, Inc."
   ],
-  "description": "A pure, powerful core for your bitcoin project.",
+  "description": "A pure, powerful core for your merit project.",
   "moduleType": [
     "globals"
   ],
   "keywords": [
-    "bitcoin",
+    "merit",
     "bitcore",
-    "btc",
+    "mrt",
     "satoshi"
   ],
   "license": "MIT",

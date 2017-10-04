@@ -10,7 +10,7 @@ function ReferralController(node) {
 ReferralController.prototype.generateReferralCode = function(req, res) {
   var self = this;
 
-  self.node.services.bitcoind.generateReferralCode(function(err, result) {
+  self.node.services.meritd.generateReferralCode(function(err, result) {
     if (err) {
       return self.common.handleErrors(err, res);
     }
@@ -24,7 +24,7 @@ ReferralController.prototype.validateReferralCode = function(req, res) {
 
   var referralCode = req.body.unlockCode;
   
-  self.node.services.bitcoind.validateReferralCode(referralCode, function(err, result) {
+  self.node.services.meritd.validateReferralCode(referralCode, function(err, result) {
     if (err) {
       return self.common.handleErrors(err, res);
     }

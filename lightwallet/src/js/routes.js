@@ -296,7 +296,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
        */
 
       .state('tabs.send.amount', {
-        url: '/amount/:recipientType/:toAddress/:toName/:toEmail/:toColor',
+        url: '/amount/:recipientType/:toAddress/:toName/:toEmail/:toPhoneNumber/:toColor/:sendMethod',
         views: {
           'tab-send@tabs': {
             controller: 'amountController',
@@ -322,6 +322,15 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           'tab-send@tabs': {
             templateUrl: 'views/addressbook.add.html',
             controller: 'addressbookAddController'
+          }
+        }
+      })
+      .state('tabs.send.easysend', {
+        url: '/easysend/:method/:recipient',
+        views: {
+          'tab-send@tabs': {
+            controller: 'easySendController',
+            templateUrl: 'views/easysend.html',
           }
         }
       })
@@ -615,7 +624,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         }
       })
       .state('tabs.addressbook.view', {
-        url: '/view/:address/:email/:name',
+        url: '/view/:address/:email/:name/:phoneNumber',
         views: {
           'tab-settings@tabs': {
             templateUrl: 'views/addressbook.view.html',
@@ -864,8 +873,8 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           fromOnboarding: null
         },
       })
-      
-      
+
+
       /*
        *
        * Feedback
@@ -924,7 +933,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
 
       /*
        *
-       * Buy or Sell Bitcoin
+       * Buy or Sell Merit
        *
        */
 
@@ -1289,15 +1298,15 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         deepLinkService.branchInit();
       });
 
-    
+
       $ionicPlatform.on('menubutton', function() {
         window.location = '#/preferences';
       });
 
       // Currently, we have to set a timeout until the $stateProvider is ready
-      // TODO: Refactor this whole approach when updating Angular.  
+      // TODO: Refactor this whole approach when updating Angular.
       var handleInitialStateTransition = function (currentState) {
-        $timeout( () => { 
+        $timeout( () => {
           console.log(`What is the current state name: ${$state.current.name}`);
           if ($state.is('onboarding.easyReceive')) {
             $log.debug("Current state is easyReceive; not making changes...");

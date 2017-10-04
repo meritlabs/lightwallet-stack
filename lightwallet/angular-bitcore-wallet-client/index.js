@@ -40,7 +40,7 @@ bwcModule.provider("bwcService", function() {
       //setting a backup-backup bwsUrl because this module won't have access to the configService
       //TODO: This client probably should not return the client without a proper BWSURL.
       var bwc = new Client({
-        baseUrl: opts.bwsurl || 'https://mws.merit.me/mws/api',
+        baseUrl: opts.bwsurl || 'http://127.0.0.1:3232/bws/api',
         verbose: opts.verbose,
         timeout: 100000,
         transports: ['polling'],

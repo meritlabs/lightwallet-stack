@@ -175,7 +175,7 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
   }; // ToDo: update after changes in meritd
   if (utxoArg.height && utxoArg.height > 0) {
     utxo.height = utxoArg.height;
-    utxo.confirmations = this.node.services.bitcoind.height - utxoArg.height + 1;
+    utxo.confirmations = this.node.services.meritd.height - utxoArg.height + 1;
   } else {
     utxo.confirmations = 0;
   }

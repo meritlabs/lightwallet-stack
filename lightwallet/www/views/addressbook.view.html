@@ -22,6 +22,10 @@
         <span class="address-book-field-label" translate>Email</span>
         <span>{{addressbookEntry.email}}</span>
       </div>
+      <div class="item item-text-wrap" ng-show="addressbookEntry.phoneNumber">
+        <span class="address-book-field-label" translate>Phone Number</span>
+        <span>{{addressbookEntry.phoneNumber}}</span>
+      </div>
       <div class="item item-text-wrap" copy-to-clipboard="addressbookEntry.address">
         <span class="address-book-field-label" translate>Address</span>
         <span>{{addressbookEntry.address}}</span>

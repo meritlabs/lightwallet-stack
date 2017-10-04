@@ -15,7 +15,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     $scope.hasWallets = lodash.isEmpty($scope.wallets) ? false : true;
   };
 
-  // THIS is ONLY to show the 'buy bitcoins' message
+  // THIS is ONLY to show the 'buy merits' message
   // It does not have any other function.
 
   var updateHasFunds = function() {
@@ -34,7 +34,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
         if (err && !status) {
           $log.error(err);
           // error updating the wallet. Probably a network error, do not show
-          // the 'buy bitcoins' message.
+          // the 'buy merits' message.
 
           $scope.hasFunds = true;
         } else if (status.availableBalanceMicros > 0) {
@@ -85,34 +85,38 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     }
   }
 
-  var updateContactsList = function(cb) {
+  var addressBookToContactList = function(ab) {
+    return lodash.map(ab, function(v, k) {
+      return {
+        name: lodash.isObject(v) ? v.name : v,
+        address: k,
+        email: lodash.isObject(v) ? v.email : null,
+        phoneNumber: lodash.isObject(v) ? v.phoneNumber : null,
+        recipientType: 'contact',
+        sendMethod: 'address',
+        getAddress: function(cb) {
+          return cb(null, k);
+        },
+      };
+    });
+  };
+
+  var initContactsList = function(cb) {
     addressbookService.list(function(err, ab) {
       if (err) $log.error(err);
 
       $scope.hasContacts = lodash.isEmpty(ab) ? false : true;
       if (!$scope.hasContacts) return cb();
 
-      var completeContacts = [];
-      lodash.each(ab, function(v, k) {
-        completeContacts.push({
-          name: lodash.isObject(v) ? v.name : v,
-          address: k,
-          email: lodash.isObject(v) ? v.email : null,
-          recipientType: 'contact',
-          getAddress: function(cb) {
-            return cb(null, k);
-          },
-        });
-      });
-      var contacts = completeContacts.slice(0, (currentContactsPage + 1) * CONTACTS_SHOW_LIMIT);
-      $scope.contactsShowMore = completeContacts.length > contacts.length;
-      originalList = originalList.concat(contacts);
+      var completeContacts = addressBookToContactList(ab);
+      originalList = originalList.concat(completeContacts);
+      $scope.contactsShowMore = completeContacts.length > CONTACTS_SHOW_LIMIT;
       return cb();
     });
   };
 
-  var updateList = function() {
-    $scope.list = lodash.clone(originalList);
+  var initList = function() {
+    $scope.list = [];
     $timeout(function() {
       $ionicScrollDelegate.resize();
       $scope.$apply();
@@ -152,12 +156,13 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
 
   $scope.findContact = function(search) {
-    if (incomingData.redir(search)) {
+    
+    if(search && search.length > 19 && incomingData.redir(search)) {
       return;
     }
 
-    if (!search || search.length < 2) {
-      $scope.list = originalList;
+    if (!search || search.length < 1) {
+      $scope.list = [];
       $timeout(function() {
         $scope.$apply();
       });
@@ -165,26 +170,67 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     }
 
     var result = lodash.filter(originalList, function(item) {
-      var val = item.name;
+      var val = item.name + item.email + item.phoneNumber;
       return lodash.includes(val.toLowerCase(), search.toLowerCase());
     });
 
-    $scope.list = result;
+    addressbookService.searchContacts(search, function(contacts) {
+      $scope.list = result.concat(lodash.map(contacts, function(contact) {
+        var obj = {
+          name: contact.name.formatted,
+          emails: lodash.map(contact.emails, function(o) { return o.value; }),
+          phoneNumbers: lodash.map(contact.phoneNumbers, function(o) { return o.value; }),
+          address: '',
+          getAddress: function(cb) { return cb(); }
+        };
+
+        var email = lodash.find(obj.emails, function(x) {
+          return lodash.includes(x.toLowerCase(), search.toLowerCase());
+        });
+        if (email) {
+          obj.email = email;
+          obj.phoneNumber = lodash.find(obj.phoneNumbers) || '';
+          obj.sendMethod = 'email';
+          return obj;
+        }
+
+        var phoneNumber = lodash.find(obj.phoneNumbers, function(x) {
+          return lodash.includes(x.toLowerCase(), search.toLowerCase());
+        });
+        if (phoneNumber) {
+          obj.phoneNumber = phoneNumber;
+          obj.email = lodash.find(obj.emails) || '';
+          obj.sendMethod = 'sms';
+          return obj;
+        }
+
+        // search matched name, default to sms?
+        obj.email = lodash.find(obj.emails) || '';
+        obj.phoneNumber = lodash.find(obj.phoneNumbers) || '';
+        obj.sendMethod = obj.phoneNumber ? 'sms' : 'email';
+        return obj;
+      }));
+      return;
+    });
   };
 
   $scope.goToAmount = function(item) {
     $timeout(function() {
       item.getAddress(function(err, addr) {
-        if (err || !addr) {
+        if (err) {
           //Error is already formated
           return popupService.showAlert(err);
         }
-        $log.debug('Got toAddress:' + addr + ' | ' + item.name);
+        if (addr) {
+          $log.debug('Got toAddress:' + addr + ' | ' + item.name);
+        }
         return $state.transitionTo('tabs.send.amount', {
           recipientType: item.recipientType,
           toAddress: addr,
           toName: item.name,
           toEmail: item.email,
+          toPhoneNumber: item.phoneNumber,
+          sendMethod: item.sendMethod,
           toColor: item.color
         })
       });
@@ -198,7 +244,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     });
   };
 
-  $scope.buyBitcoin = function() {
+  $scope.buyMerit = function() {
     $state.go('tabs.home').then(function() {
       $state.go('tabs.buyandsell');
     });
@@ -222,8 +268,8 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     }
     updateHasFunds();
     updateWalletsList();
-    updateContactsList(function() {
-      updateList();
+    initContactsList(function() {
+      initList();
     });
   });
 });

@@ -18,7 +18,8 @@ angular.module('copayApp.controllers').controller('addressbookListController', f
         contacts.push({
           name: lodash.isObject(v) ? v.name : v,
           address: k,
-          email: lodash.isObject(v) ? v.email : null
+          email: lodash.isObject(v) ? v.email : null,
+          phoneNumber: lodash.isObject(v) ? v.phoneNumber : null,
         });
       });
 

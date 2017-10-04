@@ -12,7 +12,7 @@ WalletController.prototype.unlock = function(req, res) {
   var unlockCode = req.body.unlockCode;
   var unlockAddress = req.body.unlockAddress;
 
-  self.node.services.bitcoind.unlockWallet(unlockCode, unlockAddress, function(err, result) {
+  self.node.services.meritd.unlockWallet(unlockCode, unlockAddress, function(err, result) {
     if(err) {
       return self.common.handleErrors(err, res);
     }
