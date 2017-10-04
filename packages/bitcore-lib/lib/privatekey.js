@@ -7,6 +7,7 @@ var BN = require('./crypto/bn');
 var JSUtil = require('./util/js');
 var Networks = require('./networks');
 var Point = require('./crypto/point');
+var Hash = require('./crypto/hash');
 var PublicKey = require('./publickey');
 var Random = require('./crypto/random');
 var $ = require('./util/preconditions');
@@ -51,7 +52,7 @@ function PrivateKey(data, network) {
   if (!info.bn || info.bn.cmp(new BN(0)) === 0){
     throw new TypeError('Number can not be equal to zero, undefined, null or false');
   }
-  if (!info.bn.lt(Point.getN())) {
+  if (!PrivateKey._isValidBN(info.bn)) {
     throw new TypeError('Number must be less than N');
   }
   if (typeof(info.network) === 'undefined') {
@@ -114,19 +115,62 @@ PrivateKey.prototype._classifyArguments = function(data, network) {
 };
 
 /**
+ * Validates that a BN is valid for generating a key.
+ */
+PrivateKey._isValidBN = function(bn) {
+  return bn.lt(Point.getN());
+};
+
+
+/**
  * Internal function to get a random Big Number (BN)
  *
  * @returns {BN} A new randomly generated BN
  * @private
  */
 PrivateKey._getRandomBN = function(){
-  var condition;
   var bn;
   do {
     var privbuf = Random.getRandomBuffer(32);
     bn = BN.fromBuffer(privbuf);
-    condition = bn.lt(Point.getN());
-  } while (!condition);
+  } while (!PrivateKey._isValidBN(bn));
+  return bn;
+};
+
+/**
+ * Internal function to get a random Big Number (BN)
+ * Combined with an optional password
+ *
+ * @returns {BN} A new randomly generated BN
+ * @private
+ */
+PrivateKey._getNewBNForEasySend = function(optionalPassword){
+  var bn;
+  var secret;
+  do {
+    secret = Random.getRandomBuffer(16);
+    var mixedsecret = secret + optionalPassword;
+    var hash = Hash.sha256sha256(Buffer.from(mixedsecret));
+    bn = BN.fromBuffer(hash);
+  } while (!PrivateKey._isValidBN(bn));
+
+  return {
+    secret: secret,
+    bn: bn
+  };
+};
+
+PrivateKey._getBNForEasySend = function(secret, optionalPassword){
+  var mixedsecret = secret + optionalPassword;
+  var secretBuf = Buffer.from(mixedsecret, 'binary');
+  var hash = Hash.sha256sha256(secretBuf);
+
+  var bn = BN.fromBuffer(hash);
+
+  $.checkArgument(
+    PrivateKey._isValidBN(bn),
+    'The secret and password do not create a valid private key');
+
   return bn;
 };
 
@@ -254,6 +298,39 @@ PrivateKey.fromObject = function(obj) {
  */
 PrivateKey.fromRandom = function(network) {
   var bn = PrivateKey._getRandomBN();
+  return new PrivateKey(bn, network);
+};
+
+/**
+ * Instantiate a new PrivateKey to be used for receiving an EasySend
+ * transaction.
+ *
+ * @param {string=} optionalPassword - An optional password to further secure
+ *  the transaction.
+ * @param {string=} network - Either "livenet" or "testnet"
+ * @returns {PrivateKey} A new valid instance of PrivateKey
+ */
+PrivateKey.forNewEasySend = function(optionalPassword, network) {
+  var pair = PrivateKey._getNewBNForEasySend(optionalPassword);
+  return { 
+    secret: pair.secret,
+    key: new PrivateKey(pair.bn, network)
+  };
+};
+
+/**
+ * Instantiate a PrivateKey to be used for receiving an EasySend
+ * transaction given a secret generated from forNewEasySend.
+ *
+ * @param {string=} secret - Random secret used to seed the private key generation.
+ *  Should match what was generated from forNewEasySend.
+ * @param {string=} optionalPassword - An optional password to further secure
+ *  the transaction. Should match one sent to forNewEasySend.
+ * @param {string=} network - Either "livenet" or "testnet"
+ * @returns {PrivateKey} A new valid instance of PrivateKey
+ */
+PrivateKey.forEasySend = function(secret, optionalPassword, network) {
+  var bn = PrivateKey._getBNForEasySend(secret, optionalPassword);
   return new PrivateKey(bn, network);
 };
 
