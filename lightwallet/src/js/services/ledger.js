@@ -221,6 +221,21 @@ angular.module('copayApp.services')
       return new ByteString(res, GP.HEX);
     }
 
+    root.hexToArray = function(s) {
+      var bstr = new ByteString(s, GP.HEX).toBuffer();
+      var a = new Uint8Array(bstr.length);
+      Array.prototype.forEach.call(bstr, 
+        function (ch, i) { 
+          a[i] = ch.charCodeAt(0);
+        });
+
+      return a;
+    }
+
+    root.hexToString = function(s) {
+      return new ByteString(s, GP.HEX).toBuffer();
+    }
+
     return root;
   });
 
@@ -252,7 +267,7 @@ Convert.hexToBin = function(src) {
   var result = "";
   var digits = "0123456789ABCDEF";
   if ((src.length % 2) != 0) {
-    throw "Invalid string";
+    throw "Invalid string: " + src;
   }
   src = src.toUpperCase();
   for (var i = 0; i < src.length; i += 2) {
