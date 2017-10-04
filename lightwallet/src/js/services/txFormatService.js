@@ -8,7 +8,7 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
 
   root.formatAmount = function(micros, fullPrecision) {
     var config = configService.getSync().wallet.settings;
-    if (config.unitCode == 'sat') return micros;
+    if (config.unitCode == 'micros') return micros;
 
     //TODO : now only works for english, specify opts to change thousand separator and decimal separator
     var opts = {
@@ -182,27 +182,27 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
 
   root.parseAmount = function(amount, currency) {
     var config = configService.getSync().wallet.settings;
-    var satToMrt = 1 / 100000000;
+    var microsToMrt = 1 / 100000000;
     var unitToMicro = config.unitToMicro;
     var amountUnitStr;
-    var amountSat;
+    var amountMicros;
     var alternativeIsoCode = config.alternativeIsoCode;
 
     // If fiat currency
-    if (currency != 'bits' && currency != 'MRT' && currency != 'sat') {
+    if (currency != 'bits' && currency != 'MRT' && currency != 'micros') {
       amountUnitStr = $filter('formatFiatAmount')(amount) + ' ' + currency;
-      amountSat = rateService.fromFiat(amount, currency).toFixed(0);
-    } else if (currency == 'sat') {
-      amountSat = amount;
-      amountUnitStr = root.formatAmountStr(amountSat);
-      // convert sat to MRT
-      amount = (amountSat * satToMrt).toFixed(8);
+      amountMicros = rateService.fromFiat(amount, currency).toFixed(0);
+    } else if (currency == 'micros') {
+      amountMicros = amount;
+      amountUnitStr = root.formatAmountStr(amountMicros);
+      // convert micros to MRT
+      amount = (amountMicros * microsToMrt).toFixed(8);
       currency = 'MRT';
     } else {
-      amountSat = parseInt((amount * unitToMicro).toFixed(0));
-      amountUnitStr = root.formatAmountStr(amountSat);
+      amountMicros = parseInt((amount * unitToMicro).toFixed(0));
+      amountUnitStr = root.formatAmountStr(amountMicros);
       // convert unit to MRT
-      amount = (amountSat * satToMrt).toFixed(8);
+      amount = (amountMicros * microsToMrt).toFixed(8);
       currency = 'MRT';
     }
 
@@ -210,7 +210,7 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
       amount: amount,
       currency: currency,
       alternativeIsoCode: alternativeIsoCode,
-      amountSat: amountSat,
+      amountMicros: amountMicros,
       amountUnitStr: amountUnitStr
     };
   };

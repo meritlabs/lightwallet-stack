@@ -204,13 +204,13 @@ describe('Addresses', function() {
       var insight = {
         'addrStr': 'mkPvAKZ2rar6qeG3KjBtJHHMSP1wFZH7Er',
         'balance': 0,
-        'balanceSat': 0,
+        'balanceMicros': 0,
         'totalReceived': 27.82729129,
-        'totalReceivedSat': 2782729129,
+        'totalReceivedMicros': 2782729129,
         'totalSent': 27.82729129,
-        'totalSentSat': 2782729129,
+        'totalSentMicros': 2782729129,
         'unconfirmedBalance': 0,
-        'unconfirmedBalanceSat': 0,
+        'unconfirmedBalanceMicros': 0,
         'unconfirmedTxApperances': 0,
         'txApperances': 2,
         'transactions': [
@@ -329,7 +329,7 @@ describe('Addresses', function() {
 
       var node = {
         services: {
-          bitcoind: {
+          meritd: {
             height: 534230
           }
         },
@@ -393,7 +393,7 @@ describe('Addresses', function() {
 
       var node = {
         services: {
-          bitcoind: {
+          meritd: {
             height: 534230
           }
         },
@@ -440,7 +440,7 @@ describe('Addresses', function() {
                 'sequence': 4294967295,
                 'n': 0,
                 'addr': 'moFfnRwt77pApKnnU6m5uocFaa43aAYpt5',
-                'valueSat': 53540000,
+                'valueMicros': 53540000,
                 'value': 0.5354,
                 'doubleSpentTxID': null
               },
@@ -454,7 +454,7 @@ describe('Addresses', function() {
                 'sequence': 4294967295,
                 'n': 1,
                 'addr': 'n1XJBAyU4hNR4xRtY3UxnmAteoJX83p5qv',
-                'valueSat': 299829,
+                'valueMicros': 299829,
                 'value': 0.00299829,
                 'doubleSpentTxID': null
               }
@@ -550,7 +550,7 @@ describe('Addresses', function() {
       var node = {
         getAddressHistory: sinon.stub().callsArgWith(2, null, txinfos2),
         services: {
-          bitcoind: {
+          meritd: {
             height: 534232
           }
         },
@@ -592,7 +592,7 @@ describe('Addresses', function() {
                 'sequence': 4294967295,
                 'n': 0,
                 'addr': 'moFfnRwt77pApKnnU6m5uocFaa43aAYpt5',
-                'valueSat': 53540000,
+                'valueMicros': 53540000,
                 'value': 0.5354,
                 'doubleSpentTxID': null
               },
@@ -602,7 +602,7 @@ describe('Addresses', function() {
                 'sequence': 4294967295,
                 'n': 1,
                 'addr': 'n1XJBAyU4hNR4xRtY3UxnmAteoJX83p5qv',
-                'valueSat': 299829,
+                'valueMicros': 299829,
                 'value': 0.00299829,
                 'doubleSpentTxID': null
               }
@@ -686,7 +686,7 @@ describe('Addresses', function() {
       var node = {
         getAddressHistory: sinon.stub().callsArgWith(2, null, txinfos2),
         services: {
-          bitcoind: {
+          meritd: {
             height: 534232
           }
         },

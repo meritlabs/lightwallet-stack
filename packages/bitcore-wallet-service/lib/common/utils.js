@@ -19,7 +19,7 @@ Utils.getMissingFields = function(obj, args) {
 
 /**
  *
- * @desc rounds a JAvascript number
+ * @desc rounds a Javascript number
  * @param number
  * @return {number}
  */
@@ -27,7 +27,7 @@ Utils.strip = function(number) {
   return parseFloat(number.toPrecision(12));
 }
 
-/* TODO: It would be nice to be compatible with bitcoind signmessage. How
+/* TODO: It would be nice to be compatible with meritd signmessage. How
  * the hash is calculated there? */
 Utils.hashMessage = function(text, noReverse) {
   $.checkArgument(text);
@@ -106,7 +106,7 @@ Utils.formatAmount = function(micros, unit, opts) {
       maxDecimals: 0,
       minDecimals: 0,
     },
-    sat: {
+    micros: {
       toMicros: 1,
       maxDecimals: 0,
       minDecimals: 0,

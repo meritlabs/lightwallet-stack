@@ -2,15 +2,16 @@
   "network": "testnet",
   "port": 3001,
   "services": [
-    "bitcoind",
+    "meritd",
     "insight-api",
     "web"
   ],
   "servicesConfig": {
-    "bitcoind": {
+    "meritd": {
       "spawn": {
-	"datadir": "./data-and-logs/data-1",
-	"exec": "../merit/src/meritd"
+    	  "datadir": "./data-and-logs/data-1",
+        "_exec": "perl -e '$0='meritdummy'; sleep infinity'",
+        "exec": "../merit/src/meritd"
       }
     }
   }

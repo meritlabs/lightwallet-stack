@@ -64,7 +64,7 @@ var InsightAPI = function(options) {
   this.txController = new TxController(this.node);
 };
 
-InsightAPI.dependencies = ['bitcoind', 'web'];
+InsightAPI.dependencies = ['meritd', 'web'];
 
 inherits(InsightAPI, BaseService);
 
@@ -93,9 +93,9 @@ InsightAPI.prototype.getRoutePrefix = function() {
 };
 
 InsightAPI.prototype.start = function(callback) {
-  this.node.services.bitcoind.on('tx', this.transactionEventHandler.bind(this));
-  this.node.services.bitcoind.on('block', this.blockEventHandler.bind(this));
-  this.node.services.bitcoind.on('rawreferraltx', this.referralEventHandler.bind(this));
+  this.node.services.meritd.on('tx', this.transactionEventHandler.bind(this));
+  this.node.services.meritd.on('block', this.blockEventHandler.bind(this));
+  this.node.services.meritd.on('rawreferraltx', this.referralEventHandler.bind(this));
   setImmediate(callback);
 };
 
@@ -214,6 +214,7 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.get('/addr/:addr/totalReceived', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.totalReceived.bind(addresses));
   app.get('/addr/:addr/totalSent', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.totalSent.bind(addresses));
   app.get('/addr/:addr/unconfirmedBalance', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.unconfirmedBalance.bind(addresses));
+  app.get('/addr/:addr/validate', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.validateAddresses.bind(addresses));
 
   // Status route
   var status = new StatusController(this.node);

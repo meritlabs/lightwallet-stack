@@ -143,14 +143,14 @@ var history = [
     vout: 0,
     n: 0,
     addr: "2N6Zutg26LEC4iYVxi7SHhopVLP1iZPU1rZ",
-    valueSat: 485645,
+    valueMicros: 485645,
     value: 0.00485645,
   }, {
     txid: "6e599eea3e2898b91087eb87e041c5d8dec5362447a8efba185ed593f6dc64c0",
     vout: 1,
     n: 1,
     addr: "2MyqmcWjmVxW8i39wdk1CVPdEqKyFSY9H1S",
-    valueSat: 885590,
+    valueMicros: 885590,
     value: 0.0088559,
   }],
   vout: [{
@@ -183,14 +183,14 @@ var history = [
     vout: 0,
     n: 0,
     addr: "2N6Zutg26LEC4iYVxi7SHhopVLP1iZPU1rZ",
-    valueSat: 485645,
+    valueMicros: 485645,
     value: 0.00485645,
   }, {
     txid: "6e599eea3e2898b91087eb87e041c5d8dec5362447a8efba185ed593f6dc64c0",
     vout: 1,
     n: 1,
     addr: "2MyqmcWjmVxW8i39wdk1CVPdEqKyFSY9H1S",
-    valueSat: 885590,
+    valueMicros: 885590,
     value: 0.0088559,
   }],
   vout: [{
@@ -223,7 +223,7 @@ var history = [
     vout: 0,
     n: 0,
     addr: "2NAVFnsHqy5JvqDJydbHPx393LFqFFBQ89V",
-    valueSat: 45753,
+    valueMicros: 45753,
     value: 0.00045753,
   }],
   vout: [{

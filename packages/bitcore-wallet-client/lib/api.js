@@ -2141,7 +2141,7 @@ API.prototype.broadcastTxProposal = function(txp, cb) {
       PayPro.send({
         http: self.payProHttp,
         url: txp.payProUrl,
-        amountSat: txp.amount,
+        amountMicros: txp.amount,
         refundAddr: txp.changeAddress.address,
         merchant_data: paypro.merchant_data,
         rawTx: t.serialize({
@@ -2502,6 +2502,14 @@ API.prototype.getStatusByIdentifier = function(opts, cb) {
     return cb(err, result);
   });
 };
+
+API.prototype.validateAddress = function(address, network, cb) {
+  const url = `/v1/addresses/${address}/validate/${network}`;
+  this._doGetRequest(url, function(err, result) {
+    if (err || !result) return cb(err);
+    return cb(null, result);
+  });
+}; 
 
 
 API.prototype.referralTxConfirmationSubscribe = function(opts, cb) {

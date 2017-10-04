@@ -1,8 +1,8 @@
 {
   "name": "bitcore-p2p",
   "version": "1.1.2",
-  "description": "Interface to the bitcoin P2P network for bitcore",
-  "author": "BitPay <dev@bitpay.com>",
+  "description": "Interface to the merit P2P network for bitcore",
+  "author": "MeritLabs Inc.",
   "main": "index.js",
   "scripts": {
     "lint": "gulp lint",
@@ -48,12 +48,12 @@
     }
   ],
   "keywords": [
-    "bitcoin",
+    "merit",
     "bitcore"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bitpay/bitcore-p2p.git"
+    "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "dependencies": {
     "bitcore-lib": "^0.14.0",

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('copayApp.controllers').controller('tabHomeController',
-  function($rootScope, $timeout, $scope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $window, gettextCatalog, lodash, popupService, ongoingProcess, externalLinkService, latestReleaseService, profileService, walletService, configService, $log, platformInfo, storageService, txpModalService, appConfigService, startupService, addressbookService, feedbackService, bwcError, nextStepsService, buyAndSellService, homeIntegrationsService, bitpayCardService, pushNotificationsService, timeService) {
+  function($rootScope, $timeout, $scope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $window, gettextCatalog, lodash, popupService, ongoingProcess, externalLinkService, latestReleaseService, profileService, walletService, configService, $log, platformInfo, storageService, txpModalService, appConfigService, startupService, addressbookService, feedbackService, bwcError, nextStepsService, buyAndSellService, homeIntegrationsService, bitpayCardService, pushNotificationsService, timeService, easyReceiveService) {
     var wallet;
     var listeners = [];
     var notifications = [];
@@ -18,7 +18,19 @@ angular.module('copayApp.controllers').controller('tabHomeController',
 
     $scope.$on("$ionicView.afterEnter", function() {
       startupService.ready();
+      $scope.handleEasyReceive();
     });
+
+    $scope.handleEasyReceive = function () {
+      easyReceiveService.getEasyReceipt(function(err, receipt) {
+        if (err || lodash.isEmpty(receipt)) {
+          $log.debug("Unable to load easyReceipt.");
+        } else {
+          $log.debug("Loading easyReceipt into memory.", receipt);  
+          popupService.showConfirm("You've got Merit!", "Someone sent you Merit", "I'll Take It", "Nah", function(){});
+        }
+      });
+    };
 
     $scope.$on("$ionicView.beforeEnter", function(event, data) {
       if (!$scope.homeTip) {

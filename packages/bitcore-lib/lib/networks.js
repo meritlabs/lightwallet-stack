@@ -8,7 +8,7 @@ var networkMaps = {};
 
 /**
  * A network is merely a map containing values that correspond to version
- * numbers for each bitcoin network. Currently only supporting "livenet"
+ * numbers for each merit network. Currently only supporting "livenet"
  * (a.k.a. "mainnet") and "testnet".
  * @constructor
  */
@@ -126,6 +126,7 @@ function removeNetwork(network) {
   }
 }
 
+// ToDo: add Merit DNS seeds
 addNetwork({
   name: 'livenet',
   alias: 'mainnet',
@@ -136,14 +137,7 @@ addNetwork({
   xprivkey: 0x0488ade4,
   networkMagic: 0xf9beb4d9,
   port: 8333,
-  dnsSeeds: [
-    'seed.bitcoin.sipa.be',
-    'dnsseed.bluematt.me',
-    'dnsseed.bitcoin.dashjr.org',
-    'seed.bitcoinstats.com',
-    'seed.bitnodes.io',
-    'bitseed.xf2.org'
-  ]
+  dnsSeeds: []
 });
 
 /**
@@ -170,15 +164,11 @@ var testnet = get('testnet');
 
 // Add configurable values for testnet/regtest
 
+// ToDo: add Merit DNS seeds
 var TESTNET = {
   PORT: 18333,
   NETWORK_MAGIC: BufferUtil.integerAsBuffer(0x0b110907),
-  DNS_SEEDS: [
-    'testnet-seed.bitcoin.petertodd.org',
-    'testnet-seed.bluematt.me',
-    'testnet-seed.alexykot.me',
-    'testnet-seed.bitcoin.schildbach.de'
-  ]
+  DNS_SEEDS: []
 };
 
 for (var key in TESTNET) {

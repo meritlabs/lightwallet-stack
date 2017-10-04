@@ -1,8 +1,8 @@
 {
   "name": "bitcore-message",
   "version": "1.0.4",
-  "description": "Bitcoin Messages for Bitcore",
-  "author": "BitPay <dev@bitpay.com>",
+  "description": "Merit Messages for Bitcore",
+  "author": "MeritLabs Inc.",
   "main": "index.js",
   "scripts": {
     "lint": "gulp lint",
@@ -11,16 +11,16 @@
     "build": "gulp"
   },
   "keywords": [
-    "bitcoin",
+    "merit",
     "bitcore",
-    "btc",
+    "mrt",
     "satoshi",
     "message",
     "signing"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/meritlabs/bitcore-message.git"
+    "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "dependencies": {
     "bitcore-lib": "^0.14.0"

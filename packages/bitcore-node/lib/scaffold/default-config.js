@@ -24,7 +24,7 @@ function getDefaultConfig(options) {
     mkdirp.sync(defaultPath);
   }
 
-  var defaultServices = ['bitcoind', 'web'];
+  var defaultServices = ['meritd', 'web'];
   if (options.additionalServices) {
     defaultServices = defaultServices.concat(options.additionalServices);
   }
@@ -35,10 +35,10 @@ function getDefaultConfig(options) {
       port: 3001,
       services: defaultServices,
       servicesConfig: {
-        bitcoind: {
+        meritd: {
           spawn: {
             datadir: path.resolve(defaultPath, './data'),
-            exec: path.resolve(__dirname, '../../bin/bitcoind')
+            exec: path.resolve(__dirname, '../../bin/meritd')
           }
         }
       }

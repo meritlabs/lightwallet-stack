@@ -139,7 +139,7 @@ Output.prototype.inspect = function() {
   } else {
     scriptStr = this._scriptBuffer.toString('hex');
   }
-  return '<Output (' + this.micros + ' sats) ' + scriptStr + '>';
+  return '<Output (' + this.micros + ' micros) ' + scriptStr + '>';
 };
 
 Output.fromBufferReader = function(br) {

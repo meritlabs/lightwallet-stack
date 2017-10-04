@@ -34,7 +34,7 @@
         </i>
       </div>
       <div class="title" translate>
-        Your bitcoin wallet is ready!
+        Your merit wallet is ready!
       </div>
       <div class="subtitle" translate>
         On this screen you can see all your wallets, accounts, and assets.
@@ -97,7 +97,7 @@
             <span class="tab-home__wallet__multisig-number" ng-if="wallet.n > 1">
               {{wallet.m}}-of-{{wallet.n}}
             </span>
-            <i ng-if="!wallet.balanceHidden && (wallet.status.totalBalanceSat != wallet.status.spendableAmount)" class="tab-home__wallet__status-icon ion-ios-timer-outline"></i>
+            <i ng-if="!wallet.balanceHidden && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)" class="tab-home__wallet__status-icon ion-ios-timer-outline"></i>
             <span class="assertive" ng-if="wallet.error">{{wallet.error}}</span>
           </span>
           &nbsp;

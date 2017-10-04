@@ -10,11 +10,11 @@ var UNITS = {
   'mMRT'     : [1e5, 5],
   'uMRT'     : [1e2, 2],
   'bits'     : [1e2, 2],
-  'micros' : [1, 0]
+  'micros'   : [1, 0]
 };
 
 /**
- * Utility for handling and converting bitcoins units. The supported units are
+ * Utility for handling and converting merits units. The supported units are
  * MRT, mMRT, bits (also named uMRT) and micros. A unit instance can be created with an
  * amount and a unit code, or alternatively using static methods like {fromMRT}.
  * It also allows to be created from a fiat amount and the exchange rate, or
@@ -26,7 +26,7 @@ var UNITS = {
  *
  * @example
  * ```javascript
- * var sats = Unit.fromMRT(1.3).toMicros();
+ * var micros = Unit.fromMRT(1.3).toMicros();
  * var mili = Unit.fromBits(1.3).to(Unit.mMRT);
  * var bits = Unit.fromFiat(1.3, 350).bits;
  * var mrt = new Unit(1.3, Unit.bits).MRT;

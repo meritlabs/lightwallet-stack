@@ -14,11 +14,15 @@ prepare-lightwallet:
 
 .PHONY: start-lightwallet
 start-lightwallet:
-	cd ./lightwallet && npm run apply && npm start
+	cd ./lightwallet && npm run apply && npm run livestart
 
 .PHONY: clean-lightwallet
 clean-lightwallet:
 	rm -rf ./lightwallet/node_modules
+	rm -rf ./lightwallet/plugins
+	rm -rf ./lightwallet/platforms/ios
+	rm -rf ./lightwallet/platforms/windows
+	rm -rf ./lightwallet/platforms/android
 
 
 ### lightwallet-stack ###
@@ -31,7 +35,7 @@ start-mongo:
 stop-mongo:
 	kill `pgrep mongo`
 
-# Symlink the Bitcoin bitcoind
+# Symlink the Merit meritd
 # See https://github.com/meritlabs/lightwallet-stack/blob/master/bitcore-node/docs/development.md
 .PHONY: symlink-bitcore-node
 symlink-bitcore-node:

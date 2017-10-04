@@ -40,14 +40,14 @@ angular.module('copayApp.controllers').controller('customAmountController', func
       if (currency != 'MRT') {
         // Convert to MRT
         var config = configService.getSync().wallet.settings;
-        var amountUnit = txFormatService.microToUnit(parsedAmount.amountSat);
+        var amountUnit = txFormatService.microToUnit(parsedAmount.amountMicros);
         var mrtParsedAmount = txFormatService.parseAmount(amountUnit, config.unitName);
 
         $scope.amountMrt = mrtParsedAmount.amount;
         $scope.altAmountStr = mrtParsedAmount.amountUnitStr;
       } else {
         $scope.amountMrt = amount; // MRT
-        $scope.altAmountStr = txFormatService.formatAlternativeStr(parsedAmount.amountSat);
+        $scope.altAmountStr = txFormatService.formatAlternativeStr(parsedAmount.amountMicros);
       }
     });
   });
@@ -61,12 +61,12 @@ angular.module('copayApp.controllers').controller('customAmountController', func
 
   $scope.shareAddress = function() {
     if (!platformInfo.isCordova) return;
-    var data = 'bitcoin:' + $scope.address + '?amount=' + $scope.amountMrt;
+    var data = 'merit:' + $scope.address + '?amount=' + $scope.amountMrt;
     window.plugins.socialsharing.share(data, null, null, null);
   }
 
   $scope.copyToClipboard = function() {
-    return 'bitcoin:' + $scope.address + '?amount=' + $scope.amountMrt;
+    return 'merit:' + $scope.address + '?amount=' + $scope.amountMrt;
   };
 
 });
