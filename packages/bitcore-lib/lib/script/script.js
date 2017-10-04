@@ -114,6 +114,7 @@ Script.prototype.toBuffer = function() {
     var opcodenum = chunk.opcodenum;
     bw.writeUInt8(chunk.opcodenum);
     if (chunk.buf) {
+      chunk.buf = new Buffer(chunk.buf);
       if (opcodenum < Opcode.OP_PUSHDATA1) {
         bw.write(chunk.buf);
       } else if (opcodenum === Opcode.OP_PUSHDATA1) {
@@ -129,8 +130,6 @@ Script.prototype.toBuffer = function() {
     }
   }
 
-  console.log("BW");
-  console.log(bw);
   return bw.concat();
 };
 
@@ -811,26 +810,19 @@ Script.buildEasySendOut = function(publicKeys, blockTimeout) {
     'Number of required public keys must be two or more');
 
   blockTimeout = parseInt(blockTimeout, 10);
-  console.log("EASY");
-  console.log(publicKeys);
-  console.log(blockTimeout);
-  console.log(publicKeys.length);
 
   var script = new Script();
   script.chunks = [];
 
   var blockTimeoutBN = BN.fromNumber(blockTimeout);
-  console.log(blockTimeoutBN);
   script.add(blockTimeoutBN.toScriptNumBuffer());
   for (var i = 0; i < publicKeys.length; i++) {
-    console.log("KEY");
-    console.log(publicKeys[i]);
     script.add(publicKeys[i]);
   }
-  /*
+
   script.add(Opcode.smallInt(publicKeys.length));
   script.add(Opcode.OP_EASYSEND);
-  */
+
   return script;
 };
 
