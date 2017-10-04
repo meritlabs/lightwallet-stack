@@ -236,7 +236,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
   $scope.finish = function() {
     var _amount = evaluate(format($scope.amount));
 
-    if ($scope.sendMethod != 'address') {
+    if ($scope.sendMethod && $scope.sendMethod != 'address') {
       $state.transitionTo('tabs.send.easysend', {
         method: $scope.sendMethod,
         recipient: $scope.sendMethod == 'sms' ? $scope.toPhoneNumber : $scope.toEmail
