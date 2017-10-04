@@ -101,7 +101,9 @@ angular.module('copayApp.services')
     service._generateEasyScript = function (receipt) {
       // Generate the easyScript per the EasySend standard as outlined <TODO: here>
       var optionalPassword = ""; // TODO get from user
-      var receivePrv = bitcore.PrivateKey.forEasySend(receipt.secret, optionalPassword);
+
+      var secret = ledger.hexToString(receipt.secret);
+      var receivePrv = bitcore.PrivateKey.forEasySend(secret, optionalPassword);
       var receivePub = bitcore.PublicKey.fromPrivateKey(receivePrv).toBuffer();
       var senderPubKey = ledger.hexToArray(receipt.senderPublicKey);
 
@@ -111,8 +113,9 @@ angular.module('copayApp.services')
       ];
 
       var script = bitcore.Script.buildEasySendOut(publicKeys, receipt.blockTimeout);
-      console.log("SCRIPT");
-      console.log(bitcore.Address.payingTo(script, 'testnet'));
+
+      var address = bitcore.Address.payingTo(script, 'testnet'); 
+      console.log(address.toString());
       return script;
     }
 

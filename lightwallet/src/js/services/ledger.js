@@ -232,6 +232,10 @@ angular.module('copayApp.services')
       return a;
     }
 
+    root.hexToString = function(s) {
+      return new ByteString(s, GP.HEX).toBuffer();
+    }
+
     return root;
   });
 
