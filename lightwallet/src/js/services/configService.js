@@ -15,7 +15,7 @@ angular.module('copayApp.services').factory('configService', function(storageSer
     // Bitcore wallet service URL
     bws: {
       // url: 'https://bws.bitpay.com/bws/api',
-      url: 'http://localhost:3232/bws/api',
+      url: 'http://adil.merit.me:3232/bws/api',
     },
 
     download: {

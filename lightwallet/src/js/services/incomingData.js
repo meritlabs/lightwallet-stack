@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.services').factory('incomingData', function($log, $state, $timeout, $ionicHistory, bitcore, $rootScope, payproService, scannerService, appConfigService, popupService, gettextCatalog, bwcService) {
+angular.module('copayApp.services').factory('incomingData', function($log, $state, $timeout, $ionicHistory, bitcore, $rootScope, payproService, scannerService, appConfigService, popupService, gettextCatalog, bwcService,configService) {
 
   var root = {};
 
@@ -66,6 +66,7 @@ angular.module('copayApp.services').factory('incomingData', function($log, $stat
         }
       }, 100);
     }
+
     // data extensions for Payment Protocol with non-backwards-compatible request
     if ((/^bitcoin:\?r=[\w+]/).exec(data)) {
       data = decodeURIComponent(data.replace('bitcoin:?r=', ''));
@@ -83,7 +84,8 @@ angular.module('copayApp.services').factory('incomingData', function($log, $stat
     data = sanitizeUri(data);
 
     const checkAndProcessAddress = function(data, network) {
-      const walletClient = bwcService.getClient();
+      opts.bwsurl = configService.getDefaults().bws.url;
+      const walletClient = bwcService.getClient(null, opts);
 
       walletClient.validateAddress(data, network, function(err, result) {
         if (err || !result) {
