@@ -96,11 +96,6 @@ Utils.formatAmount = function(micros, unit, opts) {
       maxDecimals: 6,
       minDecimals: 2,
     },
-    mrt: {
-      toSatoshis: 100000000,
-      maxDecimals: 6,
-      minDecimals: 2,
-    },
     bit: {
       toMicros: 100,
       maxDecimals: 0,
