@@ -190,11 +190,11 @@ describe('BufferReader', function() {
       br.readUInt64LEBN().toNumber().should.equal(1);
     });
 
-    it('should return 10BTC', function() {
-      var tenbtc = 10 * 1e8;
-      var tenbtcBuffer = new Buffer('00ca9a3b00000000', 'hex');
-      var br = new BufferReader(tenbtcBuffer);
-      br.readUInt64LEBN().toNumber().should.equal(tenbtc);
+    it('should return 10MRT', function() {
+      var tenmrt = 10 * 1e8;
+      var tenmrtBuffer = new Buffer('00ca9a3b00000000', 'hex');
+      var br = new BufferReader(tenmrtBuffer);
+      br.readUInt64LEBN().toNumber().should.equal(tenmrt);
     });
 
     it('should return 2^30', function() {
@@ -212,11 +212,11 @@ describe('BufferReader', function() {
       br.readUInt64LEBN().toNumber().should.equal(num);
     });
 
-    it('should return max number of satoshis', function() {
-      var maxSatoshis = 21000000 * 1e8;
-      var maxSatoshisBuffer = new Buffer('0040075af0750700', 'hex');
-      var br = new BufferReader(maxSatoshisBuffer);
-      br.readUInt64LEBN().toNumber().should.equal(maxSatoshis);
+    it('should return max number of micros', function() {
+      var maxMicros = 21000000 * 1e8;
+      var maxMicrosBuffer = new Buffer('0040075af0750700', 'hex');
+      var br = new BufferReader(maxMicrosBuffer);
+      br.readUInt64LEBN().toNumber().should.equal(maxMicros);
     });
 
     it('should return 2^53 - 1', function() {

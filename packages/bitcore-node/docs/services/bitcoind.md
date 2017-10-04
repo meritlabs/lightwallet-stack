@@ -197,7 +197,7 @@ The `unspentOutputs` will have the format:
     txid: '9d956c5d324a1c2b12133f3242deff264a9b9f61be701311373998681b8c1769',
     outputIndex: 1,
     height: 150,
-    satoshis: 1000000000,
+    micros: 1000000000,
     script: '76a9140b2f0a0c31bfe0406b0ccc1381fdbe311946dadc88ac',
     confirmations: 3
   }
@@ -209,7 +209,7 @@ The `unspentOutputs` will have the format:
 ```js
 var address = 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW';
 node.services.bitcoind.getAddressBalance(address, options, function(err, balance) {
-  // balance will be in satoshis with "received" and "balance"
+  // balance will be in micros with "received" and "balance"
 });
 ```
 
@@ -246,7 +246,7 @@ The history format will be:
           outputIndexes: [0]
         }
       },
-      satoshis: 1000000000,
+      micros: 1000000000,
       tx: <detailed_transaction> // the same format as getDetailedTransaction
     }
   ]
@@ -266,7 +266,7 @@ node.services.bitcoind.getAddressSummary(address, options, function(err, summary
 });
 ```
 
-The `summary` will have the format (values are in satoshis):
+The `summary` will have the format (values are in micros):
 
 ```js
 {
@@ -282,7 +282,7 @@ The `summary` will have the format (values are in satoshis):
 }
 ```
 **Notes**:
-- `totalReceived` does not exclude change *(the amount of satoshis originating from the same address)*
+- `totalReceived` does not exclude change *(the amount of micros originating from the same address)*
 - `unconfirmedBalance` is the delta that the unconfirmed transactions have on the total balance *(can be both positive and negative)*
 - `unconfirmedAppearances` is the total number of unconfirmed transactions
 - `appearances` is the total confirmed transactions

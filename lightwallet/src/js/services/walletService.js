@@ -2,8 +2,8 @@
 
 angular.module('copayApp.services').factory('walletService', function($log, $timeout, lodash, trezor, ledger, intelTEE, storageService, configService, rateService, uxLanguage, $filter, gettextCatalog, bwcError, $ionicPopup, fingerprintService, ongoingProcess, gettext, $rootScope, txFormatService, $ionicModal, $state, bwcService, bitcore, popupService) {
 
-  // Ratio low amount warning (fee/amount) in incoming TX 
-  var LOW_AMOUNT_RATIO = 0.15; 
+  // Ratio low amount warning (fee/amount) in incoming TX
+  var LOW_AMOUNT_RATIO = 0.15;
 
   // Ratio of "many utxos" warning in total balance (fee/amount)
   var TOTAL_LOW_WARNING_RATIO = .3;
@@ -193,32 +193,32 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
       cache.balanceByAddress = balance.byAddress;
 
       // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
-      cache.totalBalanceSat = balance.totalAmount;
+      cache.totalBalanceMicros = balance.totalAmount;
 
       // Spend unconfirmed funds
       if (config.spendUnconfirmed) {
-        cache.lockedBalanceSat = balance.lockedAmount;
-        cache.availableBalanceSat = balance.availableAmount;
+        cache.lockedBalanceMicros = balance.lockedAmount;
+        cache.availableBalanceMicros = balance.availableAmount;
         cache.totalBytesToSendMax = balance.totalBytesToSendMax;
         cache.pendingAmount = 0;
         cache.spendableAmount = balance.totalAmount - balance.lockedAmount;
       } else {
-        cache.lockedBalanceSat = balance.lockedConfirmedAmount;
-        cache.availableBalanceSat = balance.availableConfirmedAmount;
+        cache.lockedBalanceMicros = balance.lockedConfirmedAmount;
+        cache.availableBalanceMicros = balance.availableConfirmedAmount;
         cache.totalBytesToSendMax = balance.totalBytesToSendConfirmedMax;
         cache.pendingAmount = balance.totalAmount - balance.totalConfirmedAmount;
         cache.spendableAmount = balance.totalConfirmedAmount - balance.lockedAmount;
       }
 
       // Selected unit
-      cache.unitToSatoshi = config.settings.unitToSatoshi;
-      cache.satToUnit = 1 / cache.unitToSatoshi;
+      cache.unitToMicro = config.settings.unitToMicro;
+      cache.microToUnit = 1 / cache.unitToMicro;
       cache.unitName = config.settings.unitName;
 
       //STR
-      cache.totalBalanceStr = txFormatService.formatAmount(cache.totalBalanceSat) + ' ' + cache.unitName;
-      cache.lockedBalanceStr = txFormatService.formatAmount(cache.lockedBalanceSat) + ' ' + cache.unitName;
-      cache.availableBalanceStr = txFormatService.formatAmount(cache.availableBalanceSat) + ' ' + cache.unitName;
+      cache.totalBalanceStr = txFormatService.formatAmount(cache.totalBalanceMicros) + ' ' + cache.unitName;
+      cache.lockedBalanceStr = txFormatService.formatAmount(cache.lockedBalanceMicros) + ' ' + cache.unitName;
+      cache.availableBalanceStr = txFormatService.formatAmount(cache.availableBalanceMicros) + ' ' + cache.unitName;
       cache.spendableBalanceStr = txFormatService.formatAmount(cache.spendableAmount) + ' ' + cache.unitName;
       cache.pendingBalanceStr = txFormatService.formatAmount(cache.pendingAmount) + ' ' + cache.unitName;
 
@@ -238,9 +238,9 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
 
       rateService.whenAvailable(function() {
 
-        var totalBalanceAlternative = rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
+        var totalBalanceAlternative = rateService.toFiat(cache.totalBalanceMicros, cache.alternativeIsoCode);
         var pendingBalanceAlternative = rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode);
-        var lockedBalanceAlternative = rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
+        var lockedBalanceAlternative = rateService.toFiat(cache.lockedBalanceMicros, cache.alternativeIsoCode);
         var spendableBalanceAlternative = rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode);
         var alternativeConversionRate = rateService.toFiat(100000000, cache.alternativeIsoCode);
 
@@ -269,7 +269,7 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
     };
 
     function walletStatusHash(status) {
-      return status ? status.balance.totalAmount : wallet.totalBalanceSat;
+      return status ? status.balance.totalAmount : wallet.totalBalanceMicros;
     };
 
     function _getStatus(initStatusHash, tries, cb) {
@@ -922,7 +922,7 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
   };
 
 
-  // Approx utxo amount, from which the uxto is economically redeemable  
+  // Approx utxo amount, from which the uxto is economically redeemable
   root.getMinFee = function(wallet, feeLevels, nbOutputs) {
     var lowLevelRate = (lodash.find(feeLevels[wallet.network], {
       level: 'normal',
@@ -933,7 +933,7 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
   };
 
 
-  // Approx utxo amount, from which the uxto is economically redeemable  
+  // Approx utxo amount, from which the uxto is economically redeemable
   root.getLowAmount = function(wallet, feeLevels, nbOutputs) {
     var minFee = root.getMinFee(wallet,feeLevels, nbOutputs);
     return parseInt( minFee / LOW_AMOUNT_RATIO);
@@ -948,15 +948,15 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
 
       var minFee = root.getMinFee(wallet, levels, resp.length);
 
-      var balance = lodash.sum(resp, 'satoshis');
+      var balance = lodash.sum(resp, 'micros');
 
       // for 2 outputs
       var lowAmount = root.getLowAmount(wallet, levels);
       var lowUtxos = lodash.filter(resp, function(x) {
-        return x.satoshis < lowAmount;
+        return x.micros < lowAmount;
       });
 
-      var totalLow = lodash.sum(lowUtxos, 'satoshis');
+      var totalLow = lodash.sum(lowUtxos, 'micros');
 
       return cb(err, {
         allUtxos:  resp || [],

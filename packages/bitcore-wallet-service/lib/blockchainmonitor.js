@@ -87,6 +87,34 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
   });
   socket.on('tx', _.bind(self._handleIncomingTx, self));
   socket.on('block', _.bind(self._handleNewBlock, self, network));
+  socket.on('rawreferraltx', _.bind(self._handleReferral, self));
+};
+
+BlockchainMonitor.prototype._handleReferral = function(data) {
+  const self = this;
+
+  if (!data) return;
+
+  self.storage.fetchReferralByCodeHash(data.codeHash, function(err, rtx) {
+    if (err) {
+      log.error('Could not fetch referral from the db');
+      return;
+    }
+
+    if (!rtx) return;
+
+    self.storage.storeReferral(data, function(err) {
+      if (err) log.error('Could not store referral');
+
+      const args = data;
+
+      const notification = Notification.create({
+        type: 'NewIncomingReferralTx',
+        data: args,
+      });
+      self._storeAndBroadcastNotification(notification);
+    });
+  });
 };
 
 BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, processIt) {
@@ -103,11 +131,11 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
     var walletId = txp.walletId;
 
     if (!processIt) {
-      log.info('Detected broadcast ' + data.txid + ' of an accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'sat ]');
+      log.info('Detected broadcast ' + data.txid + ' of an accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'micros ]');
       return setTimeout(self._handleThirdPartyBroadcasts.bind(self, data, true), 20 * 1000);
     }
 
-    log.info('Processing accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'sat ]');
+    log.info('Processing accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'micros ]');
 
     txp.setBroadcasted();
 
@@ -157,7 +185,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
       if (!address || address.isChange) return next();
 
       var walletId = address.walletId;
-      log.info('Incoming tx for wallet ' + walletId + ' [' + out.amount + 'sat -> ' + out.address + ']');
+      log.info('Incoming tx for wallet ' + walletId + ' [' + out.amount + 'micros -> ' + out.address + ']');
 
       var fromTs = Date.now() - 24 * 3600 * 1000;
       self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
@@ -279,9 +307,61 @@ BlockchainMonitor.prototype._handleTxConfirmations = function(network, hash) {
   });
 };
 
+BlockchainMonitor.prototype._handleReferralConfirmations = function(network, hash) {
+  const self = this;
+
+  const explorer = self.explorers[network];
+  if (!explorer) return;
+
+  explorer.getReferralsInBlock(hash, function(err, referrals) {
+    if (err) {
+      log.error('Could not fetch referrals for block');
+      return;
+    }
+    if (_.isEmpty(referrals)) return;
+
+    self.storage.fetchActiveReferralConfirmationSubs(function (err, subs) {
+      if (err) {
+        log.error('Could not fetch referral confirmation subscriptions');
+        return;
+      }
+
+      const indexedSubs = _.indexBy(subs, 'codeHash');
+      const triggered = _.reduce(referrals, function(acc, reftx) {
+        if (!indexedSubs[reftx]) return acc;
+
+        acc.push(indexedSubs[reftx]);
+        return acc;
+      }, []);
+
+      async.each(triggered, function(sub) {
+        log.info('New referral confirmation ' + sub.codeHash);
+        sub.isActive = false;
+        self.storage.storeTxConfirmationSub(sub, function(err) {
+          if (err) {
+            log.error(`Could not update confirmation with codeHash: ${sub.codeHash}`);
+            return;
+          }
+
+          const notification = Notification.create({
+            type: 'ReferralConfirmation',
+            creatorId: sub.copayerId,
+            walletId: sub.walletId,
+            data: sub,
+          });
+          self._storeAndBroadcastNotification(notification, function () {
+            log.info(`Referral confirmation with code ${sub.codeHash} successfully sent`);
+          });
+        });
+      });
+    });
+  });
+};
+
 BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
   this._notifyNewBlock(network, hash);
   this._handleTxConfirmations(network, hash);
+  this._handleReferralConfirmations(network, hash);
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {

@@ -15,11 +15,11 @@ var node;
 
 var should = chai.should();
 
-var BitcoinRPC = require('bitcoind-rpc');
+var MeritRPC = require('meritd-rpc');
 var index = require('..');
 var Transaction = bitcore.Transaction;
 var BitcoreNode = index.Node;
-var BitcoinService = index.services.Bitcoin;
+var MeritService = index.services.Merit;
 var testWIF = 'cSdkPxkAjA4HDr5VHgsebAPDEh9Gyub4HK8UJr2DFGGqKKy4K5sG';
 var testKey;
 var client;
@@ -48,12 +48,12 @@ describe('Node Functionality', function() {
         network: 'regtest',
         services: [
           {
-            name: 'bitcoind',
-            module: BitcoinService,
+            name: 'meritd',
+            module: MeritService,
             config: {
               spawn: {
                 datadir: datadir,
-                exec: path.resolve(__dirname, '../bin/bitcoind')
+                exec: path.resolve(__dirname, '../bin/meritd')
               }
             }
           }
@@ -74,23 +74,23 @@ describe('Node Functionality', function() {
           return done(err);
         }
 
-        client = new BitcoinRPC({
+        client = new MeritRPC({
           protocol: 'http',
           host: '127.0.0.1',
           port: 30331,
-          user: 'bitcoin',
+          user: 'merit',
           pass: 'local321',
           rejectUnauthorized: false
         });
 
         var syncedHandler = function() {
-          if (node.services.bitcoind.height === 150) {
-            node.services.bitcoind.removeListener('synced', syncedHandler);
+          if (node.services.meritd.height === 150) {
+            node.services.meritd.removeListener('synced', syncedHandler);
             done();
           }
         };
 
-        node.services.bitcoind.on('synced', syncedHandler);
+        node.services.meritd.on('synced', syncedHandler);
 
         client.generate(150, function(err) {
           if (err) {
@@ -119,9 +119,9 @@ describe('Node Functionality', function() {
       var bus = node.openBus();
       var blockExpected;
       var blockReceived;
-      bus.subscribe('bitcoind/hashblock');
-      bus.on('bitcoind/hashblock', function(data) {
-        bus.unsubscribe('bitcoind/hashblock');
+      bus.subscribe('meritd/hashblock');
+      bus.on('meritd/hashblock', function(data) {
+        bus.unsubscribe('meritd/hashblock');
         if (blockExpected) {
           data.should.be.equal(blockExpected);
           done();
@@ -149,8 +149,8 @@ describe('Node Functionality', function() {
     before(function(done) {
       this.timeout(10000);
       address = testKey.toAddress(regtest).toString();
-      var startHeight = node.services.bitcoind.height;
-      node.services.bitcoind.on('tip', function(height) {
+      var startHeight = node.services.meritd.height;
+      node.services.meritd.on('tip', function(height) {
         if (height === startHeight + 3) {
           done();
         }
@@ -202,10 +202,10 @@ describe('Node Functionality', function() {
         info.addresses[address].outputIndexes.length.should.equal(1);
         info.addresses[address].outputIndexes[0].should.be.within(0, 1);
         info.addresses[address].inputIndexes.should.deep.equal([]);
-        info.satoshis.should.equal(10 * 1e8);
+        info.micros.should.equal(10 * 1e8);
         info.confirmations.should.equal(3);
         info.tx.blockTimestamp.should.be.a('number');
-        info.tx.feeSatoshis.should.be.within(950, 4000);
+        info.tx.feeMicros.should.be.within(950, 4000);
         done();
       });
     });
@@ -248,8 +248,8 @@ describe('Node Functionality', function() {
         /* jshint maxstatements: 50 */
 
         // Finished once all blocks have been mined
-        var startHeight = node.services.bitcoind.height;
-        node.services.bitcoind.on('tip', function(height) {
+        var startHeight = node.services.meritd.height;
+        node.services.meritd.on('tip', function(height) {
           if (height === startHeight + 5) {
             done();
           }
@@ -313,7 +313,7 @@ describe('Node Functionality', function() {
               async.series([
                 function(next) {
                   var tx2 = new Transaction();
-                  tx2Amount = results[0].satoshis - 10000;
+                  tx2Amount = results[0].micros - 10000;
                   tx2.from(results[0]);
                   tx2.to(address2, tx2Amount);
                   tx2.change(address);
@@ -328,7 +328,7 @@ describe('Node Functionality', function() {
                 }, function(next) {
                   var tx3 = new Transaction();
                   tx3.from(results[1]);
-                  tx3.to(address3, results[1].satoshis - 10000);
+                  tx3.to(address3, results[1].micros - 10000);
                   tx3.change(address);
                   tx3.sign(testKey);
                   node.sendTransaction(tx3.serialize(), function(err) {
@@ -340,7 +340,7 @@ describe('Node Functionality', function() {
                 }, function(next) {
                   var tx4 = new Transaction();
                   tx4.from(results[2]);
-                  tx4.to(address4, results[2].satoshis - 10000);
+                  tx4.to(address4, results[2].micros - 10000);
                   tx4.change(address);
                   tx4.sign(testKey);
                   node.sendTransaction(tx4.serialize(), function(err) {
@@ -353,8 +353,8 @@ describe('Node Functionality', function() {
                   var tx5 = new Transaction();
                   tx5.from(results[3]);
                   tx5.from(results[4]);
-                  tx5.to(address5, results[3].satoshis - 10000);
-                  tx5.to(address6, results[4].satoshis - 10000);
+                  tx5.to(address5, results[3].micros - 10000);
+                  tx5.to(address6, results[4].micros - 10000);
                   tx5.change(address);
                   tx5.sign(testKey);
                   node.sendTransaction(tx5.serialize(), function(err) {
@@ -401,7 +401,7 @@ describe('Node Functionality', function() {
           should.exist(history[2].addresses[address3]);
           history[3].tx.height.should.equal(156);
           should.exist(history[3].addresses[address2]);
-          history[3].satoshis.should.equal(tx2Amount);
+          history[3].micros.should.equal(tx2Amount);
           history[3].tx.hash.should.equal(tx2Hash);
           history[3].confirmations.should.equal(4);
           done();
@@ -507,11 +507,11 @@ describe('Node Functionality', function() {
           history[2].tx.height.should.equal(157);
           history[3].tx.height.should.equal(156);
           history[4].tx.height.should.equal(155);
-          history[4].satoshis.should.equal(-10000);
+          history[4].micros.should.equal(-10000);
           history[4].addresses[address].outputIndexes.should.deep.equal([0, 1, 2, 3, 4]);
           history[4].addresses[address].inputIndexes.should.deep.equal([0]);
           history[5].tx.height.should.equal(152);
-          history[5].satoshis.should.equal(10 * 1e8);
+          history[5].micros.should.equal(10 * 1e8);
           done();
         });
       });
@@ -620,7 +620,7 @@ describe('Node Functionality', function() {
             var history = results.items;
             history.length.should.equal(1);
             history[0].tx.height.should.equal(155);
-            history[0].satoshis.should.equal(-10000);
+            history[0].micros.should.equal(-10000);
             history[0].addresses[address].outputIndexes.should.deep.equal([0, 1, 2, 3, 4]);
             history[0].addresses[address].inputIndexes.should.deep.equal([0]);
             done();
@@ -638,7 +638,7 @@ describe('Node Functionality', function() {
             var history = results.items;
             history.length.should.equal(1);
             history[0].tx.height.should.equal(152);
-            history[0].satoshis.should.equal(10 * 1e8);
+            history[0].micros.should.equal(10 * 1e8);
             done();
           });
         });
@@ -663,11 +663,11 @@ describe('Node Functionality', function() {
         var memAddress = bitcore.PrivateKey().toAddress(node.network).toString();
         var tx = new Transaction();
         tx.from(unspentOutput);
-        tx.to(memAddress, unspentOutput.satoshis - 1000);
+        tx.to(memAddress, unspentOutput.micros - 1000);
         tx.fee(1000);
         tx.sign(testKey);
 
-        node.services.bitcoind.sendTransaction(tx.serialize(), function(err, hash) {
+        node.services.meritd.sendTransaction(tx.serialize(), function(err, hash) {
           node.getAddressTxids(memAddress, {}, function(err, txids) {
             if (err) {
               return done(err);

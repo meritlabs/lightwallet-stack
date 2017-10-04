@@ -11,13 +11,13 @@ var BufferWriter = bitcore.encoding.BufferWriter;
 var Opcode = bitcore.Opcode;
 var _ = require('lodash');
 
-var script_valid = require('../data/bitcoind/script_valid');
-var script_invalid = require('../data/bitcoind/script_invalid');
-var tx_valid = require('../data/bitcoind/tx_valid');
-var tx_invalid = require('../data/bitcoind/tx_invalid');
+var script_valid = require('../data/meritd/script_valid');
+var script_invalid = require('../data/meritd/script_invalid');
+var tx_valid = require('../data/meritd/tx_valid');
+var tx_invalid = require('../data/meritd/tx_invalid');
 
-//the script string format used in bitcoind data tests
-Script.fromBitcoindString = function(str) {
+//the script string format used in meritd data tests
+Script.fromMeritdString = function(str) {
   var bw = new BufferWriter();
   var tokens = str.split(' ');
   for (var i = 0; i < tokens.length; i++) {
@@ -134,7 +134,7 @@ describe('Interpreter', function() {
         txId: 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
         outputIndex: 0,
         script: scriptPubkey,
-        satoshis: 100000
+        micros: 100000
       };
       var tx = new Transaction()
         .from(utxo)
@@ -195,8 +195,8 @@ describe('Interpreter', function() {
   };
 
   var testFixture = function(vector, expected) {
-    var scriptSig = Script.fromBitcoindString(vector[0]);
-    var scriptPubkey = Script.fromBitcoindString(vector[1]);
+    var scriptSig = Script.fromMeritdString(vector[0]);
+    var scriptPubkey = Script.fromMeritdString(vector[1]);
     var flags = getFlags(vector[2]);
 
     var hashbuf = new Buffer(32);
@@ -210,7 +210,7 @@ describe('Interpreter', function() {
     }));
     credtx.addOutput(new Transaction.Output({
       script: scriptPubkey,
-      satoshis: 0
+      micros: 0
     }));
     var idbuf = credtx.id;
 
@@ -223,7 +223,7 @@ describe('Interpreter', function() {
     }));
     spendtx.addOutput(new Transaction.Output({
       script: new Script(),
-      satoshis: 0
+      micros: 0
     }));
 
     var interp = new Interpreter();
@@ -252,7 +252,7 @@ describe('Interpreter', function() {
     testAllFixtures(script_invalid, false);
 
   });
-  describe('bitcoind transaction evaluation fixtures', function() {
+  describe('meritd transaction evaluation fixtures', function() {
     var test_txs = function(set, expected) {
       var c = 0;
       set.forEach(function(vector) {
@@ -272,9 +272,9 @@ describe('Interpreter', function() {
             var txoutnum = input[1];
             var scriptPubKeyStr = input[2];
             if (txoutnum === -1) {
-              txoutnum = 0xffffffff; //bitcoind casts -1 to an unsigned int
+              txoutnum = 0xffffffff; //meritd casts -1 to an unsigned int
             }
-            map[txid + ':' + txoutnum] = Script.fromBitcoindString(scriptPubKeyStr);
+            map[txid + ':' + txoutnum] = Script.fromMeritdString(scriptPubKeyStr);
           });
 
           var tx = new Transaction(txhex);

@@ -22,19 +22,18 @@ function checkConfigVersion2(fullConfig) {
   if (!datadirUndefined || addressDefined || dbDefined) {
 
     console.warn('\nConfiguration file is not compatible with this version. \n' +
-                 'A reindex for bitcoind is necessary for this upgrade with the "reindex=1" bitcoin.conf option. \n' +
-                 'There are changes necessary in both bitcoin.conf and bitcore-node.json. \n\n' +
-                 'To upgrade please see the details below and documentation at: \n' +
-                 'https://github.com/bitpay/bitcore-node/blob/bitcoind/docs/upgrade.md \n');
+                 'A reindex for meritd is necessary for this upgrade with the "reindex=1" merit.conf option. \n' +
+                 'There are changes necessary in both merit.conf and bitcore-node.json. \n\n' +
+                 'To upgrade please see the details below and documentation at: \n');
 
     if (!datadirUndefined) {
       console.warn('Please remove "datadir" and add it to the config at ' + fullConfig.path + ' with:');
       var missingConfig = {
         servicesConfig: {
-          bitcoind: {
+          meritd: {
             spawn: {
               datadir: fullConfig.datadir,
-              exec: path.resolve(__dirname, '../../bin/bitcoind')
+              exec: path.resolve(__dirname, '../../bin/meritd')
             }
           }
         }
@@ -154,9 +153,9 @@ function loadModule(req, service) {
  * specified modules, and assemble an array in this format:
  * [
  *   {
- *     name: 'bitcoind',
+ *     name: 'meritd',
  *     config: {},
- *     module: BitcoinService
+ *     module: MeritService
  *   }
  * ]
  * @param {Function} req - The require function to use

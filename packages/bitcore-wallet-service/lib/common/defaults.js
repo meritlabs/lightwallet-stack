@@ -75,10 +75,10 @@ Defaults.UTXO_SELECTION_MAX_FEE_VS_TX_AMOUNT_FACTOR = 0.05;
 // when fees are significant (proportional to how much we would pay for using that big input only).
 Defaults.UTXO_SELECTION_MAX_FEE_VS_SINGLE_UTXO_FEE_FACTOR = 5;
 
-// Minimum allowed amount for tx outputs (including change) in SAT
+// Minimum allowed amount for tx outputs (including change) in Micros
 Defaults.MIN_OUTPUT_AMOUNT = 5000;
 
-// Number of confirmations from which tx in history will be cached 
+// Number of confirmations from which tx in history will be cached
 // (ie we consider them inmutables)
 Defaults.CONFIRMATIONS_TO_START_CACHING = 6 * 6; // ~ 6hrs
 
@@ -97,14 +97,14 @@ Defaults.SESSION_EXPIRATION = 1 * 60 * 60; // 1 hour to session expiration
 
 Defaults.RateLimit = {
   createWallet: {
-    windowMs: 60 * 60 * 1000, // hour window 
-    delayAfter: 10, // begin slowing down responses after the 3rd request 
-    delayMs: 3000, // slow down subsequent responses by 3 seconds per request 
+    windowMs: 60 * 60 * 1000, // hour window
+    delayAfter: 10, // begin slowing down responses after the 3rd request
+    delayMs: 3000, // slow down subsequent responses by 3 seconds per request
     max: 20, // start blocking after 20 request
     message: "Too many wallets created from this IP, please try again after an hour"
   },
   // otherPosts: {
-  //   windowMs: 60 * 60 * 1000, // 1 hour window 
+  //   windowMs: 60 * 60 * 1000, // 1 hour window
   //   max: 1200 , // 1 post every 3 sec average, max.
   // },
 };

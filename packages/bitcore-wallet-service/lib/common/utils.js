@@ -19,7 +19,7 @@ Utils.getMissingFields = function(obj, args) {
 
 /**
  *
- * @desc rounds a JAvascript number
+ * @desc rounds a Javascript number
  * @param number
  * @return {number}
  */
@@ -27,7 +27,7 @@ Utils.strip = function(number) {
   return parseFloat(number.toPrecision(12));
 }
 
-/* TODO: It would be nice to be compatible with bitcoind signmessage. How
+/* TODO: It would be nice to be compatible with meritd signmessage. How
  * the hash is calculated there? */
 Utils.hashMessage = function(text, noReverse) {
   $.checkArgument(text);
@@ -89,26 +89,31 @@ Utils._tryVerifyMessage = function(hash, sig, publicKeyBuffer) {
   }
 };
 
-Utils.formatAmount = function(satoshis, unit, opts) {
+Utils.formatAmount = function(micros, unit, opts) {
   var UNITS = {
-    btc: {
+    mrt: {
+      toMicros: 100000000,
+      maxDecimals: 6,
+      minDecimals: 2,
+    },
+    mrt: {
       toSatoshis: 100000000,
       maxDecimals: 6,
       minDecimals: 2,
     },
     bit: {
-      toSatoshis: 100,
+      toMicros: 100,
       maxDecimals: 0,
       minDecimals: 0,
     },
-    sat: {
-      toSatoshis: 1,
+    micros: {
+      toMicros: 1,
       maxDecimals: 0,
       minDecimals: 0,
     }
   };
 
-  $.shouldBeNumber(satoshis);
+  $.shouldBeNumber(micros);
   $.checkArgument(_.contains(_.keys(UNITS), unit));
 
   function addSeparators(nStr, thousands, decimal, minDecimals) {
@@ -129,21 +134,21 @@ Utils.formatAmount = function(satoshis, unit, opts) {
   opts = opts || {};
 
   var u = _.assign(UNITS[unit], opts);
-  var amount = (satoshis / u.toSatoshis).toFixed(u.maxDecimals);
+  var amount = (micros / u.toMicros).toFixed(u.maxDecimals);
   return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u.minDecimals);
 };
 
-Utils.formatAmountInBtc = function(amount) {
-  return Utils.formatAmount(amount, 'btc', {
+Utils.formatAmountInMrt = function(amount) {
+  return Utils.formatAmount(amount, 'mrt', {
     minDecimals: 8,
     maxDecimals: 8,
-  }) + 'btc';
+  }) + 'mrt';
 };
 
 Utils.formatUtxos = function(utxos) {
   if (_.isEmpty(utxos)) return 'none';
   return _.map([].concat(utxos), function(i) {
-    var amount = Utils.formatAmountInBtc(i.satoshis);
+    var amount = Utils.formatAmountInMrt(i.micros);
     var confirmations = i.confirmations ? i.confirmations + 'c' : 'u';
     return amount + '/' + confirmations;
   }).join(', ');

@@ -19,7 +19,7 @@ For a list of frequently asked questions please visit the [Copay FAQ](https://gi
 - Support for Bitcoin testnet wallets
 - Synchronous access across all major mobile and desktop platforms
 - Payment protocol (BIP70-BIP73) support: easily-identifiable payment requests and verifiable, secure bitcoin payments
-- Support for over 150 currency pricing options and unit denomination in BTC or bits
+- Support for over 150 currency pricing options and unit denomination in MRT or bits
 - Mnemonic (BIP39) support for wallet backups
 - Paper wallet sweep support (BIP38)
 - Hardware wallet support (Trezor and Ledger) (only in Chrome App version)

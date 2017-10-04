@@ -72,7 +72,7 @@ describe('Push notifications', function() {
               pushNotificationsOpts: {
                 templatePath: './lib/templates',
                 defaultLanguage: 'en',
-                defaultUnit: 'btc',
+                defaultUnit: 'mrt',
                 subjectPrefix: '',
                 pushServerUrl: 'http://localhost:8000',
                 authorizationKey: 'secret',
@@ -226,7 +226,7 @@ describe('Push notifications', function() {
               pushNotificationsOpts: {
                 templatePath: './lib/templates',
                 defaultLanguage: 'en',
-                defaultUnit: 'btc',
+                defaultUnit: 'mrt',
                 subjectPrefix: '',
                 pushServerUrl: 'http://localhost:8000',
                 authorizationKey: 'secret',
@@ -244,7 +244,7 @@ describe('Push notifications', function() {
       server.savePreferences({
         email: 'copayer1@domain.com',
         language: 'es',
-        unit: 'btc',
+        unit: 'mrt',
       }, function(err) {
         server.createAddress({}, function(err, address) {
           should.not.exist(err);
@@ -461,6 +461,7 @@ describe('Push notifications', function() {
           name: 'my wallet',
           m: 1,
           n: 3,
+          beacon: 'beacon',
           pubKey: TestData.keyPair.pub,
         };
         server.createWallet(walletOpts, function(err, wId) {
@@ -479,7 +480,7 @@ describe('Push notifications', function() {
             pushNotificationsOpts: {
               templatePath: './lib/templates',
               defaultLanguage: 'en',
-              defaultUnit: 'btc',
+              defaultUnit: 'mrt',
               subjectPrefix: '',
               pushServerUrl: 'http://localhost:8000',
               authorizationKey: 'secret',

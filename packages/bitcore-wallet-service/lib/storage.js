@@ -15,6 +15,7 @@ var Model = require('./model');
 var collections = {
   WALLETS: 'wallets',
   TXS: 'txs',
+  REFERRALS: 'referrals',
   ADDRESSES: 'addresses',
   NOTIFICATIONS: 'notifications',
   COPAYERS_LOOKUP: 'copayers_lookup',
@@ -26,6 +27,7 @@ var collections = {
   SESSIONS: 'sessions',
   PUSH_NOTIFICATION_SUBS: 'push_notification_subs',
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
+  REFERRAL_TX_CONFIRMATION_SUBS: 'referral_confirmation_subs',
 };
 
 var Storage = function(opts) {
@@ -52,6 +54,9 @@ Storage.prototype._createIndexes = function() {
   this.db.collection(collections.TXS).createIndex({
     walletId: 1,
     createdOn: -1,
+  });
+  this.db.collection(collections.REFERRALS).createIndex({
+    codeHash: 1,
   });
   this.db.collection(collections.NOTIFICATIONS).createIndex({
     walletId: 1,
@@ -83,6 +88,9 @@ Storage.prototype._createIndexes = function() {
     copayerId: 1,
     txid: 1,
   });
+  this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).createIndex({
+    codeHash: 1,
+  })
   this.db.collection(collections.SESSIONS).createIndex({
     copayerId: 1
   });
@@ -346,6 +354,30 @@ Storage.prototype.fetchBroadcastedTxs = function(walletId, opts, cb) {
   });
 };
 
+Storage.prototype.fetchReferralByCodeHash = function(codeHash, cb) {
+  const self = this;
+
+  const filter = {
+    codeHash,
+  };
+
+  self.db.collection(collections.REFERRALS).find(filter, function(err, result) {
+    if (err) return cb(err);
+    if (!result) return cb();
+
+    return cb(null, result);
+  });
+};
+
+Storage.prototype.storeReferral = function(referral, cb) {
+  this.db.collection(collections.REFERRALS).update({
+    codeHash: referral.codeHash,
+  }, referral, {
+    w: 1,
+    upsert: true,
+  }, cb);
+};
+
 /**
  * Retrieves notifications after a specific id or from a given ts (whichever is more recent).
  *
@@ -514,7 +546,6 @@ Storage.prototype.fetchAddress = function(address, cb) {
   }, function(err, result) {
     if (err) return cb(err);
     if (!result) return cb();
-
     return cb(null, Model.Address.fromObj(result));
   });
 };
@@ -628,7 +659,7 @@ Storage.prototype.storeActiveAddresses = function(walletId, addresses, cb) {
 };
 
 // --------         ---------------------------  Total
-//           > Time >                  
+//           > Time >
 //                       ^to     <=  ^from
 //                       ^fwdIndex  =>  ^end
 Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {
@@ -962,6 +993,25 @@ Storage.prototype.fetchActiveTxConfirmationSubs = function(copayerId, cb) {
     });
 };
 
+
+Storage.prototype.fetchActiveReferralConfirmationSubs = function(cb) {
+  const filter = {
+    isActive: true
+  };
+
+  this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).find(filter)
+    .toArray(function(err, result) {
+      if (err) return cb(err);
+
+      if (!result) return cb();
+
+      const subs = _.map([].concat(result), function(r) {
+        return Model.ReferralTxConfirmationSub.fromObj(r);
+      });
+      return cb(null, subs);
+    });
+};
+
 Storage.prototype.storeTxConfirmationSub = function(txConfirmationSub, cb) {
   this.db.collection(collections.TX_CONFIRMATION_SUBS).update({
     copayerId: txConfirmationSub.copayerId,
@@ -978,6 +1028,25 @@ Storage.prototype.removeTxConfirmationSub = function(copayerId, txid, cb) {
     txid: txid,
   }, {
     w: 1
+  }, cb);
+};
+
+Storage.prototype.storeReferralTxConfirmationSub = function(referralConfirmationSub, cb) {
+  this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).update({
+    copayerId: referralConfirmationSub.copayerId,
+    codeHash: referralConfirmationSub.codeHash,
+  }, referralConfirmationSub, {
+    w: 1,
+    upsert: true,
+  }, cb);
+};
+
+Storage.prototype.removeReferralTxConfirmationSub = function(copayerId, codeHash, cb) {
+  this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).remove({
+    codeHash: codeHash,
+  }, {
+    w: 1,
+    upsert: true,
   }, cb);
 };
 
