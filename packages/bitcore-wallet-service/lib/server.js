@@ -640,7 +640,7 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
     walletId: walletId,
   });
 
-  this.storage.storeNotification(walletId, notification, function() {
+  self.storage.storeNotification(walletId, notification, function() {
     self.messageBroker.send(notification);
     return cb();
   });

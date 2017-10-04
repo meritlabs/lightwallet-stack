@@ -64,6 +64,10 @@ helpers.beforeEach = function(cb) {
       return cb(null, { result: { referralcode: 'code' } });
     }
 
+    blockchainExplorer.getReferralsInBlock = function() {
+      return cb(null, []);
+    }
+
     var opts = {
       storage: storage,
       blockchainExplorer: blockchainExplorer,
