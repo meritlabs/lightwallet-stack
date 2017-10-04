@@ -156,6 +156,10 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
 
   $scope.findContact = function(search) {
+    
+    if(search && search.length > 19 && incomingData.redir(search)) {
+      return;
+    }
 
     if (!search || search.length < 1) {
       $scope.list = [];
