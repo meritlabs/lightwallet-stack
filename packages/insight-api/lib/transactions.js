@@ -53,7 +53,7 @@ TxController.prototype.transformTransaction = function(transaction, options, cal
 
   var confirmations = 0;
   if(transaction.height >= 0) {
-    confirmations = this.node.services.bitcoind.height - transaction.height + 1;
+    confirmations = this.node.services.meritd.height - transaction.height + 1;
   }
 
   var transformed = {

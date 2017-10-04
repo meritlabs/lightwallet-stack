@@ -87,6 +87,34 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
   });
   socket.on('tx', _.bind(self._handleIncomingTx, self));
   socket.on('block', _.bind(self._handleNewBlock, self, network));
+  socket.on('rawreferraltx', _.bind(self._handleReferral, self));
+};
+
+BlockchainMonitor.prototype._handleReferral = function(data) {
+  const self = this;
+
+  if (!data) return;
+
+  self.storage.fetchReferralByCodeHash(data.codeHash, function(err, rtx) {
+    if (err) {
+      log.error('Could not fetch referral from the db');
+      return;
+    }
+
+    if (!rtx) return;
+
+    self.storage.storeReferral(data, function(err) {
+      if (err) log.error('Could not store referral');
+
+      const args = data;
+
+      const notification = Notification.create({
+        type: 'NewIncomingReferralTx',
+        data: args,
+      });
+      self._storeAndBroadcastNotification(notification);
+    });
+  });
 };
 
 BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, processIt) {
@@ -279,9 +307,61 @@ BlockchainMonitor.prototype._handleTxConfirmations = function(network, hash) {
   });
 };
 
+BlockchainMonitor.prototype._handleReferralConfirmations = function(network, hash) {
+  const self = this;
+
+  const explorer = self.explorers[network];
+  if (!explorer) return;
+
+  explorer.getReferralsInBlock(hash, function(err, referrals) {
+    if (err) {
+      log.error('Could not fetch referrals for block');
+      return;
+    }
+    if (_.isEmpty(referrals)) return;
+
+    self.storage.fetchActiveReferralConfirmationSubs(function (err, subs) {
+      if (err) {
+        log.error('Could not fetch referral confirmation subscriptions');
+        return;
+      }
+
+      const indexedSubs = _.indexBy(subs, 'codeHash');
+      const triggered = _.reduce(referrals, function(acc, reftx) {
+        if (!indexedSubs[reftx]) return acc;
+
+        acc.push(indexedSubs[reftx]);
+        return acc;
+      }, []);
+
+      async.each(triggered, function(sub) {
+        log.info('New referral confirmation ' + sub.codeHash);
+        sub.isActive = false;
+        self.storage.storeTxConfirmationSub(sub, function(err) {
+          if (err) {
+            log.error(`Could not update confirmation with codeHash: ${sub.codeHash}`);
+            return;
+          }
+
+          const notification = Notification.create({
+            type: 'ReferralConfirmation',
+            creatorId: sub.copayerId,
+            walletId: sub.walletId,
+            data: sub,
+          });
+          self._storeAndBroadcastNotification(notification, function () {
+            log.info(`Referral confirmation with code ${sub.codeHash} successfully sent`);
+          });
+        });
+      });
+    });
+  });
+};
+
 BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
   this._notifyNewBlock(network, hash);
   this._handleTxConfirmations(network, hash);
+  this._handleReferralConfirmations(network, hash);
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {

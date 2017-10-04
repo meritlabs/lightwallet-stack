@@ -1,47 +1,27 @@
 {
   "project_info": {
-    "project_number": "953682058057",
-    "firebase_url": "https://foxcomm-staging.firebaseio.com",
-    "project_id": "foxcomm-staging",
-    "storage_bucket": "foxcomm-staging.appspot.com"
+    "project_number": "1091326413792",
+    "firebase_url": "https://prime-service-181121.firebaseio.com",
+    "project_id": "prime-service-181121",
+    "storage_bucket": "prime-service-181121.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:953682058057:android:c60e95c518bea670",
+        "mobilesdk_app_id": "1:1091326413792:android:c60e95c518bea670",
         "android_client_info": {
           "package_name": "me.merit.LightWallet"
         }
       },
       "oauth_client": [
         {
-          "client_id": "953682058057-72lb5f8a6i6ama12ssqa4g098f2gmij8.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "953682058057-vdvl4th434n68d2afj6vdm77v038fcld.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "953682058057-8vr427rf4c7ji64trbbtovoc8vto637j.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "953682058057-trm1gl4qpa6c9c8av6b42e4p766bloa7.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "953682058057-o21m80u2d7raoq71fetp8u21k8306a7p.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "953682058057-cse9mkmr1ot9ps79o3qrut39kjrhd6da.apps.googleusercontent.com",
+          "client_id": "1091326413792-gle6nvsk3auqtd7hj0vahug4icf9pph4.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBKvzaqVhRcdzr0fc2OpJ3OJblJ4Dov6Us"
+          "current_key": "AIzaSyBnjv7oeziLxfWvKs4nM9I9XFVCk-u2kVI"
         }
       ],
       "services": {

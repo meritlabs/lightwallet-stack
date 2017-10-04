@@ -135,6 +135,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       recipientType: data.stateParams.recipientType || null,
       toName: data.stateParams.toName,
       toEmail: data.stateParams.toEmail,
+      toPhoneNumber: data.stateParams.toPhoneNumber,
       toColor: data.stateParams.toColor,
       network: (new bitcore.Address(data.stateParams.toAddress)).network.name,
       txp: {},
@@ -355,7 +356,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       return warningMsg.join('\n');
     };
 
-    var msg = gettextCatalog.getString("{{fee}} will be deducted for bitcoin networking fees.", {
+    var msg = gettextCatalog.getString("{{fee}} will be deducted for merit networking fees.", {
       fee: txFormatService.formatAmountStr(sendMaxInfo.fee)
     });
     var warningMsg = verifyExcludedUtxos();
@@ -465,7 +466,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     if (!tx || !wallet) return;
 
     if ($scope.paymentExpired) {
-      popupService.showAlert(null, gettextCatalog.getString('This bitcoin payment request has expired.'));
+      popupService.showAlert(null, gettextCatalog.getString('This merit payment request has expired.'));
       $scope.sendStatus = '';
       $timeout(function() {
         $scope.$apply();

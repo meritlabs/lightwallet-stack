@@ -21,9 +21,9 @@ function PaymentProtocol() {
 PaymentProtocol.PAYMENT_REQUEST_MAX_SIZE = 50000;
 PaymentProtocol.PAYMENT_MAX_SIZE = 50000;
 PaymentProtocol.PAYMENT_ACK_MAX_SIZE = 60000;
-PaymentProtocol.PAYMENT_REQUEST_CONTENT_TYPE = 'application/bitcoin-paymentrequest';
-PaymentProtocol.PAYMENT_CONTENT_TYPE = 'application/bitcoin-payment';
-PaymentProtocol.PAYMENT_ACK_CONTENT_TYPE = 'application/bitcoin-paymentack';
+PaymentProtocol.PAYMENT_REQUEST_CONTENT_TYPE = 'application/merit-paymentrequest';
+PaymentProtocol.PAYMENT_CONTENT_TYPE = 'application/merit-payment';
+PaymentProtocol.PAYMENT_ACK_CONTENT_TYPE = 'application/merit-paymentack';
 
 // https://www.google.com/search?q=signatureAlgorithm+1.2.840.113549.1.1.1
 // http://msdn.microsoft.com/en-us/library/windows/desktop/aa379057(v=vs.85).aspx
@@ -378,7 +378,7 @@ PaymentProtocol.prototype.verify = function(returnTrust) {
 };
 
 function magicHash(str) {
-  var magicBytes = new Buffer('Bitcoin Signed Message:\n');
+  var magicBytes = new Buffer('Merit Signed Message:\n');
   var prefix1 = varintBufNum(magicBytes.length);
   var message = new Buffer(str);
   var prefix2 = varintBufNum(message.length);

@@ -5,7 +5,7 @@ node_modules/
 data-and-logs/data-1/*
 data-and-logs/data-2/*
 data-and-logs/data-3/*
-!bitcoin.conf
+!merit.conf
 hosts.json
 bitcore-node/devnode/
 insight-ui/public/*

@@ -7,14 +7,15 @@ angular.module('copayApp.controllers').controller('addressbookAddController', fu
   $scope.addressbookEntry = {
     'address': $stateParams.addressbookEntry || '',
     'name': '',
-    'email': ''
+    'email': '',
+    'phoneNumber': ''
   };
 
   $scope.onQrCodeScannedAddressBook = function(data, addressbookForm) {
     $timeout(function() {
       var form = addressbookForm;
       if (data && form) {
-        data = data.replace('bitcoin:', '');
+        data = data.replace('merit:', '');
         form.address.$setViewValue(data);
         form.address.$isValid = true;
         form.address.$render();

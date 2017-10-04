@@ -15,11 +15,11 @@ var node;
 
 var should = chai.should();
 
-var BitcoinRPC = require('bitcoind-rpc');
+var MeritRPC = require('meritd-rpc');
 var index = require('..');
 var Transaction = bitcore.Transaction;
 var BitcoreNode = index.Node;
-var BitcoinService = index.services.Bitcoin;
+var MeritService = index.services.Merit;
 var testWIF = 'cSdkPxkAjA4HDr5VHgsebAPDEh9Gyub4HK8UJr2DFGGqKKy4K5sG';
 var testKey;
 var client;
@@ -48,12 +48,12 @@ describe('Node Functionality', function() {
         network: 'regtest',
         services: [
           {
-            name: 'bitcoind',
-            module: BitcoinService,
+            name: 'meritd',
+            module: MeritService,
             config: {
               spawn: {
                 datadir: datadir,
-                exec: path.resolve(__dirname, '../bin/bitcoind')
+                exec: path.resolve(__dirname, '../bin/meritd')
               }
             }
           }
@@ -74,23 +74,23 @@ describe('Node Functionality', function() {
           return done(err);
         }
 
-        client = new BitcoinRPC({
+        client = new MeritRPC({
           protocol: 'http',
           host: '127.0.0.1',
           port: 30331,
-          user: 'bitcoin',
+          user: 'merit',
           pass: 'local321',
           rejectUnauthorized: false
         });
 
         var syncedHandler = function() {
-          if (node.services.bitcoind.height === 150) {
-            node.services.bitcoind.removeListener('synced', syncedHandler);
+          if (node.services.meritd.height === 150) {
+            node.services.meritd.removeListener('synced', syncedHandler);
             done();
           }
         };
 
-        node.services.bitcoind.on('synced', syncedHandler);
+        node.services.meritd.on('synced', syncedHandler);
 
         client.generate(150, function(err) {
           if (err) {
@@ -119,9 +119,9 @@ describe('Node Functionality', function() {
       var bus = node.openBus();
       var blockExpected;
       var blockReceived;
-      bus.subscribe('bitcoind/hashblock');
-      bus.on('bitcoind/hashblock', function(data) {
-        bus.unsubscribe('bitcoind/hashblock');
+      bus.subscribe('meritd/hashblock');
+      bus.on('meritd/hashblock', function(data) {
+        bus.unsubscribe('meritd/hashblock');
         if (blockExpected) {
           data.should.be.equal(blockExpected);
           done();
@@ -149,8 +149,8 @@ describe('Node Functionality', function() {
     before(function(done) {
       this.timeout(10000);
       address = testKey.toAddress(regtest).toString();
-      var startHeight = node.services.bitcoind.height;
-      node.services.bitcoind.on('tip', function(height) {
+      var startHeight = node.services.meritd.height;
+      node.services.meritd.on('tip', function(height) {
         if (height === startHeight + 3) {
           done();
         }
@@ -248,8 +248,8 @@ describe('Node Functionality', function() {
         /* jshint maxstatements: 50 */
 
         // Finished once all blocks have been mined
-        var startHeight = node.services.bitcoind.height;
-        node.services.bitcoind.on('tip', function(height) {
+        var startHeight = node.services.meritd.height;
+        node.services.meritd.on('tip', function(height) {
           if (height === startHeight + 5) {
             done();
           }
@@ -667,7 +667,7 @@ describe('Node Functionality', function() {
         tx.fee(1000);
         tx.sign(testKey);
 
-        node.services.bitcoind.sendTransaction(tx.serialize(), function(err, hash) {
+        node.services.meritd.sendTransaction(tx.serialize(), function(err, hash) {
           node.getAddressTxids(memAddress, {}, function(err, txids) {
             if (err) {
               return done(err);

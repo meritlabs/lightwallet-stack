@@ -1,8 +1,8 @@
 {
   "name": "insight-api",
-  "description": "A Bitcoin blockchain REST and web socket API service for Bitcore Node.",
+  "description": "A Merit blockchain REST and web socket API service for Bitcore Node.",
   "version": "0.4.3",
-  "repository": "git://github.com/bitpay/insight-api.git",
+  "repository": "https://github.com/meritlabs/lightwallet-stack",
   "contributors": [
     {
       "name": "Gustavo Cortez",
@@ -38,15 +38,15 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/bitpay/insight-api/issues"
+    "url": "https://github.com/meritlabs/lightwallet-stack/issues"
   },
-  "homepage": "https://github.com/bitpay/insight-api",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "license": "MIT",
   "keywords": [
     "insight",
     "insight api",
     "blockchain",
-    "bitcoin api",
+    "merit api",
     "blockchain api",
     "json",
     "bitcore"
