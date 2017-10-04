@@ -146,6 +146,31 @@ angular.module('copayApp.services')
       storage.remove('profile', cb);
     };
 
+    root.storeNewEasyReceipt = function(easyReceipt, cb) {
+      storage.create('easyReceipt', easyReceipt.toObj(), cb);
+    };
+
+    root.storeEasyReceipt = function(easyReceipt, cb) {
+      storage.set('easyReceipt', easyReceipt.toObj(), cb);
+    };
+
+    root.getEasyReceipt = function(cb) {
+      storage.get('easyReceipt', function(err, str) {
+        if (err || !str)
+          return cb(err);
+
+        var receipt, err; 
+        try {
+          receipt = EasyReceipt.fromString(str);
+        } catch (e) {
+          $log.debug("Could not read easyReceipt:", e);
+          err = new Error('Could not read easyReceipt:' + receipt);
+        }
+        return cb(err, receipt);
+      });
+    };
+
+
     root.setFeedbackInfo = function(feedbackValues, cb) {
       storage.set('feedback', feedbackValues, cb);
     };

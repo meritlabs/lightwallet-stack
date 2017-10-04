@@ -32,19 +32,19 @@ AddressController.prototype.show = function(req, res) {
 };
 
 AddressController.prototype.balance = function(req, res) {
-  this.addressSummarySubQuery(req, res, 'balanceSat');
+  this.addressSummarySubQuery(req, res, 'balanceMicros');
 };
 
 AddressController.prototype.totalReceived = function(req, res) {
-  this.addressSummarySubQuery(req, res, 'totalReceivedSat');
+  this.addressSummarySubQuery(req, res, 'totalReceivedMicros');
 };
 
 AddressController.prototype.totalSent = function(req, res) {
-  this.addressSummarySubQuery(req, res, 'totalSentSat');
+  this.addressSummarySubQuery(req, res, 'totalSentMicros');
 };
 
 AddressController.prototype.unconfirmedBalance = function(req, res) {
-  this.addressSummarySubQuery(req, res, 'unconfirmedBalanceSat');
+  this.addressSummarySubQuery(req, res, 'unconfirmedBalanceMicros');
 };
 
 AddressController.prototype.addressSummarySubQuery = function(req, res, param) {
@@ -68,13 +68,13 @@ AddressController.prototype.getAddressSummary = function(address, options, callb
     var transformed = {
       addrStr: address,
       balance: summary.balance / 1e8,
-      balanceSat: summary.balance,
+      balanceMicros: summary.balance,
       totalReceived: summary.totalReceived / 1e8,
-      totalReceivedSat: summary.totalReceived,
+      totalReceivedMicros: summary.totalReceived,
       totalSent: summary.totalSpent / 1e8,
-      totalSentSat: summary.totalSpent,
+      totalSentMicros: summary.totalSpent,
       unconfirmedBalance: summary.unconfirmedBalance / 1e8,
-      unconfirmedBalanceSat: summary.unconfirmedBalance,
+      unconfirmedBalanceMicros: summary.unconfirmedBalance,
       unconfirmedTxApperances: summary.unconfirmedAppearances, // misspelling - ew
       txApperances: summary.appearances, // yuck
       transactions: summary.txids
@@ -122,6 +122,22 @@ AddressController.prototype.check = function(req, res, next, addresses) {
   next();
 };
 
+AddressController.prototype.validateAddresses = function(req, res) {
+  const self = this;
+  const address = req.addr;
+
+  this.node.validateAddress(address, function(err, response) {
+    if (err || !response.result)  {
+      return self.common.handleErrors({
+        message: 'Invalid address: ' + err.message,
+        code: 1
+      }, res);
+    } 
+
+    return res.jsonp({ isValid: response.result.isvalid, isBeaconed: response.result.isbeaconed });
+  });  
+};
+
 AddressController.prototype.utxo = function(req, res) {
   var self = this;
 
@@ -154,12 +170,12 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
     txid: utxoArg.txid,
     vout: utxoArg.outputIndex,
     scriptPubKey: utxoArg.script,
-    amount: utxoArg.micros / 1e8,
-    micros: utxoArg.micros
-  };
+    amount: utxoArg.satoshis / 1e8,
+    micros: utxoArg.satoshis 
+  }; // ToDo: update after changes in meritd
   if (utxoArg.height && utxoArg.height > 0) {
     utxo.height = utxoArg.height;
-    utxo.confirmations = this.node.services.bitcoind.height - utxoArg.height + 1;
+    utxo.confirmations = this.node.services.meritd.height - utxoArg.height + 1;
   } else {
     utxo.confirmations = 0;
   }

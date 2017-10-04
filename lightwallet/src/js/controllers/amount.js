@@ -5,7 +5,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
   var unitToMicro;
   var microToUnit;
   var unitDecimals;
-  var satToMrt;
+  var microsToMrt;
   var SMALL_FONT_SIZE_LIMIT = 10;
   var LENGTH_EXPRESSION_LIMIT = 19;
   var isNW = platformInfo.isNW;
@@ -73,12 +73,12 @@ angular.module('copayApp.controllers').controller('amountController', function($
     $scope.isCordova = platformInfo.isCordova;
     unitToMicro = config.unitToMicro;
     microToUnit = 1 / unitToMicro;
-    satToMrt = 1 / 100000000;
+    microsToMrt = 1 / 100000000;
     unitDecimals = config.unitDecimals;
 
     $scope.resetAmount();
 
-    // in SAT ALWAYS
+    // in Micros ALWAYS
     if ($stateParams.toAmount) {
       $scope.amount = (($stateParams.toAmount) * microToUnit).toFixed(unitDecimals);
     }

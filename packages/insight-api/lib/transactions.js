@@ -53,7 +53,7 @@ TxController.prototype.transformTransaction = function(transaction, options, cal
 
   var confirmations = 0;
   if(transaction.height >= 0) {
-    confirmations = this.node.services.bitcoind.height - transaction.height + 1;
+    confirmations = this.node.services.meritd.height - transaction.height + 1;
   }
 
   var transformed = {
@@ -116,7 +116,7 @@ TxController.prototype.transformInput = function(options, input, index) {
   }
 
   transformed.addr = input.address;
-  transformed.valueSat = input.micros;
+  transformed.valueMicros = input.micros;
   transformed.value = input.micros / 1e8;
   transformed.doubleSpentTxID = null; // TODO
   //transformed.isConfirmed = null; // TODO

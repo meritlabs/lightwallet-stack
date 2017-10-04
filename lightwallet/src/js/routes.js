@@ -760,12 +760,32 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
+
+      // DEEPLINK INTO ONBOARDING FLOW
+      .state('onboarding.easyReceive', {
+        url: '/easyreceive?inviteCode&amount&senderName&sentToAddress&secret',
+        views: {
+          'onboarding': {
+            templateUrl: 'views/onboarding/welcome-easyreceive.html',
+            controller: 'welcomeController',
+          }
+        }
+      })
       .state('onboarding.tour', {
         url: '/tour',
         views: {
           'onboarding': {
             templateUrl: 'views/onboarding/tour.html',
             controller: 'tourController'
+          }
+        }
+      })
+      .state('onboarding.unlock', {
+        url: '/unlock',
+        views: {
+          'onboarding': {
+            templateUrl: 'views/onboarding/unlock.html',
+            controller: 'unlockController'
           }
         }
       })
@@ -837,18 +857,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         },
       })
 
-      // DEEPLINK INTO ONBOARDING FLOW
-      .state('onboarding.fromEasySend', {
-        templateUrl: 'views/onboarding/welcome-easysend.html',
-        controller: 'welcomeController',
-        params: {
-          inviteCode: null,
-          amount: null,
-          secret: null
-        }
-      })
-      
-      
+
       /*
        *
        * Feedback
@@ -907,7 +916,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
 
       /*
        *
-       * Buy or Sell Bitcoin
+       * Buy or Sell Merit
        *
        */
 
@@ -1272,10 +1281,25 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         deepLinkService.branchInit();
       });
 
-    
+
       $ionicPlatform.on('menubutton', function() {
         window.location = '#/preferences';
       });
+
+      // Currently, we have to set a timeout until the $stateProvider is ready
+      // TODO: Refactor this whole approach when updating Angular.
+      var handleInitialStateTransition = function (currentState) {
+        $timeout( () => {
+          console.log(`What is the current state name: ${$state.current.name}`);
+          if ($state.is('onboarding.easyReceive')) {
+            $log.debug("Current state is easyReceive; not making changes...");
+            // Do nothing
+          } else {
+            // Our default position is to go to the welcome screen.
+            $state.go('onboarding.welcome');
+          }
+        }, 100);
+      }
 
       $log.info('Init profile...');
       // Try to open local profile
@@ -1286,11 +1310,11 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         if (err) {
           if (err.message && err.message.match('NOPROFILE')) {
             $log.debug('No profile... redirecting');
-            $state.go('onboarding.welcome');
+            handleInitialStateTransition($state);
           } else if (err.message && err.message.match('NONAGREEDDISCLAIMER')) {
             if (lodash.isEmpty(profileService.getWallets())) {
               $log.debug('No wallets and no disclaimer... redirecting');
-              $state.go('onboarding.welcome');
+              handleInitialStateTransition($state);
             } else {
               $log.debug('Display disclaimer... redirecting');
               $state.go('onboarding.disclaimer', {

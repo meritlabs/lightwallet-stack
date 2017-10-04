@@ -62,7 +62,7 @@ Insight.prototype.getUtxos = function(addresses, cb) {
 };
 
 /**
- * Broadcast a transaction to the bitcoin network
+ * Broadcast a transaction to the merit network
  */
 Insight.prototype.broadcast = function(rawTx, cb) {
   var args = {
@@ -126,7 +126,7 @@ Insight.prototype.getTransactions = function(addresses, from, to, cb) {
         txs = txs.items;
     }
 
-    // NOTE: Whenever Insight breaks communication with bitcoind, it returns invalid data but no error code.
+    // NOTE: Whenever Insight breaks communication with meritd, it returns invalid data but no error code.
     if (!_.isArray(txs) || (txs.length != _.compact(txs).length)) return cb(new Error('Could not retrieve transactions from blockchain. Request was:' + JSON.stringify(args)));
 
     return cb(null, txs, total);
@@ -242,9 +242,7 @@ Insight.prototype.validateReferralCode = function(referralCode, cb) {
 };
 
 Insight.prototype.unlockWallet = function(referralCode, unlockAddress, cb) {
-  var self = this;
-
-  var args = {
+  const args = {
     method: 'POST',
     path: `${this.apiPrefix}/wallet/unlock`,
     json: {
@@ -259,6 +257,22 @@ Insight.prototype.unlockWallet = function(referralCode, unlockAddress, cb) {
     }
     return cb(null, body);
   });
+};
+
+Insight.prototype.validateAddress = function(address, cb) {
+  const args = {
+    method: 'GET',
+    path: `${this.apiPrefix}/addr/${address}/validate`,
+  };
+
+  this._doRequest(args, function(err, res, body) {
+    if (err || res.statusCode !== 200) {
+      return cb(_parseErr(err, res));
+    }
+
+    return cb(null, JSON.parse(body));
+  });
+
 };
 
 module.exports = Insight;

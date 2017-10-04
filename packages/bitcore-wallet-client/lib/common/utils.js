@@ -36,7 +36,7 @@ Utils.decryptMessage = function(cyphertextJson, encryptingKey) {
   }
 };
 
-/* TODO: It would be nice to be compatible with bitcoind signmessage. How
+/* TODO: It would be nice to be compatible with meritd signmessage. How
  * the hash is calculated there? */
 Utils.hashMessage = function(text) {
   $.checkArgument(text);

@@ -96,10 +96,10 @@ angular.module('copayApp.controllers').controller('confirmController', function(
             walletsUpdated++;
             w.status = status;
 
-            if (!status.availableBalanceSat)
+            if (!status.availableBalanceMicros)
               $log.debug('No balance available in: ' + w.name);
 
-            if (status.availableBalanceSat > minAmount) {
+            if (status.availableBalanceMicros > minAmount) {
               filteredWallets.push(w);
             }
           }
@@ -355,7 +355,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       return warningMsg.join('\n');
     };
 
-    var msg = gettextCatalog.getString("{{fee}} will be deducted for bitcoin networking fees.", {
+    var msg = gettextCatalog.getString("{{fee}} will be deducted for merit networking fees.", {
       fee: txFormatService.formatAmountStr(sendMaxInfo.fee)
     });
     var warningMsg = verifyExcludedUtxos();
@@ -465,7 +465,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     if (!tx || !wallet) return;
 
     if ($scope.paymentExpired) {
-      popupService.showAlert(null, gettextCatalog.getString('This bitcoin payment request has expired.'));
+      popupService.showAlert(null, gettextCatalog.getString('This merit payment request has expired.'));
       $scope.sendStatus = '';
       $timeout(function() {
         $scope.$apply();
@@ -570,7 +570,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
     if (usingCustomFee) {
       scope.customFeePerKB = tx.feeRate;
-      scope.feePerSatByte = tx.feeRate / 1000;
+      scope.feePerMicrosByte = tx.feeRate / 1000;
     }
 
     $ionicModal.fromTemplateUrl('views/modals/chooseFeeLevel.html', {
