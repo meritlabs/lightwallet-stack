@@ -135,9 +135,9 @@ clean-lightwallet-stack: clean-npm \
 	clean-bitcore-message \
 	clean-bitcore-payment-protocol
 
-.PHONY: test-bitcoin-rpc
-test-bitcoin-rpc:
-	cd packages/bitcoin-rpc && npm test
+.PHONY: test-merit-rpc
+test-merit-rpc:
+	cd packages/merit-rpc && npm test
 
 .PHONY: test-bitcore-lib
 test-bitcore-lib:
@@ -176,7 +176,7 @@ test-insight-api:
 	cd packages/insight-api && npm test
 
 .PHONY: test-all
-test-all: test-bitcoin-rpc \
+test-all: test-merit-rpc \
 	test-bitcore-lib \
 	test-bitcore-message \
 	test-bitcore-mnemonic \
