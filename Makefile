@@ -121,8 +121,8 @@ clean-bitcore-message:
 clean-bitcore-payment-protocol:
 	rm -rf ./packages/bitcore-payment-protocol/node_modules
 
-.PHONY: clean-lightwallet-stack
-clean-lightwallet-stack: clean-npm \
+.PHONY: clean-stack
+clean-stack: clean-npm \
 	clean-bitcore-lib \
 	clean-bitcoin-rpc \
 	clean-bitcore-mnemonic \
