@@ -1,14 +1,15 @@
 'use strict';
 
-var _ = require('lodash');
-var BlockHeader = require('./blockheader');
-var BN = require('../crypto/bn');
-var BufferUtil = require('../util/buffer');
-var BufferReader = require('../encoding/bufferreader');
-var BufferWriter = require('../encoding/bufferwriter');
-var Hash = require('../crypto/hash');
-var Transaction = require('../transaction');
-var $ = require('../util/preconditions');
+const _ = require('lodash');
+const BlockHeader = require('./blockheader');
+const BN = require('../crypto/bn');
+const BufferUtil = require('../util/buffer');
+const BufferReader = require('../encoding/bufferreader');
+const BufferWriter = require('../encoding/bufferwriter');
+const Hash = require('../crypto/hash');
+const Transaction = require('../transaction');
+const Referral = require('../referral');
+const $ = require('../util/preconditions');
 
 /**
  * Instantiate a Block from a Buffer, JSON object, or Object with
@@ -53,7 +54,7 @@ Block._from = function _from(arg) {
  * @private
  */
 Block._fromObject = function _fromObject(data) {
-  var transactions = [];
+  const transactions = [];
   data.transactions.forEach(function(tx) {
     if (tx instanceof Transaction) {
       transactions.push(tx);
@@ -61,9 +62,18 @@ Block._fromObject = function _fromObject(data) {
       transactions.push(Transaction().fromObject(tx));
     }
   });
+  const referrals = [];
+  data.referrals.forEach(function(ref) {
+    if (ref instanceof Referral) {
+      referrals.push(ref);
+    } else {
+      referrals.push(Referral().fromObject(ref));
+    }
+  });
   var info = {
     header: BlockHeader.fromObject(data.header),
-    transactions: transactions
+    transactions: transactions,
+    referrals: referrals,
   };
   return info;
 };
@@ -86,10 +96,15 @@ Block._fromBufferReader = function _fromBufferReader(br) {
   var info = {};
   $.checkState(!br.finished(), 'No block data received');
   info.header = BlockHeader.fromBufferReader(br);
-  var transactions = br.readVarintNum();
+  const transactions = br.readVarintNum();
   info.transactions = [];
-  for (var i = 0; i < transactions; i++) {
+  for (let i = 0; i < transactions; i++) {
     info.transactions.push(Transaction().fromBufferReader(br));
+  }
+  const referrals = br.readVarintNum();
+  info.referrals = [];
+  for (let i = 0; i < referrals; i++) {
+    info.referrals.push(Referral().fromBufferReader(br));
   }
   return info;
 };
@@ -140,12 +155,17 @@ Block.fromRawBlock = function fromRawBlock(data) {
  */
 Block.prototype.toObject = Block.prototype.toJSON = function toObject() {
   var transactions = [];
+  var referrals = [];
   this.transactions.forEach(function(tx) {
     transactions.push(tx.toObject());
   });
+  this.referrals.forEach(function(ref) {
+    referrals.push(ref);
+  });
   return {
     header: this.header.toObject(),
-    transactions: transactions
+    transactions: transactions,
+    referrals: referrals,
   };
 };
 

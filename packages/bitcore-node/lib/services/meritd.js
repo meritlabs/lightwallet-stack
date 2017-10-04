@@ -219,13 +219,13 @@ Merit.prototype.getPublishEvents = function() {
       unsubscribe: this.unsubscribeAddress.bind(this)
     },
     {
-      name: 'meritd/rawreferral',
+      name: 'meritd/rawreferraltx',
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
     },
     {
-      name: 'meritd/hashreferral',
+      name: 'meritd/hashreferraltx',
       scope: this,
       subscribe: this.subscribe.bind(this, 'hashreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'hashreferraltx')

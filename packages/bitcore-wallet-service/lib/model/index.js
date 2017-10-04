@@ -11,5 +11,6 @@ Model.TxNote = require('./txnote');
 Model.Session = require('./session');
 Model.PushNotificationSub = require('./pushnotificationsub');
 Model.TxConfirmationSub = require('./txconfirmationsub');
+Model.ReferralTxConfirmationSub = require('./referraltxconfirmationsub');
 
 module.exports = Model;

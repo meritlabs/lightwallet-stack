@@ -115,17 +115,21 @@ BlockController.prototype._normalizePrevHash = function(hash) {
 };
 
 BlockController.prototype.transformBlock = function(block, info) {
-  var blockObj = block.toObject();
-  var transactionIds = blockObj.transactions.map(function(tx) {
+  const blockObj = block.toObject();
+  const transactionIds = blockObj.transactions.map(function(tx) {
     return tx.hash;
   });
-  return {
+  const referralCodes = blockObj.referrals.map(function (ref) {
+    return ref.codeHash;
+  });
+  const result = {
     hash: block.hash,
     size: block.toBuffer().length,
     height: info.height,
     version: blockObj.header.version,
     merkleroot: blockObj.header.merkleRoot,
     tx: transactionIds,
+    referrals: referralCodes,
     time: blockObj.header.time,
     nonce: blockObj.header.nonce,
     bits: blockObj.header.bits.toString(16),
@@ -138,6 +142,7 @@ BlockController.prototype.transformBlock = function(block, info) {
     isMainChain: (info.confirmations !== -1),
     poolInfo: this.getPoolInfo(block)
   };
+  return result;
 };
 
 /**
@@ -309,11 +314,13 @@ BlockController.prototype.list = function(req, res) {
 };
 
 BlockController.prototype.getPoolInfo = function(block) {
-  var coinbaseBuffer = block.transactions[0].inputs[0]._scriptBuffer;
+  if (block.transactions[0] && block.transactions[0].inputs && block.transactions[0].inputs[0]) {
+    const coinbaseBuffer = block.transactions[0].inputs[0]._scriptBuffer;
 
-  for(var k in this.poolStrings) {
-    if (coinbaseBuffer.toString('utf-8').match(k)) {
-      return this.poolStrings[k];
+    for(let k in this.poolStrings) {
+      if (coinbaseBuffer.toString('utf-8').match(k)) {
+        return this.poolStrings[k];
+      }
     }
   }
 
