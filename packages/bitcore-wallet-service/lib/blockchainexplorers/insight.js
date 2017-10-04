@@ -198,6 +198,21 @@ Insight.prototype.getTxidsInBlock = function(blockHash, cb) {
   });
 };
 
+Insight.prototype.getReferralsInBlock = function(blockHash, cb) {
+  const self = this;
+
+  const args = {
+    method: 'GET',
+    path: `${this.apiPrefix}/block/${blockHash}`,
+    json: true,
+  };
+
+  this._doRequest(args, function(err, res, body) {
+    if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
+    return cb(null, body.referrals);
+  });
+};
+
 Insight.prototype.initSocket = function() {
 
   // sockets always use the first server on the pull

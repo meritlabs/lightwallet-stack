@@ -360,6 +360,8 @@ WalletService.prototype.createWallet = function(opts, cb) {
   var newWallet;
   var unlocked = false;
   var shareCode = "";
+  var codeHash = "";
+
   async.series([
     function(acb) {
       var bc = self._getBlockchainExplorer(opts.network);
@@ -377,9 +379,9 @@ WalletService.prototype.createWallet = function(opts, cb) {
           }
         }
 
-
         unlocked = true;
         shareCode = result.result.referralcode;
+        codeHash = result.result.codehash;
 
         return acb(null);
       });
@@ -408,7 +410,8 @@ WalletService.prototype.createWallet = function(opts, cb) {
         addressType: addressType,
         beacon: opts.beacon,
         unlocked: unlocked,
-        shareCode: shareCode
+        shareCode: shareCode,
+        codeHash: codeHash,
       });
       self.storage.storeWallet(wallet, function(err) {
         log.debug('Wallet created', wallet.id, opts.network);
@@ -419,7 +422,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
   ], function(err) {
     var newWalletId = newWallet ? newWallet.id : null;
     var newWalletShareCode = newWallet ? newWallet.shareCode : null;
-    return cb(err, newWalletId, newWalletShareCode);
+    return cb(err, newWalletId, newWalletShareCode, codeHash);
   });
 };
 
@@ -3295,6 +3298,37 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
   var self = this;
 
   self.storage.removeTxConfirmationSub(self.copayerId, opts.txid, cb);
+};
+
+WalletService.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
+  if (!checkRequired(opts, ['codeHash'], cb)) return;
+
+  const self = this;
+
+  self.storage.fetchReferralByCodeHash(opts.codeHash, function(err, rtx) {
+    if (err) {
+      log.error('Could not fetch referral from the db');
+      return;
+    }
+
+    if (!rtx) return;
+
+    const sub = Model.ReferralTxConfirmationSub.create({
+      copayerId: self.copayerId,
+      walletId: self.walletId,
+      codeHash: opts.codeHash,
+    });
+
+    self.storage.storeReferralTxConfirmationSub(sub, cb);
+  });
+};
+
+WalletService.prototype.referralTxConfirmationUnsubscribe = function(opts, cb) {
+  if (!checkRequired(opts, ['codeHash'], cb)) return;
+
+  const self = this;
+
+  self.storage.removeReferralTxConfirmationSub(self.copayerId, opts.codeHash, cb);
 };
 
 module.exports = WalletService;

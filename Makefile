@@ -52,7 +52,8 @@ start-bitcore-wallet-service:
 	cd ./packages/bitcore-wallet-service/ && node messagebroker/messagebroker.js & \
 	cd ./packages/bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
 	cd ./packages/bitcore-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
-	cd ./packages/bitcore-wallet-service/ && node bws.js &
+	cd ./packages/bitcore-wallet-service/ && node bws.js & \
+	cd ./packages/bitcore-wallet-service/ && node pushnotificationsservice/pushnotificationsservice.js
 
 .PHONY: stop-bitcore-wallet-service
 stop-bitcore-wallet-service:

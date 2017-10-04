@@ -129,13 +129,5 @@
         "ionic": "^3.6.0",
         "lodash": "^4.17.4",
         "trash-cli": "^1.4.0"
-    },
-    "cordova": {
-        "plugins": {
-            "branch-cordova-sdk": {
-                "BRANCH_KEY": "key_live_edqKoEEX0yip4cpCBjbnXlpkqBmai2VN",
-                "URI_SCHEME": "merit"
-            }
-        }
     }
 }

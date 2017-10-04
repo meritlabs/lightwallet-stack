@@ -230,11 +230,12 @@ ExpressApp.prototype.start = function(opts, cb) {
 
     // When a wallet is successfully created in Merit, it receives a shareCode
     // that other users can use to unlock their wallets.
-    server.createWallet(req.body, function(err, walletId, shareCode) {
+    server.createWallet(req.body, function(err, walletId, shareCode, codeHash) {
       if (err) return returnError(err, res, req);
       res.json({
         walletId: walletId,
-        shareCode: shareCode
+        shareCode: shareCode,
+        codeHash: codeHash,
       });
     });
   });
@@ -773,6 +774,27 @@ ExpressApp.prototype.start = function(opts, cb) {
     };
     getServerWithAuth(req, res, function(server) {
       server.txConfirmationUnsubscribe(opts, function(err, response) {
+        if (err) return returnError(err, res, req);
+        res.json(response);
+      });
+    });
+  });
+
+  router.post('/v1/referraltxconfirmations/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      server.referralTxConfirmationSubscribe(req.body, function(err, response) {
+        if (err) return returnError(err, res, req);
+        res.json(response);
+      });
+    });
+  });
+
+  router.delete('/v1/referraltxconfirmations/:codeHash', function(req, res) {
+    const opts = {
+      codeHash: req.params['codeHash'],
+    };
+    getServerWithAuth(req, res, function(server) {
+      server.referralTxConfirmationUnsubscribe(opts, function(err, response) {
         if (err) return returnError(err, res, req);
         res.json(response);
       });
