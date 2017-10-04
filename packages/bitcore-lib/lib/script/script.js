@@ -901,7 +901,7 @@ Script.buildScriptHashOut = function(script) {
     (script instanceof Address && script.isPayToScriptHash()));
   var s = new Script();
   s.add(Opcode.OP_HASH160)
-    .add(script instanceof Address ? script.hashBuffer : Hash.sha256ripemd160(this.toBuffer()))
+    .add(script instanceof Address ? script.hashBuffer : Hash.sha256ripemd160(script.toBuffer()))
     .add(Opcode.OP_EQUAL);
 
   s._network = script._network || script.network;
