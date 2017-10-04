@@ -84,6 +84,7 @@ angular.module('copayApp.services').factory('incomingData', function($log, $stat
     data = sanitizeUri(data);
 
     const checkAndProcessAddress = function(data, network) {
+      var opts = {};
       opts.bwsurl = configService.getDefaults().bws.url;
       const walletClient = bwcService.getClient(null, opts);
 
