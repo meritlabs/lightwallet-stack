@@ -139,7 +139,8 @@ module.exports = function(grunt) {
           'node_modules/ngtouch/src/ngTouch.js',
           'node_modules/angular-route/angular-route.js',
           'angular-bitauth/angular-bitauth.js',
-          'angular-bitcore-wallet-client/angular-bitcore-wallet-client.js'
+          'angular-bitcore-wallet-client/angular-bitcore-wallet-client.js', 
+          'angular-environment-variables/angular-environment-variables.js'
         ],
         dest: 'www/lib/angular-components.js'
       },
@@ -257,7 +258,8 @@ module.exports = function(grunt) {
       dist: {
         files: {
           'angular-bitcore-wallet-client/angular-bitcore-wallet-client.js': ['angular-bitcore-wallet-client/index.js'],
-          'angular-bitauth/angular-bitauth.js': ['angular-bitauth/index.js']
+          'angular-bitauth/angular-bitauth.js': ['angular-bitauth/index.js'],
+          'angular-environment-variables/angular-environment-variables.js': ['angular-environment-variables/index.js']
         },
       }
     }
