@@ -180,7 +180,9 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
           getAddress: function(cb) { return cb(); }
         };
 
-        var email = lodash.find(obj.emails, function(x) { return lodash.includes(x, search); });
+        var email = lodash.find(obj.emails, function(x) {
+          return lodash.includes(x.toLowerCase(), search.toLowerCase());
+        });
         if (email) {
           obj.email = email;
           obj.phoneNumber = lodash.find(obj.phoneNumbers) || '';
@@ -188,7 +190,9 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
           return obj;
         }
 
-        var phoneNumber = lodash.find(obj.phoneNumbers, function(x) { return lodash.includes(x, search); });
+        var phoneNumber = lodash.find(obj.phoneNumbers, function(x) {
+          return lodash.includes(x.toLowerCase(), search.toLowerCase());
+        });
         if (phoneNumber) {
           obj.phoneNumber = phoneNumber;
           obj.email = lodash.find(obj.emails) || '';
@@ -221,7 +225,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
           toAddress: addr,
           toName: item.name,
           toEmail: item.email,
-          toPhoneNumber: item.PhoneNumber,
+          toPhoneNumber: item.phoneNumber,
           sendMethod: item.sendMethod,
           toColor: item.color
         })

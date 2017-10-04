@@ -29,16 +29,12 @@ angular.module('copayApp.controllers').controller('amountController', function($
     $scope.toName = data.stateParams.toName;
     $scope.toEmail = data.stateParams.toEmail;
     $scope.toPhoneNumber = data.stateParams.toPhoneNumber;
-    $scope.easyMethod = data.stateParams.easyMethod;
-    $scope.showAlternativeAmount = !!$scope.nextStep;
+    $scope.sendMethod = data.stateParams.sendMethod;
+    $scope.showAlternativeAmount = true; 
     $scope.toColor = data.stateParams.toColor;
     $scope.showSendMax = false;
-    $scope.search = {
-      email: null,
-      phoneNumber: null,
-    };
 
-    if (!$scope.nextStep && !$scope.easyMethod && !data.stateParams.toAddress) {
+    if (!$scope.nextStep && !$scope.sendMethod && !data.stateParams.toAddress) {
       $log.error('Bad params at amount');
       throw ('bad params');
     }
@@ -240,10 +236,10 @@ angular.module('copayApp.controllers').controller('amountController', function($
   $scope.finish = function() {
     var _amount = evaluate(format($scope.amount));
 
-    if ($scope.easyMethod) {
+    if ($scope.sendMethod != 'address') {
       $state.transitionTo('tabs.send.easysend', {
-        method: $scope.easyMethod,
-        recipient: $scope.search.email ? $scope.search.email : $scope.search.phoneNumber
+        method: $scope.sendMethod,
+        recipient: $scope.sendMethod == 'sms' ? $scope.toPhoneNumber : $scope.toEmail
       });
     } else if ($scope.nextStep) {
       $state.transitionTo($scope.nextStep, {
