@@ -93,6 +93,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
         email: lodash.isObject(v) ? v.email : null,
         phoneNumber: lodash.isObject(v) ? v.phoneNumber : null,
         recipientType: 'contact',
+        sendMethod: 'address',
         getAddress: function(cb) {
           return cb(null, k);
         },
@@ -171,13 +172,35 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
 
     addressbookService.searchContacts(search, function(contacts) {
       $scope.list = result.concat(lodash.map(contacts, function(contact) {
-        return {
+        var obj = {
           name: contact.name.formatted,
-          email: lodash.isEmpty(contact.emails) ? '' : contact.emails.shift().value, // TODO: get matching email from search
-          phoneNumber: lodash.isEmpty(contact.phoneNumber) ? '' : contact.phoneNumbers.shift().value, // TODO: get matching phoneNumber from search
+          emails: lodash.map(contact.emails, function(o) { return o.value; }),
+          phoneNumbers: lodash.map(contact.phoneNumbers, function(o) { return o.value; }),
           address: '',
-          getAddress: function() { alert(contact.toString()); }
+          getAddress: function(cb) { return cb(); }
         };
+
+        var email = lodash.find(obj.emails, function(x) { return lodash.includes(x, search); });
+        if (email) {
+          obj.email = email;
+          obj.phoneNumber = lodash.find(obj.phoneNumbers) || '';
+          obj.sendMethod = 'email';
+          return obj;
+        }
+
+        var phoneNumber = lodash.find(obj.phoneNumbers, function(x) { return lodash.includes(x, search); });
+        if (phoneNumber) {
+          obj.phoneNumber = phoneNumber;
+          obj.email = lodash.find(obj.emails) || '';
+          obj.sendMethod = 'sms';
+          return obj;
+        }
+
+        // search matched name, default to sms?
+        obj.email = lodash.find(obj.emails) || '';
+        obj.phoneNumber = lodash.find(obj.phoneNumbers) || '';
+        obj.sendMethod = obj.phoneNumber ? 'sms' : 'email';
+        return obj;
       }));
       return;
     });
@@ -186,32 +209,23 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   $scope.goToAmount = function(item) {
     $timeout(function() {
       item.getAddress(function(err, addr) {
-        if (err || !addr) {
+        if (err) {
           //Error is already formated
           return popupService.showAlert(err);
         }
-        $log.debug('Got toAddress:' + addr + ' | ' + item.name);
+        if (addr) {
+          $log.debug('Got toAddress:' + addr + ' | ' + item.name);
+        }
         return $state.transitionTo('tabs.send.amount', {
           recipientType: item.recipientType,
           toAddress: addr,
           toName: item.name,
           toEmail: item.email,
           toPhoneNumber: item.PhoneNumber,
+          sendMethod: item.sendMethod,
           toColor: item.color
         })
       });
-    });
-  };
-
-  $scope.goToEmail = function() {
-    return $state.transitionTo('tabs.send.amount', {
-      easyMethod: 'email',
-    });
-  };
-
-  $scope.goToSMS = function() {
-    return $state.transitionTo('tabs.send.amount', {
-      easyMethod: 'sms',
     });
   };
 
