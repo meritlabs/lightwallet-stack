@@ -1183,8 +1183,9 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       outputIndex: delta.index,
       script: script.toHex(),
       micros: delta.micros,
+      isCoinbase: delta.isCoinbase,
       timestamp: delta.timestamp
-    };
+    }; 
   }
 
   function updateWithMempool(confirmedUtxos, mempoolDeltas) {
