@@ -45,6 +45,24 @@ angular.module('copayApp.services')
       }
     };
 
+    /**
+     * Get a pending easyReceipt from localStorage.
+     * These easyReceipts are usually parsed from URL params.    
+     * This does not interact with the blockchain.
+     */
+    service.getPendingEasyReceipt = function (cb) {
+      storageService.getPendingEasyReceipt(function(err, receipt) {
+        // If the receipt is not valid, we should add an error here, and not return it.  
+        if (receipt && !receipt.isValid()) {
+          var newError = new Error("EasyReceipt failed validation: " + receipt);
+          cb(newError, receipt);
+        } else {
+          // Pass along the original payload for the controller to handle.
+          cb(err, receipt);
+        }
+      });
+    }
+
     service.getPendingEasyReceipt = function (cb) {
       storageService.getPendingEasyReceipt(function(err, receipt) {
         // If the receipt is not valid, we should add an error here, and not return it.  
