@@ -224,6 +224,7 @@ RpcClient.callspec = {
   validatereferralcode: 'str',
   getInputForEasySend: 'str',
   getanv: 'str',
+  getaddressrewards: 'str',
 };
 
 var slice = function(arr, start, end) {

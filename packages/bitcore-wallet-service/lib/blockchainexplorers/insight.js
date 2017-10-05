@@ -293,4 +293,23 @@ Insight.prototype.getANV = function(keys, cb) {
   });
 };
 
+Insight.prototype.getRewards = function(addresses, cb) {
+  var self = this;
+
+    var args = {
+      method: 'GET',
+      path: `${this.apiPrefix}/rewards`,
+      json: {
+        addresses: addresses
+      }
+    };
+
+    this._doRequest(args, function(err, res, body) {
+      if (err || res.statusCode !== 200) {
+        return cb(_parseErr(err, res));
+      }
+      return cb(null, body);
+    });
+}
+
 module.exports = Insight;
