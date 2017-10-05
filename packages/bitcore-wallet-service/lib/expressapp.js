@@ -795,13 +795,11 @@ ExpressApp.prototype.start = function(opts, cb) {
   * These are all namespaced to v5 to differentiate from coPay versioning
   */
 
-  router.post('/v5/easyreceive/validate', function(req, res) {
-    var opts = {
-      easyReceiptScript: req.params['easyReceiptScript']
-    };
+  router.get('/v5/easyreceive/validate/:scriptId', function(req, res) {
+    var scriptId = req.params['scriptId']
 
     var server = getServer(req, res); 
-    server.validateEasyReceipt(opts, function(err, response) {
+    server.validateEasyScript(scriptId, function(err, response) {
       if (err) {
         log.debug("Called Validate EasyReceipt in BWS: ", err);
         return returnError(err, res, req);
