@@ -2286,7 +2286,7 @@ Merit.prototype.validateAddress = function(address, callback) {
       } else { 
         log.info('getInputForEasySend Response: ', response);
         callback(null, response);
-}
+      }
     });
    } else { 
      var err = new errors.RPCError('EasyScript was missing or incorrect');

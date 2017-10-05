@@ -695,6 +695,40 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
 };
 
 /**
+ * Create an easySend script and create a transaction to the script address
+ *
+ * @param {Object}      opts
+ * @param {string}      opts.passphrase       - optional password to generate receiver's private key
+ * @param {number}      opts.timeout          - maximum depth transaction is redeemable by receiver
+ * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
+ * @param {Callback}    cb
+ */
+API.prototype.buildEasySendScriptHash = function(opts, cb) {
+  var self = this;
+
+  opts = opts || {};
+
+  var privateKey = self.credentials.getDerivedXPrivKey(opts.walletPassword);
+  var network = opts.network || 'livenet';
+
+  // {key, secret}
+  var rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
+
+  var pubkeys = [
+    rcvPair.key.publicKey,
+    privateKey.publicKey
+  ];
+
+  var timeout = opts.timeout || 144;
+  var result = {
+    script: Bitcore.Script.buildEasySendOut(pubkeys, timeout).toScriptHashOut(),
+    secret: rvcPair.secret
+  };
+
+  cb(null, result);
+}
+
+/**
  * Open a wallet and try to complete the public key ring.
  *
  * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is complete.
@@ -2509,7 +2543,7 @@ API.prototype.validateAddress = function(address, network, cb) {
     if (err || !result) return cb(err);
     return cb(null, result);
   });
-}; 
+};
 
 
 API.prototype.referralTxConfirmationSubscribe = function(opts, cb) {

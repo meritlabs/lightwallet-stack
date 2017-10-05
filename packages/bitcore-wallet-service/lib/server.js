@@ -3311,9 +3311,9 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
 WalletService.prototype.validateEasyReceipt = function(opts, cb) {
   try {
     //easyScript = new Bitcore.Script.buildEasySendOut();
-    var easyScript = "abc123";
+    var easyScript = opts.easyReceiptScript;
   } catch (ex) {
-    return cb(new ClientError('Invalid easyReceive script!'));
+    return cb(new ClientError('Missing param: easyReceiptScript!'));
   };
 
   //var bc = self._getBlockchainExplorer(opts.network);
