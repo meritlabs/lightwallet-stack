@@ -94,7 +94,6 @@ WalletService.initialize = function(opts, cb) {
   lock = opts.lock || new Lock(opts.lockOpts);
   blockchainExplorer = opts.blockchainExplorer;
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
-  log.debug("Setting LocalMeritDeamon up with node: ", opts.node);
   localMeritDaemon = new LocalDaemon(opts.node);
   if (opts.request)
     request = opts.request;
