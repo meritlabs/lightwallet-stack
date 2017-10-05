@@ -2273,7 +2273,7 @@ Merit.prototype.validateAddress = function(address, callback) {
  * @param {String} easyScript - The full easyScript value.  
  */
 
- Bitcoin.prototype.getInputForEasySend = function(easyScript, callback) {
+ Merit.prototype.getInputForEasySend = function(easyScript, callback) {
    log.info('ValidateEasyScript RPC called: ', easyScript);
 
    const self = this;

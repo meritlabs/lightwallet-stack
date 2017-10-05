@@ -809,6 +809,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       }
       res.json(response);
     });
+  });
   
   router.post('/v1/referraltxconfirmations/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
@@ -833,8 +834,9 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   this.app.use(opts.basePath || '/bws/api', router);
 
+  // Pass bitcore node to th walletService to initialize it.  
+  // This allows us to access Meritd directly from MWS.  
   opts.node = this.node;
-  log.debug("What is the Node in express app?", this.node);
   WalletService.initialize(opts, cb);
 
 };
