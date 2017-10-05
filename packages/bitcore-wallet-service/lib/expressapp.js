@@ -845,6 +845,20 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/rewards/', function(req, res) {
+    var opts = {
+      addresses: req.query.addresses.split(','),
+    };
+
+    getServerWithAuth(req, res, function(server) {
+      server.getRewards(opts, function(err, response) {
+        if (err) return returnError(err, res, req);
+
+        res.json(response);
+      });
+    });
+  });
+
   this.app.use(opts.basePath || '/bws/api', router);
 
   // Pass bitcore node to th walletService to initialize it.  

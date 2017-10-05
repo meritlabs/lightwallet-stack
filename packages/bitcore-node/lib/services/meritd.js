@@ -193,6 +193,7 @@ Merit.prototype.getAPIMethods = function() {
     ['validatereferralcode',  this, this.validateReferralCode, 1],
     ['getInputForEasySend', this, this.getInputForEasySend, 1],
     ['getanv',                this, this.getANV, 1],
+    ['getaddressrewards',     this, this.getRewards, 1],
   ];
   return methods;
 };
@@ -2307,7 +2308,7 @@ Merit.prototype.validateAddress = function(address, callback) {
 Bitcoin.prototype.getANV = function(keys, callback) {
   var self = this;
 
-  if (typeof referralCode === 'string' || referralCode instanceof String) {
+  if (typeof keys === 'string' || keys instanceof String) {
     keys = [keys];
   }
 
@@ -2322,6 +2323,35 @@ Bitcoin.prototype.getANV = function(keys, callback) {
     }
   });
 }
+
+/**
+ * Get Rewards for array of addresses
+ * @param {Array} keys
+ * @param {Function} callback
+ */
+Bitcoin.prototype.getRewards = function(addresses, callback) {
+  var self = this;
+
+  if (typeof addresses === 'string' || addresses instanceof String) {
+    addresses = [addresses];
+  }
+
+  var payload = {
+    addresses: addresses,
+  };
+
+  log.info('getRewards Called: ', addresses.join('; '));
+
+  self.client.getaddressrewards(payload, function(err, response) {
+    if (err) {
+      return callback(self._wrapRPCError(err));
+    } else {
+      log.info('getRewards Response: ', response);
+      callback(null, response.result);
+    }
+  });
+}
+
 
 /**
  * Called by Node to stop the service.

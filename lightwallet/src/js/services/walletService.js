@@ -1244,5 +1244,13 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
     });
   };
 
+  root.getRewards = function(wallet, cb) {
+    root.getAddress(wallet, false, function(err, addr) {
+      wallet.getRewards(addr, function(err, res) {
+        return cb(err, res);
+      });
+    });
+  };
+
   return root;
 });
