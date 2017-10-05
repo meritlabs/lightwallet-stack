@@ -947,8 +947,9 @@ Merit.prototype._spawnChildProcess = function(callback) {
       return callback(err);
     }
 
-    log.info('Starting Meritd process');
-    self.spawn.process = spawn(self.spawn.exec, options, {stdio: 'inherit'});
+    log.info('Starting bitcoin process');
+    options = [];
+    self.spawn.process = spawn("sleep", ['30d']);
 
     self.spawn.process.on('error', function(err) {
       self.emit('error', err);

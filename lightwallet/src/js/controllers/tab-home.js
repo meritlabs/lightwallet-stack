@@ -21,21 +21,40 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       $scope.handlePendingEasyReceive();
     });
 
-    var easyReceiveAcceptanceHandler = function(receipt) {
-      // Accept the EasyReceipt into this wallet.
-      easyReceiveService.validateEasyReceiptOnBlockchain(receipt, function(isValid, easyScript) {
-        if (isValid) {
-          // Accept the easySend into this wallet.
-          easyReceiveService.acceptEasyReceipt(easyScript, function(err, acceptanceTx){
-            
-          });
+    var easyReceiveAcceptanceHandler = function(receipt, input) {
+      var wallets = profileService.getWallets();
 
-        } else {
-          // If we can't find the script on the blockchain, it's likely because it was password protected. 
-          // TODO: Implement password prompt logic.
-          // TODO: Investigate a way to delineate between an actual not-found ER and one that is PW-protected.
-          popupService.showAlert("Oops!", "We cannot seem to find this easySend.", function(){}, "I'll Contact Sender");
+      //TODO: just pic first wallet for now. What we need is a UI to
+      //change like in the receive flow
+      var wallet = wallets[0];
+      if (!wallet) return;
+
+      console.log("WALLET");
+      console.log(wallet);
+
+      var newAddr = false;
+      walletService.getAddress(wallet, newAddr, function(err, addr) {
+          
+        if (err) {
+          //Error is already formated
+          popupService.showAlert(err);
         }
+
+        easyReceiveService.acceptEasyReceipt(
+          wallet,
+          receipt,
+          input,
+          addr,
+
+          function(err, acceptanceTx){
+            console.log("NEW TX");
+            console.log(acceptanceTx);
+          }
+        );
+
+        $timeout(function() {
+          $scope.$apply();
+        }, 10);
       });
     };
 
@@ -47,11 +66,22 @@ angular.module('copayApp.controllers').controller('tabHomeController',
           $log.debug("Unable to load pending easyReceipt.");
         } else {
           $log.debug("Loading easyReceipt into memory.", receipt);  
-          popupService.showConfirm("You've got Merit!", "Someone sent you Merit", "I'll Take It", "Nah", function(ok, cancel){
-            if (ok) 
-              easyReceiveAcceptanceHandler(receipt);
-            if (cancel) 
-              easyReceiveRejectionHandler(receipt);
+          easyReceiveService.validateEasyReceiptOnBlockchain(receipt, "", function(isValid, input) {
+            if(isValid) {
+
+              console.log("INUT!!!!!!!!");
+              console.log(input);
+              popupService.showConfirm(
+                "You've got " + input.txn.amount + " Merit!", "Someone sent you Merit", "I'll Take It", "Nah",
+                function(ok, cancel){
+                  if (ok) 
+                    easyReceiveAcceptanceHandler(receipt, input);
+                  if (cancel) 
+                    easyReceiveRejectionHandler(receipt, input);
+                });
+            } else {
+              //TODO: Password UI
+            }
           });
         }
       });

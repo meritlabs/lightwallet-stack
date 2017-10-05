@@ -1,7 +1,20 @@
 'use string';
 angular.module('copayApp.services')
-  .factory('easyReceiveService', function easyReceiveServiceFactory($rootScope, $timeout, $log, $state, bitcore, lodash, storageService, bwcService, bwcError, configService, ledger) {
-    
+  .factory('easyReceiveService', 
+    function easyReceiveServiceFactory(
+      $rootScope,
+      $timeout,
+      $log,
+      $state,
+      bitcore,
+      lodash,
+      storageService,
+      bwcService,
+      bwcError,
+      configService,
+      ledger,
+      feeService) {
+
     var service = {};
     service.easyReceipt = {};
 
@@ -13,16 +26,16 @@ angular.module('copayApp.services')
         $log.debug("Received unlock code from URL param.  Storing for later...")
         service.easyReceipt.unlockCode = params.uc;
       }
-      
+
       if (params.sn) {
         $log.debug("Received sender name from URL param.  Storing for later...")
         service.easyReceipt.senderName = params.sn;
       }
-      
+
       if (params.se) {
         service.easyReceipt.secret = params.se;
       }
-      
+
       if (params.sk) {
         service.easyReceipt.senderPublicKey = params.sk;
       }
@@ -81,10 +94,10 @@ angular.module('copayApp.services')
     }
 
     /* TODO: consider splitting this up into multiple methods
-    * One to search the blockchain for the script. 
-    * The other to actually unlock it. 
-    */
-    service.validateEasyReceiptOnBlockchain = function (receipt, cb) {
+     * One to search the blockchain for the script. 
+     * The other to actually unlock it. 
+     */
+    service.validateEasyReceiptOnBlockchain = function (receipt, optionalPassword, cb) {
       // Check if the easyScript is on the blockchain.
 
       // Get the bwsUrl from the configService.  
@@ -93,25 +106,72 @@ angular.module('copayApp.services')
       var walletClient = bwcService.getClient(null, opts);
       receipt.onBlockChain = false;
 
-      var script = service._generateEasyScript(receipt);
-      var scriptId= bitcore.Address.payingTo(script, 'testnet'); 
+      var scriptData = service._generateEasyScript(receipt, optionalPassword);
+      var scriptId= bitcore.Address.payingTo(scriptData.script, 'testnet'); 
 
       walletClient.validateEasyScript(scriptId, function(err, txn){
         if (err) {
           $log.debug("Could not validate easyScript on the blockchain.");
+          cb(false, null);
         }
 
         //Easy Receipt is on the blockchain; let's pass it back.
         if (err == null && txn) {
+          scriptData.input = txn.result;
           console.log("TXN");
           console.log(txn);
-          cb(true, txn);
+          cb(true, {
+            txn: txn.result,
+            privateKey: scriptData.privateKey,
+            publicKey: scriptData.publicKey,
+            script: scriptData.script,
+            scriptId: scriptId,
+          });
         }
       });
     }
 
-    service.acceptEasyReceipt = function(easyScript, cb) {
+    service.acceptEasyReceipt = function(wallet, receipt, input, destinationAddress, cb) {
       //Accept the EasyReceipt
+      console.log("SENDING TO");
+      console.log(destinationAddress);
+      wallet.buildEasySendRedeemTx(
+        input.txn,
+        input.script,
+        input.privateKey,
+        destinationAddress,
+        null, //null opts just to test transaction
+
+        function(err, testTx) {
+          if (err) return cb(err);
+          var rawTxLength = testTx.serialize().length;
+          feeService.getCurrentFeeRate(wallet.network, function(err, feePerKB) {
+            var opts = {};
+            //TODO: Don't use magic numbers
+            opts.fee = Math.round((feePerKB * rawTxLength) / 2000);
+
+            wallet.buildEasySendRedeemTx(
+              input.txn,
+              input.script,
+              input.privateKey,
+              destinationAddress,
+              opts,
+
+              function(err, tx) {
+                if (err) return cb(err);
+                wallet.broadcastRawTx({
+                  rawTx: tx.serialize(),
+                  network: wallet.network
+                }, function(err, txid) {
+                  if (err) return cb(err);
+                  return cb(null, destinationAddress, txid);
+                });
+              }
+
+            );
+          });
+        }
+      );
     };
     
     service.rejectEasyReceipt = function(cb) {
@@ -120,10 +180,7 @@ angular.module('copayApp.services')
 
 
 
-    service._generateEasyScript = function (receipt) {
-      // Generate the easyScript per the EasySend standard as outlined <TODO: here>
-      var optionalPassword = ""; // TODO get from user
-
+    service._generateEasyScript = function (receipt, optionalPassword) {
       var secret = ledger.hexToString(receipt.secret);
       var receivePrv = bitcore.PrivateKey.forEasySend(secret, optionalPassword);
       var receivePub = bitcore.PublicKey.fromPrivateKey(receivePrv).toBuffer();
@@ -134,7 +191,11 @@ angular.module('copayApp.services')
         senderPubKey
       ];
 
-      return bitcore.Script.buildEasySendOut(publicKeys, receipt.blockTimeout);
+      return {
+        privateKey: receivePrv,
+        publicKey: receivePub,
+        script: bitcore.Script.buildEasySendOut(publicKeys, receipt.blockTimeout)
+      };
     }
 
     return service;
