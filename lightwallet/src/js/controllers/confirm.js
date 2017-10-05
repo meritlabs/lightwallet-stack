@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('confirmController', function($rootScope, $scope, $interval, $filter, $timeout, $ionicScrollDelegate, gettextCatalog, walletService, platformInfo, lodash, configService, rateService, $stateParams, $window, $state, $log, profileService, bitcore, txFormatService, ongoingProcess, $ionicModal, popupService, $ionicHistory, $ionicConfig, payproService, feeService, bwcError, txConfirmNotification) {
+angular.module('copayApp.controllers').controller('confirmController', function($rootScope, $scope, $interval, $filter, $timeout, $ionicScrollDelegate, gettextCatalog, walletService, platformInfo, lodash, configService, rateService, $stateParams, $window, $state, $log, profileService, bitcore, txFormatService, ongoingProcess, $ionicModal, popupService, $ionicHistory, $ionicConfig, payproService, feeService, bwcError, txConfirmNotification, easySendService) {
 
   var countDown = null;
   var CONFIRM_LIMIT_USD = 20;
@@ -162,8 +162,19 @@ angular.module('copayApp.controllers').controller('confirmController', function(
           setWallet($scope.wallets[0], tx);
         }
       });
-
+      // TODO: better check for easysend
+      if (!tx.toAddress) {
+        easySendService.createEasySendScriptHash($scope.wallet, function(err, result) {
+          if (err) {
+            console.log(err);
+          }
+          tx.script = result.script;
+          tx.easySendSecret = result.secret;
+        });
+      }
     });
+
+
   });
 
 
@@ -196,11 +207,17 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
     var txp = {};
 
-    txp.outputs = [{
-      'toAddress': tx.toAddress,
-      'amount': tx.toAmount,
-      'message': tx.description
-    }];
+    if (tx.script) {
+      txp.outputs = [{
+        'script': tx.script
+      }];
+    } else {
+      txp.outputs = [{
+        'toAddress': tx.toAddress,
+        'amount': tx.toAmount,
+        'message': tx.description
+      }];
+    }
 
     if (tx.sendMaxInfo) {
       txp.inputs = tx.sendMaxInfo.inputs;
