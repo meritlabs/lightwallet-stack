@@ -150,6 +150,10 @@ angular.module('copayApp.services')
       storage.set('easyReceipt', easyReceipt.toObj(), cb);
     };
 
+    root.deletePendingEasyReceipt = function(cb) {
+      storage.remove('easyReceipt', cb);
+    };
+
     root.getPendingEasyReceipt = function(cb) {
       storage.get('easyReceipt', function(err, str) {
         if (err || !str)

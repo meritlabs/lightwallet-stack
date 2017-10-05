@@ -1,20 +1,20 @@
 {
-    "name": "merit",
-    "description": "Merit Wallet",
-    "author": "BitPay",
+    "name": "merit-lightwallet",
+    "description": "Merit LightWallet application",
+    "author": "MeritLabs Inc.",
     "version": "3.7.1",
     "keywords": [
-        "bitcoin",
+        "merit",
         "wallet",
         "bitpay",
-        "merit",
+        "mrt",
         "multisignature",
         "bitcore"
     ],
     "main": "www/index.html",
-    "title": "Copay",
+    "title": "Merit LightWallet",
     "window": {
-        "title": "Merit Wallet",
+        "title": "Merit LightWallet",
         "icon": "www/img/app/icon.png",
         "toolbar": false,
         "show": true,
@@ -39,11 +39,11 @@
     "homepage": "https://merit.me",
     "license": "MIT",
     "repository": {
-        "url": "git://github.com/meritlabs/merit-mobile.git",
+        "url": "https://github.com/meritlabs/lightwallet-stack",
         "type": "git"
     },
     "bugs": {
-        "url": "https://github.com/meritlabs/merit-mobile/issues"
+        "url": "https://github.com/meritlabs/lightwallet-stack/issues"
     },
     "dependencies": {
         "adm-zip": "^0.4.7",
@@ -129,13 +129,5 @@
         "ionic": "^3.6.0",
         "lodash": "^4.17.4",
         "trash-cli": "^1.4.0"
-    },
-    "cordova": {
-        "plugins": {
-            "branch-cordova-sdk": {
-                "BRANCH_KEY": "key_live_edqKoEEX0yip4cpCBjbnXlpkqBmai2VN",
-                "URI_SCHEME": "merit"
-            }
-        }
     }
 }

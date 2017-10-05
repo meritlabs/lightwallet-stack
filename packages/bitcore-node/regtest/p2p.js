@@ -15,13 +15,13 @@ var Transaction = bitcore.Transaction;
 var BN = bitcore.crypto.BN;
 var async = require('async');
 var rimraf = require('rimraf');
-var bitcoind;
+var meritd;
 
 /* jshint unused: false */
 var should = chai.should();
 var assert = chai.assert;
 var sinon = require('sinon');
-var BitcoinRPC = require('bitcoind-rpc');
+var MeritRPC = require('meritd-rpc');
 var transactionData = [];
 var blockHashes = [];
 var txs = [];
@@ -49,33 +49,33 @@ describe('P2P Functionality', function() {
         throw err;
       }
 
-      bitcoind = require('../').services.Bitcoin({
+      meritd = require('../').services.Merit({
         spawn: {
           datadir: datadir,
-          exec: path.resolve(__dirname, '../bin/bitcoind')
+          exec: path.resolve(__dirname, '../bin/meritd')
         },
         node: {
           network: bitcore.Networks.testnet
         }
       });
 
-      bitcoind.on('error', function(err) {
+      meritd.on('error', function(err) {
         log.error('error="%s"', err.message);
       });
 
-      log.info('Waiting for Bitcoin Core to initialize...');
+      log.info('Waiting for Merit Core to initialize...');
 
-      bitcoind.start(function(err) {
+      meritd.start(function(err) {
         if (err) {
           throw err;
         }
-        log.info('Bitcoind started');
+        log.info('Meritd started');
 
-        client = new BitcoinRPC({
+        client = new MeritRPC({
           protocol: 'http',
           host: '127.0.0.1',
           port: 30331,
-          user: 'bitcoin',
+          user: 'merit',
           pass: 'local321',
           rejectUnauthorized: false
         });
@@ -163,8 +163,8 @@ describe('P2P Functionality', function() {
     this.timeout(20000);
     peer.on('disconnect', function() {
       log.info('Peer disconnected');
-      bitcoind.node.stopping = true;
-      bitcoind.stop(function(err, result) {
+      meritd.node.stopping = true;
+      meritd.stop(function(err, result) {
         done();
       });
     });
@@ -176,7 +176,7 @@ describe('P2P Functionality', function() {
 
     var usedTxs = {};
 
-    bitcoind.on('tx', function(buffer) {
+    meritd.on('tx', function(buffer) {
       var txFromResult = new Transaction().fromBuffer(buffer);
       var tx = usedTxs[txFromResult.id];
       should.exist(tx);

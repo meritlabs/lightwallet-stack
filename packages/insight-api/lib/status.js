@@ -45,7 +45,7 @@ StatusController.prototype.show = function(req, res) {
 };
 
 StatusController.prototype.getInfo = function(callback) {
-  this.node.services.bitcoind.getInfo(function(err, result) {
+  this.node.services.meritd.getInfo(function(err, result) {
     if (err) {
       return callback(err);
     }
@@ -67,7 +67,7 @@ StatusController.prototype.getInfo = function(callback) {
 };
 
 StatusController.prototype.getLastBlockHash = function() {
-  var hash = this.node.services.bitcoind.tiphash;
+  var hash = this.node.services.meritd.tiphash;
   return {
     syncTipHash: hash,
     lastblockhash: hash
@@ -75,7 +75,7 @@ StatusController.prototype.getLastBlockHash = function() {
 };
 
 StatusController.prototype.getBestBlockHash = function(callback) {
-  this.node.services.bitcoind.getBestBlockHash(function(err, hash) {
+  this.node.services.meritd.getBestBlockHash(function(err, hash) {
     if (err) {
       return callback(err);
     }
@@ -86,7 +86,7 @@ StatusController.prototype.getBestBlockHash = function(callback) {
 };
 
 StatusController.prototype.getDifficulty = function(callback) {
-  this.node.services.bitcoind.getInfo(function(err, info) {
+  this.node.services.meritd.getInfo(function(err, info) {
     if (err) {
       return callback(err);
     }
@@ -100,7 +100,7 @@ StatusController.prototype.sync = function(req, res) {
   var self = this;
   var status = 'syncing';
 
-  this.node.services.bitcoind.isSynced(function(err, synced) {
+  this.node.services.meritd.isSynced(function(err, synced) {
     if (err) {
       return self.common.handleErrors(err, res);
     }
@@ -108,15 +108,15 @@ StatusController.prototype.sync = function(req, res) {
       status = 'finished';
     }
 
-    self.node.services.bitcoind.syncPercentage(function(err, percentage) {
+    self.node.services.meritd.syncPercentage(function(err, percentage) {
       if (err) {
         return self.common.handleErrors(err, res);
       }
       var info = {
         status: status,
-        blockChainHeight: self.node.services.bitcoind.height,
+        blockChainHeight: self.node.services.meritd.height,
         syncPercentage: Math.round(percentage),
-        height: self.node.services.bitcoind.height,
+        height: self.node.services.meritd.height,
         error: null,
         type: 'bitcore node'
       };
