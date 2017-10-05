@@ -31,13 +31,15 @@ angular.module('copayApp.services').factory('deepLinkService', function($ionicPl
             if(data['+clicked_branch_link']) {
                 // We have a branch deeplink on our hands.  Let's parse relevant easySend params.
                 console.log('Deep Link Data:' + JSON.stringify(data));
-                easyReceiveService.validateAndSaveParams(data, function(err, easyReceipt){
-                    if (!err && $state.is('onboarding.welcome')) {
-                        // We've landed on the welcome screen, but have a pending EasyReceipt 
-                        // in memory.  Most likely a deeplink.
-                        $state.go('onboarding.easyReceive');
-                    }
-                });
+                $timeout( () => { 
+                    easyReceiveService.validateAndSaveParams(data, function(err, easyReceipt){
+                        if (!err && $state.is('onboarding.welcome')) {
+                            // We've landed on the welcome screen, but have a pending EasyReceipt 
+                            // in memory.  Most likely a deeplink.
+                            $state.go('onboarding.easyReceive');
+                        }
+                    });
+                }, 100);
             }
         });
     }
