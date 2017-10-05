@@ -71,15 +71,19 @@ angular.module('copayApp.services')
       var walletClient = bwcService.getClient(null, opts);
       receipt.onBlockChain = false;
 
-      var easyReceiptScript = service._generateEasyScript(receipt);
-      walletClient.validateEasyReceipt(easyReceiptScript, function(err, easyScript){
+      var script = service._generateEasyScript(receipt);
+      var scriptId= bitcore.Address.payingTo(script, 'testnet'); 
+
+      walletClient.validateEasyScript(scriptId, function(err, txn){
         if (err) {
           $log.debug("Could not validate easyScript on the blockchain.");
         }
 
         //Easy Receipt is on the blockchain; let's pass it back.
-        if (err == null && easyScript) {
-          cb(true, easyScript);
+        if (err == null && txn) {
+          console.log("TXN");
+          console.log(txn);
+          cb(true, txn);
         }
       });
     }
@@ -108,11 +112,7 @@ angular.module('copayApp.services')
         senderPubKey
       ];
 
-      var script = bitcore.Script.buildEasySendOut(publicKeys, receipt.blockTimeout);
-
-      var address = bitcore.Address.payingTo(script, 'testnet'); 
-      console.log(address.toString());
-      return script;
+      return bitcore.Script.buildEasySendOut(publicKeys, receipt.blockTimeout);
     }
 
     return service;

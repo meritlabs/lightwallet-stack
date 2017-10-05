@@ -2580,14 +2580,13 @@ API.prototype.createWalletFromOldCopay = function(username, password, blob, cb) 
  * @param cb Callback or handler to manage response from BWS
  * @return {undefined}
  */
-API.prototype.validateEasyReceipt = function(easyReceiptScript, cb) {
+API.prototype.validateEasyScript = function(scriptId, cb) {
   var self = this;
 
-  var args = {
-    easyReceiptScript: easyReceiptScript
-  };
-  var url = '/v5/easyreceive/validate';
-  this._doPostRequest(url, args, function(err, body) {
+  console.log("Validating: " + scriptId);
+
+  var url = '/v5/easyreceive/validate/' + scriptId;
+  this._doGetRequest(url, function(err, body) {
     if (err) return cb(err);
     return cb(null, body);
   });
