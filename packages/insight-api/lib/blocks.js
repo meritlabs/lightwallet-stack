@@ -59,7 +59,7 @@ BlockController.prototype.block = function(req, res, next) {
   var blockCached = self.blockCache.get(hash);
 
   if (blockCached) {
-    blockCached.confirmations = self.node.services.bitcoind.height - blockCached.height + 1;
+    blockCached.confirmations = self.node.services.meritd.height - blockCached.height + 1;
     req.block = blockCached;
     next();
   } else {
@@ -69,7 +69,7 @@ BlockController.prototype.block = function(req, res, next) {
       } else if(err) {
         return self.common.handleErrors(err, res);
       }
-      self.node.services.bitcoind.getBlockHeader(hash, function(err, info) {
+      self.node.services.meritd.getBlockHeader(hash, function(err, info) {
         if (err) {
           return self.common.handleErrors(err, res);
         }
@@ -115,17 +115,21 @@ BlockController.prototype._normalizePrevHash = function(hash) {
 };
 
 BlockController.prototype.transformBlock = function(block, info) {
-  var blockObj = block.toObject();
-  var transactionIds = blockObj.transactions.map(function(tx) {
+  const blockObj = block.toObject();
+  const transactionIds = blockObj.transactions.map(function(tx) {
     return tx.hash;
   });
-  return {
+  const referralCodes = blockObj.referrals.map(function (ref) {
+    return ref.codeHash;
+  });
+  const result = {
     hash: block.hash,
     size: block.toBuffer().length,
     height: info.height,
     version: blockObj.header.version,
     merkleroot: blockObj.header.merkleRoot,
     tx: transactionIds,
+    referrals: referralCodes,
     time: blockObj.header.time,
     nonce: blockObj.header.nonce,
     bits: blockObj.header.bits.toString(16),
@@ -138,6 +142,7 @@ BlockController.prototype.transformBlock = function(block, info) {
     isMainChain: (info.confirmations !== -1),
     poolInfo: this.getPoolInfo(block)
   };
+  return result;
 };
 
 /**
@@ -158,7 +163,7 @@ BlockController.prototype.showRaw = function(req, res) {
 BlockController.prototype.blockIndex = function(req, res) {
   var self = this;
   var height = req.params.height;
-  this.node.services.bitcoind.getBlockHeader(parseInt(height), function(err, info) {
+  this.node.services.meritd.getBlockHeader(parseInt(height), function(err, info) {
     if (err) {
       return self.common.handleErrors(err, res);
     }
@@ -183,7 +188,7 @@ BlockController.prototype._getBlockSummary = function(hash, moreTimestamp, next)
   if (summaryCache) {
     finish(summaryCache);
   } else {
-    self.node.services.bitcoind.getRawBlock(hash, function(err, blockBuffer) {
+    self.node.services.meritd.getRawBlock(hash, function(err, blockBuffer) {
       if (err) {
         return next(err);
       }
@@ -201,7 +206,7 @@ BlockController.prototype._getBlockSummary = function(hash, moreTimestamp, next)
       var txlength = br.readVarintNum();
       info.transactions = [bitcore.Transaction().fromBufferReader(br)];
 
-      self.node.services.bitcoind.getBlockHeader(hash, function(err, blockHeader) {
+      self.node.services.meritd.getBlockHeader(hash, function(err, blockHeader) {
         if (err) {
           return next(err);
         }
@@ -216,7 +221,7 @@ BlockController.prototype._getBlockSummary = function(hash, moreTimestamp, next)
           poolInfo: self.getPoolInfo(info)
         };
 
-        var confirmations = self.node.services.bitcoind.height - height + 1;
+        var confirmations = self.node.services.meritd.height - height + 1;
         if (confirmations >= self.blockCacheConfirmations) {
           self.blockSummaryCache.set(hash, summary);
         }
@@ -259,7 +264,7 @@ BlockController.prototype.list = function(req, res) {
   var more = false;
   var moreTimestamp = lte;
 
-  self.node.services.bitcoind.getBlockHashesByTimestamp(lte, gte, function(err, hashes) {
+  self.node.services.meritd.getBlockHashesByTimestamp(lte, gte, function(err, hashes) {
     if(err) {
       return self.common.handleErrors(err, res);
     }
@@ -309,11 +314,13 @@ BlockController.prototype.list = function(req, res) {
 };
 
 BlockController.prototype.getPoolInfo = function(block) {
-  var coinbaseBuffer = block.transactions[0].inputs[0]._scriptBuffer;
+  if (block.transactions[0] && block.transactions[0].inputs && block.transactions[0].inputs[0]) {
+    const coinbaseBuffer = block.transactions[0].inputs[0]._scriptBuffer;
 
-  for(var k in this.poolStrings) {
-    if (coinbaseBuffer.toString('utf-8').match(k)) {
-      return this.poolStrings[k];
+    for(let k in this.poolStrings) {
+      if (coinbaseBuffer.toString('utf-8').match(k)) {
+        return this.poolStrings[k];
+      }
     }
   }
 

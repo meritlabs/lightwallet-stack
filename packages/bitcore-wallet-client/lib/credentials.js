@@ -299,7 +299,7 @@ Credentials.prototype.addWalletPrivateKey = function(walletPrivKey) {
   this.sharedEncryptingKey = Utils.privateKeyToAESKey(walletPrivKey);
 };
 
-Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copayerName, beacon, shareCode) {
+Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copayerName, beacon, shareCode, codeHash) {
   this.walletId = walletId;
   this.walletName = walletName;
   this.m = m;
@@ -309,6 +309,7 @@ Credentials.prototype.addWalletInfo = function(walletId, walletName, m, n, copay
     this.beacon = beacon;
     this.shareCode = shareCode;
     this.unlocked = true;
+    this.codeHash = codeHash;
   }
 
   if (copayerName)

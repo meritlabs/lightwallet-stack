@@ -16,8 +16,8 @@ UtilsController.prototype.estimateFee = function(req, res) {
 
   async.map(nbBlocks, function(n, next) {
     var num = parseInt(n);
-    // Insight and Bitcoin JSON-RPC return bitcoin for this value (instead of micros).
-    self.node.services.bitcoind.estimateFee(num, function(err, fee) {
+    // Insight and Merit JSON-RPC return merit for this value (instead of micros).
+    self.node.services.meritd.estimateFee(num, function(err, fee) {
       if (err) {
         return next(err);
       }

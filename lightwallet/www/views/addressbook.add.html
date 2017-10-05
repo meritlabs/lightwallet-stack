@@ -33,9 +33,17 @@
                  name="email"
                  ng-model="addressbookEntry.email">
         </label>
+        <label class="item item-input item-stacked-label">
+          <span class="input-label" translate>Phone Number</span>
+          <input type="text"
+                 id="phoneNumber"
+                 placeholder="{{'123-123-1234'}}"
+                 name="phoneNumber"
+                 ng-model="addressbookEntry.phoneNumber">
+        </label>
         <div>
           <label class="item item-input item-stacked-label">
-            <span class="input-label" translate>Bitcoin Address</span>
+            <span class="input-label" translate>Merit Address</span>
             <div class="input-notification">
               <i ng-show="!addressbookForm.address.$invalid" class="icon ion-checkmark-circled valid"></i>
               <i ng-show="addressbookForm.address.$invalid && addressbookEntry.address" class="icon ion-close-circled invalid"></i>

@@ -274,7 +274,7 @@ describe('PaymentProtocol', function() {
       var paypro = new PaymentProtocol();
       paypro.makePayment();
       paypro.set('memo', 'test memo');
-      paypro.getContentType().should.equal('application/bitcoin-payment');
+      paypro.getContentType().should.equal('application/merit-payment');
     });
 
   });

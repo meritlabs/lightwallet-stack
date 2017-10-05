@@ -1299,7 +1299,7 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
     id: opts.id,
     beacon: opts.beacon,
     unlocked: opts.unlocked,
-    shareCode: opts.shareCode
+    shareCode: opts.shareCode,
   };
 
   // Create wallet
@@ -1308,7 +1308,9 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
 
     var walletId = res.walletId;
     var walletShareCode = res.shareCode;
-    c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode);
+    var walletCodeHash = res.codeHash;
+    c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
+
 
     var secret = API._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
@@ -2509,6 +2511,19 @@ API.prototype.validateAddress = function(address, network, cb) {
   });
 }; 
 
+
+API.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
+  const url = '/v1/referraltxconfirmations/';
+  this._doPostRequest(url, opts, function(err, response) {
+    if (err) return cb(err);
+    return cb(null, response);
+  });
+};
+
+API.prototype.referralTxConfirmationUnsubscribe = function(codeHash, cb) {
+  const url = '/v1/referraltxconfirmations/' + codeHash;
+  this._doDeleteRequest(url, cb);
+};
 
 /*
  *

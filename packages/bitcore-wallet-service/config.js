@@ -57,7 +57,7 @@ var config = {
     defaultUnit: 'mrt',
     subjectPrefix: '',
     pushServerUrl: 'https://fcm.googleapis.com/fcm',
-    authorizationKey: '',
+    authorizationKey: 'key',
   },
   fiatRateServiceOpts: {
     defaultProvider: 'BitPay',

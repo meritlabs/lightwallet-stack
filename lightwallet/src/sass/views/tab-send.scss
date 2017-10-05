@@ -1,5 +1,12 @@
 #tab-send {
   @extend .deflash-blue;
+  .card {
+    margin-top: 0;
+    margin-bottom: 0;
+    &:first-child {
+      margin-top: 14px;
+    }
+  }
   .input {
     input {
       width: 100%;
@@ -70,7 +77,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-   }
+  }
   .search-input {
     background-color: transparent;
     padding-left: 30px;
@@ -90,8 +97,8 @@
     }
     .icon {
       line-height: 31px;
-        padding-top: 2px;
-        padding-bottom: 1px;
+      padding-top: 2px;
+      padding-bottom: 1px;
     }
   }
   .show-more {
@@ -103,7 +110,7 @@
   }
   .sendTip {
     text-align: center;
-    & > .item-heading {
+    &>.item-heading {
       margin-top: 10px;
       background: 0 none;
     }
@@ -113,21 +120,21 @@
     .item {
       border-style: none;
     }
-    & > .title {
+    &>.title {
       font-size: 20px;
       font-weight: bold;
       color: $v-dark-gray;
       margin: 20px 10px;
     }
-    & > .subtitle {
+    &>.subtitle {
       font-size: 1rem;
       line-height: 1.5em;
       font-weight: 300;
       color: $v-dark-gray;
       margin: 20px 1em 2.5em;
     }
-    .big-icon-svg{
-      .bg.green{
+    .big-icon-svg {
+      .bg.green {
         padding: 0 10px;
         box-shadow: none;
       }
@@ -140,12 +147,12 @@
       padding-top: 1.5rem;
       padding-bottom: 1.5rem;
       .big-icon-svg {
-        left:5px;
-       & > .bg{
-        width:30px;
-        height:30px;
-        box-shadow: none;
-       }
+        left: 5px;
+        &>.bg {
+          width: 30px;
+          height: 30px;
+          box-shadow: none;
+        }
       }
       &:before {
         display: block;
@@ -163,7 +170,7 @@
       &.item-heading {
         &:before {
           top: 99%;
-          width:100%;
+          width: 100%;
         }
       }
       &:nth-child(2) {
@@ -176,5 +183,7 @@
       }
     }
   }
-  .scroll{height: 100%;}
+  .scroll {
+    height: 100%;
+  }
 }

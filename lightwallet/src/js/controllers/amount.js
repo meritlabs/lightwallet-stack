@@ -28,39 +28,51 @@ angular.module('copayApp.controllers').controller('amountController', function($
     $scope.toAddress = data.stateParams.toAddress;
     $scope.toName = data.stateParams.toName;
     $scope.toEmail = data.stateParams.toEmail;
-    $scope.showAlternativeAmount = !!$scope.nextStep;
+    $scope.toPhoneNumber = data.stateParams.toPhoneNumber;
+    $scope.sendMethod = data.stateParams.sendMethod;
+    $scope.showAlternativeAmount = true; 
     $scope.toColor = data.stateParams.toColor;
     $scope.showSendMax = false;
 
-    if (!$scope.nextStep && !data.stateParams.toAddress) {
-      $log.error('Bad params at amount')
+    if (!$scope.nextStep && !$scope.sendMethod && !data.stateParams.toAddress) {
+      $log.error('Bad params at amount');
       throw ('bad params');
     }
 
     var reNr = /^[1234567890\.]$/;
     var reOp = /^[\*\+\-\/]$/;
 
-    var disableKeys = angular.element($window).on('keydown', function(e) {
-      if (!e.key) return;
-      if (e.which === 8) { // you can add others here inside brackets.
-        e.preventDefault();
-        $scope.removeDigit();
-      }
+    $scope.keysEnabled = true;
 
-      if (e.key.match(reNr)) {
-        $scope.pushDigit(e.key);
-      } else if (e.key.match(reOp)) {
-        $scope.pushOperator(e.key);
-      } else if (e.keyCode === 86) {
-        if (e.ctrlKey || e.metaKey)
-          processClipboard();
-      } else if (e.keyCode === 13)
-        $scope.finish();
+    $scope.disableKeys = function() {
+      $scope.keysEnabled = false;
+      angular.element($window).on('keydown', function(e) {
+        if (!e.key) return;
+        if (e.which === 8) { // you can add others here inside brackets.
+          e.preventDefault();
+          $scope.removeDigit();
+        }
 
-      $timeout(function() {
-        $scope.$apply();
+        if (e.key.match(reNr)) {
+          $scope.pushDigit(e.key);
+        } else if (e.key.match(reOp)) {
+          $scope.pushOperator(e.key);
+        } else if (e.keyCode === 86) {
+          if (e.ctrlKey || e.metaKey)
+            processClipboard();
+        } else if (e.keyCode === 13)
+          $scope.finish();
+
+        $timeout(function() {
+          $scope.$apply();
+        });
       });
-    });
+    };
+
+    $scope.enableKeys = function() {
+      $scope.keysEnabled = true;
+      angular.element($window).off('keydown');
+    };
 
     var config = configService.getSync().wallet.settings;
     $scope.unitName = config.unitName;
@@ -76,6 +88,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
     microsToMrt = 1 / 100000000;
     unitDecimals = config.unitDecimals;
 
+    $scope.disableKeys();
     $scope.resetAmount();
 
     // in Micros ALWAYS
@@ -223,12 +236,17 @@ angular.module('copayApp.controllers').controller('amountController', function($
   $scope.finish = function() {
     var _amount = evaluate(format($scope.amount));
 
-    if ($scope.nextStep) {
+    if ($scope.sendMethod && $scope.sendMethod != 'address') {
+      $state.transitionTo('tabs.send.easysend', {
+        method: $scope.sendMethod,
+        recipient: $scope.sendMethod == 'sms' ? $scope.toPhoneNumber : $scope.toEmail
+      });
+    } else if ($scope.nextStep) {
       $state.transitionTo($scope.nextStep, {
         id: _id,
         amount: $scope.useSendMax ? null : _amount,
         currency: $scope.showAlternativeAmount ? $scope.alternativeIsoCode : $scope.unitName,
-        useSendMax: $scope.useSendMax
+        useSendMax: $scope.useSendMax,
       });
     } else {
       var amount = $scope.showAlternativeAmount ? fromFiat(_amount) : _amount;
@@ -238,6 +256,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
         toAddress: $scope.toAddress,
         toName: $scope.toName,
         toEmail: $scope.toEmail,
+        toPhoneNumber: $scope.toPhoneNumber,
         toColor: $scope.toColor,
         useSendMax: $scope.useSendMax
       });
