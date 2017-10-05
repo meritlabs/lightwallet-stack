@@ -8,12 +8,12 @@
     "bitcore-wallet-service"
   ],
   "servicesConfig": {
-    "meritd": {
-      "spawn": {
-    	  "datadir": "./data-and-logs/data-1",
-        "exec": "perl -e '$0='meritdummy'; sleep infinity'",
-        "_exec": "../merit/src/meritd"
-      }
+    "bitcoind": {
+        "spawn": {
+            "datadir": "./data-and-logs/data-3",
+            "exec": "perl -e '$0='meritdummy'; sleep infinity'",
+            "_exec": "../merit/src/meritd"
+        }
     }
   }
 }

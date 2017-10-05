@@ -695,6 +695,31 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
 };
 
 /**
+ * Creates a transaction to redeem an easy send transaction. The input param
+ * must contain
+ *    {
+ *      txn: <transaction info from getinputforeasysend cli call>,
+ *      privateKey: <private key used to sign script>,
+ *      publicKey: <pub key of the private key>,
+ *      script: <easysend script to redeem>,
+ *      scriptId: <Address used script>
+ *    }
+ *
+ * input.txn contains
+ *     {
+ *      amount: <amount to redeem>,
+ *      index: <index of unspent transaction>,
+ *      txid: <id of transaction associated with the scriptId>
+ *     }
+ * @param {input} Input described above.
+ * @param {destinationAddress} Address to put the funds into.
+ */
+API.prototype.buildEasySendRedeemTx = function(input, destinationAddress, opts, cb) {
+  //TODO: Create and sign a transaction to redeem easy send. Use input as 
+  //unspent Txo and use script to create scriptSig
+}
+
+/**
  * Open a wallet and try to complete the public key ring.
  *
  * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is complete.
