@@ -4,6 +4,7 @@ prepare-prereqs:
 	npm install -g npm
 	npm install -g lerna
 	npm install -g grunt
+	npm install -g cordova
 
 
 ### lightwallet-app ###
@@ -11,6 +12,9 @@ prepare-prereqs:
 prepare-lightwallet:
 	cd ./lightwallet && npm install
 	cd ./lightwallet && npm run apply
+	cd ./lightwallet && cordova platform add ios
+	cd ./lightwallet && cordova platform add android
+	cd ./lightwallet && cordova platform add windows
 
 .PHONY: start-lightwallet
 start-lightwallet:
