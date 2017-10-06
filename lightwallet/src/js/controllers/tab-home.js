@@ -29,9 +29,6 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       var wallet = wallets[0];
       if (!wallet) return;
 
-      console.log("WALLET");
-      console.log(wallet);
-
       var newAddr = false;
       walletService.getAddress(wallet, newAddr, function(err, addr) {
           
@@ -46,9 +43,14 @@ angular.module('copayApp.controllers').controller('tabHomeController',
           input,
           addr,
 
-          function(err, acceptanceTx){
-            console.log("NEW TX");
-            console.log(acceptanceTx);
+          function(err, destinationAddress, acceptanceTx){
+            if(err) {
+              console.log("ERR");
+              console.log(err);
+            } else {
+              console.log("NEW TX");
+              console.log(acceptanceTx);
+            }
           }
         );
 
@@ -69,8 +71,6 @@ angular.module('copayApp.controllers').controller('tabHomeController',
           easyReceiveService.validateEasyReceiptOnBlockchain(receipt, "", function(isValid, input) {
             if(isValid) {
 
-              console.log("INUT!!!!!!!!");
-              console.log(input);
               popupService.showConfirm(
                 "You've got " + input.txn.amount + " Merit!", "Someone sent you Merit", "I'll Take It", "Nah",
                 function(ok, cancel){
