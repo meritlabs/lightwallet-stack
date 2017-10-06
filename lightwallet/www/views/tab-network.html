@@ -14,9 +14,9 @@
         <div class="code">
           <span class="code-title">Aggregate Network Value</span>
 
-          <ion-spinner class="spinner-dark" icon="crescent" ng-show="wallet.anv === undefined"></ion-spinner>
-
+          <ion-spinner class="spinner-dark" icon="crescent" ng-show="wallet.anv === undefined && !wallet.error"></ion-spinner>
           <span ng-show="wallet.anv !== undefined">{{wallet.anv.amountUnitStr}}</span>
+          <span class="assertive" ng-if="wallet.error">{{wallet.error}}</span>
         </div>
 
         <div class="code">

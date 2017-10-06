@@ -25,7 +25,7 @@ WalletController.prototype.getANV = function(req, res) {
   var self = this;
   var keys = req.body.keys;
 
-  self.node.services.bitcoind.getANV(keys, function(err, result) {
+  self.node.services.meritd.getANV(keys, function(err, result) {
     if(err) {
       return self.common.handleErrors(err, res);
     }
@@ -38,7 +38,7 @@ WalletController.prototype.getRewards = function(req, res) {
   var self = this;
   var addresses = req.body.addresses;
 
-  self.node.services.bitcoind.getRewards(addresses, function(err, result) {
+  self.node.services.meritd.getRewards(addresses, function(err, result) {
     if(err) {
       return self.common.handleErrors(err, res);
     }
