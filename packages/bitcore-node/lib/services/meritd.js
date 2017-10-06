@@ -128,6 +128,9 @@ Merit.prototype._initCaches = function() {
   this.summaryCache = LRU(50000);
   this.blockOverviewCache = LRU(144);
   this.transactionDetailedCache = LRU(100000);
+  this.anvCache = LRU(50000);
+  this.rewardsCache = LRU(50000);
+
 
   // caches valid indefinitely
   this.transactionCache = LRU(100000);
@@ -473,6 +476,8 @@ Merit.prototype._resetCaches = function() {
   this.balanceCache.reset();
   this.summaryCache.reset();
   this.blockOverviewCache.reset();
+  this.anvCache.reset();
+  this.rewardsCache.reset();
 };
 
 Merit.prototype._tryAllClients = function(func, callback) {
@@ -2305,22 +2310,25 @@ Merit.prototype.validateAddress = function(address, callback) {
  * @param {Array} keys
  * @param {Function} callback
  */
-Bitcoin.prototype.getANV = function(keys, callback) {
+Merit.prototype.getANV = function(keysArg, callback) {
   var self = this;
+  var keys = self._normalizeAddressArg(keysArg);
+  var cacheKey = keys.join('');
+  var anv = self.anvCache.get(cacheKey);
 
-  if (typeof keys === 'string' || keys instanceof String) {
-    keys = [keys];
+  if (anv) {
+    return setImmediate(function() {
+      callback(null, anv);
+    });
   }
-
-  log.info('getANV Called: ', keys.join('; '));
 
   self.client.getanv(keys, function(err, response) {
     if (err) {
       return callback(self._wrapRPCError(err));
-    } else {
-      log.info('getANV Response: ', response);
-      callback(null, response.result);
     }
+
+    self.anvCache.set(cacheKey, response.result);
+    callback(null, response.result);
   });
 }
 
@@ -2329,29 +2337,27 @@ Bitcoin.prototype.getANV = function(keys, callback) {
  * @param {Array} keys
  * @param {Function} callback
  */
-Bitcoin.prototype.getRewards = function(addresses, callback) {
+Merit.prototype.getRewards = function(addressArg, callback) {
   var self = this;
+  var addresses = self._normalizeAddressArg(addressArg);
+  var cacheKey = addresses.join('');
+  var rewards = self.rewardsCache.get(cacheKey);
 
-  if (typeof addresses === 'string' || addresses instanceof String) {
-    addresses = [addresses];
+  if (rewards) {
+    return setImmediate(function() {
+      callback(null, rewards);
+    });
   }
 
-  var payload = {
-    addresses: addresses,
-  };
-
-  log.info('getRewards Called: ', addresses.join('; '));
-
-  self.client.getaddressrewards(payload, function(err, response) {
+  this.client.getaddressrewards({ addresses: addresses }, function(err, response) {
     if (err) {
       return callback(self._wrapRPCError(err));
-    } else {
-      log.info('getRewards Response: ', response);
-      callback(null, response.result);
     }
+
+    self.rewardsCache.set(cacheKey, response.result);
+    callback(null, response.result);
   });
 }
-
 
 /**
  * Called by Node to stop the service.

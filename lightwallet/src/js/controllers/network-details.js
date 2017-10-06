@@ -30,7 +30,7 @@ angular
         });
       });
 
-      walletService.getRewards($scope.wallet, function(err, rewards) {
+      walletService.getRewards($scope.wallet, function(err, addressRewards) {
         $scope.fetchingRewards = false;
 
         if (err) {
@@ -38,7 +38,10 @@ angular
         }
 
         $timeout(function() {
-          $scope.rewards = txFormatService.parseAmount(rewards.mining, 'micros');
+          $scope.rewards = {
+            mining: txFormatService.parseAmount(addressRewards.rewards.mining, 'micros'),
+            ambassador: txFormatService.parseAmount(addressRewards.rewards.ambassador, 'micros'),
+          };
         });
       });
     });

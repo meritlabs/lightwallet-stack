@@ -1247,7 +1247,12 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
   root.getRewards = function(wallet, cb) {
     root.getAddress(wallet, false, function(err, addr) {
       wallet.getRewards(addr, function(err, res) {
-        return cb(err, res);
+        var addressRewards = lodash.find(res, { address: addr });
+        if(!addressRewards) {
+          return cb('No rewards found for address "' + addr + '"');
+        }
+
+        return cb(null, addressRewards);
       });
     });
   };
