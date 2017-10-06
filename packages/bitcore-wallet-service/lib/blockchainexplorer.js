@@ -10,6 +10,7 @@ var Insight = require('./blockchainexplorers/insight');
 var PROVIDERS = {
   'insight': {
     //'livenet': 'http://127.0.0.1:3131', //Does not exist for now.
+    'livenet': 'http://127.0.0.1:3001',
     'testnet': 'http://127.0.0.1:3001',
   },
 };

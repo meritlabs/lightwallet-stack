@@ -118,8 +118,6 @@ angular.module('copayApp.services')
         //Easy Receipt is on the blockchain; let's pass it back.
         if (err == null && txn) {
           scriptData.input = txn.result;
-          console.log("TXN");
-          console.log(txn);
           cb(true, {
             txn: txn.result,
             privateKey: scriptData.privateKey,
@@ -133,45 +131,36 @@ angular.module('copayApp.services')
 
     service.acceptEasyReceipt = function(wallet, receipt, input, destinationAddress, cb) {
       //Accept the EasyReceipt
-      console.log("SENDING TO");
-      console.log(destinationAddress);
-      wallet.buildEasySendRedeemTx(
-        input.txn,
-        input.script,
-        input.privateKey,
+
+      var opts = {};
+      var testTx = wallet.buildEasySendRedeemTransaction(
+        input,
         destinationAddress,
-        null, //null opts just to test transaction
+        opts);
 
-        function(err, testTx) {
+      var rawTxLength = testTx.serialize().length;
+
+      feeService.getCurrentFeeRate(wallet.network, function(err, feePerKB) {
+
+        if (err) return cb(err);
+
+        //TODO: Don't use magic numbers
+        opts.fee = Math.round((feePerKB * rawTxLength) / 2000);
+
+        var tx = wallet.buildEasySendRedeemTransaction(
+          input,
+          destinationAddress,
+          opts);
+
+        wallet.broadcastRawTx({
+          rawTx: tx.serialize(),
+          network: wallet.network
+        }, function(err, txid) {
           if (err) return cb(err);
-          var rawTxLength = testTx.serialize().length;
-          feeService.getCurrentFeeRate(wallet.network, function(err, feePerKB) {
-            var opts = {};
-            //TODO: Don't use magic numbers
-            opts.fee = Math.round((feePerKB * rawTxLength) / 2000);
+          return cb(null, destinationAddress, txid);
+        });
 
-            wallet.buildEasySendRedeemTx(
-              input.txn,
-              input.script,
-              input.privateKey,
-              destinationAddress,
-              opts,
-
-              function(err, tx) {
-                if (err) return cb(err);
-                wallet.broadcastRawTx({
-                  rawTx: tx.serialize(),
-                  network: wallet.network
-                }, function(err, txid) {
-                  if (err) return cb(err);
-                  return cb(null, destinationAddress, txid);
-                });
-              }
-
-            );
-          });
-        }
-      );
+      });
     };
     
     service.rejectEasyReceipt = function(cb) {
