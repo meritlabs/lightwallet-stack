@@ -3,8 +3,7 @@
   "repository": "https://github.com/meritlabs/lightwallet-stack",
   "license": "MIT",
   "readme": "README.md",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "lerna": "^2.1.2"
   }
