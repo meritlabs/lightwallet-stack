@@ -1222,17 +1222,38 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
     uxLanguage.init();
 
     $ionicPlatform.ready(function() {
-      if (screen.width < 768 && platformInfo.isCordova)
+      if (screen.width < 768 && platformInfo.isCordova) {
         screen.lockOrientation('portrait');
+      }
 
       if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard && !platformInfo.isWP) {
         cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
         cordova.plugins.Keyboard.disableScroll(true);
       }
 
-      window.addEventListener('native.keyboardshow', function() {
-        document.body.classList.add('keyboard-open');
-      });
+      if (window.cordova) {
+        var isUnlockViewOnIOS = function () {
+          return platformInfo.isIOS && document.getElementById('onboard-unlock') && document.getElementById('onboard-unlock').style.opacity == 1;
+        };
+
+        window.addEventListener('native.keyboardshow', function(e) {
+          console.log('keyboard shown. height: ', e.keyboardHeight);
+          document.body.classList.add('keyboard-open-merit');
+          if (isUnlockViewOnIOS()) {
+            var view = document.getElementsByClassName('view-container')[0];
+            view.style.transform = `translateY(-${e.keyboardHeight}px)`;
+          }
+        });
+
+        window.addEventListener('native.keyboardhide', function() {
+          console.log('keyboard hidden');
+          document.body.classList.remove('keyboard-open-merit');
+          if (isUnlockViewOnIOS()) {
+            var view = document.getElementsByClassName('view-container')[0];
+            view.style.transform = 'translateY(0px)';
+          }
+        });
+      }
 
       $ionicPlatform.registerBackButtonAction(function(e) {
 
