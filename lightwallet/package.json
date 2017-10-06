@@ -155,7 +155,6 @@
     "clean-all": "git clean -dfx"
   },
   "devDependencies": {
-    "@ionic/cli-plugin-ionic1": "2.1.1",
     "cordova": "^6.5.0",
     "fs-extra": "^0.30.0",
     "grunt": "^1.0.1",
