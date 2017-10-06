@@ -1237,7 +1237,6 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         };
 
         window.addEventListener('native.keyboardshow', function(e) {
-          console.log('keyboard shown. height: ', e.keyboardHeight);
           document.body.classList.add('keyboard-open-merit');
           if (isUnlockViewOnIOS()) {
             var view = document.getElementsByClassName('view-container')[0];
@@ -1246,7 +1245,6 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         });
 
         window.addEventListener('native.keyboardhide', function() {
-          console.log('keyboard hidden');
           document.body.classList.remove('keyboard-open-merit');
           if (isUnlockViewOnIOS()) {
             var view = document.getElementsByClassName('view-container')[0];
