@@ -7,6 +7,8 @@ var Common = require('./common');
 var async = require('async');
 
 var MAXINT = 0xffffffff; // Math.pow(2, 32) - 1;
+const COINBASE_MATURITY = 100;;
+
 
 function TxController(node) {
   this.node = node;
@@ -87,13 +89,16 @@ TxController.prototype.transformTransaction = function(transaction, options, cal
   }
 
   if(transaction.coinbase) {
-    transformed.isCoinBase = true;
+    transformed.isCoinbase = true; 
+    transformed.isMature = transformed.confirmations >= COINBASE_MATURITY ? true : false;
   }
 
   transformed.valueOut = transaction.outputMicros / 1e8;
   transformed.valueIn = transaction.inputMicros / 1e8;
   transformed.fees = transaction.feeMicros / 1e8;
 
+  console.log("Transformed TXN: ");
+  console.log(transformed);
   callback(null, transformed);
 };
 

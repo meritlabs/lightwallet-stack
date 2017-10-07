@@ -11,7 +11,7 @@ function AddressController(node) {
   this.common = new Common({log: this.node.log});
 }
 
-const COINBASE_MATURITY = 100;;
+const COINBASE_MATURITY = 100;
 
 AddressController.prototype.show = function(req, res) {
   var self = this;
