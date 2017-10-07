@@ -180,13 +180,17 @@ TxController.prototype.transformInvTransaction = function(transaction) {
     return seq < MAXINT - 1;
   });
 
+  // We want to know if a transaction is coinbase so that we can handle it in a relevant way 
+  // In various wallets.  
   var transformed = {
     txid: transaction.hash,
     valueOut: valueOut / 1e8,
     vout: vout,
     isRBF: isRBF,
+    isCoinbase: transaction.isCoinbase()
   };
 
+  
   return transformed;
 };
 
