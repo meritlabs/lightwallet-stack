@@ -82,14 +82,8 @@ angular.module('copayApp.services')
      * This does not interact with the blockchain.
      */
     service.deletePendingEasyReceipt = function (cb) {
-      storageService.deletePendingEasyReceipt(function(err, receipt) {
-        // If the receipt is not valid, we should add an error here, and not return it.  
-        if (err) {
-          cb(err);
-        } else {
-          // Pass along the original payload for the controller to handle.
-          cb(err, receipt);
-        }
+      storageService.deletePendingEasyReceipt(function(err) {
+          return cb(err);
       });
     }
 
@@ -165,6 +159,9 @@ angular.module('copayApp.services')
     
     service.rejectEasyReceipt = function(cb) {
       //Reject the EasyReceipt
+      service.deletePendingEasyReceipt(function(err) {
+        cb(err);
+      });
     };
 
 

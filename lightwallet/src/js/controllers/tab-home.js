@@ -18,7 +18,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
 
     $scope.$on("$ionicView.afterEnter", function() {
       startupService.ready();
-      $scope.handlePendingEasyReceive();
+      $scope.getPendingEasyReceipt();
     });
 
     var easyReceiveAcceptanceHandler = function(receipt, input) {
@@ -60,9 +60,18 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       });
     };
 
-    // TODO: Consider moving this from the home screen to anywhere in the flow, using event emitters 
-    // and listeners.
-    $scope.handlePendingEasyReceive = function () {
+    var easyReceiveRejectionHandler = function (receipt) {
+      $log.debug("Attempting to reject the easyReciept!");
+      //For now, let's just delete it from memory.
+      easyReceiveService.rejectEasyReceipt(function(err){
+        if (err) {
+          $log.debug("Could not remove pending EasyReceipt from localstorage!");
+        }
+      })
+    };
+
+    // Get the pending easyReceipt from memory; pass it to handler.
+    $scope.getPendingEasyReceipt = function () {
       easyReceiveService.getPendingEasyReceipt(function(err, receipt) {
         if (err || lodash.isEmpty(receipt)) {
           $log.debug("Unable to load pending easyReceipt.");
@@ -85,6 +94,22 @@ angular.module('copayApp.controllers').controller('tabHomeController',
           });
         }
       });
+    };
+    
+    // Handle the pending easyReceipt.  
+    $scope.handlePendingEasyReceipt = function (err, receipt) {
+      if (lodash.isEmpty(receipt)) {
+        $log.debug("Unable to load pending easyReceipt.");
+      } else {
+        $log.debug("Loading pending easyReceipt.", receipt);  
+        popupService.showConfirm("You've got Merit!", "Someone sent you Merit", "I'll Take It", "Nah", function(ok, cancel){
+          if (ok) {
+            easyReceiveAcceptanceHandler(receipt);
+          } else {
+            easyReceiveRejectionHandler(receipt);
+          }
+        });
+      }
     };
 
     $scope.$on("$ionicView.beforeEnter", function(event, data) {
@@ -167,6 +192,9 @@ angular.module('copayApp.controllers').controller('tabHomeController',
           var wallet = profileService.getWallet(walletId);
           updateWallet(wallet);
           if ($scope.recentTransactionsEnabled) getNotifications();
+        }),
+        $rootScope.$on('easyReceiveEvent', function(e, easyReceipt) {
+          $scope.handlePendingEasyReceipt(err, easyReceipt);
         })
       ];
 
