@@ -198,8 +198,9 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
           return next();
         }
 
+        var notificationType = data.isCoinbase ? 'NewIncomingCoinbase' : 'NewIncomingTx';
         var notification = Notification.create({
-          type: 'NewIncomingTx',
+          type: notificationType,
           data: {
             txid: data.txid,
             address: out.address,
