@@ -104,13 +104,10 @@ angular.module('copayApp.services')
       var scriptId= bitcore.Address.payingTo(scriptData.script, 'testnet'); 
 
       walletClient.validateEasyScript(scriptId, function(err, txn){
-        if (err) {
+        if (err || txn.result.found == false) {
           $log.debug("Could not validate easyScript on the blockchain.");
           cb(false, null);
-        }
-
-        //Easy Receipt is on the blockchain; let's pass it back.
-        if (err == null && txn) {
+        } else {
           scriptData.input = txn.result;
           cb(true, {
             txn: txn.result,
@@ -151,15 +148,16 @@ angular.module('copayApp.services')
           network: wallet.network
         }, function(err, txid) {
           if (err) return cb(err);
-          return cb(null, destinationAddress, txid);
+          return storageService.deletePendingEasyReceipt(function(err) {
+            cb(null, destinationAddress, txid)
+          });
         });
-
       });
     };
     
     service.rejectEasyReceipt = function(cb) {
       //Reject the EasyReceipt
-      service.deletePendingEasyReceipt(function(err) {
+      storageService.deletePendingEasyReceipt(function(err) {
         cb(err);
       });
     };
