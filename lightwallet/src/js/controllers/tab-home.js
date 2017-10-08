@@ -31,7 +31,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
 
       var newAddr = false;
       walletService.getAddress(wallet, newAddr, function(err, addr) {
-          
+
         if (err) {
           //Error is already formated
           popupService.showAlert(err);
@@ -67,8 +67,38 @@ angular.module('copayApp.controllers').controller('tabHomeController',
         if (err) {
           $log.debug("Could not remove pending EasyReceipt from localstorage!");
         }
-      })
+      });
     };
+
+    var showGotMeritPrompt = function(input, receipt) {
+      popupService.showConfirm(
+        "You've got " + input.txn.amount + " Merit!", "Someone sent you Merit", "I'll Take It", "Nah",
+        function(ok){
+          if (ok) 
+            easyReceiveAcceptanceHandler(receipt, input);
+          else
+            easyReceiveRejectionHandler(receipt, input);
+        });
+    }
+    var getPasswordPendingEasyReceipt = function (receipt) {
+      popupService.showPrompt(
+        "You've got Merit from " + receipt.senderName + " !",
+        "Enter the Password",
+        {ok:"I'll Take It", cancel: "Nah"},
+        function(pass){
+          if(pass) { 
+            easyReceiveService.validateEasyReceiptOnBlockchain(receipt, pass, function(isValid, input) {
+              if(isValid) {
+                showGotMeritPrompt(input, receipt);
+              } else {
+                getPasswordPendingEasyReceipt(receipt);
+              }
+            });
+          } else {
+            easyReceiveRejectionHandler(receipt, input);
+          }
+        });
+    }
 
     // Get the pending easyReceipt from memory; pass it to handler.
     $scope.getPendingEasyReceipt = function () {
@@ -79,17 +109,9 @@ angular.module('copayApp.controllers').controller('tabHomeController',
           $log.debug("Loading easyReceipt into memory.", receipt);  
           easyReceiveService.validateEasyReceiptOnBlockchain(receipt, "", function(isValid, input) {
             if(isValid) {
-
-              popupService.showConfirm(
-                "You've got " + input.txn.amount + " Merit!", "Someone sent you Merit", "I'll Take It", "Nah",
-                function(ok, cancel){
-                  if (ok) 
-                    easyReceiveAcceptanceHandler(receipt, input);
-                  if (cancel) 
-                    easyReceiveRejectionHandler(receipt, input);
-                });
+              showGotMeritPrompt(input, receipt);
             } else {
-              //TODO: Password UI
+              getPasswordPendingEasyReceipt(receipt);
             }
           });
         }
