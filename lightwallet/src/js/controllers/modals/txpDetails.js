@@ -30,6 +30,10 @@ angular.module('copayApp.controllers').controller('txpDetailsController', functi
     $scope.tx.feeLevelStr = feeService.feeOpts[$scope.tx.feeLevel];
   };
 
+  $scope.isConfirmed = function(tx) {
+    return ((!tx.isCoinbase && tx.confirmations && tx.confirmations > 0) || (tx.isCoinbase && tx.confirmations >= COINBASE_MATURITY));
+  };
+
   function applyButtonText() {
     $scope.buttonText = $scope.isCordova && !$scope.isWindowsPhoneApp ? gettextCatalog.getString('Slide') + ' ' : gettextCatalog.getString('Click') + ' ';
 
