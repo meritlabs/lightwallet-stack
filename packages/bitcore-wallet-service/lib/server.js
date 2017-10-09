@@ -1637,7 +1637,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       if (utxo.micros <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
       if (excludeIndex[utxo.txid + ":" + utxo.vout]) return false;
-      if (utxo.isFromCoinbase && !utxo.isMature) return false; 
+      if (utxo.isCoinbase && !utxo.isMature) return false; 
       return true;
     });
   };
@@ -2864,6 +2864,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         time: tx.time,
         addressTo: addressTo,
         confirmations: tx.confirmations,
+        isCoinbase: tx.isCoinbase
       };
 
       if (_.isNumber(tx.size) && tx.size > 0) {

@@ -120,6 +120,7 @@ angular.module('copayApp.controllers').controller('walletDetailsController', fun
     };
   };
 
+  // look at the details of a transaction
   $scope.openTxModal = function(btx) {
     $scope.btx = lodash.cloneDeep(btx);
     $scope.walletId = $scope.wallet.id;
