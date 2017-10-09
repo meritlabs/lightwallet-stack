@@ -434,7 +434,7 @@ describe('Meritd Functionality', function() {
         tx.height.should.be.a('number');
         should.exist(tx.blockTimestamp);
         should.exist(tx.blockHash);
-        tx.coinbase.should.equal(true);
+        tx.isCoinbase.should.equal(true);
         tx.version.should.equal(1);
         should.exist(tx.size);
         tx.locktime.should.equal(0);

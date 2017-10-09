@@ -1233,8 +1233,6 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       });
     } else {
       self.client.getAddressUtxos({addresses: addresses}, function(err, response) {
-        console.log("got and address");
-        console.log(response);
         if (err) {
           return callback(self._wrapRPCError(err));
         }
@@ -2071,8 +2069,12 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
           blockTimestamp: result.time,
           version: result.version,
           hash: txid,
-          locktime: result.locktime,
+          locktime: result.locktime
         };
+
+        if (result.vin[0] && result.vin[0].coinbase) {
+          tx.isCoinbase = true;
+        }
 
         addInputsToTx(tx, result);
         addOutputsToTx(tx, result);
