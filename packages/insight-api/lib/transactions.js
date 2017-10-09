@@ -64,7 +64,7 @@ TxController.prototype.transformTransaction = function(transaction, options, cal
     locktime: transaction.locktime
   };
 
-  if(transaction.coinbase) {
+  if(transaction.isCoinbase) {
     transformed.vin = [
       {
         coinbase: transaction.inputs[0].script,
@@ -88,7 +88,7 @@ TxController.prototype.transformTransaction = function(transaction, options, cal
     transformed.blocktime = transformed.time;
   }
 
-  if(transaction.coinbase) {
+  if(transaction.isCoinbase) {
     transformed.isCoinbase = true; 
     transformed.isMature = transformed.confirmations >= COINBASE_MATURITY ? true : false;
   }

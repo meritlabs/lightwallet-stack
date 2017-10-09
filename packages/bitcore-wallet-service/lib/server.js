@@ -2723,6 +2723,8 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
       time: t,
       inputs: inputs,
       outputs: outputs,
+      isCoinbase: tx.isCoinbase,
+      isMature: tx.isMature
     };
   });
 };
@@ -2864,7 +2866,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         time: tx.time,
         addressTo: addressTo,
         confirmations: tx.confirmations,
-        isCoinbase: tx.isCoinbase
+        isCoinbase: tx.isCoinbase,
+        isMature: tx.isMature
       };
 
       if (_.isNumber(tx.size) && tx.size > 0) {
