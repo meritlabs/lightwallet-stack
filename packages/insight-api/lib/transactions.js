@@ -7,7 +7,7 @@ var Common = require('./common');
 var async = require('async');
 
 var MAXINT = 0xffffffff; // Math.pow(2, 32) - 1;
-const COINBASE_MATURITY = 100;;
+const COINBASE_MATURITY = 100;
 
 
 function TxController(node) {
