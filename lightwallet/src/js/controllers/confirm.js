@@ -69,14 +69,13 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
 
-    function setWalletSelector(network, minAmount, cb) {
+    function setWalletSelector(minAmount, cb) {
 
       // no min amount? (sendMax) => look for no empty wallets
       minAmount = minAmount || 1;
 
       $scope.wallets = profileService.getWallets({
         onlyComplete: true,
-        network: network
       });
 
       if (!$scope.wallets || !$scope.wallets.length) {
@@ -137,7 +136,6 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       toEmail: data.stateParams.toEmail,
       toPhoneNumber: data.stateParams.toPhoneNumber,
       toColor: data.stateParams.toColor,
-      network: (new bitcore.Address(data.stateParams.toAddress)).network.name,
       txp: {},
     };
 
@@ -151,7 +149,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
       $scope.walletSelectorTitle = gettextCatalog.getString('Send from');
 
-      setWalletSelector(tx.network, tx.toAmount, function(err) {
+      setWalletSelector(tx.toAmount, function(err) {
         if (err) {
           return exitWithError('Could not update wallets');
         }
@@ -162,19 +160,20 @@ angular.module('copayApp.controllers').controller('confirmController', function(
           setWallet($scope.wallets[0], tx);
         }
       });
-      // TODO: better check for easysend
+      tx.network = $scope.wallet.credentials.network;
+      // TODO: add a better check for easysend?
       if (!tx.toAddress) {
         easySendService.createEasySendScriptHash($scope.wallet, function(err, result) {
           if (err) {
             console.log(err);
           }
+          console.log(result);
           tx.script = result.script;
           tx.easySendSecret = result.secret;
+          tx.toAddress = result.script.getAddressInfo;
         });
       }
     });
-
-
   });
 
 
@@ -209,7 +208,9 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
     if (tx.script) {
       txp.outputs = [{
-        'script': tx.script
+        'script': tx.script,
+        'amount': tx.toAmount,
+        'message': tx.description
       }];
     } else {
       txp.outputs = [{
