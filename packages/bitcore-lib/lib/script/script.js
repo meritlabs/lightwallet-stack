@@ -803,7 +803,7 @@ Script.buildP2SHMultisigIn = function(pubkeys, threshold, signatures, opts) {
  * @param {number} blockTimeout - amount of blocks the transaction can be buried under 
  *                                until it isn't redeemable anymore.
  */
-Script.buildEasySendOut = function(publicKeys, blockTimeout) {
+Script.buildEasySendOut = function(publicKeys, blockTimeout, network) {
   $.checkArgument(publicKeys.length >= 2,
     'Number of required public keys must be two or more');
 
@@ -811,6 +811,7 @@ Script.buildEasySendOut = function(publicKeys, blockTimeout) {
 
   var script = new Script();
   script.chunks = [];
+  script._network = network;
 
   var blockTimeoutBN = BN.fromNumber(blockTimeout);
   script.add(blockTimeoutBN.toScriptNumBuffer());

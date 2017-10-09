@@ -1894,16 +1894,26 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
     var output = opts.outputs[i];
     output.valid = false;
 
-    if (!checkRequired(output, ['toAddress', 'amount'])) {
-      return new ClientError('Argument missing in output #' + (i + 1) + '.');
-    }
-
     var toAddress = {};
     try {
-      toAddress = new Bitcore.Address(output.toAddress);
+      console.log('I am about to print the output');
+      console.log(output);
+      console.log('I just printed the output');
+      if (checkRequired(output, ['toAddress', 'amount'])) {
+        toAddress = new Bitcore.Address(output.toAddress);
+      } else if (checkRequired(output, ['script', 'amount'])) {
+        console.log('trying to get an address from the script');
+        toAddress = output.script.toAddress();
+        console.log('GoT an address from the script');
+      } else {
+        return new ClientError('Argument missing in output #' + (i + 1) + '.');
+      }
     } catch (ex) {
+      console.log('ex is thrown');
+      console.log(ex.toString());
       return Errors.INVALID_ADDRESS;
     }
+
     if (toAddress.network != wallet.getNetworkName()) {
       return Errors.INCORRECT_ADDRESS_NETWORK;
     }
@@ -1917,6 +1927,7 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
 
     output.valid = true;
   }
+
   return null;
 };
 

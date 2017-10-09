@@ -721,8 +721,8 @@ API.prototype.buildEasySendScriptHash = function(opts, cb) {
 
   var timeout = opts.timeout || 144;
   var result = {
-    script: Bitcore.Script.buildEasySendOut(pubkeys, timeout).toScriptHashOut(),
-    secret: rvcPair.secret
+    script: Bitcore.Script.buildEasySendOut(pubkeys, timeout, network).toScriptHashOut(),
+    secret: rcvPair.secret
   };
 
   cb(null, result);

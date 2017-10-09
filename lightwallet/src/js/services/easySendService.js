@@ -1,4 +1,5 @@
-'use string';
+'use strict';
+
 angular.module('copayApp.services')
   .factory('easySendService', function easySendServiceFactory($rootScope, $timeout, $log, $state, bitcore, lodash, storageService) {
     
@@ -7,7 +8,7 @@ angular.module('copayApp.services')
 
       // TODO: get network and a passphrase
       var opts = {
-        network: 'testnet',
+        network: wallet.credentials.network,
         passphrase: 'donkey'
       }
 
