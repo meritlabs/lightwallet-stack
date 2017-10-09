@@ -1631,12 +1631,13 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       return res;
     }, {});
 
+    // We should ensure that utxos are not locked and are mature enough.
     return _.filter(utxos, function(utxo) {
       if (utxo.locked) return false;
       if (utxo.micros <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
       if (excludeIndex[utxo.txid + ":" + utxo.vout]) return false;
-      if (utxo.isCoinbase && !utxo.isMature) return false;
+      if (utxo.isFromCoinbase && !utxo.isMature) return false; 
       return true;
     });
   };
@@ -1651,6 +1652,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
   function select(utxos, cb) {
     var totalValueInUtxos = _.sum(utxos, 'micros');
+
     var netValueInUtxos = totalValueInUtxos - baseTxpFee - (utxos.length * feePerInput);
 
     if (totalValueInUtxos < txpAmount) {
