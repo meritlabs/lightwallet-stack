@@ -35,16 +35,14 @@
           <i class="icon big-icon-svg">
             <img src="img/icon-wallet.svg" class="bg wallet-background-color-default"/>
           </i>
-          <span translate>Total Referrals in Your Network</span>
-          <p>0</p>
-        </span>
-
-        <span class="item item-sub item-icon-left item-big-icon-left">
-          <i class="icon big-icon-svg">
-            <img src="img/icon-wallet.svg" class="bg wallet-background-color-default"/>
-          </i>
           <span translate>Total Value of Your Network</span>
-          <p>0</p>
+
+          <p>
+            <ion-spinner class="spinner-dark" icon="crescent" ng-show="totalAnv === undefined && !wallet.error"></ion-spinner>
+
+            <span ng-show="totalAnv !== undefined">{{totalAnv.amountUnitStr}}</span>
+            <span class="assertive" ng-if="wallet.error">{{wallet.error}}</span>
+          </p>
         </span>
       </div>
 

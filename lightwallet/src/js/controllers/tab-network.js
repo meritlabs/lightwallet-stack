@@ -44,7 +44,7 @@ angular
           $scope.fetchingAnv = false;
 
           if (err) {
-            $scope.error = err;
+            $scope.errorAnv = err;
           }
 
           $timeout(function() {

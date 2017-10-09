@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('copayApp.controllers').controller('tabHomeController',
-  function($rootScope, $timeout, $scope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $window, gettextCatalog, lodash, popupService, ongoingProcess, externalLinkService, latestReleaseService, profileService, walletService, configService, $log, platformInfo, storageService, txpModalService, appConfigService, startupService, addressbookService, feedbackService, bwcError, nextStepsService, buyAndSellService, homeIntegrationsService, bitpayCardService, pushNotificationsService, timeService, easyReceiveService) {
+  function($rootScope, $timeout, $scope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $window, gettextCatalog, lodash, popupService, ongoingProcess, externalLinkService, latestReleaseService, profileService, walletService, configService, $log, platformInfo, storageService, txpModalService, appConfigService, startupService, addressbookService, feedbackService, bwcError, nextStepsService, buyAndSellService, homeIntegrationsService, bitpayCardService, pushNotificationsService, timeService, easyReceiveService, txFormatService) {
     var wallet;
     var listeners = [];
     var notifications = [];
@@ -75,7 +75,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       popupService.showConfirm(
         "You've got " + input.txn.amount + " Merit!", "Someone sent you Merit", "I'll Take It", "Nah",
         function(ok){
-          if (ok) 
+          if (ok)
             easyReceiveAcceptanceHandler(receipt, input);
           else
             easyReceiveRejectionHandler(receipt, input);
@@ -87,7 +87,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
         "Enter the Password",
         {ok:"I'll Take It", cancel: "Nah"},
         function(pass){
-          if(pass) { 
+          if(pass) {
             easyReceiveService.validateEasyReceiptOnBlockchain(receipt, pass, function(isValid, input) {
               if(isValid) {
                 showGotMeritPrompt(input, receipt);
@@ -107,7 +107,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
         if (err || lodash.isEmpty(receipt)) {
           $log.debug("Unable to load pending easyReceipt.");
         } else {
-          $log.debug("Loading easyReceipt into memory.", receipt);  
+          $log.debug("Loading easyReceipt into memory.", receipt);
           easyReceiveService.validateEasyReceiptOnBlockchain(receipt, "", function(isValid, input) {
             if(isValid) {
               showGotMeritPrompt(input, receipt);
@@ -118,13 +118,13 @@ angular.module('copayApp.controllers').controller('tabHomeController',
         }
       });
     };
-    
-    // Handle the pending easyReceipt.  
+
+    // Handle the pending easyReceipt.
     $scope.handlePendingEasyReceipt = function (err, receipt) {
       if (lodash.isEmpty(receipt)) {
         $log.debug("Unable to load pending easyReceipt.");
       } else {
-        $log.debug("Loading pending easyReceipt.", receipt);  
+        $log.debug("Loading pending easyReceipt.", receipt);
         popupService.showConfirm("You've got Merit!", "Someone sent you Merit", "I'll Take It", "Nah", function(ok, cancel){
           if (ok) {
             easyReceiveAcceptanceHandler(receipt);
@@ -323,6 +323,16 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       })
     };
 
+    var getAnv = function(wallet, cb) {
+      walletService.getANV(wallet, function(err, anv) {
+        if (err) {
+          cb(err);
+        }
+
+        cb(null, anv);
+      });
+    }
+
     var updateAllWallets = function() {
       $scope.wallets = profileService.getWallets();
       if (lodash.isEmpty($scope.wallets)) return;
@@ -330,6 +340,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       var i = $scope.wallets.length;
       var j = 0;
       var timeSpan = 60 * 60 * 24 * 7;
+      var totalAnv = 0;
 
       lodash.each($scope.wallets, function(wallet) {
         walletService.getStatus(wallet, {}, function(err, status) {
@@ -349,9 +360,22 @@ angular.module('copayApp.controllers').controller('tabHomeController',
 
             // TODO service refactor? not in profile service
             profileService.setLastKnownBalance(wallet.id, wallet.status.totalBalanceStr, function() {});
+
           }
           if (++j == i) {
             updateTxps();
+          }
+        });
+
+        getAnv(wallet, function(err, anv) {
+          if (err) {
+            $scope.errorAnv = err;
+          } else {
+            totalAnv += anv;
+
+            $timeout(function() {
+              $scope.totalAnv = txFormatService.parseAmount(totalAnv, 'micros');
+            }, 10);
           }
         });
       });
