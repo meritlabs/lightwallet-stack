@@ -1214,7 +1214,11 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
   var balance = {
     totalAmount: _.sum(utxos, 'micros'),
     lockedAmount: _.sum(_.filter(utxos, 'locked'), 'micros'),
-    totalConfirmedAmount: _.sum(_.filter(utxos, 'confirmations'), 'micros'),
+    totalConfirmedAmount: _.sum(
+      _.filter(utxos, function(utxo) {
+        return ((utxo.isCoinbase && utxo.confirmations > 100) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0));
+      }, 
+    'micros')),
     lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
   };
   balance.availableAmount = balance.totalAmount - balance.lockedAmount;
