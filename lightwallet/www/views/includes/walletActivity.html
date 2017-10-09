@@ -22,7 +22,14 @@
       {{notification.amountStr}}
       </div>
   </div>
-
+  
+  <div ng-if="notification.type == 'NewIncomingCoinbase'">
+      <span translate>Mining Reward</span>
+      <div class="wallet-activity-amount">
+      {{notification.amountStr}}
+      </div>
+  </div>
+  
   <div ng-if="notification.type == 'TxProposalRemoved'">
     <span translate>Proposal Deleted</span>:
     <b>{{notification.message}}</b>

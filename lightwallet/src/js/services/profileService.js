@@ -834,7 +834,8 @@ angular.module('copayApp.services')
 
       var typeFilter = {
         'NewOutgoingTx': 1,
-        'NewIncomingTx': 1
+        'NewIncomingTx': 1,
+        'NewIncomingCoinbase': 1
       };
 
       var w = root.getWallets();
