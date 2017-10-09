@@ -22,7 +22,7 @@ angular
         $scope.fetchingAnv = false;
 
         if (err) {
-          $scope.error = err;
+          $scope.errorAnv = err;
         }
 
         $timeout(function() {
@@ -34,7 +34,7 @@ angular
         $scope.fetchingRewards = false;
 
         if (err) {
-          $scope.error = err;
+          $scope.errorRewards = err;
         }
 
         $timeout(function() {
