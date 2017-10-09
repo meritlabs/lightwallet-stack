@@ -4,7 +4,8 @@
   "services": [
     "meritd",
     "insight-api",
-    "web"
+    "web",
+    "bitcore-wallet-service"
   ],
   "servicesConfig": {
     "meritd": {
@@ -12,6 +13,12 @@
     	  "datadir": "./data-and-logs/data-1",
         "_exec": "perl -e '$0='meritdummy'; sleep infinity'",
         "exec": "../merit/src/meritd"
+      }
+    },
+    "bitcore-wallet-service": {
+      "spawn": {
+        "datadir": "./data-and-logs/data-1",
+        "exec": "cd ./packages/bitcore-wallet-service/ && node bitcorenode/index.js"
       }
     }
   }
