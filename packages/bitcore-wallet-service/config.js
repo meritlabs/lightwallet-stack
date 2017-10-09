@@ -1,3 +1,5 @@
+var sgTransport = require('nodemailer-sendgrid-transport');
+
 var config = {
   basePath: '/bws/api',
   disableLogs: false,
@@ -78,12 +80,18 @@ var config = {
   //    testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
   //  },
   //},
-  //
-  // To use sendgrid:
-  // var sgTransport = require('nodemail-sendgrid-transport');
-  // mailer:sgTransport({
-  //  api_user: xxx,
-  //  api_key: xxx,
-  // });
+  mailer: sgTransport({ auth: {
+    api_key: '',
+  }}),
+  emailOpts: {
+    subjectPrefix: '[Merit]',
+    from: 'support@merit.me',
+    defaultLanguage: 'en',
+    defaultUnit: 'mrt',
+    publicTxUrlTemplate: {
+      livenet: 'https://insight.bitpay.com/tx/{{txid}}',
+      testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
+    }
+  }
 };
 module.exports = config;

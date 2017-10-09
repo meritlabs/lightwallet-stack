@@ -12,9 +12,6 @@ prepare-prereqs:
 prepare-lightwallet:
 	cd ./lightwallet && npm install
 	cd ./lightwallet && npm run apply
-	cd ./lightwallet && cordova platform add ios
-	cd ./lightwallet && cordova platform add android
-	cd ./lightwallet && cordova platform add windows
 
 .PHONY: start-lightwallet
 start-lightwallet:
@@ -57,7 +54,8 @@ start-bitcore-wallet-service:
 	cd ./packages/bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
 	cd ./packages/bitcore-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
 	cd ./packages/bitcore-wallet-service/ && node bws.js & \
-	cd ./packages/bitcore-wallet-service/ && node pushnotificationsservice/pushnotificationsservice.js
+	cd ./packages/bitcore-wallet-service/ && node pushnotificationsservice/pushnotificationsservice.js & \
+	cd ./packages/bitcore-wallet-service/ && node emailservice/emailservice.js
 
 .PHONY: stop-bitcore-wallet-service
 stop-bitcore-wallet-service:
