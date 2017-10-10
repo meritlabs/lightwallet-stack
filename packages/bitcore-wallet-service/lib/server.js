@@ -1096,7 +1096,7 @@ WalletService.prototype._getUtxos = function(addresses, cb) {
     if (err) return cb(err);
 
     var utxos = _.map(utxos, function(utxo) {
-      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations']);
+      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations', 'isCoinbase', 'isMature']);
       u.confirmations = u.confirmations || 0;
       u.locked = false;
       u.micros = _.isNumber(u.micros) ? +u.micros : Utils.strip(u.amount * 1e8);
@@ -1216,11 +1216,15 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
     lockedAmount: _.sum(_.filter(utxos, 'locked'), 'micros'),
     totalConfirmedAmount: _.sum(
       _.filter(utxos, function(utxo) {
-        return ((utxo.isCoinbase && utxo.confirmations > 100) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0));
+        console.log("Totalizing!");
+        console.log(utxo);
+        return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0));
       }, 
     'micros')),
     lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
   };
+  console.log("balance!!");
+  console.log(balance);
   balance.availableAmount = balance.totalAmount - balance.lockedAmount;
   balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
 
