@@ -31,6 +31,7 @@ var BlockHeader = function BlockHeader(arg) {
   this.timestamp = info.time;
   this.bits = info.bits;
   this.nonce = info.nonce;
+  this.cycle = info.cycle;
 
   if (info.hash) {
     $.checkState(
@@ -83,7 +84,8 @@ BlockHeader._fromObject = function _fromObject(data) {
     time: data.time,
     timestamp: data.time,
     bits: data.bits,
-    nonce: data.nonce
+    nonce: data.nonce,
+    cycle: data.cycle
   };
   return info;
 };
@@ -142,6 +144,13 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br) {
   info.time = br.readUInt32LE();
   info.bits = br.readUInt32LE();
   info.nonce = br.readUInt32LE();
+
+  const cycleNonces = br.readVarintNum();
+  info.cycle = [];
+  for (let i = 0; i < cycleNonces; i++) {
+    info.cycle.push(br.readUInt32LE());
+  }
+
   return info;
 };
 
@@ -165,7 +174,8 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     merkleRoot: BufferUtil.reverse(this.merkleRoot).toString('hex'),
     time: this.time,
     bits: this.bits,
-    nonce: this.nonce
+    nonce: this.nonce,
+    cycle: this.cycle
   };
 };
 
