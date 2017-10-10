@@ -167,7 +167,6 @@ angular.module('copayApp.controllers').controller('confirmController', function(
           if (err) {
             console.log(err);
           }
-          console.log(result);
           tx.script = result.script;
           tx.easySendSecret = result.secret;
           tx.toAddress = result.script.getAddressInfo;
@@ -212,6 +211,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
         'amount': tx.toAmount,
         'message': tx.description
       }];
+      txp.addressType = 'P2SH';
     } else {
       txp.outputs = [{
         'toAddress': tx.toAddress,

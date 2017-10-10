@@ -1896,22 +1896,16 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
 
     var toAddress = {};
     try {
-      console.log('I am about to print the output');
-      console.log(output);
-      console.log('I just printed the output');
       if (checkRequired(output, ['toAddress', 'amount'])) {
         toAddress = new Bitcore.Address(output.toAddress);
       } else if (checkRequired(output, ['script', 'amount'])) {
-        console.log('trying to get an address from the script');
-        toAddress = output.script.toAddress();
-        console.log('GoT an address from the script');
+        var script = new Bitcore.Script(output.script);
+        toAddress = script.toAddress(output.script._network);
       } else {
         return new ClientError('Argument missing in output #' + (i + 1) + '.');
       }
     } catch (ex) {
-      console.log('ex is thrown');
-      console.log(ex.toString());
-      return Errors.INVALID_ADDRESS;
+      return new ClientError('exception checking address: ' + ex);
     }
 
     if (toAddress.network != wallet.getNetworkName()) {
@@ -2119,16 +2113,24 @@ WalletService.prototype.createTx = function(opts, cb) {
               feeLevel: opts.feeLevel,
               feePerKb: feePerKb,
               payProUrl: opts.payProUrl,
+              network: wallet.getNetworkName(),
               walletM: wallet.m,
               walletN: wallet.n,
               excludeUnconfirmedUtxos: !!opts.excludeUnconfirmedUtxos,
               validateOutputs: !opts.validateOutputs,
-              addressType: wallet.addressType,
+              addressType: opts.addressType,
               customData: opts.customData,
               inputs: opts.inputs,
               fee: opts.inputs && !_.isNumber(opts.feePerKb) ? opts.fee : null,
               noShuffleOutputs: opts.noShuffleOutputs
             };
+
+            txOpts.outputs = _.map(txOpts.outputs, function(output) {
+              if(output.script) {
+                output.script = Bitcore.Script(output.script);
+              }
+              return output;
+            });
 
             txp = Model.TxProposal.create(txOpts);
             next();
