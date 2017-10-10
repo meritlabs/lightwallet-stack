@@ -32,13 +32,18 @@ angular.module('copayApp.services').service('popupService', function($log, $ioni
 
   var _ionicPrompt = function(title, message, opts, cb) {
     opts = opts || {};
+
+    var okText = opts.ok || gettextCatalog.getString('OK');
+    var cancelText = opts.cancel || gettextCatalog.getString('Cancel');
+
     $ionicPopup.prompt({
       title: title,
       subTitle: message,
       cssClass: opts.class,
       template: '<input ng-model="data.response" type="' + opts.inputType + '" value ="" autocomplete="off" autofocus>',
       inputPlaceholder: opts.inputPlaceholder,
-      defaultText: opts.defaultText
+      defaultText: opts.defaultText,
+      buttonLabels: [okText, cancelText]
     }).then(function(res) {
       return cb(res);
     });
@@ -69,8 +74,9 @@ angular.module('copayApp.services').service('popupService', function($log, $ioni
       if (results.buttonIndex == 1) return cb(results.input1);
       else return cb();
     }
-    var okText = gettextCatalog.getString('OK');
-    var cancelText = gettextCatalog.getString('Cancel');
+
+    var okText = opts.ok || gettextCatalog.getString('OK');
+    var cancelText = opts.cancel || gettextCatalog.getString('Cancel');
     title = title ? title : '';
     navigator.notification.prompt(message, onPrompt, title, [okText, cancelText], opts.defaultText);
   };

@@ -26,3 +26,6 @@ lerna-debug.log
 
 # Merit Daemon
 packages/bitcore-node/bin/meritd
+
+# Dot Env
+.env

@@ -4,6 +4,7 @@ var Address = require('../address');
 var BufferReader = require('../encoding/bufferreader');
 var BufferWriter = require('../encoding/bufferwriter');
 var Hash = require('../crypto/hash');
+var BN = require('../crypto/bn');
 var Opcode = require('../opcode');
 var PublicKey = require('../publickey');
 var Signature = require('../crypto/signature');
@@ -111,6 +112,7 @@ Script.prototype.toBuffer = function() {
     var opcodenum = chunk.opcodenum;
     bw.writeUInt8(chunk.opcodenum);
     if (chunk.buf) {
+      chunk.buf = new Buffer(chunk.buf);
       if (opcodenum < Opcode.OP_PUSHDATA1) {
         bw.write(chunk.buf);
       } else if (opcodenum === Opcode.OP_PUSHDATA1) {
@@ -441,6 +443,29 @@ Script.prototype.isMultisigIn = function() {
 };
 
 /**
+ * @returns {boolean} if this is a pay to EasySend input script
+ */
+Script.prototype.isEasySendIn = function() {
+  if (this.chunks.length === 1) {
+    var signatureBuf = this.chunks[0].buf;
+    if (signatureBuf &&
+        signatureBuf.length &&
+        signatureBuf[0] === 0x30) {
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+ * @returns {boolean} if this is a EasySend output script
+ */
+Script.prototype.isEasySendOut = function() {
+  var buf = this.toBuffer();
+  return (buf.length >= 1 && buf[buf.length - 1] === Opcode.OP_EASYSEND);
+};
+
+/**
  * @returns {boolean} true if this is a valid standard OP_RETURN output
  */
 Script.prototype.isDataOut = function() {
@@ -622,7 +647,7 @@ Script.prototype._addByType = function(obj, prepend) {
   } else if (typeof obj === 'object') {
     this._insertAtPosition(obj, prepend);
   } else {
-    throw new Error('Invalid script chunk');
+    throw new Error('Invalid script chunk: ' + obj);
   }
 };
 
@@ -767,6 +792,52 @@ Script.buildP2SHMultisigIn = function(pubkeys, threshold, signatures, opts) {
     s.add(signature);
   });
   s.add((opts.cachedMultisig || Script.buildMultisigOut(pubkeys, threshold, opts)).toBuffer());
+  return s;
+};
+
+/**
+ * @returns {Script} a new EasySend output script for given public keys,
+ * requiring m of those public keys to spend
+ * @param {PublicKey[]} publicKeys - list of all public keys controlling the output.
+ *                                This is the key encoded as straight bytes.
+ * @param {number} blockTimeout - amount of blocks the transaction can be buried under 
+ *                                until it isn't redeemable anymore.
+ */
+Script.buildEasySendOut = function(publicKeys, blockTimeout) {
+  $.checkArgument(publicKeys.length >= 2,
+    'Number of required public keys must be two or more');
+
+  blockTimeout = parseInt(blockTimeout, 10);
+
+  var script = new Script();
+  script.chunks = [];
+
+  var blockTimeoutBN = BN.fromNumber(blockTimeout);
+  script.add(blockTimeoutBN.toScriptNumBuffer());
+  for (var i = 0; i < publicKeys.length; i++) {
+    script.add(publicKeys[i]);
+  }
+
+  script.add(Opcode.smallInt(publicKeys.length));
+  script.add(Opcode.OP_EASYSEND);
+
+  return script;
+};
+
+/**
+ * A new EasySend input script for the given signature, The signature should
+ * be one of the public keys used in the easysend out script.
+ * @param {buffer} signature to be append to the script
+ * @returns {Script}
+ */
+Script.buildEasySendIn = function(signature, easyScript) {
+  var s = new Script();
+  var sigBuf = BufferUtil.concat([
+    signature.toDER(),
+    BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)
+  ]);
+  s.add(sigBuf);
+  s.add(easyScript.toBuffer());
   return s;
 };
 

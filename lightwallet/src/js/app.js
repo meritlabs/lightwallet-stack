@@ -14,6 +14,7 @@ var modules = [
   'angular-md5',
   'bwcModule',
   'bitauthModule',
+  'envVarsModule',
   'copayApp.filters',
   'copayApp.services',
   'copayApp.controllers',

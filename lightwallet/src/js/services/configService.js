@@ -1,9 +1,17 @@
 'use strict';
 
-angular.module('copayApp.services').factory('configService', function(storageService, lodash, $log, $timeout, $rootScope, platformInfo) {
+angular.module('copayApp.services').factory('configService', function(storageService, lodash, $log, $timeout, $rootScope, platformInfo, envVarsService) {
+
   var root = {};
 
   var isWindowsPhoneApp = platformInfo.isCordova && platformInfo.isWP;
+
+  // Check Environment Variable for Environment-Specific Parameters:
+  console.log("Getting the envVars!");
+  console.log(envVarsService.getVars());
+  
+  var bwsUrl = envVarsService.getVars().bwsUrl || 'http://localhost:3232/bws/api';
+  //var bwsUrl = 'http://adil.merit.me:3232/bws/api';
 
   var defaultConfig = {
     // wallet limits
@@ -15,7 +23,7 @@ angular.module('copayApp.services').factory('configService', function(storageSer
     // Bitcore wallet service URL
     bws: {
       // url: 'https://bws.bitpay.com/bws/api',
-      url: 'http://localhost:3232/bws/api',
+      url: bwsUrl,
     },
 
     download: {

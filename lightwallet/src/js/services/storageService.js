@@ -146,15 +146,15 @@ angular.module('copayApp.services')
       storage.remove('profile', cb);
     };
 
-    root.storeNewEasyReceipt = function(easyReceipt, cb) {
-      storage.create('easyReceipt', easyReceipt.toObj(), cb);
-    };
-
-    root.storeEasyReceipt = function(easyReceipt, cb) {
+    root.storePendingEasyReceipt = function(easyReceipt, cb) {
       storage.set('easyReceipt', easyReceipt.toObj(), cb);
     };
 
-    root.getEasyReceipt = function(cb) {
+    root.deletePendingEasyReceipt = function(cb) {
+      storage.remove('easyReceipt', cb);
+    };
+
+    root.getPendingEasyReceipt = function(cb) {
       storage.get('easyReceipt', function(err, str) {
         if (err || !str)
           return cb(err);

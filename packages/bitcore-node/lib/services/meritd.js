@@ -190,7 +190,8 @@ Merit.prototype.getAPIMethods = function() {
     // Merit Specific RPC
     ['generatereferralcode',  this, this.generateReferralCode, 0],
     ['unlockwallet',          this, this.unlockWallet,         2],
-    ['validatereferralcode',  this, this.validateReferralCode, 1]
+    ['validatereferralcode',  this, this.validateReferralCode, 1],
+    ['getInputForEasySend', this, this.getInputForEasySend, 1]
   ];
   return methods;
 };
@@ -358,7 +359,6 @@ Merit.prototype._loadSpawnConfiguration = function(node) {
 
   $.checkArgument(this.options.spawn, 'Please specify "spawn" in meritd config options');
   $.checkArgument(this.options.spawn.datadir, 'Please specify "spawn.datadir" in meritd config options');
-  $.checkArgument(this.options.spawn.exec, 'Please specify "spawn.exec" in meritd config options');
 
   this._expandRelativeDatadir();
 
@@ -916,7 +916,11 @@ Merit.prototype._stopSpawnedMerit = function(callback) {
     });
   }
 
-  stopProcess();
+  if(spawnOptions.exec) {
+    stopProcess();
+  } else {
+    callback(null);
+  }
 };
 
 Merit.prototype._spawnChildProcess = function(callback) {
@@ -947,26 +951,28 @@ Merit.prototype._spawnChildProcess = function(callback) {
     }
 
     log.info('Starting Meritd process');
-    self.spawn.process = spawn(self.spawn.exec, options, {stdio: 'inherit'});
+    if(spawn.exec) {
+      self.spawn.process = spawn(self.spawn.exec, options, {stdio: 'inherit'});
 
-    self.spawn.process.on('error', function(err) {
-      self.emit('error', err);
-    });
+      self.spawn.process.on('error', function(err) {
+        self.emit('error', err);
+      });
 
-    self.spawn.process.once('exit', function(code) {
-      if (!self.node.stopping) {
-        log.warn('Merit process unexpectedly exited with code:', code);
-        log.warn('Restarting Merit child process in ' + self.spawnRestartTime + 'ms');
-        setTimeout(function() {
-          self._spawnChildProcess(function(err) {
-            if (err) {
-              return self.emit('error', err);
-            }
-            log.warn('Merit process restarted');
-          });
-        }, self.spawnRestartTime);
-      }
-    });
+      self.spawn.process.once('exit', function(code) {
+        if (!self.node.stopping) {
+          log.warn('Merit process unexpectedly exited with code:', code);
+          log.warn('Restarting Merit child process in ' + self.spawnRestartTime + 'ms');
+          setTimeout(function() {
+            self._spawnChildProcess(function(err) {
+              if (err) {
+                return self.emit('error', err);
+              }
+              log.warn('Merit process restarted');
+            });
+          }, self.spawnRestartTime);
+        }
+      });
+    }
 
     var exitShutdown = false;
 
@@ -2217,7 +2223,7 @@ Merit.prototype.validateReferralCode = function(referralCode, callback) {
   }
 };
 
-/*
+/**
  * Updates the wallet with referral code and beacons first key with associated referral
  * Returns an object containing various wallet state info.
  * @param {String} code, The code needed to unlock the wallet
@@ -2266,6 +2272,33 @@ Merit.prototype.validateAddress = function(address, callback) {
     return callback(self._wrapRPCError(err));
   }
 };
+
+/**
+ * Checks if an easyScript is on the blockChain.
+ * @param {String} easyScript - The full easyScript value.  
+ */
+
+ Merit.prototype.getInputForEasySend = function(easyScript, callback) {
+   log.info('ValidateEasyScript RPC called: ', easyScript);
+
+   const self = this;
+
+  if (typeof easyScript == 'string' || easyScript instanceof String) {
+    self.client.getInputForEasySend(easyScript, function(err, response) {
+      log.info("Juicy results: ", response); 
+      if (err) {
+        return callback(self._wrapRPCError(err));
+      } else { 
+        log.info('getInputForEasySend Response: ', response);
+        callback(null, response);
+}
+    });
+   } else { 
+     var err = new errors.RPCError('EasyScript was missing or incorrect');
+     err.code = -8;
+     return callback(self._wrapRPCError(err));
+   }
+ };
 
 /**
  * Called by Node to stop the service.

@@ -1,52 +1,70 @@
 'use string';
 angular.module('copayApp.services')
-  .factory('easyReceiveService', function easyReceiveServiceFactory($rootScope, $timeout, $log, $state, lodash, storageService) {
-    
+  .factory('easyReceiveService', 
+    function easyReceiveServiceFactory(
+      $rootScope,
+      $timeout,
+      $log,
+      $state,
+      bitcore,
+      lodash,
+      storageService,
+      bwcService,
+      bwcError,
+      configService,
+      ledger,
+      feeService) {
+
     var service = {};
     service.easyReceipt = {};
 
     // TODO: Support having multiple easyReceipts in local storage, so that user can accept them all.
-    service.validateAndSaveParams = function(params) {
+    service.validateAndSaveParams = function(params, cb) { 
       $log.debug("Parsing params that have been deeplinked in.");
       $log.debug(params);
-      if (params.inviteCode) {
-        $log.debug("Received inviteCode from URL param.  Storing for later...")
-        service.easyReceipt.inviteCode = params.inviteCode;
+      if (params.uc) {
+        $log.debug("Received unlock code from URL param.  Storing for later...")
+        service.easyReceipt.unlockCode = params.uc;
       }
-      
-      if (params.senderName) {
-        $log.debug("Received senderName from URL param.  Storing for later...")
-        service.easyReceipt.senderName = params.senderName;
+
+      if (params.sn) {
+        $log.debug("Received sender name from URL param.  Storing for later...")
+        service.easyReceipt.senderName = params.sn;
       }
-      
-      if (params.amount) {
-        $log.debug("Received amount from URL param.  Storing for later...")
-        service.easyReceipt.amount = params.amount;
+
+      if (params.se) {
+        service.easyReceipt.secret = params.se;
       }
-      
-      if (params.secret) {
-        service.easyReceipt.secret = params.secret;
+
+      if (params.sk) {
+        service.easyReceipt.senderPublicKey = params.sk;
       }
-      
-      if (params.sentToAddress) {
-        service.easyReceipt.sentToAddress = params.sentToAddress;
+
+      if (params.bt) {
+        service.easyReceipt.blockTimeout = parseInt(params.bt, 10);
       }
+
       if (!lodash.isEmpty(service.easyReceipt)) {
         var receiptToStore = EasyReceipt.fromObj(service.easyReceipt);
         if (receiptToStore.isValid()) {
-          storageService.storeEasyReceipt(receiptToStore, function(err) {
-            if (err) {
-              $log.debug("Could not save the easyReceipt:", err);
-            }
+          // We are storing the easyReceipt into localStorage, 
+          storageService.storePendingEasyReceipt(receiptToStore, function(err) {
+            cb(err, receiptToStore);            
           });
         } else {
-          $log.debug("EasyReceipt params are invalid; not storing.");
+          var err = new Error("EasyReceipt is not valid; not storing.");
+          cb(err, null);          
         }
       }
     };
 
-    service.getEasyReceipt = function (cb) {
-      storageService.getEasyReceipt(function(err, receipt) {
+    /**
+     * Get a pending easyReceipt from localStorage.
+     * These easyReceipts are usually parsed from URL params.    
+     * This does not interact with the blockchain.
+     */
+    service.getPendingEasyReceipt = function (cb) {
+      storageService.getPendingEasyReceipt(function(err, receipt) {
         // If the receipt is not valid, we should add an error here, and not return it.  
         if (receipt && !receipt.isValid()) {
           var newError = new Error("EasyReceipt failed validation: " + receipt);
@@ -56,6 +74,112 @@ angular.module('copayApp.services')
           cb(err, receipt);
         }
       });
+    }
+
+    /**
+     * Delete a pending easyReceipt from localStorage.
+     * These easyReceipts are usually parsed from URL params.    
+     * This does not interact with the blockchain.
+     */
+    service.deletePendingEasyReceipt = function (cb) {
+      storageService.deletePendingEasyReceipt(function(err) {
+          return cb(err);
+      });
+    }
+
+    /* TODO: consider splitting this up into multiple methods
+     * One to search the blockchain for the script. 
+     * The other to actually unlock it. 
+     */
+    service.validateEasyReceiptOnBlockchain = function (receipt, optionalPassword, cb) {
+      // Check if the easyScript is on the blockchain.
+
+      // Get the bwsUrl from the configService.  
+      var opts = {};
+      opts.bwsurl = configService.getDefaults().bws.url;
+      var walletClient = bwcService.getClient(null, opts);
+      receipt.onBlockChain = false;
+
+      var scriptData = service._generateEasyScript(receipt, optionalPassword);
+      var scriptId= bitcore.Address.payingTo(scriptData.script, 'testnet'); 
+
+      walletClient.validateEasyScript(scriptId, function(err, txn){
+        if (err || txn.result.found == false) {
+          $log.debug("Could not validate easyScript on the blockchain.");
+          cb(false, null);
+        } else {
+          scriptData.input = txn.result;
+          cb(true, {
+            txn: txn.result,
+            privateKey: scriptData.privateKey,
+            publicKey: scriptData.publicKey,
+            script: scriptData.script,
+            scriptId: scriptId,
+          });
+        }
+      });
+    }
+
+    service.acceptEasyReceipt = function(wallet, receipt, input, destinationAddress, cb) {
+      //Accept the EasyReceipt
+
+      var opts = {};
+      var testTx = wallet.buildEasySendRedeemTransaction(
+        input,
+        destinationAddress,
+        opts);
+
+      var rawTxLength = testTx.serialize().length;
+
+      feeService.getCurrentFeeRate(wallet.network, function(err, feePerKB) {
+
+        if (err) return cb(err);
+
+        //TODO: Don't use magic numbers
+        opts.fee = Math.round((feePerKB * rawTxLength) / 2000);
+
+        var tx = wallet.buildEasySendRedeemTransaction(
+          input,
+          destinationAddress,
+          opts);
+
+        wallet.broadcastRawTx({
+          rawTx: tx.serialize(),
+          network: wallet.network
+        }, function(err, txid) {
+          if (err) return cb(err);
+          return storageService.deletePendingEasyReceipt(function(err) {
+            cb(null, destinationAddress, txid)
+          });
+        });
+      });
+    };
+    
+    service.rejectEasyReceipt = function(cb) {
+      //Reject the EasyReceipt
+      storageService.deletePendingEasyReceipt(function(err) {
+        cb(err);
+      });
+    };
+
+
+
+    service._generateEasyScript = function (receipt, optionalPassword) {
+      var secret = ledger.hexToString(receipt.secret);
+      var receivePrv = bitcore.PrivateKey.forEasySend(secret, optionalPassword);
+      var receivePub = bitcore.PublicKey.fromPrivateKey(receivePrv).toBuffer();
+      var senderPubKey = ledger.hexToArray(receipt.senderPublicKey);
+
+      var publicKeys = [
+        receivePub,
+        senderPubKey
+      ];
+
+      return {
+        privateKey: receivePrv,
+        publicKey: receivePub,
+        script: bitcore.Script.buildEasySendOut(publicKeys, receipt.blockTimeout)
+      };
     }
 
     return service;
