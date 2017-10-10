@@ -72,6 +72,9 @@ angular.module('copayApp.services').factory('feeService', function($log, $timeou
     walletClient.getFeeLevels('livenet', function(errLivenet, levelsLivenet) {
       walletClient.getFeeLevels('testnet', function(errTestnet, levelsTestnet) {
         if (errLivenet || errTestnet) {
+          console.log("LEVEL ERROR");
+          console.log(errLivenet);
+          console.log(errTestnet);
           return cb(gettextCatalog.getString('Could not get dynamic fee'));
         }
 

@@ -359,7 +359,6 @@ Merit.prototype._loadSpawnConfiguration = function(node) {
 
   $.checkArgument(this.options.spawn, 'Please specify "spawn" in meritd config options');
   $.checkArgument(this.options.spawn.datadir, 'Please specify "spawn.datadir" in meritd config options');
-  $.checkArgument(this.options.spawn.exec, 'Please specify "spawn.exec" in meritd config options');
 
   this._expandRelativeDatadir();
 
@@ -917,7 +916,11 @@ Merit.prototype._stopSpawnedMerit = function(callback) {
     });
   }
 
-  stopProcess();
+  if(spawnOptions.exec) {
+    stopProcess();
+  } else {
+    callback(null);
+  }
 };
 
 Merit.prototype._spawnChildProcess = function(callback) {
@@ -948,26 +951,28 @@ Merit.prototype._spawnChildProcess = function(callback) {
     }
 
     log.info('Starting Meritd process');
-    self.spawn.process = spawn(self.spawn.exec, options, {stdio: 'inherit'});
+    if(spawn.exec) {
+      self.spawn.process = spawn(self.spawn.exec, options, {stdio: 'inherit'});
 
-    self.spawn.process.on('error', function(err) {
-      self.emit('error', err);
-    });
+      self.spawn.process.on('error', function(err) {
+        self.emit('error', err);
+      });
 
-    self.spawn.process.once('exit', function(code) {
-      if (!self.node.stopping) {
-        log.warn('Merit process unexpectedly exited with code:', code);
-        log.warn('Restarting Merit child process in ' + self.spawnRestartTime + 'ms');
-        setTimeout(function() {
-          self._spawnChildProcess(function(err) {
-            if (err) {
-              return self.emit('error', err);
-            }
-            log.warn('Merit process restarted');
-          });
-        }, self.spawnRestartTime);
-      }
-    });
+      self.spawn.process.once('exit', function(code) {
+        if (!self.node.stopping) {
+          log.warn('Merit process unexpectedly exited with code:', code);
+          log.warn('Restarting Merit child process in ' + self.spawnRestartTime + 'ms');
+          setTimeout(function() {
+            self._spawnChildProcess(function(err) {
+              if (err) {
+                return self.emit('error', err);
+              }
+              log.warn('Merit process restarted');
+            });
+          }, self.spawnRestartTime);
+        }
+      });
+    }
 
     var exitShutdown = false;
 
