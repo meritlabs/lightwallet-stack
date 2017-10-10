@@ -45,11 +45,12 @@ angular.module('copayApp.controllers').controller('tabHomeController',
 
           function(err, destinationAddress, acceptanceTx){
             if(err) {
-              console.log("ERR");
-              console.log(err);
+              popupService.showAlert("There was an error getting the Merit");
+              $log.debug("Error Accepting Easy Send");
+              $log.debug(err);
             } else {
-              console.log("NEW TX");
-              console.log(acceptanceTx);
+              $log.debug("Accepted Easy Send, got new Transaction");
+              $log.debug(acceptanceTx);
             }
           }
         );
