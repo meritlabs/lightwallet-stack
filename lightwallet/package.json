@@ -61,6 +61,7 @@
         "branch-cordova-sdk": "^2.6.12",
         "clipboard": "^1.7.1",
         "cordova-custom-config": "^4.0.2",
+        "cordova-ios": "^4.5.1",
         "coveralls": "^2.11.9",
         "express": "^4.11.2",
         "fs": "0.0.2",

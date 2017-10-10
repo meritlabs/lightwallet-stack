@@ -11,7 +11,7 @@ angular.module('copayApp.services').factory('configService', function(storageSer
   console.log(envVarsService.getVars());
   
   var bwsUrl = envVarsService.getVars().bwsUrl || 'http://localhost:3232/bws/api';
-  //var bwsUrl = 'http://localhost:3232/bws/api';
+  //var bwsUrl = 'http://adil.merit.me:3232/bws/api';
 
   var defaultConfig = {
     // wallet limits

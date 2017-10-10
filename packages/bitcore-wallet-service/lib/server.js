@@ -3321,17 +3321,9 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
 /**
  * Validate that an EasyScript is on the blockchain, and that it can be unlocked.
  */
-WalletService.prototype.validateEasyReceipt = function(opts, cb) {
-  try {
-    //easyScript = new Bitcore.Script.buildEasySendOut();
-    var easyScript = opts.easyReceiptScript;
-  } catch (ex) {
-    return cb(new ClientError('Missing param: easyReceiptScript!'));
-  };
-
-  //var bc = self._getBlockchainExplorer(opts.network);
+WalletService.prototype.validateEasyScript = function(scriptId, cb) {
   log.debug("About to call localMeritDaemon");
-  localMeritDaemon.getInputForEasySend(easyScript, function(errMsg, result) {
+  localMeritDaemon.getInputForEasySend(scriptId, function(errMsg, result) {
     log.debug("Called LocalMerit Daemon with result: ", result);
     log.debug("Called LocalMerit Daemon with errMsg: ", errMsg);
     if (errMsg) {

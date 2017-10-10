@@ -53,6 +53,21 @@ var EMAIL_TYPES = {
     notifyDoer: true,
     notifyOthers: false,
   },
+  'NewIncomingReferralTx': {
+    filename: 'new_incoming_referral',
+    notifyDoer: true,
+    notifyOthers: true,
+  },
+  'ReferralConfirmation': {
+    filename: 'referral_confirmation',
+    notifyDoer: true,
+    notifyOthers: false,
+  },
+  'ReferralWasRejected': {
+    filename: 'referral_rejected',
+    notifyDoer: true,
+    notifyOthers: false,
+  }
 };
 
 
@@ -110,7 +125,11 @@ EmailService.prototype.start = function(opts, cb) {
       done();
     },
     function(done) {
-      self.mailer = opts.mailer || nodemailer.createTransport(opts.emailOpts);
+      if (opts.mailer) {
+        self.mailer = nodemailer.createTransport(opts.mailer) ;
+      } else {
+        self.mailer = nodemailer.createTransport(opts.emailOpts);
+      }
       done();
     },
   ], function(err) {
