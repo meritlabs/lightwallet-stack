@@ -170,6 +170,9 @@ angular.module('copayApp.controllers').controller('confirmController', function(
             console.log(err);
           }
           tx.script = result.script;
+          tx.script.isOutput = true;
+          console.log('We have constructed a script hash');
+          console.log(tx.script);
           tx.easySendSecret = result.secret;
           tx.toAddress = result.script.getAddressInfo;
         });
@@ -214,6 +217,8 @@ angular.module('copayApp.controllers').controller('confirmController', function(
         'message': tx.description
       }];
       txp.addressType = 'P2SH';
+      console.log('We added an output.');
+      console.log(txp.outputs);
     } else {
       txp.outputs = [{
         'toAddress': tx.toAddress,
@@ -495,7 +500,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     }
 
     ongoingProcess.set('creatingTx', true, onSendStatusChange);
-    getTxp(lodash.clone(tx), wallet, false, function(err, txp) {
+    getTxp(lodash.cloneDeep(tx), wallet, false, function(err, txp) {
       ongoingProcess.set('creatingTx', false, onSendStatusChange);
       if (err) return;
 
