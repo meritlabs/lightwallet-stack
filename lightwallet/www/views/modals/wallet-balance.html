@@ -33,7 +33,7 @@
           </span>
         </div>
       </div>
-      <div class="wallet-balance__description" translate>The total amount of merit stored in this wallet.</div>
+      <div class="wallet-balance__description" translate>The total amount of Merit stored in this wallet.</div>
     </div>
     <div class="wallet-balance__list list card">
       <div class="wallet-balance__item item">
@@ -52,13 +52,13 @@
           </span>
         </div>
       </div>
-      <div class="wallet-balance__description" translate>The amount of merit immediately spendable from this wallet.</div>
+      <div class="wallet-balance__description" translate>The amount of Merit immediately spendable from this wallet.</div>
     </div>
     <div class="wallet-balance__list list card">
       <div class="wallet-balance__item item">
         <img class="wallet-balance__icon" src="img/icon-confirming-clear.svg" width="18"\>
         <div class="wallet-balance__content no-border">
-          <div class="wallet-balance__title" translate>Confirming</div>
+          <div class="wallet-balance__title" translate>Pending</div>
           <span class="item-note text-right wallet-balance__amount">
             <span class="wallet-balance__amount wallet-balance__amount--confirming">
               {{status.pendingBalanceStr}}
@@ -71,7 +71,7 @@
           </span>
         </div>
       </div>
-      <div class="wallet-balance__description" translate>The amount of Merit that is ready to spend.  That means less than 1 confirmation for payments and less than 100 confirmations for rewards. </div>
+      <div class="wallet-balance__description" translate>Incoming Merit that is still pending.  That means less than 1 confirmation for payments and less than 100 confirmations for rewards. </div>
     </div>
     <div class="wallet-balance__list list card" ng-show="status.lockedBalanceMicros!=0">
       <div class="wallet-balance__item item">
