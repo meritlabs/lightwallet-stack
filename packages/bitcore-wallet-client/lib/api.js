@@ -218,6 +218,9 @@ API.prototype._processTxps = function(txps) {
     _.each(txp.outputs, function(output) {
       output.encryptedMessage = output.message;
       output.message = API._decryptMessage(output.message, encryptingKey) || null;
+      if (output.script) {
+        output.script = new Bitcore.Script(output.script);
+      }
     });
     txp.hasUnconfirmedInputs = _.some(txp.inputs, function(input) {
       return input.confirmations == 0;
@@ -1756,6 +1759,9 @@ API.prototype._getCreateTxProposalArgs = function(opts) {
   args.payProUrl = opts.payProUrl || null;
   _.each(args.outputs, function(o) {
     o.message = API._encryptMessage(o.message, self.credentials.sharedEncryptingKey) || null;
+    if (o.script) {
+      o.script = new Bitcore.Script(o.script);
+    }
   });
 
   return args;
@@ -1793,12 +1799,18 @@ API.prototype.createTxProposal = function(opts, cb) {
 
   var args = self._getCreateTxProposalArgs(opts);
 
+  console.log('We\'re starting with these opts in bwc api:');
+  console.log(opts);
+
+  console.log('... but we\'re sending these args:');
+  console.log(args);
   self._doPostRequest('/v2/txproposals/', args, function(err, txp) {
     if (err) return cb(err);
 
     self._processTxps(txp);
 
     if (!Verifier.checkProposalCreation(args, txp, self.credentials.sharedEncryptingKey)) {
+      console.log('Uh oh, you found the princess\nRAANG. She is in another house. Go away.');
       return cb(new Errors.SERVER_COMPROMISED);
     }
 

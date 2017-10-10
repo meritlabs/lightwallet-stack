@@ -43,7 +43,19 @@ var Script = function Script(from) {
 };
 
 Script.prototype.set = function(obj) {
-  this.chunks = obj.chunks || this.chunks;
+  var chunks = obj.chunks || this.chunks;
+  this.chunks = _.map(chunks, function(chunk) {
+    return {
+      len: chunk.len,
+      opcodenum: chunk.opcodenum,
+      buf: new Uint8Array(chunk.buf)
+    };
+  });
+  this._isInput = obj.isInput;
+  this._isOutput = obj.isOutput;
+  
+  this._network = obj._network || obj.network || Networks.defaultNetwork;
+
   return this;
 };
 

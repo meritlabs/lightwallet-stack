@@ -1237,7 +1237,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       });
     } else {
       self.client.getAddressUtxos({addresses: addresses}, function(err, response) {
-        console.log("got and address");
+        console.log("got an address");
         console.log(response);
         if (err) {
           return callback(self._wrapRPCError(err));

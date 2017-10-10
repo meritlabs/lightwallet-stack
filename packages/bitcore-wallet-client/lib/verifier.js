@@ -90,7 +90,13 @@ Verifier.checkProposalCreation = function(args, txp, encryptingKey) {
     var o1 = txp.outputs[i];
     var o2 = args.outputs[i];
     if (!strEqual(o1.toAddress, o2.toAddress)) return false;
-    if (!strEqual(o1.script, o2.script)) return false;
+    if (!strEqual(o1.script, o2.script)) {
+      console.log('txp script');
+      console.log(o1.script);
+      console.log('arg script');
+      console.log(o2.script);
+      return false;
+    }
     if (o1.amount != o2.amount) return false;
     var decryptedMessage = null;
     try {

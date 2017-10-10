@@ -1900,7 +1900,7 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
         toAddress = new Bitcore.Address(output.toAddress);
       } else if (checkRequired(output, ['script', 'amount'])) {
         var script = new Bitcore.Script(output.script);
-        toAddress = script.toAddress(output.script._network);
+        toAddress = Bitcore.Address.fromScript(script, script._network);
       } else {
         return new ClientError('Argument missing in output #' + (i + 1) + '.');
       }
@@ -2118,7 +2118,7 @@ WalletService.prototype.createTx = function(opts, cb) {
               walletN: wallet.n,
               excludeUnconfirmedUtxos: !!opts.excludeUnconfirmedUtxos,
               validateOutputs: !opts.validateOutputs,
-              addressType: opts.addressType,
+              addressType: wallet.addressType,
               customData: opts.customData,
               inputs: opts.inputs,
               fee: opts.inputs && !_.isNumber(opts.feePerKb) ? opts.fee : null,
@@ -2127,7 +2127,7 @@ WalletService.prototype.createTx = function(opts, cb) {
 
             txOpts.outputs = _.map(txOpts.outputs, function(output) {
               if(output.script) {
-                output.script = Bitcore.Script(output.script);
+                output.script = new Bitcore.Script(output.script);
               }
               return output;
             });
