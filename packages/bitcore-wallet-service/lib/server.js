@@ -1216,15 +1216,11 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
     lockedAmount: _.sum(_.filter(utxos, 'locked'), 'micros'),
     totalConfirmedAmount: _.sum(
       _.filter(utxos, function(utxo) {
-        console.log("Totalizing!");
-        console.log(utxo);
         return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0));
-      }, 
-    'micros')),
+      }), 
+    'micros'),
     lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
   };
-  console.log("balance!!");
-  console.log(balance);
   balance.availableAmount = balance.totalAmount - balance.lockedAmount;
   balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
 
