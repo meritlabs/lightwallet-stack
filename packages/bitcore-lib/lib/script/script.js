@@ -831,9 +831,14 @@ Script.buildEasySendOut = function(publicKeys, blockTimeout, network) {
  * @param {buffer} signature to be append to the script
  * @returns {Script}
  */
-Script.buildEasySendIn = function(signature) {
+Script.buildEasySendIn = function(signature, easyScript) {
   var s = new Script();
-  s.add(signature);
+  var sigBuf = BufferUtil.concat([
+    signature.toDER(),
+    BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)
+  ]);
+  s.add(sigBuf);
+  s.add(easyScript.toBuffer());
   return s;
 };
 

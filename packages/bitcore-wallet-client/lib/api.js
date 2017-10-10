@@ -704,11 +704,9 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
  * @param {Callback}    cb
  */
 API.prototype.buildEasySendScriptHash = function(opts, cb) {
-  var self = this;
-
   opts = opts || {};
 
-  var privateKey = self.credentials.getDerivedXPrivKey(opts.walletPassword);
+  var privateKey = this.credentials.getDerivedXPrivKey(opts.walletPassword);
   var network = opts.network || 'livenet';
 
   // {key, secret}
@@ -727,6 +725,73 @@ API.prototype.buildEasySendScriptHash = function(opts, cb) {
 
   cb(null, result);
 }
+
+/**
+ * Creates a transaction to redeem an easy send transaction. The input param
+ * must contain
+ *    {
+ *      txn: <transaction info from getinputforeasysend cli call>,
+ *      privateKey: <private key used to sign script>,
+ *      publicKey: <pub key of the private key>,
+ *      script: <easysend script to redeem>,
+ *      scriptId: <Address used script>
+ *    }
+ *
+ * input.txn contains
+ *     {
+ *      amount: <amount in MRT to redeem>,
+ *      index: <index of unspent transaction>,
+ *      txid: <id of transaction associated with the scriptId>
+ *     }
+ * @param {input} Input described above.
+ * @param {destinationAddress} Address to put the funds into.
+ */
+API.prototype.buildEasySendRedeemTransaction = function(input, destinationAddress, opts) {
+  //TODO: Create and sign a transaction to redeem easy send. Use input as 
+  //unspent Txo and use script to create scriptSig
+  opts = opts || {};
+
+  var inputAddress = input.txn.scriptId;
+
+  var fee = opts.fee || 10000;
+  var microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros(); 
+  var amount =  microAmount - fee;
+  if (amount <= 0) return new Errors.INSUFFICIENT_FUNDS;
+
+  var tx = new Bitcore.Transaction();
+
+  try {
+    var toAddress = Bitcore.Address.fromString(destinationAddress);
+    var p2shScript = input.script.toScriptHashOut();
+
+    tx.addInput(
+      new Bitcore.Transaction.Input.PayToScriptHashInput({
+        output: Bitcore.Transaction.Output.fromObject({
+          script: p2shScript,
+          micros: microAmount
+        }),
+        prevTxId: input.txn.txid,
+        outputIndex: input.txn.index,
+        script: input.script
+      }, input.script, p2shScript));
+
+    tx.to(toAddress, amount)
+    tx.fee(fee)
+
+    var sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, null, 0, input.script)
+    var inputScript = Bitcore.Script.buildEasySendIn(sig, input.script);
+
+    tx.inputs[0].setScript(inputScript);
+
+    // Make sure the tx can be serialized
+    tx.serialize();
+
+  } catch (ex) {
+    log.error('Could not build transaction from private key', ex);
+    return new Errors.COULD_NOT_BUILD_TRANSACTION;
+  }
+  return tx;
+};
 
 /**
  * Open a wallet and try to complete the public key ring.
@@ -2629,14 +2694,13 @@ API.prototype.createWalletFromOldCopay = function(username, password, blob, cb) 
  * @param cb Callback or handler to manage response from BWS
  * @return {undefined}
  */
-API.prototype.validateEasyReceipt = function(easyReceiptScript, cb) {
+API.prototype.validateEasyScript = function(scriptId, cb) {
   var self = this;
 
-  var args = {
-    easyReceiptScript: easyReceiptScript
-  };
-  var url = '/v5/easyreceive/validate';
-  this._doPostRequest(url, args, function(err, body) {
+  console.log("Validating: " + scriptId);
+
+  var url = '/v5/easyreceive/validate/' + scriptId;
+  this._doGetRequest(url, function(err, body) {
     if (err) return cb(err);
     return cb(null, body);
   });

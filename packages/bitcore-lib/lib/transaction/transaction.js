@@ -586,8 +586,6 @@ Transaction.prototype._fromMultisigUtxo = function(utxo, pubkeys, threshold) {
     clazz = MultiSigInput;
   } else if (utxo.script.isScriptHashOut()) {
     clazz = MultiSigScriptHashInput;
-  } else (utxo.script.isEasySendOut) {
-    clazz = Easy
   } else {
     throw new Error("@TODO");
   }
