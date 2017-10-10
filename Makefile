@@ -4,6 +4,7 @@ prepare-prereqs:
 	npm install -g npm
 	npm install -g lerna
 	npm install -g grunt
+	npm install -g cordova
 
 
 ### lightwallet-app ###
@@ -11,6 +12,9 @@ prepare-prereqs:
 prepare-lightwallet:
 	cd ./lightwallet && npm install
 	cd ./lightwallet && npm run apply
+	cd ./lightwallet && cordova platform add ios
+	cd ./lightwallet && cordova platform add android
+	cd ./lightwallet && cordova platform add windows
 
 .PHONY: start-lightwallet
 start-lightwallet:
@@ -73,7 +77,7 @@ use-lerna:
 	lerna bootstrap
 
 .PHONY: start-stack
-start-stack: symlink-bitcore-node start-bitcore-wallet-service start-bitcore-node
+start-stack: symlink-bitcore-node start-bitcore-node
 
 
 # Clean
@@ -122,8 +126,8 @@ clean-bitcore-message:
 clean-bitcore-payment-protocol:
 	rm -rf ./packages/bitcore-payment-protocol/node_modules
 
-.PHONY: clean-lightwallet-stack
-clean-lightwallet-stack: clean-npm \
+.PHONY: clean-stack
+clean-stack: clean-npm \
 	clean-bitcore-lib \
 	clean-bitcoin-rpc \
 	clean-bitcore-mnemonic \

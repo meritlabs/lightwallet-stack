@@ -9,13 +9,13 @@ angular.module('copayApp.controllers').controller('unlockController',
     });
 
     $scope.loadEasyReceipt = function() {
-      easyReceiveService.getEasyReceipt(function(err, receipt) {
+      easyReceiveService.getPendingEasyReceipt(function(err, receipt) {
         if (err || lodash.isEmpty(receipt)) {
           $log.debug("Unable to load easyReceipt.", err);
         } else {
           $log.debug("Loading easyReceipt into memory.", receipt);
           $scope.easyReceipt = receipt;
-          $scope.formData.unlockCode = $scope.easyReceipt.inviteCode;
+          $scope.formData.unlockCode = $scope.easyReceipt.unlockCode;
 
         }
       });

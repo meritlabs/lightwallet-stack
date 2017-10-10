@@ -8,6 +8,7 @@ var config = require('../config');
 
 log.debug = log.verbose;
 log.disableColor();
+
 var EmailValidator = require('email-validator');
 var Stringify = require('json-stable-stringify');
 
@@ -26,6 +27,7 @@ var Storage = require('./storage');
 var MessageBroker = require('./messagebroker');
 var BlockchainExplorer = require('./blockchainexplorer');
 var FiatRateService = require('./fiatrateservice');
+var LocalDaemon = require('./blockchainexplorers/localdaemon');
 
 var request = require('request');
 
@@ -41,6 +43,7 @@ var blockchainExplorerOpts;
 var messageBroker;
 var fiatRateService;
 var serviceVersion;
+var localMeritDaemon;
 
 /**
  * Creates an instance of the Bitcore Wallet Service.
@@ -57,6 +60,7 @@ function WalletService() {
   this.messageBroker = messageBroker;
   this.fiatRateService = fiatRateService;
   this.notifyTicker = 0;
+  this.localMeritDaemon = localMeritDaemon;
 };
 
 function checkRequired(obj, args, cb) {
@@ -90,6 +94,7 @@ WalletService.initialize = function(opts, cb) {
   lock = opts.lock || new Lock(opts.lockOpts);
   blockchainExplorer = opts.blockchainExplorer;
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
+  localMeritDaemon = new LocalDaemon(opts.node);
   if (opts.request)
     request = opts.request;
 
@@ -3298,6 +3303,22 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
   var self = this;
 
   self.storage.removeTxConfirmationSub(self.copayerId, opts.txid, cb);
+};
+
+/**
+ * Validate that an EasyScript is on the blockchain, and that it can be unlocked.
+ */
+WalletService.prototype.validateEasyScript = function(scriptId, cb) {
+  log.debug("About to call localMeritDaemon");
+  localMeritDaemon.getInputForEasySend(scriptId, function(errMsg, result) {
+    log.debug("Called LocalMerit Daemon with result: ", result);
+    log.debug("Called LocalMerit Daemon with errMsg: ", errMsg);
+    if (errMsg) {
+      return cb("Could not find easyScript on BlockChain.")
+    }
+
+    return cb(errMsg, result);
+  });
 };
 
 WalletService.prototype.referralTxConfirmationSubscribe = function(opts, cb) {

@@ -17,9 +17,17 @@ var Stats = require('./stats');
 
 log.disableColor();
 log.debug = log.verbose;
-log.level = 'info';
+log.level = 'verbose';
 
-var ExpressApp = function() {
+var ExpressApp = function(node) {
+  // BWS now relies on bitcore-node in order to have direct access to meritd.
+  // If bitcore node isn't here, then you probably didn't run BWS from bitcore-node.
+
+  if (!node) {
+    throw new Error("Bitcore node not detected; shutting down...");
+  }
+  
+  this.node = node;
   this.app = express();
 };
 
@@ -156,10 +164,12 @@ ExpressApp.prototype.start = function(opts, cb) {
     opts = opts || {};
 
     var credentials = getCredentials(req);
-    if (!credentials)
+    if (!credentials) {
+      log.debug("NO CREDENTIALS SUPPLIED TO BWS");
       return returnError(new WalletService.ClientError({
         code: 'NOT_AUTHORIZED'
       }), res, req);
+    }
 
     var auth = {
       copayerId: credentials.copayerId,
@@ -780,6 +790,25 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  /*
+  * EasySend Routes
+  * Used to process easySend and seasyReceive actions
+  * These are all namespaced to v5 to differentiate from coPay versioning
+  */
+
+  router.get('/v5/easyreceive/validate/:scriptId', function(req, res) {
+    var scriptId = req.params['scriptId']
+
+    var server = getServer(req, res); 
+    server.validateEasyScript(scriptId, function(err, response) {
+      if (err) {
+        log.debug("Called Validate EasyReceipt in BWS: ", err);
+        return returnError(err, res, req);
+      }
+      res.json(response);
+    });
+  });
+  
   router.post('/v1/referraltxconfirmations/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       server.referralTxConfirmationSubscribe(req.body, function(err, response) {
@@ -803,6 +832,9 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   this.app.use(opts.basePath || '/bws/api', router);
 
+  // Pass bitcore node to th walletService to initialize it.  
+  // This allows us to access Meritd directly from MWS.  
+  opts.node = this.node;
   WalletService.initialize(opts, cb);
 
 };

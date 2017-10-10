@@ -6,7 +6,6 @@ angular.module('copayApp.controllers').controller('welcomeController', function(
     if (!lodash.isEmpty($stateParams)) {
       $scope.processEasyReceiveParams();
       $scope.loadEasyReceipt();
-      
     }
 
   });
@@ -25,7 +24,7 @@ angular.module('copayApp.controllers').controller('welcomeController', function(
 
 
   $scope.loadEasyReceipt = function() {
-    easyReceiveService.getEasyReceipt(function(err, receipt) {
+    easyReceiveService.getPendingEasyReceipt(function(err, receipt) {
       if (err || lodash.isEmpty(receipt)) {
         $log.debug("Unable to load easyReceipt.", err);
         $scope.skipEasyReceiveView();
@@ -33,8 +32,19 @@ angular.module('copayApp.controllers').controller('welcomeController', function(
         $log.debug("Loading easyReceipt into memory.", receipt);  
         $scope.easyReceipt = receipt;
         
-        //We want to create a profile if the easyReceive is loaded into memory properly.
-        $scope.createProfile();
+        // Need to wait for the state provider to initialize.
+        $timeout(() => {
+          if ($state.is('onboarding.easyReceive')) {
+            // We want to create a profile if the easyReceive is loaded into memory properly, 
+            // And we didn't already create one on the welcome view.
+            $scope.createProfile();
+          } 
+
+          // If I have an easyReceipt in localStorage upon resuming the application.
+          if ($state.is('onboarding.welcome')) {
+            $state.go('onboarding.easyReceive');
+          }
+        }, 100);
       }
     });
   };
@@ -46,17 +56,25 @@ angular.module('copayApp.controllers').controller('welcomeController', function(
     });
   };
 
-
+  // Relevant if you were deeplinked into the webapp, but your 
+  // easySend params are invalid.  
   $scope.skipEasyReceiveView = function () {
-    if ($state.is('onboarding.easyReceive')){
-      $log.debug("Redirecting to welcome view.");
-      $state.go('onboarding.welcome');
-    }
+    $timeout(() => {
+      if ($state.is('onboarding.easyReceive')){
+        $log.debug("Redirecting to welcome view.");
+        $state.go('onboarding.welcome');
+      }
+    }, 100);
   };
 
+  // This is primarily for params that are found off the primary URL, which is primarily for the web-app use caes.
+  // We might consider using branch for that use-case going forward, but this approach has the advantage of no centralization.
   $scope.processEasyReceiveParams = function () {
     if (!lodash.isEmpty($stateParams)) {
-      easyReceiveService.validateAndSaveParams($stateParams);
+      easyReceiveService.validateAndSaveParams($stateParams, function(err, easyReceipt) {
+        if (err || !easyReceipt) 
+          $log.debug("Could not save the easyReceipt from WelcomeController: ", err);      
+      });
     }
   };
 
