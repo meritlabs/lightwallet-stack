@@ -148,7 +148,7 @@ Input.prototype.setScript = function(script) {
  */
 Input.prototype.getSignatures = function() {
   throw new errors.AbstractMethodInvoked(
-    'Trying to sign unsupported output type (only P2PKH and P2SH multisig inputs are supported)' +
+    'Trying to sign unsupported output type (only P2PKH and P2SH multisig, and generic P2SH inputs are supported)' +
     ' for input: ' + JSON.stringify(this)
   );
 };
