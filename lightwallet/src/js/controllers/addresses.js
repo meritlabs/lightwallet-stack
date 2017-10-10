@@ -75,26 +75,26 @@ angular.module('copayApp.controllers').controller('addressesController', functio
 
 
 
-    feeService.getFeeLevels(function(err, levels){
-      walletService.getLowUtxos($scope.wallet, levels, function(err, resp) {
-        if (err) return;
+    feeService.getFeeLevel('livenet', function(err, levels){
+      feeService.getFeeLevel('testnet', function(err, levels){
+        walletService.getLowUtxos($scope.wallet, levels, function(err, resp) {
+          if (err) return;
 
-        if (resp.allUtxos && resp.allUtxos.length) {
-
-
-          var allSum = lodash.sum(resp.allUtxos || 0, 'micros');
-          var per = (resp.minFee / allSum) * 100;
-
-          $scope.lowWarning = resp.warning;
-          $scope.lowUtxosNb = resp.lowUtxos.length;
-          $scope.allUtxosNb = resp.allUtxos.length;
-          $scope.lowUtxosSum = txFormatService.formatAmountStr(lodash.sum(resp.lowUtxos || 0, 'micros'));
-          $scope.allUtxosSum = txFormatService.formatAmountStr(allSum);
-          $scope.minFee = txFormatService.formatAmountStr(resp.minFee || 0);
-          $scope.minFeePer = per.toFixed(2) + '%';
+          if (resp.allUtxos && resp.allUtxos.length) {
 
 
-        }
+            var allSum = lodash.sum(resp.allUtxos || 0, 'micros');
+            var per = (resp.minFee / allSum) * 100;
+
+            $scope.lowWarning = resp.warning;
+            $scope.lowUtxosNb = resp.lowUtxos.length;
+            $scope.allUtxosNb = resp.allUtxos.length;
+            $scope.lowUtxosSum = txFormatService.formatAmountStr(lodash.sum(resp.lowUtxos || 0, 'micros'));
+            $scope.allUtxosSum = txFormatService.formatAmountStr(allSum);
+            $scope.minFee = txFormatService.formatAmountStr(resp.minFee || 0);
+            $scope.minFeePer = per.toFixed(2) + '%';
+          }
+        });
       });
     });
   };

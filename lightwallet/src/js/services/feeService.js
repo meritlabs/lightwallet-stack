@@ -30,7 +30,7 @@ angular.module('copayApp.services').factory('feeService', function($log, $timeou
 
     network = network || 'livenet';
 
-    root.getFeeLevels(function(err, levels, fromCache) {
+    root.getFeeLevel(network, function(err, levels, fromCache) {
       if (err) return cb(err);
 
       var feeLevelRate = lodash.find(levels[network], {
@@ -39,8 +39,9 @@ angular.module('copayApp.services').factory('feeService', function($log, $timeou
 
       if (!feeLevelRate || !feeLevelRate.feePerKB) {
         return cb({
-          message: gettextCatalog.getString("Could not get dynamic fee for level: {{feeLevel}}", {
-            feeLevel: feeLevel
+          message: gettextCatalog.getString("Could not get dynamic fee for level: {{feeLevel}} on network {{network}}", {
+            feeLevel: feeLevel,
+            network: network
           })
         });
       }
@@ -57,7 +58,7 @@ angular.module('copayApp.services').factory('feeService', function($log, $timeou
     return root.getFeeRate(network, root.getCurrentFeeLevel(), cb);
   };
 
-  root.getFeeLevels = function(cb) {
+  root.getFeeLevel = function(network ,cb) {
 
     if (cache.updateTs > Date.now() - CACHE_TIME_TS * 1000) {
       return cb(null, cache.data, true);
@@ -68,24 +69,17 @@ angular.module('copayApp.services').factory('feeService', function($log, $timeou
     var walletClient = bwcService.getClient(null, opts);
     var unitName = configService.getSync().wallet.settings.unitName;
 
-    walletClient.getFeeLevels('livenet', function(errLivenet, levelsLivenet) {
-      walletClient.getFeeLevels('testnet', function(errTestnet, levelsTestnet) {
-        if (errLivenet || errTestnet) {
-          console.log("LEVEL ERROR");
-          console.log(errLivenet);
-          console.log(errTestnet);
+    walletClient.getFeeLevels(network, function(err, level) {
+        if (err) {
           return cb(gettextCatalog.getString('Could not get dynamic fee'));
         }
 
         cache.updateTs = Date.now();
-        cache.data = {
-          'livenet': levelsLivenet,
-          'testnet': levelsTestnet
-        };
+        cache.data = cache.data || {};
+        cache.data[network] = level;
 
         return cb(null, cache.data);
       });
-    });
   };
 
 
