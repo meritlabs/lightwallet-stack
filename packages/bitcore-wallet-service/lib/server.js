@@ -93,7 +93,11 @@ WalletService.initialize = function(opts, cb) {
   blockchainExplorer = opts.blockchainExplorer;
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
   localMeritDaemon = new LocalDaemon(opts.node);
-  log = opts.node.log;
+  log = opts.node.log; 
+  console.log("Initialize@@@");
+  console.log(log.verbose);
+  console.log(log.debug);
+  //log.debug = log.verbose;
   if (opts.request)
     request = opts.request;
 
@@ -1550,8 +1554,13 @@ WalletService.prototype._sampleFeeLevels = function(network, points, cb) {
     }));
 
     if (failed.length) {
-      var logger = network == 'livenet' ? log.warn : log.debug;
-      logger('Could not compute fee estimation in ' + network + ': ' + failed.join(', ') + ' blocks.');
+      var failErr = 'Could not compute fee estimation in ' + network + ': ' + failed.join(', ') + ' blocks.';
+      // Log is not available until the walletService is initialized.
+      if (network == 'livenet') {
+        log.warn(failErr);
+      } else {
+        log.debug(failErr);
+      }
     }
 
     return cb(null, levels);
@@ -2144,6 +2153,14 @@ WalletService.prototype.createTx = function(opts, cb) {
             getChangeAddress(wallet, function(err, address) {
               if (err) return next(err);
               changeAddress = address;
+              // Unlock the address used for receiving change.
+              var unlockParams = {
+                unlockCode: wallet.shareCode,
+                address: changeAddress.address
+              }
+              self._unlockAddress(unlockParams, function(err, result){
+                if (err) return next(err);
+              });
               next();
             });
           },
