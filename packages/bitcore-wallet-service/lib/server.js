@@ -1096,7 +1096,7 @@ WalletService.prototype._getUtxos = function(addresses, cb) {
     if (err) return cb(err);
 
     var utxos = _.map(utxos, function(utxo) {
-      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations']);
+      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations', 'isCoinbase', 'isMature']);
       u.confirmations = u.confirmations || 0;
       u.locked = false;
       u.micros = _.isNumber(u.micros) ? +u.micros : Utils.strip(u.amount * 1e8);
@@ -1214,7 +1214,11 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
   var balance = {
     totalAmount: _.sum(utxos, 'micros'),
     lockedAmount: _.sum(_.filter(utxos, 'locked'), 'micros'),
-    totalConfirmedAmount: _.sum(_.filter(utxos, 'confirmations'), 'micros'),
+    totalConfirmedAmount: _.sum(
+      _.filter(utxos, function(utxo) {
+        return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0));
+      }), 
+    'micros'),
     lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
   };
   balance.availableAmount = balance.totalAmount - balance.lockedAmount;
@@ -1631,11 +1635,13 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       return res;
     }, {});
 
+    // We should ensure that utxos are not locked and are mature enough.
     return _.filter(utxos, function(utxo) {
       if (utxo.locked) return false;
       if (utxo.micros <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
       if (excludeIndex[utxo.txid + ":" + utxo.vout]) return false;
+      if (utxo.isCoinbase && !utxo.isMature) return false; 
       return true;
     });
   };
@@ -1650,6 +1656,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
   function select(utxos, cb) {
     var totalValueInUtxos = _.sum(utxos, 'micros');
+
     var netValueInUtxos = totalValueInUtxos - baseTxpFee - (utxos.length * feePerInput);
 
     if (totalValueInUtxos < txpAmount) {
@@ -2720,6 +2727,8 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
       time: t,
       inputs: inputs,
       outputs: outputs,
+      isCoinbase: tx.isCoinbase,
+      isMature: tx.isMature
     };
   });
 };
@@ -2861,6 +2870,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         time: tx.time,
         addressTo: addressTo,
         confirmations: tx.confirmations,
+        isCoinbase: tx.isCoinbase,
+        isMature: tx.isMature
       };
 
       if (_.isNumber(tx.size) && tx.size > 0) {
