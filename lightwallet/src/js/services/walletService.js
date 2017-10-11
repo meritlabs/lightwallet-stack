@@ -661,8 +661,6 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
     if (lodash.isEmpty(txp) || lodash.isEmpty(wallet))
       return cb('MISSING_PARAMETER');
 
-    console.log('We\'ve passed the txp to the walletservice.');
-    console.log(txp);
     wallet.createTxProposal(txp, function(err, createdTxp) {
       if (err) return cb(err);
       else {

@@ -1899,8 +1899,7 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
       if (checkRequired(output, ['toAddress', 'amount'])) {
         toAddress = new Bitcore.Address(output.toAddress);
       } else if (checkRequired(output, ['script', 'amount'])) {
-        var script = new Bitcore.Script(output.script);
-        toAddress = Bitcore.Address.fromScript(script, script._network);
+        toAddress = output.script.toAddress(output.scriptNetwork);
       } else {
         return new ClientError('Argument missing in output #' + (i + 1) + '.');
       }
@@ -1981,6 +1980,16 @@ WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) 
         opts.inputs = info.inputs;
         return next();
       });
+    },
+    function(next) {
+      opts.outputs = _.map(opts.outputs, function(output) {
+        if(output.script) {
+          output.script = Bitcore.Script.fromHex(output.script);
+          output.script._network = output.scriptNetwork;
+        }
+        return output;
+      });
+      next();
     },
     function(next) {
       if (opts.validateOutputs === false) return next();
@@ -2124,13 +2133,6 @@ WalletService.prototype.createTx = function(opts, cb) {
               fee: opts.inputs && !_.isNumber(opts.feePerKb) ? opts.fee : null,
               noShuffleOutputs: opts.noShuffleOutputs
             };
-
-            txOpts.outputs = _.map(txOpts.outputs, function(output) {
-              if(output.script) {
-                output.script = new Bitcore.Script(output.script);
-              }
-              return output;
-            });
 
             txp = Model.TxProposal.create(txOpts);
             next();
