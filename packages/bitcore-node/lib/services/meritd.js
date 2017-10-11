@@ -128,6 +128,9 @@ Merit.prototype._initCaches = function() {
   this.summaryCache = LRU(50000);
   this.blockOverviewCache = LRU(144);
   this.transactionDetailedCache = LRU(100000);
+  this.anvCache = LRU(50000);
+  this.rewardsCache = LRU(50000);
+
 
   // caches valid indefinitely
   this.transactionCache = LRU(100000);
@@ -191,7 +194,9 @@ Merit.prototype.getAPIMethods = function() {
     ['generatereferralcode',  this, this.generateReferralCode, 0],
     ['unlockwallet',          this, this.unlockWallet,         2],
     ['validatereferralcode',  this, this.validateReferralCode, 1],
-    ['getInputForEasySend', this, this.getInputForEasySend, 1]
+    ['getInputForEasySend', this, this.getInputForEasySend, 1],
+    ['getanv',                this, this.getANV, 1],
+    ['getaddressrewards',     this, this.getRewards, 1],
   ];
   return methods;
 };
@@ -471,6 +476,8 @@ Merit.prototype._resetCaches = function() {
   this.balanceCache.reset();
   this.summaryCache.reset();
   this.blockOverviewCache.reset();
+  this.anvCache.reset();
+  this.rewardsCache.reset();
 };
 
 Merit.prototype._tryAllClients = function(func, callback) {
@@ -2276,7 +2283,6 @@ Merit.prototype.validateAddress = function(address, callback) {
  * Checks if an easyScript is on the blockChain.
  * @param {String} easyScript - The full easyScript value.
  */
-
  Merit.prototype.getInputForEasySend = function(easyScript, callback) {
    log.info('ValidateEasyScript RPC called: ', easyScript);
 
@@ -2290,7 +2296,7 @@ Merit.prototype.validateAddress = function(address, callback) {
       } else {
         log.info('getInputForEasySend Response: ', response);
         callback(null, response);
-}
+      }
     });
    } else {
      var err = new errors.RPCError('EasyScript was missing or incorrect');
@@ -2298,6 +2304,60 @@ Merit.prototype.validateAddress = function(address, callback) {
      return callback(self._wrapRPCError(err));
    }
  };
+
+/**
+ * Get ANV for array of keys
+ * @param {Array} keys
+ * @param {Function} callback
+ */
+Merit.prototype.getANV = function(keysArg, callback) {
+  var self = this;
+  var keys = self._normalizeAddressArg(keysArg);
+  var cacheKey = keys.join('');
+  var anv = self.anvCache.get(cacheKey);
+
+  if (anv) {
+    return setImmediate(function() {
+      callback(null, anv);
+    });
+  }
+
+  self.client.getanv(keys, function(err, response) {
+    if (err) {
+      return callback(self._wrapRPCError(err));
+    }
+
+    self.anvCache.set(cacheKey, response.result);
+    callback(null, response.result);
+  });
+}
+
+/**
+ * Get Rewards for array of addresses
+ * @param {Array} keys
+ * @param {Function} callback
+ */
+Merit.prototype.getRewards = function(addressArg, callback) {
+  var self = this;
+  var addresses = self._normalizeAddressArg(addressArg);
+  var cacheKey = addresses.join('');
+  var rewards = self.rewardsCache.get(cacheKey);
+
+  if (rewards) {
+    return setImmediate(function() {
+      callback(null, rewards);
+    });
+  }
+
+  this.client.getaddressrewards({ addresses: addresses }, function(err, response) {
+    if (err) {
+      return callback(self._wrapRPCError(err));
+    }
+
+    self.rewardsCache.set(cacheKey, response.result);
+    callback(null, response.result);
+  });
+}
 
 /**
  * Called by Node to stop the service.

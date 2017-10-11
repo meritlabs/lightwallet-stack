@@ -7,6 +7,7 @@
 @import "tab-home";
 @import "tab-receive";
 @import "tab-scan";
+@import "tab-network";
 @import "tab-send";
 @import "tab-settings";
 @import "wallet-colors";
@@ -45,6 +46,7 @@
 @import "includes/itemSelector";
 @import "includes/walletSelector";
 @import "includes/accountSelector";
+@import "includes/network-details";
 @import "integrations/integrations";
 @import "custom-amount";
 @import "includes/pin";

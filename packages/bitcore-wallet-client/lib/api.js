@@ -1640,6 +1640,34 @@ API.prototype.getStatus = function(opts, cb) {
   });
 };
 
+API.prototype.getANV = function(addr, cb) {
+  $.checkState(this.credentials);
+
+  var keys = [addr];
+  var network = this.credentials.network;
+
+  this._doGetRequest('/v1/anv/?network=' + network + '&keys=' + keys.join(','), function(err, result) {
+    if (err) return cb(err);
+
+    return cb(err, result);
+  });
+}
+
+API.prototype.getRewards = function(address, cb) {
+  $.checkState(this.credentials);
+
+  var addresses = [address];
+  var network = this.credentials.network;
+
+  console.log(addresses);
+
+  this._doGetRequest('/v1/rewards/?network=' + network + '&addresses=' + addresses.join(','), function(err, result) {
+    if (err) return cb(err);
+
+    return cb(err, result);
+  });
+}
+
 /**
  * Get copayer preferences
  *
@@ -2578,7 +2606,7 @@ API.prototype.validateAddress = function(address, network, cb) {
     if (err || !result) return cb(err);
     return cb(null, result);
   });
-}; 
+};
 
 
 API.prototype.referralTxConfirmationSubscribe = function(opts, cb) {
