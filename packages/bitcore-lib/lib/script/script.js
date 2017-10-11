@@ -45,7 +45,10 @@ var Script = function Script(from) {
 Script.prototype.set = function(obj) {
   var chunks = obj.chunks || this.chunks;
   this.chunks = _.each(chunks, function(chunk) {
-    if(chunk.buf) chunk.buf = new Uint8Array(chunk.buf);
+    if(chunk.buf) {
+      if(chunk.buf.data) chunk.buf = new Uint8Array(chunk.buf.data);
+      else chunk.buf = new Uint8Array(chunk.buf);
+    }
   });
   this._isInput = obj.isInput;
   this._isOutput = obj.isOutput;
