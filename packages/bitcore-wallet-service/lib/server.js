@@ -94,10 +94,6 @@ WalletService.initialize = function(opts, cb) {
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
   localMeritDaemon = new LocalDaemon(opts.node);
   log = opts.node.log; 
-  console.log("Initialize@@@");
-  console.log(log.verbose);
-  console.log(log.debug);
-  //log.debug = log.verbose;
   if (opts.request)
     request = opts.request;
 
