@@ -88,8 +88,6 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       var walletsUpdated = 0;
 
       lodash.each($scope.wallets, function(w) {
-        console.log('\ngetting status on wallet:');
-        console.log(w);
         walletService.getStatus(w, {}, function(err, status) {
           if (err || !status) {
             $log.error(err);
@@ -171,10 +169,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
           }
           tx.script = result.script;
           tx.script.isOutput = true;
-          console.log('We have constructed a script hash');
-          console.log(tx.script);
           tx.easySendSecret = result.secret;
-          tx.toAddress = result.script.getAddressInfo;
         });
       }
     });
@@ -217,8 +212,6 @@ angular.module('copayApp.controllers').controller('confirmController', function(
         'message': tx.description
       }];
       txp.addressType = 'P2SH';
-      console.log('We added an output.');
-      console.log(txp.outputs);
     } else {
       txp.outputs = [{
         'toAddress': tx.toAddress,
