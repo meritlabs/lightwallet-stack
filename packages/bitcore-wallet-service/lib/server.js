@@ -369,25 +369,18 @@ WalletService.prototype.createWallet = function(opts, cb) {
 
   async.series([
     function(acb) {
-      var bc = self._getBlockchainExplorer(opts.network);
-
-      bc.unlockWallet(opts.beacon, unlockAddress.toString(), function(errMsg, result) {
-
-        if (errMsg)  {
-          // TODO: Use Error codes instead of string matching.
-          // TODO: Even sooner, we should have more descriptive error states coming back
-          // from the blockchain explorer.
-          if (errMsg == "Error querying the blockchain") {
-            return acb(Errors.UNLOCK_STILL_PENDING)
-          } else {
-            return acb(Errors.UNLOCK_CODE_INVALID);
-          }
+      var unlockParams = {
+        unlockCode: opts.beacon, 
+        address: unlockAddress
+      }
+      self._unlockAddress(unlockParams, function(err, result){
+        if (err) {
+          return acb(err);
         }
 
         unlocked = true;
-        shareCode = result.result.referralcode;
-        codeHash = result.result.codehash;
-
+        shareCode = result.shareCode;
+        codeHash = result.codeHash;
         return acb(null);
       });
     },
@@ -508,6 +501,52 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
       }
       cb();
     });
+  });
+};
+
+/**
+ * Unlocks an address with an unlock code.
+ * @param {Object} opts
+ * @param {String} opts.unlockCode The unlock code used to unlock this wallet.
+ * @param {String} opts.address The address to unlock with the above unlock code.
+ * @param {String} opts.network The relevant network to execute this command (livenet/testnet)
+ */
+
+WalletService.prototype._unlockAddress = function (opts, cb) {
+  var self = this;
+  opts = opts || {};
+
+  if (!opts.unlockCode) {
+    cb(new ClientError('No unlockCode provided.'));
+  }
+
+  if (!opts.address) {
+    cb(new ClientError('No unlock address provided.'));
+  }
+
+  var network = opts.network || 'livenet';
+  var bc = self._getBlockchainExplorer(network);
+  var unlocked = false;
+  
+  bc.unlockWallet(opts.unlockCode, opts.address.toString(), function(errMsg, result) {
+
+    if (errMsg)  {
+      // TODO: Use Error codes instead of string matching.
+      // TODO: Even sooner, we should have more descriptive error states coming back
+      // from the blockchain explorer.
+      console.log("Got an error in unlock: " + errMsg);
+      if (errMsg == "Error querying the blockchain") {
+        return cb(Errors.UNLOCK_STILL_PENDING);
+      } else {
+        return cb(Errors.UNLOCK_CODE_INVALID);
+      }
+    }
+
+    unlocked = true;
+    var shareCode = result.result.referralcode || "";
+    var codeHash = result.result.codehash || "";
+
+    return cb(null, {unlocked: unlocked, shareCode: shareCode, codeHash: codeHash});
   });
 };
 
@@ -989,15 +1028,24 @@ WalletService.prototype.createAddress = function(opts, cb) {
   function createNewAddress(wallet, cb) {
     var address = wallet.createAddress(false);
 
-    self.storage.storeAddressAndWallet(wallet, address, function(err) {
+    var unlockParams = {
+      unlockCode: wallet.shareCode,
+      address: address.address
+    }
+    self._unlockAddress(unlockParams, function(err, result){
       if (err) return cb(err);
-
-      self._notify('NewAddress', {
-        address: address.address,
-      }, function() {
-        return cb(null, address);
+      
+      self.storage.storeAddressAndWallet(wallet, address, function(err) {
+        if (err) return cb(err);
+  
+        self._notify('NewAddress', {
+          address: address.address,
+        }, function() {
+          return cb(null, address);
+        });
       });
     });
+    
   };
 
   function getFirstAddress(wallet, cb) {
