@@ -44,6 +44,8 @@ node_modules
 bower_components
 angular-bitcore-wallet-client/angular-bitcore-wallet-client.js
 angular-bitauth/angular-bitauth.js
+angular-environment-variables/angular-environment-variables.js
+
 
 # Users Environment Variables
 .lock-wscript
@@ -106,4 +108,5 @@ www/index.html
 ## Firebase
 /GoogleService-Info.plist
 /google-services.json
+
 
