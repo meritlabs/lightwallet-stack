@@ -102,7 +102,7 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
 
   $scope.feeOpts = feeService.feeOpts;
   $scope.loadingFee = true;
-  feeService.getFeeLevels(function(err, levels) {
+  feeService.getFeeLevel($scope.network, function(err, levels) {
     $scope.loadingFee = false;
     if (err || lodash.isEmpty(levels)) {
       showErrorAndClose(null, err);

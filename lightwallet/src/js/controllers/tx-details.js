@@ -127,7 +127,8 @@ angular.module('copayApp.controllers').controller('txDetailsController', functio
         $scope.$digest();
       });
 
-      feeService.getFeeLevels(function(err, levels) {
+      var network = $scope.wallet.credentials.network;
+      feeService.getFeeLevel(network, function(err, levels) {
         if (err) return;
         walletService.getLowAmount($scope.wallet, levels, function(err, amount) {
           if (err) return;

@@ -73,9 +73,9 @@ angular.module('copayApp.controllers').controller('addressesController', functio
       });
     });
 
+    var network = $scope.wallet.credentials.network;
 
-
-    feeService.getFeeLevels(function(err, levels){
+    feeService.getFeeLevel(network, function(err, levels){
       walletService.getLowUtxos($scope.wallet, levels, function(err, resp) {
         if (err) return;
 
@@ -92,8 +92,6 @@ angular.module('copayApp.controllers').controller('addressesController', functio
           $scope.allUtxosSum = txFormatService.formatAmountStr(allSum);
           $scope.minFee = txFormatService.formatAmountStr(resp.minFee || 0);
           $scope.minFeePer = per.toFixed(2) + '%';
-
-
         }
       });
     });
