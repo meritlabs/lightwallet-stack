@@ -2104,8 +2104,6 @@ WalletService.prototype.createTx = function(opts, cb) {
         return cb(null, _.first(addresses));
       });
     } else {
-      log.error("We are getting changeAddress.  Opts: ");
-      log.error(JSON.stringify(opts));
       if (opts.changeAddress) {
         self.storage.fetchAddress(opts.changeAddress, function(err, address) {
           if (err) return cb(Errors.INVALID_CHANGE_ADDRESS);
