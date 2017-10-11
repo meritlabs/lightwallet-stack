@@ -1,0 +1,71 @@
+<ion-view id="network-details" hide-tabs>
+  <ion-nav-bar class="bar-royal">
+    <ion-nav-title>
+      {{title}}
+    </ion-nav-title>
+    <ion-nav-back-button>
+    </ion-nav-back-button>
+  </ion-nav-bar>
+
+  <ion-content class="tx-details-content">
+    <div class="card">
+      <div class="header">
+        <i class="icon big-icon-svg">
+          <img src="img/icon-users.svg" class="bg" />
+        </i>
+      </div>
+
+      <div ng-if="wallet">
+        <div class="item item-sub item-icon-left item-big-icon-left item-icon-right wallet">
+          <i class="icon big-icon-svg">
+          <img src="img/icon-wallet.svg" ng-class="{'wallet-background-color-default': !wallet.color, 'wallet-background-color-locked': wallet.locked}" ng-style="{'background-color': wallet.color}" class="bg wallet"/>
+        </i>
+          <span>{{wallet.name || wallet.id}}</span>
+
+          <p>
+            <span ng-if="wallet.isComplete()">
+              <span>{{wallet.cachedBalance}}</span>
+              <span class="assertive" ng-if="wallet.error">{{wallet.error}}</span>
+            </span>
+          </p>
+        </div>
+
+        <div class="item item-info item-icon-left item-icon-right">
+          <i class="icon big-icon-svg">
+            <img src="img/merit.svg" class="bg"/>
+          </i>
+          <span translate>Value of Your Network</span>
+
+          <p>
+            <span ng-if="wallet.isComplete()">
+              <ion-spinner class="spinner-dark" icon="crescent" ng-show="fetchingAnv && !errorAnv"></ion-spinner>
+
+              <span ng-show="!fetchingAnv">{{anv.amountUnitStr}}</span><br />
+              <span class="assertive" ng-if="errorAnv">{{errorAnv}}</span>
+            </span>
+          </p>
+        </div>
+
+        <div class="item item-info item-icon-left item-icon-right">
+          <i class="icon big-icon-svg">
+            <img src="img/cup.svg" class="bg"/>
+          </i>
+          <span translate>Rewards</span>
+
+          <p>
+            <span ng-if="wallet.isComplete()">
+              <ion-spinner class="spinner-dark" icon="crescent" ng-show="fetchingRewards && !errorRewards"></ion-spinner>
+
+              <span ng-show="!fetchingRewards">Mining: {{rewards.mining.amountUnitStr}}</span><br />
+              <span ng-show="!fetchingRewards">Ambassador: {{rewards.ambassador.amountUnitStr}}</span>
+              <span class="assertive" ng-if="errorRewards">{{errorRewardserror}}</span>
+            </span>
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </ion-content>
+</ion-view>

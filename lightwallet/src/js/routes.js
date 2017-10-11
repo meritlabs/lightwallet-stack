@@ -253,12 +253,21 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
-      .state('tabs.scan', {
-        url: '/scan',
+      .state('tabs.network', {
+        url: '/network',
         views: {
-          'tab-scan': {
-            controller: 'tabScanController',
-            templateUrl: 'views/tab-scan.html',
+          'tab-network': {
+            controller: 'tabNetworkController',
+            templateUrl: 'views/tab-network.html',
+          }
+        }
+      })
+      .state('tabs.network.details', {
+        url: '/:walletId/details',
+        views: {
+          'tab-network@tabs': {
+            controller: 'networkDetailsController',
+            templateUrl: 'views/network-details.html',
           }
         }
       })

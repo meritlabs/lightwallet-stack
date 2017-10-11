@@ -432,6 +432,46 @@ WalletService.prototype.createWallet = function(opts, cb) {
 };
 
 /**
+ * Get ANV for keys
+ * @param {Object} opts
+ * @param {array} opts.keys - Array of keys to get ANV for.
+ * @returns {Number} anv
+ */
+WalletService.prototype.getANV = function(opts, cb) {
+  opts.network = opts.network || 'livenet';
+
+  var bc = this._getBlockchainExplorer(opts.network);
+
+  bc.getANV(opts.keys, function(err, result) {
+    cb(err, result);
+  });
+};
+
+/**
+ * Get Rewards for addresses
+ * @param {array} addresses - Array of addresses to get Rewards for.
+ * @returns {Number} anv
+ */
+WalletService.prototype.getRewards = function(opts, cb) {
+  var addresses = opts.addresses;
+
+  console.log(addresses);
+
+  if (addresses.length == 0) {
+    return cb(null, []);
+  }
+
+  console.log(addresses);
+
+  var networkName = Bitcore.Address(addresses[0]).toObject().network;
+  var bc = this._getBlockchainExplorer(networkName);
+
+  bc.getRewards(addresses, function(err, result) {
+    cb(err, result);
+  });
+};
+
+/**
  * Retrieves a wallet from storage.
  * @param {Object} opts
  * @returns {Object} wallet
