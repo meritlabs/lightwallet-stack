@@ -951,7 +951,7 @@ Merit.prototype._spawnChildProcess = function(callback) {
     }
 
     log.info('Starting Meritd process');
-    if(spawn.exec) {
+    if(self.spawn.exec) {
       self.spawn.process = spawn(self.spawn.exec, options, {stdio: 'inherit'});
 
       self.spawn.process.on('error', function(err) {
@@ -1190,7 +1190,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       micros: delta.micros,
       isCoinbase: delta.isCoinbase,
       timestamp: delta.timestamp
-    }; 
+    };
   }
 
   function updateWithMempool(confirmedUtxos, mempoolDeltas) {
@@ -2274,7 +2274,7 @@ Merit.prototype.validateAddress = function(address, callback) {
 
 /**
  * Checks if an easyScript is on the blockChain.
- * @param {String} easyScript - The full easyScript value.  
+ * @param {String} easyScript - The full easyScript value.
  */
 
  Merit.prototype.getInputForEasySend = function(easyScript, callback) {
@@ -2284,15 +2284,15 @@ Merit.prototype.validateAddress = function(address, callback) {
 
   if (typeof easyScript == 'string' || easyScript instanceof String) {
     self.client.getInputForEasySend(easyScript, function(err, response) {
-      log.info("Juicy results: ", response); 
+      log.info("Juicy results: ", response);
       if (err) {
         return callback(self._wrapRPCError(err));
-      } else { 
+      } else {
         log.info('getInputForEasySend Response: ', response);
         callback(null, response);
 }
     });
-   } else { 
+   } else {
      var err = new errors.RPCError('EasyScript was missing or incorrect');
      err.code = -8;
      return callback(self._wrapRPCError(err));
