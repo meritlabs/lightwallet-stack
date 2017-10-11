@@ -5,6 +5,7 @@ angular.module('copayApp.controllers').controller('walletDetailsController', fun
   var HISTORY_SHOW_LIMIT = 10;
   var currentTxHistoryPage = 0;
   var listeners = [];
+  const COINBASE_MATURITY = 100;
   $scope.txps = [];
   $scope.completeTxHistory = [];
   $scope.openTxpModal = txpModalService.open;
@@ -120,6 +121,7 @@ angular.module('copayApp.controllers').controller('walletDetailsController', fun
     };
   };
 
+  // look at the details of a transaction
   $scope.openTxModal = function(btx) {
     $scope.btx = lodash.cloneDeep(btx);
     $scope.walletId = $scope.wallet.id;
@@ -232,8 +234,8 @@ angular.module('copayApp.controllers').controller('walletDetailsController', fun
     return timeService.isDateInCurrentMonth(date);
   };
 
-  $scope.isUnconfirmed = function(tx) {
-    return !tx.confirmations || tx.confirmations === 0;
+  $scope.isConfirmed = function(tx) {
+    return ((!tx.isCoinbase && tx.confirmations && tx.confirmations > 0) || (tx.isCoinbase && tx.confirmations >= COINBASE_MATURITY));
   };
 
   $scope.showMore = function() {

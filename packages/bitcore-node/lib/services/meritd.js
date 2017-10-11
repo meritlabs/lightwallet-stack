@@ -1188,8 +1188,9 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       outputIndex: delta.index,
       script: script.toHex(),
       micros: delta.micros,
+      isCoinbase: delta.isCoinbase,
       timestamp: delta.timestamp
-    };
+    }; 
   }
 
   function updateWithMempool(confirmedUtxos, mempoolDeltas) {
@@ -1237,8 +1238,6 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       });
     } else {
       self.client.getAddressUtxos({addresses: addresses}, function(err, response) {
-        console.log("got and address");
-        console.log(response);
         if (err) {
           return callback(self._wrapRPCError(err));
         }
@@ -2012,7 +2011,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
     tx.inputMicros = 0;
     for(var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
       var input = result.vin[inputIndex];
-      if (!tx.coinbase) {
+      if (!tx.isCoinbase) {
         tx.inputMicros += input.valueSat; // TODO: rename sat
       }
       var script = null;
@@ -2020,8 +2019,8 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
       if (input.scriptSig) {
         script = input.scriptSig.hex;
         scriptAsm = input.scriptSig.asm;
-      } else if (input.coinbase) {
-        script = input.coinbase;
+      } else if (input.isCoinbase) {
+        script = input.isCoinbase;
       }
       tx.inputs.push({
         prevTxId: input.txid || null,
@@ -2075,17 +2074,17 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
           blockTimestamp: result.time,
           version: result.version,
           hash: txid,
-          locktime: result.locktime,
+          locktime: result.locktime
         };
 
         if (result.vin[0] && result.vin[0].coinbase) {
-          tx.coinbase = true;
+          tx.isCoinbase = true;
         }
 
         addInputsToTx(tx, result);
         addOutputsToTx(tx, result);
 
-        if (!tx.coinbase) {
+        if (!tx.isCoinbase) {
           tx.feeMicros = tx.inputMicros - tx.outputMicros;
         } else {
           tx.feeMicros = 0;
