@@ -73,28 +73,26 @@ angular.module('copayApp.controllers').controller('addressesController', functio
       });
     });
 
+    var network = $scope.wallet.credentials.network;
+
+    feeService.getFeeLevel(network, function(err, levels){
+      walletService.getLowUtxos($scope.wallet, levels, function(err, resp) {
+        if (err) return;
+
+        if (resp.allUtxos && resp.allUtxos.length) {
 
 
-    feeService.getFeeLevel('livenet', function(err, levels){
-      feeService.getFeeLevel('testnet', function(err, levels){
-        walletService.getLowUtxos($scope.wallet, levels, function(err, resp) {
-          if (err) return;
+          var allSum = lodash.sum(resp.allUtxos || 0, 'micros');
+          var per = (resp.minFee / allSum) * 100;
 
-          if (resp.allUtxos && resp.allUtxos.length) {
-
-
-            var allSum = lodash.sum(resp.allUtxos || 0, 'micros');
-            var per = (resp.minFee / allSum) * 100;
-
-            $scope.lowWarning = resp.warning;
-            $scope.lowUtxosNb = resp.lowUtxos.length;
-            $scope.allUtxosNb = resp.allUtxos.length;
-            $scope.lowUtxosSum = txFormatService.formatAmountStr(lodash.sum(resp.lowUtxos || 0, 'micros'));
-            $scope.allUtxosSum = txFormatService.formatAmountStr(allSum);
-            $scope.minFee = txFormatService.formatAmountStr(resp.minFee || 0);
-            $scope.minFeePer = per.toFixed(2) + '%';
-          }
-        });
+          $scope.lowWarning = resp.warning;
+          $scope.lowUtxosNb = resp.lowUtxos.length;
+          $scope.allUtxosNb = resp.allUtxos.length;
+          $scope.lowUtxosSum = txFormatService.formatAmountStr(lodash.sum(resp.lowUtxos || 0, 'micros'));
+          $scope.allUtxosSum = txFormatService.formatAmountStr(allSum);
+          $scope.minFee = txFormatService.formatAmountStr(resp.minFee || 0);
+          $scope.minFeePer = per.toFixed(2) + '%';
+        }
       });
     });
   };
