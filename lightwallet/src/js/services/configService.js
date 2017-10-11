@@ -8,7 +8,7 @@ angular.module('copayApp.services').factory('configService', function(storageSer
 
   // Check Environment Variable for Environment-Specific Parameters:
   console.log("Getting the envVars!");
-  console.log(envVarsService.getVars());
+  console.log(envVarsService.getVars(), "envVars");
   
   var bwsUrl = envVarsService.getVars().bwsUrl || 'http://localhost:3232/bws/api';
   //var bwsUrl = 'http://adil.merit.me:3232/bws/api';
