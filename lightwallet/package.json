@@ -121,7 +121,7 @@
   },
   "scripts": {
     "start": "npm run build:www && ionic serve --nolivereload --nogulp -s --address 0.0.0.0",
-    "livestart": "npm run build:www && ionic serve --livereload -s --address 0.0.0.0",
+    "livestart": "npm run build:www && grunt serve",
     "start:ios": "npm run build:www && npm run build:ios && npm run open:ios",
     "start:android": "npm run build:www && npm run build:android && npm run run:android",
     "start:windows": "npm run build:www && npm run build:windows",
@@ -158,6 +158,7 @@
     "cordova": "^6.5.0",
     "fs-extra": "^0.30.0",
     "grunt": "^1.0.1",
+    "grunt-contrib-connect": "^1.0.2",
     "ionic": "3.12.0",
     "lodash": "^4.17.4",
     "trash-cli": "^1.4.0"
