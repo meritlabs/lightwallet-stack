@@ -2,10 +2,9 @@
 
 var _ = require('lodash');
 var $ = require('preconditions').singleton();
-var log = require('npmlog');
-log.debug = log.verbose;
 var io = require('socket.io-client');
 var requestList = require('./request-list');
+var log;
 
 function Insight(opts) {
   $.checkArgument(opts);
@@ -16,6 +15,7 @@ function Insight(opts) {
   this.network = opts.network || 'livenet';
   this.hosts = opts.url;
   this.userAgent = opts.userAgent || 'bws';
+  log = opts.log;
 };
 
 
