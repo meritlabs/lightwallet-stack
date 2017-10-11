@@ -3,11 +3,8 @@
 var _ = require('lodash');
 var $ = require('preconditions').singleton();
 var async = require('async');
-var log = require('npmlog');
 var config = require('../config');
 
-log.debug = log.verbose;
-log.disableColor();
 
 var EmailValidator = require('email-validator');
 var Stringify = require('json-stable-stringify');
@@ -44,6 +41,7 @@ var messageBroker;
 var fiatRateService;
 var serviceVersion;
 var localMeritDaemon;
+var log;
 
 /**
  * Creates an instance of the Bitcore Wallet Service.
@@ -95,6 +93,7 @@ WalletService.initialize = function(opts, cb) {
   blockchainExplorer = opts.blockchainExplorer;
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
   localMeritDaemon = new LocalDaemon(opts.node);
+  log = opts.node.log;
   if (opts.request)
     request = opts.request;
 
@@ -1130,6 +1129,7 @@ WalletService.prototype._getBlockchainExplorer = function(network) {
   opts.provider = 'insight';
   opts.network = network;
   opts.userAgent = WalletService.getServiceVersion();
+  opts.log = log;
   return new BlockchainExplorer(opts);
 };
 
@@ -2099,6 +2099,8 @@ WalletService.prototype.createTx = function(opts, cb) {
         return cb(null, _.first(addresses));
       });
     } else {
+      log.error("We are getting changeAddress.  Opts: ");
+      log.error(JSON.stringify(opts));
       if (opts.changeAddress) {
         self.storage.fetchAddress(opts.changeAddress, function(err, address) {
           if (err) return cb(Errors.INVALID_CHANGE_ADDRESS);
