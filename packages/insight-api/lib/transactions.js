@@ -93,9 +93,9 @@ TxController.prototype.transformTransaction = function(transaction, options, cal
     transformed.isMature = transformed.confirmations >= COINBASE_MATURITY ? true : false;
   }
 
-  transformed.valueOut = transaction.outputMicros / 1e8;
-  transformed.valueIn = transaction.inputMicros / 1e8;
-  transformed.fees = transaction.feeMicros / 1e8;
+  transformed.valueOut = transaction.outputQuanta / 1e8;
+  transformed.valueIn = transaction.inputQuanta / 1e8;
+  transformed.fees = transaction.feeQuanta / 1e8;
 
   console.log("Transformed TXN: ");
   console.log(transformed);
@@ -121,8 +121,8 @@ TxController.prototype.transformInput = function(options, input, index) {
   }
 
   transformed.addr = input.address;
-  transformed.valueMicros = input.micros;
-  transformed.value = input.micros / 1e8;
+  transformed.valueQuanta = input.quanta;
+  transformed.value = input.quanta / 1e8;
   transformed.doubleSpentTxID = null; // TODO
   //transformed.isConfirmed = null; // TODO
   //transformed.confirmations = null; // TODO
@@ -133,7 +133,7 @@ TxController.prototype.transformInput = function(options, input, index) {
 
 TxController.prototype.transformOutput = function(options, output, index) {
   var transformed = {
-    value: (output.micros / 1e8).toFixed(8),
+    value: (output.quanta / 1e8).toFixed(8),
     n: index,
     scriptPubKey: {
       hex: output.script
@@ -165,12 +165,12 @@ TxController.prototype.transformInvTransaction = function(transaction) {
   var vout = [];
   for (var i = 0; i < transaction.outputs.length; i++) {
     var output = transaction.outputs[i];
-    valueOut += output.micros;
+    valueOut += output.quanta;
     if (output.script) {
       var address = output.script.toAddress(self.node.network);
       if (address) {
         var obj = {};
-        obj[address.toString()] = output.micros;
+        obj[address.toString()] = output.quanta;
         vout.push(obj);
       }
     }

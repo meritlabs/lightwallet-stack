@@ -202,10 +202,10 @@ describe('Node Functionality', function() {
         info.addresses[address].outputIndexes.length.should.equal(1);
         info.addresses[address].outputIndexes[0].should.be.within(0, 1);
         info.addresses[address].inputIndexes.should.deep.equal([]);
-        info.micros.should.equal(10 * 1e8);
+        info.quanta.should.equal(10 * 1e8);
         info.confirmations.should.equal(3);
         info.tx.blockTimestamp.should.be.a('number');
-        info.tx.feeMicros.should.be.within(950, 4000);
+        info.tx.feeQuanta.should.be.within(950, 4000);
         done();
       });
     });
@@ -313,7 +313,7 @@ describe('Node Functionality', function() {
               async.series([
                 function(next) {
                   var tx2 = new Transaction();
-                  tx2Amount = results[0].micros - 10000;
+                  tx2Amount = results[0].quanta - 10000;
                   tx2.from(results[0]);
                   tx2.to(address2, tx2Amount);
                   tx2.change(address);
@@ -328,7 +328,7 @@ describe('Node Functionality', function() {
                 }, function(next) {
                   var tx3 = new Transaction();
                   tx3.from(results[1]);
-                  tx3.to(address3, results[1].micros - 10000);
+                  tx3.to(address3, results[1].quanta - 10000);
                   tx3.change(address);
                   tx3.sign(testKey);
                   node.sendTransaction(tx3.serialize(), function(err) {
@@ -340,7 +340,7 @@ describe('Node Functionality', function() {
                 }, function(next) {
                   var tx4 = new Transaction();
                   tx4.from(results[2]);
-                  tx4.to(address4, results[2].micros - 10000);
+                  tx4.to(address4, results[2].quanta - 10000);
                   tx4.change(address);
                   tx4.sign(testKey);
                   node.sendTransaction(tx4.serialize(), function(err) {
@@ -353,8 +353,8 @@ describe('Node Functionality', function() {
                   var tx5 = new Transaction();
                   tx5.from(results[3]);
                   tx5.from(results[4]);
-                  tx5.to(address5, results[3].micros - 10000);
-                  tx5.to(address6, results[4].micros - 10000);
+                  tx5.to(address5, results[3].quanta - 10000);
+                  tx5.to(address6, results[4].quanta - 10000);
                   tx5.change(address);
                   tx5.sign(testKey);
                   node.sendTransaction(tx5.serialize(), function(err) {
@@ -401,7 +401,7 @@ describe('Node Functionality', function() {
           should.exist(history[2].addresses[address3]);
           history[3].tx.height.should.equal(156);
           should.exist(history[3].addresses[address2]);
-          history[3].micros.should.equal(tx2Amount);
+          history[3].quanta.should.equal(tx2Amount);
           history[3].tx.hash.should.equal(tx2Hash);
           history[3].confirmations.should.equal(4);
           done();
@@ -507,11 +507,11 @@ describe('Node Functionality', function() {
           history[2].tx.height.should.equal(157);
           history[3].tx.height.should.equal(156);
           history[4].tx.height.should.equal(155);
-          history[4].micros.should.equal(-10000);
+          history[4].quanta.should.equal(-10000);
           history[4].addresses[address].outputIndexes.should.deep.equal([0, 1, 2, 3, 4]);
           history[4].addresses[address].inputIndexes.should.deep.equal([0]);
           history[5].tx.height.should.equal(152);
-          history[5].micros.should.equal(10 * 1e8);
+          history[5].quanta.should.equal(10 * 1e8);
           done();
         });
       });
@@ -620,7 +620,7 @@ describe('Node Functionality', function() {
             var history = results.items;
             history.length.should.equal(1);
             history[0].tx.height.should.equal(155);
-            history[0].micros.should.equal(-10000);
+            history[0].quanta.should.equal(-10000);
             history[0].addresses[address].outputIndexes.should.deep.equal([0, 1, 2, 3, 4]);
             history[0].addresses[address].inputIndexes.should.deep.equal([0]);
             done();
@@ -638,7 +638,7 @@ describe('Node Functionality', function() {
             var history = results.items;
             history.length.should.equal(1);
             history[0].tx.height.should.equal(152);
-            history[0].micros.should.equal(10 * 1e8);
+            history[0].quanta.should.equal(10 * 1e8);
             done();
           });
         });
@@ -663,7 +663,7 @@ describe('Node Functionality', function() {
         var memAddress = bitcore.PrivateKey().toAddress(node.network).toString();
         var tx = new Transaction();
         tx.from(unspentOutput);
-        tx.to(memAddress, unspentOutput.micros - 1000);
+        tx.to(memAddress, unspentOutput.quanta - 1000);
         tx.fee(1000);
         tx.sign(testKey);
 

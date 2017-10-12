@@ -29,7 +29,7 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
   };
 
   $scope.ok = function() {
-    $scope.customFeePerKB = $scope.customFeePerKB ? ($scope.customMicrosPerByte.value * 1000).toFixed() : null;
+    $scope.customFeePerKB = $scope.customFeePerKB ? ($scope.customQuantaPerByte.value * 1000).toFixed() : null;
     $scope.hideModal($scope.feeLevel, $scope.customFeePerKB);
   };
 
@@ -40,8 +40,8 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
     $scope.maxFeeAllowed = $scope.maxFeeRecommended * FEE_MULTIPLIER;
   };
 
-  $scope.checkFees = function(feePerMicrosByte) {
-    var fee = Number(feePerMicrosByte);
+  $scope.checkFees = function(feePerQuantaByte) {
+    var fee = Number(feePerQuantaByte);
 
     if (fee <= $scope.minFeeAllowed) $scope.showError = true;
     else $scope.showError = false;
@@ -61,17 +61,17 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
     // If no custom fee
     if (value) {
       $scope.customFeePerKB = null;
-      $scope.feePerMicrosByte = (value.feePerKB / 1000).toFixed();
+      $scope.feePerQuantaByte = (value.feePerKB / 1000).toFixed();
       $scope.avgConfirmationTime = value.nbBlocks * 10;
     } else {
       $scope.avgConfirmationTime = null;
-      $scope.customMicrosPerByte = { value: Number($scope.feePerMicrosByte) };
-      $scope.customFeePerKB = ($scope.feePerMicrosByte * 1000).toFixed();
+      $scope.customQuantaPerByte = { value: Number($scope.feePerQuantaByte) };
+      $scope.customFeePerKB = ($scope.feePerQuantaByte * 1000).toFixed();
     }
 
     // Warnings
     $scope.setFeesRecommended();
-    $scope.checkFees($scope.feePerMicrosByte);
+    $scope.checkFees($scope.feePerQuantaByte);
 
     $timeout(function() {
       $scope.$apply();
@@ -95,7 +95,7 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
   //
   // IF usingCustomFee
   // $scope.customFeePerKB
-  // $scope.feePerMicrosByte
+  // $scope.feePerQuantaByte
 
   if (lodash.isEmpty($scope.feeLevel)) showErrorAndClose(null, gettextCatalog.getString('Fee level is not defined') );
   $scope.selectedFee = { value: $scope.feeLevel };

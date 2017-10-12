@@ -48,7 +48,7 @@ angular.module('copayApp.services').factory('feeService', function($log, $timeou
 
       var feeRate = feeLevelRate.feePerKB;
 
-      if (!fromCache) $log.debug('Dynamic fee: ' + feeLevel + '/' + network + ' ' + (feeLevelRate.feePerKB / 1000).toFixed() + ' Micros/B');
+      if (!fromCache) $log.debug('Dynamic fee: ' + feeLevel + '/' + network + ' ' + (feeLevelRate.feePerKB / 1000).toFixed() + ' Quanta/B');
 
       return cb(null, feeRate);
     });
@@ -64,7 +64,7 @@ angular.module('copayApp.services').factory('feeService', function($log, $timeou
       return cb(null, cache.data, true);
     }
 
-    // We should ge the default BWS URL for now.  
+    // We should ge the default BWS URL for now.
     var opts = {};
     opts.bwsurl = configService.getDefaults().bws.url;
     const walletClient = bwcService.getClient(null, opts);

@@ -17,17 +17,17 @@ describe('TransactionSignature', function() {
 
   var fromAddress = 'mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1';
   var privateKey = 'cSBnVM4xvxarwGQuAfQFwqDg9k5tErHUHzgWsEfD4zdwUasvqRVY';
-  var simpleUtxoWith100000Micros = {
+  var simpleUtxoWith100000Quanta = {
     address: fromAddress,
     txId: 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
     outputIndex: 0,
     script: Script.buildPublicKeyHashOut(fromAddress).toString(),
-    micros: 100000
+    quanta: 100000
   };
 
   var getSignatureFromTransaction = function() {
     var transaction = new Transaction();
-    transaction.from(simpleUtxoWith100000Micros);
+    transaction.from(simpleUtxoWith100000Quanta);
     return transaction.getSignatures(privateKey)[0];
   };
 
@@ -68,7 +68,7 @@ describe('TransactionSignature', function() {
       txId: '0000000000000000000000000000000000000000000000000000000000000000', // Not relevant
       outputIndex: 0,
       script: Script.buildMultisigOut([public1, public2], 2).toScriptHashOut(),
-      micros: 100000
+      quanta: 100000
     };
     var transaction = new Transaction().from(utxo, [public1, public2], 2);
     var signatures = transaction.getSignatures(private1);
@@ -79,7 +79,7 @@ describe('TransactionSignature', function() {
 
   it('can be aplied to a Transaction with Transaction#addSignature', function() {
     var transaction = new Transaction();
-    transaction.from(simpleUtxoWith100000Micros);
+    transaction.from(simpleUtxoWith100000Quanta);
     var signature = transaction.getSignatures(privateKey)[0];
     var addSignature = function() {
       return transaction.applySignature(signature);

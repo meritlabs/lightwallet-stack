@@ -26,7 +26,7 @@ angular
         }
 
         $timeout(function() {
-          $scope.anv = txFormatService.parseAmount(anv, 'micros');
+          $scope.anv = txFormatService.parseAmount(anv, 'quanta');
         });
       });
 
@@ -39,8 +39,8 @@ angular
 
         $timeout(function() {
           $scope.rewards = {
-            mining: txFormatService.parseAmount(addressRewards.rewards.mining, 'micros'),
-            ambassador: txFormatService.parseAmount(addressRewards.rewards.ambassador, 'micros'),
+            mining: txFormatService.parseAmount(addressRewards.rewards.mining, 'quanta'),
+            ambassador: txFormatService.parseAmount(addressRewards.rewards.ambassador, 'quanta'),
           };
         });
       });

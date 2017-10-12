@@ -438,9 +438,9 @@ describe('Meritd Functionality', function() {
         tx.version.should.equal(1);
         should.exist(tx.size);
         tx.locktime.should.equal(0);
-        tx.feeMicros.should.equal(0);
-        tx.outputMicros.should.equal(50 * 1e8);
-        tx.inputMicros.should.equal(0);
+        tx.feeQuanta.should.equal(0);
+        tx.outputQuanta.should.equal(50 * 1e8);
+        tx.inputQuanta.should.equal(0);
         tx.inputs.length.should.equal(1);
         tx.outputs.length.should.equal(1);
         should.equal(tx.inputs[0].prevTxId, null);
@@ -448,8 +448,8 @@ describe('Meritd Functionality', function() {
         tx.inputs[0].script.should.be.a('string');
         should.equal(tx.inputs[0].scriptAsm, null);
         should.equal(tx.inputs[0].address, null);
-        should.equal(tx.inputs[0].micros, null);
-        tx.outputs[0].micros.should.equal(50 * 1e8);
+        should.equal(tx.inputs[0].quanta, null);
+        tx.outputs[0].quanta.should.equal(50 * 1e8);
         tx.outputs[0].script.should.be.a('string');
         tx.outputs[0].scriptAsm.should.be.a('string');
         tx.outputs[0].spentTxId.should.be.a('string');

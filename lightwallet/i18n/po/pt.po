@@ -2421,7 +2421,7 @@ msgid "Set up a password"
 msgstr "Configure uma senha"
 
 #: src/js/controllers/preferencesFee.js:84
-msgid "Set your own fee in micros/byte"
+msgid "Set your own fee in quanta/byte"
 msgstr ""
 
 #: www/views/tab-settings.html:3
@@ -3229,7 +3229,7 @@ msgid "You control your merit."
 msgstr "Você controla o seu merit."
 
 #: www/views/modals/chooseFeeLevel.html:63
-msgid "You should not set a fee higher than {{maxFeeRecommended}} micros/byte."
+msgid "You should not set a fee higher than {{maxFeeRecommended}} quanta/byte."
 msgstr ""
 
 #: www/views/modals/bitpay-card-confirmation.html:5

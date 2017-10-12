@@ -21,7 +21,7 @@ var Unit = require('../unit');
  * @param {string|Script} data.scriptPubKey the script that must be resolved to release the funds
  * @param {string|Script=} data.script alias for `scriptPubKey`
  * @param {number} data.amount amount of bitcoins associated
- * @param {number=} data.micros alias for `amount`, but expressed in micros (1 MRT = 1e8 micros)
+ * @param {number=} data.quanta alias for `amount`, but expressed in quanta (1 MRT = 1e8 quanta)
  * @param {string|Address=} data.address the associated address to the script, if provided
  */
 function UnspentOutput(data) {
@@ -44,17 +44,17 @@ function UnspentOutput(data) {
   $.checkArgument(!_.isUndefined(data.scriptPubKey) || !_.isUndefined(data.script),
                   'Must provide the scriptPubKey for that output!');
   var script = new Script(data.scriptPubKey || data.script);
-  // TODO: rename satoshis
-  $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.satoshis),
+  // TODO: rename quanta
+  $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.quanta),
                   'Must provide an amount for the output');
-  var amount = !_.isUndefined(data.amount) ? new Unit.fromMRT(data.amount).toMicros() : data.satoshis;
+  var amount = !_.isUndefined(data.amount) ? new Unit.fromMRT(data.amount).toQuanta() : data.quanta;
   $.checkArgument(_.isNumber(amount), 'Amount must be a number');
   JSUtil.defineImmutable(this, {
     address: address,
     txId: txId,
     outputIndex: outputIndex,
     script: script,
-    micros: amount
+    quanta: amount
   });
 }
 
@@ -64,7 +64,7 @@ function UnspentOutput(data) {
  */
 UnspentOutput.prototype.inspect = function() {
   return '<UnspentOutput: ' + this.txId + ':' + this.outputIndex +
-         ', micros: ' + this.micros + ', address: ' + this.address + '>';
+         ', quanta: ' + this.quanta + ', address: ' + this.address + '>';
 };
 
 /**
@@ -94,7 +94,7 @@ UnspentOutput.prototype.toObject = UnspentOutput.prototype.toJSON = function toO
     txid: this.txId,
     vout: this.outputIndex,
     scriptPubKey: this.script.toBuffer().toString('hex'),
-    amount: Unit.fromMicros(this.micros).toMRT()
+    amount: Unit.fromQuanta(this.quanta).toMRT()
   };
 };
 

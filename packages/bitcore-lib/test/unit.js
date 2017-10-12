@@ -31,13 +31,13 @@ describe('Unit', function() {
     }).to.not.throw();
   });
 
-  it('has property accesors "MRT", "mMRT", "uMRT", "bits", and "micros"', function() {
+  it('has property accesors "MRT", "mMRT", "uMRT", "bits", and "quanta"', function() {
     var unit = new Unit(1.2, 'MRT');
     unit.MRT.should.equal(1.2);
     unit.mMRT.should.equal(1200);
     unit.uMRT.should.equal(1200000);
     unit.bits.should.equal(1200000);
-    unit.micros.should.equal(120000000);
+    unit.quanta.should.equal(120000000);
   });
 
   it('a string amount is allowed', function() {
@@ -55,8 +55,8 @@ describe('Unit', function() {
     unit = Unit.fromBits('100');
     unit.bits.should.equal(100);
 
-    unit = Unit.fromMicros('8999');
-    unit.micros.should.equal(8999);
+    unit = Unit.fromQuanta('8999');
+    unit.quanta.should.equal(8999);
 
     unit = Unit.fromFiat('43', 350);
     unit.MRT.should.equal(0.12285714);
@@ -74,33 +74,33 @@ describe('Unit', function() {
     unit = Unit.fromBits(100);
     unit.bits.should.equal(100);
 
-    unit = Unit.fromMicros(8999);
-    unit.micros.should.equal(8999);
+    unit = Unit.fromQuanta(8999);
+    unit.quanta.should.equal(8999);
 
     unit = Unit.fromFiat(43, 350);
     unit.MRT.should.equal(0.12285714);
   });
 
-  it('converts to micros correctly', function() {
+  it('converts to quanta correctly', function() {
     /* jshint maxstatements: 25 */
     var unit;
 
     unit = Unit.fromMRT(1.3);
     unit.mMRT.should.equal(1300);
     unit.bits.should.equal(1300000);
-    unit.micros.should.equal(130000000);
+    unit.quanta.should.equal(130000000);
 
     unit = Unit.fromMilis(1.3);
     unit.MRT.should.equal(0.0013);
     unit.bits.should.equal(1300);
-    unit.micros.should.equal(130000);
+    unit.quanta.should.equal(130000);
 
     unit = Unit.fromBits(1.3);
     unit.MRT.should.equal(0.0000013);
     unit.mMRT.should.equal(0.0013);
-    unit.micros.should.equal(130);
+    unit.quanta.should.equal(130);
 
-    unit = Unit.fromMicros(3);
+    unit = Unit.fromQuanta(3);
     unit.MRT.should.equal(0.00000003);
     unit.mMRT.should.equal(0.00003);
     unit.bits.should.equal(0.03);
@@ -110,7 +110,7 @@ describe('Unit', function() {
     var unit = Unit.fromMRT(0.00000003);
     unit.mMRT.should.equal(0.00003);
     unit.bits.should.equal(0.03);
-    unit.micros.should.equal(3);
+    unit.quanta.should.equal(3);
   });
 
   it('exposes unit codes', function() {
@@ -123,8 +123,8 @@ describe('Unit', function() {
     should.exist(Unit.bits);
     Unit.bits.should.equal('bits');
 
-    should.exist(Unit.micros);
-    Unit.micros.should.equal('micros');
+    should.exist(Unit.quanta);
+    Unit.quanta.should.equal('quanta');
   });
 
   it('exposes a method that converts to different units', function() {
@@ -132,7 +132,7 @@ describe('Unit', function() {
     unit.to(Unit.MRT).should.equal(unit.MRT);
     unit.to(Unit.mMRT).should.equal(unit.mMRT);
     unit.to(Unit.bits).should.equal(unit.bits);
-    unit.to(Unit.micros).should.equal(unit.micros);
+    unit.to(Unit.quanta).should.equal(unit.quanta);
   });
 
   it('exposes shorthand conversion methods', function() {
@@ -141,7 +141,7 @@ describe('Unit', function() {
     unit.toMilis().should.equal(unit.mMRT);
     unit.toMillis().should.equal(unit.mMRT);
     unit.toBits().should.equal(unit.bits);
-    unit.toMicros().should.equal(unit.micros);
+    unit.toQuanta().should.equal(unit.quanta);
   });
 
   it('can convert to fiat', function() {
@@ -173,7 +173,7 @@ describe('Unit', function() {
 
   it('inspect method displays nicely', function() {
     var unit = new Unit(1.3, 'MRT');
-    unit.inspect().should.equal('<Unit: 130000000 micros>');
+    unit.inspect().should.equal('<Unit: 130000000 quanta>');
   });
 
   it('fails when the unit is not recognized', function() {

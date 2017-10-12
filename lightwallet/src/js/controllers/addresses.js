@@ -82,13 +82,13 @@ angular.module('copayApp.controllers').controller('addressesController', functio
         if (resp.allUtxos && resp.allUtxos.length) {
 
 
-          var allSum = lodash.sum(resp.allUtxos || 0, 'micros');
+          var allSum = lodash.sum(resp.allUtxos || 0, 'quanta');
           var per = (resp.minFee / allSum) * 100;
 
           $scope.lowWarning = resp.warning;
           $scope.lowUtxosNb = resp.lowUtxos.length;
           $scope.allUtxosNb = resp.allUtxos.length;
-          $scope.lowUtxosSum = txFormatService.formatAmountStr(lodash.sum(resp.lowUtxos || 0, 'micros'));
+          $scope.lowUtxosSum = txFormatService.formatAmountStr(lodash.sum(resp.lowUtxos || 0, 'quanta'));
           $scope.allUtxosSum = txFormatService.formatAmountStr(allSum);
           $scope.minFee = txFormatService.formatAmountStr(resp.minFee || 0);
           $scope.minFeePer = per.toFixed(2) + '%';

@@ -48,7 +48,7 @@ angular.module('copayApp.controllers').controller('buyCoinbaseController', funct
       data.stateParams.currency);
 
     // Buy always in MRT
-    amount = (parsedAmount.amountMicros / 100000000).toFixed(8);
+    amount = (parsedAmount.amountQuanta / 100000000).toFixed(8);
     currency = 'MRT';
 
     $scope.amountUnitStr = parsedAmount.amountUnitStr;

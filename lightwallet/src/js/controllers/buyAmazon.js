@@ -63,20 +63,20 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
     }
   };
 
-  var microsToFiat = function(micros, cb) {
-    txFormatService.toFiat(micros, $scope.currencyIsoCode, function(value) {
+  var quantaToFiat = function(quanta, cb) {
+    txFormatService.toFiat(quanta, $scope.currencyIsoCode, function(value) {
       return cb(value);
     });
   };
 
-  var setTotalAmount = function(amountMicros, invoiceFeeMicors, networkFeeMicros) {
-    microsToFiat(amountMicros, function(a) {
+  var setTotalAmount = function(amountQuanta, invoiceFeeMicors, networkFeeQuanta) {
+    quantaToFiat(amountQuanta, function(a) {
       $scope.amount = Number(a);
 
-      microsToFiat(invoiceFeeMicors, function(i) {
+      quantaToFiat(invoiceFeeMicors, function(i) {
         $scope.invoiceFee = Number(i);
 
-        microsToFiat(networkFeeMicros, function(n) {
+        quantaToFiat(networkFeeQuanta, function(n) {
           $scope.networkFee = Number(n);
           $scope.totalAmount = $scope.amount + $scope.invoiceFee + $scope.networkFee;
           $timeout(function() {
@@ -139,17 +139,17 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
 
     var outputs = [];
     var toAddress = invoice.meritAddress;
-    var amountMicros = parseInt((invoice.btcDue * 100000000).toFixed(0)); // MRT to Micro
+    var amountQuanta = parseInt((invoice.btcDue * 100000000).toFixed(0)); // MRT to Micro
 
     outputs.push({
       'toAddress': toAddress,
-      'amount': amountMicros,
+      'amount': amountQuanta,
       'message': message
     });
 
     var txp = {
       toAddress: toAddress,
-      amount: amountMicros,
+      amount: amountQuanta,
       outputs: outputs,
       message: message,
       payProUrl: payProUrl,
@@ -261,7 +261,7 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
           invoiceTime: invoice.invoiceTime
         };
         $scope.totalAmountStr = txFormatService.formatAmountStr(ctxp.amount);
-        setTotalAmount(parsedAmount.amountMicros, invoiceFeeMicors, ctxp.fee);
+        setTotalAmount(parsedAmount.amountQuanta, invoiceFeeMicors, ctxp.fee);
       });
     });
   };

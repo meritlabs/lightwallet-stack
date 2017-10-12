@@ -68,7 +68,7 @@ Transaction.DUST_AMOUNT = 546;
 // Margin of error to allow fees in the vecinity of the expected value but doesn't allow a big difference
 Transaction.FEE_SECURITY_MARGIN = 150;
 
-// max amount of micros in circulation
+// max amount of quanta in circulation
 Transaction.MAX_MONEY = 21000000 * 1e8;
 
 // nlocktime limit to be considered block height rather than a timestamp
@@ -77,7 +77,7 @@ Transaction.NLOCKTIME_BLOCKHEIGHT_LIMIT = 5e8;
 // Max value for an unsigned 32 bit value
 Transaction.NLOCKTIME_MAX_VALUE = 4294967295;
 
-// Value used for fee estimation (micros per kilobyte)
+// Value used for fee estimation (quanta per kilobyte)
 Transaction.FEE_PER_KB = 100000;
 
 // Safe upper bound for change address script size in bytes
@@ -172,10 +172,10 @@ Transaction.prototype.checkedSerialize = function(opts) {
   return this.uncheckedSerialize();
 };
 
-Transaction.prototype.invalidMicros = function() {
+Transaction.prototype.invalidQuanta = function() {
   var invalid = false;
   for (var i = 0; i < this.outputs.length; i++) {
-    if (this.outputs[i].invalidMicros()) {
+    if (this.outputs[i].invalidQuanta()) {
       invalid = true;
     }
   }
@@ -192,8 +192,8 @@ Transaction.prototype.invalidMicros = function() {
 Transaction.prototype.getSerializationError = function(opts) {
   opts = opts || {};
 
-  if (this.invalidMicros()) {
-    return new errors.Transaction.InvalidMicros();
+  if (this.invalidQuanta()) {
+    return new errors.Transaction.InvalidQuanta();
   }
 
   var unspent = this._getUnspentValue();
@@ -254,7 +254,7 @@ Transaction.prototype._hasDustOutputs = function(opts) {
   var index, output;
   for (index in this.outputs) {
     output = this.outputs[index];
-    if (output.micros < Transaction.DUST_AMOUNT && !output.script.isDataOut()) {
+    if (output.quanta < Transaction.DUST_AMOUNT && !output.script.isDataOut()) {
       return new errors.Transaction.DustOutputs();
     }
   }
@@ -489,7 +489,7 @@ Transaction.prototype._newTransaction = function() {
  * @property {string} prevTxId
  * @property {number} outputIndex
  * @property {(Buffer|string|Script)} script
- * @property {number} micros
+ * @property {number} quanta
  */
 
 /**
@@ -505,7 +505,7 @@ Transaction.prototype._newTransaction = function() {
  *  txId: 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
  *  outputIndex: 0,
  *  script: Script.empty(),
- *  micros: 1020000
+ *  quanta: 1020000
  * }
  * ```
  * Where `address` can be either a string or a bitcore Address object. The
@@ -522,10 +522,10 @@ Transaction.prototype._newTransaction = function() {
  * transaction.from({'txid': '0000...', vout: 0, amount: 0.1, scriptPubKey: 'OP_DUP ...'});
  *
  * // From a pay to public key hash output
- * transaction.from({'txId': '0000...', outputIndex: 0, micros: 1000, script: 'OP_DUP ...'});
+ * transaction.from({'txId': '0000...', outputIndex: 0, quanta: 1000, script: 'OP_DUP ...'});
  *
  * // From a multisig P2SH output
- * transaction.from({'txId': '0000...', inputIndex: 0, micros: 1000, script: '... OP_HASH'},
+ * transaction.from({'txId': '0000...', inputIndex: 0, quanta: 1000, script: '... OP_HASH'},
  *                  ['03000...', '02000...'], 2);
  * ```
  *
@@ -569,7 +569,7 @@ Transaction.prototype._fromNonP2SH = function(utxo) {
   this.addInput(new clazz({
     output: new Output({
       script: utxo.script,
-      micros: utxo.micros
+      quanta: utxo.quanta
     }),
     prevTxId: utxo.txId,
     outputIndex: utxo.outputIndex,
@@ -592,7 +592,7 @@ Transaction.prototype._fromMultisigUtxo = function(utxo, pubkeys, threshold) {
   this.addInput(new clazz({
     output: new Output({
       script: utxo.script,
-      micros: utxo.micros
+      quanta: utxo.quanta
     }),
     prevTxId: utxo.txId,
     outputIndex: utxo.outputIndex,
@@ -603,24 +603,24 @@ Transaction.prototype._fromMultisigUtxo = function(utxo, pubkeys, threshold) {
 /**
  * Add an input to this transaction. The input must be an instance of the `Input` class.
  * It should have information about the Output that it's spending, but if it's not already
- * set, two additional parameters, `outputScript` and `micros` can be provided.
+ * set, two additional parameters, `outputScript` and `quanta` can be provided.
  *
  * @param {Input} input
  * @param {String|Script} outputScript
- * @param {number} micros
+ * @param {number} quanta
  * @return Transaction this, for chaining
  */
-Transaction.prototype.addInput = function(input, outputScript, micros) {
+Transaction.prototype.addInput = function(input, outputScript, quanta) {
   $.checkArgumentType(input, Input, 'input');
-  if (!input.output && (_.isUndefined(outputScript) || _.isUndefined(micros))) {
-    throw new errors.Transaction.NeedMoreInfo('Need information about the UTXO script and micros');
+  if (!input.output && (_.isUndefined(outputScript) || _.isUndefined(quanta))) {
+    throw new errors.Transaction.NeedMoreInfo('Need information about the UTXO script and quanta');
   }
-  if (!input.output && outputScript && !_.isUndefined(micros)) {
+  if (!input.output && outputScript && !_.isUndefined(quanta)) {
     outputScript = outputScript instanceof Script ? outputScript : new Script(outputScript);
-    $.checkArgumentType(micros, 'number', 'micros');
+    $.checkArgumentType(quanta, 'number', 'quanta');
     input.output = new Output({
       script: outputScript,
-      micros: micros
+      quanta: quanta
     });
   }
   return this.uncheckedAddInput(input);
@@ -657,7 +657,7 @@ Transaction.prototype.hasAllUtxoInfo = function() {
  * for inputs (in further versions, SIGHASH_SINGLE or SIGHASH_NONE signatures will not
  * be reset).
  *
- * @param {number} amount micros to be sent
+ * @param {number} amount quanta to be sent
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.fee = function(amount) {
@@ -672,7 +672,7 @@ Transaction.prototype.fee = function(amount) {
  * for inputs (in further versions, SIGHASH_SINGLE or SIGHASH_NONE signatures will not
  * be reset).
  *
- * @param {number} amount micros per KB to be sent
+ * @param {number} amount quanta per KB to be sent
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.feePerKb = function(amount) {
@@ -714,7 +714,7 @@ Transaction.prototype.getChangeOutput = function() {
 /**
  * @typedef {Object} Transaction~toObject
  * @property {(string|Address)} address
- * @property {number} micros
+ * @property {number} quanta
  */
 
 /**
@@ -724,14 +724,14 @@ Transaction.prototype.getChangeOutput = function() {
  * SIGHASH_SINGLE or SIGHASH_NONE signatures will not be reset).
  *
  * @param {(string|Address|Array.<Transaction~toObject>)} address
- * @param {number} amount in micros
+ * @param {number} amount in quanta
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.to = function(address, amount) {
   if (_.isArray(address)) {
     var self = this;
     _.each(address, function(to) {
-      self.to(to.address, to.micros);
+      self.to(to.address, to.quanta);
     });
     return this;
   }
@@ -742,7 +742,7 @@ Transaction.prototype.to = function(address, amount) {
   );
   this.addOutput(new Output({
     script: Script(new Address(address)),
-    micros: amount
+    quanta: amount
   }));
   return this;
 };
@@ -760,7 +760,7 @@ Transaction.prototype.to = function(address, amount) {
 Transaction.prototype.addData = function(value) {
   this.addOutput(new Output({
     script: Script.buildDataOut(value),
-    micros: 0
+    quanta: 0
   }));
   return this;
 };
@@ -802,7 +802,7 @@ Transaction.prototype._addOutput = function(output) {
 
 
 /**
- * Calculates or gets the total output amount in micros
+ * Calculates or gets the total output amount in quanta
  *
  * @return {Number} the transaction total output amount
  */
@@ -811,7 +811,7 @@ Transaction.prototype._getOutputAmount = function() {
     var self = this;
     this._outputAmount = 0;
     _.each(this.outputs, function(output) {
-      self._outputAmount += output.micros;
+      self._outputAmount += output.quanta;
     });
   }
   return this._outputAmount;
@@ -819,7 +819,7 @@ Transaction.prototype._getOutputAmount = function() {
 
 
 /**
- * Calculates or gets the total input amount in micros
+ * Calculates or gets the total input amount in quanta
  *
  * @return {Number} the transaction total input amount
  */
@@ -831,7 +831,7 @@ Transaction.prototype._getInputAmount = function() {
       if (_.isUndefined(input.output)) {
         throw new errors.Transaction.Input.MissingPreviousOutput();
       }
-      self._inputAmount += input.output.micros;
+      self._inputAmount += input.output.quanta;
     });
   }
   return this._inputAmount;
@@ -852,7 +852,7 @@ Transaction.prototype._updateChangeOutput = function() {
     this._changeIndex = this.outputs.length;
     this._addOutput(new Output({
       script: this._changeScript,
-      micros: changeAmount
+      quanta: changeAmount
     }));
   } else {
     this._changeIndex = undefined;
@@ -874,7 +874,7 @@ Transaction.prototype._updateChangeOutput = function() {
  * If there's no fee set and no change address,
  * estimate the fee based on size.
  *
- * @return {Number} fee of this transaction in micros
+ * @return {Number} fee of this transaction in quanta
  */
 Transaction.prototype.getFee = function() {
   if (this.isCoinbase()) {
@@ -957,7 +957,7 @@ Transaction.prototype.sort = function() {
   this.sortOutputs(function(outputs) {
     var copy = Array.prototype.concat.apply([], outputs);
     copy.sort(function(first, second) {
-      return first.micros - second.micros
+      return first.quanta - second.quanta
         || compare(first.script.toBuffer(), second.script.toBuffer());
     });
     return copy;
@@ -1145,13 +1145,13 @@ Transaction.prototype.verify = function() {
   for (var i = 0; i < this.outputs.length; i++) {
     var txout = this.outputs[i];
 
-    if (txout.invalidMicros()) {
-      return 'transaction txout ' + i + ' micros is invalid';
+    if (txout.invalidQuanta()) {
+      return 'transaction txout ' + i + ' quanta is invalid';
     }
-    if (txout._microsBN.gt(new BN(Transaction.MAX_MONEY, 10))) {
+    if (txout._quantaBN.gt(new BN(Transaction.MAX_MONEY, 10))) {
       return 'transaction txout ' + i + ' greater than MAX_MONEY';
     }
-    valueoutbn = valueoutbn.add(txout._microsBN);
+    valueoutbn = valueoutbn.add(txout._quantaBN);
     if (valueoutbn.gt(new BN(Transaction.MAX_MONEY))) {
       return 'transaction txout ' + i + ' total output greater than MAX_MONEY';
     }

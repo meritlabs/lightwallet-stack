@@ -138,7 +138,7 @@ angular.module('copayApp.services')
           $log.debug("Trezor TX input path:", i.path);
           var pathArr = i.path.split('/');
           var n = [hwWallet.UNISIG_ROOTPATH | 0x80000000, 0 | 0x80000000, account | 0x80000000, parseInt(pathArr[1]), parseInt(pathArr[2])];
-          inAmount += i.micros;
+          inAmount += i.quanta;
           return {
             address_n: n,
             prev_index: i.vout,
@@ -175,7 +175,7 @@ angular.module('copayApp.services')
           var n = [hwWallet.MULTISIG_ROOTPATH | 0x80000000, 0 | 0x80000000, account | 0x80000000, parseInt(pathArr[1]), parseInt(pathArr[2])];
           var np = n.slice(3);
 
-          inAmount += i.micros;
+          inAmount += i.quanta;
 
           var orderedPubKeys = root._orderPubKeys(xPubKeys, np);
           var pubkeys = orderedPubKeys.map(function(v) {

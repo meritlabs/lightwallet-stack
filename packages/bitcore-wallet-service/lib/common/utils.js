@@ -89,26 +89,26 @@ Utils._tryVerifyMessage = function(hash, sig, publicKeyBuffer) {
   }
 };
 
-Utils.formatAmount = function(micros, unit, opts) {
+Utils.formatAmount = function(quanta, unit, opts) {
   var UNITS = {
     mrt: {
-      toMicros: 100000000,
+      toQuanta: 100000000,
       maxDecimals: 6,
       minDecimals: 2,
     },
     bit: {
-      toMicros: 100,
+      toQuanta: 100,
       maxDecimals: 0,
       minDecimals: 0,
     },
-    micros: {
-      toMicros: 1,
+    quanta: {
+      toQuanta: 1,
       maxDecimals: 0,
       minDecimals: 0,
     }
   };
 
-  $.shouldBeNumber(micros);
+  $.shouldBeNumber(quanta);
   $.checkArgument(_.contains(_.keys(UNITS), unit));
 
   function addSeparators(nStr, thousands, decimal, minDecimals) {
@@ -129,7 +129,7 @@ Utils.formatAmount = function(micros, unit, opts) {
   opts = opts || {};
 
   var u = _.assign(UNITS[unit], opts);
-  var amount = (micros / u.toMicros).toFixed(u.maxDecimals);
+  var amount = (quanta / u.toQuanta).toFixed(u.maxDecimals);
   return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u.minDecimals);
 };
 
@@ -143,7 +143,7 @@ Utils.formatAmountInMrt = function(amount) {
 Utils.formatUtxos = function(utxos) {
   if (_.isEmpty(utxos)) return 'none';
   return _.map([].concat(utxos), function(i) {
-    var amount = Utils.formatAmountInMrt(i.micros);
+    var amount = Utils.formatAmountInMrt(i.quanta);
     var confirmations = i.confirmations ? i.confirmations + 'c' : 'u';
     return amount + '/' + confirmations;
   }).join(', ');

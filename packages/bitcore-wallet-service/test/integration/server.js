@@ -1085,7 +1085,7 @@ describe('Wallet service', function() {
             status.pendingTxps.length.should.equal(1);
             var balance = status.balance;
             balance.totalAmount.should.equal(3e8);
-            balance.lockedAmount.should.equal(tx.inputs[0].micros);
+            balance.lockedAmount.should.equal(tx.inputs[0].quanta);
             balance.availableAmount.should.equal(balance.totalAmount - balance.lockedAmount);
             done();
           });
@@ -1579,7 +1579,7 @@ describe('Wallet service', function() {
           should.not.exist(err);
           should.exist(utxos);
           utxos.length.should.equal(2);
-          _.sum(utxos, 'micros').should.equal(3 * 1e8);
+          _.sum(utxos, 'quanta').should.equal(3 * 1e8);
           server.getMainAddresses({}, function(err, addresses) {
             var utxo = utxos[0];
             var address = _.find(addresses, {
@@ -1599,13 +1599,13 @@ describe('Wallet service', function() {
         var address = utxos[0].address;
         var amount = _.sum(_.filter(utxos, {
           address: address
-        }), 'micros');
+        }), 'quanta');
         server.getUtxos({
           addresses: [address]
         }, function(err, utxos) {
           should.not.exist(err);
           should.exist(utxos);
-          _.sum(utxos, 'micros').should.equal(amount);
+          _.sum(utxos, 'quanta').should.equal(amount);
           done();
         });
       });
@@ -2631,7 +2631,7 @@ describe('Wallet service', function() {
               tx.fee.should.equal(1000e2);
               var t = tx.getBitcoreTx();
               t.getFee().should.equal(1000e2);
-              t.getChangeOutput().micros.should.equal(3e8 - 0.8e8 - 1000e2);
+              t.getChangeOutput().quanta.should.equal(3e8 - 0.8e8 - 1000e2);
               done();
             });
           });
@@ -3102,7 +3102,7 @@ describe('Wallet service', function() {
 
       it('should support creating a tx with no change address', function(done) {
         helpers.stubUtxos(server, wallet, [1, 2], function() {
-          var max = 3e8 - 7000; // Fees for this tx at 100bits/kB = 7000 micros
+          var max = 3e8 - 7000; // Fees for this tx at 100bits/kB = 7000 quanta
           var txOpts = {
             outputs: [{
               toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
@@ -3115,7 +3115,7 @@ describe('Wallet service', function() {
             should.exist(txp);
             var t = txp.getBitcoreTx().toObject();
             t.outputs.length.should.equal(1);
-            t.outputs[0].micros.should.equal(max);
+            t.outputs[0].quanta.should.equal(max);
             done();
           });
         });
@@ -3238,7 +3238,7 @@ describe('Wallet service', function() {
             should.exist(tx);
             var bitcoreTx = tx.getBitcoreTx();
             bitcoreTx.outputs.length.should.equal(1);
-            bitcoreTx.outputs[0].micros.should.equal(tx.amount);
+            bitcoreTx.outputs[0].quanta.should.equal(tx.amount);
             done();
           });
         });
@@ -3292,7 +3292,7 @@ describe('Wallet service', function() {
                 server.getBalance({}, function(err, balance) {
                   should.not.exist(err);
                   balance.totalAmount.should.equal(3.6e8);
-                  var amountInputs = _.sum(txs[0].inputs, 'micros');
+                  var amountInputs = _.sum(txs[0].inputs, 'quanta');
                   balance.lockedAmount.should.equal(amountInputs);
                   balance.lockedAmount.should.be.below(balance.totalAmount);
                   balance.availableAmount.should.equal(balance.totalAmount - balance.lockedAmount);
@@ -3372,7 +3372,7 @@ describe('Wallet service', function() {
             t.getFee().should.equal(tx.fee);
             should.not.exist(t.getChangeOutput());
             t.toObject().inputs.length.should.equal(tx.inputs.length);
-            t.toObject().outputs[0].micros.should.equal(tx.amount);
+            t.toObject().outputs[0].quanta.should.equal(tx.amount);
             done();
           });
         });
@@ -3392,8 +3392,8 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             var t = txp.getBitcoreTx();
-            var changeOutput = t.getChangeOutput().micros;
-            var outputs = _.without(_.pluck(t.outputs, 'micros'), changeOutput);
+            var changeOutput = t.getChangeOutput().quanta;
+            var outputs = _.without(_.pluck(t.outputs, 'quanta'), changeOutput);
 
             outputs.should.not.deep.equal(_.pluck(txOpts.outputs, 'amount'));
             txOpts.noShuffleOutputs = true;
@@ -3402,8 +3402,8 @@ describe('Wallet service', function() {
               should.exist(txp);
 
               t = txp.getBitcoreTx();
-              changeOutput = t.getChangeOutput().micros;
-              outputs = _.without(_.pluck(t.outputs, 'micros'), changeOutput);
+              changeOutput = t.getChangeOutput().quanta;
+              outputs = _.without(_.pluck(t.outputs, 'quanta'), changeOutput);
 
               outputs.should.deep.equal(_.pluck(txOpts.outputs, 'amount'));
               done();
@@ -3606,7 +3606,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(35000);
+            txp.inputs[0].quanta.should.equal(35000);
 
             done();
           });
@@ -3618,14 +3618,14 @@ describe('Wallet service', function() {
           var txOpts = {
             outputs: [{
               toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
-              amount: _.sum(utxos, 'micros') - 0.5e8,
+              amount: _.sum(utxos, 'quanta') - 0.5e8,
             }],
             feePerKb: 100e2,
           };
           server.createTx(txOpts, function(err, txp) {
             should.not.exist(err);
             should.exist(txp);
-            var amounts = _.pluck(txp.inputs, 'micros');
+            var amounts = _.pluck(txp.inputs, 'quanta');
             amounts.length.should.equal(30);
             _.all(amounts, function(amount, i) {
               if (i == 0) return true;
@@ -3648,7 +3648,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(3);
-            txp.inputs[0].micros.should.equal(10000);
+            txp.inputs[0].quanta.should.equal(10000);
 
             done();
           });
@@ -3687,7 +3687,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(1e8);
+            txp.inputs[0].quanta.should.equal(1e8);
             done();
           });
         });
@@ -3709,7 +3709,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(1e8);
+            txp.inputs[0].quanta.should.equal(1e8);
             Defaults.UTXO_SELECTION_MAX_SINGLE_UTXO_FACTOR = _old;
             done();
           });
@@ -3730,7 +3730,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(1e8);
+            txp.inputs[0].quanta.should.equal(1e8);
 
             done();
           });
@@ -3749,7 +3749,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(9e8);
+            txp.inputs[0].quanta.should.equal(9e8);
             done();
           });
         });
@@ -3772,7 +3772,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(100e8);
+            txp.inputs[0].quanta.should.equal(100e8);
             Defaults.UTXO_SELECTION_MIN_TX_AMOUNT_VS_UTXO_FACTOR = _old1;
             Defaults.MAX_TX_SIZE_IN_KB = _old2;
             done();
@@ -3869,7 +3869,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(1e8);
+            txp.inputs[0].quanta.should.equal(1e8);
             done();
           });
         });
@@ -3913,7 +3913,7 @@ describe('Wallet service', function() {
         });
       });
       it('should correct fee if resulting change would be below threshold', function(done) {
-        helpers.stubUtxos(server, wallet, ['200bit', '500micros'], function() {
+        helpers.stubUtxos(server, wallet, ['200bit', '500quanta'], function() {
           var txOpts = {
             outputs: [{
               toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
@@ -3924,7 +3924,7 @@ describe('Wallet service', function() {
           server.createTx(txOpts, function(err, txp) {
             should.not.exist(err);
             txp.inputs.length.should.equal(1);
-            (_.sum(txp.inputs, 'micros') - txp.outputs[0].amount - txp.fee).should.equal(0);
+            (_.sum(txp.inputs, 'quanta') - txp.outputs[0].amount - txp.fee).should.equal(0);
             var changeOutput = txp.getBitcoreTx().getChangeOutput();
             should.not.exist(changeOutput);
             done();
@@ -4582,7 +4582,7 @@ describe('Wallet service', function() {
         }, function(err, info) {
           should.not.exist(err);
           should.exist(info);
-          var amounts = _.pluck(info.inputs, 'micros');
+          var amounts = _.pluck(info.inputs, 'quanta');
           amounts.length.should.equal(30);
           _.all(amounts, function(amount, i) {
             if (i == 0) return true;
@@ -6235,7 +6235,7 @@ describe('Wallet service', function() {
                 time: Date.now() / 1000,
                 inputs: [{
                   address: tx.inputs[0].address,
-                  amount: utxos[0].micros,
+                  amount: utxos[0].quanta,
                 }],
                 outputs: [{
                   address: changeAddresses[0].address,

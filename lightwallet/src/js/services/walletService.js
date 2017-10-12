@@ -193,18 +193,18 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
       cache.balanceByAddress = balance.byAddress;
 
       // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
-      cache.totalBalanceMicros = balance.totalAmount;
+      cache.totalBalanceQuanta = balance.totalAmount;
 
       // Spend unconfirmed funds
       if (config.spendUnconfirmed) {
-        cache.lockedBalanceMicros = balance.lockedAmount;
-        cache.availableBalanceMicros = balance.availableAmount;
+        cache.lockedBalanceQuanta = balance.lockedAmount;
+        cache.availableBalanceQuanta = balance.availableAmount;
         cache.totalBytesToSendMax = balance.totalBytesToSendMax;
         cache.pendingAmount = 0;
         cache.spendableAmount = balance.totalAmount - balance.lockedAmount;
       } else {
-        cache.lockedBalanceMicros = balance.lockedConfirmedAmount;
-        cache.availableBalanceMicros = balance.availableConfirmedAmount;
+        cache.lockedBalanceQuanta = balance.lockedConfirmedAmount;
+        cache.availableBalanceQuanta = balance.availableConfirmedAmount;
         cache.totalBytesToSendMax = balance.totalBytesToSendConfirmedMax;
         cache.pendingAmount = balance.totalAmount - balance.totalConfirmedAmount;
         cache.spendableAmount = balance.totalConfirmedAmount - balance.lockedAmount;
@@ -216,9 +216,9 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
       cache.unitName = config.settings.unitName;
 
       //STR
-      cache.totalBalanceStr = txFormatService.formatAmount(cache.totalBalanceMicros) + ' ' + cache.unitName;
-      cache.lockedBalanceStr = txFormatService.formatAmount(cache.lockedBalanceMicros) + ' ' + cache.unitName;
-      cache.availableBalanceStr = txFormatService.formatAmount(cache.availableBalanceMicros) + ' ' + cache.unitName;
+      cache.totalBalanceStr = txFormatService.formatAmount(cache.totalBalanceQuanta) + ' ' + cache.unitName;
+      cache.lockedBalanceStr = txFormatService.formatAmount(cache.lockedBalanceQuanta) + ' ' + cache.unitName;
+      cache.availableBalanceStr = txFormatService.formatAmount(cache.availableBalanceQuanta) + ' ' + cache.unitName;
       cache.spendableBalanceStr = txFormatService.formatAmount(cache.spendableAmount) + ' ' + cache.unitName;
       cache.pendingBalanceStr = txFormatService.formatAmount(cache.pendingAmount) + ' ' + cache.unitName;
 
@@ -238,9 +238,9 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
 
       rateService.whenAvailable(function() {
 
-        var totalBalanceAlternative = rateService.toFiat(cache.totalBalanceMicros, cache.alternativeIsoCode);
+        var totalBalanceAlternative = rateService.toFiat(cache.totalBalanceQuanta, cache.alternativeIsoCode);
         var pendingBalanceAlternative = rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode);
-        var lockedBalanceAlternative = rateService.toFiat(cache.lockedBalanceMicros, cache.alternativeIsoCode);
+        var lockedBalanceAlternative = rateService.toFiat(cache.lockedBalanceQuanta, cache.alternativeIsoCode);
         var spendableBalanceAlternative = rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode);
         var alternativeConversionRate = rateService.toFiat(100000000, cache.alternativeIsoCode);
 
@@ -269,7 +269,7 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
     };
 
     function walletStatusHash(status) {
-      return status ? status.balance.totalAmount : wallet.totalBalanceMicros;
+      return status ? status.balance.totalAmount : wallet.totalBalanceQuanta;
     };
 
     function _getStatus(initStatusHash, tries, cb) {
@@ -948,15 +948,15 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
 
       var minFee = root.getMinFee(wallet, levels, resp.length);
 
-      var balance = lodash.sum(resp, 'micros');
+      var balance = lodash.sum(resp, 'quanta');
 
       // for 2 outputs
       var lowAmount = root.getLowAmount(wallet, levels);
       var lowUtxos = lodash.filter(resp, function(x) {
-        return x.micros < lowAmount;
+        return x.quanta < lowAmount;
       });
 
-      var totalLow = lodash.sum(lowUtxos, 'micros');
+      var totalLow = lodash.sum(lowUtxos, 'quanta');
 
       return cb(err, {
         allUtxos:  resp || [],

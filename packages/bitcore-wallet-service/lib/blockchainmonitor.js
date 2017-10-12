@@ -131,11 +131,11 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
     var walletId = txp.walletId;
 
     if (!processIt) {
-      log.info('Detected broadcast ' + data.txid + ' of an accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'micros ]');
+      log.info('Detected broadcast ' + data.txid + ' of an accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'quanta ]');
       return setTimeout(self._handleThirdPartyBroadcasts.bind(self, data, true), 20 * 1000);
     }
 
-    log.info('Processing accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'micros ]');
+    log.info('Processing accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'quanta ]');
 
     txp.setBroadcasted();
 
@@ -187,7 +187,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
       var walletId = address.walletId;
       var notificationType = data.isCoinbase ? 'NewIncomingCoinbase' : 'NewIncomingTx';
       
-      log.info(notificationType + ' for wallet ' + walletId + ' [' + out.amount + 'micros -> ' + out.address + ']');
+      log.info(notificationType + ' for wallet ' + walletId + ' [' + out.amount + 'quanta -> ' + out.address + ']');
 
       var fromTs = Date.now() - 24 * 3600 * 1000;
       self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {

@@ -644,7 +644,7 @@ API.prototype.getBalanceFromPrivateKey = function(privateKey, cb) {
     addresses: address.toString(),
   }, function(err, utxos) {
     if (err) return cb(err);
-    return cb(null, _.sum(utxos, 'micros'));
+    return cb(null, _.sum(utxos, 'quanta'));
   });
 };
 
@@ -669,7 +669,7 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
       if (!_.isArray(utxos) || utxos.length == 0) return next(new Error('No utxos found'));
 
       var fee = opts.fee || 10000;
-      var amount = _.sum(utxos, 'micros') - fee;
+      var amount = _.sum(utxos, 'quanta') - fee;
       if (amount <= 0) return next(new Errors.INSUFFICIENT_FUNDS);
 
       var tx;
@@ -724,7 +724,7 @@ API.prototype.buildEasySendRedeemTransaction = function(input, destinationAddres
   var inputAddress = input.txn.scriptId;
 
   var fee = opts.fee || 10000;
-  var microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros(); 
+  var microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toQuanta(); 
   var amount =  microAmount - fee;
   if (amount <= 0) return new Errors.INSUFFICIENT_FUNDS;
 
@@ -738,7 +738,7 @@ API.prototype.buildEasySendRedeemTransaction = function(input, destinationAddres
       new Bitcore.Transaction.Input.PayToScriptHashInput({
         output: Bitcore.Transaction.Output.fromObject({
           script: p2shScript,
-          micros: microAmount
+          quanta: microAmount
         }),
         prevTxId: input.txn.txid,
         outputIndex: input.txn.index,
@@ -2238,7 +2238,7 @@ API.prototype.broadcastTxProposal = function(txp, cb) {
       PayPro.send({
         http: self.payProHttp,
         url: txp.payProUrl,
-        amountMicros: txp.amount,
+        amountQuanta: txp.amount,
         refundAddr: txp.changeAddress.address,
         merchant_data: paypro.merchant_data,
         rawTx: t.serialize({

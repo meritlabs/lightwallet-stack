@@ -1136,10 +1136,10 @@ WalletService.prototype._getUtxos = function(addresses, cb) {
     if (err) return cb(err);
 
     var utxos = _.map(utxos, function(utxo) {
-      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations', 'isCoinbase', 'isMature']);
+      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'quanta', 'confirmations', 'isCoinbase', 'isMature']);
       u.confirmations = u.confirmations || 0;
       u.locked = false;
-      u.micros = _.isNumber(u.micros) ? +u.micros : Utils.strip(u.amount * 1e8);
+      u.quanta = _.isNumber(u.quanta) ? +u.quanta : Utils.strip(u.amount * 1e8);
       delete u.amount;
       return u;
     });
@@ -1252,14 +1252,14 @@ WalletService.prototype.getUtxos = function(opts, cb) {
 
 WalletService.prototype._totalizeUtxos = function(utxos) {
   var balance = {
-    totalAmount: _.sum(utxos, 'micros'),
-    lockedAmount: _.sum(_.filter(utxos, 'locked'), 'micros'),
+    totalAmount: _.sum(utxos, 'quanta'),
+    lockedAmount: _.sum(_.filter(utxos, 'locked'), 'quanta'),
     totalConfirmedAmount: _.sum(
       _.filter(utxos, function(utxo) {
         return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0));
       }), 
-    'micros'),
-    lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
+    'quanta'),
+    lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'quanta'),
   };
   balance.availableAmount = balance.totalAmount - balance.lockedAmount;
   balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
@@ -1287,7 +1287,7 @@ WalletService.prototype._getBalanceFromAddresses = function(addresses, cb) {
     });
 
     _.each(utxos, function(utxo) {
-      byAddress[utxo.address].amount += utxo.micros;
+      byAddress[utxo.address].amount += utxo.quanta;
     });
 
     balance.byAddress = _.values(byAddress);
@@ -1460,7 +1460,7 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         inputs = _.filter(inputs, 'confirmations');
       }
       inputs = _.sortBy(inputs, function(input) {
-        return -input.micros;
+        return -input.quanta;
       });
 
       if (_.isEmpty(inputs)) return cb(null, info);
@@ -1484,18 +1484,18 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         var feePerInput = sizePerInput * txp.feePerKb / 1000.;
 
         var partitionedByAmount = _.partition(inputs, function(input) {
-          return input.micros > feePerInput;
+          return input.quanta > feePerInput;
         });
 
         info.utxosBelowFee = partitionedByAmount[1].length;
-        info.amountBelowFee = _.sum(partitionedByAmount[1], 'micros');
+        info.amountBelowFee = _.sum(partitionedByAmount[1], 'quanta');
         inputs = partitionedByAmount[0];
 
         _.each(inputs, function(input, i) {
           var sizeInKb = (baseTxpSize + (i + 1) * sizePerInput) / 1000.;
           if (sizeInKb > Defaults.MAX_TX_SIZE_IN_KB) {
             info.utxosAboveMaxSize = inputs.length - i;
-            info.amountAboveMaxSize = _.sum(_.slice(inputs, i), 'micros');
+            info.amountAboveMaxSize = _.sum(_.slice(inputs, i), 'quanta');
             return false;
           }
           txp.inputs.push(input);
@@ -1504,7 +1504,7 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         if (_.isEmpty(txp.inputs)) return cb(null, info);
 
         var fee = txp.getEstimatedFee();
-        var amount = _.sum(txp.inputs, 'micros') - fee;
+        var amount = _.sum(txp.inputs, 'quanta') - fee;
 
         if (amount < Defaults.MIN_OUTPUT_AMOUNT) return cb(null, info);
 
@@ -1678,7 +1678,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     // We should ensure that utxos are not locked and are mature enough.
     return _.filter(utxos, function(utxo) {
       if (utxo.locked) return false;
-      if (utxo.micros <= feePerInput) return false;
+      if (utxo.quanta <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
       if (excludeIndex[utxo.txid + ":" + utxo.vout]) return false;
       if (utxo.isCoinbase && !utxo.isMature) return false; 
@@ -1695,7 +1695,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
   };
 
   function select(utxos, cb) {
-    var totalValueInUtxos = _.sum(utxos, 'micros');
+    var totalValueInUtxos = _.sum(utxos, 'quanta');
 
     var netValueInUtxos = totalValueInUtxos - baseTxpFee - (utxos.length * feePerInput);
 
@@ -1712,12 +1712,12 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     log.debug('Big input threshold ' + Utils.formatAmountInMrt(bigInputThreshold));
 
     var partitions = _.partition(utxos, function(utxo) {
-      return utxo.micros > bigInputThreshold;
+      return utxo.quanta > bigInputThreshold;
     });
 
-    var bigInputs = _.sortBy(partitions[0], 'micros');
+    var bigInputs = _.sortBy(partitions[0], 'quanta');
     var smallInputs = _.sortBy(partitions[1], function(utxo) {
-      return -utxo.micros;
+      return -utxo.quanta;
     });
 
     log.debug('Considering ' + bigInputs.length + ' big inputs (' + Utils.formatUtxos(bigInputs) + ')');
@@ -1732,13 +1732,13 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     _.each(smallInputs, function(input, i) {
       log.debug('Input #' + i + ': ' + Utils.formatUtxos(input));
 
-      var netInputAmount = input.micros - feePerInput;
+      var netInputAmount = input.quanta - feePerInput;
 
       log.debug('The input contributes ' + Utils.formatAmountInMrt(netInputAmount));
 
       selected.push(input);
 
-      total += input.micros;
+      total += input.quanta;
       netTotal += netInputAmount;
 
       var txpSize = baseTxpSize + selected.length * sizePerInput;
@@ -1798,7 +1798,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       if (!_.isEmpty(bigInputs)) {
         var input = _.first(bigInputs);
         log.debug('Using big input: ', Utils.formatUtxos(input));
-        total = input.micros;
+        total = input.quanta;
         fee = Math.round(baseTxpFee + feePerInput);
         netTotal = total - fee;
         selected = [input];
@@ -1892,7 +1892,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       var err = self._checkTx(txp);
 
       if (!err) {
-        var change = _.sum(txp.inputs, 'micros') - _.sum(txp.outputs, 'amount') - txp.fee;
+        var change = _.sum(txp.inputs, 'quanta') - _.sum(txp.outputs, 'amount') - txp.fee;
         log.debug('Successfully built transaction. Total fees: ' + Utils.formatAmountInMrt(txp.fee) + ', total change: ' + Utils.formatAmountInMrt(change));
       } else {
         log.warn('Error building transaction', err);
@@ -2737,7 +2737,7 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
     var inputs = _.map(tx.vin, function(item) {
       return {
         address: item.addr,
-        amount: item.valueMicros,
+        amount: item.valueQuanta,
       }
     });
 
