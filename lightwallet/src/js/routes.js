@@ -784,10 +784,10 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
       * Params available:
       * se - secret
       * sk - sender public key
-      * sn - sender name 
+      * sn - sender name
       * uc - unlock code
       - bt - block timeout
-      */ 
+      */
       .state('onboarding.easyReceive', {
         url: '/easy?se&sk&sn&uc&bt',
         views: {
@@ -896,15 +896,6 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           'tab-settings@tabs': {
             templateUrl: 'views/feedback/send.html',
             controller: 'sendController'
-          }
-        }
-      })
-      .state('tabs.shareApp', {
-        url: '/shareApp/:score/:skipped/:fromSettings',
-        views: {
-          'tab-settings@tabs': {
-            controller: 'completeController',
-            templateUrl: 'views/feedback/complete.html'
           }
         }
       })

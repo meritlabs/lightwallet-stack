@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('completeController', function($scope, $stateParams, $timeout, $log, $ionicHistory, $state, $ionicNavBarDelegate, $ionicConfig, platformInfo, configService, storageService, lodash, appConfigService, gettextCatalog, referralCodeService) {
+angular.module('copayApp.controllers').controller('completeController', function($scope, $stateParams, $timeout, $log, $ionicHistory, $state, $ionicNavBarDelegate, $ionicConfig, platformInfo, configService, storageService, lodash, appConfigService, gettextCatalog) {
   $scope.isCordova = platformInfo.isCordova;
   $scope.title = gettextCatalog.getString("Share {{appName}}", {
     appName: appConfigService.nameCase
@@ -16,18 +16,6 @@ angular.module('copayApp.controllers').controller('completeController', function
     $timeout(window.plugins.spinnerDialog.hide, 300);
     $timeout(cb, 20);
   }
-
-  referralCodeService.getCode({ id: 1 }, function(err, code) {
-    if (err) {
-      $scope.referralCode = `Error! ${err}`;
-      $scope.copyEnabled = false;
-    } else {
-      $scope.referralCode = code;
-      $scope.copyEnabled = true;
-    }
-
-    $scope.$applyAsync();
-  });
 
   $scope.shareFacebook = function() {
     quickFeedback(function() {
