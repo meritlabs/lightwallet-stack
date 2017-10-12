@@ -190,7 +190,7 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
 
     console.log(currency);
     // If fiat currency
-    if (currency != 'bits' && currency != 'MRT' && currency != 'quanta') {
+    if (currency != 'MRT' && currency != 'quanta') {
       amountUnitStr = $filter('formatFiatAmount')(amount) + ' ' + currency;
       amountQuanta = rateService.fromFiat(amount, currency).toFixed(0);
     } else if (currency == 'quanta') {

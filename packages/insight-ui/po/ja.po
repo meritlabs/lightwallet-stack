@@ -547,9 +547,6 @@ msgstr "採掘日時:"
 #~ msgid "(Orphaned)"
 #~ msgstr "(孤立したブロック)"
 
-#~ msgid "Bits"
-#~ msgstr "Bits"
-
 #~ msgid "Block #{{block.height}}"
 #~ msgstr "ブロック #{{block.height}}"
 

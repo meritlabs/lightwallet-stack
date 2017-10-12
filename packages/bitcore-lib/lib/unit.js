@@ -9,13 +9,12 @@ var UNITS = {
   'MRT'      : [1e8, 8],
   'mMRT'     : [1e5, 5],
   'uMRT'     : [1e2, 2],
-  'bits'     : [1e2, 2],
   'quanta'   : [1, 0]
 };
 
 /**
  * Utility for handling and converting merits units. The supported units are
- * MRT, mMRT, bits (also named uMRT) and quanta. A unit instance can be created with an
+ * MRT, mMRT,uMRT and quanta. A unit instance can be created with an
  * amount and a unit code, or alternatively using static methods like {fromMRT}.
  * It also allows to be created from a fiat amount and the exchange rate, or
  * alternatively using the {fromFiat} static method.
@@ -27,9 +26,6 @@ var UNITS = {
  * @example
  * ```javascript
  * var quanta = Unit.fromMRT(1.3).toQuanta();
- * var mili = Unit.fromBits(1.3).to(Unit.mMRT);
- * var bits = Unit.fromFiat(1.3, 350).bits;
- * var mrt = new Unit(1.3, Unit.bits).MRT;
  * ```
  *
  * @param {Number} amount - The amount to be represented
@@ -100,16 +96,6 @@ Unit.fromMillis = Unit.fromMilis = function(amount) {
 };
 
 /**
- * Returns a Unit instance created from an amount in bits
- *
- * @param {Number} amount - The amount in bits
- * @returns {Unit} A Unit instance
- */
-Unit.fromQuanta = Unit.fromBits = function(amount) {
-  return new Unit(amount, Unit.bits);
-};
-
-/**
  * Returns a Unit instance created from an amount in quanta
  *
  * @param {Number} amount - The amount in quanta
@@ -175,15 +161,6 @@ Unit.prototype.toMRT = function() {
  */
 Unit.prototype.toMillis = Unit.prototype.toMilis = function() {
   return this.to(Unit.mMRT);
-};
-
-/**
- * Returns the value represented in bits
- *
- * @returns {Number} The value converted to bits
- */
-Unit.prototype.toQuanta = Unit.prototype.toBits = function() {
-  return this.to(Unit.bits);
 };
 
 /**

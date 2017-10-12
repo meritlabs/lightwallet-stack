@@ -125,7 +125,7 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
   });
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
-    $scope.isFiat = data.stateParams.currency != 'bits' && data.stateParams.currency != 'MRT' ? true : false;
+    $scope.isFiat = data.stateParams.currency != 'MRT' ? true : false;
     var parsedAmount = txFormatService.parseAmount(
       data.stateParams.amount,
       data.stateParams.currency);

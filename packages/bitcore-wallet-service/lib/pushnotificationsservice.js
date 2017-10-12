@@ -292,7 +292,6 @@ PushNotificationsService.prototype._getDataForTemplate = function(notification, 
   var self = this;
   var UNIT_LABELS = {
     mrt: 'MRT',
-    bit: 'bits'
   };
 
   var data = _.cloneDeep(notification.data);
