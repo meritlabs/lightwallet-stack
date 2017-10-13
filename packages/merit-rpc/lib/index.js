@@ -223,6 +223,8 @@ RpcClient.callspec = {
   unlockwalletwithaddress: 'str str',
   validatereferralcode: 'str',
   getInputForEasySend: 'str',
+  getanv: 'str',
+  getaddressrewards: 'obj',
 };
 
 var slice = function(arr, start, end) {

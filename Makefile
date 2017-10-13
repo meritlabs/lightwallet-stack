@@ -12,9 +12,6 @@ prepare-prereqs:
 prepare-lightwallet:
 	cd ./lightwallet && npm install
 	cd ./lightwallet && npm run apply
-	cd ./lightwallet && cordova platform add ios
-	cd ./lightwallet && cordova platform add android
-	cd ./lightwallet && cordova platform add windows
 
 .PHONY: start-lightwallet
 start-lightwallet:

@@ -110,8 +110,14 @@ angular.module('copayApp.controllers').controller('txDetailsController', functio
 
       if ($scope.btx.action != 'invalid') {
         if ($scope.btx.action == 'sent') $scope.title = gettextCatalog.getString('Sent Funds');
-        if ($scope.btx.action == 'received') $scope.title = gettextCatalog.getString('Received Funds');
         if ($scope.btx.action == 'moved') $scope.title = gettextCatalog.getString('Moved Funds');
+        if ($scope.btx.action == 'received') {
+          if ($scope.btx.isCoinbase) {
+            $scope.title = gettextCatalog.getString('Received Mining Reward');  
+          } else {
+            $scope.title = gettextCatalog.getString('Received Funds');
+          }
+        }
       }
 
       updateMemo();
@@ -121,7 +127,8 @@ angular.module('copayApp.controllers').controller('txDetailsController', functio
         $scope.$digest();
       });
 
-      feeService.getFeeLevels(function(err, levels) {
+      var network = $scope.wallet.credentials.network;
+      feeService.getFeeLevel(network, function(err, levels) {
         if (err) return;
         walletService.getLowAmount($scope.wallet, levels, function(err, amount) {
           if (err) return;
