@@ -309,6 +309,7 @@ TxController.prototype.send = function(req, res) {
   this.node.sendTransaction(req.body.rawtx, function(err, txid) {
     if(err) {
       // TODO handle specific errors
+      self.common.log.warn("Error when broadcasting rawTx: " + req.body.rawtx);
       return self.common.handleErrors(err, res);
     }
 
