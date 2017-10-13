@@ -13,9 +13,11 @@ var _ = bitcore.deps._;
 var $ = bitcore.util.preconditions;
 var async = require('async');
 var _ = require('lodash');
+var log;
 
 function LocalDaemon(node) {
   this.node = node;
+  log = this.node.log;
 };
 
 LocalDaemon.prototype.getInputForEasySend = function(easyScript, cb) {
