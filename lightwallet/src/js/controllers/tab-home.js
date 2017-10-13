@@ -324,13 +324,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
     };
 
     var getAnv = function(wallet, cb) {
-      walletService.getANV(wallet, function(err, anv) {
-        if (err) {
-          cb(err);
-        }
-
-        cb(null, anv);
-      });
+      walletService.getANV(wallet, cb);
     }
 
     var updateAllWallets = function() {
