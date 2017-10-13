@@ -720,7 +720,8 @@ API.prototype.buildEasySendScriptHash = function(opts, cb) {
   var timeout = opts.timeout || 144;
   var result = {
     script: Bitcore.Script.buildEasySendOut(pubkeys, timeout, network).toScriptHashOut(),
-    secret: rcvPair.secret
+    senderPubKey: privateKey.publicKey.toString(),
+    secret: rcvPair.secret.toString('hex')
   };
 
   cb(null, result);

@@ -170,7 +170,15 @@ angular.module('copayApp.controllers').controller('confirmController', function(
           tx.script = result.script;
           tx.script.isOutput = true;
           tx.easySendSecret = result.secret;
+          tx.senderPublicKey = result.senderPubKey;
           tx.toAddress = tx.script.toAddress().toString();
+
+          // Testing outputs
+          tx.url = 'localhost:8100/#/onboarding/easy' +
+            '?se=' + tx.easySendSecret +
+            '&sk=' + tx.senderPublicKey +
+            '&sn=foo&bt=144&uc=58094f46fb'
+          tx.rpcCall = 'easyreceive ' + tx.easySendSecret + ' ' + tx.senderPublicKey + ' donkey 144';
         });
       }
     });
@@ -214,6 +222,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
         'message': tx.description
       }];
       txp.addressType = 'P2SH';
+      console.log(tx);
     } else {
       txp.outputs = [{
         'toAddress': tx.toAddress,
