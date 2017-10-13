@@ -22,7 +22,7 @@ Constants.BIP45_SHARED_INDEX = 0x80000000 - 1;
 
 Constants.UNITS = {
   mrt: {
-    toMicros: 100000000,
+    toQuanta: 100000000,
     full: {
       maxDecimals: 8,
       minDecimals: 8,
@@ -33,7 +33,7 @@ Constants.UNITS = {
     }
   },
   bit: {
-    toMicros: 100,
+    toQuanta: 100,
     full: {
       maxDecimals: 2,
       minDecimals: 2,

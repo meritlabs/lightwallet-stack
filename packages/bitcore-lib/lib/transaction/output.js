@@ -17,7 +17,7 @@ function Output(args) {
     return new Output(args);
   }
   if (_.isObject(args)) {
-    this.micros = args.micros;
+    this.quanta = args.quanta;
     if (bufferUtil.isBuffer(args.script)) {
       this._scriptBuffer = args.script;
     } else {
@@ -48,42 +48,42 @@ Object.defineProperty(Output.prototype, 'script', {
   }
 });
 
-Object.defineProperty(Output.prototype, 'micros', {
+Object.defineProperty(Output.prototype, 'quanta', {
   configurable: false,
   enumerable: true,
   get: function() {
-    return this._micros;
+    return this._quanta;
   },
   set: function(num) {
     if (num instanceof BN) {
-      this._microsBN = num;
-      this._micros = num.toNumber();
+      this._quantaBN = num;
+      this._quanta = num.toNumber();
     } else if (_.isString(num)) {
-      this._micros = parseInt(num);
-      this._microsBN = BN.fromNumber(this._micros);
+      this._quanta = parseInt(num);
+      this._quantaBN = BN.fromNumber(this._quanta);
     } else {
       $.checkArgument(
         JSUtil.isNaturalNumber(num),
-        'Output micros is not a natural number'
+        'Output quanta is not a natural number'
       );
-      this._microsBN = BN.fromNumber(num);
-      this._micros = num;
+      this._quantaBN = BN.fromNumber(num);
+      this._quanta = num;
     }
     $.checkState(
-      JSUtil.isNaturalNumber(this._micros),
-      'Output micros is not a natural number'
+      JSUtil.isNaturalNumber(this._quanta),
+      'Output quanta is not a natural number'
     );
   }
 });
 
-Output.prototype.invalidMicros = function() {
-  if (this._micros > MAX_SAFE_INTEGER) {
-    return 'transaction txout micros greater than max safe integer';
+Output.prototype.invalidQuanta = function() {
+  if (this._quanta > MAX_SAFE_INTEGER) {
+    return 'transaction txout quanta greater than max safe integer';
   }
-  if (this._micros !== this._microsBN.toNumber()) {
-    return 'transaction txout micros has corrupted value';
+  if (this._quanta !== this._quantaBN.toNumber()) {
+    return 'transaction txout quanta has corrupted value';
   }
-  if (this._micros < 0) {
+  if (this._quanta < 0) {
     return 'transaction txout negative';
   }
   return false;
@@ -91,7 +91,7 @@ Output.prototype.invalidMicros = function() {
 
 Output.prototype.toObject = Output.prototype.toJSON = function toObject() {
   var obj = {
-    micros: this.micros
+    quanta: this.quanta
   };
   obj.script = this._scriptBuffer.toString('hex');
   return obj;
@@ -139,12 +139,12 @@ Output.prototype.inspect = function() {
   } else {
     scriptStr = this._scriptBuffer.toString('hex');
   }
-  return '<Output (' + this.micros + ' micros) ' + scriptStr + '>';
+  return '<Output (' + this.quanta + ' quanta) ' + scriptStr + '>';
 };
 
 Output.fromBufferReader = function(br) {
   var obj = {};
-  obj.micros = br.readUInt64LEBN();
+  obj.quanta = br.readUInt64LEBN();
   var size = br.readVarintNum();
   if (size !== 0) {
     obj.script = br.read(size);
@@ -158,7 +158,7 @@ Output.prototype.toBufferWriter = function(writer) {
   if (!writer) {
     writer = new BufferWriter();
   }
-  writer.writeUInt64LEBN(this._microsBN);
+  writer.writeUInt64LEBN(this._quantaBN);
   var script = this._scriptBuffer;
   writer.writeVarintNum(script.length);
   writer.write(script);

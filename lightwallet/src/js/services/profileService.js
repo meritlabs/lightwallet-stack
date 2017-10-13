@@ -790,14 +790,14 @@ angular.module('copayApp.services')
       if (opts.hasFunds) {
         ret = lodash.filter(ret, function(w) {
           if (!w.status) return;
-          return (w.status.availableBalanceMicros > 0);
+          return (w.status.availableBalanceQuanta > 0);
         });
       }
 
       if (opts.minAmount) {
         ret = lodash.filter(ret, function(w) {
           if (!w.status) return;
-          return (w.status.availableBalanceMicros > opts.minAmount);
+          return (w.status.availableBalanceQuanta > opts.minAmount);
         });
       }
 

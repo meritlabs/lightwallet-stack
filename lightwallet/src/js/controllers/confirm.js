@@ -96,10 +96,10 @@ angular.module('copayApp.controllers').controller('confirmController', function(
             walletsUpdated++;
             w.status = status;
 
-            if (!status.availableBalanceMicros)
+            if (!status.availableBalanceQuanta)
               $log.debug('No balance available in: ' + w.name);
 
-            if (status.availableBalanceMicros > minAmount) {
+            if (status.availableBalanceQuanta > minAmount) {
               filteredWallets.push(w);
             }
           }
@@ -571,7 +571,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
     if (usingCustomFee) {
       scope.customFeePerKB = tx.feeRate;
-      scope.feePerMicrosByte = tx.feeRate / 1000;
+      scope.feePerQuantaByte = tx.feeRate / 1000;
     }
 
     $ionicModal.fromTemplateUrl('views/modals/chooseFeeLevel.html', {

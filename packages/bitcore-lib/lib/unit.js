@@ -9,27 +9,23 @@ var UNITS = {
   'MRT'      : [1e8, 8],
   'mMRT'     : [1e5, 5],
   'uMRT'     : [1e2, 2],
-  'bits'     : [1e2, 2],
-  'micros'   : [1, 0]
+  'quanta'   : [1, 0]
 };
 
 /**
  * Utility for handling and converting merits units. The supported units are
- * MRT, mMRT, bits (also named uMRT) and micros. A unit instance can be created with an
+ * MRT, mMRT,uMRT and quanta. A unit instance can be created with an
  * amount and a unit code, or alternatively using static methods like {fromMRT}.
  * It also allows to be created from a fiat amount and the exchange rate, or
  * alternatively using the {fromFiat} static method.
  * You can consult for different representation of a unit instance using it's
- * {to} method, the fixed unit methods like {toMicros} or alternatively using
+ * {to} method, the fixed unit methods like {toQuanta} or alternatively using
  * the unit accessors. It also can be converted to a fiat amount by providing the
  * corresponding MRT/fiat exchange rate.
  *
  * @example
  * ```javascript
- * var micros = Unit.fromMRT(1.3).toMicros();
- * var mili = Unit.fromBits(1.3).to(Unit.mMRT);
- * var bits = Unit.fromFiat(1.3, 350).bits;
- * var mrt = new Unit(1.3, Unit.bits).MRT;
+ * var quanta = Unit.fromMRT(1.3).toQuanta();
  * ```
  *
  * @param {Number} amount - The amount to be represented
@@ -100,23 +96,13 @@ Unit.fromMillis = Unit.fromMilis = function(amount) {
 };
 
 /**
- * Returns a Unit instance created from an amount in bits
+ * Returns a Unit instance created from an amount in quanta
  *
- * @param {Number} amount - The amount in bits
+ * @param {Number} amount - The amount in quanta
  * @returns {Unit} A Unit instance
  */
-Unit.fromMicros = Unit.fromBits = function(amount) {
-  return new Unit(amount, Unit.bits);
-};
-
-/**
- * Returns a Unit instance created from an amount in micros
- *
- * @param {Number} amount - The amount in micros
- * @returns {Unit} A Unit instance
- */
-Unit.fromMicros = function(amount) {
-  return new Unit(amount, Unit.micros);
+Unit.fromQuanta = function(amount) {
+  return new Unit(amount, Unit.quanta);
 };
 
 /**
@@ -178,40 +164,31 @@ Unit.prototype.toMillis = Unit.prototype.toMilis = function() {
 };
 
 /**
- * Returns the value represented in bits
+ * Returns the value represented in quanta
  *
- * @returns {Number} The value converted to bits
+ * @returns {Number} The value converted to quanta
  */
-Unit.prototype.toMicros = Unit.prototype.toBits = function() {
-  return this.to(Unit.bits);
-};
-
-/**
- * Returns the value represented in micros
- *
- * @returns {Number} The value converted to micros
- */
-Unit.prototype.toMicros = function() {
-  return this.to(Unit.micros);
+Unit.prototype.toQuanta = function() {
+  return this.to(Unit.quanta);
 };
 
 /**
  * Returns the value represented in fiat
  *
  * @param {string} rate - The exchange rate between MRT/currency
- * @returns {Number} The value converted to micros
+ * @returns {Number} The value converted to quanta
  */
 Unit.prototype.atRate = function(rate) {
   return this.to(rate);
 };
 
 /**
- * Returns a the string representation of the value in micros
+ * Returns a the string representation of the value in quanta
  *
- * @returns {string} the value in micros
+ * @returns {string} the value in quanta
  */
 Unit.prototype.toString = function() {
-  return this.micros + ' micros';
+  return this.quanta + ' quanta';
 };
 
 /**
@@ -229,7 +206,7 @@ Unit.prototype.toObject = Unit.prototype.toJSON = function toObject() {
 /**
  * Returns a string formatted for the console
  *
- * @returns {string} the value in micros
+ * @returns {string} the value in quanta
  */
 Unit.prototype.inspect = function() {
   return '<Unit: ' + this.toString() + '>';

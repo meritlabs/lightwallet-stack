@@ -4,7 +4,7 @@
       {{'Merit Network Fee Policy'|translate}}
     </div>
     <button
-      ng-disabled="customFeePerKB && !customMicrosPerByte.value"
+      ng-disabled="customFeePerKB && !customQuantaPerByte.value"
       class="button button-clear" ng-click="ok()" translate>
       OK
     </button>
@@ -26,8 +26,8 @@
       <div class="col rate" ng-class="{'separator': !customFeePerKB}">
         <div ng-if="!customFeePerKB">
           <div class="value">
-            <span ng-if="feePerMicrosByte && !loadingFee">
-              {{feePerMicrosByte}} micros/byte
+            <span ng-if="feePerQuantaByte && !loadingFee">
+              {{feePerQuantaByte}} quanta/byte
             </span>
             <span ng-if="loadingFee">...</span>
           </div>
@@ -43,10 +43,10 @@
               ng-max="maxFeeAllowed"
               min="minFeeRecommended"
               max="maxFeeRecommended"
-              ng-change="checkFees(customMicrosPerByte.value)"
-              ng-model="customMicrosPerByte.value"
+              ng-change="checkFees(customQuantaPerByte.value)"
+              ng-model="customQuantaPerByte.value"
               ng-required="customFeePerKB">
-              <span class="unit">micros/byte</span>
+              <span class="unit">quanta/byte</span>
             </label>
           </div>
           <div class="error-fee">
@@ -62,7 +62,7 @@
                 Your fee is lower than recommended.
               </span>
               <span ng-if="showMaxWarning" translate>
-                You should not set a fee higher than {{maxFeeRecommended}} micros/byte.
+                You should not set a fee higher than {{maxFeeRecommended}} quanta/byte.
               </span>
             </div>
           </div>

@@ -374,7 +374,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
             totalAnv += anv;
 
             $timeout(function() {
-              $scope.totalAnv = txFormatService.parseAmount(totalAnv, 'micros');
+              $scope.totalAnv = txFormatService.parseAmount(totalAnv, 'quanta');
             }, 10);
           }
         });

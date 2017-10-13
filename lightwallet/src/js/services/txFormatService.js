@@ -6,27 +6,27 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
   root.Utils = bwcService.getUtils();
 
 
-  root.formatAmount = function(micros, fullPrecision) {
+  root.formatAmount = function(quanta, fullPrecision) {
     var config = configService.getSync().wallet.settings;
-    if (config.unitCode == 'micros') return micros;
+    if (config.unitCode == 'quanta') return quanta;
 
     //TODO : now only works for english, specify opts to change thousand separator and decimal separator
     var opts = {
       fullPrecision: !!fullPrecision
     };
-    return this.Utils.formatAmount(micros, config.unitCode, opts);
+    return this.Utils.formatAmount(quanta, config.unitCode, opts);
   };
 
-  root.formatAmountStr = function(micros) {
-    if (isNaN(micros)) return;
+  root.formatAmountStr = function(quanta) {
+    if (isNaN(quanta)) return;
     var config = configService.getSync().wallet.settings;
-    return root.formatAmount(micros) + ' ' + config.unitName;
+    return root.formatAmount(quanta) + ' ' + config.unitName;
   };
 
-  root.toFiat = function(micros, code, cb) {
-    if (isNaN(micros)) return;
+  root.toFiat = function(quanta, code, cb) {
+    if (isNaN(quanta)) return;
     var val = function() {
-      var v1 = rateService.toFiat(micros, code);
+      var v1 = rateService.toFiat(quanta, code);
       if (!v1) return null;
 
       return v1.toFixed(2);
@@ -43,10 +43,10 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
     };
   };
 
-  root.formatToUSD = function(micros, cb) {
-    if (isNaN(micros)) return;
+  root.formatToUSD = function(quanta, cb) {
+    if (isNaN(quanta)) return;
     var val = function() {
-      var v1 = rateService.toFiat(micros, 'USD');
+      var v1 = rateService.toFiat(quanta, 'USD');
       if (!v1) return null;
 
       return v1.toFixed(2);
@@ -63,12 +63,12 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
     };
   };
 
-  root.formatAlternativeStr = function(micros, cb) {
-    if (isNaN(micros)) return;
+  root.formatAlternativeStr = function(quanta, cb) {
+    if (isNaN(quanta)) return;
     var config = configService.getSync().wallet.settings;
 
     var val = function() {
-      var v1 = parseFloat((rateService.toFiat(micros, config.alternativeIsoCode)).toFixed(2));
+      var v1 = parseFloat((rateService.toFiat(quanta, config.alternativeIsoCode)).toFixed(2));
       v1 = $filter('formatFiatAmount')(v1);
       if (!v1) return null;
 
@@ -182,28 +182,28 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
 
   root.parseAmount = function(amount, currency) {
     var config = configService.getSync().wallet.settings;
-    var microsToMrt = 1 / 100000000;
+    var quantaToMrt = 1 / 100000000;
     var unitToMicro = config.unitToMicro;
     var amountUnitStr;
-    var amountMicros;
+    var amountQuanta;
     var alternativeIsoCode = config.alternativeIsoCode;
 
     console.log(currency);
     // If fiat currency
-    if (currency != 'bits' && currency != 'MRT' && currency != 'micros') {
+    if (currency != 'MRT' && currency != 'quanta') {
       amountUnitStr = $filter('formatFiatAmount')(amount) + ' ' + currency;
-      amountMicros = rateService.fromFiat(amount, currency).toFixed(0);
-    } else if (currency == 'micros') {
-      amountMicros = amount;
-      amountUnitStr = root.formatAmountStr(amountMicros);
-      // convert micros to MRT
-      amount = (amountMicros * microsToMrt).toFixed(8);
+      amountQuanta = rateService.fromFiat(amount, currency).toFixed(0);
+    } else if (currency == 'quanta') {
+      amountQuanta = amount;
+      amountUnitStr = root.formatAmountStr(amountQuanta);
+      // convert quanta to MRT
+      amount = (amountQuanta * quantaToMrt).toFixed(8);
       currency = 'MRT';
     } else {
-      amountMicros = parseInt((amount * unitToMicro).toFixed(0));
-      amountUnitStr = root.formatAmountStr(amountMicros);
+      amountQuanta = parseInt((amount * unitToMicro).toFixed(0));
+      amountUnitStr = root.formatAmountStr(amountQuanta);
       // convert unit to MRT
-      amount = (amountMicros * microsToMrt).toFixed(8);
+      amount = (amountQuanta * quantaToMrt).toFixed(8);
       currency = 'MRT';
     }
 
@@ -211,7 +211,7 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
       amount: amount,
       currency: currency,
       alternativeIsoCode: alternativeIsoCode,
-      amountMicros: amountMicros,
+      amountQuanta: amountQuanta,
       amountUnitStr: amountUnitStr
     };
   };

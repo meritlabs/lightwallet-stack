@@ -82,8 +82,8 @@ module.exports = [{
     name: 'DustOutputs',
     message: 'Dust amount detected in one output'
   }, {
-    name: 'InvalidMicros',
-    message: 'Output micros are invalid',
+    name: 'InvalidQuanta',
+    message: 'Output quanta are invalid',
   }, {
     name: 'FeeError',
     message: 'Internal Error on Fee {0}',

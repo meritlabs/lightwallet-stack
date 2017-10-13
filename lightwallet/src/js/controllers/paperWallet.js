@@ -42,8 +42,8 @@ angular.module('copayApp.controllers').controller('paperWalletController',
             $state.go('tabs.home');
           } else {
             $scope.privateKey = privateKey;
-            $scope.balanceMicros = balance;
-            if ($scope.balanceMicros <= 0)
+            $scope.balanceQuanta = balance;
+            if ($scope.balanceQuanta <= 0)
               popupService.showAlert(gettextCatalog.getString('Error'), gettextCatalog.getString('Not funds found'));
             var config = configService.getSync().wallet.settings;
             $scope.balance = txFormatService.formatAmount(balance) + ' ' + config.unitName;

@@ -3242,8 +3242,8 @@ module.exports = [{
     name: 'DustOutputs',
     message: 'Dust amount detected in one output'
   }, {
-    name: 'InvalidMicros',
-    message: 'Output micros are invalid',
+    name: 'InvalidQuanta',
+    message: 'Output quanta are invalid',
   }, {
     name: 'FeeError',
     message: 'Internal Error on Fee {0}',
@@ -8967,7 +8967,7 @@ function Output(args) {
     return new Output(args);
   }
   if (_.isObject(args)) {
-    this.micros = args.micros;
+    this.quanta = args.quanta;
     if (bufferUtil.isBuffer(args.script)) {
       this._scriptBuffer = args.script;
     } else {
@@ -8998,42 +8998,42 @@ Object.defineProperty(Output.prototype, 'script', {
   }
 });
 
-Object.defineProperty(Output.prototype, 'micros', {
+Object.defineProperty(Output.prototype, 'quanta', {
   configurable: false,
   enumerable: true,
   get: function() {
-    return this._micros;
+    return this._quanta;
   },
   set: function(num) {
     if (num instanceof BN) {
-      this._microsBN = num;
-      this._micros = num.toNumber();
+      this._quantaBN = num;
+      this._quanta = num.toNumber();
     } else if (_.isString(num)) {
-      this._micros = parseInt(num);
-      this._microsBN = BN.fromNumber(this._micros);
+      this._quanta = parseInt(num);
+      this._quantaBN = BN.fromNumber(this._quanta);
     } else {
       $.checkArgument(
         JSUtil.isNaturalNumber(num),
-        'Output micros is not a natural number'
+        'Output quanta is not a natural number'
       );
-      this._microsBN = BN.fromNumber(num);
-      this._micros = num;
+      this._quantaBN = BN.fromNumber(num);
+      this._quanta = num;
     }
     $.checkState(
-      JSUtil.isNaturalNumber(this._micros),
-      'Output micros is not a natural number'
+      JSUtil.isNaturalNumber(this._quanta),
+      'Output quanta is not a natural number'
     );
   }
 });
 
-Output.prototype.invalidMicros = function() {
-  if (this._micros > MAX_SAFE_INTEGER) {
-    return 'transaction txout micros greater than max safe integer';
+Output.prototype.invalidQuanta = function() {
+  if (this._quanta > MAX_SAFE_INTEGER) {
+    return 'transaction txout quanta greater than max safe integer';
   }
-  if (this._micros !== this._microsBN.toNumber()) {
-    return 'transaction txout micros has corrupted value';
+  if (this._quanta !== this._quantaBN.toNumber()) {
+    return 'transaction txout quanta has corrupted value';
   }
-  if (this._micros < 0) {
+  if (this._quanta < 0) {
     return 'transaction txout negative';
   }
   return false;
@@ -9041,7 +9041,7 @@ Output.prototype.invalidMicros = function() {
 
 Output.prototype.toObject = Output.prototype.toJSON = function toObject() {
   var obj = {
-    micros: this.micros
+    quanta: this.quanta
   };
   obj.script = this._scriptBuffer.toString('hex');
   return obj;
@@ -9089,12 +9089,12 @@ Output.prototype.inspect = function() {
   } else {
     scriptStr = this._scriptBuffer.toString('hex');
   }
-  return '<Output (' + this.micros + ' micros) ' + scriptStr + '>';
+  return '<Output (' + this.quanta + ' quanta) ' + scriptStr + '>';
 };
 
 Output.fromBufferReader = function(br) {
   var obj = {};
-  obj.micros = br.readUInt64LEBN();
+  obj.quanta = br.readUInt64LEBN();
   var size = br.readVarintNum();
   if (size !== 0) {
     obj.script = br.read(size);
@@ -9108,7 +9108,7 @@ Output.prototype.toBufferWriter = function(writer) {
   if (!writer) {
     writer = new BufferWriter();
   }
-  writer.writeUInt64LEBN(this._microsBN);
+  writer.writeUInt64LEBN(this._quantaBN);
   var script = this._scriptBuffer;
   writer.writeVarintNum(script.length);
   writer.write(script);
@@ -9191,7 +9191,7 @@ var sighash = function sighash(transaction, sighashType, inputNumber, subscript)
 
     for (i = 0; i < inputNumber; i++) {
       txcopy.outputs[i] = new Output({
-        micros: BN.fromBuffer(new buffer.Buffer(BITS_64_ON, 'hex')),
+        quanta: BN.fromBuffer(new buffer.Buffer(BITS_64_ON, 'hex')),
         script: Script.empty()
       });
     }
@@ -9422,7 +9422,7 @@ Transaction.DUST_AMOUNT = 546;
 // Margin of error to allow fees in the vecinity of the expected value but doesn't allow a big difference
 Transaction.FEE_SECURITY_MARGIN = 150;
 
-// max amount of micros in circulation
+// max amount of quanta in circulation
 Transaction.MAX_MONEY = 21000000 * 1e8;
 
 // nlocktime limit to be considered block height rather than a timestamp
@@ -9431,7 +9431,7 @@ Transaction.NLOCKTIME_BLOCKHEIGHT_LIMIT = 5e8;
 // Max value for an unsigned 32 bit value
 Transaction.NLOCKTIME_MAX_VALUE = 4294967295;
 
-// Value used for fee estimation (micros per kilobyte)
+// Value used for fee estimation (quanta per kilobyte)
 Transaction.FEE_PER_KB = 100000;
 
 // Safe upper bound for change address script size in bytes
@@ -9526,10 +9526,10 @@ Transaction.prototype.checkedSerialize = function(opts) {
   return this.uncheckedSerialize();
 };
 
-Transaction.prototype.invalidMicros = function() {
+Transaction.prototype.invalidQuanta = function() {
   var invalid = false;
   for (var i = 0; i < this.outputs.length; i++) {
-    if (this.outputs[i].invalidMicros()) {
+    if (this.outputs[i].invalidQuanta()) {
       invalid = true;
     }
   }
@@ -9546,8 +9546,8 @@ Transaction.prototype.invalidMicros = function() {
 Transaction.prototype.getSerializationError = function(opts) {
   opts = opts || {};
 
-  if (this.invalidMicros()) {
-    return new errors.Transaction.InvalidMicros();
+  if (this.invalidQuanta()) {
+    return new errors.Transaction.InvalidQuanta();
   }
 
   var unspent = this._getUnspentValue();
@@ -9608,7 +9608,7 @@ Transaction.prototype._hasDustOutputs = function(opts) {
   var index, output;
   for (index in this.outputs) {
     output = this.outputs[index];
-    if (output.micros < Transaction.DUST_AMOUNT && !output.script.isDataOut()) {
+    if (output.quanta < Transaction.DUST_AMOUNT && !output.script.isDataOut()) {
       return new errors.Transaction.DustOutputs();
     }
   }
@@ -9843,7 +9843,7 @@ Transaction.prototype._newTransaction = function() {
  * @property {string} prevTxId
  * @property {number} outputIndex
  * @property {(Buffer|string|Script)} script
- * @property {number} micros
+ * @property {number} quanta
  */
 
 /**
@@ -9859,7 +9859,7 @@ Transaction.prototype._newTransaction = function() {
  *  txId: 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
  *  outputIndex: 0,
  *  script: Script.empty(),
- *  micros: 1020000
+ *  quanta: 1020000
  * }
  * ```
  * Where `address` can be either a string or a bitcore Address object. The
@@ -9876,10 +9876,10 @@ Transaction.prototype._newTransaction = function() {
  * transaction.from({'txid': '0000...', vout: 0, amount: 0.1, scriptPubKey: 'OP_DUP ...'});
  *
  * // From a pay to public key hash output
- * transaction.from({'txId': '0000...', outputIndex: 0, micros: 1000, script: 'OP_DUP ...'});
+ * transaction.from({'txId': '0000...', outputIndex: 0, quanta: 1000, script: 'OP_DUP ...'});
  *
  * // From a multisig P2SH output
- * transaction.from({'txId': '0000...', inputIndex: 0, micros: 1000, script: '... OP_HASH'},
+ * transaction.from({'txId': '0000...', inputIndex: 0, quanta: 1000, script: '... OP_HASH'},
  *                  ['03000...', '02000...'], 2);
  * ```
  *
@@ -9923,7 +9923,7 @@ Transaction.prototype._fromNonP2SH = function(utxo) {
   this.addInput(new clazz({
     output: new Output({
       script: utxo.script,
-      micros: utxo.micros
+      quanta: utxo.quanta
     }),
     prevTxId: utxo.txId,
     outputIndex: utxo.outputIndex,
@@ -9946,7 +9946,7 @@ Transaction.prototype._fromMultisigUtxo = function(utxo, pubkeys, threshold) {
   this.addInput(new clazz({
     output: new Output({
       script: utxo.script,
-      micros: utxo.micros
+      quanta: utxo.quanta
     }),
     prevTxId: utxo.txId,
     outputIndex: utxo.outputIndex,
@@ -9957,24 +9957,24 @@ Transaction.prototype._fromMultisigUtxo = function(utxo, pubkeys, threshold) {
 /**
  * Add an input to this transaction. The input must be an instance of the `Input` class.
  * It should have information about the Output that it's spending, but if it's not already
- * set, two additional parameters, `outputScript` and `micros` can be provided.
+ * set, two additional parameters, `outputScript` and `quanta` can be provided.
  *
  * @param {Input} input
  * @param {String|Script} outputScript
- * @param {number} micros
+ * @param {number} quanta
  * @return Transaction this, for chaining
  */
-Transaction.prototype.addInput = function(input, outputScript, micros) {
+Transaction.prototype.addInput = function(input, outputScript, quanta) {
   $.checkArgumentType(input, Input, 'input');
-  if (!input.output && (_.isUndefined(outputScript) || _.isUndefined(micros))) {
-    throw new errors.Transaction.NeedMoreInfo('Need information about the UTXO script and micros');
+  if (!input.output && (_.isUndefined(outputScript) || _.isUndefined(quanta))) {
+    throw new errors.Transaction.NeedMoreInfo('Need information about the UTXO script and quanta');
   }
-  if (!input.output && outputScript && !_.isUndefined(micros)) {
+  if (!input.output && outputScript && !_.isUndefined(quanta)) {
     outputScript = outputScript instanceof Script ? outputScript : new Script(outputScript);
-    $.checkArgumentType(micros, 'number', 'micros');
+    $.checkArgumentType(quanta, 'number', 'quanta');
     input.output = new Output({
       script: outputScript,
-      micros: micros
+      quanta: quanta
     });
   }
   return this.uncheckedAddInput(input);
@@ -10011,7 +10011,7 @@ Transaction.prototype.hasAllUtxoInfo = function() {
  * for inputs (in further versions, SIGHASH_SINGLE or SIGHASH_NONE signatures will not
  * be reset).
  *
- * @param {number} amount micros to be sent
+ * @param {number} amount quanta to be sent
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.fee = function(amount) {
@@ -10026,7 +10026,7 @@ Transaction.prototype.fee = function(amount) {
  * for inputs (in further versions, SIGHASH_SINGLE or SIGHASH_NONE signatures will not
  * be reset).
  *
- * @param {number} amount micros per KB to be sent
+ * @param {number} amount quanta per KB to be sent
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.feePerKb = function(amount) {
@@ -10068,7 +10068,7 @@ Transaction.prototype.getChangeOutput = function() {
 /**
  * @typedef {Object} Transaction~toObject
  * @property {(string|Address)} address
- * @property {number} micros
+ * @property {number} quanta
  */
 
 /**
@@ -10078,14 +10078,14 @@ Transaction.prototype.getChangeOutput = function() {
  * SIGHASH_SINGLE or SIGHASH_NONE signatures will not be reset).
  *
  * @param {(string|Address|Array.<Transaction~toObject>)} address
- * @param {number} amount in micros
+ * @param {number} amount in quanta
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.to = function(address, amount) {
   if (_.isArray(address)) {
     var self = this;
     _.each(address, function(to) {
-      self.to(to.address, to.micros);
+      self.to(to.address, to.quanta);
     });
     return this;
   }
@@ -10096,7 +10096,7 @@ Transaction.prototype.to = function(address, amount) {
   );
   this.addOutput(new Output({
     script: Script(new Address(address)),
-    micros: amount
+    quanta: amount
   }));
   return this;
 };
@@ -10114,7 +10114,7 @@ Transaction.prototype.to = function(address, amount) {
 Transaction.prototype.addData = function(value) {
   this.addOutput(new Output({
     script: Script.buildDataOut(value),
-    micros: 0
+    quanta: 0
   }));
   return this;
 };
@@ -10156,7 +10156,7 @@ Transaction.prototype._addOutput = function(output) {
 
 
 /**
- * Calculates or gets the total output amount in micros
+ * Calculates or gets the total output amount in quanta
  *
  * @return {Number} the transaction total output amount
  */
@@ -10165,7 +10165,7 @@ Transaction.prototype._getOutputAmount = function() {
     var self = this;
     this._outputAmount = 0;
     _.each(this.outputs, function(output) {
-      self._outputAmount += output.micros;
+      self._outputAmount += output.quanta;
     });
   }
   return this._outputAmount;
@@ -10173,7 +10173,7 @@ Transaction.prototype._getOutputAmount = function() {
 
 
 /**
- * Calculates or gets the total input amount in micros
+ * Calculates or gets the total input amount in quanta
  *
  * @return {Number} the transaction total input amount
  */
@@ -10185,7 +10185,7 @@ Transaction.prototype._getInputAmount = function() {
       if (_.isUndefined(input.output)) {
         throw new errors.Transaction.Input.MissingPreviousOutput();
       }
-      self._inputAmount += input.output.micros;
+      self._inputAmount += input.output.quanta;
     });
   }
   return this._inputAmount;
@@ -10206,7 +10206,7 @@ Transaction.prototype._updateChangeOutput = function() {
     this._changeIndex = this.outputs.length;
     this._addOutput(new Output({
       script: this._changeScript,
-      micros: changeAmount
+      quanta: changeAmount
     }));
   } else {
     this._changeIndex = undefined;
@@ -10228,7 +10228,7 @@ Transaction.prototype._updateChangeOutput = function() {
  * If there's no fee set and no change address,
  * estimate the fee based on size.
  *
- * @return {Number} fee of this transaction in micros
+ * @return {Number} fee of this transaction in quanta
  */
 Transaction.prototype.getFee = function() {
   if (this.isCoinbase()) {
@@ -10311,7 +10311,7 @@ Transaction.prototype.sort = function() {
   this.sortOutputs(function(outputs) {
     var copy = Array.prototype.concat.apply([], outputs);
     copy.sort(function(first, second) {
-      return first.micros - second.micros
+      return first.quanta - second.quanta
         || compare(first.script.toBuffer(), second.script.toBuffer());
     });
     return copy;
@@ -10499,13 +10499,13 @@ Transaction.prototype.verify = function() {
   for (var i = 0; i < this.outputs.length; i++) {
     var txout = this.outputs[i];
 
-    if (txout.invalidMicros()) {
-      return 'transaction txout ' + i + ' micros is invalid';
+    if (txout.invalidQuanta()) {
+      return 'transaction txout ' + i + ' quanta is invalid';
     }
-    if (txout._microsBN.gt(new BN(Transaction.MAX_MONEY, 10))) {
+    if (txout._quantaBN.gt(new BN(Transaction.MAX_MONEY, 10))) {
       return 'transaction txout ' + i + ' greater than MAX_MONEY';
     }
-    valueoutbn = valueoutbn.add(txout._microsBN);
+    valueoutbn = valueoutbn.add(txout._quantaBN);
     if (valueoutbn.gt(new BN(Transaction.MAX_MONEY))) {
       return 'transaction txout ' + i + ' total output greater than MAX_MONEY';
     }
@@ -10608,7 +10608,7 @@ var Unit = require('../unit');
  * @param {string|Script} data.scriptPubKey the script that must be resolved to release the funds
  * @param {string|Script=} data.script alias for `scriptPubKey`
  * @param {number} data.amount amount of bitcoins associated
- * @param {number=} data.micros alias for `amount`, but expressed in micros (1 MRT = 1e8 micros)
+ * @param {number=} data.quanta alias for `amount`, but expressed in quanta (1 MRT = 1e8 quanta)
  * @param {string|Address=} data.address the associated address to the script, if provided
  */
 function UnspentOutput(data) {
@@ -10631,16 +10631,16 @@ function UnspentOutput(data) {
   $.checkArgument(!_.isUndefined(data.scriptPubKey) || !_.isUndefined(data.script),
                   'Must provide the scriptPubKey for that output!');
   var script = new Script(data.scriptPubKey || data.script);
-  $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.micros),
+  $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.quanta),
                   'Must provide an amount for the output');
-  var amount = !_.isUndefined(data.amount) ? new Unit.fromMRT(data.amount).toMicros() : data.micros;
+  var amount = !_.isUndefined(data.amount) ? new Unit.fromMRT(data.amount).toQuanta() : data.quanta;
   $.checkArgument(_.isNumber(amount), 'Amount must be a number');
   JSUtil.defineImmutable(this, {
     address: address,
     txId: txId,
     outputIndex: outputIndex,
     script: script,
-    micros: amount
+    quanta: amount
   });
 }
 
@@ -10650,7 +10650,7 @@ function UnspentOutput(data) {
  */
 UnspentOutput.prototype.inspect = function() {
   return '<UnspentOutput: ' + this.txId + ':' + this.outputIndex +
-         ', micros: ' + this.micros + ', address: ' + this.address + '>';
+         ', quanta: ' + this.quanta + ', address: ' + this.address + '>';
 };
 
 /**
@@ -10680,7 +10680,7 @@ UnspentOutput.prototype.toObject = UnspentOutput.prototype.toJSON = function toO
     txid: this.txId,
     vout: this.outputIndex,
     scriptPubKey: this.script.toBuffer().toString('hex'),
-    amount: Unit.fromMicros(this.micros).toMRT()
+    amount: Unit.fromQuanta(this.quanta).toMRT()
   };
 };
 
@@ -10699,23 +10699,23 @@ var UNITS = {
   'mMRT'     : [1e5, 5],
   'uMRT'     : [1e2, 2],
   'bits'     : [1e2, 2],
-  'micros' : [1, 0]
+  'quanta' : [1, 0]
 };
 
 /**
  * Utility for handling and converting bitcoins units. The supported units are
- * MRT, mMRT, bits (also named uMRT) and micros. A unit instance can be created with an
+ * MRT, mMRT, bits (also named uMRT) and quanta. A unit instance can be created with an
  * amount and a unit code, or alternatively using static methods like {fromMRT}.
  * It also allows to be created from a fiat amount and the exchange rate, or
  * alternatively using the {fromFiat} static method.
  * You can consult for different representation of a unit instance using it's
- * {to} method, the fixed unit methods like {toMicros} or alternatively using
+ * {to} method, the fixed unit methods like {toQuanta} or alternatively using
  * the unit accessors. It also can be converted to a fiat amount by providing the
  * corresponding MRT/fiat exchange rate.
  *
  * @example
  * ```javascript
- * var micros = Unit.fromMRT(1.3).toMicros();
+ * var quanta = Unit.fromMRT(1.3).toQuanta();
  * var mili = Unit.fromBits(1.3).to(Unit.mMRT);
  * var bits = Unit.fromFiat(1.3, 350).bits;
  * var mrt = new Unit(1.3, Unit.bits).MRT;
@@ -10794,18 +10794,18 @@ Unit.fromMillis = Unit.fromMilis = function(amount) {
  * @param {Number} amount - The amount in bits
  * @returns {Unit} A Unit instance
  */
-Unit.fromMicros = Unit.fromBits = function(amount) {
+Unit.fromQuanta = Unit.fromBits = function(amount) {
   return new Unit(amount, Unit.bits);
 };
 
 /**
- * Returns a Unit instance created from an amount in micros
+ * Returns a Unit instance created from an amount in quanta
  *
- * @param {Number} amount - The amount in micros
+ * @param {Number} amount - The amount in quanta
  * @returns {Unit} A Unit instance
  */
-Unit.fromMicros = function(amount) {
-  return new Unit(amount, Unit.micros);
+Unit.fromQuanta = function(amount) {
+  return new Unit(amount, Unit.quanta);
 };
 
 /**
@@ -10871,36 +10871,36 @@ Unit.prototype.toMillis = Unit.prototype.toMilis = function() {
  *
  * @returns {Number} The value converted to bits
  */
-Unit.prototype.toMicros = Unit.prototype.toBits = function() {
+Unit.prototype.toQuanta = Unit.prototype.toBits = function() {
   return this.to(Unit.bits);
 };
 
 /**
- * Returns the value represented in micros
+ * Returns the value represented in quanta
  *
- * @returns {Number} The value converted to micros
+ * @returns {Number} The value converted to quanta
  */
-Unit.prototype.toMicros = function() {
-  return this.to(Unit.micros);
+Unit.prototype.toQuanta = function() {
+  return this.to(Unit.quanta);
 };
 
 /**
  * Returns the value represented in fiat
  *
  * @param {string} rate - The exchange rate between MRT/currency
- * @returns {Number} The value converted to micros
+ * @returns {Number} The value converted to quanta
  */
 Unit.prototype.atRate = function(rate) {
   return this.to(rate);
 };
 
 /**
- * Returns a the string representation of the value in micros
+ * Returns a the string representation of the value in quanta
  *
- * @returns {string} the value in micros
+ * @returns {string} the value in quanta
  */
 Unit.prototype.toString = function() {
-  return this.micros + ' micros';
+  return this.quanta + ' quanta';
 };
 
 /**
@@ -10918,7 +10918,7 @@ Unit.prototype.toObject = Unit.prototype.toJSON = function toObject() {
 /**
  * Returns a string formatted for the console
  *
- * @returns {string} the value in micros
+ * @returns {string} the value in quanta
  */
 Unit.prototype.inspect = function() {
   return '<Unit: ' + this.toString() + '>';
@@ -10944,7 +10944,7 @@ var Unit = require('./unit');
  *
  * All standard parameters can be found as members of the class, the address
  * is represented using an {Address} instance and the amount is represented in
- * micros. Any other non-standard parameters can be found under the extra member.
+ * quanta. Any other non-standard parameters can be found under the extra member.
  *
  * @example
  * ```javascript
@@ -11086,18 +11086,18 @@ URI.prototype._fromObject = function(obj) {
 };
 
 /**
- * Internal function to transform a MRT string amount into micros
+ * Internal function to transform a MRT string amount into quanta
  *
  * @param {string} amount - Amount MRT string
  * @throws {TypeError} Invalid amount
- * @returns {Object} Amount represented in micros
+ * @returns {Object} Amount represented in quanta
  */
 URI.prototype._parseAmount = function(amount) {
   amount = Number(amount);
   if (isNaN(amount)) {
     throw new TypeError('Invalid amount');
   }
-  return Unit.fromMRT(amount).toMicros();
+  return Unit.fromMRT(amount).toQuanta();
 };
 
 URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
@@ -11120,7 +11120,7 @@ URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
 URI.prototype.toString = function() {
   var query = {};
   if (this.amount) {
-    query.amount = Unit.fromMicros(this.amount).toMRT();
+    query.amount = Unit.fromQuanta(this.amount).toMRT();
   }
   if (this.message) {
     query.message = this.message;
@@ -53523,7 +53523,7 @@ function formatValue(ctx, value, recurseTimes) {
   }
 
   // IE doesn't make error fields non-enumerable
-  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+  // http://msdn.quantaoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
   if (isError(value)
       && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
     return formatError(value);

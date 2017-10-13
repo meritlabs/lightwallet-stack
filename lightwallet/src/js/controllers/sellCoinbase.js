@@ -37,8 +37,8 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
   var checkTransaction = lodash.throttle(function(count, txp) {
     $log.warn('Check if transaction has been received by Coinbase. Try ' + count + '/5');
     // TX amount in MRT
-    var microsToMrt = 1 / 100000000;
-    var amountMRT = (txp.amount * microsToMrt).toFixed(8);
+    var quantaToMrt = 1 / 100000000;
+    var amountMRT = (txp.amount * quantaToMrt).toFixed(8);
     coinbaseService.init(function(err, res) {
       if (err) {
         $log.error(err);
@@ -125,7 +125,7 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
   });
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
-    $scope.isFiat = data.stateParams.currency != 'bits' && data.stateParams.currency != 'MRT' ? true : false;
+    $scope.isFiat = data.stateParams.currency != 'MRT' ? true : false;
     var parsedAmount = txFormatService.parseAmount(
       data.stateParams.amount,
       data.stateParams.currency);
@@ -143,7 +143,7 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
       onlyComplete: true,
       network: $scope.network,
       hasFunds: true,
-      minAmount: parsedAmount.amountMicros
+      minAmount: parsedAmount.amountQuanta
     });
 
     if (lodash.isEmpty($scope.wallets)) {
@@ -258,18 +258,18 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
           }
           var outputs = [];
           var toAddress = data.data.address;
-          var amountMicros = parseInt(($scope.sellRequestInfo.amount.amount * 100000000).toFixed(0));
+          var amountQuanta = parseInt(($scope.sellRequestInfo.amount.amount * 100000000).toFixed(0));
           var comment = 'Sell merit (Coinbase)';
 
           outputs.push({
             'toAddress': toAddress,
-            'amount': amountMicros,
+            'amount': amountQuanta,
             'message': comment
           });
 
           var txp = {
             toAddress: toAddress,
-            amount: amountMicros,
+            amount: amountQuanta,
             outputs: outputs,
             message: comment,
             payProUrl: null,

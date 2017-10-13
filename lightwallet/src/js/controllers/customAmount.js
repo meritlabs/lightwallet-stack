@@ -40,14 +40,14 @@ angular.module('copayApp.controllers').controller('customAmountController', func
       if (currency != 'MRT') {
         // Convert to MRT
         var config = configService.getSync().wallet.settings;
-        var amountUnit = txFormatService.microToUnit(parsedAmount.amountMicros);
+        var amountUnit = txFormatService.microToUnit(parsedAmount.amountQuanta);
         var mrtParsedAmount = txFormatService.parseAmount(amountUnit, config.unitName);
 
         $scope.amountMrt = mrtParsedAmount.amount;
         $scope.altAmountStr = mrtParsedAmount.amountUnitStr;
       } else {
         $scope.amountMrt = amount; // MRT
-        $scope.altAmountStr = txFormatService.formatAlternativeStr(parsedAmount.amountMicros);
+        $scope.altAmountStr = txFormatService.formatAlternativeStr(parsedAmount.amountQuanta);
       }
     });
   });

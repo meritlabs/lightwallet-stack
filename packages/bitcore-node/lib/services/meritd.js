@@ -1194,7 +1194,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       txid: delta.txid,
       outputIndex: delta.index,
       script: script.toHex(),
-      micros: delta.micros,
+      quanta: delta.quanta,
       isCoinbase: delta.isCoinbase,
       timestamp: delta.timestamp
     };
@@ -1211,7 +1211,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
 
     for (var i = 0; i < mempoolDeltas.length; i++) {
       var delta = mempoolDeltas[i];
-      if (delta.prevtxid && delta.micros <= 0) {
+      if (delta.prevtxid && delta.quanta <= 0) {
         if (!spentOutputs[delta.prevtxid]) {
           spentOutputs[delta.prevtxid] = [delta.prevout];
         } else {
@@ -1269,11 +1269,11 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
 };
 
 Merit.prototype._getBalanceFromMempool = function(deltas) {
-  var micros = 0;
+  var quanta = 0;
   for (var i = 0; i < deltas.length; i++) {
-    micros += deltas[i].micros;
+    quanta += deltas[i].quanta;
   }
-  return micros;
+  return quanta;
 };
 
 Merit.prototype._getTxidsFromMempool = function(deltas) {
@@ -1405,7 +1405,7 @@ Merit.prototype._getAddressDetailsForInput = function(input, inputIndex, result,
     } else {
       result.addresses[address].inputIndexes.push(inputIndex);
     }
-    result.micros -= input.micros;
+    result.quanta -= input.quanta;
   }
 };
 
@@ -1423,14 +1423,14 @@ Merit.prototype._getAddressDetailsForOutput = function(output, outputIndex, resu
     } else {
       result.addresses[address].outputIndexes.push(outputIndex);
     }
-    result.micros += output.micros;
+    result.quanta += output.quanta;
   }
 };
 
 Merit.prototype._getAddressDetailsForTransaction = function(transaction, addressStrings) {
   var result = {
     addresses: {},
-    micros: 0
+    quanta: 0
   };
 
   for (var inputIndex = 0; inputIndex < transaction.inputs.length; inputIndex++) {
@@ -1443,7 +1443,7 @@ Merit.prototype._getAddressDetailsForTransaction = function(transaction, address
     this._getAddressDetailsForOutput(output, outputIndex, result, addressStrings);
   }
 
-  $.checkState(Number.isFinite(result.micros));
+  $.checkState(Number.isFinite(result.quanta));
 
   return result;
 };
@@ -1466,7 +1466,7 @@ Merit.prototype._getAddressDetailedTransaction = function(txid, options, next) {
 
       var details = {
         addresses: addressDetails.addresses,
-        micros: addressDetails.micros,
+        quanta: addressDetails.quanta,
         confirmations: self._getConfirmationsDetail(transaction),
         tx: transaction
       };
@@ -1986,12 +1986,12 @@ Merit.prototype.getTransaction = function(txid, callback) {
  *       script: [hexString],
  *       scriptAsm: [asmString],
  *       address: '1LCTmj15p7sSXv3jmrPfA6KGs6iuepBiiG',
- *       micros: 771146
+ *       quanta: 771146
  *     }
  *   ],
  *   outputs: [
  *     {
- *       micros: 811146,
+ *       quanta: 811146,
  *       script: '76a914d2955017f4e3d6510c57b427cf45ae29c372c99088ac',
  *       scriptAsm: 'OP_DUP OP_HASH160 d2955017f4e3d6510c57b427cf45ae29c372c990 OP_EQUALVERIFY OP_CHECKSIG',
  *       address: '1LCTmj15p7sSXv3jmrPfA6KGs6iuepBiiG',
@@ -2000,9 +2000,9 @@ Merit.prototype.getTransaction = function(txid, callback) {
  *       spentHeight: 100
  *     }
  *   ],
- *   inputMicros: 771146,
- *   outputMicros: 811146,
- *   feeMicros: 40000
+ *   inputQuanta: 771146,
+ *   outputQuanta: 811146,
+ *   feeQuanta: 40000
  * };
  *
  * @param {String} txid - The hex string of the transaction
@@ -2015,11 +2015,11 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
   // ToDo: valueSat must be valueXXX after renaming in merit-cli
   function addInputsToTx(tx, result) {
     tx.inputs = [];
-    tx.inputMicros = 0;
+    tx.inputQuanta = 0;
     for(var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
       var input = result.vin[inputIndex];
       if (!tx.isCoinbase) {
-        tx.inputMicros += input.valueSat; // TODO: rename sat
+        tx.inputQuanta += input.valueSat; // TODO: rename sat
       }
       var script = null;
       var scriptAsm = null;
@@ -2036,23 +2036,23 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
         scriptAsm: scriptAsm || null,
         sequence: input.sequence,
         address: input.address || null,
-        micros: _.isUndefined(input.valueSat) ? null : input.valueSat // TODO: rename sat
+        quanta: _.isUndefined(input.valueSat) ? null : input.valueSat // TODO: rename sat
       });
     }
   }
 
   function addOutputsToTx(tx, result) {
     tx.outputs = [];
-    tx.outputMicros = 0;
+    tx.outputQuanta = 0;
     for(var outputIndex = 0; outputIndex < result.vout.length; outputIndex++) {
       var out = result.vout[outputIndex];
-      tx.outputMicros += out.valueSat; // TODO: rename sat
+      tx.outputQuanta += out.valueSat; // TODO: rename sat
       var address = null;
       if (out.scriptPubKey && out.scriptPubKey.addresses && out.scriptPubKey.addresses.length === 1) {
         address = out.scriptPubKey.addresses[0];
       }
       tx.outputs.push({
-        micros: out.valueSat, // TODO: rename sat
+        quanta: out.valueSat, // TODO: rename sat
         script: out.scriptPubKey.hex,
         scriptAsm: out.scriptPubKey.asm,
         spentTxId: out.spentTxId,
@@ -2092,9 +2092,9 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
         addOutputsToTx(tx, result);
 
         if (!tx.isCoinbase) {
-          tx.feeMicros = tx.inputMicros - tx.outputMicros;
+          tx.feeQuanta = tx.inputQuanta - tx.outputQuanta;
         } else {
-          tx.feeMicros = 0;
+          tx.feeQuanta = 0;
         }
 
         self.transactionDetailedCache.set(txid, tx);

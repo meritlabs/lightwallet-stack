@@ -75,7 +75,7 @@ Defaults.UTXO_SELECTION_MAX_FEE_VS_TX_AMOUNT_FACTOR = 0.05;
 // when fees are significant (proportional to how much we would pay for using that big input only).
 Defaults.UTXO_SELECTION_MAX_FEE_VS_SINGLE_UTXO_FEE_FACTOR = 5;
 
-// Minimum allowed amount for tx outputs (including change) in Micros
+// Minimum allowed amount for tx outputs (including change) in Quanta
 Defaults.MIN_OUTPUT_AMOUNT = 5000;
 
 // Number of confirmations from which tx in history will be cached

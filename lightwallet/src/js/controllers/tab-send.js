@@ -37,7 +37,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
           // the 'buy merits' message.
 
           $scope.hasFunds = true;
-        } else if (status.availableBalanceMicros > 0) {
+        } else if (status.availableBalanceQuanta > 0) {
           $scope.hasFunds = true;
           $rootScope.everHasFunds = true;
         }
@@ -156,7 +156,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
 
   $scope.findContact = function(search) {
-    
+
     if(search && search.length > 19 && incomingData.redir(search)) {
       return;
     }

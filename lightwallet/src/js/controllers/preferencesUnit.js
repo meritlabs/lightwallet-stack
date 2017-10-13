@@ -4,12 +4,6 @@ angular.module('copayApp.controllers').controller('preferencesUnitController', f
 
   var config = configService.getSync();
   $scope.unitList = [{
-    name: 'bits (1,000,000 bits = 1MRT)',
-    shortName: 'bits',
-    value: 100,
-    decimals: 2,
-    code: 'bit',
-  }, {
     name: 'MRT',
     shortName: 'MRT',
     value: 100000000,

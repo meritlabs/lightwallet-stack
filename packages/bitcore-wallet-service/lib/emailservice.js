@@ -228,7 +228,6 @@ EmailService.prototype._getDataForTemplate = function(notification, recipient, c
   // TODO: Declare these in BWU
   var UNIT_LABELS = {
     mrt: 'MRT',
-    bit: 'bits'
   };
 
   var data = _.cloneDeep(notification.data);
