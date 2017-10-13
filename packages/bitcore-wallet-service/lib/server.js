@@ -1945,8 +1945,6 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
     try {
       if (checkRequired(output, ['toAddress', 'amount'])) {
         toAddress = new Bitcore.Address(output.toAddress);
-      } else if (checkRequired(output, ['script', 'amount'])) {
-        toAddress = output.script.toAddress(output.scriptNetwork);
       } else {
         return new ClientError('Argument missing in output #' + (i + 1) + '.');
       }
@@ -2027,16 +2025,6 @@ WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) 
         opts.inputs = info.inputs;
         return next();
       });
-    },
-    function(next) {
-      opts.outputs = _.map(opts.outputs, function(output) {
-        if(output.script) {
-          output.script = Bitcore.Script.fromHex(output.script);
-          output.script._network = output.scriptNetwork;
-        }
-        return output;
-      });
-      next();
     },
     function(next) {
       if (opts.validateOutputs === false) return next();
@@ -2204,6 +2192,7 @@ WalletService.prototype.createTx = function(opts, cb) {
     });
   });
 };
+
 WalletService.prototype._verifyRequestPubKey = function(requestPubKey, signature, xPubKey) {
   var pub = (new Bitcore.HDPublicKey(xPubKey)).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
   return Utils.verifyMessage(requestPubKey, signature, pub.toString());

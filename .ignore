@@ -42,7 +42,6 @@ packages/bitcore-payment-protocol/node_modules/
 packages/bitcore-payment-protocol/package-lock.json
 packages/bitcore-wallet-client/node_modules/
 packages/bitcore-wallet-client/package-lock.json
-packages/bitcore-wallet-service/.index.js.swp
 packages/bitcore-wallet-service/node_modules/
 packages/bitcore-wallet-service/package-lock.json
 packages/insight-api/node_modules/

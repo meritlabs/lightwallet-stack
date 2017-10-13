@@ -170,6 +170,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
           tx.script = result.script;
           tx.script.isOutput = true;
           tx.easySendSecret = result.secret;
+          tx.toAddress = tx.script.toAddress().toString();
         });
       }
     });
@@ -207,7 +208,8 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
     if (tx.script) {
       txp.outputs = [{
-        'script': tx.script,
+        'script': tx.script.toHex(),
+        'toAddress': tx.toAddress,
         'amount': tx.toAmount,
         'message': tx.description
       }];
@@ -493,7 +495,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     }
 
     ongoingProcess.set('creatingTx', true, onSendStatusChange);
-    getTxp(lodash.cloneDeep(tx), wallet, false, function(err, txp) {
+    getTxp(lodash.clone(tx), wallet, false, function(err, txp) {
       ongoingProcess.set('creatingTx', false, onSendStatusChange);
       if (err) return;
 

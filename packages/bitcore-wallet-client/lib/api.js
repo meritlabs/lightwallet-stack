@@ -218,9 +218,6 @@ API.prototype._processTxps = function(txps) {
     _.each(txp.outputs, function(output) {
       output.encryptedMessage = output.message;
       output.message = API._decryptMessage(output.message, encryptingKey) || null;
-      if (output.script) {
-        output.script = new Bitcore.Script(output.script);
-      }
     });
     txp.hasUnconfirmedInputs = _.some(txp.inputs, function(input) {
       return input.confirmations == 0;
@@ -1787,10 +1784,6 @@ API.prototype._getCreateTxProposalArgs = function(opts) {
   args.payProUrl = opts.payProUrl || null;
   _.each(args.outputs, function(o) {
     o.message = API._encryptMessage(o.message, self.credentials.sharedEncryptingKey) || null;
-    if (o.script) {
-      o.scriptNetwork = o.script._network;
-      o.script = new Bitcore.Script(o.script).toHex();
-    }
   });
 
   return args;
