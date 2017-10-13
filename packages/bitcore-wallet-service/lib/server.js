@@ -3,11 +3,8 @@
 var _ = require('lodash');
 var $ = require('preconditions').singleton();
 var async = require('async');
-var log = require('npmlog');
 var config = require('../config');
 
-log.debug = log.verbose;
-log.disableColor();
 
 var EmailValidator = require('email-validator');
 var Stringify = require('json-stable-stringify');
@@ -44,6 +41,7 @@ var messageBroker;
 var fiatRateService;
 var serviceVersion;
 var localMeritDaemon;
+var log;
 
 /**
  * Creates an instance of the Bitcore Wallet Service.
@@ -95,6 +93,7 @@ WalletService.initialize = function(opts, cb) {
   blockchainExplorer = opts.blockchainExplorer;
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
   localMeritDaemon = new LocalDaemon(opts.node);
+  log = opts.node.log; 
   if (opts.request)
     request = opts.request;
 
@@ -369,25 +368,18 @@ WalletService.prototype.createWallet = function(opts, cb) {
 
   async.series([
     function(acb) {
-      var bc = self._getBlockchainExplorer(opts.network);
-
-      bc.unlockWallet(opts.beacon, unlockAddress.toString(), function(errMsg, result) {
-
-        if (errMsg)  {
-          // TODO: Use Error codes instead of string matching.
-          // TODO: Even sooner, we should have more descriptive error states coming back
-          // from the blockchain explorer.
-          if (errMsg == "Error querying the blockchain") {
-            return acb(Errors.UNLOCK_STILL_PENDING)
-          } else {
-            return acb(Errors.UNLOCK_CODE_INVALID);
-          }
+      var unlockParams = {
+        unlockCode: opts.beacon, 
+        address: unlockAddress
+      }
+      self._unlockAddress(unlockParams, function(err, result){
+        if (err) {
+          return acb(err);
         }
 
         unlocked = true;
-        shareCode = result.result.referralcode;
-        codeHash = result.result.codehash;
-
+        shareCode = result.shareCode;
+        codeHash = result.codeHash;
         return acb(null);
       });
     },
@@ -410,7 +402,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
         n: opts.n,
         network: opts.network,
         pubKey: pubKey.toString(),
-        singleAddress: true , // Defaulting all wallets to single address for now.
+        singleAddress: !!opts.singleAddress,
         derivationStrategy: derivationStrategy,
         addressType: addressType,
         beacon: opts.beacon,
@@ -455,13 +447,9 @@ WalletService.prototype.getANV = function(opts, cb) {
 WalletService.prototype.getRewards = function(opts, cb) {
   var addresses = opts.addresses;
 
-  console.log(addresses);
-
   if (addresses.length == 0) {
     return cb(null, []);
   }
-
-  console.log(addresses);
 
   var networkName = Bitcore.Address(addresses[0]).toObject().network;
   var bc = this._getBlockchainExplorer(networkName);
@@ -548,6 +536,52 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
       }
       cb();
     });
+  });
+};
+
+/**
+ * Unlocks an address with an unlock code.
+ * @param {Object} opts
+ * @param {String} opts.unlockCode The unlock code used to unlock this wallet.
+ * @param {String} opts.address The address to unlock with the above unlock code.
+ * @param {String} opts.network The relevant network to execute this command (livenet/testnet)
+ */
+
+WalletService.prototype._unlockAddress = function (opts, cb) {
+  var self = this;
+  opts = opts || {};
+
+  if (!opts.unlockCode) {
+    cb(new ClientError('No unlockCode provided.'));
+  }
+
+  if (!opts.address) {
+    cb(new ClientError('No unlock address provided.'));
+  }
+
+  var network = opts.network || 'livenet';
+  var bc = self._getBlockchainExplorer(network);
+  var unlocked = false;
+  
+  bc.unlockWallet(opts.unlockCode, opts.address.toString(), function(errMsg, result) {
+
+    if (errMsg)  {
+      // TODO: Use Error codes instead of string matching.
+      // TODO: Even sooner, we should have more descriptive error states coming back
+      // from the blockchain explorer.
+      console.log("Got an error in unlock: " + errMsg);
+      if (errMsg == "Error querying the blockchain") {
+        return cb(Errors.UNLOCK_STILL_PENDING);
+      } else {
+        return cb(Errors.UNLOCK_CODE_INVALID);
+      }
+    }
+
+    unlocked = true;
+    var shareCode = result.result.referralcode || "";
+    var codeHash = result.result.codehash || "";
+
+    return cb(null, {unlocked: unlocked, shareCode: shareCode, codeHash: codeHash});
   });
 };
 
@@ -1029,15 +1063,24 @@ WalletService.prototype.createAddress = function(opts, cb) {
   function createNewAddress(wallet, cb) {
     var address = wallet.createAddress(false);
 
-    self.storage.storeAddressAndWallet(wallet, address, function(err) {
+    var unlockParams = {
+      unlockCode: wallet.shareCode,
+      address: address.address
+    }
+    self._unlockAddress(unlockParams, function(err, result){
       if (err) return cb(err);
-
-      self._notify('NewAddress', {
-        address: address.address,
-      }, function() {
-        return cb(null, address);
+      
+      self.storage.storeAddressAndWallet(wallet, address, function(err) {
+        if (err) return cb(err);
+  
+        self._notify('NewAddress', {
+          address: address.address,
+        }, function() {
+          return cb(null, address);
+        });
       });
     });
+    
   };
 
   function getFirstAddress(wallet, cb) {
@@ -1122,6 +1165,7 @@ WalletService.prototype._getBlockchainExplorer = function(network) {
   opts.provider = 'insight';
   opts.network = network;
   opts.userAgent = WalletService.getServiceVersion();
+  opts.log = log;
   return new BlockchainExplorer(opts);
 };
 
@@ -1257,7 +1301,7 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
     totalConfirmedAmount: _.sum(
       _.filter(utxos, function(utxo) {
         return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0));
-      }), 
+      }),
     'micros'),
     lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
   };
@@ -1542,8 +1586,13 @@ WalletService.prototype._sampleFeeLevels = function(network, points, cb) {
     }));
 
     if (failed.length) {
-      var logger = network == 'livenet' ? log.warn : log.debug;
-      logger('Could not compute fee estimation in ' + network + ': ' + failed.join(', ') + ' blocks.');
+      var failErr = 'Could not compute fee estimation in ' + network + ': ' + failed.join(', ') + ' blocks.';
+      // Log is not available until the walletService is initialized.
+      if (network == 'livenet') {
+        log.warn(failErr);
+      } else {
+        log.debug(failErr);
+      }
     }
 
     return cb(null, levels);
@@ -1681,7 +1730,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       if (utxo.micros <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
       if (excludeIndex[utxo.txid + ":" + utxo.vout]) return false;
-      if (utxo.isCoinbase && !utxo.isMature) return false; 
+      if (utxo.isCoinbase && !utxo.isMature) return false;
       return true;
     });
   };
@@ -2136,6 +2185,14 @@ WalletService.prototype.createTx = function(opts, cb) {
             getChangeAddress(wallet, function(err, address) {
               if (err) return next(err);
               changeAddress = address;
+              // Unlock the address used for receiving change.
+              var unlockParams = {
+                unlockCode: wallet.shareCode,
+                address: changeAddress.address
+              }
+              self._unlockAddress(unlockParams, function(err, result){
+                if (err) return next(err);
+              });
               next();
             });
           },
