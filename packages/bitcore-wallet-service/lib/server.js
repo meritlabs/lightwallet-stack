@@ -455,13 +455,9 @@ WalletService.prototype.getANV = function(opts, cb) {
 WalletService.prototype.getRewards = function(opts, cb) {
   var addresses = opts.addresses;
 
-  console.log(addresses);
-
   if (addresses.length == 0) {
     return cb(null, []);
   }
-
-  console.log(addresses);
 
   var networkName = Bitcore.Address(addresses[0]).toObject().network;
   var bc = this._getBlockchainExplorer(networkName);
@@ -1257,7 +1253,7 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
     totalConfirmedAmount: _.sum(
       _.filter(utxos, function(utxo) {
         return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0));
-      }), 
+      }),
     'micros'),
     lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
   };
@@ -1681,7 +1677,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       if (utxo.micros <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
       if (excludeIndex[utxo.txid + ":" + utxo.vout]) return false;
-      if (utxo.isCoinbase && !utxo.isMature) return false; 
+      if (utxo.isCoinbase && !utxo.isMature) return false;
       return true;
     });
   };
