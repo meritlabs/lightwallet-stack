@@ -4,9 +4,19 @@ module.exports = function(grunt) {
 
   require('load-grunt-tasks')(grunt);
 
-  // Project Configuration
+    // Project Configuration
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    connect: {
+          server: {
+              options: {
+                  port: 8100,
+                  base: 'www',
+                  open: true,
+                  livereload: true
+              }
+          }
+    },
     exec: {
       appConfig: {
         command: 'node ./util/buildAppConfig.js'
@@ -70,6 +80,7 @@ module.exports = function(grunt) {
         cmd: 'gpg -u 1112CFA1 --output webkitbuilds/<%= pkg.title %>.dmg.sig --detach-sig webkitbuilds/<%= pkg.title %>.dmg'
       },
     },
+
     watch: {
       options: {
         dateFormat: function(time) {
@@ -92,7 +103,13 @@ module.exports = function(grunt) {
           'src/js/models/*.js',
           'src/js/controllers/**/*.js'
         ],
-        tasks: ['concat:js']
+        tasks: ['concat:js'],
+      },
+      www: {
+          files: ['www/**/*'],
+          options: {
+              livereload: true
+          }
       },
       gettext: {
         files: [
@@ -139,7 +156,7 @@ module.exports = function(grunt) {
           'node_modules/ngtouch/src/ngTouch.js',
           'node_modules/angular-route/angular-route.js',
           'angular-bitauth/angular-bitauth.js',
-          'angular-bitcore-wallet-client/angular-bitcore-wallet-client.js', 
+          'angular-bitcore-wallet-client/angular-bitcore-wallet-client.js',
           'angular-environment-variables/angular-environment-variables.js'
         ],
         dest: 'www/lib/angular-components.js'
@@ -254,18 +271,27 @@ module.exports = function(grunt) {
         dest: '<%= pkg.title %>-linux/'
       }
     },
+    envify: {
+      all: {
+          files: {
+              'angular-environment-variables/envified.js': ['angular-environment-variables/index.js']
+          }
+      }
+    },
     browserify: {
       dist: {
         files: {
           'angular-bitcore-wallet-client/angular-bitcore-wallet-client.js': ['angular-bitcore-wallet-client/index.js'],
           'angular-bitauth/angular-bitauth.js': ['angular-bitauth/index.js'],
-          'angular-environment-variables/angular-environment-variables.js': ['angular-environment-variables/index.js']
-        },
-      }
-    }
+          'angular-environment-variables/angular-environment-variables.js': ['angular-environment-variables/envified.js']
+        }
+      },
+    },
+    clean: ['angular-environment-variables/envified.js']
   });
 
-  grunt.registerTask('default', ['nggettext_compile', 'exec:appConfig', 'exec:externalServices', 'browserify', 'sass', 'concat', 'copy:ionic_fonts', 'copy:ionic_js']);
+  grunt.registerTask('default', ['nggettext_compile', 'exec:appConfig', 'exec:externalServices', 'envify', 'browserify',  'clean', 'sass', 'concat', 'copy:ionic_fonts', 'copy:ionic_js']);
+  grunt.registerTask('serve', ['connect', 'watch']);
   grunt.registerTask('prod', ['default', 'uglify']);
   grunt.registerTask('translate', ['nggettext_extract']);
   grunt.registerTask('desktop', ['prod', 'nwjs', 'copy:linux', 'compress:linux']);

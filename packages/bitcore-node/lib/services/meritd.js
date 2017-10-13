@@ -128,6 +128,9 @@ Merit.prototype._initCaches = function() {
   this.summaryCache = LRU(50000);
   this.blockOverviewCache = LRU(144);
   this.transactionDetailedCache = LRU(100000);
+  this.anvCache = LRU(50000);
+  this.rewardsCache = LRU(50000);
+
 
   // caches valid indefinitely
   this.transactionCache = LRU(100000);
@@ -191,7 +194,9 @@ Merit.prototype.getAPIMethods = function() {
     ['generatereferralcode',  this, this.generateReferralCode, 0],
     ['unlockwallet',          this, this.unlockWallet,         2],
     ['validatereferralcode',  this, this.validateReferralCode, 1],
-    ['getInputForEasySend', this, this.getInputForEasySend, 1]
+    ['getInputForEasySend', this, this.getInputForEasySend, 1],
+    ['getanv',                this, this.getANV, 1],
+    ['getaddressrewards',     this, this.getRewards, 1],
   ];
   return methods;
 };
@@ -471,6 +476,8 @@ Merit.prototype._resetCaches = function() {
   this.balanceCache.reset();
   this.summaryCache.reset();
   this.blockOverviewCache.reset();
+  this.anvCache.reset();
+  this.rewardsCache.reset();
 };
 
 Merit.prototype._tryAllClients = function(func, callback) {
@@ -951,7 +958,7 @@ Merit.prototype._spawnChildProcess = function(callback) {
     }
 
     log.info('Starting Meritd process');
-    if(spawn.exec) {
+    if(self.spawn.exec) {
       self.spawn.process = spawn(self.spawn.exec, options, {stdio: 'inherit'});
 
       self.spawn.process.on('error', function(err) {
@@ -1188,6 +1195,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       outputIndex: delta.index,
       script: script.toHex(),
       micros: delta.micros,
+      isCoinbase: delta.isCoinbase,
       timestamp: delta.timestamp
     };
   }
@@ -1237,8 +1245,6 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       });
     } else {
       self.client.getAddressUtxos({addresses: addresses}, function(err, response) {
-        console.log("got an address");
-        console.log(response);
         if (err) {
           return callback(self._wrapRPCError(err));
         }
@@ -2012,7 +2018,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
     tx.inputMicros = 0;
     for(var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
       var input = result.vin[inputIndex];
-      if (!tx.coinbase) {
+      if (!tx.isCoinbase) {
         tx.inputMicros += input.valueSat; // TODO: rename sat
       }
       var script = null;
@@ -2020,8 +2026,8 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
       if (input.scriptSig) {
         script = input.scriptSig.hex;
         scriptAsm = input.scriptSig.asm;
-      } else if (input.coinbase) {
-        script = input.coinbase;
+      } else if (input.isCoinbase) {
+        script = input.isCoinbase;
       }
       tx.inputs.push({
         prevTxId: input.txid || null,
@@ -2075,17 +2081,17 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
           blockTimestamp: result.time,
           version: result.version,
           hash: txid,
-          locktime: result.locktime,
+          locktime: result.locktime
         };
 
         if (result.vin[0] && result.vin[0].coinbase) {
-          tx.coinbase = true;
+          tx.isCoinbase = true;
         }
 
         addInputsToTx(tx, result);
         addOutputsToTx(tx, result);
 
-        if (!tx.coinbase) {
+        if (!tx.isCoinbase) {
           tx.feeMicros = tx.inputMicros - tx.outputMicros;
         } else {
           tx.feeMicros = 0;
@@ -2275,9 +2281,8 @@ Merit.prototype.validateAddress = function(address, callback) {
 
 /**
  * Checks if an easyScript is on the blockChain.
- * @param {String} easyScript - The full easyScript value.  
+ * @param {String} easyScript - The full easyScript value.
  */
-
  Merit.prototype.getInputForEasySend = function(easyScript, callback) {
    log.info('ValidateEasyScript RPC called: ', easyScript);
 
@@ -2285,20 +2290,74 @@ Merit.prototype.validateAddress = function(address, callback) {
 
   if (typeof easyScript == 'string' || easyScript instanceof String) {
     self.client.getInputForEasySend(easyScript, function(err, response) {
-      log.info("Juicy results: ", response); 
+      log.info("Juicy results: ", response);
       if (err) {
         return callback(self._wrapRPCError(err));
-      } else { 
+      } else {
         log.info('getInputForEasySend Response: ', response);
         callback(null, response);
       }
     });
-   } else { 
+   } else {
      var err = new errors.RPCError('EasyScript was missing or incorrect');
      err.code = -8;
      return callback(self._wrapRPCError(err));
    }
  };
+
+/**
+ * Get ANV for array of keys
+ * @param {Array} keys
+ * @param {Function} callback
+ */
+Merit.prototype.getANV = function(keysArg, callback) {
+  var self = this;
+  var keys = self._normalizeAddressArg(keysArg);
+  var cacheKey = keys.join('');
+  var anv = self.anvCache.get(cacheKey);
+
+  if (anv) {
+    return setImmediate(function() {
+      callback(null, anv);
+    });
+  }
+
+  self.client.getanv(keys, function(err, response) {
+    if (err) {
+      return callback(self._wrapRPCError(err));
+    }
+
+    self.anvCache.set(cacheKey, response.result);
+    callback(null, response.result);
+  });
+}
+
+/**
+ * Get Rewards for array of addresses
+ * @param {Array} keys
+ * @param {Function} callback
+ */
+Merit.prototype.getRewards = function(addressArg, callback) {
+  var self = this;
+  var addresses = self._normalizeAddressArg(addressArg);
+  var cacheKey = addresses.join('');
+  var rewards = self.rewardsCache.get(cacheKey);
+
+  if (rewards) {
+    return setImmediate(function() {
+      callback(null, rewards);
+    });
+  }
+
+  this.client.getaddressrewards({ addresses: addresses }, function(err, response) {
+    if (err) {
+      return callback(self._wrapRPCError(err));
+    }
+
+    self.rewardsCache.set(cacheKey, response.result);
+    callback(null, response.result);
+  });
+}
 
 /**
  * Called by Node to stop the service.

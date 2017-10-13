@@ -185,13 +185,15 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
       if (!address || address.isChange) return next();
 
       var walletId = address.walletId;
-      log.info('Incoming tx for wallet ' + walletId + ' [' + out.amount + 'micros -> ' + out.address + ']');
+      var notificationType = data.isCoinbase ? 'NewIncomingCoinbase' : 'NewIncomingTx';
+      
+      log.info(notificationType + ' for wallet ' + walletId + ' [' + out.amount + 'micros -> ' + out.address + ']');
 
       var fromTs = Date.now() - 24 * 3600 * 1000;
       self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
         if (err) return next(err);
         var alreadyNotified = _.any(notifications, function(n) {
-          return n.type == 'NewIncomingTx' && n.data && n.data.txid == data.txid;
+          return n.type == notificationType && n.data && n.data.txid == data.txid;
         });
         if (alreadyNotified) {
           log.info('The incoming tx ' + data.txid + ' was already notified');
@@ -199,7 +201,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
         }
 
         var notification = Notification.create({
-          type: 'NewIncomingTx',
+          type: notificationType,
           data: {
             txid: data.txid,
             address: out.address,

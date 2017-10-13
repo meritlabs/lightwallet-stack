@@ -11,6 +11,8 @@ function AddressController(node) {
   this.common = new Common({log: this.node.log});
 }
 
+const COINBASE_MATURITY = 100;
+
 AddressController.prototype.show = function(req, res) {
   var self = this;
   var options = {
@@ -171,7 +173,8 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
     vout: utxoArg.outputIndex,
     scriptPubKey: utxoArg.script,
     amount: utxoArg.satoshis / 1e8,
-    micros: utxoArg.satoshis 
+    micros: utxoArg.satoshis, 
+    isCoinbase: utxoArg.isCoinbase 
   }; // ToDo: update after changes in meritd
   if (utxoArg.height && utxoArg.height > 0) {
     utxo.height = utxoArg.height;
@@ -181,6 +184,9 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
   }
   if (utxoArg.timestamp) {
     utxo.ts = utxoArg.timestamp;
+  }
+  if (utxo.isCoinbase) {
+    utxo.isMature = utxo.confirmations >= COINBASE_MATURITY ? true : false;
   }
   return utxo;
 };

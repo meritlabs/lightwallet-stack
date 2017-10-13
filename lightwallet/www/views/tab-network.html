@@ -1,0 +1,102 @@
+<ion-view id="tab-network" show-tabs>
+  <ion-nav-bar class="bar-royal">
+    <ion-nav-title>{{'Network' | translate}}</ion-nav-title>
+    <ion-nav-buttons side="primary">
+      <button class="button back-button button-clear ng-hide" ng-click="goBack()" ng-show="canGoBack()">
+        <i class="icon ion-ios-close-empty"></i>
+      </button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+
+  <ion-content scroll="false">
+    <article class="network">
+      <div class="card">
+        <div class="code">
+          <span class="code-title">Aggregate Network Value</span>
+
+          <ion-spinner class="spinner-dark" icon="crescent" ng-show="wallet.anv === undefined && !wallet.error"></ion-spinner>
+          <span ng-show="wallet.anv !== undefined">{{wallet.anv.amountUnitStr}}</span>
+          <span class="assertive" ng-if="wallet.error">{{wallet.error}}</span>
+        </div>
+
+        <div class="code">
+          <span class="code-title">Referral Code</span>
+          <span class="code-value" copy-to-clipboard="wallet.shareCode">{{wallet.shareCode}}</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="actions" copy-to-clipboard="wallet.shareCode">
+          <div class="item item-icon-left item-icon-right">
+            <i class="icon big-icon-svg">
+            <img src="img/icon-import.svg" class="bg"/>
+          </i>
+            <span translate>Copy Code to Clipboard</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <div class="item item-icon-left item-icon-right">
+            <i class="icon big-icon-svg">
+            <img src="img/tab-icons/ico-scan.svg" class="bg"/>
+          </i>
+            <span translate>Your invite QR Code</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <div class="item item-icon-left item-icon-right">
+            <i class="icon big-icon-svg">
+            <img src="img/icon-email.svg" class="bg"/>
+          </i>
+            <span translate>Share via Email</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <div class="item item-icon-left item-icon-right">
+            <i class="icon big-icon-svg">
+            <img src="img/icon-contacts.svg" class="bg"/>
+          </i>
+            <span translate>Share via SMS</span>
+          </div>
+        </div>
+
+        <div class="actions" ng-click="openNetworkDetails(wallet)">
+          <div class="item item-icon-left item-icon-right">
+            <i class="icon big-icon-svg">
+            <img src="img/icon-users.svg" class="bg"/>
+          </i>
+            <span translate>Your Merit Network Details</span>
+            <i class="icon bp-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="wallet-selector" ng-click="showWalletSelector()" ng-if="wallets[0] && wallet">
+        <a ng-if="wallet" class="item item-sub item-icon-left item-big-icon-left item-icon-right">
+            <i class="icon big-icon-svg">
+              <img src="img/icon-wallet.svg" ng-class="{'wallet-background-color-default': !wallet.color}" ng-style="{'background-color': wallet.color}" class="bg wallet"/>
+            </i>
+            <span>
+              {{wallet.name || wallet.id}}
+            </span>
+            <p>
+            <span ng-if="!wallet.balanceHidden"> {{wallet.status.totalBalanceStr}} </span>
+
+            <span ng-if="wallet.balanceHidden" translate>[Balance Hidden]</span>
+            <span class="tab-home__wallet__multisig-number" ng-if="wallet.n > 1">
+              {{wallet.m}}-of-{{wallet.n}}
+            </span>
+            <span class="assertive" ng-if="wallet.error">{{wallet.error}}</span>
+            &nbsp;
+            </p>
+            <i ng-if="!singleWallet" class="icon bp-arrow-right"></i>
+          </a>
+      </div>
+    </article>
+  </ion-content>
+  <wallet-selector wallet-selector-title="walletSelectorTitle" wallet-selector-wallets="wallets" wallet-selector-selected-wallet="wallet"
+    wallet-selector-show="showWallets" wallet-selector-on-select="onWalletSelect">
+  </wallet-selector>
+</ion-view>
