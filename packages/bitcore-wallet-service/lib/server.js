@@ -372,7 +372,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
         unlockCode: opts.beacon, 
         address: unlockAddress
       }
-      self._unlockAddress(unlockParams, function(err, result){
+      self.unlockAddress(unlockParams, function(err, result){
         if (err) {
           return acb(err);
         }
@@ -547,7 +547,7 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
  * @param {String} opts.network The relevant network to execute this command (livenet/testnet)
  */
 
-WalletService.prototype._unlockAddress = function (opts, cb) {
+WalletService.prototype.unlockAddress = function (opts, cb) {
   var self = this;
   opts = opts || {};
 
@@ -1067,7 +1067,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
       unlockCode: wallet.shareCode,
       address: address.address
     }
-    self._unlockAddress(unlockParams, function(err, result){
+    self.unlockAddress(unlockParams, function(err, result){
       if (err) return cb(err);
       
       self.storage.storeAddressAndWallet(wallet, address, function(err) {
@@ -2190,7 +2190,7 @@ WalletService.prototype.createTx = function(opts, cb) {
                 unlockCode: wallet.shareCode,
                 address: changeAddress.address
               }
-              self._unlockAddress(unlockParams, function(err, result){
+              self.unlockAddress(unlockParams, function(err, result){
                 if (err) return next(err);
               });
               next();
