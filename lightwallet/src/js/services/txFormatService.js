@@ -188,7 +188,6 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
     var amountMicros;
     var alternativeIsoCode = config.alternativeIsoCode;
 
-    console.log(currency);
     // If fiat currency
     if (currency != 'bits' && currency != 'MRT' && currency != 'micros') {
       amountUnitStr = $filter('formatFiatAmount')(amount) + ' ' + currency;

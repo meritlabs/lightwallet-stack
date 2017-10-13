@@ -715,7 +715,7 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
  * @param {destinationAddress} Address to put the funds into.
  */
 API.prototype.buildEasySendRedeemTransaction = function(input, destinationAddress, opts) {
-  //TODO: Create and sign a transaction to redeem easy send. Use input as 
+  //TODO: Create and sign a transaction to redeem easy send. Use input as
   //unspent Txo and use script to create scriptSig
   var self = this;
 
@@ -724,7 +724,7 @@ API.prototype.buildEasySendRedeemTransaction = function(input, destinationAddres
   var inputAddress = input.txn.scriptId;
 
   var fee = opts.fee || 10000;
-  var microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros(); 
+  var microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
   var amount =  microAmount - fee;
   if (amount <= 0) return new Errors.INSUFFICIENT_FUNDS;
 
@@ -1658,8 +1658,6 @@ API.prototype.getRewards = function(address, cb) {
 
   var addresses = [address];
   var network = this.credentials.network;
-
-  console.log(addresses);
 
   this._doGetRequest('/v1/rewards/?network=' + network + '&addresses=' + addresses.join(','), function(err, result) {
     if (err) return cb(err);
