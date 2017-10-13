@@ -23,6 +23,7 @@ var requestList = function(args, cb) {
 
   args.timeout = args.timeout || DEFAULT_TIMEOUT;
 
+  // This allows us to round-robin requests across hosts until we get one that is responsive.
   var urls = _.map(args.hosts, function(x) {
     return (x + args.path);
   });
@@ -37,13 +38,13 @@ var requestList = function(args, cb) {
       args.uri = nextUrl;
       request(args, function(err, res, body) {
         if (err) {
-          log.warn('REQUEST FAIL: ' + nextUrl + ' ERROR: ' + err);
+          log.warn('REQUEST FAILED: ' + nextUrl + ' ERROR: ' + err);
         }
 
         if (res) {
           success = !!res.statusCode.toString().match(/^[1234]../);
           if (!success) {
-            log.warn('REQUEST FAIL: ' + nextUrl + ' STATUS CODE: ' + res.statusCode);
+            log.warn('REQUEST FAILED: ' + nextUrl + ' STATUS CODE: ' + res.statusCode);
           }
         }
 

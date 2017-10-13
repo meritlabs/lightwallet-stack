@@ -67,17 +67,4 @@ angular
         });
       }
     };
-
-    $scope.canGoBack = function() {
-      return $state.params.passthroughMode;
-    };
-
-    function goBack() {
-      $ionicHistory.nextViewOptions({
-        disableAnimate: true,
-      });
-      $ionicHistory.backView().go();
-    }
-
-    $scope.goBack = goBack;
   });

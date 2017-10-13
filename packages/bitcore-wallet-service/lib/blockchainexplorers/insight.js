@@ -2,10 +2,9 @@
 
 var _ = require('lodash');
 var $ = require('preconditions').singleton();
-var log = require('npmlog');
-log.debug = log.verbose;
 var io = require('socket.io-client');
 var requestList = require('./request-list');
+var log;
 
 function Insight(opts) {
   $.checkArgument(opts);
@@ -16,15 +15,19 @@ function Insight(opts) {
   this.network = opts.network || 'livenet';
   this.hosts = opts.url;
   this.userAgent = opts.userAgent || 'bws';
+  log = opts.log;
 };
 
 
 var _parseErr = function(err, res) {
+  // The 'err' can be misleading because it's not really the error returned from insight.
+  // Instead, it is an error in communicating with insight.  
   if (err) {
-    log.warn('Insight error: ', err);
-    return "Insight Error";
+    log.warn('Network error connecting to blockchain explorer: ', err);
+    return "Error connecting to the blockchain explorer.";
   }
   log.warn("Insight " + res.request.href + " Returned Status: " + res.statusCode);
+  
   return "Error querying the blockchain";
 };
 

@@ -11,7 +11,7 @@ var data = require('../data/merkleblocks.js');
 var transactionVector = require('../data/tx_creation');
 
 
-describe('MerkleBlock', function() {
+describe.skip('MerkleBlock', function() {
   var blockhex  = data.HEX[0];
   var blockbuf  = new Buffer(blockhex,'hex');
   var blockJSON = JSON.stringify(data.JSON[0]);
