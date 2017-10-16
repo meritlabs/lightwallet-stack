@@ -12,10 +12,6 @@
   <ion-content scroll="false">
     <div class="complete-layout">
       <div class="complete-layout__expand" ng-class="{'fade-in': !animate || socialsharing}">
-        <div ng-show="fromSettings">
-          <img src="img/ico-positive-feedback.svg" class="share-the-love-illustration"/>
-          <div class="subtitle" translate>Share the love by inviting your friends.</div>
-        </div>
         <div ng-show="!fromSettings">
           <div class="feedback-title" translate>Thank you!</div>
           <div class="subtitle" ng-show="!skipped" translate>A member of the team will review your feedback as soon as possible.</div>
@@ -24,48 +20,6 @@
             <img src="img/illustration-send-feedback.png" class="send-feedback-illustration"/>
           </div>
           <div class="subtitle" ng-if="score > 3 && socialsharing" translate>Share the love by inviting your friends.</div>
-        </div>
-      </div>
-      <div class="referral-code">
-        <input class="referral-code__input" readonly value="{{referralCode}}" id="referral-code" />
-        <button class="button button-primary referral-code__btn" ng-class="{'_enabled': copyEnabled }" ng-disabled="!copyEnabled" data-clipboard-target="#referral-code">Copy</button>
-      </div>
-      <div class="share-buttons" ng-if="score > 3 && socialsharing && copyEnabled" ng-class="{'slide-up': socialsharing }">
-        <div class="share-buttons__action" ng-show="facebook" ng-click="shareFacebook()">
-          <i class="icon socialsharing-icon">
-            <img src="img/social-icons/ico-social-facebook.svg"/>
-          </i>
-          <div>Facebook</div>
-        </div>
-        <div class="share-buttons__action" ng-show="twitter" ng-click="shareTwitter()">
-          <i class="icon socialsharing-icon">
-            <img src="img/social-icons/ico-social-twitter.svg"/>
-          </i>
-          <div>Twitter</div>
-        </div>
-        <div class="share-buttons__action" ng-show="googleplus" ng-click="shareGooglePlus()">
-          <i class="icon socialsharing-icon">
-            <img src="img/social-icons/ico-social-googleplus.svg"/>
-          </i>
-          <div>Google+</div>
-        </div>
-        <div class="share-buttons__action" ng-show="email" ng-click="shareEmail()">
-          <i class="icon socialsharing-icon">
-            <img src="img/social-icons/ico-social-email.svg"/>
-          </i>
-          <div>Email</div>
-        </div>
-        <div class="share-buttons__action" ng-show="whatsapp" ng-click="shareWhatsapp()">
-          <i class="icon socialsharing-icon">
-            <img src="img/social-icons/ico-social-whatsapp.svg"/>
-          </i>
-          <div>Whatsapp</div>
-        </div>
-        <div class="share-buttons__action" ng-click="shareMessage()">
-          <i class="icon socialsharing-icon">
-            <img src="img/social-icons/ico-social-message.svg"/>
-          </i>
-          <div>Message</div>
         </div>
       </div>
     </div>
