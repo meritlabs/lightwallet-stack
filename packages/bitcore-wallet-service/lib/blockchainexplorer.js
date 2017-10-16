@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var $ = require('preconditions').singleton();
-var log = require('npmlog');
+var log = require('npmlog'); // Default to NPM Log
 log.debug = log.verbose;
 
 var Insight = require('./blockchainexplorers/insight');
@@ -19,6 +19,7 @@ function BlockChainExplorer(opts) {
 
   var provider = opts.provider || 'insight';
   var network = opts.network || 'testnet';
+  var log = opts.log || log; //If we don't have a unified logger, use npmlog.
 
   $.checkState(PROVIDERS[provider], 'Provider ' + provider + ' not supported');
   $.checkState(_.contains(_.keys(PROVIDERS[provider]), network), 'Network ' + network + ' not supported by this provider');
@@ -32,6 +33,7 @@ function BlockChainExplorer(opts) {
         url: url,
         apiPrefix: opts.apiPrefix,
         userAgent: opts.userAgent,
+        log: opts.log
       });
     default:
       throw new Error('Provider ' + provider + ' not supported.');
