@@ -559,7 +559,7 @@ WalletService.prototype._unlockAddress = function (opts, cb) {
     cb(new ClientError('No unlock address provided.'));
   }
 
-  var network = opts.network || 'livenet';
+  var network = opts.network || 'testnet';  // TODO: Support livenet formally.
   var bc = self._getBlockchainExplorer(network);
   var unlocked = false;
   
