@@ -17,7 +17,7 @@ var log;
 
 function LocalDaemon(node) {
   this.node = node;
-  log = this.node.log;
+  log = this.node.log; //This daemon requires BWS to be run through bitcore-node, which is a requirement going forward.
 };
 
 LocalDaemon.prototype.getInputForEasySend = function(easyScript, cb) {
