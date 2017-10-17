@@ -150,9 +150,14 @@ PrivateKey._getNewBNForEasySend = function(optionalPassword){
   do {
     secret = Random.getRandomBuffer(16);
     var mixedsecret = secret + optionalPassword;
-    var hash = Hash.sha256sha256(Buffer.from(mixedsecret));
+    var hash = Hash.sha256sha256(Buffer.from(mixedsecret, 'binary'));
     bn = BN.fromBuffer(hash);
   } while (!PrivateKey._isValidBN(bn));
+
+  console.log("Generated a private key");
+  console.log(bn);
+  console.log("This is the private key I would get on the receive end");
+  console.log(PrivateKey._getBNForEasySend(secret, optionalPassword));
 
   return {
     secret: secret,

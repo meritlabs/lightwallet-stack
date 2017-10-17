@@ -713,9 +713,10 @@ API.prototype.buildEasySendScriptHash = function(opts, cb) {
   var rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
 
   var pubkeys = [
-    rcvPair.key.publicKey,
-    privateKey.publicKey
+    rcvPair.key.publicKey.toBuffer(),
+    privateKey.publicKey.toBuffer()
   ];
+  console.log(pubkeys);
 
   var timeout = opts.timeout || 144;
   var result = {
@@ -1876,7 +1877,7 @@ API.prototype.unlockAddress = function(opts, cb) {
   var self = this;
   opts = opts || {};
 
-  self._doPostRequest('/v3/addresses/unlock/', function(err, result) {
+  self._doPostRequest('/v3/addresses/unlock/', opts, function(err, result) {
     if (err) return cb(err);
     return cb(err, result);
   });
