@@ -211,26 +211,8 @@ ExpressApp.prototype.start = function(opts, cb) {
     };
   }
 
-  // DEPRECATED
 
   router.post('/v1/wallets/', createWalletLimiter, function(req, res) {
-    logDeprecated(req);
-    var server;
-    try {
-      server = getServer(req, res);
-    } catch (ex) {
-      return returnError(ex, res, req);
-    }
-    req.body.supportBIP44AndP2PKH = false;
-    server.createWallet(req.body, function(err, walletId) {
-      if (err) return returnError(err, res, req);
-      res.json({
-        walletId: walletId,
-      });
-    });
-  });
-
-  router.post('/v2/wallets/', createWalletLimiter, function(req, res) {
     var server;
     try {
       server = getServer(req, res);
@@ -264,25 +246,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  // DEPRECATED
   router.post('/v1/wallets/:id/copayers/', function(req, res) {
-    logDeprecated(req);
-    req.body.walletId = req.params['id'];
-    req.body.supportBIP44AndP2PKH = false;
-    var server;
-    try {
-      server = getServer(req, res);
-    } catch (ex) {
-      return returnError(ex, res, req);
-    }
-    server.joinWallet(req.body, function(err, result) {
-      if (err) return returnError(err, res, req);
-
-      res.json(result);
-    });
-  });
-
-  router.post('/v2/wallets/:id/copayers/', function(req, res) {
     req.body.walletId = req.params['id'];
     var server;
     try {
@@ -297,20 +261,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  // DEPRECATED
   router.get('/v1/wallets/', function(req, res) {
-    logDeprecated(req);
-    getServerWithAuth(req, res, function(server) {
-      server.getStatus({
-        includeExtendedInfo: true
-      }, function(err, status) {
-        if (err) return returnError(err, res, req);
-        res.json(status);
-      });
-    });
-  });
-
-  router.get('/v2/wallets/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       var opts = {};
       if (req.query.includeExtendedInfo == '1') opts.includeExtendedInfo = true;
@@ -388,33 +339,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  // DEPRECATED
   router.post('/v1/addresses/', function(req, res) {
-    logDeprecated(req);
-    getServerWithAuth(req, res, function(server) {
-      server.createAddress({
-        ignoreMaxGap: true
-      }, function(err, address) {
-        if (err) return returnError(err, res, req);
-        res.json(address);
-      });
-    });
-  });
-
-  // DEPRECATED
-  router.post('/v2/addresses/', function(req, res) {
-    logDeprecated(req);
-    getServerWithAuth(req, res, function(server) {
-      server.createAddress({
-        ignoreMaxGap: true
-      }, function(err, address) {
-        if (err) return returnError(err, res, req);
-        res.json(address);
-      });
-    });
-  });
-
-  router.post('/v3/addresses/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       server.createAddress(req.body, function(err, address) {
         if (err) return returnError(err, res, req);
@@ -447,28 +372,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  // DEPRECATED
   router.get('/v1/feelevels/', function(req, res) {
-    logDeprecated(req);
-    var opts = {};
-    if (req.query.network) opts.network = req.query.network;
-    var server;
-    try {
-      server = getServer(req, res);
-    } catch (ex) {
-      return returnError(ex, res, req);
-    }
-    server.getFeeLevels(opts, function(err, feeLevels) {
-      if (err) return returnError(err, res, req);
-      _.each(feeLevels, function(feeLevel) {
-        feeLevel.feePerKB = feeLevel.feePerKb;
-        delete feeLevel.feePerKb;
-      });
-      res.json(feeLevels);
-    });
-  });
-
-  router.get('/v2/feelevels/', function(req, res) {
     var opts = {};
     if (req.query.network) opts.network = req.query.network;
     var server;
@@ -743,20 +647,8 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  // DEPRECATED
-  router.delete('/v1/pushnotifications/subscriptions/', function(req, res) {
-    logDeprecated(req);
-    getServerWithAuth(req, res, function(server) {
-      server.pushNotificationsUnsubscribe({
-        token: 'dummy'
-      }, function(err, response) {
-        if (err) return returnError(err, res, req);
-        res.json(response);
-      });
-    });
-  });
 
-  router.delete('/v2/pushnotifications/subscriptions/:token', function(req, res) {
+  router.delete('/v1/pushnotifications/subscriptions/:token', function(req, res) {
     var opts = {
       token: req.params['token'],
     };
@@ -796,7 +688,7 @@ ExpressApp.prototype.start = function(opts, cb) {
   * These are all namespaced to v5 to differentiate from coPay versioning
   */
 
-  router.get('/v5/easyreceive/validate/:scriptId', function(req, res) {
+  router.get('/v1/easyreceive/validate/:scriptId', function(req, res) {
     var scriptId = req.params['scriptId']
 
     var server = getServer(req, res); 
