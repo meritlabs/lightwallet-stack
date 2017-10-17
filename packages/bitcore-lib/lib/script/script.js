@@ -812,7 +812,7 @@ Script.buildEasySendOut = function(publicKeys, blockTimeout, network) {
   $.checkArgument(publicKeys.length >= 2,
     'Number of required public keys must be two or more');
 
-  blockTimeout = parseInt(blockTimeout, 120);
+  blockTimeout = parseInt(blockTimeout, 144);
 
   var script = new Script();
   script.chunks = [];
