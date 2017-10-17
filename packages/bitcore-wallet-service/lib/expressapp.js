@@ -423,6 +423,15 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.post('/v3/addresses/unlock/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      server.unlockAddress(req.body, function(err, response) {
+        if (err) return returnError(err, res, req);
+        res.json(response);
+      });
+    });
+  });
+
   router.get('/v1/addresses/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       var opts = {};

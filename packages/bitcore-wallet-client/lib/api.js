@@ -1865,6 +1865,24 @@ API.prototype.publishTxProposal = function(opts, cb) {
 };
 
 /**
+ * unlock an address
+ * @param {Object} opts
+ * @param {String} opts.address     - the address to unlock
+ * @param {String} opts.unlockcode  - the code to use to unlock opts.address
+ */
+API.prototype.unlockAddress = function(opts, cb) {
+  $.checkState(this.credentials);
+
+  var self = this;
+  opts = opts || {};
+
+  self._doPostRequest('/v3/addresses/unlock/', function(err, result) {
+    if (err) return cb(err);
+    return cb(err, result);
+  });
+};
+
+/**
  * Create a new address
  *
  * @param {Object} opts
