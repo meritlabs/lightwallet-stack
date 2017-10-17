@@ -192,7 +192,7 @@ Merit.prototype.getAPIMethods = function() {
 
     // Merit Specific RPC
     ['generatereferralcode',  this, this.generateReferralCode, 0],
-    ['unlockwallet',          this, this.unlockWallet,         2],
+    ['unlockWallet',          this, this.unlockWallet,         2],
     ['validatereferralcode',  this, this.validateReferralCode, 1],
     ['getInputForEasySend', this, this.getInputForEasySend, 1],
     ['getanv',                this, this.getANV, 1],
@@ -2241,7 +2241,7 @@ Merit.prototype.unlockWallet = function(code, address, callback) {
   var self = this;
 
   if ((typeof code === 'string' || code instanceof String) && (typeof address === 'string' || address instanceof String)) {
-    self.client.unlockwalletwithaddress(address, code, function(err, response) {
+    self.client.unlockWalletWithAddress(address, code, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
