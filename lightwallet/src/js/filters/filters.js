@@ -32,6 +32,7 @@ angular.module('copayApp.filters', [])
       var formats = locale.NUMBER_FORMATS;
       var config = configService.getSync().wallet.settings;
       return function(amount) {
+        if (!amount) return null;
         if (!config) return amount;
 
         var fractionSize = 2;
