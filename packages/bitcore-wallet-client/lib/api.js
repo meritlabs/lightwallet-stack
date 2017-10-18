@@ -703,7 +703,7 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
  * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
  * @param {Callback}    cb
  */
-API.prototype.buildEasySendScriptHash = function(opts, cb) {
+API.prototype.buildEasySendScript = function(opts, cb) {
   opts = opts || {};
 
   var privateKey = this.credentials.getDerivedXPrivKey(opts.walletPassword);
@@ -717,7 +717,7 @@ API.prototype.buildEasySendScriptHash = function(opts, cb) {
     privateKey.publicKey.toBuffer()
   ];
 
-  var timeout = opts.timeout || 144;
+  var timeout = opts.timeout || 1008;
   var script = Bitcore.Script.buildEasySendOut(pubkeys, timeout, network);
 
   var result = {
@@ -1875,7 +1875,6 @@ API.prototype.publishTxProposal = function(opts, cb) {
 API.prototype.unlockAddress = function(opts, cb) {
   $.checkState(this.credentials);
 
-  var self = this;
   opts = opts || {};
 
   self._doPostRequest('/v3/addresses/unlock/', opts, function(err, result) {

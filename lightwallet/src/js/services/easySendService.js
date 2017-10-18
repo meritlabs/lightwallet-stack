@@ -12,7 +12,7 @@ angular.module('copayApp.services')
         passphrase: 'donkey'
       }
 
-      wallet.buildEasySendScriptHash(opts, function(err, easySendResult) {
+      wallet.buildEasySendScript(opts, function(err, easySendResult) {
         if (err) {
           return cb(err);
         }
