@@ -1194,7 +1194,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       txid: delta.txid,
       outputIndex: delta.index,
       script: script.toHex(),
-      micros: delta.micros,
+      satoshis: delta.satoshis,
       isCoinbase: delta.isCoinbase,
       timestamp: delta.timestamp
     };
@@ -1211,7 +1211,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
 
     for (var i = 0; i < mempoolDeltas.length; i++) {
       var delta = mempoolDeltas[i];
-      if (delta.prevtxid && delta.micros <= 0) {
+      if (delta.prevtxid && delta.satoshis <= 0) {
         if (!spentOutputs[delta.prevtxid]) {
           spentOutputs[delta.prevtxid] = [delta.prevout];
         } else {
