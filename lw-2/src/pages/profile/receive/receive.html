@@ -1,0 +1,61 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>Receive</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content > 
+
+
+    <div class="qr-container" margin-top>
+        <qr-code *ngIf="address" [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
+        <div class="address">{{ address }}</div>
+        <div>
+            <button ion-button clear [hidden]="!address" class="button-request" (click)="requestSpecificAmount()">
+                <span>Request Specific amount </span>
+                <ion-icon name="arrow-forward"></ion-icon>
+            </button>
+        </div>
+        <div>
+            <button ion-button clear  [hidden]="!address" class="button-address" (click)="setAddress(true)">
+                <span>Generate new address</span>
+            </button>
+        </div>
+    </div>
+
+    <ion-footer (click)="selectWallet()" *ngIf="wallet">
+        <ion-toolbar>
+
+            <ion-item >
+                <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
+                    <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
+                </i>
+
+                <h2 translate>{{wallet.name || wallet._id}}</h2>
+                <p>
+                    <span *ngIf="!wallet.isComplete()" class="assertive" translate>Incomplete</span>
+                    <span *ngIf="wallet.isComplete()">
+                    <span *ngIf="!wallet.balanceHidden">
+                        {{wallet.status.totalBalanceStr ? wallet.status.totalBalanceStr : ( wallet.cachedBalance ? wallet.cachedBalance   + (wallet.cachedBalanceUpdatedOn ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn  * 1000 | amTimeAgo) : '') : ''  ) }}
+                    </span>
+                    <span *ngIf="wallet.balanceHidden" translate>
+                        [Balance Hidden]
+                    </span>
+                    <span *ngIf="wallet.n > 1">
+                        {{wallet.m}}-of-{{wallet.n}}
+                    </span>
+                    <ion-icon *ngIf="!wallet.balanceHidden && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
+                              name="timer-outline"></ion-icon>
+
+                    <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>
+                </span>
+                </p>
+            </ion-item>
+
+        </ion-toolbar>
+    </ion-footer>
+
+</ion-content>

@@ -1,0 +1,93 @@
+<ion-header>
+    <ion-navbar color="secondary">
+        <ion-title translate>Import Wallet</ion-title>
+    </ion-navbar>
+    <ion-toolbar color="secondary">
+        <ion-segment [(ngModel)]="segment" >
+        <ion-segment-button value="phrase">
+            Phrase
+        </ion-segment-button>
+        <ion-segment-button value="file">
+            File
+        </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+    <span *ngIf="segment == 'phrase'">
+        <ion-item margin-top>
+            <ion-label translate>
+                Enter the recovery phrase (usually 12 words)
+            </ion-label>
+            <button (click)="openScanner()" ion-button icon-only item-right clear>
+                <ion-icon name="qr-scanner"  color="primary"></ion-icon>
+            </button>
+        </ion-item>
+
+        <ion-item>
+            <textarea fz-elastic [(ngModel)]="formData.words" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"
+                      [placeholder]="'Type it here'"
+            ></textarea>
+        </ion-item>
+
+        <ion-item-divider translate>Options</ion-item-divider>
+        <ion-item>
+            <ion-label translate>Password</ion-label>
+            <ion-input text-right [(ngModel)]="formData.phrasePassword" [placeholder]="'Recovery phrase password (optional)'"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-label translate>Derivation Path</ion-label>
+            <ion-input text-right [(ngModel)]="formData.derivationPath" [placeholder]="'BIP32 path for address derivation'"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-label translate>From Hardware Wallet</ion-label>
+            <ion-toggle [(ngModel)]="formData.fromHardwareWallet"></ion-toggle>
+        </ion-item>
+
+        <ion-item>
+            <ion-label translate>Testnet</ion-label>
+            <ion-toggle [(ngModel)]="formData.testnet"></ion-toggle>
+        </ion-item>
+
+        <ion-item margin-bottom>
+            <ion-label translate>Wallet Service Url</ion-label>
+            <ion-input text-right [(ngModel)]="formData.bwsUrl"></ion-input>
+        </ion-item>
+
+        <button class="action-button" margin-top block (click)="importMnemonic()" ion-button translate>Import</button>
+
+    </span>
+
+    <span *ngIf="segment == 'file'">
+
+        <ion-item margin-top>
+            <ion-label translate *ngIf="!formData.backupFile">
+                Choose a backup file from your computer
+            </ion-label>
+            <ion-label *ngIf="formData.backupFile">
+                {{formData.backupFile.name}}
+            </ion-label>
+            <button (click)="openImport()" ion-button icon-only item-right clear>
+                <ion-icon name="ios-share-outline" color="primary"></ion-icon>
+            </button>
+            <input type="file" (change)="fileChangeListener($event)"  #fileInput>
+        </ion-item>
+        <ion-item>
+            <ion-label translate>Password</ion-label>
+            <ion-input text-right [(ngModel)]="formData.filePassword" [placeholder]="'Your password'"></ion-input>
+        </ion-item>
+
+        <ion-item margin-bottom margin-top>
+            <ion-label translate>Wallet Service Url</ion-label>
+            <ion-input text-right [(ngModel)]="formData.bwsUrl"></ion-input>
+        </ion-item>
+
+        <button class="action-button" margin-top block (click)="importBlob()" ion-button translate>Import</button>
+
+    </span>
+
+</ion-content>

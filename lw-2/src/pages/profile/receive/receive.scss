@@ -1,0 +1,19 @@
+@import "../profile-module";
+page-receive {
+  @extend %module-profile;
+
+
+  text-align: center;
+
+  .address {
+    margin: 10px auto;
+  }
+
+  .qr-container {
+    margin-top: 100px !important;
+  }
+
+  .button-request, .button-address {
+    font-size: 12px;
+  }
+}

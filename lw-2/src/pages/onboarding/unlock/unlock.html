@@ -1,0 +1,31 @@
+<ion-header><ion-navbar></ion-navbar></ion-header>
+
+<ion-content fullscreen>
+
+    <div class="container">
+
+        <div class="title" translate>
+            Merit is an invite-only network.
+        </div>
+        <div class="text" translate>
+            Merit is controlling its growth and looking out for the long-term.
+        </div>
+        <div class="image"  translate>
+            <div class="illustration control"></div>
+        </div>
+        <div class="text" translate>
+            You'll need an unlock code from a friend or colleague.
+        </div>
+        <div class="bottom-buttons">
+            <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
+                [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'feil'"
+                [(ngModel)]="formData.unlockCode">
+            <button (click)="unlock()" ion-button icon-only translate>
+                <ion-icon name="arrow-forward"></ion-icon>
+            </button>
+        </div>
+
+    </div>
+
+
+</ion-content>
