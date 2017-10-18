@@ -3,7 +3,7 @@
 angular.module('copayApp.controllers').controller('tabSendController', function($scope, $rootScope, $log, $timeout, $ionicScrollDelegate, addressbookService, profileService, lodash, $state, walletService, incomingData, popupService, platformInfo, bwcError, gettextCatalog, scannerService) {
 
   var originalList;
-  var mobileContactList;
+  var deviceContactList;
   var CONTACTS_SHOW_LIMIT;
   var currentContactsPage;
   $scope.isChromeApp = platformInfo.isChromeApp;
@@ -118,12 +118,12 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     });
   };
 
-  var initMobileContacts = function(cb) {
-    addressbookService.getAllMobileContacts(function(contacts) {
+  var initDeviceContacts = function(cb) {
+    addressbookService.getAllDeviceContacts(function(contacts) {
       contacts = lodash.filter(contacts, function(contact) {
         return !(lodash.isEmpty(contact.emails) && lodash.isEmpty(contact.phoneNumbers));
       });
-      mobileContactList = mobileContactList.concat(lodash.map(contacts, function(contact) {
+      deviceContactList = deviceContactList.concat(lodash.map(contacts, function(contact) {
         var item = {
           name: contact.name.formatted,
           emails: lodash.map(contact.emails, function(o) { return o.value; }),
@@ -233,9 +233,9 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     }
 
     var result = findMatchingContacts(originalList, search);
-    var mobileResult = findMatchingContacts(mobileContactList, search);
+    var deviceResult = findMatchingContacts(deviceContactList, search);
 
-    $scope.list = result.concat(lodash.map(mobileResult, function(contact) {
+    $scope.list = result.concat(lodash.map(deviceResult, function(contact) {
       return contactWithSendMethod(contact, search);
     }));
   };
@@ -282,7 +282,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
       search: null
     };
     originalList = [];
-    mobileContactList = [];
+    deviceContactList = [];
     CONTACTS_SHOW_LIMIT = 10;
     currentContactsPage = 0;
     hasWallets();
@@ -296,7 +296,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     updateHasFunds();
     updateWalletsList();
     initContactsList(function() {
-      initMobileContacts(function() {
+      initDeviceContacts(function() {
         initList();
       });
     });

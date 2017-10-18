@@ -45,7 +45,7 @@ angular.module('copayApp.services').factory('addressbookService', function(bitco
     return cb();
   };
 
-  root.getAllMobileContacts = function(cb) {
+  root.getAllDeviceContacts = function(cb) {
     return root.searchContacts('', cb);
   };
 
