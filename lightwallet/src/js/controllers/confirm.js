@@ -169,7 +169,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
           }
           tx.script = result.script;
           tx.script.isOutput = true;
-          tx.easySendSecret = result.secret;
+          tx.easySendSecret = result.secret.toString("hex");
           tx.senderPublicKey = result.senderPubKey;
           tx.toAddress = tx.script.toAddress().toString();
 
