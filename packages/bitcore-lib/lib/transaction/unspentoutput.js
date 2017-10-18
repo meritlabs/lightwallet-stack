@@ -44,7 +44,6 @@ function UnspentOutput(data) {
   $.checkArgument(!_.isUndefined(data.scriptPubKey) || !_.isUndefined(data.script),
                   'Must provide the scriptPubKey for that output!');
   var script = new Script(data.scriptPubKey || data.script);
-  // TODO: rename satoshis
   $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.micros),
                   'Must provide an amount for the output');
   var amount = !_.isUndefined(data.amount) ? new Unit.fromMRT(data.amount).toMicros() : data.micros;
