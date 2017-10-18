@@ -1,0 +1,41 @@
+$wallet-default-color: rgb(1, 148, 119);
+$wallet-locked-color: #999;
+
+%module-profile {
+
+  .wallet-icon {
+    padding: 7px;
+    img {
+      height: 36px;
+      border-radius: 4px;
+      box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 12px 0px;
+      padding: 4px 8px;
+      vertical-align: middle;
+    }
+    &.default img {
+      background: $wallet-default-color;
+    }
+    &.locked img {
+      background: $wallet-locked-color !important;
+    }
+  }
+
+  .error {
+    color: color($colors, 'danger');
+  }
+
+
+  ion-card ion-icon {
+    font-size: 50px !important;
+  }
+
+  ion-card h2 {
+    color: #666;
+    font-size: 16px;
+    font-weight: normal;
+  }
+  ion-card p {
+    color: rgb(102, 102, 119);
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,53 @@
+page-import {
+
+  .action-button {
+    width: 85%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  //ion-footer  {
+  //  text-align: center;
+  //  height: 64px;
+  //  line-height: 64px;
+  //  border: none !important;
+  //  padding: 0 !important;
+  //  ion-toolbar {
+  //    height: 70px;
+  //    background: white;
+  //    border: none !important;
+  //    padding: 0 !important;
+  //    .toolbar-content {
+  //      background: white;
+  //      border: none;
+  //      padding: 0 !important;
+  //      height: 70px;
+  //    }
+  //  }
+  //  button {
+  //    margin-top: 0 !important;
+  //    vertical-align: top;
+  //    max-width: 300px;
+  //    width: 85%;
+  //    display: inline-block;
+  //  }
+  //}
+
+  textarea {
+    width: 100%;
+    min-height: 65px;
+    border: none;
+    font-weight: normal;
+    text-transform: none;
+  }
+
+  textarea::-webkit-input-placeholder {
+    color: rgba(0,0,0,0.4);
+    font-size: 14px;
+  }
+
+  input[type="file"] {
+    visibility: hidden ;
+  }
+
+}

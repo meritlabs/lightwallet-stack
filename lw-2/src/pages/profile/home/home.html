@@ -1,0 +1,72 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>
+            <img src="assets/img/logo-negative.svg">
+        </ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+    <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
+
+
+    <ion-item-divider translate>
+        Network
+    </ion-item-divider>
+
+    <ion-item>
+        <i class="wallet-icon default" item-start>
+            <img src="assets/img/icon-wallet.svg" >
+        </i>
+        <h2 translate>Total value of your network</h2>
+        <p translate>{{totalAmountFormatted}}</p>
+    </ion-item>
+
+
+    <ion-item-divider translate>
+        Wallets
+    </ion-item-divider>
+    <ion-list>
+        <button ion-item (click)="toAddWallet()" class="add-item">
+            <h2 translate> Create new wallet</h2>
+        </button>
+
+        <button ion-item (click)="toImportWallet()" class="add-item">
+            <h2 translate>Import wallet</h2>
+        </button>
+
+        <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)">
+            <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
+                <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
+            </i>
+            <h2 translate>{{wallet.name || wallet._id}}</h2>
+            <p>
+                <span *ngIf="!wallet.isComplete()" class="assertive" translate>Incomplete</span>
+                <span *ngIf="wallet.isComplete()">
+                    <span *ngIf="!wallet.balanceHidden">
+                        {{wallet.status.totalBalanceStr ? wallet.status.totalBalanceStr : ( wallet.cachedBalance ? wallet.cachedBalance   + (wallet.cachedBalanceUpdatedOn ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn  * 1000 | amTimeAgo) : '') : ''  ) }}
+                    </span>
+                    <span *ngIf="wallet.balanceHidden" translate>
+                        [Balance Hidden]
+                    </span>
+                    <span *ngIf="wallet.n > 1">
+                        {{wallet.m}}-of-{{wallet.n}}
+                    </span>
+                    <ion-icon *ngIf="!wallet.balanceHidden && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
+                    name="timer-outline"></ion-icon>
+
+                    <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>
+                </span>
+            </p>
+        </button>
+    </ion-list>
+
+
+
+
+
+</ion-content>

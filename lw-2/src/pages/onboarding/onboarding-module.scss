@@ -1,0 +1,81 @@
+%module-onboarding {
+
+  ion-header {
+    &:after {
+      display: none;
+    }
+    ion-navbar, .toolbar-background {
+      background: transparent;
+      border: none !important;
+    }
+    ion-navbar button {
+      color: color($colors, 'primary') !important;
+    }
+  }
+
+  .scroll-content {
+    background: color($colors, 'secondary');
+    background-image: linear-gradient(to bottom, color($colors, 'secondary'), lighten(color($colors, 'secondary'), 5%));
+
+    text-align: center;
+    overflow-y: hidden;
+    height: 100%;
+    margin-top: 0 !important;
+    padding: 0 !important;
+
+    .container {
+      height: 100%;
+      margin-top: 0 !important;
+      display: flex;
+      flex-direction: column;
+      padding-top: 44px;
+      padding-bottom: 33px;
+      box-sizing: border-box;
+    }
+
+    .text {
+      padding: 1.5rem 3rem;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 24px;
+    }
+    .title {
+      padding: 0  3rem;
+      color: rgb(194, 201, 209);
+      font-weight: normal;
+      font-size: 24px;
+      line-height: 31px;
+    }
+    .image {
+      flex: 1;
+      .illustration {
+        width: 100%;
+        height: 100%;
+        margin: 0 auto;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        background-size: contain !important;
+        z-index: -1;
+      }
+    }
+    .bottom-buttons {
+      height: 50px;
+      width: 85%;
+      max-width: 400px;
+      margin: 0 auto;
+      padding-top: 10px;
+      button {
+        padding: 0 10px;
+        height: 40px;
+        vertical-align: top;
+        margin: 0;
+        margin-left: 2px;
+      }
+    }
+  }
+
+
+
+
+}

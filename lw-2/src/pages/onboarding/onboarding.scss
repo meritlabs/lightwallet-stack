@@ -1,0 +1,16 @@
+@import "onboarding-module";
+page-onboarding {
+  @extend %module-onboarding;
+
+  img {
+    height: 5%;
+    margin-top: 20%;
+  }
+  .bottom-buttons {
+    height: 60px !important;
+    padding-top: 0 !important;
+    button {
+      margin: 0;
+    }
+  }
+}

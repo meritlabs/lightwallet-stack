@@ -1,0 +1,27 @@
+@import "../onboarding-module";
+page-tour {
+  @extend %module-onboarding;
+
+  .slide-zoom {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0 !important;
+    padding-top: 44px;
+    box-sizing: border-box;
+  }
+
+  .bottom-buttons {
+    height: 90px !important;
+  }
+
+  .illustration.currency {
+    background:  url('../assets/img/onboarding/tour-currency.svg');
+  }
+  .illustration.control {
+    background:  url('../assets/img/onboarding/tour-control.svg');
+  }
+  .illustration.secure {
+    background:  url('../assets/img/onboarding/tour-phone.svg');
+  }
+}
