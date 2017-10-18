@@ -372,7 +372,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
         unlockCode: opts.beacon, 
         address: unlockAddress
       }
-      self._unlockAddress(unlockParams, function(err, result){
+      self.unlockAddress(unlockParams, function(err, result){
         if (err) {
           return acb(err);
         }
@@ -547,7 +547,7 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
  * @param {String} opts.network The relevant network to execute this command (livenet/testnet)
  */
 
-WalletService.prototype._unlockAddress = function (opts, cb) {
+WalletService.prototype.unlockAddress = function (opts, cb) {
   var self = this;
   opts = opts || {};
 
@@ -1067,7 +1067,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
       unlockCode: wallet.shareCode,
       address: address.address
     }
-    self._unlockAddress(unlockParams, function(err, result){
+    self.unlockAddress(unlockParams, function(err, result){
       if (err) return cb(err);
       
       self.storage.storeAddressAndWallet(wallet, address, function(err) {
@@ -1990,16 +1990,17 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
     var output = opts.outputs[i];
     output.valid = false;
 
-    if (!checkRequired(output, ['toAddress', 'amount'])) {
-      return new ClientError('Argument missing in output #' + (i + 1) + '.');
-    }
-
     var toAddress = {};
     try {
-      toAddress = new Bitcore.Address(output.toAddress);
+      if (checkRequired(output, ['toAddress', 'amount'])) {
+        toAddress = new Bitcore.Address(output.toAddress);
+      } else {
+        return new ClientError('Argument missing in output #' + (i + 1) + '.');
+      }
     } catch (ex) {
-      return Errors.INVALID_ADDRESS;
+      return new ClientError('exception checking address: ' + ex);
     }
+
     if (toAddress.network != wallet.getNetworkName()) {
       return Errors.INCORRECT_ADDRESS_NETWORK;
     }
@@ -2013,6 +2014,7 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
 
     output.valid = true;
   }
+
   return null;
 };
 
@@ -2188,7 +2190,7 @@ WalletService.prototype.createTx = function(opts, cb) {
                 unlockCode: wallet.shareCode,
                 address: changeAddress.address
               }
-              self._unlockAddress(unlockParams, function(err, result){
+              self.unlockAddress(unlockParams, function(err, result){
                 if (err) return next(err);
               });
               next();
@@ -2212,6 +2214,7 @@ WalletService.prototype.createTx = function(opts, cb) {
               feeLevel: opts.feeLevel,
               feePerKb: feePerKb,
               payProUrl: opts.payProUrl,
+              network: wallet.getNetworkName(),
               walletM: wallet.m,
               walletN: wallet.n,
               excludeUnconfirmedUtxos: !!opts.excludeUnconfirmedUtxos,
@@ -2246,6 +2249,7 @@ WalletService.prototype.createTx = function(opts, cb) {
     });
   });
 };
+
 WalletService.prototype._verifyRequestPubKey = function(requestPubKey, signature, xPubKey) {
   var pub = (new Bitcore.HDPublicKey(xPubKey)).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
   return Utils.verifyMessage(requestPubKey, signature, pub.toString());
