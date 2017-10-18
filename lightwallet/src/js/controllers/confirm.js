@@ -177,8 +177,8 @@ angular.module('copayApp.controllers').controller('confirmController', function(
           tx.url = 'localhost:8100/#/onboarding/easy' +
             '?se=' + tx.easySendSecret +
             '&sk=' + tx.senderPublicKey +
-            '&sn=foo&bt=144&uc=58094f46fb'
-          tx.rpcCall = 'easyreceive ' + tx.easySendSecret + ' ' + tx.senderPublicKey + ' donkey 144';
+            '&sn=foo&bt=1008&uc=58094f46fb'
+          tx.rpcCall = 'easyreceive ' + tx.easySendSecret + ' ' + tx.senderPublicKey + ' donkey 1008';
         });
       }
     });
