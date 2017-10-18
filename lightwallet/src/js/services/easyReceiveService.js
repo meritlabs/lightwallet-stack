@@ -174,7 +174,6 @@ angular.module('copayApp.services')
         receivePub,
         senderPubKey
       ];
-      console.log(publicKeys);
 
       return {
         privateKey: receivePrv,
