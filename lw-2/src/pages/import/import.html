@@ -64,14 +64,14 @@
 
     <span *ngIf="segment == 'file'">
 
-        <ion-item margin-top>
+        <ion-item margin-top (click)="openImport()">
             <ion-label translate *ngIf="!formData.backupFile">
                 Choose a backup file from your computer
             </ion-label>
             <ion-label *ngIf="formData.backupFile">
                 {{formData.backupFile.name}}
             </ion-label>
-            <button (click)="openImport()" ion-button icon-only item-right clear>
+            <button  ion-button icon-only item-right clear>
                 <ion-icon name="ios-share-outline" color="primary"></ion-icon>
             </button>
             <input type="file" (change)="fileChangeListener($event)"  #fileInput>
