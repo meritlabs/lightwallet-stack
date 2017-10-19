@@ -809,7 +809,7 @@ API.prototype.openWallet = function(cb) {
   if (self.credentials.isComplete() && self.credentials.hasWalletInfo())
     return cb(null, true);
 
-  self._doGetRequest('/v2/wallets/?includeExtendedInfo=1', function(err, ret) {
+  self._doGetRequest('/v1/wallets/?includeExtendedInfo=1', function(err, ret) {
     if (err) return cb(err);
     var wallet = ret.wallet;
 
@@ -1202,7 +1202,7 @@ API.prototype._doJoinWallet = function(walletId, walletPrivKey, xPubKey, request
   var hash = Utils.getCopayerHash(args.name, args.xPubKey, args.requestPubKey);
   args.copayerSignature = Utils.signMessage(hash, walletPrivKey);
 
-  var url = '/v2/wallets/' + walletId + '/copayers';
+  var url = '/v1/wallets/' + walletId + '/copayers';
   this._doPostRequest(url, args, function(err, body) {
     if (err) return cb(err);
     self._processWallet(body.wallet);
@@ -1323,7 +1323,7 @@ API.prototype.getFeeLevels = function(network, cb) {
 
   $.checkArgument(network || _.includes(['livenet', 'testnet'], network));
 
-  self._doGetRequest('/v2/feelevels/?network=' + (network || 'livenet'), function(err, result) {
+  self._doGetRequest('/v1/feelevels/?network=' + (network || 'livenet'), function(err, result) {
     if (err) return cb(err);
     return cb(err, result);
   });
@@ -1406,7 +1406,7 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
   };
 
   // Create wallet
-  self._doPostRequest('/v2/wallets/', args, function(err, res) {
+  self._doPostRequest('/v1/wallets/', args, function(err, res) {
     if (err) return cb(err);
 
     var walletId = res.walletId;
@@ -1511,7 +1511,7 @@ API.prototype.recreateWallet = function(cb) {
       beacon: c.beacon
     };
 
-    self._doPostRequest('/v2/wallets/', args, function(err, body) {
+    self._doPostRequest('/v1/wallets/', args, function(err, body) {
       if (err) {
         if (!(err instanceof Errors.WALLET_ALREADY_EXISTS))
           return cb(err);
@@ -1661,7 +1661,7 @@ API.prototype.getStatus = function(opts, cb) {
   qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
   qs.push('twoStep=' + (opts.twoStep ? '1' : '0'));
 
-  self._doGetRequest('/v2/wallets/?' + qs.join('&'), function(err, result) {
+  self._doGetRequest('/v1/wallets/?' + qs.join('&'), function(err, result) {
     if (err) return cb(err);
     if (result.wallet.status == 'pending') {
       var c = self.credentials;
@@ -1823,7 +1823,7 @@ API.prototype.createTxProposal = function(opts, cb) {
 
   var args = self._getCreateTxProposalArgs(opts);
 
-  self._doPostRequest('/v2/txproposals/', args, function(err, txp) {
+  self._doPostRequest('/v1/txproposals/', args, function(err, txp) {
     if (err) return cb(err);
 
     self._processTxps(txp);
@@ -1906,7 +1906,7 @@ API.prototype.createAddress = function(opts, cb) {
 
   opts = opts || {};
 
-  self._doPostRequest('/v3/addresses/', opts, function(err, address) {
+  self._doPostRequest('/v1/addresses/', opts, function(err, address) {
     if (err) return cb(err);
 
     if (!Verifier.checkAddress(self.credentials, address)) {
@@ -2175,7 +2175,7 @@ API.signTxProposalFromAirGapped = function(key, txp, unencryptedPkr, m, n, opts)
   }
 
   var newClient = new API({
-    baseUrl: 'https://bws.example.com/bws/api'
+    baseUrl: 'https://bws.example.com/bws/api' // WHY?!
   });
 
   if (key.slice(0, 4) === 'xprv' || key.slice(0, 4) === 'tprv') {
@@ -2558,7 +2558,7 @@ API.prototype.pushNotificationsSubscribe = function(opts, cb) {
  * @return {Callback} cb - Return error if exists
  */
 API.prototype.pushNotificationsUnsubscribe = function(token, cb) {
-  var url = '/v2/pushnotifications/subscriptions/' + token;
+  var url = '/v1/pushnotifications/subscriptions/' + token;
   this._doDeleteRequest(url, cb);
 };
 
@@ -2746,7 +2746,7 @@ API.prototype.validateEasyScript = function(scriptId, cb) {
 
   console.log("Validating: " + scriptId);
 
-  var url = '/v5/easyreceive/validate/' + scriptId;
+  var url = '/v1/easyreceive/validate/' + scriptId;
   this._doGetRequest(url, function(err, body) {
     if (err) return cb(err);
     return cb(null, body);
