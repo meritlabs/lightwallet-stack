@@ -348,7 +348,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.post('/v3/addresses/unlock/', function(req, res) {
+  router.post('/v1/addresses/unlock/', function(req, res) {
     var server;
     try {
       server = getServer(req, res);
