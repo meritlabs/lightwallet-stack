@@ -26,7 +26,7 @@ var ExpressApp = function(node) {
   if (!node) {
     throw new Error("Bitcore node not detected; shutting down...");
   }
-  
+
   this.node = node;
   this.app = express();
 };
@@ -684,14 +684,11 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   /*
   * EasySend Routes
-  * Used to process easySend and seasyReceive actions
-  * These are all namespaced to v5 to differentiate from coPay versioning
   */
-
   router.get('/v1/easyreceive/validate/:scriptId', function(req, res) {
     var scriptId = req.params['scriptId']
 
-    var server = getServer(req, res); 
+    var server = getServer(req, res);
     server.validateEasyScript(scriptId, function(err, response) {
       if (err) {
         log.debug("Called Validate EasyReceipt in BWS: ", err);
@@ -700,7 +697,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       res.json(response);
     });
   });
-  
+
   router.post('/v1/referraltxconfirmations/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       server.referralTxConfirmationSubscribe(req.body, function(err, response) {
@@ -753,8 +750,8 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   this.app.use(opts.basePath || '/bws/api', router);
 
-  // Pass bitcore node to th walletService to initialize it.  
-  // This allows us to access Meritd directly from MWS.  
+  // Pass bitcore node to th walletService to initialize it.
+  // This allows us to access Meritd directly from MWS.
   opts.node = this.node;
   WalletService.initialize(opts, cb);
 
