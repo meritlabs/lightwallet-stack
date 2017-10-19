@@ -22,6 +22,10 @@ export class SettingsPage {
     //do something here
   }
 
+  toAddressbook() {
+    this.navCtrl.push('AddressbookPage');
+  }
+
   logout() {
     this.app.getRootNav().setRoot('OnboardingPage');
   }

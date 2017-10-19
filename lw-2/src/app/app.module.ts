@@ -5,6 +5,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
 import { MyApp } from './app.component';
+import {ProfileProvider} from "../providers/profile";
+import {ProfileProviderMock} from "../providers/mocks/profile";
 
 @NgModule({
   declarations: [
@@ -21,6 +23,7 @@ import { MyApp } from './app.component';
   providers: [
     StatusBar,
     SplashScreen,
+    {provide: ProfileProvider, useClass: ProfileProviderMock},
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

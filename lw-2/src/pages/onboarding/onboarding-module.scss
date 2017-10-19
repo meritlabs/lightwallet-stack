@@ -20,7 +20,6 @@
     text-align: center;
     overflow-y: hidden;
     height: 100%;
-    margin-top: 0 !important;
     padding: 0 !important;
 
     .container {
@@ -49,6 +48,7 @@
     }
     .image {
       flex: 1;
+      padding: 20px;
       .illustration {
         width: 100%;
         height: 100%;

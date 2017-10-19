@@ -14,4 +14,17 @@
 
 <ion-content>
 
+    <span *ngIf="wallets">
+        <button ion-item *ngFor="let wallet of wallets" [class.selected]="selectedWallet.id == wallet.id" (click)="select(wallet)">
+            <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
+                <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
+            </i>
+            <h2 translate>{{wallet.name || wallet._id}}</h2>
+            <p>
+                TEST
+            </p>
+        </button>
+    </span>
+
+
 </ion-content>

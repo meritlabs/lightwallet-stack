@@ -1,32 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
-class WalletMock {
-  name =  'Wallet Mock';
-  id = 'id123';
-  status = {totalBalanceStr: '0 bits', totalBalanceAlternative: '0.0', alternativeIsoCode: 'USD', totalBalanceMicros: 0, spendableAmount: 0};
-  private complete = true;
-  isComplete = () => { return this.complete; };
-  balanceHidden =  false;
-  color =  'darkred';
-  locked = false;
-  cachedBalance:string;
-  cachedBalanceUpdatedOn:number;
-  m = 1;
-  n = 1;
-  error = false;
-  canSign = () => { return true; };
-  getPrivKeyExternalSourceName = () => { return ''; };
-  isPrivKeyExternal = () => { return false; };
-  isPrivKeyEncrypted = () => { return false; };
-
-  constructor(fields:any) {
-    for (const f in fields) {
-      this[f] = fields[f];
-    }
-  }
-}
-
+import {ProfileProvider} from "../../../providers/profile";
+import {Wallet} from "../../../models/Wallet";
 
 @IonicPage()
 @Component({
@@ -35,36 +11,29 @@ class WalletMock {
 })
 export class ReceivePage {
 
-  public wallets = [
-    new WalletMock({name: 'Empty wallet'}),
-    new WalletMock({color: 'orange', name: 'Hidden balance wallet', balanceHidden: true}),
-    new WalletMock({color: 'darkblue', name: 'Cached balance wallet', cachedBalance: '10 bits', cachedBalanceUpdatedOn: 1508229051}),
-    new WalletMock({color: 'red', name: 'Locked wallet', locked: true }),
-    new WalletMock({color: 'darkgreen', name: 'Incomplete wallet', complete: false}),
-    new WalletMock({color: undefined, name: 'Multisig wallet', m: 2}),
-    new WalletMock({color: 'darkcyan', name: 'Processing wallet', status: {totalBalanceStr: '10 bits', totalBalanceMicros: 10, spendableAmount: 0}}),
-    new WalletMock({color: 'darkslateblue', name: 'Error wallet', error: 'Some error'}),
-  ];
-  public wallet:WalletMock;
-
   public protocolHandler: string;
   public address: string;
   public qrAddress: string;
 
+  public wallets:Array<Wallet>;
+  public wallet:Wallet;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    public ModalCtrl:ModalController
+    private  ModalCtrl:ModalController,
+    private profileProvider:ProfileProvider
   ) {
     this.protocolHandler = "bitcoin";
     this.address = "1FgGP9dKqtWC1Q9xGhPYVmAeyezeZCFjhf";
     this.updateQrAddress();
-    this.wallet = this.wallets[0];
-    console.log(this.wallet);
   }
 
   ionViewDidLoad() {
     //do something here
+    this.wallets = this.profileProvider.getWallets();
+    this.wallet = this.wallets[0];
+
   }
 
   requestSpecificAmount() {
@@ -81,7 +50,31 @@ export class ReceivePage {
   }
 
   selectWallet() {
-    this.ModalCtrl.create('SelectWalletModal').present();
+    let modal = this.ModalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
+    modal.present();
+    modal.onDidDismiss((wallet) => {
+      if (wallet) this.wallet = wallet;
+    });
+  }
+
+  share() {
+    //@TODO implement sharing using Ionic Social Sharing
+  }
+
+  copyToClipboard(address) {
+    // @TODO implement copy to clipboard and notify
+  }
+
+  toCopayers() {
+    this.navCtrl.push('CopayersPage', {walletId: this.wallet.id, wallet: this.wallet});
+  }
+
+  shareButtonAvailable() {
+    return (
+      this.wallet
+      && this.wallet.isComplete()
+      //&& TODO CHECK IF IS NATIVE
+    );
   }
 
 }

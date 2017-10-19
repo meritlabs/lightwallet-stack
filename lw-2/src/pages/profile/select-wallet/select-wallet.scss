@@ -1,3 +1,8 @@
+@import "../profile-module";
 page-select-wallet {
+  @extend %module-profile;
 
+  .selected h2, .selected p{
+    color: color($colors, 'primary');
+  }
 }

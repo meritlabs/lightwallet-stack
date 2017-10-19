@@ -1,0 +1,72 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>{{wallet.name}}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="share()" *ngIf="shareButtonAvailable()">
+                <ion-icon name="share"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+
+    <span *ngIf="wallet.notAuthorized">
+        <ion-item-divider translate >
+                Wallet incomplete and broken. Delete it and create a new one
+        </ion-item-divider>
+    </span>
+
+    <span *ngIf="!wallet.notAuthorized">
+
+<ion-item-divider translate>Share this invitation with your copayers</ion-item-divider>
+        <div (click)="copyToClipboard(secret)" *ngIf="wallet.secret">
+
+            <qr-code [value]="wallet.secret" [level]="L" [size]="220" [foreground]="'#334'"></qr-code>
+
+            <div class="secret">{{wallet.secret}}</div>
+
+            <button clear color="danger" (click)="cancelInvitation()" ion-button translate>Cancel invitation</button>
+        </div>
+
+
+        <div *ngIf="!wallet.secret" class="loading">
+            <ion-spinner></ion-spinner>
+        </div>
+
+
+
+        <ion-list *ngIf="wallet.secret" margin-top>
+
+            <ion-item>
+                <ion-label translate>Waiting for copayers</ion-label>
+                <<small item-right>
+                    [ <span translate>{{wallet.m}}-of-{{wallet.n}}</span> ]
+                </small>
+            </ion-item>
+
+
+            <ion-item *ngFor="let copayer of wallet.copayers">
+                <ion-icon item-start name="checkmark"></ion-icon>
+                <ion-label *ngIf="copayer.id == wallet.copayerId" translate>
+                    Me
+                </ion-label>
+                <ion-label *ngIf="copayer.id != wallet.copayerId" translate>
+                    {{copayer.name}}
+                </ion-label>
+            </ion-item>
+
+
+
+
+
+
+        </ion-list>
+    </span>
+
+
+
+</ion-content>
