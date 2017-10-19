@@ -695,6 +695,42 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
 };
 
 /**
+ * Create an easySend script and create a transaction to the script address
+ *
+ * @param {Object}      opts
+ * @param {string}      opts.passphrase       - optional password to generate receiver's private key
+ * @param {number}      opts.timeout          - maximum depth transaction is redeemable by receiver
+ * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
+ * @param {Callback}    cb
+ */
+API.prototype.buildEasySendScript = function(opts, cb) {
+  opts = opts || {};
+
+  var privateKey = this.credentials.getDerivedXPrivKey(opts.walletPassword);
+  var network = opts.network || 'livenet';
+
+  // {key, secret}
+  var rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
+
+  var pubkeys = [
+    rcvPair.key.publicKey.toBuffer(),
+    privateKey.publicKey.toBuffer()
+  ];
+
+  var timeout = opts.timeout || 1008;
+  var script = Bitcore.Script.buildEasySendOut(pubkeys, timeout, network);
+
+  var result = {
+    receiverPubKey: rcvPair.key.publicKey,
+    script: script.toScriptHashOut(),
+    senderPubKey: privateKey.publicKey.toString(),
+    secret: rcvPair.secret.toString('hex')
+  };
+
+  cb(null, result);
+}
+
+/**
  * Creates a transaction to redeem an easy send transaction. The input param
  * must contain
  *    {
@@ -717,8 +753,6 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
 API.prototype.buildEasySendRedeemTransaction = function(input, destinationAddress, opts) {
   //TODO: Create and sign a transaction to redeem easy send. Use input as
   //unspent Txo and use script to create scriptSig
-  var self = this;
-
   opts = opts || {};
 
   var inputAddress = input.txn.scriptId;
@@ -1829,6 +1863,23 @@ API.prototype.publishTxProposal = function(opts, cb) {
     if (err) return cb(err);
     self._processTxps(txp);
     return cb(null, txp);
+  });
+};
+
+/**
+ * unlock an address
+ * @param {Object} opts
+ * @param {String} opts.address     - the address to unlock
+ * @param {String} opts.unlockcode  - the code to use to unlock opts.address
+ */
+API.prototype.unlockAddress = function(opts, cb) {
+  $.checkState(this.credentials);
+
+  opts = opts || {};
+
+  self._doPostRequest('/v3/addresses/unlock/', opts, function(err, result) {
+    if (err) return cb(err);
+    return cb(err, result);
   });
 };
 
