@@ -1178,7 +1178,7 @@ WalletService.prototype._getUtxos = function(addresses, cb) {
     if (err) return cb(err);
 
     var utxos = _.map(utxos, function(utxo) {
-      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations', 'isCoinbase', 'isMature']);
+      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations', 'isCoinbase', 'isMature', 'isMine', 'isChange']);
       u.confirmations = u.confirmations || 0;
       u.locked = false;
       u.micros = _.isNumber(u.micros) ? +u.micros : Utils.strip(u.amount * 1e8);
@@ -1261,6 +1261,17 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
       });
     },
     function(next) {
+      // Let's filter through and classify all outputs.  
+      // We specifically want to know if they are change or belong to us.
+      var indexedAddresses = _.indexBy(allAddresses, 'address');
+      _.each(allUtxos, function(utxo){
+        var address = indexedAddresses[utxo.address];
+        utxo.isMine = !!address;
+        utxo.isChange = address ? address.isChange : false;
+      });
+      return next();
+    },
+    function(next) {
       // Needed for the clients to sign UTXOs
       var addressToPath = _.indexBy(allAddresses, 'address');
       _.each(allUtxos, function(utxo) {
@@ -1296,9 +1307,12 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
   var balance = {
     totalAmount: _.sum(utxos, 'micros'),
     lockedAmount: _.sum(_.filter(utxos, 'locked'), 'micros'),
+    // We believe it makes sense to show change as confirmed.  This is sensical because a transaction
+    // will either be rejected or accepted in its entirety.  (Eg. It is not that some Vouts will be 
+    // accepted while others will be denied.)
     totalConfirmedAmount: _.sum(
       _.filter(utxos, function(utxo) {
-        return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0));
+        return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) || (utxo.isMine && utxo.isChange && utxo.micros >= 0));
       }),
     'micros'),
     lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
@@ -1314,7 +1328,7 @@ WalletService.prototype._getBalanceFromAddresses = function(addresses, cb) {
   var self = this;
 
   self._getUtxosForCurrentWallet(addresses, function(err, utxos) {
-    if (err) return cb(err);
+        if (err) return cb(err);
 
     var balance = self._totalizeUtxos(utxos);
 
