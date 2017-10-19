@@ -1877,7 +1877,7 @@ API.prototype.unlockAddress = function(opts, cb) {
 
   opts = opts || {};
 
-  self._doPostRequest('/v3/addresses/unlock/', opts, function(err, result) {
+  self._doPostRequest('/v1/addresses/unlock/', opts, function(err, result) {
     if (err) return cb(err);
     return cb(err, result);
   });
