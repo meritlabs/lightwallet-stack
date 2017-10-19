@@ -558,23 +558,21 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
   if (!opts.address) {
     cb(new ClientError('No unlock address provided.'));
   }
-
-  var network = opts.network || 'testnet';  // TODO: Support livenet formally.
-  var bc = self._getBlockchainExplorer(network);
-  var unlocked = false;
   
-  bc.unlockWallet(opts.unlockCode, opts.address.toString(), function(errMsg, result) {
+  var unlocked = false;
+  localMeritDaemon.unlockWallet(opts.unlockCode, opts.address.toString(), function(errMsg, result) {
 
     if (errMsg)  {
       // TODO: Use Error codes instead of string matching.
       // TODO: Even sooner, we should have more descriptive error states coming back
       // from the blockchain explorer.
-      console.log("Got an error in unlock: " + errMsg);
-      if (errMsg == "Error querying the blockchain") {
-        return cb(Errors.UNLOCK_STILL_PENDING);
-      } else {
+      log.warn("Got an error in unlock: " + errMsg);
+      if ('provided code does not exist in the chain'.indexOf(errMsg)) {
         return cb(Errors.UNLOCK_CODE_INVALID);
-      }
+      } 
+      if ('unlockwalletwithaddress: Address is already beaconed.'.indexOf(errMsg)) {
+        return cb(Errors.UNLOCKED_ALREADY);
+      } 
     }
 
     unlocked = true;
@@ -2190,8 +2188,10 @@ WalletService.prototype.createTx = function(opts, cb) {
                 unlockCode: wallet.shareCode,
                 address: changeAddress.address
               }
-              self.unlockAddress(unlockParams, function(err, result){
-                if (err) return next(err);
+              self._unlockAddress(unlockParams, function(err, result){
+                // If the change address is unlocked already, we can continue with 
+                // the creation of the TXN.
+                if (err && !(err == Errors.UNLOCKED_ALREADY)) return next(err);
               });
               next();
             });
