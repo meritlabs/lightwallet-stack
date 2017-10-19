@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('confirmController', function($rootScope, $scope, $interval, $filter, $timeout, $ionicScrollDelegate, gettextCatalog, walletService, platformInfo, lodash, configService, rateService, $stateParams, $window, $state, $log, profileService, bitcore, txFormatService, ongoingProcess, $ionicModal, popupService, $ionicHistory, $ionicConfig, payproService, feeService, bwcError, txConfirmNotification) {
+angular.module('copayApp.controllers').controller('confirmController', function($rootScope, $scope, $interval, $filter, $timeout, $ionicScrollDelegate, gettextCatalog, walletService, platformInfo, lodash, configService, rateService, $stateParams, $window, $state, $log, profileService, bitcore, txFormatService, ongoingProcess, $ionicModal, popupService, $ionicHistory, $ionicConfig, payproService, feeService, bwcError, txConfirmNotification, easySendService) {
 
   var countDown = null;
   var CONFIRM_LIMIT_USD = 20;
@@ -69,14 +69,13 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
 
-    function setWalletSelector(network, minAmount, cb) {
+    function setWalletSelector(minAmount, cb) {
 
       // no min amount? (sendMax) => look for no empty wallets
       minAmount = minAmount || 1;
 
       $scope.wallets = profileService.getWallets({
         onlyComplete: true,
-        network: network
       });
 
       if (!$scope.wallets || !$scope.wallets.length) {
@@ -137,7 +136,6 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       toEmail: data.stateParams.toEmail,
       toPhoneNumber: data.stateParams.toPhoneNumber,
       toColor: data.stateParams.toColor,
-      network: (new bitcore.Address(data.stateParams.toAddress)).network.name,
       txp: {},
     };
 
@@ -151,7 +149,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
       $scope.walletSelectorTitle = gettextCatalog.getString('Send from');
 
-      setWalletSelector(tx.network, tx.toAmount, function(err) {
+      setWalletSelector(tx.toAmount, function(err) {
         if (err) {
           return exitWithError('Could not update wallets');
         }
@@ -162,7 +160,27 @@ angular.module('copayApp.controllers').controller('confirmController', function(
           setWallet($scope.wallets[0], tx);
         }
       });
+      tx.network = $scope.wallet.credentials.network;
+      // TODO: add a better check for easysend?
+      if (!tx.toAddress) {
+        easySendService.createEasySendScriptHash($scope.wallet, function(err, result) {
+          if (err) {
+            console.log(err);
+          }
+          tx.script = result.script;
+          tx.script.isOutput = true;
+          tx.easySendSecret = result.secret;
+          tx.senderPublicKey = result.senderPubKey;
+          tx.toAddress = tx.script.toAddress().toString();
 
+          // Testing outputs
+          tx.url = 'localhost:8100/#/onboarding/easy' +
+            '?se=' + tx.easySendSecret +
+            '&sk=' + tx.senderPublicKey +
+            '&sn=foo&bt=1008&uc=58094f46fb'
+          tx.rpcCall = 'easyreceive ' + tx.easySendSecret + ' ' + tx.senderPublicKey + ' donkey 1008';
+        });
+      }
     });
   });
 
@@ -196,11 +214,22 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
     var txp = {};
 
-    txp.outputs = [{
-      'toAddress': tx.toAddress,
-      'amount': tx.toAmount,
-      'message': tx.description
-    }];
+    if (tx.script) {
+      txp.outputs = [{
+        'script': tx.script.toHex(),
+        'toAddress': tx.toAddress,
+        'amount': tx.toAmount,
+        'message': tx.description
+      }];
+      txp.addressType = 'P2SH';
+      console.log(tx);
+    } else {
+      txp.outputs = [{
+        'toAddress': tx.toAddress,
+        'amount': tx.toAmount,
+        'message': tx.description
+      }];
+    }
 
     if (tx.sendMaxInfo) {
       txp.inputs = tx.sendMaxInfo.inputs;
