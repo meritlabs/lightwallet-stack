@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
-import {ProfileProvider} from "../../../providers/profile";
-import {Wallet} from "../../../models/Wallet";
+import {ProfileService} from "../../../providers/profile-service";
+import {Wallet} from "../../../models/wallet";
 
 @IonicPage()
 @Component({
@@ -22,7 +22,7 @@ export class ReceivePage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private  ModalCtrl:ModalController,
-    private profileProvider:ProfileProvider
+    private profileService:ProfileService
   ) {
     this.protocolHandler = "bitcoin";
     this.address = "1FgGP9dKqtWC1Q9xGhPYVmAeyezeZCFjhf";
@@ -31,7 +31,7 @@ export class ReceivePage {
 
   ionViewDidLoad() {
     //do something here
-    this.wallets = this.profileProvider.getWallets();
+    this.wallets = this.profileService.getWallets();
     this.wallet = this.wallets[0];
 
   }

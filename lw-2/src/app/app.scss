@@ -57,11 +57,25 @@ ion-card {
   text-align: center;
   button {
     width: 85%;
-    max-height: 300px;
+    max-width: 300px;
     margin: 0 auto;
   }
 }
 
 .list-md .item-input:last-child {
   border-bottom: none;
+}
+
+.white-space-normal {
+  white-space: normal;
+}
+
+.plain-text {
+  padding: 0 10px;
+  color: $label-text-color;
+  font-size: 14px;
+}
+
+ion-item.selected ion-label {
+  color: color($colors, 'primary') !important;
 }

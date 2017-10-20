@@ -24,7 +24,7 @@
             <ion-label>Help &amp; support</ion-label>
         </ion-item>
 
-        <ion-item (click)="feedback()">
+        <ion-item (click)="toFeedback()">
             <ion-icon name="mail" item-start></ion-icon>
             <ion-label translate>Send feedback</ion-label>
         </ion-item>
@@ -39,49 +39,37 @@
         </ion-item>
 
 
-        <ion-item>
+        <ion-item (click)="toLanguageSelect()">
             <ion-icon name="globe" item-start></ion-icon>
             <ion-label>
-                <ion-label>Language</ion-label>
+               <h2 translate>Language</h2>
+               <p>{{currentLanguageName}}</p>
             </ion-label>
-            <ion-select [(ngModel)]="currentLanguage" (ionChange)="setLanguage(currentLanguage)">
-                <ion-option *ngFor="let lang of languages" [value]="lang.isoCode">{{ lang.name }}</ion-option>
-            </ion-select>
         </ion-item>
 
 
-        <ion-item>
+        <ion-item (click)="toUnitSelect()">
             <ion-icon name="calculator" item-start></ion-icon>
             <ion-label>
-                <ion-label>Language</ion-label>
+                <h2 translate>Currency</h2>
+                <p>{{currentUnitName}}</p>
             </ion-label>
-            <ion-select [(ngModel)]="currentUnit">
-                <ion-option *ngFor="let unit of unitList" [value]="unit.code">{{ unit.shortName}}</ion-option>
-            </ion-select>
         </ion-item>
 
-
-
-        <ion-item (click)="altCurrencyModal()">
+        <ion-item (click)="toCurrencySelect()">
             <ion-icon name="cash" item-start></ion-icon>
-            <ion-label translate>
-                Alternative currency
+            <ion-label>
+                <h2  translate>Alternative currency</h2>
+                <p>{{currentAlternativeName}}</p>
             </ion-label>
-        </ion-item>
-
-
-
-        <ion-item-divider translate>Wallets &amp; integrations</ion-item-divider>
-        <ion-item>
-            <ion-label>Not implemented</ion-label>
         </ion-item>
 
         <ion-item-divider translate>More</ion-item-divider>
-        <ion-item (click)="openAdvancedPage()">
+        <ion-item (click)="toAdvancedSettings()">
             <ion-icon name="hammer" item-start></ion-icon>
             Advanced
         </ion-item>
-        <ion-item (click)="openAboutPage()">
+        <ion-item (click)="toAbout()">
             <ion-icon name="apps" item-start></ion-icon>
             About {{appName}}
         </ion-item>

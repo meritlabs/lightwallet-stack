@@ -43,4 +43,8 @@ export class CopayersPage {
     );
   }
 
+  share() {
+    // todo implement
+  }
+
 }
