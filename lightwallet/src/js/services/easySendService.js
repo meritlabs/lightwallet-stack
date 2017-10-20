@@ -26,7 +26,7 @@ angular.module('copayApp.services')
         return wallet.unlockAddress(unlockScriptOpts, function(err1, res1) {
           if (err1) return cb(err1);
           var unlockRecipientOpts = {
-            unlockCode: res1.shareCode,
+            unlockCode: wallet.shareCode,
             address: easySendResult.receiverPubKey.toAddress().toString(),
             network: opts.network
           };
@@ -37,7 +37,7 @@ angular.module('copayApp.services')
           });
         });
       });
-    }
+    };
 
     service.sendSMS = function(recipient, url, cb) {
       var smsPlugin = null;
