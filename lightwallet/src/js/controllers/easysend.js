@@ -17,7 +17,8 @@ angular.module('copayApp.controllers').controller('easySendController', function
     $scope.$on("$ionicView.beforeEnter", function(event, data) {
       $scope.method = data.stateParams.method;
       $scope.recipient = data.stateParams.recipient;
-      $scope.body = generateURLService.getURL();
+      $scope.url = data.stateParams.url;
+      $scope.body = 'You\'ve been sent some merit. Click the link to redeem it!.' + $scope.url;
     });
 
     $scope.confirm = function() {

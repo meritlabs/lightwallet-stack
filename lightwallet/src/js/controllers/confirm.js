@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('confirmController', function($rootScope, $scope, $interval, $filter, $timeout, $ionicScrollDelegate, gettextCatalog, walletService, platformInfo, lodash, configService, rateService, $stateParams, $window, $state, $log, profileService, bitcore, txFormatService, ongoingProcess, $ionicModal, popupService, $ionicHistory, $ionicConfig, payproService, feeService, bwcError, txConfirmNotification, easySendService) {
+angular.module('copayApp.controllers').controller('confirmController', function($rootScope, $scope, $interval, $filter, $timeout, $ionicScrollDelegate, gettextCatalog, walletService, platformInfo, lodash, configService, rateService, $stateParams, $window, $state, $log, profileService, bitcore, txFormatService, ongoingProcess, $ionicModal, popupService, $ionicHistory, $ionicConfig, payproService, feeService, bwcError, txConfirmNotification, easySendService, generateURLService) {
 
   var countDown = null;
   var CONFIRM_LIMIT_USD = 20;
@@ -118,6 +118,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     };
 
     // Setup $scope
+    $scope.sendMethod = data.stateParams.sendMethod;
 
     // Grab stateParams
     tx = {
@@ -174,11 +175,13 @@ angular.module('copayApp.controllers').controller('confirmController', function(
           tx.toAddress = tx.script.toAddress().toString();
 
           // Testing outputs
-          tx.url = 'localhost:8100/#/onboarding/easy' +
-            '?se=' + tx.easySendSecret +
-            '&sk=' + tx.senderPublicKey +
-            '&sn=foo&bt=1008&uc=58094f46fb'
-          tx.rpcCall = 'easyreceive ' + tx.easySendSecret + ' ' + tx.senderPublicKey + ' donkey 1008';
+          tx.url = generateURLService.getURL({
+            se: tx.easySendSecret,
+            sk: tx.senderPublicKey,
+            sn: 'foo',
+            bt: 1008,
+            uc: '58094f46fb'
+          })
         });
       }
     });
@@ -577,6 +580,17 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     }
   };
 
+  function notifyRecipient() {
+    switch ($scope.sendMethod) {
+      case 'sms':
+        easySendService.sendSMS($scope.toPhoneNumber, $scope.tx.url, function() {});
+        break;
+      case 'email':
+        easySendService.sendEmail($scope.toEmail, $scope.tx.url, function() {});
+        break;
+    }
+  }
+
   $scope.statusChangeHandler = statusChangeHandler;
 
   $scope.onSuccessConfirm = function() {
@@ -587,6 +601,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     });
     $state.go('tabs.send').then(function() {
       $ionicHistory.clearHistory();
+      notifyRecipient();
       $state.transitionTo('tabs.home');
     });
   };
