@@ -38,4 +38,13 @@ $wallet-locked-color: #999;
     color: rgb(102, 102, 119);
     font-size: 14px;
   }
+
+  ion-footer {
+    .item-inner {
+      border-bottom: none !important;
+    }
+    .toolbar-background {
+      background: white;
+    }
+  }
 }

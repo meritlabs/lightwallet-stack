@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import {Wallet} from "../../../models/wallet";
-import {ProfileProvider} from "../../../providers/profile";
+import {ProfileService} from "../../../providers/profile-service";
 
 @IonicPage()
 @Component({
@@ -17,10 +17,9 @@ export class SelectWalletModal {
     public navCtrl: NavController,
     public navParams: NavParams,
     private viewCtrl: ViewController,
-    private profileProvider:ProfileProvider,
+    private profileService:ProfileService,
   ) {
-      this.wallets = this.profileProvider.getWallets();
-      console.log(JSON.stringify(this.wallets));
+      this.wallets = this.profileService.getWallets();
       this.selectedWallet = this.navParams.get('selectedWallet');
   }
 

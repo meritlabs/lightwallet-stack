@@ -2,11 +2,41 @@
 
     <ion-navbar color="secondary">
         <ion-title translate>Address Book</ion-title>
+
+        <ion-buttons end>
+            <button ion-button (click)="toAddContact()" translate>
+                <ion-icon name="plus"></ion-icon>
+            </button>
+        </ion-buttons>
     </ion-navbar>
 
 </ion-header>
 
-
 <ion-content>
+
+    <!--<p class="plain-text" translate>-->
+        <!--No contacts yet. Get started adding your first one.-->
+    <!--</p>-->
+
+    <!--<div class="control-buttons">-->
+        <!--<button  (click)="toAddContact()" ion-button>Add contact</button>-->
+    <!--</div>-->
+
+
+    <ion-card *ngIf="!contacts?.length" padding>
+        <div translate>
+
+            <div class="icon">
+                <img src="assets/img/address-book-add.svg">
+            </div>
+
+            No contacts yet. Get started adding your first one.
+        </div>
+    </ion-card>
+
+        <div class="control-buttons">
+            <button  (click)="toAddContact()" ion-button >Add contact</button>
+        </div>
+
 
 </ion-content>

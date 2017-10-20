@@ -1,7 +1,12 @@
+
 page-settings {
 
   ion-label, ion-icon {
     color: #666;
+  }
+
+  ion-label p {
+    color: #999 !important;
   }
 
 }

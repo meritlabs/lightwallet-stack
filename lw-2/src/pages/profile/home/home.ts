@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import {Wallet} from "../../../models/wallet";
-import {ProfileProvider} from "../../../providers/profile";
+import {ProfileService} from "../../../providers/profile-service";
 
 
 @IonicPage()
@@ -24,7 +24,7 @@ export class HomePage {
     public navParams: NavParams,
     private navCtrl:NavController,
     private app:App,
-    private profileProvider:ProfileProvider
+    private profileService:ProfileService
   ) {
     //this.navCtrl = app.getRootNavs()[0];
   }
@@ -35,7 +35,7 @@ export class HomePage {
 
   ionViewDidLoad() {
     //do something here
-    this.wallets = this.profileProvider.getWallets();
+    this.wallets = this.profileService.getWallets();
   }
 
   openWallet(wallet) {
