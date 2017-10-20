@@ -34,6 +34,7 @@ var RateService = function(opts) {
 var _instance;
 RateService.singleton = function(opts) {
   if (!_instance) {
+    opts.isAvailable = false;
     _instance = new RateService(opts);
   }
   return _instance;
@@ -57,7 +58,7 @@ RateService.prototype._fetchCurrencies = function() {
           rate: currency.rate
         });
       });
-      self._isAvailable = true;
+      // self._isAvailable = true; // ToDo: enable after we get integration with rate service supporting Merit
       self.lodash.each(self._queued, function(callback) {
         setTimeout(callback, 1);
       });
