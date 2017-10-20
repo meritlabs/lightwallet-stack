@@ -334,15 +334,6 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
-      .state('tabs.send.easysend', {
-        url: '/easysend/:method/:recipient',
-        views: {
-          'tab-send@tabs': {
-            controller: 'easySendController',
-            templateUrl: 'views/easysend.html',
-          }
-        }
-      })
 
       /*
        *
