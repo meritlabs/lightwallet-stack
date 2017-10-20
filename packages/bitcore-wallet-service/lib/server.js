@@ -2202,7 +2202,7 @@ WalletService.prototype.createTx = function(opts, cb) {
                 unlockCode: wallet.shareCode,
                 address: changeAddress.address
               }
-              self._unlockAddress(unlockParams, function(err, result){
+              self.unlockAddress(unlockParams, function(err, result){
                 // If the change address is unlocked already, we can continue with 
                 // the creation of the TXN.
                 if (err && !(err == Errors.UNLOCKED_ALREADY)) return next(err);

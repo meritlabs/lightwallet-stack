@@ -1875,6 +1875,8 @@ API.prototype.publishTxProposal = function(opts, cb) {
 API.prototype.unlockAddress = function(opts, cb) {
   $.checkState(this.credentials);
 
+  var self = this;
+
   opts = opts || {};
 
   self._doPostRequest('/v1/addresses/unlock/', opts, function(err, result) {
