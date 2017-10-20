@@ -178,8 +178,8 @@ angular.module('copayApp.controllers').controller('confirmController', function(
           tx.url = generateURLService.getURL({
             se: tx.easySendSecret,
             sk: tx.senderPublicKey,
-            sn: 'foo',
-            bt: 1008,
+            sn: 'foo',  // TODO: get the sender's name
+            bt: 1008,   // TODO: make the timeout configurable
             uc: $scope.wallet.shareCode
           })
         });
@@ -583,9 +583,11 @@ angular.module('copayApp.controllers').controller('confirmController', function(
   function notifyRecipient() {
     switch ($scope.sendMethod) {
       case 'sms':
+        // TODO: Add a meaningful callback
         easySendService.sendSMS($scope.tx.toPhoneNumber, $scope.tx.url, function() {});
         break;
       case 'email':
+        // TODO: Add a meaningful callback
         easySendService.sendEmail($scope.tx.toEmail, $scope.tx.url, function() {});
         break;
     }
