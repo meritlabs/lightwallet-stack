@@ -1,0 +1,25 @@
+page-terms-of-use {
+
+  user-select: text;
+
+  .heading {
+    font-weight: bold;
+    color: #445;
+  }
+
+  .scroll-content {
+    padding-top: 1.5rem;
+    color: #777;
+    margin-bottom: 210px;
+    p {
+      padding: 0 2.5%;
+      margin: 2rem auto;
+      font-size: 13px;
+      line-height: 20px;
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+  }
+
+}

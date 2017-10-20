@@ -1,0 +1,95 @@
+<ion-header>
+    <ion-navbar color="secondary">
+        <ion-title>{{wallet?.name}}</ion-title>
+    </ion-navbar>
+</ion-header>
+
+
+
+<ion-content fullscreen *ngIf="wallet.id">
+
+    <div class="wallet-header" [style.background]="wallet.color" [class.default]="!wallet.color" (tap)="wallet.balanceHidePaused = !wallet.balanceHidePaused">
+
+        <div  *ngIf="wallet.isComplete()" >
+
+            <div *ngIf="updateStatusError">
+                <!-- @TODO IMPLEMENT -->
+                <!--<span class="size-12 db m10">{{updateStatusError}}</span>-->
+                <!--<a class="button button-outline button-light button-small wallet-retry" ng-class="{_locked: wallet.locked}" ng-click='updateAll(true)' translate>Tap to retry</a>-->
+            </div>
+
+            <div *ngIf="walletNotRegistered">
+                <!-- @TODO IMPLEMENT
+                <!--<span class="size-12 db m10" translate>This wallet is not registered at the given Bitcore Wallet Service (BWS). You can recreate it from the local information.</span>-->
+                <!--<a class="button button-outline button-light button-small" ng-click='recreate()' translate>Recreate</a>-->
+            </div>
+
+            <span *ngIf="!wallet.balanceHidden || wallet.balanceHidePaused" >
+                <div  class="amount">
+                    {{wallet.status.totalBalanceStr}}
+                </div>
+                <div class="amount-alternative" *ngIf="wallet.status.totalBalanceAlternative">
+                    {{wallet.status.totalBalanceAlternative}} {{wallet.status.alternativeIsoCode}}
+                </div>
+            </span>
+
+            <span *ngIf="wallet.balanceHidden && !wallet.balanceHidePaused">
+                <div  class="amount" translate>
+                    [Balance Hidden]
+                </div>
+                <div class="amount-alternative" translate>
+                    Tap to show
+                </div>
+            </span>
+
+            <div class="wallet-info">
+
+                <span *ngIf="wallet.status.wallet?.singleAddress" translate>Auditable</span>
+                <span *ngIf="wallet.network != 'livenet'">
+                    <img src="assets/img/icon-testnet-white.svg">
+                    <img src="assets/img/icon-text-testnet-white.svg">
+                </span>
+
+                <img *ngIf="!wallet.canSign() && !wallet.isPrivKeyExternal()" src="assets/img/icon-read-only-white.svg">
+                <img *ngIf="wallet.getPrivKeyExternalSourceName() == 'trezor'" src="assetsimg/icon-trezor-white.svg">
+                <img *ngIf="wallet.getPrivKeyExternalSourceName() == 'ledger'" src="assets/img/icon-ledger-white.svg">
+                <img *ngIf="wallet.getPrivKeyExternalSourceName() == 'intelTEE'" src="assets/img/icon-inteltee-white.svg">
+
+                <span *ngIf="wallet.credentials?.n > 1">{{wallet.m}}-of-{{wallet.n}}</span>
+                <span *ngIf="wallet.credentials?.account">#{{wallet.credentials.account || 0}} </span>
+                <img  *ngIf="wallet.usingCustomBWS" src="assets/img/icon-bws-white.svg">
+
+                <img  *ngIf="wallet.isPrivKeyEncrypted()" src="assets/img/icon-lock-white.svg">
+
+                <img  *ngIf="wallet.usingCustomBWS" src="assets/img/icon-bws-white.svg">
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- @TODO go to unlockWarning (or change interface) -->
+    <a class="wallet-not-unlocked-warning" *ngIf="wallet.locked"  translate>
+        Wallet is not unlocked yet
+    </a>
+
+    <!-- @TODO go to backup page  -->
+    <button ion-button block class="wallet-not-backed-up-warning" *ngIf="wallet.needsBackup" (click)="goToBackup()" translate>
+        Wallet not backed up
+    </button>
+
+    <!--<a class="wallet-not-backed-up-warning" ng-if="lowUtxosWarning" ui-sref="tabs.wallet.addresses({walletId:wallet.id,from: 'tabs.wallet'})" translate>-->
+        <!--Spending this balance will need significant Merit network fees-->
+    <!--</a>-->
+
+    <ion-item-divider translate>
+        Transactions
+    </ion-item-divider>
+    <ion-list>
+        <ion-item *ngIf="!txHistory || !txHistory[0]">
+            <ion-label>No transactions yet</ion-label>
+        </ion-item>
+    </ion-list>
+
+</ion-content>
+

@@ -1,0 +1,131 @@
+<ion-header>
+
+    <ion-navbar color="secondary" >
+        <ion-title translate>Create Personal Wallet</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+
+    <ion-list margin-top>
+
+        <ion-item>
+            <ion-label translate>Wallet name</ion-label>
+            <ion-input text-right [placeholder]="'Family vacation funds'" [(ngModel)]="formData.walletName"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-label translate>Unlock code</ion-label>
+            <ion-input text-right [placeholder]="'Paste it here'" [(ngModel)]="formData.beacon"></ion-input>
+        </ion-item>
+
+        <ion-item-divider translate>Advanced</ion-item-divider>
+        <ion-item>
+            <ion-label translate>Wallet Service URL</ion-label>
+            <ion-input text-right [(ngModel)]="formData.bwsurl"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label translate>Wallet Key</ion-label>
+
+            <ion-select (ionChange)="setSeedSource($event)">
+                <ion-option *ngFor="let seed of formData.seedOptions" [value]="seed">{{seed.label}}</ion-option>
+            </ion-select>
+        </ion-item>
+
+        <ion-item>
+            <ion-label translate>Account Number</ion-label>
+            <ion-input type="number" text-right [(ngModel)]="formData.account"></ion-input>
+        </ion-item>
+
+        <ion-item *ngIf="formData.seedSource?.id == 'set'"> 
+            <ion-label translate>Wallet Recovery Phrase</ion-label>
+            <ion-input text-right [placeholder]="'Enter the recovery phrase'" [(ngModel)]="formData.privateKey"></ion-input>
+        </ion-item>
+
+
+
+
+        <ion-item *ngIf="formData.seedSource?.id == 'new' || formData.seedSource?.id == 'set'">
+            <ion-label translate>Add a password</ion-label>
+            <ion-toggle [(ngModel)]="formData.encrypt"></ion-toggle>
+        </ion-item>
+
+
+        <span *ngIf="formData.seedSource?.id == 'new'">
+
+            <ion-item *ngIf="formData.encrypt">
+                <ion-label translate>Password</ion-label>
+                <ion-input type="password" text-right  [placeholder]="'Password'" [(ngModel)]="formData.createPassphrase"
+                ></ion-input>
+            </ion-item>
+
+            <ion-item *ngIf="formData.encrypt">
+                <ion-label translate>Repeat password</ion-label>
+                <ion-input type="password" text-right  [placeholder]="'Repeat Password'" [(ngModel)]="formData.repeatPassword"
+                    [class.incorrect]="formData.repeatPassword && (formData.createPassphrase != formData.repeatPassword)"
+                ></ion-input>
+            </ion-item>
+
+        </span>
+
+        <span *ngIf="formData.seedSource?.id == 'set'">
+
+            <ion-item *ngIf="formData.encrypt">
+                <ion-label translate>Password</ion-label>
+                <ion-input type="password" text-right [placeholder]="'Password'" [(ngModel)]="formData.passphrase"
+                ></ion-input>
+            </ion-item>
+
+            <ion-item *ngIf="formData.encrypt">
+                <ion-label translate>Repeat password</ion-label>
+                <ion-input type="password" text-right  [placeholder]="'Repeat Password'" [(ngModel)]="formData.repeatPassword"
+                           [class.incorrect]="formData.repeatPassword && (formData.passphrase != formData.repeatPassword)"
+                ></ion-input>
+            </ion-item>
+        </span>
+
+        <ion-item *ngIf="(formData.seedSource.id =='new' || formData.seedSource.id =='set') && formData.encrypt">
+            <strong translate>This password cannot be recovered. If the password is lost, there is no way you could recover your funds.</strong>
+            <ion-label>
+                I have written it down
+            </ion-label>
+            <ion-checkbox [(ngModel)]="formData.passwordSaved">
+            </ion-checkbox>
+        </ion-item>
+
+
+        <ion-item *ngIf="formData.seedSource?.id == 'set'">
+            <ion-label translate>Derivation Path</ion-label>
+            <ion-input text-right [placeholder]="'BIP32 path for address derivation'" [(ngModel)]="formData.derivationPath"></ion-input>
+        </ion-item>
+
+
+        <ion-item *ngIf="formData.seedSource?.supportsTestnet" >
+            <ion-label translate>Testnet</ion-label>
+            <ion-toggle [(ngModel)]="formData.testnetEnabled"></ion-toggle>
+        </ion-item>
+
+
+        <ion-item>
+            <ion-label>
+                <span translate>Single Address Wallet</span>
+                <small translate>For audit purposes</small>
+            </ion-label>
+            <ion-toggle [(ngModel)]="formData.singleAddressEnabled"></ion-toggle>
+        </ion-item>
+
+
+    </ion-list>
+
+
+    <div class="control-buttons">
+        <button ion-button [disabled]="!isCreationEnabled()" translate>
+            Create new wallet
+        </button>
+    </div>
+
+
+</ion-content>

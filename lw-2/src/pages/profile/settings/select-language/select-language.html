@@ -1,0 +1,37 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title translate>Language</ion-title>
+
+        <ion-buttons end>
+            <button ion-button (click)="cancel()" translate>
+                cancel
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+    <ion-list>
+        <ion-item *ngFor="let language of availableLanguages" [class.selected]="currentLanguage == language" (click)="select(language)">
+            <ion-label>{{language}}</ion-label>
+            <ion-icon name="checkmark" color="primary" item-right *ngIf="currentLanguage == language"></ion-icon>
+        </ion-item>
+    </ion-list>
+
+    <p class="plain-text" translate>
+        We’re always looking for translation contributions! You can make corrections or help to make this app available in your native language by joining our community on Crowdin.
+    </p>
+
+    <p class="plain-text" translate>
+        Don't see your language on Crowdin? Contact the Owner on Crowdin! We'd love to support your language.
+    </p>
+
+    <div class="control-buttons">
+        <button  (click)="toCommunity()" ion-button>Contribure Translations</button>
+    </div>
+
+</ion-content>
