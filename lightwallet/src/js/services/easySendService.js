@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module('copayApp.services')
-  .factory('easySendService', function easySendServiceFactory($rootScope, $timeout, $log, $state, bitcore, lodash, storageService) {
+  .factory('easySendService', function easySendServiceFactory($rootScope, $timeout, $log, $state, $window, bitcore, lodash, storageService) {
 
     var service = {};
+
     service.createEasySendScriptHash = function(wallet, cb) {
 
       // TODO: get a passphrase
@@ -37,5 +38,41 @@ angular.module('copayApp.services')
         });
       });
     }
+
+    service.sendSMS = function(recipient, url, cb) {
+      var smsPlugin = null;
+      try {
+        smsPlugin = $window.sms;
+      } catch(ex) {
+        return cb(ex);
+      }
+      var options = {
+        android: {intent: 'INTENT'}
+      };
+
+      smsPlugin.send(recipient.toString(),
+        service._getBody(url),
+        options,
+        service._onSuccess(cb),
+        service._onFailure(cb));
+    };
+
+    service.sendEmail = function(recipient, url, cb) {
+      try {
+        var emailPlugin = null;
+      } catch(ex) {
+        return cb(ex);
+      }
+      emailPlugin = $window.cordova.plugins.email;
+      emailPlugin.open({to: [recipient], body: service._getBody(url)}, service._onSuccess(cb));
+    };
+
+    service._getBody = function(url) {
+      return 'You\'ve been sent some merit. Click the link to redeem it!. ' + url;
+    };
+
+    service._onSuccess = function(cb) { return function(res) { return cb(null, res); }; };
+    service._onFailure = function(cb) { return function(err) { return cb(err); }; };
+
     return service;
 });
