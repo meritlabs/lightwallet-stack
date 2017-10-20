@@ -1,0 +1,74 @@
+page-wallet {
+  ion-header {
+    &:after {
+      display: none;
+    }
+    ion-navbar, .toolbar-background {
+      background: transparent !important;
+      border: none !important;
+    }
+  }
+
+  .wallet-header {
+    height: 200px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .wallet-header.default {
+    background: $wallet-default-color;
+  }
+
+  .scroll-content {
+    padding-top: 0 !important;
+  }
+
+  .amount {
+    font-size: 36px;
+    height: 40px;
+    line-height: 40px;
+    color: white;
+    margin-top: 80px;
+    font-weight: 600;
+  }
+  .amount-alternative {
+    font-size: 14px;
+    height: 20px;
+    line-height: 20px;
+    color: white;
+    font-weight: normal;
+  }
+
+  .wallet-info {
+    height: 30px;
+    line-height: 30px;
+    width: 100%;
+    margin-top: 30px;
+    text-align: left;
+    padding: 0 20px;
+    color: white;
+    font-size: 10px;
+    img {
+      height: 10px;
+      margin-right: 1px;
+    }
+  }
+
+  .wallet-not-unlocked-warning {
+    background: orange;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    display: block;
+    text-decoration: none;
+    z-index: 9999;
+    position: relative;
+    padding: 2px 5px;
+    margin-bottom: 1px;
+  }
+
+  ion-label {
+    font-size: 12px;
+    color: #666;
+  }
+
+}

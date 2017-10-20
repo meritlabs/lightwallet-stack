@@ -1,0 +1,25 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title translate>Unit</ion-title>
+
+        <ion-buttons end>
+            <button ion-button (click)="cancel()" translate>
+                cancel
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+    <ion-list >
+        <ion-item *ngFor="let unit of availableUnits" [class.selected]="unit == currentUnit" (click)="select(unit)">
+            <ion-label>{{unit}}</ion-label>
+            <ion-icon name="checkmark" color="primary" item-right *ngIf="unit == currentUnit"></ion-icon>
+        </ion-item>
+    </ion-list>
+
+</ion-content>

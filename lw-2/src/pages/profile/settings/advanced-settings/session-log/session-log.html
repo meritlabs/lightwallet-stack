@@ -1,0 +1,50 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title translate>Session log</ion-title>
+
+        <!--<ion-buttons end>-->
+            <!--<button ion-button icon-only>-->
+                <!--<ion-icon name="more"></ion-icon>-->
+            <!--</button>-->
+        <!--</ion-buttons>-->
+
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+    <p *ngIf="!filteredLogs.length" translate>
+        No logs for selected level
+    </p>
+
+    <p *ngFor="let l of filteredLogs" [ngClass]="getLogLevelName(l.level)">
+        <b>[{{l.timestamp|amDateFormat}}]</b> <b>[{{getLogLevelName(l.level)}}]</b> <span *ngFor="let message of l.arguments">{{message}} </span>
+    </p>
+
+
+</ion-content>
+
+<ion-footer>
+    <ion-toolbar>
+
+        <ion-item (click)="copy()">
+            <ion-icon name="ios-clipboard-outline" item-left color="primary"></ion-icon>
+            <ion-label translate>Copy to clipboard</ion-label>
+        </ion-item>
+
+        <ion-grid>
+            <ion-row>
+                <ion-col translate>Error</ion-col>
+                <ion-col translate>Warning</ion-col>
+                <ion-col translate>Info</ion-col>
+                <ion-col translate>Debug</ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <ion-range min="0" max="3" step="1" [(ngModel)]="logLevel" debounce="100" (ionChange)="filterLogs()"></ion-range>
+
+    </ion-toolbar>
+</ion-footer>
