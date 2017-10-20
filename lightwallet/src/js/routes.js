@@ -314,7 +314,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         }
       })
       .state('tabs.send.confirm', {
-        url: '/confirm/:recipientType/:toAddress/:toName/:toAmount/:toEmail/:toColor/:description/:useSendMax/:sendMethod/',
+        url: '/confirm/:recipientType/:toAddress/:toName/:toAmount/:toEmail/:toPhoneNumber/:toColor/:description/:useSendMax/:sendMethod/',
         views: {
           'tab-send@tabs': {
             controller: 'confirmController',

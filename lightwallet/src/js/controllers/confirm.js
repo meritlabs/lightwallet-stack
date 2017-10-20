@@ -180,7 +180,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
             sk: tx.senderPublicKey,
             sn: 'foo',
             bt: 1008,
-            uc: '58094f46fb'
+            uc: $scope.wallet.shareCode
           })
         });
       }
@@ -583,10 +583,10 @@ angular.module('copayApp.controllers').controller('confirmController', function(
   function notifyRecipient() {
     switch ($scope.sendMethod) {
       case 'sms':
-        easySendService.sendSMS($scope.toPhoneNumber, $scope.tx.url, function() {});
+        easySendService.sendSMS($scope.tx.toPhoneNumber, $scope.tx.url, function() {});
         break;
       case 'email':
-        easySendService.sendEmail($scope.toEmail, $scope.tx.url, function() {});
+        easySendService.sendEmail($scope.tx.toEmail, $scope.tx.url, function() {});
         break;
     }
   }
