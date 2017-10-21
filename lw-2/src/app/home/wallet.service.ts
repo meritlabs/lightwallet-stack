@@ -927,6 +927,70 @@ export class WalletService {
     });
   }
 
+// create and store a wallet
+public createWallet(opts: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.doCreateWallet(opts).then((walletClient: any) => {
+        this.addAndBindWalletClient(walletClient, {
+          bwsurl: opts.bwsurl
+        }).then((wallet: any) => {
+          return resolve(wallet);
+        });
+      }).catch((err: any) => {
+        return reject(err);
+      });
+    });
+  }
+
+  // joins and stores a wallet
+  public joinWallet(opts: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let walletClient = this.bwcProvider.getClient(null, opts);
+      this.logger.debug('Joining Wallet:', opts);
+
+      try {
+        var walletData = this.bwcProvider.parseSecret(opts.secret);
+
+        // check if exist
+        if (_.find(this.profile.credentials, {
+          'walletId': walletData.walletId
+        })) {
+          return reject('Cannot join the same wallet more that once'); // TODO getTextCatalog
+        }
+      } catch (ex) {
+        this.logger.debug(ex);
+        return reject('Bad wallet invitation'); // TODO getTextCatalog
+      }
+      opts.networkName = walletData.network;
+      this.logger.debug('Joining Wallet:', opts);
+
+      this.seedWallet(opts).then((walletClient: any) => {
+        walletClient.joinWallet(opts.secret, opts.myName || 'me', {
+          coin: opts.coin
+        }, (err: any) => {
+          if (err) {
+            this.bwcErrorProvider.cb(err, 'Could not join wallet').then((msg: string) => { //TODO getTextCatalog
+              return reject(msg);
+            });
+          } else {
+            this.addAndBindWalletClient(walletClient, {
+              bwsurl: opts.bwsurl
+            }).then((wallet: any) => {
+              return resolve(wallet);
+            });
+          };
+        });
+      }).catch((err: any) => {
+        return reject(err);
+      });
+    });
+  }
+
+  public getWallet(walletId: string): any {
+    return this.wallet[walletId];
+  };
+
 
   public expireAddress(wallet: any): Promise<any> {
     return new Promise((resolve, reject) => {

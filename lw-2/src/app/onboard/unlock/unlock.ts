@@ -33,7 +33,7 @@ export class UnlockComponent {
   }
 
   createAndUnlockWallet() {
-
+    this.walletService.createDefaultWallet();
   }
 
 }
