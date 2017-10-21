@@ -4,7 +4,7 @@ import {Wallet} from "../../models/wallet";
 import {WalletMock} from "../../models/mocks/wallet";
 
 @Injectable()
-export class ProfileProviderMock extends ProfileService {
+export class ProfileServiceMock extends ProfileService {
 
   getWallets():Array<Wallet> {
 

@@ -12,10 +12,10 @@ export class ProfileService {
     return new Promise((resolve, reject) => {
 
       this.logger.info('Creating profile');
-      let defaults = this.configProvider.getDefaults();
-      let config = this.configProvider.get();
+      let defaults = this.configService.getDefaults();
+      let config = this.configService.get();
       let profile = this.profile.create();
-      this.persistenceProvider.storeNewProfile(profile).then((err: any) => {
+      this.persistenceService.storeNewProfile(profile).then((err: any) => {
         this.bindProfile(profile).then(() => {
           // ignore NONAGREEDDISCLAIMER
           return resolve();
@@ -31,7 +31,7 @@ export class ProfileService {
 
   public bindProfile(profile: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      let config = this.configProvider.get();
+      let config = this.configService.get();
 
       let bindWallets = (): Promise<any> => {
         return new Promise((resolve, reject) => {
@@ -78,7 +78,7 @@ export class ProfileService {
       if (disclaimerAccepted) return resolve();
 
       // OLD flag
-      this.persistenceProvider.getCopayDisclaimerFlag().then((val) => {
+      this.persistenceService.getCopayDisclaimerFlag().then((val) => {
         if (val) {
           this.profile.disclaimerAccepted = true;
           return resolve();

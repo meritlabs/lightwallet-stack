@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicComponent, NavController, NavParams } from 'ionic-angular';
-import {ConfigProvider} from "../../../../providers/config";
+import {ConfigService} from "../../../../providers/config";
 
 
 @IonicComponent({
@@ -19,7 +19,7 @@ export class CreateWalletComponent {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private config:ConfigProvider
+    private config:ConfigService
   ) {
     this.formData.bwsurl = config.getDefaults().bws.url;
 

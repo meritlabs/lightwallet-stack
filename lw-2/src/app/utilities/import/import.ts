@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicComponent, NavController, NavParams  } from 'ionic-angular';
 
 //import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ConfigProvider} from "../../providers/config";
+import {ConfigService} from "../../providers/config";
 
 
 @IonicComponent({
@@ -37,7 +37,7 @@ export class ImportComponent {
     public navCtrl: NavController,
     public navParams: NavParams,
     //private formBuilder:FormBuilder,
-    private config:ConfigProvider
+    private config:ConfigService
   ) {
     //this.formGroup = this.formBuilder.group({
     //  mapStyle: ['Nancy', Validators.minLength(2)],

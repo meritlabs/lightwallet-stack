@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicComponentModule } from 'ionic-angular';
 import { ImportComponent } from './import';
-import {ConfigProvider} from "../../providers/config";
+import {ConfigService} from "../../providers/config";
 
 @NgModule({
   declarations: [
@@ -11,7 +11,7 @@ import {ConfigProvider} from "../../providers/config";
     IonicComponentModule.forChild(ImportComponent),
   ],
   providers: [
-    ConfigProvider
+    ConfigService
   ]
 })
 export class ImportComponentModule {}

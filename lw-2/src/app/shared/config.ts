@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable()
-export class ConfigProvider {
+export class ConfigService {
 
   private defaultConfig = {
     // wallet limits

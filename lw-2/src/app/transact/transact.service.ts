@@ -1,39 +1,39 @@
 import { Injectable } from '@angular/core';
 import { Logger } from '@nsalaun/ng-logger';
 import * as _ from 'lodash';
-import { PersistenceProvider } from '../persistence/persistence';
-import { ConfigProvider } from '../shared/config';
-import { BwcProvider } from '../shared/bwc.service';
-import { BwcErrorProvider } from '../bwc-error/bwc-error';
+import { PersistenceService } from '../persistence/persistence';
+import { ConfigService } from '../shared/config';
+import { BwcService } from '../shared/bwc.service';
+import { BwcErrorService } from '../bwc-error/bwc-error';
 import { WalletService } from '../wallet/wallet';
-import { PlatformProvider } from '../platform/platform';
-import { AppProvider } from '../../providers/app/app';
-import { LanguageProvider } from '../../providers/language/language';
-import { TxFormatProvider } from '../../providers/tx-format/tx-format';
+import { PlatformService } from '../platform/platform';
+import { AppService } from '../../providers/app/app';
+import { LanguageService } from '../../providers/language/language';
+import { TxFormatService } from '../../providers/tx-format/tx-format';
 import { Profile } from '../../models/profile/profile.model';
 
 @Injectable()
-export class ProfileProvider {
+export class ProfileService {
   public wallet: any = {};
   public profile: Profile = new Profile();
 
   private UPDATE_PERIOD = 15;
   private throttledBwsEvent: any;
   private validationLock: boolean = false;
-  private errors: any = this.bwcProvider.getErrors();
+  private errors: any = this.bwcService.getErrors();
   private queue: Array<any> = [];
 
   constructor(
     private logger: Logger,
-    private walletProvider: WalletService,
-    private persistenceProvider: PersistenceProvider,
-    private configProvider: ConfigProvider,
-    private bwcProvider: BwcProvider,
-    private bwcErrorProvider: BwcErrorProvider,
-    private platformProvider: PlatformProvider,
-    private appProvider: AppProvider,
-    private languageProvider: LanguageProvider,
-    private txFormatProvider: TxFormatProvider
+    private walletService: WalletService,
+    private persistenceService: PersistenceService,
+    private configService: ConfigService,
+    private bwcService: BwcService,
+    private bwcErrorService: BwcErrorService,
+    private platformService: PlatformService,
+    private appService: AppService,
+    private languageService: LanguageService,
+    private txFormatService: TxFormatService
   ) {
     this.throttledBwsEvent = _.throttle((n, wallet) => {
       this.newBwsEvent(n, wallet);
@@ -41,8 +41,8 @@ export class ProfileProvider {
   }
 
   private updateWalletSettings(wallet: any): void {
-    let config: any = this.configProvider.get();
-    let defaults: any = this.configProvider.getDefaults();
+    let config: any = this.configService.get();
+    let defaults: any = this.configService.getDefaults();
     // this.config.whenAvailable(function (config) { TODO
     wallet.usingCustomBWS = config.bwsFor && config.bwsFor[wallet.id] && (config.bwsFor[wallet.id] != defaults.bws.url);
     wallet.name = (config.aliasFor && config.aliasFor[wallet.id]) || wallet.credentials.walletName;
@@ -52,7 +52,7 @@ export class ProfileProvider {
   }
 
   public setBackupFlag(walletId: string): void {
-    this.persistenceProvider.setBackupFlag(walletId).then(() => {
+    this.persistenceService.setBackupFlag(walletId).then(() => {
       this.logger.debug('Backup flag stored');
       this.wallet[walletId].needsBackup = false;
     }).catch((err) => {
@@ -74,7 +74,7 @@ export class ProfileProvider {
         return reject(false);
       }
 
-      this.persistenceProvider.getBackupFlag(wallet.credentials.walletId).then((val: string) => {
+      this.persistenceService.getBackupFlag(wallet.credentials.walletId).then((val: string) => {
         if (val) {
           return resolve(false);
         }
@@ -88,7 +88,7 @@ export class ProfileProvider {
   private balanceIsHidden(wallet: any): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
-      this.persistenceProvider.getHideBalanceFlag(wallet.credentials.walletId).then((shouldHideBalance: string) => {
+      this.persistenceService.getHideBalanceFlag(wallet.credentials.walletId).then((shouldHideBalance: string) => {
         var hideBalance = (shouldHideBalance == 'true') ? true : false;
         return resolve(hideBalance);
       }).catch((err) => {
@@ -188,7 +188,7 @@ export class ProfileProvider {
   public updateCredentials(credentials: any): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.profile.updateWallet(credentials);
-      this.persistenceProvider.storeProfile(this.profile).then(() => {
+      this.persistenceService.storeProfile(this.profile).then(() => {
         return resolve();
       });
     });
@@ -196,7 +196,7 @@ export class ProfileProvider {
 
   public getLastKnownBalance(wid: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.persistenceProvider.getBalanceCache(wid).then((data: string) => {
+      this.persistenceService.getBalanceCache(wid).then((data: string) => {
         return resolve(data);
       }).catch((err: any) => {
         return reject(err);
@@ -224,7 +224,7 @@ export class ProfileProvider {
 
   public setLastKnownBalance(wid: string, balance: number): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceProvider.setBalanceCache(wid, { balance: balance, updatedOn: Math.floor(Date.now() / 1000), });
+      this.persistenceService.setBalanceCache(wid, { balance: balance, updatedOn: Math.floor(Date.now() / 1000), });
       return resolve();
     });
   }
@@ -243,7 +243,7 @@ export class ProfileProvider {
     this.validationLock = true;
 
     // IOS devices are already checked
-    let skipDeviceValidation = this.platformProvider.isIOS || this.profile.isDeviceChecked(this.platformProvider.ua);
+    let skipDeviceValidation = this.platformService.isIOS || this.profile.isDeviceChecked(this.platformService.ua);
     let walletId = wallet.credentials.walletId;
 
     this.logger.debug('ValidatingWallet: ' + walletId + ' skip Device:' + skipDeviceValidation);
@@ -255,10 +255,10 @@ export class ProfileProvider {
 
         this.logger.debug('ValidatingWallet End:  ' + walletId + ' isOK:' + isOK);
         if (isOK) {
-          this.profile.setChecked(this.platformProvider.ua, walletId);
+          this.profile.setChecked(this.platformService.ua, walletId);
         } else {
           this.logger.warn('Key Derivation failed for wallet:' + walletId);
-          this.persistenceProvider.clearLastAddress(walletId).then(() => {
+          this.persistenceService.clearLastAddress(walletId).then(() => {
           });
         };
 
@@ -269,7 +269,7 @@ export class ProfileProvider {
 
   public storeProfileIfDirty(): void {
     if (this.profile.dirty) {
-      this.persistenceProvider.storeProfile(this.profile).then((err: any) => {
+      this.persistenceService.storeProfile(this.profile).then((err: any) => {
         this.logger.debug('Saved modified Profile');
         return;
       });
@@ -280,7 +280,7 @@ export class ProfileProvider {
 
   public importWallet(str: string, opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      let walletClient = this.bwcProvider.getClient(null, opts);
+      let walletClient = this.bwcService.getClient(null, opts);
 
       this.logger.debug('Importing Wallet:', opts);
 
@@ -336,7 +336,7 @@ export class ProfileProvider {
       let walletId: string = wallet.credentials.walletId
 
       if (!this.profile.addWallet(JSON.parse(wallet.export()))) {
-        return reject("Wallet already in " + this.appProvider.info.nameCase); // TODO gettextCatalog
+        return reject("Wallet already in " + this.appService.info.nameCase); // TODO gettextCatalog
       }
 
 
@@ -348,7 +348,7 @@ export class ProfileProvider {
 
       let saveBwsUrl = (): Promise<any> => {
         return new Promise((resolve, reject) => {
-          let defaults: any = this.configProvider.getDefaults();
+          let defaults: any = this.configService.getDefaults();
           let bwsFor: any = {};
           bwsFor[walletId] = opts.bwsurl || defaults.bws.url;
 
@@ -357,13 +357,13 @@ export class ProfileProvider {
             return resolve();
           }
 
-          this.configProvider.set({ bwsFor: bwsFor });
+          this.configService.set({ bwsFor: bwsFor });
           return resolve();
         });
       };
 
       saveBwsUrl().then(() => {
-        this.persistenceProvider.storeProfile(this.profile).then(() => {
+        this.persistenceService.storeProfile(this.profile).then(() => {
           return resolve(wallet);
         }).catch((err: any) => {
           return reject(err);
@@ -373,12 +373,12 @@ export class ProfileProvider {
   }
 
   private shouldSkipValidation(walletId: string): boolean {
-    return this.profile.isChecked(this.platformProvider.ua, walletId) || this.platformProvider.isIOS;
+    return this.profile.isChecked(this.platformService.ua, walletId) || this.platformService.isIOS;
   }
 
   private setMetaData(wallet: any, addressBook: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceProvider.getAddressbook(wallet.credentials.network).then((localAddressBook: any) => {
+      this.persistenceService.getAddressbook(wallet.credentials.network).then((localAddressBook: any) => {
         let localAddressBook1 = {};
         try {
           localAddressBook1 = JSON.parse(localAddressBook);
@@ -386,7 +386,7 @@ export class ProfileProvider {
           this.logger.warn(ex);
         }
         let mergeAddressBook = _.merge(addressBook, localAddressBook1);
-        this.persistenceProvider.setAddressbook(wallet.credentials.network, JSON.stringify(addressBook)).then(() => {
+        this.persistenceService.setAddressbook(wallet.credentials.network, JSON.stringify(addressBook)).then(() => {
           return resolve();
         }).catch((err: any) => {
           return reject(err);
@@ -400,13 +400,13 @@ export class ProfileProvider {
   public importExtendedPrivateKey(xPrivKey: string, opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      var walletClient = this.bwcProvider.getClient(null, opts);
+      var walletClient = this.bwcService.getClient(null, opts);
       this.logger.debug('Importing Wallet xPrivKey');
 
       walletClient.importFromExtendedPrivateKey(xPrivKey, opts, (err: any) => {
         if (err) {
           if (err instanceof this.errors.NOT_AUTHORIZED) return reject(err);
-          this.bwcErrorProvider.cb(err, 'Could not import').then((msg: string) => { //TODO getTextCatalog
+          this.bwcErrorService.cb(err, 'Could not import').then((msg: string) => { //TODO getTextCatalog
             return reject(msg);
           });
         } else {
@@ -433,7 +433,7 @@ export class ProfileProvider {
   public importMnemonic(words: string, opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      var walletClient = this.bwcProvider.getClient(null, opts);
+      var walletClient = this.bwcService.getClient(null, opts);
 
       this.logger.debug('Importing Wallet Mnemonic');
 
@@ -451,7 +451,7 @@ export class ProfileProvider {
             return reject(err);
           }
 
-          this.bwcErrorProvider.cb(err, 'Could not import').then((msg: string) => { //TODO getTextCatalog
+          this.bwcErrorService.cb(err, 'Could not import').then((msg: string) => { //TODO getTextCatalog
             return reject(msg);
           });
 
@@ -471,7 +471,7 @@ export class ProfileProvider {
   public importExtendedPublicKey(opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      var walletClient = this.bwcProvider.getClient(null, opts);
+      var walletClient = this.bwcService.getClient(null, opts);
       this.logger.debug('Importing Wallet XPubKey');
 
       walletClient.importFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
@@ -485,7 +485,7 @@ export class ProfileProvider {
           if (err instanceof this.errors.NOT_AUTHORIZED)
             err.name = 'WALLET_DOES_NOT_EXIST';
 
-          this.bwcErrorProvider.cb(err, 'Could not import').then((msg: string) => { //TODO getTextCatalog
+          this.bwcErrorService.cb(err, 'Could not import').then((msg: string) => { //TODO getTextCatalog
             return reject(msg);
           });
 
@@ -513,12 +513,12 @@ export class ProfileProvider {
 
       // Create the client
       let getBWSURL = (walletId: string) => {
-        var config: any = this.configProvider.get();
-        var defaults: any = this.configProvider.getDefaults();
+        var config: any = this.configService.get();
+        var defaults: any = this.configService.getDefaults();
         return ((config.bwsFor && config.bwsFor[walletId]) || defaults.bws.url);
       };
 
-      let walletClient = this.bwcProvider.getClient(JSON.stringify(credentials), {
+      let walletClient = this.bwcService.getClient(JSON.stringify(credentials), {
         bwsurl: getBWSURL(credentials.walletId),
       });
 
@@ -532,7 +532,7 @@ export class ProfileProvider {
 
   public loadAndBindProfile(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceProvider.getProfile().then((profile: any) => {
+      this.persistenceService.getProfile().then((profile: any) => {
         if (!profile) {
           return reject();
         }
@@ -558,7 +558,7 @@ export class ProfileProvider {
 
       var walletId = wallet.credentials.walletId;
 
-      var config = this.configProvider.get();
+      var config = this.configService.get();
 
       this.logger.debug('Deleting Wallet:', wallet.credentials.walletName);
       wallet.removeAllListeners();
@@ -567,11 +567,11 @@ export class ProfileProvider {
 
       delete this.wallet[walletId];
 
-      this.persistenceProvider.removeAllWalletData(walletId).catch((err: any) => {
+      this.persistenceService.removeAllWalletData(walletId).catch((err: any) => {
         this.logger.warn(err);
       });
 
-      this.persistenceProvider.storeProfile(this.profile).then(() => {
+      this.persistenceService.storeProfile(this.profile).then(() => {
         return resolve();
       }).catch((err: any) => {
         return reject(err);
@@ -583,7 +583,7 @@ export class ProfileProvider {
   public setDisclaimerAccepted(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.profile.disclaimerAccepted = true;
-      this.persistenceProvider.storeProfile(this.profile).then(() => {
+      this.persistenceService.storeProfile(this.profile).then(() => {
         return resolve();
       }).catch((err) => {
         return reject(err);
@@ -657,7 +657,7 @@ export class ProfileProvider {
   public toggleHideBalanceFlag(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.wallet[walletId].balanceHidden = !this.wallet[walletId].balanceHidden;
-      this.persistenceProvider.setHideBalanceFlag(walletId, this.wallet[walletId].balanceHidden.toString()).then(() => {
+      this.persistenceService.setHideBalanceFlag(walletId, this.wallet[walletId].balanceHidden.toString()).then(() => {
         return resolve();
       }).catch((err: any) => {
         return reject(err);
@@ -726,7 +726,7 @@ export class ProfileProvider {
           x.txid = x.data ? x.data.txid : null;
           x.types = [x.type];
 
-          if (x.data && x.data.amount) x.amountStr = this.txFormatProvider.formatAmountStr(x.wallet.coin, x.data.amount);
+          if (x.data && x.data.amount) x.amountStr = this.txFormatService.formatAmountStr(x.wallet.coin, x.data.amount);
 
           x.action = function () {
             // TODO?
@@ -760,7 +760,7 @@ export class ProfileProvider {
           }
         });
 
-        let u = this.bwcProvider.getUtils();
+        let u = this.bwcService.getUtils();
         _.each(finale, (x: any) => {
           if (x.data && x.data.message && x.wallet && x.wallet.credentials.sharedEncryptingKey) {
             // TODO TODO TODO => BWC

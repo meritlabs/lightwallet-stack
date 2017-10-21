@@ -3,12 +3,12 @@ import { Injectable } from '@angular/core';
 import * as BWC from 'bitcore-wallet-client';
 
 @Injectable()
-export class BwcProvider {
+export class BwcService {
   public buildTx = BWC.buildTx;
   public parseSecret = BWC.parseSecret;
   public Client = BWC;
   constructor() {
-    console.log('Hello BwcProvider Provider');
+    console.log('Hello BwcService Service');
   }
   getBitcore() {
     return BWC.Bitcore;
