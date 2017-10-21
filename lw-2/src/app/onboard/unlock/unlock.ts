@@ -27,7 +27,7 @@ export class UnlockPage {
   unlock() {
     //unlock actions
     this.unlockState = 'success';
-    this.navCtrl.push('ProfilePage');
+    this.navCtrl.push('TransactPage');
   }
 
 }
