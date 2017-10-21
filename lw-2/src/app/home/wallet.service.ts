@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Logger } from '@nsalaun/ng-logger';
 
-import { ConfigService } from '../config/config';
-import { BwcService } from '../bwc/bwc';
-import { TxFormatService } from '../tx-format/tx-format';
-import { PersistenceService } from '../persistence/persistence';
-import { BwcErrorService } from '../bwc-error/bwc-error';
-import { RateService } from '../rate/rate';
-import { Filter } from '../filter/filter';
-import { PopupService } from '../popup/popup';
-import { OnGoingProcess } from '../on-going-process/on-going-process';
-import { TouchIdService } from '../touchid/touchid';
+import { ConfigService } from '../shared/config.service';
+import { BwcService } from '../shared/bwc.service';
+import { TxFormatService } from '../transact/tx-format.service';
+import { PersistenceService } from '../shared/persistence.service';
+import { BwcErrorService } from '../shared/bwc-error.service';
+import { RateService } from '../shared/rate.service';
+import { Filter } from '../shared/filter.service';
+import { PopupService } from '../shared/popup/popup.service';
+import { OnGoingProcess } from '../shared/on-going-process.service';
+import { TouchIdService } from '../shared/touchid.service';
 import { LanguageService } from '../shared/language.service';
 
 import * as lodash from 'lodash';
