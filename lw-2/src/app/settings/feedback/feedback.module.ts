@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { FeedbackPage } from './feedback';
+import { IonicComponentModule } from 'ionic-angular';
+import { FeedbackComponent } from './feedback';
 
 @NgModule({
   declarations: [
-    FeedbackPage,
+    FeedbackComponent,
   ],
   imports: [
-    IonicPageModule.forChild(FeedbackPage),
+    IonicComponentModule.forChild(FeedbackComponent),
   ],
 })
-export class FeedbackPageModule {}
+export class FeedbackComponentModule {}

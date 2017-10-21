@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { NetworkPage } from './network';
+import { IonicComponentModule } from 'ionic-angular';
+import { NetworkComponent } from './network';
 import {MomentModule} from "angular2-moment/moment.module";
 
 @NgModule({
   declarations: [
-    NetworkPage,
+    NetworkComponent,
   ],
   imports: [
     MomentModule,
-    IonicPageModule.forChild(NetworkPage),
+    IonicComponentModule.forChild(NetworkComponent),
   ],
 })
-export class NetworkPageModule {}
+export class NetworkComponentModule {}

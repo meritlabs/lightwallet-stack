@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { SessionLogPage } from './session-log';
+import { IonicComponentModule } from 'ionic-angular';
+import { SessionLogComponent } from './session-log';
 import {MomentModule} from "angular2-moment/moment.module";
 
 @NgModule({
   declarations: [
-    SessionLogPage,
+    SessionLogComponent,
   ],
   imports: [
     MomentModule,
-    IonicPageModule.forChild(SessionLogPage),
+    IonicComponentModule.forChild(SessionLogComponent),
   ],
 })
-export class SessionLogPageModule {}
+export class SessionLogComponentModule {}

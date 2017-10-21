@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-send',
+  selector: 'component-send',
   templateUrl: 'send.html',
 })
-export class SendPage {
+export class SendComponent {
 
 
   constructor(

@@ -1,21 +1,21 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavController, NavParams  } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams  } from 'ionic-angular';
 
 //import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ConfigProvider} from "../../providers/config";
 
 
-@IonicPage({
-  defaultHistory: ['OnboardingPage']
+@IonicComponent({
+  defaultHistory: ['OnboardingComponent']
 })
 @Component({
-  selector: 'page-import',
+  selector: 'component-import',
   templateUrl: 'import.html',
 })
-export class ImportPage {
+export class ImportComponent {
 
-  //public phrasePage = 'ImportPhrasePage';
-  //public filePage   = 'ImportFilePage';
+  //public phraseComponent = 'ImportPhraseComponent';
+  //public fileComponent   = 'ImportFileComponent';
   //public formGroup:FormGroup;
 
   @ViewChild('fileInput') input:ElementRef;
@@ -51,7 +51,7 @@ export class ImportPage {
   }
 
   openScanner() {
-    this.navCtrl.push('ImportScanPage');
+    this.navCtrl.push('ImportScanComponent');
   }
 
   openImport() {
@@ -64,11 +64,11 @@ export class ImportPage {
 
 
   importMnemonic() {
-    this.navCtrl.push('ProfilePage');
+    this.navCtrl.push('ProfileComponent');
   }
 
   importBlob() {
-    this.navCtrl.push('ProfilePage');
+    this.navCtrl.push('ProfileComponent');
   }
 
 }

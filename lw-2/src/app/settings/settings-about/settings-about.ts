@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams, AlertController } from 'ionic-angular';
 import {ExternalLinkService} from "../../../../providers/external-link-service";
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-settings-about',
+  selector: 'component-settings-about',
   templateUrl: 'settings-about.html',
 })
-export class SettingsAboutPage {
+export class SettingsAboutComponent {
 
   public version = '0.0.0'; //@todo move to config
   public commitHash = 'a1b2c3d4'; //@todo move to config
@@ -27,11 +27,11 @@ export class SettingsAboutPage {
   }
 
   toSessionLog() {
-    this.navCtrl.push('SessionLogPage');
+    this.navCtrl.push('SessionLogComponent');
   }
 
   toTermsOfUse() {
-    this.navCtrl.push('TermsOfUsePage');
+    this.navCtrl.push('TermsOfUseComponent');
   }
 
   toGithub() {

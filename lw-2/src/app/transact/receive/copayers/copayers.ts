@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 import {Wallet} from "../../../../models/wallet";
 
 
-@IonicPage({
+@IonicComponent({
   segment: 'receive/:walletId',
-  defaultHistory: ['ReceivePage']
+  defaultHistory: ['ReceiveComponent']
 })
 @Component({
-  selector: 'page-copayers',
+  selector: 'component-copayers',
   templateUrl: 'copayers.html',
 })
-export class CopayersPage {
+export class CopayersComponent {
 
   wallet:Wallet;
 

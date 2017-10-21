@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-advanced-settings',
+  selector: 'component-advanced-settings',
   templateUrl: 'advanced-settings.html',
 })
-export class AdvancedSettingsPage {
+export class AdvancedSettingsComponent {
 
 
   constructor(

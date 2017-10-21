@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams, App } from 'ionic-angular';
 import {Wallet} from "../../../models/wallet";
 import {ProfileService} from "../../../providers/profile-service";
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-home',
+  selector: 'component-home',
   templateUrl: 'home.html',
 })
-export class HomePage {
+export class HomeComponent {
 
   private totalAmount = 0;
   public totalAmountFormatted = '0 bits';
@@ -40,18 +40,18 @@ export class HomePage {
 
   openWallet(wallet) {
     if (!wallet.isComplete) {
-      this.navCtrl.push('CopayersPage')
+      this.navCtrl.push('CopayersComponent')
     } else {
-      this.navCtrl.push('WalletPage', {walletId: wallet.id, wallet: wallet});
+      this.navCtrl.push('WalletComponent', {walletId: wallet.id, wallet: wallet});
     }
   }
 
   toAddWallet() {
-    this.navCtrl.push('CreateWalletPage');
+    this.navCtrl.push('CreateWalletComponent');
   }
 
   toImportWallet() {
-    this.navCtrl.push('ImportPage');
+    this.navCtrl.push('ImportComponent');
   }
 
 

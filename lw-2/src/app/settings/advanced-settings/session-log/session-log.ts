@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 import {Logger} from "../../../../../providers/logger";
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-session-log',
+  selector: 'component-session-log',
   templateUrl: 'session-log.html',
 })
-export class SessionLogPage {
+export class SessionLogComponent {
 
   showSettingsBar:boolean = false;
   logLevel = 4;

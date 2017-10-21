@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 import {Wallet} from "../../../models/wallet";
 import {ProfileService} from "../../../providers/profile-service";
 import {ModalController} from "ionic-angular/index";
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-network',
+  selector: 'component-network',
   templateUrl: 'network.html',
 })
-export class NetworkPage {
+export class NetworkComponent {
 
   public wallets:Array<Wallet>;
   public wallet:Wallet;

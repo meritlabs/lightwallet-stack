@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { TermsOfUsePage } from './terms-of-use';
+import { IonicComponentModule } from 'ionic-angular';
+import { TermsOfUseComponent } from './terms-of-use';
 
 @NgModule({
   declarations: [
-    TermsOfUsePage,
+    TermsOfUseComponent,
   ],
   imports: [
-    IonicPageModule.forChild(TermsOfUsePage),
+    IonicComponentModule.forChild(TermsOfUseComponent),
   ],
 })
-export class TermsOfUsePageModule {}
+export class TermsOfUseComponentModule {}

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
+import { IonicComponentModule } from 'ionic-angular';
 import { SelectCurrencyModal } from './select-currency';
 
 @NgModule({
@@ -7,7 +7,7 @@ import { SelectCurrencyModal } from './select-currency';
     SelectCurrencyModal,
   ],
   imports: [
-    IonicPageModule.forChild(SelectCurrencyModal),
+    IonicComponentModule.forChild(SelectCurrencyModal),
   ],
 })
-export class SelectCurrencyPageModule {}
+export class SelectCurrencyComponentModule {}

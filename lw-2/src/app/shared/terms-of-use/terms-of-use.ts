@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-terms-of-use',
+  selector: 'component-terms-of-use',
   templateUrl: 'terms-of-use.html',
 })
-export class TermsOfUsePage {
+export class TermsOfUseComponent {
 
 
   constructor(

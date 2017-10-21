@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 
 
-@IonicPage({
+@IonicComponent({
   segment: 'wallet/:walletId',
-  defaultHistory: ['ProfilePage']
+  defaultHistory: ['ProfileComponent']
 })
 @Component({
-  selector: 'page-wallet',
+  selector: 'component-wallet',
   templateUrl: 'wallet.html',
 })
-export class WalletPage {
+export class WalletComponent {
 
   public wallet:any;
 

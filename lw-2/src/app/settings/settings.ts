@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, AlertController, ModalController } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams, App, AlertController, ModalController } from 'ionic-angular';
 import {ExternalLinkService} from "../../../providers/external-link-service";
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-settings',
+  selector: 'component-settings',
   templateUrl: 'settings.html',
 })
-export class SettingsPage {
+export class SettingsComponent {
 
   public currentLanguageName = 'English'; //TODO move to profile or config service
   public currentUnitName     = 'MRT'; //TODO move to profile or config service
@@ -30,11 +30,11 @@ export class SettingsPage {
   }
 
   toAddressbook() {
-    this.navCtrl.push('AddressbookPage');
+    this.navCtrl.push('AddressbookComponent');
   }
 
   logout() {
-    this.app.getRootNav().setRoot('OnboardingPage');
+    this.app.getRootNav().setRoot('OnboardingComponent');
   }
 
   toLanguageSelect() {
@@ -47,7 +47,7 @@ export class SettingsPage {
   }
 
   toFeedback() {
-    this.navCtrl.push('FeedbackPage');
+    this.navCtrl.push('FeedbackComponent');
   }
 
   toUnitSelect() {
@@ -70,11 +70,11 @@ export class SettingsPage {
   }
 
   toAdvancedSettings() {
-    this.navCtrl.push('AdvancedSettingsPage')
+    this.navCtrl.push('AdvancedSettingsComponent')
   }
 
   toAbout() {
-    this.navCtrl.push('SettingsAboutPage');
+    this.navCtrl.push('SettingsAboutComponent');
   }
 
   help() {
