@@ -11,6 +11,7 @@ import { Filter } from '../filter/filter';
 import { PopupService } from '../popup/popup';
 import { OnGoingProcess } from '../on-going-process/on-going-process';
 import { TouchIdService } from '../touchid/touchid';
+import { LanguageService } from '../shared/language.service';
 
 import * as lodash from 'lodash';
 
@@ -48,7 +49,8 @@ export class WalletService {
     private filter: Filter,
     private popupService: PopupService,
     private ongoingProcess: OnGoingProcess,
-    private touchidService: TouchIdService
+    private touchidService: TouchIdService,
+    private languageService: LanguageService
   ) {
     console.log('Hello WalletService Service');
   }
