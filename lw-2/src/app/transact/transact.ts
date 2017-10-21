@@ -3,13 +3,13 @@ import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
 
 
 @IonicPage({
-  segment: 'profile'
+  segment: 'transact'
 })
 @Component({
-  selector: 'page-profile',
-  templateUrl: 'profile.html',
+  selector: 'page-transact',
+  templateUrl: 'transact.html',
 })
-export class ProfilePage {
+export class TransactPage {
 
   public homePage     = 'HomePage';
   public receivePage  = 'ReceivePage';
