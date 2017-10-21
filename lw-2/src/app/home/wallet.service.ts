@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Logger } from '@nsalaun/ng-logger';
 
-import { ConfigProvider } from '../config/config';
-import { BwcProvider } from '../bwc/bwc';
-import { TxFormatProvider } from '../tx-format/tx-format';
-import { PersistenceProvider } from '../persistence/persistence';
-import { BwcErrorProvider } from '../bwc-error/bwc-error';
-import { RateProvider } from '../rate/rate';
+import { ConfigService } from '../config/config';
+import { BwcService } from '../bwc/bwc';
+import { TxFormatService } from '../tx-format/tx-format';
+import { PersistenceService } from '../persistence/persistence';
+import { BwcErrorService } from '../bwc-error/bwc-error';
+import { RateService } from '../rate/rate';
 import { Filter } from '../filter/filter';
-import { PopupProvider } from '../popup/popup';
+import { PopupService } from '../popup/popup';
 import { OnGoingProcess } from '../on-going-process/on-going-process';
-import { TouchIdProvider } from '../touchid/touchid';
+import { TouchIdService } from '../touchid/touchid';
 
 import * as lodash from 'lodash';
 
@@ -35,22 +35,22 @@ export class WalletService {
   private SOFT_CONFIRMATION_LIMIT: number = 12;
   private SAFE_CONFIRMATIONS: number = 6;
 
-  private errors: any = this.bwcProvider.getErrors();
+  private errors: any = this.bwcService.getErrors();
 
   constructor(
     private logger: Logger,
-    private bwcProvider: BwcProvider,
-    private txFormatProvider: TxFormatProvider,
-    private configProvider: ConfigProvider,
-    private persistenceProvider: PersistenceProvider,
-    private bwcErrorProvider: BwcErrorProvider,
-    private rateProvider: RateProvider,
+    private bwcService: BwcService,
+    private txFormatService: TxFormatService,
+    private configService: ConfigService,
+    private persistenceService: PersistenceService,
+    private bwcErrorService: BwcErrorService,
+    private rateService: RateService,
     private filter: Filter,
-    private popupProvider: PopupProvider,
+    private popupService: PopupService,
     private ongoingProcess: OnGoingProcess,
-    private touchidProvider: TouchIdProvider
+    private touchidService: TouchIdService
   ) {
-    console.log('Hello WalletService Provider');
+    console.log('Hello WalletService Service');
   }
 
 
@@ -98,7 +98,7 @@ export class WalletService {
 
         lodash.each(txps, (tx: any) => {
 
-          tx = this.txFormatProvider.processTx(wallet.coin, tx);
+          tx = this.txFormatService.processTx(wallet.coin, tx);
 
           // no future transactions...
           if (tx.createdOn > now)
@@ -153,7 +153,7 @@ export class WalletService {
       let cacheBalance = (wallet: any, balance: any): void => {
         if (!balance) return;
 
-        let configGet: any = this.configProvider.get();
+        let configGet: any = this.configService.get();
         let config: any = configGet.wallet;
 
         let cache = wallet.cachedStatus;
@@ -184,11 +184,11 @@ export class WalletService {
         cache.satToUnit = 1 / cache.unitToSatoshi;
 
         //STR
-        cache.totalBalanceStr = this.txFormatProvider.formatAmountStr(wallet.coin, cache.totalBalanceSat);
-        cache.lockedBalanceStr = this.txFormatProvider.formatAmountStr(wallet.coin, cache.lockedBalanceSat);
-        cache.availableBalanceStr = this.txFormatProvider.formatAmountStr(wallet.coin, cache.availableBalanceSat);
-        cache.spendableBalanceStr = this.txFormatProvider.formatAmountStr(wallet.coin, cache.spendableAmount);
-        cache.pendingBalanceStr = this.txFormatProvider.formatAmountStr(wallet.coin, cache.pendingAmount);
+        cache.totalBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.totalBalanceSat);
+        cache.lockedBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.lockedBalanceSat);
+        cache.availableBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.availableBalanceSat);
+        cache.spendableBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.spendableAmount);
+        cache.pendingBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.pendingAmount);
 
         cache.alternativeName = config.settings.alternativeName;
         cache.alternativeIsoCode = config.settings.alternativeIsoCode;
@@ -208,13 +208,13 @@ export class WalletService {
           return reject(err);
         });
 
-        this.rateProvider.whenAvailable().then(() => {
+        this.rateService.whenAvailable().then(() => {
 
-          let totalBalanceAlternative = this.rateProvider.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode, wallet.coin);
-          let pendingBalanceAlternative = this.rateProvider.toFiat(cache.pendingAmount, cache.alternativeIsoCode, wallet.coin);
-          let lockedBalanceAlternative = this.rateProvider.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode, wallet.coin);
-          let spendableBalanceAlternative = this.rateProvider.toFiat(cache.spendableAmount, cache.alternativeIsoCode, wallet.coin);
-          let alternativeConversionRate = this.rateProvider.toFiat(100000000, cache.alternativeIsoCode, wallet.coin);
+          let totalBalanceAlternative = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode, wallet.coin);
+          let pendingBalanceAlternative = this.rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode, wallet.coin);
+          let lockedBalanceAlternative = this.rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode, wallet.coin);
+          let spendableBalanceAlternative = this.rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode, wallet.coin);
+          let alternativeConversionRate = this.rateService.toFiat(100000000, cache.alternativeIsoCode, wallet.coin);
 
           cache.totalBalanceAlternative = this.filter.formatFiatAmount(totalBalanceAlternative);
           cache.pendingBalanceAlternative = this.filter.formatFiatAmount(pendingBalanceAlternative);
@@ -292,7 +292,7 @@ export class WalletService {
   // Check address
   private isAddressUsed(wallet: any, byAddress: Array<any>): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceProvider.getLastAddress(wallet.id).then((addr) => {
+      this.persistenceService.getLastAddress(wallet.id).then((addr) => {
         let used = lodash.find(byAddress, {
           address: addr
         });
@@ -305,14 +305,14 @@ export class WalletService {
 
   private getAddress(wallet: any, forceNew: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceProvider.getLastAddress(wallet.id).then((addr) => {
+      this.persistenceService.getLastAddress(wallet.id).then((addr) => {
         if (!forceNew && addr) return resolve(addr);
 
         if (!wallet.isComplete())
           return reject('WALLET_NOT_COMPLETE');
 
         this.createAddress(wallet).then((_addr) => {
-          this.persistenceProvider.storeLastAddress(wallet.id, _addr).then(() => {
+          this.persistenceService.storeLastAddress(wallet.id, _addr).then(() => {
             return resolve(_addr);
           }).catch((err) => {
             return reject(err);
@@ -349,7 +349,7 @@ export class WalletService {
               return resolve(addr[0].address);
             });
           };
-          this.bwcErrorProvider.cb(err, prefix).then((msg) => {
+          this.bwcErrorService.cb(err, prefix).then((msg) => {
             return reject(msg);
           });
         };
@@ -361,7 +361,7 @@ export class WalletService {
   private getSavedTxs(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      this.persistenceProvider.getTxHistory(walletId).then((txs: any) => {
+      this.persistenceService.getTxHistory(walletId).then((txs: any) => {
         let localTxs = [];
 
         if (!txs) {
@@ -431,8 +431,8 @@ export class WalletService {
 
           this.logger.debug('Fixing Tx Cache Unit to: ' + wallet.coin)
           lodash.each(txs, (tx: any) => {
-            tx.amountStr = this.txFormatProvider.formatAmountStr(wallet.coin, tx.amount);
-            tx.feeStr = this.txFormatProvider.formatAmountStr(wallet.coin, tx.fees);
+            tx.amountStr = this.txFormatService.formatAmountStr(wallet.coin, tx.amount);
+            tx.feeStr = this.txFormatService.formatAmountStr(wallet.coin, tx.fees);
           });
         };
       };
@@ -481,7 +481,7 @@ export class WalletService {
               requestLimit = LIMIT;
               getNewTxs(newTxs, skip);
             }).catch((err) => {
-              this.logger.warn(this.bwcErrorProvider.msg(err, 'Server Error')); //TODO
+              this.logger.warn(this.bwcErrorService.msg(err, 'Server Error')); //TODO
               if (err instanceof this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
                 this.logger.info('Retrying history download in 5 secs...');
                 return reject(setTimeout(() => {
@@ -557,7 +557,7 @@ export class WalletService {
               wallet.completeHistory = newHistory;
             }
 
-            return this.persistenceProvider.setTxHistory(historyToSave, walletId).then(() => {
+            return this.persistenceService.setTxHistory(historyToSave, walletId).then(() => {
               this.logger.debug('Tx History saved.');
               return resolve();
             }).catch((err) => {
@@ -576,7 +576,7 @@ export class WalletService {
   }
 
   private processNewTxs(wallet: any, txs: any): Array<any> {
-    let configGet: any = this.configProvider.get();
+    let configGet: any = this.configService.get();
     let config: any = configGet.wallet.settings;
     let now = Math.floor(Date.now() / 1000);
     let txHistoryUnique = {};
@@ -584,7 +584,7 @@ export class WalletService {
     wallet.hasUnsafeConfirmed = false;
 
     lodash.each(txs, (tx: any) => {
-      tx = this.txFormatProvider.processTx(wallet.coin, tx);
+      tx = this.txFormatService.processTx(wallet.coin, tx);
 
       // no future transactions...
       if (tx.time > now)
@@ -866,7 +866,7 @@ export class WalletService {
           wallet.savePreferences(prefs, (err: any) => {
 
             if (err) {
-              this.popupProvider.ionicAlert(this.bwcErrorProvider.msg(err, 'Could not save preferences on the server')); //TODO Gettextcatalog
+              this.popupService.ionicAlert(this.bwcErrorService.msg(err, 'Could not save preferences on the server')); //TODO Gettextcatalog
               return reject(err);
             }
 
@@ -876,7 +876,7 @@ export class WalletService {
       };
 
       // Update this JIC.
-      let config: any = this.configProvider.get();
+      let config: any = this.configService.get();
       let walletSettings = config.wallet.settings;
 
       //prefs.email  (may come from arguments)
@@ -946,11 +946,11 @@ export class WalletService {
   public joinWallet(opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      let walletClient = this.bwcProvider.getClient(null, opts);
+      let walletClient = this.bwcService.getClient(null, opts);
       this.logger.debug('Joining Wallet:', opts);
 
       try {
-        var walletData = this.bwcProvider.parseSecret(opts.secret);
+        var walletData = this.bwcService.parseSecret(opts.secret);
 
         // check if exist
         if (_.find(this.profile.credentials, {
@@ -970,7 +970,7 @@ export class WalletService {
           coin: opts.coin
         }, (err: any) => {
           if (err) {
-            this.bwcErrorProvider.cb(err, 'Could not join wallet').then((msg: string) => { //TODO getTextCatalog
+            this.bwcErrorService.cb(err, 'Could not join wallet').then((msg: string) => { //TODO getTextCatalog
               return reject(msg);
             });
           } else {
@@ -995,7 +995,7 @@ export class WalletService {
   public expireAddress(wallet: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this.logger.debug('Cleaning Address ' + wallet.id);
-      this.persistenceProvider.clearLastAddress(wallet.id).then(() => {
+      this.persistenceService.clearLastAddress(wallet.id).then(() => {
         return resolve();
       }).catch((err: any) => {
         return reject(err);
@@ -1079,7 +1079,7 @@ export class WalletService {
   // An alert dialog
   private askPassword(name: string, title: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.popupProvider.ionicPrompt(title, name, null, null).then((res: any) => {
+      this.popupService.ionicPrompt(title, name, null, null).then((res: any) => {
         return resolve(res);
       }).catch((err: any) => {
         return reject(err);
@@ -1157,14 +1157,14 @@ export class WalletService {
         //$rootScope.$emit('Local/TxAction', wallet.id);
         return resolve();
       }).catch((err) => {
-        return reject(this.bwcErrorProvider.msg(err));
+        return reject(this.bwcErrorService.msg(err));
       });
     });
   }
 
   public prepare(wallet: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.touchidProvider.checkWallet(wallet).then(() => {
+      this.touchidService.checkWallet(wallet).then(() => {
         this.handleEncryptedWallet(wallet).then((password: string) => {
           return resolve(password);
         }).catch((err) => {
@@ -1190,7 +1190,7 @@ export class WalletService {
             //$rootScope.$emit('Local/TxAction', wallet.id);
             return resolve(broadcastedTxp);
           }).catch((err) => {
-            return reject(this.bwcErrorProvider.msg(err));
+            return reject(this.bwcErrorService.msg(err));
           });
         } else {
           //$rootScope.$emit('Local/TxAction', wallet.id);
@@ -1216,7 +1216,7 @@ export class WalletService {
             return reject(err);
           });
         }).catch((err) => {
-          return reject(this.bwcErrorProvider.msg(err));
+          return reject(this.bwcErrorService.msg(err));
         });
       } else {
         this.prepare(wallet).then((password: string) => {
@@ -1230,10 +1230,10 @@ export class WalletService {
             });
           }).catch((err) => {
             this.ongoingProcess.set('sendingTx', false, customStatusHandler);
-            return reject(this.bwcErrorProvider.msg(err));
+            return reject(this.bwcErrorService.msg(err));
           });
         }).catch((err) => {
-          return reject(this.bwcErrorProvider.msg(err));
+          return reject(this.bwcErrorService.msg(err));
         });
       };
     });
@@ -1286,13 +1286,13 @@ export class WalletService {
       };
       opts.touchIdFor[wallet.id] = enabled;
 
-      this.touchidProvider.checkWallet(wallet).then(() => {
-        this.configProvider.set(opts);
+      this.touchidService.checkWallet(wallet).then(() => {
+        this.configService.set(opts);
         return resolve();
       }).catch((err) => {
         opts.touchIdFor[wallet.id] = !enabled;
         this.logger.debug('Error with fingerprint:' + err);
-        this.configProvider.set(opts);
+        this.configService.set(opts);
         return reject(err);
       });
     });
@@ -1331,7 +1331,7 @@ export class WalletService {
 
   public copyCopayers(wallet: any, newWallet: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      let walletPrivKey = this.bwcProvider.getBitcore().PrivateKey.fromString(wallet.credentials.walletPrivKey);
+      let walletPrivKey = this.bwcService.getBitcore().PrivateKey.fromString(wallet.credentials.walletPrivKey);
       let copayer = 1;
       let i = 0;
 
@@ -1370,7 +1370,7 @@ export class WalletService {
             coin: opts.coin
           }, (err: any, secret: any) => {
             if (err) {
-              this.bwcErrorProvider.cb(err, 'Error creating wallet').then((msg: string) => { //TODO getTextCatalog
+              this.bwcErrorService.cb(err, 'Error creating wallet').then((msg: string) => { //TODO getTextCatalog
                 return reject(msg);
               });
             } else {
@@ -1388,7 +1388,7 @@ export class WalletService {
     return new Promise((resolve, reject) => {
 
       opts = opts ? opts : {};
-      let walletClient = this.bwcProvider.getClient(null, opts);
+      let walletClient = this.bwcService.getClient(null, opts);
       let network = opts.networkName || 'livenet';
 
       if (opts.mnemonic) {
@@ -1431,7 +1431,7 @@ export class WalletService {
           return reject('Could not create using the specified extended public key'); // TODO GetTextCatalog
         }
       } else {
-        let lang = this.languageProvider.getCurrent();
+        let lang = this.languageService.getCurrent();
         try {
           walletClient.seedFromRandomWithMnemonic({
             network: network,

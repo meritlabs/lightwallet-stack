@@ -5,8 +5,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
 import { MyApp } from './app.component';
-import {ProfileService} from "../providers/profile-service";
-import {ProfileProviderMock} from "../providers/mocks/profile";
+import {ProfileService} from "/home/profile.service";
+import {ProfileServiceMock} from "../providers/mocks/profile";
 import {Logger} from "../providers/logger";
 
 import { MomentModule } from 'angular2-moment';
@@ -29,7 +29,7 @@ import { MomentModule } from 'angular2-moment';
     StatusBar,
     SplashScreen,
     Logger,
-    {provide: ProfileService, useClass: ProfileProviderMock},
+    {provide: ProfileService, useClass: ProfileServiceMock},
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

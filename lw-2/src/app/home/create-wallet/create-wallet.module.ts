@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { IonicComponentModule } from 'ionic-angular';
 import { CreateWalletComponent } from './create-wallet';
-import {ConfigProvider} from "../../../../providers/config";
+import {ConfigService} from "../../../../providers/config";
 
 @NgModule({
   declarations: [
     CreateWalletComponent,
   ],
   providers: [
-    ConfigProvider
+    ConfigService
   ],
   imports: [
     IonicComponentModule.forChild(CreateWalletComponent),
