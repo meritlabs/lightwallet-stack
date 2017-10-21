@@ -28,12 +28,20 @@ export class UnlockComponent {
 
   unlock() {
     //unlock actions
-    this.unlockState = 'success';
-    this.navCtrl.push('TransactComponent');
+    this.createAndUnlockWallet().then(() => {
+      this.unlockState = 'success';
+      this.navCtrl.push('TransactComponent');
+    });
   }
 
-  createAndUnlockWallet() {
-    this.walletService.createDefaultWallet();
+  createAndUnlockWallet(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.walletService.createDefaultWallet().then((wallet: any) => {
+        resolve();
+      }).catch((err) => {
+        reject(err);
+      });
+    });
   }
 
 }
