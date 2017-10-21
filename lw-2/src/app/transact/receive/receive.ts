@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams, ModalController } from 'ionic-angular';
 
 import {ProfileService} from "../../../providers/profile-service";
 import {Wallet} from "../../../models/wallet";
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-receive',
+  selector: 'component-receive',
   templateUrl: 'receive.html',
 })
-export class ReceivePage {
+export class ReceiveComponent {
 
   public protocolHandler: string;
   public address: string;
@@ -37,7 +37,7 @@ export class ReceivePage {
   }
 
   requestSpecificAmount() {
-    //this.navCtrl.push(AmountPage, {address: this.address, sending: false});
+    //this.navCtrl.push(AmountComponent, {address: this.address, sending: false});
   }
 
   setAddress() {
@@ -66,7 +66,7 @@ export class ReceivePage {
   }
 
   toCopayers() {
-    this.navCtrl.push('CopayersPage', {walletId: this.wallet.id, wallet: this.wallet});
+    this.navCtrl.push('CopayersComponent', {walletId: this.wallet.id, wallet: this.wallet});
   }
 
   shareButtonAvailable() {

@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 import {ConfigProvider} from "../../../../providers/config";
 
 
-@IonicPage({
-  defaultHistory: ['ProfilePage']
+@IonicComponent({
+  defaultHistory: ['ProfileComponent']
 })
 @Component({
-  selector: 'page-create-wallet',
+  selector: 'component-create-wallet',
   templateUrl: 'create-wallet.html',
 })
-export class CreateWalletPage {
+export class CreateWalletComponent {
 
   public formData = {walletName: '', beacon: '', bwsurl: '', seedSource: '', seedOptions: [], encrypted: false, passphrase: '', createPassphrase: '', repeatPassword: ''};
 

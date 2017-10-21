@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 
 
-@IonicPage({
-  defaultHistory: ['ImportPage']
+@IonicComponent({
+  defaultHistory: ['ImportComponent']
 })
 @Component({
-  selector: 'page-import-scan',
+  selector: 'component-import-scan',
   templateUrl: 'import-scan.html',
 })
-export class ImportScanPage {
+export class ImportScanComponent {
 
 
   constructor(

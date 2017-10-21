@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-feedback',
+  selector: 'component-feedback',
   templateUrl: 'feedback.html',
 })
-export class FeedbackPage {
+export class FeedbackComponent {
 
   public text:string;
 

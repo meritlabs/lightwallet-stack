@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams, ViewController } from 'ionic-angular';
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-select-currency',
+  selector: 'component-select-currency',
   templateUrl: 'select-currency.html',
 })
 export class SelectCurrencyModal {

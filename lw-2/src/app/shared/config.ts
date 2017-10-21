@@ -22,12 +22,12 @@ export class ConfigProvider {
 
     rateApp: {
       bitpay: {
-        ios: 'http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=1149581638&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8',
+        ios: 'http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=1149581638&componentNumber=0&sortOrdering=2&type=Purple+Software&mt=8',
         android: 'https://play.google.com/store/apps/details?id=com.bitpay.wallet',
         wp: ''
       },
       copay: {
-        ios: 'http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=951330296&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8',
+        ios: 'http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=951330296&componentNumber=0&sortOrdering=2&type=Purple+Software&mt=8',
         android: 'https://play.google.com/store/apps/details?id=com.bitpay.copay',
         wp: ''
       }

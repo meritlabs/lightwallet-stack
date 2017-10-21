@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 import {ContactsService} from "../../../../providers/contacts-service";
 
 
-@IonicPage({
-  defaultHistory: ['SettingsPage']
+@IonicComponent({
+  defaultHistory: ['SettingsComponent']
 })
 @Component({
-  selector: 'page-addressbook',
+  selector: 'component-addressbook',
   templateUrl: 'addressbook.html',
 })
-export class AddressbookPage {
+export class AddressbookComponent {
 
   contacts = [];
 
@@ -26,11 +26,11 @@ export class AddressbookPage {
   }
 
   toAddContact() {
-    this.navCtrl.push('AddContactPage');
+    this.navCtrl.push('AddContactComponent');
   }
 
   toContact(contact) {
-    this.navCtrl.push('ContactPage', {contact: contact});
+    this.navCtrl.push('ContactComponent', {contact: contact});
   }
 
 

@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-contact',
+  selector: 'component-contact',
   templateUrl: 'contact.html',
 })
-export class ContactPage {
+export class ContactComponent {
 
 
   constructor(

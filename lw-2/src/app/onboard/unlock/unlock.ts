@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 
 
-@IonicPage({
-  defaultHistory: ['OnboardingPage']
+@IonicComponent({
+  defaultHistory: ['OnboardingComponent']
 })
 @Component({
-  selector: 'page-unlock',
+  selector: 'component-unlock',
   templateUrl: 'unlock.html',
 })
-export class UnlockPage {
+export class UnlockComponent {
 
   public unlockState:'success'|'fail';
   public formData = {unockCode: ''};
@@ -27,7 +27,9 @@ export class UnlockPage {
   unlock() {
     //unlock actions
     this.unlockState = 'success';
-    this.navCtrl.push('TransactPage');
+    this.navCtrl.push('TransactComponent');
   }
+
+  function 
 
 }

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
+import { IonicComponentModule } from 'ionic-angular';
 import { SelectUnitModal } from './select-unit';
 
 @NgModule({
@@ -7,7 +7,7 @@ import { SelectUnitModal } from './select-unit';
     SelectUnitModal,
   ],
   imports: [
-    IonicPageModule.forChild(SelectUnitModal),
+    IonicComponentModule.forChild(SelectUnitModal),
   ],
 })
-export class SelectUnitPageModule {}
+export class SelectUnitComponentModule {}

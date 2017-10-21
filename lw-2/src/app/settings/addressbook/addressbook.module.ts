@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { AddressbookPage } from './addressbook';
+import { IonicComponentModule } from 'ionic-angular';
+import { AddressbookComponent } from './addressbook';
 import {ContactsService} from "../../../../providers/contacts-service";
 
 @NgModule({
   declarations: [
-    AddressbookPage,
+    AddressbookComponent,
   ],
   providers: [
     ContactsService
   ],
   imports: [
-    IonicPageModule.forChild(AddressbookPage),
+    IonicComponentModule.forChild(AddressbookComponent),
   ],
 })
-export class AddressbookPageModule {}
+export class AddressbookComponentModule {}

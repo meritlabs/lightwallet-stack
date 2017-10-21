@@ -1,21 +1,21 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams, Tabs } from 'ionic-angular';
 
 
-@IonicPage({
+@IonicComponent({
   segment: 'transact'
 })
 @Component({
-  selector: 'page-transact',
+  selector: 'component-transact',
   templateUrl: 'transact.html',
 })
-export class TransactPage {
+export class TransactComponent {
 
-  public homePage     = 'HomePage';
-  public receivePage  = 'ReceivePage';
-  public networkPage  = 'NetworkPage';
-  public sendPage     = 'SendPage';
-  public settingsPage = 'SettingsPage';
+  public homeComponent     = 'HomeComponent';
+  public receiveComponent  = 'ReceiveComponent';
+  public networkComponent  = 'NetworkComponent';
+  public sendComponent     = 'SendComponent';
+  public settingsComponent = 'SettingsComponent';
 
   @ViewChild('tabs') tabRef: Tabs;
 

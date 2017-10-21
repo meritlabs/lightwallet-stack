@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicComponent, NavController, NavParams } from 'ionic-angular';
 
 
-@IonicPage()
+@IonicComponent()
 @Component({
-  selector: 'page-onboarding',
+  selector: 'component-onboarding',
   templateUrl: 'onboarding.html',
 })
-export class OnboardingPage {
+export class OnboardingComponent {
 
 
   constructor(
@@ -21,12 +21,12 @@ export class OnboardingPage {
     //do something here
   }
 
-  toTourPage() {
-    this.navCtrl.push('TourPage');
+  toTourComponent() {
+    this.navCtrl.push('TourComponent');
   }
 
-  toImportPage() {
-    this.navCtrl.push('ImportPage')
+  toImportComponent() {
+    this.navCtrl.push('ImportComponent')
   }
 
 }
