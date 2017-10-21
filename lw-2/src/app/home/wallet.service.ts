@@ -988,6 +988,22 @@ export class WalletService {
     });
   }
 
+  public createDefaultWallet(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var opts: any = {};
+      opts.m = 1;
+      opts.n = 1;
+      opts.networkName = 'testnet';
+      opts.coin = 'mrt';
+      this.createWallet(opts).then((wallet: any) => {
+        return resolve(wallet);
+      }).catch((err) => {
+        return reject(err);
+      });
+    });
+  };
+
+
   public isReady(wallet: any): string {
     if (!wallet.isComplete())
       return 'WALLET_NOT_COMPLETE';
