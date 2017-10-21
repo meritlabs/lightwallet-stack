@@ -3,11 +3,11 @@ import { Inject } from '@angular/core';
 import { Logger } from '@nsalaun/ng-logger';
 import * as _ from 'lodash';
 
-import { IStorage, ISTORAGE } from './storage/istorage';
-import { PlatformService } from '../platform/platform';
-import { LocalStorage } from './storage/local-storage';
-import { FileStorage } from './storage/file-storage';
-import { RamStorage } from './storage/ram-storage';
+import { IStorage, ISTORAGE } from './storage/storage.interface';
+import { PlatformService } from '../platform.service';
+import { LocalStorage } from './storage/local-storage.service';
+import { FileStorage } from './storage/file-storage.service';
+import { RamStorage } from './storage/ram-storage.service';
 
 const Keys = {
   ADDRESS_BOOK: network => 'addressbook-' + network,
