@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Logger } from '@nsalaun/ng-logger';
 import { Events } from 'ionic-angular';
-import { PersistenceProvider } from '../persistence/persistence';
+import { PersistenceService } from '../shared/persistence.service';
 
 import * as _ from "lodash";
 
@@ -172,16 +172,16 @@ const configDefault: Config = {
 };
 
 @Injectable()
-export class ConfigProvider {
+export class ConfigService {
   private configCache: Config;
 
 
   constructor(
     private logger: Logger,
     private events: Events,
-    private persistence: PersistenceProvider
+    private persistence: PersistenceService
   ) {
-    this.logger.debug('ConfigProvider initialized.');
+    this.logger.debug('ConfigService initialized.');
   }
 
   public load() {
