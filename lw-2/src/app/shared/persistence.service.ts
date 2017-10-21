@@ -3,8 +3,8 @@ import { Inject } from '@angular/core';
 import { Logger } from '@nsalaun/ng-logger';
 import * as _ from 'lodash';
 
-import { IStorage, ISTORAGE } from './storage/storage.interface';
-import { PlatformService } from '../platform.service';
+import { Storage, STORAGE } from './storage/storage.interface';
+import { PlatformService } from './platform.service';
 import { LocalStorage } from './storage/local-storage.service';
 import { FileStorage } from './storage/file-storage.service';
 import { RamStorage } from './storage/ram-storage.service';
@@ -57,7 +57,7 @@ export let persistenceServiceFactory = (platform: PlatformService, log: Logger) 
 
 @Injectable()
 export class PersistenceService {
-  constructor( @Inject(ISTORAGE) public storage: IStorage, private log: Logger) {
+  constructor( @Inject(STORAGE) public storage: Storage, private log: Logger) {
   };
 
   storeNewProfile(profile): Promise<void> {
