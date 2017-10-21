@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicComponent, NavController, NavParams } from 'ionic-angular';
+import { WalletService } from '../../home/wallet.service';
 
 
 @IonicComponent({
@@ -16,7 +17,8 @@ export class UnlockComponent {
 
   constructor(
     public navCtrl: NavController,
-    public navParams: NavParams
+    public navParams: NavParams, 
+    private walletService: WalletService
   ) {
   }
 
@@ -30,6 +32,8 @@ export class UnlockComponent {
     this.navCtrl.push('TransactComponent');
   }
 
-  function 
+  createAndUnlockWallet() {
+
+  }
 
 }

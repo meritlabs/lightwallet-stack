@@ -22,7 +22,7 @@ import * as lodash from 'lodash';
 
 
 @Injectable()
-export class WalletProvider {
+export class WalletService {
 
   // Ratio low amount warning (fee/amount) in incoming TX
   private LOW_AMOUNT_RATIO: number = 0.15;

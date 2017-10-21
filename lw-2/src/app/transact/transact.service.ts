@@ -5,7 +5,7 @@ import { PersistenceProvider } from '../persistence/persistence';
 import { ConfigProvider } from '../shared/config';
 import { BwcProvider } from '../shared/bwc.service';
 import { BwcErrorProvider } from '../bwc-error/bwc-error';
-import { WalletProvider } from '../wallet/wallet';
+import { WalletService } from '../wallet/wallet';
 import { PlatformProvider } from '../platform/platform';
 import { AppProvider } from '../../providers/app/app';
 import { LanguageProvider } from '../../providers/language/language';
@@ -25,7 +25,7 @@ export class ProfileProvider {
 
   constructor(
     private logger: Logger,
-    private walletProvider: WalletProvider,
+    private walletProvider: WalletService,
     private persistenceProvider: PersistenceProvider,
     private configProvider: ConfigProvider,
     private bwcProvider: BwcProvider,
