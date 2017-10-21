@@ -836,8 +836,8 @@ export class ProfileProvider {
       var opts: any = {};
       opts.m = 1;
       opts.n = 1;
-      opts.networkName = 'livenet';
-      opts.coin = 'btc';
+      opts.networkName = 'testnet';
+      opts.coin = 'mrt';
       this.createWallet(opts).then((wallet: any) => {
         return resolve(wallet);
       }).catch((err) => {
