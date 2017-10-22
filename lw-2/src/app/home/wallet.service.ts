@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { Logger } from '@nsalaun/ng-logger';
 
 import { ConfigService } from '../shared/config.service';
-import { BwcService } from '../shared/bwc.service';
+import { BwcService } from '../core/bwc.service';
 import { TxFormatService } from '../transact/tx-format.service';
-import { PersistenceService } from '../shared/persistence.service';
-import { BwcError } from '../shared/bwc-error.model';
+import { PersistenceService } from '../core/persistence.service';
+import { BwcError } from '../core/bwc-error.model';
 import { RateService } from '../transact/rate.service';
 import { FiatAmount } from '../shared/fiat-amount.model';
-import { PopupService } from '../shared/popup.service';
-import { OnGoingProcess } from '../shared/on-going-process.service';
+import { PopupService } from '../core/popup.service';
+import { SpinnerService } from '../core/spinner.service';
 import { TouchIdService } from '../shared/touchid.service';
 import { LanguageService } from '../shared/language.service';
 
@@ -47,7 +47,7 @@ export class WalletService {
     private bwcErrorService: BwcError,
     private rateService: RateService,
     private popupService: PopupService,
-    private ongoingProcess: OnGoingProcess,
+    private spinnerService: SpinnerService,
     private touchidService: TouchIdService,
     private languageService: LanguageService
   ) {
@@ -903,10 +903,10 @@ export class WalletService {
   public recreate(wallet: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this.logger.debug('Recreating wallet:', wallet.id);
-      this.ongoingProcess.set('recreating', true);
+      this.spinnerService.setSpinnerStatus('recreating', true);
       wallet.recreateWallet((err: any) => {
         wallet.notAuthorized = false;
-        this.ongoingProcess.set('recreating', false);
+        this.spinnerService.setSpinnerStatus('recreating', false);
         if (err) return reject(err);
         return resolve();
       });
@@ -1137,10 +1137,10 @@ export class WalletService {
 
   public reject(wallet: any, txp: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.ongoingProcess.set('rejectTx', true);
+      this.spinnerService.setSpinnerStatus('rejectTx', true);
       this.rejectTx(wallet, txp).then((txpr: any) => {
         this.invalidateCache(wallet);
-        this.ongoingProcess.set('rejectTx', false);
+        this.spinnerService.setSpinnerStatus('rejectTx', false);
         //$rootScope.$emit('Local/TxAction', wallet.id);
         return resolve(txpr);
       }).catch((err) => {
@@ -1151,10 +1151,10 @@ export class WalletService {
 
   public onlyPublish(wallet: any, txp: any, customStatusHandler: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.ongoingProcess.set('sendingTx', true, customStatusHandler);
+      this.spinnerService.setSpinnerStatus('sendingTx', true, customStatusHandler);
       this.publishTx(wallet, txp).then((publishedTxp) => {
         this.invalidateCache(wallet);
-        this.ongoingProcess.set('sendingTx', false, customStatusHandler);
+        this.spinnerService.setSpinnerStatus('sendingTx', false, customStatusHandler);
         //$rootScope.$emit('Local/TxAction', wallet.id);
         return resolve();
       }).catch((err) => {
@@ -1180,14 +1180,14 @@ export class WalletService {
   private signAndBroadcast(wallet: any, publishedTxp: any, password: any, customStatusHandler: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      this.ongoingProcess.set('signingTx', true, customStatusHandler);
+      this.spinnerService.setSpinnerStatus('signingTx', true, customStatusHandler);
       this.signTx(wallet, publishedTxp, password).then((signedTxp: any) => {
-        this.ongoingProcess.set('signingTx', false, customStatusHandler);
+        this.spinnerService.setSpinnerStatus('signingTx', false, customStatusHandler);
         this.invalidateCache(wallet);
         if (signedTxp.status == 'accepted') {
-          this.ongoingProcess.set('broadcastingTx', true, customStatusHandler);
+          this.spinnerService.setSpinnerStatus('broadcastingTx', true, customStatusHandler);
           this.broadcastTx(wallet, signedTxp).then((broadcastedTxp: any) => {
-            this.ongoingProcess.set('broadcastingTx', false, customStatusHandler);
+            this.spinnerService.setSpinnerStatus('broadcastingTx', false, customStatusHandler);
             //$rootScope.$emit('Local/TxAction', wallet.id);
             return resolve(broadcastedTxp);
           }).catch((err) => {
@@ -1221,16 +1221,16 @@ export class WalletService {
         });
       } else {
         this.prepare(wallet).then((password: string) => {
-          this.ongoingProcess.set('sendingTx', true, customStatusHandler);
+          this.spinnerService.setSpinnerStatus('sendingTx', true, customStatusHandler);
           this.publishTx(wallet, txp).then((publishedTxp: any) => {
-            this.ongoingProcess.set('sendingTx', false, customStatusHandler);
+            this.spinnerService.setSpinnerStatus('sendingTx', false, customStatusHandler);
             this.signAndBroadcast(wallet, publishedTxp, password, customStatusHandler).then((broadcastedTxp: any) => {
               return resolve(broadcastedTxp);
             }).catch((err) => {
               return reject(err);
             });
           }).catch((err) => {
-            this.ongoingProcess.set('sendingTx', false, customStatusHandler);
+            this.spinnerService.setSpinnerStatus('sendingTx', false, customStatusHandler);
             return reject(this.bwcErrorService.msg(err));
           });
         }).catch((err) => {
