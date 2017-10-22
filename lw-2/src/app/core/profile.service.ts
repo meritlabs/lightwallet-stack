@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Logger } from '@nsalaun/ng-logger';
 import * as _ from 'lodash';
-import { PersistenceService } from '../shared/persistence.service';
+import { PersistenceService } from '../core/persistence.service';
 import { ConfigService } from '../shared/config.service';
-import { BwcService } from '../shared/bwc.service';
-import { BwcError } from '../shared/bwc-error.model';
+import { BwcService } from '../core/bwc.service';
+import { BwcError } from '../core/bwc-error.model';
 import { WalletService } from '../home/wallet.service';
-import { PlatformService } from '../shared/platform.service';
-import { AppService } from '../shared/app-settings.service';
+import { PlatformService } from '../core/platform.service';
+import { AppService } from '../core/app-settings.service';
 import { LanguageService } from '../shared/language.service';
 import { TxFormatService } from '../transact/tx-format.service';
-import { Profile } from '../shared/profile.model';
+import { Profile } from '../core/profile.model';
 
 @Injectable()
 export class ProfileService {
@@ -327,7 +327,7 @@ export class ProfileService {
   }
 
   // Adds and bind a new client to the profile
-  private addAndBindWalletClient(wallet: any, opts: any): Promise<any> {
+  public addAndBindWalletClient(wallet: any, opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!wallet || !wallet.credentials) {
         return reject('Could not access wallet'); // TODO gettextCatalog
@@ -422,51 +422,7 @@ export class ProfileService {
     });
   }
 
-  private normalizeMnemonic(words: string): string {
-    if (!words || !words.indexOf) return words;
-    let isJA = words.indexOf('\u3000') > -1;
-    let wordList = words.split(/[\u3000\s]+/);
-
-    return wordList.join(isJA ? '\u3000' : ' ');
-  };
-
-  public importMnemonic(words: string, opts: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-
-      var walletClient = this.bwcService.getClient(null, opts);
-
-      this.logger.debug('Importing Wallet Mnemonic');
-
-      words = this.normalizeMnemonic(words);
-      walletClient.importFromMnemonic(words, {
-        network: opts.networkName,
-        passphrase: opts.passphrase,
-        entropySourcePath: opts.entropySourcePath,
-        derivationStrategy: opts.derivationStrategy || 'BIP44',
-        account: opts.account || 0,
-        coin: opts.coin
-      }, (err: any) => {
-        if (err) {
-          if (err instanceof this.errors.NOT_AUTHORIZED) {
-            return reject(err);
-          }
-
-          this.bwcErrorService.cb(err, 'Could not import').then((msg: string) => { //TODO getTextCatalog
-            return reject(msg);
-          });
-
-        }
-
-        this.addAndBindWalletClient(walletClient, {
-          bwsurl: opts.bwsurl
-        }).then((wallet: any) => {
-          return resolve(wallet);
-        }).catch((err: any) => {
-          return reject(err);
-        });
-      });
-    });
-  }
+ 
 
   public importExtendedPublicKey(opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
