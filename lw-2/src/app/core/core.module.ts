@@ -8,6 +8,8 @@ import { Logger } from "./logger";
 
 import { MomentModule } from 'angular2-moment';
 
+// The core module exists to make commonly used singleton services available 
+// for use in other modules.  
 @NgModule({
     imports: [
         CommonModule,
@@ -16,7 +18,7 @@ import { MomentModule } from 'angular2-moment';
     declarations: [SpinnerComponent],
     providers: [
         Logger, 
-        SpinnerService
+        SpinnerService,
         StatusBar,
         SplashScreen,
         Logger,
