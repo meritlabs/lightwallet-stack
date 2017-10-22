@@ -5,7 +5,7 @@ import { ConfigService } from '../shared/config.service';
 import { BwcService } from '../shared/bwc.service';
 import { TxFormatService } from '../transact/tx-format.service';
 import { PersistenceService } from '../shared/persistence.service';
-import { BwcErrorService } from '../shared/bwc-error.service';
+import { BwcError } from '../shared/bwc-error.model';
 import { RateService } from '../shared/rate.service';
 import { Filter } from '../shared/filter.service';
 import { PopupService } from '../shared/popup/popup.service';
@@ -44,7 +44,7 @@ export class WalletService {
     private txFormatService: TxFormatService,
     private configService: ConfigService,
     private persistenceService: PersistenceService,
-    private bwcErrorService: BwcErrorService,
+    private bwcErrorService: BwcError,
     private rateService: RateService,
     private filter: Filter,
     private popupService: PopupService,
