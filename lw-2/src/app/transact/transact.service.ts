@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Logger } from '@nsalaun/ng-logger';
 import * as _ from 'lodash';
-import { PersistenceService } from '../persistence/persistence';
-import { ConfigService } from '../shared/config';
+import { PersistenceService } from '../shared/persistence.service';
+import { ConfigService } from '../shared/config.service';
 import { BwcService } from '../shared/bwc.service';
-import { BwcErrorService } from '../bwc-error/bwc-error';
-import { WalletService } from '../wallet/wallet';
-import { PlatformService } from '../platform/platform';
-import { AppService } from '../../providers/app/app';
-import { LanguageService } from '../../providers/language/language';
-import { TxFormatService } from '../../providers/tx-format/tx-format';
-import { Profile } from '../../models/profile/profile.model';
+import { BwcError } from '../shared/bwc-error.model';
+import { WalletService } from '../home/wallet.service';
+import { PlatformService } from '../shared/platform.service';
+import { AppService } from '../shared/app-settings.service';
+import { LanguageService } from '../shared/language.service';
+import { TxFormatService } from '../transact/tx-format.service';
+import { Profile } from '../shared/profile.model';
 
 @Injectable()
 export class ProfileService {
@@ -29,7 +29,7 @@ export class ProfileService {
     private persistenceService: PersistenceService,
     private configService: ConfigService,
     private bwcService: BwcService,
-    private bwcErrorService: BwcErrorService,
+    private bwcErrorService: BwcError,
     private platformService: PlatformService,
     private appService: AppService,
     private languageService: LanguageService,
@@ -529,27 +529,6 @@ export class ProfileService {
       return resolve(this.bindWalletClient(walletClient));
     });
   }
-
-  public loadAndBindProfile(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.persistenceService.getProfile().then((profile: any) => {
-        if (!profile) {
-          return reject();
-        }
-        // Deprecated: storageService.tryToMigrate
-        this.logger.debug('Profile read');
-        this.bindProfile(profile).then(() => {
-          return resolve();
-        }).catch((err: any) => {
-          return reject(err);
-        });
-      }).catch((err: any) => {
-        //$rootScope.$emit('Local/DeviceError', err); TODO
-        return reject(err);
-      });
-    });
-  }
-
 
 
   
