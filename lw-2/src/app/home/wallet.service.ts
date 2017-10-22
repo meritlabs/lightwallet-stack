@@ -6,8 +6,8 @@ import { BwcService } from '../shared/bwc.service';
 import { TxFormatService } from '../transact/tx-format.service';
 import { PersistenceService } from '../shared/persistence.service';
 import { BwcError } from '../shared/bwc-error.model';
-import { RateService } from '../shared/rate.service';
-import { Filter } from '../shared/filter.service';
+import { RateService } from '../transact/rate.service';
+import { FiatAmount } from '../shared/fiat-amount.model';
 import { PopupService } from '../shared/popup/popup.service';
 import { OnGoingProcess } from '../shared/on-going-process.service';
 import { TouchIdService } from '../shared/touchid.service';
@@ -46,7 +46,6 @@ export class WalletService {
     private persistenceService: PersistenceService,
     private bwcErrorService: BwcError,
     private rateService: RateService,
-    private filter: Filter,
     private popupService: PopupService,
     private ongoingProcess: OnGoingProcess,
     private touchidService: TouchIdService,
@@ -218,11 +217,11 @@ export class WalletService {
           let spendableBalanceAlternative = this.rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode, wallet.coin);
           let alternativeConversionRate = this.rateService.toFiat(100000000, cache.alternativeIsoCode, wallet.coin);
 
-          cache.totalBalanceAlternative = this.filter.formatFiatAmount(totalBalanceAlternative);
-          cache.pendingBalanceAlternative = this.filter.formatFiatAmount(pendingBalanceAlternative);
-          cache.lockedBalanceAlternative = this.filter.formatFiatAmount(lockedBalanceAlternative);
-          cache.spendableBalanceAlternative = this.filter.formatFiatAmount(spendableBalanceAlternative);
-          cache.alternativeConversionRate = this.filter.formatFiatAmount(alternativeConversionRate);
+          cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
+          cache.pendingBalanceAlternative = new FiatAmount(pendingBalanceAlternative);
+          cache.lockedBalanceAlternative = new FiatAmount(lockedBalanceAlternative);
+          cache.spendableBalanceAlternative = new FiatAmount(spendableBalanceAlternative);
+          cache.alternativeConversionRate = new FiatAmount(alternativeConversionRate);
 
           cache.alternativeBalanceAvailable = true;
           cache.isRateAvailable = true;
