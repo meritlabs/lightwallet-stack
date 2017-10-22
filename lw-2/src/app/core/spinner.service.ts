@@ -56,17 +56,16 @@ export class SpinnerService {
     'buyingGiftCard': 'Buying Gift Card...',
     'topup': 'Top up in progress...'
   };
-  private currentlyRunning:string[] = [];
+  private currentlyRunning:Map<string, boolean> = new Map<string, boolean>();
 
   public setSpinnerStatus(processName: string, runningNow: boolean): void {
     this.logger.info("Setting spinner status for: " + processName + "to: " + runningNow);
-
-    this.currentlyRunning.push(processName);
+    this.currentlyRunning[processName] = runningNow;
     this.renderSpinner();    
   }
 
   public getSpinnerStatus(processName: string): boolean {
-    return this.currentlyRunning.includes(processName);
+    return this.currentlyRunning[processName];
   }
 
   // Decide if we want them to automatically dismiss after sometime. 
