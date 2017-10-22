@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import { BwcService } from '../shared/bwc.service';
 import { RateService } from './rate.service';
 import { ConfigService } from '../shared/config.service';
-import { Filter } from '../shared/filter.service';
+import { FiatAmount } from '../shared/fiat-amount.model';
 import * as _ from "lodash";
 
 @Injectable()
@@ -18,7 +18,6 @@ export class TxFormatService {
     private bwc: BwcService,
     private rate: RateService,
     private config: ConfigService,
-    private filter: Filter
   ) {
     console.log('Hello TxFormatService Service');
   }
@@ -66,7 +65,7 @@ export class TxFormatService {
       let settings = this.config.get().wallet.settings;
 
       var v1 = parseFloat((this.rate.toFiat(satoshis, settings.alternativeIsoCode, coin)).toFixed(2));
-      var v1FormatFiat = this.filter.formatFiatAmount(v1);
+      var v1FormatFiat = new FiatAmount(v1);
       if (!v1FormatFiat) resolve(null);
 
       resolve(v1FormatFiat + ' ' + settings.alternativeIsoCode);
@@ -186,7 +185,7 @@ export class TxFormatService {
 
     // If fiat currency
     if (currency != 'BCH' && currency != 'BTC' && currency != 'sat') {
-      amountUnitStr = this.filter.formatFiatAmount(amount) + ' ' + currency;
+      amountUnitStr = new FiatAmount(amount) + ' ' + currency;
       amountSat = this.rate.fromFiat(amount, currency, coin).toFixed(0);
     } else if (currency == 'sat') {
       amountSat = amount;
