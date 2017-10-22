@@ -8,7 +8,7 @@ import { PersistenceService } from '../shared/persistence.service';
 import { BwcError } from '../shared/bwc-error.model';
 import { RateService } from '../transact/rate.service';
 import { FiatAmount } from '../shared/fiat-amount.model';
-import { PopupService } from '../shared/popup/popup.service';
+import { PopupService } from '../shared/popup.service';
 import { OnGoingProcess } from '../shared/on-going-process.service';
 import { TouchIdService } from '../shared/touchid.service';
 import { LanguageService } from '../shared/language.service';
