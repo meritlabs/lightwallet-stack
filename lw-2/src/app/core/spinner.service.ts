@@ -58,7 +58,7 @@ export class SpinnerService {
   };
   private currentlyRunning:string[] = [];
 
-  public setSpinnerStatus(processName: string, runningNow: boolean): void {
+  public setSpinnerStatus(processName: string, runningNow: boolean, customStatusHandler?: any): void {
     this.logger.info("Setting spinner status for: " + processName + "to: " + runningNow);
 
     if (runningNow) {
