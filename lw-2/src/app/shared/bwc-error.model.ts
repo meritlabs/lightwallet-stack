@@ -8,7 +8,7 @@ export class BwcError {
   constructor(
     private log: Logger, 
   ) { 
-    console.log('Hello BwcErrorProvider Provider');
+    console.log('Hello BwcError model');
   }
 
 

@@ -71,6 +71,27 @@ export class ProfileService {
     });
   }
 
+
+  public loadAndBindProfile(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.persistenceService.getProfile().then((profile: any) => {
+        if (!profile) {
+          return reject();
+        }
+        // Deprecated: storageService.tryToMigrate
+        this.logger.debug('Profile read');
+        this.bindProfile(profile).then(() => {
+          return resolve();
+        }).catch((err: any) => {
+          return reject(err);
+        });
+      }).catch((err: any) => {
+        //$rootScope.$emit('Local/DeviceError', err); TODO
+        return reject(err);
+      });
+    });
+  }
+
   public isDisclaimerAccepted(): Promise<any> {
     return new Promise((resolve, reject) => {
 
