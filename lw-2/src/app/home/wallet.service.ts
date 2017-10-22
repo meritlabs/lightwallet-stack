@@ -12,6 +12,7 @@ import { PopupService } from '../core/popup.service';
 import { SpinnerService } from '../core/spinner.service';
 import { TouchIdService } from '../shared/touchid.service';
 import { LanguageService } from '../shared/language.service';
+import { ProfileService } from '../core/profile.service';
 
 import * as lodash from 'lodash';
 
@@ -43,6 +44,7 @@ export class WalletService {
     private bwcService: BwcService,
     private txFormatService: TxFormatService,
     private configService: ConfigService,
+    private profileService: ProfileService,
     private persistenceService: PersistenceService,
     private bwcErrorService: BwcError,
     private rateService: RateService,
@@ -954,7 +956,7 @@ export class WalletService {
         var walletData = this.bwcService.parseSecret(opts.secret);
 
         // check if exist
-        if (_.find(this.profile.credentials, {
+        if (_.find(this.profileService.credentials, {
           'walletId': walletData.walletId
         })) {
           return reject('Cannot join the same wallet more that once'); // TODO getTextCatalog
