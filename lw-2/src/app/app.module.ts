@@ -1,15 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { StatusBar } from '@ionic-native/status-bar';
 
 import { MyApp } from './app.component';
-import {ProfileService} from "/home/profile.service";
-import {ProfileServiceMock} from "../providers/mocks/profile";
-import {Logger} from "../providers/logger";
 
 import { MomentModule } from 'angular2-moment';
+import { CoreModule } from './core/core.module';
 
 
 @NgModule({
@@ -19,6 +15,7 @@ import { MomentModule } from 'angular2-moment';
   imports: [
     BrowserModule,
     MomentModule,
+    CoreModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
@@ -26,10 +23,6 @@ import { MomentModule } from 'angular2-moment';
     MyApp
   ],
   providers: [
-    StatusBar,
-    SplashScreen,
-    Logger,
-    {provide: ProfileService, useClass: ProfileServiceMock},
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
