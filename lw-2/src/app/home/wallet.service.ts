@@ -26,6 +26,9 @@ import * as lodash from 'lodash';
 @Injectable()
 export class WalletService {
 
+  // TODO: Implement wallet model.
+  private wallets: any = {}
+
   // Ratio low amount warning (fee/amount) in incoming TX
   private LOW_AMOUNT_RATIO: number = 0.15;
 
@@ -51,7 +54,8 @@ export class WalletService {
     private popupService: PopupService,
     private spinnerService: SpinnerService,
     private touchidService: TouchIdService,
-    private languageService: LanguageService
+    private languageService: LanguageService, 
+    private mnemonicService: MnemonicService
   ) {
     console.log('Hello WalletService Service');
   }
@@ -991,7 +995,7 @@ export class WalletService {
   }
 
   public getWallet(walletId: string): any {
-    return this.wallet[walletId];
+    return this.profileService.wallets[walletId];
   };
 
 
@@ -1397,7 +1401,7 @@ export class WalletService {
 
       if (opts.mnemonic) {
         try {
-          opts.mnemonic = this.normalizeMnemonic(opts.mnemonic);
+          opts.mnemonic = this.mnemonicService.normalizeMnemonic(opts.mnemonic);
           walletClient.seedFromMnemonic(opts.mnemonic, {
             network: network,
             passphrase: opts.passphrase,
