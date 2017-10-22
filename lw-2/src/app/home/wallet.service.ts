@@ -934,7 +934,7 @@ export class WalletService {
   public createWallet(opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this.doCreateWallet(opts).then((walletClient: any) => {
-        this.addAndBindWalletClient(walletClient, {
+        this.profileService.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
         }).then((wallet: any) => {
           return resolve(wallet);
@@ -956,7 +956,7 @@ export class WalletService {
         var walletData = this.bwcService.parseSecret(opts.secret);
 
         // check if exist
-        if (_.find(this.profileService.credentials, {
+        if (_.find(this.profileService.profile.credentials, {
           'walletId': walletData.walletId
         })) {
           return reject('Cannot join the same wallet more that once'); // TODO getTextCatalog
@@ -977,7 +977,7 @@ export class WalletService {
               return reject(msg);
             });
           } else {
-            this.addAndBindWalletClient(walletClient, {
+            this.profileService.addAndBindWalletClient(walletClient, {
               bwsurl: opts.bwsurl
             }).then((wallet: any) => {
               return resolve(wallet);
@@ -1387,6 +1387,7 @@ export class WalletService {
     });
   }
 
+  // TODO: Rename this.  
   private seedWallet(opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
