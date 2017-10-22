@@ -14,7 +14,7 @@ import { Profile } from '../core/profile.model';
 
 @Injectable()
 export class ProfileService {
-  public wallet: any = {};
+  public wallets: any = {};
   public profile: Profile = new Profile();
 
   private UPDATE_PERIOD = 15;
@@ -54,7 +54,7 @@ export class ProfileService {
   public setBackupFlag(walletId: string): void {
     this.persistenceService.setBackupFlag(walletId).then(() => {
       this.logger.debug('Backup flag stored');
-      this.wallet[walletId].needsBackup = false;
+      this.wallets[walletId].needsBackup = false;
     }).catch((err) => {
       if (err) this.logger.error(err);
     });
@@ -101,7 +101,7 @@ export class ProfileService {
     opts = opts ? opts : {};
     var walletId = wallet.credentials.walletId;
 
-    if ((this.wallet[walletId] && this.wallet[walletId].started) && !opts.force) return false;
+    if ((this.wallets[walletId] && this.wallets[walletId].started) && !opts.force) return false;
 
     // INIT WALLET VIEWMODEL
     wallet.id = walletId;
@@ -113,7 +113,7 @@ export class ProfileService {
     wallet.coin = wallet.credentials.coin;
 
     this.updateWalletSettings(wallet);
-    this.wallet[walletId] = wallet;
+    this.wallets[walletId] = wallet;
 
     this.needsBackup(wallet).then((val: any) => {
       wallet.needsBackup = val;
@@ -500,7 +500,7 @@ export class ProfileService {
 
       this.profile.deleteWallet(walletId);
 
-      delete this.wallet[walletId];
+      delete this.wallets[walletId];
 
       this.persistenceService.removeAllWalletData(walletId).catch((err: any) => {
         this.logger.warn(err);
@@ -532,7 +532,7 @@ export class ProfileService {
 
     opts = opts || {};
 
-    let ret = _.values(this.wallet);
+    let ret = _.values(this.wallets);
 
     if (opts.coin) {
       ret = _.filter(ret, (x: any) => {
@@ -591,8 +591,8 @@ export class ProfileService {
 
   public toggleHideBalanceFlag(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.wallet[walletId].balanceHidden = !this.wallet[walletId].balanceHidden;
-      this.persistenceService.setHideBalanceFlag(walletId, this.wallet[walletId].balanceHidden.toString()).then(() => {
+      this.wallets[walletId].balanceHidden = !this.wallets[walletId].balanceHidden;
+      this.persistenceService.setHideBalanceFlag(walletId, this.wallets[walletId].balanceHidden.toString()).then(() => {
         return resolve();
       }).catch((err: any) => {
         return reject(err);
