@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Logger } from '@nsalaun/ng-logger';
-import { BwcService } from '../shared/bwc.service';
+import { BwcService } from '../../core/bwc.service';
+import { BwcError } from '../../core/bwc-error.model';
+import { ProfileService } from '../../core/profile.service';
+
 
 import * as _ from 'lodash';
 
@@ -9,8 +12,13 @@ export class MnemonicService {
 
   constructor(
       private logger: Logger, 
-      private bwcService: BwcService
+      private bwcService: BwcService,
+      private bwcErrorService: BwcError,
+      private profileService: ProfileService,
   ){}
+
+  private errors: any = this.bwcService.getErrors();
+  
 
   public importMnemonic(words: string, opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -39,7 +47,7 @@ export class MnemonicService {
 
         }
 
-        this.addAndBindWalletClient(walletClient, {
+        this.profileService.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
         }).then((wallet: any) => {
           return resolve(wallet);
@@ -50,7 +58,9 @@ export class MnemonicService {
     });
   }
 
-  public seedFromMnemonic(opts: any, walletClient: BWC): Promise<any> {
+  // TODO: Create an interface for BWC, and use it to type 
+  // it as it is sent around.
+  public seedFromMnemonic(opts: any, walletClient: any): Promise<any> {
     return new Promise((resolve, reject) => {
       try {
         opts.mnemonic = this.normalizeMnemonic(opts.mnemonic);
