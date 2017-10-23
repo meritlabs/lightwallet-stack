@@ -69,9 +69,17 @@ clean-npm:
 prepare-stack: clean-npm \
 	use-lerna
 
+.PHONY: prepare-procuction-stack
+prepare-production-stack: clean-npm \
+	use-lerna-production
+
 .PHONY: use-lerna
 use-lerna:
 	lerna bootstrap
+
+.PHONY: use-lerna-production
+use-lerna-production:
+	lerna bootstrap -- --production --no-optional
 
 .PHONY: start-stack
 start-stack: symlink-bitcore-node start-bitcore-node
