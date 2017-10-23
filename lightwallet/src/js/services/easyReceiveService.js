@@ -1,6 +1,6 @@
 'use string';
 angular.module('copayApp.services')
-  .factory('easyReceiveService', 
+  .factory('easyReceiveService',
     function easyReceiveServiceFactory(
       $rootScope,
       $timeout,
@@ -19,7 +19,7 @@ angular.module('copayApp.services')
     service.easyReceipt = {};
 
     // TODO: Support having multiple easyReceipts in local storage, so that user can accept them all.
-    service.validateAndSaveParams = function(params, cb) { 
+    service.validateAndSaveParams = function(params, cb) {
       $log.debug("Parsing params that have been deeplinked in.");
       $log.debug(params);
       if (params.uc) {
@@ -47,25 +47,25 @@ angular.module('copayApp.services')
       if (!lodash.isEmpty(service.easyReceipt)) {
         var receiptToStore = EasyReceipt.fromObj(service.easyReceipt);
         if (receiptToStore.isValid()) {
-          // We are storing the easyReceipt into localStorage, 
+          // We are storing the easyReceipt into localStorage,
           storageService.storePendingEasyReceipt(receiptToStore, function(err) {
-            cb(err, receiptToStore);            
+            cb(err, receiptToStore);
           });
         } else {
           var err = new Error("EasyReceipt is not valid; not storing.");
-          cb(err, null);          
+          cb(err, null);
         }
       }
     };
 
     /**
      * Get a pending easyReceipt from localStorage.
-     * These easyReceipts are usually parsed from URL params.    
+     * These easyReceipts are usually parsed from URL params.
      * This does not interact with the blockchain.
      */
     service.getPendingEasyReceipt = function (cb) {
       storageService.getPendingEasyReceipt(function(err, receipt) {
-        // If the receipt is not valid, we should add an error here, and not return it.  
+        // If the receipt is not valid, we should add an error here, and not return it.
         if (receipt && !receipt.isValid()) {
           var newError = new Error("EasyReceipt failed validation: " + receipt);
           cb(newError, receipt);
@@ -78,7 +78,7 @@ angular.module('copayApp.services')
 
     /**
      * Delete a pending easyReceipt from localStorage.
-     * These easyReceipts are usually parsed from URL params.    
+     * These easyReceipts are usually parsed from URL params.
      * This does not interact with the blockchain.
      */
     service.deletePendingEasyReceipt = function (cb) {
@@ -88,13 +88,13 @@ angular.module('copayApp.services')
     }
 
     /* TODO: consider splitting this up into multiple methods
-     * One to search the blockchain for the script. 
-     * The other to actually unlock it. 
+     * One to search the blockchain for the script.
+     * The other to actually unlock it.
      */
     service.validateEasyReceiptOnBlockchain = function (receipt, optionalPassword, network, cb) {
       // Check if the easyScript is on the blockchain.
 
-      // Get the bwsUrl from the configService.  
+      // Get the bwsUrl from the configService.
       var opts = {};
       opts.bwsurl = configService.getDefaults().bws.url;
       var walletClient = bwcService.getClient(null, opts);
@@ -120,9 +120,11 @@ angular.module('copayApp.services')
       });
     }
 
-    service.acceptEasyReceipt = function(wallet, receipt, input, destinationAddress, cb) {
-      //Accept the EasyReceipt
-
+    /* Spend easysend utxo
+     * when accepting - spend to recipient
+     * when rejecting - spend to sender
+     */
+    function spendEasyReceipt(wallet, receipt, input, destinationAddress, cb) {
       var opts = {};
       var testTx = wallet.buildEasySendRedeemTransaction(
         input,
@@ -154,12 +156,16 @@ angular.module('copayApp.services')
         });
       });
     };
-    
-    service.rejectEasyReceipt = function(cb) {
+
+    service.acceptEasyReceipt = function(wallet, receipt, input, destinationAddress, cb) {
+      //Accept the EasyReceipt
+      return spendEasyReceipt(wallet, receipt, input, destinationAddress, cb);
+    };
+
+    service.rejectEasyReceipt = function(wallet, receipt, input, cb) {
       //Reject the EasyReceipt
-      storageService.deletePendingEasyReceipt(function(err) {
-        cb(err);
-      });
+      var senderAddress = receipt.senderPubKey.toAddress(wallet.network);
+      return spendEasyReceipt(wallet, receipt, input, senderAddress, cb);
     };
 
 
