@@ -24,7 +24,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
     var easyReceiveAcceptanceHandler = function(receipt, input) {
       var wallets = profileService.getWallets();
 
-      //TODO: just pic first wallet for now. What we need is a UI to
+      //TODO: just pick first wallet for now. What we need is a UI to
       //change like in the receive flow
       var wallet = wallets[0];
       if (!wallet) return;
@@ -61,14 +61,32 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       });
     };
 
-    var easyReceiveRejectionHandler = function (receipt) {
+    var easyReceiveRejectionHandler = function (receipt, input) {
+      var wallets = profileService.getWallets();
+
+      //TODO: just pick first wallet for now. What we need is a UI to
+      //change like in the receive flow
+      var wallet = wallets[0];
+      if (!wallet) return;
+
       $log.debug("Attempting to reject the easyReciept!");
-      //For now, let's just delete it from memory.
-      easyReceiveService.rejectEasyReceipt(function(err){
-        if (err) {
-          $log.debug("Could not remove pending EasyReceipt from localstorage!");
+
+      easyReceiveService.rejectEasyReceipt(
+        wallet,
+        receipt,
+        input,
+        function(err, destinationAddress, acceptanceTx){
+          if(err) {
+            popupService.showAlert("There was an error rejecting the Merit");
+            $log.debug("Error Rejecting Easy Send");
+            $log.debug(err);
+          } else {
+            $log.debug("Rejected Easy Send");
+            $log.debug("Got returning transaction");
+            $log.debug(acceptanceTx);
+          }
         }
-      });
+      );
     };
 
     var showGotMeritPrompt = function(input, receipt) {
@@ -98,7 +116,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
               }
             });
           } else {
-            easyReceiveRejectionHandler(receipt);
+            easyReceiveRejectionHandler(receipt, input);
           }
         });
     }
