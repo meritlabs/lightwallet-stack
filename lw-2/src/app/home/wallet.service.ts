@@ -1402,7 +1402,8 @@ export class WalletService {
 
       if (opts.mnemonic) {
         try {
-          this.mnemonicService.seedFromMnemonic(opts, walletClient).then((walletClient: BWC) => {
+          // TODO: Type the walletClient
+          this.mnemonicService.seedFromMnemonic(opts, walletClient).then((walletClient: any) => {
             resolve(walletClient)});
         } catch (ex) {
           this.logger.info(ex);
