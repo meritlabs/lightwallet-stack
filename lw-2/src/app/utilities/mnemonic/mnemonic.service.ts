@@ -7,19 +7,10 @@ import * as _ from 'lodash';
 @Injectable()
 export class MnemonicService {
 
-constructor(
-    private logger: Logger, 
-    private bwcService: BwcService
-){
-
-}
-private normalizeMnemonic(words: string): string {
-    if (!words || !words.indexOf) return words;
-    let isJA = words.indexOf('\u3000') > -1;
-    let wordList = words.split(/[\u3000\s]+/);
-
-    return wordList.join(isJA ? '\u3000' : ' ');
-  };
+  constructor(
+      private logger: Logger, 
+      private bwcService: BwcService
+  ){}
 
   public importMnemonic(words: string, opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -58,4 +49,32 @@ private normalizeMnemonic(words: string): string {
       });
     });
   }
+
+  public seedFromMnemonic(opts: any, walletClient: BWC): Promise<any> {
+    return new Promise((resolve, reject) => {
+      try {
+        opts.mnemonic = this.normalizeMnemonic(opts.mnemonic);
+        let network = opts.networkName || 'livenet';
+        walletClient.seedFromMnemonic(opts.mnemonic, {
+          network: network,
+          passphrase: opts.passphrase,
+          account: opts.account || 0,
+          derivationStrategy: opts.derivationStrategy || 'BIP44',
+          coin: opts.coin
+        });
+        resolve(walletClient);
+      } catch (ex) {
+        this.logger.info(ex);
+        return reject('Could not create: Invalid wallet recovery phrase'); // TODO getTextCatalog
+      }
+    })    
+  }
+
+  private normalizeMnemonic(words: string): string {
+    if (!words || !words.indexOf) return words;
+    let isJA = words.indexOf('\u3000') > -1;
+    let wordList = words.split(/[\u3000\s]+/);
+
+    return wordList.join(isJA ? '\u3000' : ' ');
+  };
 }
