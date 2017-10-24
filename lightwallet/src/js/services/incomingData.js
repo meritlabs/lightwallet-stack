@@ -103,7 +103,7 @@ angular.module('copayApp.services').factory('incomingData', function($log, $stat
               goToAmountPage(data);
             }
           } else {
-            popupService.showAlert(gettextCatalog.getString('Error'), 'This address was not beaconed yet!');
+            popupService.showAlert(gettextCatalog.getString('Error'), 'This address is invalid!');
           }
         }
       });
