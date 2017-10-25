@@ -1,7 +1,7 @@
-import { Storage, KeyAlreadyExistsError } from './storage.interface';
+import { MeritStorage, KeyAlreadyExistsError } from './storage.interface';
 import { Logger } from '../logger';
 
-export class RamStorage implements Storage {
+export class RamStorage implements MeritStorage {
   hash = {};
 
   constructor(private log: Logger) { }

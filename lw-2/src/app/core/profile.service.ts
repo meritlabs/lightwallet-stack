@@ -11,6 +11,7 @@ import { AppService } from '../core/app-settings.service';
 import { LanguageService } from '../shared/language.service';
 import { TxFormatService } from '../transact/tx-format.service';
 import { Profile } from '../core/profile.model';
+import { Wallet } from './wallet.model.ts';
 
 @Injectable()
 export class ProfileService {
@@ -526,7 +527,7 @@ export class ProfileService {
     });
   }
 
-  public getWallets(opts?: any) {
+  public getWallets(opts?: any): Array<Wallet> {
 
     if (opts && !_.isObject(opts)) throw "bad argument";
 

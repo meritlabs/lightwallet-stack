@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { Logger } from '../logger';
 import * as _ from 'lodash';
 
-import { Storage, KeyAlreadyExistsError } from './storage.interface';
+import { MeritStorage, KeyAlreadyExistsError } from './storage.interface';
 
 @Injectable()
-export class LocalStorage implements Storage {
+export class LocalStorage implements MeritStorage {
   ls: Storage;
   constructor(private log: Logger) {
     this.ls = (typeof window.localStorage !== "undefined") ? window.localStorage : null;
