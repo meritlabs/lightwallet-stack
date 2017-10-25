@@ -1,6 +1,6 @@
-@import "../profile-module";
+@import "../../transact/transact-module";
 component-receive {
-  @extend %module-profile;
+  @extend %module-transact;
 
   text-align: center;
 

@@ -1,6 +1,6 @@
-@import "../profile-module";
+@import "../transact/transact-module";
 component-home {
-  @extend %module-profile;
+  @extend %module-transact;
 
   ion-navbar img {
     height: 18px;

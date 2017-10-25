@@ -6,7 +6,7 @@ import {ExternalLinkService} from "../../../../providers/external-link-service";
 
 @IonicPage()
 @Component({
-  selector: 'component-select-language',
+  selector: 'page-select-language',
   templateUrl: 'select-language.html',
 })
 export class SelectLanguageModal {

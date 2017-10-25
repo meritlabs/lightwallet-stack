@@ -1,6 +1,7 @@
-@import "../profile-module";
+@import "../transact-module";
+
 component-select-wallet {
-  @extend %module-profile;
+  @extend %module-transact;
 
   .selected h2, .selected p{
     color: color($colors, 'primary');

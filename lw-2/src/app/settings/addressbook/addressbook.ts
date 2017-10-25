@@ -7,7 +7,7 @@ import {ContactsService} from "../../../../providers/contacts-service";
   defaultHistory: ['SettingsComponent']
 })
 @Component({
-  selector: 'component-addressbook',
+  selector: 'page-addressbook',
   templateUrl: 'addressbook.html',
 })
 export class AddressbookComponent {

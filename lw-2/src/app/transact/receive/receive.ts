@@ -6,7 +6,7 @@ import {Wallet} from "../../../models/wallet";
 
 @IonicPage()
 @Component({
-  selector: 'component-receive',
+  selector: 'page-receive',
   templateUrl: 'receive.html',
 })
 export class ReceiveComponent {

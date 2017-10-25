@@ -5,13 +5,13 @@ import {ExternalLinkService} from "../../../providers/external-link-service";
 
 @IonicPage()
 @Component({
-  selector: 'component-settings',
+  selector: 'page-settings',
   templateUrl: 'settings.html',
 })
 export class SettingsComponent {
 
   public currentLanguageName = 'English'; //TODO move to profile or config service
-  public currentUnitName     = 'MRT'; //TODO move to profile or config service
+  public currentUnitName     = 'MRT'; //TODO move to profile service
   public currentAlternativeName = 'US Dollar'; //TODO move to profile or config service
 
   constructor(

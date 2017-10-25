@@ -7,7 +7,7 @@ import {ModalController} from "ionic-angular/index";
 
 @IonicPage()
 @Component({
-  selector: 'component-network',
+  selector: 'page-network',
   templateUrl: 'network.html',
 })
 export class NetworkComponent {

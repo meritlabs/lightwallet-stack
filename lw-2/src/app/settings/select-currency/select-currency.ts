@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
 
 @IonicPage()
 @Component({
-  selector: 'component-select-currency',
+  selector: 'page-select-currency',
   templateUrl: 'select-currency.html',
 })
 export class SelectCurrencyModal {

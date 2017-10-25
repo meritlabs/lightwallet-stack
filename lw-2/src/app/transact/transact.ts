@@ -6,7 +6,7 @@ import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
   segment: 'transact'
 })
 @Component({
-  selector: 'component-transact',
+  selector: 'page-transact',
   templateUrl: 'transact.html',
 })
 export class TransactComponent {

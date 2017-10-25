@@ -5,7 +5,7 @@ import {ExternalLinkService} from "../../../../providers/external-link-service";
 
 @IonicPage()
 @Component({
-  selector: 'component-settings-about',
+  selector: 'page-settings-about',
   templateUrl: 'settings-about.html',
 })
 export class SettingsAboutComponent {

@@ -7,7 +7,7 @@ import { WalletService } from '../../home/wallet.service';
   defaultHistory: ['OnboardingComponent']
 })
 @Component({
-  selector: 'component-unlock',
+  selector: 'page-unlock',
   templateUrl: 'unlock.html',
 })
 export class UnlockComponent {
