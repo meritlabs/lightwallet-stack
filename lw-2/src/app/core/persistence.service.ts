@@ -3,7 +3,7 @@ import { Inject } from '@angular/core';
 import { Logger } from './logger';
 import * as _ from 'lodash';
 
-import { Storage, STORAGE } from './storage/storage.interface';
+import { MeritStorage, MERITSTORAGE } from './storage/storage.interface';
 import { PlatformService } from './platform.service';
 import { LocalStorage } from './storage/local-storage.service';
 import { FileStorage } from './storage/file-storage.service';
