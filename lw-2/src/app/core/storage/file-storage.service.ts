@@ -3,7 +3,7 @@ import { Logger } from '../logger';
 import * as _ from 'lodash';
 import { File, DirectoryEntry, FileEntry } from '@ionic-native/file';
 import { Platform } from 'ionic-angular';
-import { Storage, KeyAlreadyExistsError } from './istorage';
+import { Storage, KeyAlreadyExistsError } from './storage.interface';
 
 @Injectable()
 export class FileStorage implements Storage {
