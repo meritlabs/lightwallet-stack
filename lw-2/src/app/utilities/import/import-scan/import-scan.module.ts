@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { ImportScanComponent } from './import-scan';
+import { ImportScanView } from './import-scan';
 
 @NgModule({
   declarations: [
-    ImportScanComponent,
+    ImportScanView,
   ],
   imports: [
-    IonicPageModule.forChild(ImportScanComponent),
+    IonicPageModule.forChild(ImportScanView),
   ],
 })
 export class ImportScanComponentModule {}

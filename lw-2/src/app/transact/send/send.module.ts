@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { SendComponent } from './send';
+import { SendView } from './send';
 
 @NgModule({
   declarations: [
-    SendComponent,
+    SendView,
   ],
   imports: [
-    IonicPageModule.forChild(SendComponent),
+    IonicPageModule.forChild(SendView),
   ],
 })
 export class SendComponentModule {}

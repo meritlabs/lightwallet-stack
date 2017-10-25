@@ -7,7 +7,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   selector: 'page-onboarding',
   templateUrl: 'onboarding.html',
 })
-export class OnboardingComponent {
+export class OnboardingView {
 
 
   constructor(
@@ -21,12 +21,12 @@ export class OnboardingComponent {
     //do something here
   }
 
-  toTourComponent() {
-    this.navCtrl.push('TourComponent');
+  toTourView() {
+    this.navCtrl.push('TourView');
   }
 
-  toImportComponent() {
-    this.navCtrl.push('ImportComponent')
+  toImportView() {
+    this.navCtrl.push('ImportView')
   }
 
 }

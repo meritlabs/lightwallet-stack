@@ -9,7 +9,7 @@ import {ProfileService} from "../../../providers/profile-service";
   selector: 'page-home',
   templateUrl: 'home.html',
 })
-export class HomeComponent {
+export class HomeView {
 
   private totalAmount = 0;
   public totalAmountFormatted = '0 bits';
@@ -40,18 +40,18 @@ export class HomeComponent {
 
   openWallet(wallet) {
     if (!wallet.isComplete) {
-      this.navCtrl.push('CopayersComponent')
+      this.navCtrl.push('CopayersView')
     } else {
-      this.navCtrl.push('WalletComponent', {walletId: wallet.id, wallet: wallet});
+      this.navCtrl.push('WalletView', {walletId: wallet.id, wallet: wallet});
     }
   }
 
   toAddWallet() {
-    this.navCtrl.push('CreateWalletComponent');
+    this.navCtrl.push('CreateWalletView');
   }
 
   toImportWallet() {
-    this.navCtrl.push('ImportComponent');
+    this.navCtrl.push('ImportView');
   }
 
 

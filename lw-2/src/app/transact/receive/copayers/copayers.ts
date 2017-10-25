@@ -5,13 +5,13 @@ import {Wallet} from "../../../../models/wallet";
 
 @IonicPage({
   segment: 'receive/:walletId',
-  defaultHistory: ['ReceiveComponent']
+  defaultHistory: ['ReceiveView']
 })
 @Component({
   selector: 'page-copayers',
   templateUrl: 'copayers.html',
 })
-export class CopayersComponent {
+export class CopayersView {
 
   wallet:Wallet;
 

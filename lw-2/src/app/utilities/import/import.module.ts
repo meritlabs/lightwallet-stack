@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { ImportComponent } from './import';
-import {ConfigService} from "../../providers/config";
+import { ImportView } from './import';
+import {ConfigService} from "../../shared/config.service"; // hi
 
 @NgModule({
   declarations: [
-    ImportComponent
+    ImportView
   ],
   imports: [
-    IonicPageModule.forChild(ImportComponent),
+    IonicPageModule.forChild(ImportView),
   ],
   providers: [
     ConfigService

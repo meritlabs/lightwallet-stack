@@ -3,13 +3,13 @@ import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
 
 
 @IonicPage({
-  defaultHistory: ['OnboardingComponent']
+  defaultHistory: ['OnboardingView']
 })
 @Component({
   selector: 'page-tour',
   templateUrl: 'tour.html',
 })
-export class TourComponent {
+export class TourView {
 
   @ViewChild(Slides) slides: Slides;
   public currentIndex: number;
@@ -30,8 +30,8 @@ export class TourComponent {
     this.currentIndex = this.slides.getActiveIndex();
   }
 
-  toUnlockComponent() {
-    this.navCtrl.push('UnlockComponent');
+  toUnlockView() {
+    this.navCtrl.push('UnlockView');
   }
 
 }

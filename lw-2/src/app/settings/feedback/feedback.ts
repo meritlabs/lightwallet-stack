@@ -7,7 +7,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   selector: 'page-feedback',
   templateUrl: 'feedback.html',
 })
-export class FeedbackComponent {
+export class FeedbackView {
 
   public text:string;
 

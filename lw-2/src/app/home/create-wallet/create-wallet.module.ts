@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { CreateWalletComponent } from './create-wallet';
+import { CreateWalletView } from './create-wallet';
 import {ConfigService} from "../../../../providers/config";
 
 @NgModule({
   declarations: [
-    CreateWalletComponent,
+    CreateWalletView,
   ],
   providers: [
     ConfigService
   ],
   imports: [
-    IonicPageModule.forChild(CreateWalletComponent),
+    IonicPageModule.forChild(CreateWalletView),
   ],
 })
 export class CreateWalletComponentModule {}

@@ -4,13 +4,13 @@ import {ConfigService} from "../../../../providers/config";
 
 
 @IonicPage({
-  defaultHistory: ['ProfileComponent']
+  defaultHistory: ['ProfileView']
 })
 @Component({
   selector: 'page-create-wallet',
   templateUrl: 'create-wallet.html',
 })
-export class CreateWalletComponent {
+export class CreateWalletView {
 
   public formData = {walletName: '', beacon: '', bwsurl: '', seedSource: '', seedOptions: [], encrypted: false, passphrase: '', createPassphrase: '', repeatPassword: ''};
 

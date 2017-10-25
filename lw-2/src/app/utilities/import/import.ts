@@ -6,16 +6,16 @@ import {ConfigService} from "../../providers/config";
 
 
 @IonicPage({
-  defaultHistory: ['OnboardingComponent']
+  defaultHistory: ['OnboardingView']
 })
 @Component({
   selector: 'page-import',
   templateUrl: 'import.html',
 })
-export class ImportComponent {
+export class ImportView {
 
-  //public phraseComponent = 'ImportPhraseComponent';
-  //public fileComponent   = 'ImportFileComponent';
+  //public phraseView = 'ImportPhraseView';
+  //public fileView   = 'ImportFileView';
   //public formGroup:FormGroup;
 
   @ViewChild('fileInput') input:ElementRef;
@@ -51,7 +51,7 @@ export class ImportComponent {
   }
 
   openScanner() {
-    this.navCtrl.push('ImportScanComponent');
+    this.navCtrl.push('ImportScanView');
   }
 
   openImport() {
@@ -64,11 +64,11 @@ export class ImportComponent {
 
 
   importMnemonic() {
-    this.navCtrl.push('ProfileComponent');
+    this.navCtrl.push('ProfileView');
   }
 
   importBlob() {
-    this.navCtrl.push('ProfileComponent');
+    this.navCtrl.push('ProfileView');
   }
 
 }

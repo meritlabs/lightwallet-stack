@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { TransactComponent } from './transact';
+import { TransactView } from './transact';
 
 /*
   Transact is the most thoughtful name we can think of to define all of 
@@ -8,10 +8,10 @@ import { TransactComponent } from './transact';
 */
 @NgModule({
   declarations: [
-    TransactComponent,
+    TransactView,
   ],
   imports: [
-    IonicPageModule.forChild(TransactComponent),
+    IonicPageModule.forChild(TransactView),
   ],
 })
 export class TransactComponentModule {}

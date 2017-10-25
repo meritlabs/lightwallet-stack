@@ -10,7 +10,7 @@ import {ModalController} from "ionic-angular/index";
   selector: 'page-network',
   templateUrl: 'network.html',
 })
-export class NetworkComponent {
+export class NetworkView {
 
   public wallets:Array<Wallet>;
   public wallet:Wallet;
