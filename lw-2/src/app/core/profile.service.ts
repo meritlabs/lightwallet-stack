@@ -5,13 +5,13 @@ import { PersistenceService } from '../core/persistence.service';
 import { ConfigService } from '../shared/config.service';
 import { BwcService } from '../core/bwc.service';
 import { BwcError } from '../core/bwc-error.model';
-import { WalletService } from '../home/wallet.service';
+import { WalletService } from '../wallets/wallet.service';
 import { PlatformService } from '../core/platform.service';
 import { AppService } from '../core/app-settings.service';
 import { LanguageService } from '../shared/language.service';
 import { TxFormatService } from '../transact/tx-format.service';
 import { Profile } from '../core/profile.model';
-import { Wallet } from './wallet.model.ts';
+import { Wallet } from '../wallets/wallet.model';
 
 @Injectable()
 export class ProfileService {

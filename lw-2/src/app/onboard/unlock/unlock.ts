@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { WalletService } from '../../home/wallet.service';
+import { WalletService } from '../../wallets/wallet.service';
 
 
 @IonicPage({
@@ -34,7 +34,7 @@ export class UnlockView {
     });
   }
 
-  createAndUnlockWallet(): Promise<void> {
+  createAndUnlockWallet(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.walletService.createDefaultWallet().then((wallet: any) => {
         resolve();
