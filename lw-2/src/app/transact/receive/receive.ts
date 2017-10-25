@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicComponent, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
 import {ProfileService} from "../../../providers/profile-service";
 import {Wallet} from "../../../models/wallet";
 
-@IonicComponent()
+@IonicPage()
 @Component({
   selector: 'component-receive',
   templateUrl: 'receive.html',

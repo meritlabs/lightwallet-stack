@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { AdvancedSettingsComponent } from './advanced-settings';
 
 @NgModule({
@@ -7,7 +7,7 @@ import { AdvancedSettingsComponent } from './advanced-settings';
     AdvancedSettingsComponent,
   ],
   imports: [
-    IonicComponentModule.forChild(AdvancedSettingsComponent),
+    IonicPageModule.forChild(AdvancedSettingsComponent),
   ],
 })
 export class AdvancedSettingsComponentModule {}

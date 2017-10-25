@@ -1,8 +1,8 @@
 import { Component,  ViewChild} from '@angular/core';
-import { IonicComponent, NavController, NavParams, Slides } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
 
 
-@IonicComponent({
+@IonicPage({
   defaultHistory: ['OnboardingComponent']
 })
 @Component({

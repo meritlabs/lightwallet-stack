@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { TourComponent } from './tour';
 
 @NgModule({
@@ -7,7 +7,7 @@ import { TourComponent } from './tour';
     TourComponent,
   ],
   imports: [
-    IonicComponentModule.forChild(TourComponent),
+    IonicPageModule.forChild(TourComponent),
   ],
 })
 export class TourComponentModule {}

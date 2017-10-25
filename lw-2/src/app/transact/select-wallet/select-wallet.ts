@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicComponent, NavController, NavParams, ViewController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import {Wallet} from "../../../models/wallet";
 import {ProfileService} from "../../../providers/profile-service";
 
-@IonicComponent()
+@IonicPage()
 @Component({
   selector: 'component-select-wallet',
   templateUrl: 'select-wallet.html',

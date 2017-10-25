@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { HomeComponent } from './home';
 import { MomentModule } from 'angular2-moment';
 
@@ -9,7 +9,7 @@ import { MomentModule } from 'angular2-moment';
   ],
   imports: [
     MomentModule,
-    IonicComponentModule.forChild(HomeComponent),
+    IonicPageModule.forChild(HomeComponent),
   ],
 })
 export class HomeComponentModule {}

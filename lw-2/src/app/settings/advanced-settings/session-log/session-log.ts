@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicComponent, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {Logger} from "../../../../../providers/logger";
 
 
-@IonicComponent()
+@IonicPage()
 @Component({
   selector: 'component-session-log',
   templateUrl: 'session-log.html',

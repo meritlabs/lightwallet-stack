@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { TransactComponent } from './transact';
 
 /*
@@ -11,7 +11,7 @@ import { TransactComponent } from './transact';
     TransactComponent,
   ],
   imports: [
-    IonicComponentModule.forChild(TransactComponent),
+    IonicPageModule.forChild(TransactComponent),
   ],
 })
 export class TransactComponentModule {}

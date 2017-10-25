@@ -1,8 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicComponent, NavController, NavParams, Tabs } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
 
 
-@IonicComponent({
+@IonicPage({
   segment: 'transact'
 })
 @Component({

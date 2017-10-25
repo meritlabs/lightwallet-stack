@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicComponent, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {Wallet} from "../../../../models/wallet";
 
 
-@IonicComponent({
+@IonicPage({
   segment: 'receive/:walletId',
   defaultHistory: ['ReceiveComponent']
 })

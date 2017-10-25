@@ -1,11 +1,11 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { IonicComponent, NavController, NavParams  } from 'ionic-angular';
+import { IonicPage, NavController, NavParams  } from 'ionic-angular';
 
 //import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ConfigService} from "../../providers/config";
 
 
-@IonicComponent({
+@IonicPage({
   defaultHistory: ['OnboardingComponent']
 })
 @Component({

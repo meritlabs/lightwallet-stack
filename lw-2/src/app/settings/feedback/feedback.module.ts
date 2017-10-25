@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { FeedbackComponent } from './feedback';
 
 @NgModule({
@@ -7,7 +7,7 @@ import { FeedbackComponent } from './feedback';
     FeedbackComponent,
   ],
   imports: [
-    IonicComponentModule.forChild(FeedbackComponent),
+    IonicPageModule.forChild(FeedbackComponent),
   ],
 })
 export class FeedbackComponentModule {}
