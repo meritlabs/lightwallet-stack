@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '@nsalaun/ng-logger';
+import { Logger } from './logger';
 import { BwcService } from '../../core/bwc.service';
 import { BwcError } from '../../core/bwc-error.model';
 import { ProfileService } from '../../core/profile.service';

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '@nsalaun/ng-logger';
+import { Logger } from '../core/logger';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigService } from '../shared/config.service';

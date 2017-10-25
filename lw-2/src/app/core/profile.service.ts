@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '@nsalaun/ng-logger';
+import { Logger } from './logger';
 import * as _ from 'lodash';
 import { PersistenceService } from '../core/persistence.service';
 import { ConfigService } from '../shared/config.service';
