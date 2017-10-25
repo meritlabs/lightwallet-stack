@@ -1,6 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
 
+// Transact is the proposed name of the umbrella for the primary actions 
+// That exist through the tabs on the bottom of the screen. 
 
 @IonicPage({
   segment: 'transact'

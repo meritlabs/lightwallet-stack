@@ -126,7 +126,7 @@ export class BwcError {
               body = 'Invalid address';
               break;
             case 'MAIN_ADDRESS_GAP_REACHED':
-              body = 'Empty addresses limit reached. New addresses cannot be generated.);
+              body = 'Empty addresses limit reached. New addresses cannot be generated.';
               break;
             case 'WALLET_LOCKED':
               body = 'Wallet is locked';

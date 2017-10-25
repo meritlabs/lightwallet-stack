@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PlatformService } from './platform.service';
+import { PlatformService } from './../core/platform.service';
 import { ConfigService } from './config.service';
 
 import { TouchID } from '@ionic-native/touch-id';
