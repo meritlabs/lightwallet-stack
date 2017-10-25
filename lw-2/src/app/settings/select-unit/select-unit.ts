@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicComponent, NavController, NavParams, ViewController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 
 
-@IonicComponent()
+@IonicPage()
 @Component({
   selector: 'component-select-unit',
   templateUrl: 'select-unit.html',

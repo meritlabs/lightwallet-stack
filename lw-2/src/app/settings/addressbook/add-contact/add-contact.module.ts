@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { AddContactComponent } from './add-contact';
 
 @NgModule({
@@ -7,7 +7,7 @@ import { AddContactComponent } from './add-contact';
     AddContactComponent,
   ],
   imports: [
-    IonicComponentModule.forChild(AddContactComponent),
+    IonicPageModule.forChild(AddContactComponent),
   ],
 })
 export class AddContactComponentModule {}

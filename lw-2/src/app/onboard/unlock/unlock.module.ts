@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { UnlockComponent } from './unlock';
 
 @NgModule({
@@ -7,7 +7,7 @@ import { UnlockComponent } from './unlock';
     UnlockComponent,
   ],
   imports: [
-    IonicComponentModule.forChild(UnlockComponent),
+    IonicPageModule.forChild(UnlockComponent),
   ],
 })
 export class UnlockComponentModule {}

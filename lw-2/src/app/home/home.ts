@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicComponent, NavController, NavParams, App } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import {Wallet} from "../../../models/wallet";
 import {ProfileService} from "../../../providers/profile-service";
 
 
-@IonicComponent()
+@IonicPage()
 @Component({
   selector: 'component-home',
   templateUrl: 'home.html',

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicComponent, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 
-@IonicComponent()
+@IonicPage()
 @Component({
   selector: 'component-terms-of-use',
   templateUrl: 'terms-of-use.html',

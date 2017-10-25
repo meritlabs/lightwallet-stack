@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { ImportScanComponent } from './import-scan';
 
 @NgModule({
@@ -7,7 +7,7 @@ import { ImportScanComponent } from './import-scan';
     ImportScanComponent,
   ],
   imports: [
-    IonicComponentModule.forChild(ImportScanComponent),
+    IonicPageModule.forChild(ImportScanComponent),
   ],
 })
 export class ImportScanComponentModule {}

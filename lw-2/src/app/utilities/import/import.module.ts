@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { ImportComponent } from './import';
 import {ConfigService} from "../../providers/config";
 
@@ -8,7 +8,7 @@ import {ConfigService} from "../../providers/config";
     ImportComponent
   ],
   imports: [
-    IonicComponentModule.forChild(ImportComponent),
+    IonicPageModule.forChild(ImportComponent),
   ],
   providers: [
     ConfigService

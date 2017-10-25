@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { SendComponent } from './send';
 
 @NgModule({
@@ -7,7 +7,7 @@ import { SendComponent } from './send';
     SendComponent,
   ],
   imports: [
-    IonicComponentModule.forChild(SendComponent),
+    IonicPageModule.forChild(SendComponent),
   ],
 })
 export class SendComponentModule {}

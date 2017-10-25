@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { CopayersComponent } from './copayers';
 import {QRCodeModule} from "angular2-qrcode/lib/angular2-qrcode";
 
@@ -9,7 +9,7 @@ import {QRCodeModule} from "angular2-qrcode/lib/angular2-qrcode";
   ],
   imports: [
     QRCodeModule,
-    IonicComponentModule.forChild(CopayersComponent),
+    IonicPageModule.forChild(CopayersComponent),
   ],
 })
 export class CopayersComponentModule {}

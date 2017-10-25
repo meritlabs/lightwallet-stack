@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { NetworkComponent } from './network';
 import {MomentModule} from "angular2-moment/moment.module";
 
@@ -9,7 +9,7 @@ import {MomentModule} from "angular2-moment/moment.module";
   ],
   imports: [
     MomentModule,
-    IonicComponentModule.forChild(NetworkComponent),
+    IonicPageModule.forChild(NetworkComponent),
   ],
 })
 export class NetworkComponentModule {}

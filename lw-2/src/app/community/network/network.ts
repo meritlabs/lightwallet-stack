@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicComponent, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {Wallet} from "../../../models/wallet";
 import {ProfileService} from "../../../providers/profile-service";
 import {ModalController} from "ionic-angular/index";
 
 
-@IonicComponent()
+@IonicPage()
 @Component({
   selector: 'component-network',
   templateUrl: 'network.html',

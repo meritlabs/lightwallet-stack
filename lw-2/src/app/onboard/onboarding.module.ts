@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { OnboardingComponent } from './onboarding';
 
 @NgModule({
@@ -7,7 +7,7 @@ import { OnboardingComponent } from './onboarding';
     OnboardingComponent,
   ],
   imports: [
-    IonicComponentModule.forChild(OnboardingComponent),
+    IonicPageModule.forChild(OnboardingComponent),
   ],
 })
 export class OnboardingComponentModule {}

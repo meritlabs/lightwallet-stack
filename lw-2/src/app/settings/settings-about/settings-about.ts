@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicComponent, NavController, NavParams, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import {ExternalLinkService} from "../../../../providers/external-link-service";
 
 
-@IonicComponent()
+@IonicPage()
 @Component({
   selector: 'component-settings-about',
   templateUrl: 'settings-about.html',

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicComponentModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { SettingsComponent } from './settings';
 import {ExternalLinkService} from "../../../providers/external-link-service";
 
@@ -11,7 +11,7 @@ import {ExternalLinkService} from "../../../providers/external-link-service";
     ExternalLinkService
   ],
   imports: [
-    IonicComponentModule.forChild(SettingsComponent),
+    IonicPageModule.forChild(SettingsComponent),
   ],
 })
 export class SettingsComponentModule {}
