@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { Logger } from '@nsalaun/ng-logger';
+import { Logger } from './logger';
 import 'rxjs/add/operator/map';
 
 import { LanguageService } from '../shared/language.service';

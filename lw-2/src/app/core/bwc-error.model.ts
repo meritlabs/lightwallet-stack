@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '@nsalaun/ng-logger';
+import { Logger } from './logger';
 
 
 @Injectable()
@@ -33,7 +33,7 @@ export class BwcError {
               body = 'Wallet Recovery Phrase is invalid';
               break;
             case 'WALLET_DOES_NOT_EXIST':
-              body = 'Wallet not registered at the wallet service. Recreate it fro "Create Wallet" using "Advanced Options" to set your recovery phrase');
+              body = 'Wallet not registered at the wallet service. Recreate it fro "Create Wallet" using "Advanced Options" to set your recovery phrase';
               break;
             case 'MISSING_PRIVATE_KEY':
               body = 'Missing private keys to sign';

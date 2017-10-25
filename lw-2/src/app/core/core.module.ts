@@ -14,11 +14,10 @@ import { MomentModule } from 'angular2-moment';
     imports: [
         CommonModule,
     ],
-    exports: [SpinnerComponent],
-    declarations: [SpinnerComponent],
+    exports: [],
+    declarations: [],
     providers: [
         Logger, 
-        SpinnerService,
         StatusBar,
         SplashScreen,
         Logger,

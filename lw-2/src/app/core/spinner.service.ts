@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import { Logger } from '@nsalaun/ng-logger';
+import { Logger } from './logger';
 import { LoadingController } from 'ionic-angular';
 
 import * as _ from 'lodash';

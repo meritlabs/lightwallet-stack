@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Inject } from '@angular/core';
-import { Logger } from '@nsalaun/ng-logger';
+import { Logger } from './logger';
 import * as _ from 'lodash';
 
 import { Storage, STORAGE } from './storage/storage.interface';

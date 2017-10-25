@@ -1,5 +1,5 @@
 import { Storage, KeyAlreadyExistsError } from './storage.interface';
-import { Logger } from '@nsalaun/ng-logger';
+import { Logger } from '../logger';
 
 export class RamStorage implements Storage {
   hash = {};
