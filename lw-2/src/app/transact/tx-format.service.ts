@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { BwcService } from '../shared/bwc.service';
+import { BwcService } from './../core/bwc.service';
 import { RateService } from './rate.service';
 import { ConfigService } from '../shared/config.service';
 import { FiatAmount } from '../shared/fiat-amount.model';

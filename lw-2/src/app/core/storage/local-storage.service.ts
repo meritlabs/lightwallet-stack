@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Logger } from '../logger';
 import * as _ from 'lodash';
 
-import { Storage, KeyAlreadyExistsError } from './istorage';
+import { Storage, KeyAlreadyExistsError } from './storage.interface';
 
 @Injectable()
 export class LocalStorage implements Storage {
