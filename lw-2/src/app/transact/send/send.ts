@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 @IonicPage()
 @Component({
-  selector: 'component-send',
+  selector: 'page-send',
   templateUrl: 'send.html',
 })
 export class SendComponent {

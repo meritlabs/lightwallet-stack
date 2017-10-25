@@ -9,7 +9,7 @@ import {ConfigService} from "../../providers/config";
   defaultHistory: ['OnboardingComponent']
 })
 @Component({
-  selector: 'component-import',
+  selector: 'page-import',
   templateUrl: 'import.html',
 })
 export class ImportComponent {

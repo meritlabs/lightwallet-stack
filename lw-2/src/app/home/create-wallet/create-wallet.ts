@@ -7,7 +7,7 @@ import {ConfigService} from "../../../../providers/config";
   defaultHistory: ['ProfileComponent']
 })
 @Component({
-  selector: 'component-create-wallet',
+  selector: 'page-create-wallet',
   templateUrl: 'create-wallet.html',
 })
 export class CreateWalletComponent {

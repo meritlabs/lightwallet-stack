@@ -5,7 +5,7 @@ import {Contact} from "../../../../../models/contact";
 
 @IonicPage()
 @Component({
-  selector: 'component-add-contact',
+  selector: 'page-add-contact',
   templateUrl: 'add-contact.html',
 })
 export class AddContactComponent {

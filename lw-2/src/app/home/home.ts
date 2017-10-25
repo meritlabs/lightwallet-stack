@@ -6,7 +6,7 @@ import {ProfileService} from "../../../providers/profile-service";
 
 @IonicPage()
 @Component({
-  selector: 'component-home',
+  selector: 'page-home',
   templateUrl: 'home.html',
 })
 export class HomeComponent {

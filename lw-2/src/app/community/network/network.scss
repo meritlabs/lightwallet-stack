@@ -1,6 +1,6 @@
-@import "../profile-module";
+@import "../../transact/transact-module";
 component-network {
-  @extend %module-profile;
+  @extend %module-transact;
 
   ion-footer {
     .item-inner {

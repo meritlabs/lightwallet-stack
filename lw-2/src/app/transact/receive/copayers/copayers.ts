@@ -8,7 +8,7 @@ import {Wallet} from "../../../../models/wallet";
   defaultHistory: ['ReceiveComponent']
 })
 @Component({
-  selector: 'component-copayers',
+  selector: 'page-copayers',
   templateUrl: 'copayers.html',
 })
 export class CopayersComponent {

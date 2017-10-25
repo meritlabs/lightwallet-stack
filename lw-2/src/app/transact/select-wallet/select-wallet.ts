@@ -5,7 +5,7 @@ import {ProfileService} from "../../../providers/profile-service";
 
 @IonicPage()
 @Component({
-  selector: 'component-select-wallet',
+  selector: 'page-select-wallet',
   templateUrl: 'select-wallet.html',
 })
 export class SelectWalletModal {

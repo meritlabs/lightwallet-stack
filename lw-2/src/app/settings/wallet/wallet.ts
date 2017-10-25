@@ -7,7 +7,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   defaultHistory: ['ProfileComponent']
 })
 @Component({
-  selector: 'component-wallet',
+  selector: 'page-wallet',
   templateUrl: 'wallet.html',
 })
 export class WalletComponent {

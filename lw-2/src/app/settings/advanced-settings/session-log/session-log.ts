@@ -5,7 +5,7 @@ import {Logger} from "../../../../../providers/logger";
 
 @IonicPage()
 @Component({
-  selector: 'component-session-log',
+  selector: 'page-session-log',
   templateUrl: 'session-log.html',
 })
 export class SessionLogComponent {

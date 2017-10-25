@@ -6,7 +6,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   defaultHistory: ['ImportComponent']
 })
 @Component({
-  selector: 'component-import-scan',
+  selector: 'page-import-scan',
   templateUrl: 'import-scan.html',
 })
 export class ImportScanComponent {
