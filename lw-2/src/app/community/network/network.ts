@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import {Wallet} from "../../core/wallet.model.ts";
-import {ProfileService} from "./../../core/profile.service";
-import {ModalController} from "ionic-angular/index";
+import { Wallet } from "./../../wallets/wallet.model";
+import { ProfileService } from "./../../core/profile.service";
+import { ModalController } from "ionic-angular/index";
 
 
 @IonicPage()
