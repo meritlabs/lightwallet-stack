@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core';
 
-export interface Storage {
+export interface MeritStorage {
   get(k: string): Promise<any>;
   set(k: string, v: any): Promise<void>;
   remove(k: string): Promise<void>;
@@ -13,4 +13,4 @@ export class KeyAlreadyExistsError extends Error {
   }
 }
 
-export let STORAGE = new InjectionToken<Storage>('storage');
+export let MERITSTORAGE = new InjectionToken<MeritStorage>('storage');
