@@ -9,13 +9,13 @@ import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
   selector: 'page-transact',
   templateUrl: 'transact.html',
 })
-export class TransactComponent {
+export class TransactView {
 
-  public homeComponent     = 'HomeComponent';
-  public receiveComponent  = 'ReceiveComponent';
-  public networkComponent  = 'NetworkComponent';
-  public sendComponent     = 'SendComponent';
-  public settingsComponent = 'SettingsComponent';
+  public homeView     = 'HomeView';
+  public receiveView  = 'ReceiveView';
+  public networkView  = 'NetworkView';
+  public sendView     = 'SendView';
+  public settingsView = 'SettingsView';
 
   @ViewChild('tabs') tabRef: Tabs;
 

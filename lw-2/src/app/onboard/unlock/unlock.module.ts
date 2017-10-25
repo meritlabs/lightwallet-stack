@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { UnlockComponent } from './unlock';
+import { UnlockView } from './unlock';
 
 @NgModule({
   declarations: [
-    UnlockComponent,
+    UnlockView,
   ],
   imports: [
-    IonicPageModule.forChild(UnlockComponent),
+    IonicPageModule.forChild(UnlockView),
   ],
 })
 export class UnlockComponentModule {}

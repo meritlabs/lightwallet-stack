@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { TourComponent } from './tour';
+import { TourView } from './tour';
 
 @NgModule({
   declarations: [
-    TourComponent,
+    TourView,
   ],
   imports: [
-    IonicPageModule.forChild(TourComponent),
+    IonicPageModule.forChild(TourView),
   ],
 })
 export class TourComponentModule {}

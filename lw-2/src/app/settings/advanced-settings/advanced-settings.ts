@@ -7,7 +7,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   selector: 'page-advanced-settings',
   templateUrl: 'advanced-settings.html',
 })
-export class AdvancedSettingsComponent {
+export class AdvancedSettingsView {
 
 
   constructor(

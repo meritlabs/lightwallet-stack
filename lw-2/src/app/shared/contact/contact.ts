@@ -7,7 +7,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   selector: 'page-contact',
   templateUrl: 'contact.html',
 })
-export class ContactComponent {
+export class ContactView {
 
 
   constructor(

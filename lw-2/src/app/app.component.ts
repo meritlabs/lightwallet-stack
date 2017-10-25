@@ -8,7 +8,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 })
 export class MyApp {
 
-  public rootComponent = 'OnboardingComponent';
+  public rootComponent = 'OnboardingView';
 
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen) {
     platform.ready().then(() => {

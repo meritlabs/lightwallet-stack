@@ -4,13 +4,13 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 @IonicPage({
   segment: 'wallet/:walletId',
-  defaultHistory: ['ProfileComponent']
+  defaultHistory: ['ProfileView']
 })
 @Component({
   selector: 'page-wallet',
   templateUrl: 'wallet.html',
 })
-export class WalletComponent {
+export class WalletView {
 
   public wallet:any;
 

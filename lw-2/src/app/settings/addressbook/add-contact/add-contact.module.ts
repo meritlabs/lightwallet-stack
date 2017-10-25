@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { AddContactComponent } from './add-contact';
+import { AddContactView } from './add-contact';
 
 @NgModule({
   declarations: [
-    AddContactComponent,
+    AddContactView,
   ],
   imports: [
-    IonicPageModule.forChild(AddContactComponent),
+    IonicPageModule.forChild(AddContactView),
   ],
 })
 export class AddContactComponentModule {}

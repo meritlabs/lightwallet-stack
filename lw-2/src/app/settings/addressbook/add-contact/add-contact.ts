@@ -8,7 +8,7 @@ import {Contact} from "../../../../../models/contact";
   selector: 'page-add-contact',
   templateUrl: 'add-contact.html',
 })
-export class AddContactComponent {
+export class AddContactView {
 
   public contact:Contact;
 

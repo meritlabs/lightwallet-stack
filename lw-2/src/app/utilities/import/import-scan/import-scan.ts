@@ -3,13 +3,13 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 
 @IonicPage({
-  defaultHistory: ['ImportComponent']
+  defaultHistory: ['ImportView']
 })
 @Component({
   selector: 'page-import-scan',
   templateUrl: 'import-scan.html',
 })
-export class ImportScanComponent {
+export class ImportScanView {
 
 
   constructor(

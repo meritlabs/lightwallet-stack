@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { OnboardingComponent } from './onboarding';
+import { OnboardingView } from './onboarding';
 
 @NgModule({
   declarations: [
-    OnboardingComponent,
+    OnboardingView,
   ],
   imports: [
-    IonicPageModule.forChild(OnboardingComponent),
+    IonicPageModule.forChild(OnboardingView),
   ],
 })
 export class OnboardingComponentModule {}

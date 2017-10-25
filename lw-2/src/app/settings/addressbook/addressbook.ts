@@ -4,13 +4,13 @@ import {ContactsService} from "../../../../providers/contacts-service";
 
 
 @IonicPage({
-  defaultHistory: ['SettingsComponent']
+  defaultHistory: ['SettingsView']
 })
 @Component({
   selector: 'page-addressbook',
   templateUrl: 'addressbook.html',
 })
-export class AddressbookComponent {
+export class AddressbookView {
 
   contacts = [];
 
@@ -26,11 +26,11 @@ export class AddressbookComponent {
   }
 
   toAddContact() {
-    this.navCtrl.push('AddContactComponent');
+    this.navCtrl.push('AddContactView');
   }
 
   toContact(contact) {
-    this.navCtrl.push('ContactComponent', {contact: contact});
+    this.navCtrl.push('ContactView', {contact: contact});
   }
 
 

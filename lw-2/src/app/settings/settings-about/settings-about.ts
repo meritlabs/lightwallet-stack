@@ -8,7 +8,7 @@ import {ExternalLinkService} from "../../../../providers/external-link-service";
   selector: 'page-settings-about',
   templateUrl: 'settings-about.html',
 })
-export class SettingsAboutComponent {
+export class SettingsAboutView {
 
   public version = '0.0.0'; //@todo move to config
   public commitHash = 'a1b2c3d4'; //@todo move to config
@@ -27,11 +27,11 @@ export class SettingsAboutComponent {
   }
 
   toSessionLog() {
-    this.navCtrl.push('SessionLogComponent');
+    this.navCtrl.push('SessionLogView');
   }
 
   toTermsOfUse() {
-    this.navCtrl.push('TermsOfUseComponent');
+    this.navCtrl.push('TermsOfUseView');
   }
 
   toGithub() {

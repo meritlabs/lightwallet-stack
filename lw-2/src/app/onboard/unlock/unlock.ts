@@ -4,16 +4,16 @@ import { WalletService } from '../../home/wallet.service';
 
 
 @IonicPage({
-  defaultHistory: ['OnboardingComponent']
+  defaultHistory: ['OnboardingView']
 })
 @Component({
   selector: 'page-unlock',
   templateUrl: 'unlock.html',
 })
-export class UnlockComponent {
+export class UnlockView {
 
   public unlockState:'success'|'fail';
-  public formData = {unockCode: ''};
+  public formData = {unlockCode: ''};
 
   constructor(
     public navCtrl: NavController,
@@ -30,7 +30,7 @@ export class UnlockComponent {
     //unlock actions
     this.createAndUnlockWallet().then(() => {
       this.unlockState = 'success';
-      this.navCtrl.push('TransactComponent');
+      this.navCtrl.push('TransactView');
     });
   }
 

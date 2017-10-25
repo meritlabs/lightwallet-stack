@@ -9,7 +9,7 @@ import {Wallet} from "../../../models/wallet";
   selector: 'page-receive',
   templateUrl: 'receive.html',
 })
-export class ReceiveComponent {
+export class ReceiveView {
 
   public protocolHandler: string;
   public address: string;
@@ -37,7 +37,7 @@ export class ReceiveComponent {
   }
 
   requestSpecificAmount() {
-    //this.navCtrl.push(AmountComponent, {address: this.address, sending: false});
+    //this.navCtrl.push(AmountView, {address: this.address, sending: false});
   }
 
   setAddress() {
@@ -66,7 +66,7 @@ export class ReceiveComponent {
   }
 
   toCopayers() {
-    this.navCtrl.push('CopayersComponent', {walletId: this.wallet.id, wallet: this.wallet});
+    this.navCtrl.push('CopayersView', {walletId: this.wallet.id, wallet: this.wallet});
   }
 
   shareButtonAvailable() {

@@ -8,7 +8,7 @@ import {ExternalLinkService} from "../../../providers/external-link-service";
   selector: 'page-settings',
   templateUrl: 'settings.html',
 })
-export class SettingsComponent {
+export class SettingsView {
 
   public currentLanguageName = 'English'; //TODO move to profile or config service
   public currentUnitName     = 'MRT'; //TODO move to profile service
@@ -30,11 +30,11 @@ export class SettingsComponent {
   }
 
   toAddressbook() {
-    this.navCtrl.push('AddressbookComponent');
+    this.navCtrl.push('AddressbookView');
   }
 
   logout() {
-    this.app.getRootNav().setRoot('OnboardingComponent');
+    this.app.getRootNav().setRoot('OnboardingView');
   }
 
   toLanguageSelect() {
@@ -47,7 +47,7 @@ export class SettingsComponent {
   }
 
   toFeedback() {
-    this.navCtrl.push('FeedbackComponent');
+    this.navCtrl.push('FeedbackView');
   }
 
   toUnitSelect() {
@@ -70,11 +70,11 @@ export class SettingsComponent {
   }
 
   toAdvancedSettings() {
-    this.navCtrl.push('AdvancedSettingsComponent')
+    this.navCtrl.push('AdvancedSettingsView')
   }
 
   toAbout() {
-    this.navCtrl.push('SettingsAboutComponent');
+    this.navCtrl.push('SettingsAboutView');
   }
 
   help() {

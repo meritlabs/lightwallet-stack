@@ -8,7 +8,7 @@ import {Logger} from "../../../../../providers/logger";
   selector: 'page-session-log',
   templateUrl: 'session-log.html',
 })
-export class SessionLogComponent {
+export class SessionLogView {
 
   showSettingsBar:boolean = false;
   logLevel = 4;
