@@ -12,4 +12,4 @@ import {MomentModule} from "angular2-moment/moment.module";
     IonicPageModule.forChild(NetworkView),
   ],
 })
-export class NetworkComponentModule {}
+export class NetworkViewModule {}

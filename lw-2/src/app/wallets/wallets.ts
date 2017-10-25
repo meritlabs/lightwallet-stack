@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
-import {Wallet} from "../../../models/wallet";
-import {ProfileService} from "../../../providers/profile-service";
+import { Wallet } from "./wallet.model";
+import { ProfileService } from "./../core/profile.service";
 
 
 @IonicPage()
 @Component({
-  selector: 'page-home',
-  templateUrl: 'home.html',
+  selector: 'page-wallets',
+  templateUrl: 'wallets.html',
 })
-export class HomeView {
+export class WalletsView {
 
   private totalAmount = 0;
   public totalAmountFormatted = '0 bits';
