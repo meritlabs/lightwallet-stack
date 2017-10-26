@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import {ProfileService} from "../profile-service";
-import {Wallet} from "../../models/wallet";
-import {WalletMock} from "../../models/mocks/wallet";
+import { ProfileService } from "@app/core/profile.service";
+import { Wallet } from "@app/wallets/wallet.model";
+import { WalletMock } from "@app/wallets/wallet.model.mock.ts";
 
 @Injectable()
 export class ProfileServiceMock extends ProfileService {
 
-  getWallets():Array<Wallet> {
+  getWallets():Array<WalletMock> {
 
     console.log("using mock method ProfileService::getWallets()");
 

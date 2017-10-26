@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import {Wallet} from "../../../../models/wallet";
+import { Wallet } from "@app/wallets/wallet.model";
 
 
 @IonicPage({

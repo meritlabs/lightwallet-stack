@@ -11,7 +11,8 @@ export class WalletMock extends Wallet {
   cachedBalanceUpdatedOn:number;
   m:number = 1;
   n:number = 1;
-  error:string;
+  secret: string = "donkey";
+  error:string = "Error";
   copayers:Array<any> = [{id: '1', name: 'test copayer'}];
 
   private _isComplete = true;
