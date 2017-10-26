@@ -57,7 +57,7 @@ export let persistenceServiceFactory = (platform: PlatformService, log: Logger) 
 
 @Injectable()
 export class PersistenceService {
-  constructor( @Inject(STORAGE) public storage: Storage, private log: Logger) {
+  constructor( @Inject(MERITSTORAGE) public storage: Storage, private log: Logger) {
   };
 
   storeNewProfile(profile): Promise<void> {
