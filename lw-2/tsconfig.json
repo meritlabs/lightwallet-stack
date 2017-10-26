@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": true, // for BWC
     "declaration": false,
     "allowJs": true,
     "noEmit": true,    
