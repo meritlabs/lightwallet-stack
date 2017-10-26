@@ -19,7 +19,7 @@ interface Config {
       idleDurationMin: number;
       settings: {
         unitName: string;
-        unitToMicro: number;
+        unitToSatoshi: number;
         unitDecimals: number;
         unitCode: string;
         alternativeName: string;

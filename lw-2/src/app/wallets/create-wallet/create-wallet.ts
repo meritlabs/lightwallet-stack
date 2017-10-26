@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import {ConfigService} from "../../../../providers/config";
+import { ConfigService } from "@app/shared/config.service";
 
 
 @IonicPage({
