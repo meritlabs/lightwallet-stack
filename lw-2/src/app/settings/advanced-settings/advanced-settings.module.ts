@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { AdvancedSettingsView } from '@app/settings/advanced-settings/advanced-settings';
+import { AdvancedSettingsView } from 'merit/settings/advanced-settings/advanced-settings';
 
 @NgModule({
   declarations: [

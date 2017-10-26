@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '@app/core/logger';
+import { Logger } from 'merit/core/logger';
 import { Events } from 'ionic-angular';
-import { PersistenceService } from '@app/core/persistence.service';
+import { PersistenceService } from 'merit/core/persistence.service';
 
 import * as _ from "lodash";
 

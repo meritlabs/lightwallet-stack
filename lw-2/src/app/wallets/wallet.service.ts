@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '@app/core/logger';
+import { Logger } from 'merit/core/logger';
 
-import { ConfigService } from '@app/shared/config.service';
-import { BwcService } from '@app/core/bwc.service';
-import { TxFormatService } from '@app/transact/tx-format.service';
-import { PersistenceService } from '@app/core/persistence.service';
-import { BwcError } from '@app/core/bwc-error.model';
-import { RateService } from '@app/transact/rate.service';
-import { FiatAmount } from '@app/shared/fiat-amount.model';
-import { PopupService } from '@app/core/popup.service';
-import { SpinnerService } from '@app/core/spinner.service';
-import { TouchIdService } from '@app/shared/touchid.service';
-import { LanguageService } from '@app/shared/language.service';
-import { ProfileService } from '@app/core/profile.service';
-import { MnemonicService } from '@app/utilities/mnemonic/mnemonic.service';
+import { ConfigService } from 'merit/shared/config.service';
+import { BwcService } from 'merit/core/bwc.service';
+import { TxFormatService } from 'merit/transact/tx-format.service';
+import { PersistenceService } from 'merit/core/persistence.service';
+import { BwcError } from 'merit/core/bwc-error.model';
+import { RateService } from 'merit/transact/rate.service';
+import { FiatAmount } from 'merit/shared/fiat-amount.model';
+import { PopupService } from 'merit/core/popup.service';
+import { SpinnerService } from 'merit/core/spinner.service';
+import { TouchIdService } from 'merit/shared/touchid.service';
+import { LanguageService } from 'merit/shared/language.service';
+import { ProfileService } from 'merit/core/profile.service';
+import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 
 import * as _ from 'lodash';
 

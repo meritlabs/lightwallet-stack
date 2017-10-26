@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '@app/core/logger';
+import { Logger } from 'merit/core/logger';
 import * as _ from 'lodash';
 
-import { MeritStorage, KeyAlreadyExistsError } from '@app/core/storage/storage.interface';
+import { MeritStorage, KeyAlreadyExistsError } from 'merit/core/storage/storage.interface';
 
 @Injectable()
 export class LocalStorage implements MeritStorage {

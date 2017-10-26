@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { ImportView } from '@app/utilities/import/import';
+import { ImportView } from 'merit/utilities/import/import';
 import {ConfigService} from "../../shared/config.service"; // hi
 
 @NgModule({

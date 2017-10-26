@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { UnlockView } from '@app/onboard/unlock/unlock';
+import { UnlockView } from 'merit/onboard/unlock/unlock';
 
 @NgModule({
   declarations: [

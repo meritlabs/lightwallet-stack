@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '@app/core/logger';
+import { Logger } from 'merit/core/logger';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ConfigService } from '@app/shared/config.service';
+import { ConfigService } from 'merit/shared/config.service';
 
 import * as _ from "lodash";
 

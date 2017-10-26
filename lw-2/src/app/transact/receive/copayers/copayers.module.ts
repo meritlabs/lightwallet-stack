@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { CopayersView } from '@app/transact/receive/copayers/copayers';
+import { CopayersView } from 'merit/transact/receive/copayers/copayers';
 import {QRCodeModule} from "angular2-qrcode/lib/angular2-qrcode";
 
 @NgModule({
