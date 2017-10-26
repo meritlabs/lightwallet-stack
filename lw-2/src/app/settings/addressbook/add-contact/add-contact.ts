@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import {Contact} from "../../../../../models/contact";
+import { Contact } from "./../../../shared/contact/contact.model";
 
 
 @IonicPage()
