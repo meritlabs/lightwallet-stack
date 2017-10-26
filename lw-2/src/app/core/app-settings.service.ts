@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { Logger } from './logger';
+import { Logger } from '@app/core/logger';
 import 'rxjs/add/operator/map';
 
-import { LanguageService } from '../shared/language.service';
-import { ConfigService } from '../shared/config.service';
-import { TouchIdService } from '../shared//touchid.service';
+import { LanguageService } from '@app/shared/language.service';
+import { ConfigService } from '@app/shared/config.service';
+import { TouchIdService } from '@app/shared/touchid.service';
 
 interface App {
   packageName: string;

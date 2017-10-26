@@ -2,10 +2,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
-import { MyApp } from './app.component';
+import { MyApp } from '@app/app.component';
 
 import { MomentModule } from 'angular2-moment';
-import { CoreModule } from './core/core.module';
+import { CoreModule } from '@app/core/core.module';
 
 
 @NgModule({

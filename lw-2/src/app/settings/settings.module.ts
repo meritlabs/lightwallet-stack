@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { SettingsView } from './settings';
+import { SettingsView } from '@app/settings/settings';
 import {ExternalLinkService} from "../../../providers/external-link-service";
 
 @NgModule({

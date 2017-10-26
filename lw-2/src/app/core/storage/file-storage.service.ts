@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '../logger';
+import { Logger } from '@app/core/logger';
 import * as _ from 'lodash';
 import { File, DirectoryEntry, FileEntry } from '@ionic-native/file';
 import { Platform } from 'ionic-angular';
-import { MeritStorage, KeyAlreadyExistsError } from './storage.interface';
+import { MeritStorage, KeyAlreadyExistsError } from '@app/core/storage/storage.interface';
 
 @Injectable()
 export class FileStorage implements MeritStorage {

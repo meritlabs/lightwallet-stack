@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { ImportScanView } from './import-scan';
+import { ImportScanView } from '@app/utilities/import/import-scan/import-scan';
 
 @NgModule({
   declarations: [

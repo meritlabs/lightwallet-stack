@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Logger } from './../../core/logger';
-import { BwcService } from '../../core/bwc.service';
-import { BwcError } from '../../core/bwc-error.model';
-import { ProfileService } from '../../core/profile.service';
+import { Logger } from '@app/core/logger';
+import { BwcService } from '@app/core/bwc.service';
+import { BwcError } from '@app/core/bwc-error.model';
+import { ProfileService } from '@app/core/profile.service';
 
 
 import * as _ from 'lodash';

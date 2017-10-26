@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { FeedbackView } from './feedback';
+import { FeedbackView } from '@app/settings/feedback/feedback';
 
 @NgModule({
   declarations: [

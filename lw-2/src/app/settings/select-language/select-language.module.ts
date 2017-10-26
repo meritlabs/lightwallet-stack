@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { SelectLanguageModal } from './select-language';
+import { SelectLanguageModal } from '@app/settings/select-language/select-language';
 import { ExternalLinkService } from "@app/shared/external-link.service";
 
 @NgModule({
