@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import { Logger } from '@app/core/logger';
+import { Logger } from 'merit/core/logger';
 import { LoadingController } from 'ionic-angular';
 
 import * as _ from 'lodash';

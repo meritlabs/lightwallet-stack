@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { ContactView } from '@app/shared/contact/contact.view';
+import { ContactView } from 'merit/shared/contact/contact.view';
 
 @NgModule({
   declarations: [

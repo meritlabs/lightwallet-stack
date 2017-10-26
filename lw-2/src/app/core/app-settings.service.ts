@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { Logger } from '@app/core/logger';
+import { Logger } from 'merit/core/logger';
 import 'rxjs/add/operator/map';
 
-import { LanguageService } from '@app/shared/language.service';
-import { ConfigService } from '@app/shared/config.service';
-import { TouchIdService } from '@app/shared/touchid.service';
+import { LanguageService } from 'merit/shared/language.service';
+import { ConfigService } from 'merit/shared/config.service';
+import { TouchIdService } from 'merit/shared/touchid.service';
 
 interface App {
   packageName: string;

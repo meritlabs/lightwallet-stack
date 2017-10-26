@@ -1,5 +1,5 @@
-import { MeritStorage, KeyAlreadyExistsError } from '@app/core/storage/storage.interface';
-import { Logger } from '@app/core/logger';
+import { MeritStorage, KeyAlreadyExistsError } from 'merit/core/storage/storage.interface';
+import { Logger } from 'merit/core/logger';
 
 export class RamStorage implements MeritStorage {
   hash = {};

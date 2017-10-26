@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { TransactView } from '@app/transact/transact';
+import { TransactView } from 'merit/transact/transact';
 
 /*
   Transact is the most thoughtful name we can think of to define all of 

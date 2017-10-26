@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { BwcService } from '@app/core/bwc.service';
-import { RateService } from '@app/transact/rate.service';
-import { ConfigService } from '@app/shared/config.service';
-import { FiatAmount } from '@app/shared/fiat-amount.model';
+import { BwcService } from 'merit/core/bwc.service';
+import { RateService } from 'merit/transact/rate.service';
+import { ConfigService } from 'merit/shared/config.service';
+import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import * as _ from "lodash";
 
 @Injectable()

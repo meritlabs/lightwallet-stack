@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { SelectUnitModal } from '@app/settings/select-unit/select-unit';
+import { SelectUnitModal } from 'merit/settings/select-unit/select-unit';
 
 @NgModule({
   declarations: [

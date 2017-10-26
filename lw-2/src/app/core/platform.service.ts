@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { Logger } from '@app/core/logger';
+import { Logger } from 'merit/core/logger';
 
 @Injectable()
 export class PlatformService {

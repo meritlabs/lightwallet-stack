@@ -2,12 +2,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
-import { MyApp } from '@app/app.component';
+import { MyApp } from 'merit/app.component';
 
 import { MomentModule } from 'angular2-moment';
-import { CoreModule } from '@app/core/core.module';
+import { CoreModule } from 'merit/core/core.module';
 
-
+// App Module
 @NgModule({
   declarations: [
     MyApp

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Inject } from '@angular/core';
-import { Logger } from '@app/core/logger';
+import { Logger } from 'merit/core/logger';
 import * as _ from 'lodash';
 
-import { MeritStorage, MERITSTORAGE } from '@app/core/storage/storage.interface';
-import { PlatformService } from '@app/core/platform.service';
-import { LocalStorage } from '@app/core/storage/local-storage.service';
-import { FileStorage } from '@app/core/storage/file-storage.service';
-import { RamStorage } from '@app/core/storage/ram-storage.service';
+import { MeritStorage, MERITSTORAGE } from 'merit/core/storage/storage.interface';
+import { PlatformService } from 'merit/core/platform.service';
+import { LocalStorage } from 'merit/core/storage/local-storage.service';
+import { FileStorage } from 'merit/core/storage/file-storage.service';
+import { RamStorage } from 'merit/core/storage/ram-storage.service';
 
 const Keys = {
   ADDRESS_BOOK: network => 'addressbook-' + network,
