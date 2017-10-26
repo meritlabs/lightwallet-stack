@@ -3,7 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { ReceiveView } from './receive';
 import { MomentModule } from 'angular2-moment';
 import { QRCodeModule } from 'angular2-qrcode';
-import {ProfileService} from "../../../providers/profile-service";
+import { ProfileService } from "@app/core/profile.service";
 
 @NgModule({
   declarations: [
