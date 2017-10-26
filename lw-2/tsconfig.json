@@ -10,10 +10,14 @@
       "dom",
       "es7"
     ],
+    "baseUrl": ".",
     "module": "es2015",
     "moduleResolution": "node",
     "sourceMap": true,
-    "target": "es2015"
+    "target": "es2015",
+    "paths": {
+      "@app/*": [ "./src/app/*" ]
+    }
   },
   "include": [
     "src/**/*.ts"
