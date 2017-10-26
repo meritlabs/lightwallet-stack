@@ -4,7 +4,8 @@ import { Wallet } from "./../../wallets/wallet.model";
 import { ProfileService } from "./../../core/profile.service";
 import { ModalController } from "ionic-angular/index";
 
-
+// Network View 
+// Part of the Community Tab.
 @IonicPage()
 @Component({
   selector: 'page-network',

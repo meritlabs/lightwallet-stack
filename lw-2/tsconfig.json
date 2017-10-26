@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "allowUnreachableCode": true, // for BWC
+    "allowUnreachableCode": true,
     "declaration": false,
     "allowJs": true,
     "noEmit": true,    
@@ -17,7 +17,8 @@
     "sourceMap": true,
     "target": "es2015",
     "paths": {
-      "@app/*": [ "./src/app/*" ]
+      "@app/*": [ "src/app/*" ],
+      "merit/*": [ "src/app/*" ]
     }
   },
   "include": [
