@@ -527,7 +527,7 @@ export class ProfileService {
     });
   }
 
-  public getWallets(opts?: any): Array<Wallet> {
+  public getWallets(opts?: any): Array<Any> {
 
     if (opts && !_.isObject(opts)) throw "bad argument";
 
