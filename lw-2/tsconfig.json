@@ -4,7 +4,7 @@
     "allowUnreachableCode": true,
     "declaration": false,
     "allowJs": true,
-    "noEmit": true,    
+    "noEmit": false,    
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
