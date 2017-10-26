@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 
+// The onboarding view (component)
 @IonicPage()
 @Component({
   selector: 'page-onboarding',
