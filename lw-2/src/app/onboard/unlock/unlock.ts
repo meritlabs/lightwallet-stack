@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { WalletService } from 'merit/wallets/wallet.service';
 
-
+// Unlock view for wallet
 @IonicPage({
   defaultHistory: ['OnboardingView']
 })
