@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { Logger } from './logger';
+import { Logger } from '@app/core/logger';
 
 @Injectable()
 export class PlatformService {

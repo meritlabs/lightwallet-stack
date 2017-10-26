@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { WalletView } from './wallet';
+import { WalletView } from '@app/settings/wallet/wallet';
 
 @NgModule({
   declarations: [

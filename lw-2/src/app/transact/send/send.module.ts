@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { SendView } from './send';
+import { SendView } from '@app/transact/send/send';
 
 @NgModule({
   declarations: [

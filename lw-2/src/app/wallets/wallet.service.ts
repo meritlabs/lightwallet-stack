@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '../core/logger';
+import { Logger } from '@app/core/logger';
 
-import { ConfigService } from '../shared/config.service';
-import { BwcService } from '../core/bwc.service';
-import { TxFormatService } from '../transact/tx-format.service';
-import { PersistenceService } from '../core/persistence.service';
-import { BwcError } from '../core/bwc-error.model';
-import { RateService } from '../transact/rate.service';
-import { FiatAmount } from '../shared/fiat-amount.model';
-import { PopupService } from '../core/popup.service';
-import { SpinnerService } from '../core/spinner.service';
-import { TouchIdService } from '../shared/touchid.service';
-import { LanguageService } from '../shared/language.service';
-import { ProfileService } from '../core/profile.service';
-import { MnemonicService } from '../utilities/mnemonic/mnemonic.service';
+import { ConfigService } from '@app/shared/config.service';
+import { BwcService } from '@app/core/bwc.service';
+import { TxFormatService } from '@app/transact/tx-format.service';
+import { PersistenceService } from '@app/core/persistence.service';
+import { BwcError } from '@app/core/bwc-error.model';
+import { RateService } from '@app/transact/rate.service';
+import { FiatAmount } from '@app/shared/fiat-amount.model';
+import { PopupService } from '@app/core/popup.service';
+import { SpinnerService } from '@app/core/spinner.service';
+import { TouchIdService } from '@app/shared/touchid.service';
+import { LanguageService } from '@app/shared/language.service';
+import { ProfileService } from '@app/core/profile.service';
+import { MnemonicService } from '@app/utilities/mnemonic/mnemonic.service';
 
 import * as _ from 'lodash';
 

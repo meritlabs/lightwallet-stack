@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Logger } from './logger';
+import { Logger } from '@app/core/logger';
 import * as _ from 'lodash';
-import { PersistenceService } from '../core/persistence.service';
-import { ConfigService } from '../shared/config.service';
-import { BwcService } from '../core/bwc.service';
-import { BwcError } from '../core/bwc-error.model';
-import { WalletService } from '../wallets/wallet.service';
-import { PlatformService } from '../core/platform.service';
-import { AppService } from '../core/app-settings.service';
-import { LanguageService } from '../shared/language.service';
-import { TxFormatService } from '../transact/tx-format.service';
-import { Profile } from '../core/profile.model';
-import { Wallet } from '../wallets/wallet.model';
+import { PersistenceService } from '@app/core/persistence.service';
+import { ConfigService } from '@app/shared/config.service';
+import { BwcService } from '@app/core/bwc.service';
+import { BwcError } from '@app/core/bwc-error.model';
+import { WalletService } from '@app/wallets/wallet.service';
+import { PlatformService } from '@app/core/platform.service';
+import { AppService } from '@app/core/app-settings.service';
+import { LanguageService } from '@app/shared/language.service';
+import { TxFormatService } from '@app/transact/tx-format.service';
+import { Profile } from '@app/core/profile.model';
+import { Wallet } from '@app/wallets/wallet.model';
 
 @Injectable()
 export class ProfileService {

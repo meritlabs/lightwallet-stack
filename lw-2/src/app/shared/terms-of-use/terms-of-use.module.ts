@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { TermsOfUseView } from './terms-of-use';
+import { TermsOfUseView } from '@app/shared/terms-of-use/terms-of-use';
 
 @NgModule({
   declarations: [
