@@ -1,4 +1,4 @@
-import {Wallet} from "../wallet";
+import { Wallet } from "@app/wallets/wallet.model";
 export class WalletMock extends Wallet {
 
   id:string = '1';
