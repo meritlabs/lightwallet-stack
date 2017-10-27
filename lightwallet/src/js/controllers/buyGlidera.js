@@ -102,10 +102,12 @@ angular.module('copayApp.controllers').controller('buyGlideraController', functi
       } else {
         message = 'A SMS containing a confirmation code was sent to your phone.';
       }
-      popupService.showPrompt(title, message, null, function(twoFaCode) {
-        if (typeof twoFaCode == 'undefined') return cb();
-        return cb(twoFaCode);
-      });
+      popupService.showPrompt(title, message, null, popupService.promptCallback(
+        function(twoFaCode) {
+          if (typeof twoFaCode == 'undefined') return cb();
+          return cb(twoFaCode);
+        })
+      );
     } else {
       return cb();
     }

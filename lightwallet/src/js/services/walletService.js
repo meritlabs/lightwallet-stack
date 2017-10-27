@@ -1019,10 +1019,12 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
       forceHTMLPrompt: true,
       class: 'text-warn'
     };
-    popupService.showPrompt(title, name, opts, function(res) {
-      if (!res) return cb();
-      if (res) return cb(res)
-    });
+    popupService.showPrompt(title, name, opts, popupService.promptCallback(
+      function(res) {
+        if (!res) return cb();
+        if (res) return cb(res)
+      })
+    );
   };
 
 

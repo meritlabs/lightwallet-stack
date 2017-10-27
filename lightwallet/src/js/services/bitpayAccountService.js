@@ -108,9 +108,7 @@ angular.module('copayApp.services').factory('bitpayAccountService', function($lo
   var checkOtp = function(pairData, cb) {
     if (pairData.otp) {
       var msg = gettextCatalog.getString('Enter Two Factor for your BitPay account');
-      popupService.showPrompt(null, msg, null, function(res) {
-        cb(res);
-      });
+      popupService.showPrompt(null, msg, null, popupService.promptCallback(cb));
     } else {
       cb();
     }
