@@ -10,8 +10,8 @@ import { RateService } from 'merit/transact/rate.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { PopupService } from 'merit/core/popup.service';
 import { SpinnerService } from 'merit/core/spinner.service';
-import { TouchIdService } from 'merit/shared/touchid.service';
-import { LanguageService } from 'merit/shared/language.service';
+import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
+import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 

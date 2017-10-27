@@ -6,17 +6,19 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Logger } from "./logger";
 import { BwcService } from 'merit/core/bwc.service';
-import { PersistenceService } from 'merit/core/persistence.service';
+import { PersistenceService, persistenceServiceFactory } from 'merit/core/persistence.service';
 import { BwcError } from 'merit/core/bwc-error.model';
 import { PlatformService } from 'merit/core/platform.service';
 import { ProfileService } from 'merit/core/profile.service';
-import { LanguageService } from 'merit/shared/language.service';
+import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { AppService } from 'merit/core/app-settings.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { TransactModule } from 'merit/transact/transact.module';
-
-
+import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
+import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
+import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
+import { TouchID } from '@ionic-native/touch-id';
 
 
 
@@ -28,11 +30,23 @@ import { MomentModule } from 'angular2-moment';
   The goal, over time, is to make this module leaner and tighter as we continue
   to evolve the application.
 */
+
+export function createTranslateLoader(http: Http) {
+    return new TranslatePoHttpLoader(http, 'assets/i18n', '.po');
+  }
+
 @NgModule({
     imports: [
         CommonModule,
         TransactModule, // Ideally, we can remove this dependency.
-        HttpModule        
+        HttpModule,
+        TranslateModule.forRoot({
+            loader: {
+              provide: TranslateLoader,
+              useFactory: createTranslateLoader,
+              deps: [Http]
+            }
+          })        
     ],
     exports: [],
     declarations: [],
@@ -42,14 +56,28 @@ import { MomentModule } from 'angular2-moment';
         SplashScreen,
         Logger,
         BwcService,
-        PersistenceService,
+        {
+            provide: PersistenceService,
+            useFactory: persistenceServiceFactory,
+            deps: [PlatformService, Logger],
+            multi: false
+        },
         BwcError,
         PlatformService,
         ProfileService,
-        LanguageService,
+        {
+            provide: LanguageService,
+            deps: [TranslateService],
+            multi: false
+        },
         TxFormatService,
         AppService,
-        ConfigService
+        ConfigService,
+        {
+            provide: TouchIdService,
+            deps: [TouchID],
+            multi: false
+        },
     ]
 })
 
