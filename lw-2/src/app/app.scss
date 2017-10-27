@@ -79,3 +79,16 @@ ion-card {
 ion-item.selected ion-label {
   color: color($colors, 'primary') !important;
 }
+
+ion-item textarea {
+  width: 100%;
+  min-height: 65px;
+  border: none;
+  font-weight: normal;
+  text-transform: none;
+
+  &::-webkit-input-placeholder {
+    color: rgba(0,0,0,0.4);
+    font-size: 14px;
+  }
+}
