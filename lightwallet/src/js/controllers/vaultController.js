@@ -15,7 +15,7 @@ angular.module('copayApp.controllers').controller('vaultController', function($s
   };
 
   $scope.toVaultWallet = function() {
-
+    $state.go('tabs.home');
   };
 
 });
