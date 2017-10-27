@@ -36,11 +36,12 @@ import { MomentModule } from 'angular2-moment';
 export function createTranslateLoader(http: Http) {
     return new TranslatePoHttpLoader(http, 'assets/i18n', '.po');
   }
-
+ 
+  // Ideally, we can remove the transaction dependency.
 @NgModule({
     imports: [
         CommonModule,
-        TransactModule, // Ideally, we can remove this dependency.
+        TransactModule,
         HttpModule,
         TranslateModule.forRoot({
             loader: {
