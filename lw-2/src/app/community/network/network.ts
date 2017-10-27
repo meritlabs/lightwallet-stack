@@ -8,7 +8,7 @@ import { ModalController } from "ionic-angular/index";
 // Part of the Community Tab.
 @IonicPage()
 @Component({
-  selector: 'page-network',
+  selector: 'view-network',
   templateUrl: 'network.html',
 })
 export class NetworkView {

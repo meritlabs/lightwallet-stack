@@ -16,14 +16,14 @@
         <div class="text" translate>
             You'll need an unlock code from a friend or colleague.
         </div>
-        <div class="bottom-buttons">
+        <form class="bottom-buttons" (ngSubmit)="createAndUnlockWallet()">
             <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
-                [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'feil'"
-                [(ngModel)]="formData.unlockCode">
-            <button (click)="unlock()" ion-button icon-only translate>
+                [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
+                [(ngModel)]="formData.unlockCode" name="unlockCode">
+            <button type="submit" ion-button icon-only translate>
                 <ion-icon name="arrow-forward"></ion-icon>
             </button>
-        </div>
+        </form>
 
     </div>
 

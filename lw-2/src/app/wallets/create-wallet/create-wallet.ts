@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ConfigService } from "@app/shared/config.service";
+import { ConfigService } from "merit/shared/config.service";
 
 
 @IonicPage({
   defaultHistory: ['ProfileView']
 })
 @Component({
-  selector: 'page-create-wallet',
+  selector: 'view-create-wallet',
   templateUrl: 'create-wallet.html',
 })
 export class CreateWalletView {

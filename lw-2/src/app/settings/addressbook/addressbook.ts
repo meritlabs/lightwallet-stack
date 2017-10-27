@@ -7,7 +7,7 @@ import { ContactsService } from "./../../shared/contacts.service";
   defaultHistory: ['SettingsView']
 })
 @Component({
-  selector: 'page-addressbook',
+  selector: 'view-addressbook',
   templateUrl: 'addressbook.html',
 })
 export class AddressbookView {

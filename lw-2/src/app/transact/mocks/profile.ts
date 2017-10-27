@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ProfileService } from "@app/core/profile.service";
-import { Wallet } from "@app/wallets/wallet.model";
-import { WalletMock } from "@app/wallets/wallet.model.mock.ts";
+import { ProfileService } from "merit/core/profile.service";
+import { Wallet } from "merit/wallets/wallet.model";
+import { WalletMock } from "merit/wallets/wallet.model.mock.ts";
 
 @Injectable()
 export class ProfileServiceMock extends ProfileService {

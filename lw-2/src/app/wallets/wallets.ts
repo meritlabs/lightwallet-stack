@@ -6,7 +6,7 @@ import { ProfileService } from "./../core/profile.service";
 
 @IonicPage()
 @Component({
-  selector: 'page-wallets',
+  selector: 'view-wallets',
   templateUrl: 'wallets.html',
 })
 export class WalletsView {
