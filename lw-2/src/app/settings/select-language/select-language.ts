@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import {AlertController} from "ionic-angular/index";
-import { ExternalLinkService } from "@app/shared/external-link.service";
+import { ExternalLinkService } from "merit/shared/external-link.service";
 
 
 @IonicPage()
 @Component({
-  selector: 'page-select-language',
+  selector: 'view-select-language',
   templateUrl: 'select-language.html',
 })
 export class SelectLanguageModal {

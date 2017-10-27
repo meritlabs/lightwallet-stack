@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 @IonicPage()
 @Component({
-  selector: 'page-advanced-settings',
+  selector: 'view-advanced-settings',
   templateUrl: 'advanced-settings.html',
 })
 export class AdvancedSettingsView {

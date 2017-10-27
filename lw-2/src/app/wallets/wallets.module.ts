@@ -7,6 +7,7 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { LanguageService } from 'merit/core/language.service';
+import {WalletServiceMock} from "./wallet.service.mock";
 
 
 @NgModule({
@@ -14,7 +15,7 @@ import { LanguageService } from 'merit/core/language.service';
     WalletsView,
   ],
   providers: [
-    WalletService,
+    {provide: WalletService, useClass: WalletServiceMock},
     MnemonicService,
     LanguageService
   ]

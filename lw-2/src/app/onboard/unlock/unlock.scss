@@ -27,5 +27,10 @@ view-unlock {
     flex-direction: row;
   }
 
+  input.failed {
+    background: color($colors, 'danger');
+    color: white;
+  }
+
 
 }

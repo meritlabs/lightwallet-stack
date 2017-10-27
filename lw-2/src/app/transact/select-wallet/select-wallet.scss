@@ -1,6 +1,6 @@
 @import "../transact-module";
 
-component-select-wallet {
+view-select-wallet {
   @extend %module-transact;
 
   .selected h2, .selected p{

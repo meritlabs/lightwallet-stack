@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { ProfileService } from "@app/core/profile.service";
-import { Wallet } from "@app/wallets/wallet.model";
+import { ProfileService } from "merit/core/profile.service";
+import { Wallet } from "merit/wallets/wallet.model";
 
 @IonicPage()
 @Component({
-  selector: 'page-select-wallet',
+  selector: 'view-select-wallet',
   templateUrl: 'select-wallet.html',
 })
 export class SelectWalletModal {

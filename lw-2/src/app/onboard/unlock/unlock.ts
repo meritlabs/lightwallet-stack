@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, App, LoadingController, ToastController } from 'ionic-angular';
 import { WalletService } from 'merit/wallets/wallet.service';
+import {ToastConfig} from "merit/core/toast.config";
 
 // Unlock view for wallet
 @IonicPage({
@@ -16,9 +17,10 @@ export class UnlockView {
   public formData = {unlockCode: ''};
 
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams, 
-    private walletService: WalletService
+    private app:App,
+    private walletService: WalletService,
+    private toastCtrl: ToastController,
+    private loaderCtrl:LoadingController
   ) {
   }
 
@@ -26,21 +28,30 @@ export class UnlockView {
     //do something here
   }
 
-  unlock() {
-    //unlock actions
-    this.createAndUnlockWallet().then(() => {
-      this.unlockState = 'success';
-      this.navCtrl.push('TransactView');
-    });
-  }
-
   createAndUnlockWallet(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.walletService.createDefaultWallet().then((wallet: any) => {
-        resolve();
-      }).catch((err) => {
-        reject(err);
-      });
+
+      if (!this.formData.unlockCode) {
+        this.unlockState = 'fail';
+      } else {
+
+        let loader = this.loaderCtrl.create({content: 'Creating wallet...'});
+        loader.present();
+
+        this.walletService.createDefaultWallet(this.formData.unlockCode).then((wallet) => {
+          console.debug('created wallet', wallet);
+          loader.dismiss();
+
+          /** todo store wallet */
+
+          this.app.getRootNav().setRoot('TransactView');
+        }).catch((err) => {
+          loader.dismiss();
+          this.unlockState = 'fail';
+          this.toastCtrl.create({ message: err, cssClass: ToastConfig.CLASS_ERROR }).present();
+        });
+      }
+
     });
   }
 
