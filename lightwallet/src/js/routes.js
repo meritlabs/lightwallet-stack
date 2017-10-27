@@ -385,6 +385,15 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           },
         }
       })
+      .state('tabs.add.create-vault', {
+        url: '/create-vault',
+        views: {
+          'tab-home@tabs': {
+            templateUrl: 'views/tab-create-vault.html',
+            controller: 'createController'
+          },
+        }
+      })
       .state('tabs.add.create-shared', {
         url: '/create-shared',
         views: {

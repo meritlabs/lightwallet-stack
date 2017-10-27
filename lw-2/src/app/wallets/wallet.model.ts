@@ -35,6 +35,9 @@ export class Wallet {
     //TODO IMPLEMENT
     return true;
   };
+  isVault = ():boolean => {
+    return true;
+  };
 
 
   constructor(fields:any) {

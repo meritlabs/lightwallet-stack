@@ -41,7 +41,8 @@
 
         <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)">
             <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
-                <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
+                <img *ngIf="!wallet.isVault" src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
+                <img *ngIf="wallet.isVault" src="assets/img/icon-lock.svg"  [style.background]="wallet.color" >
             </i>
             <h2 translate>{{wallet.name || wallet._id}}</h2>
             <p>
