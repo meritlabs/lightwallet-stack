@@ -6,7 +6,7 @@ import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
   defaultHistory: ['OnboardingView']
 })
 @Component({
-  selector: 'page-tour',
+  selector: 'view-tour',
   templateUrl: 'tour.html',
 })
 export class TourView {

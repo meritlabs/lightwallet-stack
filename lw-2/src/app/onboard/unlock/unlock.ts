@@ -7,7 +7,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
   defaultHistory: ['OnboardingView']
 })
 @Component({
-  selector: 'page-unlock',
+  selector: 'view-unlock',
   templateUrl: 'unlock.html',
 })
 export class UnlockView {
