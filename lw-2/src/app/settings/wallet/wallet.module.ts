@@ -21,4 +21,4 @@ import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
     MnemonicService
   ]
 })
-export class WalletComponentModule {}
+export class WalletSettingsModule {}

@@ -12,7 +12,9 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { Profile } from 'merit/core/profile.model';
 import { Wallet } from 'merit/wallets/wallet.model';
 
-// This was effectively the API-Client
+/* 
+  Historically, this acted as the API-Client
+*/ 
 @Injectable()
 export class ProfileService {
   public wallets: any = {};
