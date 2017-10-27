@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { BwcService } from 'merit/core/bwc.service';
 import { RateService } from 'merit/transact/rate.service';
@@ -7,6 +6,9 @@ import { ConfigService } from 'merit/shared/config.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import * as _ from "lodash";
 
+/* 
+  Ideally, this service gets loaded when it is needed.
+*/ 
 @Injectable()
 export class TxFormatService {
 
@@ -14,7 +16,6 @@ export class TxFormatService {
   public pendingTxProposalsCountForUs: number
 
   constructor(
-    public http: Http,
     private bwc: BwcService,
     private rate: RateService,
     private config: ConfigService,
