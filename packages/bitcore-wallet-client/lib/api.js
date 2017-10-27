@@ -711,6 +711,16 @@ API.prototype.buildEasySendScript = function(opts, cb) {
     var privateKey = self.credentials.getDerivedXPrivKey(opts.walletPassword);
     var network = opts.network || 'livenet';
 
+    self.unlockAddress({
+      unlockCode: self.shareCode,
+      network: network,
+      address: privateKey.publicKey.toAddress(network).toString()
+    }, function(err) {
+      if(err) {
+        throw new Error("error beaconing sender address: " + err);
+      }
+    });
+
     // {key, secret}
     var rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
 
