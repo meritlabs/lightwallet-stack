@@ -170,6 +170,15 @@ angular.module('copayApp.services')
       });
     };
 
+    root.storeDeepLinkHandled = function(deepLinkID, cb) {
+      storage.set('deepLinkHandled-' + deepLinkID, {handled: true}, cb);
+    }
+    root.deleteDeepLinkHandled = function(deepLinkID, cb) {
+      storage.remove('deepLinkHandled-' + deepLinkID, cb);
+    }
+    root.getDeepLinkHandled = function(deepLinkID, cb) {
+      storage.get('deepLinkHandled-' + deepLinkID, cb);
+    }
 
     root.setFeedbackInfo = function(feedbackValues, cb) {
       storage.set('feedback', feedbackValues, cb);
