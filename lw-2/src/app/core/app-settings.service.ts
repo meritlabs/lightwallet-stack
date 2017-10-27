@@ -3,10 +3,11 @@ import { Http, Response } from '@angular/http';
 import { Logger } from 'merit/core/logger';
 import 'rxjs/add/operator/map';
 
-import { LanguageService } from 'merit/shared/language.service';
+import { LanguageService } from 'merit/core/language.service';
 import { ConfigService } from 'merit/shared/config.service';
-import { TouchIdService } from 'merit/shared/touchid.service';
+import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 
+// TODO: Improve implementation
 interface App {
   packageName: string;
   packageDescription: string;

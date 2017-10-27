@@ -7,7 +7,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { BwcError } from 'merit/core/bwc-error.model';
 import { PlatformService } from 'merit/core/platform.service';
 import { AppService } from 'merit/core/app-settings.service';
-import { LanguageService } from 'merit/shared/language.service';
+import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { Profile } from 'merit/core/profile.model';
 import { Wallet } from 'merit/wallets/wallet.model';

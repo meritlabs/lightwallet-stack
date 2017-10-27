@@ -6,6 +6,7 @@ import { ConfigService } from 'merit/shared/config.service';
 
 import * as _ from "lodash";
 
+// Language Service!
 @Injectable()
 export class LanguageService {
   private languages: Array<any> = [
