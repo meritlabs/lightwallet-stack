@@ -4,4 +4,13 @@
     <ion-nav-back-button>
     </ion-nav-back-button>
   </ion-nav-bar>
+
+  <ion-content>
+    <form name="vaultForm" ng-submit="create()" novalidate>
+
+      <button type="submit" class="button button-standard button-primary" ng-click="toMasterKey()">
+        <span translate>Next</span>
+      </button>
+    </form>
+  </ion-content>
 </ion-view>
