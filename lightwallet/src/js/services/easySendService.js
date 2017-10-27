@@ -7,10 +7,16 @@ angular.module('copayApp.services')
 
     service.createEasySendScriptHash = function(wallet, cb) {
 
-      // TODO: get a passphrase
-      var opts = {
-        network: wallet.credentials.network,
-        passphrase: 'donkey'
+      try {
+        // TODO: get a passphrase
+        var opts = {
+          network: wallet.credentials.network,
+          passphrase: 'donkey'
+        };
+      } catch (e) {
+        console.log('easySendService with wallet:');
+        console.log(wallet);
+        cb(e);
       }
 
       wallet.buildEasySendScript(opts, function(err, easySendResult) {

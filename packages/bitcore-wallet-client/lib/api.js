@@ -706,19 +706,24 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
 API.prototype.buildEasySendScript = function(opts, cb) {
   opts = opts || {};
 
-  var privateKey = this.credentials.getDerivedXPrivKey(opts.walletPassword);
-  var network = opts.network || 'livenet';
+  var self = this;
+  try {
+    var privateKey = self.credentials.getDerivedXPrivKey(opts.walletPassword);
+    var network = opts.network || 'livenet';
 
-  // {key, secret}
-  var rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
+    // {key, secret}
+    var rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
 
-  var pubkeys = [
-    rcvPair.key.publicKey.toBuffer(),
-    privateKey.publicKey.toBuffer()
-  ];
+    var pubkeys = [
+      rcvPair.key.publicKey.toBuffer(),
+      privateKey.publicKey.toBuffer()
+    ];
 
-  var timeout = opts.timeout || 1008;
-  var script = Bitcore.Script.buildEasySendOut(pubkeys, timeout, network);
+    var timeout = opts.timeout || 1008;
+    var script = Bitcore.Script.buildEasySendOut(pubkeys, timeout, network);
+  } catch (e) {
+    cb(e);
+  }
 
   var result = {
     receiverPubKey: rcvPair.key.publicKey,
@@ -1879,10 +1884,7 @@ API.prototype.unlockAddress = function(opts, cb) {
 
   opts = opts || {};
 
-  self._doPostRequest('/v1/addresses/unlock/', opts, function(err, result) {
-    if (err) return cb(err);
-    return cb(err, result);
-  });
+  self._doPostRequest('/v1/addresses/unlock/', opts, cb);
 };
 
 /**

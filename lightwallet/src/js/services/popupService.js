@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.services').service('popupService', function($log, $ionicPopup, platformInfo, gettextCatalog) {
+angular.module('copayApp.services').service('popupService', function($rootScope, $log, $ionicPopup, platformInfo, gettextCatalog) {
 
   var isCordova = platformInfo.isCordova;
   var isWindowsPhoneApp = platformInfo.isCordova && platformInfo.isWP;
@@ -32,21 +32,28 @@ angular.module('copayApp.services').service('popupService', function($log, $ioni
 
   var _ionicPrompt = function(title, message, opts, cb) {
     opts = opts || {};
-
     var okText = opts.ok || gettextCatalog.getString('OK');
     var cancelText = opts.cancel || gettextCatalog.getString('Cancel');
+    opts.buttonLabels = opts.buttonLabels || [okText, cancelText];
+    $rootScope.prompt = {};
 
-    $ionicPopup.prompt({
+    $ionicPopup.show({
       title: title,
       subTitle: message,
       cssClass: opts.class,
-      template: '<input ng-model="data.response" type="' + opts.inputType + '" value ="" autocomplete="off" autofocus>',
+      template: '<input ng-model="prompt.response" type="' + opts.inputType + '" value ="" autocomplete="off" autofocus>',
+      scope: $rootScope,
       inputPlaceholder: opts.inputPlaceholder,
       defaultText: opts.defaultText,
-      buttonLabels: [okText, cancelText]
-    }).then(function(res) {
-      return cb(res);
-    });
+      buttons: buttonLabels.map(function(label, index) {
+        return {
+          text: label,
+          onTap: function() {
+            return {buttonIndex: index + 1, input1: $rootScope.data.response};
+          }
+        };
+      })
+    }).then(cb);
   };
 
   /*************** Cordova ****************/
@@ -70,15 +77,20 @@ angular.module('copayApp.services').service('popupService', function($log, $ioni
   };
 
   var _cordovaPrompt = function(title, message, opts, cb) {
-    var onPrompt = function(results) {
-      if (results.buttonIndex == 1) return cb(results.input1);
-      else return cb();
-    }
-
+    opts = opts || {};
     var okText = opts.ok || gettextCatalog.getString('OK');
     var cancelText = opts.cancel || gettextCatalog.getString('Cancel');
+    opts.buttonLabels = opts.buttonLabels || [okText, cancelText];
+
     title = title ? title : '';
-    navigator.notification.prompt(message, onPrompt, title, [okText, cancelText], opts.defaultText);
+    navigator.notification.prompt(message, cb, title, opts.buttonLabels, opts.defaultText);
+  };
+
+  this.promptCallback = function(cb) {
+    return function(results) {
+      if (results.buttonIndex == 1) return cb(results.input1);
+      else return cb();
+    };
   };
 
   /**
@@ -88,7 +100,6 @@ angular.module('copayApp.services').service('popupService', function($log, $ioni
    * @param {String} Message
    * @param {Callback} Function (optional)
    */
-
   this.showAlert = function(title, msg, cb, okText) {
     var message = (msg && msg.message) ? msg.message : msg;
     $log.warn(title ? (title + ': ' + message) : message);

@@ -152,25 +152,27 @@ angular.module('copayApp.controllers').controller('txDetailsController', functio
     }
     if ($scope.btx.note && $scope.btx.note.body) opts.defaultText = $scope.btx.note.body;
 
-    popupService.showPrompt($scope.wallet.name, gettextCatalog.getString('Memo'), opts, function(text) {
-      if (typeof text == "undefined") return;
+    popupService.showPrompt($scope.wallet.name, gettextCatalog.getString('Memo'), opts, popupService.promptCallback(
+      function(text) {
+        if (typeof text == "undefined") return;
 
-      $scope.btx.note = {
-        body: text
-      };
-      $log.debug('Saving memo');
+        $scope.btx.note = {
+          body: text
+        };
+        $log.debug('Saving memo');
 
-      var args = {
-        txid: $scope.btx.txid,
-        body: text
-      };
+        var args = {
+          txid: $scope.btx.txid,
+          body: text
+        };
 
-      walletService.editTxNote($scope.wallet, args, function(err, res) {
-        if (err) {
-          $log.debug('Could not save tx comment ' + err);
-        }
-      });
-    });
+        walletService.editTxNote($scope.wallet, args, function(err, res) {
+          if (err) {
+            $log.debug('Could not save tx comment ' + err);
+          }
+        });
+      })
+    );
   };
 
   $scope.viewOnBlockchain = function() {

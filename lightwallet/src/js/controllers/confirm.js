@@ -74,9 +74,14 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       // no min amount? (sendMax) => look for no empty wallets
       minAmount = minAmount || 1;
 
-      $scope.wallets = profileService.getWallets({
-        onlyComplete: true,
-      });
+      try {
+        $scope.wallets = profileService.getWallets({
+          onlyComplete: true,
+        });
+      } catch (e) {
+        console.log({confirmjs: e});
+        return cb(e);
+      }
 
       if (!$scope.wallets || !$scope.wallets.length) {
         setNoWallet(gettextCatalog.getString('No wallets available'));
@@ -166,13 +171,17 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       if (!tx.toAddress) {
         easySendService.createEasySendScriptHash($scope.wallet, function(err, result) {
           if (err) {
-            console.log(err);
+            console.log({confirmjs: err});
           }
           tx.script = result.script;
           tx.script.isOutput = true;
           tx.easySendSecret = result.secret;
           tx.senderPublicKey = result.senderPubKey;
-          tx.toAddress = tx.script.toAddress().toString();
+          try {
+            tx.toAddress = tx.script.toAddress().toString();
+          } catch (e) {
+            console.log({confirmjs: e});
+          }
 
           // Testing outputs
           tx.url = generateURLService.getURL({
@@ -409,12 +418,14 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       defaultText: tx.description
     };
 
-    popupService.showPrompt(null, message, opts, function(res) {
-      if (typeof res != 'undefined') tx.description = res;
-      $timeout(function() {
-        $scope.$apply();
-      });
-    });
+    popupService.showPrompt(null, message, opts, popupService.promptCallback(
+      function(res) {
+        if (typeof res != 'undefined') tx.description = res;
+        $timeout(function() {
+          $scope.$apply();
+        });
+      })
+    );
   };
 
   function _paymentTimeControl(expirationTime) {

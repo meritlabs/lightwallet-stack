@@ -135,10 +135,12 @@ angular.module('copayApp.controllers').controller('paperWalletController',
       if (!$scope.isPkEncrypted) $scope.scanFunds();
       else {
         var message = gettextCatalog.getString('Private key encrypted. Enter password');
-        popupService.showPrompt(null, message, null, function(res) {
-          $scope.passphrase = res;
-          $scope.scanFunds();
-        });
+        popupService.showPrompt(null, message, null, popupService.promptCallback(
+          function(res) {
+            $scope.passphrase = res;
+            $scope.scanFunds();
+          })
+        );
       }
     });
 
