@@ -1,11 +1,15 @@
 <ion-view id="view-add" show-tabs>
-    <ion-nav-bar class="bar-royal">
-      <ion-nav-title>{{'Create Vault' | translate}}</ion-nav-title>
-      <ion-nav-back-button>
-      </ion-nav-back-button>
-    </ion-nav-bar>
-  <ion-content>
-    Master key
+  <ion-nav-bar class="bar-royal">
+    <ion-nav-title>{{'Create Vault' | translate}}</ion-nav-title>
+    <ion-nav-back-button>
+    </ion-nav-back-button>
+  </ion-nav-bar>
+  <ion-content scroll="false">
+    <article class="address">
+      <div class="address-info">
+        Master key
+      </div>
+    </article>
 
     <button type="submit" class="button button-standard button-primary" ng-click="toSummaryView()">
       <span translate>Next</span>
