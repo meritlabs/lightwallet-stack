@@ -44,6 +44,8 @@ angular.module('copayApp.services')
         service.easyReceipt.blockTimeout = parseInt(params.bt, 10);
       }
 
+      service.easyReceipt.deepLinkURL = params['~referring_link'];
+
       if (!lodash.isEmpty(service.easyReceipt)) {
         var receiptToStore = EasyReceipt.fromObj(service.easyReceipt);
         if (receiptToStore.isValid()) {
@@ -151,7 +153,10 @@ angular.module('copayApp.services')
         }, function(err, txid) {
           if (err) return cb(err);
           return storageService.deletePendingEasyReceipt(function(err) {
-            cb(null, destinationAddress, txid)
+            if (err) return cb(err);
+            storageService.storeDeepLinkHandled(receipt.deepLinkURL, function(err2) {
+              cb(null, destinationAddress, txid);
+            });
           });
         });
       });
@@ -163,8 +168,18 @@ angular.module('copayApp.services')
     };
 
     service.rejectEasyReceipt = function(wallet, receipt, input, cb) {
+      if(!input) {
+        return storageService.deletePendingEasyReceipt(cb);
+      }
+      try {
+        var senderAddress = bitcore.PublicKey
+          .fromString(receipt.senderPublicKey, 'hex')
+          .toAddress(wallet.network)
+          .toString();
+      } catch (e) {
+        return cb(e);
+      }
       //Reject the EasyReceipt
-      var senderAddress = receipt.senderPubKey.toAddress(wallet.network);
       return spendEasyReceipt(wallet, receipt, input, senderAddress, cb);
     };
 

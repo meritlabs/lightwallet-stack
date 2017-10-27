@@ -69,7 +69,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       var wallet = wallets[0];
       if (!wallet) return;
 
-      $log.debug("Attempting to reject the easyReciept!");
+      $log.debug("Attempting to reject the easyReceipt!");
 
       easyReceiveService.rejectEasyReceipt(
         wallet,
@@ -99,24 +99,55 @@ angular.module('copayApp.controllers').controller('tabHomeController',
             easyReceiveRejectionHandler(receipt, input);
         });
     }
+
+    // cordova and ionic prompt indexing starts at 1
+    var easyReceipButtons = ['Accept', 'Ignore', 'Reject'];
+    var ACCEPT_INDEX = easyReceipButtons.indexOf('Accept') + 1;
+    var IGNORE_INDEX = easyReceipButtons.indexOf('Ignore') + 1;
+    var REJECT_INDEX = easyReceipButtons.indexOf('Reject') + 1;
+
     var getPasswordPendingEasyReceipt = function (receipt, network) {
       network = network || "testnet";
       popupService.showPrompt(
         "You've got Merit from " + receipt.senderName + " !",
         "Enter the Password",
-        {ok:"I'll Take It", cancel: "Nah"},
-        function(pass){
-          if(pass) {
-            easyReceiveService.validateEasyReceiptOnBlockchain(receipt, pass, network,
-              function(isValid, input) {
-              if(isValid) {
-                showGotMeritPrompt(input, receipt);
+        {
+          inputType: 'password',
+          buttonLabels: easyReceipButtons
+        },
+        function(resp){
+          switch(resp.buttonIndex) {
+            case ACCEPT_INDEX:
+              if(resp.input1) {
+                easyReceiveService.validateEasyReceiptOnBlockchain(receipt, resp.input1, network,
+                  function(isValid, input) {
+                  if(isValid) {
+                    showGotMeritPrompt(input, receipt);
+                  } else {
+                    getPasswordPendingEasyReceipt(receipt, network);
+                  }
+                });
               } else {
                 getPasswordPendingEasyReceipt(receipt, network);
               }
-            });
-          } else {
-            easyReceiveRejectionHandler(receipt, input);
+              break;
+            case IGNORE_INDEX:
+              easyReceiveRejectionHandler(receipt);
+              break;
+            case REJECT_INDEX:
+              if(resp.input1) {
+                easyReceiveService.validateEasyReceiptOnBlockchain(receipt, resp.input1, network,
+                  function(isValid, input) {
+                  if(isValid) {
+                    easyReceiveRejectionHandler(receipt, input);
+                  } else {
+                    getPasswordPendingEasyReceipt(receipt, network);
+                  }
+                });
+              } else {
+                getPasswordPendingEasyReceipt(receipt, network);
+              }
+              break;
           }
         });
     }
@@ -139,22 +170,6 @@ angular.module('copayApp.controllers').controller('tabHomeController',
           });
         }
       });
-    };
-
-    // Handle the pending easyReceipt.
-    $scope.handlePendingEasyReceipt = function (err, receipt) {
-      if (lodash.isEmpty(receipt)) {
-        $log.debug("Unable to load pending easyReceipt.");
-      } else {
-        $log.debug("Loading pending easyReceipt.", receipt);
-        popupService.showConfirm("You've got Merit!", "Someone sent you Merit", "I'll Take It", "Nah", function(ok, cancel){
-          if (ok) {
-            easyReceiveAcceptanceHandler(receipt);
-          } else {
-            easyReceiveRejectionHandler(receipt);
-          }
-        });
-      }
     };
 
     $scope.$on("$ionicView.beforeEnter", function(event, data) {
