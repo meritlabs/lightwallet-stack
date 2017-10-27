@@ -4,6 +4,8 @@ import { WalletsView } from 'merit/wallets/wallets';
 import { MomentModule } from 'angular2-moment';
 import { BwcService } from 'merit/core/bwc.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
+import { WalletService } from 'merit/wallets/wallet.service';
+import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 
 
 @NgModule({
@@ -11,8 +13,8 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
     WalletsView,
   ],
   providers: [
-    BwcService,
-    TxFormatService
+    WalletService,
+    MnemonicService
   ]
   ,
   imports: [
@@ -20,4 +22,4 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
     IonicPageModule.forChild(WalletsView),
   ],
 })
-export class WalletsViewModule {}
+export class WalletsModule {}
