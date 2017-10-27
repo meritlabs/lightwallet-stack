@@ -1,5 +1,5 @@
-@import "../transact/transact-module";
-component-home {
+@import '../transact/transact-module';
+view-wallets {
   @extend %module-transact;
 
   ion-navbar img {

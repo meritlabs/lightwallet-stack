@@ -3,14 +3,14 @@ import { IonicPage, NavController, NavParams  } from 'ionic-angular';
 
 // Todo: 
 //import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import { ConfigService } from "@app/shared/config.service";
+import { ConfigService } from "merit/shared/config.service";
 
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
 })
 @Component({
-  selector: 'page-import',
+  selector: 'view-import',
   templateUrl: 'import.html',
 })
 export class ImportView {

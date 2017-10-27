@@ -5,7 +5,7 @@ import { Logger } from 'merit/core/logger';
 
 @IonicPage()
 @Component({
-  selector: 'page-session-log',
+  selector: 'view-session-log',
   templateUrl: 'session-log.html',
 })
 export class SessionLogView {

@@ -5,7 +5,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 // The onboarding view (component)
 @IonicPage()
 @Component({
-  selector: 'page-onboarding',
+  selector: 'view-onboarding',
   templateUrl: 'onboarding.html',
 })
 export class OnboardingView {
