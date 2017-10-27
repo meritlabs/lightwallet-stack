@@ -9,7 +9,9 @@ import { BwcService } from 'merit/core/bwc.service';
 import { PersistenceService, persistenceServiceFactory } from 'merit/core/persistence.service';
 import { BwcError } from 'merit/core/bwc-error.model';
 import { PlatformService } from 'merit/core/platform.service';
+
 import { ProfileService } from 'merit/core/profile.service';
+
 import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { AppService } from 'merit/core/app-settings.service';
@@ -21,7 +23,6 @@ import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { TouchID } from '@ionic-native/touch-id';
 import { PopupService } from 'merit/core/popup.service';
 import { SpinnerService } from 'merit/core/spinner.service';
-
 
 
 import { MomentModule } from 'angular2-moment';
@@ -53,7 +54,7 @@ export function createTranslateLoader(http: Http) {
     exports: [],
     declarations: [],
     providers: [
-        Logger, 
+        Logger,
         StatusBar,
         SplashScreen,
         Logger,
@@ -68,7 +69,7 @@ export function createTranslateLoader(http: Http) {
         PlatformService,
         ProfileService,
         {
-            provide: LanguageService,
+          provide: LanguageService,
             deps: [TranslateService],
             multi: false
         },

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
-import { ProfileService } from "@app/core/profile.service";
-import { Wallet } from "@app/wallets/wallet.model";
+import { ProfileService } from "merit/core/profile.service";
+import { Wallet } from "merit/wallets/wallet.model";
 
 @IonicPage()
 @Component({
-  selector: 'page-receive',
+  selector: 'view-receive',
   templateUrl: 'receive.html',
 })
 export class ReceiveView {

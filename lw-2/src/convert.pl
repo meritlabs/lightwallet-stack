@@ -9,7 +9,7 @@
 # Add this to tslint.json 'compilerOptions'
 #
 #     "paths": {
-#         "@app/*": [
+#         "merit/*": [
 #             "./src/app/*"
 #         ]
 #     }
