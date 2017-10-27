@@ -19,6 +19,8 @@ import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-transla
 import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { TouchID } from '@ionic-native/touch-id';
+import { PopupService } from 'merit/core/popup.service';
+import { SpinnerService } from 'merit/core/spinner.service';
 
 
 
@@ -78,6 +80,8 @@ export function createTranslateLoader(http: Http) {
             deps: [TouchID],
             multi: false
         },
+        PopupService,
+        SpinnerService
     ]
 })
 
