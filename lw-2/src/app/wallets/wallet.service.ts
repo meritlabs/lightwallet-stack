@@ -21,6 +21,7 @@ import * as _ from 'lodash';
 /* Refactor CheckList:
   - Bwc Error provider
   - Remove ongoingProcess provider, and handle Loading indicators in controllers
+  - Decouple the tight dependencies on ProfileService; and create logical separation concerns 
 */
 
 
