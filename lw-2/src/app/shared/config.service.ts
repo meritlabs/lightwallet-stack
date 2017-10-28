@@ -84,6 +84,10 @@ interface Config {
   log: {
     filter: string;
   };
+
+  // Custom Aliases 
+  // Stored like: aliasFor[WalletId] = "Full Wallet"
+  aliasFor?: object;
 };
 
 const configDefault: Config = {
@@ -181,7 +185,12 @@ export class ConfigService {
     private events: Events,
     private persistence: PersistenceService
   ) {
-    this.logger.debug('ConfigService initialized.');
+    this.load()
+      .then(() => {
+        this.logger.debug('ConfigService initialized.');
+      }).catch(err => {
+        this.logger.warn('ConfigService could not load default config');
+      }) 
   }
 
   public load() {
