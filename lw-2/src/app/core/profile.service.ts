@@ -611,7 +611,8 @@ export class ProfileService {
 
       let typeFilter = {
         'NewOutgoingTx': 1,
-        'NewIncomingTx': 1
+        'NewIncomingTx': 1,
+        'NewIncomingCoinbase': 1
       };
 
       let w = this.getWallets();
