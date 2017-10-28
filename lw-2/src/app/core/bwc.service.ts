@@ -30,7 +30,7 @@ export class BwcService {
 
     //note opts use `bwsurl` all lowercase;
     let bwc = new BWC({
-      baseUrl: opts.bwsurl || 'https://localhost:3232/bws/api',
+      baseUrl: opts.bwsurl || 'http://localhost:3232/bws/api',
       verbose: opts.verbose,
       timeout: 100000,
       transports: ['polling'],
