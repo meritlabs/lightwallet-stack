@@ -18,9 +18,9 @@ import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import * as _ from 'lodash';
 
 
-/* TODO LIST:
+/* Refactor CheckList:
   - Bwc Error provider
-  - onGoingProcess provider
+  - Remove ongoingProcess provider, and handle Loading indicators in controllers
 */
 
 
