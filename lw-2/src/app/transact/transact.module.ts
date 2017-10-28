@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TransactView } from 'merit/transact/transact';
 import { RateService } from 'merit/transact/rate.service';
+import {RateServiceMock} from "merit/transact/rate.service.mock";
 
 
 /*
@@ -16,7 +17,10 @@ import { RateService } from 'merit/transact/rate.service';
     IonicPageModule.forChild(TransactView),
   ],
   providers: [
-    RateService
+    {
+      provide: RateService,
+      useClass: RateServiceMock
+    }
   ]
 })
 export class TransactModule {}
