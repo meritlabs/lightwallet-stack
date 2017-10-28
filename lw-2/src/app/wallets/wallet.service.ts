@@ -1060,13 +1060,14 @@ export class WalletService {
     });
   }
 
-  public createDefaultWallet(): Promise<any> {
+  public createDefaultWallet(unlockCode: string): Promise<any> {
     return new Promise((resolve, reject) => {
       var opts: any = {};
       opts.m = 1;
       opts.n = 1;
       opts.networkName = 'testnet';
       opts.coin = 'mrt';
+      opts.unlockCode = unlockCode;
       this.createWallet(opts).then((wallet: any) => {
         return resolve(wallet);
       }).catch((err) => {
@@ -1371,10 +1372,12 @@ export class WalletService {
           let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
           let myName = opts.myName || 'me'; // TODO GetTextCatalog
           
+          // TODO: Rename Beacon to UnlockCode down the stack
           walletClient.createWallet(name, myName, opts.m, opts.n, {
             network: opts.networkName,
             singleAddress: opts.singleAddress,
             walletPrivKey: opts.walletPrivKey,
+            beacon: opts.unlockCode,
             coin: opts.coin
           }, (err: any, secret: any) => {
             if (err) {
@@ -1382,6 +1385,7 @@ export class WalletService {
                 return reject(msg);
               });
             } else {
+              // TODO: Subscribe to ReferralTxConfirmation
               return resolve(walletClient);
             }
           });
