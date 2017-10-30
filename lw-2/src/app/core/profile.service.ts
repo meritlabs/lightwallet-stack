@@ -73,7 +73,7 @@ export class ProfileService {
   private needsBackup(wallet: any): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (!this.requiresBackup(wallet)) {
-        return reject(false);
+        return resolve(false);
       }
 
       this.persistenceService.getBackupFlag(wallet.credentials.walletId).then((val: string) => {
@@ -125,11 +125,16 @@ export class ProfileService {
       console.log("Binding 2");    
       this.needsBackup(wallet).then((val: any) => {
         wallet.needsBackup = val;
+      }).catch((err) => {
+        console.log("NeedsBackup Failed!");
+        console.log(err);
       });
 
       this.balanceIsHidden(wallet).then((val: any) => {
         wallet.balanceHidden = val;
-      });
+      }).catch((err) => {
+        console.log("BalanceIsHiddent");
+      });;
 
       console.log("Binding 3");    
       wallet.removeAllListeners();
