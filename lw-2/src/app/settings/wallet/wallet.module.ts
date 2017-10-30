@@ -17,7 +17,7 @@ import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
     IonicPageModule.forChild(WalletView)
   ],
   providers: [
-    MnemonicService
+    
   ]
 })
 export class WalletSettingsModule {}

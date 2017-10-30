@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { BwcService } from 'merit/core/bwc.service';
-import { WalletService } from 'merit/wallets/wallet.service';
 import { RateService } from 'merit/transact/rate.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
@@ -19,8 +18,7 @@ export class TxFormatService {
   constructor(
     private bwc: BwcService,
     private rate: RateService,
-    private config: ConfigService,
-    private walletService: WalletService
+    private config: ConfigService
   ) {
     console.log('Hello TxFormatService Service');
   }
@@ -139,7 +137,8 @@ export class TxFormatService {
         tx.createdOn = now;
 
     
-      tx.wallet = walletService.getWallet(tx.walletId);
+      // TODO: We should not call any services here.  Data should be passed in.
+      tx.wallet = {copayerId: "Yep"};
 
 
       if (!tx.wallet) {

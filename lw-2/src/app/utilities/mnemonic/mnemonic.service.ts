@@ -12,9 +12,9 @@ export class MnemonicService {
 
   constructor(
       private logger: Logger, 
-      private bwcService: BwcService,
-      private bwcErrorService: BwcError,
       private profileService: ProfileService,
+      private bwcService: BwcService,
+      private bwcErrorService: BwcError
   ){}
 
   private errors: any = this.bwcService.getErrors();
