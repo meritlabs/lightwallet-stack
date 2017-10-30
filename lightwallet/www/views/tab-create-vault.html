@@ -1,4 +1,4 @@
-<ion-view class="settings" show-tabs>
+<ion-view id="vault-creation-first" class="vault-creation settings" show-tabs>
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>{{'Create Vault' | translate}}</ion-nav-title>
     <ion-nav-back-button>
@@ -7,26 +7,32 @@
 
   <ion-content>
     <form name="vaultForm" ng-submit="create()" novalidate>
-      <div class="list settings-list settings-input-group">
-        <label class="item item-input item-stacked-label">
-          <span class="input-label" translate>Vault name</span>
-          <input type="text"
-          placeholder="{{'Family vacation funds'|translate}}"
-          ng-model="formData.vaultName"
-          ng-required="true"
-          required>
-        </label>
-      </div>
+      <div class="view-container">
+        <div class="content-container">
+          <div class="list settings-list settings-input-group">
+            <label class="item item-input item-stacked-label">
+              <span class="input-label" translate>Vault name</span>
+              <input type="text"
+              placeholder="{{'Family vacation funds'|translate}}"
+              ng-model="formData.vaultName"
+              ng-required="true"
+              required>
+            </label>
+          </div>
 
-      <div class="list settings-list settings-input-group">
-        <label class="item item-input item-stacked-label">
-          <span class="input-label" translate>Whitelist</span>
-        </label>
-      </div>
+          <div class="list settings-list settings-input-group">
+            <label class="item item-input item-stacked-label">
+              <span class="input-label" translate>Whitelist</span>
+            </label>
+          </div>
+        </div>
 
-      <button type="submit" class="button button-standard button-primary" ng-click="toMasterKey()">
-        <span translate>Next</span>
-      </button>
+        <div class="button-container">
+          <button type="submit" class="button button-standard button-primary" ng-click="toMasterKey()">
+            <span translate>Next</span>
+          </button>
+        </div>
+      </div>
     </form>
   </ion-content>
 </ion-view>

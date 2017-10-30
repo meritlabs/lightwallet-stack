@@ -1,14 +1,50 @@
-<ion-view id="view-add" show-tabs>
+<ion-view id="vault-creation-summary" class="vault-creation settings" show-tabs>
     <ion-nav-bar class="bar-royal">
       <ion-nav-title>{{'Create Vault' | translate}}</ion-nav-title>
       <ion-nav-back-button>
       </ion-nav-back-button>
     </ion-nav-bar>
   <ion-content>
-    Summary
+    <form name="summary" ng-submit="create()" novalidate>
+      <div class="view-container">
+        <div class="content-container">
+          <div class="list settings-list settings-input-group">
+            <label class="item item-input item-stacked-label">
+            <span class="input-label" translate>Vault name</span>
+            <input type="text"
+              placeholder="{{'Master Key'|translate}}"
+              ng-required="true"
+              required
+              disabled
+              value="My vault">
+            </label>
+          </div>
 
-    <button type="submit" class="button button-standard button-primary" ng-click="toVaultWallet()">
-      <span translate>Create</span>
-    </button>
+          <div class="list settings-list settings-input-group">
+            <label class="item item-input item-stacked-label">
+              <span class="input-label" translate>Master key</span>
+              <input type="text"
+              placeholder="{{'Master Key'|translate}}"
+              ng-required="true"
+              required
+              disabled
+              value="THE KEY">
+            </label>
+          </div>
+
+          <div class="list settings-list settings-input-group">
+            <label class="item item-input item-stacked-label">
+              <span class="input-label" translate>Whitelist</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="button-container">
+          <button type="submit" class="button button-standard button-primary" ng-click="toVaultWallet()">
+            <span translate>Create</span>
+          </button>
+        </div>
+      </div>
+    </form>
   </ion-content>
 </ion-view>

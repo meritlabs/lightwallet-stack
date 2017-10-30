@@ -1,0 +1,64 @@
+.vault-creation {
+  input:disabled {
+    background: #fff;
+  }
+
+  .view-container {
+
+    overflow: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    &.master-key-view {
+      padding-top: 20vh;
+      background: #fff;
+    }
+
+    .content-container {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .master-key-info {
+      display: flex;
+      flex-direction: column;
+      height: 50vh;
+    }
+
+    .title, .key, .comment {
+      text-align: center;
+    }
+
+    .title {
+      height: 20%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .key {
+      flex-grow: 1;
+      font-weight: bold;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .comment {
+      height: 20%;
+      color: $v-mid-gray;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .button-container {
+      display: block;
+      justify-self: flex-end;
+      padding-bottom: 20px;
+    }
+  }
+}
