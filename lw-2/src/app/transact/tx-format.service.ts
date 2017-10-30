@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { BwcService } from 'merit/core/bwc.service';
+import { WalletService } from 'merit/wallets/wallet.service';
 import { RateService } from 'merit/transact/rate.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
@@ -19,6 +20,7 @@ export class TxFormatService {
     private bwc: BwcService,
     private rate: RateService,
     private config: ConfigService,
+    private walletService: WalletService
   ) {
     console.log('Hello TxFormatService Service');
   }
@@ -35,37 +37,37 @@ export class TxFormatService {
     return this.bwc.getUtils().formatAmount(satoshis, settings.unitCode, opts);
   }
 
-  formatAmountStr(coin: string, satoshis: number) {
+  formatAmountStr(satoshis: number) {
     if (isNaN(satoshis)) return;
-    return this.formatAmount(satoshis) + ' ' + (coin).toUpperCase();
+    return this.formatAmount(satoshis) + ' MRT';
   }
 
-  toFiat(coin: string, satoshis: number, code: string): Promise<any> {
+  toFiat(satoshis: number, code: string): Promise<any> {
     return new Promise((resolve, reject) => {
       if (isNaN(satoshis)) resolve();
       var v1;
-      v1 = this.rate.toFiat(satoshis, code, coin);
+      v1 = this.rate.toFiat(satoshis, code);
       if (!v1) resolve(null);
       resolve(v1.toFixed(2));
     });
   }
 
-  formatToUSD(coin: string, satoshis: number) {
+  formatToUSD(satoshis: number) {
     return new Promise((resolve, reject) => {
       var v1;
       if (isNaN(satoshis)) resolve();
-      v1 = this.rate.toFiat(satoshis, 'USD', coin);
+      v1 = this.rate.toFiat(satoshis, 'USD');
       if (!v1) resolve(null);
       resolve(v1.toFixed(2));
     });
   };
 
-  formatAlternativeStr(coin: string, satoshis: number) {
+  formatAlternativeStr(satoshis: number) {
     return new Promise((resolve, reject) => {
       if (isNaN(satoshis)) resolve();
       let settings = this.config.get().wallet.settings;
 
-      var v1 = parseFloat((this.rate.toFiat(satoshis, settings.alternativeIsoCode, coin)).toFixed(2));
+      var v1 = parseFloat((this.rate.toFiat(satoshis, settings.alternativeIsoCode)).toFixed(2));
       var v1FormatFiat = new FiatAmount(v1);
       if (!v1FormatFiat) resolve(null);
 
@@ -73,7 +75,7 @@ export class TxFormatService {
     });
   };
 
-  processTx(coin: string, tx: any) {
+  processTx(tx: any) {
     if (!tx || tx.action == 'invalid')
       return tx;
 
@@ -88,17 +90,17 @@ export class TxFormatService {
           tx.hasMultiplesOutputs = true;
         }
         tx.amount = _.reduce(tx.outputs, function (total: any, o: any) {
-          o.amountStr = this.formatAmountStr(coin, o.amount);
-          o.alternativeAmountStr = this.formatAlternativeStr(coin, o.amount);
+          o.amountStr = this.formatAmountStr(o.amount);
+          o.alternativeAmountStr = this.formatAlternativeStr(o.amount);
           return total + o.amount;
         }, 0);
       }
       tx.toAddress = tx.outputs[0].toAddress;
     }
 
-    tx.amountStr = this.formatAmountStr(coin, tx.amount);
-    tx.alternativeAmountStr = this.formatAlternativeStr(coin, tx.amount);
-    tx.feeStr = this.formatAmountStr(coin, tx.fee || tx.fees);
+    tx.amountStr = this.formatAmountStr(tx.amount);
+    tx.alternativeAmountStr = this.formatAlternativeStr(tx.amount);
+    tx.feeStr = this.formatAmountStr(tx.fee || tx.fees);
 
     if (tx.amountStr) {
       tx.amountValueStr = tx.amountStr.split(' ')[0];
@@ -136,13 +138,8 @@ export class TxFormatService {
       if (tx.createdOn > now)
         tx.createdOn = now;
 
-      // TODO: implement profileService.getWallet(tx.walletId)
-      //tx.wallet = profileService.getWallet(tx.walletId);
-      tx.wallet = {
-        coin: "btc",
-        copayerId: "asdasdasdasd"
-      }
-      // hardcoded tx.wallet ^
+    
+      tx.wallet = walletService.getWallet(tx.walletId);
 
 
       if (!tx.wallet) {
@@ -150,7 +147,7 @@ export class TxFormatService {
         return;
       }
 
-      tx = this.processTx(tx.wallet.coin, tx);
+      tx = this.processTx(tx);
 
       var action: any = _.find(tx.actions, {
         copayerId: tx.wallet.copayerId
@@ -175,7 +172,7 @@ export class TxFormatService {
     return txps;
   };
 
-  parseAmount(coin: string, amount: any, currency: string) {
+  parseAmount(amount: any, currency: string) {
     let settings = this.config.get()['wallet']['settings']; // TODO
 
     var satToBtc = 1 / 100000000;
@@ -187,19 +184,19 @@ export class TxFormatService {
     // If fiat currency
     if (currency != 'BCH' && currency != 'BTC' && currency != 'sat') {
       amountUnitStr = new FiatAmount(amount) + ' ' + currency;
-      amountSat = this.rate.fromFiat(amount, currency, coin).toFixed(0);
+      amountSat = this.rate.fromFiat(amount, currency).toFixed(0);
     } else if (currency == 'sat') {
       amountSat = amount;
-      amountUnitStr = this.formatAmountStr(coin, amountSat);
+      amountUnitStr = this.formatAmountStr(amountSat);
       // convert sat to BTC or BCH
       amount = (amountSat * satToBtc).toFixed(8);
-      currency = (coin).toUpperCase();
+      currency = 'MRT';
     } else {
       amountSat = parseInt((amount * unitToSatoshi).toFixed(0));
-      amountUnitStr = this.formatAmountStr(coin, amountSat);
+      amountUnitStr = this.formatAmountStr(amountSat);
       // convert unit to BTC or BCH
       amount = (amountSat * satToBtc).toFixed(8);
-      currency = (coin).toUpperCase();
+      currency = 'MRT';
     }
 
     return {

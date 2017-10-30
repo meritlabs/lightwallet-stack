@@ -79,12 +79,13 @@ export class WalletService {
       wallet.cachedTxps.isValid = false;
   }
 
-  getStatus(wallet: any, opts: any) {
+  getStatus(wallet: any, opts?: any): Promise<any> {
     return new Promise((resolve, reject) => {
       opts = opts || {};
       var walletId = wallet.id;
 
       let processPendingTxps = (status: any) => {
+        status = status || {};
         let txps = status.pendingTxps;
         let now = Math.floor(Date.now() / 1000);
 
@@ -108,7 +109,7 @@ export class WalletService {
 
         _.each(txps, (tx: any) => {
 
-          tx = this.txFormatService.processTx(wallet.coin, tx);
+          tx = this.txFormatService.processTx(tx);
 
           // no future transactions...
           if (tx.createdOn > now)
@@ -155,7 +156,7 @@ export class WalletService {
               }
               return reject(err);
             }
-            return resolve(null);
+            return resolve(ret);
           });
         })
       };
@@ -194,11 +195,11 @@ export class WalletService {
         cache.satToUnit = 1 / cache.unitToSatoshi;
 
         //STR
-        cache.totalBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.totalBalanceSat);
-        cache.lockedBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.lockedBalanceSat);
-        cache.availableBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.availableBalanceSat);
-        cache.spendableBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.spendableAmount);
-        cache.pendingBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.pendingAmount);
+        cache.totalBalanceStr = this.txFormatService.formatAmountStr(cache.totalBalanceSat);
+        cache.lockedBalanceStr = this.txFormatService.formatAmountStr(cache.lockedBalanceSat);
+        cache.availableBalanceStr = this.txFormatService.formatAmountStr(cache.availableBalanceSat);
+        cache.spendableBalanceStr = this.txFormatService.formatAmountStr(cache.spendableAmount);
+        cache.pendingBalanceStr = this.txFormatService.formatAmountStr(cache.pendingAmount);
 
         cache.alternativeName = config.settings.alternativeName;
         cache.alternativeIsoCode = config.settings.alternativeIsoCode;
@@ -220,11 +221,11 @@ export class WalletService {
 
         this.rateService.whenAvailable().then(() => {
 
-          let totalBalanceAlternative = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode, wallet.coin);
-          let pendingBalanceAlternative = this.rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode, wallet.coin);
-          let lockedBalanceAlternative = this.rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode, wallet.coin);
-          let spendableBalanceAlternative = this.rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode, wallet.coin);
-          let alternativeConversionRate = this.rateService.toFiat(100000000, cache.alternativeIsoCode, wallet.coin);
+          let totalBalanceAlternative = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
+          let pendingBalanceAlternative = this.rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode);
+          let lockedBalanceAlternative = this.rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
+          let spendableBalanceAlternative = this.rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode);
+          let alternativeConversionRate = this.rateService.toFiat(100000000, cache.alternativeIsoCode);
 
           cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
           cache.pendingBalanceAlternative = new FiatAmount(pendingBalanceAlternative);
@@ -439,10 +440,10 @@ export class WalletService {
 
         if (cacheCoin == 'bits') {
 
-          this.logger.debug('Fixing Tx Cache Unit to: ' + wallet.coin)
+          this.logger.debug('Fixing Tx Cache Unit to: MRT');
           _.each(txs, (tx: any) => {
-            tx.amountStr = this.txFormatService.formatAmountStr(wallet.coin, tx.amount);
-            tx.feeStr = this.txFormatService.formatAmountStr(wallet.coin, tx.fees);
+            tx.amountStr = this.txFormatService.formatAmountStr(tx.amount);
+            tx.feeStr = this.txFormatService.formatAmountStr(tx.fees);
           });
         };
       };
@@ -594,7 +595,7 @@ export class WalletService {
     wallet.hasUnsafeConfirmed = false;
 
     _.each(txs, (tx: any) => {
-      tx = this.txFormatService.processTx(wallet.coin, tx);
+      tx = this.txFormatService.processTx(tx);
 
       // no future transactions...
       if (tx.time > now)
@@ -977,7 +978,6 @@ export class WalletService {
 
       this.seedWallet(opts).then((walletClient: any) => {
         walletClient.joinWallet(opts.secret, opts.myName || 'me', {
-          coin: opts.coin
         }, (err: any) => {
           if (err) {
             this.bwcErrorService.cb(err, 'Could not join wallet').then((msg: string) => { //TODO getTextCatalog
@@ -1037,7 +1037,6 @@ export class WalletService {
   public getLowUtxos(wallet: any, levels: any): Promise<any> {
     return new Promise((resolve, reject) => {
       wallet.getUtxos({
-        coin: wallet.coin
       }, (err, resp) => {
         if (err || !resp || !resp.length) return reject(err);
 
@@ -1068,7 +1067,6 @@ export class WalletService {
       opts.m = 1;
       opts.n = 1;
       opts.networkName = 'testnet';
-      opts.coin = 'mrt';
       opts.unlockCode = unlockCode;
       this.createWallet(opts).then((wallet: any) => {
         return resolve(wallet);
@@ -1337,7 +1335,7 @@ export class WalletService {
 
   public getProtocolHandler(wallet: any): string {
     if (wallet.coin == 'bch') return 'bitcoincash';
-    else return 'bitcoin';
+    else return 'merit';
   }
 
   public copyCopayers(wallet: any, newWallet: any): Promise<any> {
@@ -1349,7 +1347,6 @@ export class WalletService {
       _.each(wallet.credentials.publicKeyRing, (item) => {
         let name = item.copayerName || ('copayer ' + copayer++);
         newWallet._doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
-          coin: newWallet.credentials.coin,
         }, (err: any) => {
           //Ignore error is copayer already in wallet
           if (err && !(err instanceof this.errors.COPAYER_IN_WALLET)) return reject(err);
@@ -1379,8 +1376,7 @@ export class WalletService {
             network: opts.networkName,
             singleAddress: opts.singleAddress,
             walletPrivKey: opts.walletPrivKey,
-            beacon: opts.unlockCode,
-            coin: opts.coin
+            beacon: opts.unlockCode
           }, (err: any, secret: any) => {
             if (err) {
               this.bwcErrorService.cb(err, 'Error creating wallet').then((msg: string) => { //TODO getTextCatalog
@@ -1420,8 +1416,7 @@ export class WalletService {
           walletClient.seedFromExtendedPrivateKey(opts.extendedPrivateKey, {
             network: network,
             account: opts.account || 0,
-            derivationStrategy: opts.derivationStrategy || 'BIP44',
-            coin: opts.coin,
+            derivationStrategy: opts.derivationStrategy || 'BIP44'
           });
         } catch (ex) {
           this.logger.warn(ex);
@@ -1431,8 +1426,7 @@ export class WalletService {
         try {
           walletClient.seedFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
             account: opts.account || 0,
-            derivationStrategy: opts.derivationStrategy || 'BIP44',
-            coin: opts.coin
+            derivationStrategy: opts.derivationStrategy || 'BIP44'
           });
           walletClient.credentials.hwInfo = opts.hwInfo;
         } catch (ex) {
@@ -1446,8 +1440,7 @@ export class WalletService {
             network: network,
             passphrase: opts.passphrase,
             language: lang,
-            account: 0,
-            coin: opts.coin
+            account: 0
           });
         } catch (e) {
           this.logger.info('Error creating recovery phrase: ' + e.message);
@@ -1456,8 +1449,7 @@ export class WalletService {
             walletClient.seedFromRandomWithMnemonic({
               network: network,
               passphrase: opts.passphrase,
-              account: 0,
-              coin: opts.coin
+              account: 0
             });
           } else {
             return reject(e);

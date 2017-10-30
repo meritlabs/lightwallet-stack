@@ -33,8 +33,7 @@ export class MnemonicService {
         passphrase: opts.passphrase,
         entropySourcePath: opts.entropySourcePath,
         derivationStrategy: opts.derivationStrategy || 'BIP44',
-        account: opts.account || 0,
-        coin: opts.coin
+        account: opts.account || 0
       }, (err: any) => {
         if (err) {
           if (err instanceof this.errors.NOT_AUTHORIZED) {
@@ -69,8 +68,7 @@ export class MnemonicService {
           network: network,
           passphrase: opts.passphrase,
           account: opts.account || 0,
-          derivationStrategy: opts.derivationStrategy || 'BIP44',
-          coin: opts.coin
+          derivationStrategy: opts.derivationStrategy || 'BIP44'
         });
         resolve(walletClient);
       } catch (ex) {
