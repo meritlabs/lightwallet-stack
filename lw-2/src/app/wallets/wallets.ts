@@ -36,8 +36,11 @@ export class WalletsView {
   }
 
   ionViewDidLoad() {
+    console.log("Updating all the wallets.");
+    
     // TODO: Show loader?
     this.updateAllWallets().then((updatedWallets) => {
+      console.log("Updated all the wallets.");
       this.wallets = updatedWallets;
     }).catch((err) => {
       console.log("Could not update wallets");
@@ -61,7 +64,7 @@ export class WalletsView {
     this.navCtrl.push('ImportView');
   }
 
-  updateAllWallets(): Promise<Array<Wallet>> {
+  private updateAllWallets(): Promise<Array<Wallet>> {
     return new Promise((resolve, reject) => {
       let wallets = this.profileService.getWallets();
       _.each(wallets, (wallet) => {
@@ -72,6 +75,7 @@ export class WalletsView {
           reject(err);
         });
       });
+      resolve(wallets);
     })
   }
 

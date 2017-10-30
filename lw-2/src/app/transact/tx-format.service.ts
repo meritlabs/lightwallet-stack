@@ -138,7 +138,7 @@ export class TxFormatService {
 
     
       // TODO: We should not call any services here.  Data should be passed in.
-      tx.wallet = {copayerId: "Yep"};
+      tx.wallet = {copayerId: "yepNope"};
 
 
       if (!tx.wallet) {
