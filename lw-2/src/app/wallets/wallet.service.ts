@@ -22,6 +22,7 @@ import * as _ from 'lodash';
   - Bwc Error provider
   - Remove ongoingProcess provider, and handle Loading indicators in controllers
   - Decouple the tight dependencies on ProfileService; and create logical separation concerns 
+  - Ensure that anything returning a promise has promises through the stack.
 */
 
 
@@ -1393,7 +1394,7 @@ export class WalletService {
         }).catch((err: any) => {
           return reject(err);
         });
-      }, 50);
+      }, 5000);
     });
   }
 
