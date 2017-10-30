@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { Wallet } from "./wallet.model";
-import { ProfileService } from "./../core/profile.service";
-
+import { ProfileService } from "merit/core/profile.service";
+import { WalletService } from "merit/wallets/wallet.service";
+import * as _ from "lodash";
 
 @IonicPage()
 @Component({
@@ -24,7 +25,8 @@ export class WalletsView {
     public navParams: NavParams,
     private navCtrl:NavController,
     private app:App,
-    private profileService:ProfileService
+    private profileService:ProfileService,
+    private walletService: WalletService
   ) {
     //this.navCtrl = app.getRootNavs()[0];
   }
@@ -34,8 +36,13 @@ export class WalletsView {
   }
 
   ionViewDidLoad() {
-    //do something here
-    this.wallets = this.profileService.getWallets();
+    // TODO: Show loader?
+    this.updateAllWallets().then((updatedWallets) => {
+      this.wallets = updatedWallets;
+    }).catch((err) => {
+      console.log("Could not update wallets");
+      // TODO: Throw a toast?  
+    }); 
   }
 
   openWallet(wallet) {
@@ -52,6 +59,20 @@ export class WalletsView {
 
   toImportWallet() {
     this.navCtrl.push('ImportView');
+  }
+
+  updateAllWallets(): Promise<Array<Wallet>> {
+    return new Promise((resolve, reject) => {
+      let wallets = this.profileService.getWallets();
+      _.each(wallets, (wallet) => {
+        this.walletService.getStatus(wallet).then((status) => {
+          wallet.status = status;
+        }).catch((err) => {
+          console.log("Could not update all wallets!");
+          reject(err);
+        });
+      });
+    })
   }
 
 
