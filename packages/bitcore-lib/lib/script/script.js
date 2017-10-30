@@ -841,6 +841,44 @@ Script.buildEasySendIn = function(signature, easyScript) {
   return s;
 };
 
+Script.buildSimpleVaultScript = function(tag) {
+  $.checkArgument(tag, 'Tag must be present');
+
+  var s = new Script();
+  var tagBytes = BN.fromString(tag);
+
+  s.add(Opcode.OP_DROP)
+    .add(Opcode.OP_DROP)
+    .add(Opcode.OP_TOALTSTACK)
+    .add(Opcode.OP_TOALTSTACK)
+    .add(0)
+    .add(Opcode.OP_EQUAL)
+    .add(Opcode.OP_IF)
+      .add(Opcode.OP_FROMALTSTACK)
+      .add(Opcode.OP_FROMALTSTACK)
+      .add(Opcode.OP_DROP)
+      .add(Opcode.OP_CHECKSIG)
+      .add(Opcode.OP_SWAP)
+      .add(Opcode.OP_DROP)
+    .add(Opcode.OP_ELSE)
+      .add(Opcode.OP_FROMALTSTACK)
+      .add(Opcode.OP_DROP)
+      .add(Opcode.OP_FROMALTSTACK)
+      .add(Opcode.OP_DUP)
+      .add(Opcode.OP_TOALTSTACK)
+      .add(Opcode.OP_CHECKSIGVERIFY)
+      .add(Opcode.OP_TOALTSTACK)
+      .add(Opcode.OP_ANYVALUE)
+      .add(Opcode.OP_ANYVALUE)
+      .add(tagBytes)
+      .add(Opcode.OP_FROMALTSTACK)
+      .add(Opcode.OP_FROMALTSTACK)
+      .add(1)
+      .add(Opcode.OP_CHECKOUTPUTSIG)
+    .add(Opcode.OP_ENDIF);
+  return s;
+};
+
 /**
  * @returns {Script} a new pay to public key hash output for the given
  * address or public key
