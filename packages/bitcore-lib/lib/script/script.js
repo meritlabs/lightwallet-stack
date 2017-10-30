@@ -876,6 +876,18 @@ Script.buildSimpleVaultScript = function(tag) {
       .add(1)
       .add(Opcode.OP_CHECKOUTPUTSIG)
     .add(Opcode.OP_ENDIF);
+
+  return s;
+};
+
+Script.buildParameterizedP2SH = function(dest) {
+  var s = new Script();
+  var destBytes = "";
+
+  s.add(Opcode.OP_HASH160)
+    .add(destBytes.toBuffer())
+    .add(Opcode.OP_EQUALVERIFY);
+
   return s;
 };
 
