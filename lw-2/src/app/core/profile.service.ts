@@ -117,7 +117,6 @@ export class ProfileService {
       wallet.copayerId = wallet.credentials.copayerId;
       wallet.m = wallet.credentials.m;
       wallet.n = wallet.credentials.n;
-      wallet.coin = wallet.credentials.coin;
 
       this.updateWalletSettings(wallet);
       this.wallets[walletId] = wallet;
@@ -460,7 +459,6 @@ export class ProfileService {
       walletClient.importFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
         account: opts.account || 0,
         derivationStrategy: opts.derivationStrategy || 'BIP44',
-        coin: opts.coin
       }, (err: any) => {
         if (err) {
 
@@ -560,12 +558,6 @@ export class ProfileService {
     opts = opts || {};
 
     let ret = _.values(this.wallets);
-
-    if (opts.coin) {
-      ret = _.filter(ret, (x: any) => {
-        return (x.credentials.coin == opts.coin);
-      });
-    }
 
     if (opts.network) {
       ret = _.filter(ret, (x: any) => {
@@ -689,7 +681,7 @@ export class ProfileService {
           x.txid = x.data ? x.data.txid : null;
           x.types = [x.type];
 
-          if (x.data && x.data.amount) x.amountStr = this.txFormatService.formatAmountStr(x.wallet.coin, x.data.amount);
+          if (x.data && x.data.amount) x.amountStr = this.txFormatService.formatAmountStr(x.data.amount);
 
           x.action = function () {
             // TODO?

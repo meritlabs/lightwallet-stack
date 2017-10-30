@@ -11,8 +11,7 @@ import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 */
 @NgModule({
   declarations: [
-    WalletView,
-    TouchIdModule
+    WalletView
   ],
   imports: [
     IonicPageModule.forChild(WalletView)

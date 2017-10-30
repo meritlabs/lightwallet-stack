@@ -44,7 +44,7 @@
 
             <div class="wallet-info">
 
-                <span *ngIf="wallet.status.wallet?.singleAddress" translate>Auditable</span>
+                <span *ngIf="wallet.status && wallet.status.wallet?.singleAddress" translate>Auditable</span>
                 <span *ngIf="wallet.network != 'livenet'">
                     <img src="assets/img/icon-testnet-white.svg">
                     <img src="assets/img/icon-text-testnet-white.svg">
