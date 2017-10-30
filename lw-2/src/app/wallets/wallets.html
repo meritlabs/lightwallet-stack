@@ -47,7 +47,7 @@
             <p>
                 <span *ngIf="!wallet.isComplete()" class="assertive" translate>Incomplete</span>
                 <span *ngIf="wallet.isComplete()">
-                    <span *ngIf="!wallet.balanceHidden">
+                    <span *ngIf="!wallet.balanceHidden && wallet.status">
                         {{wallet.status.totalBalanceStr ? wallet.status.totalBalanceStr : ( wallet.cachedBalance ? wallet.cachedBalance   + (wallet.cachedBalanceUpdatedOn ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn  * 1000 | amTimeAgo) : '') : ''  ) }}
                     </span>
                     <span *ngIf="wallet.balanceHidden" translate>
@@ -56,7 +56,7 @@
                     <span *ngIf="wallet.n > 1">
                         {{wallet.m}}-of-{{wallet.n}}
                     </span>
-                    <ion-icon *ngIf="!wallet.balanceHidden && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
+                    <ion-icon *ngIf="wallet.status && !wallet.balanceHidden && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
                     name="timer-outline"></ion-icon>
 
                     <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>

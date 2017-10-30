@@ -45,14 +45,16 @@ export class UnlockView {
           /** todo store wallet */
 
           this.app.getRootNav().setRoot('TransactView');
+          resolve(wallet);
         }).catch((err) => {
           loader.dismiss();
           this.unlockState = 'fail';
           this.toastCtrl.create({ message: err, cssClass: ToastConfig.CLASS_ERROR }).present();
+          reject(err);
         });
       }
-
     });
+    
   }
 
 }
