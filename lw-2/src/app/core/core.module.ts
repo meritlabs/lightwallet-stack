@@ -15,7 +15,6 @@ import { ProfileService } from 'merit/core/profile.service';
 import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { AppService } from 'merit/core/app-settings.service';
-import { ConfigService } from 'merit/shared/config.service';
 import { TransactModule } from 'merit/transact/transact.module';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
@@ -24,8 +23,13 @@ import { TouchID } from '@ionic-native/touch-id';
 import { PopupService } from 'merit/core/popup.service';
 import { SpinnerService } from 'merit/core/spinner.service';
 
-
 import { MomentModule } from 'angular2-moment';
+
+
+import { ConfigService } from 'merit/shared/config.service';
+import {ConfigServiceMock} from "merit/shared/config.service.mock";
+import {ProfileServiceMock} from "./profile.service.mock";
+import {TxFormatServiceMock} from "../transact/tx-format.sevice.mock";
 
 /* 
   The core module exists to make commonly used singleton services available 
@@ -67,15 +71,23 @@ export function createTranslateLoader(http: Http) {
         },
         BwcError,
         PlatformService,
-        ProfileService,
+
+        {
+          provide: ProfileService,
+          useClass: ProfileServiceMock
+        },
+
         {
           provide: LanguageService,
             deps: [TranslateService],
             multi: false
         },
-        TxFormatService,
+        {
+          provide: TxFormatService,
+          useClass: TxFormatServiceMock
+        },
         AppService,
-        ConfigService,
+        {provide: ConfigService, useClass: ConfigServiceMock},
         {
             provide: TouchIdService,
             deps: [TouchID],

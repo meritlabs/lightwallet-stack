@@ -11,8 +11,10 @@ export class RateServiceMock  {
     this.logger.warn("Using mock service: RateServiceMock");
   }
 
+
+
   // todo how to use chain parameter?
-  public fromFiat(meritAmount:number, currencyCode:string, chain:string):Promise<number> {
+  fromFiat(meritAmount:number, currencyCode:string, chain:string):Promise<number> {
     return new Promise((resolve, reject) => {
       resolve(123.5423489723049823);
     });

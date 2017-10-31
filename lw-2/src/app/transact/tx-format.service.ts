@@ -175,40 +175,44 @@ export class TxFormatService {
     return txps;
   };
 
-  parseAmount(coin: string, amount: any, currency: string) {
-    let settings = this.config.get()['wallet']['settings']; // TODO
+  parseAmount(coin: string, amount: any, currency: string):Promise<string> {
 
-    var satToBtc = 1 / 100000000;
-    var unitToSatoshi = settings.unitToSatoshi;
-    var amountUnitStr;
-    var amountSat;
-    var alternativeIsoCode = settings.alternativeIsoCode;
+    return new Promise((resolve, reject) => {
+      let settings = this.config.get()['wallet']['settings']; // TODO
 
-    // If fiat currency
-    if (currency != 'BCH' && currency != 'BTC' && currency != 'sat') {
-      amountUnitStr = new FiatAmount(amount) + ' ' + currency;
-      amountSat = this.rate.fromFiat(amount, currency, coin).toFixed(0);
-    } else if (currency == 'sat') {
-      amountSat = amount;
-      amountUnitStr = this.formatAmountStr(coin, amountSat);
-      // convert sat to BTC or BCH
-      amount = (amountSat * satToBtc).toFixed(8);
-      currency = (coin).toUpperCase();
-    } else {
-      amountSat = parseInt((amount * unitToSatoshi).toFixed(0));
-      amountUnitStr = this.formatAmountStr(coin, amountSat);
-      // convert unit to BTC or BCH
-      amount = (amountSat * satToBtc).toFixed(8);
-      currency = (coin).toUpperCase();
-    }
+      var satToBtc = 1 / 100000000;
+      var unitToSatoshi = settings.unitToSatoshi;
+      var amountUnitStr;
+      var amountSat;
+      var alternativeIsoCode = settings.alternativeIsoCode;
 
-    return {
-      amount: amount,
-      currency: currency,
-      alternativeIsoCode: alternativeIsoCode,
-      amountSat: amountSat,
-      amountUnitStr: amountUnitStr
-    };
+      // If fiat currency
+      if (currency != 'BCH' && currency != 'BTC' && currency != 'sat') {
+        amountUnitStr = new FiatAmount(amount) + ' ' + currency;
+        amountSat = this.rate.fromFiat(amount, currency, coin).toFixed(0);
+      } else if (currency == 'sat') {
+        amountSat = amount;
+        amountUnitStr = this.formatAmountStr(coin, amountSat);
+        // convert sat to BTC or BCH
+        amount = (amountSat * satToBtc).toFixed(8);
+        currency = (coin).toUpperCase();
+      } else {
+        amountSat = parseInt((amount * unitToSatoshi).toFixed(0));
+        amountUnitStr = this.formatAmountStr(coin, amountSat);
+        // convert unit to BTC or BCH
+        amount = (amountSat * satToBtc).toFixed(8);
+        currency = (coin).toUpperCase();
+      }
+
+      resolve({
+        amount: amount,
+        currency: currency,
+        alternativeIsoCode: alternativeIsoCode,
+        amountSat: amountSat,
+        amountUnitStr: amountUnitStr
+      });
+    });
+
   };
 
   satToUnit(amount: any) {
