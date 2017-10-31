@@ -282,6 +282,7 @@ export class WalletService {
             processPendingTxps(status);
 
             this.logger.debug('Got Wallet Status for:' + wallet.credentials.walletName);
+            this.logger.debug(status);
 
             cacheStatus(status);
 
@@ -289,13 +290,15 @@ export class WalletService {
 
             return resolve(status);
           }).catch((err) => {
+            this.logger.error("Could not get the status!");
+            this.logger.error(err);
             return reject(err);
           });
 
         });
       };
 
-      _getStatus(walletStatusHash(null), 0);
+      return _getStatus(walletStatusHash(null), 0);
 
     });
   }

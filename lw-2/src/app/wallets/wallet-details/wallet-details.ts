@@ -18,6 +18,9 @@ export class WalletDetailsView {
     public navCtrl: NavController,
     public navParams: NavParams
   ) {
+    // We can assume that the wallet data has already been fetched and 
+    // passed in from the wallets (list) view.  This enables us to keep
+    // things fast and smooth.  We can refresh as needed.
     this.wallet = this.navParams.get('wallet');
     console.log("Inside the wallet-details view.");
     console.log(this.wallet);
@@ -29,7 +32,8 @@ export class WalletDetailsView {
 
   ionViewDidLoad() {
     console.log("Wallet-Detail View Did Load.");
-    //profileService.getWallet();
+    // TODO: Refactor this to a promise..
+    this.wallet = profileService.getWallet();
     console.log(this.wallet);
     //do something here
   }
