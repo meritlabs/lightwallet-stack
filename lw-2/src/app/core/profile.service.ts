@@ -37,6 +37,7 @@ export class ProfileService {
     private languageService: LanguageService,
     private txFormatService: TxFormatService
   ) {
+    console.log("Hello ProfileService!");
     this.throttledBwsEvent = _.throttle((n, wallet) => {
       this.newBwsEvent(n, wallet);
     }, 10000);
@@ -556,7 +557,8 @@ export class ProfileService {
     if (opts && !_.isObject(opts)) throw "bad argument";
 
     opts = opts || {};
-
+    console.log("Getting wallets");
+    console.log(this.wallets);
     let ret = _.values(this.wallets);
 
     if (opts.network) {

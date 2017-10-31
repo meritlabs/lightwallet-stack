@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { WalletView } from 'merit/settings/wallet/wallet';
+import { WalletDetailsView } from 'merit/wallets/wallet-details/wallet-details';
 import { TouchIdModule } from 'merit/shared/touch-id/touch-id.module';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { PopupService } from 'merit/core/popup.service';
@@ -11,13 +11,13 @@ import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 */
 @NgModule({
   declarations: [
-    WalletView
+    WalletDetailsView
   ],
   imports: [
-    IonicPageModule.forChild(WalletView)
+    IonicPageModule.forChild(WalletDetailsView)
   ],
   providers: [
     MnemonicService
   ]
 })
-export class WalletSettingsModule {}
+export class WalletDetailsModule {}

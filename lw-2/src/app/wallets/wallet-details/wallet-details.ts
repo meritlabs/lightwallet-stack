@@ -4,13 +4,13 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 @IonicPage({
   segment: 'wallet/:walletId',
-  defaultHistory: ['ProfileView']
+  defaultHistory: ['WalletsView']
 })
 @Component({
   selector: 'view-wallet',
   templateUrl: 'wallet.html',
 })
-export class WalletView {
+export class WalletDetailsView {
 
   public wallet:any;
 
@@ -18,7 +18,9 @@ export class WalletView {
     public navCtrl: NavController,
     public navParams: NavParams
   ) {
-      this.wallet = this.navParams.get('wallet');
+    this.wallet = this.navParams.get('wallet');
+    console.log("Inside the wallet-details view.");
+    console.log(this.wallet);
   }
 
   ionViewWillLeave() {
@@ -26,6 +28,8 @@ export class WalletView {
   }
 
   ionViewDidLoad() {
+    console.log("Wallet-Detail View Did Load.");
+    //profileService.getWallet();
     console.log(this.wallet);
     //do something here
   }
