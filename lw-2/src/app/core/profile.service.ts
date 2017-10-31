@@ -287,6 +287,78 @@ export class ProfileService {
     }, delay);
   }
 
+  /* 
+    Profile-related Methods
+  */ 
+  public loadAndBindProfile(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.persistenceService.getProfile().then((profile: any) => {
+
+        if (!profile) {
+          return resolve();
+        }
+        this.profile = new Profile();
+        this.profile = this.profile.fromObj(profile);
+        // Deprecated: storageService.tryToMigrate
+        this.logger.debug('Profile read');
+        this.bindProfile(this.profile).then(() => {
+          return resolve(this.profile);
+        }).catch((err: any) => {
+          return reject(err);
+        });
+      }).catch((err: any) => {
+        //$rootScope.$emit('Local/DeviceError', err); TODO
+        return reject(err);
+      });
+    });
+  }
+
+  public bindProfile(profile: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let config = this.configService.get();
+
+      let bindWallets = (): Promise<any> => {
+        return new Promise((resolve, reject) => {
+
+          let l = profile.credentials.length;
+          let i = 0;
+          let totalBound = 0;
+
+          if (!l) {
+            return resolve();
+          }
+
+          _.each(profile.credentials, (credentials) => {
+            this.bindWallet(credentials).then((bound: number) => {
+              i++;
+              totalBound += bound;
+              if (i == l) {
+                this.logger.info('Bound ' + totalBound + ' out of ' + l + ' wallets');
+                return resolve();
+              }
+            }).catch((err) => {
+              return reject(err);
+            });
+          });
+        });
+      };
+
+      bindWallets().then(() => {
+        this.isDisclaimerAccepted().then((accepted) => {
+          if (accepted) {
+            return resolve();
+          } else {
+            return reject(new Error('NONAGREEDDISCLAIMER: Non agreed disclaimer'));
+          }
+        }).catch(() => {
+          return reject("Could not query disclaimer!");
+        });
+      }).catch((err: any) => {
+        return reject(err);
+      });
+    });
+  }
+
   public storeProfileIfDirty(): void {
     if (this.profile.dirty) {
       this.persistenceService.storeProfile(this.profile).then((err: any) => {
@@ -298,6 +370,23 @@ export class ProfileService {
     };
   }
 
+  public isDisclaimerAccepted(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+
+      let disclaimerAccepted = this.profile && this.profile.disclaimerAccepted;
+      if (disclaimerAccepted) {
+        return resolve(true);
+      }
+      
+      resolve(false);
+    });
+  }
+
+
+  /* 
+    Wallet-related Methods
+  */ 
+  
   public importWallet(str: string, opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let walletClient = this.bwcService.getClient(null, opts);

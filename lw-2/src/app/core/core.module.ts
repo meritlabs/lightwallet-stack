@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpModule, Http } from '@angular/http';
 
@@ -23,6 +23,10 @@ import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { TouchID } from '@ionic-native/touch-id';
 import { PopupService } from 'merit/core/popup.service';
 import { SpinnerService } from 'merit/core/spinner.service';
+import { TransactView } from 'merit/transact/transact';
+import { OnboardingView } from 'merit/onboard/onboarding.view';
+
+
 
 
 import { MomentModule } from 'angular2-moment';
@@ -53,7 +57,8 @@ export function createTranslateLoader(http: Http) {
           })        
     ],
     exports: [],
-    declarations: [],
+    declarations: [
+    ],
     providers: [
         Logger,
         StatusBar,
@@ -69,11 +74,7 @@ export function createTranslateLoader(http: Http) {
         BwcError,
         PlatformService,
         ProfileService,
-        {
-          provide: LanguageService,
-            deps: [TranslateService],
-            multi: false
-        },
+        LanguageService,
         TxFormatService,
         AppService,
         ConfigService,
@@ -82,6 +83,12 @@ export function createTranslateLoader(http: Http) {
             deps: [TouchID],
             multi: false
         },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: (app: AppService) => () => app.load(),
+            deps: [AppService, LanguageService],
+            multi: true
+          },
         PopupService,
         SpinnerService
     ]
