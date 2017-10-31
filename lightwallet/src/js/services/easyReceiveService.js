@@ -153,10 +153,7 @@ angular.module('copayApp.services')
         }, function(err, txid) {
           if (err) return cb(err);
           return storageService.deletePendingEasyReceipt(function(err) {
-            if (err) return cb(err);
-            storageService.storeDeepLinkHandled(receipt.deepLinkURL, function(err2) {
-              cb(null, destinationAddress, txid);
-            });
+            cb(null, destinationAddress, txid);
           });
         });
       });

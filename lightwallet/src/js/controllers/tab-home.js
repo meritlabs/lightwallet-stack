@@ -111,7 +111,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
     var getPasswordPendingEasyReceipt = function (receipt, network) {
       network = network || "testnet";
       popupService.showPrompt(
-      "You've got Merit from " + receipt.senderName + "!",
+        "You've got Merit from " + receipt.senderName + "!",
         "Enter the Password",
         {ok:"Validate", cancel: "Ignore"},
         function(pass){

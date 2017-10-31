@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.services').factory('deepLinkService', function ($ionicPlatform, platformInfo, easyReceiveService, storageService, $state, $log, $timeout, $rootScope) {
+angular.module('copayApp.services').factory('deepLinkService', function ($ionicPlatform, platformInfo, easyReceiveService, $state, $log, $timeout, $rootScope) {
   var deeplink = {};
 
   $ionicPlatform.ready(function () {
@@ -31,22 +31,6 @@ angular.module('copayApp.services').factory('deepLinkService', function ($ionicP
       if (data['+clicked_branch_link']) {
         // We have a branch deeplink on our hands.  Let's parse relevant easySend params.
         $log.debug('Deep Link Data:' + JSON.stringify(data));
-
-        var alreadyHandled = false;
-        storageService.getDeepLinkHandled(data['~referring_link'], function (err, link) {
-          if (err) {
-            console.log(err);
-            return;
-          }
-          if (!id || link['handled']) {
-            console.log('Deep link not yet handled');
-            return;
-          }
-          console.log('Deep link has already been handled');
-          alreadyHandled = true;
-        });
-
-        if (alreadyHandled) return;
 
         // We have a long timeout below because the app is still initializing, which takes time.
         easyReceiveService.validateAndSaveParams(data, function (err, easyReceipt) {
