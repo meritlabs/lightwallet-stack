@@ -172,6 +172,22 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       });
     };
 
+    // Handle the pending easyReceipt.
+    $scope.handlePendingEasyReceipt = function (err, receipt) {
+      if (lodash.isEmpty(receipt)) {
+        $log.debug("Unable to load pending easyReceipt.");
+      } else {
+        $log.debug("Loading pending easyReceipt.", receipt);
+        popupService.showConfirm("You've got Merit!", "Someone sent you Merit", "I'll Take It", "Nah", function(ok, cancel){
+          if (ok) {
+            easyReceiveAcceptanceHandler(receipt);
+          } else {
+            easyReceiveRejectionHandler(receipt);
+          }
+        });
+      }
+    };
+
     $scope.$on("$ionicView.beforeEnter", function(event, data) {
       if (!$scope.homeTip) {
         storageService.getHomeTipAccepted(function(error, value) {
