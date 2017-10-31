@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ContactsService } from "./../../shared/contacts.service";
+import { ContactsService } from "merit/shared/contacts.service";
 
 
 @IonicPage({

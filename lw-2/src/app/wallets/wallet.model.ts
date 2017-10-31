@@ -2,7 +2,7 @@ export class Wallet {
 
   id:string;
   name:string;
-  status:Object;
+  status:any;
   balanceHidden:boolean;
   color:string;
   locked:boolean;

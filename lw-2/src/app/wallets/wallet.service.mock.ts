@@ -12,7 +12,7 @@ export class WalletServiceMock {
   ) {
     this.logger.warn("Using mock service! WalletServiceMock");
   }
-  public createDefaultWallet(): Promise<any> {
+  public createDefaultWallet(unlockCode:string): Promise<any> {
     return new Promise((resolve, reject) => {
         resolve();
     });
@@ -24,7 +24,7 @@ export class WalletServiceMock {
     });
   }
 
-  getWalletAnv(wallet:Wallet):Promise<number> {
+  getWalletAnv(wallet:Wallet):Promise<any> {
     return new Promise((resolve, reject) => {
       resolve(
         (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0

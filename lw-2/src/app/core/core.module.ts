@@ -61,40 +61,40 @@ export function createTranslateLoader(http: Http) {
         Logger,
         StatusBar,
         SplashScreen,
-        Logger,
         BwcService,
+        BwcError,
         {
             provide: PersistenceService,
             useFactory: persistenceServiceFactory,
             deps: [PlatformService, Logger],
             multi: false
         },
-        BwcError,
         PlatformService,
-
         {
           provide: ProfileService,
           useClass: ProfileServiceMock
         },
-
-        {
-          provide: LanguageService,
-            deps: [TranslateService],
-            multi: false
-        },
+        //{
+        //  provide: LanguageService,
+        //    deps: [TranslateService],
+        //    multi: false
+        //},
         {
           provide: TxFormatService,
           useClass: TxFormatServiceMock
         },
         AppService,
-        {provide: ConfigService, useClass: ConfigServiceMock},
         {
-            provide: TouchIdService,
-            deps: [TouchID],
-            multi: false
-        },
-        PopupService,
-        SpinnerService
+          provide: ConfigService,
+          useClass: ConfigServiceMock
+         },
+        //{
+        //    provide: TouchIdService,
+        //    deps: [TouchID],
+        //    multi: false
+        //},
+        //PopupService,
+        //SpinnerService
     ]
 })
 

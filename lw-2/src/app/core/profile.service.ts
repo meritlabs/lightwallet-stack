@@ -526,7 +526,7 @@ export class ProfileService {
     });
   }
 
-  public getWallets(opts?: any): Promise<Array> {
+  public getWallets(opts?: any): Promise<any> {
 
     return new Promise((resolve, reject) => {
 
@@ -621,7 +621,8 @@ export class ProfileService {
       let w = this.getWallets();
       if (_.isEmpty(w)) return resolve();
 
-      let l = w.length;
+      //let l = w.length;
+      let l = 1; //temp!!
       let j = 0;
       let notifications = [];
 

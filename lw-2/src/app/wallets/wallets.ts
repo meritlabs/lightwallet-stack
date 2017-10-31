@@ -65,7 +65,7 @@ export class WalletsView {
   //}
 
 
-  private getWallets():Promise<Array> {
+  private getWallets():Promise<Array<Wallet>> {
     if (!this.wallets) {
       this.wallets = this.profileService.getWallets();
     }
@@ -174,7 +174,8 @@ export class WalletsView {
       let forceNewAddress = false;
       this.walletService.getAddress(wallet, forceNewAddress).then((address) => {
 
-        this.easyReceiveService.acceptEasyReceipt(wallet, receipt, input, address).catch((err) => {
+        let input = 1;
+        this.easyReceiveService.acceptEasyReceipt(receipt, wallet , input, address).catch((err) => {
           this.toastCtrl.create({
             message: err,
             cssClass: ToastConfig.CLASS_ERROR
@@ -253,7 +254,7 @@ export class WalletsView {
     this.navCtrl.push('ImportView');
   }
 
-  openTransactionDetails(transaction:Transaction) {
+  openTransactionDetails(transaction) {
     this.navCtrl.push('TransactionView', {transaction: transaction});
   }
 

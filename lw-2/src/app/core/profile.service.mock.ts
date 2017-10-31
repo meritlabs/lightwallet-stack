@@ -4,17 +4,19 @@ import {Profile} from "./profile.model";
 import {Wallet} from "merit/wallets/wallet.model";
 import {WalletMock} from "merit/wallets/wallet.model.mock";
 import {Logger} from "merit/core/logger";
+import {BwcService} from "./bwc.service";
 
 @Injectable()
 export class ProfileServiceMock  {
 
   constructor(
-    private logger:Logger
+    private logger:Logger,
+    private bwcService:BwcService
   ) {
     this.logger.warn("Using service mock! ProfileServiceMock");
   }
 
-  getWallets():Promise<Array> {
+  getWallets():Promise<Array<Wallet>> {
 
     return new Promise((rs,rj) => {
       rs([

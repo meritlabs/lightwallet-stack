@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { FeedbackView } from 'merit/settings/feedback/feedback';
+import { FeedbackView } from 'merit/feedback/feedback';
 
 @NgModule({
   declarations: [

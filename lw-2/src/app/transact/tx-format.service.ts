@@ -175,7 +175,7 @@ export class TxFormatService {
     return txps;
   };
 
-  parseAmount(coin: string, amount: any, currency: string):Promise<string> {
+  parseAmount(coin: string, amount: any, currency: string):Promise<any> {
 
     return new Promise((resolve, reject) => {
       let settings = this.config.get()['wallet']['settings']; // TODO
