@@ -52,7 +52,7 @@ export class WalletsView {
     if (!wallet.isComplete) {
       this.navCtrl.push('CopayersView')
     } else {
-      this.navCtrl.push('WalletView', {walletId: wallet.id, wallet: wallet});
+      this.navCtrl.push('WalletDetailsView', {walletId: wallet.id, wallet: wallet});
     }
   }
 
@@ -67,6 +67,8 @@ export class WalletsView {
   private updateAllWallets(): Promise<Array<Wallet>> {
     return new Promise((resolve, reject) => {
       let wallets = this.profileService.getWallets();
+      console.log("Just got wallets");
+      console.log(wallets);
       _.each(wallets, (wallet) => {
         this.walletService.getStatus(wallet).then((status) => {
           wallet.status = status;
