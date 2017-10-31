@@ -75,23 +75,24 @@ export class WalletsView {
     //return new Promise((resolve, reject) => {
       let wallets = this.profileService.getWallets();
       //var updatedWallets:Array<Wallet> = []; 
-
-      Promise.map(wallets, (wallet) => {
-        this.walletService.getStatus(wallet).then((status) => {
-          wallet.status = status;
-        });
-        return wallet;
-      }, {concurrency: 3}).then((upstatuses) => {
+      //let ws = this.walletService;
+      Promise.map(wallets, function(wallet) {
+        console.log("What is the wallet?");
+        console.log(wallet);
+        this.walletService.getStatus(wallet).then( function(status) {
+          //wallet.status = status;
+          console.log('stateezie');
+          console.log(status);
+          return status;
+      }).then(function (upstatuses) {
         console.log("Let's update the wallets with: ");
         console.log(upstatuses);
         this.wallets = upstatuses;
-      }, (updatedWallets) => {
-        console.log("I think we got an error: ");
-        console.log(updatedWallets);
       }).catch((err) => {
-        console.log("Bamboozled!!");
-        console.log(err);
+        console.log("Hello slippery donkey");
       });
+
+    });
 
       // this.logger.warn("Just got wallets");
       // this.logger.warn(wallets);
