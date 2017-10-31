@@ -59,7 +59,7 @@ export class AppService {
     return new Promise((resolve, reject) => {
       this.config.load().then(() => {
         this.language.load();
-        this.touchid.init();
+        //this.touchid.init();
         this.getInfo().subscribe((info) => {
           this.info = info;
           resolve();
