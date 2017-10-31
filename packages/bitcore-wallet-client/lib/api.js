@@ -816,11 +816,22 @@ API.prototype.buildVaultCreationTransaction = function(input, opts) {
 
   tx.addInput(
     new Bitcore.Transaction.Input.PayToScriptHashInput({
+      output: Bitcore.Transaction.Output.fromObject({
+        script: p2shScript,
+        micros: 0
+      }),
+      prevTxId: input.txn.txid,
+      outputIndex: input.txn.index,
       script: input.script
     }, input.script, p2shScript)
   );
 
   tx.fee(fee);
+
+  var sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, null, 0, input.script);
+  var inputScript = Bitcore.Script.buildParameterizedP2SH('');
+
+  tx.inputs[0].setScript(inputScript);
 
   return tx;
 };
