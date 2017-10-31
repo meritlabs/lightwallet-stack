@@ -16,6 +16,7 @@ import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 
 import * as _ from 'lodash';
+import {Wallet} from "./wallet.model";
 
 
 /* TODO LIST:
@@ -311,7 +312,7 @@ export class WalletService {
     });
   }
 
-  private getAddress(wallet: any, forceNew: boolean): Promise<any> {
+  public getAddress(wallet: any, forceNew: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       this.persistenceService.getLastAddress(wallet.id).then((addr) => {
         if (!forceNew && addr) return resolve(addr);
@@ -1459,6 +1460,15 @@ export class WalletService {
         }
       }
       return resolve(walletClient);
+    });
+  }
+
+  // todo its a mock now!!
+  getWalletAnv(wallet:Wallet):Promise<number> {
+    return new Promise((resolve, reject) => {
+      resolve(
+       (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
+      )
     });
   }
   

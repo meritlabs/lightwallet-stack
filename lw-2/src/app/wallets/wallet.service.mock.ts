@@ -24,4 +24,24 @@ export class WalletServiceMock {
     });
   }
 
+  getWalletAnv(wallet:Wallet):Promise<number> {
+    return new Promise((resolve, reject) => {
+      resolve(
+        (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
+      )
+    });
+  }
+
+  public getAddress(wallet: any, forceNew: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      resolve([]);
+    });
+  }
+
+  public getStatus(wallet:any, opts:any):Promise<any> {
+    return new Promise((resolve, reject) => {
+      resolve({totalBalanceStr: '0 bits', totalBalanceAlternative: '0.0', alternativeIsoCode: 'USD', totalBalanceMicros: 0, spendableAmount: 0});
+    })
+  }
+
 }
