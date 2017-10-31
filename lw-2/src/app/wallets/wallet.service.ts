@@ -1061,7 +1061,7 @@ export class WalletService {
     });
   }
 
-  public createDefaultWallet(): Promise<any> {
+  public createDefaultWallet(unlockCode:string): Promise<any> {
     return new Promise((resolve, reject) => {
       var opts: any = {};
       opts.m = 1;

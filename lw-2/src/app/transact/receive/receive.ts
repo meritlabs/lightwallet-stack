@@ -15,8 +15,8 @@ export class ReceiveView {
   public address: string;
   public qrAddress: string;
 
-  public wallets:Array<Wallet>;
-  public wallet:Wallet;
+  public wallets;
+  public wallet;
 
   constructor(
     public navCtrl: NavController,
