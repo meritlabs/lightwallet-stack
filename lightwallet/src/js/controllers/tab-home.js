@@ -89,9 +89,17 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       );
     };
 
+    var easyReceiveIgnoreHandler = function () {
+      easyReceiveService.deletePendingEasyReceipt(function(err) {
+        if (err) {
+          console.log('Error ignoring easyReceipt.' + err);
+        }
+      });
+    };
+
     var showGotMeritPrompt = function(input, receipt) {
       popupService.showConfirm(
-        "You've got " + input.txn.amount + " Merit!", "Someone sent you Merit", "I'll Take It", "Nah",
+        "You've got " + input.txn.amount + " Merit!", "Someone sent you Merit", "Accept", "Reject",
         function(ok){
           if (ok)
             easyReceiveAcceptanceHandler(receipt, input);
@@ -100,54 +108,24 @@ angular.module('copayApp.controllers').controller('tabHomeController',
         });
     }
 
-    // cordova and ionic prompt indexing starts at 1
-    var easyReceipButtons = ['Accept', 'Ignore', 'Reject'];
-    var ACCEPT_INDEX = easyReceipButtons.indexOf('Accept') + 1;
-    var IGNORE_INDEX = easyReceipButtons.indexOf('Ignore') + 1;
-    var REJECT_INDEX = easyReceipButtons.indexOf('Reject') + 1;
-
     var getPasswordPendingEasyReceipt = function (receipt, network) {
       network = network || "testnet";
       popupService.showPrompt(
-        "You've got Merit from " + receipt.senderName + " !",
+      "You've got Merit from " + receipt.senderName + "!",
         "Enter the Password",
-        {
-          inputType: 'password',
-          buttonLabels: easyReceipButtons
-        },
-        function(resp){
-          switch(resp.buttonIndex) {
-            case ACCEPT_INDEX:
-              if(resp.input1) {
-                easyReceiveService.validateEasyReceiptOnBlockchain(receipt, resp.input1, network,
-                  function(isValid, input) {
-                  if(isValid) {
-                    showGotMeritPrompt(input, receipt);
-                  } else {
-                    getPasswordPendingEasyReceipt(receipt, network);
-                  }
-                });
-              } else {
-                getPasswordPendingEasyReceipt(receipt, network);
-              }
-              break;
-            case IGNORE_INDEX:
-              easyReceiveRejectionHandler(receipt);
-              break;
-            case REJECT_INDEX:
-              if(resp.input1) {
-                easyReceiveService.validateEasyReceiptOnBlockchain(receipt, resp.input1, network,
-                  function(isValid, input) {
-                  if(isValid) {
-                    easyReceiveRejectionHandler(receipt, input);
-                  } else {
-                    getPasswordPendingEasyReceipt(receipt, network);
-                  }
-                });
-              } else {
-                getPasswordPendingEasyReceipt(receipt, network);
-              }
-              break;
+        {ok:"Validate", cancel: "Ignore"},
+        function(pass){
+          if(pass) {
+            easyReceiveService.validateEasyReceiptOnBlockchain(receipt, pass, network,
+              function(isValid, input) {
+                if(isValid) {
+                  showGotMeritPrompt(input, receipt);
+                } else {
+                  getPasswordPendingEasyReceipt(receipt, network);
+                }
+              });
+          } else {
+            easyReceiveIgnoreHandler(receipt);
           }
         });
     }
