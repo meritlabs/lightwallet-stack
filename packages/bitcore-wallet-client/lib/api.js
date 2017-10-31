@@ -27,6 +27,9 @@ var Package = require('../package.json');
 var Errors = require('./errors');
 
 var BASE_URL = 'http://localhost:3232/bws/api';
+var LIVENET = 'livenet';
+var TESTNET = 'testnet';
+var DEFAULT_NET = LIVENET;
 
 /**
  * @desc ClientAPI constructor.
@@ -280,14 +283,14 @@ API._signRequest = function(method, url, args, privKey) {
  * Seed from random
  *
  * @param {Object} opts
- * @param {String} opts.network - default 'livenet'
+ * @param {String} opts.network - default LIVENET
  */
 API.prototype.seedFromRandom = function(opts) {
   $.checkArgument(arguments.length <= 1, 'DEPRECATED: only 1 argument accepted.');
   $.checkArgument(_.isUndefined(opts) || _.isObject(opts), 'DEPRECATED: argument should be an options object.');
 
   opts = opts || {};
-  this.credentials = Credentials.create(opts.network || 'livenet');
+  this.credentials = Credentials.create(opts.network || LIVENET);
 };
 
 
@@ -366,7 +369,7 @@ API.prototype.validateKeyDerivation = function(opts, cb) {
  * Seed from random with mnemonic
  *
  * @param {Object} opts
- * @param {String} opts.network - default 'livenet'
+ * @param {String} opts.network - default LIVENET
  * @param {String} opts.passphrase
  * @param {Number} opts.language - default 'en'
  * @param {Number} opts.account - default 0
@@ -376,7 +379,7 @@ API.prototype.seedFromRandomWithMnemonic = function(opts) {
   $.checkArgument(_.isUndefined(opts) || _.isObject(opts), 'DEPRECATED: argument should be an options object.');
 
   opts = opts || {};
-  this.credentials = Credentials.createWithMnemonic(opts.network || 'livenet', opts.passphrase, opts.language || 'en', opts.account || 0);
+  this.credentials = Credentials.createWithMnemonic(opts.network || DEFAULT_NET, opts.passphrase, opts.language || 'en', opts.account || 0);
 };
 
 API.prototype.getMnemonic = function() {
@@ -413,7 +416,7 @@ API.prototype.seedFromExtendedPrivateKey = function(xPrivKey, opts) {
  *
  * @param {String} BIP39 words
  * @param {Object} opts
- * @param {String} opts.network - default 'livenet'
+ * @param {String} opts.network - default LIVENET
  * @param {String} opts.passphrase
  * @param {Number} opts.account - default 0
  * @param {String} opts.derivationStrategy - default 'BIP44'
@@ -422,7 +425,7 @@ API.prototype.seedFromMnemonic = function(words, opts) {
   $.checkArgument(_.isUndefined(opts) || _.isObject(opts), 'DEPRECATED: second argument should be an options object.');
 
   opts = opts || {};
-  this.credentials = Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
+  this.credentials = Credentials.fromMnemonic(opts.network || DEFAULT_NET, words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
 };
 
 /**
@@ -518,7 +521,7 @@ API.prototype._import = function(cb) {
  *
  * @param {String} BIP39 words
  * @param {Object} opts
- * @param {String} opts.network - default 'livenet'
+ * @param {String} opts.network - default LIVENET
  * @param {String} opts.passphrase
  * @param {Number} opts.account - default 0
  * @param {String} opts.derivationStrategy - default 'BIP44'
@@ -532,7 +535,7 @@ API.prototype.importFromMnemonic = function(words, opts, cb) {
   opts = opts || {};
 
   function derive(nonCompliantDerivation) {
-    return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, {
+    return Credentials.fromMnemonic(opts.network || DEFAULT_NET, words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, {
       nonCompliantDerivation: nonCompliantDerivation,
       entropySourcePath: opts.entropySourcePath,
     });
@@ -695,6 +698,42 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
 };
 
 /**
+ * Create an easySend script and create a transaction to the script address
+ *
+ * @param {Object}      opts
+ * @param {string}      opts.passphrase       - optional password to generate receiver's private key
+ * @param {number}      opts.timeout          - maximum depth transaction is redeemable by receiver
+ * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
+ * @param {Callback}    cb
+ */
+API.prototype.buildEasySendScript = function(opts, cb) {
+  opts = opts || {};
+
+  var privateKey = this.credentials.getDerivedXPrivKey(opts.walletPassword);
+  var network = opts.network || LIVENET;
+
+  // {key, secret}
+  var rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
+
+  var pubkeys = [
+    rcvPair.key.publicKey.toBuffer(),
+    privateKey.publicKey.toBuffer()
+  ];
+
+  var timeout = opts.timeout || 1008;
+  var script = Bitcore.Script.buildEasySendOut(pubkeys, timeout, network);
+
+  var result = {
+    receiverPubKey: rcvPair.key.publicKey,
+    script: script.toScriptHashOut(),
+    senderPubKey: privateKey.publicKey.toString(),
+    secret: rcvPair.secret.toString('hex')
+  };
+
+  cb(null, result);
+}
+
+/**
  * Creates a transaction to redeem an easy send transaction. The input param
  * must contain
  *    {
@@ -745,10 +784,10 @@ API.prototype.buildEasySendRedeemTransaction = function(input, destinationAddres
         script: input.script
       }, input.script, p2shScript));
 
-    tx.to(toAddress, amount)
-    tx.fee(fee)
+    tx.to(toAddress, amount);
+    tx.fee(fee);
 
-    var sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, null, 0, input.script)
+    var sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, null, 0, input.script);
     var inputScript = Bitcore.Script.buildEasySendIn(sig, input.script);
 
     tx.inputs[0].setScript(inputScript);
@@ -760,6 +799,31 @@ API.prototype.buildEasySendRedeemTransaction = function(input, destinationAddres
     log.error('Could not build transaction from private key', ex);
     return new Errors.COULD_NOT_BUILD_TRANSACTION;
   }
+  return tx;
+};
+
+/**
+ * Create vault transaction
+ */
+API.prototype.buildVaultCreationTransaction = function(input, opts) {
+  opts = opts || {};
+
+  var tx = new Bitcore.Transaction();
+
+  var fee = opts.fee || 10000;
+  var p2shScript = input.script.toScriptHashOut();
+  
+  var privateKey = this.credentials.getDerivedXPrivKey(opts.walletPassword);
+  var network = opts.network || DEFAULT_NET;
+
+  tx.addInput(
+    new Bitcore.Transaction.Input.PayToScriptHashInput({
+      script: input.script
+    }, input.script, p2shScript)
+  );
+
+  tx.fee(fee);
+
   return tx;
 };
 
@@ -1002,7 +1066,7 @@ API._buildSecret = function(walletId, walletPrivKey, network) {
   }
   var widHex = new Buffer(walletId.replace(/-/g, ''), 'hex');
   var widBase58 = new Bitcore.encoding.Base58(widHex).toString();
-  return _.padRight(widBase58, 22, '0') + walletPrivKey.toWIF() + (network == 'testnet' ? 'T' : 'L');
+  return _.padRight(widBase58, 22, '0') + walletPrivKey.toWIF() + (network == TESTNET ? 'T' : 'L');
 };
 
 API.parseSecret = function(secret) {
@@ -1031,7 +1095,7 @@ API.parseSecret = function(secret) {
     return {
       walletId: walletId,
       walletPrivKey: walletPrivKey,
-      network: networkChar == 'T' ? 'testnet' : 'livenet',
+      network: networkChar == 'T' ? TESTNET : LIVENET,
     };
   } catch (ex) {
     throw new Error('Invalid secret');
@@ -1280,16 +1344,16 @@ API.prototype.decryptPrivateKey = function(password) {
 /**
  * Get current fee levels for the specified network
  *
- * @param {string} network - 'livenet' (default) or 'testnet'
+ * @param {string} network - LIVENET (default) or TESTNET
  * @param {Callback} cb
  * @returns {Callback} cb - Returns error or an object with status information
  */
 API.prototype.getFeeLevels = function(network, cb) {
   var self = this;
 
-  $.checkArgument(network || _.includes(['livenet', 'testnet'], network));
+  $.checkArgument(network || _.includes([LIVENET, TESTNET], network));
 
-  self._doGetRequest('/v2/feelevels/?network=' + (network || 'livenet'), function(err, result) {
+  self._doGetRequest('/v1/feelevels/?network=' + (network || LIVENET), function(err, result) {
     if (err) return cb(err);
     return cb(err, result);
   });
@@ -1320,7 +1384,7 @@ API.prototype._checkKeyDerivation = function() {
  * @param {Number} m
  * @param {Number} n
  * @param {object} opts (optional: advanced options)
- * @param {string} opts.network[='livenet']
+ * @param {string} opts.network[=DEFAULT_NET]
  * @param {string} opts.singleAddress[=false] - The wallet will only ever have one address.
  * @param {string} opts.beacon - A required unlock code to enable this address on the network.
  * @param {String} opts.walletPrivKey - set a walletPrivKey (instead of random)
@@ -1336,8 +1400,8 @@ API.prototype.createWallet = function(walletName, copayerName, m, n, opts, cb) {
   if (opts) $.shouldBeObject(opts);
   opts = opts || {};
 
-  var network = opts.network || 'livenet';
-  if (!_.includes(['testnet', 'livenet'], network)) return cb(new Error('Invalid network'));
+  var network = opts.network || DEFAULT_NET;
+  if (!_.includes([TESTNET, LIVENET], network)) return cb(new Error('Invalid network'));
 
   if (!self.credentials) {
     log.info('Generating new keys');
@@ -2128,8 +2192,8 @@ API.signTxProposalFromAirGapped = function(key, txp, unencryptedPkr, m, n, opts)
   });
 
   if (key.slice(0, 4) === 'xprv' || key.slice(0, 4) === 'tprv') {
-    if (key.slice(0, 4) === 'xprv' && txp.network == 'testnet') throw new Error("testnet HD keys must start with tprv");
-    if (key.slice(0, 4) === 'tprv' && txp.network == 'livenet') throw new Error("livenet HD keys must start with xprv");
+    if (key.slice(0, 4) === 'xprv' && txp.network == TESTNET) throw new Error("testnet HD keys must start with tprv");
+    if (key.slice(0, 4) === 'tprv' && txp.network == LIVENET) throw new Error("livenet HD keys must start with xprv");
     newClient.seedFromExtendedPrivateKey(key, {
       'account': opts.account,
       'derivationStrategy': opts.derivationStrategy
