@@ -236,12 +236,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
   $scope.finish = function() {
     var _amount = evaluate(format($scope.amount));
 
-    if ($scope.sendMethod && $scope.sendMethod != 'address') {
-      $state.transitionTo('tabs.send.easysend', {
-        method: $scope.sendMethod,
-        recipient: $scope.sendMethod == 'sms' ? $scope.toPhoneNumber : $scope.toEmail
-      });
-    } else if ($scope.nextStep) {
+    if ($scope.nextStep) {
       $state.transitionTo($scope.nextStep, {
         id: _id,
         amount: $scope.useSendMax ? null : _amount,
@@ -251,6 +246,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
     } else {
       var amount = $scope.showAlternativeAmount ? fromFiat(_amount) : _amount;
       $state.transitionTo('tabs.send.confirm', {
+        sendMethod: $scope.sendMethod,
         recipientType: $scope.recipientType,
         toAmount: $scope.useSendMax ? null : (amount * unitToMicro).toFixed(0),
         toAddress: $scope.toAddress,
