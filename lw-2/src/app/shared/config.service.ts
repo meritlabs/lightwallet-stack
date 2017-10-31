@@ -5,6 +5,11 @@ import { PersistenceService } from 'merit/core/persistence.service';
 
 import * as _ from "lodash";
 
+/*
+  Need to think about how to name this optimally, given.. 
+  "AppService"
+*/ 
+
 interface Config {
   limits: {
     totalCopayers: number;
@@ -117,7 +122,7 @@ const configDefault: Config = {
 
   // Bitcore wallet service URL
   bws: {
-    url: 'https://bws.merit.me/bws/api'
+    url: 'http://localhost:3232/bws/api'
   },
 
   download: {

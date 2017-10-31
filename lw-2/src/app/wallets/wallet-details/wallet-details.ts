@@ -8,7 +8,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 @Component({
   selector: 'view-wallet',
-  templateUrl: 'wallet.html',
+  templateUrl: 'wallet-details.html',
 })
 export class WalletDetailsView {
 
