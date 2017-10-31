@@ -219,8 +219,8 @@ RpcClient.callspec = {
 
   // Merit RPC
   generatereferralcode: '',
-  unlockwallet: 'str',
-  unlockwalletwithaddress: 'str str',
+  unlockWallet: 'str',
+  unlockWalletWithAddress: 'str str',
   validatereferralcode: 'str',
   getInputForEasySend: 'str',
   getanv: 'str',

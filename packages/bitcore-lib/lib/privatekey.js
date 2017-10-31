@@ -149,8 +149,9 @@ PrivateKey._getNewBNForEasySend = function(optionalPassword){
   var secret;
   do {
     secret = Random.getRandomBuffer(16);
-    var mixedsecret = secret + optionalPassword;
-    var hash = Hash.sha256sha256(Buffer.from(mixedsecret));
+    var secretStr = secret.toString('binary');
+    var mixedsecret = secretStr + optionalPassword;
+    var hash = Hash.sha256sha256(Buffer.from(mixedsecret, 'binary'));
     bn = BN.fromBuffer(hash);
   } while (!PrivateKey._isValidBN(bn));
 
