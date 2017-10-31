@@ -2007,27 +2007,27 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
       if (checkRequired(output, ['toAddress', 'amount'])) {
         toAddress = new Bitcore.Address(output.toAddress);
       } else {
-        throw new ClientError('Argument missing in output #' + (i + 1) + '.');
+        return new ClientError('Argument missing in output #' + (i + 1) + '.');
       }
     } catch (ex) {
-      return cb(new ClientError('exception checking address: ' + ex));
+      return new ClientError('exception checking address: ' + ex);
     }
 
     if (toAddress.network != wallet.getNetworkName()) {
-      return cb(Errors.INCORRECT_ADDRESS_NETWORK);
+      return Errors.INCORRECT_ADDRESS_NETWORK;
     }
 
     if (!_.isNumber(output.amount) || _.isNaN(output.amount) || output.amount <= 0) {
-      return cb(new ClientError('Invalid amount'));
+      return new ClientError('Invalid amount');
     }
     if (output.amount < dustThreshold) {
-      return cb(Errors.DUST_AMOUNT);
+      return Errors.DUST_AMOUNT;
     }
 
     output.valid = true;
   }
 
-  return cb();
+  return null;
 };
 
 WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) {
@@ -2089,7 +2089,11 @@ WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) 
     },
     function(next) {
       if (opts.validateOutputs === false) return next();
-      self._validateOutputs(opts, wallet, next);
+      var validationError = self._validateOutputs(opts, wallet, next);
+      if (validationError) {
+        return next(validationError);
+      }
+      next();
     },
   ], cb);
 };
