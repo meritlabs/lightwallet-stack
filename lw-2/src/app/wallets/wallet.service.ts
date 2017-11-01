@@ -82,7 +82,7 @@ export class WalletService {
   }
 
   // TODO: Make async
-  getStatus(wallet: any, opts?: any): Promise<any> {
+  public getStatus(wallet: any, opts?: any): Promise<any> {
     return new Promise((resolve, reject) => {
       opts = opts || {};
       var walletId = wallet.id;
@@ -311,22 +311,8 @@ export class WalletService {
       });
     });
   }
-
-  // Check address
-  private isAddressUsed(wallet: any, byAddress: Array<any>): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.persistenceService.getLastAddress(wallet.id).then((addr) => {
-        let used = _.find(byAddress, {
-          address: addr
-        });
-        return resolve(used);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-  }
-
-  private getAddress(wallet: any, forceNew: boolean): Promise<any> {
+  
+  public getAddress(wallet: any, forceNew: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       this.persistenceService.getLastAddress(wallet.id).then((addr) => {
         if (!forceNew && addr) return resolve(addr);
@@ -348,6 +334,21 @@ export class WalletService {
       });
     });
   }
+
+  // Check address
+  private isAddressUsed(wallet: any, byAddress: Array<any>): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.persistenceService.getLastAddress(wallet.id).then((addr) => {
+        let used = _.find(byAddress, {
+          address: addr
+        });
+        return resolve(used);
+      }).catch((err) => {
+        return reject(err);
+      });
+    });
+  }
+
 
   private createAddress(wallet: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -806,7 +807,7 @@ export class WalletService {
     });
   }
 
-  signTx(wallet: any, txp: any, password: string): Promise<any> {
+  public signTx(wallet: any, txp: any, password: string): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!wallet || !txp)
         return reject('MISSING_PARAMETER');

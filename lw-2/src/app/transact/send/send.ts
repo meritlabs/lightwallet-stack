@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { Promise } from 'bluebird';
 
 import { Wallet } from 'merit/wallets/wallet.model';
 import { WalletService } from 'merit/wallets/wallet.service';
+import { AddressBookService } from 'merit/shared/address-book/address-book.service';
+import { PopupService } from 'merit/core/popup.service';
 import * as _ from 'lodash';
 
 @IonicPage()
@@ -12,6 +14,8 @@ import * as _ from 'lodash';
   templateUrl: 'send.html',
 })
 export class SendView {
+  @ViewChild(Content) content: Content;
+
   private walletsToTransfer: Array<any>; // Eventually array of wallets
   private showTransferCard: boolean;
   private wallets: Array<Wallet>;
@@ -19,13 +23,19 @@ export class SendView {
   private deviceContacts: Array<any>; // On your phone or mobile device.
   private currentContactsPage = 0;
   private showMoreContacts: boolean = false;
+  private filteredList: Array<any>;
+  private formData: { 
+    search: string
+  };
+  private searchFocus: boolean;
   public static readonly CONTACTS_SHOW_LIMIT = 10;
 
 
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private walletService: WalletService
+    private walletService: WalletService,
+    private popupService: PopupService
   ) {
 
   }
@@ -106,6 +116,101 @@ export class SendView {
         return item;
       }));
     });
-  }  
+  } 
+  
+  private initList():void {
+    this.filteredList = [];
+    this.content.resize();  
+    //TODO: Lifecycle tick if needed
+  }
 
+  private findMatchingContacts(list, term):Array<any> {
+    return _.filter(list, (item) => {
+      return _.includes(item.searchTerm.toLowerCase(), term.toLowerCase());
+    });
+  }
+
+  private contactWithSendMethod(contact, search) {
+    var obj = _.clone(contact);
+
+    var email = _.find(obj.emails, function(x:any) {
+      return _.includes(x.toLowerCase(), search.toLowerCase());
+    });
+    if (email) {
+      obj.email = email;
+      obj.phoneNumber = _.find(obj.phoneNumbers) || '';
+      obj.sendMethod = 'email';
+      return obj;
+    }
+
+    var phoneNumber = _.find(obj.phoneNumbers, function(x:any) {
+      return _.includes(x.toLowerCase(), search.toLowerCase());
+    });
+    if (phoneNumber) {
+      obj.phoneNumber = phoneNumber;
+      obj.email = _.find(obj.emails) || '';
+      obj.sendMethod = 'sms';
+      return obj;
+    }
+
+    // search matched name, default to sms?
+    obj.email = _.find(obj.emails) || '';
+    obj.phoneNumber = _.find(obj.phoneNumbers) || '';
+    obj.sendMethod = obj.phoneNumber ? 'sms' : 'email';
+    return obj;
+  }
+
+  private openScanner(): void {
+    this.navCtrl.parent.select(2);    
+  }
+ 
+  private showMore(): void {
+    this.currentContactsPage++;
+    this.updateWalletList();
+  }
+
+  private searchInFocus(): void {
+    this.searchFocus = true;
+  }
+
+  private searchBlurred(): void {
+    if (this.formData.search == null || this.formData.search.length == 0) {
+      this.searchFocus = false;
+    }
+  }
+
+  private findContact(search): any {
+    if (!search || search.length < 1) {
+      this.filteredList = [];
+      return;
+    }
+
+    var result = this.findMatchingContacts(this.originalContacts, search);
+    var deviceResult = this.findMatchingContacts(this.deviceContacts, search);
+
+    this.filteredList = result.concat(_.map(deviceResult, function(contact) {
+      return this.contactWithSendMethod(contact, search);
+    }));
+  }
+
+  private goToAmount(item) {
+    item.getAddress(function(err, addr) {
+      if (err) {
+        //Error is already formated
+        return this.popupService.showAlert(err);
+      }
+      if (addr) {
+        this.logger.debug('Got toAddress:' + addr + ' | ' + item.name);
+      }
+      return this.navCtrl.go('amount', {
+        recipientType: item.recipientType,
+        toAddress: addr,
+        toName: item.name,
+        toEmail: item.email,
+        toPhoneNumber: item.phoneNumber,
+        sendMethod: item.sendMethod,
+        toColor: item.color
+      })
+    });
+  }
 }
