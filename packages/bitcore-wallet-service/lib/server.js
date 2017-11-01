@@ -3478,5 +3478,16 @@ WalletService.prototype.referralTxConfirmationUnsubscribe = function(opts, cb) {
   self.storage.removeReferralTxConfirmationSub(self.copayerId, opts.codeHash, cb);
 };
 
+/**
+ * Vaulting
+ */
+WalletService.prototype.getVaults = function(opts, cb) {
+  return cb(null, []);
+};
+
+WalletService.prototype.createVault = function(opts, cb) {
+  return cb(null, {});
+}
+
 module.exports = WalletService;
 module.exports.ClientError = ClientError;
