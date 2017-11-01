@@ -165,9 +165,6 @@ angular.module('copayApp.services')
     };
 
     service.rejectEasyReceipt = function(wallet, receipt, input, cb) {
-      if(!input) {
-        return storageService.deletePendingEasyReceipt(cb);
-      }
       try {
         var senderAddress = bitcore.PublicKey
           .fromString(receipt.senderPublicKey, 'hex')
