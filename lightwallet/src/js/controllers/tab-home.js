@@ -248,7 +248,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
           if ($scope.recentTransactionsEnabled) getNotifications();
         }),
         $rootScope.$on('easyReceiveEvent', function(e, easyReceipt) {
-          $scope.handlePendingEasyReceipt(err, easyReceipt);
+          $scope.handlePendingEasyReceipt(e, easyReceipt);
         })
       ];
 
