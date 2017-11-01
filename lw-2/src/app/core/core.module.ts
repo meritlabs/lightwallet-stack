@@ -15,7 +15,6 @@ import { ProfileService } from 'merit/core/profile.service';
 import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { AppService } from 'merit/core/app-settings.service';
-import { ConfigService } from 'merit/shared/config.service';
 import { TransactModule } from 'merit/transact/transact.module';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
@@ -28,8 +27,13 @@ import { OnboardingView } from 'merit/onboard/onboarding.view';
 
 
 
-
 import { MomentModule } from 'angular2-moment';
+
+
+import { ConfigService } from 'merit/shared/config.service';
+import {ConfigServiceMock} from "merit/shared/config.service.mock";
+import {ProfileServiceMock} from "./profile.service.mock";
+import {TxFormatServiceMock} from "../transact/tx-format.sevice.mock";
 
 /* 
   The core module exists to make commonly used singleton services available 
@@ -63,15 +67,14 @@ export function createTranslateLoader(http: Http) {
         Logger,
         StatusBar,
         SplashScreen,
-        Logger,
         BwcService,
+        BwcError,
         {
             provide: PersistenceService,
             useFactory: persistenceServiceFactory,
             deps: [PlatformService, Logger],
             multi: false
         },
-        BwcError,
         PlatformService,
         ProfileService,
         LanguageService,
@@ -79,16 +82,11 @@ export function createTranslateLoader(http: Http) {
         AppService,
         ConfigService,
         {
-            provide: TouchIdService,
-            deps: [TouchID],
-            multi: false
-        },
-        {
             provide: APP_INITIALIZER,
             useFactory: (app: AppService) => () => app.load(),
             deps: [AppService, LanguageService],
             multi: true
-          },
+        },
         PopupService,
         SpinnerService
     ]

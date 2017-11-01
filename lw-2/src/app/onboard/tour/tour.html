@@ -11,7 +11,7 @@
 
 <ion-content fullscreen>
 
-    <ion-slides componentr="true" #slides>
+    <ion-slides pager="true" #slides>
 
         <ion-slide>
 
@@ -43,6 +43,9 @@
             </div>
             <div class="image"  translate>
                 <div class="illustration currency"></div>
+            </div>
+            <div class="text exchange-rate">
+                1 MRT = $ {{rateData.usdPerMerit|async|number:'1.0-3'}}
             </div>
             <div class="text" translate>
                 The exchange rate changes with the market.

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import * as BWC from  './../../lib/bwc';
+
+//import * as BWC from  './../../lib/bwc';
+let BWC = require('./../../lib/bwc');
 
 @Injectable()
 export class BwcService {

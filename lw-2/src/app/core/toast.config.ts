@@ -5,4 +5,4 @@ export class ToastConfig {
     static CLASS_ERROR = 'toast-error';
     static CLASS_MESSAGE = 'toast-message';
   
-  }
+}
