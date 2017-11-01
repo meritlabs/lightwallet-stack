@@ -5,10 +5,12 @@ import { ProfileService } from "merit/core/profile.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { Logger } from "merit/core/logger";
 import * as _ from "lodash";
-//import { Promise } from 'bluebird';
+import { Promise } from 'bluebird';
 
 /* 
-  Using bluebird promises!
+  Using bluebird promises! 
+  This gives us the ability to map over items and 
+  engage in async requests.
 */ 
 @IonicPage()
 @Component({

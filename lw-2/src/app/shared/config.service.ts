@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Logger } from 'merit/core/logger';
 import { Events } from 'ionic-angular';
+import { Promise } from 'bluebird';
+
 import { PersistenceService } from 'merit/core/persistence.service';
 
 import * as _ from "lodash";

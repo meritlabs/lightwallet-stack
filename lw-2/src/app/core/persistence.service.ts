@@ -8,6 +8,8 @@ import { PlatformService } from 'merit/core/platform.service';
 import { LocalStorage } from 'merit/core/storage/local-storage.service';
 import { FileStorage } from 'merit/core/storage/file-storage.service';
 import { RamStorage } from 'merit/core/storage/ram-storage.service';
+import { Promise } from 'bluebird';
+
 
 const Keys = {
   ADDRESS_BOOK: network => 'addressbook-' + network,

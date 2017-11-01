@@ -14,6 +14,7 @@ import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
+import { Promise } from 'bluebird';
 
 import * as _ from 'lodash';
 
@@ -44,6 +45,7 @@ export class WalletService {
   private SAFE_CONFIRMATIONS: number = 6;
 
   private errors: any = this.bwcService.getErrors();
+  
 
   constructor(
     private logger: Logger,
@@ -79,8 +81,8 @@ export class WalletService {
       wallet.cachedTxps.isValid = false;
   }
 
-  getStatus(wallet: any, opts?: any): Promise<any> {
-    return new Promise((resolve, reject) => {
+  // TODO: Make async
+  async getStatus(wallet: any, opts?: any) {
       opts = opts || {};
       var walletId = wallet.id;
 
@@ -145,20 +147,18 @@ export class WalletService {
       };
 
 
-      let get = (): Promise<any> => {
-        return new Promise((resolve, reject) => {
-          wallet.getStatus({
-            twoStep: true
-          }, (err, ret) => {
-            if (err) {
-              if (err instanceof this.errors.NOT_AUTHORIZED) {
-                return reject('WALLET_NOT_REGISTERED');
-              }
-              return reject(err);
+      let get = async () => {
+        wallet.getStatus({
+          twoStep: true
+        }, (err, ret) => {
+          if (err) {
+            if (err instanceof this.errors.NOT_AUTHORIZED) {
+              return 'WALLET_NOT_REGISTERED';
             }
-            return resolve(ret);
-          });
-        })
+            return err;
+          }
+          return ret;
+        });
       };
 
       let cacheBalance = (wallet: any, balance: any): void => {
@@ -300,7 +300,6 @@ export class WalletService {
 
       return _getStatus(walletStatusHash(null), 0);
 
-    });
   }
 
   // Check address
