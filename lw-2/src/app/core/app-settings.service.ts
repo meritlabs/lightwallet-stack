@@ -6,6 +6,8 @@ import 'rxjs/add/operator/map';
 import { LanguageService } from 'merit/core/language.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
+import { Promise } from 'bluebird';
+
 
 // TODO: Improve implementation
 interface App {

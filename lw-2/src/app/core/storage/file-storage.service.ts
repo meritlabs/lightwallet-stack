@@ -4,6 +4,8 @@ import * as _ from 'lodash';
 import { File, DirectoryEntry, FileEntry } from '@ionic-native/file';
 import { Platform } from 'ionic-angular';
 import { MeritStorage, KeyAlreadyExistsError } from 'merit/core/storage/storage.interface';
+import { Promise } from 'bluebird';
+
 
 @Injectable()
 export class FileStorage implements MeritStorage {

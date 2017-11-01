@@ -11,6 +11,8 @@ import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { Profile } from 'merit/core/profile.model';
 import { Wallet } from 'merit/wallets/wallet.model';
+import { Promise } from 'bluebird';
+
 
 /* 
   Historically, this acted as the API-Client
