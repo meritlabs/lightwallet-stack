@@ -5,7 +5,7 @@ import { ProfileService } from "merit/core/profile.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { Logger } from "merit/core/logger";
 import * as _ from "lodash";
-import { Promise } from 'bluebird';
+//import { Promise } from 'bluebird';
 
 /* 
   Using bluebird promises!
@@ -41,18 +41,11 @@ export class WalletsView {
     refresher.complete();
   }
 
-  ionViewDidLoad() {
+  async ionViewDidLoad() {
     this.logger.warn("Updating all the wallets.");
     
     // TODO: Show loader?
-    this.updateAllWallets();
-    // .then((updatedWallets) => {
-    //   this.logger.warn("Updated all the wallets.");
-    //   this.wallets = updatedWallets;
-    // }).catch((err) => {
-    //   this.logger.warn("Could not update wallets");
-    //   // TODO: Throw a toast?  
-    // }); 
+    this.wallets = await this.updateAllWallets();
   }
 
   openWallet(wallet) {
@@ -71,52 +64,13 @@ export class WalletsView {
     this.navCtrl.push('ImportView');
   }
 
-  private updateAllWallets(): void {
-    //return new Promise((resolve, reject) => {
-      let wallets = this.profileService.getWallets();
-      //var updatedWallets:Array<Wallet> = []; 
-      //let ws = this.walletService;
-      Promise.map(wallets, function(wallet) {
-        console.log("What is the wallet?");
-        console.log(wallet);
-        this.walletService.getStatus(wallet).then( function(status) {
-          //wallet.status = status;
-          console.log('stateezie');
-          console.log(status);
-          return status;
-      }).then(function (upstatuses) {
-        console.log("Let's update the wallets with: ");
-        console.log(upstatuses);
-        this.wallets = upstatuses;
-      }).catch((err) => {
-        console.log("Hello slippery donkey");
-      });
+  private async updateAllWallets() {
+    let wallets = await this.profileService.getWallets();
+    return await Promise.all(_.map(wallets, async (wallet) => {
+      wallet.status = await this.walletService.getStatus(wallet);  
+      return wallet;
+    }));
 
-    });
-
-      // this.logger.warn("Just got wallets");
-      // this.logger.warn(wallets);
-      // _.forOwn(wallets, (wallet, walletId) => {
-      //   this.logger.warn("Learn you some JS");
-      //   this.logger.warn(wallet);
-      //   this.logger.warn(walletId);
-      //   this.walletService.getStatus(wallet).then((status) => {
-      //     wallet.status = status || "donkey";
-      //     updatedWallets.push(wallet);
-      //     this.logger.warn("Dirty status: ");
-      //     this.logger.warn(status);
-      //   }).catch((err) => {
-      //     this.logger.warn("Could not update all wallets!");
-      //     reject(err);
-      //   }).then((status) => {
-      //     this.logger.warn("Dirty status: ");
-      //     this.logger.warn(status);
-      //     });
-      // });
-      // this.logger.warn("Wallets AfterStatus: ");
-      // this.logger.warn(updatedWallets);
-      // resolve(updatedWallets);
-    //})
   }
 
 
