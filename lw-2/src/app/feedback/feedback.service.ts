@@ -12,7 +12,6 @@ export class FeedbackService {
   constructor(
     private http:Http,
     private logger:Logger,
-    private storageService:Storage,
     private configService:ConfigService
   ) {
   }

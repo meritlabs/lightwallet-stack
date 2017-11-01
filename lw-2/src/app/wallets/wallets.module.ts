@@ -28,10 +28,10 @@ import {AddressbookServiceMock} from "merit/addressbook/addressbook.service.mock
   /** @DISCUSS what's the best place for app update service? */
   providers: [
     WalletService,
-    {provide: AppUpdateService, useClass: AppUpdateServiceMock},
-    {provide: FeedbackService, useClass: FeedbackServiceMock},
-    {provide: EasyReceiveService, useClass: EasyReceiveServiceMock},
-    {provide: AddressbookService, useClass: AddressbookServiceMock},
+    AppUpdateService,
+    FeedbackService,
+    EasyReceiveService,
+    AddressbookService,
     InAppBrowser,
     MnemonicService,
     LanguageService

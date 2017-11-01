@@ -9,7 +9,7 @@ import {EasyReceiveServiceMock} from "merit/easy-receive/easy-receive.service.mo
     EasyReceiveView,
   ],
   providers: [
-    {provide: EasyReceiveService, useClass: EasyReceiveServiceMock}
+    EasyReceiveService
   ],
   imports: [
     IonicPageModule.forChild(EasyReceiveView),
