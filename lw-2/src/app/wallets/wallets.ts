@@ -43,9 +43,7 @@ export class WalletsView {
     refresher.complete();
   }
 
-  async ionViewDidLoad() {
-    this.logger.warn("Updating all the wallets.");
-    
+  async ionViewDidLoad() {    
     // TODO: Show loader?
     this.wallets = await this.updateAllWallets();
   }
