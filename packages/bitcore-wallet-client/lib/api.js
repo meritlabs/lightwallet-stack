@@ -2795,4 +2795,27 @@ API.prototype.validateEasyScript = function(scriptId, cb) {
 
 };
 
+/**
+ * Vaulting 
+ */
+API.prototype.getVaults = function() {
+  var self = this;
+  
+  var url = '/v1/vaults/';
+  this._doGetRequest(url, function(err, body) {
+    if (err) return cb(err);
+    return cb(null, body);
+  });
+};
+
+API.prototype.createVault = function() {
+  var self = this;
+  
+  var url = '/v1/vaults/';
+  this._doGetRequest(url, function(err, body) {
+    if (err) return cb(err);
+    return cb(null, body);
+  });
+};
+
 module.exports = API;
