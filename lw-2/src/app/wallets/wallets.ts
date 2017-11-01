@@ -73,7 +73,7 @@ export class WalletsView {
   //}
 
 
-  async private getWallets():Promise<Array<Wallet>> {
+  private async getWallets():Promise<Array<Wallet>> {
     if (!this.wallets) {
       this.wallets = await this.updateAllWallets();
     }
@@ -82,7 +82,9 @@ export class WalletsView {
   }
 
 
-  async ionViewDidLoad() {
+  public ionViewDidLoad() {
+
+    console.log('wallets view onload');
 
     this.registerListeners();
 
@@ -266,12 +268,12 @@ export class WalletsView {
   private async updateAllWallets() {
     let wallets = await this.profileService.getWallets();
     return await Promise.all(_.map(wallets, async (wallet) => {
-      wallet.status = await this.walletService.getStatus(wallet);  
+      wallet.status = await this.walletService.getStatus(wallet);
       return wallet;
     }));
 
   }
-    
+
   openTransactionDetails(transaction) {
     this.navCtrl.push('TransactionView', {transaction: transaction});
   }

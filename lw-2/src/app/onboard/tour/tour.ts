@@ -26,8 +26,7 @@ export class TourView {
   }
 
   ionViewDidLoad() {
-    /** @TODO what we use at 'chain'?? (third parameter) */
-    this.rateData.usdPerMerit = this.rateService.fromFiat(1e8, 'USD', '');
+    this.rateData.usdPerMerit = this.rateService.fromFiat(1e8, 'USD');
   }
 
   slideNext() {
