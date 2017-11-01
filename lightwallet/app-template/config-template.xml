@@ -76,7 +76,7 @@
     <plugin name="cordova-plugin-queries-schemes" spec="~0.1.5" />
     <plugin name="cordova-plugin-fcm" spec="https://github.com/cmgustavo/cordova-plugin-fcm.git" />
     <!-- Branch -->
-    <plugin name="branch-cordova-sdk" spec="^2.6.12" />
+    <plugin name="branch-cordova-sdk" spec="^2.6.16" />
     <branch-config>
       <branch-key value="key_live_edqKoEEX0yip4cpCBjbnXlpkqBmai2VN" />
       <uri-scheme value="merit" />
