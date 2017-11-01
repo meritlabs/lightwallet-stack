@@ -82,7 +82,8 @@ export class WalletService {
   }
 
   // TODO: Make async
-  async getStatus(wallet: any, opts?: any) {
+  getStatus(wallet: any, opts?: any): Promise<any> {
+    return new Promise((resolve, reject) => {
       opts = opts || {};
       var walletId = wallet.id;
 
@@ -154,11 +155,11 @@ export class WalletService {
           }, (err, ret) => {
             if (err) {
               if (err instanceof this.errors.NOT_AUTHORIZED) {
-                reject('WALLET_NOT_REGISTERED');
+                return reject('WALLET_NOT_REGISTERED');
               }
-              reject(err);
+              return reject(err);
             }
-            resolve(ret);
+            return resolve(ret);
           });
         });
       };
@@ -238,6 +239,8 @@ export class WalletService {
 
           cache.alternativeBalanceAvailable = true;
           cache.isRateAvailable = true;
+        }).catch((err) => {
+          this.logger.warn("Error setting display balances: ", err);
         });
       };
 
@@ -301,8 +304,12 @@ export class WalletService {
         });
       };
 
-      return _getStatus(walletStatusHash(null), 0);
-
+      _getStatus(walletStatusHash(null), 0).then((status) => {
+        return resolve(status);
+      }).catch((err) => {
+        this.logger.warn("Error getting status: ", err);
+      });
+    });
   }
 
   // Check address
