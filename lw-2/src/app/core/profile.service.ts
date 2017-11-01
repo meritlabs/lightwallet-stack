@@ -643,62 +643,72 @@ export class ProfileService {
     });
   }
 
-  public getWallets(opts?: any): Array<any> {
+  public getWallets(opts?: any): Promise<any> {
 
-    if (opts && !_.isObject(opts)) throw "bad argument";
+    return new Promise((resolve, reject) => {
 
-    opts = opts || {};
-    console.log("Getting wallets");
-    console.log(this.wallets);
-    let ret = _.values(this.wallets);
+      opts = opts || {};
+      console.log("Getting wallets");
+      console.log(this.wallets);
+      let ret = _.values(this.wallets);
 
-    if (opts.network) {
-      ret = _.filter(ret, (x: any) => {
-        return (x.credentials.network == opts.network);
+      if (opts.network) {
+        ret = _.filter(ret, (x: any) => {
+          return (x.credentials.network == opts.network);
+        });
+      }
+
+      if (opts.network) {
+        ret = _.filter(ret, (x: any) => {
+          return (x.credentials.network == opts.network);
+        });
+      }
+
+      if (opts.n) {
+        ret = _.filter(ret, (w: any) => {
+          return (w.credentials.n == opts.n);
+        });
+      }
+
+      if (opts.m) {
+        ret = _.filter(ret, (w: any) => {
+          return (w.credentials.m == opts.m);
+        });
+      }
+
+      if (opts.hasFunds) {
+        ret = _.filter(ret, (w: any) => {
+          if (!w.status) return;
+          return (w.status.availableBalanceSat > 0);
+        });
+      }
+
+      if (opts.minAmount) {
+        ret = _.filter(ret, (w: any) => {
+          if (!w.status) return;
+          return (w.status.availableBalanceSat > opts.minAmount);
+        });
+      }
+
+      if (opts.onlyComplete) {
+        ret = _.filter(ret, (w: any) => {
+          return w.isComplete();
+        });
+      } else { }
+
+      // Add cached balance async
+      _.each(ret, (x: any) => {
+        this.addLastKnownBalance(x);
       });
-    }
 
-    if (opts.n) {
-      ret = _.filter(ret, (w: any) => {
-        return (w.credentials.n == opts.n);
-      });
-    }
 
-    if (opts.m) {
-      ret = _.filter(ret, (w: any) => {
-        return (w.credentials.m == opts.m);
-      });
-    }
+      resolve(_.sortBy(ret, [(x: any) => {
+          return x.isComplete();
+        }, 'createdOn'])
+      );
 
-    if (opts.hasFunds) {
-      ret = _.filter(ret, (w: any) => {
-        if (!w.status) return;
-        return (w.status.availableBalanceSat > 0);
-      });
-    }
-
-    if (opts.minAmount) {
-      ret = _.filter(ret, (w: any) => {
-        if (!w.status) return;
-        return (w.status.availableBalanceSat > opts.minAmount);
-      });
-    }
-
-    if (opts.onlyComplete) {
-      ret = _.filter(ret, (w: any) => {
-        return w.isComplete();
-      });
-    } else { }
-
-    // Add cached balance async
-    _.each(ret, (x: any) => {
-      this.addLastKnownBalance(x);
     });
 
-
-    return _.sortBy(ret, [(x: any) => {
-      return x.isComplete();
-    }, 'createdOn']);
   }
 
   public toggleHideBalanceFlag(walletId: string): Promise<any> {
@@ -728,7 +738,8 @@ export class ProfileService {
       let w = this.getWallets();
       if (_.isEmpty(w)) return resolve();
 
-      let l = w.length;
+      //let l = w.length;
+      let l = 1; //temp!!
       let j = 0;
       let notifications = [];
 

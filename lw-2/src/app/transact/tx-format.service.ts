@@ -200,13 +200,6 @@ export class TxFormatService {
       currency = 'MRT';
     }
 
-    return {
-      amount: amount,
-      currency: currency,
-      alternativeIsoCode: alternativeIsoCode,
-      amountSat: amountSat,
-      amountUnitStr: amountUnitStr
-    };
   };
 
   satToUnit(amount: any) {

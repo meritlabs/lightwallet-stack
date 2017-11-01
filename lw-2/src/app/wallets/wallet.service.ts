@@ -5,7 +5,7 @@ import { ConfigService } from 'merit/shared/config.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { PersistenceService } from 'merit/core/persistence.service';
-import { BwcError } from 'merit/core/bwc-error.model';
+import { BwcError } from 'merit/core/bwc-error.model'; 
 import { RateService } from 'merit/transact/rate.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { PopupService } from 'merit/core/popup.service';
@@ -17,6 +17,7 @@ import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { Promise } from 'bluebird';
 
 import * as _ from 'lodash';
+import {Wallet} from "./wallet.model";
 
 
 /* Refactor CheckList:
@@ -326,7 +327,7 @@ export class WalletService {
     });
   }
 
-  private getAddress(wallet: any, forceNew: boolean): Promise<any> {
+  public getAddress(wallet: any, forceNew: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       this.persistenceService.getLastAddress(wallet.id).then((addr) => {
         if (!forceNew && addr) return resolve(addr);
@@ -1469,6 +1470,15 @@ export class WalletService {
         }
       }
       return resolve(walletClient);
+    });
+  }
+
+  // todo its a mock now!!
+  getWalletAnv(wallet:Wallet):Promise<number> {
+    return new Promise((resolve, reject) => {
+      resolve(
+       (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
+      )
     });
   }
   
