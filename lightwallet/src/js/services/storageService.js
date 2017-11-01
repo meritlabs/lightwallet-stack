@@ -170,7 +170,6 @@ angular.module('copayApp.services')
       });
     };
 
-
     root.setFeedbackInfo = function(feedbackValues, cb) {
       storage.set('feedback', feedbackValues, cb);
     };

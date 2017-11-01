@@ -706,28 +706,40 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
 API.prototype.buildEasySendScript = function(opts, cb) {
   opts = opts || {};
 
-  var privateKey = this.credentials.getDerivedXPrivKey(opts.walletPassword);
-  var network = opts.network || 'livenet';
+  var self = this;
+  try {
+    var result = {}
+    self.createAddress({}, function(err, addr) {
+      if (err || addr.publicKeys.length < 1) {
+        throw new Error('Error creating an address for easySend');
+      }
+      var pubKey = Bitcore.PublicKey.fromString(addr.publicKeys[0]);
 
-  // {key, secret}
-  var rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
+      // {key, secret}
+      var network = opts.network || 'livenet';
+      var rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
 
-  var pubkeys = [
-    rcvPair.key.publicKey.toBuffer(),
-    privateKey.publicKey.toBuffer()
-  ];
+      var pubKeys = [
+        rcvPair.key.publicKey.toBuffer(),
+        pubKey.toBuffer()
+      ];
 
-  var timeout = opts.timeout || 1008;
-  var script = Bitcore.Script.buildEasySendOut(pubkeys, timeout, network);
+      var timeout = opts.timeout || 1008;
+      var script = Bitcore.Script.buildEasySendOut(pubKeys, timeout, network);
 
-  var result = {
-    receiverPubKey: rcvPair.key.publicKey,
-    script: script.toScriptHashOut(),
-    senderPubKey: privateKey.publicKey.toString(),
-    secret: rcvPair.secret.toString('hex')
-  };
+      result = {
+        receiverPubKey: rcvPair.key.publicKey,
+        script: script.toScriptHashOut(),
+        senderPubKey: pubKey.toString(),
+        secret: rcvPair.secret.toString('hex')
+      };
 
-  cb(null, result);
+      cb(null, result);
+    });
+
+  } catch (e) {
+    cb(e);
+  }
 }
 
 /**
