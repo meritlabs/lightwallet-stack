@@ -28,6 +28,7 @@ var collections = {
   PUSH_NOTIFICATION_SUBS: 'push_notification_subs',
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
   REFERRAL_TX_CONFIRMATION_SUBS: 'referral_confirmation_subs',
+  VAULTS: 'vaults',
 };
 
 var Storage = function(opts) {
@@ -92,7 +93,10 @@ Storage.prototype._createIndexes = function() {
     codeHash: 1,
   })
   this.db.collection(collections.SESSIONS).createIndex({
-    copayerId: 1
+    copayerId: 1,
+  });
+  this.db.collection(collections.VAULTS).createIndex({
+    copayerId: 1,
   });
 };
 
@@ -1067,6 +1071,30 @@ Storage.prototype._dump = function(cb, fn) {
       });
     }, cb);
   });
+};
+
+/**
+ * Vaults
+ */
+Storage.prototype.fetchVaults = function(copayerId, cb) {
+  this.db.collection(collections.VAULTS).find({
+    copayerId,
+  }).toArray(function(err, result) {
+    if (err) return cb(err);
+
+    if (!result) return cb();
+
+    return cb(null, result);
+  });
+};
+
+Storage.prototype.storeVault = function(copayerId, vaultTx, cb) {
+  this.db.collection(collections.VAULTS).insert({
+    copayerId,
+    ...vaultTx,
+  }, {
+    w: 1
+  }, cb);
 };
 
 Storage.collections = collections;

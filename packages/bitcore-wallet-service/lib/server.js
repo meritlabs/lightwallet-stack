@@ -3482,11 +3482,23 @@ WalletService.prototype.referralTxConfirmationUnsubscribe = function(opts, cb) {
  * Vaulting
  */
 WalletService.prototype.getVaults = function(opts, cb) {
-  return cb(null, []);
+  const self = this;
+
+  self.storage.fetchVaults(self.copayerId, function(err, result) {
+    if (err) return cb(err);
+
+    return cb(null, result);
+  });
 };
 
 WalletService.prototype.createVault = function(opts, cb) {
-  return cb(null, {});
+  const self = this;
+  
+  self.storage.storeVault(self.copayerId, function(err, result) {
+    if (err) return cb(err);
+
+    return cb(null, {});
+  });
 }
 
 module.exports = WalletService;
