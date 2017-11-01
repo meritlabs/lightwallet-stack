@@ -25,15 +25,10 @@ import { SpinnerService } from 'merit/core/spinner.service';
 import { TransactView } from 'merit/transact/transact';
 import { OnboardingView } from 'merit/onboard/onboarding.view';
 
-
-
 import { MomentModule } from 'angular2-moment';
 
-
 import { ConfigService } from 'merit/shared/config.service';
-import {ConfigServiceMock} from "merit/shared/config.service.mock";
-import {ProfileServiceMock} from "./profile.service.mock";
-import {TxFormatServiceMock} from "../transact/tx-format.sevice.mock";
+
 
 /* 
   The core module exists to make commonly used singleton services available 

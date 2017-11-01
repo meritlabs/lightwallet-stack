@@ -231,9 +231,10 @@ export class ProfileService {
       let now = Math.floor(Date.now() / 1000);
       let showRange = 600; // 10min;
 
-      this.getLastKnownBalance(wallet.id).then((data: string) => {
+      this.getLastKnownBalance(wallet.id).then((data: any) => {
         if (data) {
-          let parseData: any = JSON.parse(data);
+          let parseData = data;
+          //let parseData: any = JSON.parse(data);
           wallet.cachedBalance = parseData.balance;
           wallet.cachedBalanceUpdatedOn = (parseData.updatedOn < now - showRange) ? parseData.updatedOn : null;
         }

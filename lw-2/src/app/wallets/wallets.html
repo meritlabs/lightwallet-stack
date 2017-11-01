@@ -18,7 +18,7 @@
         Features
     </ion-item-divider>
 
-    <span *ngIf="feedbackNeeded|async">
+    <span *ngIf="feedbackNeeded">
         <ion-item  translate>
             <ion-label>Please rate our app</ion-label>
             <span item-right>
@@ -42,7 +42,7 @@
     </span>
 
 
-    <ion-item *ngIf="newReleaseExists|async" translate (click)="toLatestRelease()">
+    <ion-item *ngIf="newReleaseExists" translate (click)="toLatestRelease()">
         <ion-label translate>New version of app available!</ion-label>
         <button ion-button clear item-right><ion-icon name="link"></ion-icon></button>
     </ion-item>
@@ -57,16 +57,16 @@
             <img src="assets/img/icon-wallet.svg" >
         </i>
         <h2 translate>Total value of your network</h2>
-        {{totalAmountFormatted|async}}
+        {{totalAmountFormatted}}
     </ion-item>
 
-    <span *ngIf="(txpsData|async)?.txpsN && (addressbook|async)">
+    <span *ngIf="txpsData?.txpsN && addressbook">
         <ion-item-divider translate >
             Payment Proposals
-            <ion-badge item-right>{{(txpsData|async)?.txpsN}}</ion-badge>
+            <ion-badge item-right>{{txpsData?.txpsN}}</ion-badge>
         </ion-item-divider>
         <ion-list>
-            <ion-item *ngFor="let txp of (txpsData|async)?.txps" (click)="toTxpDetails(txp)">
+            <ion-item *ngFor="let txp of txpsData?.txps" (click)="toTxpDetails(txp)">
                 <span *ngIf="!txp.merchant">
 
                     <span *ngIf="txp.message" class="ellipsis">{{txp.message}}</span>
@@ -94,13 +94,13 @@
     </span>
 
 
-    <span *ngIf="recentTransactionsEnabled && (recentTransactions|async)?.total">
+    <span *ngIf="recentTransactionsEnabled && recentTransactions?.total">
         <ion-item-divider translate >
             Recent Transactions
-            <ion-badge item-right>{{(recentTransactions|async)?.total}}</ion-badge>
+            <ion-badge item-right>{{recentTransactions?.total}}</ion-badge>
         </ion-item-divider>
         <ion-list>
-            <ion-item *ngFor="let notification of (recentTransactions|async)?.notifications" (click)="toNotificationDetail(notification)">
+            <ion-item *ngFor="let notification of recentTransactions?.notifications" (click)="toNotificationDetail(notification)">
 
                 <div *ngIf="notification.type == 'NewCopayer' && notification.wallet.n > 1" translate>Copayer joined</div>
                 <div *ngIf="notification.type == 'NewCopayer' && notification.wallet.n == 1" translate>Wallet created</div>
@@ -165,7 +165,7 @@
             </h2>
         </button>
 
-        <button ion-item *ngFor="let wallet of wallets|async" (click)="openWallet(wallet)">
+        <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)">
             <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
                 <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
             </i>
