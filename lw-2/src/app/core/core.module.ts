@@ -88,7 +88,12 @@ export function createTranslateLoader(http: Http) {
             multi: true
         },
         PopupService,
-        SpinnerService
+        SpinnerService,
+      {
+          provide: TouchIdService,
+          deps: [TouchID],
+          multi: false
+      }
     ]
 })
 

@@ -23,7 +23,7 @@ import {TxFormatServiceMock} from "merit/transact/tx-format.sevice.mock";
     IonicPageModule.forChild(TransactView),
   ],
   providers: [
-    ProfileService
+    ProfileService,
     {
       provide: RateService,
       useClass: RateServiceMock
