@@ -147,19 +147,22 @@ export class WalletService {
       };
 
 
-      let get = async () => {
-        wallet.getStatus({
-          twoStep: true
-        }, (err, ret) => {
-          if (err) {
-            if (err instanceof this.errors.NOT_AUTHORIZED) {
-              return 'WALLET_NOT_REGISTERED';
+      let get = ():Promise<any> => {
+        return new Promise((resolve, reject) => {
+          wallet.getStatus({
+            twoStep: true
+          }, (err, ret) => {
+            if (err) {
+              if (err instanceof this.errors.NOT_AUTHORIZED) {
+                reject('WALLET_NOT_REGISTERED');
+              }
+              reject(err);
             }
-            return err;
-          }
-          return ret;
+            resolve(ret);
+          });
         });
       };
+      
 
       let cacheBalance = (wallet: any, balance: any): void => {
         if (!balance) return;
