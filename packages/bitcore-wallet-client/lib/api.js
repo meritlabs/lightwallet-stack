@@ -794,7 +794,7 @@ API.prototype.buildEasySendRedeemTransaction = function(input, destinationAddres
     tx.to(toAddress, amount)
     tx.fee(fee)
 
-    var sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, null, 0, input.script)
+    var sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, input.script);
     var inputScript = Bitcore.Script.buildEasySendIn(sig, input.script);
 
     tx.inputs[0].setScript(inputScript);
