@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Promise } from 'bluebird';
 
 import { Wallet } from 'merit/wallets/wallet.model';
 import { WalletService } from 'merit/wallets/wallet.service';
+import { ProfileService } from 'merit/core/profile.service';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { PopupService } from 'merit/core/popup.service';
 import * as _ from 'lodash';
@@ -14,8 +15,7 @@ import * as _ from 'lodash';
   templateUrl: 'send.html',
 })
 export class SendView {
-  @ViewChild(Content) content: Content;
-
+  public static readonly CONTACTS_SHOW_LIMIT = 10;
   private walletsToTransfer: Array<any>; // Eventually array of wallets
   private showTransferCard: boolean;
   private wallets: Array<Wallet>;
@@ -28,21 +28,31 @@ export class SendView {
     search: string
   };
   private searchFocus: boolean;
-  public static readonly CONTACTS_SHOW_LIMIT = 10;
+  private hasFunds: boolean;
+  private hasOwnedMerit: boolean; 
 
 
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
     private walletService: WalletService,
-    private popupService: PopupService
+    private popupService: PopupService,
+    private profileService: ProfileService
   ) {
-
+    this.hasOwnedMerit = this.profileService.hasOwnedMerit();
   }
 
   ionViewDidLoad() {
-    //do something here
+    this.formData = { search: null };
+    this.originalContacts = [];
+    this.deviceContacts = [];
+    this.hasWallets();
   }
+
+  private hasWallets(): boolean {
+    return (_.isEmpty(this.wallets) ? false : true);
+  }
+  
 
   private updateWalletList(): Promise<any> {
     let walletList:Array<any> = [];
@@ -52,8 +62,8 @@ export class SendView {
           color: w.color,
           name: w.name, 
           recipientType: 'wallet',
-          getAddress: (cb) => {
-            this.walletService.getAddress(w, false, cb);
+          getAddress: () => {
+            Promise.resolve(this.walletService.getAddress(w, false));
           }
         });
       });
@@ -120,7 +130,9 @@ export class SendView {
   
   private initList():void {
     this.filteredList = [];
-    this.content.resize();  
+    
+    // TODO: Resize this in the best-practices ionic3 wya.  
+    //this.content.resize();  
     //TODO: Lifecycle tick if needed
   }
 
@@ -213,4 +225,18 @@ export class SendView {
       })
     });
   }
+
+  // TODO: Let's consider a better way to handle these multi-hop transitions.
+  private createWallet():void {
+    this.navCtrl.push('wallets').then(() => {
+      this.navCtrl.push('add-wallet');
+    });
+  }
+
+  private buyMert(): void {
+    this.navCtrl.push('wallets').then(() => {
+      this.navCtrl.push('buy-and-sell');
+    });
+  }
+
 }

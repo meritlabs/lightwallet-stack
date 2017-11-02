@@ -32,8 +32,6 @@ export class WalletDetailsView {
 
   ionViewDidLoad() {
     console.log("Wallet-Detail View Did Load.");
-    // TODO: Refactor this to a promise..
-    //this.wallet = profileService.getWallet();
     console.log(this.wallet);
     //do something here
   }
