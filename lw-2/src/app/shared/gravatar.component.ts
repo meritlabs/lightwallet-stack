@@ -18,7 +18,7 @@ export class GravatarComponent {
     constructor(
       el: ElementRef
     ) {
-      this.emailHash = Md5.createHash(this.email.toLowerCase() || '');
+      this.emailHash = Md5.hashStr(this.email.toLowerCase() || '').toString();
     }
 
 }
