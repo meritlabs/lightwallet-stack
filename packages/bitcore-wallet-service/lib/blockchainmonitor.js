@@ -374,7 +374,7 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) 
 
     log.info('Received tx in block to check vaults: ', txids);
     async.each(txids, function(txId) {
-      log.info(`Checking if TX with id ${txid} is vault TX`);
+      log.info(`Checking if TX with id ${txId} is vault TX`);
 
       self.storage.fetchVaultByTxId(txId, function(err, tx) {
         if (err) {
@@ -392,7 +392,16 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) 
             return;
           }
 
-          // ToDo: send notification here
+          const notification = Notification.create({
+            type: 'VaultConfirmation',
+            creatorId: sub.copayerId,
+            walletId: sub.walletId,
+            data: result,
+          });
+
+          self._storeAndBroadcastNotification(notification, function () {
+            log.info(`Vault confirmation with code ${txId} successfully sent`);
+          });
         });
       });
     });
