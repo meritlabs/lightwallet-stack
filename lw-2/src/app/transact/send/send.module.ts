@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { SendView } from 'merit/transact/send/send';
 
+// This module manaages the sending of money.
 @NgModule({
   declarations: [
     SendView,
