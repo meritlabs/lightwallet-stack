@@ -68,11 +68,6 @@ export class WalletsView {
   ) {
   }
 
-  //doRefresh(refresher) {
-  //  refresher.complete();
-  //}
-
-
   private async getWallets():Promise<Array<Wallet>> {
     if (!this.wallets) {
       this.wallets = await this.updateAllWallets();
@@ -81,10 +76,8 @@ export class WalletsView {
     return this.wallets;
   }
 
+  public async ionViewDidLoad() {
 
-  public ionViewDidLoad() {
-
-    console.log('wallets view onload');
 
     this.registerListeners();
 
@@ -94,12 +87,12 @@ export class WalletsView {
 
     this.processEasyReceive();
 
-    this.newReleaseExists = this.appUpdateService.isUpdateAvailable();
-    this.feedbackNeeded   = this.feedbackService.isFeedBackNeeded();
+    this.newReleaseExists = await this.appUpdateService.isUpdateAvailable();
+    this.feedbackNeeded   = await this.feedbackService.isFeedBackNeeded();
 
-    this.addressbook = this.addressbookService.list();
+    this.addressbook = await this.addressbookService.list();
 
-    this.txpsData = this.profileService.getTxps({limit: 3});
+    this.txpsData = await this.profileService.getTxps({limit: 3});
     if (this.configService.get().recentTransactions.enabled) {
       this.recentTransactionsEnabled = true;
       this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
@@ -149,8 +142,10 @@ export class WalletsView {
    */
   private processEasyReceive() {
     this.easyReceiveService.getPendingReceipt().then((receipt) => {
-      let checkPass = receipt.checkPassword;
-      this.showEasyReceiveModal(receipt, checkPass);
+      if (receipt) {
+        let checkPass = receipt.checkPassword;
+        this.showEasyReceiveModal(receipt, checkPass);
+      }
     });
   }
 

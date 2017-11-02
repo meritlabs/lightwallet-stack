@@ -28,6 +28,7 @@ import { OnboardingView } from 'merit/onboard/onboarding.view';
 import { MomentModule } from 'angular2-moment';
 
 import { ConfigService } from 'merit/shared/config.service';
+import {MeritToastController} from "merit/core/toast.controller";
 
 
 /* 
@@ -88,7 +89,8 @@ export function createTranslateLoader(http: Http) {
           provide: TouchIdService,
           deps: [TouchID],
           multi: false
-      }
+      },
+      MeritToastController
     ]
 })
 
