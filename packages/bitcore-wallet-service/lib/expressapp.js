@@ -776,6 +776,15 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.post('/v1/vaults/:id', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      server.renewVault(req.body, function(err, txp) {
+        if (err) return returnError(err, res, req);
+        res.json(txp);
+      });
+    });
+  });
+
 
   this.app.use(opts.basePath || '/bws/api', router);
 

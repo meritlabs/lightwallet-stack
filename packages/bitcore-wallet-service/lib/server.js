@@ -3520,7 +3520,13 @@ WalletService.prototype.createVault = function(opts, cb) {
       return next();
     }
   ]);
-}
+};
+
+WalletService.prototype.renewVault = function(opts, cb) {
+  const self = this;
+
+  return cb(null, {});
+};
 
 module.exports = WalletService;
 module.exports.ClientError = ClientError;
