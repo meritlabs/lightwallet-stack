@@ -360,10 +360,50 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
   });
 };
 
+BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) {
+  const self = this;
+
+  const explorer = self.explorers[network];
+  if (!explorer) return;
+
+  explorer.getTxidsInBlock(hash, function(err, txids) {
+    if (err) {
+      log.error('Could not fetch txids from block ' + hash, err);
+      return;
+    }
+
+    log.info('Received tx in block to check vaults: ', txids);
+    async.each(txids, function(txId) {
+      log.info(`Checking if TX with id ${txid} is vault TX`);
+
+      self.storage.fetchVaultByTxId(txId, function(err, tx) {
+        if (err) {
+          log.error(`Error while fetching data for vault with txid: ${txId}`);
+          return;
+        }
+
+        if (!tx) {
+          return;
+        }
+
+        self.storage.setVaultConfirmed(function (err, result) {
+          if (err) {
+            log.error(`Could not update vault with txId: ${txId}`)
+            return;
+          }
+
+          // ToDo: send notification here
+        });
+      });
+    });
+  });
+};
+
 BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
   this._notifyNewBlock(network, hash);
   this._handleTxConfirmations(network, hash);
   this._handleReferralConfirmations(network, hash);
+  this._handleVaultConfirmations(network, hash);
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {
