@@ -3494,11 +3494,22 @@ WalletService.prototype.getVaults = function(opts, cb) {
 WalletService.prototype.createVault = function(opts, cb) {
   const self = this;
   
-  self.storage.storeVault(self.copayerId, function(err, result) {
-    if (err) return cb(err);
+  opts.status = Bitcore.Vault.Vault.VaultStates.PENDING;
 
-    return cb(null, {});
-  });
+  async.series([
+    function(next) {
+      self.storage.storeVault(self.copayerId, opts, function(err, result) {
+        if (err) return cb(err);
+
+        return next();
+      });
+    },
+    function(next) {
+      self.getVaults(opts, cb);
+
+      return next();
+    }
+  ]);
 }
 
 module.exports = WalletService;
