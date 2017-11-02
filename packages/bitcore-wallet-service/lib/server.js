@@ -3504,6 +3504,16 @@ WalletService.prototype.createVault = function(opts, cb) {
         return next();
       });
     },
+    // function(next) {
+    //   var bc = self._getBlockchainExplorer(opts.network);
+      
+    //   bc.broadcast(opts, function(err, txid) {
+    //     if (err) return cb(err);
+        
+    //     opts.txid = txid;
+    //     return next();
+    //   });
+    // }, // Enable me later when transaction is constructed successfully
     function(next) {
       self.getVaults(opts, cb);
 
