@@ -19,7 +19,7 @@ import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
 })
 export class MeritLightWallet {
 
-  public rootPage;
+  public rootComponent;
 
   constructor(
     private platform: Platform, 
@@ -56,15 +56,15 @@ export class MeritLightWallet {
       this.profileService.loadAndBindProfile().then((profile: any) => {
         
         this.openLockModal();
-        if (profile) this.rootPage = 'TransactView';
+        if (profile) this.rootComponent = 'TransactView';
         else {
           //this.profileService.createProfile();
-          this.rootPage = 'OnboardingView';
+          this.rootComponent = 'OnboardingView';
         }
       }).catch((err: any) => {
         this.logger.warn(err);
         //TODO: Send them somewhere better.
-        this.rootPage = 'OnboardingView';
+        this.rootComponent = 'OnboardingView';
       });
     });
   }

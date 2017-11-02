@@ -25,7 +25,8 @@ export class EasyReceiveService {
     //get and validate in blockchain
 
     return new Promise((resolve, reject) => {
-      resolve(new EasyReceipt({senderName: 'Mock user'}));
+      //resolve(new EasyReceipt({senderName: 'Mock user'}));
+      resolve();
     })
   }
 

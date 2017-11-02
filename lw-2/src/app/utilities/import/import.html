@@ -58,13 +58,13 @@
             <ion-input text-right [(ngModel)]="formData.bwsUrl"></ion-input>
         </ion-item>
 
-        <button class="action-button" margin-top block (click)="importMnemonic()" ion-button translate>Import</button>
+        <button class="action-button" margin-top block (click)="importMnemonic()" ion-button translate [disabled]="!mnemonicImportAllowed()">Import</button>
 
     </span>
 
     <span *ngIf="segment == 'file'">
 
-        <ion-item margin-top (click)="openImport()">
+        <ion-item margin-top (click)="openFilePicker()">
             <ion-label translate *ngIf="!formData.backupFile">
                 Choose a backup file from your computer
             </ion-label>

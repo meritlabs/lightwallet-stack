@@ -880,7 +880,7 @@ export class ProfileService {
       let txps = [];
 
       _.each(w, (x: any) => {
-        if (x.pendingTxps)
+        if (x && x.pendingTxps)
           txps = txps.concat(x.pendingTxps);
       });
       let n = txps.length;
