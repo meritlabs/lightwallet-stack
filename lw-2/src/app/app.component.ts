@@ -18,8 +18,8 @@ import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
   templateUrl: 'app.html'
 })
 export class MeritLightWallet {
-  //public rootComponent: any;
-  public rootComponent = 'OnboardingView';
+
+  public rootPage;
 
   constructor(
     private platform: Platform, 
@@ -31,14 +31,8 @@ export class MeritLightWallet {
     private appService: AppService,
     private configService: ConfigService
   ) {
-    this.platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
-      statusBar.styleDefault();
-      splashScreen.hide();
 
-      this.initializeApp();
-    });
+    this.initializeApp();
   }
 
   /*
@@ -46,6 +40,7 @@ export class MeritLightWallet {
      load and bind the persisted profile (if it exists).
   */ 
   private initializeApp() {
+    
     this.platform.ready().then((readySource) => {
       this.logger.info(
         'platform ready (' + readySource + '): ' +
@@ -59,16 +54,17 @@ export class MeritLightWallet {
       }
       // Check Profile
       this.profileService.loadAndBindProfile().then((profile: any) => {
+        
         this.openLockModal();
-        if (profile) this.rootComponent = 'TransactView';
+        if (profile) this.rootPage = 'TransactView';
         else {
           //this.profileService.createProfile();
-          this.rootComponent = 'OnboardingView';
+          this.rootPage = 'OnboardingView';
         }
       }).catch((err: any) => {
         this.logger.warn(err);
         //TODO: Send them somewhere better.
-        this.rootComponent = 'OnboardingView';
+        this.rootPage = 'OnboardingView';
       });
     });
   }

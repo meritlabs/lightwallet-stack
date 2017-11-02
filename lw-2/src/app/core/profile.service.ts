@@ -376,12 +376,12 @@ export class ProfileService {
   public isDisclaimerAccepted(): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
-      let disclaimerAccepted = this.profile && this.profile.disclaimerAccepted;
-      if (disclaimerAccepted) {
-        return resolve(true);
-      }
-      
-      resolve(false);
+        let disclaimerAccepted = (this.profile && this.profile.disclaimerAccepted);
+        if (disclaimerAccepted) {
+          return resolve(true);
+        }
+
+        resolve(false);
     });
   }
 
