@@ -9,33 +9,32 @@
 
 <ion-content>
 
-    <div ng-if="hasFunds">
+    <div *ngIf="hasFunds">
       <div class="send-header-wrapper">
         <div class="item item-heading send-heading"><span translate>Recipient</span></div>
-        <div class="item input search-wrapper" ng-class="{'focus': searchFocus}">
+        <div class="item input search-wrapper" [class.focus]="searchFocus">
           <i class="icon icon-svg abs-v-center"><img class="svg" src="img/icon-bitcoin-symbol.svg"></i>
           <div class="item-icon-right">
-            <input type="text" class="search-input" placeholder="{{'Search or enter merit address' | translate}}" ng-model="formData.search" ng-change="findContact(formData.search)" ng-model-onblur ng-focus="searchInFocus()" ng-blur="searchBlurred()">
+            <input type="text" class="search-input" placeholder="{{'Search or enter merit address' | translate}}" [(ngModel)]=="formData.search" (ngModelChange)="findContact(formData.search)" ng-model-onblur (focus)="searchInFocus()" (blur)="searchBlurred()">
             <i class="icon icon-svg qr abs-v-center separator-left" on-tap="openScanner()"><img src="img/scan-ico.svg"></i>
           </div>
         </div>
       </div>
     </div>
     <div class="list">
-      <a class="item item-icon-left item-icon-right" ng-repeat="item in list" ng-if="!item.isWallet && item.recipientType != 'wallet'" ng-click="goToAmount(item)">
+      <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList" *ngIf="!item.isWallet && item.recipientType != 'wallet'" (click)="goToAmount(item)">
         <i class="icon big-icon-svg">
-          <img src="img/contact-placeholder.svg" class="bg" ng-if="isChromeApp">
-          <gravatar class="send-gravatar" name="{{item.name}}" width="30" email="{{item.email}}" ng-if="!isChromeApp"></gravatar>
+          <gravatar class="send-gravatar" name="{{item.name}}" width="30" email="{{item.email}}" *ngIf="!isChromeApp"></gravatar>
         </i>
         {{item.name}}
         <i class="icon bp-arrow-right"></i>
       </a>
-      <div class="show-more" ng-if="contactsShowMore" ng-click="showMore()" translate>
+      <div class="show-more" *ngIf="contactsShowMore" (click)="showMore()" translate>
         Show more
       </div>
     </div>
     <div class="list">
-      <div ng-if="!checkingBalance && (!hasFunds || !hasWallets)">
+      <div *ngIf="!checkingBalance && (!hasFunds || !hasWallets)">
         <div class="card sendTip">
           <div class="item item-icon-right item-heading"></div>
           <div>
@@ -47,16 +46,16 @@
           Start sending merit
         </div>
         <div class="subtitle">
-          <span ng-show="hasWallets" translate>To get started, buy merit or share your address. You can receive merit from any wallet or service.</span>
-          <span ng-show="!hasWallets" translate>To get started, you'll need to create a merit wallet and get some merit.</span>
+          <span *ngIf="hasWallets" translate>To get started, buy merit or share your address. You can receive merit from any wallet or service.</span>
+          <span *ngIf="!hasWallets" translate>To get started, you'll need to create a merit wallet and get some merit.</span>
           <div class="padding">
-            <button class="button button-standard button-primary" ng-click="buyMerit()" ng-show="hasWallets" translate>Buy Merit</button>
-            <button class="button button-standard button-primary" ng-click="createWallet()" ng-show="!hasWallets" translate>Create merit wallet</button>
-            <button class="button button-standard button-secondary" ui-sref="tabs.receive" ng-show="hasWallets" translate>Show merit address</button>
+            <button class="button button-standard button-primary" (click)="buyMerit()" *ngIf="hasWallets" translate>Buy Merit</button>
+            <button class="button button-standard button-primary" (click)="createWallet()" *ngIf="!hasWallets" translate>Create merit wallet</button>
+            <button class="button button-standard button-secondary" ui-sref="tabs.receive" *ngIf="hasWallets" translate>Show merit address</button>
           </div>
         </div>
       </div>
-      <div ng-if="hasFunds && hasWallets">
+      <div *ngIf="hasFunds && hasWallets">
         <div class="card sendTip">
           <div class="item item-icon-right item-heading"></div>
           <div>
@@ -70,15 +69,15 @@
         </div>
       </div>
 
-      <div class="card" ng-if="showTransferCard && hasFunds">
+      <div class="card" *ngIf="showTransferCard && hasFunds">
         <div class="item item-heading">
           <span translate>Transfer to Wallet</span>
         </div>
         <div class="list">
-          <a class="item item-icon-left item-icon-right" ng-repeat="item in list" ng-if="hasWallets && item.recipientType == 'wallet'"
-            ng-click="goToAmount(item)">
-          <i class="icon big-icon-svg" ng-if="item.recipientType == 'wallet'">
-            <img src="img/icon-wallet.svg" ng-class="{'wallet-background-color-default': !item.color}" ng-style="{'background-color': item.color}" class="bg"/>
+          <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList" *ngIf="hasWallets && item.recipientType == 'wallet'"
+            (click)="goToAmount(item)">
+          <i class="icon big-icon-svg" *ngIf="item.recipientType == 'wallet'">
+            <img src="img/icon-wallet.svg" [class.wallet-background-color-default]="!item.color" [style.background]="item.color" class="bg"/>
           </i>
           {{item.name}}
           <i class="icon bp-arrow-right"></i>

@@ -9,5 +9,7 @@ import { SendView } from 'merit/transact/send/send';
   imports: [
     IonicPageModule.forChild(SendView),
   ],
+  exports: [
+  ]
 })
-export class SendComponentModule {}
+export class SendViewModule {}

@@ -878,4 +878,13 @@ export class ProfileService {
     });
   };
 
+  /*
+   This is useful because it helps us know whether or not to show 
+   the user occasional helpful guidance about how to get started with Merit. 
+   (Beyond the onboarding flow.)
+  */
+  public hasOwnedMerit(): boolean {
+    return true;
+  }
+
 }
