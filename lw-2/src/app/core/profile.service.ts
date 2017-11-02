@@ -303,7 +303,7 @@ export class ProfileService {
         this.profile = this.profile.fromObj(profile);
         // Deprecated: storageService.tryToMigrate
         this.logger.debug('Profile read');
-        this.bindProfile(this.profile).then(() => {
+        return this.bindProfile(this.profile).then(() => {
           return resolve(this.profile);
         }).catch((err: any) => {
           return reject(err);
@@ -345,7 +345,7 @@ export class ProfileService {
         });
       };
 
-      bindWallets().then(() => {
+      return bindWallets().then(() => {
         this.isDisclaimerAccepted().then((accepted) => {
           if (accepted) {
             return resolve();
