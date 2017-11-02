@@ -1089,7 +1089,7 @@ Storage.prototype.fetchVaults = function(copayerId, cb) {
 };
 
 Storage.prototype.storeVault = function(copayerId, vaultTx, cb) {
-  this.db.collection(collections.VAULTS).insert({
+  this.db.collection(collections.VAULTS).insertOne({
     copayerId,
     ...vaultTx,
   }, {

@@ -57,6 +57,7 @@ bitcore.Transaction = require('./lib/transaction');
 bitcore.Referral = require('./lib/referral');
 bitcore.URI = require('./lib/uri');
 bitcore.Unit = require('./lib/unit');
+bitcore.Vault = require('./lib/vault');
 
 // dependencies, subject to change
 bitcore.deps = {};
