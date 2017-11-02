@@ -12,6 +12,8 @@ var mongodb = require('mongodb');
 
 var Model = require('./model');
 
+var Bitcore = require('bitcore-lib');
+
 var collections = {
   WALLETS: 'wallets',
   TXS: 'txs',
@@ -97,6 +99,9 @@ Storage.prototype._createIndexes = function() {
   });
   this.db.collection(collections.VAULTS).createIndex({
     copayerId: 1,
+  });
+  this.db.collection(collections.VAULTS).createIndex({
+    txId: 1,
   });
 };
 
@@ -1094,6 +1099,27 @@ Storage.prototype.storeVault = function(copayerId, vaultTx, cb) {
     ...vaultTx,
   }, {
     w: 1
+  }, cb);
+};
+
+Storage.prototype.fetchVaultByTxId = function(txId, cb) {
+  this.db.collection(collections.VAULTS).findOne({
+    txId,
+  }, function(err, result) {
+    if (err) return cb(err);
+    if (!result) return cb();
+
+    return cb(null, result);
+  });
+};
+
+Storage.prototype.setVaultConfirmed = function(txId, cb) {
+  tx.status = Bitcore.Vault.Vault.VaultStates.APPROVED;
+  this.db.collection(collections.VAULTS).findAndModify({
+    txId,
+  }, tx, {
+    new: true,
+    upsert: true,
   }, cb);
 };
 
