@@ -1,71 +1,78 @@
 {
-    "name": "merit-lightwallet",
-    "description": "Merit LightWallet application",
-    "author": "MeritLabs Inc.",
-    "keywords": [
-        "merit",
-        "wallet",
-        "bitpay",
-        "mrt",
-        "multisignature",
-        "bitcore"
-    ],
-    "scripts": {
-        "clean": "ionic-app-scripts clean",
-        "build": "ionic-app-scripts build",
-        "lint": "ionic-app-scripts lint",
-        "ionic:build": "ionic-app-scripts build",
-        "ionic:serve": "ionic-app-scripts serve"
-    },
-    "dependencies": {
-        "@angular/common": "4.4.4",
-        "@angular/compiler": "4.4.4",
-        "@angular/compiler-cli": "4.4.4",
-        "@angular/core": "4.4.4",
-        "@angular/forms": "4.4.4",
-        "@angular/http": "4.4.4",
-        "@angular/platform-browser": "4.4.4",
-        "@angular/platform-browser-dynamic": "4.4.4",
-        "@angular/tsc-wrapped": "^4.4.6",
-        "@biesbjerg/ngx-translate-po-http-loader": "1.0.1",
-        "@ionic-native/android-fingerprint-auth": "4.3.2",
-        "@ionic-native/core": "4.3.2",
-        "@ionic-native/file": "4.3.2",
-        "@ionic-native/in-app-browser": "^4.3.2",
-        "@ionic-native/qr-scanner": "^4.3.3",
-        "@ionic-native/splash-screen": "4.3.2",
-        "@ionic-native/status-bar": "4.3.2",
-        "@ionic-native/touch-id": "4.3.2",
-        "@ionic/storage": "2.0.1",
-        "@ngx-translate/core": "6.0.1",
-        "@nsalaun/ng-logger": "2.0.1",
-        "@types/chrome": "0.0.47",
-        "@types/cordova-plugin-qrscanner": "1.0.31",
-        "@types/jasmine": "2.5.53",
-        "@types/lodash": "4.14.71",
-        "angular2-elastic": "^0.13.0",
-        "angular2-moment": "^1.7.0",
-        "angular2-qrcode": "^2.0.1",
-        "autoprefixer": "^7.1.6",
-        "bluebird": "^3.5.1",
-        "cordova-plugin-qrscanner": "^2.5.0",
-        "ionic-angular": "3.8.0",
-        "ionicons": "3.0.0",
-        "rxjs": "5.4.3",
-        "sw-toolbox": "3.6.0",
-        "zone.js": "0.8.18"
-    },
-    "devDependencies": {
-        "@ionic/app-scripts": "3.0.1",
-        "@types/node": "^8.0.47",
-        "typescript": "2.5.3"
-    },
-    "config": {
-        "ionic_webpack": "webpack.config.js"
-    },
-    "cordova": {
-        "plugins": {
-            "cordova-plugin-qrscanner": {}
-        }
+  "name": "merit-lightwallet",
+  "description": "Merit LightWallet application",
+  "author": "MeritLabs Inc.",
+  "keywords": [
+    "merit",
+    "wallet",
+    "bitpay",
+    "mrt",
+    "multisignature",
+    "bitcore"
+  ],
+  "scripts": {
+    "clean": "ionic-app-scripts clean",
+    "build": "ionic-app-scripts build",
+    "lint": "ionic-app-scripts lint",
+    "ionic:build": "ionic-app-scripts build",
+    "ionic:serve": "ionic-app-scripts serve"
+  },
+  "dependencies": {
+    "@angular/common": "4.4.4",
+    "@angular/compiler": "4.4.4",
+    "@angular/compiler-cli": "4.4.4",
+    "@angular/core": "4.4.4",
+    "@angular/forms": "4.4.4",
+    "@angular/http": "4.4.4",
+    "@angular/platform-browser": "4.4.4",
+    "@angular/platform-browser-dynamic": "4.4.4",
+    "@angular/tsc-wrapped": "^4.4.6",
+    "@biesbjerg/ngx-translate-po-http-loader": "1.0.1",
+    "@ionic-native/android-fingerprint-auth": "4.3.2",
+    "@ionic-native/clipboard": "^4.3.3",
+    "@ionic-native/core": "4.3.2",
+    "@ionic-native/file": "4.3.2",
+    "@ionic-native/in-app-browser": "^4.3.2",
+    "@ionic-native/qr-scanner": "^4.3.3",
+    "@ionic-native/social-sharing": "^4.3.3",
+    "@ionic-native/splash-screen": "4.3.2",
+    "@ionic-native/status-bar": "4.3.2",
+    "@ionic-native/touch-id": "4.3.2",
+    "@ionic/storage": "2.0.1",
+    "@ngx-translate/core": "6.0.1",
+    "@nsalaun/ng-logger": "2.0.1",
+    "@types/chrome": "0.0.47",
+    "@types/cordova-plugin-qrscanner": "1.0.31",
+    "@types/jasmine": "2.5.53",
+    "@types/lodash": "4.14.71",
+    "angular2-elastic": "^0.13.0",
+    "angular2-moment": "^1.7.0",
+    "angular2-qrcode": "^2.0.1",
+    "autoprefixer": "^7.1.6",
+    "bluebird": "^3.5.1",
+    "cordova-clipboard": "^1.1.0",
+    "cordova-plugin-qrscanner": "^2.5.0",
+    "cordova-plugin-x-socialsharing": "^5.2.1",
+    "ionic-angular": "3.8.0",
+    "ionicons": "3.0.0",
+    "ngx-clipboard": "^8.1.1",
+    "rxjs": "5.4.3",
+    "sw-toolbox": "3.6.0",
+    "zone.js": "0.8.18"
+  },
+  "devDependencies": {
+    "@ionic/app-scripts": "3.0.1",
+    "@types/node": "^8.0.47",
+    "typescript": "2.5.3"
+  },
+  "config": {
+    "ionic_webpack": "webpack.config.js"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-qrscanner": {},
+      "cordova-plugin-x-socialsharing": {},
+      "cordova-clipboard": {}
     }
+  }
 }

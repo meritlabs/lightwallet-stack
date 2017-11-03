@@ -1,8 +1,14 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, LoadingController } from 'ionic-angular';
 
 import { ProfileService } from "merit/core/profile.service";
 import { Wallet } from "merit/wallets/wallet.model";
+import {WalletService} from "../../wallets/wallet.service";
+import {ToastConfig} from "../../core/toast.config";
+import {MeritToastController} from "../../core/toast.controller";
+import {Logger} from "../../core/logger";
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { Clipboard } from '@ionic-native/clipboard';
 
 @IonicPage()
 @Component({
@@ -18,39 +24,83 @@ export class ReceiveView {
   public wallets;
   public wallet;
 
+  public addressGenerationInProgress:boolean;
+  public socialSharingAvailable:boolean;
+
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private  ModalCtrl:ModalController,
-    private profileService:ProfileService
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private modalCtrl:ModalController,
+    private profileService:ProfileService,
+    private walletService:WalletService,
+    private loadCtrl:LoadingController,
+    private toastCtrl:MeritToastController,
+    private logger:Logger,
+    private socialSharing: SocialSharing,
+    private clipboard:Clipboard
   ) {
     this.protocolHandler = "bitcoin";
-    this.address = "1FgGP9dKqtWC1Q9xGhPYVmAeyezeZCFjhf";
-    this.updateQrAddress();
+
   }
 
-  ionViewDidLoad() {
-    //do something here
-    this.wallets = this.profileService.getWallets();
-    this.wallet = this.wallets[0];
+  async ionViewDidLoad() {
+    this.wallets = await this.profileService.getWallets();
+
+    if (this.wallets && this.wallets[0]) {
+      this.wallet = this.wallets[0];
+      //this.generateAddress();
+      this.address = '1FgGP9dKqtWC1Q9xGhPYVmAeyezeZCFjhf';
+      this.qrAddress = 'bitcoin:1FgGP9dKqtWC1Q9xGhPYVmAeyezeZCFjhf';
+    }
+
+    this.socialSharing.canShareVia('email').then(() => {
+      this.socialSharingAvailable = true;
+    }).catch((err) => {
+      console.log(err);
+      this.socialSharingAvailable = false;
+    })
 
   }
 
   requestSpecificAmount() {
-    //this.navCtrl.push(AmountView, {address: this.address, sending: false});
+    let modal = this.modalCtrl.create('AmountView');
+    modal.onDidDismiss((amount) => {
+       //todo do something
+    });
+
+    modal.present();
   }
 
-  setAddress() {
-    this.address = this.address === "1FgGP9dKqtWC1Q9xGhPYVmAeyezeZCFjhf" ? "1RTes3reeRTs1Q9xGhPYVmQFrdUyCr3EsX" : "1FgGP9dKqtWC1Q9xGhPYVmAeyezeZCFjhf";
-    this.updateQrAddress();
-  }
+  generateAddress(forceNew?) {
 
-  updateQrAddress () {
-    this.qrAddress = this.protocolHandler + ":" + this.address;
+    //let loader = this.loadCtrl.create({text: 'Generating...'});
+    //loader.present();
+
+    this.addressGenerationInProgress = true;
+
+    this.walletService.getAddress(this.wallet, forceNew).then((address) => {
+
+      this.address = address;
+      this.qrAddress = this.protocolHandler + ":" + this.address;
+      this.addressGenerationInProgress = false;
+      //loader.dismiss();
+
+    }).catch((err) => {
+      this.addressGenerationInProgress = false;
+      this.address = null;
+      this.qrAddress = null;
+      //loader.dismiss();
+      this.logger.warn('Failed to generate new adrress '+err);
+      this.toastCtrl.create({
+        message: 'Failed to generate new adrress: '+err,
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    });
+
   }
 
   selectWallet() {
-    let modal = this.ModalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
+    let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
     modal.present();
     modal.onDidDismiss((wallet) => {
       if (wallet) this.wallet = wallet;
@@ -58,11 +108,18 @@ export class ReceiveView {
   }
 
   share() {
-    //@TODO implement sharing using Ionic Social Sharing
+    //todo implement social sharing
+    this.socialSharing.share('merit:'+this.address);
   }
 
   copyToClipboard(address) {
-    // @TODO implement copy to clipboard and notify
+
+    this.clipboard.copy(address);
+
+    this.toastCtrl.create({
+      message: 'Address copied to clipboard',
+      cssClass: ToastConfig.CLASS_MESSAGE
+    }).present();
   }
 
   toCopayers() {
@@ -71,9 +128,9 @@ export class ReceiveView {
 
   shareButtonAvailable() {
     return (
-      this.wallet
+      this.socialSharingAvailable
+      && this.wallet
       && this.wallet.isComplete()
-      //&& TODO CHECK IF IS NATIVE
     );
   }
 

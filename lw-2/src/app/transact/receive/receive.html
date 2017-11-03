@@ -23,23 +23,37 @@
         <button (click)="toCopayers()" ion-button>Open Wallet</button>
     </ion-card>
 
-    <div class="container" *ngIf="wallet && wallet.isComplete()">
+    <div class="container" *ngIf="wallet && wallet.isComplete() && qrAddress && !addressGenerationInProgress">
 
         <qr-code *ngIf="address" [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
-        <div class="address" (click)="copyToClipboard(address)">{{ address }}</div>
+        <div  class="address" (click)="copyToClipboard(address)"  ngxClipboard [cbContent]="address">{{address}}</div>
+
+
         <div>
             <button ion-button clear [hidden]="!address" class="button-request" (click)="requestSpecificAmount()">
                 <span>Request Specific amount </span>
                 <ion-icon name="arrow-forward"></ion-icon>
             </button>
         </div>
+
+
         <div>
-            <button ion-button clear  [hidden]="!address" class="button-address" (click)="setAddress(true)">
+            <button ion-button clear  [hidden]="!address" class="button-address" (click)="generateAddress(forceNew = true)">
                 <span>Generate new address</span>
             </button>
         </div>
 
     </div>
+
+    <div margin-top padding *ngIf="addressGenerationInProgress">
+        <ion-spinner></ion-spinner>
+    </div>
+
+    <div class="container" *ngIf="wallet && wallet.isComplete() && !qrAddress && !addressGenerationInProgress">
+        No address available for this wallet
+    </div>
+
+
 
 </ion-content>
 
@@ -60,7 +74,7 @@
             <p>
                 <span *ngIf="!wallet.isComplete()" class="assertive" translate>Incomplete</span>
                 <span *ngIf="wallet.isComplete()">
-                <span *ngIf="!wallet.balanceHidden">
+                <span *ngIf="wallet.status && !wallet.balanceHidden">
                 {{wallet.status.totalBalanceStr ? wallet.status.totalBalanceStr : ( wallet.cachedBalance ? wallet.cachedBalance   + (wallet.cachedBalanceUpdatedOn ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn  * 1000 | amTimeAgo) : '') : ''  ) }}
                 </span>
                 <span *ngIf="wallet.balanceHidden" translate>
@@ -69,7 +83,7 @@
                 <span *ngIf="wallet.n > 1">
                 {{wallet.m}}-of-{{wallet.n}}
                 </span>
-                <ion-icon *ngIf="!wallet.balanceHidden && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
+                <ion-icon *ngIf="!wallet.balanceHidden && wallet.status && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
                 name="timer-outline"></ion-icon>
 
                 <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>

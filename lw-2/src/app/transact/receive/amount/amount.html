@@ -1,0 +1,37 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>AmountView</ion-title>
+
+        <ion-buttons end>
+            <button ion-button (click)="close()">
+                close
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+        <ion-item>
+            <ion-label>Currency</ion-label>
+            <ion-select [(ngModel)]="formData.currency">
+                <ion-option *ngFor="let currency of availableCurrencies">{{currency}}</ion-option>
+            </ion-select>
+        </ion-item>
+
+
+        <ion-item>
+            <ion-label>Amount</ion-label>
+            <ion-input type="number" item-right [(ngModel)]="formData.amount" text-right>
+            </ion-input>
+        </ion-item>
+
+        <div class="control-buttons" margin-top>
+            <button type="submit" ion-button translate item-right (click)="setAmount()">Set amount</button>
+        </div>
+
+
+</ion-content>

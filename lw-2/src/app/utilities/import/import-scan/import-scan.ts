@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, ViewController } from 'ionic-angular';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
+import {Logger} from "merit/core/logger";
 
 @IonicPage({
   defaultHistory: ['ImportView']
@@ -16,13 +17,20 @@ export class ImportScanView {
   public scannerPermitted:boolean;
 
   constructor(
-    private navCtrl: NavController,
-    private Params: NavParams,
-    private qrScanner: QRScanner
+    private viewCtrl:ViewController,
+    private qrScanner: QRScanner,
+    private logger:Logger
   ) {
+
+  }
+
+  close() {
+    this.viewCtrl.dismiss();
   }
 
   ionViewDidLoad() {
+
+    console.log('import scan onload');
 
     this.qrScanner.prepare().then((status:QRScannerStatus) => {
       this.scannerAvailable = true;
@@ -32,13 +40,15 @@ export class ImportScanView {
         this.scannerPermitted = true;
 
         // start scanning
-        let scanSub = this.qrScanner.scan().subscribe((data:string) => {
-
-          this.processScanned(data);
-
-          this.qrScanner.hide(); // hide camera preview
-          scanSub.unsubscribe(); // stop scanning
-        });
+        this.qrScanner.scan().subscribe(
+          (data:string) => {
+            return this.viewCtrl.dismiss(data);
+          },
+          (error: string) => {
+            this.logger.warn(error);
+            return this.viewCtrl.dismiss();
+          }
+        );
 
         this.qrScanner.show();
 
@@ -52,10 +62,6 @@ export class ImportScanView {
     }).catch((err) => {
       this.scannerAvailable = false;
     });
-  }
-
-  processScanned(data) {
-
   }
 
 }

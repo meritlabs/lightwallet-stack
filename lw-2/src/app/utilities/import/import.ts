@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController  } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController, ModalController  } from 'ionic-angular';
 
 import { ConfigService } from "merit/shared/config.service";
 import {BwcService} from "merit/core/bwc.service";
@@ -52,7 +52,8 @@ export class ImportView {
     private loadingCtrl:LoadingController,
     private profileService:ProfileService,
     private walletService:WalletService,
-    private derivationPathService:DerivationPathService
+    private derivationPathService:DerivationPathService,
+    private modalCtrl:ModalController
   ) {
 
     this.formData.bwsUrl = config.getDefaults().bws.url;
@@ -65,7 +66,13 @@ export class ImportView {
   }
 
   openScanner() {
-    this.navCtrl.push('ImportScanView');
+    let modal = this.modalCtrl.create('ImportScanView');
+    modal.onDidDismiss((words) => {
+      if (words) {
+        this.formData.words = words;
+      }
+    })
+    modal.present();
   }
 
   openFilePicker() {
