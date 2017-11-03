@@ -888,7 +888,7 @@ Script.buildSimpleVaultScript = function(tag) {
 
 Script.buildParameterizedP2SH = function(dest) {
   var s = new Script();
-  var destBytes = "";
+  var destBytes = BN.fromString(dest);
 
   s.add(Opcode.OP_HASH160)
     .add(destBytes.toBuffer())
