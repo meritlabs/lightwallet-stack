@@ -150,11 +150,43 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     }, 10);
   };
 
+  var couldBeEmail = function(search) {
+    var weakEmailPattern = /^\S+@\w+(\.\w+)+$/
+    return weakEmailPattern.test(search);
+  }
+
+  var couldBePhoneNumber = function(search) {
+    var weakPhoneNumberPattern = /^[\(\+]?\d+([\(\)\.-]\d*)*$/
+    return weakPhoneNumberPattern.test(search);
+  }
+
   var findMatchingContacts = function(list, term) {
     return lodash.filter(list, function(item) {
       return lodash.includes(item.searchTerm.toLowerCase(), term.toLowerCase());
     });
   };
+
+  var contactFromSearchTerm = function(search) {
+    if (couldBeEmail(search)) {
+      return {
+        name: 'Email: ' + search,
+        email: search,
+        sendMethod: 'email',
+        address: '',
+        getAddress: function(cb) { return cb(); }
+      };
+    }
+    if (couldBePhoneNumber(search)) {
+      return {
+        name: 'SMS: ' + search,
+        phoneNumber: search,
+        sendMethod: 'sms',
+        address: '',
+        getAddress: function(cb) { return cb(); }
+      };
+    }
+    return null;
+  }
 
   var contactWithSendMethod = function(contact, search) {
     var obj = lodash.clone(contact);
@@ -238,6 +270,11 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     $scope.list = result.concat(lodash.map(deviceResult, function(contact) {
       return contactWithSendMethod(contact, search);
     }));
+    if ($scope.list.length < 1) {
+      var literal = contactFromSearchTerm(search);
+      if (literal)
+        $scope.list.unshift(literal);
+    }
   };
 
   $scope.goToAmount = function(item) {
