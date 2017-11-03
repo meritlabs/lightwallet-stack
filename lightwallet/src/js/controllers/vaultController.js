@@ -1,7 +1,6 @@
 'use strict';
 
 angular.module('copayApp.controllers').controller('vaultController', function($scope, $rootScope, $state, popupService, bwcService) {
-  window.Client = walletClient;
 
   $scope.toMasterKey = function() {
     $state.go('tabs.add.create-vault.master-key');
