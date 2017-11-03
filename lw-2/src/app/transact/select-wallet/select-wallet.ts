@@ -19,12 +19,12 @@ export class SelectWalletModal {
     private viewCtrl: ViewController,
     private profileService:ProfileService,
   ) {
-      this.wallets = this.profileService.getWallets();
-      this.selectedWallet = this.navParams.get('selectedWallet');
+
   }
 
-  ionViewDidLoad() {
-    //do something here
+  async ionViewDidLoad() {
+    this.wallets = await this.profileService.getWallets();
+    this.selectedWallet = this.navParams.get('selectedWallet');
   }
 
   cancel() {
