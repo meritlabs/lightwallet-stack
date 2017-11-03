@@ -151,7 +151,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
 
   var couldBeEmail = function(search) {
-    var weakEmailPattern = /^\S+@\w+(\.\w+)+$/
+    var weakEmailPattern = /^\S+@\S+/
     return weakEmailPattern.test(search);
   }
 
