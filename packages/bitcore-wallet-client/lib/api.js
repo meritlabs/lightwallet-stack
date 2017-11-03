@@ -837,6 +837,37 @@ API.prototype.buildVaultCreationTransaction = function(input, opts) {
 };
 
 /**
+ * Create spend tx for vault
+ */
+API.prototype.createSpendFromVaultTx = function(opts) {
+  opts = opts || {};
+
+  var network = opts.network || DEFAULT_NET;
+  var fee = opts.fee || 10000;
+
+  var tx = new Bitcore.Transaction();
+  tx.fee(fee);
+
+  return tx;
+};
+
+/**
+ * Renew vault
+ * Will make all pending tx invalid
+ */
+API.prototype.buildRenewVaultTx = function(opts) {
+  opts = opts || {};
+
+  var network = opts.network || DEFAULT_NET;
+  var fee = opts.fee || 10000;
+
+  var tx = new Bitcore.Transaction();
+  tx.fee(fee);
+
+  return tx;
+};
+
+/**
  * Open a wallet and try to complete the public key ring.
  *
  * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is complete.
