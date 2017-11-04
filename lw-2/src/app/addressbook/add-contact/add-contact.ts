@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import {Contact} from "merit/shared/address-book/contact/contact.model";
+import { Contact } from "merit/shared/address-book/contact/contact.model";
 
 // Add Contact Screen
 @IonicPage()
