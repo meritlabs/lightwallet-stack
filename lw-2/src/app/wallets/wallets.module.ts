@@ -22,7 +22,7 @@ import { LanguageService } from 'merit/core/language.service';
   ,
   imports: [
     MomentModule,
-    IonicPageModule.forChild(WalletsView),
+    IonicPageModule.forChild(WalletsView)
   ],
 })
 export class WalletsModule {}
