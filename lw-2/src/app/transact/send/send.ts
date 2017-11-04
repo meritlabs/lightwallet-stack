@@ -9,6 +9,10 @@ import { AddressBookService } from 'merit/shared/address-book/address-book.servi
 import { PopupService } from 'merit/core/popup.service';
 import * as _ from 'lodash';
 
+/**
+ * The Send View allows a user to frictionlessly send Merit to contacts
+ * without needing to know if they are on the Merit network.
+ */
 @IonicPage()
 @Component({
   selector: 'view-send',

@@ -24,7 +24,7 @@
     <div class="list">
       <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList" (click)="goToAmount(item)">
         <i class="icon big-icon-svg">
-          <gravatar class="send-gravatar" name="{{item.name}}" width="30" email="{{item.email}}" ></gravatar>
+          <gravatar class="send-gravatar" [name]="item.name" width="30" [email]="item.email" ></gravatar>
         </i>
         {{item.name}}
         <i class="icon bp-arrow-right"></i>
@@ -73,8 +73,8 @@
         <div class="item item-heading">
           <span translate>Transfer to Wallet</span>
         </div>
-        <div class="list">
-          <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList" *ngIf="hasWallets && item.recipientType == 'wallet'"
+        <div class="list" *ngIf="hasWallets">
+          <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList"
             (click)="goToAmount(item)">
           <i class="icon big-icon-svg" *ngIf="item.recipientType == 'wallet'">
             <img src="img/icon-wallet.svg" [class.wallet-background-color-default]="!item.color" [style.background]="item.color" class="bg"/>
