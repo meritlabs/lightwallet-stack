@@ -11,6 +11,9 @@ import { Promise } from 'bluebird';
   Using bluebird promises! 
   This gives us the ability to map over items and 
   engage in async requests.
+
+  TODO: 
+  -- Ensure that we get navParams and then fallback to the wallet service.
 */ 
 @IonicPage()
 @Component({
