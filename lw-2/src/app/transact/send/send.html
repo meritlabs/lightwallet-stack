@@ -49,9 +49,9 @@
           <span *ngIf="hasWallets" translate>To get started, buy merit or share your address. You can receive merit from any wallet or service.</span>
           <span *ngIf="!hasWallets" translate>To get started, you'll need to create a merit wallet and get some merit.</span>
           <div class="padding">
-            <button class="button button-standard button-primary" (click)="buyMerit()" *ngIf="hasWallets" translate>Buy Merit</button>
-            <button class="button button-standard button-primary" (click)="createWallet()" *ngIf="!hasWallets" translate>Create merit wallet</button>
-            <button class="button button-standard button-secondary" ui-sref="tabs.receive" *ngIf="hasWallets" translate>Show merit address</button>
+            <button ion-button class="button button-standard button-primary" (click)="buyMerit()" *ngIf="hasWallets" translate>Buy Merit</button>
+            <button ion-button class="button button-standard button-primary" (click)="createWallet()" *ngIf="!hasWallets" translate>Create merit wallet</button>
+            <button ion-button class="button button-standard button-secondary" ui-sref="tabs.receive" *ngIf="hasWallets" translate>Show merit address</button>
           </div>
         </div>
       </div>
