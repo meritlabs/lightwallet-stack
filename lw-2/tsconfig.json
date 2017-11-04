@@ -3,7 +3,6 @@
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": true,
     "declaration": false,
-    "allowJs": true,
     "noEmit": false,    
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

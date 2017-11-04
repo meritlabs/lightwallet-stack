@@ -13,8 +13,8 @@ import { ModalController } from "ionic-angular/index";
 })
 export class NetworkView {
 
-  public wallets:Array<Wallet>;
-  public wallet:Wallet;
+  public wallets;
+  public wallet;
 
   constructor(
     public navCtrl: NavController,

@@ -7,19 +7,30 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { LanguageService } from 'merit/core/language.service';
-//import {WalletServiceMock} from "./wallet.service.mock";
 
+import {AppUpdateService} from "merit/core/app-update.service";
+import {FeedbackService} from "../feedback/feedback.service";
+
+import {EasyReceiveService} from "merit/easy-receive/easy-receive.service";
+
+import { InAppBrowser } from '@ionic-native/in-app-browser';
+import {AddressbookService} from "merit/addressbook/addressbook.service";
 
 @NgModule({
   declarations: [
     WalletsView,
   ],
+  /** @DISCUSS what's the best place for app update service? */
   providers: [
     WalletService,
+    AppUpdateService,
+    FeedbackService,
+    EasyReceiveService,
+    AddressbookService,
+    InAppBrowser,
     MnemonicService,
     LanguageService
-  ]
-  ,
+  ],
   imports: [
     MomentModule,
     IonicPageModule.forChild(WalletsView)

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { AddContactView } from 'merit/settings/addressbook/add-contact/add-contact';
+import { AddContactView } from 'merit/addressbook/add-contact/add-contact';
 
 @NgModule({
   declarations: [

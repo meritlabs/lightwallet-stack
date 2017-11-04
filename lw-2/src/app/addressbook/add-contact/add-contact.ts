@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Contact } from "./../../../shared/contact/contact.model";
-
+import {Contact} from "merit/shared/contact/contact.model";
 
 @IonicPage()
 @Component({

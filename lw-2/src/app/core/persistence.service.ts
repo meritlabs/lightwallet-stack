@@ -71,11 +71,7 @@ export class PersistenceService {
   };
 
   getProfile(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.storage.get(Keys.PROFILE).then((profile) => {
-        resolve(profile);
-      });
-    });
+    return this.storage.get(Keys.PROFILE);
   };
 
   deleteProfile(): Promise<void> {
