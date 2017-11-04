@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Platform, ModalController } from 'ionic-angular';
+import { Platform, ModalController, NavController} from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -12,6 +12,7 @@ import { TransactView } from 'merit/transact/transact';
 import { OnboardingView } from 'merit/onboard/onboarding.view';
 import { FingerprintLockView } from 'merit/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
+import { Promise } from 'bluebird';
 
 
 @Component({
@@ -29,7 +30,8 @@ export class MeritLightWallet {
     private logger: Logger,
     private modalCtrl: ModalController,
     private appService: AppService,
-    private configService: ConfigService
+    private configService: ConfigService, 
+    private navCtrl: NavController
   ) {
 
     this.initializeApp();
@@ -52,12 +54,16 @@ export class MeritLightWallet {
         this.statusBar.styleLightContent();
         this.splashScreen.hide();
       }
+      Promise.longStackTraces();
+      process.on('unhandledRejection', console.log.bind(console))      
       // Check Profile
       this.profileService.loadAndBindProfile().then((profile: any) => {
         
         this.openLockModal();
-        if (profile) this.rootComponent = 'TransactView';
-        else {
+        if (profile) {
+          this.rootComponent = 'TransactView';
+          this.navCtrl.push('TransactView');
+        } else {
           //this.profileService.createProfile();
           this.rootComponent = 'OnboardingView';
         }
