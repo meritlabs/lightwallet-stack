@@ -313,20 +313,6 @@ export class WalletService {
     });
   }
 
-  // Check address
-  private isAddressUsed(wallet: any, byAddress: Array<any>): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.persistenceService.getLastAddress(wallet.id).then((addr) => {
-        let used = _.find(byAddress, {
-          address: addr
-        });
-        return resolve(used);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-  }
-
   public getAddress(wallet: any, forceNew: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       this.persistenceService.getLastAddress(wallet.id).then((addr) => {
@@ -335,19 +321,21 @@ export class WalletService {
         if (!wallet.isComplete())
           return reject('WALLET_NOT_COMPLETE');
 
-        this.createAddress(wallet).then((_addr) => {
-          this.persistenceService.storeLastAddress(wallet.id, _addr).then(() => {
-            return resolve(_addr);
+        return this.createAddress(wallet).then((_addr) => {
+          if (_.isEmpty(_addr)) {
+            return reject(new Error("Cannot retrieve a new address"));
+          } else {
+            return this.persistenceService.storeLastAddress(wallet.id, _addr).then(() => {
+              return resolve(_addr);
+            })
+          }
           }).catch((err) => {
             return reject(err);
           });
         }).catch((err) => {
           return reject(err);
         });
-      }).catch((err) => {
-        return reject(err);
       });
-    });
   }
 
   // Check address
