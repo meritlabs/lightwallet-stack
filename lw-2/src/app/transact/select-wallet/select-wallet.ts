@@ -10,8 +10,8 @@ import { Wallet } from "merit/wallets/wallet.model";
 })
 export class SelectWalletModal {
 
-  public wallets:Array<Wallet>;
-  public selectedWallet:Wallet;
+  public wallets;
+  public selectedWallet;
 
   constructor(
     public navCtrl: NavController,
@@ -19,12 +19,12 @@ export class SelectWalletModal {
     private viewCtrl: ViewController,
     private profileService:ProfileService,
   ) {
-      this.wallets = this.profileService.getWallets();
-      this.selectedWallet = this.navParams.get('selectedWallet');
+
   }
 
-  ionViewDidLoad() {
-    //do something here
+  async ionViewDidLoad() {
+    this.wallets = await this.profileService.getWallets();
+    this.selectedWallet = this.navParams.get('selectedWallet');
   }
 
   cancel() {
