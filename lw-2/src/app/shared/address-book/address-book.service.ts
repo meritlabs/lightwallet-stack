@@ -9,12 +9,13 @@ import { PersistenceService } from 'merit/core/persistence.service';
 
 @Injectable()
 export class AddressBookService {
+  private bitcore: any;
+  
   constructor(
     private logger: Logger,
     private bwcService: BwcService,
     private bwcErrorService: BwcError,
-    private persistenceService: PersistenceService,
-    private bitcore: any
+    private persistenceService: PersistenceService
   ) {
     this.bitcore = this.bwcService.getBitcore();
   }
