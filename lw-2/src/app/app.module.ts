@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule, NavController } from 'ionic-angular';
 
 import { MeritLightWallet } from 'merit/app.component';
 import { OnboardingView } from 'merit/onboard/onboarding.view';
@@ -27,7 +27,8 @@ import { CoreModule } from 'merit/core/core.module';
     MeritLightWallet
   ],
   providers: [
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    NavController
   ]
 })
 export class AppModule {}
