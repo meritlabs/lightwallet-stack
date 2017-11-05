@@ -102,6 +102,7 @@ export class ProfileService {
     });
   }
 
+  // Adds a WalletService client (BWC) into the wallet.  
   private bindWalletClient(wallet: any, opts?: any): Promise<boolean> {
     return new Promise((resolve, reject) => {
       console.log("Binding 1");    
@@ -120,6 +121,8 @@ export class ProfileService {
       wallet.copayerId = wallet.credentials.copayerId;
       wallet.m = wallet.credentials.m;
       wallet.n = wallet.credentials.n;
+      wallet.unlocked = wallet.credentials.unlocked;
+      wallet.shareCode = wallet.credentials.shareCode;
 
       this.updateWalletSettings(wallet);
       this.wallets[walletId] = wallet;
@@ -423,7 +426,7 @@ export class ProfileService {
 
       let addressBook = strParsed.addressBook ? strParsed.addressBook : {};
 
-      this.addAndBindWalletClient(walletClient, {
+      return this.addAndBindWalletClient(walletClient, {
         bwsurl: opts.bwsurl
       }).then((walletId: string) => {
         this.setMetaData(walletClient, addressBook).then(() => {
