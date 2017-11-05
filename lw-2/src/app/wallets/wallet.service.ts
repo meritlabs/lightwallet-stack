@@ -165,91 +165,91 @@ export class WalletService {
         });
       };
       
+      // TODO!!: Make this return a promise and properly promisify the stack.
+      let cacheBalance = (wallet: any, balance: any): Promise<any> => {
+        return new Promise((resolve, reject) => {
 
-      let cacheBalance = (wallet: any, balance: any): void => {
-        if (!balance) return;
+        
+          if (!balance) return;
 
-        let configGet: any = this.configService.get();
-        let config: any = configGet.wallet;
+          let configGet: any = this.configService.get();
+          let config: any = configGet.wallet;
 
-        let cache = wallet.cachedStatus;
+          let cache = wallet.cachedStatus;
 
-        // Address with Balance
-        cache.balanceByAddress = balance.byAddress;
+          // Address with Balance
+          cache.balanceByAddress = balance.byAddress;
 
-        // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
-        cache.totalBalanceSat = balance.totalAmount;
+          // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
+          cache.totalBalanceSat = balance.totalAmount;
 
-        // Spend unconfirmed funds
-        if (config.spendUnconfirmed) {
-          cache.lockedBalanceSat = balance.lockedAmount;
-          cache.availableBalanceSat = balance.availableAmount;
-          cache.totalBytesToSendMax = balance.totalBytesToSendMax;
-          cache.pendingAmount = 0;
-          cache.spendableAmount = balance.totalAmount - balance.lockedAmount;
-        } else {
-          cache.lockedBalanceSat = balance.lockedConfirmedAmount;
-          cache.availableBalanceSat = balance.availableConfirmedAmount;
-          cache.totalBytesToSendMax = balance.totalBytesToSendConfirmedMax;
-          cache.pendingAmount = balance.totalAmount - balance.totalConfirmedAmount;
-          cache.spendableAmount = balance.totalConfirmedAmount - balance.lockedAmount;
-        }
-
-        // Selected unit
-        cache.unitToSatoshi = config.settings.unitToSatoshi;
-        cache.satToUnit = 1 / cache.unitToSatoshi;
-
-        //STR
-        cache.totalBalanceStr = this.txFormatService.formatAmountStr(cache.totalBalanceSat);
-        cache.lockedBalanceStr = this.txFormatService.formatAmountStr(cache.lockedBalanceSat);
-        cache.availableBalanceStr = this.txFormatService.formatAmountStr(cache.availableBalanceSat);
-        cache.spendableBalanceStr = this.txFormatService.formatAmountStr(cache.spendableAmount);
-        cache.pendingBalanceStr = this.txFormatService.formatAmountStr(cache.pendingAmount);
-
-        cache.alternativeName = config.settings.alternativeName;
-        cache.alternativeIsoCode = config.settings.alternativeIsoCode;
-
-        // Check address
-        this.isAddressUsed(wallet, balance.byAddress).then((used) => {
-          if (used) {
-            this.logger.debug('Address used. Creating new');
-            // Force new address
-            return this.getAddress(wallet, true).then((addr) => {
-              this.logger.debug('New address: ', addr);
-            }).catch((err) => {
-              return reject(err);
-            });
+          // Spend unconfirmed funds
+          if (config.spendUnconfirmed) {
+            cache.lockedBalanceSat = balance.lockedAmount;
+            cache.availableBalanceSat = balance.availableAmount;
+            cache.totalBytesToSendMax = balance.totalBytesToSendMax;
+            cache.pendingAmount = 0;
+            cache.spendableAmount = balance.totalAmount - balance.lockedAmount;
+          } else {
+            cache.lockedBalanceSat = balance.lockedConfirmedAmount;
+            cache.availableBalanceSat = balance.availableConfirmedAmount;
+            cache.totalBytesToSendMax = balance.totalBytesToSendConfirmedMax;
+            cache.pendingAmount = balance.totalAmount - balance.totalConfirmedAmount;
+            cache.spendableAmount = balance.totalConfirmedAmount - balance.lockedAmount;
           }
-        }).catch((err) => {
-          return reject(err);
-        });
 
-        this.rateService.whenAvailable().then(() => {
+          // Selected unit
+          cache.unitToSatoshi = config.settings.unitToSatoshi;
+          cache.satToUnit = 1 / cache.unitToSatoshi;
 
-          let totalBalanceAlternative = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
-          let pendingBalanceAlternative = this.rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode);
-          let lockedBalanceAlternative = this.rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
-          let spendableBalanceAlternative = this.rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode);
-          let alternativeConversionRate = this.rateService.toFiat(100000000, cache.alternativeIsoCode);
+          //STR
+          cache.totalBalanceStr = this.txFormatService.formatAmountStr(cache.totalBalanceSat);
+          cache.lockedBalanceStr = this.txFormatService.formatAmountStr(cache.lockedBalanceSat);
+          cache.availableBalanceStr = this.txFormatService.formatAmountStr(cache.availableBalanceSat);
+          cache.spendableBalanceStr = this.txFormatService.formatAmountStr(cache.spendableAmount);
+          cache.pendingBalanceStr = this.txFormatService.formatAmountStr(cache.pendingAmount);
 
-          cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
-          cache.pendingBalanceAlternative = new FiatAmount(pendingBalanceAlternative);
-          cache.lockedBalanceAlternative = new FiatAmount(lockedBalanceAlternative);
-          cache.spendableBalanceAlternative = new FiatAmount(spendableBalanceAlternative);
-          cache.alternativeConversionRate = new FiatAmount(alternativeConversionRate);
+          cache.alternativeName = config.settings.alternativeName;
+          cache.alternativeIsoCode = config.settings.alternativeIsoCode;
 
-          cache.alternativeBalanceAvailable = true;
-          cache.isRateAvailable = true;
-        }).catch((err) => {
-          this.logger.warn("Error setting display balances: ", err);
+          // Check address
+          return this.isAddressUsed(wallet, balance.byAddress).then((used) => {
+            if (used) {
+              this.logger.debug('Address used. Creating new');
+              // Force new address
+              this.getAddress(wallet, true).then((addr) => {
+                this.logger.debug('New address: ', addr);
+              })
+            }
+          }).then(() => {
+            this.rateService.whenAvailable().then(() => {
+              
+              let totalBalanceAlternative = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
+              let pendingBalanceAlternative = this.rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode);
+              let lockedBalanceAlternative = this.rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
+              let spendableBalanceAlternative = this.rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode);
+              let alternativeConversionRate = this.rateService.toFiat(100000000, cache.alternativeIsoCode);
+
+              cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
+              cache.pendingBalanceAlternative = new FiatAmount(pendingBalanceAlternative);
+              cache.lockedBalanceAlternative = new FiatAmount(lockedBalanceAlternative);
+              cache.spendableBalanceAlternative = new FiatAmount(spendableBalanceAlternative);
+              cache.alternativeConversionRate = new FiatAmount(alternativeConversionRate);
+
+              cache.alternativeBalanceAvailable = true;
+              cache.isRateAvailable = true;
+            });
+          }).catch((err) => {
+            return reject(err);
+          });
         });
       };
-
+    
       let isStatusCached = (): any => {
         return wallet.cachedStatus && wallet.cachedStatus.isValid;
       };
 
-      let cacheStatus = (status: any): void => {
+      let cacheStatus = (status: any): Promise<any> => {
         if (status.wallet && status.wallet.scanStatus == 'running') return;
 
         wallet.cachedStatus = status || {};
@@ -257,7 +257,7 @@ export class WalletService {
         cache.statusUpdatedOn = Date.now();
         cache.isValid = true;
         cache.email = status.preferences ? status.preferences.email : null;
-        cacheBalance(wallet, status.balance);
+        return cacheBalance(wallet, status.balance);
       };
 
       let walletStatusHash = (status: any): any => {
@@ -268,15 +268,18 @@ export class WalletService {
         return new Promise((resolve, reject) => {
           if (isStatusCached() && !opts.force) {
             this.logger.debug('Wallet status cache hit:' + wallet.id);
-            cacheStatus(wallet.cachedStatus);
-            processPendingTxps(wallet.cachedStatus);
-            return resolve(wallet.cachedStatus);
+            return cacheStatus(wallet.cachedStatus).then(()=> {
+              processPendingTxps(wallet.cachedStatus);
+              return resolve(wallet.cachedStatus);
+            }).catch((err) => {
+              this.logger.debug('Error in caching status:' + err);              
+            });
           };
 
           tries = tries || 0;
 
           this.logger.debug('Updating Status:', wallet.credentials.walletName, tries);
-          get().then((status) => {
+          return get().then((status) => {
             let currentStatusHash = walletStatusHash(status);
             this.logger.debug('Status update. hash:' + currentStatusHash + ' Try:' + tries);
             if (opts.untilItChanges && initStatusHash == currentStatusHash && tries < this.WALLET_STATUS_MAX_TRIES && walletId == wallet.credentials.walletId) {
@@ -291,11 +294,10 @@ export class WalletService {
             this.logger.debug('Got Wallet Status for:' + wallet.credentials.walletName);
             this.logger.debug(status);
 
-            cacheStatus(status);
-
-            wallet.scanning = status.wallet && status.wallet.scanStatus == 'running';
-
-            return resolve(status);
+            return cacheStatus(status).then(() => {
+              wallet.scanning = status.wallet && status.wallet.scanStatus == 'running';
+              return resolve(status);
+            });            
           }).catch((err) => {
             this.logger.error("Could not get the status!");
             this.logger.error(err);
@@ -305,12 +307,14 @@ export class WalletService {
         });
       };
 
-      _getStatus(walletStatusHash(null), 0).then((status) => {
+      return _getStatus(walletStatusHash(null), 0).then((status) => {
         return resolve(status);
       }).catch((err) => {
         this.logger.warn("Error getting status: ", err);
+        return reject("Error getting status: " + err);
       });
     });
+
   }
 
   public getAddress(wallet: any, forceNew: boolean): Promise<any> {
@@ -341,7 +345,7 @@ export class WalletService {
   // Check address
   private isAddressUsed(wallet: any, byAddress: Array<any>): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceService.getLastAddress(wallet.id).then((addr) => {
+      return this.persistenceService.getLastAddress(wallet.id).then((addr) => {
         let used = _.find(byAddress, {
           address: addr
         });
