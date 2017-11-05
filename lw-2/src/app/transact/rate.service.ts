@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
+import { Logger } from 'merit/core/logger';
+
 import { Promise } from 'bluebird';
 
 import * as _ from 'lodash';
@@ -19,7 +21,10 @@ export class RateService {
   private rateServiceUrl = 'https://bitpay.com/api/rates';
   private bchRateServiceUrl = 'https://api.kraken.com/0/public/Ticker?pair=BCHUSD,BCHEUR';
   
-  constructor(public http: Http) {
+  constructor(
+    public http: Http,
+    private logger: Logger    
+  ) {
     console.log('Hello RateService Service');
     this._rates = {};
     this._alternatives = [];
@@ -32,35 +37,24 @@ export class RateService {
   updateRates(): Promise<any> {
     return new Promise ((resolve, reject) => {
       let self = this;
-      this.getBTC().then((dataBTC) => {
-
-        _.each(dataBTC, (currency) => {
-          self._rates[currency.code] = currency.rate;
-          self._alternatives.push({
-            name: currency.name,
-            isoCode: currency.code,
-            rate: currency.rate
+      return this.getBTC().then((dataBTC) => {
+        if (_.isEmpty(dataBTC)) {
+          this.logger.warn("Could not update rates from rate Service");
+          //reject(new Error("Could not get conversion rate."))
+        } else {
+          _.each(dataBTC, (currency) => {
+            self._rates[currency.code] = currency.rate;
+            self._alternatives.push({
+              name: currency.name,
+              isoCode: currency.code,
+              rate: currency.rate
+            });
           });
-        });
-
-        this.getBCH().then((dataBCH) => {
-
-          _.each(dataBCH.result, (data, paircode) => {
-            var code = paircode.substr(3,3);
-            var rate =data.c[0];
-            self._ratesBCH[code] = rate;
-          });
-
-          this._isAvailable = true;
           resolve();
-        })
-        .catch((errorBCH) => {
-          console.log("Error: ", errorBCH);
-          reject(errorBCH);
-        });
+        }
       })
       .catch((errorBTC) => {
-        console.log("Error: ", errorBTC);
+        console.log("JUICED ERROR: ", errorBTC);
         reject(errorBTC);
       });
     });
@@ -68,13 +62,6 @@ export class RateService {
 
   getBTC(): Promise<any> {
     return this.http.get(this.rateServiceUrl)
-      .map((response) => response.json())
-      .toPromise()
-      .catch((error) => console.log("Error", error));
-  }
-
-  getBCH(): Promise<any> {
-    return this.http.get(this.bchRateServiceUrl)
       .map((response) => response.json())
       .toPromise()
       .catch((error) => console.log("Error", error));
@@ -116,10 +103,14 @@ export class RateService {
   //TODO IMPROVE WHEN AVAILABLE
   public whenAvailable(): Promise<any> { 
     return new Promise((resolve, reject)=> {
-      if (this._isAvailable) resolve();
-      else {
+      if (this._isAvailable) {
+        return resolve();
+      } else {
        return this.updateRates().then(()=>{
           resolve();
+        }).catch((err) => {
+          this.logger.warn("Could not update rates: " + err);
+          //reject(err);
         });
       }
     });
