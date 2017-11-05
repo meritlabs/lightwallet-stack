@@ -238,6 +238,8 @@ export class WalletService {
 
               cache.alternativeBalanceAvailable = true;
               cache.isRateAvailable = true;
+            }).catch((err) => {
+              return reject(err);
             });
           }).catch((err) => {
             return reject(err);
