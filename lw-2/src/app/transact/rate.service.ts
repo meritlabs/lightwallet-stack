@@ -114,11 +114,11 @@ export class RateService {
   };
 
   //TODO IMPROVE WHEN AVAILABLE
-  whenAvailable() { 
+  public whenAvailable(): Promise<any> { 
     return new Promise((resolve, reject)=> {
       if (this._isAvailable) resolve();
       else {
-       this.updateRates().then(()=>{
+       return this.updateRates().then(()=>{
           resolve();
         });
       }
