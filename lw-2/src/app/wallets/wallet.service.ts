@@ -222,7 +222,7 @@ export class WalletService {
               })
             }
           }).then(() => {
-            this.rateService.whenAvailable().then(() => {
+            return this.rateService.whenAvailable().then(() => {
               
               let totalBalanceAlternative = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
               let pendingBalanceAlternative = this.rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode);
