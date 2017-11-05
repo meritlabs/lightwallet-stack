@@ -740,132 +740,134 @@ export class ProfileService {
         'NewIncomingCoinbase': 1
       };
 
-      let w = this.getWallets();
-      if (_.isEmpty(w)) return resolve();
+      this.getWallets().then((wallets) => {
+        let w = wallets; 
+        if (_.isEmpty(w)) return resolve();
 
-      //let l = w.length;
-      let l = 1; //temp!!
-      let j = 0;
-      let notifications = [];
-
-
-      let isActivityCached = (wallet: any): boolean => {
-        return wallet.cachedActivity && wallet.cachedActivity.isValid;
-      }
-
-
-      let updateNotifications = (wallet: any): Promise<any> => {
-        return new Promise((resolve, reject) => {
-
-          if (isActivityCached(wallet) && !opts.force) {
-            return resolve();
-          }
-
-          wallet.getNotifications({
-            timeSpan: TIME_STAMP,
-            includeOwn: true,
-          }, (err: any, n: any) => {
-            if (err) {
-              return reject(err);
+        //let l = w.length;
+        let l = 1; //temp!!
+        let j = 0;
+        let notifications = [];
+  
+  
+        let isActivityCached = (wallet: any): boolean => {
+          return wallet.cachedActivity && wallet.cachedActivity.isValid;
+        }
+  
+  
+        let updateNotifications = (wallet: any): Promise<any> => {
+          return new Promise((resolve, reject) => {
+  
+            if (isActivityCached(wallet) && !opts.force) {
+              return resolve();
             }
-            wallet.cachedActivity = {
-              n: n.slice(-MAX),
-              isValid: true,
-            };
-
-            return resolve();
-          });
-        });
-      }
-
-      let process = (notifications: any): Array<any> => {
-        if (!notifications) return [];
-
-        let shown = _.sortBy(notifications, 'createdOn').reverse();
-
-        shown = shown.splice(0, opts.limit || MAX);
-
-        _.each(shown, (x: any) => {
-          x.txpId = x.data ? x.data.txProposalId : null;
-          x.txid = x.data ? x.data.txid : null;
-          x.types = [x.type];
-
-          if (x.data && x.data.amount) x.amountStr = this.txFormatService.formatAmountStr(x.data.amount);
-
-          x.action = function () {
-            // TODO?
-            // $state.go('tabs.wallet', {
-            //   walletId: x.walletId,
-            //   txpId: x.txpId,
-            //   txid: x.txid,
-            // });
-          };
-        });
-
-        // let finale = shown; GROUPING DISABLED!
-
-        let finale = [];
-        let prev: any;
-
-
-        // Item grouping... DISABLED.
-
-        // REMOVE (if we want 1-to-1 notification) ????
-        _.each(shown, (x: any) => {
-          if (prev && prev.walletId === x.walletId && prev.txpId && prev.txpId === x.txpId && prev.creatorId && prev.creatorId === x.creatorId) {
-            prev.types.push(x.type);
-            prev.data = _.assign(prev.data, x.data);
-            prev.txid = prev.txid || x.txid;
-            prev.amountStr = prev.amountStr || x.amountStr;
-            prev.creatorName = prev.creatorName || x.creatorName;
-          } else {
-            finale.push(x);
-            prev = x;
-          }
-        });
-
-        let u = this.bwcService.getUtils();
-        _.each(finale, (x: any) => {
-          if (x.data && x.data.message && x.wallet && x.wallet.credentials.sharedEncryptingKey) {
-            // TODO TODO TODO => BWC
-            x.message = u.decryptMessage(x.data.message, x.wallet.credentials.sharedEncryptingKey);
-          }
-        });
-
-        return finale;
-      }
-
-      _.each(w, (wallet: any) => {
-        updateNotifications(wallet).then(() => {
-          j++;
-          let n = _.filter(wallet.cachedActivity.n, (x: any) => {
-            return typeFilter[x.type];
-          });
-
-          let idToName = {};
-          if (wallet.cachedStatus) {
-            _.each(wallet.cachedStatus.wallet.copayers, (c: any) => {
-              idToName[c.id] = c.name;
+  
+            wallet.getNotifications({
+              timeSpan: TIME_STAMP,
+              includeOwn: true,
+            }, (err: any, n: any) => {
+              if (err) {
+                return reject(err);
+              }
+              wallet.cachedActivity = {
+                n: n.slice(-MAX),
+                isValid: true,
+              };
+  
+              return resolve();
             });
-          }
-
-          _.each(n, (x: any) => {
-            x.wallet = wallet;
-            if (x.creatorId && wallet.cachedStatus) {
-              x.creatorName = idToName[x.creatorId];
+          });
+        }
+  
+        let process = (notifications: any): Array<any> => {
+          if (!notifications) return [];
+  
+          let shown = _.sortBy(notifications, 'createdOn').reverse();
+  
+          shown = shown.splice(0, opts.limit || MAX);
+  
+          _.each(shown, (x: any) => {
+            x.txpId = x.data ? x.data.txProposalId : null;
+            x.txid = x.data ? x.data.txid : null;
+            x.types = [x.type];
+  
+            if (x.data && x.data.amount) x.amountStr = this.txFormatService.formatAmountStr(x.data.amount);
+  
+            x.action = function () {
+              // TODO?
+              // $state.go('tabs.wallet', {
+              //   walletId: x.walletId,
+              //   txpId: x.txpId,
+              //   txid: x.txid,
+              // });
             };
           });
-
-          notifications.push(n);
-
-          if (j == l) {
-            notifications = _.sortBy(notifications, 'createdOn');
-            notifications = _.compact(_.flatten(notifications)).slice(0, MAX);
-            let total = notifications.length;
-            return resolve({ processArray: process(notifications), total: total });
-          };
-        }).catch((err: any) => {
-          this.logger.warn('Error updating notifications:' + err);
+  
+          // let finale = shown; GROUPING DISABLED!
+  
+          let finale = [];
+          let prev: any;
+  
+  
+          // Item grouping... DISABLED.
+  
+          // REMOVE (if we want 1-to-1 notification) ????
+          _.each(shown, (x: any) => {
+            if (prev && prev.walletId === x.walletId && prev.txpId && prev.txpId === x.txpId && prev.creatorId && prev.creatorId === x.creatorId) {
+              prev.types.push(x.type);
+              prev.data = _.assign(prev.data, x.data);
+              prev.txid = prev.txid || x.txid;
+              prev.amountStr = prev.amountStr || x.amountStr;
+              prev.creatorName = prev.creatorName || x.creatorName;
+            } else {
+              finale.push(x);
+              prev = x;
+            }
+          });
+  
+          let u = this.bwcService.getUtils();
+          _.each(finale, (x: any) => {
+            if (x.data && x.data.message && x.wallet && x.wallet.credentials.sharedEncryptingKey) {
+              // TODO TODO TODO => BWC
+              x.message = u.decryptMessage(x.data.message, x.wallet.credentials.sharedEncryptingKey);
+            }
+          });
+  
+          return finale;
+        }
+  
+        _.each(w, (wallet: any) => {
+          updateNotifications(wallet).then(() => {
+            j++;
+            let n = _.filter(wallet.cachedActivity.n, (x: any) => {
+              return typeFilter[x.type];
+            });
+  
+            let idToName = {};
+            if (wallet.cachedStatus) {
+              _.each(wallet.cachedStatus.wallet.copayers, (c: any) => {
+                idToName[c.id] = c.name;
+              });
+            }
+  
+            _.each(n, (x: any) => {
+              x.wallet = wallet;
+              if (x.creatorId && wallet.cachedStatus) {
+                x.creatorName = idToName[x.creatorId];
+              };
+            });
+  
+            notifications.push(n);
+  
+            if (j == l) {
+              notifications = _.sortBy(notifications, 'createdOn');
+              notifications = _.compact(_.flatten(notifications)).slice(0, MAX);
+              let total = notifications.length;
+              return resolve({ processArray: process(notifications), total: total });
+            };
+          }).catch((err: any) => {
+            this.logger.warn('Error updating notifications:' + err);
+          });
         });
       });
     });

@@ -98,7 +98,7 @@ export class WalletsView {
     this.txpsData = await this.profileService.getTxps({limit: 3});
     if (this.configService.get().recentTransactions.enabled) {
       this.recentTransactionsEnabled = true;
-      this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
+      this.recentTransactionsData = await this.profileService.getNotifications({limit: 3});
     }
 
   }
