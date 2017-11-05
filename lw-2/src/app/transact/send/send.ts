@@ -44,6 +44,7 @@ export class SendView {
     private profileService: ProfileService
   ) {
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
+    this.hasFunds = this.profileService.hasFunds();
   }
 
   ionViewDidLoad() {

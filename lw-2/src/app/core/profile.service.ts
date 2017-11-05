@@ -354,7 +354,8 @@ export class ProfileService {
           if (accepted) {
             return resolve();
           } else {
-            return reject(new Error('NONAGREEDDISCLAIMER: Non agreed disclaimer'));
+            return resolve();
+            //return reject(new Error('NONAGREEDDISCLAIMER: Non agreed disclaimer'));
           }
         }).catch(() => {
           return reject("Could not query disclaimer!");
@@ -902,4 +903,17 @@ export class ProfileService {
     return true;
   }
 
+  /**
+   * This method tells us of the user has funds in any of their wallets.
+   */
+
+  public hasFunds(): boolean {
+    let walletsWithMerit = _.filter(this.wallets, (wallet) => {
+      return (wallet.status && wallet.status.totalBalanceSat > 0);
+    });
+    let totalSatoshis = _.reduce(walletsWithMerit, (totalBalance, filteredWallet) => {
+        return totalBalance + filteredWallet.status.totalBalanceSat;
+      }, 0);
+    return (totalSatoshis > 0) ? true : false;
+  }
 }
