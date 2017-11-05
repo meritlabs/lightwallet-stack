@@ -7,6 +7,8 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { PopupService } from 'merit/core/popup.service';
+import { Logger } from 'merit/core/logger';
+
 import * as _ from 'lodash';
 
 /**
@@ -41,15 +43,16 @@ export class SendView {
     private navParams: NavParams,
     private walletService: WalletService,
     private popupService: PopupService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private logger: Logger
   ) {
     console.log("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
     this.hasFunds = this.profileService.hasFunds();
+    this.formData = { search: '' };
   }
 
   ionViewDidLoad() {
-    this.formData = { search: null };
     this.originalContacts = [];
     this.deviceContacts = [];
     this.hasWallets();
@@ -199,6 +202,7 @@ export class SendView {
   }
 
   private findContact(search): any {
+    this.logger.debug("Inside FindContact");
     if (!search || search.length < 1) {
       this.filteredList = [];
       return;
