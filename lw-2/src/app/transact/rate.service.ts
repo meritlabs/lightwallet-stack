@@ -40,6 +40,7 @@ export class RateService {
       return this.getBTC().then((dataBTC) => {
         if (_.isEmpty(dataBTC)) {
           this.logger.warn("Could not update rates from rate Service");
+          resolve();
           //reject(new Error("Could not get conversion rate."))
         } else {
           _.each(dataBTC, (currency) => {
@@ -55,7 +56,8 @@ export class RateService {
       })
       .catch((errorBTC) => {
         console.log("JUICED ERROR: ", errorBTC);
-        reject(errorBTC);
+        resolve();
+        //reject(errorBTC);
       });
     });
   }
@@ -63,8 +65,8 @@ export class RateService {
   getBTC(): Promise<any> {
     return this.http.get(this.rateServiceUrl)
       .map((response) => response.json())
-      .toPromise()
-      .catch((error) => console.log("Error", error));
+      .toPromise();
+      
   }
 
   getRate(code) {
