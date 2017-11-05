@@ -214,7 +214,7 @@ export class WalletService {
           if (used) {
             this.logger.debug('Address used. Creating new');
             // Force new address
-            this.getAddress(wallet, true).then((addr) => {
+            return this.getAddress(wallet, true).then((addr) => {
               this.logger.debug('New address: ', addr);
             }).catch((err) => {
               return reject(err);
@@ -1388,7 +1388,7 @@ export class WalletService {
           let myName = opts.myName || 'me'; // TODO GetTextCatalog
           
           // TODO: Rename Beacon to UnlockCode down the stack
-          walletClient.createWallet(name, myName, opts.m, opts.n, {
+          return walletClient.createWallet(name, myName, opts.m, opts.n, {
             network: opts.networkName,
             singleAddress: opts.singleAddress,
             walletPrivKey: opts.walletPrivKey,
