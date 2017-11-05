@@ -43,6 +43,7 @@ export class SendView {
     private popupService: PopupService,
     private profileService: ProfileService
   ) {
+    console.log("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
     this.hasFunds = this.profileService.hasFunds();
   }
@@ -52,6 +53,7 @@ export class SendView {
     this.originalContacts = [];
     this.deviceContacts = [];
     this.hasWallets();
+    this.hasFunds = this.profileService.hasFunds();
   }
 
   private hasWallets(): boolean {

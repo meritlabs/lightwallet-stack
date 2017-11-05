@@ -909,13 +909,18 @@ export class ProfileService {
    * This method tells us of the user has funds in any of their wallets.
    */
 
-  public hasFunds(): boolean {
-    let walletsWithMerit = _.filter(this.wallets, (wallet) => {
-      return (wallet.status && wallet.status.totalBalanceSat > 0);
+  public hasFunds(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      let allWallets = this.wallets;
+      return this.getWallets().then((allWallets) => {
+        let walletsWithMerit = _.filter(allWallets, (wallet) => {
+          return (wallet.status && wallet.status.totalBalanceSat > 0);
+        });
+        let totalSatoshis = _.reduce(walletsWithMerit, (totalBalance, filteredWallet) => {
+            return totalBalance + filteredWallet.status.totalBalanceSat;
+          }, 0);
+        return (totalSatoshis > 0) ? resolve(true) : resolve(false);
+      });
     });
-    let totalSatoshis = _.reduce(walletsWithMerit, (totalBalance, filteredWallet) => {
-        return totalBalance + filteredWallet.status.totalBalanceSat;
-      }, 0);
-    return (totalSatoshis > 0) ? true : false;
   }
 }
