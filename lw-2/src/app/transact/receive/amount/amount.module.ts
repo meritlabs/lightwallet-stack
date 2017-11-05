@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { AmountView } from './amount';
+import { ReceiveAmountView } from './amount';
 
 @NgModule({
   declarations: [
-    AmountView,
+    ReceiveAmountView,
   ],
   imports: [
-    IonicPageModule.forChild(AmountView),
+    IonicPageModule.forChild(ReceiveAmountView),
   ],
 })
 export class $$moduleName$$Module {}
