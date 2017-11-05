@@ -238,8 +238,12 @@ export class WalletService {
 
               cache.alternativeBalanceAvailable = true;
               cache.isRateAvailable = true;
+              resolve();              
             }).catch((err) => {
-              return reject(err);
+              // We don't want to blow up the promise chain if the rateService is down.
+              // TODO: Fallback to last known conversion rate.
+              this.logger.warn("Could not get rates from rateService.");
+              resolve();              
             });
           }).catch((err) => {
             return reject(err);
