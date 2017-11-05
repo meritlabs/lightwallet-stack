@@ -213,14 +213,14 @@ export class WalletsView {
     this.totalAmount = 0;
 
     let coin = ''; //todo what to use here??
-    this.totalAmountFormatted =  this.txFormatService.parseAmount(coin, this.totalAmount, 'micros');
+    this.totalAmountFormatted =  this.txFormatService.parseAmount(this.totalAmount, 'MRT');
 
     wallets.forEach((wallet) => {
       this.walletService.getWalletAnv(wallet).then((amount) => {
 
         let coin = ''; //todo what to use here??
         this.totalAmount += amount;
-        this.totalAmountFormatted =  this.txFormatService.parseAmount(coin, this.totalAmount, 'micros');
+        this.totalAmountFormatted =  this.txFormatService.parseAmount(this.totalAmount, 'MRT');
       });
 
     });
