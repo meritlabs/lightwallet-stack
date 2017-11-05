@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, App, LoadingController, ToastController } from 'ionic-angular';
+import { IonicPage, App, LoadingController, ToastController, NavController } from 'ionic-angular';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ToastConfig } from "merit/core/toast.config";
 import { Promise } from 'bluebird';
@@ -22,7 +22,8 @@ export class UnlockView {
     private app:App,
     private walletService: WalletService,
     private toastCtrl: ToastController,
-    private loaderCtrl:LoadingController
+    private loaderCtrl: LoadingController, 
+    private navCtrl: NavController
   ) {
   }
 
@@ -46,7 +47,7 @@ export class UnlockView {
 
           /** todo store wallet */
 
-          this.app.getRootNav().setRoot('TransactView');
+          this.navCtrl.push('TransactView');
           resolve(wallet);
         }).catch((err) => {
           loader.dismiss();
