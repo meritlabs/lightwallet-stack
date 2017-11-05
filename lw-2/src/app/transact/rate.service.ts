@@ -19,7 +19,6 @@ export class RateService {
   private _isAvailable: boolean = false;
 
   private rateServiceUrl = 'https://bitpay.com/api/rates';
-  private bchRateServiceUrl = 'https://api.kraken.com/0/public/Ticker?pair=BCHUSD,BCHEUR';
   
   constructor(
     public http: Http,
@@ -28,7 +27,6 @@ export class RateService {
     console.log('Hello RateService Service');
     this._rates = {};
     this._alternatives = [];
-    this._ratesBCH = {};
     this.SAT_TO_BTC = 1 / 1e8;
     this.BTC_TO_SAT = 1e8;
     this.updateRates();
