@@ -7,6 +7,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { PopupService } from 'merit/core/popup.service';
+import { SendService } from 'merit/transact/send/send.service';
 import { Logger } from 'merit/core/logger';
 
 import * as _ from 'lodash';
@@ -14,6 +15,7 @@ import * as _ from 'lodash';
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
  * without needing to know if they are on the Merit network.
+ * We differentiate between the notions of 'original contacts,' which are explicitly created by the user as well as deviceContacts that are already in the addressBook of the device they are using. 
  */
 @IonicPage()
 @Component({
@@ -44,7 +46,8 @@ export class SendView {
     private walletService: WalletService,
     private popupService: PopupService,
     private profileService: ProfileService,
-    private logger: Logger
+    private logger: Logger,
+    private sendService: SendService 
   ) {
     console.log("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
@@ -201,7 +204,20 @@ export class SendView {
     }
   }
 
-  private findContact(search): any {
+  private findContact(search: string): any {
+
+    // TODO: Improve to be more resilient.
+    if(search && search.length > 19) {
+      this.sendService.isAddressValid(search).then((isValid) => {
+        if (isValid) {
+          this.navCtrl.push('Confirm');
+          return;          
+        } else {
+          this.popupService.ionicAlert('This address has not been invited to the merit network yet!');
+        }  
+      })
+    }
+
     this.logger.debug("Inside FindContact");
     if (!search || search.length < 1) {
       this.filteredList = [];
@@ -220,7 +236,7 @@ export class SendView {
     item.getAddress(function(err, addr) {
       if (err) {
         //Error is already formated
-        return this.popupService.showAlert(err);
+        return this.popupService.ionicAlert(err);
       }
       if (addr) {
         this.logger.debug('Got toAddress:' + addr + ' | ' + item.name);
