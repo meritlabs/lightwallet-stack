@@ -72,8 +72,8 @@ export class WalletsView {
   }
 
   private async getWallets():Promise<Array<Wallet>> {
-    if (!this.wallets) {
-      this.wallets = await this.updateAllWallets();
+    if (this.needWalletStatuses) {
+      this.wallets = await this.updateAllWallets();     
     }
 
     return this.wallets;
@@ -108,6 +108,8 @@ export class WalletsView {
     let updateWalletStatus = (wallet) => {
       this.walletService.getStatus(wallet, {}).then((status) => {
         wallet.status = status;
+      }).catch((err) => {
+        this.logger.error("Unable to get wallet status!");
       });
     };
 
@@ -283,6 +285,19 @@ export class WalletsView {
   txpCreatedWithinPastDay(txp) {
     var createdOn= new Date(txp.createdOn*1000);
     return ((new Date()).getTime() - createdOn.getTime()) < (1000 * 60 * 60 * 24);
+  }
+
+  private needWalletStatuses(): boolean {
+    if (_.isEmpty(this.wallets)) {
+      return true;
+    } 
+
+    _.each(this.wallets, (wallet) => {
+      if (!wallet.status) {
+        return true;
+      }
+    });
+    return false;
   }
 
 }
