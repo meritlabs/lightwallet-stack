@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { SendView } from 'merit/transact/send/send';
+import { SendService } from "merit/transact/send/send.service";
 import { GravatarModule } from 'merit/shared/gravatar.module';
 import { GravatarComponent } from 'merit/shared/gravatar.component';
 import { WalletService } from "merit/wallets/wallet.service";
@@ -18,7 +19,8 @@ import { WalletsModule } from "merit/wallets/wallets.module";
     WalletsModule
   ],
   providers: [
-    WalletService
+    WalletService,
+    SendService
   ],
   exports: [
   ]
