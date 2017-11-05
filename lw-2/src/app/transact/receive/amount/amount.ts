@@ -1,14 +1,17 @@
 import { Component } from '@angular/core';
 import { IonicPage, ViewController, NavParams } from 'ionic-angular';
-import {ConfigService} from "../../../shared/config.service";
+import {ConfigService} from "merit/shared/config.service";
 
-
+/**
+ * This is the second primary step in the sending merit flow. 
+ * It occurs after the user enters an address, but before the the user confirms.  
+ */
 @IonicPage()
 @Component({
-  selector: 'view-amount',
+  selector: 'receive-amount-view',
   templateUrl: 'amount.html',
 })
-export class AmountView {
+export class ReceiveAmountView {
 
   public formData = {
     amount: '',

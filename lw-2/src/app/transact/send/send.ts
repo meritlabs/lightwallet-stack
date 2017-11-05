@@ -19,7 +19,7 @@ import * as _ from 'lodash';
  */
 @IonicPage()
 @Component({
-  selector: 'view-send',
+  selector: 'send-view',
   templateUrl: 'send.html',
 })
 export class SendView {
@@ -210,7 +210,7 @@ export class SendView {
     if(search && search.length > 19) {
       this.sendService.isAddressValid(search).then((isValid) => {
         if (isValid) {
-          this.navCtrl.push('Confirm');
+          this.navCtrl.push('SendAmountView');
           return;          
         } else {
           this.popupService.ionicAlert('This address has not been invited to the merit network yet!');
