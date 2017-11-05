@@ -40,13 +40,13 @@ export class SendService {
     return new Promise((resolve, reject) => {
       const walletClient = this.bwcService.getClient(null, {});
       
-      let validateAddr = Promise.promisify(walletClient.validateAddress(addr, 'testnet'));
-      return validateAddr.then((addrInfo) => {
-        const isAddressBeaconed: boolean = (addrInfo.isValid && addrInfo.isBeaconed);
-        resolve(isAddressBeaconed);
-      }).catch((err) => {
-        this.logger.warn("Unable to check address lock state: ", err);
-        resolve(false);
+      walletClient.validateAddress(addr, "testnet", (err, result) => {
+        if (err || !result) {
+          reject(err || new Error("Could not validateAddress"));
+        } else {
+          const isAddressBeaconed = result.isValid && result.isBeaconed;
+          resolve(isAddressBeaconed);
+        }
       });
     });
 
