@@ -15,7 +15,7 @@
         <div class="item input search-wrapper" [class.focus]="searchFocus">
           <i class="icon icon-svg abs-v-center"><img class="svg" src="img/icon-bitcoin-symbol.svg"></i>
           <div class="item-icon-right">
-            <input type="text" class="search-input" placeholder="Search or enter merit address" [(ngModel)]=="formData.search" (ngModelChange)="findContact(formData.search)" ng-model-onblur (focus)="searchInFocus()" (blur)="searchBlurred()">
+            <input type="text" class="search-input" placeholder="Search or enter merit address" [(ngModel)]="formData.search" (ngModelChange)="findContact(formData.search)" ng-model-onblur (focus)="searchInFocus()" (blur)="searchBlurred()">
             <i class="icon icon-svg qr abs-v-center separator-left" on-tap="openScanner()"><img src="img/scan-ico.svg"></i>
           </div>
         </div>
