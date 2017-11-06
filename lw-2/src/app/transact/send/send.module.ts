@@ -9,6 +9,7 @@ import { WalletsModule } from "merit/wallets/wallets.module";
 
 
 // This module manaages the sending of money.
+// This is the first of three steps.
 @NgModule({
   declarations: [
     SendView 
