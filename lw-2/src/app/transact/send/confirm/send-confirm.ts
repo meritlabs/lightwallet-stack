@@ -23,6 +23,10 @@ import { Promise } from 'bluebird';
 })
 export class SendConfirmView {
 
+  // Statics
+  public static CONFIRM_LIMIT_USD = 20;
+  
+
   // Core Params
   private toAddress: string;
   private amount: string;
@@ -76,14 +80,14 @@ export class SendConfirmView {
         return resolve(false);
       } 
 
-      this.getTxp(tx, wallet, false).then((ctxp) => {
+      return this.getTxp(tx, wallet, false).then((ctxp) => {
 
         function confirmTx(cb) {
           if (this.walletService.isEncrypted(wallet))
             return cb();
   
           var amountUsd = parseFloat(this.txFormatService.formatToUSD(ctxp.amount));
-          if (amountUsd <= CONFIRM_LIMIT_USD)
+          if (amountUsd <= SendConfirmView.CONFIRM_LIMIT_USD)
             return cb();
   
           var message = 'Sending {{tx.amountStr}} from your {{wallet.name}} wallet';
