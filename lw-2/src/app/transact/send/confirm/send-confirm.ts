@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, IonicPage } from 'ionic-angular';
 
 /**
  * The confirm view is the final step in the transaction sending process 
- * (for sing-signature wallets).
+ * (for single-signature wallets).
  */
+@IonicPage()
 @Component({
-  selector: 'confirm-view',
-  templateUrl: 'confirm.html',
+  selector: 'send-confirm-view',
+  templateUrl: 'send-confirm.html',
 })
-export class ConfirmView {
+export class SendConfirmView {
 
   public address: string;
   public amount: string;
