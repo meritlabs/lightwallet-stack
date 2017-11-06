@@ -3,6 +3,10 @@ import { IonicPageModule } from 'ionic-angular';
 import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
 import { GravatarModule } from 'merit/shared/gravatar.module';
 import { ProfileService } from 'merit/core/profile.service';
+import { WalletService } from 'merit/wallets/wallet.service';
+import { WalletsModule } from "merit/wallets/wallets.module";
+
+
 
 
 /*
@@ -14,9 +18,11 @@ import { ProfileService } from 'merit/core/profile.service';
   ],
   imports: [
     IonicPageModule.forChild(SendConfirmView),
-    GravatarModule    
+    GravatarModule,
+    WalletsModule    
   ],
   providers: [
+    WalletService
   ]
 })
 export class SendConfirmModule {}
