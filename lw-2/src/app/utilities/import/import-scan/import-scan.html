@@ -1,6 +1,11 @@
 <ion-header>
     <ion-navbar color="secondary">
         <ion-title translate></ion-title>
+        <ion-buttons end>
+            <button ion-button (click)="close()">
+                close
+            </button>
+        </ion-buttons>
     </ion-navbar>
 </ion-header>
 
@@ -15,6 +20,17 @@
             </div>
 
             QR Scanner is available only in native applications
+        </div>
+    </ion-card>
+
+    <ion-card *ngIf="scannerAvailable && !scannerPermitted" padding>
+        <div translate>
+
+            <div class="icon">
+                <img src="assets/img/qr-code.svg">
+            </div>
+
+            App has no access to device camera.
         </div>
     </ion-card>
 

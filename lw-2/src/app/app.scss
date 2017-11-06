@@ -15,6 +15,11 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+
+// Buttons
+@import "core/buttons";
+
+// Core App Layout
 .scroll-content {
   background: rgb(242, 242, 242);
 }
@@ -92,3 +97,8 @@ ion-item textarea {
     font-size: 14px;
   }
 }
+
+// Variables
+$v-dark-gray:                                        #445 !default;
+$v-tab-send-icon:                                    url('../img/tab-icons/ico-send.svg') !default;
+$v-tab-send-selected-icon:                           url('../img/tab-icons/ico-send-selected.svg') !default;

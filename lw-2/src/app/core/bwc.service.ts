@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import * as BWC from  './../../lib/bwc';
+
+//import * as BWC from  './../../lib/bwc';
+let BWC = require('./../../lib/bwc');
 
 @Injectable()
 export class BwcService {
@@ -30,7 +32,7 @@ export class BwcService {
 
     //note opts use `bwsurl` all lowercase;
     let bwc = new BWC({
-      baseUrl: opts.bwsurl || 'https://mws.merit.me/mws/api',
+      baseUrl: opts.bwsurl || 'http://localhost:3232/bws/api',
       verbose: opts.verbose,
       timeout: 100000,
       transports: ['polling'],

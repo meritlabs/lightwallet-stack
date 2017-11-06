@@ -37,7 +37,6 @@ angular.module('copayApp.services').factory('deepLinkService', function ($ionicP
           $timeout(() => {
 
             if (!err) {
-              $rootScope.$emit('easyReceiveEvent', easyReceipt);
               if ($state.is('onboarding.welcome')) {
                 // We've landed on the welcome screen, but have a pending EasyReceipt 
                 // in memory.  Most likely a deeplink.
