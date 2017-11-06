@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Platform, ModalController, NavController} from 'ionic-angular';
+import { Platform, ModalController} from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -12,7 +12,7 @@ import { TransactView } from 'merit/transact/transact';
 import { OnboardingView } from 'merit/onboard/onboarding.view';
 import { FingerprintLockView } from 'merit/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
-import { Promise } from 'bluebird';
+import { Promise } from 'bluebird'; 
 
 
 @Component({
@@ -30,8 +30,7 @@ export class MeritLightWallet {
     private logger: Logger,
     private modalCtrl: ModalController,
     private appService: AppService,
-    private configService: ConfigService, 
-    private navCtrl: NavController
+    private configService: ConfigService
   ) {
 
     this.initializeApp();
@@ -62,7 +61,6 @@ export class MeritLightWallet {
         this.openLockModal();
         if (profile) {
           this.rootComponent = 'TransactView';
-          this.navCtrl.push('TransactView');
         } else {
           //this.profileService.createProfile();
           this.rootComponent = 'OnboardingView';

@@ -18,7 +18,7 @@ import {Logger} from "merit/core/logger";
 import { WalletService } from "merit/wallets/wallet.service";
 import {EasyReceipt} from "merit/easy-receive/easy-receipt.model";
 import {TxFormatService} from "merit/transact/tx-format.service";
-import {AddressbookService} from "merit/addressbook/addressbook.service";
+import {AddressBookService} from "merit/shared/address-book/address-book.service";
 
 
 /* 
@@ -67,7 +67,7 @@ export class WalletsView {
     private walletService:WalletService,
     private txFormatService:TxFormatService,
     private events:Events,
-    private addressbookService:AddressbookService
+    private addressbookService:AddressBookService
   ) {
   }
 
@@ -80,7 +80,6 @@ export class WalletsView {
   }
 
   public async ionViewDidLoad() {
-
 
     this.registerListeners();
 
@@ -267,9 +266,9 @@ export class WalletsView {
 
   private async updateAllWallets() {
     let wallets = await this.profileService.getWallets();
-    return await Promise.all(_.map(wallets, async (wallet) => {
+    return await Promise.all(_.map(wallets, async (wallet:any) => {
       wallet.status = await this.walletService.getStatus(wallet);
-      return wallet;
+      return wallet; 
     }));
 
   }

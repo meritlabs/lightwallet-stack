@@ -7,6 +7,11 @@ import { BwcService } from 'merit/core/bwc.service';
 import { BwcError } from 'merit/core/bwc-error.model';
 import { PersistenceService } from 'merit/core/persistence.service';
 
+declare var navigator:any;
+
+/**
+ * This service looks up entered addresses against the address book.
+ */
 @Injectable()
 export class AddressBookService {
   private bitcore: any;
