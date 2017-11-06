@@ -5,7 +5,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { NotificationService } from 'merit/shared/notification.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { PopupService } from 'merit/core/popup.service';
-import { Transaction } from 'merit/transact/transaction.model';
+import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
 
 
 import { Promise } from 'bluebird';
@@ -25,26 +25,7 @@ export class SendConfirmView {
 
   // Statics
   public static CONFIRM_LIMIT_USD = 20;
-  
-
-  // Core Params
-  private toAddress: string;
-  private amount: string;
-  private description: string;
-  private sendMax: boolean;
-  private feeLevel: any;
-  private allowSpendUnconfirmed: boolean = true; // TODO: Consider removing entirely.
-
-  // Vanity Params -- Not on the blockchain; but we use convenience and usability.
-  private recipientType: any; // TODO: Define type
-  private toName: string;
-  private toEmail: string;
-  private toPhoneNumber: string;
-  private toColor: string;
-  private usingCustomFee: boolean = false;
-
-  // TODO: Utilize a type for TxProposals
-  private txp: any; // Transaction proposal
+  private txp: TransactionProposal = new TransactionProposal; // Transaction proposal
 
   constructor(
     private navCtrl: NavController, 
@@ -55,22 +36,22 @@ export class SendConfirmView {
     private popupService: PopupService,
     private notificationService: NotificationService    
   ) { 
-
+    console.log("Hello SendConfirm View");
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ConfirmView');
-    this.toAddress = this.navParams.data.toAddress;
-    this.amount = this.navParams.data.amount;
+    this.txp.toAddress = this.navParams.data.toAddress;
+    this.txp.amount = this.navParams.data.amount;
   }
 
   // Show as much as we can about the address. 
   private displayName(): string {
-    if (this.toName) {
-      return this.toName;
+    if (this.txp.toName) {
+      return this.txp.toName;
     }
     // TODO: Check AddressBook
-    return this.toAddress || "no one";
+    return this.txp.toAddress || "no one";
   }
 
   private approveTx(tx, wallet): Promise<boolean> {
@@ -150,7 +131,7 @@ export class SendConfirmView {
           txp.inputs = tx.sendMaxInfo.inputs;
           txp.fee = tx.sendMaxInfo.fee;
         } else {
-          if (this.usingCustomFee) {
+          if (this.txp.usingCustomFee) {
             txp.feePerKb = tx.feeRate;
           } else txp.feeLevel = tx.feeLevel;
         }
