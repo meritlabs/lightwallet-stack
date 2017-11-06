@@ -8,17 +8,17 @@ import { ProfileService } from "merit/core/profile.service";
 import { FeedbackService } from "merit/feedback/feedback.service"
 import { Feedback } from "merit/feedback/feedback.model"
 import { AppUpdateService } from "merit/core/app-update.service";
-import {ToastConfig} from "../core/toast.config";
+import { ToastConfig } from "../core/toast.config";
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
-import {ConfigService} from "merit/shared/config.service";
+import { ConfigService } from "merit/shared/config.service";
 
-import {EasyReceiveService} from "merit/easy-receive/easy-receive.service";
-import {Logger} from "merit/core/logger";
+import { EasyReceiveService } from "merit/easy-receive/easy-receive.service";
+import { Logger } from "merit/core/logger";
 import { WalletService } from "merit/wallets/wallet.service";
-import {EasyReceipt} from "merit/easy-receive/easy-receipt.model";
-import {TxFormatService} from "merit/transact/tx-format.service";
-import {AddressBookService} from "merit/shared/address-book/address-book.service";
+import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
+import { TxFormatService } from "merit/transact/tx-format.service";
+import { AddressBookService } from "merit/shared/address-book/address-book.service";
 
 
 /* 
@@ -92,7 +92,7 @@ export class WalletsView {
     this.newReleaseExists = await this.appUpdateService.isUpdateAvailable();
     this.feedbackNeeded   = await this.feedbackService.isFeedBackNeeded();
 
-    this.addressbook = await this.addressbookService.list();
+    this.addressbook = await this.addressbookService.list(() => {});
 
     this.txpsData = await this.profileService.getTxps({limit: 3});
     if (this.configService.get().recentTransactions.enabled) {

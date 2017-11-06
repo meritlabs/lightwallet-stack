@@ -8,10 +8,9 @@ import { PersistenceService } from 'merit/core/persistence.service';
 import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
 import { Referral } from 'merit/community/referral.model';
 
-
-
 import * as _ from 'lodash';
 
+type Subject = TransactionProposal | Referral
 /**
  * This service allows you to subscribe and unsubscribe 
  * from notifications on an object.
@@ -32,13 +31,13 @@ export class NotificationService {
     console.log('Hello Notification Service');
   }
 
-  public subscribe(client, subject: TransactionProposal | Referral): Promise<any> {
+  public subscribe(client, subject: Subject): Promise<any> {
     let methodPrefix = this.getMethodPrefix(subject);
     
     //TODO: Rewrite BWC with promises.
     let subCall = Promise.promisify(client[methodPrefix + 'ConfirmationSubscribe'](subject.id, {}, function(){}));
     return subCall.then((res) => {
-      this.storageService['set' + methodPrefix + 'confirmNotification'](subject.id, true, cb())
+      this.persistenceService.setTxConfirmNotification(subject.id, subject);
     });
   }
 
@@ -48,7 +47,7 @@ export class NotificationService {
    * reason that we'll add more in the future.  
    * @param subject - TransactionProposal or Referral
    */
-  private getMethodPrefix(subject: TransactionProposal | Referral): string {
+  private getMethodPrefix(subject: Subject): string {
     // Switch statements don't work on types yet in TypeScript.  
     // Using ifs for now.
     if (<TransactionProposal>subject) {

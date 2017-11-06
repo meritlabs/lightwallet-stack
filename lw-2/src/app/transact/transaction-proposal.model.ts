@@ -3,7 +3,7 @@ export class TransactionProposal {
   
   // Core Params..
   public createdOn: number;
-  public id: number;
+  public id: string;
   public walletId: string;
   public creatorId: string;
   public message: string;
