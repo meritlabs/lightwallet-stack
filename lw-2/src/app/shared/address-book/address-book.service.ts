@@ -7,6 +7,8 @@ import { BwcService } from 'merit/core/bwc.service';
 import { BwcError } from 'merit/core/bwc-error.model';
 import { PersistenceService } from 'merit/core/persistence.service';
 
+declare var navigator:any;
+
 @Injectable()
 export class AddressBookService {
   private bitcore: any;
