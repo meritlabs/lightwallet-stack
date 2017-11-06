@@ -6,6 +6,7 @@ import { GravatarModule } from 'merit/shared/gravatar.module';
 import { GravatarComponent } from 'merit/shared/gravatar.component';
 import { WalletService } from "merit/wallets/wallet.service";
 import { WalletsModule } from "merit/wallets/wallets.module";
+import { AddressBookService } from "merit/shared/address-book/address-book.service";
 
 
 // This module manaages the sending of money.
@@ -21,7 +22,8 @@ import { WalletsModule } from "merit/wallets/wallets.module";
   ],
   providers: [
     WalletService,
-    SendService
+    SendService,
+    AddressBookService
   ],
   exports: [
   ]

@@ -9,6 +9,9 @@ import { PersistenceService } from 'merit/core/persistence.service';
 
 declare var navigator:any;
 
+/**
+ * This service looks up entered addresses against the address book.
+ */
 @Injectable()
 export class AddressBookService {
   private bitcore: any;
