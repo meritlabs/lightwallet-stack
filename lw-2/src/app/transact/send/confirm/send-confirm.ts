@@ -101,19 +101,9 @@ export class SendConfirmView {
           }
   
           this.walletService.publishAndSign(wallet, ctxp).then(() => {
-            this.notificationService.txConfirmSubscribe(wallet, {
-              txid: ctxp.txid
-            });
-          });, function(err, txp) {
-            if (err) return setSendError(err);
-            if (config.confirmedTxsNotifications && config.confirmedTxsNotifications.enabled) {
-              txConfirmNotification.subscribe(wallet, {
-                txid: txp.txid
-              });
-            }
-          }, onSendStatusChange);
+            this.notificationService.subscribe(wallet, ctxp);
+          });
         };
-
       });
     });
   }
