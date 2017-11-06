@@ -1,7 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { ConfirmView } from 'merit/transact/send/confirm/confirm';
+import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
 
 @IonicPage()
 @Component({
@@ -160,9 +160,7 @@ export class SendAmountView {
   };
 
   finish() {
-    // TODO: We should always be sending from here.
-    if(this.sending) {
-      this.navCtrl.push('ConfirmView', {address: this.address, amount: this.globalResult});      
-    }
+    // TODO: We should always be sending from view.
+    this.navCtrl.push('SendConfirmView', {address: this.address, amount: this.globalResult});      
   }
 }
