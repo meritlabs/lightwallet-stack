@@ -4,6 +4,8 @@ import { NavController, NavParams, IonicPage } from 'ionic-angular';
 /**
  * The confirm view is the final step in the transaction sending process 
  * (for single-signature wallets).
+ * TODO: 
+ * - Simplify
  */
 @IonicPage()
 @Component({
@@ -39,6 +41,15 @@ export class SendConfirmView {
     console.log('ionViewDidLoad ConfirmView');
     this.toAddress = this.navParams.data.toAddress;
     this.amount = this.navParams.data.amount;
+  }
+
+  // Show as much as we can about the address. 
+  private displayName(): string {
+    if (this.toName) {
+      return this.toName;
+    }
+    // TODO: Check AddressBook
+    return this.toAddress || "no one";
   }
 
 }
