@@ -39,6 +39,7 @@ export class SendView {
   private hasFunds: boolean;
   private hasOwnedMerit: boolean; 
 
+  public hasContacts:boolean; 
 
   constructor(
     private navCtrl: NavController,
@@ -47,7 +48,8 @@ export class SendView {
     private popupService: PopupService,
     private profileService: ProfileService,
     private logger: Logger,
-    private sendService: SendService 
+    private sendService: SendService,
+    private addressBookService:AddressBookService 
   ) {
     console.log("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
@@ -86,7 +88,7 @@ export class SendView {
 
   private addressBookToContactList(ab): Promise<any> {
     return new Promise((resolve, reject) => {
-      let cl = _.map(ab, function(v, k) {
+      let cl = _.map(ab, function(v:any, k) {
         let item:any = {
           name: _.isObject(v) ? v.name : v,
           address: k,
@@ -106,13 +108,13 @@ export class SendView {
   };
 
   private initContactList(): Promise<any> {
-    let addressBookList = Promise.promisify(this.addressBookService.list());
+    let addressBookList = Promise.promisify(this.addressBookService.list({})); 
     return addressBookList.then((ab) => {
       this.hasContacts = _.isEmpty(ab) ? false : true;
 
-      let completeContacts = addressBookToContactList(ab);
+      let completeContacts = this.addressBookToContactList(ab);  
       this.originalContacts = this.originalContacts.concat(completeContacts);
-      this.showMoreContacts = completeContacts.length > CONTACTS_SHOW_LIMIT;
+      this.showMoreContacts = completeContacts.length > SendView.CONTACTS_SHOW_LIMIT;
     });
   }
 
@@ -120,14 +122,14 @@ export class SendView {
     let getDeviceContacts = Promise.promisify(this.addressBookService.getAllDeviceContacts);
 
     return getDeviceContacts.then((contacts) => {
-      contacts = _.filter(contacts, (contact) => {
+      contacts = _.filter(contacts, (contact:any) => {
         return !(_.isEmpty(contact.emails) && _.isEmpty(contact.phoneNumbers));
       });
-      this.deviceContacts = this.deviceContacts.concat(_.map(contacts, function(contact) {
-        var item = {
+      this.deviceContacts = this.deviceContacts.concat(_.map(contacts, function(contact:any) {
+        var item:any = {
           name: contact.name.formatted,
-          emails: _.map(contact.emails, function(o) { return o.value; }),
-          phoneNumbers: _.map(contact.phoneNumbers, function(o) { return o.value; }),
+          emails: _.map(contact.emails, function(o:any) { return o.value; }),
+          phoneNumbers: _.map(contact.phoneNumbers, function(o:any) { return o.value; }),
           address: '',
           getAddress: function(cb) { return cb(); }
         };
