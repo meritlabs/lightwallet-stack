@@ -86,10 +86,10 @@ export class ImportView {
     let reader:any = new FileReader();
     this.loadFileInProgress = true;
     reader.onloadend = (loadEvent:any) => {
-      if (loadEvent.target.readyState == FileReader.DONE) {
+      // if (loadEvent.target.readyState == FileReader.DONE) {
         this.loadFileInProgress = false;
         this.formData.backupFileBlob = loadEvent.target.result;
-      }
+      // }
     };
 
     reader.readAsDataURL($event.target.files[0]);
@@ -112,7 +112,8 @@ export class ImportView {
     if (this.formData.words.indexOf('xprv') == 0 || this.formData.words.indexOf('tprv') == 0) {
       importCall = this.profileService.importExtendedPrivateKey(this.formData.words, opts);
     } else if (this.formData.words.indexOf('xpub') == 0 || this.formData.words.indexOf('tpub') == 0) {
-      importCall = this.profileService.importExtendedPublicKey(this.formData.words, opts);
+      opts.extendedPublicKey = this.formData.words;
+      importCall = this.profileService.importExtendedPublicKey(opts);
     } else {
       opts.passphrase = this.formData.phrasePassword;
       importCall = this.profileService.importMnemonic(this.formData.words, opts);

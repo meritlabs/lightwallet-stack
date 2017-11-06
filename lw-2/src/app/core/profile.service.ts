@@ -520,6 +520,12 @@ export class ProfileService {
     });
   }
 
+  public importMnemonic(words, opts) {
+    return new Promise((resolve, reject) => {
+        resolve({status: {}});  
+    });
+  }
+
   public importExtendedPrivateKey(xPrivKey: string, opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
@@ -913,7 +919,7 @@ export class ProfileService {
     return new Promise((resolve, reject) => {
       let allWallets = this.wallets;
       return this.getWallets().then((allWallets) => {
-        let walletsWithMerit = _.filter(allWallets, (wallet) => {
+        let walletsWithMerit = _.filter(allWallets, (wallet:any) => {
           return (wallet.status && wallet.status.totalBalanceSat > 0);
         });
         let totalSatoshis = _.reduce(walletsWithMerit, (totalBalance, filteredWallet) => {

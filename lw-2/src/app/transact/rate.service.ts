@@ -9,10 +9,10 @@ import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 
 @Injectable()
-export class RateService {
+export class RateService {  
 
   private _rates: Object;
-  private _alternatives: Array<any>;
+  private _alternatives: Array<any>;  
   private _ratesBCH: Object;
   private SAT_TO_BTC: any;
   private BTC_TO_SAT: any;

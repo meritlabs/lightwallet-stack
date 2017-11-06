@@ -14,6 +14,7 @@ export class Wallet {
   secret:string;
   notAuthorized:boolean;
   copayers:Array<any>;
+  started:boolean; 
 
   isComplete = ():boolean => {
     //TODO IMPLEMENT
