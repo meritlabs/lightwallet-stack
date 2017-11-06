@@ -1,9 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Logger } from 'merit/core/logger';
 import { Events } from 'ionic-angular';
+import { Promise } from 'bluebird';
+
 import { PersistenceService } from 'merit/core/persistence.service';
 
 import * as _ from "lodash";
+
+/*
+  Need to think about how to name this optimally, given.. 
+  "AppService"
+*/ 
 
 interface Config {
   limits: {
@@ -84,6 +91,10 @@ interface Config {
   log: {
     filter: string;
   };
+
+  // Custom Aliases 
+  // Stored like: aliasFor[WalletId] = "Full Wallet"
+  aliasFor?: object;
 };
 
 const configDefault: Config = {
@@ -113,7 +124,7 @@ const configDefault: Config = {
 
   // Bitcore wallet service URL
   bws: {
-    url: 'https://bws.merit.me/bws/api'
+    url: 'http://localhost:3232/bws/api'
   },
 
   download: {
@@ -181,7 +192,12 @@ export class ConfigService {
     private events: Events,
     private persistence: PersistenceService
   ) {
-    this.logger.debug('ConfigService initialized.');
+    this.load()
+      .then(() => {
+        this.logger.debug('ConfigService initialized.');
+      }).catch(err => {
+        this.logger.warn('ConfigService could not load default config');
+      }) 
   }
 
   public load() {

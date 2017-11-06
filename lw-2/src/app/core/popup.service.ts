@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
+import { Promise } from 'bluebird';
+
 
 @Injectable()
 export class PopupService {

@@ -3,6 +3,8 @@ import { Logger } from 'merit/core/logger';
 import { BwcService } from 'merit/core/bwc.service';
 import { BwcError } from 'merit/core/bwc-error.model';
 import { ProfileService } from 'merit/core/profile.service';
+import { Promise } from 'bluebird';
+
 
 
 import * as _ from 'lodash';
@@ -12,9 +14,9 @@ export class MnemonicService {
 
   constructor(
       private logger: Logger, 
-      private bwcService: BwcService,
-      private bwcErrorService: BwcError,
       private profileService: ProfileService,
+      private bwcService: BwcService,
+      private bwcErrorService: BwcError
   ){}
 
   private errors: any = this.bwcService.getErrors();
@@ -33,8 +35,7 @@ export class MnemonicService {
         passphrase: opts.passphrase,
         entropySourcePath: opts.entropySourcePath,
         derivationStrategy: opts.derivationStrategy || 'BIP44',
-        account: opts.account || 0,
-        coin: opts.coin
+        account: opts.account || 0
       }, (err: any) => {
         if (err) {
           if (err instanceof this.errors.NOT_AUTHORIZED) {
@@ -69,8 +70,7 @@ export class MnemonicService {
           network: network,
           passphrase: opts.passphrase,
           account: opts.account || 0,
-          derivationStrategy: opts.derivationStrategy || 'BIP44',
-          coin: opts.coin
+          derivationStrategy: opts.derivationStrategy || 'BIP44'
         });
         resolve(walletClient);
       } catch (ex) {

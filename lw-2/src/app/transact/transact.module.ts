@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TransactView } from 'merit/transact/transact';
+
+import { ProfileService } from 'merit/core/profile.service';
+
 import { RateService } from 'merit/transact/rate.service';
 
 
@@ -16,6 +19,7 @@ import { RateService } from 'merit/transact/rate.service';
     IonicPageModule.forChild(TransactView),
   ],
   providers: [
+    ProfileService,
     RateService
   ]
 })
