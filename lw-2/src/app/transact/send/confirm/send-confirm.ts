@@ -13,7 +13,7 @@ import { NavController, NavParams, IonicPage } from 'ionic-angular';
 export class SendConfirmView {
 
   // Core Params
-  public address: string;
+  public toAddress: string;
   public amount: string;
   public description: string;
   public sendMax: boolean;
@@ -37,7 +37,7 @@ export class SendConfirmView {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ConfirmView');
-    this.address = this.navParams.data.address;
+    this.toAddress = this.navParams.data.toAddress;
     this.amount = this.navParams.data.amount;
   }
 
