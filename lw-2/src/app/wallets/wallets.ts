@@ -18,7 +18,7 @@ import {Logger} from "merit/core/logger";
 import { WalletService } from "merit/wallets/wallet.service";
 import {EasyReceipt} from "merit/easy-receive/easy-receipt.model";
 import {TxFormatService} from "merit/transact/tx-format.service";
-import {AddressbookService} from "merit/addressbook/addressbook.service";
+import {AddressBookService} from "merit/shared/address-book/address-book.service";
 
 
 /* 
@@ -67,7 +67,7 @@ export class WalletsView {
     private walletService:WalletService,
     private txFormatService:TxFormatService,
     private events:Events,
-    private addressbookService:AddressbookService
+    private addressbookService:AddressBookService
   ) {
   }
 
