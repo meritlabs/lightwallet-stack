@@ -8,7 +8,7 @@ import { ContactsService } from "merit/shared/contacts.service";
 })
 @Component({
   selector: 'addressbook-view',
-  templateUrl: 'addressbook.html',
+  templateUrl: 'address-book.html',
 })
 export class AddressBookView {
 
