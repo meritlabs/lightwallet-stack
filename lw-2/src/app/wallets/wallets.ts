@@ -81,7 +81,6 @@ export class WalletsView {
 
   public async ionViewDidLoad() {
 
-
     this.registerListeners();
 
     this.getWallets().then((wallets) => {
@@ -267,9 +266,9 @@ export class WalletsView {
 
   private async updateAllWallets() {
     let wallets = await this.profileService.getWallets();
-    return await Promise.all(_.map(wallets, async (wallet) => {
+    return await Promise.all(_.map(wallets, async (wallet:any) => {
       wallet.status = await this.walletService.getStatus(wallet);
-      return wallet;
+      return wallet; 
     }));
 
   }
