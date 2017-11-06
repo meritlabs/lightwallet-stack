@@ -5,7 +5,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { PersistenceService } from 'merit/core/persistence.service';
-import { Transaction } from 'merit/transact/transaction.model';
+import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
 import { Referral } from 'merit/community/referral.model';
 
 
@@ -32,30 +32,34 @@ export class NotificationService {
     console.log('Hello Notification Service');
   }
 
-  public subscribe(client, subject: Transaction | Referral): Promise<any> {
+  public subscribe(client, subject: TransactionProposal | Referral): Promise<any> {
     let methodPrefix = this.getMethodPrefix(subject);
     
     //TODO: Rewrite BWC with promises.
-    client[methodPrefix + 'subscribe'](subject.id, {}, function(){});
-    
+    let subCall = Promise.promisify(client[methodPrefix + 'ConfirmationSubscribe'](subject.id, {}, function(){}));
+    return subCall.then((res) => {
+      this.storageService['set' + methodPrefix + 'confirmNotification'](subject.id, true, cb())
+    });
   }
 
   /**
    * Returns the method prefix used further down the stack. 
    * Today, we only have confirmation events, but it stands to 
    * reason that we'll add more in the future.  
-   * @param subject - Transaction or Referral
+   * @param subject - TransactionProposal or Referral
    */
-  private getMethodPrefix(subject: Transaction | Referral): string {
+  private getMethodPrefix(subject: TransactionProposal | Referral): string {
     // Switch statements don't work on types yet in TypeScript.  
     // Using ifs for now.
-    if (<Transaction>subject) {
-      return 'txConfirmation';
+    if (<TransactionProposal>subject) {
+      return 'tx';
     }
     if (<Referral>subject) {
-      return 'refConfirmation';
+      return 'ref';
     }
     // Should never get here because of union type.  
+    let n: never;
+    return n;
   }
 
   // export class NotificationSubject {
