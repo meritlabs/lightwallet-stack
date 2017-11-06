@@ -789,7 +789,7 @@ export class WalletService {
     return isEncrypted;
   }
 
-  public createTx(wallet: any, txp: any) {
+  public createTx(wallet: any, txp: any): Promise<any> {
     return new Promise((resolve, reject) => {
       if (_.isEmpty(txp) || _.isEmpty(wallet))
         return reject('MISSING_PARAMETER');

@@ -87,33 +87,18 @@
   </div>
 </ion-content>
 
-<click-to-accept
-  (click)="approve(tx, wallet, statusChangeHandler)"
-  *ngIf="(!isCordova || isWindowsPhoneApp) && wallet"
-  click-send-status="sendStatus"
-  is-disabled="!wallet">
-  {{buttonText}}
-</click-to-accept>
-<slide-to-accept
-  *ngIf="isCordova && !isWindowsPhoneApp && wallet"
-  slide-on-confirm="approve(tx, wallet, statusChangeHandler)"
-  slide-send-status="sendStatus"
-  is-disabled="!wallet">
-  {{buttonText}}
-</slide-to-accept>
-<slide-to-accept-success
-  slide-success-show="sendStatus === 'success'"
-  slide-success-on-confirm="onSuccessConfirm()"
-  slide-success-hide-on-confirm="true">
-  <span *ngIf="wallet.m == 1 && (wallet.canSign() || wallet.isPrivKeyExternal())" translate>Payment Sent</span>
-  <span *ngIf="wallet.m > 1 && (wallet.canSign() || wallet.isPrivKeyExternal())" translate>Proposal Created</span>
-  <span *ngIf="!wallet.canSign() && !wallet.isPrivKeyExternal()" translate>Transaction Created</span>
-</slide-to-accept-success>
+<button ion-button [disabled]="!wallet" class="click-to-accept__button button button-standard button-primary" [class.enter]="sendStatus" (click)="approve(tx, wallet, statusChangeHandler)">
+  <span class="click-to-accept__status-text" ng-class="{enter: sendStatus}">
+    <img src="img/spinner.png">
+    {{displaySendStatus}}
+  </span>
+</button>
 
+<!-- 
 <wallet-selector
   wallet-selector-title="walletSelectorTitle"
   wallet-selector-wallets="wallets"
   wallet-selector-selected-wallet="wallet"
   wallet-selector-show="walletSelector"
   wallet-selector-on-select="onWalletSelect">
-</wallet-selector>
+</wallet-selector> -->
