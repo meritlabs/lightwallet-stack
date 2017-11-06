@@ -20,6 +20,7 @@ import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-transla
 import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { TouchID } from '@ionic-native/touch-id';
+import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
 import { PopupService } from 'merit/core/popup.service';
 import { SpinnerService } from 'merit/core/spinner.service';
 import { TransactView } from 'merit/transact/transact';
@@ -42,8 +43,33 @@ export function createTranslateLoader(http: Http) {
     return new TranslatePoHttpLoader(http, 'assets/i18n', '.po');
   }
  
+// @NgModule({
+//     imports: [
+//         CommonModule,
+//         TransactModule,
+//         HttpModule,
+//         TranslateModule.forRoot({
+//                 loader: {
+//                     provide: TranslateLoader,
+//                     useFactory: createTranslateLoader,
+//                     deps: [Http]
+//                 }
+//         })        
+//     ],
+//     exports: [],
+//     declarations: [
+//     ],
+//     providers: [
+//         Logger,
+//         StatusBar,
+//         SplashScreen,
+//         BwcService,
+//         BwcError, 
+//     ]
+// }) 
+
   // Ideally, we can remove the transaction dependency.
-@NgModule({
+@NgModule({ 
     imports: [
         CommonModule,
         TransactModule,
@@ -65,6 +91,9 @@ export function createTranslateLoader(http: Http) {
         SplashScreen,
         BwcService,
         BwcError,
+        PopupService,
+        SpinnerService,
+        MeritToastController, 
         {
             provide: PersistenceService,
             useFactory: persistenceServiceFactory,
@@ -77,20 +106,20 @@ export function createTranslateLoader(http: Http) {
         TxFormatService,
         AppService,
         ConfigService,
+        AndroidFingerprintAuth, 
+        TouchID, 
+        TouchIdService,  
+        //   {
+        //       provide: TouchIdService,
+        //   deps: [TouchID],
+        //   multi: false
+        //   } 
         {
             provide: APP_INITIALIZER,
             useFactory: (app: AppService) => () => app.load(),
             deps: [AppService, LanguageService],
             multi: true
-        },
-        PopupService,
-        SpinnerService,
-      {
-          provide: TouchIdService,
-          deps: [TouchID],
-          multi: false
-      },
-      MeritToastController
+        }
     ]
 })
 

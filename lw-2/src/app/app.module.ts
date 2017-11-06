@@ -9,26 +9,22 @@ import { TransactView } from 'merit/transact/transact';
 import { MomentModule } from 'angular2-moment';
 import { CoreModule } from 'merit/core/core.module';
 
-
-
-// App Module
 @NgModule({
-  declarations: [
-    MeritLightWallet
+  declarations:[
+    MeritLightWallet,
   ],
   imports: [
-    BrowserModule,
+    BrowserModule, 
     MomentModule,
-    CoreModule,
-    IonicModule.forRoot(MeritLightWallet),
+    CoreModule, 
+    IonicModule.forRoot(MeritLightWallet)
   ],
-  bootstrap: [IonicApp],
+  bootstrap: [IonicApp], 
   entryComponents: [
     MeritLightWallet
   ],
   providers: [
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
-    NavController
+     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
-export class AppModule {}
+export class AppModule {} 
