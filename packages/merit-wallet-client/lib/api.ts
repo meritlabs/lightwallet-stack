@@ -496,27 +496,29 @@ export class API extends EventEmitter {
     }
   };
 
-  _import(cb): any {
-    $.checkState(this.credentials);
-
-
-    // First option, grab wallet info from BWS.
-    this.openWallet().then((ret) => { 
-
-      // Is the error other than "copayer was not found"? || or no priv key.
-      if (err instanceof Errors.NOT_AUTHORIZED || this.isPrivKeyExternal())
-        return cb(err);
-
+  _import(cb): Promise<any> {
+    return new Promise((resolve, reject) => {
+      
+      $.checkState(this.credentials);
+      
+      
+      // First option, grab wallet info from BWS.
+      this.openWallet().then((ret) => { 
+        
+        // Is the error other than "copayer was not found"? || or no priv key.
+      if (this.isPrivKeyExternal())
+      return reject(new Error('No Private Key!'));
+      
       //Second option, lets try to add an access
       log.info('Copayer not found, trying to add access');
-      this.addAccess({}, function(err) {
-        if (err) {
+      this.addAccess({}).then(() => {
+        
+        return this.openWallet();
+      }).catch((err) => {
           return cb(new Errors.WALLET_DOES_NOT_EXIST);
-        }
-
-        this.openWallet(cb);
       });
     });
+  });
   };
 
   /**
@@ -822,12 +824,12 @@ export class API extends EventEmitter {
    * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is complete.
    * @fires API#walletCompleted
    */
-  openWallet(cb): Promise<any> {
+  openWallet(): Promise<any> {
     return new Promise((resolve, reject) => {
     
       $.checkState(this.credentials);
       if (this.credentials.isComplete() && this.credentials.hasWalletInfo())
-        return cb(null, true);
+        return resolve(true); // wallet is already open
 
       return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
         var wallet = ret.wallet;
@@ -958,12 +960,12 @@ export class API extends EventEmitter {
   };
 
 
-  private _login(cb): any {
-    this._doPostRequest('/v1/login', {});
+  private _login(cb): Promise<any> {
+    return this._doPostRequest('/v1/login', {});
   };
 
-  private _logout(cb): any {
-    this._doPostRequest('/v1/logout', {});
+  private _logout(cb): Promise<any> {
+    return this._doPostRequest('/v1/logout', {});
   };
 
   /**
@@ -977,12 +979,14 @@ export class API extends EventEmitter {
    */
   private _doRequestWithLogin(method, url, args): Promise<any> {
 
-    function doLogin(cb) {
-      this._login(function(err, s) {
-        if (err) return cb(err);
-        if (!s) return cb(new Errors.NOT_AUTHORIZED);
-        this.session = s;
-        cb();
+    function doLogin(): Promise<any> {
+      return new Promise((resolve, reject) => {   
+        this._login(function(err, s) {
+          if (err) return cb(err);
+          if (!s) return cb(new Errors.NOT_AUTHORIZED);
+          this.session = s;
+          cb();
+        });
       });
     };
 
