@@ -6,7 +6,8 @@ import {Md5} from 'ts-md5/dist/md5';
   selector: 'gravatar', 
   inputs: ['name', 'height', 'width', 'email'],
   template: `
-  <img class="gravatar" [alt]="name" [height]="height"  [width]="width" src="https://secure.gravatar.com/avatar/{{ emailHash }}.jpg?s={{ width }}&d=mm">
+  <img  class="gravatar" [alt]="name" [height]="height"  [width]="width" 
+  [src]="'https://secure.gravatar.com/avatar/'+emailHash+'.jpg?s='+width+'&d=mm'"> 
 `
  })
 export class GravatarComponent {
@@ -15,10 +16,13 @@ export class GravatarComponent {
     public width: string;
     public email: string;
     public emailHash: string;
+    public ready:boolean; 
 
-    constructor(
-    ) {
+    ngOnInit() {
       this.emailHash = Md5.hashStr(this.email.toLowerCase() || '').toString();
+      this.ready = true; 
     }
+
+
 
 }

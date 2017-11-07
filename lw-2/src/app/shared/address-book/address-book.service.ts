@@ -27,10 +27,6 @@ export class AddressBookService {
   ) {
     this.bitcore = this.bwcService.getBitcore();
 
-    // this.getAllDeviceContacts().catch(err => {
-      // this.logger.warn(err); 
-    // })
-
   }
 
   get = function(addr, cb) {
@@ -75,17 +71,15 @@ export class AddressBookService {
     return cb();
   };
 
-  // _getAllDeviceContacts = function(cb) {
-    // return this.searchContacts('', cb);
-  // };
-
   public getAllDeviceContacts():Promise<Array<any>> {
     return new Promise((resolve, reject) => {
       this.contacts.find(['displayName', 'name', 'phoneNumbers', 'emails'], {filter: "", multiple: true}).then((contacts) => {
         return resolve(contacts);
       }).catch((err) => {
         this.logger.warn(err);
-        return resolve([]); 
+        return resolve([
+          [{name: {formatted: 'Mock user'}, emails: [{value: 'mock@user.me'}], phoneNumbers: [], address: '', getAddress: () =>  '' }]
+        ]); 
       })
     }) 
   }

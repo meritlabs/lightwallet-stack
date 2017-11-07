@@ -32,9 +32,6 @@ export class SendView {
   private currentContactsPage = 0;
   private showMoreContacts: boolean = false;
   private filteredList: Array<any>; 
-
-  public deviceDebug;
-
   private formData: { 
     search: string
   };
@@ -42,6 +39,7 @@ export class SendView {
   private hasFunds: boolean;
   private hasOwnedMerit: boolean; 
 
+  
   public hasContacts:boolean; 
 
   constructor(
@@ -62,7 +60,6 @@ export class SendView {
 
   ionViewDidLoad() {
     this.originalContacts = [];
-    this.deviceContacts = [];
     this.initDeviceContacts();
     this.hasWallets();
     this.hasFunds = this.profileService.hasFunds();
@@ -123,13 +120,12 @@ export class SendView {
   }
 
   private initDeviceContacts(): Promise<any> {
-    // let getDeviceContacts = Promise.promisify(this.addressBookService.getAllDeviceContacts);
 
     return this.addressBookService.getAllDeviceContacts().then((contacts) => {
       contacts = _.filter(contacts, (contact:any) => {
         return !(_.isEmpty(contact.emails) && _.isEmpty(contact.phoneNumbers));
       });
-      this.deviceContacts = this.deviceContacts.concat(_.map(contacts, function(contact:any) {
+      this.deviceContacts = _.map(contacts, function(contact:any) {
         var item:any = {
           name: contact.name.formatted,
           emails: _.map(contact.emails, function(o:any) { return o.value; }),
@@ -143,9 +139,8 @@ export class SendView {
           ''
         );
         return item;
-      }));
-
-      this.deviceDebug = JSON.stringify(this.deviceContacts); 
+      });
+ 
     });
   } 
   
@@ -165,6 +160,8 @@ export class SendView {
 
   private contactWithSendMethod(contact, search) {
     var obj = _.clone(contact);
+
+    console.log("OBJ", obj); 
 
     var email = _.find(obj.emails, function(x:any) {
       return _.includes(x.toLowerCase(), search.toLowerCase());
@@ -235,9 +232,11 @@ export class SendView {
     var result = this.findMatchingContacts(this.originalContacts, search);
     var deviceResult = this.findMatchingContacts(this.deviceContacts, search);
 
-    this.filteredList = result.concat(_.map(deviceResult, function(contact) {
+    console.log("RESULT", this.deviceContacts, result, deviceResult);  
+
+    this.filteredList = result.concat(_.map(deviceResult, (contact) => {
       return this.contactWithSendMethod(contact, search);
-    }));
+    }));  
   }
 
   private goToAmount(item) {
