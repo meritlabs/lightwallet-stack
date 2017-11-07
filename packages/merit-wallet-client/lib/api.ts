@@ -1573,7 +1573,7 @@ export class API extends EventEmitter {
     });
   };
 
-  _processStatus(status): any {
+  private _processStatus(status): any {
 
     function processCustomData(data) {
       var copayers = data.wallet.copayers;
@@ -1645,58 +1645,36 @@ export class API extends EventEmitter {
    * @param {Boolean} opts.includeExtendedInfo (optional: query extended status)
    * @returns {Callback} cb - Returns error or an object with status information
    */
-  getStatus(opts): Promise<any> {
+  getStatus(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
-
-    if (!cb) {
-      cb = opts;
-      opts = {};
-      log.warn('DEPRECATED WARN: getStatus should receive 2 parameters.')
-    }
-
-    opts = opts || {};
-
     var qs = [];
     qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
     qs.push('twoStep=' + (opts.twoStep ? '1' : '0'));
 
-    this._doGetRequest('/v1/wallets/?' + qs.join('&'), function(err, result) {
-      if (err) return cb(err);
+    return this._doGetRequest('/v1/wallets/?' + qs.join('&')).then((result) => {
       if (result.wallet.status == 'pending') {
         var c = this.credentials;
         result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
       }
 
       this._processStatus(result);
-
-      return cb(err, result);
     });
   };
 
   getANV(addr): Promise<any> {
-    $.checkState(this.credentials);
+      $.checkState(this.credentials);
 
-    var keys = [addr];
-    var network = this.credentials.network;
+      var keys = [addr];
+      var network = this.credentials.network;
 
-    this._doGetRequest('/v1/anv/?network=' + network + '&keys=' + keys.join(','), function(err, result) {
-      if (err) return cb(err);
-
-      return cb(err, result);
-    });
+      return this._doGetRequest('/v1/anv/?network=' + network + '&keys=' + keys.join(','));
   }
 
   getRewards(address): Promise<any> {
     $.checkState(this.credentials);
-
     var addresses = [address];
     var network = this.credentials.network;
-
-    this._doGetRequest('/v1/rewards/?network=' + network + '&addresses=' + addresses.join(','), function(err, result) {
-      if (err) return cb(err);
-
-      return cb(err, result);
-    });
+    return this._doGetRequest('/v1/rewards/?network=' + network + '&addresses=' + addresses.join(','));
   }
 
   /**
