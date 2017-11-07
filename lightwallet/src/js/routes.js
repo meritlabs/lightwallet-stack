@@ -385,8 +385,17 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           },
         }
       })
+      .state('tabs.add.create-vault.amount', {
+        url: '/create-vault/amount',
+        views: {
+          'tab-home@tabs': {
+            templateUrl: 'views/vault/amount.html',
+            controller: 'vaultController'
+          },
+        }
+      })
       .state('tabs.add.create-vault.master-key', {
-        url: '/create-vault',
+        url: '/create-vault/master-key',
         views: {
           'tab-home@tabs': {
             templateUrl: 'views/vault/master-key.html',
@@ -395,7 +404,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         }
       })
       .state('tabs.add.create-vault.summary', {
-        url: '/create-vault',
+        url: '/create-vault/summary',
         views: {
           'tab-home@tabs': {
             templateUrl: 'views/vault/summary.html',

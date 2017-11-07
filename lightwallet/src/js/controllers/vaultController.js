@@ -2,6 +2,10 @@
 
 angular.module('copayApp.controllers').controller('vaultController', function($scope, $rootScope, $state, popupService, bwcService) {
 
+  $scope.toAmount = function() {
+    $state.go('tabs.add.create-vault.amount');
+  };
+
   $scope.toMasterKey = function() {
     $state.go('tabs.add.create-vault.master-key');
   };
