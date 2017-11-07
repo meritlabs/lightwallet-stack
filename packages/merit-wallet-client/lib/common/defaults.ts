@@ -1,10 +1,9 @@
-'use strict';
+export class Defaults {
 
-var Defaults = {};
+  public static DEFAULT_FEE_PER_KB:number = 10000;
+  public static MIN_FEE_PER_KB:number = 0;
+  public static MAX_FEE_PER_KB:number = 1000000;
+  public static MAX_TX_FEE:number = 1 * 1e8;
 
-Defaults.DEFAULT_FEE_PER_KB = 10000;
-Defaults.MIN_FEE_PER_KB = 0;
-Defaults.MAX_FEE_PER_KB = 1000000;
-Defaults.MAX_TX_FEE = 1 * 1e8;
 
-module.exports = Defaults;
+};

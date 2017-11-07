@@ -9,14 +9,16 @@
  */
 
 import { API as Client } from './api';
-import { verifier } from './verifier';
+import { Verifier } from './verifier';
 import Utils = require('./common/utils');
 import sjcl = require('sjcl');
 import Bitcore = require('bitcore-lib');
 
 
 export class MeritClient extends Client {
-  public Verifier:any = verifier;
+  // I'm not sure that there is any benefit to doing this in the constructor 
+  // vs right in the class.  
+  public Verifier:any = Verifier;
   public Utils: any = Utils;
   public sjcl: any = sjcl;
 }
