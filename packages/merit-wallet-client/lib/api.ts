@@ -1035,7 +1035,7 @@ export class API extends EventEmitter {
    * @param {String} url
    * @param {Callback} cb
    */
-  _doDeleteRequest(url): Promise<any> {
+  private _doDeleteRequest(url): Promise<any> {
     return this._doRequest('delete', url, {}, false);
 };
 
@@ -1480,29 +1480,23 @@ export class API extends EventEmitter {
    *
    * @returns {Callback} cb - Returns the wallet
    */
-  recreateWallet(cb): any {
+  recreateWallet(cb): Promise<any> {
     $.checkState(this.credentials);
     $.checkState(this.credentials.isComplete());
     $.checkState(this.credentials.walletPrivKey);
     //$.checkState(this.credentials.hasWalletInfo());
 
     // First: Try to get the wallet with current credentials
-    this.getStatus({
+    return this.getStatus({
       includeExtendedInfo: true
-    }, function(err) {
-      // No error? -> Wallet is ready.
-      if (!err) {
-        log.info('Wallet is already created');
-        return cb();
-      };
+    }).then(() => {
+      let c = this.credentials;
+      let walletPrivKey = Bitcore.PrivateKey.fromString(c.walletPrivKey);
+      let walletId = c.walletId;
+      let supportBIP44AndP2PKH = c.derivationStrategy != Constants.DERIVATION_STRATEGIES.BIP45;
+      let encWalletName = Utils.encryptMessage(c.walletName || 'recovered wallet', c.sharedEncryptingKey);
 
-      var c = this.credentials;
-      var walletPrivKey = Bitcore.PrivateKey.fromString(c.walletPrivKey);
-      var walletId = c.walletId;
-      var supportBIP44AndP2PKH = c.derivationStrategy != Constants.DERIVATION_STRATEGIES.BIP45;
-      var encWalletName = Utils.encryptMessage(c.walletName || 'recovered wallet', c.sharedEncryptingKey);
-
-      var args = {
+      let args = {
         name: encWalletName,
         m: c.m,
         n: c.n,
@@ -1512,33 +1506,22 @@ export class API extends EventEmitter {
         supportBIP44AndP2PKH: supportBIP44AndP2PKH,
         beacon: c.beacon
       };
+      
 
-      this._doPostRequest('/v1/wallets/', args, function(err, body) {
-        if (err) {
-          if (!(err instanceof Errors.WALLET_ALREADY_EXISTS))
-            return cb(err);
-
-          return this.addAccess({}, function(err) {
-            if (err) return cb(err);
-            this.openWallet(function(err) {
-              return cb(err);
-            });
-          });
-        }
-
+      return this._doPostRequest('/v1/wallets/', args)
+      .then((body) => {
         if (!walletId) {
           walletId = body.walletId;
-        }
-
-        var i = 1;
-        async.each(this.credentials.publicKeyRing, function(item, next) {
+        }  
+        return this.addAccess({});
+      }).then(() => {
+        return this.openWallet();
+      }).then(() => {
+        let i = 1;
+        return Promise.each(this.credentials.publicKeyRing, function(item, next) {
           var name = item.copayerName || ('copayer ' + i++);
-          this._doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
-            supportBIP44AndP2PKH: supportBIP44AndP2PKH,
-          }, function(err) {
-            //Ignore error is copayer already in wallet
-            if (err && err instanceof Errors.COPAYER_IN_WALLET) return next();
-            return next(err);
+          return this._doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
+            supportBIP44AndP2PKH: supportBIP44AndP2PKH
           });
         });
       });
@@ -2661,6 +2644,3 @@ export class API extends EventEmitter {
 
   };
 };
-
-
-module.exports = API;
