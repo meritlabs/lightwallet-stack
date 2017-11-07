@@ -14,15 +14,19 @@
         <div class="item item-heading send-heading"><span translate>Recipient</span></div>
         <div class="item input search-wrapper" [class.focus]="searchFocus">
           <i class="icon icon-svg abs-v-center"><img class="svg" src="img/icon-bitcoin-symbol.svg"></i>
-          <div class="item-icon-right">
+          <ion-item class="item-icon-right">
             <ion-input type="text" class="search-input" placeholder="Search or enter merit address" 
             [(ngModel)]="formData.search" (ionChange)="findContact(formData.search)" 
              (focus)="searchInFocus()" (blur)="searchBlurred()"></ion-input> 
-            <i class="icon icon-svg qr abs-v-center separator-left" on-tap="openScanner()"><img src="img/scan-ico.svg"></i>
+             <button (click)="openScanner()" ion-button icon-only item-right clear>
+                <ion-icon name="qr-scanner"  color="primary"></ion-icon>
+             </button> 
+          </ion-item>
           </div>
-        </div>
       </div>
     </div>
+
+
     <div class="list">
 
       <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList" (click)="goToAmount(item)">
