@@ -16,6 +16,8 @@ import { Promise } from 'bluebird';
 
 /* 
   Historically, this acted as the API-Client
+  Now, the goal is to roll up convenience-statistics 
+  and keep a list of wallets.
 */ 
 @Injectable()
 export class ProfileService {
