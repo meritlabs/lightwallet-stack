@@ -8,6 +8,8 @@ import { PlatformService } from 'merit/core/platform.service';
 import { LocalStorage } from 'merit/core/storage/local-storage.service';
 import { FileStorage } from 'merit/core/storage/file-storage.service';
 import { RamStorage } from 'merit/core/storage/ram-storage.service';
+import { Promise } from 'bluebird';
+
 
 const Keys = {
   ADDRESS_BOOK: network => 'addressbook-' + network,
@@ -69,11 +71,7 @@ export class PersistenceService {
   };
 
   getProfile(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.storage.get(Keys.PROFILE).then((profile) => {
-        resolve(profile);
-      });
-    });
+    return this.storage.get(Keys.PROFILE);
   };
 
   deleteProfile(): Promise<void> {

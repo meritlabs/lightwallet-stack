@@ -2,7 +2,7 @@ export class Wallet {
 
   id:string;
   name:string;
-  status:Object;
+  status:any;
   balanceHidden:boolean;
   color:string;
   locked:boolean;
@@ -14,6 +14,7 @@ export class Wallet {
   secret:string;
   notAuthorized:boolean;
   copayers:Array<any>;
+  started:boolean; 
 
   isComplete = ():boolean => {
     //TODO IMPLEMENT

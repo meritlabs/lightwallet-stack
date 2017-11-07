@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 @IonicPage()
 @Component({
-  selector: 'page-terms-of-use',
+  selector: 'view-terms-of-use',
   templateUrl: 'terms-of-use.html',
 })
 export class TermsOfUseView {

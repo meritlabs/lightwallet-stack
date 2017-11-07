@@ -2,26 +2,31 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
+import { Logger } from 'merit/core/logger';
+
+import { Promise } from 'bluebird';
+
 import * as _ from 'lodash';
 
 @Injectable()
-export class RateService {
+export class RateService {  
 
   private _rates: Object;
-  private _alternatives: Array<any>;
+  private _alternatives: Array<any>;  
   private _ratesBCH: Object;
   private SAT_TO_BTC: any;
   private BTC_TO_SAT: any;
   private _isAvailable: boolean = false;
 
   private rateServiceUrl = 'https://bitpay.com/api/rates';
-  private bchRateServiceUrl = 'https://api.kraken.com/0/public/Ticker?pair=BCHUSD,BCHEUR';
   
-  constructor(public http: Http) {
+  constructor(
+    public http: Http,
+    private logger: Logger    
+  ) {
     console.log('Hello RateService Service');
     this._rates = {};
     this._alternatives = [];
-    this._ratesBCH = {};
     this.SAT_TO_BTC = 1 / 1e8;
     this.BTC_TO_SAT = 1e8;
     this.updateRates();
@@ -30,36 +35,27 @@ export class RateService {
   updateRates(): Promise<any> {
     return new Promise ((resolve, reject) => {
       let self = this;
-      this.getBTC().then((dataBTC) => {
-
-        _.each(dataBTC, (currency) => {
-          self._rates[currency.code] = currency.rate;
-          self._alternatives.push({
-            name: currency.name,
-            isoCode: currency.code,
-            rate: currency.rate
-          });
-        });
-
-        this.getBCH().then((dataBCH) => {
-
-          _.each(dataBCH.result, (data, paircode) => {
-            var code = paircode.substr(3,3);
-            var rate =data.c[0];
-            self._ratesBCH[code] = rate;
-          });
-
-          this._isAvailable = true;
+      return this.getBTC().then((dataBTC) => {
+        if (_.isEmpty(dataBTC)) {
+          this.logger.warn("Could not update rates from rate Service");
           resolve();
-        })
-        .catch((errorBCH) => {
-          console.log("Error: ", errorBCH);
-          reject(errorBCH);
-        });
+          //reject(new Error("Could not get conversion rate."))
+        } else {
+          _.each(dataBTC, (currency) => {
+            self._rates[currency.code] = currency.rate;
+            self._alternatives.push({
+              name: currency.name,
+              isoCode: currency.code,
+              rate: currency.rate
+            });
+          });
+          resolve();
+        }
       })
       .catch((errorBTC) => {
-        console.log("Error: ", errorBTC);
-        reject(errorBTC);
+        console.log("JUICED ERROR: ", errorBTC);
+        resolve();
+        //reject(errorBTC);
       });
     });
   }
@@ -67,21 +63,11 @@ export class RateService {
   getBTC(): Promise<any> {
     return this.http.get(this.rateServiceUrl)
       .map((response) => response.json())
-      .toPromise()
-      .catch((error) => console.log("Error", error));
+      .toPromise();
+      
   }
 
-  getBCH(): Promise<any> {
-    return this.http.get(this.bchRateServiceUrl)
-      .map((response) => response.json())
-      .toPromise()
-      .catch((error) => console.log("Error", error));
-  }
-
-  getRate(code, chain) {
-    if (chain == 'bch')
-      return this._ratesBCH[code];
-    else
+  getRate(code) {
       return this._rates[code];
   };
   
@@ -89,12 +75,12 @@ export class RateService {
     return this._alternatives;
   };
   
-  toFiat(satoshis, code, chain) {
-    return satoshis * this.SAT_TO_BTC * this.getRate(code, chain);
+  toFiat(satoshis, code) {
+    return satoshis * this.SAT_TO_BTC * this.getRate(code);
   };
 
-  fromFiat(amount, code, chain) {
-    return amount / this.getRate(code, chain) * this.BTC_TO_SAT;
+  fromFiat(amount, code) {
+    return amount / this.getRate(code) * this.BTC_TO_SAT;
   };
 
   listAlternatives(sort: boolean) {
@@ -115,12 +101,16 @@ export class RateService {
   };
 
   //TODO IMPROVE WHEN AVAILABLE
-  whenAvailable() { 
+  public whenAvailable(): Promise<any> { 
     return new Promise((resolve, reject)=> {
-      if (this._isAvailable) resolve();
-      else {
-       this.updateRates().then(()=>{
+      if (this._isAvailable) {
+        return resolve();
+      } else {
+       return this.updateRates().then(()=>{
           resolve();
+        }).catch((err) => {
+          this.logger.warn("Could not update rates: " + err);
+          //reject(err);
         });
       }
     });

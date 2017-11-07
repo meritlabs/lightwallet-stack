@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Wallet } from "@app/wallets/wallet.model";
+import { Wallet } from "merit/wallets/wallet.model";
 
 
 @IonicPage({
@@ -8,7 +8,7 @@ import { Wallet } from "@app/wallets/wallet.model";
   defaultHistory: ['ReceiveView']
 })
 @Component({
-  selector: 'page-copayers',
+  selector: 'view-copayers',
   templateUrl: 'copayers.html',
 })
 export class CopayersView {

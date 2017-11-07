@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
 
 @IonicPage()
 @Component({
-  selector: 'page-select-unit',
+  selector: 'view-select-unit',
   templateUrl: 'select-unit.html',
 })
 export class SelectUnitModal {

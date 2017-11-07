@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, AlertController, ModalController } from 'ionic-angular';
-import { ExternalLinkService } from "@app/shared/external-link.service";
+import { ExternalLinkService } from "merit/shared/external-link.service";
 
 
 @IonicPage()
 @Component({
-  selector: 'page-settings',
+  selector: 'view-settings',
   templateUrl: 'settings.html',
 })
 export class SettingsView {

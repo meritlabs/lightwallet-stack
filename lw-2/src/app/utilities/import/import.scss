@@ -1,22 +1,9 @@
-component-import {
+view-import {
 
   .action-button {
     width: 85%;
     max-width: 300px;
     margin: 0 auto;
-  }
-
-  textarea {
-    width: 100%;
-    min-height: 65px;
-    border: none;
-    font-weight: normal;
-    text-transform: none;
-  }
-
-  textarea::-webkit-input-placeholder {
-    color: rgba(0,0,0,0.4);
-    font-size: 14px;
   }
 
   input[type="file"] {

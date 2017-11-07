@@ -24,7 +24,7 @@ angular.module('copayApp.controllers').controller('tabHomeController',
     var easyReceiveAcceptanceHandler = function(receipt, input) {
       var wallets = profileService.getWallets();
 
-      //TODO: just pic first wallet for now. What we need is a UI to
+      //TODO: just pick first wallet for now. What we need is a UI to
       //change like in the receive flow
       var wallet = wallets[0];
       if (!wallet) return;
@@ -61,19 +61,45 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       });
     };
 
-    var easyReceiveRejectionHandler = function (receipt) {
-      $log.debug("Attempting to reject the easyReciept!");
-      //For now, let's just delete it from memory.
-      easyReceiveService.rejectEasyReceipt(function(err){
+    var easyReceiveRejectionHandler = function (receipt, input) {
+      var wallets = profileService.getWallets();
+
+      //TODO: just pick first wallet for now. What we need is a UI to
+      //change like in the receive flow
+      var wallet = wallets[0];
+      if (!wallet) return;
+
+      $log.debug("Attempting to reject the easyReceipt!");
+
+      easyReceiveService.rejectEasyReceipt(
+        wallet,
+        receipt,
+        input,
+        function(err, destinationAddress, acceptanceTx){
+          if(err) {
+            popupService.showAlert("There was an error rejecting the Merit");
+            $log.debug("Error Rejecting Easy Send");
+            $log.debug(err);
+          } else {
+            $log.debug("Rejected Easy Send");
+            $log.debug("Got returning transaction");
+            $log.debug(acceptanceTx);
+          }
+        }
+      );
+    };
+
+    var easyReceiveIgnoreHandler = function () {
+      easyReceiveService.deletePendingEasyReceipt(function(err) {
         if (err) {
-          $log.debug("Could not remove pending EasyReceipt from localstorage!");
+          console.log('Error ignoring easyReceipt.' + err);
         }
       });
     };
 
     var showGotMeritPrompt = function(input, receipt) {
       popupService.showConfirm(
-        "You've got " + input.txn.amount + " Merit!", "Someone sent you Merit", "I'll Take It", "Nah",
+        "You've got " + input.txn.amount + " Merit!", "Someone sent you Merit", "Accept", "Reject",
         function(ok){
           if (ok)
             easyReceiveAcceptanceHandler(receipt, input);
@@ -81,24 +107,25 @@ angular.module('copayApp.controllers').controller('tabHomeController',
             easyReceiveRejectionHandler(receipt, input);
         });
     }
+
     var getPasswordPendingEasyReceipt = function (receipt, network) {
       network = network || "testnet";
       popupService.showPrompt(
-        "You've got Merit from " + receipt.senderName + " !",
+        "You've got Merit from " + receipt.senderName + "!",
         "Enter the Password",
-        {ok:"I'll Take It", cancel: "Nah"},
+        {ok:"Validate", cancel: "Ignore"},
         function(pass){
           if(pass) {
             easyReceiveService.validateEasyReceiptOnBlockchain(receipt, pass, network,
               function(isValid, input) {
-              if(isValid) {
-                showGotMeritPrompt(input, receipt);
-              } else {
-                getPasswordPendingEasyReceipt(receipt, network);
-              }
-            });
+                if(isValid) {
+                  showGotMeritPrompt(input, receipt);
+                } else {
+                  getPasswordPendingEasyReceipt(receipt, network);
+                }
+              });
           } else {
-            easyReceiveRejectionHandler(receipt);
+            easyReceiveIgnoreHandler(receipt);
           }
         });
     }
@@ -121,22 +148,6 @@ angular.module('copayApp.controllers').controller('tabHomeController',
           });
         }
       });
-    };
-
-    // Handle the pending easyReceipt.
-    $scope.handlePendingEasyReceipt = function (err, receipt) {
-      if (lodash.isEmpty(receipt)) {
-        $log.debug("Unable to load pending easyReceipt.");
-      } else {
-        $log.debug("Loading pending easyReceipt.", receipt);
-        popupService.showConfirm("You've got Merit!", "Someone sent you Merit", "I'll Take It", "Nah", function(ok, cancel){
-          if (ok) {
-            easyReceiveAcceptanceHandler(receipt);
-          } else {
-            easyReceiveRejectionHandler(receipt);
-          }
-        });
-      }
     };
 
     $scope.$on("$ionicView.beforeEnter", function(event, data) {
@@ -220,9 +231,6 @@ angular.module('copayApp.controllers').controller('tabHomeController',
           updateWallet(wallet);
           if ($scope.recentTransactionsEnabled) getNotifications();
         }),
-        $rootScope.$on('easyReceiveEvent', function(e, easyReceipt) {
-          $scope.handlePendingEasyReceipt(err, easyReceipt);
-        })
       ];
 
 
