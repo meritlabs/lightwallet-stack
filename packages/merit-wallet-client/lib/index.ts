@@ -10,9 +10,9 @@
 
 import { API as Client } from './api';
 import { Verifier } from './verifier';
-import Utils = require('./common/utils');
-import sjcl = require('sjcl');
-import Bitcore = require('bitcore-lib');
+import { Utils } from './common/utils';
+import * as sjcl from 'sjcl';
+import * as Bitcore from 'bitcore-lib';
 
 
 export class MeritClient extends Client {

@@ -38,7 +38,7 @@ export class BwcService {
       transports: ['polling'],
     });
     if (walletData)
-      bwc.import(walletData, opts);
+      bwc.import(walletData);
     return bwc;
   }
 
