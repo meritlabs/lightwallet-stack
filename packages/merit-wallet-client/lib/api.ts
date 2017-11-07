@@ -12,6 +12,7 @@ import sjcl = require('sjcl');
 import url = require('url');
 import querystring = require('querystring');
 import Stringify = require('json-stable-stringify');
+import Bip38 = require('bip38');
 
 import request = require('superagent');
 
@@ -496,7 +497,7 @@ export class API extends EventEmitter {
     }
   };
 
-  _import(cb): Promise<any> {
+  _import(): Promise<any> {
     return new Promise((resolve, reject) => {
       
       $.checkState(this.credentials);
@@ -515,7 +516,7 @@ export class API extends EventEmitter {
         
         return this.openWallet();
       }).catch((err) => {
-          return cb(new Errors.WALLET_DOES_NOT_EXIST);
+          return reject(new Errors.WALLET_DOES_NOT_EXIST);
       });
     });
   });
@@ -556,16 +557,16 @@ export class API extends EventEmitter {
         return reject(new Errors.INVALID_BACKUP);
       }
 
-      this._import(function(err, ret) {
-        if (!err) return resolve(ret);
-        if (err instanceof Errors.INVALID_BACKUP) return cb(err);
+      return this._import().then((ret) => {
+        return resolve(ret);
+      }).then((err) => {
+        if (err instanceof Errors.INVALID_BACKUP) return reject(err);
         if (err instanceof Errors.NOT_AUTHORIZED || err instanceof Errors.WALLET_DOES_NOT_EXIST) {
           var altCredentials = derive(true);
-          if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return cb(err);
+          if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return reject(err);
           this.credentials = altCredentials;
-          return this._import(cb);
+          return this._import();
         }
-        return cb(err);
       });
     });
   };
@@ -581,20 +582,14 @@ export class API extends EventEmitter {
   importFromExtendedPrivateKey(xPrivKey, opts): Promise<any> {
     log.debug('Importing from Extended Private Key');
 
-    if (!cb) {
-      cb = opts;
-      opts = {};
-      log.warn('DEPRECATED WARN: importFromExtendedPrivateKey should receive 3 parameters.');
-    }
-
     try {
       this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       log.info('xPriv error:', e);
-      return cb(new Errors.INVALID_BACKUP);
+      return new Promise((resolve, reject) => { reject(new Errors.INVALID_BACKUP); });
     };
 
-    this._import(cb);
+    return this._import();
   };
 
   /**
@@ -610,7 +605,6 @@ export class API extends EventEmitter {
   importFromExtendedPublicKey(xPubKey, source, entropySourceHex, opts): Promise<any> {
     $.checkArgument(arguments.length == 5, "DEPRECATED: should receive 5 arguments");
     $.checkArgument(_.isUndefined(opts) || _.isObject(opts));
-    $.shouldBeFunction(cb);
 
     opts = opts || {};
     log.debug('Importing from Extended Private Key');
@@ -618,35 +612,37 @@ export class API extends EventEmitter {
       this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       log.info('xPriv error:', e);
-      return cb(new Errors.INVALID_BACKUP);
+      return new Promise((resolve, reject) => { reject(new Errors.INVALID_BACKUP); });
     };
 
-    this._import(cb);
+    return this._import();
   };
 
   decryptBIP38PrivateKey(encryptedPrivateKeyBase58, passphrase, opts): Promise<any> {
-    var Bip38 = require('bip38');
-    var bip38 = new Bip38();
+    return new Promise((resolve, reject) => {
+      
+      var bip38 = new Bip38();
+      
+      var privateKeyWif;
+      try {
+        privateKeyWif = bip38.decrypt(encryptedPrivateKeyBase58, passphrase);
+      } catch (ex) {
+        return reject(new Error('Could not decrypt BIP38 private key: ' + ex));
+      }
+      
+      var privateKey = new Bitcore.PrivateKey(privateKeyWif, 'livenet');
+      var address = privateKey.publicKey.toAddress().toString();
+      var addrBuff = new Buffer(address, 'ascii');
+      var actualChecksum = Bitcore.crypto.Hash.sha256sha256(addrBuff).toString('hex').substring(0, 8);
+      var expectedChecksum = Bitcore.encoding.Base58Check.decode(encryptedPrivateKeyBase58).toString('hex').substring(6, 14);
+      
+      if (actualChecksum != expectedChecksum)
+        return reject(new Error('Incorrect passphrase'));
 
-    var privateKeyWif;
-    try {
-      privateKeyWif = bip38.decrypt(encryptedPrivateKeyBase58, passphrase);
-    } catch (ex) {
-      return cb(new Error('Could not decrypt BIP38 private key', ex));
-    }
-
-    var privateKey = new Bitcore.PrivateKey(privateKeyWif);
-    var address = privateKey.publicKey.toAddress().toString();
-    var addrBuff = new Buffer(address, 'ascii');
-    var actualChecksum = Bitcore.crypto.Hash.sha256sha256(addrBuff).toString('hex').substring(0, 8);
-    var expectedChecksum = Bitcore.encoding.Base58Check.decode(encryptedPrivateKeyBase58).toString('hex').substring(6, 14);
-
-    if (actualChecksum != expectedChecksum)
-      return cb(new Error('Incorrect passphrase'));
-
-    return cb(null, privateKeyWif);
+      return resolve(privateKeyWif);
+    });
   };
-
+  
   getBalanceFromPrivateKey(privateKey): Promise<any> {
 
     var privateKey = new Bitcore.PrivateKey(privateKey);
