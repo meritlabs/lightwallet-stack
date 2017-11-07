@@ -644,60 +644,57 @@ export class API extends EventEmitter {
   };
   
   getBalanceFromPrivateKey(privateKey): Promise<any> {
-
-    var privateKey = new Bitcore.PrivateKey(privateKey);
-    var address = privateKey.publicKey.toAddress();
-    this.getUtxos({
-      addresses: address.toString(),
-    }, function(err, utxos) {
-      if (err) return cb(err);
-      return cb(null, _.sum(utxos, 'micros'));
+    return new Promise((resolve, reject) => {
+      
+      var privateKey = new Bitcore.PrivateKey(privateKey);
+      var address = privateKey.publicKey.toAddress();
+      return this.getUtxos({
+        addresses: address.toString(),
+      }).then((utxos) => {
+        return resolve(_.sumBy(utxos, 'micros'));
+      });
     });
   };
 
-  buildTxFromPrivateKey(privateKey, destinationAddress, opts): Promise<any> {
+  buildTxFromPrivateKey(privateKey, destinationAddress, opts?: any = {}): Promise<any> {
 
-    opts = opts || {};
+    return new Promise((resolve, reject) => {
+      
+      var privateKey = new Bitcore.PrivateKey(privateKey);
+      var address = privateKey.publicKey.toAddress();
 
-    var privateKey = new Bitcore.PrivateKey(privateKey);
-    var address = privateKey.publicKey.toAddress();
 
-    async.waterfall([
 
-      function(next) {
         this.getUtxos({
           addresses: address.toString(),
-        }, function(err, utxos) {
-          return next(err, utxos);
+        }).then((utxos) => {
+          if (!_.isArray(utxos) || utxos.length == 0) return reject(new Error('No utxos found'));
+          
+          var fee = opts.fee || 10000;
+          var amount = _.sumBy(utxos, 'micros') - fee;
+          if (amount <= 0) return reject(new Errors.INSUFFICIENT_FUNDS);
+  
+          var tx;
+          try {
+            var toAddress = Bitcore.Address.fromString(destinationAddress);
+  
+            tx = new Bitcore.Transaction()
+              .from(utxos)
+              .to(toAddress, amount)
+              .fee(fee)
+              .sign(privateKey);
+  
+            // Make sure the tx can be serialized
+            tx.serialize();
+  
+          } catch (ex) {
+            log.error('Could not build transaction from private key', ex);
+            reject(new Errors.COULD_NOT_BUILD_TRANSACTION);
+          }
+          return resolve(tx);
         });
-      },
-      function(utxos, next) {
-        if (!_.isArray(utxos) || utxos.length == 0) return next(new Error('No utxos found'));
-
-        var fee = opts.fee || 10000;
-        var amount = _.sum(utxos, 'micros') - fee;
-        if (amount <= 0) return next(new Errors.INSUFFICIENT_FUNDS);
-
-        var tx;
-        try {
-          var toAddress = Bitcore.Address.fromString(destinationAddress);
-
-          tx = new Bitcore.Transaction()
-            .from(utxos)
-            .to(toAddress, amount)
-            .fee(fee)
-            .sign(privateKey);
-
-          // Make sure the tx can be serialized
-          tx.serialize();
-
-        } catch (ex) {
-          log.error('Could not build transaction from private key', ex);
-          return next(new Errors.COULD_NOT_BUILD_TRANSACTION);
-        }
-        return next(null, tx);
-      }
-    ]);
+      });
+    
   };
 
   /**
