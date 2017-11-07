@@ -28,10 +28,13 @@ export class SendView {
   private showTransferCard: boolean;
   private wallets: Array<Wallet>;
   private originalContacts: Array<any>;
-  private deviceContacts: Array<any>; // On your phone or mobile device.
+  private  deviceContacts: Array<any>; // On your phone or mobile device.
   private currentContactsPage = 0;
   private showMoreContacts: boolean = false;
-  private filteredList: Array<any>;
+  private filteredList: Array<any>; 
+
+  public deviceDebug;
+
   private formData: { 
     search: string
   };
@@ -60,6 +63,7 @@ export class SendView {
   ionViewDidLoad() {
     this.originalContacts = [];
     this.deviceContacts = [];
+    this.initDeviceContacts();
     this.hasWallets();
     this.hasFunds = this.profileService.hasFunds();
   }
@@ -119,9 +123,9 @@ export class SendView {
   }
 
   private initDeviceContacts(): Promise<any> {
-    let getDeviceContacts = Promise.promisify(this.addressBookService.getAllDeviceContacts);
+    // let getDeviceContacts = Promise.promisify(this.addressBookService.getAllDeviceContacts);
 
-    return getDeviceContacts.then((contacts) => {
+    return this.addressBookService.getAllDeviceContacts().then((contacts) => {
       contacts = _.filter(contacts, (contact:any) => {
         return !(_.isEmpty(contact.emails) && _.isEmpty(contact.phoneNumbers));
       });
@@ -140,6 +144,8 @@ export class SendView {
         );
         return item;
       }));
+
+      this.deviceDebug = JSON.stringify(this.deviceContacts); 
     });
   } 
   

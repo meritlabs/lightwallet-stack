@@ -15,13 +15,16 @@
         <div class="item input search-wrapper" [class.focus]="searchFocus">
           <i class="icon icon-svg abs-v-center"><img class="svg" src="img/icon-bitcoin-symbol.svg"></i>
           <div class="item-icon-right">
-            <input type="text" class="search-input" placeholder="Search or enter merit address" [(ngModel)]="formData.search" (ngModelChange)="findContact(formData.search)" ng-model-onblur (focus)="searchInFocus()" (blur)="searchBlurred()">
+            <ion-input type="text" class="search-input" placeholder="Search or enter merit address" 
+            [(ngModel)]="formData.search" (ngModelChange)="findContact(formData.search)" 
+            ng-model-onblur (focus)="searchInFocus()" (blur)="searchBlurred()"></ion-input> 
             <i class="icon icon-svg qr abs-v-center separator-left" on-tap="openScanner()"><img src="img/scan-ico.svg"></i>
           </div>
         </div>
       </div>
     </div>
     <div class="list">
+      {{deviceDebug}}
       <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList" (click)="goToAmount(item)">
         <i class="icon big-icon-svg">
           <gravatar class="send-gravatar" [name]="item.name" width="30" [email]="item.email" ></gravatar>
