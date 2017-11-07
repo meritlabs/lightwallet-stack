@@ -3,7 +3,6 @@
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": true,
     "declaration": false,
-    "allowJs": true,
     "noEmit": false,    
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -15,7 +14,7 @@
     "module": "es2015",
     "moduleResolution": "node",
     "sourceMap": true,
-    "target": "es2015",
+    "target": "es2017",
     "paths": {
       "@app/*": [ "src/app/*" ],
       "merit/*": [ "src/app/*" ]

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpModule, Http } from '@angular/http';
 
@@ -9,22 +9,28 @@ import { BwcService } from 'merit/core/bwc.service';
 import { PersistenceService, persistenceServiceFactory } from 'merit/core/persistence.service';
 import { BwcError } from 'merit/core/bwc-error.model';
 import { PlatformService } from 'merit/core/platform.service';
+
 import { ProfileService } from 'merit/core/profile.service';
+
 import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { AppService } from 'merit/core/app-settings.service';
-import { ConfigService } from 'merit/shared/config.service';
 import { TransactModule } from 'merit/transact/transact.module';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { TouchID } from '@ionic-native/touch-id';
+import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
 import { PopupService } from 'merit/core/popup.service';
 import { SpinnerService } from 'merit/core/spinner.service';
-
-
+import { TransactView } from 'merit/transact/transact';
+import { OnboardingView } from 'merit/onboard/onboarding.view';
 
 import { MomentModule } from 'angular2-moment';
+
+import { ConfigService } from 'merit/shared/config.service';
+import {MeritToastController} from "merit/core/toast.controller";
+
 
 /* 
   The core module exists to make commonly used singleton services available 
@@ -36,11 +42,37 @@ import { MomentModule } from 'angular2-moment';
 export function createTranslateLoader(http: Http) {
     return new TranslatePoHttpLoader(http, 'assets/i18n', '.po');
   }
+ 
+// @NgModule({
+//     imports: [
+//         CommonModule,
+//         TransactModule,
+//         HttpModule,
+//         TranslateModule.forRoot({
+//                 loader: {
+//                     provide: TranslateLoader,
+//                     useFactory: createTranslateLoader,
+//                     deps: [Http]
+//                 }
+//         })        
+//     ],
+//     exports: [],
+//     declarations: [
+//     ],
+//     providers: [
+//         Logger,
+//         StatusBar,
+//         SplashScreen,
+//         BwcService,
+//         BwcError, 
+//     ]
+// }) 
 
-@NgModule({
+  // Ideally, we can remove the transaction dependency.
+@NgModule({ 
     imports: [
         CommonModule,
-        TransactModule, // Ideally, we can remove this dependency.
+        TransactModule,
         HttpModule,
         TranslateModule.forRoot({
             loader: {
@@ -51,37 +83,43 @@ export function createTranslateLoader(http: Http) {
           })        
     ],
     exports: [],
-    declarations: [],
+    declarations: [
+    ],
     providers: [
-        Logger, 
+        Logger,
         StatusBar,
         SplashScreen,
-        Logger,
         BwcService,
+        BwcError,
+        PopupService,
+        SpinnerService,
+        MeritToastController, 
         {
             provide: PersistenceService,
             useFactory: persistenceServiceFactory,
             deps: [PlatformService, Logger],
             multi: false
         },
-        BwcError,
         PlatformService,
         ProfileService,
-        {
-            provide: LanguageService,
-            deps: [TranslateService],
-            multi: false
-        },
+        LanguageService,
         TxFormatService,
         AppService,
         ConfigService,
+        AndroidFingerprintAuth, 
+        TouchID, 
+        TouchIdService,  
+        //   {
+        //       provide: TouchIdService,
+        //   deps: [TouchID],
+        //   multi: false
+        //   } 
         {
-            provide: TouchIdService,
-            deps: [TouchID],
-            multi: false
-        },
-        PopupService,
-        SpinnerService
+            provide: APP_INITIALIZER,
+            useFactory: (app: AppService) => () => app.load(),
+            deps: [AppService, LanguageService],
+            multi: true
+        }
     ]
 })
 

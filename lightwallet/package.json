@@ -58,7 +58,7 @@
     "bezier-easing": "^2.0.3",
     "bhttp": "^1.2.1",
     "bitauth": "^0.2.1",
-    "branch-cordova-sdk": "^2.6.12",
+    "branch-cordova-sdk": "^2.6.16",
     "clipboard": "^1.7.1",
     "com.verso.cordova.clipboard": "https://github.com/Visigo/CordovaClipboard",
     "cordova-android": "~6.2.3",

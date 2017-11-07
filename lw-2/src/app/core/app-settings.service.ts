@@ -6,6 +6,8 @@ import 'rxjs/add/operator/map';
 import { LanguageService } from 'merit/core/language.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
+import { Promise } from 'bluebird';
+
 
 // TODO: Improve implementation
 interface App {
@@ -59,7 +61,7 @@ export class AppService {
     return new Promise((resolve, reject) => {
       this.config.load().then(() => {
         this.language.load();
-        this.touchid.init();
+        //this.touchid.init();
         this.getInfo().subscribe((info) => {
           this.info = info;
           resolve();

@@ -37,6 +37,7 @@ EasyReceipt.fromObj = function(obj) {
   receipt.blockTimeout = obj.blockTimeout;
   receipt.unlockCode = obj.unlockCode;
   receipt.secret = obj.secret;
+  receipt.deepLinkURL = obj.deepLinkURL;
 
   return receipt;
 };

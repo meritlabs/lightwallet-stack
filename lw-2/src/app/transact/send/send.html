@@ -7,6 +7,82 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
 
-</ion-content>
+    <div *ngIf="hasFunds">
+      <div class="send-header-wrapper">
+        <div class="item item-heading send-heading"><span translate>Recipient</span></div>
+        <div class="item input search-wrapper" [class.focus]="searchFocus">
+          <i class="icon icon-svg abs-v-center"><img class="svg" src="img/icon-bitcoin-symbol.svg"></i>
+          <div class="item-icon-right">
+            <input type="text" class="search-input" placeholder="Search or enter merit address" [(ngModel)]="formData.search" (ngModelChange)="findContact(formData.search)" ng-model-onblur (focus)="searchInFocus()" (blur)="searchBlurred()">
+            <i class="icon icon-svg qr abs-v-center separator-left" on-tap="openScanner()"><img src="img/scan-ico.svg"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="list">
+      <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList" (click)="goToAmount(item)">
+        <i class="icon big-icon-svg">
+          <gravatar class="send-gravatar" [name]="item.name" width="30" [email]="item.email" ></gravatar>
+        </i>
+        {{item.name}}
+        <i class="icon bp-arrow-right"></i>
+      </a>
+      <div class="show-more" *ngIf="contactsShowMore" (click)="showMore()" translate>
+        Show more
+      </div>
+    </div>
+    <div class="list">
+      <div *ngIf="!checkingBalance && (!hasFunds || !hasWallets)">
+        <div class="card sendTip">
+          <div class="item item-icon-right item-heading"></div>
+          <div>
+            <i class="icon zero-state-icon">
+            <img src="img/tab-icons/ico-send-selected.svg"/>
+          </i>
+        </div>
+        <div class="title" translate>
+          Start sending merit
+        </div>
+        <div class="subtitle">
+          <span *ngIf="hasWallets" translate>To get started, buy merit or share your address. You can receive merit from any wallet or service.</span>
+          <span *ngIf="!hasWallets" translate>To get started, you'll need to create a merit wallet and get some merit.</span>
+          <div class="padding">
+            <button ion-button class="button button-standard button-primary" (click)="buyMerit()" *ngIf="hasWallets" translate>Buy Merit</button>
+            <button ion-button class="button button-standard button-primary" (click)="createWallet()" *ngIf="!hasWallets" translate>Create merit wallet</button>
+            <button ion-button class="button button-standard button-secondary" ui-sref="tabs.receive" *ngIf="hasWallets" translate>Show merit address</button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="hasFunds && hasWallets">
+        <div class="card sendTip">
+          <div class="item item-icon-right item-heading"></div>
+          <div>
+            <i class="icon zero-state-icon">
+            <img src="img/tab-icons/ico-send-selected.svg"/>
+          </i>
+          </div>
+          <div class="title" translate>
+            Start sending merit
+          </div>
+        </div>
+      </div>
+
+      <div class="card" *ngIf="showTransferCard && hasFunds">
+        <div class="item item-heading">
+          <span translate>Transfer to Wallet</span>
+        </div>
+        <div class="list" *ngIf="hasWallets">
+          <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList"
+            (click)="goToAmount(item)">
+          <i class="icon big-icon-svg" *ngIf="item.recipientType == 'wallet'">
+            <img src="img/icon-wallet.svg" [class.wallet-background-color-default]="!item.color" [style.background]="item.color" class="bg"/>
+          </i>
+          {{item.name}}
+          <i class="icon bp-arrow-right"></i>
+        </a>
+        </div>
+      </div>
+    </div>
+

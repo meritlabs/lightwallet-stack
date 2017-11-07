@@ -8,12 +8,12 @@ import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
   segment: 'transact'
 })
 @Component({
-  selector: 'page-transact',
+  selector: 'view-transact',
   templateUrl: 'transact.html',
 })
 export class TransactView {
 
-  public homeView     = 'HomeView';
+  public walletsView  = 'WalletsView';
   public receiveView  = 'ReceiveView';
   public networkView  = 'NetworkView';
   public sendView     = 'SendView';

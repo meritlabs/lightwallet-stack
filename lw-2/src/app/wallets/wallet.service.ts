@@ -5,7 +5,7 @@ import { ConfigService } from 'merit/shared/config.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { PersistenceService } from 'merit/core/persistence.service';
-import { BwcError } from 'merit/core/bwc-error.model';
+import { BwcError } from 'merit/core/bwc-error.model'; 
 import { RateService } from 'merit/transact/rate.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { PopupService } from 'merit/core/popup.service';
@@ -14,13 +14,17 @@ import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
+import { Promise } from 'bluebird';
 
 import * as _ from 'lodash';
+import {Wallet} from "./wallet.model";
 
 
-/* TODO LIST:
+/* Refactor CheckList:
   - Bwc Error provider
-  - onGoingProcess provider
+  - Remove ongoingProcess provider, and handle Loading indicators in controllers
+  - Decouple the tight dependencies on ProfileService; and create logical separation concerns 
+  - Ensure that anything returning a promise has promises through the stack.
 */
 
 
@@ -42,6 +46,7 @@ export class WalletService {
   private SAFE_CONFIRMATIONS: number = 6;
 
   private errors: any = this.bwcService.getErrors();
+  
 
   constructor(
     private logger: Logger,
@@ -77,12 +82,14 @@ export class WalletService {
       wallet.cachedTxps.isValid = false;
   }
 
-  getStatus(wallet: any, opts: any) {
+  // TODO: Make async
+  public getStatus(wallet: any, opts?: any): Promise<any> {
     return new Promise((resolve, reject) => {
       opts = opts || {};
       var walletId = wallet.id;
 
       let processPendingTxps = (status: any) => {
+        status = status || {};
         let txps = status.pendingTxps;
         let now = Math.floor(Date.now() / 1000);
 
@@ -106,7 +113,7 @@ export class WalletService {
 
         _.each(txps, (tx: any) => {
 
-          tx = this.txFormatService.processTx(wallet.coin, tx);
+          tx = this.txFormatService.processTx(tx);
 
           // no future transactions...
           if (tx.createdOn > now)
@@ -142,7 +149,7 @@ export class WalletService {
       };
 
 
-      let get = (): Promise<any> => {
+      let get = ():Promise<any> => {
         return new Promise((resolve, reject) => {
           wallet.getStatus({
             twoStep: true
@@ -153,93 +160,102 @@ export class WalletService {
               }
               return reject(err);
             }
-            return resolve(null);
+            return resolve(ret);
           });
-        })
+        });
       };
+      
+      // TODO!!: Make this return a promise and properly promisify the stack.
+      let cacheBalance = (wallet: any, balance: any): Promise<any> => {
+        return new Promise((resolve, reject) => {
 
-      let cacheBalance = (wallet: any, balance: any): void => {
-        if (!balance) return;
+        
+          if (!balance) return;
 
-        let configGet: any = this.configService.get();
-        let config: any = configGet.wallet;
+          let configGet: any = this.configService.get();
+          let config: any = configGet.wallet;
 
-        let cache = wallet.cachedStatus;
+          let cache = wallet.cachedStatus;
 
-        // Address with Balance
-        cache.balanceByAddress = balance.byAddress;
+          // Address with Balance
+          cache.balanceByAddress = balance.byAddress;
 
-        // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
-        cache.totalBalanceSat = balance.totalAmount;
+          // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
+          cache.totalBalanceSat = balance.totalAmount;
 
-        // Spend unconfirmed funds
-        if (config.spendUnconfirmed) {
-          cache.lockedBalanceSat = balance.lockedAmount;
-          cache.availableBalanceSat = balance.availableAmount;
-          cache.totalBytesToSendMax = balance.totalBytesToSendMax;
-          cache.pendingAmount = 0;
-          cache.spendableAmount = balance.totalAmount - balance.lockedAmount;
-        } else {
-          cache.lockedBalanceSat = balance.lockedConfirmedAmount;
-          cache.availableBalanceSat = balance.availableConfirmedAmount;
-          cache.totalBytesToSendMax = balance.totalBytesToSendConfirmedMax;
-          cache.pendingAmount = balance.totalAmount - balance.totalConfirmedAmount;
-          cache.spendableAmount = balance.totalConfirmedAmount - balance.lockedAmount;
-        }
-
-        // Selected unit
-        cache.unitToSatoshi = config.settings.unitToSatoshi;
-        cache.satToUnit = 1 / cache.unitToSatoshi;
-
-        //STR
-        cache.totalBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.totalBalanceSat);
-        cache.lockedBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.lockedBalanceSat);
-        cache.availableBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.availableBalanceSat);
-        cache.spendableBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.spendableAmount);
-        cache.pendingBalanceStr = this.txFormatService.formatAmountStr(wallet.coin, cache.pendingAmount);
-
-        cache.alternativeName = config.settings.alternativeName;
-        cache.alternativeIsoCode = config.settings.alternativeIsoCode;
-
-        // Check address
-        this.isAddressUsed(wallet, balance.byAddress).then((used) => {
-          if (used) {
-            this.logger.debug('Address used. Creating new');
-            // Force new address
-            this.getAddress(wallet, true).then((addr) => {
-              this.logger.debug('New address: ', addr);
-            }).catch((err) => {
-              return reject(err);
-            });
+          // Spend unconfirmed funds
+          if (config.spendUnconfirmed) {
+            cache.lockedBalanceSat = balance.lockedAmount;
+            cache.availableBalanceSat = balance.availableAmount;
+            cache.totalBytesToSendMax = balance.totalBytesToSendMax;
+            cache.pendingAmount = 0;
+            cache.spendableAmount = balance.totalAmount - balance.lockedAmount;
+          } else {
+            cache.lockedBalanceSat = balance.lockedConfirmedAmount;
+            cache.availableBalanceSat = balance.availableConfirmedAmount;
+            cache.totalBytesToSendMax = balance.totalBytesToSendConfirmedMax;
+            cache.pendingAmount = balance.totalAmount - balance.totalConfirmedAmount;
+            cache.spendableAmount = balance.totalConfirmedAmount - balance.lockedAmount;
           }
-        }).catch((err) => {
-          return reject(err);
-        });
 
-        this.rateService.whenAvailable().then(() => {
+          // Selected unit
+          cache.unitToSatoshi = config.settings.unitToSatoshi;
+          cache.satToUnit = 1 / cache.unitToSatoshi;
 
-          let totalBalanceAlternative = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode, wallet.coin);
-          let pendingBalanceAlternative = this.rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode, wallet.coin);
-          let lockedBalanceAlternative = this.rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode, wallet.coin);
-          let spendableBalanceAlternative = this.rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode, wallet.coin);
-          let alternativeConversionRate = this.rateService.toFiat(100000000, cache.alternativeIsoCode, wallet.coin);
+          //STR
+          cache.totalBalanceStr = this.txFormatService.formatAmountStr(cache.totalBalanceSat);
+          cache.lockedBalanceStr = this.txFormatService.formatAmountStr(cache.lockedBalanceSat);
+          cache.availableBalanceStr = this.txFormatService.formatAmountStr(cache.availableBalanceSat);
+          cache.spendableBalanceStr = this.txFormatService.formatAmountStr(cache.spendableAmount);
+          cache.pendingBalanceStr = this.txFormatService.formatAmountStr(cache.pendingAmount);
 
-          cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
-          cache.pendingBalanceAlternative = new FiatAmount(pendingBalanceAlternative);
-          cache.lockedBalanceAlternative = new FiatAmount(lockedBalanceAlternative);
-          cache.spendableBalanceAlternative = new FiatAmount(spendableBalanceAlternative);
-          cache.alternativeConversionRate = new FiatAmount(alternativeConversionRate);
+          cache.alternativeName = config.settings.alternativeName;
+          cache.alternativeIsoCode = config.settings.alternativeIsoCode;
 
-          cache.alternativeBalanceAvailable = true;
-          cache.isRateAvailable = true;
+          // Check address
+          return this.isAddressUsed(wallet, balance.byAddress).then((used) => {
+            if (used) {
+              this.logger.debug('Address used. Creating new');
+              // Force new address
+              this.getAddress(wallet, true).then((addr) => {
+                this.logger.debug('New address: ', addr);
+              })
+            }
+          }).then(() => {
+            return this.rateService.whenAvailable().then(() => {
+              
+              let totalBalanceAlternative = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
+              let pendingBalanceAlternative = this.rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode);
+              let lockedBalanceAlternative = this.rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
+              let spendableBalanceAlternative = this.rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode);
+              let alternativeConversionRate = this.rateService.toFiat(100000000, cache.alternativeIsoCode);
+
+              cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
+              cache.pendingBalanceAlternative = new FiatAmount(pendingBalanceAlternative);
+              cache.lockedBalanceAlternative = new FiatAmount(lockedBalanceAlternative);
+              cache.spendableBalanceAlternative = new FiatAmount(spendableBalanceAlternative);
+              cache.alternativeConversionRate = new FiatAmount(alternativeConversionRate);
+
+              cache.alternativeBalanceAvailable = true;
+              cache.isRateAvailable = true;
+              resolve();              
+            }).catch((err) => {
+              // We don't want to blow up the promise chain if the rateService is down.
+              // TODO: Fallback to last known conversion rate.
+              this.logger.warn("Could not get rates from rateService.");
+              resolve();              
+            });
+          }).catch((err) => {
+            return reject(err);
+          });
         });
       };
-
+    
       let isStatusCached = (): any => {
         return wallet.cachedStatus && wallet.cachedStatus.isValid;
       };
 
-      let cacheStatus = (status: any): void => {
+      let cacheStatus = (status: any): Promise<any> => {
         if (status.wallet && status.wallet.scanStatus == 'running') return;
 
         wallet.cachedStatus = status || {};
@@ -247,7 +263,7 @@ export class WalletService {
         cache.statusUpdatedOn = Date.now();
         cache.isValid = true;
         cache.email = status.preferences ? status.preferences.email : null;
-        cacheBalance(wallet, status.balance);
+        return cacheBalance(wallet, status.balance);
       };
 
       let walletStatusHash = (status: any): any => {
@@ -258,15 +274,18 @@ export class WalletService {
         return new Promise((resolve, reject) => {
           if (isStatusCached() && !opts.force) {
             this.logger.debug('Wallet status cache hit:' + wallet.id);
-            cacheStatus(wallet.cachedStatus);
-            processPendingTxps(wallet.cachedStatus);
-            return resolve(wallet.cachedStatus);
+            return cacheStatus(wallet.cachedStatus).then(()=> {
+              processPendingTxps(wallet.cachedStatus);
+              return resolve(wallet.cachedStatus);
+            }).catch((err) => {
+              this.logger.debug('Error in caching status:' + err);              
+            });
           };
 
           tries = tries || 0;
 
           this.logger.debug('Updating Status:', wallet.credentials.walletName, tries);
-          get().then((status) => {
+          return get().then((status) => {
             let currentStatusHash = walletStatusHash(status);
             this.logger.debug('Status update. hash:' + currentStatusHash + ' Try:' + tries);
             if (opts.untilItChanges && initStatusHash == currentStatusHash && tries < this.WALLET_STATUS_MAX_TRIES && walletId == wallet.credentials.walletId) {
@@ -279,28 +298,60 @@ export class WalletService {
             processPendingTxps(status);
 
             this.logger.debug('Got Wallet Status for:' + wallet.credentials.walletName);
+            this.logger.debug(status);
 
-            cacheStatus(status);
-
-            wallet.scanning = status.wallet && status.wallet.scanStatus == 'running';
-
-            return resolve(status);
+            return cacheStatus(status).then(() => {
+              wallet.scanning = status.wallet && status.wallet.scanStatus == 'running';
+              return resolve(status);
+            });            
           }).catch((err) => {
+            this.logger.error("Could not get the status!");
+            this.logger.error(err);
             return reject(err);
           });
 
         });
       };
 
-      _getStatus(walletStatusHash(null), 0);
-
+      return _getStatus(walletStatusHash(null), 0).then((status) => {
+        return resolve(status);
+      }).catch((err) => {
+        this.logger.warn("Error getting status: ", err);
+        return reject("Error getting status: " + err);
+      });
     });
+
+  }
+
+  public getAddress(wallet: any, forceNew: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.persistenceService.getLastAddress(wallet.id).then((addr) => {
+        if (!forceNew && addr) return resolve(addr);
+
+        if (!wallet.isComplete())
+          return reject('WALLET_NOT_COMPLETE');
+
+        return this.createAddress(wallet).then((_addr) => {
+          if (_.isEmpty(_addr)) {
+            return reject(new Error("Cannot retrieve a new address"));
+          } else {
+            return this.persistenceService.storeLastAddress(wallet.id, _addr).then(() => {
+              return resolve(_addr);
+            })
+          }
+          }).catch((err) => {
+            return reject(err);
+          });
+        }).catch((err) => {
+          return reject(err);
+        });
+      });
   }
 
   // Check address
   private isAddressUsed(wallet: any, byAddress: Array<any>): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceService.getLastAddress(wallet.id).then((addr) => {
+      return this.persistenceService.getLastAddress(wallet.id).then((addr) => {
         let used = _.find(byAddress, {
           address: addr
         });
@@ -311,28 +362,6 @@ export class WalletService {
     });
   }
 
-  private getAddress(wallet: any, forceNew: boolean): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.persistenceService.getLastAddress(wallet.id).then((addr) => {
-        if (!forceNew && addr) return resolve(addr);
-
-        if (!wallet.isComplete())
-          return reject('WALLET_NOT_COMPLETE');
-
-        this.createAddress(wallet).then((_addr) => {
-          this.persistenceService.storeLastAddress(wallet.id, _addr).then(() => {
-            return resolve(_addr);
-          }).catch((err) => {
-            return reject(err);
-          });
-        }).catch((err) => {
-          return reject(err);
-        });
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-  }
 
   private createAddress(wallet: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -437,10 +466,10 @@ export class WalletService {
 
         if (cacheCoin == 'bits') {
 
-          this.logger.debug('Fixing Tx Cache Unit to: ' + wallet.coin)
+          this.logger.debug('Fixing Tx Cache Unit to: MRT');
           _.each(txs, (tx: any) => {
-            tx.amountStr = this.txFormatService.formatAmountStr(wallet.coin, tx.amount);
-            tx.feeStr = this.txFormatService.formatAmountStr(wallet.coin, tx.fees);
+            tx.amountStr = this.txFormatService.formatAmountStr(tx.amount);
+            tx.feeStr = this.txFormatService.formatAmountStr(tx.fees);
           });
         };
       };
@@ -592,7 +621,7 @@ export class WalletService {
     wallet.hasUnsafeConfirmed = false;
 
     _.each(txs, (tx: any) => {
-      tx = this.txFormatService.processTx(wallet.coin, tx);
+      tx = this.txFormatService.processTx(tx);
 
       // no future transactions...
       if (tx.time > now)
@@ -760,7 +789,7 @@ export class WalletService {
     return isEncrypted;
   }
 
-  public createTx(wallet: any, txp: any) {
+  public createTx(wallet: any, txp: any): Promise<any> {
     return new Promise((resolve, reject) => {
       if (_.isEmpty(txp) || _.isEmpty(wallet))
         return reject('MISSING_PARAMETER');
@@ -791,7 +820,7 @@ export class WalletService {
     });
   }
 
-  signTx(wallet: any, txp: any, password: string): Promise<any> {
+  public signTx(wallet: any, txp: any, password: string): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!wallet || !txp)
         return reject('MISSING_PARAMETER');
@@ -975,7 +1004,6 @@ export class WalletService {
 
       this.seedWallet(opts).then((walletClient: any) => {
         walletClient.joinWallet(opts.secret, opts.myName || 'me', {
-          coin: opts.coin
         }, (err: any) => {
           if (err) {
             this.bwcErrorService.cb(err, 'Could not join wallet').then((msg: string) => { //TODO getTextCatalog
@@ -1035,7 +1063,6 @@ export class WalletService {
   public getLowUtxos(wallet: any, levels: any): Promise<any> {
     return new Promise((resolve, reject) => {
       wallet.getUtxos({
-        coin: wallet.coin
       }, (err, resp) => {
         if (err || !resp || !resp.length) return reject(err);
 
@@ -1060,13 +1087,13 @@ export class WalletService {
     });
   }
 
-  public createDefaultWallet(): Promise<any> {
+  public createDefaultWallet(unlockCode: string): Promise<any> {
     return new Promise((resolve, reject) => {
       var opts: any = {};
       opts.m = 1;
       opts.n = 1;
       opts.networkName = 'testnet';
-      opts.coin = 'mrt';
+      opts.unlockCode = unlockCode;
       this.createWallet(opts).then((wallet: any) => {
         return resolve(wallet);
       }).catch((err) => {
@@ -1334,7 +1361,7 @@ export class WalletService {
 
   public getProtocolHandler(wallet: any): string {
     if (wallet.coin == 'bch') return 'bitcoincash';
-    else return 'bitcoin';
+    else return 'merit';
   }
 
   public copyCopayers(wallet: any, newWallet: any): Promise<any> {
@@ -1346,7 +1373,6 @@ export class WalletService {
       _.each(wallet.credentials.publicKeyRing, (item) => {
         let name = item.copayerName || ('copayer ' + copayer++);
         newWallet._doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
-          coin: newWallet.credentials.coin,
         }, (err: any) => {
           //Ignore error is copayer already in wallet
           if (err && !(err instanceof this.errors.COPAYER_IN_WALLET)) return reject(err);
@@ -1371,24 +1397,26 @@ export class WalletService {
           let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
           let myName = opts.myName || 'me'; // TODO GetTextCatalog
           
-          walletClient.createWallet(name, myName, opts.m, opts.n, {
+          // TODO: Rename Beacon to UnlockCode down the stack
+          return walletClient.createWallet(name, myName, opts.m, opts.n, {
             network: opts.networkName,
             singleAddress: opts.singleAddress,
             walletPrivKey: opts.walletPrivKey,
-            coin: opts.coin
+            beacon: opts.unlockCode
           }, (err: any, secret: any) => {
             if (err) {
               this.bwcErrorService.cb(err, 'Error creating wallet').then((msg: string) => { //TODO getTextCatalog
                 return reject(msg);
               });
             } else {
+              // TODO: Subscribe to ReferralTxConfirmation
               return resolve(walletClient);
             }
           });
         }).catch((err: any) => {
           return reject(err);
         });
-      }, 50);
+      }, 5000);
     });
   }
 
@@ -1414,8 +1442,7 @@ export class WalletService {
           walletClient.seedFromExtendedPrivateKey(opts.extendedPrivateKey, {
             network: network,
             account: opts.account || 0,
-            derivationStrategy: opts.derivationStrategy || 'BIP44',
-            coin: opts.coin,
+            derivationStrategy: opts.derivationStrategy || 'BIP44'
           });
         } catch (ex) {
           this.logger.warn(ex);
@@ -1425,8 +1452,7 @@ export class WalletService {
         try {
           walletClient.seedFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
             account: opts.account || 0,
-            derivationStrategy: opts.derivationStrategy || 'BIP44',
-            coin: opts.coin
+            derivationStrategy: opts.derivationStrategy || 'BIP44'
           });
           walletClient.credentials.hwInfo = opts.hwInfo;
         } catch (ex) {
@@ -1440,8 +1466,7 @@ export class WalletService {
             network: network,
             passphrase: opts.passphrase,
             language: lang,
-            account: 0,
-            coin: opts.coin
+            account: 0
           });
         } catch (e) {
           this.logger.info('Error creating recovery phrase: ' + e.message);
@@ -1450,8 +1475,7 @@ export class WalletService {
             walletClient.seedFromRandomWithMnemonic({
               network: network,
               passphrase: opts.passphrase,
-              account: 0,
-              coin: opts.coin
+              account: 0
             });
           } else {
             return reject(e);
@@ -1459,6 +1483,15 @@ export class WalletService {
         }
       }
       return resolve(walletClient);
+    });
+  }
+
+  // todo its a mock now!!
+  getWalletAnv(wallet:Wallet):Promise<number> {
+    return new Promise((resolve, reject) => {
+      resolve(
+       (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
+      )
     });
   }
   
