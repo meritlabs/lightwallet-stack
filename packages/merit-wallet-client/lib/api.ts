@@ -706,29 +706,28 @@ export class API extends EventEmitter {
    * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
    * @param {Callback}    cb
    */
-  buildEasySendScript(opts): Promise<any> {
-    opts = opts || {};
-
-    try {
-      var result = {}
-      this.createAddress({}, function(err, addr) {
-        if (err || addr.publicKeys.length < 1) {
-          throw new Error('Error creating an address for easySend');
+  buildEasySendScript(opts:any = {}): Promise<any> {
+    return new Promise((resolve, reject) => {
+      
+      let result:any = {}
+      return this.createAddress({}).then((addr) => {
+        if (addr.publicKeys.length < 1) {
+          reject(Error('Error creating an address for easySend'));
         }
         var pubKey = Bitcore.PublicKey.fromString(addr.publicKeys[0]);
 
         // {key, secret}
         var network = opts.network || 'livenet';
         var rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
-
+        
         var pubKeys = [
           rcvPair.key.publicKey.toBuffer(),
           pubKey.toBuffer()
         ];
-
+        
         var timeout = opts.timeout || 1008;
         var script = Bitcore.Script.buildEasySendOut(pubKeys, timeout, network);
-
+        
         result = {
           receiverPubKey: rcvPair.key.publicKey,
           script: script.toScriptHashOut(),
@@ -736,12 +735,10 @@ export class API extends EventEmitter {
           secret: rcvPair.secret.toString('hex')
         };
 
-        cb(null, result);
+        resolve(result);
       });
-
-    } catch (e) {
-      cb(e);
-    }
+        
+    });
   }
 
   /**
@@ -861,9 +858,6 @@ export class API extends EventEmitter {
     var headers = {
       'x-client-version': 'bwc-' + Package.version,
     };
-    if (this.supportStaffWalletId) {
-      headers['x-wallet-id'] = this.supportStaffWalletId;
-    }
 
     return headers;
   };
@@ -974,11 +968,12 @@ export class API extends EventEmitter {
 
     function doLogin(): Promise<any> {
       return new Promise((resolve, reject) => {   
-        this._login(function(err, s) {
-          if (err) return cb(err);
-          if (!s) return cb(new Errors.NOT_AUTHORIZED);
+        this._login().then((s) => {
+          if (!s) return reject(new Errors.NOT_AUTHORIZED);
           this.session = s;
-          cb();
+          resolve();
+        }).catch((err) => {
+          reject(err);
         });
       });
     };
@@ -993,9 +988,9 @@ export class API extends EventEmitter {
       }
       
 
-      return loginIfNeeded.then(() => {
+      return loginIfNeeded().then(() => {
         return this._doRequest(method, url, args, true).then((body, header) => {
-          return this._doRequest(method, url, args, true, next);
+          return this._doRequest(method, url, args, true);
         });
       });
 };
@@ -1052,7 +1047,7 @@ export class API extends EventEmitter {
     }
     var widHex = new Buffer(walletId.replace(/-/g, ''), 'hex');
     var widBase58 = new Bitcore.encoding.Base58(widHex).toString();
-    return _.padRight(widBase58, 22, '0') + walletPrivKey.toWIF() + (network == 'testnet' ? 'T' : 'L');
+    return _.padEnd(widBase58, 22, '0') + walletPrivKey.toWIF() + (network == 'testnet' ? 'T' : 'L');
   };
 
   parseSecret = function(secret) {
@@ -1123,7 +1118,7 @@ export class API extends EventEmitter {
 
   _signTxp(txp, password): any {
     var derived = this.credentials.getDerivedXPrivKey(password);
-    return API.signTxp(txp, derived);
+    return this.signTxp(txp, derived);
   };
 
   _getCurrentSignatures(txp): any {
@@ -1190,37 +1185,37 @@ export class API extends EventEmitter {
    * @param {String} opts.customData
    * @param {Callback} cb
    */
-  _doJoinWallet(walletId, walletPrivKey, xPubKey, requestPubKey, copayerName, opts): Promise<any> {
-    $.shouldBeFunction(cb);
+  _doJoinWallet(walletId, walletPrivKey, xPubKey, requestPubKey, copayerName, opts?:any = {}): Promise<any> {
+    return new Promise((resolve, reject) => {
 
-    opts = opts || {};
+      // Adds encrypted walletPrivateKey to CustomData
+      opts.customData = opts.customData || {};
+      opts.customData.walletPrivKey = walletPrivKey.toString();
+      var encCustomData = Utils.encryptMessage(JSON.stringify(opts.customData), this.credentials.personalEncryptingKey);
+      var encCopayerName = Utils.encryptMessage(copayerName, this.credentials.sharedEncryptingKey);
 
-    // Adds encrypted walletPrivateKey to CustomData
-    opts.customData = opts.customData || {};
-    opts.customData.walletPrivKey = walletPrivKey.toString();
-    var encCustomData = Utils.encryptMessage(JSON.stringify(opts.customData), this.credentials.personalEncryptingKey);
-    var encCopayerName = Utils.encryptMessage(copayerName, this.credentials.sharedEncryptingKey);
+      var args: any = {
+        walletId: walletId,
+        name: encCopayerName,
+        xPubKey: xPubKey,
+        requestPubKey: requestPubKey,
+        customData: encCustomData,
+      };
+      if (opts.dryRun) args.dryRun = true;
 
-    var args = {
-      walletId: walletId,
-      name: encCopayerName,
-      xPubKey: xPubKey,
-      requestPubKey: requestPubKey,
-      customData: encCustomData,
-    };
-    if (opts.dryRun) args.dryRun = true;
+      if (_.isBoolean(opts.supportBIP44AndP2PKH))
+        args.supportBIP44AndP2PKH = opts.supportBIP44AndP2PKH;
 
-    if (_.isBoolean(opts.supportBIP44AndP2PKH))
-      args.supportBIP44AndP2PKH = opts.supportBIP44AndP2PKH;
+      var hash = Utils.getCopayerHash(args.name, args.xPubKey, args.requestPubKey);
+      args.copayerSignature = Utils.signMessage(hash, walletPrivKey);
 
-    var hash = Utils.getCopayerHash(args.name, args.xPubKey, args.requestPubKey);
-    args.copayerSignature = Utils.signMessage(hash, walletPrivKey);
-
-    var url = '/v1/wallets/' + walletId + '/copayers';
-    this._doPostRequest(url, args, function(err, body) {
-      if (err) return cb(err);
-      this._processWallet(body.wallet);
-      return cb(null, body.wallet);
+      var url = '/v1/wallets/' + walletId + '/copayers';
+      return this._doPostRequest(url, args).then((body) => {
+        this._processWallet(body.wallet);
+        return resolve(body.wallet);
+      }).catch((err) => {
+        return reject(err);  
+      });
     });
   };
 
@@ -1334,11 +1329,15 @@ export class API extends EventEmitter {
    */
   getFeeLevels(network): Promise<any> {
 
-    $.checkArgument(network || _.includes(['livenet', 'testnet'], network));
-
-    this._doGetRequest('/v1/feelevels/?network=' + (network || 'livenet'), function(err, result) {
-      if (err) return cb(err);
-      return cb(err, result);
+    return new Promise((resolve, reject) => {
+      
+      $.checkArgument(network || _.includes(['livenet', 'testnet'], network));
+      
+      this._doGetRequest('/v1/feelevels/?network=' + (network || 'livenet')).then((result) => {
+        return resolve(result);
+      }).catch((err) => {
+        return reject(err);
+      });
     });
   };
 
@@ -1553,6 +1552,7 @@ export class API extends EventEmitter {
     });
   };
 
+  // TODO: Promisify!
   _processWallet(wallet): any {
 
     var encryptingKey = this.credentials.sharedEncryptingKey;
