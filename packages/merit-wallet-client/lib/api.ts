@@ -1,10 +1,11 @@
 'use strict';
 
 import * as _ from 'lodash';
-import $ = require('preconditions').singleton();
+import * as _$ from 'preconditions';
+const $ = _$.singleton();
 import util = require('util');
 import async = require('async');
-import events = require('events');
+import { EventEmitter } from 'eventemitter3';
 import Bitcore = require('bitcore-lib');
 import Mnemonic = require('bitcore-mnemonic');
 import sjcl = require('sjcl');
@@ -43,7 +44,7 @@ interface InitOptions {
   logLevel?: string;
 }
 
-export class API {
+export class API extends EventEmitter {
   private const BASE_URL = 'http://localhost:3232/bws/api';
   private request: any;
   private baseUrl: string;
@@ -59,9 +60,12 @@ export class API {
   private log: any;
   private lastNotificationId: string;
   private notificationsIntervalId: any;
+  private keyDerivationOk: boolean;
+  private session: any;
 
   
   constructor(opts: InitOptions) {
+    super();
     this.request = opts.request || request;
     this.baseUrl = opts.baseUrl || this.BASE_URL;
     this.payProHttp = null; // Only for testing
@@ -71,7 +75,6 @@ export class API {
     this.log = log; 
 
     log.setLevel(this.logLevel);
-    util.inherits(this, events.EventEmitter);
   }
 
 
@@ -225,7 +228,7 @@ export class API {
         output.encryptedMessage = output.message;
         output.message = this._decryptMessage(output.message, encryptingKey) || null;
       });
-      txp.hasUnconfirmedInputs = _.some(txp.inputs, function(input) {
+      txp.hasUnconfirmedInputs = _.some(txp.inputs, function(input: any) {
         return input.confirmations == 0;
       });
       this._processTxNotes(txp.note);
@@ -306,65 +309,68 @@ export class API {
    * @param {String} opts.skipDeviceValidation
    */
   validateKeyDerivation(opts): Promise<any> {
-    var _deviceValidated: boolean;
+    return new Promise((resolve, reject) => {
+        
+      var _deviceValidated: boolean;
 
-    opts = opts || {};
+      opts = opts || {};
 
-    var c = this.credentials;
+      var c = this.credentials;
 
-    function testMessageSigning(xpriv, xpub) {
-      var nonHardenedPath = 'm/0/0';
-      var message = 'Lorem ipsum dolor sit amet, ne amet urbanitas percipitur vim, libris disputando his ne, et facer suavitate qui. Ei quidam laoreet sea. Cu pro dico aliquip gubergren, in mundi postea usu. Ad labitur posidonium interesset duo, est et doctus molestie adipiscing.';
-      var priv = xpriv.deriveChild(nonHardenedPath).privateKey;
-      var signature = Utils.signMessage(message, priv);
-      var pub = xpub.deriveChild(nonHardenedPath).publicKey;
-      return Utils.verifyMessage(message, signature, pub);
-    };
+      function testMessageSigning(xpriv, xpub) {
+        var nonHardenedPath = 'm/0/0';
+        var message = 'Lorem ipsum dolor sit amet, ne amet urbanitas percipitur vim, libris disputando his ne, et facer suavitate qui. Ei quidam laoreet sea. Cu pro dico aliquip gubergren, in mundi postea usu. Ad labitur posidonium interesset duo, est et doctus molestie adipiscing.';
+        var priv = xpriv.deriveChild(nonHardenedPath).privateKey;
+        var signature = Utils.signMessage(message, priv);
+        var pub = xpub.deriveChild(nonHardenedPath).publicKey;
+        return Utils.verifyMessage(message, signature, pub);
+      };
 
-    function testHardcodedKeys() {
-      var words = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
-      var xpriv = Mnemonic(words).toHDPrivateKey();
+      function testHardcodedKeys() {
+        var words = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+        var xpriv = Mnemonic(words).toHDPrivateKey();
 
-      if (xpriv.toString() != 'xprv9s21ZrQH143K2jHFB1HM4GNbVaBSSnjHDQP8uBtKKTvusxMirfmKEmaUS4fkwqeoLqVVT2ShayUSmnEZNV1AKqTSESqyAFCBW8nvEqKfvGy') return false;
+        if (xpriv.toString() != 'xprv9s21ZrQH143K2jHFB1HM4GNbVaBSSnjHDQP8uBtKKTvusxMirfmKEmaUS4fkwqeoLqVVT2ShayUSmnEZNV1AKqTSESqyAFCBW8nvEqKfvGy') return false;
 
-      xpriv = xpriv.deriveChild("m/44'/0'/0'");
-      if (xpriv.toString() != 'xprv9ynVfpDwjVTeyQALCLp4EVHwonHHoE37DoUkjsj6A5vxXK1Wh6YEQVPdgdGdtvqWttM4nqgxK8kgmmRD5yfKhWGbD75JGdsDb9yMtozdVc6') return false;
+        xpriv = xpriv.deriveChild("m/44'/0'/0'");
+        if (xpriv.toString() != 'xprv9ynVfpDwjVTeyQALCLp4EVHwonHHoE37DoUkjsj6A5vxXK1Wh6YEQVPdgdGdtvqWttM4nqgxK8kgmmRD5yfKhWGbD75JGdsDb9yMtozdVc6') return false;
 
-      var xpub = Bitcore.HDPublicKey.fromString('xpub6Cmr5KkqZs1xBtEoJNM4bdEgMp7nCgkxb2QMYG8hiRTwQ7LfEdrUxHi7XrjNxkeuRrNSqHLXHAuwZvqoeASrp5jxjnpMa4d8PFpA9TRxVCd');
-      return testMessageSigning(xpriv, xpub);
-    };
+        var xpub = Bitcore.HDPublicKey.fromString('xpub6Cmr5KkqZs1xBtEoJNM4bdEgMp7nCgkxb2QMYG8hiRTwQ7LfEdrUxHi7XrjNxkeuRrNSqHLXHAuwZvqoeASrp5jxjnpMa4d8PFpA9TRxVCd');
+        return testMessageSigning(xpriv, xpub);
+      };
 
-    function testLiveKeys() {
-      var words;
-      try {
-        words = c.getMnemonic();
-      } catch (ex) {}
+      function testLiveKeys() {
+        var words;
+        try {
+          words = c.getMnemonic();
+        } catch (ex) {}
 
-      var xpriv;
-      if (words && (!c.mnemonicHasPassphrase || opts.passphrase)) {
-        var m = new Mnemonic(words);
-        xpriv = m.toHDPrivateKey(opts.passphrase, c.network);
+        var xpriv;
+        if (words && (!c.mnemonicHasPassphrase || opts.passphrase)) {
+          var m = new Mnemonic(words);
+          xpriv = m.toHDPrivateKey(opts.passphrase, c.network);
+        }
+        if (!xpriv) {
+          xpriv = new Bitcore.HDPrivateKey(c.xPrivKey);
+        }
+        xpriv = xpriv.deriveChild(c.getBaseAddressDerivationPath());
+        var xpub = new Bitcore.HDPublicKey(c.xPubKey);
+
+        return testMessageSigning(xpriv, xpub);
+      };
+
+      var hardcodedOk = true;
+      if (!_deviceValidated && !opts.skipDeviceValidation) {
+        hardcodedOk = testHardcodedKeys();
+        _deviceValidated = true;
       }
-      if (!xpriv) {
-        xpriv = new Bitcore.HDPrivateKey(c.xPrivKey);
-      }
-      xpriv = xpriv.deriveChild(c.getBaseAddressDerivationPath());
-      var xpub = new Bitcore.HDPublicKey(c.xPubKey);
 
-      return testMessageSigning(xpriv, xpub);
-    };
+      var liveOk = (c.canSign() && !c.isPrivKeyEncrypted()) ? testLiveKeys() : true;
 
-    var hardcodedOk = true;
-    if (!_deviceValidated && !opts.skipDeviceValidation) {
-      hardcodedOk = testHardcodedKeys();
-      _deviceValidated = true;
-    }
+      this.keyDerivationOk = hardcodedOk && liveOk;
 
-    var liveOk = (c.canSign() && !c.isPrivKeyEncrypted()) ? testLiveKeys() : true;
-
-    this.keyDerivationOk = hardcodedOk && liveOk;
-
-    return cb(null, this.keyDerivationOk);
+      return resolve(this.keyDerivationOk);
+    });
   };
 
   /**
@@ -495,10 +501,7 @@ export class API {
 
 
     // First option, grab wallet info from BWS.
-    this.openWallet(function(err, ret) {
-
-      // it worked?
-      if (!err) return cb(null, ret);
+    this.openWallet().then((ret) => { 
 
       // Is the error other than "copayer was not found"? || or no priv key.
       if (err instanceof Errors.NOT_AUTHORIZED || this.isPrivKeyExternal())
@@ -529,35 +532,39 @@ export class API {
    * @param {String} opts.entropySourcePath - Only used if the wallet was created on a HW wallet, in which that private keys was not available for all the needed derivations
    */
   importFromMnemonic(words, opts): Promise<any> {
-    log.debug('Importing from 12 Words');
+    return new Promise((resolve, reject) => {
+      
+    
+      log.debug('Importing from 12 Words');
 
 
-    opts = opts || {};
+      opts = opts || {};
 
-    function derive(nonCompliantDerivation) {
-      return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, {
-        nonCompliantDerivation: nonCompliantDerivation,
-        entropySourcePath: opts.entropySourcePath,
-      });
-    };
+      function derive(nonCompliantDerivation) {
+        return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, {
+          nonCompliantDerivation: nonCompliantDerivation,
+          entropySourcePath: opts.entropySourcePath,
+        });
+      };
 
-    try {
-      this.credentials = derive(false);
-    } catch (e) {
-      log.info('Mnemonic error:', e);
-      return cb(new Errors.INVALID_BACKUP);
-    }
-
-    this._import(function(err, ret) {
-      if (!err) return cb(null, ret);
-      if (err instanceof Errors.INVALID_BACKUP) return cb(err);
-      if (err instanceof Errors.NOT_AUTHORIZED || err instanceof Errors.WALLET_DOES_NOT_EXIST) {
-        var altCredentials = derive(true);
-        if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return cb(err);
-        this.credentials = altCredentials;
-        return this._import(cb);
+      try {
+        this.credentials = derive(false);
+      } catch (e) {
+        log.info('Mnemonic error:', e);
+        return reject(new Errors.INVALID_BACKUP);
       }
-      return cb(err);
+
+      this._import(function(err, ret) {
+        if (!err) return resolve(ret);
+        if (err instanceof Errors.INVALID_BACKUP) return cb(err);
+        if (err instanceof Errors.NOT_AUTHORIZED || err instanceof Errors.WALLET_DOES_NOT_EXIST) {
+          var altCredentials = derive(true);
+          if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return cb(err);
+          this.credentials = altCredentials;
+          return this._import(cb);
+        }
+        return cb(err);
+      });
     });
   };
 
@@ -815,41 +822,43 @@ export class API {
    * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is complete.
    * @fires API#walletCompleted
    */
-  openWallet(cb): any {
-    $.checkState(this.credentials);
-    if (this.credentials.isComplete() && this.credentials.hasWalletInfo())
-      return cb(null, true);
+  openWallet(cb): Promise<any> {
+    return new Promise((resolve, reject) => {
+    
+      $.checkState(this.credentials);
+      if (this.credentials.isComplete() && this.credentials.hasWalletInfo())
+        return cb(null, true);
 
-    this._doGetRequest('/v1/wallets/?includeExtendedInfo=1', function(err, ret) {
-      if (err) return cb(err);
-      var wallet = ret.wallet;
+      return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
+        var wallet = ret.wallet;
 
-      this._processStatus(ret);
+        this._processStatus(ret);
 
-      if (!this.credentials.hasWalletInfo()) {
-        var me = _.find(wallet.copayers, {
-          id: this.credentials.copayerId
-        });
-        this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode);
-      }
-
-      if (wallet.status != 'complete')
-        return cb();
-
-      if (this.credentials.walletPrivKey) {
-        if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
-          return cb(new Errors.SERVER_COMPROMISED);
+        if (!this.credentials.hasWalletInfo()) {
+          var me:any = _.find(wallet.copayers, {
+            id: this.credentials.copayerId
+          });
+          this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode);
         }
-      } else {
-        // this should only happen in AIR-GAPPED flows
-        log.warn('Could not verify copayers key (missing wallet Private Key)');
-      }
 
-      this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
+        if (wallet.status != 'complete')
+          return resolve();
 
-      this.emit('walletCompleted', wallet);
+        if (this.credentials.walletPrivKey) {
+          if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
+            return reject(new Errors.SERVER_COMPROMISED);
+          }
+        } else {
+          // this should only happen in AIR-GAPPED flows
+          log.warn('Could not verify copayers key (missing wallet Private Key)');
+        }
 
-      return cb(null, ret);
+        this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
+
+        this.emit('walletCompleted', wallet);
+
+        return resolve(ret);
+      });
     });
   };
 
@@ -875,75 +884,79 @@ export class API {
    * @param {Callback} cb
    */
   _doRequest(method, url, args, useSession): Promise<any> {
+    return new Promise((resolve, reject) => {
+      
 
-    var headers = this._getHeaders(method, url, args);
+      var headers = this._getHeaders(method, url, args);
 
-    if (this.credentials) {
-      headers['x-identity'] = this.credentials.copayerId;
+      if (this.credentials) {
+        headers['x-identity'] = this.credentials.copayerId;
 
-      if (useSession && this.session) {
-        headers['x-session'] = this.session;
-      } else {
-        var reqSignature;
-        var key = args._requestPrivKey || this.credentials.requestPrivKey;
-        if (key) {
-          delete args['_requestPrivKey'];
-          reqSignature = this._signRequest(method, url, args, key);
+        if (useSession && this.session) {
+          headers['x-session'] = this.session;
+        } else {
+          var reqSignature;
+          var key = args._requestPrivKey || this.credentials.requestPrivKey;
+          if (key) {
+            delete args['_requestPrivKey'];
+            reqSignature = this._signRequest(method, url, args, key);
+          }
+          headers['x-signature'] = reqSignature;
         }
-        headers['x-signature'] = reqSignature;
-      }
-    }
-
-    var r = this.request[method](this.baseUrl + url);
-
-    r.accept('json');
-
-    _.each(headers, function(v, k) {
-      if (v) r.set(k, v);
-    });
-
-    if (args) {
-      if (method == 'post' || method == 'put') {
-        r.send(args);
-
-      } else {
-        r.query(args);
-      }
-    }
-
-    r.timeout(this.timeout);
-
-    r.end(function(err, res) {
-      if (!res) {
-        return cb(new Errors.CONNECTION_ERROR);
       }
 
-      if (res.body)
-        log.debug(util.inspect(res.body, {
-          depth: 10
-        }));
+      var r = this.request[method](this.baseUrl + url);
 
-      if (res.status !== 200) {
-        if (res.status === 404)
-          return cb(new Errors.NOT_FOUND);
+      r.accept('json');
 
-        if (!res.status)
-          return cb(new Errors.CONNECTION_ERROR);
+      _.each(headers, function(v, k) {
+        if (v) r.set(k, v);
+      });
 
-        log.error('HTTP Error:' + res.status);
+      if (args) {
+        if (method == 'post' || method == 'put') {
+          r.send(args);
 
-        if (!res.body)
-          return cb(new Error(res.status));
-
-        return cb(this._parseError(res.body));
+        } else {
+          r.query(args);
+        }
       }
 
-      if (res.body === '{"error":"read ECONNRESET"}')
-        return cb(new Errors.ECONNRESET_ERROR(JSON.parse(res.body)));
+      r.timeout(this.timeout);
 
-      return cb(null, res.body, res.header);
+      return r.then((res) => {
+        if (!res) {
+          return reject(new Errors.CONNECTION_ERROR);
+        }
+
+        if (res.body)
+          log.debug(util.inspect(res.body, {
+            depth: 10
+          }));
+
+        if (res.status !== 200) {
+          if (res.status === 404)
+            return reject(new Errors.NOT_FOUND);
+
+          if (!res.status)
+            return reject(new Errors.CONNECTION_ERROR);
+
+          log.error('HTTP Error:' + res.status);
+
+          if (!res.body)
+            return reject(new Error(res.status));
+
+          return reject(this._parseError(res.body));
+        }
+
+        if (res.body === '{"error":"read ECONNRESET"}')
+          return reject(new Errors.ECONNRESET_ERROR(JSON.parse(res.body)));
+
+        return resolve(res.body, res.header);
+      });
     });
   };
+
 
   private _login(cb): any {
     this._doPostRequest('/v1/login', {});
@@ -973,24 +986,21 @@ export class API {
       });
     };
 
-    async.waterfall([
-
-      function(next) {
-        if (this.session) return next();
-        doLogin(next);
-      },
-      function(next) {
-        this._doRequest(method, url, args, true, function(err, body, header) {
-          if (err && err instanceof Errors.NOT_AUTHORIZED) {
-            doLogin(function(err) {
-              if (err) return next(err);
-              return this._doRequest(method, url, args, true, next);
-            });
-          }
-          next(null, body, header);
+      let loginIfNeeded = (): Promise<any> => {
+        return new Promise((resolve, reject) => {
+          if (this.session) {
+            return resolve();
+          } 
+          return doLogin();   
         });
-      },
-    ]);
+      }
+      
+
+      return loginIfNeeded.then(() => {
+        return this._doRequest(method, url, args, true).then((body, header) => {
+          return this._doRequest(method, url, args, true, next);
+        });
+      });
 };
 
   /**
@@ -2093,48 +2103,6 @@ export class API {
         return cb(null, txp);
       });
     });
-  };
-
-  /**
-   * Sign transaction proposal from AirGapped
-   *
-   * @param {Object} txp
-   * @param {String} encryptedPkr
-   * @param {Number} m
-   * @param {Number} n
-   * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
-   * @return {Object} txp - Return transaction
-   */
-  signTxProposalFromAirGapped(txp, encryptedPkr, m, n, password): any {
-    $.checkState(this.credentials);
-
-
-    if (!this.canSign())
-      throw new Errors.MISSING_PRIVATE_KEY;
-
-    if (this.isPrivKeyEncrypted() && !password)
-      throw new Errors.ENCRYPTED_PRIVATE_KEY;
-
-    var publicKeyRing;
-    try {
-      publicKeyRing = JSON.parse(Utils.decryptMessage(encryptedPkr, this.credentials.personalEncryptingKey));
-    } catch (ex) {
-      throw new Error('Could not decrypt public key ring');
-    }
-
-    if (!_.isArray(publicKeyRing) || publicKeyRing.length != n) {
-      throw new Error('Invalid public key ring');
-    }
-
-    this.credentials.m = m;
-    this.credentials.n = n;
-    this.credentials.addressType = txp.addressType;
-    this.credentials.addPublicKeyRing(publicKeyRing);
-
-    if (!Verifier.checkTxProposalSignature(this.credentials, txp))
-      throw new Error('Fake transaction proposal');
-
-    return this._signTxp(txp, password);
   };
 
 
