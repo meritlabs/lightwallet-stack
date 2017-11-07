@@ -1,9 +1,11 @@
-import clientCore = require('./lib/index');
+import { MeritClient } from './lib/index';
 import bwcErrors = require('./lib/errors');
 
-export class Client {
-  constructor() {
-    clientCore.errors = bwcErrors;
+export class Client extends MeritClient {
+  public errors;
+  constructor(opts:any = {}) {
+    super({opts});
+    this.errors = bwcErrors;
   }
 }
 

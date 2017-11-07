@@ -7,22 +7,16 @@
  * Client API.
  * @alias module:Client.API
  */
-import client = require('./api');
-import verifier = require('./verifier');
+
+import { API as Client } from './api';
+import { verifier } from './verifier';
 import Utils = require('./common/utils');
 import sjcl = require('sjcl');
 import Bitcore = require('bitcore-lib');
 
-client.Verifier = verifier;
-client.Utils = verifier;
-client.sjcl = sjcl;
-client.Bitcore = Bitcore;
 
-export = client;
-
-// export class ClientCore {
-//   constructor(){
-//     this = client;
-//   }
-
-// }
+export class MeritClient extends Client {
+  public Verifier:any = verifier;
+  public Utils: any = Utils;
+  public sjcl: any = sjcl;
+}
