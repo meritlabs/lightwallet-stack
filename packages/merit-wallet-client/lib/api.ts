@@ -1183,7 +1183,7 @@ export class API extends EventEmitter {
    * @param {String} opts.customData
    * @param {Callback} cb
    */
-  _doJoinWallet(walletId, walletPrivKey, xPubKey, requestPubKey, copayerName, opts?:any = {}): Promise<any> {
+  _doJoinWallet(walletId, walletPrivKey, xPubKey, requestPubKey, copayerName, opts:any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
 
       // Adds encrypted walletPrivateKey to CustomData
@@ -1291,8 +1291,8 @@ export class API extends EventEmitter {
 
 
   private _extractPublicKeyRing = function(copayers) {
-    return _.map(copayers, function(copayer) {
-      var pkr = _.pick(copayer, ['xPubKey', 'requestPubKey']);
+    return _.map(copayers, function(copayer: any) {
+      var pkr: any = _.pick(copayer, ['xPubKey', 'requestPubKey']);
       pkr.copayerName = copayer.name;
       return pkr;
     });
@@ -1373,65 +1373,64 @@ export class API extends EventEmitter {
    * @return {undefined}
    */
   createWallet(walletName, copayerName, m, n, opts): Promise<any> {
+    return new Promise((resolve, reject) => {
+      
 
-    if (!this._checkKeyDerivation()) return cb(new Error('Cannot create new wallet'));
+      if (!this._checkKeyDerivation()) return reject(new Error('Cannot create new wallet'));
 
-    if (opts) $.shouldBeObject(opts);
-    opts = opts || {};
+      if (opts) $.shouldBeObject(opts);
+      opts = opts || {};
 
-    var network = opts.network || 'livenet';
-    if (!_.includes(['testnet', 'livenet'], network)) return cb(new Error('Invalid network'));
+      var network = opts.network || 'livenet';
+      if (!_.includes(['testnet', 'livenet'], network)) return reject(new Error('Invalid network'));
 
-    if (!this.credentials) {
-      log.info('Generating new keys');
-      this.seedFromRandom({
-        network: network
-      });
-    } else {
-      log.info('Using existing keys');
-    }
-
-    if (network != this.credentials.network) {
-      return cb(new Error('Existing keys were created for a different network'));
-    }
-
-    var walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey();
-
-    var c = this.credentials;
-    c.addWalletPrivateKey(walletPrivKey.toString());
-    var encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
-
-    var args = {
-      name: encWalletName,
-      m: m,
-      n: n,
-      pubKey: (new Bitcore.PrivateKey(walletPrivKey)).toPublicKey().toString(),
-      network: network,
-      singleAddress: !!opts.singleAddress,
-      id: opts.id,
-      beacon: opts.beacon,
-      unlocked: opts.unlocked,
-      shareCode: opts.shareCode,
-    };
-
-    // Create wallet
-    this._doPostRequest('/v1/wallets/', args, function(err, res) {
-      if (err) return cb(err);
-
-      var walletId = res.walletId;
-      var walletShareCode = res.shareCode;
-      var walletCodeHash = res.codeHash;
-      c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
-
-
-      var secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
-
-      this._doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {},
-        function(err, wallet) {
-          if (err) return cb(err);
-          return cb(null, n > 1 ? secret : null);
+      if (!this.credentials) {
+        log.info('Generating new keys');
+        this.seedFromRandom({
+          network: network
         });
-    });
+      } else {
+        log.info('Using existing keys');
+      }
+
+      if (network != this.credentials.network) {
+        return reject(new Error('Existing keys were created for a different network'));
+      }
+
+      var walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey();
+
+      var c = this.credentials;
+      c.addWalletPrivateKey(walletPrivKey.toString());
+      var encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
+
+      var args = {
+        name: encWalletName,
+        m: m,
+        n: n,
+        pubKey: (new Bitcore.PrivateKey(walletPrivKey)).toPublicKey().toString(),
+        network: network,
+        singleAddress: !!opts.singleAddress,
+        id: opts.id,
+        beacon: opts.beacon,
+        unlocked: opts.unlocked,
+        shareCode: opts.shareCode,
+      };
+
+      // Create wallet
+      return this._doPostRequest('/v1/wallets/', args).then((res) => {
+        var walletId = res.walletId;
+        var walletShareCode = res.shareCode;
+        var walletCodeHash = res.codeHash;
+        c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
+
+
+        var secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
+
+        return this._doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then((wallet) => {
+            return resolve(n > 1 ? secret : null);
+          });
+      });
+    });    
   };
 
   /**
@@ -1445,39 +1444,35 @@ export class API extends EventEmitter {
    * @returns {Callback} cb - Returns the wallet
    */
   joinWallet(secret, copayerName, opts): Promise<any> {
+    return new Promise((resolve, reject) => {
+      
+      if (!this._checkKeyDerivation()) return reject(new Error('Cannot join wallet'));
 
-    if (!cb) {
-      cb = opts;
-      opts = {};
-      log.warn('DEPRECATED WARN: joinWallet should receive 4 parameters.');
-    }
+      opts = opts || {};
 
-    if (!this._checkKeyDerivation()) return cb(new Error('Cannot join wallet'));
-
-    opts = opts || {};
-
-    try {
-      var secretData = this.parseSecret(secret);
-    } catch (ex) {
-      return cb(ex);
-    }
-
-    if (!this.credentials) {
-      this.seedFromRandom({
-        network: secretData.network
-      });
-    }
-
-    this.credentials.addWalletPrivateKey(secretData.walletPrivKey.toString());
-    this._doJoinWallet(secretData.walletId, secretData.walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, copayerName, {
-      dryRun: !!opts.dryRun,
-    }, function(err, wallet) {
-      if (err) return cb(err);
-      if (!opts.dryRun) {
-        this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.beacon, wallet.shareCode);
+      try {
+        var secretData = this.parseSecret(secret);
+      } catch (ex) {
+        return reject(ex);
       }
-      return cb(null, wallet);
+
+      if (!this.credentials) {
+        this.seedFromRandom({
+          network: secretData.network
+        });
+      }
+
+      this.credentials.addWalletPrivateKey(secretData.walletPrivKey.toString());
+      return this._doJoinWallet(secretData.walletId, secretData.walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, copayerName, {
+        dryRun: !!opts.dryRun,
+      }).then((wallet) => {
+        if (!opts.dryRun) {
+          this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.beacon, wallet.shareCode);
+        }
+        return resolve(wallet);
+      });
     });
+  
   };
 
   /**
@@ -2249,7 +2244,7 @@ export class API extends EventEmitter {
         });
       } else {
         this._doBroadcast(txp);
-Promise<      }>
+      }
     });
   };
 
