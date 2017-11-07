@@ -30,6 +30,7 @@
     "@biesbjerg/ngx-translate-po-http-loader": "1.0.1",
     "@ionic-native/android-fingerprint-auth": "4.3.2",
     "@ionic-native/clipboard": "^4.3.3",
+    "@ionic-native/contacts": "^4.3.3",
     "@ionic-native/core": "4.3.2",
     "@ionic-native/file": "4.3.2",
     "@ionic-native/in-app-browser": "^4.3.2",
@@ -60,7 +61,20 @@
     "rxjs": "5.4.3",
     "sw-toolbox": "3.6.0",
     "ts-md5": "^1.2.2",
-    "zone.js": "0.8.18"
+    "zone.js": "0.8.18",
+    "cordova-ios": "~4.3.1",
+    "cordova-android": "~6.1.2",
+    "ionic-plugin-keyboard": "~2.2.1",
+    "cordova-plugin-whitelist": "~1.3.1",
+    "cordova-plugin-statusbar": "https://github.com/apache/cordova-plugin-statusbar.git",
+    "cordova-plugin-device": "~1.1.4",
+    "cordova-plugin-splashscreen": "~4.0.1",
+    "cordova-plugin-ionic-webview": "^1.1.11",
+    "cordova-plugin-file": "~4.3.3",
+    "cordova-plugin-inappbrowser": "~1.7.1",
+    "cordova-plugin-touch-id": "~3.3.1",
+    "cordova-plugin-android-fingerprint-auth": "~1.4.0",
+    "cordova-plugin-contacts": "~2.3.1"
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.0.1",
@@ -74,7 +88,26 @@
     "plugins": {
       "cordova-plugin-qrscanner": {},
       "cordova-plugin-x-socialsharing": {},
-      "cordova-clipboard": {}
-    }
+      "cordova-clipboard": {},
+      "ionic-plugin-keyboard": {},
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-touch-id": {
+        "FACEID_USAGE_DESCRIPTION": " "
+      },
+      "cordova-plugin-android-fingerprint-auth": {},
+      "cordova-plugin-contacts": {
+        "CONTACTS_USAGE_DESCRIPTION": " "
+      }
+    },
+    "platforms": [
+      "ios",
+      "android"
+    ]
   }
 }
