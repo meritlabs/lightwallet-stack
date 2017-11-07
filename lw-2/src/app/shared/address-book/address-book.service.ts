@@ -77,9 +77,7 @@ export class AddressBookService {
         return resolve(contacts);
       }).catch((err) => {
         this.logger.warn(err);
-        return resolve([
-          [{name: {formatted: 'Mock user'}, emails: [{value: 'mock@user.me'}], phoneNumbers: [], address: '', getAddress: () =>  '' }]
-        ]); 
+        return resolve([]); 
       })
     }) 
   }

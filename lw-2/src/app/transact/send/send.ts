@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { Promise } from 'bluebird';
 
 import { Wallet } from 'merit/wallets/wallet.model';
@@ -50,7 +50,8 @@ export class SendView {
     private profileService: ProfileService,
     private logger: Logger,
     private sendService: SendService,
-    private addressBookService:AddressBookService 
+    private addressBookService:AddressBookService,
+    private modalCtrl:ModalController
   ) {
     console.log("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
@@ -161,8 +162,6 @@ export class SendView {
   private contactWithSendMethod(contact, search) {
     var obj = _.clone(contact);
 
-    console.log("OBJ", obj); 
-
     var email = _.find(obj.emails, function(x:any) {
       return _.includes(x.toLowerCase(), search.toLowerCase());
     });
@@ -191,7 +190,11 @@ export class SendView {
   }
 
   private openScanner(): void {
-    this.navCtrl.parent.select(2);    
+    let modal = this.modalCtrl.create('ImportScanView');
+    modal.onDidDismiss((code) => {
+        this.findContact(code); 
+    });
+    modal.present();
   }
  
   private showMore(): void {
@@ -231,9 +234,6 @@ export class SendView {
 
     var result = this.findMatchingContacts(this.originalContacts, search);
     var deviceResult = this.findMatchingContacts(this.deviceContacts, search);
-
-    console.log("RESULT", this.deviceContacts, result, deviceResult);  
-
     this.filteredList = result.concat(_.map(deviceResult, (contact) => {
       return this.contactWithSendMethod(contact, search);
     }));  
