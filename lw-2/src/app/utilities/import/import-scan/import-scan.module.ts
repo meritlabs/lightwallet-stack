@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { ImportScanView } from 'merit/utilities/import/import-scan/import-scan';
-import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
+
+import { BarcodeScanner } from '@ionic-native/barcode-scanner'; 
 
 
 @NgModule({
@@ -9,7 +10,7 @@ import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
     ImportScanView,
   ],
   providers: [
-    QRScanner
+    BarcodeScanner 
   ],
   imports: [
     IonicPageModule.forChild(ImportScanView),
