@@ -11,6 +11,9 @@ import { ConfigService } from "merit/shared/config.service";
   templateUrl: 'master-key.html',
 })
 export class CreateVaultMasterKeyView {
+
+  public formData = { masterKey: "My Master Key" };
+
   constructor(
     private navCtrl:NavController,
     private navParams: NavParams,

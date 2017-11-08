@@ -11,6 +11,9 @@ import { ConfigService } from "merit/shared/config.service";
   templateUrl: 'vault-summary.html',
 })
 export class CreateVaultSummaryView {
+  
+  public formData = { vaultName: 'My Vault Name', whitelist: [], amountToDeposit: 100.0, masterKey: "My Master Key" };
+
   constructor(
     private navCtrl:NavController,
     private navParams: NavParams,
