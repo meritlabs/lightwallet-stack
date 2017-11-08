@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, AlertController, ModalController } from 'ionic-angular';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { ConfigService } from "merit/shared/config.service"; 
-import {EmailService} from 'merit/shared/email.service';
+import { EmailService } from 'merit/shared/email.service';
 
 @IonicPage()
 @Component({

@@ -7,8 +7,7 @@ import { GravatarComponent } from 'merit/shared/gravatar.component';
 import { WalletService } from "merit/wallets/wallet.service";
 import { WalletsModule } from "merit/wallets/wallets.module";
 import { AddressBookView } from 'merit/shared/address-book/address-book';
-
-import { Contacts} from '@ionic-native/contacts';
+import { Contacts } from '@ionic-native/contacts';
 
 
 // This module manaages the sending of money.
