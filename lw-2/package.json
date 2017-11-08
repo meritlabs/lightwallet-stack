@@ -51,7 +51,11 @@
     "angular2-qrcode": "^2.0.1",
     "autoprefixer": "^7.1.6",
     "bluebird": "^3.5.1",
+<<<<<<< HEAD
     "cordova-android": "^6.3.0",
+=======
+    "branch-cordova-sdk": "^2.6.16",
+>>>>>>> 64b0781333d6... Branch SDK and Initialization.
     "cordova-clipboard": "^1.1.0",
     "cordova-ios": "~4.3.1",
     "cordova-plugin-android-fingerprint-auth": "~1.4.0",
@@ -88,6 +92,7 @@
     "plugins": {
       "cordova-plugin-x-socialsharing": {},
       "cordova-clipboard": {},
+<<<<<<< HEAD
       "ionic-plugin-keyboard": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-statusbar": {},
@@ -111,5 +116,9 @@
       "ios",
       "android"
     ]
+=======
+      "branch-cordova-sdk": {}
+    }
+>>>>>>> 64b0781333d6... Branch SDK and Initialization.
   }
 }
