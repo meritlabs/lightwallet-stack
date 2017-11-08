@@ -13,12 +13,17 @@ import { CreateVaultService } from "merit/vaults/create-vault/create-vault.servi
 export class CreateVaultGeneralInfoView {
 
   public formData = { vaultName: '', whitelist: [] };
+  public isNextAvailable = false;
 
   constructor(
     private navCtrl:NavController,
     private navParams: NavParams, 
     private createVaultService: CreateVaultService, 
   ){}
+
+  checkNextAvailable() {
+    this.isNextAvailable = this.formData.vaultName.length > 0;
+  }
 
   ionViewDidLoad() {
     let data = this.createVaultService.getData();

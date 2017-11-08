@@ -12,7 +12,8 @@ import { CreateVaultService } from "merit/vaults/create-vault/create-vault.servi
 })
 export class CreateVaultDepositView {
 
-  public formData = { amountToDeposit: 0.0, amountAvailable: 10000.0 };
+  public formData = { amountToDeposit: 0.0, amountAvailable: 0.0 };
+  public isNextAvailable = false;
 
   constructor(
     private navCtl: NavController,
@@ -20,10 +21,15 @@ export class CreateVaultDepositView {
     private createVaultService: CreateVaultService,
   ) {}
 
+  checkNextAvailable() {
+    this.isNextAvailable = this.formData.amountToDeposit > 0 && this.formData.amountAvailable >= this.formData.amountToDeposit;
+  }
+
   ionViewDidLoad() {
     let data = this.createVaultService.getData();
     this.formData.amountToDeposit = data.amountToDeposit;
     this.formData.amountAvailable = data.amountAvailable;
+    this.checkNextAvailable();
   }
 
   toMasterKey() {

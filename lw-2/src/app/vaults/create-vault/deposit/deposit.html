@@ -19,7 +19,7 @@
     <ion-list>
         <ion-item>
             <ion-label translate>Amout to deposit</ion-label>
-            <ion-input text-right [placeholder]="'0.0'" [(ngModel)]="formData.amountToDeposit"></ion-input>
+            <ion-input text-right [placeholder]="'0.0'" [(ngModel)]="formData.amountToDeposit" (change)="checkNextAvailable()"></ion-input>
         </ion-item>
     </ion-list>
 
@@ -58,7 +58,7 @@
     </ion-list>
 
     <div class="control-buttons">
-        <button ion-button type="button" translate (click)="toMasterKey()">
+        <button ion-button type="button" translate (click)="toMasterKey()" [(disabled)]="!isNextAvailable" >
             Next
         </button>
     </div>
