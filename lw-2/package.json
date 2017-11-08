@@ -50,6 +50,7 @@
     "angular2-qrcode": "^2.0.1",
     "autoprefixer": "^7.1.6",
     "bluebird": "^3.5.1",
+    "branch-cordova-sdk": "^2.6.16",
     "cordova-clipboard": "^1.1.0",
     "cordova-plugin-qrscanner": "^2.5.0",
     "cordova-plugin-x-socialsharing": "^5.2.1",
@@ -74,7 +75,8 @@
     "plugins": {
       "cordova-plugin-qrscanner": {},
       "cordova-plugin-x-socialsharing": {},
-      "cordova-clipboard": {}
+      "cordova-clipboard": {},
+      "branch-cordova-sdk": {}
     }
   }
 }
