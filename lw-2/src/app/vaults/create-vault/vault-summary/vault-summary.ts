@@ -12,13 +12,21 @@ import { CreateVaultService } from "merit/vaults/create-vault/create-vault.servi
 })
 export class CreateVaultSummaryView {
   
-  public formData = { vaultName: 'My Vault Name', whitelist: [], amountToDeposit: 100.0, masterKey: "My Master Key" };
+  public formData = { vaultName: '', whitelist: [], amountToDeposit: 0.0, masterKey: '' };
 
   constructor(
     private navCtrl:NavController,
     private navParams: NavParams,
     private createVaultService: CreateVaultService,
   ){}
+
+  ionViewDidLoad() {
+    let data = this.createVaultService.getData();
+    this.formData.vaultName = data.vaultName;
+    this.formData.whitelist = data.whitelist;
+    this.formData.amountToDeposit = data.amountToDeposit;
+    this.formData.masterKey = data.masterKey;
+  }
 
   create() {
     this.createVaultService.createVault().then( () => {

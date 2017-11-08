@@ -10,7 +10,7 @@ import { ConfigService } from "merit/shared/config.service";
     CreateVaultMasterKeyView,
   ],
   providers: [
-    ConfigService
+    ConfigService,
   ],
   imports: [
     IonicPageModule.forChild(CreateVaultMasterKeyView),
