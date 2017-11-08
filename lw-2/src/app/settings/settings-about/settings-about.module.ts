@@ -1,14 +1,16 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { SettingsAboutView } from 'merit/settings/settings-about/settings-about';
-import { ExternalLinkService } from "merit/shared/external-link.service";
+import {AppService} from "merit/core/app-settings.service";
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 @NgModule({
   declarations: [
     SettingsAboutView,
   ],
   providers: [
-    ExternalLinkService
+    InAppBrowser,
+    AppService
   ],
   imports: [
     IonicPageModule.forChild(SettingsAboutView),
