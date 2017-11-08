@@ -12,7 +12,7 @@
 
 <ion-content padding>
 
-    <ion-card *ngIf="!scannerAvailable" padding>
+    <ion-card  padding>
         <div translate>
 
             <div class="icon">
@@ -25,15 +25,5 @@
         </div>
     </ion-card>
 
-    <ion-card *ngIf="scannerAvailable && !scannerPermitted" padding>
-        <div translate>
-
-            <div class="icon">
-                <img src="assets/img/qr-code.svg">
-            </div>
-
-            App has no access to device camera.
-        </div>
-    </ion-card>
 
 </ion-content>

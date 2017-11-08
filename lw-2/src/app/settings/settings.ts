@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, AlertController, ModalController } from 'ionic-angular';
-import { ExternalLinkService } from "merit/shared/external-link.service";
-
+import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { ConfigService } from "merit/shared/config.service"; 
+import {EmailService} from 'merit/shared/email.service';
 
 @IonicPage()
 @Component({
@@ -10,19 +11,33 @@ import { ExternalLinkService } from "merit/shared/external-link.service";
 })
 export class SettingsView {
 
-  public currentLanguageName = 'English'; //TODO move to profile or config service
-  public currentUnitName     = 'MRT'; //TODO move to profile service
-  public currentAlternativeName = 'US Dollar'; //TODO move to profile or config service
+  public currentLanguageName;
+  public availableLanguages = [];
+  public currentUnitName;
+  public currentAlternativeName;
+  public availableUnits = [];
+  public availableAlternateCurrencies = []; 
+
+  public emailNotificationsEnabled;
+
+  private latestEmail;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private app:App,
     private alertCtrl:AlertController,
-    private externalService:ExternalLinkService,
-    private modalCtrl:ModalController
+    private inAppBrowser:InAppBrowser,
+    private modalCtrl:ModalController,
+    private configService:ConfigService,
+    private emailService:EmailService
   ) {
+    let config = this.configService.get();
+    this.currentUnitName = config.wallet.settings.unitName;
+    this.currentAlternativeName = config.wallet.settings.alternativeName;
+    this.emailNotificationsEnabled = config.emailNotifications.enabled; 
 
+    this.latestEmail = this.emailService.getEmailIfEnabled();
   }
 
   ionViewDidLoad() {
@@ -38,8 +53,8 @@ export class SettingsView {
   }
 
   toLanguageSelect() {
-    //@todo get from service
-    let modal = this.modalCtrl.create('SelectLanguageModal', {currentLanguage: this.currentLanguageName, availableLanguages: ['English', 'Русский', 'Klingon']});
+    
+    let modal = this.modalCtrl.create('SelectLanguageModal', {currentLanguage: this.currentLanguageName, availableLanguages: [ /* */ ]});
     modal.present();
     modal.onDidDismiss((language) => {
       if (language) this.currentLanguageName = language;
@@ -52,7 +67,7 @@ export class SettingsView {
 
   toUnitSelect() {
     //@todo get from service
-    let modal = this.modalCtrl.create('SelectUnitModal', {currentUnit: this.currentUnitName, availableUnits: ['bits', 'MRT']});
+    let modal = this.modalCtrl.create('SelectUnitModal', {currentUnit: this.currentUnitName, availableUnits: [ /* available units */] });
     modal.present();
     modal.onDidDismiss((unit) => {
       console.log(unit);
@@ -62,7 +77,7 @@ export class SettingsView {
 
   toCurrencySelect() {
     //@todo get from service
-    let modal = this.modalCtrl.create('SelectCurrencyModal', {currentCurrency: this.currentAlternativeName, availableCurrencies: ['US Dollar', 'Euro']});
+    let modal = this.modalCtrl.create('SelectCurrencyModal', {currentCurrency: this.currentAlternativeName, availableCurrencies: [/* available currencies */] });
     modal.present();
     modal.onDidDismiss((unit) => {
       if (unit) this.currentUnitName = unit;
@@ -79,15 +94,16 @@ export class SettingsView {
 
   help() {
 
-    //@TODO move to configs
-    let url = 'https://';
-
+    let url = this.configService.get().help.url;
+    
     let confirm = this.alertCtrl.create({
       title: 'External link',
       message: 'Help and support information is available at the website',
       buttons: [
         {text: 'Cancel', role: 'cancel', handler: () => {}},
-        {text: 'Open', handler: () => {this.externalService.open(url)} }
+        {text: 'Open', handler: () => {
+          this.inAppBrowser.create(url); 
+        } }
       ]
     });
 
@@ -95,5 +111,18 @@ export class SettingsView {
 
   }
 
+  toggleNotifications(notificationEnabled) {
+    
+    if (!this.latestEmail) return; //todo check if email is set 
 
+    let opts = {
+      enabled: notificationEnabled,
+      email: this.latestEmail.value
+    };
+
+    this.emailService.updateEmail(opts).then(() => {
+      this.latestEmail = this.emailService.getEmailIfEnabled();
+    })
+
+  }
 }

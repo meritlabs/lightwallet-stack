@@ -62,9 +62,9 @@ export class AppService {
       this.config.load().then(() => {
         this.language.load();
         //this.touchid.init();
-        this.getInfo().subscribe((info) => {
+        this.loadInfo().subscribe((info) => {
           this.info = info;
-          resolve();
+          resolve(info);
         });
       }).catch((err) => {
         this.logger.error(err);
@@ -73,7 +73,15 @@ export class AppService {
     });
   }
 
-  private getInfo() {
+  public getInfo():Promise<any> {
+    if (this.info) {
+      return Promise.resolve(this.info);
+    } else {
+      return this.load();
+    } 
+  }
+
+  private loadInfo() {
     return this.http.get(this.jsonPath)
       .map((res: Response) => res.json());
   }

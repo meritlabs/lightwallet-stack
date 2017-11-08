@@ -1,7 +1,10 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { SettingsView } from 'merit/settings/settings';
-import { ExternalLinkService } from "merit/shared/external-link.service";
+import { InAppBrowser } from '@ionic-native/in-app-browser';  
+import {EmailService} from 'merit/shared/email.service';
+import {WalletsModule} from 'merit/wallets/wallets.module'; 
+import {MnemonicService} from 'merit/utilities/mnemonic/mnemonic.service';
 
 // Settings 
 @NgModule({
@@ -9,9 +12,11 @@ import { ExternalLinkService } from "merit/shared/external-link.service";
     SettingsView,
   ],
   providers: [
-    ExternalLinkService
+    InAppBrowser,
+    EmailService
   ],
   imports: [
+    WalletsModule, 
     IonicPageModule.forChild(SettingsView),
   ],
 })
