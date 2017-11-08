@@ -12,21 +12,21 @@
     <ion-list margin-top>
         <ion-item>
             <ion-label translate>Vault name</ion-label>
-            <ion-input text-right [placeholder]="'My Vault'" [disabled]="true"></ion-input>
+            <ion-input text-right [placeholder]="'My Vault'" [(ngModel)]="formData.vaultName" [disabled]="true"></ion-input>
         </ion-item>
     </ion-list>
 
     <ion-list>
         <ion-item>
             <ion-label translate>Amount to deposit</ion-label>
-            <ion-input text-right [placeholder]="'0.0'" [value]="0.0" [disabled]="true"></ion-input>
+            <ion-input text-right [placeholder]="'0.0'" [(ngModel)]="formData.amountToDeposit" [disabled]="true"></ion-input>
         </ion-item>
     </ion-list>
 
     <ion-list>
         <ion-item>
             <ion-label translate>Master key</ion-label>
-            <ion-input text-right [placeholder]="'THE KEY'" [value]="'THE KEY'" [disabled]="true"></ion-input>
+            <ion-input text-right [placeholder]="'THE KEY'" [(ngModel)]="formData.masterKey" [disabled]="true"></ion-input>
         </ion-item>
     </ion-list>
 

@@ -11,6 +11,9 @@ import { ConfigService } from "merit/shared/config.service";
   templateUrl: 'deposit.html',
 })
 export class CreateVaultDepositView {
+
+  public formData = { amountToDeposit: 0.0, amountAvailable: 10000.0 };
+
   constructor(
     private navCtl: NavController,
     private navParams: NavParams,

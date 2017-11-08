@@ -12,14 +12,14 @@
     <ion-list margin-top>
         <ion-item>
             <ion-label translate>Available merit</ion-label>
-            <ion-input text-right [placeholder]="'0.0'" [value]="10000" [disabled]="true"></ion-input>
+            <ion-input text-right [placeholder]="'0.0'" [(ngModel)]="formData.amountAvailable" [disabled]="true"></ion-input>
         </ion-item>
     </ion-list>
 
     <ion-list>
         <ion-item>
             <ion-label translate>Amout to deposit</ion-label>
-            <ion-input text-right [placeholder]="'0.0'"></ion-input>
+            <ion-input text-right [placeholder]="'0.0'" [(ngModel)]="formData.amountToDeposit"></ion-input>
         </ion-item>
     </ion-list>
 

@@ -11,6 +11,9 @@ import { ConfigService } from "merit/shared/config.service";
   templateUrl: 'general-info.html',
 })
 export class CreateVaultGeneralInfoView {
+
+  public formData = { vaultName: '', whitelist: [] };
+
   constructor(
     private navCtrl:NavController,
     private navParams: NavParams, 
