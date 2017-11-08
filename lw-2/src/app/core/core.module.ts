@@ -23,6 +23,7 @@ import { TouchID } from '@ionic-native/touch-id';
 import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
 import { PopupService } from 'merit/core/popup.service';
 import { SpinnerService } from 'merit/core/spinner.service';
+import { DeepLinkService } from 'merit/core/deep-link.service';
 import { TransactView } from 'merit/transact/transact';
 import { OnboardingView } from 'merit/onboard/onboarding.view';
 
@@ -109,6 +110,7 @@ export function createTranslateLoader(http: Http) {
         AndroidFingerprintAuth, 
         TouchID, 
         TouchIdService,  
+        DeepLinkService,
         //   {
         //       provide: TouchIdService,
         //   deps: [TouchID],
@@ -116,7 +118,7 @@ export function createTranslateLoader(http: Http) {
         //   } 
         {
             provide: APP_INITIALIZER,
-            useFactory: (app: AppService) => () => app.load(),
+            useFactory: (app: AppService) => () => app.getInfo(),
             deps: [AppService, LanguageService],
             multi: true
         }
