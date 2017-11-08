@@ -17,7 +17,7 @@ import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { Promise } from 'bluebird';
 
 import * as _ from 'lodash';
-import {Wallet} from "./wallet.model";
+import { Wallet } from "./wallet.model";
 
 
 /* Refactor CheckList:

@@ -161,6 +161,6 @@ export class SendAmountView {
 
   finish() {
     // TODO: We should always be sending from view.
-    this.navCtrl.push('SendConfirmView', {toAddress: this.address, amount: this.globalResult});      
+    this.navCtrl.push('SendConfirmView', {toAddress: this.address, amount: this.globalResult, wallet: this.navParams.data.wallet});
   }
 }

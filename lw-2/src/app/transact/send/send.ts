@@ -211,9 +211,15 @@ export class SendView {
     // TODO: Improve to be more resilient.
     if(search && search.length > 19) {
       this.sendService.isAddressValid(search).then((isValid) => {
-        if (isValid) {
-          this.navCtrl.push('SendAmountView');
-          return;          
+          if (isValid) {
+            this.profileService.getWallets()
+              .then((wallets) => {
+                this.navCtrl.push('SendAmountView', {
+                  wallet: wallets[0],
+                  sending: true,
+                  address: search
+                });
+              });
         } else {
           this.popupService.ionicAlert('This address has not been invited to the merit network yet!');
         }  

@@ -19,7 +19,7 @@ import { Promise } from 'bluebird';
 */ 
 @Injectable()
 export class ProfileService {
-  public wallets: Array<Wallet> = [];
+  public wallets: Map<string, Wallet> = new Map<string, Wallet>();
   public profile: Profile = new Profile();
 
   private UPDATE_PERIOD = 15;
