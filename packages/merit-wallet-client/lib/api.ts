@@ -22,7 +22,7 @@ import Utils = Common.Utils;
 import * as PayPro from './paypro';
 import log = require('./log');
 import Credentials = require('./credentials');
-import Verifier = require('./verifier');
+import * as Verifier from './verifier';
 import Package = require('../package.json');
 import Errors = require('./errors');
 
@@ -1820,16 +1820,9 @@ export class API extends EventEmitter {
    * @param {String} opts.address     - the address to unlock
    * @param {String} opts.unlockcode  - the code to use to unlock opts.address
    */
-  unlockAddress(opts): Promise<any> {
+  unlockAddress(opts = {}): Promise<any> {
     $.checkState(this.credentials);
-
-
-    opts = opts || {};
-
-    this._doPostRequest('/v1/addresses/unlock/', opts, function(err, result) {
-      if (err) return cb(err);
-      return cb(err, result);
-    });
+    return this._doPostRequest('/v1/addresses/unlock/', opts);
   };
 
   /**
@@ -1840,28 +1833,17 @@ export class API extends EventEmitter {
    * @param {Callback} cb
    * @returns {Callback} cb - Return error or the address
    */
-  createAddress(opts): Promise<any> {
+  createAddress(opts = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-
-    if (!cb) {
-      cb = opts;
-      opts = {};
-      log.warn('DEPRECATED WARN: createAddress should receive 2 parameters.')
-    }
-
-    if (!this._checkKeyDerivation()) return cb(new Error('Cannot create new address for this wallet'));
-
-    opts = opts || {};
-
-    this._doPostRequest('/v1/addresses/', opts, function(err, address) {
-      if (err) return cb(err);
-
-      if (!Verifier.checkAddress(this.credentials, address)) {
-        return cb(new Errors.SERVER_COMPROMISED);
-      }
-
-      return cb(null, address);
+    return new Promise((resolve, reject) => {
+      if (!this._checkKeyDerivation()) return reject(new Error('Cannot create new address for this wallet'));
+      return this._doPostRequest('/v1/addresses/', opts).then((address) => {
+        if (!Verifier.checkAddress(this.credentials, address)) {
+          return reject(new Errors.SERVER_COMPROMISED);
+        } 
+        return resolve(address);
+      });
     });
   };
 
@@ -1875,11 +1857,8 @@ export class API extends EventEmitter {
    * @param {Callback} cb
    * @returns {Callback} cb - Return error or the array of addresses
    */
-  getMainAddresses(opts): Promise<any> {
+  getMainAddresses(opts:any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-
-
-    opts = opts || {};
 
     var args = [];
     if (opts.limit) args.push('limit=' + opts.limit);
@@ -1890,17 +1869,17 @@ export class API extends EventEmitter {
     }
     var url = '/v1/addresses/' + qs;
 
-    this._doGetRequest(url, function(err, addresses) {
-      if (err) return cb(err);
-
-      if (!opts.doNotVerify) {
-        var fake = _.some(addresses, function(address) {
-          return !Verifier.checkAddress(this.credentials, address);
-        });
-        if (fake)
-          return cb(new Errors.SERVER_COMPROMISED);
-      }
-      return cb(null, addresses);
+    return new Promise((resolve, reject) => { 
+      this._doGetRequest(url).then((addresses) => {
+        if (!opts.doNotVerify) {
+          var fake = _.some(addresses, function(address) {
+            return !Verifier.checkAddress(this.credentials, address);
+          });
+          if (fake)
+            return reject(new Errors.SERVER_COMPROMISED);
+          }
+        return resolve(addresses);
+      });
     });
   };
 
@@ -1910,19 +1889,11 @@ export class API extends EventEmitter {
    * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
    * @param {Callback} cb
    */
-  getBalance(opts): Promise<any> {
-    if (!cb) {
-      cb = opts;
-      opts = {};
-      log.warn('DEPRECATED WARN: getBalance should receive 2 parameters.')
-    }
-
-    opts = opts || {};
-
+  getBalance(opts:any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     var url = '/v1/balance/';
     if (opts.twoStep) url += '?twoStep=1';
-    this._doGetRequest(url);
+    return this._doGetRequest(url);
   };
 
   /**
@@ -1938,10 +1909,12 @@ export class API extends EventEmitter {
     $.checkState(this.credentials && this.credentials.isComplete());
 
 
-    this._doGetRequest('/v1/txproposals/', function(err, txps) {
-      if (err) return cb(err);
-
+    return this._doGetRequest('/v1/txproposals/').then((txps) => {
       this._processTxps(txps);
+
+      return Promise.each(txps, (txp) => {
+                
+      })
       async.every(txps,
         function(txp, acb) {
           if (opts.doNotVerify) return acb(true);
@@ -1971,7 +1944,7 @@ export class API extends EventEmitter {
             result = txps;
           }
           return cb(null, result);
-        });
+        }); //end every
     });
   };
 
