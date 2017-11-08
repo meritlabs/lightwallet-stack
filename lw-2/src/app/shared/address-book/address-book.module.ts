@@ -7,6 +7,7 @@ import { GravatarComponent } from 'merit/shared/gravatar.component';
 import { WalletService } from "merit/wallets/wallet.service";
 import { WalletsModule } from "merit/wallets/wallets.module";
 import { AddressBookView } from 'merit/shared/address-book/address-book';
+import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { Contacts } from '@ionic-native/contacts';
 
 
@@ -23,7 +24,8 @@ import { Contacts } from '@ionic-native/contacts';
   providers: [
     WalletService,
     SendService,
-    Contacts 
+    Contacts,
+    AddressBookService 
   ],
   exports: [
   ]

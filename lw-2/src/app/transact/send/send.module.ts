@@ -6,7 +6,7 @@ import { GravatarModule } from 'merit/shared/gravatar.module';
 import { GravatarComponent } from 'merit/shared/gravatar.component';
 import { WalletService } from "merit/wallets/wallet.service";
 import { WalletsModule } from "merit/wallets/wallets.module";
-import { AddressBookService } from "merit/shared/address-book/address-book.service";
+import { AddressBookModule } from "merit/shared/address-book/address-book.module";
 
 
 // This module manaages the sending of money.
@@ -18,12 +18,12 @@ import { AddressBookService } from "merit/shared/address-book/address-book.servi
   imports: [
     IonicPageModule.forChild(SendView),
     GravatarModule, 
-    WalletsModule
+    WalletsModule,
+    AddressBookModule
   ],
   providers: [
     WalletService,
-    SendService,
-    AddressBookService
+    SendService
   ],
   exports: [
   ]
