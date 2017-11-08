@@ -12,7 +12,8 @@ import { ConfigService } from "merit/shared/config.service";
 })
 export class CreateVaultDepositView {
   constructor(
-    private navCtl: NavController
+    private navCtl: NavController,
+    private navParams: NavParams,
   ) {}
 
   toMasterKey() {

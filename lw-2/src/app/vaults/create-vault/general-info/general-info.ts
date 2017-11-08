@@ -13,6 +13,7 @@ import { ConfigService } from "merit/shared/config.service";
 export class CreateVaultGeneralInfoView {
   constructor(
     private navCtrl:NavController,
+    private navParams: NavParams, 
   ){}
 
   toDeposit() {
