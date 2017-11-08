@@ -6,4 +6,14 @@ import { IonicPage, NavController, NavParams, App, ToastController, AlertControl
   selector: 'view-vaults',
   templateUrl: 'vaults.html',
 })
-export class VaultsView {}
+export class VaultsView {
+  public vaults;
+
+  constructor(
+    private navCtrl:NavController,
+  ){}
+
+  toAddWallet() {
+    this.navCtrl.push('CreateVaultView');
+  }
+}
