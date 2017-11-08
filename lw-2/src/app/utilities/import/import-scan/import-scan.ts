@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, ViewController } from 'ionic-angular';
-import {Logger} from "merit/core/logger";
+import { Logger } from "merit/core/logger";
 import { BarcodeScanner } from '@ionic-native/barcode-scanner'; 
 
 

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
-import {AppService} from "merit/core/app-settings.service";
+import { AppService } from "merit/core/app-settings.service";
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 @IonicPage()
