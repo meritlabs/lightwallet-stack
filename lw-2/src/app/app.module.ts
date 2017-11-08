@@ -8,6 +8,8 @@ import { TransactView } from 'merit/transact/transact';
 
 import { MomentModule } from 'angular2-moment';
 import { CoreModule } from 'merit/core/core.module';
+import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
+
 
 @NgModule({
   declarations:[
@@ -24,6 +26,7 @@ import { CoreModule } from 'merit/core/core.module';
     MeritLightWallet
   ],
   providers: [
+    CreateVaultService,
      {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

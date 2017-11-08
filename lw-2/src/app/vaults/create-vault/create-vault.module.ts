@@ -4,7 +4,6 @@ import { IonicPageModule } from 'ionic-angular';
 import { CreateVaultGeneralInfoView } from 'merit/vaults/create-vault/general-info/general-info';
 
 import { ConfigService } from "merit/shared/config.service";
-import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
 
 @NgModule({
   declarations: [
@@ -12,7 +11,6 @@ import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.servi
   ],
   providers: [
     ConfigService,
-    CreateVaultService,
   ],
   imports: [
     IonicPageModule.forChild(CreateVaultGeneralInfoView),

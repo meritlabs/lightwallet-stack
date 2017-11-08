@@ -10,7 +10,7 @@ import { ConfigService } from "merit/shared/config.service";
     CreateVaultGeneralInfoView,
   ],
   providers: [
-    ConfigService
+    ConfigService,
   ],
   imports: [
     IonicPageModule.forChild(CreateVaultGeneralInfoView),
