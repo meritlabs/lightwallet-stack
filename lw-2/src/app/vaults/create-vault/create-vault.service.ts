@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class CreateVaultService {
 
-    private model = { vaultName: '', whitelist: [], amountToDeposit: 0.0, masterKey: '' };
+    private model = { vaultName: '', whitelist: [], amountToDeposit: 0.0, amountAvailable: 10000, masterKey: '' };
 
     updateData(fields: any): void {
         this.model = { ...this.model, ...fields, };
@@ -14,7 +14,7 @@ export class CreateVaultService {
     }
 
     private resetModel() {
-        this.model = { vaultName: '', whitelist: [], amountToDeposit: 0.0, masterKey: '' };
+        this.model = { vaultName: '', whitelist: [], amountToDeposit: 0.0, amountAvailable: 10000, masterKey: '' };
     }
 
     createVault(): Promise<any> {

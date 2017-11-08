@@ -12,7 +12,7 @@
     <ion-list margin-top>
         <ion-item>
             <ion-label translate>Vault name</ion-label>
-            <ion-input text-right [placeholder]="'My Vault'" [(ngModel)]="formData.vaultName" ></ion-input>
+            <ion-input text-right [placeholder]="'My Vault'" [(ngModel)]="formData.vaultName" (change)="checkNextAvailable()"></ion-input>
         </ion-item>
     </ion-list>
 
@@ -23,7 +23,7 @@
     </ion-list>
 
     <div class="control-buttons">
-        <button ion-button type="button" translate (click)="toDeposit()">
+        <button ion-button type="button" translate (click)="toDeposit()" [(disabled)]="!isNextAvailable" >
             Next
         </button>
     </div>
