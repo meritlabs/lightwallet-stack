@@ -6,11 +6,13 @@ import 'rxjs/add/operator/map';
 import { LanguageService } from 'merit/core/language.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
+import { Observable } from 'rxjs/Observable';
+
 import { Promise } from 'bluebird';
 
 
 // TODO: Improve implementation
-interface App {
+interface AppSettings {
   packageName: string;
   packageDescription: string;
   packageNameId: string;
@@ -44,7 +46,7 @@ interface App {
 
 @Injectable()
 export class AppService {
-  public info: App;
+  public info: AppSettings;
   private jsonPath: string = 'assets/appConfig.json';
 
   constructor(
@@ -57,11 +59,19 @@ export class AppService {
     this.logger.info('AppService initialized.');
   }
 
-  public load() {
+  public getInfo():Promise<any> {
+    if (this.info) {
+      return Promise.resolve(this.info);
+    } else {
+      return this.load();
+    } 
+  }
+
+  private load(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.config.load().then(() => {
         this.language.load();
-        //this.touchid.init();
+        // TODO: Load TouchID here?
         this.loadInfo().subscribe((info) => {
           this.info = info;
           resolve(info);
@@ -73,15 +83,8 @@ export class AppService {
     });
   }
 
-  public getInfo():Promise<any> {
-    if (this.info) {
-      return Promise.resolve(this.info);
-    } else {
-      return this.load();
-    } 
-  }
 
-  private loadInfo() {
+  private loadInfo(): Observable<AppSettings> {
     return this.http.get(this.jsonPath)
       .map((res: Response) => res.json());
   }
