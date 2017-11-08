@@ -6,6 +6,7 @@ import { NotificationService } from 'merit/shared/notification.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { PopupService } from 'merit/core/popup.service';
 import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
+import { Wallet } from 'merit/wallets/wallet.model';
 
 
 import { Promise } from 'bluebird';
@@ -26,6 +27,7 @@ export class SendConfirmView {
   // Statics
   public static CONFIRM_LIMIT_USD = 20;
   private txp: TransactionProposal = new TransactionProposal; // Transaction proposal
+  private wallet: Wallet;
 
   constructor(
     private navCtrl: NavController, 
@@ -41,8 +43,10 @@ export class SendConfirmView {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ConfirmView');
+    console.log('Params', this.navParams.data);
     this.txp.toAddress = this.navParams.data.toAddress;
     this.txp.amount = this.navParams.data.amount;
+    this.wallet = this.navParams.data.wallet;
   }
 
   // Show as much as we can about the address. 
