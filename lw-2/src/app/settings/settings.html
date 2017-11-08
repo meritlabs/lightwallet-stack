@@ -35,11 +35,11 @@
         <ion-item>
             <ion-icon name="notifications" item-start></ion-icon>
             <ion-label translate>Email Notifications</ion-label>
-            <ion-toggle></ion-toggle>
+            <ion-toggle (ionChange)="toggleNotifications($event.value)" [(ngModel)]="emailNotificationsEnabled"></ion-toggle>
         </ion-item>
 
 
-        <ion-item (click)="toLanguageSelect()">
+        <ion-item (click)="toLanguageSelect()" *ngIf="availableLanguages.length > 1">
             <ion-icon name="globe" item-start></ion-icon>
             <ion-label>
                <h2 translate>Language</h2>
@@ -48,7 +48,7 @@
         </ion-item>
 
 
-        <ion-item (click)="toUnitSelect()">
+        <ion-item (click)="toUnitSelect()" *ngIf="availableUnits.length > 1">
             <ion-icon name="calculator" item-start></ion-icon>
             <ion-label>
                 <h2 translate>Currency</h2>
@@ -56,7 +56,7 @@
             </ion-label>
         </ion-item>
 
-        <ion-item (click)="toCurrencySelect()">
+        <ion-item (click)="toCurrencySelect()" *ngIf="availableAlternateCurrencies.length > 1">
             <ion-icon name="cash" item-start></ion-icon>
             <ion-label>
                 <h2  translate>Alternative currency</h2>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { Promise } from 'bluebird';
 
 import { Wallet } from 'merit/wallets/wallet.model';
@@ -28,10 +28,10 @@ export class SendView {
   private showTransferCard: boolean;
   private wallets: Array<Wallet>;
   private originalContacts: Array<any>;
-  private deviceContacts: Array<any>; // On your phone or mobile device.
+  private  deviceContacts: Array<any>; // On your phone or mobile device.
   private currentContactsPage = 0;
   private showMoreContacts: boolean = false;
-  private filteredList: Array<any>;
+  private filteredList: Array<any>; 
   private formData: { 
     search: string
   };
@@ -39,6 +39,7 @@ export class SendView {
   private hasFunds: boolean;
   private hasOwnedMerit: boolean; 
 
+  
   public hasContacts:boolean; 
 
   constructor(
@@ -49,7 +50,8 @@ export class SendView {
     private profileService: ProfileService,
     private logger: Logger,
     private sendService: SendService,
-    private addressBookService:AddressBookService 
+    private addressBookService:AddressBookService,
+    private modalCtrl:ModalController
   ) {
     console.log("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
@@ -59,7 +61,7 @@ export class SendView {
 
   ionViewDidLoad() {
     this.originalContacts = [];
-    this.deviceContacts = [];
+    this.initDeviceContacts();
     this.hasWallets();
     this.hasFunds = this.profileService.hasFunds();
   }
@@ -119,13 +121,12 @@ export class SendView {
   }
 
   private initDeviceContacts(): Promise<any> {
-    let getDeviceContacts = Promise.promisify(this.addressBookService.getAllDeviceContacts);
 
-    return getDeviceContacts.then((contacts) => {
+    return this.addressBookService.getAllDeviceContacts().then((contacts) => {
       contacts = _.filter(contacts, (contact:any) => {
         return !(_.isEmpty(contact.emails) && _.isEmpty(contact.phoneNumbers));
       });
-      this.deviceContacts = this.deviceContacts.concat(_.map(contacts, function(contact:any) {
+      this.deviceContacts = _.map(contacts, function(contact:any) {
         var item:any = {
           name: contact.name.formatted,
           emails: _.map(contact.emails, function(o:any) { return o.value; }),
@@ -139,7 +140,8 @@ export class SendView {
           ''
         );
         return item;
-      }));
+      });
+ 
     });
   } 
   
@@ -188,7 +190,11 @@ export class SendView {
   }
 
   private openScanner(): void {
-    this.navCtrl.parent.select(2);    
+    let modal = this.modalCtrl.create('ImportScanView');
+    modal.onDidDismiss((code) => {
+        this.findContact(code); 
+    });
+    modal.present();
   }
  
   private showMore(): void {
@@ -228,10 +234,9 @@ export class SendView {
 
     var result = this.findMatchingContacts(this.originalContacts, search);
     var deviceResult = this.findMatchingContacts(this.deviceContacts, search);
-
-    this.filteredList = result.concat(_.map(deviceResult, function(contact) {
+    this.filteredList = result.concat(_.map(deviceResult, (contact) => {
       return this.contactWithSendMethod(contact, search);
-    }));
+    }));  
   }
 
   private goToAmount(item) {
