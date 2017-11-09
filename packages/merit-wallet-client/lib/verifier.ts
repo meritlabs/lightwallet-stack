@@ -14,10 +14,7 @@ let log = require('./log');
  *
  * @constructor
  */
-export class Verifier {
-  constructor(opts:any) {
-    
-  }
+export module Verifier {
 
 
   /**
@@ -27,7 +24,7 @@ export class Verifier {
    * @param {String} address
    * @returns {Boolean} true or false
    */
-  public checkAddress = function(credentials, address) {
+  let checkAddress = function(credentials, address) {
     $.checkState(credentials.isComplete());
 
     var local = Utils.deriveAddress(address.type || credentials.addressType, credentials.publicKeyRing, address.path, credentials.m, credentials.network);
@@ -42,7 +39,7 @@ export class Verifier {
    * @param {Array} copayers
    * @returns {Boolean} true or false
    */
-  public checkCopayers = function(credentials, copayers) {
+  let checkCopayers = function(credentials, copayers) {
     $.checkState(credentials.walletPrivKey);
     var walletPubKey = Bitcore.PrivateKey.fromString(credentials.walletPrivKey).toPublicKey().toString();
 
@@ -78,13 +75,13 @@ export class Verifier {
     if (error) return false;
 
     if (!_.includes(_.map(copayers, 'xPubKey'), credentials.xPubKey)) {
-      log.error('Server response does not contains our public keys')
+      log.error('Server response does not contains our let keys')
       return false;
     }
     return true;
   };
 
-  public checkProposalCreation = function(args, txp, encryptingKey) {
+  let checkProposalCreation = function(args, txp, encryptingKey) {
     function strEqual(str1, str2) {
       return ((!str1 && !str2) || (str1 === str2));
     }
@@ -127,7 +124,7 @@ export class Verifier {
     return true;
   };
 
-  public checkTxProposalSignature = function(credentials, txp) {
+  let checkTxProposalSignature = function(credentials, txp) {
     $.checkArgument(txp.creatorId);
     $.checkState(credentials.isComplete());
 
@@ -171,7 +168,7 @@ export class Verifier {
   };
 
 
-  public checkPaypro = function(txp, payproOpts) {
+  let checkPaypro = function(txp, payproOpts) {
     var toAddress, amount;
 
     if (parseInt(txp.version) >= 3) {
@@ -194,7 +191,7 @@ export class Verifier {
    * @param {Object} Optional: paypro
    * @param {Boolean} isLegit
    */
-  public checkTxProposal = function(credentials, txp, opts) {
+  let checkTxProposal = function(credentials, txp, opts) {
     opts = opts || {};
 
     if (!this.checkTxProposalSignature(credentials, txp))
