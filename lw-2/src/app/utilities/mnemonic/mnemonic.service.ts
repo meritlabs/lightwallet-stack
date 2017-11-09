@@ -36,18 +36,7 @@ export class MnemonicService {
         entropySourcePath: opts.entropySourcePath,
         derivationStrategy: opts.derivationStrategy || 'BIP44',
         account: opts.account || 0
-      }, (err: any) => {
-        if (err) {
-          if (err instanceof this.errors.NOT_AUTHORIZED) {
-            return reject(err);
-          }
-
-          this.bwcErrorService.cb(err, 'Could not import').then((msg: string) => { //TODO getTextCatalog
-            return reject(msg);
-          });
-
-        }
-
+      }).then(() => {
         this.profileService.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
         }).then((wallet: any) => {
@@ -55,6 +44,11 @@ export class MnemonicService {
         }).catch((err: any) => {
           return reject(err);
         });
+      }).catch((err) => {
+          if (err instanceof this.errors.NOT_AUTHORIZED) {
+            return reject(err);
+          }
+          return (this.bwcErrorService.cb(err, 'Could not import'));
       });
     });
   }

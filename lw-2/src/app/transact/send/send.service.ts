@@ -40,9 +40,9 @@ export class SendService {
     return new Promise((resolve, reject) => {
       const walletClient = this.bwcService.getClient(null, {});
       
-      walletClient.validateAddress(addr, "testnet", (err, result) => {
-        if (err || !result) {
-          reject(err || new Error("Could not validateAddress"));
+      walletClient.validateAddress(addr, "testnet").then((result) => {
+        if (!result) {
+          reject(new Error("Could not validateAddress"));
         } else {
           const isAddressBeaconed = result.isValid && result.isBeaconed;
           resolve(isAddressBeaconed);
