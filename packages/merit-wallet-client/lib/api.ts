@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as _$ from 'preconditions';
+import { preconditions as _$ } from 'preconditions';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { EventEmitter } from 'eventemitter3';
@@ -1847,4 +1847,38 @@ export class API extends EventEmitter {
     });
   };
 
-};
+  /**
+   * Adds access to the current copayer
+   * @param {Object} opts
+   * @param {bool} opts.generateNewKey Optional: generate a new key for the new access
+   * @param {string} opts.restrictions
+   *    - cannotProposeTXs
+   *    - cannotXXX TODO
+   * @param {string} opts.name  (name for the new access)
+   *
+   * return the accesses Wallet and the requestPrivateKey
+   */
+  addAccess(opts:any = {}): Promise<any> {
+    $.checkState(this.credentials && this.credentials.canSign());
+
+    let reqPrivKey = new Bitcore.PrivateKey(opts.generateNewKey ? null : this.credentials.requestPrivKey);
+    let requestPubKey = reqPrivKey.toPublicKey().toString();
+
+    let xPriv = new Bitcore.HDPrivateKey(this.credentials.xPrivKey)
+      .deriveChild(this.credentials.getBaseAddressDerivationPath());
+    let sig = Utils.signRequestPubKey(requestPubKey, xPriv);
+    let copayerId = this.credentials.copayerId;
+
+    let encCopayerName = opts.name ? Utils.encryptMessage(opts.name, this.credentials.sharedEncryptingKey) : null;
+
+    opts = {
+      copayerId: copayerId,
+      requestPubKey: requestPubKey,
+      signature: sig,
+      name: encCopayerName,
+      restrictions: opts.restrictions,
+    };
+
+    return this._doPutRequest('/v1/copayers/' + copayerId + '/', opts);
+  };
+}

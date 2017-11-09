@@ -416,45 +416,7 @@
     });
   };
 
-  /**
-   * Adds access to the current copayer
-   * @param {Object} opts
-   * @param {bool} opts.generateNewKey Optional: generate a new key for the new access
-   * @param {string} opts.restrictions
-   *    - cannotProposeTXs
-   *    - cannotXXX TODO
-   * @param {string} opts.name  (name for the new access)
-   *
-   * return the accesses Wallet and the requestPrivateKey
-   */
-  addAccess(opts): Promise<any> {
-    $.checkState(this.credentials && this.credentials.canSign());
-
-    opts = opts || {};
-
-    var reqPrivKey = new Bitcore.PrivateKey(opts.generateNewKey ? null : this.credentials.requestPrivKey);
-    var requestPubKey = reqPrivKey.toPublicKey().toString();
-
-    var xPriv = new Bitcore.HDPrivateKey(this.credentials.xPrivKey)
-      .deriveChild(this.credentials.getBaseAddressDerivationPath());
-    var sig = Utils.signRequestPubKey(requestPubKey, xPriv);
-    var copayerId = this.credentials.copayerId;
-
-    var encCopayerName = opts.name ? Utils.encryptMessage(opts.name, this.credentials.sharedEncryptingKey) : null;
-
-    var opts = {
-      copayerId: copayerId,
-      requestPubKey: requestPubKey,
-      signature: sig,
-      name: encCopayerName,
-      restrictions: opts.restrictions,
-    };
-
-    this._doPutRequest('/v1/copayers/' + copayerId + '/', opts, function(err, res) {
-      if (err) return cb(err);
-      return cb(null, res.wallet, reqPrivKey);
-    });
-  };
+  
 
   /**
    * Get a note associated with the specified txid
