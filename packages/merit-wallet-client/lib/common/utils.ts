@@ -102,7 +102,7 @@ export class Utils {
   public deriveAddress = function(scriptType, publicKeyRing, path, m, network) {
     $.checkArgument(_.includes(_.values(Constants.SCRIPT_TYPES), scriptType));
 
-    var publicKeys = _.map(publicKeyRing, function(item) {
+    var publicKeys = _.map(publicKeyRing, function(item: any) {
       var xpub = new Bitcore.HDPublicKey(item.xPubKey);
       return xpub.deriveChild(path).publicKey;
     });
