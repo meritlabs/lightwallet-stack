@@ -17,7 +17,7 @@ export class PopupService {
     alert.present();
   };
 
-  ionicConfirm(title, message, okText, cancelText): void {
+  ionicConfirm(title, message, okText, cancelText, confirmFunc = null, rejectFunc = null): void {
     let confirm = this.alertCtrl.create({
       title: title,
       message: message,
@@ -26,12 +26,18 @@ export class PopupService {
           text: cancelText,
           handler: () => {
             console.log('Disagree clicked');
+            if (rejectFunc) {
+              rejectFunc();
+            }
           }
         },
         {
           text: okText,
           handler: () => {
             console.log('Agree clicked');
+            if (confirmFunc) {
+              confirmFunc();
+            }
           }
         }
       ]

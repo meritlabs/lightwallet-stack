@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { WalletsView } from 'merit/wallets/wallets';
+import { VaultsView } from 'merit/vaults/vaults';
 import { MomentModule } from 'angular2-moment';
 import { BwcService } from 'merit/core/bwc.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
@@ -19,6 +20,7 @@ import { AddressBookService } from "merit/shared/address-book/address-book.servi
 @NgModule({
   declarations: [
     WalletsView,
+    VaultsView,
   ],
   /** @DISCUSS what's the best place for app update service? */
   providers: [
