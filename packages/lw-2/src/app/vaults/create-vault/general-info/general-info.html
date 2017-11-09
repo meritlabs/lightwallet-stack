@@ -19,6 +19,13 @@
     <ion-list>
         <ion-item>
             <ion-label translate>Whitelist</ion-label>
+            <ion-select [(ngModel)]="formData.whitelist" okText="Okay" cancelText="Dismiss" multiple="true">
+                <ion-option>Address 1</ion-option>
+                <ion-option>Address 2</ion-option>
+                <ion-option>Address 3</ion-option>
+                <ion-option>Address 4</ion-option>
+                <ion-option>Address 5</ion-option>
+            </ion-select>
         </ion-item>
     </ion-list>
 

@@ -32,6 +32,7 @@ export class CreateVaultGeneralInfoView {
   }
 
   toDeposit() {
+    console.log(this.formData);
     this.createVaultService.updateData(this.formData);
     this.navCtrl.push('CreateVaultDepositView');
   }
