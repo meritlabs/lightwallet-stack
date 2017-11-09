@@ -413,10 +413,7 @@ export class ProfileService {
 
         str = JSON.stringify(c);
 
-        walletClient.import(str, {
-          compressed: opts.compressed,
-          password: opts.password
-        });
+        walletClient.import(str);
       } catch (err) {
         return reject('Could not import. Check input file and spending password'); // TODO getTextCatalog
       }
@@ -534,21 +531,22 @@ export class ProfileService {
       var walletClient = this.bwcService.getClient(null, opts);
       this.logger.debug('Importing Wallet xPrivKey');
 
-      walletClient.importFromExtendedPrivateKey(xPrivKey, opts, (err: any) => {
-        if (err) {
-          if (err instanceof this.errors.NOT_AUTHORIZED) return reject(err);
-          this.bwcErrorService.cb(err, 'Could not import').then((msg: string) => { //TODO getTextCatalog
-            return reject(msg);
-          });
-        } else {
-          this.addAndBindWalletClient(walletClient, {
-            bwsurl: opts.bwsurl
-          }).then((wallet: any) => {
-            return resolve(wallet);
-          }).catch((err: any) => {
-            return reject(err);
-          });
-        };
+      walletClient.importFromExtendedPrivateKey(xPrivKey, opts).then(() => {
+        // this.addAndBindWalletClient(walletClient, {
+        //   bwsurl: opts.bwsurl
+        // }).then((wallet: any) => {
+        //   return resolve(wallet);
+        // }).catch((err: any) => {
+        //   return reject(err);
+        // });
+        return this.addAndBindWalletClient(walletClient, {
+          bwsurl: opts.bwsurl
+        });
+      }).catch((err) => {
+        if (err instanceof this.errors.NOT_AUTHORIZED) {
+          return reject(err);
+        }
+        return reject(this.bwcErrorService.cb(err, 'Could not import'));
       });
     });
   }
@@ -564,18 +562,7 @@ export class ProfileService {
       walletClient.importFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
         account: opts.account || 0,
         derivationStrategy: opts.derivationStrategy || 'BIP44',
-      }, (err: any) => {
-        if (err) {
-
-          // in HW wallets, req key is always the same. They can't addAccess.
-          if (err instanceof this.errors.NOT_AUTHORIZED)
-            err.name = 'WALLET_DOES_NOT_EXIST';
-
-          this.bwcErrorService.cb(err, 'Could not import').then((msg: string) => { //TODO getTextCatalog
-            return reject(msg);
-          });
-
-        }
+      }).then(() => {
 
         this.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
@@ -584,6 +571,12 @@ export class ProfileService {
         }).catch((err: any) => {
           return reject(err);
         });
+      }).catch((err) => {
+        // in HW wallets, req key is always the same. They can't addAccess.
+        if (err instanceof this.errors.NOT_AUTHORIZED)
+          err.name = 'WALLET_DOES_NOT_EXIST';
+
+        return reject (this.bwcErrorService.cb(err, 'Could not import'));
       });
     });
   }
