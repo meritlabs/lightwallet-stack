@@ -1,12 +1,10 @@
 import * as _ from 'lodash';
 const $ = require('preconditions').singleton();
-
 let Bitcore = require('bitcore-lib');
 let Common = require('./common');
-
 let Utils = Common.Utils;
 
-let log = require('./log');
+import { Logger as log } from "./log";
 
 /**
  * @desc Verifier constructor. Checks data given by the server
