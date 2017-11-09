@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 
-import { Client } from './../../../../packages/merit-wallet-client';
+// TODO: Import the NPM package directly. 
+// Depends on creating typings and publishing the pkg.
+import { Client } from './../../../../merit-wallet-client';
 
 @Injectable()
 export class BwcService {
