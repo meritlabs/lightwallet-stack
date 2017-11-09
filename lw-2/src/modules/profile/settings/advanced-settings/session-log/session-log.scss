@@ -1,0 +1,39 @@
+page-session-log {
+
+  .toolbar-background {
+    background: white;
+  }
+
+  ion-col {
+    text-align: center;
+    font-size: 16px;
+    color: #777;
+    font-weight: bold;
+  }
+  ion-range {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: -15px;
+    .range-bar-active {
+      height: 4px !important;
+    }
+  }
+
+  p {
+    font-size: 12px;
+    padding: 5px 10px;
+    color: $label-text-color;
+    margin: 0;
+
+    &.debug { color: darkgray;   }
+    &.info  { color: darkgreen;  }
+    &.warn  { color: darkorange; }
+    &.error { color: darkred;    }
+
+    &:nth-child(1) {
+      margin-top: 5px;
+    }
+  }
+
+
+}

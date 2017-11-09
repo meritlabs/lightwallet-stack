@@ -1,0 +1,11 @@
+.toast-error {
+  .toast-message, .toast-container {
+    background: color($colors, 'danger');
+  }
+}
+
+.toast-message {
+  .toast-message, .toast-container {
+    background: color($colors, 'primary');
+  }
+}

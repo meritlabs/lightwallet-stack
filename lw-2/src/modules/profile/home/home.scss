@@ -1,0 +1,12 @@
+@import "../profile-module";
+page-home {
+  @extend %module-profile;
+
+  ion-navbar img {
+    height: 18px;
+  }
+
+  .add-item .wallet-icon {
+    padding: 0 7px;
+  }
+}

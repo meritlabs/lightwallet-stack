@@ -1,0 +1,32 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title translate>Feedback</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <ion-list >
+
+    <ion-item>
+        <ion-label class="white-space-normal">
+            We're always looking for ways to improve Merit. How could we improve your experience?
+        </ion-label>
+    </ion-item>
+        <ion-item>
+            <textarea fz-elastic [(ngModel)]="text"
+                      [placeholder]="'Your ideas, feedback or comments'"
+            ></textarea>
+        </ion-item>
+
+    </ion-list>
+
+
+
+<div class="control-buttons">
+    <button  (click)="send()" ion-button translate [disabled]="!text">Send</button>
+</div>
+
+</ion-content>

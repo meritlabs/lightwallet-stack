@@ -1,0 +1,21 @@
+<ion-header>
+    <ion-navbar color="secondary">
+        <ion-title translate></ion-title>
+    </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+
+    <ion-card *ngIf="!scannerAvailable" padding>
+        <div translate>
+
+            <div class="icon">
+                <img src="assets/img/qr-code.svg">
+            </div>
+
+            QR Scanner is available only in native applications
+        </div>
+    </ion-card>
+
+</ion-content>
