@@ -1,10 +1,9 @@
 import * as _ from 'lodash';
-import { preconditions as _$ } from 'preconditions';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { EventEmitter } from 'eventemitter3';
 
-const $ = _$.singleton();
+const $ = require('preconditions').singleton();
 let util = require('util');
 let async = require('async');
 let Bitcore = require('bitcore-lib');

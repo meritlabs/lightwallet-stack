@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
-import { preconditions as _$ } from 'preconditions';
-const $ = _$.singleton();
+const $ = require('preconditions').singleton();
 
 let Bitcore = require('bitcore-lib');
 let Common = require('./common');
