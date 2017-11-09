@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as _$ from 'preconditions';
-import * as PayPro from './paypro';
+import { PayPro } from './paypro';
 import * as Verifier from './verifier';
 import { EventEmitter } from 'eventemitter3';
 
