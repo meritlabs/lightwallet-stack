@@ -1,12 +1,12 @@
 import { Promise } from 'bluebird';
 
-module PayPro {
+export module PayPro {
   let $ = require('preconditions').singleton();
   
   let Bitcore = require('bitcore-lib');
   let BitcorePayPro = require('bitcore-payment-protocol');
 
-  let _nodeRequest = (opts, cb): Promise<any> => {
+  let _nodeRequest = (opts, cb) => {
     opts.agent = false;
     let http = opts.httpNode || (opts.proto === 'http' ? require("http") : require("https"));
 
@@ -78,13 +78,13 @@ module PayPro {
 
     let env = opts.env;
     if (!env)
-      env = (process && !process.browser) ? 'node' : 'browser';
+      env = (process && (typeof process === 'object')) ? 'node' : 'browser';
 
     let http;
     return (env == "node") ? _nodeRequest : http = _browserRequest;;
   };
 
-  export let get = (opts): Promise<any> => {
+  export let get = (opts, cb): void => {
     $.checkArgument(opts && opts.url);
 
     let http = _getHttp(opts);
@@ -93,73 +93,71 @@ module PayPro {
       'Content-Type': 'application/octet-stream',
     };
 
-    return new Promise((resolve, renew) => {
-      http(opts, function(err, dataBuffer) {
-        if (err) return cb(err);
-        let request, verified, signature, serializedDetails;
-        try {
-          let body = BitcorePayPro.PaymentRequest.decode(dataBuffer);
-          request = (new BitcorePayPro()).makePaymentRequest(body);
-          signature = request.get('signature');
-          serializedDetails = request.get('serialized_payment_details');
-          // Verify the signature
-          verified = request.verify(true);
-        } catch (e) {
-          return cb(new Error('Could not parse payment protocol: ' + e));
-        }
+    http(opts, function(err, dataBuffer) {
+      if (err) return cb(err);
+      let request, verified, signature, serializedDetails;
+      try {
+        let body = BitcorePayPro.PaymentRequest.decode(dataBuffer);
+        request = (new BitcorePayPro()).makePaymentRequest(body);
+        signature = request.get('signature');
+        serializedDetails = request.get('serialized_payment_details');
+        // Verify the signature
+        verified = request.verify(true);
+      } catch (e) {
+        return cb(new Error('Could not parse payment protocol: ' + e));
+      }
 
-        // Get the payment details
-        let decodedDetails = BitcorePayPro.PaymentDetails.decode(serializedDetails);
-        let pd = new BitcorePayPro();
-        pd = pd.makePaymentDetails(decodedDetails);
+      // Get the payment details
+      let decodedDetails = BitcorePayPro.PaymentDetails.decode(serializedDetails);
+      let pd = new BitcorePayPro();
+      pd = pd.makePaymentDetails(decodedDetails);
 
-        let outputs = pd.get('outputs');
-        if (outputs.length > 1)
-          return cb(new Error('Payment Protocol Error: Requests with more that one output are not supported'))
+      let outputs = pd.get('outputs');
+      if (outputs.length > 1)
+        return cb(new Error('Payment Protocol Error: Requests with more that one output are not supported'))
 
-        let output = outputs[0];
+      let output = outputs[0];
 
-        let amount = output.get('amount').toNumber();
-        let network = pd.get('network') == 'test' ? 'testnet' : 'livenet';
+      let amount = output.get('amount').toNumber();
+      let network = pd.get('network') == 'test' ? 'testnet' : 'livenet';
 
-        // We love payment protocol
-        let offset = output.get('script').offset;
-        let limit = output.get('script').limit;
+      // We love payment protocol
+      let offset = output.get('script').offset;
+      let limit = output.get('script').limit;
 
-        // NOTE: For some reason output.script.buffer
-        // is only an ArrayBuffer
-        let buffer = new Buffer(new Uint8Array(output.get('script').buffer));
-        let scriptBuf = buffer.slice(offset, limit);
-        let addr = new Bitcore.Address.fromScript(new Bitcore.Script(scriptBuf), network);
+      // NOTE: For some reason output.script.buffer
+      // is only an ArrayBuffer
+      let buffer = new Buffer(new Uint8Array(output.get('script').buffer));
+      let scriptBuf = buffer.slice(offset, limit);
+      let addr = new Bitcore.Address.fromScript(new Bitcore.Script(scriptBuf), network);
 
-        let md = pd.get('merchant_data');
+      let md = pd.get('merchant_data');
 
-        if (md) {
-          md = md.toString();
-        }
+      if (md) {
+        md = md.toString();
+      }
 
-        let ok = verified.verified;
-        let caName;
+      let ok = verified.verified;
+      let caName;
 
-        if (verified.isChain) {
-          ok = ok && verified.chainVerified;
-        }
+      if (verified.isChain) {
+        ok = ok && verified.chainVerified;
+      }
 
-        return cb(null, {
-          verified: ok,
-          caTrusted: verified.caTrusted,
-          caName: verified.caName,
-          selfSigned: verified.selfSigned,
-          expires: pd.get('expires'),
-          memo: pd.get('memo'),
-          time: pd.get('time'),
-          merchant_data: md,
-          toAddress: addr.toString(),
-          amount: amount,
-          network: network,
-          domain: opts.host,
-          url: opts.url,
-        });
+      return cb(null, {
+        verified: ok,
+        caTrusted: verified.caTrusted,
+        caName: verified.caName,
+        selfSigned: verified.selfSigned,
+        expires: pd.get('expires'),
+        memo: pd.get('memo'),
+        time: pd.get('time'),
+        merchant_data: md,
+        toAddress: addr.toString(),
+        amount: amount,
+        network: network,
+        domain: opts.host,
+        url: opts.url,
       });
     });
   };
