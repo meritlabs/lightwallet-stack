@@ -18,7 +18,12 @@ import * as Bitcore from 'bitcore-lib';
 export class MeritClient extends Client {
   // I'm not sure that there is any benefit to doing this in the constructor 
   // vs right in the class.  
+
   public Verifier:any = Verifier;
   public Utils: any = Utils;
   public sjcl: any = sjcl;
+
+  constructor(opts:any = {}) {
+    super(opts);
+  }
 }
