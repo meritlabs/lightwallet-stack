@@ -55,7 +55,7 @@ export class API extends EventEmitter {
   private privateKeyEncryptionOpts: any = {
     iter: 10000
   };
-  private credentials: any;
+  public credentials: any; // TODO: Make private with getters/setters
   private notificationIncludeOwn: boolean;
   private log: any;
   private lastNotificationId: string;
@@ -1881,4 +1881,11 @@ export class API extends EventEmitter {
 
     return this._doPutRequest('/v1/copayers/' + copayerId + '/', opts);
   };
+
+  // Ensure that an address is in a valid format, and that it has been beaconed on the blockchain.
+  validateAddress(address, network): Promise<any> {
+    const url = `/v1/addresses/${address}/validate/${network}`;
+    return this._doGetRequest(url);
+  };
+
 }
