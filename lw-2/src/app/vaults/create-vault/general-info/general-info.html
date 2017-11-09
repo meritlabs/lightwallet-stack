@@ -12,7 +12,7 @@
     <ion-list margin-top>
         <ion-item>
             <ion-label translate>Vault name</ion-label>
-            <ion-input text-right [placeholder]="'My Vault'" [(ngModel)]="formData.vaultName" (change)="checkNextAvailable()"></ion-input>
+            <ion-input text-right [placeholder]="'My Vault'" [(ngModel)]="formData.vaultName" (ngModelChange)="checkNextAvailable()"></ion-input>
         </ion-item>
     </ion-list>
 
