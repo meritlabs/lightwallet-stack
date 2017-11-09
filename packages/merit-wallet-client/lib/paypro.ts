@@ -1,23 +1,22 @@
-var $ = require('preconditions').singleton();
+import { Promise } from 'bluebird';
 
-var Bitcore = require('bitcore-lib');
-var BitcorePayPro = require('bitcore-payment-protocol');
+module PayPro {
+  let $ = require('preconditions').singleton();
+  
+  let Bitcore = require('bitcore-lib');
+  let BitcorePayPro = require('bitcore-payment-protocol');
 
-
-export class PayPro {
-  constructor(){}
-
-  private _nodeRequest = (opts, cb) => {
+  let _nodeRequest = (opts, cb): Promise<any> => {
     opts.agent = false;
-    var http = opts.httpNode || (opts.proto === 'http' ? require("http") : require("https"));
+    let http = opts.httpNode || (opts.proto === 'http' ? require("http") : require("https"));
 
-    var fn = opts.method == 'POST' ? 'post' : 'get';
+    let fn = opts.method == 'POST' ? 'post' : 'get';
 
     http[fn](opts, function(res) {
       if (res.statusCode != 200)
         return cb(new Error('HTTP Request Error'));
 
-      var data = []; // List of Buffer objects
+      let data:any = []; // List of Buffer objects
       res.on("data", function(chunk) {
         data.push(chunk); // Append Buffer object
       });
@@ -28,19 +27,19 @@ export class PayPro {
     });
   };
 
-  private _browserRequest = (opts, cb) => {
-    var method = (opts.method || 'GET').toUpperCase();
-    var url = opts.url;
-    var req = opts;
+  let _browserRequest = (opts, cb) => {
+    let method = (opts.method || 'GET').toUpperCase();
+    let url = opts.url;
+    let req = opts;
 
     req.headers = req.headers || {};
     req.body = req.body || req.data || '';
 
-    var xhr = opts.xhr || new XMLHttpRequest();
+    let xhr = opts.xhr || new XMLHttpRequest();
     xhr.open(method, url, true);
 
     Object.keys(req.headers).forEach(function(key) {
-      var val = req.headers[key];
+      let val = req.headers[key];
       if (key === 'Content-Length') return;
       if (key === 'Content-Transfer-Encoding') return;
       xhr.setRequestHeader(key, val);
@@ -48,12 +47,12 @@ export class PayPro {
     xhr.responseType = 'arraybuffer';
 
     xhr.onload = (event) => {
-      var response = xhr.response;
+      let response = xhr.response;
       return cb(null, new Uint8Array(response));
     };
 
     xhr.onerror = (event) => {
-      var status;
+      let status;
       if (xhr.status === 0 || !xhr.statusText) {
         status = 'HTTP Request Error';
       } else {
@@ -69,108 +68,110 @@ export class PayPro {
     }
   };
 
-  private _getHttp = (opts) => {
-    var match = opts.url.match(/^((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/);
+  let _getHttp = (opts) => {
+    let match = opts.url.match(/^((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/);
 
     opts.proto = RegExp.$2;
     opts.host = RegExp.$3;
     opts.path = RegExp.$4 + RegExp.$6;
     if (opts.http) return opts.http;
 
-    var env = opts.env;
+    let env = opts.env;
     if (!env)
       env = (process && !process.browser) ? 'node' : 'browser';
 
     let http;
-    return (env == "node") ? this._nodeRequest : http = this._browserRequest;;
+    return (env == "node") ? _nodeRequest : http = _browserRequest;;
   };
 
-  public get = (opts, cb) => {
+  export let get = (opts): Promise<any> => {
     $.checkArgument(opts && opts.url);
 
-    var http = this._getHttp(opts);
+    let http = _getHttp(opts);
     opts.headers = opts.headers || {
       'Accept': BitcorePayPro.PAYMENT_REQUEST_CONTENT_TYPE,
       'Content-Type': 'application/octet-stream',
     };
 
-    http(opts, function(err, dataBuffer) {
-      if (err) return cb(err);
-      var request, verified, signature, serializedDetails;
-      try {
-        var body = BitcorePayPro.PaymentRequest.decode(dataBuffer);
-        request = (new BitcorePayPro()).makePaymentRequest(body);
-        signature = request.get('signature');
-        serializedDetails = request.get('serialized_payment_details');
-        // Verify the signature
-        verified = request.verify(true);
-      } catch (e) {
-        return cb(new Error('Could not parse payment protocol: ' + e));
-      }
+    return new Promise((resolve, renew) => {
+      http(opts, function(err, dataBuffer) {
+        if (err) return cb(err);
+        let request, verified, signature, serializedDetails;
+        try {
+          let body = BitcorePayPro.PaymentRequest.decode(dataBuffer);
+          request = (new BitcorePayPro()).makePaymentRequest(body);
+          signature = request.get('signature');
+          serializedDetails = request.get('serialized_payment_details');
+          // Verify the signature
+          verified = request.verify(true);
+        } catch (e) {
+          return cb(new Error('Could not parse payment protocol: ' + e));
+        }
 
-      // Get the payment details
-      var decodedDetails = BitcorePayPro.PaymentDetails.decode(serializedDetails);
-      var pd = new BitcorePayPro();
-      pd = pd.makePaymentDetails(decodedDetails);
+        // Get the payment details
+        let decodedDetails = BitcorePayPro.PaymentDetails.decode(serializedDetails);
+        let pd = new BitcorePayPro();
+        pd = pd.makePaymentDetails(decodedDetails);
 
-      var outputs = pd.get('outputs');
-      if (outputs.length > 1)
-        return cb(new Error('Payment Protocol Error: Requests with more that one output are not supported'))
+        let outputs = pd.get('outputs');
+        if (outputs.length > 1)
+          return cb(new Error('Payment Protocol Error: Requests with more that one output are not supported'))
 
-      var output = outputs[0];
+        let output = outputs[0];
 
-      var amount = output.get('amount').toNumber();
-      var network = pd.get('network') == 'test' ? 'testnet' : 'livenet';
+        let amount = output.get('amount').toNumber();
+        let network = pd.get('network') == 'test' ? 'testnet' : 'livenet';
 
-      // We love payment protocol
-      var offset = output.get('script').offset;
-      var limit = output.get('script').limit;
+        // We love payment protocol
+        let offset = output.get('script').offset;
+        let limit = output.get('script').limit;
 
-      // NOTE: For some reason output.script.buffer
-      // is only an ArrayBuffer
-      var buffer = new Buffer(new Uint8Array(output.get('script').buffer));
-      var scriptBuf = buffer.slice(offset, limit);
-      var addr = new Bitcore.Address.fromScript(new Bitcore.Script(scriptBuf), network);
+        // NOTE: For some reason output.script.buffer
+        // is only an ArrayBuffer
+        let buffer = new Buffer(new Uint8Array(output.get('script').buffer));
+        let scriptBuf = buffer.slice(offset, limit);
+        let addr = new Bitcore.Address.fromScript(new Bitcore.Script(scriptBuf), network);
 
-      var md = pd.get('merchant_data');
+        let md = pd.get('merchant_data');
 
-      if (md) {
-        md = md.toString();
-      }
+        if (md) {
+          md = md.toString();
+        }
 
-      var ok = verified.verified;
-      var caName;
+        let ok = verified.verified;
+        let caName;
 
-      if (verified.isChain) {
-        ok = ok && verified.chainVerified;
-      }
+        if (verified.isChain) {
+          ok = ok && verified.chainVerified;
+        }
 
-      return cb(null, {
-        verified: ok,
-        caTrusted: verified.caTrusted,
-        caName: verified.caName,
-        selfSigned: verified.selfSigned,
-        expires: pd.get('expires'),
-        memo: pd.get('memo'),
-        time: pd.get('time'),
-        merchant_data: md,
-        toAddress: addr.toString(),
-        amount: amount,
-        network: network,
-        domain: opts.host,
-        url: opts.url,
+        return cb(null, {
+          verified: ok,
+          caTrusted: verified.caTrusted,
+          caName: verified.caName,
+          selfSigned: verified.selfSigned,
+          expires: pd.get('expires'),
+          memo: pd.get('memo'),
+          time: pd.get('time'),
+          merchant_data: md,
+          toAddress: addr.toString(),
+          amount: amount,
+          network: network,
+          domain: opts.host,
+          url: opts.url,
+        });
       });
     });
   };
 
 
-  _getPayProRefundOutputs = (addrStr, amount) => {
+  let _getPayProRefundOutputs = (addrStr, amount) => {
     amount = amount.toString(10);
 
-    var output = new BitcorePayPro.Output();
-    var addr = new Bitcore.Address(addrStr);
+    let output = new BitcorePayPro.Output();
+    let addr = new Bitcore.Address(addrStr);
 
-    var s;
+    let s;
     if (addr.isPayToPublicKeyHash()) {
       s = Bitcore.Script.buildPublicKeyHashOut(addr);
     } else if (addr.isPayToScriptHash()) {
@@ -186,8 +187,8 @@ export class PayPro {
   };
 
 
-  _createPayment = (merchant_data, rawTx, refundAddr, amountMicros) => {
-    var pay = new BitcorePayPro();
+  let _createPayment = (merchant_data, rawTx, refundAddr, amountMicros) => {
+    let pay = new BitcorePayPro();
     pay = pay.makePayment();
 
     if (merchant_data) {
@@ -195,10 +196,10 @@ export class PayPro {
       pay.set('merchant_data', merchant_data);
     }
 
-    var txBuf = new Buffer(rawTx, 'hex');
+    let txBuf = new Buffer(rawTx, 'hex');
     pay.set('transactions', [txBuf]);
 
-    var refund_outputs = this._getPayProRefundOutputs(refundAddr, amountMicros);
+    let refund_outputs = _getPayProRefundOutputs(refundAddr, amountMicros);
     if (refund_outputs)
       pay.set('refund_to', refund_outputs);
 
@@ -207,25 +208,25 @@ export class PayPro {
     // pay.set('memo', options.memo);
 
     pay = pay.serialize();
-    var buf = new ArrayBuffer(pay.length);
-    var view = new Uint8Array(buf);
-    for (var i = 0; i < pay.length; i++) {
+    let buf = new ArrayBuffer(pay.length);
+    let view = new Uint8Array(buf);
+    for (let i = 0; i < pay.length; i++) {
       view[i] = pay[i];
     }
 
     return view;
   };
 
-  send = (opts, cb) => {
+  export let send = (opts, cb) => {
     $.checkArgument(opts.merchant_data)
       .checkArgument(opts.url)
       .checkArgument(opts.rawTx)
       .checkArgument(opts.refundAddr)
       .checkArgument(opts.amountMicros);
 
-    var payment = this._createPayment(opts.merchant_data, opts.rawTx, opts.refundAddr, opts.amountMicros);
+    let payment = _createPayment(opts.merchant_data, opts.rawTx, opts.refundAddr, opts.amountMicros);
 
-    var http = this._getHttp(opts);
+    let http = _getHttp(opts);
     opts.method = 'POST';
     opts.headers = opts.headers || {
       'Accept': BitcorePayPro.PAYMENT_ACK_CONTENT_TYPE,
@@ -236,12 +237,12 @@ export class PayPro {
 
     http(opts, function(err, rawData) {
       if (err) return cb(err);
-      var memo;
+      let memo;
       if (rawData) {
         try {
-          var data = BitcorePayPro.PaymentACK.decode(rawData);
-          var pp = new BitcorePayPro();
-          var ack = pp.makePaymentACK(data);
+          let data = BitcorePayPro.PaymentACK.decode(rawData);
+          let pp = new BitcorePayPro();
+          let ack = pp.makePaymentACK(data);
           memo = ack.get('memo');
         } catch (e) {};
       }
