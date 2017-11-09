@@ -13,6 +13,7 @@ export class PlatformService {
   ua: string;
   isMobile: boolean;
   isDevel: boolean;
+  supportsLedger:boolean;
 
   constructor(private platform: Platform, private log: Logger) {
     let chrome: any;
@@ -34,6 +35,7 @@ export class PlatformService {
     this.isNW = this.isNodeWebkit();
     this.isMobile = platform.is('mobile');
     this.isDevel = !this.isMobile && !this.isNW;
+    this.supportsLedger = window.chrome && chrome.runtime && chrome.runtime && !this.isNW;
   }
 
   getBrowserName(): string {

@@ -145,36 +145,49 @@ export class WalletsView {
    * checks if pending easyreceive exists and if so, open it
    */
   private processEasyReceive() {
-    this.easyReceiveService.getPendingReceipt().then((receipt) => {
-      if (receipt) {
-        let checkPass = receipt.checkPassword;
-        this.showEasyReceiveModal(receipt, checkPass);
+    this.easyReceiveService.getPendingReceipts().then((receipts) => {
+      if (receipts[0]) {
+        let checkPass = receipts[0].checkPassword;
+        this.showEasyReceiveModal(receipts[0], checkPass);
+        
       }
     });
   }
 
-  private showEasyReceiveModal = (receipt:EasyReceipt, checkPassword:boolean) => {
-    let inputs = checkPassword ?  [{name: 'password', placeholder: 'Enter password',type: 'password'}] : [];
+  //todo change this
+  // should be two methods
+  // validating receipt in blockchain, with ignore button which just removes data from storage
+  // and receiving popup with cancel button that returns tx to the sender
+  private showEasyReceiveModal = (receipt:EasyReceipt, checkPassword)  => {
+    let inputs = checkPassword ? [{name: 'password', placeholder: 'Enter password',type: 'password'}] : [];
 
     this.alertController.create({
       title: `You've got merit from ${receipt.senderName}!`,
       inputs: inputs,
       buttons: [
-        {text: 'Cancel', role: 'cancel', handler: () => {
+        {text: 'Ignore', role: 'cancel', handler: () => {
           this.logger.info('You have declined easy receive');
-          this.rejectEasyReceipt(receipt);
-        }
-        },
-        {text: "Ok", handler: (data) => {
-          if (!data.password) {
-            this.showEasyReceiveModal(receipt, checkPassword);
-          } else {
-            this.acceptEasyReceipt(receipt, data.password);
+            this.easyReceiveService.deletePendingReceipt(receipt);
           }
-        }}
+        },
+        {text: 'Validate', handler: (data) => {
+          if (checkPassword && !data.password) {
+            this.showEasyReceiveModal(receipt, checkPassword); //the only way we can validate password input by the moment 
+          } else {
+            this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, data.password).then((data) => {
+                if (!data) {
+                  this.showEasyReceiveModal(receipt, checkPassword);
+                } else {
+                  // this.s(data, receipt);
+                  // todo show confirm 
+                }
+            });
+           }
+          }
+        }
       ]
-    }).present();
-  };
+    });
+  }
 
   private acceptEasyReceipt(receipt:EasyReceipt, password:string) {
 
@@ -203,9 +216,12 @@ export class WalletsView {
 
   }
 
-  private rejectEasyReceipt(receipt:EasyReceipt) {
+  private rejectEasyReceipt(receipt:EasyReceipt, data) {
     // todo reject
-    this.easyReceiveService.rejectEasyReceipt(receipt);
+    this.profileService.getWallets().then((wallets) => {
+        let wallet = wallets[0];
+        this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data);
+    });
   }
 
   private calculateNetworkAmount(wallets:Array<Wallet>) {

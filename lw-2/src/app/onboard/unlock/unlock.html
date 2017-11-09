@@ -4,18 +4,44 @@
 
     <div class="container">
 
-        <div class="title" translate>
-            Merit is an invite-only network.
+        <div *ngIf="!easyReceiveMode">
+
+            <div class="title" translate>
+                Merit is an invite-only network.
+            </div>
+            <div class="text" translate>
+                Merit is controlling its growth and looking out for the long-term.
+            </div>
+            <div class="image"  translate>
+                <div class="illustration control"></div>
+            </div>
+            <div class="text" translate>
+                You'll need an unlock code from a friend or colleague.
+            </div>
+
         </div>
-        <div class="text" translate>
-            Merit is controlling its growth and looking out for the long-term.
+
+       <div *ngIf="easyReceiveMode">
+
+                <img src='assets/img/logo-negative.svg' id="logo" />
+                
+                <div class="title" translate>
+                    You've got Merit!
+                </div>
+
+                <div class="text" translate>
+                    {{easyReceiveParams.senderName ? easyReceiveParams.senderName : 'Someone'}} 
+                    sent you 
+                    <strong>{{easyReceiveParams.amount ? easyReceiveParams.amount : ''}}</strong> 
+                    Merit.
+                </div>
+
+                <div class="text">
+                        All you have to do is setup an account, and you'll be able to accept it into your Merit wallet.
+                </div>
+
         </div>
-        <div class="image"  translate>
-            <div class="illustration control"></div>
-        </div>
-        <div class="text" translate>
-            You'll need an unlock code from a friend or colleague.
-        </div>
+
         <form class="bottom-buttons" (ngSubmit)="createAndUnlockWallet()">
             <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
                 [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
