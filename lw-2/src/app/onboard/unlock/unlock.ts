@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, App, LoadingController, ToastController, NavController } from 'ionic-angular';
+import { IonicPage, App, LoadingController, ToastController, NavController, NavParams } from 'ionic-angular';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ToastConfig } from "merit/core/toast.config";
 import { Promise } from 'bluebird';
@@ -18,13 +18,25 @@ export class UnlockView {
   public unlockState:'success'|'fail';
   public formData = {unlockCode: ''};
 
+  public easyReceiveMode:boolean;
+  public easyReceiveParams: {senderName:string, amount:number, unlockCode:string};
+
   constructor(
     private app:App,
     private walletService: WalletService,
     private toastCtrl: ToastController,
     private loaderCtrl: LoadingController, 
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private NavParams:NavParams
   ) {
+      
+      this.easyReceiveParams = this.NavParams.get('easyReceive');
+      this.easyReceiveParams = {senderName: 'Mock User', amount: 10, unlockCode: '12345'}; //todo temp  
+      if (this.easyReceiveParams) {
+        this.easyReceiveMode = true;
+        this.formData.unlockCode = this.easyReceiveParams.unlockCode;
+      }
+
   }
 
   ionViewDidLoad() {

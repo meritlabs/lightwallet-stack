@@ -13,6 +13,9 @@ import { OnboardingView } from 'merit/onboard/onboarding.view';
 import { FingerprintLockView } from 'merit/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
 import { DeepLinkService } from 'merit/core/deep-link.service';
+
+import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
+
 import { Promise } from 'bluebird'; 
 
 
@@ -32,10 +35,33 @@ export class MeritLightWallet {
     private modalCtrl: ModalController,
     private appService: AppService,
     private configService: ConfigService,
-    private deepLinkService: DeepLinkService
+    private deepLinkService: DeepLinkService,
+    private easyReceiveService: EasyReceiveService
   ) {
 
-    this.initializeApp();
+    Promise.longStackTraces();
+    process.on('unhandledRejection', console.log.bind(console));      
+
+    this.platform.ready().then((readySource) => {
+        this.appService.getInfo().then((appInfo) => {
+          this.logger.info(`
+            platform ready (${readySource}): -v ${appInfo.version} # ${appInfo.commitHash}
+        `);
+        });  
+
+        this.initializeApp();
+    });
+
+    this.platform.resume.subscribe(() => {
+      this.deepLinkService.getBranchData().then((data) => {
+        if (data) {
+          this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt) => {
+            //todo send event?
+          });
+        }
+      }); 
+    })
+
   }
 
   /*
@@ -43,45 +69,32 @@ export class MeritLightWallet {
      load and bind the persisted profile (if it exists).
   */ 
   private initializeApp() {
-    
-    this.platform.ready().then((readySource) => {
-      this.appService.getInfo().then((appInfo) => {
-        this.logger.info(
-          'platform ready (' + readySource + '): ' +
-          appInfo.nameCase +
-          ' - v' + appInfo.version +
-          ' #' + appInfo.commitHash);
-  
-        if (this.platform.is('cordova')) {
-          this.statusBar.styleLightContent();
-          this.splashScreen.hide();
-        }
-        Promise.longStackTraces();
-        process.on('unhandledRejection', console.log.bind(console))      
-        // Check Profile
-        this.profileService.loadAndBindProfile().then((profile: any) => {
-          
-          this.openLockModal();
-          if (profile) {
-            this.rootComponent = 'TransactView';
+
+      this.profileService.getProfile().then((profile) => {
+        this.deepLinkService.getBranchData().then((data) => {
+
+          if (data) {
+            this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt) => { 
+              this.rootComponent = (profile.credentials && profile.credentials.length) ?
+                 'TransactView' : 'UnlockView';
+            }).catch(() => {
+              this.rootComponent = (profile.credentials && profile.credentials.length) ?
+                 'TransactView' : 'OnboardingView';
+            });
           } else {
-            //this.profileService.createProfile();
-            this.rootComponent = 'OnboardingView';
+            this.rootComponent = (profile.credentials && profile.credentials.length) ?
+             'TransactView' : 'OnboardingView';
           }
-        }).catch((err: any) => {
-          this.logger.warn(err);
-          //TODO: Send them somewhere better.
-          this.rootComponent = 'OnboardingView';
+
         });
       });
-    });
 
-    this.platform.resume.subscribe(() => {
-      this.deepLinkService.branchInit();
-    });
+      if (this.platform.is('cordova')) {
+        this.statusBar.styleLightContent();
+        this.splashScreen.hide();
+      }
 
   }
-
 
   private openLockModal() {
     let config: any = this.configService.get();

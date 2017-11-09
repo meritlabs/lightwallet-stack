@@ -31,6 +31,8 @@ import { MomentModule } from 'angular2-moment';
 import { ConfigService } from 'merit/shared/config.service';
 import {MeritToastController} from "merit/core/toast.controller";
 
+import { DeepLinkService } from "merit/core/deep-link.service";
+import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 
 /* 
   The core module exists to make commonly used singleton services available 
@@ -42,31 +44,6 @@ import {MeritToastController} from "merit/core/toast.controller";
 export function createTranslateLoader(http: Http) {
     return new TranslatePoHttpLoader(http, 'assets/i18n', '.po');
   }
- 
-// @NgModule({
-//     imports: [
-//         CommonModule,
-//         TransactModule,
-//         HttpModule,
-//         TranslateModule.forRoot({
-//                 loader: {
-//                     provide: TranslateLoader,
-//                     useFactory: createTranslateLoader,
-//                     deps: [Http]
-//                 }
-//         })        
-//     ],
-//     exports: [],
-//     declarations: [
-//     ],
-//     providers: [
-//         Logger,
-//         StatusBar,
-//         SplashScreen,
-//         BwcService,
-//         BwcError, 
-//     ]
-// }) 
 
   // Ideally, we can remove the transaction dependency.
 @NgModule({ 
@@ -94,6 +71,7 @@ export function createTranslateLoader(http: Http) {
         PopupService,
         SpinnerService,
         MeritToastController, 
+        DeepLinkService,
         {
             provide: PersistenceService,
             useFactory: persistenceServiceFactory,
@@ -106,19 +84,15 @@ export function createTranslateLoader(http: Http) {
         TxFormatService,
         AppService,
         ConfigService,
-        AndroidFingerprintAuth, 
+        AndroidFingerprintAuth,
         TouchID, 
-        TouchIdService,  
-        //   {
-        //       provide: TouchIdService,
-        //   deps: [TouchID],
-        //   multi: false
-        //   } 
+        TouchIdService, 
+        EasyReceiveService, 
         {
             provide: APP_INITIALIZER,
-            useFactory: (app: AppService) => () => app.load(),
+            useFactory: (app: AppService) => () => app.getInfo(),
             deps: [AppService, LanguageService],
-            multi: true
+            multi: true 
         }
     ]
 })
