@@ -1,30 +1,31 @@
 import * as _ from 'lodash';
 import * as _$ from 'preconditions';
-const $ = _$.singleton();
-import util = require('util');
-import async = require('async');
-import { EventEmitter } from 'eventemitter3';
-import Bitcore = require('bitcore-lib');
-import Mnemonic = require('bitcore-mnemonic');
-import sjcl = require('sjcl');
-import url = require('url');
-import querystring = require('querystring');
-import Stringify = require('json-stable-stringify');
-import Bip38 = require('bip38');
-
-import request = require('superagent');
-
-import Common = require('./common');
-import Constants = Common.Constants;
-import Defaults = Common.Defaults;
-import Utils = Common.Utils;
-
 import * as PayPro from './paypro';
-import log = require('./log');
-import Credentials = require('./credentials');
 import * as Verifier from './verifier';
-import Package = require('../package.json');
-import Errors = require('./errors');
+import { EventEmitter } from 'eventemitter3';
+
+const $ = _$.singleton();
+let util = require('util');
+let async = require('async');
+let Bitcore = require('bitcore-lib');
+let Mnemonic = require('bitcore-mnemonic');
+let sjcl = require('sjcl');
+let url = require('url');
+let querystring = require('querystring');
+let Stringify = require('json-stable-stringify');
+let Bip38 = require('bip38');
+
+let request = require('superagent');
+
+let Common = require('./common');
+let Constants = Common.Constants;
+let Defaults = Common.Defaults;
+let Utils = Common.Utils;
+
+let log = require('./log');
+let Credentials = require('./credentials');
+let Package = require('../package.json');
+let Errors = require('./errors');
 
 import { Promise } from 'bluebird';
 
@@ -66,7 +67,7 @@ export class API extends EventEmitter {
   constructor(opts: InitOptions) {
     super();
     this.request = opts.request || request;
-    this.baseUrl = opts.baseUrl || this.BASE_URL;
+    this.baseUrl = opts.baseUrl || API.BASE_URL;
     this.payProHttp = null; // Only for testing
     this.doNotVerifyPayPro = opts.doNotVerifyPayPro;
     this.timeout = opts.timeout || 50000;
@@ -112,7 +113,7 @@ export class API extends EventEmitter {
       
       return this.getNotifications(opts).then((notifications: any) => {
         if (notifications.length > 0) {
-          this.lastNotificationId = _.last(notifications).id;
+          this.lastNotificationId = (_.last(notifications) as any).id;
         }
 
         _.each(notifications, function(notification) {
@@ -122,7 +123,7 @@ export class API extends EventEmitter {
 
   }
     
-  _initNotifications(opts?: any = {}): any {
+  _initNotifications(opts: any = {}): any {
     var interval = opts.notificationIntervalSeconds || 5;
     this.notificationsIntervalId = setInterval(function() {
       this._fetchLatestNotifications(interval, function(err) {
@@ -654,7 +655,7 @@ export class API extends EventEmitter {
     });
   };
 
-  buildTxFromPrivateKey(privateKey, destinationAddress, opts?: any = {}): Promise<any> {
+  buildTxFromPrivateKey(privateKey, destinationAddress, opts: any = {}): Promise<any> {
 
     return new Promise((resolve, reject) => {
       
@@ -945,11 +946,11 @@ export class API extends EventEmitter {
   };
 
 
-  private _login(cb): Promise<any> {
+  private _login(): Promise<any> {
     return this._doPostRequest('/v1/login', {});
   };
 
-  private _logout(cb): Promise<any> {
+  private _logout(): Promise<any> {
     return this._doPostRequest('/v1/logout', {});
   };
 
@@ -960,7 +961,6 @@ export class API extends EventEmitter {
    * @param {Object} method
    * @param {String} url
    * @param {Object} args
-   * @param {Callback} cb
    */
   private _doRequestWithLogin(method, url, args): Promise<any> {
 
