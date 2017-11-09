@@ -22,7 +22,6 @@ export class CreateVaultSummaryView {
 
   ionViewDidLoad() {
     let data = this.createVaultService.getData();
-    console.log('in view', data);
     this.formData.vaultName = data.vaultName;
     this.formData.whitelist = data.whitelist;
     this.formData.amountToDeposit = data.amountToDeposit;
