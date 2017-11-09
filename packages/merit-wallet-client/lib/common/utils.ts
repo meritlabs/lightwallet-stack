@@ -1,7 +1,7 @@
 'use strict';
 
 import * as _ from 'lodash';
-import * as _$ from 'preconditions';
+import { preconditions as _$ } from 'preconditions';
 const $ = _$.singleton();
 import * as sjcl from 'sjcl';
 import * as Stringify from 'json-stable-stringify';
