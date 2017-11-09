@@ -621,13 +621,6 @@
     });
   };
 
-  validateAddress(address, network): Promise<any> {
-    const url = `/v1/addresses/${address}/validate/${network}`;
-    this._doGetRequest(url, function(err, result) {
-      if (err || !result) return cb(err);
-      return cb(null, result);
-    });
-  };
 
 
   referralTxConfirmationSubscribe(opts): Promise<any> {
