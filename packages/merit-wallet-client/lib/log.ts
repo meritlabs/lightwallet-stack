@@ -38,12 +38,15 @@ export class Logger {
     'fatal': 5
   };
 
-  constructor() {
+  private constructor() {
+    this.name = "Merit Log";
+    this.level = DEFAULT_LOG_LEVEL;
+
     _.each(this.levels, function(level, levelName) {
       if (levelName === 'silent') { // dont create a log.silent() method
         return;
       }
-      Logger[levelName] = function() {
+      this[levelName] = function() {
         if (this.level === 'silent') {
           return;
         }
@@ -55,12 +58,12 @@ export class Logger {
             Error.stackTraceLimit = 2;
             var stack;
 
-            // this hack is to be compatible with IE11
-            try {
-              anerror();
-            } catch (e) {
-              stack = e.stack;
-            }
+            // // this hack is to be compatible with IE11
+            // try {
+            //   anerror();
+            // } catch (e) {
+            //   stack = e.stack;
+            // }
             var lines = stack.split('\n');
             var caller = lines[2];
             caller = ':' + caller.substr(6);
@@ -83,6 +86,7 @@ export class Logger {
       };
     });
   }
+
   /**
    * @desc
    * Sets the level of a logger. A level can be any bewteen: 'debug', 'info', 'log',
@@ -131,5 +135,15 @@ export class Logger {
    * @desc Log messages at the fatal level.
    * @param {*} args - the arguments to be logged.
    */
+
+   /**
+   * @desc
+   * Return singleton
+   *
+   * @param {string} level - the name of the logging level
+   */
+  public singleton = function(level) {
+    return (this._instance || new Logger());
+  };
 
 }
