@@ -33,24 +33,19 @@ export class CreateVaultGeneralInfoView {
   }
 
   async ionViewDidLoad() {
-    Promise.all([
-      (() => {
-        let data = this.createVaultService.getData();
-        this.formData.vaultName = data.vaultName;
-        this.formData.whitelist = data.whitelist;
-      })(),
-      (() => {
-        this.updateAllWallets().then((wallets) => {
-          this.whitelistCandidates.concat(wallets);
-        });
-      })(),
-      (() => {
-        this.updateAllWVaults().then((vaults) => {
-          this.whitelistCandidates.concat(vaults);
-        });
-      })(),
-    ]);
-    
+    let data = this.createVaultService.getData();
+    this.formData.vaultName = data.vaultName;
+    this.formData.whitelist = data.whitelist;
+
+    // fetch users wallets
+    this.updateAllWallets().then((wallets) => {
+      this.whitelistCandidates.concat(wallets);
+    });
+
+    // fetch users vaults
+    this.updateAllWVaults().then((vaults) => {
+      this.whitelistCandidates.concat(vaults);
+    });
   }
 
   toDeposit() {
@@ -58,16 +53,11 @@ export class CreateVaultGeneralInfoView {
     this.navCtrl.push('CreateVaultDepositView');
   }
 
-  private async updateAllWallets() {
-    let wallets = await this.profileService.getWallets();
-    console.log(wallets);
-    return await Promise.all(_.map(wallets, async (wallet:any) => {
-      wallet.status = await this.walletService.getStatus(wallet);
-      return wallet; 
-    }));
+  private updateAllWallets() {
+    return this.profileService.getWallets();
   }
 
-  private async updateAllWVaults() {
+  private updateAllWVaults() {
     return new Promise((resolve, reject) => {
       resolve([]);
     });
