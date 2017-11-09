@@ -2,6 +2,9 @@ import * as _ from 'lodash';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { EventEmitter } from 'eventemitter3';
+import { Common } from './common';
+import { Logger as log } from "./log";
+
 
 const $ = require('preconditions').singleton();
 let util = require('util');
@@ -16,12 +19,10 @@ let Bip38 = require('bip38');
 
 let request = require('superagent');
 
-let Common = require('./common');
 let Constants = Common.Constants;
 let Defaults = Common.Defaults;
 let Utils = Common.Utils;
 
-let log = require('./log');
 let Credentials = require('./credentials');
 let Package = require('../package.json');
 let Errors = require('./errors');
