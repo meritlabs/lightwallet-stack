@@ -1,7 +1,7 @@
 export module Common {
 
-let Constants = require('./constants');
-let Defaults = require('./defaults');
-let Utils = require('./utils');
+export let Constants = require('./constants');
+export let Defaults = require('./defaults');
+export let Utils = require('./utils');
 
 }
