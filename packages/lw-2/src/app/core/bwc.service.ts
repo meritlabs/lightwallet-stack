@@ -9,8 +9,9 @@ export class BwcService {
   private BWC: any;
   public buildTx: any; // = BWC.buildTx;
   public parseSecret: any; // = BWC.parseSecret;
-  constructor(opts: any = {}) {
-    this.BWC = Client.getInstance(opts);
+  
+  constructor() {
+    this.BWC = this.getClient(null, null);
     this.buildTx = this.BWC.buildTx;
     this.parseSecret = this.BWC.parseSecret;
     console.log('Hello BwcService Service');
@@ -32,7 +33,7 @@ export class BwcService {
     return this.BWC.Utils;
   }
 
-  getClient(walletData, opts) {
+  public getClient(walletData, opts:any = {}) {
     opts = opts || {};
 
     //note opts use `bwsurl` all lowercase;
