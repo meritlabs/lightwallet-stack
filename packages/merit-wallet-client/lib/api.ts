@@ -5,7 +5,6 @@ import { EventEmitter } from 'eventemitter3';
 import { Common } from './common';
 import { Logger } from "./log";
 import { Credentials } from './credentials';
-import { BwcError as Errors } from './errors';
 
 const log = Logger.getInstance();
 const $ = require('preconditions').singleton();
@@ -18,6 +17,7 @@ let url = require('url');
 let querystring = require('querystring');
 let Stringify = require('json-stable-stringify');
 let Bip38 = require('bip38');
+let Errors = require('./errors');
 
 let request = require('superagent');
 
