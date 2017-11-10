@@ -5,7 +5,7 @@ const Bitcore = require('bitcore-lib');
 const Mnemonic = require('bitcore-mnemonic');
 const sjcl = require('sjcl');
 
-const Common = require('./common');
+import { Common } from './common';
 const Constants = Common.Constants;
 const Utils = Common.Utils;
 
