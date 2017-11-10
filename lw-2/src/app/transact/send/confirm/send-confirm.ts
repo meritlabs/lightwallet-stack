@@ -78,6 +78,8 @@ export class SendConfirmView {
     this.updateTx(this.txp, this.wallet, {}).then(() => {
       // TODO: Handle easySend here
       this.logger.log('SendConfirmView updatedTx', this.txp)
+    }).catch((err) => {
+      this.logger.error('There was an error in updateTx:', err);
     });
   }
 
@@ -93,7 +95,8 @@ export class SendConfirmView {
   // TODO: implement
   private refresh(): void {}
 
-  private updateTx(tx, wallet, opts): Promise<any> {
+  private updateTx(tx, wallet, opts): Promise<void> {
+    this.logger.log('updateTx called', tx, wallet);
 
     if (opts.clearCache) {
       tx.txp = {};
@@ -119,35 +122,35 @@ export class SendConfirmView {
     // End of quick refresh, before wallet is selected.
     if (!wallet) return Promise.resolve();
 
-    this.feeService.getFeeRate(tx.network, tx.feeLevel).then((feeRate) => {
+    return this.feeService.getFeeRate(wallet.network, this.configFeeLevel).then((feeRate) => {
 
       if (tx.usingCustomFee) tx.feeRate = feeRate;
       tx.feeLevelName = this.feeService.feeOpts[tx.feeLevel];
 
-      if (!wallet) return Promise.resolve();
+      if (!wallet) return;
 
       // txp already generated for this wallet?
       if (tx.txp[wallet.id]) {
         this.refresh();
-        return Promise.resolve();
+        return;
       }
 
-      this.getTxp(_.clone(tx), wallet, opts.dryRun).then((txpOut) => {
+      return this.getTxp(_.clone(tx), wallet, opts.dryRun);
+    }).then((txpOut) => {
 
-        txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
-        this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
-          txpOut.alternativeFeeStr = v;
-        });
-
-        let per = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
-        txpOut.feeRatePerStr = per.toFixed(2) + '%';
-        txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
-
-        tx.txp[wallet.id] = txpOut;
-        this.logger.debug('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
-        this.refresh();
-        return Promise.resolve();
+      txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
+      this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
+        txpOut.alternativeFeeStr = v;
       });
+
+      let per = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
+      txpOut.feeRatePerStr = per.toFixed(2) + '%';
+      txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
+
+      tx.txp[wallet.id] = txpOut;
+      this.logger.debug('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
+      this.refresh();
+      return;
     });
   }
 
@@ -182,7 +185,7 @@ export class SendConfirmView {
             return this.walletService.onlyPublish(wallet, ctxp);
           }
   
-          this.walletService.publishAndSign(wallet, ctxp).then(() => {
+          return this.walletService.publishAndSign(wallet, ctxp).then(() => {
             this.notificationService.subscribe(wallet, ctxp);
           });
         };

@@ -26,6 +26,10 @@ export class FeeService {
       custom: 'Custom'
     };
     this.CACHE_TIME_TS = 60;
+    this.cache = {
+      updateTs: 0,
+      data: {}
+    };
   }
 
   getFeeOptValues(): Array<string> {
@@ -37,16 +41,19 @@ export class FeeService {
   };
 
   getFeeRate(network: string, feeLevel: string): Promise<any> {
+    this.logger.log('getFeeRate called', network, feeLevel);
     if (feeLevel == 'custom') return Promise.resolve();
     let self = this;
 
     network = network || 'livenet';
 
     return this.getFeeLevel(network).then((levels) => {
+      this.logger.log('gotFeeLevel', levels)
       var feeLevelRate: any = _.find(levels.data[network], {
         level: feeLevel
       });
       if (!feeLevelRate || !feeLevelRate.feePerKb) {
+        this.logger.error('failed in getFeeLevel', feeLevelRate)
         return Promise.reject({
           message: `Could not get dynamic fee for level: ${feeLevel} on network ${network}`
         });
@@ -73,16 +80,10 @@ export class FeeService {
     };
     const walletClient = this.bwcService.getClient(null, opts);
 
-    walletClient.getFeeLevels(network, function(err, level) {
-      if (err) {
-        return Promise.reject({message: 'Could not get dynamic fee'});
-      }
-
+    return Promise.promisify(walletClient.getFeeLevels)(network).then((level) => {
       this.cache.updateTs = Date.now();
-      this.cache.data = this.cache.data || {};
       this.cache.data[network] = level;
-
-      return Promise.resolve({data: this.cache.data, fromCache: false});
+      return {data: this.cache.data, fromCache: false};
     });
   };
 }
