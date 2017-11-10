@@ -4,7 +4,9 @@ let Bitcore = require('bitcore-lib');
 let Common = require('./common');
 let Utils = Common.Utils;
 
-import { Logger as log } from "./log";
+import { Logger } from "./log";
+const log = Logger.getInstance();
+
 
 /**
  * @desc Verifier constructor. Checks data given by the server

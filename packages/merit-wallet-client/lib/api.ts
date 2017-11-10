@@ -3,9 +3,9 @@ import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { EventEmitter } from 'eventemitter3';
 import { Common } from './common';
-import { Logger as log } from "./log";
+import { Logger } from "./log";
 
-
+const log = Logger.getInstance();
 const $ = require('preconditions').singleton();
 let util = require('util');
 let async = require('async');
