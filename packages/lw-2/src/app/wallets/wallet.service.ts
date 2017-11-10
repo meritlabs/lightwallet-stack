@@ -15,6 +15,8 @@ import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { Promise } from 'bluebird';
+import { MeritWalletClient } from './../../../../merit-wallet-client';
+
 
 import * as _ from 'lodash';
 import {Wallet} from "./wallet.model";
@@ -1403,25 +1405,19 @@ export class WalletService {
             singleAddress: opts.singleAddress,
             walletPrivKey: opts.walletPrivKey,
             beacon: opts.unlockCode
-          }, (err: any, secret: any) => {
-            if (err) {
-              this.bwcErrorService.cb(err, 'Error creating wallet').then((msg: string) => { //TODO getTextCatalog
-                return reject(msg);
-              });
-            } else {
+          }).then((secret: any) => {
               // TODO: Subscribe to ReferralTxConfirmation
               return resolve(walletClient);
-            }
           });
         }).catch((err: any) => {
-          return reject(err);
+          return reject(this.bwcErrorService.cb(err, 'Error creating wallet'));
         });
       }, 5000);
     });
   }
 
   // TODO: Rename this.  
-  private seedWallet(opts: any): Promise<any> {
+  private seedWallet(opts: any): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
 
       opts = opts ? opts : {};
