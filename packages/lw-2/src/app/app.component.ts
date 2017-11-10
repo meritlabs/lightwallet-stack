@@ -12,7 +12,6 @@ import { TransactView } from 'merit/transact/transact';
 import { OnboardingView } from 'merit/onboard/onboarding.view';
 import { FingerprintLockView } from 'merit/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
-import { DeepLinkService } from 'merit/core/deep-link.service';
 import { Promise } from 'bluebird'; 
 
 
@@ -31,8 +30,7 @@ export class MeritLightWallet {
     private logger: Logger,
     private modalCtrl: ModalController,
     private appService: AppService,
-    private configService: ConfigService,
-    private deepLinkService: DeepLinkService
+    private configService: ConfigService
   ) {
 
     this.initializeApp();
@@ -73,11 +71,6 @@ export class MeritLightWallet {
         this.rootComponent = 'OnboardingView';
       });
     });
-
-    this.platform.resume.subscribe(() => {
-      this.deepLinkService.branchInit();
-    });
-
   }
 
 
