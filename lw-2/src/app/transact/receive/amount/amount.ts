@@ -38,7 +38,7 @@ export class ReceiveAmountView {
     ];
     this.formData.currency = this.availableCurrencies[0];
 
-    let unitToMicro = settings.unitToSatoshi;
+    let unitToMicro = settings.unitToMicro;
     let microToUnit = 1 / unitToMicro;
     let microsToMrt = 1 / 100000000;
     let unitDecimals = settings.unitDecimals;
