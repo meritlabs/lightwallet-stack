@@ -79,7 +79,7 @@ export class WalletsView {
     return this.wallets;
   }
 
-  public async ionViewDidLoad() {
+  public async ionViewDidLoad() { 
 
     this.registerListeners();
 
@@ -134,8 +134,7 @@ export class WalletsView {
     });
 
     this.events.subscribe('easyReceiveEvent', (e, receipt:EasyReceipt) => {
-      let checkPass = receipt.checkPassword;
-      this.showEasyReceiveModal(receipt, checkPass);
+      this.processEasyReceive();
     });
 
   }
@@ -147,81 +146,128 @@ export class WalletsView {
   private processEasyReceive() {
     this.easyReceiveService.getPendingReceipts().then((receipts) => {
       if (receipts[0]) {
-        let checkPass = receipts[0].checkPassword;
-        this.showEasyReceiveModal(receipts[0], checkPass);
-        
+
+        this.easyReceiveService.validateEasyReceiptOnBlockchain(receipts[0], '').then((data) => {
+          if (data) {
+            this.showConfirmEasyReceivePrompt(receipts[0], data);
+          } else { //requires password
+            this.showPasswordEasyReceivePrompt(receipts[0]);
+          }
+        });
+
       }
     });
   }
 
-  //todo change this
-  // should be two methods
-  // validating receipt in blockchain, with ignore button which just removes data from storage
-  // and receiving popup with cancel button that returns tx to the sender
-  private showEasyReceiveModal = (receipt:EasyReceipt, checkPassword)  => {
-    let inputs = checkPassword ? [{name: 'password', placeholder: 'Enter password',type: 'password'}] : [];
+  private showPasswordEasyReceivePrompt(receipt:EasyReceipt, highlightInvalidInput = false) {
+
+    console.log('show alert', highlightInvalidInput); 
 
     this.alertController.create({
       title: `You've got merit from ${receipt.senderName}!`,
-      inputs: inputs,
+      cssClass: highlightInvalidInput ? 'invalid-input-prompt' : '', 
+      inputs:  [{name: 'password', placeholder: 'Enter password',type: 'password'}],
       buttons: [
         {text: 'Ignore', role: 'cancel', handler: () => {
           this.logger.info('You have declined easy receive');
-            this.easyReceiveService.deletePendingReceipt(receipt);
+            this.easyReceiveService.deletePendingReceipt(receipt).then(() => {
+              this.processEasyReceive();
+            });
           }
         },
         {text: 'Validate', handler: (data) => {
-          if (checkPassword && !data.password) {
-            this.showEasyReceiveModal(receipt, checkPassword); //the only way we can validate password input by the moment 
+          if (!data || !data.password) {
+            this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the moment 
           } else {
             this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, data.password).then((data) => {
-                if (!data) {
-                  this.showEasyReceiveModal(receipt, checkPassword);
+                if (!data) { // incorrect
+                  this.showPasswordEasyReceivePrompt(receipt, true);
                 } else {
-                  // this.s(data, receipt);
-                  // todo show confirm 
+                  this.showConfirmEasyReceivePrompt(receipt, data);
                 }
             });
            }
           }
         }
       ]
+    }).present(); 
+  }
+
+  private showConfirmEasyReceivePrompt(receipt:EasyReceipt, data) {
+  
+    this.alertController.create({
+      title: `You've got ${data.txn.amount} Merit!`,
+      buttons: [
+        {text: 'Reject', role: 'cancel', handler: () => {
+            this.rejectEasyReceipt(receipt, data).then(() => {
+                this.processEasyReceive();
+            });
+          }
+        },
+        {text: 'Accept', handler: () => { 
+          this.acceptEasyReceipt(receipt, data).then(() => {
+            this.processEasyReceive();
+        });
+        }}
+      ]
     });
   }
 
-  private acceptEasyReceipt(receipt:EasyReceipt, password:string) {
 
-    this.getWallets().then((wallets) => {
+  private acceptEasyReceipt(receipt:EasyReceipt, data:any):Promise<any> {
 
-      let wallet = wallets[0];
-      let forceNewAddress = false;
-      this.walletService.getAddress(wallet, forceNewAddress).then((address) => {
+    return new Promise((resolve, reject) => {
+      
+      this.getWallets().then((wallets) => {
+        
+          let wallet = wallets[0];
+          if (!wallet) return reject('no wallet');
+          let forceNewAddress = false;
+          this.walletService.getAddress(wallet, forceNewAddress).then((address) => {
 
-        let input = 1;
-        this.easyReceiveService.acceptEasyReceipt(receipt, wallet , input, address).catch((err) => {
-          this.toastCtrl.create({
-            message: err,
-            cssClass: ToastConfig.CLASS_ERROR
+            this.easyReceiveService.acceptEasyReceipt(receipt, wallet , data, address).then((acceptanceTx) => {
+                this.logger.info('accepted easy send', acceptanceTx);
+                resolve();
+            });
+    
+          }).catch((err) => {
+            this.toastCtrl.create({
+              message: "There was an error getting the Merit",
+              cssClass: ToastConfig.CLASS_ERROR
+            });
+            reject(); 
           });
-        })
-
-      }).catch((err) => {
-        this.toastCtrl.create({
-          message: err,
-          cssClass: ToastConfig.CLASS_ERROR
-        });
+        
       });
 
     });
-
   }
 
-  private rejectEasyReceipt(receipt:EasyReceipt, data) {
-    // todo reject
-    this.profileService.getWallets().then((wallets) => {
-        let wallet = wallets[0];
-        this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data);
+  private rejectEasyReceipt(receipt:EasyReceipt, data):Promise<any> {
+    
+    return new Promise((resolve, reject) => {
+      
+      this.profileService.getWallets().then((wallets) => {
+        
+           //todo implement wallet selection UI 
+          let wallet = wallets[0];
+          if (!wallet) return reject('no wallet'); 
+  
+          this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data).then(() => {
+              this.logger.info('Easy send returned');
+              resolve(); 
+          }).catch(() => {
+              this.toastCtrl.create({
+                  message: 'There was an error rejecting the Merit',
+                  cssClass: ToastConfig.CLASS_ERROR
+              }).present();
+              reject(); 
+          });
+    
+        });
     });
+
+   
   }
 
   private calculateNetworkAmount(wallets:Array<Wallet>) {

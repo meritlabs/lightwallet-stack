@@ -2,9 +2,7 @@
 
 <ion-content fullscreen>
 
-    <div class="container">
-
-        <div *ngIf="!easyReceiveMode">
+    <div class="container"  *ngIf="!easyReceipt">
 
             <div class="title" translate>
                 Merit is an invite-only network.
@@ -19,39 +17,54 @@
                 You'll need an unlock code from a friend or colleague.
             </div>
 
-        </div>
-
-       <div *ngIf="easyReceiveMode">
-
-                <img src='assets/img/logo-negative.svg' id="logo" />
-                
-                <div class="title" translate>
-                    You've got Merit!
-                </div>
-
-                <div class="text" translate>
-                    {{easyReceiveParams.senderName ? easyReceiveParams.senderName : 'Someone'}} 
-                    sent you 
-                    <strong>{{easyReceiveParams.amount ? easyReceiveParams.amount : ''}}</strong> 
-                    Merit.
-                </div>
-
-                <div class="text">
-                        All you have to do is setup an account, and you'll be able to accept it into your Merit wallet.
-                </div>
-
-        </div>
 
         <form class="bottom-buttons" (ngSubmit)="createAndUnlockWallet()">
-            <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
-                [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
-                [(ngModel)]="formData.unlockCode" name="unlockCode">
-            <button type="submit" ion-button icon-only translate>
-                <ion-icon name="arrow-forward"></ion-icon>
-            </button>
-        </form>
+                <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
+                    [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
+                    [(ngModel)]="formData.unlockCode" name="unlockCode">
+                <button type="submit" ion-button icon-only translate>
+                    <ion-icon name="arrow-forward"></ion-icon>
+                </button>
+            </form>
+        
 
     </div>
+
+    <div *ngIf="easyReceipt" class="container">
+        
+        <img src='assets/img/logo-negative.svg' id="logo" />
+    
+        <div class="title" translate>
+            You've got Merit!!
+        </div>
+
+        <div class="text" translate>
+            {{easyReceipt.senderName ? easyReceipt.senderName : 'Someone'}} 
+            sent you 
+            <strong>{{easyReceipt.amount ? easyReceipt.amount : ''}}</strong> 
+            Merit.
+        </div>
+
+        <div [style.flex]="1"></div>
+
+        <div class="text">
+            Now you need to enter unlock code to setup your account and accept Merit. 
+        </div>
+
+
+        <form class="bottom-buttons" (ngSubmit)="createAndUnlockWallet()">
+                <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
+                    [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
+                    [(ngModel)]="formData.unlockCode" name="unlockCode">
+                <button type="submit" ion-button icon-only translate>
+                    <ion-icon name="arrow-forward"></ion-icon>
+                </button>
+        </form> 
+            
+
+    </div>
+
+      
 
 
 </ion-content>

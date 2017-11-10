@@ -86,7 +86,9 @@ export class PersistenceService {
     return new Promise((resolve, reject) => {
       this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
         if (!receipts) receipts = [];
-        receipts = receipts.filter((r) => {r != receipt}) // prevent storing of the same receipt twice
+        receipts = receipts.filter((r) => {
+          JSON.stringify(r) != JSON.stringify(receipt)
+        }) // prevent storing of the same receipt twice
         receipts.push(receipt)
         this.storage.set(Keys.EASY_RECEIPTS, receipts).then(() => {
           resolve();
@@ -104,7 +106,11 @@ export class PersistenceService {
     return new Promise((resolve, reject) => {
         this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
           if (!receipts) receipts = [];
-          this.storage.set(Keys.EASY_RECEIPTS, receipts.filter((r) => r != receipt)).then(() => {
+
+
+          this.storage.set(Keys.EASY_RECEIPTS, receipts.filter((r) => {
+            JSON.stringify(r) != JSON.stringify(receipt)
+          })).then(() => {
             resolve();
           })
         });

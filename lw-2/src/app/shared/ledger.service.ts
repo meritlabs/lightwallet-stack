@@ -22,9 +22,10 @@ export class LedgerService {
     public hexToArray(s) {
         var bstr = new ByteString(s, GP.HEX).toBuffer();
         var a = new Uint8Array(bstr.length);
+
         Array.prototype.forEach.call(bstr, 
           function (ch, i) { 
-            a[i] = ch.charCodeAt(0);
+            a[i] = (ch+'').charCodeAt(0);
           });
   
         return a;

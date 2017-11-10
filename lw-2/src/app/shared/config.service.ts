@@ -32,6 +32,7 @@ interface Config {
         alternativeName: string;
         alternativeIsoCode: string;
         defaultLanguage: string;
+        feeLevel:string; 
       };
   };
 

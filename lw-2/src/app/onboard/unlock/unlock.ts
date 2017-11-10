@@ -3,6 +3,8 @@ import { IonicPage, App, LoadingController, ToastController, NavController, NavP
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ToastConfig } from "merit/core/toast.config";
 import { Promise } from 'bluebird';
+import { EasyReceiveService } from "merit/easy-receive/easy-receive.service";
+import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 
 
 // Unlock view for wallet
@@ -18,8 +20,7 @@ export class UnlockView {
   public unlockState:'success'|'fail';
   public formData = {unlockCode: ''};
 
-  public easyReceiveMode:boolean;
-  public easyReceiveParams: {senderName:string, amount:number, unlockCode:string};
+  public easyReceipt:EasyReceipt;
 
   constructor(
     private app:App,
@@ -27,23 +28,23 @@ export class UnlockView {
     private toastCtrl: ToastController,
     private loaderCtrl: LoadingController, 
     private navCtrl: NavController,
-    private NavParams:NavParams
+    private NavParams:NavParams,
+    private easyReceiveService:EasyReceiveService
   ) {
       
-      this.easyReceiveParams = this.NavParams.get('easyReceive');
-      this.easyReceiveParams = {senderName: 'Mock User', amount: 10, unlockCode: '12345'}; //todo temp  
-      if (this.easyReceiveParams) {
-        this.easyReceiveMode = true;
-        this.formData.unlockCode = this.easyReceiveParams.unlockCode;
-      }
-
   }
 
   ionViewDidLoad() {
-    //do something here
+    
+    this.easyReceiveService.getPendingReceipts().then((receipts) => {
+      this.easyReceipt = receipts.pop();
+      if (this.easyReceipt) this.formData.unlockCode = this.easyReceipt.unlockCode;
+    });
+
   }
 
   createAndUnlockWallet(): Promise<any> {
+    
     return new Promise((resolve, reject) => {
 
       if (!this.formData.unlockCode) {
