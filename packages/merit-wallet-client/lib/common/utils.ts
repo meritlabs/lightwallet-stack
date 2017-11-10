@@ -15,22 +15,22 @@ let encoding = Bitcore.encoding;
 import { Constants } from './constants';
 import { Defaults } from './defaults';
 
-export class Utils {
+export module Utils {
 
 
-  public SJCL:any  = {};
+  let SJCL:any  = {};
 
-  public encryptMessage = function(message, encryptingKey) {
-    var key = sjcl.codec.base64.toBits(encryptingKey);
+  export const encryptMessage = function(message, encryptingKey) {
+    let key = sjcl.codec.base64.toBits(encryptingKey);
     return sjcl.encrypt(key, message, _.defaults({
       ks: 128,
       iter: 1,
     }, this.SJCL));
   };
 
-  public decryptMessage = function(cyphertextJson, encryptingKey) {
+  export const  decryptMessage = function(cyphertextJson, encryptingKey) {
     try {
-      var key = sjcl.codec.base64.toBits(encryptingKey);
+      let key = sjcl.codec.base64.toBits(encryptingKey);
       return sjcl.decrypt(key, cyphertextJson);
     } catch (ex) {
       return cyphertextJson;
@@ -39,53 +39,53 @@ export class Utils {
 
   /* TODO: It would be nice to be compatible with meritd signmessage. How
   * the hash is calculated there? */
-  public hashMessage = function(text) {
+  export const  hashMessage = function(text) {
     $.checkArgument(text);
-    var buf = new Buffer(text);
-    var ret = crypto.Hash.sha256sha256(buf);
+    let buf = new Buffer(text);
+    let ret = crypto.Hash.sha256sha256(buf);
     ret = new Bitcore.encoding.BufferReader(ret).readReverse();
     return ret;
   };
 
 
-  public signMessage = function(text, privKey) {
+  export const  signMessage = function(text, privKey) {
     $.checkArgument(text);
-    var priv = new PrivateKey(privKey);
-    var hash = this.hashMessage(text);
+    let priv = new PrivateKey(privKey);
+    let hash = this.hashMessage(text);
     return crypto.ECDSA.sign(hash, priv, 'little').toString();
   };
 
 
-  public verifyMessage = function(text, signature, pubKey) {
+  export const  verifyMessage = function(text, signature, pubKey) {
     $.checkArgument(text);
     $.checkArgument(pubKey);
 
     if (!signature)
       return false;
 
-    var pub = new PublicKey(pubKey);
-    var hash = this.hashMessage(text);
+    let pub = new PublicKey(pubKey);
+    let hash = this.hashMessage(text);
 
     try {
-      var sig = new crypto.Signature.fromString(signature);
+      let sig = new crypto.Signature.fromString(signature);
       return crypto.ECDSA.verify(hash, sig, pub, 'little');
     } catch (e) {
       return false;
     }
   };
 
-  public privateKeyToAESKey = function(privKey) {
+  export const  privateKeyToAESKey = function(privKey) {
     $.checkArgument(privKey && _.isString(privKey));
     $.checkArgument(Bitcore.PrivateKey.isValid(privKey), 'The private key received is invalid');
-    var pk = Bitcore.PrivateKey.fromString(privKey);
+    let pk = Bitcore.PrivateKey.fromString(privKey);
     return Bitcore.crypto.Hash.sha256(pk.toBuffer()).slice(0, 16).toString('base64');
   };
 
-  public getCopayerHash = function(name, xPubKey, requestPubKey) {
+  export const  getCopayerHash = function(name, xPubKey, requestPubKey) {
     return [name, xPubKey, requestPubKey].join('|');
   };
 
-  public getProposalHash = function(proposalHeader) {
+  export const  getProposalHash = function(proposalHeader) {
     function getOldHash(toAddress, amount, message, payProUrl) {
       return [toAddress, amount, (message || ''), (payProUrl || '')].join('|');
     };
@@ -98,15 +98,15 @@ export class Utils {
     return Stringify(proposalHeader);
   };
 
-  public deriveAddress = function(scriptType, publicKeyRing, path, m, network) {
+  export const  deriveAddress = function(scriptType, publicKeyRing, path, m, network) {
     $.checkArgument(_.includes(_.values(Constants.SCRIPT_TYPES), scriptType));
 
-    var publicKeys = _.map(publicKeyRing, function(item: any) {
-      var xpub = new Bitcore.HDPublicKey(item.xPubKey);
+    let publicKeys = _.map(publicKeyRing, function(item: any) {
+      let xpub = new Bitcore.HDPublicKey(item.xPubKey);
       return xpub.deriveChild(path).publicKey;
     });
 
-    var bitcoreAddress;
+    let bitcoreAddress;
     switch (scriptType) {
       case Constants.SCRIPT_TYPES.P2SH:
         bitcoreAddress = Address.createMultisig(publicKeys, m, network);
@@ -124,41 +124,41 @@ export class Utils {
     };
   };
 
-  public xPubToCopayerId = function(xpub) {
-    var hash = sjcl.hash.sha256.hash(xpub);
+  export const  xPubToCopayerId = function(xpub) {
+    let hash = sjcl.hash.sha256.hash(xpub);
     return sjcl.codec.hex.fromBits(hash);
   };
 
-  public signRequestPubKey = function(requestPubKey, xPrivKey) {
-    var priv = new Bitcore.HDPrivateKey(xPrivKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).privateKey;
+  export const  signRequestPubKey = function(requestPubKey, xPrivKey) {
+    let priv = new Bitcore.HDPrivateKey(xPrivKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).privateKey;
     return this.signMessage(requestPubKey, priv);
   };
 
-  public verifyRequestPubKey = function(requestPubKey, signature, xPubKey) {
-    var pub = (new Bitcore.HDPublicKey(xPubKey)).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
+  export const  verifyRequestPubKey = function(requestPubKey, signature, xPubKey) {
+    let pub = (new Bitcore.HDPublicKey(xPubKey)).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
     return this.verifyMessage(requestPubKey, signature, pub.toString());
   };
 
-  public formatAmount = function(micros, unit, opts) {
+  export const  formatAmount = function(micros, unit, opts) {
     $.shouldBeNumber(micros);
     $.checkArgument(_.includes(_.keys(Constants.UNITS), unit));
 
     function clipDecimals(number, decimals) {
-      var x = number.toString().split('.');
-      var d = (x[1] || '0').substring(0, decimals);
+      let x = number.toString().split('.');
+      let d = (x[1] || '0').substring(0, decimals);
       return parseFloat(x[0] + '.' + d);
     };
 
     function addSeparators(nStr, thousands, decimal, minDecimals) {
       nStr = nStr.replace('.', decimal);
-      var x = nStr.split(decimal);
-      var x0 = x[0];
-      var x1 = x[1];
+      let x = nStr.split(decimal);
+      let x0 = x[0];
+      let x1 = x[1];
 
       x1 = _.dropRightWhile(x1, function(n, i) {
         return n == '0' && i >= minDecimals;
       }).join('');
-      var x2 = x.length > 1 ? decimal + x1 : '';
+      let x2 = x.length > 1 ? decimal + x1 : '';
 
       x0 = x0.replace(/\B(?=(\d{3})+(?!\d))/g, thousands);
       return x0 + x2;
@@ -166,14 +166,14 @@ export class Utils {
 
     opts = opts || {};
 
-    var u = Constants.UNITS[unit];
-    var precision = opts.fullPrecision ? 'full' : 'short';
-    var amount = clipDecimals((micros / u.toMicros), u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
+    let u = Constants.UNITS[unit];
+    let precision = opts.fullPrecision ? 'full' : 'short';
+    let amount = clipDecimals((micros / u.toMicros), u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
     return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u[precision].minDecimals);
   };
 
-  public buildTx = function(txp) {
-    var t = new Bitcore.Transaction();
+  export const  buildTx = function(txp) {
+    let t = new Bitcore.Transaction();
 
     $.checkState(_.includes(_.values(Constants.SCRIPT_TYPES), txp.addressType));
 
@@ -209,7 +209,7 @@ export class Utils {
 
     // Shuffle outputs for improved privacy
     if (t.outputs.length > 1) {
-      var outputOrder = _.reject(txp.outputOrder, function(order) {
+      let outputOrder = _.reject(txp.outputOrder, function(order) {
         return order >= t.outputs.length;
       });
       $.checkState(t.outputs.length == outputOrder.length);
@@ -221,10 +221,10 @@ export class Utils {
     }
 
     // Validate inputs vs outputs independently of Bitcore
-    var totalInputs = _.reduce(txp.inputs, function(memo, i) {
+    let totalInputs = _.reduce(txp.inputs, function(memo, i) {
       return +i.micros + memo;
     }, 0);
-    var totalOutputs = _.reduce(t.outputs, function(memo, o) {
+    let totalOutputs = _.reduce(t.outputs, function(memo, o) {
       return +o.micros + memo;
     }, 0);
 
