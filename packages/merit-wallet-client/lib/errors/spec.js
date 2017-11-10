@@ -1,6 +1,4 @@
-'use strict';
-
-var errorSpec = [{
+export const errorSpec: {name: string, message: string}[] = [{
   name: 'INVALID_BACKUP',
   message: 'Invalid Backup.'
 }, {
@@ -71,4 +69,3 @@ var errorSpec = [{
   message: 'Maximum number of consecutive addresses without activity reached.'
 }];
 
-module.exports = errorSpec;
