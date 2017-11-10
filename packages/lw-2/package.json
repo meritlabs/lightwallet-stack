@@ -61,7 +61,7 @@
     "sw-toolbox": "3.6.0",
     "ts-md5": "^1.2.2",
     "zone.js": "0.8.18",
-    "bitcore-lib": "^0.14.0",
+    "bitcore-lib": "^0.15.0",
     "bitcore-mnemonic": "^1.2.5",
     "bitcore-payment-protocol": "^1.2.2",
     "eventemitter3": "^2.0.3",
