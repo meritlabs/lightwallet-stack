@@ -17,20 +17,14 @@ export class DeepLinkService {
 
   public getBranchData():Promise<any> {
   
-    return new Promise((resolve, reject) => {
       if (!this.platform.is('cordova')) { 
-        this.logger.warn('branch deeplinking is available on native devices only');
-        return resolve(); 
+          this.logger.warn('branch deeplinking is available on native devices only');
+          return Promise.resolve();
+      } else {
+        const Branch = window['Branch'];
+        return Branch.initSession();
       }
-      const Branch = window['Branch'];
-      Branch.initSession(data => {
-        if (data['+clicked_branch_link']) {
-          resolve(data);
-        } else {
-          resolve();
-        }
-      });
-    });
+
 
   }
 
