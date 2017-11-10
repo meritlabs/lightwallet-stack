@@ -969,8 +969,8 @@ export class WalletService {
 // create and store a wallet
   public createWallet(opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.doCreateWallet(opts).then((walletClient: any) => {
-        this.profileService.addAndBindWalletClient(walletClient, {
+      return this.doCreateWallet(opts).then((walletClient: any) => {
+        return this.profileService.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
         }).then((wallet: any) => {
           return resolve(wallet);
@@ -1096,7 +1096,7 @@ export class WalletService {
       opts.n = 1;
       opts.networkName = 'testnet';
       opts.unlockCode = unlockCode;
-      this.createWallet(opts).then((wallet: any) => {
+      return this.createWallet(opts).then((wallet: any) => {
         return resolve(wallet);
       }).catch((err) => {
         return reject(err);
@@ -1394,7 +1394,7 @@ export class WalletService {
       
       this.logger.debug('Creating Wallet:', showOpts);
       setTimeout(() => {
-        this.seedWallet(opts).then((walletClient: any) => {
+        return this.seedWallet(opts).then((walletClient: any) => {
           
           let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
           let myName = opts.myName || 'me'; // TODO GetTextCatalog
@@ -1428,7 +1428,8 @@ export class WalletService {
         try {
           // TODO: Type the walletClient
           this.mnemonicService.seedFromMnemonic(opts, walletClient).then((walletClient: any) => {
-            resolve(walletClient)});
+            return resolve(walletClient)
+          });
         } catch (ex) {
           this.logger.info(ex);
           return reject('Could not create: Invalid wallet recovery phrase'); // TODO getTextCatalog
@@ -1485,7 +1486,7 @@ export class WalletService {
   // todo its a mock now!!
   getWalletAnv(wallet:Wallet):Promise<number> {
     return new Promise((resolve, reject) => {
-      resolve(
+      return resolve(
        (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
       )
     });
