@@ -18,10 +18,20 @@ let DEFAULT_LOG_LEVEL = 'silent';
  * @constructor
  */
 
+interface LoggerWithLevels {
+  silent(message: string, ...supportingDetails: any[]): void;
+  debug(message: string, ...supportingDetails: any[]): void;
+  info(message: string, ...supportingDetails: any[]): void;
+  log(message: string, ...supportingDetails: any[]): void;
+  warn(message: string, ...supportingDetails: any[]): void;
+  error(message: string, ...supportingDetails: any[]): void;
+  fatal(message: string, ...supportingDetails: any[]): void;
+ }
 
-export class Logger {
- private name: string;
- private level: string;
+export class Logger implements LoggerWithLevels {
+  private static _instance: Logger; 
+  private name: string;
+  private level: string;
 
   public getLevels = function() {
     return this.levels;
@@ -38,53 +48,84 @@ export class Logger {
     'fatal': 5
   };
 
+  public silent(message: string, ...supportingDetails: any[]): void {
+    this.logMessage('silent', message)
+  }
+
+  /**
+   * @class Logger
+   * @method debug
+   * @desc Log messages at the debug level.
+   * @param {*} args - the arguments to be logged.
+   */
+  public debug(message: string, ...supportingDetails: any[]): void {
+    this.logMessage('silent', message)
+  }
+
+  public log(message: string, ...supportingDetails: any[]): void {
+    this.logMessage('silent', message)
+  }
+
+  /**
+   * @class Logger
+   * @method info
+   * @desc Log messages at the info level.
+   * @param {*} args - the arguments to be logged.
+   */
+  public info(message: string, ...supportingDetails: any[]): void {
+    this.logMessage('silent', message)
+  }
+
+  public warn(message: string, ...supportingDetails: any[]): void {
+    this.logMessage('silent', message)
+  }
+
+  public error(message: string, ...supportingDetails: any[]): void {
+    this.logMessage('silent', message)
+  }
+
+  public fatal(message: string, ...supportingDetails: any[]): void {
+    this.logMessage('silent', message)
+  }
+
   private constructor() {
     this.name = "Merit Log";
     this.level = DEFAULT_LOG_LEVEL;
 
-    _.each(this.levels, function(level, levelName) {
-      if (levelName === 'silent') { // dont create a log.silent() method
-        return;
-      }
-      this[levelName] = function() {
-        if (this.level === 'silent') {
-          return;
-        }
-
-        if (level >= this.levels[this.level]) {
-
-          if (Error.stackTraceLimit && this.level == 'debug') {
-            var old = Error.stackTraceLimit;
-            Error.stackTraceLimit = 2;
-            var stack;
-
-            // // this hack is to be compatible with IE11
-            // try {
-            //   anerror();
-            // } catch (e) {
-            //   stack = e.stack;
-            // }
-            var lines = stack.split('\n');
-            var caller = lines[2];
-            caller = ':' + caller.substr(6);
-            Error.stackTraceLimit = old;
-          }
-
-          var str = '[' + levelName + (caller || '') + '] ' + arguments[0],
-            extraArgs,
-            extraArgs = [].slice.call(arguments, 1);
-          if (console[levelName]) {
-            extraArgs.unshift(str);
-            console[levelName].apply(console, extraArgs);
-          } else {
-            if (extraArgs.length) {
-              str += JSON.stringify(extraArgs);
-            }
-            console.log(str);
-          }
-        }
-      };
+    _.each(this.levels, function(level, levelName: string) {
+      
     });
+  }
+
+  private logMessage(levelName: string, message: string, supportingDetails?: any[]) {
+    let level:number = this.levels[levelName] || -1;
+
+    if (levelName === 'silent') { // dont create a log.silent() method
+      return;
+    }
+    if (level >= this.levels[this.level]) {
+      if (Error.stackTraceLimit && this.level == 'debug') {
+        let old = Error.stackTraceLimit;
+        Error.stackTraceLimit = 2;
+        let stack;
+        let lines = stack.split('\n');
+        let caller = lines[2];
+        caller = ':' + caller.substr(6);
+        Error.stackTraceLimit = old;
+        
+        let str = '[' + levelName + (caller || '') + '] ' + arguments[0],
+        extraArgs = [].slice.call(arguments, 1);
+        if (console[levelName]) {
+          extraArgs.unshift(str);
+          console[levelName].apply(console, extraArgs);
+        } else {
+          if (extraArgs.length) {
+            str += JSON.stringify(extraArgs);
+          }
+          console.log(str);
+        }
+      }
+    };
   }
 
   /**
@@ -99,18 +140,8 @@ export class Logger {
     this.level = level;
   };
 
-  /**
-   * @class Logger
-   * @method debug
-   * @desc Log messages at the debug level.
-   * @param {*} args - the arguments to be logged.
-   */
-  /**
-   * @class Logger
-   * @method info
-   * @desc Log messages at the info level.
-   * @param {*} args - the arguments to be logged.
-   */
+
+  
   /**
    * @class Logger
    * @method log
@@ -142,7 +173,7 @@ export class Logger {
    *
    * @param {string} level - the name of the logging level
    */
-  public singleton = function(level) {
+  public static getInstance() {
     return (this._instance || new Logger());
   };
 
