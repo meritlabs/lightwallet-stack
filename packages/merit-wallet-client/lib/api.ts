@@ -960,7 +960,7 @@ export class API extends EventEmitter {
    */
   private _doRequestWithLogin(method, url, args): Promise<any> {
 
-    function doLogin(): Promise<any> {
+    let doLogin = (): Promise<any> => {
       return new Promise((resolve, reject) => {   
         this._login().then((s) => {
           if (!s) return reject(new Errors.NOT_AUTHORIZED);
@@ -1552,13 +1552,13 @@ export class API extends EventEmitter {
     });
   };
 
-  private _processStatus(status): any {
+  private _processStatus = (status): any => {
 
-    function processCustomData(data) {
+    let processCustomData = (data) => {
       var copayers = data.wallet.copayers;
       if (!copayers) return;
 
-      var me = _.find(copayers, {
+      var me:any = _.find(copayers, {
         'id': this.credentials.copayerId
       });
       if (!me || !me.customData) return;
