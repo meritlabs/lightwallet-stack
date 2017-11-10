@@ -28,11 +28,15 @@ export class FeeService {
     this.CACHE_TIME_TS = 60;
   }
 
-  getCurrentFeeLevel() {
+  getFeeOptValues(): Array<string> {
+    return _.values(this.feeOpts);
+  };
+
+  getCurrentFeeLevel(): string {
     return this.configService.get().wallet.settings.feeLevel || 'normal';
   };
 
-  getFeeRate(network, feeLevel) {
+  getFeeRate(network: string, feeLevel: string): Promise<any> {
     if (feeLevel == 'custom') return Promise.resolve();
     let self = this;
 
@@ -53,11 +57,11 @@ export class FeeService {
     });
   };
 
-  getCurrentFeeRate(network) {
+  getCurrentFeeRate(network: string) {
     return this.getFeeRate(network, this.getCurrentFeeLevel());
   };
 
-  getFeeLevel(network): Promise<{data: Object, fromCache: Boolean}> {
+  getFeeLevel(network: string): Promise<{data: Object, fromCache: Boolean}> {
 
     if (this.cache.updateTs > Date.now() - this.CACHE_TIME_TS * 1000) {
       return Promise.resolve({data: this.cache.data, fromCache: true});
