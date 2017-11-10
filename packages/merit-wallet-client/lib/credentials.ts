@@ -39,7 +39,8 @@ const FIELDS = [
   'entropySourcePath',
   'unlocked',
   'beacon',
-  'shareCode'
+  'shareCode',
+  'version',
 ];
 
 function _checkNetwork(network: string) {
@@ -61,6 +62,7 @@ export class Credentials {
   public externalSource: any;
   public addressType: any;
   public xPrivKeyEncrypted: any;
+  public version: string;
 
 
   private static wordsForLang = {
@@ -188,6 +190,9 @@ export class Credentials {
     this.network = fixedNet;
     this.xPrivKey = (new Bitcore.HDPrivateKey(fixedNet)).toString();
     this.compliantDerivation = true;
+    this.version = '1.0.0';
+    this.derivationStrategy = Constants.DERIVATION_STRATEGIES.BIP44;
+    this.account = 0;
   }
 
    public Mnemonic = function(network, passphrase, language, account, opts) {
@@ -389,8 +394,7 @@ export class Credentials {
         purpose = '48';
         break;
       default:
-        purpose = '0';
-        break;
+        throw new Error('Credentials#getBaseAddressDerivationPath: derivation strategy is not set.');
     }
 
     let coin = (this.network == 'livenet' ? "0" : "1");
