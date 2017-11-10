@@ -4,6 +4,8 @@ import { Verifier } from './verifier';
 import { EventEmitter } from 'eventemitter3';
 import { Common } from './common';
 import { Logger } from "./log";
+import { Credentials } from './credentials';
+import { BwcError as Errors } from './errors';
 
 const log = Logger.getInstance();
 const $ = require('preconditions').singleton();
@@ -23,9 +25,7 @@ let Constants = Common.Constants;
 let Defaults = Common.Defaults;
 let Utils = Common.Utils;
 
-let Credentials = require('./credentials');
 let Package = require('../package.json');
-let Errors = require('./errors');
 
 import { Promise } from 'bluebird';
 
