@@ -87,8 +87,6 @@ export class API extends EventEmitter {
   initialize(opts): Promise<any> {
     return new Promise((resolve, reject) => {
       $.checkState(this.credentials);
-
-
       this.notificationIncludeOwn = !!opts.notificationIncludeOwn;
       this._initNotifications(opts);
       return resolve();
@@ -100,9 +98,8 @@ export class API extends EventEmitter {
     this._logout();
   };
 
-  private _fetchLatestNotifications(interval): Promise<any> {
-      
-      var opts:any = {
+  _fetchLatestNotifications(interval): Promise<any> {      
+      let opts:any = {
         lastNotificationId: this.lastNotificationId,
         includeOwn: this.notificationIncludeOwn,
       };
@@ -124,12 +121,13 @@ export class API extends EventEmitter {
   }
     
   _initNotifications(opts: any = {}): any {
-    var interval = opts.notificationIntervalSeconds || 5;
-    this.notificationsIntervalId = setInterval(function() {
-      this._fetchLatestNotifications(interval, function(err) {
+    const interval = opts.notificationIntervalSeconds || 5;
+    const self = this;
+    self.notificationsIntervalId = setInterval(function() {
+      self._fetchLatestNotifications(interval).catch((err) => {
         if (err) {
           if (err instanceof Errors.NOT_FOUND || err instanceof Errors.NOT_AUTHORIZED) {
-            this._disposeNotifications();
+            self._disposeNotifications();
           }
         }
       });
@@ -412,8 +410,7 @@ export class API extends EventEmitter {
    * @param {Number} opts.account - default 0
    * @param {String} opts.derivationStrategy - default 'BIP44'
    */
-  seedFromExtendedPrivateKey(xPrivKey, opts): any {
-    opts = opts || {};
+  seedFromExtendedPrivateKey(xPrivKey, opts: any = {}): void {
     this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
   };
 

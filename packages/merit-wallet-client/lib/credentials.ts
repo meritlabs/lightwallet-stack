@@ -158,7 +158,7 @@ export class Credentials {
     return x;
   };
 
-  private static _getNetworkFromExtendedKey = function(xKey) {
+  private _getNetworkFromExtendedKey = function(xKey) {
     $.checkArgument(xKey && _.isString(xKey));
     return xKey.charAt(0) == 't' ? 'testnet' : 'livenet';
   };
