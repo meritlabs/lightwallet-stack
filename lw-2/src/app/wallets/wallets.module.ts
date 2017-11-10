@@ -15,7 +15,7 @@ import {EasyReceiveService} from "merit/easy-receive/easy-receive.service";
 
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AddressBookModule } from "merit/shared/address-book/address-book.module";
-import { LedgerService } from 'merit/shared/ledger-service';
+import { LedgerService } from 'merit/shared/ledger.service'; 
 
 @NgModule({
   declarations: [
