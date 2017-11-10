@@ -1,4 +1,4 @@
-export const errorSpec: {name: string, message: string}[] = [{
+export const errorSpec = [{
   name: 'INVALID_BACKUP',
   message: 'Invalid Backup.'
 }, {
