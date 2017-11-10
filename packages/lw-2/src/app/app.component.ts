@@ -54,7 +54,7 @@ export class MeritLightWallet {
         this.splashScreen.hide();
       }
       Promise.longStackTraces();
-      process.on('unhandledRejection', console.log.bind(console))      
+      process.on('unhandledRejection', console.log.bind(console));      
       // Check Profile
       this.profileService.loadAndBindProfile().then((profile: any) => {
         
