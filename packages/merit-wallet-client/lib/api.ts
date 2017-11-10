@@ -380,12 +380,11 @@ export class API extends EventEmitter {
    * @param {Number} opts.language - default 'en'
    * @param {Number} opts.account - default 0
    */
-  seedFromRandomWithMnemonic(opts): any {
+  seedFromRandomWithMnemonic(opts: any = {}): any {
     $.checkArgument(arguments.length <= 1, 'DEPRECATED: only 1 argument accepted.');
     $.checkArgument(_.isUndefined(opts) || _.isObject(opts), 'DEPRECATED: argument should be an options object.');
 
-    opts = opts || {};
-    this.credentials = Credentials.createWithMnemonic(opts.network || 'livenet', opts.passphrase, opts.language || 'en', opts.account || 0);
+    this.credentials = Credentials.createWithMnemonic(opts.network || 'livenet', opts.passphrase, opts.language || 'en', opts.account || 0);;
   };
 
   getMnemonic(): any {
@@ -852,7 +851,7 @@ export class API extends EventEmitter {
 
   _getHeaders(method, url, args): any {
     var headers = {
-      'x-client-version': 'bwc-' + Package.version,
+      'x-client-version': 'MWC-' + Package.version,
     };
 
     return headers;

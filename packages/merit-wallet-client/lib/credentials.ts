@@ -178,6 +178,11 @@ export class Credentials {
     return x;
   };
 
+  private static _xPubToCopayerId = function(xpub) {
+    var hash = sjcl.hash.sha256.hash(xpub);
+    return sjcl.codec.hex.fromBits(hash);
+  };
+
   constructor() {
     let fixedNet = 'testnet';
     this.network = fixedNet;
@@ -340,7 +345,7 @@ export class Credentials {
 
     this.personalEncryptingKey = this._hashFromEntropy('personalKey', 16).toString('base64');
 
-    this.copayerId = this._xPubToCopayerId(this.xPubKey);
+    this.copayerId = Credentials._xPubToCopayerId(this.xPubKey);
     this.publicKeyRing = [{
       xPubKey: this.xPubKey,
       requestPubKey: this.requestPubKey,
@@ -382,6 +387,9 @@ export class Credentials {
         break;
       case Constants.DERIVATION_STRATEGIES.BIP48:
         purpose = '48';
+        break;
+      default:
+        purpose = '0';
         break;
     }
 
