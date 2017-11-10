@@ -459,38 +459,38 @@ export class ProfileService {
       if (!skipKeyValidation)
         this.runValidation(wallet);
 
-      this.bindWalletClient(wallet).then((success)=> {
+      return this.bindWalletClient(wallet).then((success)=> {
         if (success) {
           console.log("Nailed it.");
         }
+     
+        let saveBwsUrl = (): Promise<any> => {
+          return new Promise((resolve, reject) => {
+            let defaults: any = this.configService.getDefaults();
+            let bwsFor: any = {};
+            bwsFor[walletId] = opts.bwsurl || defaults.bws.url;
+
+            // Dont save the default
+            if (bwsFor[walletId] == defaults.bws.url) {
+              return resolve();
+            }
+
+            this.configService.set({ bwsFor: bwsFor });
+            return resolve();
+          });
+        };
+
+        return saveBwsUrl().then(() => {
+          return this.persistenceService.storeProfile(this.profile).then(() => {
+            return resolve(wallet);
+          });
+        });
       }).catch((err) => {
         console.log("We got errored");
         console.log(err);
+        return reject(err);
       });
 
-      let saveBwsUrl = (): Promise<any> => {
-        return new Promise((resolve, reject) => {
-          let defaults: any = this.configService.getDefaults();
-          let bwsFor: any = {};
-          bwsFor[walletId] = opts.bwsurl || defaults.bws.url;
-
-          // Dont save the default
-          if (bwsFor[walletId] == defaults.bws.url) {
-            return resolve();
-          }
-
-          this.configService.set({ bwsFor: bwsFor });
-          return resolve();
-        });
-      };
-
-      saveBwsUrl().then(() => {
-        this.persistenceService.storeProfile(this.profile).then(() => {
-          return resolve(wallet);
-        }).catch((err: any) => {
-          return reject(err);
-        });
-      });
     });
   }
 
