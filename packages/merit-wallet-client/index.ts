@@ -1,5 +1,5 @@
 import { MeritClient } from './lib/index';
-import { BwcError } from './lib/errors';
+let BwcError = require('./lib/errors');
 
 // Singleton to ensure that conserve and handle memory most effectively.
 export class Client extends MeritClient {
