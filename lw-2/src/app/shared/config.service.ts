@@ -123,7 +123,8 @@ const configDefault: Config = {
       unitCode: 'mrt',
       alternativeName: 'US Dollar',
       alternativeIsoCode: 'USD',
-      defaultLanguage: ''
+      defaultLanguage: '',
+      feeLevel: 'normal'
     }
   },
 

@@ -71,6 +71,7 @@ export class MeritLightWallet {
   private initializeApp() {
 
       this.profileService.getProfile().then((profile) => {
+
         this.deepLinkService.getBranchData().then((data) => {
 
           if (data) {
@@ -86,7 +87,12 @@ export class MeritLightWallet {
              'TransactView' : 'OnboardingView';
           }
 
-        });
+        }).catch((err) => {
+          this.logger.error(err); 
+          this.rootComponent = 'OnboardingView';
+        })
+
+
       });
 
       if (this.platform.is('cordova')) {
