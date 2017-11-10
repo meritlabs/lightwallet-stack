@@ -62,6 +62,12 @@ export class Logger implements LoggerWithLevels {
     this.logMessage('silent', message)
   }
 
+    /**
+   * @class Logger
+   * @method log
+   * @desc Log messages at an intermediary level called 'log'.
+   * @param {*} args - the arguments to be logged.
+   */
   public log(message: string, ...supportingDetails: any[]): void {
     this.logMessage('silent', message)
   }
@@ -76,14 +82,32 @@ export class Logger implements LoggerWithLevels {
     this.logMessage('silent', message)
   }
 
+  /**
+   * @class Logger
+   * @method warn
+   * @desc Log messages at the warn level.
+   * @param {*} args - the arguments to be logged.
+   */
   public warn(message: string, ...supportingDetails: any[]): void {
     this.logMessage('silent', message)
   }
 
+  /**
+   * @class Logger
+   * @method error
+   * @desc Log messages at the error level.
+   * @param {*} args - the arguments to be logged.
+   */
   public error(message: string, ...supportingDetails: any[]): void {
     this.logMessage('silent', message)
   }
-
+  
+  /**
+   * @class Logger
+   * @method fatal
+   * @desc Log messages at the fatal level.
+   * @param {*} args - the arguments to be logged.
+   */
   public fatal(message: string, ...supportingDetails: any[]): void {
     this.logMessage('silent', message)
   }
@@ -139,33 +163,6 @@ export class Logger implements LoggerWithLevels {
   public setLevel = function(level) {
     this.level = level;
   };
-
-
-  
-  /**
-   * @class Logger
-   * @method log
-   * @desc Log messages at an intermediary level called 'log'.
-   * @param {*} args - the arguments to be logged.
-   */
-  /**
-   * @class Logger
-   * @method warn
-   * @desc Log messages at the warn level.
-   * @param {*} args - the arguments to be logged.
-   */
-  /**
-   * @class Logger
-   * @method error
-   * @desc Log messages at the error level.
-   * @param {*} args - the arguments to be logged.
-   */
-  /**
-   * @class Logger
-   * @method fatal
-   * @desc Log messages at the fatal level.
-   * @param {*} args - the arguments to be logged.
-   */
 
    /**
    * @desc
