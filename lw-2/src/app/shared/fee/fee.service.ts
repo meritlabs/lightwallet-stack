@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 @Injectable()
 export class FeeService {
   private CACHE_TIME_TS: number;
-  private cache: {data: Object, updateTs: number};
+  private cache: {updateTs: number, data: any};
   public feeOpts: Object;
 
   constructor(
@@ -47,19 +47,17 @@ export class FeeService {
 
     network = network || 'livenet';
 
-    return this.getFeeLevel(network).then((levels) => {
-      this.logger.log('gotFeeLevel', levels)
-      var feeLevelRate: any = _.find(levels.data[network], {
-        level: feeLevel
-      });
+    return this.getFeeLevel(network, feeLevel).then((levelData: {data: {level: string, feePerKb: number}, fromCache: Boolean}) => {
+      let feeLevelRate = levelData.data
+      this.logger.log('feeLevelRate is', feeLevelRate)
       if (!feeLevelRate || !feeLevelRate.feePerKb) {
         this.logger.error('failed in getFeeLevel', feeLevelRate)
         return Promise.reject({
           message: `Could not get dynamic fee for level: ${feeLevel} on network ${network}`
         });
       }
-      var feeRate = feeLevelRate.feePerKB;
-      if (!levels.fromCache) self.logger.debug('Dynamic fee: ' + feeLevel + '/' + network + ' ' + (feeLevelRate.feePerKb / 1000).toFixed() + ' Micros/B');
+      let feeRate = feeLevelRate.feePerKb;
+      if (!levelData.fromCache) self.logger.debug('Dynamic fee: ' + feeLevel + '/' + network + ' ' + (feeLevelRate.feePerKb / 1000).toFixed() + ' Micros/B');
       return feeRate;
     });
   };
@@ -68,7 +66,7 @@ export class FeeService {
     return this.getFeeRate(network, this.getCurrentFeeLevel());
   };
 
-  getFeeLevel(network: string): Promise<{data: Object, fromCache: Boolean}> {
+  getFeeLevel(network: string, feeLevel: string): Promise<{data: {level: string, feePerKb: number}, fromCache: Boolean}> {
 
     if (this.cache.updateTs > Date.now() - this.CACHE_TIME_TS * 1000) {
       return Promise.resolve({data: this.cache.data, fromCache: true});
@@ -80,10 +78,21 @@ export class FeeService {
     };
     const walletClient = this.bwcService.getClient(null, opts);
 
-    return Promise.promisify(walletClient.getFeeLevels)(network).then((level) => {
+    return Promise.resolve(walletClient.getFeeLevels(network, (err, levels) => {
+      if (err) {
+        return Promise.reject({message: 'Could not get dynamic fee'});
+      }
+
       this.cache.updateTs = Date.now();
-      this.cache.data[network] = level;
-      return {data: this.cache.data, fromCache: false};
+      this.cache.data = _.find(levels, {
+        level: feeLevel
+      })
+    })).delay(100).then(() => {
+      return this.cache;
+    }).then((cache) => {
+      return cache.data;
+    }).then((data) => {
+      return Promise.resolve({data: data, fromCache: false});
     });
   };
 }
