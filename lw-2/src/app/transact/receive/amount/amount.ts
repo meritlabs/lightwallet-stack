@@ -28,7 +28,6 @@ export class ReceiveAmountView {
 
   }
 
-
   ionViewDidLoad() {
     let settings = this.configService.get().wallet.settings;
 
@@ -46,8 +45,6 @@ export class ReceiveAmountView {
 
   }
 
-
-
   close() {
     this.viewCtrl.dismiss();
   }
@@ -55,8 +52,5 @@ export class ReceiveAmountView {
   setAmount() {
     this.viewCtrl.dismiss(this.formData.amount);
   }
-
-
-
 
 }

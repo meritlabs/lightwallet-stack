@@ -31,7 +31,7 @@ export class SendConfirmView {
   private static CONFIRM_LIMIT_USD = 20;
   private static FEE_TOO_HIGH_LIMIT_PER = 15;
 
-  private txp: TransactionProposal = new TransactionProposal; // Transaction proposal
+  private txData: any;
   private wallet: Wallet;
   private walletSettings: any;
   private unitToMicro: number;
@@ -58,38 +58,39 @@ export class SendConfirmView {
   ionViewDidLoad() {
     this.logger.log('ionViewDidLoad ConfirmView');
     this.logger.log('Params', this.navParams.data);
-    this.txp = _.pick(this.navParams.data, [
+    this.txData = _.pick(this.navParams.data, [
       'toAddress',
-      'amount',
+      'toAmount',
       'description',
       'recipientType',
       'toName',
       'toEmail',
       'toPhoneNumber'
     ]);
+    this.txData.txp = {};
+    this.txData.toName = this.txData.toName || '';
     this.wallet = this.navParams.data.wallet;
     this.walletSettings = this.configService.get().wallet.settings;
     this.unitToMicro = this.walletSettings.unitToMicro;
     this.unitDecimals = this.walletSettings.unitDecimals;
     this.microToUnit = 1 / this.unitToMicro;
     this.configFeeLevel = this.walletSettings.feeLevel ? this.walletSettings.feeLevel : 'normal';
-    this.txp.allowSpendUnconfirmed = this.walletSettings.spendUnconfirmed;
+    this.txData.toAmount = this.txData.toAmount * this.unitToMicro; // TODO: get the right number from amount page
+    this.txData.allowSpendUnconfirmed = this.walletSettings.spendUnconfirmed;
 
-    this.updateTx(this.txp, this.wallet, {}).then(() => {
-      // TODO: Handle easySend here
-      this.logger.log('SendConfirmView updatedTx', this.txp)
-    }).catch((err) => {
+    this.updateTx(this.txData, this.wallet, {}).catch((err) => {
       this.logger.error('There was an error in updateTx:', err);
     });
+    this.logger.log('ionViewDidLoad send-confirm', this);
   }
 
   // Show as much as we can about the address. 
-  private displayName(): string {
-    if (this.txp.toName) {
-      return this.txp.toName;
+  public displayName(): string {
+    if (this.txData.toName) {
+      return this.txData.toName;
     }
     // TODO: Check AddressBook
-    return this.txp.toAddress || "no one";
+    return this.txData.toAddress || "no one";
   }
 
   // TODO: implement
@@ -102,9 +103,7 @@ export class SendConfirmView {
       tx.txp = {};
     }
 
-    this.txp = tx;
-
-    function updateAmount() {
+    let updateAmount = () => {
       if (!tx.toAmount) return;
 
       // Amount
@@ -130,7 +129,7 @@ export class SendConfirmView {
       if (!wallet) return;
 
       // txp already generated for this wallet?
-      if (tx.txp[wallet.id]) {
+      if (tx.txp) {
         this.refresh();
         return;
       }
@@ -143,12 +142,14 @@ export class SendConfirmView {
         txpOut.alternativeFeeStr = v;
       });
 
-      let per = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
+      let per = (txpOut.fee / (txpOut.toAmount + txpOut.fee) * 100);
       txpOut.feeRatePerStr = per.toFixed(2) + '%';
       txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
 
-      tx.txp[wallet.id] = txpOut;
-      this.logger.debug('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
+      tx.txp = txpOut;
+      this.txData = tx;
+
+      this.logger.log('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
       this.refresh();
       return;
     });
@@ -163,11 +164,11 @@ export class SendConfirmView {
 
       return this.getTxp(tx, wallet, false).then((ctxp) => {
 
-        function confirmTx(cb) {
+        let confirmTx = (cb) => {
           if (this.walletService.isEncrypted(wallet))
             return cb();
   
-          var amountUsd = parseFloat(this.txFormatService.formatToUSD(ctxp.amount));
+          var amountUsd = parseFloat(this.txFormatService.formatToUSD(ctxp.toAmount));
           if (amountUsd <= SendConfirmView.CONFIRM_LIMIT_USD)
             return cb();
   
@@ -177,15 +178,17 @@ export class SendConfirmView {
           this.popupService.ionicConfirm(null, message, okText, cancelText);
         };
   
-        function publishAndSign(): Promise<any> {
+        let publishAndSign = (): Promise<any> => {
           
           if (!wallet.canSign() && !wallet.isPrivKeyExternal()) {
             this.logger.info('No signing proposal: No private key');
   
-            return this.walletService.onlyPublish(wallet, ctxp);
+            // TODO: custom status handler?
+            return this.walletService.onlyPublish(wallet, ctxp, _.noop);
           }
   
-          return this.walletService.publishAndSign(wallet, ctxp).then(() => {
+          // TODO: custom status handler?
+          return this.walletService.publishAndSign(wallet, ctxp, _.noop).then(() => {
             this.notificationService.subscribe(wallet, ctxp);
           });
         };
@@ -231,7 +234,7 @@ export class SendConfirmView {
           txp.inputs = tx.sendMaxInfo.inputs;
           txp.fee = tx.sendMaxInfo.fee;
         } else {
-          if (this.txp.usingCustomFee) {
+          if (this.txData.usingCustomFee) {
             txp.feePerKb = tx.feeRate;
           } else txp.feeLevel = tx.feeLevel;
         }
@@ -254,7 +257,7 @@ export class SendConfirmView {
     scope.feeLevel = tx.feeLevel;
     scope.noSave = true;
 
-    if (this.txp.usingCustomFee) {
+    if (this.txData.usingCustomFee) {
       scope.customFeePerKB = tx.feeRate;
       scope.feePerMicrosByte = tx.feeRate / 1000;
     }
@@ -264,17 +267,15 @@ export class SendConfirmView {
     })
     feeLevelModel.onDidDismiss((selectedFeeData) => {
       this.logger.debug('New fee level choosen:' + selectedFeeData.selectedFee + ' was:' + tx.feeLevel);
-      this.txp.usingCustomFee = selectedFeeData.selectedFee == 'custom' ? true : false;
-      if (tx.feeLevel == selectedFeeData.selectedFee && !this.txp.usingCustomFee) return;
+      this.txData.usingCustomFee = selectedFeeData.selectedFee == 'custom' ? true : false;
+      if (tx.feeLevel == selectedFeeData.selectedFee && !this.txData.usingCustomFee) return;
       tx.feeLevel = selectedFeeData.selectedFee;
-      if (this.txp.usingCustomFee) tx.feeRate = parseInt(selectedFeeData.customFeePerKB);
+      if (this.txData.usingCustomFee) tx.feeRate = parseInt(selectedFeeData.customFeePerKB);
 
-      /*
       this.updateTx(tx, wallet, {
         clearCache: true,
         dryRun: true
-      }, function() {});
-      */
+      }).then(() => {});
     })
     feeLevelModel.present();
   };
