@@ -853,46 +853,76 @@ Script.buildSimpleVaultScript = function(tag) {
   var s = new Script();
   var tagBytes = BN.fromString(tag);
 
-  s.add(Opcode.OP_DROP)
-    .add(Opcode.OP_DROP)
-    .add(Opcode.OP_TOALTSTACK)
-    .add(Opcode.OP_TOALTSTACK)
-    .add(0)
-    .add(Opcode.OP_EQUAL)
-    .add(Opcode.OP_IF)
-      .add(Opcode.OP_FROMALTSTACK)
-      .add(Opcode.OP_FROMALTSTACK)
-      .add(Opcode.OP_DROP)
-      .add(Opcode.OP_CHECKSIG)
-      .add(Opcode.OP_SWAP)
-      .add(Opcode.OP_DROP)
-    .add(Opcode.OP_ELSE)
-      .add(Opcode.OP_FROMALTSTACK)
-      .add(Opcode.OP_DROP)
-      .add(Opcode.OP_FROMALTSTACK)
-      .add(Opcode.OP_DUP)
-      .add(Opcode.OP_TOALTSTACK)
-      .add(Opcode.OP_CHECKSIGVERIFY)
-      .add(Opcode.OP_TOALTSTACK)
-      .add(Opcode.OP_ANYVALUE)
-      .add(Opcode.OP_ANYVALUE)
-      .add(tagBytes)
-      .add(Opcode.OP_FROMALTSTACK)
-      .add(Opcode.OP_FROMALTSTACK)
-      .add(1)
-      .add(Opcode.OP_CHECKOUTPUTSIG)
-    .add(Opcode.OP_ENDIF);
+  s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] <tag>| 
+   .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] | 
+   .add(Opcode. OP_NTOALTSTACK               )// <out index> <sig> <mode> | [addresses]
+   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> <spend key> | [addresses] <renew key>
+   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> | [addresses] <renew key> <spend key>
+   .add(Opcode. 0                            )// <sig> <mode> 0 | [addresses] <renew key> <spend key>
+   .add(Opcode. OP_EQUAL                     )// <sig> <bool> | [addresses] <renew key> <spend key>
+   .add(Opcode. OP_IF                        )// <sig> | [addresses] <renew key> <spend key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <renew key>
+   .add(Opcode.      OP_DUP                  )// <sig> <spend key> <spend key> | [addresses] <renew key>
+   .add(Opcode.      OP_TOALTSTACK           )// <sig> <spend key> | [addresses] <renew key> <spend key>
+   .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses] <renew key> <spend key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> | [addresses] <renew key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> | [addresses]
+   .add(             0                       )// <spend key> <renew key> <0 args> | [addresses]
+   .add(             0                       )// <spend key> <renew key> <0 args> <out index>| [addresses]
+   .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> <0 args> <out index> [addresses] |
+   .add(Opcode.      OP_NDUP                 )// <spend key> <renew key> <0 args> <out index> [addresses] [addresses] |
+   .add(Opcode.      OP_NTOALTSTACK          )// <spend key> <renew key> <0 args> <out index> [addresses] | [addresses]
+   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )// <spend key> <renew key> | [addresses]
+   .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> [addresses] |
+   .add(Opcode.      OP_DUP                  )// <spend key> <renew key> [addresses] <num addresss> |
+   .add(             5                       )// <spend key> <renew key> [addresses] <num addresss> 4 |
+   .add(Opcode.      OP_ADD                  )// <spend key> <renew key> [addresses] <total args> |
+   .add(Opcode.      OP_TOALTSTACK           )// <spend key> <renew key> [addresses] | <total args>
+   .add(Opcode.      tagBytes                )// <spend key> <renew key> [addresses] <tag> | 
+   .add(Opcode.      0                       )// <spend key> <renew key> [addresses] <tag> <vault type> |
+   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> | 
+   .add(             1                       )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> |
+   .add(             's'                     )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> |
+   .add(             1                       )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> <num addresses>|
+   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )// |
+   .add(             2                       )// 2 |
+   .add(Opcode.      OP_OUTPUTCOUNT          )// <count>
+   .add(Opcode.      OP_EQUAL                )// <bool>
+   .add(Opcode. OP_ELSE                      )
+   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <renew key>
+   .add(Opcode.      OP_DROP                 )// <sig> | [addresses] <renew key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <renew key> | [addresses]  
+   .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses]
+   .add(             0                       )// <total args> | [addresses]
+   .add(             0                       )// <total args> <out index> | [addresses]
+   .add(             's'                     )// <total args> <out index> <self> | [addresses]
+   .add(             1                       )// <total args> <out index> <self> <num addresses>| [addresses]
+   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )//  | [addresses]
+   .add(             1                       )// 1 | [addresses]
+   .add(Opcode.      OP_OUTPUTCOUNT          )// 1 <count> | [addresses]
+   .add(Opcode.      OP_EQUAL                )// <bool> | [addresses]
+   .add(Opcode. OP_ENDIF);
 
   return s;
 };
 
 Script.buildParameterizedP2SH = function(dest) {
-  var s = new Script();
-  var destBytes = BN.fromString(dest);
+  let s = new Script();
+  let destBytes = BN.fromString(dest);
 
   s.add(Opcode.OP_HASH160)
-    .add(destBytes.toBuffer())
-    .add(Opcode.OP_EQUALVERIFY);
+   .add(destBytes.toBuffer())
+   .add(Opcode.OP_EQUALVERIFY);
+
+  let size = 0;
+  for(let i = 1; i < arguments.length; i++) {
+    s.add(arguments[i]);
+    size++;
+  }
+
+  s.add(Opcode.OP_DEPTH)
+   .add(size)
+   .add(Opcode.OP_GREATERTHANOREQUAL);
 
   return s;
 };
