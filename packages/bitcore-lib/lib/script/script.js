@@ -879,7 +879,7 @@ Script.buildSimpleVaultScript = function(tag) {
    .add(Opcode.      OP_ADD                  )// <spend key> <renew key> [addresses] <total args> |
    .add(Opcode.      OP_TOALTSTACK           )// <spend key> <renew key> [addresses] | <total args>
    .add(Opcode.      tagBytes                )// <spend key> <renew key> [addresses] <tag> | 
-   .add(Opcode.      0                       )// <spend key> <renew key> [addresses] <tag> <vault type> |
+   .add(             0                       )// <spend key> <renew key> [addresses] <tag> <vault type> |
    .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> | 
    .add(             1                       )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> |
    .add(             's'                     )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> |
