@@ -210,7 +210,7 @@ export class API extends EventEmitter {
   _processTxps(txps): any {
     if (!txps) return;
 
-    var encryptingKey = this.credentials.sharedEncryptingKey;
+    let encryptingKey = this.credentials.sharedEncryptingKey;
     _.each([].concat(txps), function(txp) {
       txp.encryptedMessage = txp.message;
       txp.message = this._decryptMessage(txp.message, encryptingKey) || null;
@@ -2001,62 +2001,62 @@ export class API extends EventEmitter {
   * @param {Callback} cb
   * @return {Callback} cb - Return error or object
   */
- signTxProposal(txp, password): Promise<any> {
-   return new Promise((resolve, reject) => {
-    $.checkState(this.credentials && this.credentials.isComplete());
-    $.checkArgument(txp.creatorId);
+  signTxProposal(txp, password): Promise<any> {
+    return new Promise((resolve, reject) => {
+      $.checkState(this.credentials && this.credentials.isComplete());
+      $.checkArgument(txp.creatorId);
 
-    if (!txp.signatures) {
-      if (!this.canSign())
-        return reject(Errors.MISSING_PRIVATE_KEY);
+      if (!txp.signatures) {
+        if (!this.canSign())
+          return reject(Errors.MISSING_PRIVATE_KEY);
 
-      if (this.isPrivKeyEncrypted() && !password)
-        return reject(Errors.ENCRYPTED_PRIVATE_KEY);
-    }
-
-    this.getPayPro(txp).then((paypro) => {
-      let isLegit = Verifier.checkTxProposal(this.credentials, txp, {
-        paypro: paypro,
-      });
-
-      if (!isLegit)
-        return reject(Errors.SERVER_COMPROMISED);
-
-      let signatures = txp.signatures;
-
-      if (_.isEmpty(signatures)) {
-        try {
-          signatures = this._signTxp(txp, password);
-        } catch (ex) {
-          log.error('Error signing tx', ex);
-          return reject(ex);
-        }
+        if (this.isPrivKeyEncrypted() && !password)
+          return reject(Errors.ENCRYPTED_PRIVATE_KEY);
       }
 
-      let url = '/v1/txproposals/' + txp.id + '/signatures/';
-      let args = {
-        signatures: signatures
-      };
+      this.getPayPro(txp).then((paypro) => {
+        let isLegit = Verifier.checkTxProposal(this.credentials, txp, {
+          paypro: paypro,
+        });
 
-      this._doPostRequest(url, args).then((txp) => {
-        this._processTxps(txp);
-        return resolve(txp);
+        if (!isLegit)
+          return reject(Errors.SERVER_COMPROMISED);
+
+        let signatures = txp.signatures;
+
+        if (_.isEmpty(signatures)) {
+          try {
+            signatures = this._signTxp(txp, password);
+          } catch (ex) {
+            log.error('Error signing tx', ex);
+            return reject(ex);
+          }
+        }
+
+        let url = '/v1/txproposals/' + txp.id + '/signatures/';
+        let args = {
+          signatures: signatures
+        };
+
+        this._doPostRequest(url, args).then((txp) => {
+          this._processTxps(txp);
+          return resolve(txp);
+        });
       });
     });
-  });
- }
+  }
 
-/**
- * Sign transaction proposal from AirGapped
- *
- * @param {Object} txp
- * @param {String} encryptedPkr
- * @param {Number} m
- * @param {Number} n
- * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
- * @return {Object} txp - Return transaction
- */
-  signTxProposalFromAirGapped(txp, encryptedPkr, m, n, password) {
+  /**
+   * Sign transaction proposal from AirGapped
+   *
+   * @param {Object} txp
+   * @param {String} encryptedPkr
+   * @param {Number} m
+   * @param {Number} n
+   * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
+   * @return {Object} txp - Return transaction
+   */
+  public signTxProposalFromAirGapped(txp, encryptedPkr, m, n, password) {
     $.checkState(this.credentials);
     if (!this.canSign())
       throw Errors.MISSING_PRIVATE_KEY;
@@ -2085,5 +2085,149 @@ export class API extends EventEmitter {
 
     return this._signTxp(txp, password);
   };
+
+
+  /**
+   * Reject a transaction proposal
+   *
+   * @param {Object} txp
+   * @param {String} reason
+   * @param {Callback} cb
+   * @return {Callback} cb - Return error or object
+   */
+  public rejectTxProposal(txp, reason): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    var url = '/v1/txproposals/' + txp.id + '/rejections/';
+    var args = {
+      reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || '',
+    };
+    return this._doPostRequest(url, args).then((txp) => {
+      this._processTxps(txp);
+      return Promise.resolve(txp);
+    });
+  }
+
+    /**
+   * Broadcast raw transaction
+   *
+   * @param {Object} opts
+   * @param {String} opts.network
+   * @param {String} opts.rawTx
+   * @param {Callback} cb
+   * @return {Callback} cb - Return error or txid
+   */
+  public broadcastRawTx(opts:any = {}): Promise<any> {
+    $.checkState(this.credentials);
+    opts = opts || {};
+
+    var url = '/v1/broadcast_raw/';
+    return this._doPostRequest(url, opts);
+  };
+
+  private _doBroadcast(txp): Promise<any> {
+    var url = '/v1/txproposals/' + txp.id + '/broadcast/';
+    this._doPostRequest(url, {}).then((txp) => {
+      return Promise.resolve(this._processTxps(txp));
+    });
+  };
+
+  /**
+  * Broadcast a transaction proposal
+  *
+  * @param {Object} txp
+  * @param {Callback} cb
+  * @return {Callback} cb - Return error or object
+  */
+  public broadcastTxProposal(txp): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+    this.getPayPro(txp).then((paypro) => {
+      if (paypro) {
+        var t = Utils.buildTx(txp);
+        this._applyAllSignatures(txp, t);
+
+        PayPro.send({
+          http: this.payProHttp,
+          url: txp.payProUrl,
+          amountMicros: txp.amount,
+          refundAddr: txp.changeAddress.address,
+          merchant_data: paypro.merchant_data,
+          rawTx: t.serialize({
+            disableSmallFees: true,
+            disableLargeFees: true,
+            disableDustOutputs: true
+          }),
+        }, function(err, ack, memo) {
+          if (err) return Promise.Reject(err);
+          this._doBroadcast(txp, function(err, txp) {
+            return Promise.resolve(err, txp, memo);
+          });
+        });
+      } else {
+        return Promise.resolve(this._doBroadcast(txp));
+      }
+    });
+  };
+
+  /**
+   * Remove a transaction proposal
+   *
+   * @param {Object} txp
+   * @param {Callback} cb
+   * @return {Callback} cb - Return error or empty
+   */
+  removeTxProposal(txp): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    var url = '/v1/txproposals/' + txp.id;
+    return this._doDeleteRequest(url);
+  };
+
+  /**
+   * Get transaction history
+   *
+   * @param {Object} opts
+   * @param {Number} opts.skip (defaults to 0)
+   * @param {Number} opts.limit
+   * @param {Boolean} opts.includeExtendedInfo
+   * @param {Callback} cb
+   * @return {Callback} cb - Return error or array of transactions
+   */
+  getTxHistory(opts): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    var args = [];
+    if (opts) {
+      if (opts.skip) args.push('skip=' + opts.skip);
+      if (opts.limit) args.push('limit=' + opts.limit);
+      if (opts.includeExtendedInfo) args.push('includeExtendedInfo=1');
+    }
+    var qs = '';
+    if (args.length > 0) {
+      qs = '?' + args.join('&');
+    }
+
+    var url = '/v1/txhistory/' + qs;
+    this._doGetRequest(url).then((txs) => {
+      this._processTxps(txs);
+      return Promise.resolve(txs);
+    });
+  };
+
+  /**
+   * getTx
+   *
+   * @param {String} TransactionId
+   * @return {Callback} cb - Return error or transaction
+   */
+  getTx(id): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    var url = '/v1/txproposals/' + id;
+    this._doGetRequest(url).then((txp) => {
+      return Promise.resolve(this._processTxps(txp));
+    });
+  };
+
 
 }
