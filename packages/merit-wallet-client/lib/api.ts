@@ -5,7 +5,7 @@ import { EventEmitter } from 'eventemitter3';
 import { Common } from './common';
 import { Logger } from "./log";
 import { Credentials } from './credentials';
-import { BwcError as Errors } from './errors';
+import { ErrorTypes as Errors } from './errors';
 
 const log = Logger.getInstance();
 const $ = require('preconditions').singleton();
@@ -126,7 +126,7 @@ export class API extends EventEmitter {
     self.notificationsIntervalId = setInterval(function() {
       self._fetchLatestNotifications(interval).catch((err) => {
         if (err) {
-          if (err instanceof Errors.NOT_FOUND || err instanceof Errors.NOT_AUTHORIZED) {
+          if (err == Errors.NOT_FOUND || err == Errors.NOT_AUTHORIZED) {
             self._disposeNotifications();
           }
         }
@@ -255,7 +255,7 @@ export class API extends EventEmitter {
     var ret;
     if (body.code) {
       if (Errors[body.code]) {
-        ret = new Errors[body.code];
+        ret = Errors[body.code];
         if (body.message) ret.message = body.message;
       } else {
         ret = new Error(body.code + ': ' + body.message);
@@ -488,7 +488,7 @@ export class API extends EventEmitter {
       var credentials = Credentials.fromObj(JSON.parse(str));
       this.credentials = credentials;
     } catch (ex) {
-      throw new Errors.INVALID_BACKUP;
+      throw Errors.INVALID_BACKUP;
     }
   };
 
@@ -511,7 +511,7 @@ export class API extends EventEmitter {
         
         return this.openWallet();
       }).catch((err) => {
-          return reject(new Errors.WALLET_DOES_NOT_EXIST);
+          return reject(Errors.WALLET_DOES_NOT_EXIST);
       });
     });
   });
@@ -549,14 +549,14 @@ export class API extends EventEmitter {
         this.credentials = derive(false);
       } catch (e) {
         log.info('Mnemonic error:', e);
-        return reject(new Errors.INVALID_BACKUP);
+        return reject(Errors.INVALID_BACKUP);
       }
 
       return this._import().then((ret) => {
         return resolve(ret);
       }).then((err) => {
-        if (err instanceof Errors.INVALID_BACKUP) return reject(err);
-        if (err instanceof Errors.NOT_AUTHORIZED || err instanceof Errors.WALLET_DOES_NOT_EXIST) {
+        if (err == Errors.INVALID_BACKUP) return reject(err);
+        if (err == Errors.NOT_AUTHORIZED || err == Errors.WALLET_DOES_NOT_EXIST) {
           var altCredentials = derive(true);
           if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return reject(err);
           this.credentials = altCredentials;
@@ -581,7 +581,7 @@ export class API extends EventEmitter {
       this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       log.info('xPriv error:', e);
-      return new Promise((resolve, reject) => { reject(new Errors.INVALID_BACKUP); });
+      return new Promise((resolve, reject) => { reject(Errors.INVALID_BACKUP); });
     };
 
     return this._import();
@@ -607,7 +607,7 @@ export class API extends EventEmitter {
       this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       log.info('xPriv error:', e);
-      return new Promise((resolve, reject) => { reject(new Errors.INVALID_BACKUP); });
+      return new Promise((resolve, reject) => { reject(Errors.INVALID_BACKUP); });
     };
 
     return this._import();
@@ -667,7 +667,7 @@ export class API extends EventEmitter {
           
           var fee = opts.fee || 10000;
           var amount = _.sumBy(utxos, 'micros') - fee;
-          if (amount <= 0) return reject(new Errors.INSUFFICIENT_FUNDS);
+          if (amount <= 0) return reject(Errors.INSUFFICIENT_FUNDS);
   
           var tx;
           try {
@@ -684,7 +684,7 @@ export class API extends EventEmitter {
   
           } catch (ex) {
             log.error('Could not build transaction from private key', ex);
-            reject(new Errors.COULD_NOT_BUILD_TRANSACTION);
+            reject(Errors.COULD_NOT_BUILD_TRANSACTION);
           }
           return resolve(tx);
         });
@@ -766,7 +766,7 @@ export class API extends EventEmitter {
     var fee = opts.fee || 10000;
     var microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
     var amount =  microAmount - fee;
-    if (amount <= 0) return new Errors.INSUFFICIENT_FUNDS;
+    if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
 
     var tx = new Bitcore.Transaction();
 
@@ -798,7 +798,7 @@ export class API extends EventEmitter {
 
     } catch (ex) {
       log.error('Could not build transaction from private key', ex);
-      return new Errors.COULD_NOT_BUILD_TRANSACTION;
+      return Errors.COULD_NOT_BUILD_TRANSACTION;
     }
     return tx;
   };
@@ -833,7 +833,7 @@ export class API extends EventEmitter {
 
         if (this.credentials.walletPrivKey) {
           if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
-            return reject(new Errors.SERVER_COMPROMISED);
+            return reject(Errors.SERVER_COMPROMISED);
           }
         } else {
           // this should only happen in AIR-GAPPED flows
@@ -910,7 +910,7 @@ export class API extends EventEmitter {
 
       return r.then((res) => {
         if (!res) {
-          return reject(new Errors.CONNECTION_ERROR);
+          return reject(Errors.CONNECTION_ERROR);
         }
 
         if (res.body)
@@ -920,10 +920,10 @@ export class API extends EventEmitter {
 
         if (res.status !== 200) {
           if (res.status === 404)
-            return reject(new Errors.NOT_FOUND);
+            return reject(Errors.NOT_FOUND);
 
           if (!res.status)
-            return reject(new Errors.CONNECTION_ERROR);
+            return reject(Errors.CONNECTION_ERROR);
 
           log.error('HTTP Error:' + res.status);
 
@@ -934,7 +934,7 @@ export class API extends EventEmitter {
         }
 
         if (res.body === '{"error":"read ECONNRESET"}')
-          return reject(new Errors.ECONNRESET_ERROR(JSON.parse(res.body)));
+          return reject(Errors.ECONNRESET_ERROR);
 
         return resolve(res.body, res.header);
       });
@@ -963,7 +963,7 @@ export class API extends EventEmitter {
     let doLogin = (): Promise<any> => {
       return new Promise((resolve, reject) => {   
         this._login().then((s) => {
-          if (!s) return reject(new Errors.NOT_AUTHORIZED);
+          if (!s) return reject(Errors.NOT_AUTHORIZED);
           this.session = s;
           resolve();
         }).catch((err) => {
@@ -1120,7 +1120,7 @@ export class API extends EventEmitter {
       type: 'accept'
     });
 
-    return _.map(acceptedActions, function(x) {
+    return _.map(acceptedActions, function(x: any) {
       return {
         signatures: x.signatures,
         xpub: x.xpub,
@@ -1775,7 +1775,7 @@ export class API extends EventEmitter {
       this._processTxps(txp);
 
       if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey)) {
-        return Promise.reject(new Errors.SERVER_COMPROMISED);
+        return Promise.reject(Errors.SERVER_COMPROMISED);
       }
 
       Promise.resolve(txp);
@@ -1836,7 +1836,7 @@ export class API extends EventEmitter {
       if (!this._checkKeyDerivation()) return reject(new Error('Cannot create new address for this wallet'));
       return this._doPostRequest('/v1/addresses/', opts).then((address) => {
         if (!Verifier.checkAddress(this.credentials, address)) {
-          return reject(new Errors.SERVER_COMPROMISED);
+          return reject(Errors.SERVER_COMPROMISED);
         } 
         return resolve(address);
       });
