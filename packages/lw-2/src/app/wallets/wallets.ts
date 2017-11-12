@@ -72,10 +72,11 @@ export class WalletsView {
   }
 
   private async getWallets():Promise<Array<Wallet>> {
-    if (this.needWalletStatuses) {
+    console.log("needWalletStatuses");
+    console.log(this.needWalletStatuses());
+    if (this.needWalletStatuses()) {
       this.wallets = await this.updateAllWallets();     
     }
-
     return this.wallets;
   }
 
@@ -266,10 +267,14 @@ export class WalletsView {
 
   private async updateAllWallets() {
     let wallets = await this.profileService.getWallets();
+    // Get the statuses of all the wallets.
     return await Promise.all(_.map(wallets, async (wallet:any) => {
       wallet.status = await this.walletService.getStatus(wallet);
       return wallet; 
-    }));
+    })).catch((err) => {
+      console.log("Error updating wallets");
+      console.log(err);
+    });
 
   }
 
