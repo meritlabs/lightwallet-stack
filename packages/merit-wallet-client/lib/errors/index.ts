@@ -10,6 +10,7 @@ export interface BwcErrorConstructor {
 }
 
 export const BwcError: BwcErrorConstructor = <any>class BwcError {
+  readonly prototype = Object.create(Error.prototype);
   public constructor(message: string) {
     Object.defineProperty(this, 'name', {
       get: () => (this.constructor as any).name,
@@ -21,8 +22,8 @@ export const BwcError: BwcErrorConstructor = <any>class BwcError {
   }
 };
 
-(BwcError as any).prototype = Object.create(Error.prototype);
-BwcError.prototype.constructor = BwcError;
+// (BwcError as any).prototype = Object.create(Error.prototype);
+// BwcError.prototype.constructor = BwcError;
 
 export module ErrorTypes {
   export const INVALID_BACKUP = new BwcError('Invalid Backup.');  
