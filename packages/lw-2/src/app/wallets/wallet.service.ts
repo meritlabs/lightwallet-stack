@@ -170,9 +170,7 @@ export class WalletService {
       // TODO!!: Make this return a promise and properly promisify the stack.
       let cacheBalance = (wallet: any, balance: any): Promise<any> => {
         return new Promise((resolve, reject) => {
-
-        
-          if (!balance) return;
+          if (!balance) resolve();
 
           let configGet: any = this.configService.get();
           let config: any = configGet.wallet;
@@ -216,10 +214,12 @@ export class WalletService {
 
           // Check address
           return this.isAddressUsed(wallet, balance.byAddress).then((used) => {
+            console.log("Used##");
+            console.log(used);
             if (used) {
               this.logger.debug('Address used. Creating new');
               // Force new address
-              this.getAddress(wallet, true).then((addr) => {
+              return this.getAddress(wallet, true).then((addr) => {
                 this.logger.debug('New address: ', addr);
               })
             }
@@ -240,12 +240,12 @@ export class WalletService {
 
               cache.alternativeBalanceAvailable = true;
               cache.isRateAvailable = true;
-              resolve();              
+              return resolve();              
             }).catch((err) => {
               // We don't want to blow up the promise chain if the rateService is down.
               // TODO: Fallback to last known conversion rate.
               this.logger.warn("Could not get rates from rateService.");
-              resolve();              
+              return resolve();              
             });
           }).catch((err) => {
             return reject(err);
