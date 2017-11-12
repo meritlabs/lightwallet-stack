@@ -491,7 +491,7 @@ export class Credentials {
     }
   };
 
-  public getKeys = function(password) {
+  public getKeys = function(password):any {
     let keys:any = {};
 
     if (this.isPrivKeyEncrypted()) {

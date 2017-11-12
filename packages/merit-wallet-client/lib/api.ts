@@ -1082,7 +1082,7 @@ export class API extends EventEmitter {
     return t.uncheckedSerialize();
   };
 
-  signTxp = function(txp, derivedXPrivKey) {
+  public signTxp = function(txp, derivedXPrivKey):any {
     //Derive proper key to sign, for each input
     var privs = [];
     var derived = {};
@@ -1110,7 +1110,7 @@ export class API extends EventEmitter {
     return signatures;
   };
 
-  _signTxp(txp, password): any {
+  private _signTxp(txp, password): any {
     var derived = this.credentials.getDerivedXPrivKey(password);
     return this.signTxp(txp, derived);
   };
@@ -1993,5 +1993,97 @@ export class API extends EventEmitter {
     });
   };
 
+  /**
+  * Sign a transaction proposal
+  *
+  * @param {Object} txp
+  * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
+  * @param {Callback} cb
+  * @return {Callback} cb - Return error or object
+  */
+ signTxProposal(txp, password): Promise<any> {
+   return new Promise((resolve, reject) => {
+    $.checkState(this.credentials && this.credentials.isComplete());
+    $.checkArgument(txp.creatorId);
+
+    if (!txp.signatures) {
+      if (!this.canSign())
+        return reject(Errors.MISSING_PRIVATE_KEY);
+
+      if (this.isPrivKeyEncrypted() && !password)
+        return reject(Errors.ENCRYPTED_PRIVATE_KEY);
+    }
+
+    this.getPayPro(txp).then((paypro) => {
+      let isLegit = Verifier.checkTxProposal(this.credentials, txp, {
+        paypro: paypro,
+      });
+
+      if (!isLegit)
+        return reject(Errors.SERVER_COMPROMISED);
+
+      let signatures = txp.signatures;
+
+      if (_.isEmpty(signatures)) {
+        try {
+          signatures = this._signTxp(txp, password);
+        } catch (ex) {
+          log.error('Error signing tx', ex);
+          return reject(ex);
+        }
+      }
+
+      let url = '/v1/txproposals/' + txp.id + '/signatures/';
+      let args = {
+        signatures: signatures
+      };
+
+      this._doPostRequest(url, args).then((txp) => {
+        this._processTxps(txp);
+        return resolve(txp);
+      });
+    });
+  });
+ }
+
+/**
+ * Sign transaction proposal from AirGapped
+ *
+ * @param {Object} txp
+ * @param {String} encryptedPkr
+ * @param {Number} m
+ * @param {Number} n
+ * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
+ * @return {Object} txp - Return transaction
+ */
+  signTxProposalFromAirGapped(txp, encryptedPkr, m, n, password) {
+    $.checkState(this.credentials);
+    if (!this.canSign())
+      throw Errors.MISSING_PRIVATE_KEY;
+
+    if (this.isPrivKeyEncrypted() && !password)
+      throw Errors.ENCRYPTED_PRIVATE_KEY;
+
+    var publicKeyRing;
+    try {
+      publicKeyRing = JSON.parse(Utils.decryptMessage(encryptedPkr, this.credentials.personalEncryptingKey));
+    } catch (ex) {
+      throw new Error('Could not decrypt public key ring');
+    }
+
+    if (!_.isArray(publicKeyRing) || publicKeyRing.length != n) {
+      throw new Error('Invalid public key ring');
+    }
+
+    this.credentials.m = m;
+    this.credentials.n = n;
+    this.credentials.addressType = txp.addressType;
+    this.credentials.addPublicKeyRing(publicKeyRing);
+
+    if (!Verifier.checkTxProposalSignature(this.credentials, txp))
+      throw new Error('Fake transaction proposal');
+
+    return this._signTxp(txp, password);
+  };
 
 }
