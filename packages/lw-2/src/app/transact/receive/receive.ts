@@ -3,10 +3,10 @@ import { IonicPage, NavController, NavParams, ModalController, LoadingController
 
 import { ProfileService } from "merit/core/profile.service";
 import { Wallet } from "merit/wallets/wallet.model";
-import {WalletService} from "../../wallets/wallet.service";
-import {ToastConfig} from "../../core/toast.config";
-import {MeritToastController} from "../../core/toast.controller";
-import {Logger} from "../../core/logger";
+import { WalletService } from "../../wallets/wallet.service";
+import { ToastConfig } from "../../core/toast.config";
+import { MeritToastController } from "../../core/toast.controller";
+import { Logger } from "../../core/logger";
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Clipboard } from '@ionic-native/clipboard';
 

@@ -6,6 +6,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { NotificationService } from 'merit/shared/notification.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { PopupService } from 'merit/core/popup.service';
+import { ProfileService } from 'merit/core/profile.service';
 import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
 import { Wallet } from 'merit/wallets/wallet.model';
 import { FeeService } from 'merit/shared/fee/fee.service';
@@ -44,6 +45,7 @@ export class SendConfirmView {
     usingCustomFee?: boolean
   };
   private wallet: Wallet;
+  private wallets: Array<Wallet>;
   private walletSettings: any;
   private unitToMicro: number;
   private unitDecimals: number;
@@ -55,6 +57,7 @@ export class SendConfirmView {
     private configService: ConfigService,
     private navCtrl: NavController, 
     private navParams: NavParams,
+    private profileService: ProfileService,
     private logger: Logger,
     private feeService: FeeService,
     private walletService: WalletService,
@@ -66,7 +69,8 @@ export class SendConfirmView {
     console.log("Hello SendConfirm View");
   }
 
-  ionViewDidLoad() {
+  async ionViewDidLoad() {
+    this.wallets = await this.profileService.getWallets();
     this.logger.log('ionViewDidLoad ConfirmView');
     this.logger.log('Params', this.navParams);
     let toAmount = this.navParams.get('toAmount');
@@ -85,7 +89,7 @@ export class SendConfirmView {
       allowSpendUnconfirmed: this.walletSettings.spendUnconfirmed
     }
 
-    this.updateTx(this.txData, this.wallet, {}).catch((err) => {
+    this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
       this.logger.error('There was an error in updateTx:', err);
     });
     this.logger.log('ionViewDidLoad send-confirm', this);
@@ -136,12 +140,13 @@ export class SendConfirmView {
       if (!wallet) return Promise.resolve();
 
       // txp already generated for this wallet?
-      if (tx.txp) {
+      if (!_.isEmpty(tx.txp)) {
         this.refresh();
         return Promise.resolve();
       }
 
       return this.getTxp(_.clone(tx), wallet, opts.dryRun).then((txpOut) => {
+        this.logger.log('getTxp got the response: ', txpOut);
 
         txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
         this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
@@ -160,6 +165,12 @@ export class SendConfirmView {
         return Promise.resolve();
       });
     });
+  }
+
+  public approve(): void {
+    this.approveTx(this.txData.txp, this.wallet).then((worked) => {
+      this.logger.log('The result of approveTx was: ' + worked);
+    })
   }
 
   private approveTx(tx, wallet): Promise<boolean> {
@@ -253,11 +264,11 @@ export class SendConfirmView {
         }
         txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
         txp.dryRun = dryRun;
-        return resolve(this.walletService.createTx(wallet, txp));
+        return this.walletService.createTx(wallet, txp);
     });
   }
 
-  chooseFeeLevel(tx, wallet) {
+  private _chooseFeeLevel(tx, wallet) {
     
     let scope: any = {};
     scope.network = tx.network;
@@ -289,5 +300,17 @@ export class SendConfirmView {
   public toggleAddress() {
     this.showAddress = !this.showAddress;
   };
+
+  chooseFeeLevel(): void {
+    this._chooseFeeLevel(this.txData, this.wallet);
+  }
+
+  selectWallet() {
+    let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
+    modal.present();
+    modal.onDidDismiss((wallet) => {
+      if (wallet) this.wallet = wallet;
+    });
+  }
 
 }
