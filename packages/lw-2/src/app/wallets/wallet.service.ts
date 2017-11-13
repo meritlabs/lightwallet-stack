@@ -150,23 +150,6 @@ export class WalletService {
         wallet.pendingTxps = txps;
       };
 
-
-      let get = ():Promise<any> => {
-        return new Promise((resolve, reject) => {
-          wallet.getStatus({
-            twoStep: true
-          }, (err, ret) => {
-            if (err) {
-              if (err instanceof this.errors.NOT_AUTHORIZED) {
-                return reject('WALLET_NOT_REGISTERED');
-              }
-              return reject(err);
-            }
-            return resolve(ret);
-          });
-        });
-      };
-      
       // TODO!!: Make this return a promise and properly promisify the stack.
       let cacheBalance = (wallet: any, balance: any): Promise<any> => {
         return new Promise((resolve, reject) => {
@@ -287,7 +270,7 @@ export class WalletService {
           tries = tries || 0;
 
           this.logger.debug('Updating Status:', wallet.credentials.walletName, tries);
-          return get().then((status) => {
+          return wallet.getStatus.then((status) => {
             let currentStatusHash = walletStatusHash(status);
             this.logger.debug('Status update. hash:' + currentStatusHash + ' Try:' + tries);
             if (opts.untilItChanges && initStatusHash == currentStatusHash && tries < this.WALLET_STATUS_MAX_TRIES && walletId == wallet.credentials.walletId) {
@@ -316,6 +299,8 @@ export class WalletService {
       };
 
       return _getStatus(walletStatusHash(null), 0).then((status) => {
+        console.log("Got status from _getStatus");
+        console.log(status);
         return resolve(status);
       }).catch((err) => {
         this.logger.warn("Error getting status: ", err);
