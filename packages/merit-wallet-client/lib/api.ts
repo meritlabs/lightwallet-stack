@@ -62,7 +62,24 @@ export class API extends EventEmitter {
   private notificationsIntervalId: any;
   private keyDerivationOk: boolean;
   private session: any;
+  
+  // Mutated from other services (namely wallet.service and profile.service)
   public id: string; // TODO: Re-evaluate where this belongs.
+  public completeHistory: any; // This is mutated from Wallet.Service.ts; for now.
+  public cachedStatus: any; 
+  public cachedActivity: any; 
+  public cachedTxps: any;
+  public pendingTxps: any;
+  public totalBalanceSat: number;
+  public scanning: boolean; 
+  public hasUnsafeConfirmed: boolean;
+  public network: string;
+  public n: number;
+  public m: number;
+  public notAuthorized: boolean;
+  public needsBackup: boolean;
+  public name: string;
+  
 
   
   constructor(opts: InitOptions) {
@@ -1173,7 +1190,7 @@ export class API extends EventEmitter {
 
   /**
    * Join
-   * @private
+   * @public
    *
    * @param {String} walletId
    * @param {String} walletPrivKey
@@ -1184,7 +1201,7 @@ export class API extends EventEmitter {
    * @param {String} opts.customData
    * @param {Callback} cb
    */
-  private _doJoinWallet(walletId, walletPrivKey, xPubKey, requestPubKey, copayerName, opts:any = {}): Promise<any> {
+  public doJoinWallet(walletId, walletPrivKey, xPubKey, requestPubKey, copayerName, opts:any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
 
       // Adds encrypted walletPrivateKey to CustomData
@@ -1307,7 +1324,7 @@ export class API extends EventEmitter {
    * @param {Object} opts optional: SJCL options to encrypt (.iter, .salt, etc).
    * @return {undefined}
    */
-  encryptPrivateKey(password, opts): any {
+  encryptPrivateKey(password, opts?: any): any {
     this.credentials.encryptPrivateKey(password, opts || this.privateKeyEncryptionOpts);
   };
 
@@ -1428,7 +1445,7 @@ export class API extends EventEmitter {
 
         var secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
-        return this._doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then((wallet) => {
+        return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then((wallet) => {
             return resolve(n > 1 ? secret : null);
           });
       });
@@ -1465,7 +1482,7 @@ export class API extends EventEmitter {
       }
 
       this.credentials.addWalletPrivateKey(secretData.walletPrivKey.toString());
-      return this._doJoinWallet(secretData.walletId, secretData.walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, copayerName, {
+      return this.doJoinWallet(secretData.walletId, secretData.walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, copayerName, {
         dryRun: !!opts.dryRun,
       }).then((wallet) => {
         if (!opts.dryRun) {
@@ -1522,7 +1539,7 @@ export class API extends EventEmitter {
         let i = 1;
         return Promise.each(this.credentials.publicKeyRing, function(item, next) {
           var name = item.copayerName || ('copayer ' + i++);
-          return this._doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
+          return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
             supportBIP44AndP2PKH: supportBIP44AndP2PKH
           });
         });
@@ -2179,7 +2196,8 @@ export class API extends EventEmitter {
         }, function(err, ack, memo) {
           if (err) return Promise.Reject(err);
           this._doBroadcast(txp, function(err, txp) {
-            return Promise.resolve(err, txp, memo);
+            this.log.info(memo);
+            return Promise.resolve(txp);
           });
         });
       } else {
