@@ -3,7 +3,7 @@ import { ModalController, NavParams, ViewController } from 'ionic-angular';
 import { FeeService } from 'merit/shared/fee/fee.service';
 
 @Component({
-  templateUrl: 'fee-level.modal.html'
+  templateUrl: 'fee-level-modal.html'
 })
 export class FeeLevelModal {
   public network: any;
