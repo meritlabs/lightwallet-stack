@@ -141,28 +141,24 @@ export class SendConfirmView {
         return Promise.resolve();
       }
 
-      return Promise.resolve(this.getTxp(_.clone(tx), wallet, opts.dryRun));
-    }).tap((txpOut) => {
-      console.log("Who are you txpOut?")
-      console.log(txpOut)
-      return txpOut
-    }).then((txpOut) => {
+      return this.getTxp(_.clone(tx), wallet, opts.dryRun).then((txpOut) => {
 
-      txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
-      this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
-        txpOut.alternativeFeeStr = v;
+        txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
+        this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
+          txpOut.alternativeFeeStr = v;
+        });
+
+        let per = (txpOut.fee / (txpOut.toAmount + txpOut.fee) * 100);
+        txpOut.feeRatePerStr = per.toFixed(2) + '%';
+        txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
+
+        tx.txp = txpOut;
+        this.txData = tx;
+
+        this.logger.log('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
+        this.refresh();
+        return Promise.resolve();
       });
-
-      let per = (txpOut.fee / (txpOut.toAmount + txpOut.fee) * 100);
-      txpOut.feeRatePerStr = per.toFixed(2) + '%';
-      txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
-
-      tx.txp = txpOut;
-      this.txData = tx;
-
-      this.logger.log('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
-      this.refresh();
-      return Promise.resolve();
     });
   }
 
