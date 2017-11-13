@@ -15,7 +15,7 @@ Lock.prototype._release = function(token, task) {
 Lock.prototype._runOne = function(token) {
   var self = this;
 
-  if (_.any(self.tasks[token], {
+  if (_.some(self.tasks[token], {
     running: true
   })) return;
 

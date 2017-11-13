@@ -1019,7 +1019,7 @@ WalletService.prototype._canCreateAddress = function(ignoreMaxGap, cb) {
     var latestAddresses = _.takeRight(_.reject(addresses, {
       isChange: true
     }), Defaults.MAX_MAIN_ADDRESS_GAP);
-    if (latestAddresses.length < Defaults.MAX_MAIN_ADDRESS_GAP || _.any(latestAddresses, {
+    if (latestAddresses.length < Defaults.MAX_MAIN_ADDRESS_GAP || _.some(latestAddresses, {
       hasActivity: true
     })) return cb(null, true);
 
@@ -1482,7 +1482,7 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
   }
 
   if (opts.feeLevel) {
-    if (!_.any(Defaults.FEE_LEVELS, {
+    if (!_.some(Defaults.FEE_LEVELS, {
       name: opts.feeLevel
     }))
       return cb(new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', ')));
@@ -2046,7 +2046,7 @@ WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) 
       }
 
       if (opts.feeLevel) {
-        if (!_.any(Defaults.FEE_LEVELS, {
+        if (!_.some(Defaults.FEE_LEVELS, {
           name: opts.feeLevel
         }))
           return next(new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', ')));
@@ -2319,7 +2319,7 @@ WalletService.prototype.publishTx = function(opts, cb) {
 
           var txpInputs = _.map(txp.inputs, utxoKey);
           var utxosIndex = _.indexBy(utxos, utxoKey);
-          var unavailable = _.any(txpInputs, function(i) {
+          var unavailable = _.some(txpInputs, function(i) {
             var utxo = utxosIndex[i];
             return !utxo || utxo.locked;
           });
