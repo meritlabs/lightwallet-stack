@@ -355,31 +355,31 @@ export class WalletService {
   private createAddress(wallet: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this.logger.debug('Creating address for wallet:', wallet.id);
-
-      wallet.createAddress({}, (err, addr) => {
-        if (err) {
-          let prefix = 'Could not create address'; //TODO Gettextcatalog
-          if (err instanceof this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
-            this.logger.warn(err);
-            return setTimeout(() => {
-              this.createAddress(wallet);
-            }, 5000);
-          } else if (err instanceof this.errors.MAIN_ADDRESS_GAP_REACHED || (err.message && err.message == 'MAIN_ADDRESS_GAP_REACHED')) {
-            this.logger.warn(err);
-            prefix = null;
-            wallet.getMainAddresses({
-              reverse: true,
-              limit: 1
-            }, (err, addr) => {
-              if (err) return reject(err);
-              return resolve(addr[0].address);
-            });
-          };
-          this.bwcErrorService.cb(err, prefix).then((msg) => {
-            return reject(msg);
-          });
-        };
+      return wallet.createAddress({}).then((addr) => {
         return resolve(addr.address);
+      }).catch((err) => {
+        let prefix = 'Could not create address'; //TODO Gettextcatalog
+        if (err == this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
+          this.logger.warn(err);
+          this.logger.warn("Attempting to create address again.");
+          return setTimeout(() => {
+            this.createAddress(wallet);
+          }, 5000);
+        } else if (err == this.errors.MAIN_ADDRESS_GAP_REACHED || (err.message && err.message == 'MAIN_ADDRESS_GAP_REACHED')) {
+          this.logger.warn(err);
+          this.logger.warn("Using main address instead.");
+          prefix = null;
+          return wallet.getMainAddresses({
+            reverse: true,
+            limit: 1
+          }).then((addr) => {
+            return resolve(addr[0].address);
+          });
+        }
+        // No specific error matched above, run through the errorService callback filter.
+        return this.bwcErrorService.cb(err, prefix).then((msg) => {
+          return reject(msg);
+        });
       });
     });
   }
