@@ -352,7 +352,7 @@ export class WalletService {
   }
 
 
-  private createAddress(wallet: any): Promise<any> {
+  private createAddress(wallet: MeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
       this.logger.debug('Creating address for wallet:', wallet.id);
       return wallet.createAddress({}).then((addr) => {
