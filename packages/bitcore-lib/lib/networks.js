@@ -133,6 +133,7 @@ addNetwork({
   pubkeyhash: 0x00,
   privatekey: 0x80,
   scripthash: 0x05,
+  paramscripthash: 0x08,
   xpubkey: 0x0488b21e,
   xprivkey: 0x0488ade4,
   networkMagic: 0xf9beb4d9,
@@ -152,6 +153,7 @@ addNetwork({
   pubkeyhash: 0x6f,
   privatekey: 0xef,
   scripthash: 0xc4,
+  paramscripthash: 0x96,
   xpubkey: 0x043587cf,
   xprivkey: 0x04358394
 });
