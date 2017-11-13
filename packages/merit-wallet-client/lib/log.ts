@@ -29,7 +29,7 @@ export interface LoggerWithLevels {
  }
 
 export class Logger implements LoggerWithLevels {
-  private static _instance: Logger; 
+  private static _instance: Logger;
   private name: string;
   private level: string;
 
@@ -59,7 +59,7 @@ export class Logger implements LoggerWithLevels {
    * @param {*} args - the arguments to be logged.
    */
   public debug(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('silent', message)
+    this.logMessage('debug', message)
   }
 
     /**
@@ -69,7 +69,7 @@ export class Logger implements LoggerWithLevels {
    * @param {*} args - the arguments to be logged.
    */
   public log(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('silent', message)
+    this.logMessage('log', message)
   }
 
   /**
@@ -79,7 +79,7 @@ export class Logger implements LoggerWithLevels {
    * @param {*} args - the arguments to be logged.
    */
   public info(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('silent', message)
+    this.logMessage('info', message)
   }
 
   /**
@@ -89,7 +89,7 @@ export class Logger implements LoggerWithLevels {
    * @param {*} args - the arguments to be logged.
    */
   public warn(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('silent', message)
+    this.logMessage('warn', message)
   }
 
   /**
@@ -99,9 +99,9 @@ export class Logger implements LoggerWithLevels {
    * @param {*} args - the arguments to be logged.
    */
   public error(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('silent', message)
+    this.logMessage('error', message)
   }
-  
+
   /**
    * @class Logger
    * @method fatal
@@ -109,7 +109,7 @@ export class Logger implements LoggerWithLevels {
    * @param {*} args - the arguments to be logged.
    */
   public fatal(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('silent', message)
+    this.logMessage('fatal', message)
   }
 
   private constructor() {
@@ -117,7 +117,7 @@ export class Logger implements LoggerWithLevels {
     this.level = DEFAULT_LOG_LEVEL;
 
     _.each(this.levels, function(level, levelName: string) {
-      
+
     });
   }
 
@@ -136,7 +136,7 @@ export class Logger implements LoggerWithLevels {
         let caller = lines[2];
         caller = ':' + caller.substr(6);
         Error.stackTraceLimit = old;
-        
+
         let str = '[' + levelName + (caller || '') + '] ' + arguments[0],
         extraArgs = [].slice.call(arguments, 1);
         if (console[levelName]) {
