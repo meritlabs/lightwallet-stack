@@ -31,7 +31,17 @@ export class SendConfirmView {
   private static CONFIRM_LIMIT_USD = 20;
   private static FEE_TOO_HIGH_LIMIT_PER = 15;
 
-  private txData: any;
+  private txData: {
+    toAddress: any,
+    toAmount: number,
+    toName: string, 
+    description?: string, 
+    recipientType?: any, 
+    toEmail?: string, 
+    toPhoneNumber?: string,
+    txp: any,
+    allowSpendUnconfirmed: boolean
+  };
   private wallet: Wallet;
   private walletSettings: any;
   private unitToMicro: number;
@@ -57,26 +67,21 @@ export class SendConfirmView {
 
   ionViewDidLoad() {
     this.logger.log('ionViewDidLoad ConfirmView');
-    this.logger.log('Params', this.navParams.data);
-    this.txData = _.pick(this.navParams.data, [
-      'toAddress',
-      'toAmount',
-      'description',
-      'recipientType',
-      'toName',
-      'toEmail',
-      'toPhoneNumber'
-    ]);
-    this.txData.txp = {};
-    this.txData.toName = this.txData.toName || '';
-    this.wallet = this.navParams.data.wallet;
+    this.logger.log('Params', this.navParams);
+    let toAmount = this.navParams.get('toAmount');
+    this.txData = {
+      toAddress:  this.navParams.get('toAddress'),
+      txp: {},
+      toName: this.navParams.get('toAddress') || '',
+      toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
+      allowSpendUnconfirmed: this.walletSettings.spendUnconfirmed
+    }
+    this.wallet = this.navParams.get('wallet');
     this.walletSettings = this.configService.get().wallet.settings;
     this.unitToMicro = this.walletSettings.unitToMicro;
     this.unitDecimals = this.walletSettings.unitDecimals;
     this.microToUnit = 1 / this.unitToMicro;
     this.configFeeLevel = this.walletSettings.feeLevel ? this.walletSettings.feeLevel : 'normal';
-    this.txData.toAmount = this.txData.toAmount * this.unitToMicro; // TODO: get the right number from amount page
-    this.txData.allowSpendUnconfirmed = this.walletSettings.spendUnconfirmed;
 
     this.updateTx(this.txData, this.wallet, {}).catch((err) => {
       this.logger.error('There was an error in updateTx:', err);
