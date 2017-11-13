@@ -185,9 +185,9 @@ WalletService.getInstance = function(opts) {
   opts = opts || {};
 
   var version = Utils.parseVersion(opts.clientVersion);
-  if (version && version.agent == 'bwc') {
-    if (version.major == 0 || (version.major == 1 && version.minor < 2)) {
-      throw new ClientError(Errors.codes.UPGRADE_NEEDED, 'BWC clients < 1.2 are no longer supported.');
+  if (version && version.agent == 'MWC') {
+    if (version.major == 0 || (version.major == 1 && version.minor < 0)) {
+      throw new ClientError(Errors.codes.UPGRADE_NEEDED, 'MWC clients < 1.0 are no longer supported.');
     }
   }
 
