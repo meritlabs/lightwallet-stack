@@ -40,8 +40,8 @@ export class SendConfirmView {
     toEmail?: string, 
     toPhoneNumber?: string,
     txp: any,
-    allowSpendUnconfirmed: boolean,
-    usingCustomFee: boolean
+    allowSpendUnconfirmed?: boolean,
+    usingCustomFee?: boolean
   };
   private wallet: Wallet;
   private walletSettings: any;
@@ -133,15 +133,15 @@ export class SendConfirmView {
       if (tx.usingCustomFee) tx.feeRate = feeRate;
       tx.feeLevelName = this.feeService.feeOpts[tx.feeLevel];
 
-      if (!wallet) return;
+      if (!wallet) return Promise.resolve();
 
       // txp already generated for this wallet?
       if (tx.txp) {
         this.refresh();
-        return;
+        return Promise.resolve();
       }
 
-      return this.getTxp(_.clone(tx), wallet, opts.dryRun);
+      return Promise.resolve(this.getTxp(_.clone(tx), wallet, opts.dryRun));
     }).tap((txpOut) => {
       console.log("Who are you txpOut?")
       console.log(txpOut)
@@ -162,7 +162,7 @@ export class SendConfirmView {
 
       this.logger.log('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
       this.refresh();
-      return;
+      return Promise.resolve();
     });
   }
 
