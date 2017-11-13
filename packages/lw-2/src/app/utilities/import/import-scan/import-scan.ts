@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, ViewController } from 'ionic-angular';
-import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
-import {Logger} from "merit/core/logger";
+import { Logger } from "merit/core/logger";
+import { BarcodeScanner } from '@ionic-native/barcode-scanner'; 
+
+
+declare var cordova:any;
 
 @IonicPage({
   defaultHistory: ['ImportView']
@@ -16,9 +19,11 @@ export class ImportScanView {
 
   public scannerPermitted:boolean;
 
+  public err; 
+
   constructor(
     private viewCtrl:ViewController,
-    private qrScanner: QRScanner,
+    private barcodeScanner: BarcodeScanner,
     private logger:Logger
   ) {
 
@@ -30,37 +35,10 @@ export class ImportScanView {
 
   ionViewDidLoad() {
 
-    console.log('import scan onload');
-
-    this.qrScanner.prepare().then((status:QRScannerStatus) => {
-      this.scannerAvailable = true;
-
-      if (status.authorized) {
-
-        this.scannerPermitted = true;
-
-        // start scanning
-        this.qrScanner.scan().subscribe(
-          (data:string) => {
-            return this.viewCtrl.dismiss(data);
-          },
-          (error: string) => {
-            this.logger.warn(error);
-            return this.viewCtrl.dismiss();
-          }
-        );
-
-        this.qrScanner.show();
-
-      } else if (status.denied) {
-        this.scannerPermitted = false;
-        this.qrScanner.openSettings();
-      } else {
-        this.scannerPermitted = false;
-      }
-
-    }).catch((err) => {
-      this.scannerAvailable = false;
+    this.barcodeScanner.scan({formats: 'QR_CODE'}).then((barcodeData) => {
+      this.viewCtrl.dismiss(barcodeData); 
+    }).catch((err) => { 
+        this.err = err;  
     });
   }
 
