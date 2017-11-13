@@ -924,17 +924,16 @@ Script.buildSimpleVaultScript = function(tag) {
   return s;
 };
 
-Script.buildParameterizedP2SH = function(dest) {
+Script.buildParameterizedP2SH = function(script, params) {
   let s = new Script();
   let destBytes = BN.fromString(dest);
-
   s.add(Opcode.OP_HASH160)
-   .add(destBytes.toBuffer())
+   .add(script instanceof Address ? script.hashBuffer : Hash.sha256ripemd160(script.toBuffer()))
    .add(Opcode.OP_EQUALVERIFY);
 
   let size = 0;
-  for(let i = 1; i < arguments.length; i++) {
-    s.add(arguments[i]);
+  for(let i = 0; i < params.length; i++) {
+    s.add(params[i]);
     size++;
   }
 

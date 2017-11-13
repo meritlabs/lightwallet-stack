@@ -812,41 +812,38 @@ API.prototype.buildEasySendRedeemTransaction = function(input, destinationAddres
   return tx;
 };
 
-/**
- * Create vault transaction
- */
-API.prototype.buildVaultCreationTransaction = function(input, opts) {
-  opts = opts || {};
+API.prototype.createVault = function(type, opts) {
+  if(type == 0) {
+    let tag = opts.masterPubKey.toAddress().hashBuffer;
 
-  var tx = new Bitcore.Transaction();
+    let params = [
+        opts.spendPubKey.toBuffer(),
+        opts.masterPubKey.toBuffer(),
+      ];
 
-  var fee = opts.fee || 10000;
-  var p2shScript = input.script.toScriptHashOut();
-  
-  var privateKey = this.credentials.getDerivedXPrivKey(opts.walletPassword);
-  var network = opts.network || DEFAULT_NET;
+    params = params.concat(opts.whitelist);
+    params.push(opts.whitelist.length);
+    params.push(tag);
+    params.push(type);
 
-  tx.addInput(
-    new Bitcore.Transaction.Input.PayToScriptHashInput({
-      output: Bitcore.Transaction.Output.fromObject({
-        script: p2shScript,
-        micros: 0
-      }),
-      prevTxId: input.txn.txid,
-      outputIndex: input.txn.index,
-      script: input.script
-    }, input.script, p2shScript)
-  );
+    let redeemScript = Script.buildSimpleVaultScript(tag);
+    let scriptPubKey = Script.buildParameterizedP2SH(script, params)
 
-  tx.fee(fee);
+    let vault = {
+      type: type,
+      tag: opts.masterPubKey.toAddress().hashBuffer,
+      whitelist: whitelist,
+      spendPubKey: opts.spendPubKey,
+      masterPubKey: opts.masterPubKey,
+      redeemScript: redeemScript,
+      scriptPubKey: scriptPubKey,
+    };
 
-  var sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, null, 0, input.script);
-  var inputScript = Bitcore.Script.buildParameterizedP2SH('');
-
-  tx.inputs[0].setScript(inputScript);
-
-  return tx;
-};
+    return vault;
+  } else {
+    throw new Error('Unsupported vault type');
+  }
+}
 
 /**
  * Create spend tx for vault
