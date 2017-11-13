@@ -94,11 +94,6 @@ export class WalletsView {
       console.log(err)
     })
   );
-
-    setTimeout(function () {
-        console.log("Waiting to see what comes back with wallets.");
-        console.log(this.wallets)
-  }, 5000);
   }
 
   private registerListeners() {

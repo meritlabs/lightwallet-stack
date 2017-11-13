@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import { Logger } from 'merit/core/logger';
 
 import { Promise } from 'bluebird';
+const request = require('superagent');
 
 import * as _ from 'lodash';
 
@@ -21,7 +21,6 @@ export class RateService {
   private rateServiceUrl = 'https://bitpay.com/api/rates';
   
   constructor(
-    public http: Http,
     private logger: Logger    
   ) {
     console.log('Hello RateService Service');
@@ -35,10 +34,10 @@ export class RateService {
   updateRates(): Promise<any> {
     return new Promise ((resolve, reject) => {
       let self = this;
-      return this.getBTC().then((dataBTC) => {
+      return this.getBTC().timeout(1000).then((dataBTC) => {
         if (_.isEmpty(dataBTC)) {
           this.logger.warn("Could not update rates from rate Service");
-          resolve();
+          return resolve();
           //reject(new Error("Could not get conversion rate."))
         } else {
           _.each(dataBTC, (currency) => {
@@ -49,22 +48,27 @@ export class RateService {
               rate: currency.rate
             });
           });
-          resolve();
+          return resolve();
         }
       })
       .catch((errorBTC) => {
         console.log("JUICED ERROR: ", errorBTC);
-        resolve();
+        return resolve();
         //reject(errorBTC);
       });
     });
   }
 
   getBTC(): Promise<any> {
-    return this.http.get(this.rateServiceUrl)
-      .map((response) => response.json())
-      .toPromise();
-      
+    return new Promise((resolve, reject) => {
+      let r = request['get'](this.rateServiceUrl);
+      return r.then((res) => {
+        if (!res) {
+          return reject("Error connecting to rate service.");
+        }
+        return resolve(res.body);
+      });
+    });
   }
 
   getRate(code) {
@@ -75,8 +79,8 @@ export class RateService {
     return this._alternatives;
   };
   
-  toFiat(satoshis, code) {
-    return satoshis * this.SAT_TO_BTC * this.getRate(code);
+  toFiat(micros, code) {
+    return micros * this.SAT_TO_BTC * this.getRate(code);
   };
 
   fromFiat(amount, code) {

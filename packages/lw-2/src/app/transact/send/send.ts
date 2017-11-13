@@ -11,6 +11,7 @@ import { SendService } from 'merit/transact/send/send.service';
 import { Logger } from 'merit/core/logger';
 
 import * as _ from 'lodash';
+import { MeritWalletClient } from '../../../../../merit-wallet-client/index';
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
@@ -26,7 +27,7 @@ export class SendView {
   public static readonly CONTACTS_SHOW_LIMIT = 10;
   private walletsToTransfer: Array<any>; // Eventually array of wallets
   private showTransferCard: boolean;
-  private wallets: Array<Wallet>;
+  private wallets: Array<MeritWalletClient>;
   private originalContacts: Array<any>;
   private deviceContacts: Array<any>; // On your phone or mobile device.
   private currentContactsPage = 0;
@@ -211,9 +212,15 @@ export class SendView {
     // TODO: Improve to be more resilient.
     if(search && search.length > 19) {
       this.sendService.isAddressValid(search).then((isValid) => {
-        if (isValid) {
-          this.navCtrl.push('SendAmountView');
-          return;          
+          if (isValid) {
+            this.profileService.getWallets()
+              .then((wallets) => {
+                this.navCtrl.push('SendAmountView', {
+                  wallet: wallets[0],
+                  sending: true,
+                  address: search
+                });
+              });
         } else {
           this.popupService.ionicAlert('This address has not been invited to the merit network yet!');
         }  
