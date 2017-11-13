@@ -71,36 +71,34 @@ export class WalletsView {
   ) {
   }
 
-  private async getWallets():Promise<Array<Wallet>> {
-    console.log("needWalletStatuses");
-    console.log(this.needWalletStatuses());
-    if (this.needWalletStatuses()) {
-      this.wallets = await this.updateAllWallets();     
-    }
-    return this.wallets;
-  }
 
   public async ionViewDidLoad() {
+    console.log("Wallets.ts ionViewDidLoad");
 
     this.registerListeners();
-
-    this.getWallets().then((wallets) => {
-      this.calculateNetworkAmount(wallets);
-    });
-
-    this.processEasyReceive();
-
     this.newReleaseExists = await this.appUpdateService.isUpdateAvailable();
     this.feedbackNeeded   = await this.feedbackService.isFeedBackNeeded();
-
     this.addressbook = await this.addressbookService.list(() => {});
 
-    this.txpsData = await this.profileService.getTxps({limit: 3});
-    if (this.configService.get().recentTransactions.enabled) {
-      this.recentTransactionsEnabled = true;
-      this.recentTransactionsData = await this.profileService.getNotifications({limit: 3});
-    }
+    Promise.resolve(this.getWallets().then((wallets) => {
+      this.calculateNetworkAmount(wallets);
+      this.processEasyReceive();
+      this.txpsData = this.profileService.getTxps({limit: 3});
+      if (this.configService.get().recentTransactions.enabled) {
+        this.recentTransactionsEnabled = true;
+        this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
+      }
+    })
+    .catch((err) => {
+      console.log("@@ERROR IN Updating statuses.")
+      console.log(err)
+    })
+  );
 
+    setTimeout(function () {
+        console.log("Waiting to see what comes back with wallets.");
+        console.log(this.wallets)
+  }, 5000);
   }
 
   private registerListeners() {
@@ -265,17 +263,30 @@ export class WalletsView {
     this.navCtrl.push('ImportView');
   }
 
+
+  private async getWallets():Promise<Array<Wallet>> {
+    console.log("needWalletStatuses");
+    console.log(this.needWalletStatuses());
+    if (this.needWalletStatuses()) {
+      this.wallets = await this.updateAllWallets();     
+    }
+    console.log("@@Got wallets with statuses");    
+    console.log(this.wallets);    
+    return this.wallets;
+  }
+
   private async updateAllWallets() {
     let wallets = await this.profileService.getWallets();
+    console.log("@@got the wallets")
+    console.log(wallets)
     // Get the statuses of all the wallets.
     return await Promise.all(_.map(wallets, async (wallet:any) => {
-      wallet.status = await this.walletService.getStatus(wallet);
+      wallet.status = this.walletService.getStatus(wallet);
       return wallet; 
     })).catch((err) => {
       console.log("Error updating wallets");
       console.log(err);
     });
-
   }
 
   openTransactionDetails(transaction) {
