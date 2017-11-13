@@ -11,6 +11,7 @@
     "bitcore"
   ],
   "scripts": {
+    "prepare-bwc": "browserify src/lib/bwc/src.js --standalone bwc > src/lib/bwc/index.js",
     "clean": "ionic-app-scripts clean",
     "build": "ionic-app-scripts build",
     "lint": "ionic-app-scripts lint",
