@@ -1,29 +1,37 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
-import { ExternalLinkService } from "merit/shared/external-link.service";
-
+import { AppService } from "merit/core/app-settings.service";
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 @IonicPage()
-@Component({
+@Component({ 
   selector: 'view-settings-about',
   templateUrl: 'settings-about.html',
 })
 export class SettingsAboutView {
 
-  public version = '0.0.0'; //@todo move to config
-  public commitHash = 'a1b2c3d4'; //@todo move to config
+  public version:string;
+  public commitHash:string; 
+  public repoUrl:string;
 
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
     private  alertCtrl:AlertController,
-    private externalService:ExternalLinkService
+    private inAppBrowser:InAppBrowser,
+    private appSettingsService:AppService
   ) {
 
   }
 
-  ionViewDidLoad() {
-    //do something here
+  async ionViewDidLoad() {
+
+    let info = await this.appSettingsService.getInfo();
+
+    this.version = this.appSettingsService.info.version;
+    this.commitHash = this.appSettingsService.info.commitHash;
+    this.repoUrl = this.appSettingsService.info.gitHubRepoUrl; 
+
   }
 
   toSessionLog() {
@@ -35,15 +43,15 @@ export class SettingsAboutView {
   }
 
   toGithub() {
-    //@TODO move to configs
-    let url = 'https://github.com/meritlabs/lightwallet-stack';
-
+    
     let confirm = this.alertCtrl.create({
       title: 'External link',
       message: 'You can see the latest developments and contribute to this open source app by visiting our project on GitHub',
       buttons: [
         {text: 'Cancel', role: 'cancel', handler: () => {}},
-        {text: 'Open GitHub', handler: () => {this.externalService.open(url)} }
+        {text: 'Open GitHub', handler: () => {
+          this.inAppBrowser.create(this.repoUrl);
+        } }
       ]
     });
 

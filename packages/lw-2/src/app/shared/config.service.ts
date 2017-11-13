@@ -79,6 +79,10 @@ interface Config {
     url: string;
   };
 
+  help: {
+    url: string
+  },
+
   pushNotificationsEnabled: boolean;
 
   confirmedTxsNotifications: {
@@ -168,6 +172,10 @@ const configDefault: Config = {
     url: 'https://api.github.com/repos/bitpay/copay/releases/latest'
   },
 
+  help: {
+    url: 'https://help.merit.me'
+  },
+
   pushNotificationsEnabled: true,
 
   confirmedTxsNotifications: {
@@ -214,18 +222,21 @@ export class ConfigService {
     });
   }
 
-  public set(newOpts: object) {
-    let config = _.cloneDeep(configDefault);
-
-    if (_.isString(newOpts)) {
-      newOpts = JSON.parse(newOpts);
-    }
-    _.merge(config, this.configCache, newOpts);
-    this.configCache = config;
-    this.events.publish('config:updated', this.configCache);
-
-    this.persistence.storeConfig(this.configCache).then(() => {
-      this.logger.info('Config saved');
+  public set(newOpts: object):Promise<any> {
+    return new Promise((resolve, reject) => {
+      let config = _.cloneDeep(configDefault);
+      
+          if (_.isString(newOpts)) {
+            newOpts = JSON.parse(newOpts);
+          }
+          _.merge(config, this.configCache, newOpts);
+          this.configCache = config;
+          this.events.publish('config:updated', this.configCache);
+      
+          return this.persistence.storeConfig(this.configCache).then(() => {
+            this.logger.info('Config saved');
+            resolve(this.configCache);
+          });
     });
   }
 

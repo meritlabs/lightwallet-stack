@@ -811,9 +811,8 @@ export class WalletService {
     });
   }
 
-  public updateRemotePreferences(clients: any, prefs: any): Promise<any> {
+  public updateRemotePreferences(clients: any, prefs: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      prefs = prefs || {};
 
       if (!_.isArray(clients))
         clients = [clients];
