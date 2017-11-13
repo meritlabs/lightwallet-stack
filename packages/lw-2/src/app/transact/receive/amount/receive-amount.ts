@@ -9,7 +9,7 @@ import {ConfigService} from "merit/shared/config.service";
 @IonicPage()
 @Component({
   selector: 'receive-amount-view',
-  templateUrl: 'amount.html',
+  templateUrl: 'receive-amount.html',
 })
 export class ReceiveAmountView {
 
@@ -28,7 +28,6 @@ export class ReceiveAmountView {
 
   }
 
-
   ionViewDidLoad() {
     let settings = this.configService.get().wallet.settings;
 
@@ -38,15 +37,13 @@ export class ReceiveAmountView {
     ];
     this.formData.currency = this.availableCurrencies[0];
 
-    let unitToMicro = settings.unitToSatoshi;
+    let unitToMicro = settings.unitToMicro;
     let microToUnit = 1 / unitToMicro;
     let microsToMrt = 1 / 100000000;
     let unitDecimals = settings.unitDecimals;
 
 
   }
-
-
 
   close() {
     this.viewCtrl.dismiss();
@@ -55,8 +52,5 @@ export class ReceiveAmountView {
   setAmount() {
     this.viewCtrl.dismiss(this.formData.amount);
   }
-
-
-
 
 }

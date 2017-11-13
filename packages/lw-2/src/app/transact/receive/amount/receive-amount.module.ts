@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { ReceiveAmountView } from './amount';
+import { ReceiveAmountView } from './receive-amount';
 
 @NgModule({
   declarations: [
