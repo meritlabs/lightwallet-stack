@@ -3,7 +3,7 @@ import {EasyReceipt} from "merit/easy-receive/easy-receipt.model";
 import { Wallet } from "merit/wallets/wallet.model";
 import { Logger } from 'merit/core/logger';
 import { PersistenceService } from 'merit/core/persistence.service';
-import { FeeService } from 'merit/transact/fee.service'
+import { FeeService } from 'merit/shared/fee/fee.service'
 import { BwcService } from 'merit/core/bwc.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { LedgerService } from 'merit/shared/ledger.service';
@@ -86,9 +86,9 @@ export class EasyReceiveService {
       let scriptData = this.generateEasyScipt(receipt, password, network);
       var scriptId = this.bwcService.getBitcore().Address.payingTo(scriptData.script, network);
   
-      walletClient.validateEasyScript(scriptId, (err, txn) => {
-        if (err || txn.result.found == false) {
-          this.logger.warn("Could not validate easyScript on the blockchain.", err);
+      return walletClient.validateEasyScript(scriptId).then((txn) => {
+        if (txn.result.found == false) {
+          this.logger.warn("Could not validate easyScript on the blockchain.");
           resolve(false);
         } else {
           resolve({
@@ -99,7 +99,11 @@ export class EasyReceiveService {
             scriptId: scriptId,
           });
         }
+      }).catch((err) => {
+        this.logger.warn("Could not validate easyScript on the blockchain.", err);
+        resolve(false);
       });
+
     });
   }
 
