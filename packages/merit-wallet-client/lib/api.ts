@@ -208,7 +208,7 @@ export class API extends EventEmitter {
 
     if (!notes) return;
 
-    var encryptingKey = this.credentials.sharedEncryptingKey;
+    let encryptingKey = this.credentials.sharedEncryptingKey;
     _.each([].concat(notes), function(note) {
       note.encryptedBody = note.body;
       note.body = this._decryptMessage(note.body, encryptingKey);
@@ -274,7 +274,7 @@ export class API extends EventEmitter {
         };
       }
     }
-    var ret;
+    let ret;
     if (body.code) {
       if (Errors[body.code]) {
         ret = Errors[body.code];
@@ -300,7 +300,7 @@ export class API extends EventEmitter {
    * @param {String} privKey - Private key to sign the request
    */
   private _signRequest = function(method, url, args, privKey) {
-    var message = [method.toLowerCase(), url, JSON.stringify(args)].join('|');
+    let message = [method.toLowerCase(), url, JSON.stringify(args)].join('|');
     return Utils.signMessage(message, privKey);
   };
 
@@ -331,61 +331,61 @@ export class API extends EventEmitter {
   validateKeyDerivation(opts): Promise<any> {
     return new Promise((resolve, reject) => {
         
-      var _deviceValidated: boolean;
+      let _deviceValidated: boolean;
 
       opts = opts || {};
 
-      var c = this.credentials;
+      let c = this.credentials;
 
       function testMessageSigning(xpriv, xpub) {
-        var nonHardenedPath = 'm/0/0';
-        var message = 'Lorem ipsum dolor sit amet, ne amet urbanitas percipitur vim, libris disputando his ne, et facer suavitate qui. Ei quidam laoreet sea. Cu pro dico aliquip gubergren, in mundi postea usu. Ad labitur posidonium interesset duo, est et doctus molestie adipiscing.';
-        var priv = xpriv.deriveChild(nonHardenedPath).privateKey;
-        var signature = Utils.signMessage(message, priv);
-        var pub = xpub.deriveChild(nonHardenedPath).publicKey;
+        let nonHardenedPath = 'm/0/0';
+        let message = 'Lorem ipsum dolor sit amet, ne amet urbanitas percipitur vim, libris disputando his ne, et facer suavitate qui. Ei quidam laoreet sea. Cu pro dico aliquip gubergren, in mundi postea usu. Ad labitur posidonium interesset duo, est et doctus molestie adipiscing.';
+        let priv = xpriv.deriveChild(nonHardenedPath).privateKey;
+        let signature = Utils.signMessage(message, priv);
+        let pub = xpub.deriveChild(nonHardenedPath).publicKey;
         return Utils.verifyMessage(message, signature, pub);
       };
 
       function testHardcodedKeys() {
-        var words = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
-        var xpriv = Mnemonic(words).toHDPrivateKey();
+        let words = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+        let xpriv = Mnemonic(words).toHDPrivateKey();
 
         if (xpriv.toString() != 'xprv9s21ZrQH143K2jHFB1HM4GNbVaBSSnjHDQP8uBtKKTvusxMirfmKEmaUS4fkwqeoLqVVT2ShayUSmnEZNV1AKqTSESqyAFCBW8nvEqKfvGy') return false;
 
         xpriv = xpriv.deriveChild("m/44'/0'/0'");
         if (xpriv.toString() != 'xprv9ynVfpDwjVTeyQALCLp4EVHwonHHoE37DoUkjsj6A5vxXK1Wh6YEQVPdgdGdtvqWttM4nqgxK8kgmmRD5yfKhWGbD75JGdsDb9yMtozdVc6') return false;
 
-        var xpub = Bitcore.HDPublicKey.fromString('xpub6Cmr5KkqZs1xBtEoJNM4bdEgMp7nCgkxb2QMYG8hiRTwQ7LfEdrUxHi7XrjNxkeuRrNSqHLXHAuwZvqoeASrp5jxjnpMa4d8PFpA9TRxVCd');
+        let xpub = Bitcore.HDPublicKey.fromString('xpub6Cmr5KkqZs1xBtEoJNM4bdEgMp7nCgkxb2QMYG8hiRTwQ7LfEdrUxHi7XrjNxkeuRrNSqHLXHAuwZvqoeASrp5jxjnpMa4d8PFpA9TRxVCd');
         return testMessageSigning(xpriv, xpub);
       };
 
       function testLiveKeys() {
-        var words;
+        let words;
         try {
           words = c.getMnemonic();
         } catch (ex) {}
 
-        var xpriv;
+        let xpriv;
         if (words && (!c.mnemonicHasPassphrase || opts.passphrase)) {
-          var m = new Mnemonic(words);
+          let m = new Mnemonic(words);
           xpriv = m.toHDPrivateKey(opts.passphrase, c.network);
         }
         if (!xpriv) {
           xpriv = new Bitcore.HDPrivateKey(c.xPrivKey);
         }
         xpriv = xpriv.deriveChild(c.getBaseAddressDerivationPath());
-        var xpub = new Bitcore.HDPublicKey(c.xPubKey);
+        let xpub = new Bitcore.HDPublicKey(c.xPubKey);
 
         return testMessageSigning(xpriv, xpub);
       };
 
-      var hardcodedOk = true;
+      let hardcodedOk = true;
       if (!_deviceValidated && !opts.skipDeviceValidation) {
         hardcodedOk = testHardcodedKeys();
         _deviceValidated = true;
       }
 
-      var liveOk = (c.canSign() && !c.isPrivKeyEncrypted()) ? testLiveKeys() : true;
+      let liveOk = (c.canSign() && !c.isPrivKeyEncrypted()) ? testLiveKeys() : true;
 
       this.keyDerivationOk = hardcodedOk && liveOk;
 
@@ -484,9 +484,9 @@ export class API extends EventEmitter {
 
     opts = opts || {};
 
-    var output;
+    let output;
 
-    var c = Credentials.fromObj(this.credentials);
+    let c = Credentials.fromObj(this.credentials);
 
     if (opts.noSign) {
       c.setNoSign();
@@ -507,7 +507,7 @@ export class API extends EventEmitter {
    */
   import(str): any {
     try {
-      var credentials = Credentials.fromObj(JSON.parse(str));
+      let credentials = Credentials.fromObj(JSON.parse(str));
       this.credentials = credentials;
     } catch (ex) {
       throw Errors.INVALID_BACKUP;
@@ -579,7 +579,7 @@ export class API extends EventEmitter {
       }).then((err) => {
         if (err == Errors.INVALID_BACKUP) return reject(err);
         if (err == Errors.NOT_AUTHORIZED || err == Errors.WALLET_DOES_NOT_EXIST) {
-          var altCredentials = derive(true);
+          let altCredentials = derive(true);
           if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return reject(err);
           this.credentials = altCredentials;
           return this._import();
@@ -638,20 +638,20 @@ export class API extends EventEmitter {
   decryptBIP38PrivateKey(encryptedPrivateKeyBase58, passphrase, opts): Promise<any> {
     return new Promise((resolve, reject) => {
       
-      var bip38 = new Bip38();
+      let bip38 = new Bip38();
       
-      var privateKeyWif;
+      let privateKeyWif;
       try {
         privateKeyWif = bip38.decrypt(encryptedPrivateKeyBase58, passphrase);
       } catch (ex) {
         return reject(new Error('Could not decrypt BIP38 private key: ' + ex));
       }
       
-      var privateKey = new Bitcore.PrivateKey(privateKeyWif, 'livenet');
-      var address = privateKey.publicKey.toAddress().toString();
-      var addrBuff = new Buffer(address, 'ascii');
-      var actualChecksum = Bitcore.crypto.Hash.sha256sha256(addrBuff).toString('hex').substring(0, 8);
-      var expectedChecksum = Bitcore.encoding.Base58Check.decode(encryptedPrivateKeyBase58).toString('hex').substring(6, 14);
+      let privateKey = new Bitcore.PrivateKey(privateKeyWif, 'livenet');
+      let address = privateKey.publicKey.toAddress().toString();
+      let addrBuff = new Buffer(address, 'ascii');
+      let actualChecksum = Bitcore.crypto.Hash.sha256sha256(addrBuff).toString('hex').substring(0, 8);
+      let expectedChecksum = Bitcore.encoding.Base58Check.decode(encryptedPrivateKeyBase58).toString('hex').substring(6, 14);
       
       if (actualChecksum != expectedChecksum)
         return reject(new Error('Incorrect passphrase'));
@@ -660,11 +660,11 @@ export class API extends EventEmitter {
     });
   };
   
-  getBalanceFromPrivateKey(privateKey): Promise<any> {
+  getBalanceFromPrivateKey(_privateKey: string): Promise<any> {
     return new Promise((resolve, reject) => {
       
-      var privateKey = new Bitcore.PrivateKey(privateKey);
-      var address = privateKey.publicKey.toAddress();
+      let privateKey = new Bitcore.PrivateKey(_privateKey);
+      let address = privateKey.publicKey.toAddress();
       return this.getUtxos({
         addresses: address.toString(),
       }).then((utxos) => {
@@ -673,12 +673,12 @@ export class API extends EventEmitter {
     });
   };
 
-  buildTxFromPrivateKey(privateKey, destinationAddress, opts: any = {}): Promise<any> {
+  buildTxFromPrivateKey(_privateKey:string, destinationAddress, opts: any = {}): Promise<any> {
 
     return new Promise((resolve, reject) => {
       
-      var privateKey = new Bitcore.PrivateKey(privateKey);
-      var address = privateKey.publicKey.toAddress();
+      let privateKey = new Bitcore.PrivateKey(_privateKey);
+      let address = privateKey.publicKey.toAddress();
 
 
 
@@ -687,13 +687,13 @@ export class API extends EventEmitter {
         }).then((utxos) => {
           if (!_.isArray(utxos) || utxos.length == 0) return reject(new Error('No utxos found'));
           
-          var fee = opts.fee || 10000;
-          var amount = _.sumBy(utxos, 'micros') - fee;
+          let fee = opts.fee || 10000;
+          let amount = _.sumBy(utxos, 'micros') - fee;
           if (amount <= 0) return reject(Errors.INSUFFICIENT_FUNDS);
   
-          var tx;
+          let tx;
           try {
-            var toAddress = Bitcore.Address.fromString(destinationAddress);
+            let toAddress = Bitcore.Address.fromString(destinationAddress);
   
             tx = new Bitcore.Transaction()
               .from(utxos)
@@ -731,19 +731,19 @@ export class API extends EventEmitter {
         if (addr.publicKeys.length < 1) {
           reject(Error('Error creating an address for easySend'));
         }
-        var pubKey = Bitcore.PublicKey.fromString(addr.publicKeys[0]);
+        let pubKey = Bitcore.PublicKey.fromString(addr.publicKeys[0]);
 
         // {key, secret}
-        var network = opts.network || 'livenet';
-        var rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
+        let network = opts.network || 'livenet';
+        let rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
         
-        var pubKeys = [
+        let pubKeys = [
           rcvPair.key.publicKey.toBuffer(),
           pubKey.toBuffer()
         ];
         
-        var timeout = opts.timeout || 1008;
-        var script = Bitcore.Script.buildEasySendOut(pubKeys, timeout, network);
+        let timeout = opts.timeout || 1008;
+        let script = Bitcore.Script.buildEasySendOut(pubKeys, timeout, network);
         
         result = {
           receiverPubKey: rcvPair.key.publicKey,
@@ -783,18 +783,18 @@ export class API extends EventEmitter {
     //unspent Txo and use script to create scriptSig
     opts = opts || {};
 
-    var inputAddress = input.txn.scriptId;
+    let inputAddress = input.txn.scriptId;
 
-    var fee = opts.fee || 10000;
-    var microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
-    var amount =  microAmount - fee;
+    let fee = opts.fee || 10000;
+    let microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
+    let amount =  microAmount - fee;
     if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
 
-    var tx = new Bitcore.Transaction();
+    let tx = new Bitcore.Transaction();
 
     try {
-      var toAddress = Bitcore.Address.fromString(destinationAddress);
-      var p2shScript = input.script.toScriptHashOut();
+      let toAddress = Bitcore.Address.fromString(destinationAddress);
+      let p2shScript = input.script.toScriptHashOut();
 
       tx.addInput(
         new Bitcore.Transaction.Input.PayToScriptHashInput({
@@ -810,8 +810,8 @@ export class API extends EventEmitter {
       tx.to(toAddress, amount)
       tx.fee(fee)
 
-      var sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, input.script);
-      var inputScript = Bitcore.Script.buildEasySendIn(sig, input.script);
+      let sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, input.script);
+      let inputScript = Bitcore.Script.buildEasySendIn(sig, input.script);
 
       tx.inputs[0].setScript(inputScript);
 
@@ -839,12 +839,12 @@ export class API extends EventEmitter {
         return resolve(true); // wallet is already open
 
       return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
-        var wallet = ret.wallet;
+        let wallet = ret.wallet;
 
         this._processStatus(ret);
 
         if (!this.credentials.hasWalletInfo()) {
-          var me:any = _.find(wallet.copayers, {
+          let me:any = _.find(wallet.copayers, {
             id: this.credentials.copayerId
           });
           this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode);
@@ -872,7 +872,7 @@ export class API extends EventEmitter {
   };
 
   _getHeaders(method, url, args): any {
-    var headers = {
+    let headers = {
       'x-client-version': 'MWC-' + Package.version,
     };
 
@@ -893,7 +893,7 @@ export class API extends EventEmitter {
     return new Promise((resolve, reject) => {
       
 
-      var headers = this._getHeaders(method, url, args);
+      let headers = this._getHeaders(method, url, args);
 
       if (this.credentials) {
         headers['x-identity'] = this.credentials.copayerId;
@@ -901,8 +901,8 @@ export class API extends EventEmitter {
         if (useSession && this.session) {
           headers['x-session'] = this.session;
         } else {
-          var reqSignature;
-          var key = args._requestPrivKey || this.credentials.requestPrivKey;
+          let reqSignature;
+          let key = args._requestPrivKey || this.credentials.requestPrivKey;
           if (key) {
             delete args['_requestPrivKey'];
             reqSignature = this._signRequest(method, url, args, key);
@@ -911,7 +911,7 @@ export class API extends EventEmitter {
         }
       }
 
-      var r = this.request[method](this.baseUrl + url);
+      let r = this.request[method](this.baseUrl + url);
 
       r.accept('json');
 
@@ -1061,8 +1061,8 @@ export class API extends EventEmitter {
     if (_.isString(walletPrivKey)) {
       walletPrivKey = Bitcore.PrivateKey.fromString(walletPrivKey);
     }
-    var widHex = new Buffer(walletId.replace(/-/g, ''), 'hex');
-    var widBase58 = new Bitcore.encoding.Base58(widHex).toString();
+    let widHex = new Buffer(walletId.replace(/-/g, ''), 'hex');
+    let widBase58 = new Bitcore.encoding.Base58(widHex).toString();
     return _.padEnd(widBase58, 22, '0') + walletPrivKey.toWIF() + (network == 'testnet' ? 'T' : 'L');
   };
 
@@ -1070,9 +1070,9 @@ export class API extends EventEmitter {
     $.checkArgument(secret);
 
     function split(str, indexes) {
-      var parts = [];
+      let parts = [];
       indexes.push(str.length);
-      var i = 0;
+      let i = 0;
       while (i < indexes.length) {
         parts.push(str.substring(i == 0 ? 0 : indexes[i - 1], indexes[i]));
         i++;
@@ -1081,13 +1081,13 @@ export class API extends EventEmitter {
     };
 
     try {
-      var secretSplit = split(secret, [22, 74]);
-      var widBase58 = secretSplit[0].replace(/0/g, '');
-      var widHex = Bitcore.encoding.Base58.decode(widBase58).toString('hex');
-      var walletId = split(widHex, [8, 12, 16, 20]).join('-');
+      let secretSplit = split(secret, [22, 74]);
+      let widBase58 = secretSplit[0].replace(/0/g, '');
+      let widHex = Bitcore.encoding.Base58.decode(widBase58).toString('hex');
+      let walletId = split(widHex, [8, 12, 16, 20]).join('-');
 
-      var walletPrivKey = Bitcore.PrivateKey.fromString(secretSplit[1]);
-      var networkChar = secretSplit[2];
+      let walletPrivKey = Bitcore.PrivateKey.fromString(secretSplit[1]);
+      let networkChar = secretSplit[2];
 
       return {
         walletId: walletId,
@@ -1100,16 +1100,16 @@ export class API extends EventEmitter {
   };
 
   getRawTx = function(txp) {
-    var t = Utils.buildTx(txp);
+    let t = Utils.buildTx(txp);
     return t.uncheckedSerialize();
   };
 
   public signTxp = function(txp, derivedXPrivKey):any {
     //Derive proper key to sign, for each input
-    var privs = [];
-    var derived = {};
+    let privs = [];
+    let derived = {};
 
-    var xpriv = new Bitcore.HDPrivateKey(derivedXPrivKey);
+    let xpriv = new Bitcore.HDPrivateKey(derivedXPrivKey);
 
     _.each(txp.inputs, function(i) {
       $.checkState(i.path, "Input derivation path not available (signing transaction)")
@@ -1119,9 +1119,9 @@ export class API extends EventEmitter {
       }
     });
 
-    var t = Utils.buildTx(txp);
+    let t = Utils.buildTx(txp);
 
-    var signatures = _.map(privs, function(priv, i) {
+    let signatures = _.map(privs, function(priv, i) {
       return t.getSignatures(priv);
     });
 
@@ -1133,12 +1133,12 @@ export class API extends EventEmitter {
   };
 
   private _signTxp(txp, password): any {
-    var derived = this.credentials.getDerivedXPrivKey(password);
+    let derived = this.credentials.getDerivedXPrivKey(password);
     return this.signTxp(txp, derived);
   };
 
   _getCurrentSignatures(txp): any {
-    var acceptedActions = _.filter(txp.actions, {
+    let acceptedActions = _.filter(txp.actions, {
       type: 'accept'
     });
 
@@ -1154,15 +1154,15 @@ export class API extends EventEmitter {
     if (signatures.length != txp.inputs.length)
       throw new Error('Number of signatures does not match number of inputs');
 
-    var i = 0,
+    let i = 0,
       x = new Bitcore.HDPublicKey(xpub);
 
     _.each(signatures, function(signatureHex) {
-      var input = txp.inputs[i];
+      let input = txp.inputs[i];
       try {
-        var signature = Bitcore.crypto.Signature.fromString(signatureHex);
-        var pub = x.deriveChild(txp.inputPaths[i]).publicKey;
-        var s = {
+        let signature = Bitcore.crypto.Signature.fromString(signatureHex);
+        let pub = x.deriveChild(txp.inputPaths[i]).publicKey;
+        let s = {
           inputIndex: i,
           signature: signature,
           sigtype: Bitcore.crypto.Signature.SIGHASH_ALL,
@@ -1182,7 +1182,7 @@ export class API extends EventEmitter {
 
     $.checkState(txp.status == 'accepted');
 
-    var sigs = this._getCurrentSignatures(txp);
+    let sigs = this._getCurrentSignatures(txp);
     _.each(sigs, function(x) {
       this._addSignaturesToBitcoreTx(txp, t, x.signatures, x.xpub);
     });
@@ -1207,10 +1207,10 @@ export class API extends EventEmitter {
       // Adds encrypted walletPrivateKey to CustomData
       opts.customData = opts.customData || {};
       opts.customData.walletPrivKey = walletPrivKey.toString();
-      var encCustomData = Utils.encryptMessage(JSON.stringify(opts.customData), this.credentials.personalEncryptingKey);
-      var encCopayerName = Utils.encryptMessage(copayerName, this.credentials.sharedEncryptingKey);
+      let encCustomData = Utils.encryptMessage(JSON.stringify(opts.customData), this.credentials.personalEncryptingKey);
+      let encCopayerName = Utils.encryptMessage(copayerName, this.credentials.sharedEncryptingKey);
 
-      var args: any = {
+      let args: any = {
         walletId: walletId,
         name: encCopayerName,
         xPubKey: xPubKey,
@@ -1222,10 +1222,10 @@ export class API extends EventEmitter {
       if (_.isBoolean(opts.supportBIP44AndP2PKH))
         args.supportBIP44AndP2PKH = opts.supportBIP44AndP2PKH;
 
-      var hash = Utils.getCopayerHash(args.name, args.xPubKey, args.requestPubKey);
+      let hash = Utils.getCopayerHash(args.name, args.xPubKey, args.requestPubKey);
       args.copayerSignature = Utils.signMessage(hash, walletPrivKey);
 
-      var url = '/v1/wallets/' + walletId + '/copayers';
+      let url = '/v1/wallets/' + walletId + '/copayers';
       return this._doPostRequest(url, args).then((body) => {
         return this._processWallet(body.wallet).then(() => {
           return resolve(body.wallet);
@@ -1290,7 +1290,7 @@ export class API extends EventEmitter {
     if (!this.isPrivKeyEncrypted()) return;
 
     try {
-      var keys = this.getKeys(password);
+      let keys = this.getKeys(password);
       return !!keys.xPrivKey;
     } catch (e) {
       return false;
@@ -1311,7 +1311,7 @@ export class API extends EventEmitter {
 
   private _extractPublicKeyRing = function(copayers) {
     return _.map(copayers, function(copayer: any) {
-      var pkr: any = _.pick(copayer, ['xPubKey', 'requestPubKey']);
+      let pkr: any = _.pick(copayer, ['xPubKey', 'requestPubKey']);
       pkr.copayerName = copayer.name;
       return pkr;
     });
@@ -1368,7 +1368,7 @@ export class API extends EventEmitter {
 };
 
   _checkKeyDerivation(): any {
-    var isInvalid = (this.keyDerivationOk === false);
+    let isInvalid = (this.keyDerivationOk === false);
     if (isInvalid) {
       log.error('Key derivation for this device is not working as expected');
     }
@@ -1400,7 +1400,7 @@ export class API extends EventEmitter {
       if (opts) $.shouldBeObject(opts);
       opts = opts || {};
 
-      var network = opts.network || 'livenet';
+      let network = opts.network || 'livenet';
       if (!_.includes(['testnet', 'livenet'], network)) return reject(new Error('Invalid network'));
 
       if (!this.credentials) {
@@ -1416,13 +1416,13 @@ export class API extends EventEmitter {
         return reject(new Error('Existing keys were created for a different network'));
       }
 
-      var walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey();
+      let walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey();
 
-      var c = this.credentials;
+      let c = this.credentials;
       c.addWalletPrivateKey(walletPrivKey.toString());
-      var encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
+      let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
 
-      var args = {
+      let args = {
         name: encWalletName,
         m: m,
         n: n,
@@ -1437,13 +1437,13 @@ export class API extends EventEmitter {
 
       // Create wallet
       return this._doPostRequest('/v1/wallets/', args).then((res) => {
-        var walletId = res.walletId;
-        var walletShareCode = res.shareCode;
-        var walletCodeHash = res.codeHash;
+        let walletId = res.walletId;
+        let walletShareCode = res.shareCode;
+        let walletCodeHash = res.codeHash;
         c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
 
 
-        var secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
+        let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
         return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then((wallet) => {
             return resolve(n > 1 ? secret : null);
@@ -1462,25 +1462,15 @@ export class API extends EventEmitter {
    * @param {Callback} cb
    * @returns {Callback} cb - Returns the wallet
    */
-  joinWallet(secret, copayerName, opts): Promise<any> {
+  joinWallet(secret, copayerName, opts:any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      
       if (!this._checkKeyDerivation()) return reject(new Error('Cannot join wallet'));
-
-      opts = opts || {};
-
-      try {
-        var secretData = this.parseSecret(secret);
-      } catch (ex) {
-        return reject(ex);
-      }
-
+      let secretData = this.parseSecret(secret);
       if (!this.credentials) {
         this.seedFromRandom({
           network: secretData.network
         });
       }
-
       this.credentials.addWalletPrivateKey(secretData.walletPrivKey.toString());
       return this.doJoinWallet(secretData.walletId, secretData.walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, copayerName, {
         dryRun: !!opts.dryRun,
@@ -1488,11 +1478,12 @@ export class API extends EventEmitter {
         if (!opts.dryRun) {
           this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.beacon, wallet.shareCode);
         }
-        return resolve(wallet);
+        return resolve(wallet);        
+      }).catch((ex) => {
+        return reject(ex);
       });
     });
-  
-  };
+  }
 
   /**
    * Recreates a wallet, given credentials (with wallet id)
@@ -1538,7 +1529,7 @@ export class API extends EventEmitter {
       }).then(() => {
         let i = 1;
         return Promise.each(this.credentials.publicKeyRing, function(item, next) {
-          var name = item.copayerName || ('copayer ' + i++);
+          let name = item.copayerName || ('copayer ' + i++);
           return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
             supportBIP44AndP2PKH: supportBIP44AndP2PKH
           });
@@ -1550,15 +1541,15 @@ export class API extends EventEmitter {
   // TODO: Promisify!
   private _processWallet(wallet): Promise<any> {
     return new Promise((resolve, reject) => {
-      var encryptingKey = this.credentials.sharedEncryptingKey;
+      let encryptingKey = this.credentials.sharedEncryptingKey;
 
-      var name = Utils.decryptMessage(wallet.name, encryptingKey);
+      let name = Utils.decryptMessage(wallet.name, encryptingKey);
       if (name != wallet.name) {
         wallet.encryptedName = wallet.name;
       }
       wallet.name = name;
       _.each(wallet.copayers, function(copayer) {
-        var name = Utils.decryptMessage(copayer.name, encryptingKey);
+        let name = Utils.decryptMessage(copayer.name, encryptingKey);
         if (name != copayer.name) {
           copayer.encryptedName = copayer.name;
         }
@@ -1566,7 +1557,7 @@ export class API extends EventEmitter {
         _.each(copayer.requestPubKeys, function(access) {
           if (!access.name) return;
 
-          var name = Utils.decryptMessage(access.name, encryptingKey);
+          let name = Utils.decryptMessage(access.name, encryptingKey);
           if (name != access.name) {
             access.encryptedName = access.name;
           }
@@ -1583,10 +1574,10 @@ export class API extends EventEmitter {
     let processCustomData = (data): Promise<any> => {
       return new Promise((resolve, reject) => {
         
-        var copayers = data.wallet.copayers;
+        let copayers = data.wallet.copayers;
         if (!copayers) return resolve();
 
-        var me:any = _.find(copayers, {
+        let me:any = _.find(copayers, {
           'id': this.credentials.copayerId
         });
         if (!me || !me.customData) return resolve();
@@ -1634,7 +1625,7 @@ export class API extends EventEmitter {
 
     opts = opts || {};
 
-    var url = '/v1/notifications/';
+    let url = '/v1/notifications/';
     if (opts.lastNotificationId) {
       url += '?notificationId=' + opts.lastNotificationId;
     } else if (opts.timeSpan) {
@@ -1642,7 +1633,7 @@ export class API extends EventEmitter {
     }
 
     return this._doGetRequestWithLogin(url).then((result) => {
-      var notifications = _.filter(result, function(notification) {
+      let notifications = _.filter(result, function(notification) {
         return opts.includeOwn || (notification.creatorId != this.credentials.copayerId);
       });
 
@@ -1659,13 +1650,13 @@ export class API extends EventEmitter {
    */
   getStatus(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
-    var qs = [];
+    let qs = [];
     qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
     qs.push('twoStep=' + (opts.twoStep ? '1' : '0'));
 
     return this._doGetRequest('/v1/wallets/?' + qs.join('&')).then((result) => {
       if (result.wallet.status == 'pending') {
-        var c = this.credentials;
+        let c = this.credentials;
         result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
       }
 
@@ -1678,16 +1669,16 @@ export class API extends EventEmitter {
   getANV(addr): Promise<any> {
       $.checkState(this.credentials);
 
-      var keys = [addr];
-      var network = this.credentials.network;
+      let keys = [addr];
+      let network = this.credentials.network;
 
       return this._doGetRequest('/v1/anv/?network=' + network + '&keys=' + keys.join(','));
   }
 
   getRewards(address): Promise<any> {
     $.checkState(this.credentials);
-    var addresses = [address];
-    var network = this.credentials.network;
+    let addresses = [address];
+    let network = this.credentials.network;
     return this._doGetRequest('/v1/rewards/?network=' + network + '&addresses=' + addresses.join(','));
   }
 
@@ -1755,7 +1746,7 @@ export class API extends EventEmitter {
   getUtxos(opts): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     opts = opts || {};
-    var url = '/v1/utxos/';
+    let url = '/v1/utxos/';
     if (opts.addresses) {
       url += '?' + querystring.stringify({
         addresses: [].concat(opts.addresses).join(',')
@@ -1766,7 +1757,7 @@ export class API extends EventEmitter {
 
   _getCreateTxProposalArgs(opts): any {
 
-    var args = _.cloneDeep(opts);
+    let args = _.cloneDeep(opts);
     args.message = this._encryptMessage(opts.message, this.credentials.sharedEncryptingKey) || null;
     args.payProUrl = opts.payProUrl || null;
     _.each(args.outputs, function(o) {
@@ -1805,7 +1796,7 @@ export class API extends EventEmitter {
     $.checkArgument(opts);
 
 
-    var args = this._getCreateTxProposalArgs(opts);
+    let args = this._getCreateTxProposalArgs(opts);
 
     return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
       this._processTxps(txp);
@@ -1833,13 +1824,13 @@ export class API extends EventEmitter {
     $.checkState(parseInt(opts.txp.version) >= 3);
 
 
-    var t = Utils.buildTx(opts.txp);
-    var hash = t.uncheckedSerialize();
-    var args = {
+    let t = Utils.buildTx(opts.txp);
+    let hash = t.uncheckedSerialize();
+    let args = {
       proposalSignature: Utils.signMessage(hash, this.credentials.requestPrivKey)
     };
 
-    var url = '/v1/txproposals/' + opts.txp.id + '/publish/';
+    let url = '/v1/txproposals/' + opts.txp.id + '/publish/';
     this._doPostRequest(url, args).then((txp) => {
       this._processTxps(txp);
       return Promise.resolve(txp);
@@ -1934,19 +1925,19 @@ export class API extends EventEmitter {
   public getMainAddresses(opts:any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    var args = [];
+    let args = [];
     if (opts.limit) args.push('limit=' + opts.limit);
     if (opts.reverse) args.push('reverse=1');
-    var qs = '';
+    let qs = '';
     if (args.length > 0) {
       qs = '?' + args.join('&');
     }
-    var url = '/v1/addresses/' + qs;
+    let url = '/v1/addresses/' + qs;
 
     return new Promise((resolve, reject) => { 
       return this._doGetRequest(url).then((addresses) => {
         if (!opts.doNotVerify) {
-          var fake = _.some(addresses, function(address) {
+          let fake = _.some(addresses, function(address) {
             return !Verifier.checkAddress(this.credentials, address);
           });
           if (fake)
@@ -1965,7 +1956,7 @@ export class API extends EventEmitter {
    */
   public getBalance(opts:any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-    var url = '/v1/balance/';
+    let url = '/v1/balance/';
     if (opts.twoStep) url += '?twoStep=1';
     return this._doGetRequest(url);
   };
@@ -2100,7 +2091,7 @@ export class API extends EventEmitter {
     if (this.isPrivKeyEncrypted() && !password)
       throw Errors.ENCRYPTED_PRIVATE_KEY;
 
-    var publicKeyRing;
+    let publicKeyRing;
     try {
       publicKeyRing = JSON.parse(Utils.decryptMessage(encryptedPkr, this.credentials.personalEncryptingKey));
     } catch (ex) {
@@ -2134,8 +2125,8 @@ export class API extends EventEmitter {
   public rejectTxProposal(txp, reason): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    var url = '/v1/txproposals/' + txp.id + '/rejections/';
-    var args = {
+    let url = '/v1/txproposals/' + txp.id + '/rejections/';
+    let args = {
       reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || '',
     };
     return this._doPostRequest(url, args).then((txp) => {
@@ -2157,12 +2148,12 @@ export class API extends EventEmitter {
     $.checkState(this.credentials);
     opts = opts || {};
 
-    var url = '/v1/broadcast_raw/';
+    let url = '/v1/broadcast_raw/';
     return this._doPostRequest(url, opts);
   };
 
   private _doBroadcast(txp): Promise<any> {
-    var url = '/v1/txproposals/' + txp.id + '/broadcast/';
+    let url = '/v1/txproposals/' + txp.id + '/broadcast/';
     return this._doPostRequest(url, {}).then((txp) => {
       return Promise.resolve(this._processTxps(txp));
     });
@@ -2179,7 +2170,7 @@ export class API extends EventEmitter {
     $.checkState(this.credentials && this.credentials.isComplete());
     return this.getPayPro(txp).then((paypro) => {
       if (paypro) {
-        var t = Utils.buildTx(txp);
+        let t = Utils.buildTx(txp);
         this._applyAllSignatures(txp, t);
 
         PayPro.send({
@@ -2216,7 +2207,7 @@ export class API extends EventEmitter {
   removeTxProposal(txp): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    var url = '/v1/txproposals/' + txp.id;
+    let url = '/v1/txproposals/' + txp.id;
     return this._doDeleteRequest(url);
   };
 
@@ -2233,18 +2224,18 @@ export class API extends EventEmitter {
   public getTxHistory(opts): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    var args = [];
+    let args = [];
     if (opts) {
       if (opts.skip) args.push('skip=' + opts.skip);
       if (opts.limit) args.push('limit=' + opts.limit);
       if (opts.includeExtendedInfo) args.push('includeExtendedInfo=1');
     }
-    var qs = '';
+    let qs = '';
     if (args.length > 0) {
       qs = '?' + args.join('&');
     }
 
-    var url = '/v1/txhistory/' + qs;
+    let url = '/v1/txhistory/' + qs;
     return this._doGetRequest(url).then((txs) => {
       this._processTxps(txs);
       return Promise.resolve(txs);
@@ -2260,7 +2251,7 @@ export class API extends EventEmitter {
   public getTx(id): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    var url = '/v1/txproposals/' + id;
+    let url = '/v1/txproposals/' + id;
     return this._doGetRequest(url).then((txp) => {
       return Promise.resolve(this._processTxps(txp));
     });
@@ -2276,7 +2267,7 @@ export class API extends EventEmitter {
    */
   public startScan(opts:any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-    var args = {
+    let args = {
       includeCopayerBranches: opts.includeCopayerBranches,
     };
     return this._doPostRequest('/v1/addresses/scan', args);
@@ -2318,11 +2309,11 @@ export class API extends EventEmitter {
    */
   public getTxNotes(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
-    var args = [];
+    let args = [];
     if (_.isNumber(opts.minTs)) {
       args.push('minTs=' + opts.minTs);
     }
-    var qs = '';
+    let qs = '';
     if (args.length > 0) {
       qs = '?' + args.join('&');
     }
@@ -2342,10 +2333,10 @@ export class API extends EventEmitter {
    */
   public getFiatRate(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
-    var args = [];
+    let args = [];
     if (opts.ts) args.push('ts=' + opts.ts);
     if (opts.provider) args.push('provider=' + opts.provider);
-    var qs = '';
+    let qs = '';
     if (args.length > 0) {
       qs = '?' + args.join('&');
     }
@@ -2361,7 +2352,7 @@ export class API extends EventEmitter {
    * @returns {Object} response - Status of subscription.
    */
   public pushNotificationsSubscribe(opts): Promise<any> {
-    var url = '/v1/pushnotifications/subscriptions/';
+    let url = '/v1/pushnotifications/subscriptions/';
     return this._doPostRequest(url, opts); 
   };
 
@@ -2371,7 +2362,7 @@ export class API extends EventEmitter {
    * @return {Callback} cb - Return error if exists
    */
   pushNotificationsUnsubscribe(token): Promise<any> {
-    var url = '/v1/pushnotifications/subscriptions/' + token;
+    let url = '/v1/pushnotifications/subscriptions/' + token;
     return this._doDeleteRequest(url);
   };
 
@@ -2382,7 +2373,7 @@ export class API extends EventEmitter {
    * @returns {Object} response - Status of subscription.
    */
   txConfirmationSubscribe(opts): Promise<any> {
-    var url = '/v1/txconfirmations/';
+    let url = '/v1/txconfirmations/';
     return this._doPostRequest(url, opts);
   };
 
@@ -2392,7 +2383,7 @@ export class API extends EventEmitter {
    * @return {Callback} cb - Return error if exists
    */
   txConfirmationUnsubscribe(txid): Promise<any> {
-    var url = '/v1/txconfirmations/' + txid;
+    let url = '/v1/txconfirmations/' + txid;
     return this._doDeleteRequest(url);
 };
 
@@ -2406,16 +2397,16 @@ export class API extends EventEmitter {
    * @return {Callback} cb - Return error (if exists) and object result
    */
   public getSendMaxInfo(opts:any = {}): Promise<any> {
-    var args = [];
+    let args = [];
 
     if (opts.feeLevel) args.push('feeLevel=' + opts.feeLevel);
     if (opts.feePerKb) args.push('feePerKb=' + opts.feePerKb);
     if (opts.excludeUnconfirmedUtxos) args.push('excludeUnconfirmedUtxos=1');
     if (opts.returnInputs) args.push('returnInputs=1');
-    var qs = '';
+    let qs = '';
     if (args.length > 0)
       qs = '?' + args.join('&');
-    var url = '/v1/sendmaxinfo/' + qs;
+    let url = '/v1/sendmaxinfo/' + qs;
 
     return this._doGetRequest(url);
   };
@@ -2430,14 +2421,14 @@ export class API extends EventEmitter {
    */
   public getStatusByIdentifier(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
-    var qs = [];
+    let qs = [];
     qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
     qs.push('twoStep=' + (opts.twoStep ? '1' : '0'));
 
     return this._doGetRequest('/v1/wallets/' + opts.identifier + '?' + qs.join('&')).then((result) => {
       if (!result || !result.wallet) return Promise.reject('Could not get status by identifier.');
       if (result.wallet.status == 'pending') {
-        var c = this.credentials;
+        let c = this.credentials;
         result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
       }
       return Promise.resolve(this._processStatus(result));
@@ -2464,7 +2455,7 @@ export class API extends EventEmitter {
   validateEasyScript(scriptId): Promise<any> {
     log.warn("Validating: " + scriptId);
 
-    var url = '/v1/easyreceive/validate/' + scriptId;
+    let url = '/v1/easyreceive/validate/' + scriptId;
     this._doGetRequest(url);
   };
 }
