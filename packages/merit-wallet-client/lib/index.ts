@@ -22,6 +22,7 @@ export class MeritClient extends Client {
   public Verifier:any = Verifier;
   public Utils: any = Utils;
   public sjcl: any = sjcl;
+  public Bitcore: any = Bitcore;
 
   constructor(opts:any = {}) {
     super(opts);
