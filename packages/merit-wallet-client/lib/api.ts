@@ -35,7 +35,7 @@ import { Promise } from 'bluebird';
  * 
  */
 
-interface InitOptions { 
+export interface InitOptions { 
   request?: any;
   baseUrl?: string;
   payProHttp?: string;
@@ -44,7 +44,111 @@ interface InitOptions {
   logLevel?: string;
 }
 
-export class API extends EventEmitter {
+export interface IAPI {
+  // fields
+  credentials: any;
+
+  // functions
+  initNotifications(): Promise<any>;
+  initialize(opts: any): Promise<any>;
+  dispose(): any;
+  _fetchLatestNotifications(interval: number): Promise<any>;
+  _initNotifications(opts: any): any;
+  _disposeNotifications(): void;
+  setNotificationsInterval(notificationIntervalSeconds): any;
+  _processTxNotes(notes: any): void;
+  _processTxps(txps: Array<any>): Promise<any>;
+  seedFromRandom(opts: any): any;
+  validateKeyDerivation(opts: any): Promise<any>;
+  seedFromRandomWithMnemonic(opts: any): any;
+  seedFromRandomWithMnemonic(opts: any): any;
+  getMnemonic(): any;
+  mnemonicHasPassphrase(): any;
+  clearMnemonic(): any;
+  seedFromExtendedPrivateKey(xPrivKey: any, opts: any): void;
+  seedFromMnemonic(words: Array<string>, opts: any): any;
+  seedFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any): any;
+  export(opts: any): any;
+  import(str: string): any;
+  _import(): Promise<any>;
+  importFromMnemonic(words: string, opts: any): Promise<any>;
+  importFromExtendedPrivateKey(xPrivKey: any, opts: any): Promise<any>;
+  importFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any): Promise<any>;
+  decryptBIP38PrivateKey(encryptedPrivateKeyBase58: any, passphrase: string, opts: any): Promise<any>;
+  getBalanceFromPrivateKey(privateKey: any): Promise<any>;
+  buildTxFromPrivateKey(privateKey: any, destinationAddress: any, opts: any): Promise<any>;
+  buildEasySendScript(opts: any): Promise<any>;
+  buildEasySendRedeemTransaction(input: any, destinationAddress: any, opts: any): any;
+  openWallet(): Promise<any>;
+  _getHeaders(method: string, url: string, args: any): any;
+  _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<any>;
+  _doPostRequest(url: string, args: any): Promise<any>;
+  _doPutRequest(url: string, args: any): Promise<any>;
+  _doGetRequest(url: string): Promise<any>;
+  _doGetRequestWithLogin(url: string): Promise<any>;
+  parseSecret(secret: string): any;
+  buildTx(txp: any): any;
+  getRawTx(txp: any): any;
+  signTxp(txp: any, derivedXPrivKey) :any;
+  _getCurrentSignatures(txp: any): any;
+  _addSignaturesToBitcoreTx(txp: any, t: any, signatures: any, xpub: any): any;
+  _applyAllSignatures(txp: any, t: any): any;
+  isComplete(): any;
+  isPrivKeyEncrypted(): any;
+  isPrivKeyExternal(): any;
+  getPrivKeyExternalSourceName(): any
+  getKeys(password: string): any;
+  checkPassword(password: string): any;
+  canSign(): any;
+  encryptPrivateKey(password: string, opts: any): any;
+  decryptPrivateKey(password: string): any;
+  getFeeLevels(network: string): Promise<any>;
+  createWallet(walletName: string, copayerName: string, m: number, n: number, opts: any): Promise<any>;
+  joinWallet(secret: string, copayerName: string, opts: any): Promise<any>;
+  recreateWallet(c: any): Promise<any>;
+  getNotifications(opts: any): Promise<any>;
+  getStatus(opts: any): Promise<any>;
+  getANV(addr: any): Promise<any>;
+  getRewards(address: any): Promise<any>;
+  getPreferences(): Promise<any>;
+  savePreferences(preferences: any): Promise<any>;
+  fetchPayPro(opts: any, cb: Function);
+  getUtxos(opts: any): Promise<any>;
+  _getCreateTxProposalArgs(opts: any): any;
+  createTxProposal(opts: any): Promise<any>;
+  publishTxProposal(opts: any): Promise<any>;
+  unlockAddress(opts: any): Promise<any>;
+  createAddress(opts: any): Promise<any>;
+  addAccess(opts: any): Promise<any>;
+  validateAddress(address: string, network: string): Promise<any>;
+  getMainAddresses(opts: any): Promise<any>;
+  getBalance(opts: any): Promise<any>;
+  getTxProposals(opts: any): Promise<any>;
+  signTxProposal(txp: any, password: string): Promise<any>;
+  signTxProposalFromAirGapped(txp: any, encryptedPkr: string, m: number, n: number, password: string): Promise<any>;
+  rejectTxProposal(txp: any, reason: any): Promise<any>;
+  broadcastRawTx(opts: any): Promise<any>;
+  broadcastTxProposal(txp: any): Promise<any>;
+  removeTxProposal(txp: any): Promise<any>;
+  getTxHistory(opts: any): Promise<any>;
+  getTx(id: any): Promise<any>;
+  startScan(opts: any): Promise<any>;
+  getTxNote(opts: any): Promise<any>;
+  editTxNote(opts: any): Promise<any>;
+  getTxNotes(opts: any): Promise<any>;
+  getFiatRate(opts: any): Promise<any>;
+  pushNotificationsSubscribe(opts: any): Promise<any>;
+  pushNotificationsUnsubscribe(token: string): Promise<any>;
+  txConfirmationSubscribe(opts: any): Promise<any>;
+  txConfirmationUnsubscribe(txid: string): Promise<any>;
+  getSendMaxInfo(opts: any): Promise<any>;
+  getStatusByIdentifier(opts: any): Promise<any>;
+  referralTxConfirmationSubscribe(opts: any): Promise<any>;
+  referralTxConfirmationUnsubscribe(codeHash: string): Promise<any>;
+  validateEasyScript(scriptId: string): Promise<any>;
+}
+
+export class API extends EventEmitter implements IAPI {
   private static BASE_URL = 'http://localhost:3232/bws/api';
   private request: any;
   private baseUrl: string;
@@ -186,7 +290,7 @@ export class API extends EventEmitter {
     }
   };
 
-  _processTxNotes(notes): any {
+  _processTxNotes(notes): void {
 
     if (!notes) return;
 
@@ -207,7 +311,7 @@ export class API extends EventEmitter {
    * @param {Array} txps
    * @param {String} encryptingKey
    */
-  _processTxps(txps): any {
+  _processTxps(txps): Promise<any> {
     return new Promise((resolve, reject) => {
       
       if (!txps) return resolve();
@@ -244,7 +348,7 @@ export class API extends EventEmitter {
    * @memberof Client.API
    * @param {Object} body
    */
-  private _parseError = function(body) {
+  private _parseError = function(body: any): Error {
     if (!body) return;
 
     if (_.isString(body)) {
@@ -256,7 +360,7 @@ export class API extends EventEmitter {
         };
       }
     }
-    var ret;
+    let ret;
     if (body.code) {
       if (Errors[body.code]) {
         ret = Errors[body.code];
@@ -293,7 +397,7 @@ export class API extends EventEmitter {
    * @param {Object} opts
    * @param {String} opts.network - default 'livenet'
    */
-  seedFromRandom(opts): any {
+  seedFromRandom(opts: any): any {
     $.checkArgument(arguments.length <= 1, 'DEPRECATED: only 1 argument accepted.');
     $.checkArgument(_.isUndefined(opts) || _.isObject(opts), 'DEPRECATED: argument should be an options object.');
 
@@ -310,7 +414,7 @@ export class API extends EventEmitter {
    * @param {String} opts.passphrase
    * @param {String} opts.skipDeviceValidation
    */
-  validateKeyDerivation(opts): Promise<any> {
+  validateKeyDerivation(opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
         
       var _deviceValidated: boolean;
@@ -413,7 +517,7 @@ export class API extends EventEmitter {
    * @param {Number} opts.account - default 0
    * @param {String} opts.derivationStrategy - default 'BIP44'
    */
-  seedFromExtendedPrivateKey(xPrivKey, opts: any = {}): void {
+  seedFromExtendedPrivateKey(xPrivKey: any, opts: any = {}): void {
     this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
   };
 
@@ -429,10 +533,7 @@ export class API extends EventEmitter {
    * @param {Number} opts.account - default 0
    * @param {String} opts.derivationStrategy - default 'BIP44'
    */
-  seedFromMnemonic(words, opts): any {
-    $.checkArgument(_.isUndefined(opts) || _.isObject(opts), 'DEPRECATED: second argument should be an options object.');
-
-    opts = opts || {};
+  seedFromMnemonic(words: Array<string>, opts: any = {}): any {
     this.credentials = Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
   };
 
@@ -446,10 +547,7 @@ export class API extends EventEmitter {
    * @param {Number} opts.account - default 0
    * @param {String} opts.derivationStrategy - default 'BIP44'
    */
-  seedFromExtendedPublicKey(xPubKey, source, entropySourceHex, opts): any {
-    $.checkArgument(_.isUndefined(opts) || _.isObject(opts));
-
-    opts = opts || {};
+  seedFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any = {}): any {
     this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
   };
 
@@ -461,10 +559,8 @@ export class API extends EventEmitter {
    * @param {Boolean} opts.password
    * @param {Boolean} opts.noSign
    */
-  export(opts): any {
+  export(opts: any = {}): any {
     $.checkState(this.credentials);
-
-    opts = opts || {};
 
     var output;
 
@@ -483,11 +579,11 @@ export class API extends EventEmitter {
 
 
   /**
-   * Import wallet
+   * Import wallets
    *
    * @param {Object} str - The serialized JSON created with #export
    */
-  import(str): any {
+  import(str: string): any {
     try {
       var credentials = Credentials.fromObj(JSON.parse(str));
       this.credentials = credentials;
@@ -533,14 +629,9 @@ export class API extends EventEmitter {
    * @param {String} opts.derivationStrategy - default 'BIP44'
    * @param {String} opts.entropySourcePath - Only used if the wallet was created on a HW wallet, in which that private keys was not available for all the needed derivations
    */
-  importFromMnemonic(words, opts): Promise<any> {
+  importFromMnemonic(words: string, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      
-    
       log.debug('Importing from 12 Words');
-
-
-      opts = opts || {};
 
       function derive(nonCompliantDerivation) {
         return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, {
@@ -578,7 +669,7 @@ export class API extends EventEmitter {
   * @param {String} opts.derivationStrategy - default 'BIP44'
   * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is imported.
   */
-  importFromExtendedPrivateKey(xPrivKey, opts): Promise<any> {
+  importFromExtendedPrivateKey(xPrivKey: any, opts: any = {}): Promise<any> {
     log.debug('Importing from Extended Private Key');
 
     try {
@@ -601,11 +692,9 @@ export class API extends EventEmitter {
    * @param {Number} opts.account - default 0
    * @param {String} opts.derivationStrategy - default 'BIP44'
    */
-  importFromExtendedPublicKey(xPubKey, source, entropySourceHex, opts): Promise<any> {
+  importFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any = {}): Promise<any> {
     $.checkArgument(arguments.length == 5, "DEPRECATED: should receive 5 arguments");
-    $.checkArgument(_.isUndefined(opts) || _.isObject(opts));
 
-    opts = opts || {};
     log.debug('Importing from Extended Private Key');
     try {
       this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
@@ -617,7 +706,7 @@ export class API extends EventEmitter {
     return this._import();
   };
 
-  decryptBIP38PrivateKey(encryptedPrivateKeyBase58, passphrase, opts): Promise<any> {
+  decryptBIP38PrivateKey(encryptedPrivateKeyBase58: any, passphrase: string, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       
       var bip38 = new Bip38();
@@ -642,7 +731,7 @@ export class API extends EventEmitter {
     });
   };
   
-  getBalanceFromPrivateKey(privateKey): Promise<any> {
+  getBalanceFromPrivateKey(privateKey: any): Promise<any> {
     return new Promise((resolve, reject) => {
       
       var privateKey = new Bitcore.PrivateKey(privateKey);
@@ -655,15 +744,10 @@ export class API extends EventEmitter {
     });
   };
 
-  buildTxFromPrivateKey(privateKey, destinationAddress, opts: any = {}): Promise<any> {
-
-    return new Promise((resolve, reject) => {
-      
+  buildTxFromPrivateKey(privateKey: any, destinationAddress: any, opts: any = {}): Promise<any> {
+    return new Promise((resolve, reject) => {  
       var privateKey = new Bitcore.PrivateKey(privateKey);
       var address = privateKey.publicKey.toAddress();
-
-
-
         this.getUtxos({
           addresses: address.toString(),
         }).then((utxos) => {
@@ -760,11 +844,9 @@ export class API extends EventEmitter {
    * @param {input} Input described above.
    * @param {destinationAddress} Address to put the funds into.
    */
-  buildEasySendRedeemTransaction(input, destinationAddress, opts): any {
+  buildEasySendRedeemTransaction(input: any, destinationAddress: any, opts: any = {}): any {
     //TODO: Create and sign a transaction to redeem easy send. Use input as
     //unspent Txo and use script to create scriptSig
-    opts = opts || {};
-
     var inputAddress = input.txn.scriptId;
 
     var fee = opts.fee || 10000;
@@ -853,7 +935,7 @@ export class API extends EventEmitter {
     });
   };
 
-  _getHeaders(method, url, args): any {
+  _getHeaders(method: string, url: string, args: any): any {
     var headers = {
       'x-client-version': 'MWC-' + Package.version,
     };
@@ -871,7 +953,7 @@ export class API extends EventEmitter {
    * @param {Object} args
    * @param {Callback} cb
    */
-  _doRequest(method, url, args, useSession): Promise<any> {
+  _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       
 
@@ -962,7 +1044,7 @@ export class API extends EventEmitter {
    * @param {String} url
    * @param {Object} args
    */
-  private _doRequestWithLogin(method, url, args): Promise<any> {
+  private _doRequestWithLogin(method: string, url: string, args: any): Promise<any> {
 
     let doLogin = (): Promise<any> => {
       return new Promise((resolve, reject) => {   
@@ -976,21 +1058,21 @@ export class API extends EventEmitter {
       });
     };
 
-      let loginIfNeeded = (): Promise<any> => {
-        return new Promise((resolve, reject) => {
-          if (this.session) {
-            return resolve();
-          } 
-          return doLogin();   
-        });
-      }
-      
-
-      return loginIfNeeded().then(() => {
-        return this._doRequest(method, url, args, true).then((body, header) => {
-          return this._doRequest(method, url, args, true);
-        });
+    let loginIfNeeded = (): Promise<any> => {
+      return new Promise((resolve, reject) => {
+        if (this.session) {
+          return resolve();
+        } 
+        return doLogin();   
       });
+    }
+    
+
+    return loginIfNeeded().then(() => {
+      return this._doRequest(method, url, args, true).then((body, header) => {
+        return this._doRequest(method, url, args, true);
+      });
+    });
 };
 
   /**
@@ -1001,13 +1083,13 @@ export class API extends EventEmitter {
    * @param {Object} args
    * @param {Callback} cb
    */
-  _doPostRequest(url, args): Promise<any> {
+  _doPostRequest(url: string, args: any): Promise<any> {
     return this._doRequest('post', url, args, false);
-};
+  };
 
-  _doPutRequest(url, args): Promise<any> {
+  _doPutRequest(url: string, args: any): Promise<any> {
     return this._doRequest('put', url, args, false);
-};
+  };
 
   /**
    * Do a GET request
@@ -1016,17 +1098,17 @@ export class API extends EventEmitter {
    * @param {String} url
    * @param {Callback} cb
    */
-  _doGetRequest(url): Promise<any> {
+  _doGetRequest(url: string): Promise<any> {
     url += url.indexOf('?') > 0 ? '&' : '?';
     url += 'r=' + _.random(10000, 99999);
     return this._doRequest('get', url, {}, false);
-};
+  };
 
-  _doGetRequestWithLogin(url): Promise<any> {
+  _doGetRequestWithLogin(url: string): Promise<any> {
     url += url.indexOf('?') > 0 ? '&' : '?';
     url += 'r=' + _.random(10000, 99999);
     return this._doRequestWithLogin('get', url, {});
-};
+  };
 
   /**
    * Do a DELETE request
@@ -1035,9 +1117,9 @@ export class API extends EventEmitter {
    * @param {String} url
    * @param {Callback} cb
    */
-  private _doDeleteRequest(url): Promise<any> {
+  private _doDeleteRequest(url: string): Promise<any> {
     return this._doRequest('delete', url, {}, false);
-};
+  };
 
   private _buildSecret = function(walletId, walletPrivKey, network) {
     if (_.isString(walletPrivKey)) {
@@ -1048,7 +1130,7 @@ export class API extends EventEmitter {
     return _.padEnd(widBase58, 22, '0') + walletPrivKey.toWIF() + (network == 'testnet' ? 'T' : 'L');
   };
 
-  parseSecret = function(secret) {
+  parseSecret(secret: string): any {
     $.checkArgument(secret);
 
     function split(str, indexes) {
@@ -1081,12 +1163,16 @@ export class API extends EventEmitter {
     }
   };
 
-  getRawTx = function(txp) {
+  buildTx(txp: any): any {
+    return Utils.buildTx(txp);
+  }
+
+  getRawTx(txp: any): any {
     var t = Utils.buildTx(txp);
     return t.uncheckedSerialize();
   };
 
-  public signTxp = function(txp, derivedXPrivKey):any {
+  signTxp(txp: any, derivedXPrivKey) :any {
     //Derive proper key to sign, for each input
     var privs = [];
     var derived = {};
@@ -1119,7 +1205,7 @@ export class API extends EventEmitter {
     return this.signTxp(txp, derived);
   };
 
-  _getCurrentSignatures(txp): any {
+  _getCurrentSignatures(txp: any): any {
     var acceptedActions = _.filter(txp.actions, {
       type: 'accept'
     });
@@ -1132,7 +1218,7 @@ export class API extends EventEmitter {
     });
   };
 
-  _addSignaturesToBitcoreTx(txp, t, signatures, xpub): any {
+  _addSignaturesToBitcoreTx(txp: any, t: any, signatures: any, xpub: any): any {
     if (signatures.length != txp.inputs.length)
       throw new Error('Number of signatures does not match number of inputs');
 
@@ -1160,7 +1246,7 @@ export class API extends EventEmitter {
   };
 
 
-  _applyAllSignatures(txp, t): any {
+  _applyAllSignatures(txp: any, t: any): any {
 
     $.checkState(txp.status == 'accepted');
 
@@ -1257,7 +1343,7 @@ export class API extends EventEmitter {
    *
    * @param password
    */
-  getKeys(password): any {
+  getKeys(password: string): any {
     return this.credentials.getKeys(password);
   };
 
@@ -1268,7 +1354,7 @@ export class API extends EventEmitter {
    *
    * @param password
    */
-  checkPassword(password): any {
+  checkPassword(password: string): any {
     if (!this.isPrivKeyEncrypted()) return;
 
     try {
@@ -1306,7 +1392,7 @@ export class API extends EventEmitter {
    * @param {Object} opts optional: SJCL options to encrypt (.iter, .salt, etc).
    * @return {undefined}
    */
-  encryptPrivateKey(password, opts): any {
+  encryptPrivateKey(password: string, opts: any): any {
     this.credentials.encryptPrivateKey(password, opts || this.privateKeyEncryptionOpts);
   };
 
@@ -1315,7 +1401,7 @@ export class API extends EventEmitter {
    *
    * @param {String} password Password used to encrypt
    */
-  decryptPrivateKey(password): any {
+  decryptPrivateKey(password: string): any {
     return this.credentials.decryptPrivateKey(password);
   };
 
@@ -1323,10 +1409,9 @@ export class API extends EventEmitter {
    * Get current fee levels for the specified network
    *
    * @param {string} network - 'livenet' (default) or 'testnet'
-   * @param {Callback} cb
    * @returns {Callback} cb - Returns error or an object with status information
    */
-  getFeeLevels(network): Promise<any> {
+  getFeeLevels(network: string): Promise<any> {
 
     return new Promise((resolve, reject) => {
       
@@ -1345,9 +1430,9 @@ export class API extends EventEmitter {
    *
    * @param {Callback} cb
    */
-  getVersion(cb): any {
+  getVersion(): any {
     this._doGetRequest('/v1/version/');
-};
+  };
 
   _checkKeyDerivation(): any {
     var isInvalid = (this.keyDerivationOk === false);
@@ -1373,14 +1458,12 @@ export class API extends EventEmitter {
    * @param cb
    * @return {undefined}
    */
-  createWallet(walletName, copayerName, m, n, opts): Promise<any> {
+  createWallet(walletName: string, copayerName: string, m: number, n: number, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       
-
       if (!this._checkKeyDerivation()) return reject(new Error('Cannot create new wallet'));
 
       if (opts) $.shouldBeObject(opts);
-      opts = opts || {};
 
       var network = opts.network || 'livenet';
       if (!_.includes(['testnet', 'livenet'], network)) return reject(new Error('Invalid network'));
@@ -1441,15 +1524,12 @@ export class API extends EventEmitter {
    * @param {String} copayerName
    * @param {Object} opts
    * @param {Boolean} opts.dryRun[=false] - Simulate wallet join
-   * @param {Callback} cb
-   * @returns {Callback} cb - Returns the wallet
+   * @returns {Promise} 
    */
-  joinWallet(secret, copayerName, opts): Promise<any> {
+  joinWallet(secret: string, copayerName: string, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       
       if (!this._checkKeyDerivation()) return reject(new Error('Cannot join wallet'));
-
-      opts = opts || {};
 
       try {
         var secretData = this.parseSecret(secret);
@@ -1478,10 +1558,8 @@ export class API extends EventEmitter {
 
   /**
    * Recreates a wallet, given credentials (with wallet id)
-   *
-   * @returns {Callback} cb - Returns the wallet
    */
-  recreateWallet(cb): Promise<any> {
+  recreateWallet(c: any): Promise<any> {
     $.checkState(this.credentials);
     $.checkState(this.credentials.isComplete());
     $.checkState(this.credentials.walletPrivKey);
@@ -1611,10 +1689,8 @@ export class API extends EventEmitter {
    * @returns {Callback} cb - Returns error or an array of notifications
    */
   // TODO: Make this return a promise of []Notifications
-  getNotifications(opts): Promise<any> {
+  getNotifications(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
-
-    opts = opts || {};
 
     var url = '/v1/notifications/';
     if (opts.lastNotificationId) {
@@ -1657,7 +1733,7 @@ export class API extends EventEmitter {
     });
   };
 
-  getANV(addr): Promise<any> {
+  getANV(addr: any): Promise<any> {
       $.checkState(this.credentials);
 
       var keys = [addr];
@@ -1666,7 +1742,7 @@ export class API extends EventEmitter {
       return this._doGetRequest('/v1/anv/?network=' + network + '&keys=' + keys.join(','));
   }
 
-  getRewards(address): Promise<any> {
+  getRewards(address: any): Promise<any> {
     $.checkState(this.credentials);
     var addresses = [address];
     var network = this.credentials.network;
@@ -1675,13 +1751,9 @@ export class API extends EventEmitter {
 
   /**
    * Get copayer preferences
-   *
-   * @param {Callback} cb
-   * @return {Callback} cb - Return error or object
    */
-  getPreferences(cb): Promise<any> {
+  getPreferences(): Promise<any> {
     $.checkState(this.credentials);
-    $.checkArgument(cb);
 
     return this._doGetRequest('/v1/preferences/');
   };
@@ -1690,10 +1762,8 @@ export class API extends EventEmitter {
    * Save copayer preferences
    *
    * @param {Object} preferences
-   * @param {Callback} cb
-   * @return {Callback} cb - Return error or object
    */
-  savePreferences(preferences): Promise<any> {
+  savePreferences(preferences: any): Promise<any> {
     $.checkState(this.credentials);
 
     this._doPutRequest('/v1/preferences/', preferences);
@@ -1711,7 +1781,7 @@ export class API extends EventEmitter {
    *  paypro.memo
    */
   // TODO: Promisify (if we keep PayPro functionality.)
-  fetchPayPro(opts, cb): void {
+  fetchPayPro(opts: any, cb: Function): void {
     $.checkArgument(opts)
       .checkArgument(opts.payProUrl);
 
@@ -1732,11 +1802,10 @@ export class API extends EventEmitter {
    * @param {Function} cb
    * @param {Object} opts
    * @param {Array} opts.addresses (optional) - List of addresses from where to fetch UTXOs.
-   * @returns {Callback} cb - Return error or the list of utxos
    */
-  getUtxos(opts): Promise<any> {
+  getUtxos(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-    opts = opts || {};
+
     var url = '/v1/utxos/';
     if (opts.addresses) {
       url += '?' + querystring.stringify({
@@ -1744,9 +1813,9 @@ export class API extends EventEmitter {
       });
     }
     this._doGetRequest(url);
-};
+  };
 
-  _getCreateTxProposalArgs(opts): any {
+  _getCreateTxProposalArgs(opts: any): any {
 
     var args = _.cloneDeep(opts);
     args.message = this._encryptMessage(opts.message, this.credentials.sharedEncryptingKey) || null;
@@ -1781,7 +1850,7 @@ export class API extends EventEmitter {
    * @param {Boolean} opts.noShuffleOutputs - Optional. If set, TX outputs won't be shuffled. Defaults to false
    * @returns {Callback} cb - Return error or the transaction proposal
    */
-  createTxProposal(opts): Promise<any> {
+  createTxProposal(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     $.checkState(this.credentials.sharedEncryptingKey);
     $.checkArgument(opts);
@@ -1807,7 +1876,7 @@ export class API extends EventEmitter {
    * @param {Object} opts.txp - The transaction proposal object returned by the API#createTxProposal method
    * @returns {Callback} cb - Return error or null
    */
-  publishTxProposal(opts): Promise<any> {
+  publishTxProposal(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     $.checkArgument(opts)
       .checkArgument(opts.txp);
@@ -1834,7 +1903,7 @@ export class API extends EventEmitter {
    * @param {String} opts.address     - the address to unlock
    * @param {String} opts.unlockcode  - the code to use to unlock opts.address
    */
-  unlockAddress(opts = {}): Promise<any> {
+  unlockAddress(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     return this._doPostRequest('/v1/addresses/unlock/', opts);
   };
@@ -1847,7 +1916,7 @@ export class API extends EventEmitter {
    * @param {Callback} cb
    * @returns {Callback} cb - Return error or the address
    */
-  createAddress(opts = {}): Promise<any> {
+  createAddress(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
     return new Promise((resolve, reject) => {
@@ -1897,7 +1966,7 @@ export class API extends EventEmitter {
   };
 
   // Ensure that an address is in a valid format, and that it has been beaconed on the blockchain.
-  public validateAddress(address, network): Promise<any> {
+  validateAddress(address: string, network: string): Promise<any> {
     const url = `/v1/addresses/${address}/validate/${network}`;
     return this._doGetRequest(url);
   };
@@ -1910,10 +1979,8 @@ export class API extends EventEmitter {
    * @param {Boolean} opts.doNotVerify
    * @param {Numeric} opts.limit (optional) - Limit the resultset. Return all addresses by default.
    * @param {Boolean} [opts.reverse=false] (optional) - Reverse the order of returned addresses.
-   * @param {Callback} cb
-   * @returns {Callback} cb - Return error or the array of addresses
    */
-  public getMainAddresses(opts:any = {}): Promise<any> {
+  getMainAddresses(opts:any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
     var args = [];
@@ -1943,9 +2010,8 @@ export class API extends EventEmitter {
    * Update wallet balance
    *
    * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
-   * @param {Callback} cb
    */
-  public getBalance(opts:any = {}): Promise<any> {
+  getBalance(opts:any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     var url = '/v1/balance/';
     if (opts.twoStep) url += '?twoStep=1';
@@ -1961,7 +2027,7 @@ export class API extends EventEmitter {
    * @param {Boolean} opts.doNotEncryptPkr
    * @return {Callback} cb - Return error or array of transactions proposals
    */
-  public getTxProposals(opts): Promise<any> {
+  getTxProposals(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
 
@@ -2016,10 +2082,8 @@ export class API extends EventEmitter {
   *
   * @param {Object} txp
   * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
-  * @param {Callback} cb
-  * @return {Callback} cb - Return error or object
   */
-  signTxProposal(txp, password): Promise<any> {
+  signTxProposal(txp: any, password: string): Promise<any> {
     return new Promise((resolve, reject) => {
       $.checkState(this.credentials && this.credentials.isComplete());
       $.checkArgument(txp.creatorId);
@@ -2074,7 +2138,7 @@ export class API extends EventEmitter {
    * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
    * @return {Object} txp - Return transaction
    */
-  public signTxProposalFromAirGapped(txp, encryptedPkr, m, n, password) {
+  signTxProposalFromAirGapped(txp: any, encryptedPkr: string, m: number, n: number, password: string): Promise<any> {
     $.checkState(this.credentials);
     if (!this.canSign())
       throw Errors.MISSING_PRIVATE_KEY;
@@ -2110,10 +2174,8 @@ export class API extends EventEmitter {
    *
    * @param {Object} txp
    * @param {String} reason
-   * @param {Callback} cb
-   * @return {Callback} cb - Return error or object
    */
-  public rejectTxProposal(txp, reason): Promise<any> {
+  rejectTxProposal(txp: any, reason: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
     var url = '/v1/txproposals/' + txp.id + '/rejections/';
@@ -2135,7 +2197,7 @@ export class API extends EventEmitter {
    * @param {Callback} cb
    * @return {Callback} cb - Return error or txid
    */
-  public broadcastRawTx(opts:any = {}): Promise<any> {
+  broadcastRawTx(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
     opts = opts || {};
 
@@ -2157,7 +2219,7 @@ export class API extends EventEmitter {
   * @param {Callback} cb
   * @return {Callback} cb - Return error or object
   */
-  public broadcastTxProposal(txp): Promise<any> {
+  broadcastTxProposal(txp): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     return this.getPayPro(txp).then((paypro) => {
       if (paypro) {
@@ -2194,7 +2256,7 @@ export class API extends EventEmitter {
    * @param {Callback} cb
    * @return {Callback} cb - Return error or empty
    */
-  removeTxProposal(txp): Promise<any> {
+  removeTxProposal(txp: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
     var url = '/v1/txproposals/' + txp.id;
@@ -2211,7 +2273,7 @@ export class API extends EventEmitter {
    * @param {Callback} cb
    * @return {Callback} cb - Return error or array of transactions
    */
-  public getTxHistory(opts): Promise<any> {
+  getTxHistory(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
     var args = [];
@@ -2238,7 +2300,7 @@ export class API extends EventEmitter {
    * @param {String} TransactionId
    * @return {Callback} cb - Return error or transaction
    */
-  public getTx(id): Promise<any> {
+  getTx(id: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
     var url = '/v1/txproposals/' + id;
@@ -2255,7 +2317,7 @@ export class API extends EventEmitter {
    * @param {Boolean} opts.includeCopayerBranches (defaults to false)
    * @param {Callback} cb
    */
-  public startScan(opts:any = {}): Promise<any> {
+  startScan(opts:any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     var args = {
       includeCopayerBranches: opts.includeCopayerBranches,
@@ -2268,7 +2330,7 @@ export class API extends EventEmitter {
    * @param {Object} opts
    * @param {string} opts.txid - The txid to associate this note with
    */
-  public getTxNote(opts:any = {}): Promise<any> {
+  getTxNote(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
     return this._doGetRequest('/v1/txnotes/' + opts.txid + '/').then((note) => {
       return Promise.resolve(this._processTxNotes(note));
@@ -2282,7 +2344,7 @@ export class API extends EventEmitter {
    * @param {string} opts.txid - The txid to associate this note with
    * @param {string} opts.body - The contents of the note
    */
-  public editTxNote(opts:any = {}): Promise<any> {
+  editTxNote(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
     if (opts.body) {
       opts.body = this._encryptMessage(opts.body, this.credentials.sharedEncryptingKey);
@@ -2297,7 +2359,7 @@ export class API extends EventEmitter {
    * @param {Object} opts
    * @param {string} opts.minTs - The starting timestamp
    */
-  public getTxNotes(opts:any = {}): Promise<any> {
+  getTxNotes(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
     var args = [];
     if (_.isNumber(opts.minTs)) {
@@ -2321,7 +2383,7 @@ export class API extends EventEmitter {
    * @param {String} [opts.provider] - A provider of exchange rates (default 'BitPay').
    * @returns {Object} rates - The exchange rate.
    */
-  public getFiatRate(opts:any = {}): Promise<any> {
+  getFiatRate(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
     var args = [];
     if (opts.ts) args.push('ts=' + opts.ts);
@@ -2341,7 +2403,7 @@ export class API extends EventEmitter {
    * @param {String} opts.token - Device token.
    * @returns {Object} response - Status of subscription.
    */
-  public pushNotificationsSubscribe(opts): Promise<any> {
+  pushNotificationsSubscribe(opts: any): Promise<any> {
     var url = '/v1/pushnotifications/subscriptions/';
     return this._doPostRequest(url, opts); 
   };
@@ -2351,7 +2413,7 @@ export class API extends EventEmitter {
    * @param {String} token - Device token
    * @return {Callback} cb - Return error if exists
    */
-  pushNotificationsUnsubscribe(token): Promise<any> {
+  pushNotificationsUnsubscribe(token: string): Promise<any> {
     var url = '/v1/pushnotifications/subscriptions/' + token;
     return this._doDeleteRequest(url);
   };
@@ -2362,7 +2424,7 @@ export class API extends EventEmitter {
    * @param {String} opts.txid - The txid to subscribe to.
    * @returns {Object} response - Status of subscription.
    */
-  txConfirmationSubscribe(opts): Promise<any> {
+  txConfirmationSubscribe(opts: any): Promise<any> {
     var url = '/v1/txconfirmations/';
     return this._doPostRequest(url, opts);
   };
@@ -2370,9 +2432,8 @@ export class API extends EventEmitter {
   /**
    * Stop listening for a tx confirmation.
    * @param {String} txid - The txid to unsubscribe from.
-   * @return {Callback} cb - Return error if exists
    */
-  txConfirmationUnsubscribe(txid): Promise<any> {
+  txConfirmationUnsubscribe(txid: string): Promise<any> {
     var url = '/v1/txconfirmations/' + txid;
     return this._doDeleteRequest(url);
 };
@@ -2384,9 +2445,8 @@ export class API extends EventEmitter {
    * @param {number} opts.feePerKb - Optional. Specify the fee per KB (in micro).
    * @param {Boolean} opts.excludeUnconfirmedUtxos - Indicates it if should use (or not) the unconfirmed utxos
    * @param {Boolean} opts.returnInputs - Indicates it if should return (or not) the inputs
-   * @return {Callback} cb - Return error (if exists) and object result
    */
-  public getSendMaxInfo(opts:any = {}): Promise<any> {
+  getSendMaxInfo(opts:any = {}): Promise<any> {
     var args = [];
 
     if (opts.feeLevel) args.push('feeLevel=' + opts.feeLevel);
@@ -2407,9 +2467,8 @@ export class API extends EventEmitter {
    * @param {string} opts.identifier - The identifier
    * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
    * @param {Boolean} opts.includeExtendedInfo (optional: query extended status)
-   * @returns {Callback} cb - Returns error or an object with status information
    */
-  public getStatusByIdentifier(opts:any = {}): Promise<any> {
+  getStatusByIdentifier(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
     var qs = [];
     qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
@@ -2425,7 +2484,7 @@ export class API extends EventEmitter {
     });
   };
 
-  public referralTxConfirmationSubscribe(opts): Promise<any> {
+  referralTxConfirmationSubscribe(opts): Promise<any> {
     const url = '/v1/referraltxconfirmations/';
     return this._doPostRequest(url, opts);
   };

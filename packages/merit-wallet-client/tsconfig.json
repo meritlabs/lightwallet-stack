@@ -11,10 +11,12 @@
         "es7"
       ],
       "baseUrl": ".",
-      "module": "es2015",
+      "module": "commonjs",
       "moduleResolution": "node",
       "sourceMap": true,
+      "outDir": "./dist",
       "target": "es2017",
+      "allowJs": true,
       "paths": {
       }
     },
