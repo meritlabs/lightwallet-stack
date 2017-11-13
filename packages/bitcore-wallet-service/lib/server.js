@@ -185,9 +185,9 @@ WalletService.getInstance = function(opts) {
   opts = opts || {};
 
   var version = Utils.parseVersion(opts.clientVersion);
-  if (version && version.agent == 'bwc') {
-    if (version.major == 0 || (version.major == 1 && version.minor < 2)) {
-      throw new ClientError(Errors.codes.UPGRADE_NEEDED, 'BWC clients < 1.2 are no longer supported.');
+  if (version && version.agent == 'MWC') {
+    if (version.major == 0 || (version.major == 1 && version.minor < 0)) {
+      throw new ClientError(Errors.codes.UPGRADE_NEEDED, 'MWC clients < 1.0 are no longer supported.');
     }
   }
 
@@ -518,7 +518,7 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
       bc.getTransaction(opts.identifier, function(err, tx) {
         if (err || !tx) return nextNetwork(err, false);
         var outputs = _.first(self._normalizeTxHistory(tx)).outputs;
-        var toAddresses = _.pluck(outputs, 'address');
+        var toAddresses = _.map(outputs, 'address');
         async.detect(toAddresses, function(addressStr, nextAddress) {
           self.storage.fetchAddress(addressStr, function(err, address) {
             if (err || !address) return nextAddress(err, false);
@@ -965,7 +965,7 @@ WalletService.prototype.savePreferences = function(opts, cb) {
     },
   }];
 
-  opts = _.pick(opts, _.pluck(preferences, 'name'));
+  opts = _.pick(opts, _.map(preferences, 'name'));
   try {
     _.each(preferences, function(preference) {
       var value = opts[preference.name];
@@ -1214,7 +1214,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
     function(next) {
       if (allAddresses.length == 0) return cb(null, []);
 
-      var addressStrs = _.pluck(allAddresses, 'address');
+      var addressStrs = _.map(allAddresses, 'address');
       self._getUtxos(addressStrs, function(err, utxos) {
         if (err) return next(err);
 
@@ -1228,7 +1228,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
       self.getPendingTxs({}, function(err, txps) {
         if (err) return next(err);
 
-        var lockedInputs = _.map(_.flatten(_.pluck(txps, 'inputs')), utxoKey);
+        var lockedInputs = _.map(_.flatten(_.map(txps, 'inputs')), utxoKey);
         _.each(lockedInputs, function(input) {
           if (utxoIndex[input]) {
             utxoIndex[input].locked = true;
@@ -1248,7 +1248,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
         limit: 100
       }, function(err, txs) {
         if (err) return next(err);
-        var spentInputs = _.map(_.flatten(_.pluck(txs, 'inputs')), utxoKey);
+        var spentInputs = _.map(_.flatten(_.map(txs, 'inputs')), utxoKey);
         _.each(spentInputs, function(input) {
           if (utxoIndex[input]) {
             utxoIndex[input].spent = true;
@@ -1367,7 +1367,7 @@ WalletService.prototype._getBalanceOneStep = function(opts, cb) {
           self.storage.cleanActiveAddresses(self.walletId, next);
         },
         function(next) {
-          var active = _.pluck(balance.byAddress, 'address')
+          var active = _.map(balance.byAddress, 'address')
           self.storage.storeActiveAddresses(self.walletId, active, next);
         },
       ], function(err) {
@@ -1396,7 +1396,7 @@ WalletService.prototype._getActiveAddresses = function(cb) {
       if (err) return cb(err);
 
       var now = Math.floor(Date.now() / 1000);
-      var recent = _.pluck(_.filter(allAddresses, function(address) {
+      var recent = _.map(_.filter(allAddresses, function(address) {
         return address.createdOn > (now - 24 * 3600);
       }), 'address');
 
@@ -1485,7 +1485,7 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
     if (!_.any(Defaults.FEE_LEVELS, {
       name: opts.feeLevel
     }))
-      return cb(new ClientError('Invalid fee level. Valid values are ' + _.pluck(Defaults.FEE_LEVELS, 'name').join(', ')));
+      return cb(new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', ')));
   }
 
   if (_.isNumber(opts.feePerKb)) {
@@ -1623,7 +1623,7 @@ WalletService.prototype.getFeeLevels = function(opts, cb) {
   opts = opts || {};
 
   function samplePoints() {
-    var definedPoints = _.uniq(_.pluck(Defaults.FEE_LEVELS, 'nbBlocks'));
+    var definedPoints = _.uniq(_.map(Defaults.FEE_LEVELS, 'nbBlocks'));
     return _.uniq(_.flatten(_.map(definedPoints, function(p) {
       return _.range(p, p + Defaults.FEE_LEVELS_FALLBACK + 1);
     })));
@@ -2049,7 +2049,7 @@ WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) 
         if (!_.any(Defaults.FEE_LEVELS, {
           name: opts.feeLevel
         }))
-          return next(new ClientError('Invalid fee level. Valid values are ' + _.pluck(Defaults.FEE_LEVELS, 'name').join(', ')));
+          return next(new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', ')));
       }
 
       if (_.isNumber(opts.feePerKb)) {
@@ -2707,7 +2707,7 @@ WalletService.prototype.rejectTx = function(opts, cb) {
         },
         function(next) {
           if (txp.status == 'rejected') {
-            var rejectedBy = _.pluck(_.filter(txp.actions, {
+            var rejectedBy = _.map(_.filter(txp.actions, {
               type: 'reject'
             }), 'copayerId');
 
@@ -3068,7 +3068,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       function(next) {
         if (txs) return next();
 
-        var addressStrs = _.pluck(addresses, 'address');
+        var addressStrs = _.map(addresses, 'address');
         var bc = self._getBlockchainExplorer(network);
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
