@@ -123,6 +123,10 @@ clean-bitcore-message:
 clean-bitcore-payment-protocol:
 	rm -rf ./packages/bitcore-payment-protocol/node_modules
 
+.PHONY: clean-lightwallet-2
+clean-lightwallet-2:
+	rm -rf ./packages/lw-2/node_modules
+
 .PHONY: clean-stack
 clean-stack: clean-npm \
 	clean-bitcore-lib \
@@ -135,7 +139,8 @@ clean-stack: clean-npm \
 	clean-bitcore-p2p \
 	clean-bitcore-node \
 	clean-bitcore-message \
-	clean-bitcore-payment-protocol
+	clean-bitcore-payment-protocol \
+	clean-lightwallet-2
 
 .PHONY: test-bitcoin-rpc
 test-bitcoin-rpc:

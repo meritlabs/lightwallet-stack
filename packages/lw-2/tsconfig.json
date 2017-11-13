@@ -11,10 +11,10 @@
       "es7"
     ],
     "baseUrl": ".",
-    "module": "es2015",
+    "module": "esnext",
     "moduleResolution": "node",
     "sourceMap": true,
-    "target": "es2017",
+    "target": "esnext",
     "paths": {
       "@app/*": [ "src/app/*" ],
       "merit/*": [ "src/app/*" ]

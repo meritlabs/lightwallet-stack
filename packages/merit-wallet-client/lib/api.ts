@@ -5,6 +5,7 @@ import { EventEmitter } from 'eventemitter3';
 import { Common } from './common';
 import { Logger } from "./log";
 import { Credentials } from './credentials';
+import { ErrorTypes as Errors } from './errors';
 
 const log = Logger.getInstance();
 const $ = require('preconditions').singleton();
@@ -17,7 +18,6 @@ let url = require('url');
 let querystring = require('querystring');
 let Stringify = require('json-stable-stringify');
 let Bip38 = require('bip38');
-let Errors = require('./errors');
 
 let request = require('superagent');
 
@@ -87,8 +87,6 @@ export class API extends EventEmitter {
   initialize(opts): Promise<any> {
     return new Promise((resolve, reject) => {
       $.checkState(this.credentials);
-
-
       this.notificationIncludeOwn = !!opts.notificationIncludeOwn;
       this._initNotifications(opts);
       return resolve();
@@ -100,9 +98,8 @@ export class API extends EventEmitter {
     this._logout();
   };
 
-  private _fetchLatestNotifications(interval): Promise<any> {
-      
-      var opts:any = {
+  _fetchLatestNotifications(interval): Promise<any> {      
+      let opts:any = {
         lastNotificationId: this.lastNotificationId,
         includeOwn: this.notificationIncludeOwn,
       };
@@ -124,12 +121,13 @@ export class API extends EventEmitter {
   }
     
   _initNotifications(opts: any = {}): any {
-    var interval = opts.notificationIntervalSeconds || 5;
-    this.notificationsIntervalId = setInterval(function() {
-      this._fetchLatestNotifications(interval, function(err) {
+    const interval = opts.notificationIntervalSeconds || 5;
+    const self = this;
+    self.notificationsIntervalId = setInterval(function() {
+      self._fetchLatestNotifications(interval).catch((err) => {
         if (err) {
-          if (err instanceof Errors.NOT_FOUND || err instanceof Errors.NOT_AUTHORIZED) {
-            this._disposeNotifications();
+          if (err == Errors.NOT_FOUND || err == Errors.NOT_AUTHORIZED) {
+            self._disposeNotifications();
           }
         }
       });
@@ -212,7 +210,7 @@ export class API extends EventEmitter {
   _processTxps(txps): any {
     if (!txps) return;
 
-    var encryptingKey = this.credentials.sharedEncryptingKey;
+    let encryptingKey = this.credentials.sharedEncryptingKey;
     _.each([].concat(txps), function(txp) {
       txp.encryptedMessage = txp.message;
       txp.message = this._decryptMessage(txp.message, encryptingKey) || null;
@@ -257,7 +255,7 @@ export class API extends EventEmitter {
     var ret;
     if (body.code) {
       if (Errors[body.code]) {
-        ret = new Errors[body.code];
+        ret = Errors[body.code];
         if (body.message) ret.message = body.message;
       } else {
         ret = new Error(body.code + ': ' + body.message);
@@ -382,12 +380,11 @@ export class API extends EventEmitter {
    * @param {Number} opts.language - default 'en'
    * @param {Number} opts.account - default 0
    */
-  seedFromRandomWithMnemonic(opts): any {
+  seedFromRandomWithMnemonic(opts: any = {}): any {
     $.checkArgument(arguments.length <= 1, 'DEPRECATED: only 1 argument accepted.');
     $.checkArgument(_.isUndefined(opts) || _.isObject(opts), 'DEPRECATED: argument should be an options object.');
 
-    opts = opts || {};
-    this.credentials = Credentials.createWithMnemonic(opts.network || 'livenet', opts.passphrase, opts.language || 'en', opts.account || 0);
+    this.credentials = Credentials.createWithMnemonic(opts.network || 'livenet', opts.passphrase, opts.language || 'en', opts.account || 0);;
   };
 
   getMnemonic(): any {
@@ -412,8 +409,7 @@ export class API extends EventEmitter {
    * @param {Number} opts.account - default 0
    * @param {String} opts.derivationStrategy - default 'BIP44'
    */
-  seedFromExtendedPrivateKey(xPrivKey, opts): any {
-    opts = opts || {};
+  seedFromExtendedPrivateKey(xPrivKey, opts: any = {}): void {
     this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
   };
 
@@ -492,7 +488,7 @@ export class API extends EventEmitter {
       var credentials = Credentials.fromObj(JSON.parse(str));
       this.credentials = credentials;
     } catch (ex) {
-      throw new Errors.INVALID_BACKUP;
+      throw Errors.INVALID_BACKUP;
     }
   };
 
@@ -515,7 +511,7 @@ export class API extends EventEmitter {
         
         return this.openWallet();
       }).catch((err) => {
-          return reject(new Errors.WALLET_DOES_NOT_EXIST);
+          return reject(Errors.WALLET_DOES_NOT_EXIST);
       });
     });
   });
@@ -553,14 +549,14 @@ export class API extends EventEmitter {
         this.credentials = derive(false);
       } catch (e) {
         log.info('Mnemonic error:', e);
-        return reject(new Errors.INVALID_BACKUP);
+        return reject(Errors.INVALID_BACKUP);
       }
 
       return this._import().then((ret) => {
         return resolve(ret);
       }).then((err) => {
-        if (err instanceof Errors.INVALID_BACKUP) return reject(err);
-        if (err instanceof Errors.NOT_AUTHORIZED || err instanceof Errors.WALLET_DOES_NOT_EXIST) {
+        if (err == Errors.INVALID_BACKUP) return reject(err);
+        if (err == Errors.NOT_AUTHORIZED || err == Errors.WALLET_DOES_NOT_EXIST) {
           var altCredentials = derive(true);
           if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return reject(err);
           this.credentials = altCredentials;
@@ -585,7 +581,7 @@ export class API extends EventEmitter {
       this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       log.info('xPriv error:', e);
-      return new Promise((resolve, reject) => { reject(new Errors.INVALID_BACKUP); });
+      return new Promise((resolve, reject) => { reject(Errors.INVALID_BACKUP); });
     };
 
     return this._import();
@@ -611,7 +607,7 @@ export class API extends EventEmitter {
       this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       log.info('xPriv error:', e);
-      return new Promise((resolve, reject) => { reject(new Errors.INVALID_BACKUP); });
+      return new Promise((resolve, reject) => { reject(Errors.INVALID_BACKUP); });
     };
 
     return this._import();
@@ -671,7 +667,7 @@ export class API extends EventEmitter {
           
           var fee = opts.fee || 10000;
           var amount = _.sumBy(utxos, 'micros') - fee;
-          if (amount <= 0) return reject(new Errors.INSUFFICIENT_FUNDS);
+          if (amount <= 0) return reject(Errors.INSUFFICIENT_FUNDS);
   
           var tx;
           try {
@@ -688,7 +684,7 @@ export class API extends EventEmitter {
   
           } catch (ex) {
             log.error('Could not build transaction from private key', ex);
-            reject(new Errors.COULD_NOT_BUILD_TRANSACTION);
+            reject(Errors.COULD_NOT_BUILD_TRANSACTION);
           }
           return resolve(tx);
         });
@@ -770,7 +766,7 @@ export class API extends EventEmitter {
     var fee = opts.fee || 10000;
     var microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
     var amount =  microAmount - fee;
-    if (amount <= 0) return new Errors.INSUFFICIENT_FUNDS;
+    if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
 
     var tx = new Bitcore.Transaction();
 
@@ -802,7 +798,7 @@ export class API extends EventEmitter {
 
     } catch (ex) {
       log.error('Could not build transaction from private key', ex);
-      return new Errors.COULD_NOT_BUILD_TRANSACTION;
+      return Errors.COULD_NOT_BUILD_TRANSACTION;
     }
     return tx;
   };
@@ -837,7 +833,7 @@ export class API extends EventEmitter {
 
         if (this.credentials.walletPrivKey) {
           if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
-            return reject(new Errors.SERVER_COMPROMISED);
+            return reject(Errors.SERVER_COMPROMISED);
           }
         } else {
           // this should only happen in AIR-GAPPED flows
@@ -855,7 +851,7 @@ export class API extends EventEmitter {
 
   _getHeaders(method, url, args): any {
     var headers = {
-      'x-client-version': 'bwc-' + Package.version,
+      'x-client-version': 'MWC-' + Package.version,
     };
 
     return headers;
@@ -914,7 +910,7 @@ export class API extends EventEmitter {
 
       return r.then((res) => {
         if (!res) {
-          return reject(new Errors.CONNECTION_ERROR);
+          return reject(Errors.CONNECTION_ERROR);
         }
 
         if (res.body)
@@ -924,10 +920,10 @@ export class API extends EventEmitter {
 
         if (res.status !== 200) {
           if (res.status === 404)
-            return reject(new Errors.NOT_FOUND);
+            return reject(Errors.NOT_FOUND);
 
           if (!res.status)
-            return reject(new Errors.CONNECTION_ERROR);
+            return reject(Errors.CONNECTION_ERROR);
 
           log.error('HTTP Error:' + res.status);
 
@@ -938,7 +934,7 @@ export class API extends EventEmitter {
         }
 
         if (res.body === '{"error":"read ECONNRESET"}')
-          return reject(new Errors.ECONNRESET_ERROR(JSON.parse(res.body)));
+          return reject(Errors.ECONNRESET_ERROR);
 
         return resolve(res.body, res.header);
       });
@@ -964,10 +960,10 @@ export class API extends EventEmitter {
    */
   private _doRequestWithLogin(method, url, args): Promise<any> {
 
-    function doLogin(): Promise<any> {
+    let doLogin = (): Promise<any> => {
       return new Promise((resolve, reject) => {   
         this._login().then((s) => {
-          if (!s) return reject(new Errors.NOT_AUTHORIZED);
+          if (!s) return reject(Errors.NOT_AUTHORIZED);
           this.session = s;
           resolve();
         }).catch((err) => {
@@ -1086,7 +1082,7 @@ export class API extends EventEmitter {
     return t.uncheckedSerialize();
   };
 
-  signTxp = function(txp, derivedXPrivKey) {
+  public signTxp = function(txp, derivedXPrivKey):any {
     //Derive proper key to sign, for each input
     var privs = [];
     var derived = {};
@@ -1114,7 +1110,7 @@ export class API extends EventEmitter {
     return signatures;
   };
 
-  _signTxp(txp, password): any {
+  private _signTxp(txp, password): any {
     var derived = this.credentials.getDerivedXPrivKey(password);
     return this.signTxp(txp, derived);
   };
@@ -1124,7 +1120,7 @@ export class API extends EventEmitter {
       type: 'accept'
     });
 
-    return _.map(acceptedActions, function(x) {
+    return _.map(acceptedActions, function(x: any) {
       return {
         signatures: x.signatures,
         xpub: x.xpub,
@@ -1556,13 +1552,13 @@ export class API extends EventEmitter {
     });
   };
 
-  private _processStatus(status): any {
+  private _processStatus = (status): any => {
 
-    function processCustomData(data) {
+    let processCustomData = (data) => {
       var copayers = data.wallet.copayers;
       if (!copayers) return;
 
-      var me = _.find(copayers, {
+      var me:any = _.find(copayers, {
         'id': this.credentials.copayerId
       });
       if (!me || !me.customData) return;
@@ -1779,7 +1775,7 @@ export class API extends EventEmitter {
       this._processTxps(txp);
 
       if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey)) {
-        return Promise.reject(new Errors.SERVER_COMPROMISED);
+        return Promise.reject(Errors.SERVER_COMPROMISED);
       }
 
       Promise.resolve(txp);
@@ -1840,7 +1836,7 @@ export class API extends EventEmitter {
       if (!this._checkKeyDerivation()) return reject(new Error('Cannot create new address for this wallet'));
       return this._doPostRequest('/v1/addresses/', opts).then((address) => {
         if (!Verifier.checkAddress(this.credentials, address)) {
-          return reject(new Errors.SERVER_COMPROMISED);
+          return reject(Errors.SERVER_COMPROMISED);
         } 
         return resolve(address);
       });
@@ -1883,9 +1879,555 @@ export class API extends EventEmitter {
   };
 
   // Ensure that an address is in a valid format, and that it has been beaconed on the blockchain.
-  validateAddress(address, network): Promise<any> {
+  public validateAddress(address, network): Promise<any> {
     const url = `/v1/addresses/${address}/validate/${network}`;
     return this._doGetRequest(url);
   };
 
+
+  /**
+   * Get your main addresses
+   *
+   * @param {Object} opts
+   * @param {Boolean} opts.doNotVerify
+   * @param {Numeric} opts.limit (optional) - Limit the resultset. Return all addresses by default.
+   * @param {Boolean} [opts.reverse=false] (optional) - Reverse the order of returned addresses.
+   * @param {Callback} cb
+   * @returns {Callback} cb - Return error or the array of addresses
+   */
+  public getMainAddresses(opts:any = {}): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    var args = [];
+    if (opts.limit) args.push('limit=' + opts.limit);
+    if (opts.reverse) args.push('reverse=1');
+    var qs = '';
+    if (args.length > 0) {
+      qs = '?' + args.join('&');
+    }
+    var url = '/v1/addresses/' + qs;
+
+    return new Promise((resolve, reject) => { 
+      return this._doGetRequest(url).then((addresses) => {
+        if (!opts.doNotVerify) {
+          var fake = _.some(addresses, function(address) {
+            return !Verifier.checkAddress(this.credentials, address);
+          });
+          if (fake)
+            return reject(Errors.SERVER_COMPROMISED);
+          }
+        return resolve(addresses);
+      });
+    });
+  };
+
+  /**
+   * Update wallet balance
+   *
+   * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
+   * @param {Callback} cb
+   */
+  public getBalance(opts:any = {}): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+    var url = '/v1/balance/';
+    if (opts.twoStep) url += '?twoStep=1';
+    return this._doGetRequest(url);
+  };
+
+  /**
+   * Get list of transactions proposals
+   *
+   * @param {Object} opts
+   * @param {Boolean} opts.doNotVerify
+   * @param {Boolean} opts.forAirGapped
+   * @param {Boolean} opts.doNotEncryptPkr
+   * @return {Callback} cb - Return error or array of transactions proposals
+   */
+  public getTxProposals(opts): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+
+    return this._doGetRequest('/v1/txproposals/').then((txps) => {
+      this._processTxps(txps);
+
+      return Promise.each(txps, (txp) => {
+        if (!opts.doNotVerify) {
+          // TODO: Find a way to run this check in parallel.
+          this.getPayPro(txp).then((paypro)  => {
+            if (!Verifier.checkTxProposal(this.credentials, txp, {
+              paypro: paypro,
+            })) {
+              Promise.reject(Errors.SERVER_COMPROMISED);
+            }
+          });
+        }
+        }).then(() => {
+          let result: any;
+          if (opts.forAirGapped) {
+            result = {
+              txps: JSON.parse(JSON.stringify(txps)),
+              encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
+              unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
+              m: this.credentials.m,
+              n: this.credentials.n,
+            };
+          } else {
+            result = txps;
+          }
+          Promise.resolve(result);
+        });
+    });
+  };
+
+  //TODO: Refactor Paypro module to be Promisified.
+  private getPayPro(txp): Promise<any> {
+    if (!txp.payProUrl || this.doNotVerifyPayPro)
+      return Promise.resolve();
+
+    PayPro.get({
+      url: txp.payProUrl,
+      http: this.payProHttp,
+    }, function(err, paypro) {
+      if (err) return Promise.reject(new Error('Cannot check transaction now:' + err));
+      return Promise.resolve(paypro);
+    });
+  };
+
+  /**
+  * Sign a transaction proposal
+  *
+  * @param {Object} txp
+  * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
+  * @param {Callback} cb
+  * @return {Callback} cb - Return error or object
+  */
+  signTxProposal(txp, password): Promise<any> {
+    return new Promise((resolve, reject) => {
+      $.checkState(this.credentials && this.credentials.isComplete());
+      $.checkArgument(txp.creatorId);
+
+      if (!txp.signatures) {
+        if (!this.canSign())
+          return reject(Errors.MISSING_PRIVATE_KEY);
+
+        if (this.isPrivKeyEncrypted() && !password)
+          return reject(Errors.ENCRYPTED_PRIVATE_KEY);
+      }
+
+      this.getPayPro(txp).then((paypro) => {
+        let isLegit = Verifier.checkTxProposal(this.credentials, txp, {
+          paypro: paypro,
+        });
+
+        if (!isLegit)
+          return reject(Errors.SERVER_COMPROMISED);
+
+        let signatures = txp.signatures;
+
+        if (_.isEmpty(signatures)) {
+          try {
+            signatures = this._signTxp(txp, password);
+          } catch (ex) {
+            log.error('Error signing tx', ex);
+            return reject(ex);
+          }
+        }
+
+        let url = '/v1/txproposals/' + txp.id + '/signatures/';
+        let args = {
+          signatures: signatures
+        };
+
+        this._doPostRequest(url, args).then((txp) => {
+          this._processTxps(txp);
+          return resolve(txp);
+        });
+      });
+    });
+  }
+
+  /**
+   * Sign transaction proposal from AirGapped
+   *
+   * @param {Object} txp
+   * @param {String} encryptedPkr
+   * @param {Number} m
+   * @param {Number} n
+   * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
+   * @return {Object} txp - Return transaction
+   */
+  public signTxProposalFromAirGapped(txp, encryptedPkr, m, n, password) {
+    $.checkState(this.credentials);
+    if (!this.canSign())
+      throw Errors.MISSING_PRIVATE_KEY;
+
+    if (this.isPrivKeyEncrypted() && !password)
+      throw Errors.ENCRYPTED_PRIVATE_KEY;
+
+    var publicKeyRing;
+    try {
+      publicKeyRing = JSON.parse(Utils.decryptMessage(encryptedPkr, this.credentials.personalEncryptingKey));
+    } catch (ex) {
+      throw new Error('Could not decrypt public key ring');
+    }
+
+    if (!_.isArray(publicKeyRing) || publicKeyRing.length != n) {
+      throw new Error('Invalid public key ring');
+    }
+
+    this.credentials.m = m;
+    this.credentials.n = n;
+    this.credentials.addressType = txp.addressType;
+    this.credentials.addPublicKeyRing(publicKeyRing);
+
+    if (!Verifier.checkTxProposalSignature(this.credentials, txp))
+      throw new Error('Fake transaction proposal');
+
+    return this._signTxp(txp, password);
+  };
+
+
+  /**
+   * Reject a transaction proposal
+   *
+   * @param {Object} txp
+   * @param {String} reason
+   * @param {Callback} cb
+   * @return {Callback} cb - Return error or object
+   */
+  public rejectTxProposal(txp, reason): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    var url = '/v1/txproposals/' + txp.id + '/rejections/';
+    var args = {
+      reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || '',
+    };
+    return this._doPostRequest(url, args).then((txp) => {
+      this._processTxps(txp);
+      return Promise.resolve(txp);
+    });
+  }
+
+    /**
+   * Broadcast raw transaction
+   *
+   * @param {Object} opts
+   * @param {String} opts.network
+   * @param {String} opts.rawTx
+   * @param {Callback} cb
+   * @return {Callback} cb - Return error or txid
+   */
+  public broadcastRawTx(opts:any = {}): Promise<any> {
+    $.checkState(this.credentials);
+    opts = opts || {};
+
+    var url = '/v1/broadcast_raw/';
+    return this._doPostRequest(url, opts);
+  };
+
+  private _doBroadcast(txp): Promise<any> {
+    var url = '/v1/txproposals/' + txp.id + '/broadcast/';
+    return this._doPostRequest(url, {}).then((txp) => {
+      return Promise.resolve(this._processTxps(txp));
+    });
+  };
+
+  /**
+  * Broadcast a transaction proposal
+  *
+  * @param {Object} txp
+  * @param {Callback} cb
+  * @return {Callback} cb - Return error or object
+  */
+  public broadcastTxProposal(txp): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+    return this.getPayPro(txp).then((paypro) => {
+      if (paypro) {
+        var t = Utils.buildTx(txp);
+        this._applyAllSignatures(txp, t);
+
+        PayPro.send({
+          http: this.payProHttp,
+          url: txp.payProUrl,
+          amountMicros: txp.amount,
+          refundAddr: txp.changeAddress.address,
+          merchant_data: paypro.merchant_data,
+          rawTx: t.serialize({
+            disableSmallFees: true,
+            disableLargeFees: true,
+            disableDustOutputs: true
+          }),
+        }, function(err, ack, memo) {
+          if (err) return Promise.Reject(err);
+          this._doBroadcast(txp, function(err, txp) {
+            return Promise.resolve(err, txp, memo);
+          });
+        });
+      } else {
+        return Promise.resolve(this._doBroadcast(txp));
+      }
+    });
+  };
+
+  /**
+   * Remove a transaction proposal
+   *
+   * @param {Object} txp
+   * @param {Callback} cb
+   * @return {Callback} cb - Return error or empty
+   */
+  removeTxProposal(txp): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    var url = '/v1/txproposals/' + txp.id;
+    return this._doDeleteRequest(url);
+  };
+
+  /**
+   * Get transaction history
+   *
+   * @param {Object} opts
+   * @param {Number} opts.skip (defaults to 0)
+   * @param {Number} opts.limit
+   * @param {Boolean} opts.includeExtendedInfo
+   * @param {Callback} cb
+   * @return {Callback} cb - Return error or array of transactions
+   */
+  public getTxHistory(opts): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    var args = [];
+    if (opts) {
+      if (opts.skip) args.push('skip=' + opts.skip);
+      if (opts.limit) args.push('limit=' + opts.limit);
+      if (opts.includeExtendedInfo) args.push('includeExtendedInfo=1');
+    }
+    var qs = '';
+    if (args.length > 0) {
+      qs = '?' + args.join('&');
+    }
+
+    var url = '/v1/txhistory/' + qs;
+    return this._doGetRequest(url).then((txs) => {
+      this._processTxps(txs);
+      return Promise.resolve(txs);
+    });
+  };
+
+  /**
+   * getTx
+   *
+   * @param {String} TransactionId
+   * @return {Callback} cb - Return error or transaction
+   */
+  public getTx(id): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    var url = '/v1/txproposals/' + id;
+    return this._doGetRequest(url).then((txp) => {
+      return Promise.resolve(this._processTxps(txp));
+    });
+  };
+
+  /**
+   * Start an address scanning process.
+   * When finished, the scanning process will send a notification 'ScanFinished' to all copayers.
+   *
+   * @param {Object} opts
+   * @param {Boolean} opts.includeCopayerBranches (defaults to false)
+   * @param {Callback} cb
+   */
+  public startScan(opts:any = {}): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+    var args = {
+      includeCopayerBranches: opts.includeCopayerBranches,
+    };
+    return this._doPostRequest('/v1/addresses/scan', args);
+  };
+
+  /**
+   * Get a note associated with the specified txid
+   * @param {Object} opts
+   * @param {string} opts.txid - The txid to associate this note with
+   */
+  public getTxNote(opts:any = {}): Promise<any> {
+    $.checkState(this.credentials);
+    return this._doGetRequest('/v1/txnotes/' + opts.txid + '/').then((note) => {
+      return Promise.resolve(this._processTxNotes(note));
+    });
+  }
+
+
+  /**
+   * Edit a note associated with the specified txid
+   * @param {Object} opts
+   * @param {string} opts.txid - The txid to associate this note with
+   * @param {string} opts.body - The contents of the note
+   */
+  public editTxNote(opts:any = {}): Promise<any> {
+    $.checkState(this.credentials);
+    if (opts.body) {
+      opts.body = this._encryptMessage(opts.body, this.credentials.sharedEncryptingKey);
+    }
+    return this._doPutRequest('/v1/txnotes/' + opts.txid + '/', opts).then((note) => {
+      return Promise.resolve(this._processTxNotes(note));
+    });
+  };
+
+  /**
+   * Get all notes edited after the specified date
+   * @param {Object} opts
+   * @param {string} opts.minTs - The starting timestamp
+   */
+  public getTxNotes(opts:any = {}): Promise<any> {
+    $.checkState(this.credentials);
+    var args = [];
+    if (_.isNumber(opts.minTs)) {
+      args.push('minTs=' + opts.minTs);
+    }
+    var qs = '';
+    if (args.length > 0) {
+      qs = '?' + args.join('&');
+    }
+
+    return this._doGetRequest('/v1/txnotes/' + qs).then((notes) => {
+      return Promise.resolve(this._processTxNotes(notes));
+    });
+  }
+
+  /**
+   * Returns exchange rate for the specified currency & timestamp.
+   * @param {Object} opts
+   * @param {string} opts.code - Currency ISO code.
+   * @param {Date} [opts.ts] - A timestamp to base the rate on (default Date.now()).
+   * @param {String} [opts.provider] - A provider of exchange rates (default 'BitPay').
+   * @returns {Object} rates - The exchange rate.
+   */
+  public getFiatRate(opts:any = {}): Promise<any> {
+    $.checkState(this.credentials);
+    var args = [];
+    if (opts.ts) args.push('ts=' + opts.ts);
+    if (opts.provider) args.push('provider=' + opts.provider);
+    var qs = '';
+    if (args.length > 0) {
+      qs = '?' + args.join('&');
+    }
+
+    return this._doGetRequest('/v1/fiatrates/' + opts.code + '/' + qs);
+  }
+
+  /**
+   * Subscribe to push notifications.
+   * @param {Object} opts
+   * @param {String} opts.type - Device type (ios or android).
+   * @param {String} opts.token - Device token.
+   * @returns {Object} response - Status of subscription.
+   */
+  public pushNotificationsSubscribe(opts): Promise<any> {
+    var url = '/v1/pushnotifications/subscriptions/';
+    return this._doPostRequest(url, opts); 
+  };
+
+  /**
+   * Unsubscribe from push notifications.
+   * @param {String} token - Device token
+   * @return {Callback} cb - Return error if exists
+   */
+  pushNotificationsUnsubscribe(token): Promise<any> {
+    var url = '/v1/pushnotifications/subscriptions/' + token;
+    return this._doDeleteRequest(url);
+  };
+
+  /**
+   * Listen to a tx for its first confirmation.
+   * @param {Object} opts
+   * @param {String} opts.txid - The txid to subscribe to.
+   * @returns {Object} response - Status of subscription.
+   */
+  txConfirmationSubscribe(opts): Promise<any> {
+    var url = '/v1/txconfirmations/';
+    return this._doPostRequest(url, opts);
+  };
+
+  /**
+   * Stop listening for a tx confirmation.
+   * @param {String} txid - The txid to unsubscribe from.
+   * @return {Callback} cb - Return error if exists
+   */
+  txConfirmationUnsubscribe(txid): Promise<any> {
+    var url = '/v1/txconfirmations/' + txid;
+    return this._doDeleteRequest(url);
+};
+
+  /**
+   * Returns send max information.
+   * @param {String} opts
+   * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level ('priority', 'normal', 'economy', 'superEconomy').
+   * @param {number} opts.feePerKb - Optional. Specify the fee per KB (in micro).
+   * @param {Boolean} opts.excludeUnconfirmedUtxos - Indicates it if should use (or not) the unconfirmed utxos
+   * @param {Boolean} opts.returnInputs - Indicates it if should return (or not) the inputs
+   * @return {Callback} cb - Return error (if exists) and object result
+   */
+  public getSendMaxInfo(opts:any = {}): Promise<any> {
+    var args = [];
+
+    if (opts.feeLevel) args.push('feeLevel=' + opts.feeLevel);
+    if (opts.feePerKb) args.push('feePerKb=' + opts.feePerKb);
+    if (opts.excludeUnconfirmedUtxos) args.push('excludeUnconfirmedUtxos=1');
+    if (opts.returnInputs) args.push('returnInputs=1');
+    var qs = '';
+    if (args.length > 0)
+      qs = '?' + args.join('&');
+    var url = '/v1/sendmaxinfo/' + qs;
+
+    return this._doGetRequest(url);
+  };
+
+  /**
+   * Get wallet status based on a string identifier (one of: walletId, address, txid)
+   *
+   * @param {string} opts.identifier - The identifier
+   * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
+   * @param {Boolean} opts.includeExtendedInfo (optional: query extended status)
+   * @returns {Callback} cb - Returns error or an object with status information
+   */
+  public getStatusByIdentifier(opts:any = {}): Promise<any> {
+    $.checkState(this.credentials);
+    var qs = [];
+    qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
+    qs.push('twoStep=' + (opts.twoStep ? '1' : '0'));
+
+    return this._doGetRequest('/v1/wallets/' + opts.identifier + '?' + qs.join('&')).then((result) => {
+      if (!result || !result.wallet) return Promise.reject('Could not get status by identifier.');
+      if (result.wallet.status == 'pending') {
+        var c = this.credentials;
+        result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
+      }
+      return Promise.resolve(this._processStatus(result));
+    });
+  };
+
+  public referralTxConfirmationSubscribe(opts): Promise<any> {
+    const url = '/v1/referraltxconfirmations/';
+    return this._doPostRequest(url, opts);
+  };
+
+  referralTxConfirmationUnsubscribe(codeHash): Promise<any> {
+    const url = '/v1/referraltxconfirmations/' + codeHash;
+    return this._doDeleteRequest(url);
+  }
+
+  /**
+   *
+   * Checks the blockChain for a valid EasySend transaction that can be unlocked.
+   * @param {String} EasyReceiptScript The script of the easySend, generated client side
+   * @param cb Callback or handler to manage response from BWS
+   * @return {undefined}
+   */
+  validateEasyScript(scriptId): Promise<any> {
+    log.warn("Validating: " + scriptId);
+
+    var url = '/v1/easyreceive/validate/' + scriptId;
+    this._doGetRequest(url);
+  };
 }
