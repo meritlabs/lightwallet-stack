@@ -108,7 +108,7 @@ export class SendAmountView {
 
         var a = this.fromFiat(result);
         if (a) {
-          this.alternativeAmount = txFormatService.formatAmount(a * unitToSatoshi, true);
+          this.alternativeAmount = txFormatService.formatAmount(a * unitToMicro, true);
         } else {
           this.alternativeAmount = 'N/A'; //TODO
           this.allowSend = false;
@@ -145,7 +145,7 @@ export class SendAmountView {
     // TODO: implement this function correctly - Need: txFormatService, isFiat, $filter
     console.log("processResult TODO");
     /*if (this.availableUnits[this.unitIndex].isFiat) return $filter('formatFiatAmount')(val);
-    else return txFormatService.formatAmount(val.toFixed(unitDecimals) * unitToSatoshi, true);*/
+    else return txFormatService.formatAmount(val.toFixed(unitDecimals) * unitToMicro, true);*/
   };
 
   fromFiat(val: number) {
@@ -156,11 +156,11 @@ export class SendAmountView {
   toFiat(val) {
     // TODO: implement next line correctly - Need: rateService
     /*if (!rateService.getRate(fiatCode)) return;
-    return parseFloat((rateService.toFiat(val * unitToSatoshi, fiatCode, availableUnits[unitIndex].id)).toFixed(2));*/
+    return parseFloat((rateService.toFiat(val * unitToMicro, fiatCode, availableUnits[unitIndex].id)).toFixed(2));*/
   };
 
   finish() {
     // TODO: We should always be sending from view.
-    this.navCtrl.push('SendConfirmView', {toAddress: this.address, amount: this.globalResult});      
+    this.navCtrl.push('SendConfirmView', {toAddress: this.address, toAmount: parseInt(this.globalResult), wallet: this.navParams.data.wallet});
   }
 }

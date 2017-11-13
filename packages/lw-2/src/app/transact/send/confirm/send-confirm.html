@@ -13,8 +13,8 @@
         <span translate>Sending</span>
       </div>
       <div class="amount-label">
-        <div class="amount">{{txp.amountValueStr || '...'}} <span class="unit">{{txp.amountUnitStr}}</span></div>
-        <div class="alternative">{{txp.alternativeAmountStr || '...'}}</div>
+        <div class="amount">{{txData.amountValueStr || '...'}} <span class="unit">{{txData.amountUnitStr}}</span></div>
+        <div class="alternative">{{txData.alternativeAmountStr || '...'}}</div>
       </div>
     </div>
     <div class="info">
@@ -24,21 +24,21 @@
         <span class="payment-proposal-to" *ngIf="!recipientType">
           <img src="img/icon-bitcoin-small.svg">
 
-          <div copy-to-clipboard="txp.toAddress" class="ellipsis">
-            <span class="m15l size-14" *ngIf="txp.toName">{{displayName}}</span>
+          <div copy-to-clipboard="txData.toAddress" class="ellipsis">
+            <span class="m15l size-14" *ngIf="txData.toName">{{displayName}}</span>
           </div>
         </span>
         <div class="wallet" *ngIf="recipientType == 'wallet'">
           <i class="icon big-icon-svg">
             <img src="img/icon-wallet.svg" [class.wallet-background-color-default]="!toColor" [style.background-color]="toColor" class="bg"/>
           </i>
-          <div copy-to-clipboard="txp.toAddress" class="ellipsis">
+          <div copy-to-clipboard="txData.toAddress" class="ellipsis">
             <span class="wallet-name">{{displayName}}</span>
           </div>
         </div>
         <div *ngIf="recipientType == 'contact'" class="gravatar-contact toggle" (click)="toggleAddress()">
-          <gravatar class="send-gravatar" [name]="txp.toName" height="30" width="30" [email]="toEmail"></gravatar>
-          <span *ngIf="txp.toName">{{displayName}}</span>
+          <gravatar class="send-gravatar" [name]="txData.toName" height="30" width="30" [email]="toEmail"></gravatar>
+          <span *ngIf="txData.toName">{{displayName}}</span>
         </div>
       </div>
       <a class="item item-icon-right" *ngIf="wallet" (click)="showWalletSelector()">
@@ -58,13 +58,13 @@
         <i class="icon bp-arrow-right"></i>
       </a>
       <div class="item item-icon-right" *ngIf="wallet" (click)="chooseFeeLevel(tx, wallet)">
-        <span class="label" translate>Fee: {{txp.feeLevelName}}</span>
-        <span class="m10l">{{txp.txp[wallet.id].feeStr || '...'}}</span>
+        <span class="label" translate>Fee: {{txData.feeLevelName}}</span>
+        <span class="m10l">{{txData.txp.feeStr || '...'}}</span>
         <span class="item-note m10l">
-          <span>{{txp.txp[wallet.id].alternativeFeeStr || '...'}}&nbsp;
-          <span class="fee-rate" *ngIf="txp.txp[wallet.id].feeRatePerStr"> &middot;
-              <i class="ion-alert-circled warn" *ngIf="txp.txp[wallet.id].feeToHigh"></i> &nbsp;
-              <span class="fee-rate" [class.warn]="txp.txp[wallet.id].feeToHigh" translate> {{txp.txp[wallet.id].feeRatePerStr}}  of the sending amount </span>
+          <span>{{txData.txp.alternativeFeeStr || '...'}}&nbsp;
+          <span class="fee-rate" *ngIf="txData.txp.feeRatePerStr"> &middot;
+              <i class="ion-alert-circled warn" *ngIf="txData.txp.feeToHigh"></i> &nbsp;
+              <span class="fee-rate" [class.warn]="txData.txp.feeToHigh" translate> {{txData.txp.feeRatePerStr}}  of the sending amount </span>
 
           </span>
         </span>
@@ -75,7 +75,7 @@
       <a class="item item-icon-right" *ngIf="wallet" (click)="showDescriptionPopup(tx)">
         <span class="label" translate>Add Memo</span>
         <span class="item-note m10l">
-          {{txp.description}}
+          {{txData.description}}
         </span>
         <i class="icon bp-arrow-right"></i>
       </a>

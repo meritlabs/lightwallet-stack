@@ -75,8 +75,8 @@ export class RateService {
     return this._alternatives;
   };
   
-  toFiat(satoshis, code) {
-    return satoshis * this.SAT_TO_BTC * this.getRate(code);
+  toFiat(micros, code) {
+    return micros * this.SAT_TO_BTC * this.getRate(code);
   };
 
   fromFiat(amount, code) {
