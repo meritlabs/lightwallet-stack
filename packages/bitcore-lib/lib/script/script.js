@@ -394,6 +394,18 @@ Script.prototype.isScriptHashOut = function() {
 };
 
 /**
+ * @returns {boolean} if this is a p2sh output script
+ */
+Script.prototype.isParameterizedScriptHashOut = function() {
+  var buf = this.toBuffer();
+  return (buf.length > 25 &&
+    buf[0] === Opcode.OP_HASH160 &&
+    buf[1] === 0x14 &&
+    buf[buf.length - 3] === Opcode.OP_DEPTH &&
+    buf[buf.length - 1] === Opcode.OP_GREATERTHANOREQUAL);
+};
+
+/**
  * @returns {boolean} if this is a p2sh input script
  * Note that these are frequently indistinguishable from pubkeyhashin
  */
@@ -490,14 +502,18 @@ Script.prototype.isDataOut = function() {
  * @returns {Buffer}
  */
 Script.prototype.getData = function() {
-  if (this.isDataOut() || this.isScriptHashOut()) {
+  if (
+      this.isDataOut() ||
+      this.isScriptHashOut() ||
+      this.isParameterizedScriptHashOut()) {
+
     if (_.isUndefined(this.chunks[1])) {
       return new Buffer(0);
     } else {
       return new Buffer(this.chunks[1].buf);
     }
-  }
-  if (this.isPublicKeyHashOut()) {
+
+  } else if (this.isPublicKeyHashOut()) {
     return new Buffer(this.chunks[2].buf);
   }
   throw new Error('Unrecognized script type to get data from');
@@ -521,6 +537,7 @@ Script.types.PUBKEY_IN = 'Spend from public key';
 Script.types.PUBKEYHASH_OUT = 'Pay to public key hash';
 Script.types.PUBKEYHASH_IN = 'Spend from public key hash';
 Script.types.SCRIPTHASH_OUT = 'Pay to script hash';
+Script.types.PARAMETERIZED_SCRIPTHASH_OUT = 'Parameterized Pay to script hash';
 Script.types.SCRIPTHASH_IN = 'Spend from script hash';
 Script.types.MULTISIG_OUT = 'Pay to multisig';
 Script.types.MULTISIG_IN = 'Spend from multisig';
@@ -548,6 +565,7 @@ Script.outputIdentifiers.PUBKEY_OUT = Script.prototype.isPublicKeyOut;
 Script.outputIdentifiers.PUBKEYHASH_OUT = Script.prototype.isPublicKeyHashOut;
 Script.outputIdentifiers.MULTISIG_OUT = Script.prototype.isMultisigOut;
 Script.outputIdentifiers.SCRIPTHASH_OUT = Script.prototype.isScriptHashOut;
+Script.outputIdentifiers.PARAMETERIZED_SCRIPTHASH_OUT = Script.prototype.isParameterizedScriptHashOut;
 Script.outputIdentifiers.DATA_OUT = Script.prototype.isDataOut;
 
 /**
@@ -1096,6 +1114,10 @@ Script.prototype._getOutputAddressInfo = function() {
     info.hashBuffer = this.getData();
     info.network = this._network || Networks.defaultNetwork;
     info.type = Address.PayToScriptHash;
+  } else if (this.isParameterizedScriptHashOut()) {
+    info.hashBuffer = this.getData();
+    info.network = this._network || Networks.defaultNetwork;
+    info.type = Address.ParameterizedPayToScriptHash;
   } else if (this.isPublicKeyHashOut()) {
     info.hashBuffer = this.getData();
     info.type = Address.PayToPublicKeyHash;
