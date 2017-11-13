@@ -48,9 +48,7 @@ export class ReceiveView {
 
     if (this.wallets && this.wallets[0]) {
       this.wallet = this.wallets[0];
-      //this.generateAddress();
-      this.address = '1FgGP9dKqtWC1Q9xGhPYVmAeyezeZCFjhf';
-      this.qrAddress = 'bitcoin:1FgGP9dKqtWC1Q9xGhPYVmAeyezeZCFjhf';
+      this.generateAddress();
     }
 
     this.socialSharing.canShareVia('email').then(() => {
@@ -71,11 +69,7 @@ export class ReceiveView {
     modal.present();
   }
 
-  generateAddress(forceNew?) {
-
-    //let loader = this.loadCtrl.create({text: 'Generating...'});
-    //loader.present();
-
+  generateAddress(forceNew?: boolean) {
     this.addressGenerationInProgress = true;
 
     this.walletService.getAddress(this.wallet, forceNew).then((address) => {
@@ -83,13 +77,10 @@ export class ReceiveView {
       this.address = address;
       this.qrAddress = this.protocolHandler + ":" + this.address;
       this.addressGenerationInProgress = false;
-      //loader.dismiss();
-
     }).catch((err) => {
       this.addressGenerationInProgress = false;
       this.address = null;
       this.qrAddress = null;
-      //loader.dismiss();
       this.logger.warn('Failed to generate new adrress '+err);
       this.toastCtrl.create({
         message: 'Failed to generate new adrress: '+err,
