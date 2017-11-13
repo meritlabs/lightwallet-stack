@@ -15,6 +15,8 @@ import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { Promise } from 'bluebird';
+import { MeritWalletClient } from './../../../../merit-wallet-client';
+
 
 import * as _ from 'lodash';
 import {Wallet} from "./wallet.model";
@@ -148,29 +150,10 @@ export class WalletService {
         wallet.pendingTxps = txps;
       };
 
-
-      let get = ():Promise<any> => {
-        return new Promise((resolve, reject) => {
-          wallet.getStatus({
-            twoStep: true
-          }, (err, ret) => {
-            if (err) {
-              if (err instanceof this.errors.NOT_AUTHORIZED) {
-                return reject('WALLET_NOT_REGISTERED');
-              }
-              return reject(err);
-            }
-            return resolve(ret);
-          });
-        });
-      };
-      
       // TODO!!: Make this return a promise and properly promisify the stack.
       let cacheBalance = (wallet: any, balance: any): Promise<any> => {
         return new Promise((resolve, reject) => {
-
-        
-          if (!balance) return;
+          if (!balance) resolve();
 
           let configGet: any = this.configService.get();
           let config: any = configGet.wallet;
@@ -214,10 +197,12 @@ export class WalletService {
 
           // Check address
           return this.isAddressUsed(wallet, balance.byAddress).then((used) => {
+            console.log("Used##");
+            console.log(used);
             if (used) {
               this.logger.debug('Address used. Creating new');
               // Force new address
-              this.getAddress(wallet, true).then((addr) => {
+              return this.getAddress(wallet, true).then((addr) => {
                 this.logger.debug('New address: ', addr);
               })
             }
@@ -238,12 +223,12 @@ export class WalletService {
 
               cache.alternativeBalanceAvailable = true;
               cache.isRateAvailable = true;
-              resolve();              
+              return resolve();              
             }).catch((err) => {
               // We don't want to blow up the promise chain if the rateService is down.
               // TODO: Fallback to last known conversion rate.
               this.logger.warn("Could not get rates from rateService.");
-              resolve();              
+              return resolve();              
             });
           }).catch((err) => {
             return reject(err);
@@ -285,7 +270,7 @@ export class WalletService {
           tries = tries || 0;
 
           this.logger.debug('Updating Status:', wallet.credentials.walletName, tries);
-          return get().then((status) => {
+          return wallet.getStatus.then((status) => {
             let currentStatusHash = walletStatusHash(status);
             this.logger.debug('Status update. hash:' + currentStatusHash + ' Try:' + tries);
             if (opts.untilItChanges && initStatusHash == currentStatusHash && tries < this.WALLET_STATUS_MAX_TRIES && walletId == wallet.credentials.walletId) {
@@ -314,6 +299,8 @@ export class WalletService {
       };
 
       return _getStatus(walletStatusHash(null), 0).then((status) => {
+        console.log("Got status from _getStatus");
+        console.log(status);
         return resolve(status);
       }).catch((err) => {
         this.logger.warn("Error getting status: ", err);
@@ -967,8 +954,8 @@ export class WalletService {
 // create and store a wallet
   public createWallet(opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.doCreateWallet(opts).then((walletClient: any) => {
-        this.profileService.addAndBindWalletClient(walletClient, {
+      return this.doCreateWallet(opts).then((walletClient: any) => {
+        return this.profileService.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
         }).then((wallet: any) => {
           return resolve(wallet);
@@ -1094,7 +1081,7 @@ export class WalletService {
       opts.n = 1;
       opts.networkName = 'testnet';
       opts.unlockCode = unlockCode;
-      this.createWallet(opts).then((wallet: any) => {
+      return this.createWallet(opts).then((wallet: any) => {
         return resolve(wallet);
       }).catch((err) => {
         return reject(err);
@@ -1392,7 +1379,7 @@ export class WalletService {
       
       this.logger.debug('Creating Wallet:', showOpts);
       setTimeout(() => {
-        this.seedWallet(opts).then((walletClient: any) => {
+        return this.seedWallet(opts).then((walletClient: any) => {
           
           let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
           let myName = opts.myName || 'me'; // TODO GetTextCatalog
@@ -1403,25 +1390,19 @@ export class WalletService {
             singleAddress: opts.singleAddress,
             walletPrivKey: opts.walletPrivKey,
             beacon: opts.unlockCode
-          }, (err: any, secret: any) => {
-            if (err) {
-              this.bwcErrorService.cb(err, 'Error creating wallet').then((msg: string) => { //TODO getTextCatalog
-                return reject(msg);
-              });
-            } else {
+          }).then((secret: any) => {
               // TODO: Subscribe to ReferralTxConfirmation
               return resolve(walletClient);
-            }
           });
         }).catch((err: any) => {
-          return reject(err);
+          return reject(this.bwcErrorService.cb(err, 'Error creating wallet'));
         });
       }, 5000);
     });
   }
 
   // TODO: Rename this.  
-  private seedWallet(opts: any): Promise<any> {
+  private seedWallet(opts: any): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
 
       opts = opts ? opts : {};
@@ -1432,7 +1413,8 @@ export class WalletService {
         try {
           // TODO: Type the walletClient
           this.mnemonicService.seedFromMnemonic(opts, walletClient).then((walletClient: any) => {
-            resolve(walletClient)});
+            return resolve(walletClient)
+          });
         } catch (ex) {
           this.logger.info(ex);
           return reject('Could not create: Invalid wallet recovery phrase'); // TODO getTextCatalog
@@ -1489,7 +1471,7 @@ export class WalletService {
   // todo its a mock now!!
   getWalletAnv(wallet:Wallet):Promise<number> {
     return new Promise((resolve, reject) => {
-      resolve(
+      return resolve(
        (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
       )
     });

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 // TODO: Import the NPM package directly. 
 // Depends on creating typings and publishing the pkg.
-import { Client } from './../../../../merit-wallet-client';
+import { MeritWalletClient } from './../../../../merit-wallet-client';
 
 @Injectable()
 export class BwcService {
@@ -33,11 +33,11 @@ export class BwcService {
     return this.BWC.Utils;
   }
 
-  public getClient(walletData, opts:any = {}) {
+  public getClient(walletData, opts:any = {}): MeritWalletClient {
     opts = opts || {};
 
     //note opts use `bwsurl` all lowercase;
-    let bwc = Client.getInstance({
+    let bwc = MeritWalletClient.getInstance({
       baseUrl: opts.bwsurl || 'http://localhost:3232/bws/api',
       verbose: opts.verbose,
       timeout: 100000,

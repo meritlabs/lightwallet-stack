@@ -5,7 +5,7 @@ const Bitcore = require('bitcore-lib');
 const Mnemonic = require('bitcore-mnemonic');
 const sjcl = require('sjcl');
 
-const Common = require('./common');
+import { Common } from './common';
 const Constants = Common.Constants;
 const Utils = Common.Utils;
 
@@ -39,7 +39,8 @@ const FIELDS = [
   'entropySourcePath',
   'unlocked',
   'beacon',
-  'shareCode'
+  'shareCode',
+  'version',
 ];
 
 function _checkNetwork(network: string) {
@@ -61,6 +62,7 @@ export class Credentials {
   public externalSource: any;
   public addressType: any;
   public xPrivKeyEncrypted: any;
+  public version: string;
 
 
   private static wordsForLang = {
@@ -158,7 +160,7 @@ export class Credentials {
     return x;
   };
 
-  private static _getNetworkFromExtendedKey = function(xKey) {
+  private _getNetworkFromExtendedKey = function(xKey) {
     $.checkArgument(xKey && _.isString(xKey));
     return xKey.charAt(0) == 't' ? 'testnet' : 'livenet';
   };
@@ -178,11 +180,19 @@ export class Credentials {
     return x;
   };
 
+  private static _xPubToCopayerId = function(xpub) {
+    var hash = sjcl.hash.sha256.hash(xpub);
+    return sjcl.codec.hex.fromBits(hash);
+  };
+
   constructor() {
     let fixedNet = 'testnet';
     this.network = fixedNet;
     this.xPrivKey = (new Bitcore.HDPrivateKey(fixedNet)).toString();
     this.compliantDerivation = true;
+    this.version = '1.0.0';
+    this.derivationStrategy = Constants.DERIVATION_STRATEGIES.BIP44;
+    this.account = 0;
   }
 
    public Mnemonic = function(network, passphrase, language, account, opts) {
@@ -340,7 +350,7 @@ export class Credentials {
 
     this.personalEncryptingKey = this._hashFromEntropy('personalKey', 16).toString('base64');
 
-    this.copayerId = this._xPubToCopayerId(this.xPubKey);
+    this.copayerId = Credentials._xPubToCopayerId(this.xPubKey);
     this.publicKeyRing = [{
       xPubKey: this.xPubKey,
       requestPubKey: this.requestPubKey,
@@ -383,6 +393,8 @@ export class Credentials {
       case Constants.DERIVATION_STRATEGIES.BIP48:
         purpose = '48';
         break;
+      default:
+        throw new Error('Credentials#getBaseAddressDerivationPath: derivation strategy is not set.');
     }
 
     let coin = (this.network == 'livenet' ? "0" : "1");
@@ -479,7 +491,7 @@ export class Credentials {
     }
   };
 
-  public getKeys = function(password) {
+  public getKeys = function(password):any {
     let keys:any = {};
 
     if (this.isPrivKeyEncrypted()) {

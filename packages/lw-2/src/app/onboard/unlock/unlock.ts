@@ -41,19 +41,19 @@ export class UnlockView {
         let loader = this.loaderCtrl.create({content: 'Creating wallet...'});
         loader.present();
 
-        this.walletService.createDefaultWallet(this.formData.unlockCode).then((wallet) => {
+        return this.walletService.createDefaultWallet(this.formData.unlockCode).then((wallet) => {
           console.debug('created wallet', wallet);
           loader.dismiss();
 
           /** todo store wallet */
 
           this.navCtrl.push('TransactView');
-          resolve(wallet);
+          return resolve(wallet);
         }).catch((err) => {
           loader.dismiss();
           this.unlockState = 'fail';
           this.toastCtrl.create({ message: err, cssClass: ToastConfig.CLASS_ERROR }).present();
-          reject(err);
+          return reject(err);
         });
       }
     });

@@ -69,3 +69,4 @@ export const errorSpec = [{
   message: 'Maximum number of consecutive addresses without activity reached.'
 }];
 
+module.exports = errorSpec;
