@@ -9,7 +9,7 @@ import {ConfigService} from "merit/shared/config.service";
 @IonicPage()
 @Component({
   selector: 'receive-amount-view',
-  templateUrl: 'amount.html',
+  templateUrl: 'receive-amount.html',
 })
 export class ReceiveAmountView {
 
