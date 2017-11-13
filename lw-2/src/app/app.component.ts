@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Platform, ModalController} from 'ionic-angular';
+import { Platform, ModalController, App} from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -16,7 +16,9 @@ import { DeepLinkService } from 'merit/core/deep-link.service';
 
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 
-import { Promise } from 'bluebird'; 
+import { Promise } from 'bluebird';
+
+import * as _ from 'lodash';
 
 
 @Component({
@@ -36,30 +38,36 @@ export class MeritLightWallet {
     private appService: AppService,
     private configService: ConfigService,
     private deepLinkService: DeepLinkService,
-    private easyReceiveService: EasyReceiveService
+    private easyReceiveService: EasyReceiveService,
+    private app:App
   ) {
 
     Promise.longStackTraces();
-    process.on('unhandledRejection', console.log.bind(console));      
+    process.on('unhandledRejection', console.log.bind(console));
+
 
     this.platform.ready().then((readySource) => {
         this.appService.getInfo().then((appInfo) => {
           this.logger.info(`
             platform ready (${readySource}): -v ${appInfo.version} # ${appInfo.commitHash}
         `);
-        });  
+        });
 
         this.initializeApp();
     });
 
     this.platform.resume.subscribe(() => {
-      this.deepLinkService.getBranchData().then((data) => {
-        if (data) {
+      this.deepLinkService.getBranchData(() => {}).then((data) => {
+        if (data && !_.isEmpty(data)) {
           this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt) => {
-            //todo send event?
+            this.profileService.getProfile().then((profile) => {
+              let viewToNavigate = (profile.credentials && profile.credentials.length) ?
+                'TransactView' : 'UnlockView';
+              this.app.getRootNavs()[0].setRoot(viewToNavigate);
+            });
           });
         }
-      }); 
+      });
     })
 
   }
@@ -72,10 +80,10 @@ export class MeritLightWallet {
 
       this.profileService.getProfile().then((profile) => {
 
-        this.deepLinkService.getBranchData().then((data) => {
+        this.deepLinkService.getBranchData(() => {}).then((data) => {
 
-          if (data) {
-            this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt) => { 
+          if (data && !_.isEmpty(data)) {
+            this.easyReceiveService.validateAndSaveParams(data).then(() => {
               this.rootComponent = (profile.credentials && profile.credentials.length) ?
                  'TransactView' : 'UnlockView';
             }).catch(() => {

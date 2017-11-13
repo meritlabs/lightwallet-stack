@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Logger } from 'merit/core/logger';
-import * as _ from 'lodash';
 import { PersistenceService } from 'merit/core/persistence.service';
 import { Platform } from 'ionic-angular';
 
@@ -15,14 +14,14 @@ export class DeepLinkService {
     this.logger.info("Hello Deep Link Service");
   }
 
-  public getBranchData():Promise<any> {
+  public getBranchData(callback):Promise<any> {
   
       if (!this.platform.is('cordova')) { 
           this.logger.warn('branch deeplinking is available on native devices only');
           return Promise.resolve();
       } else {
         const Branch = window['Branch'];
-        return Branch.initSession();
+        return Branch.initSession(callback);
       }
 
 
