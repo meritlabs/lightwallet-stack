@@ -1183,7 +1183,7 @@ export class API extends EventEmitter {
    * @param {String} opts.customData
    * @param {Callback} cb
    */
-  _doJoinWallet(walletId, walletPrivKey, xPubKey, requestPubKey, copayerName, opts:any = {}): Promise<any> {
+  private _doJoinWallet(walletId, walletPrivKey, xPubKey, requestPubKey, copayerName, opts:any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
 
       // Adds encrypted walletPrivateKey to CustomData
@@ -1209,8 +1209,9 @@ export class API extends EventEmitter {
 
       var url = '/v1/wallets/' + walletId + '/copayers';
       return this._doPostRequest(url, args).then((body) => {
-        this._processWallet(body.wallet);
-        return resolve(body.wallet);
+        return this._processWallet(body.wallet).then(() => {
+          return resolve(body.wallet);
+        });
       }).catch((err) => {
         return reject(err);  
       });
@@ -1529,7 +1530,7 @@ export class API extends EventEmitter {
   };
 
   // TODO: Promisify!
-  _processWallet(wallet): Promise<any> {
+  private _processWallet(wallet): Promise<any> {
     return new Promise((resolve, reject) => {
       var encryptingKey = this.credentials.sharedEncryptingKey;
 
