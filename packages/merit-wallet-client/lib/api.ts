@@ -208,29 +208,33 @@ export class API extends EventEmitter {
    * @param {String} encryptingKey
    */
   _processTxps(txps): any {
-    if (!txps) return;
+    return new Promise((resolve, reject) => {
+      
+      if (!txps) return resolve();
 
-    let encryptingKey = this.credentials.sharedEncryptingKey;
-    _.each([].concat(txps), function(txp) {
-      txp.encryptedMessage = txp.message;
-      txp.message = this._decryptMessage(txp.message, encryptingKey) || null;
-      txp.creatorName = this._decryptMessage(txp.creatorName, encryptingKey);
+      let encryptingKey = this.credentials.sharedEncryptingKey;
+      _.each([].concat(txps), function(txp) {
+        txp.encryptedMessage = txp.message;
+        txp.message = this._decryptMessage(txp.message, encryptingKey) || null;
+        txp.creatorName = this._decryptMessage(txp.creatorName, encryptingKey);
 
-      _.each(txp.actions, function(action) {
-        action.copayerName = this._decryptMessage(action.copayerName, encryptingKey);
-        action.comment = this._decryptMessage(action.comment, encryptingKey);
-        // TODO get copayerName from Credentials -> copayerId to copayerName
-        // action.copayerName = null;
+        _.each(txp.actions, function(action) {
+          action.copayerName = this._decryptMessage(action.copayerName, encryptingKey);
+          action.comment = this._decryptMessage(action.comment, encryptingKey);
+          // TODO get copayerName from Credentials -> copayerId to copayerName
+          // action.copayerName = null;
+        });
+        _.each(txp.outputs, function(output) {
+          output.encryptedMessage = output.message;
+          output.message = this._decryptMessage(output.message, encryptingKey) || null;
+        });
+        txp.hasUnconfirmedInputs = _.some(txp.inputs, function(input: any) {
+          return input.confirmations == 0;
+        });
+        this._processTxNotes(txp.note);
       });
-      _.each(txp.outputs, function(output) {
-        output.encryptedMessage = output.message;
-        output.message = this._decryptMessage(output.message, encryptingKey) || null;
-      });
-      txp.hasUnconfirmedInputs = _.some(txp.inputs, function(input: any) {
-        return input.confirmations == 0;
-      });
-      this._processTxNotes(txp.note);
-    });
+      return resolve();
+    });    
   };
 
   /**
@@ -1525,63 +1529,74 @@ export class API extends EventEmitter {
   };
 
   // TODO: Promisify!
-  _processWallet(wallet): any {
+  _processWallet(wallet): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var encryptingKey = this.credentials.sharedEncryptingKey;
 
-    var encryptingKey = this.credentials.sharedEncryptingKey;
-
-    var name = Utils.decryptMessage(wallet.name, encryptingKey);
-    if (name != wallet.name) {
-      wallet.encryptedName = wallet.name;
-    }
-    wallet.name = name;
-    _.each(wallet.copayers, function(copayer) {
-      var name = Utils.decryptMessage(copayer.name, encryptingKey);
-      if (name != copayer.name) {
-        copayer.encryptedName = copayer.name;
+      var name = Utils.decryptMessage(wallet.name, encryptingKey);
+      if (name != wallet.name) {
+        wallet.encryptedName = wallet.name;
       }
-      copayer.name = name;
-      _.each(copayer.requestPubKeys, function(access) {
-        if (!access.name) return;
-
-        var name = Utils.decryptMessage(access.name, encryptingKey);
-        if (name != access.name) {
-          access.encryptedName = access.name;
+      wallet.name = name;
+      _.each(wallet.copayers, function(copayer) {
+        var name = Utils.decryptMessage(copayer.name, encryptingKey);
+        if (name != copayer.name) {
+          copayer.encryptedName = copayer.name;
         }
-        access.name = name;
+        copayer.name = name;
+        _.each(copayer.requestPubKeys, function(access) {
+          if (!access.name) return;
+
+          var name = Utils.decryptMessage(access.name, encryptingKey);
+          if (name != access.name) {
+            access.encryptedName = access.name;
+          }
+          access.name = name;
+        });
       });
+      //TODO: Is there a better way to be sure we've waited for any I/O?
+      return resolve();
     });
   };
 
-  private _processStatus = (status): any => {
+  private _processStatus = (status): Promise<any> => {
 
-    let processCustomData = (data) => {
-      var copayers = data.wallet.copayers;
-      if (!copayers) return;
+    let processCustomData = (data): Promise<any> => {
+      return new Promise((resolve, reject) => {
+        
+        var copayers = data.wallet.copayers;
+        if (!copayers) return resolve();
 
-      var me:any = _.find(copayers, {
-        'id': this.credentials.copayerId
+        var me:any = _.find(copayers, {
+          'id': this.credentials.copayerId
+        });
+        if (!me || !me.customData) return resolve();
+
+        let customData;
+        try {
+          customData = JSON.parse(Utils.decryptMessage(me.customData, this.credentials.personalEncryptingKey));
+        } catch (e) {
+          log.warn('Could not decrypt customData:', me.customData);
+        }
+        if (!customData) return resolve();
+
+        
+        // Update walletPrivateKey
+        if (!this.credentials.walletPrivKey && customData.walletPrivKey) {
+          this.credentials.addWalletPrivateKey(customData.walletPrivKey);
+        }
+        
+        // Add it to result
+        return resolve(data.customData = customData);
       });
-      if (!me || !me.customData) return;
-
-      var customData;
-      try {
-        customData = JSON.parse(Utils.decryptMessage(me.customData, this.credentials.personalEncryptingKey));
-      } catch (e) {
-        log.warn('Could not decrypt customData:', me.customData);
-      }
-      if (!customData) return;
-
-      // Add it to result
-      data.customData = customData;
-
-      // Update walletPrivateKey
-      if (!this.credentials.walletPrivKey && customData.walletPrivKey)
-        this.credentials.addWalletPrivateKey(customData.walletPrivKey);
-    };
-
-    processCustomData(status);
-    this._processWallet(status.wallet);
-    this._processTxps(status.pendingTxps);
+    }
+    
+    // Resolve all our async calls here, then resolve this wrapping promise.
+    return Promise.all([
+      processCustomData(status), 
+      this._processWallet(status.wallet),
+      this._processTxps(status.pendingTxps)
+    ]);
   }
 
 
@@ -1635,7 +1650,9 @@ export class API extends EventEmitter {
         result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
       }
 
-      this._processStatus(result);
+      return this._processStatus(result).then(() => {
+        return Promise.resolve(result);
+      });
     });
   };
 

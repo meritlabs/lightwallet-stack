@@ -270,7 +270,9 @@ export class WalletService {
           tries = tries || 0;
 
           this.logger.debug('Updating Status:', wallet.credentials.walletName, tries);
-          return wallet.getStatus.then((status) => {
+          return wallet.getStatus().then((status) => {
+            console.log("@@@ WHAT IS STATUS From WC GetStatus?")
+            console.log(status)
             let currentStatusHash = walletStatusHash(status);
             this.logger.debug('Status update. hash:' + currentStatusHash + ' Try:' + tries);
             if (opts.untilItChanges && initStatusHash == currentStatusHash && tries < this.WALLET_STATUS_MAX_TRIES && walletId == wallet.credentials.walletId) {
