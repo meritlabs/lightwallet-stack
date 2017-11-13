@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+      "allowSyntheticDefaultImports": true,
+      "allowUnreachableCode": true,
+      "declaration": false,
+      "noEmit": false,    
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "lib": [
+        "dom",
+        "es7"
+      ],
+      "baseUrl": ".",
+      "module": "es2015",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "target": "es2017",
+      "paths": {
+      }
+    },
+    "include": [
+      "**/*.ts",
+      "*.ts"
+    ],
+    "exclude": [
+      "node_modules",
+      "src/lib"
+    ],
+    "compileOnSave": false,
+    "atom": {
+      "rewriteTsconfig": false
+    }
+  }
