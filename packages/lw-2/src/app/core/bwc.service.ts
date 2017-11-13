@@ -15,9 +15,14 @@ export class BwcService {
     this.buildTx = this.BWC.buildTx;
     this.parseSecret = this.BWC.parseSecret;
     console.log('Hello BwcService Service');
+    console.log("the client: ")
+    console.log(this.BWC)
   }
   
   public getBitcore() {
+    console.log("Getting bitcore")
+    console.log(this.BWC)
+    console.log(this.BWC.Bitcore)
     return this.BWC.Bitcore;
   }
 
@@ -39,7 +44,7 @@ export class BwcService {
     //note opts use `bwsurl` all lowercase;
     let bwc = MeritWalletClient.getInstance({
       baseUrl: opts.bwsurl || 'http://localhost:3232/bws/api',
-      verbose: opts.verbose,
+      verbose: opts.verbose || false,
       timeout: 100000,
       transports: ['polling'],
     });
