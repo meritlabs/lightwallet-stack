@@ -67,7 +67,7 @@ angular.module('copayApp.services').factory('ongoingProcess', function($log, $ti
     ongoingProcess[processName] = isOn;
 
     var name;
-    root.any = lodash.any(ongoingProcess, function(isOn, processName) {
+    root.some = lodash.some(ongoingProcess, function(isOn, processName) {
       if (isOn)
         name = name || processName;
       return isOn;

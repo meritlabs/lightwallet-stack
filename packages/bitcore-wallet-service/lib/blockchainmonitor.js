@@ -192,7 +192,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
       var fromTs = Date.now() - 24 * 3600 * 1000;
       self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
         if (err) return next(err);
-        var alreadyNotified = _.any(notifications, function(n) {
+        var alreadyNotified = _.some(notifications, function(n) {
           return n.type == notificationType && n.data && n.data.txid == data.txid;
         });
         if (alreadyNotified) {
