@@ -71,7 +71,7 @@ export class TxFormatService {
       var v1FormatFiat = new FiatAmount(v1);
       if (!v1FormatFiat) resolve(null);
 
-      resolve(v1FormatFiat + ' ' + settings.alternativeIsoCode);
+      resolve(v1FormatFiat.amount + ' ' + settings.alternativeIsoCode);
     });
   };
 

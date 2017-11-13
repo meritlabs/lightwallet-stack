@@ -1833,12 +1833,13 @@ export class API extends EventEmitter implements IAPI {
   };
 
   _getCreateTxProposalArgs(opts: any): any {
+    let self = this;
 
     let args = _.cloneDeep(opts);
-    args.message = this._encryptMessage(opts.message, this.credentials.sharedEncryptingKey) || null;
+    args.message = self._encryptMessage(opts.message, self.credentials.sharedEncryptingKey) || null;
     args.payProUrl = opts.payProUrl || null;
     _.each(args.outputs, function(o) {
-      o.message = this._encryptMessage(o.message, this.credentials.sharedEncryptingKey) || null;
+      o.message = self._encryptMessage(o.message, self.credentials.sharedEncryptingKey) || null;
     });
 
     return args;
@@ -1865,7 +1866,7 @@ export class API extends EventEmitter implements IAPI {
    * @param {Array} opts.inputs - Optional. Inputs for this TX
    * @param {number} opts.fee - Optional. Use an fixed fee for this TX (only when opts.inputs is specified)
    * @param {Boolean} opts.noShuffleOutputs - Optional. If set, TX outputs won't be shuffled. Defaults to false
-   * @returns {Callback} cb - Return error or the transaction proposal
+   * @returns {Callback} - Return error or the transaction proposal
    */
   createTxProposal(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
