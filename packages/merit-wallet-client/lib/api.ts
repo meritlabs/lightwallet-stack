@@ -62,6 +62,7 @@ export class API extends EventEmitter {
   private notificationsIntervalId: any;
   private keyDerivationOk: boolean;
   private session: any;
+  public id: string; // TODO: Re-evaluate where this belongs.
 
   
   constructor(opts: InitOptions) {
