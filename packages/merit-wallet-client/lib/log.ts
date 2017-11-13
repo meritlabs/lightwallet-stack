@@ -18,7 +18,7 @@ let DEFAULT_LOG_LEVEL = 'silent';
  * @constructor
  */
 
-interface LoggerWithLevels {
+export interface LoggerWithLevels {
   silent(message: string, ...supportingDetails: any[]): void;
   debug(message: string, ...supportingDetails: any[]): void;
   info(message: string, ...supportingDetails: any[]): void;
