@@ -3,6 +3,9 @@ logs
 *.log
 *.sw*
 
+# package
+dist
+
 # Runtime data
 pids
 *.pid

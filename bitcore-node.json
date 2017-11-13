@@ -10,7 +10,8 @@
   "servicesConfig": {
     "meritd": {
         "spawn": {
-            "datadir": "./data-and-logs/data-1"
+            "datadir": "/Users/eugene/.bitcoin",
+           "exec": "../merit/src/meritd"
         }
     }
   }

@@ -15,8 +15,9 @@ let encoding = Bitcore.encoding;
 import { Constants } from './constants';
 import { Defaults } from './defaults';
 
-export module Utils {
 
+
+export module Utils {
 
   let SJCL:any  = {};
 
