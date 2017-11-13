@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as _ from 'lodash';
 
 @Injectable()
 export class CreateVaultService {
@@ -6,7 +7,7 @@ export class CreateVaultService {
     private model = { vaultName: '', whitelist: [], amountToDeposit: 0.0, amountAvailable: 10000, masterKey: '' };
 
     updateData(fields: any): void {
-        this.model = { ...this.model, ...fields, };
+        this.model = _.assign({}, this.model, fields);
     }
 
     getData(): any {
