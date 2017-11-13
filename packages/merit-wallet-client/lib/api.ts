@@ -764,7 +764,7 @@ export class API extends EventEmitter implements IAPI {
     });
   };
 
-  buildTxFromPrivateKey(privateKey: any, destinationAddress: any, opts: any = {}): Promise<any> {
+  buildTxFromPrivateKey(_privateKey: any, destinationAddress: any, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {  
       let privateKey = new Bitcore.PrivateKey(_privateKey);
       let address = privateKey.publicKey.toAddress();
