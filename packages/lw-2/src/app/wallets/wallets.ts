@@ -281,7 +281,7 @@ export class WalletsView {
     console.log(wallets)
     // Get the statuses of all the wallets.
     return await Promise.all(_.map(wallets, async (wallet:any) => {
-      wallet.status = this.walletService.getStatus(wallet);
+      wallet.status = await this.walletService.getStatus(wallet);
       return wallet; 
     })).catch((err) => {
       console.log("Error updating wallets");
