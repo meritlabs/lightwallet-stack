@@ -79,6 +79,7 @@ export class API extends EventEmitter {
   public notAuthorized: boolean;
   public needsBackup: boolean;
   public name: string;
+  public color: string; 
   
 
   
