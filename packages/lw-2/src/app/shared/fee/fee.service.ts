@@ -78,21 +78,19 @@ export class FeeService {
     };
     const walletClient = this.bwcService.getClient(null, opts);
 
-    return Promise.resolve(walletClient.getFeeLevels(network, (err, levels) => {
-      if (err) {
-        return Promise.reject({message: 'Could not get dynamic fee'});
-      }
-
+    return Promise.resolve(walletClient.getFeeLevels(network).then((levels) => {
       this.cache.updateTs = Date.now();
       this.cache.data = _.find(levels, {
         level: feeLevel
       })
-    })).delay(100).then(() => {
+    })).delay(100).then(() => { //Todo: fix this workaround.
       return this.cache;
     }).then((cache) => {
       return cache.data;
     }).then((data) => {
       return Promise.resolve({data: data, fromCache: false});
+    }).catch((err) => {
+      return Promise.reject({message: 'Could not get dynamic fee'});
     });
   };
 }
