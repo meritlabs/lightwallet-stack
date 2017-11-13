@@ -9,7 +9,7 @@ import { PopupService } from 'merit/core/popup.service';
 import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
 import { Wallet } from 'merit/wallets/wallet.model';
 import { FeeService } from 'merit/shared/fee/fee.service';
-import { FeeLevelModal } from 'merit/shared/fee/fee-level';
+import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 
 import * as  _  from 'lodash';
 import { Promise } from 'bluebird';
