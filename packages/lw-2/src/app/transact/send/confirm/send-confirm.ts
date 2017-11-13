@@ -40,7 +40,8 @@ export class SendConfirmView {
     toEmail?: string, 
     toPhoneNumber?: string,
     txp: any,
-    allowSpendUnconfirmed: boolean
+    allowSpendUnconfirmed: boolean,
+    usingCustomFee: boolean
   };
   private wallet: Wallet;
   private walletSettings: any;
@@ -69,6 +70,13 @@ export class SendConfirmView {
     this.logger.log('ionViewDidLoad ConfirmView');
     this.logger.log('Params', this.navParams);
     let toAmount = this.navParams.get('toAmount');
+    this.walletSettings = this.configService.get().wallet.settings;
+    this.wallet = this.navParams.get('wallet');
+    this.unitToMicro = this.walletSettings.unitToMicro;
+    this.unitDecimals = this.walletSettings.unitDecimals;
+    this.microToUnit = 1 / this.unitToMicro;
+    this.configFeeLevel = this.walletSettings.feeLevel ? this.walletSettings.feeLevel : 'normal';
+
     this.txData = {
       toAddress:  this.navParams.get('toAddress'),
       txp: {},
@@ -76,12 +84,6 @@ export class SendConfirmView {
       toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
       allowSpendUnconfirmed: this.walletSettings.spendUnconfirmed
     }
-    this.wallet = this.navParams.get('wallet');
-    this.walletSettings = this.configService.get().wallet.settings;
-    this.unitToMicro = this.walletSettings.unitToMicro;
-    this.unitDecimals = this.walletSettings.unitDecimals;
-    this.microToUnit = 1 / this.unitToMicro;
-    this.configFeeLevel = this.walletSettings.feeLevel ? this.walletSettings.feeLevel : 'normal';
 
     this.updateTx(this.txData, this.wallet, {}).catch((err) => {
       this.logger.error('There was an error in updateTx:', err);
@@ -140,6 +142,10 @@ export class SendConfirmView {
       }
 
       return this.getTxp(_.clone(tx), wallet, opts.dryRun);
+    }).tap((txpOut) => {
+      console.log("Who are you txpOut?")
+      console.log(txpOut)
+      return txpOut
     }).then((txpOut) => {
 
       txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
@@ -251,7 +257,7 @@ export class SendConfirmView {
         }
         txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
         txp.dryRun = dryRun;
-        return this.walletService.createTx(wallet, txp);
+        return resolve(this.walletService.createTx(wallet, txp));
     });
   }
 
