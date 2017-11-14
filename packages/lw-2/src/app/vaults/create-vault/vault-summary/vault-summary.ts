@@ -26,6 +26,7 @@ export class CreateVaultSummaryView {
     this.formData.whitelist = data.whitelist;
     this.formData.amountToDeposit = data.amountToDeposit;
     this.formData.masterKey = data.masterKey;
+    console.log(this.formData);
   }
 
   create() {

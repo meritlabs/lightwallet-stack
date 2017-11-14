@@ -39,10 +39,11 @@ export class CreateVaultGeneralInfoView {
 
     // fetch users wallets
     this.updateAllWallets().then((wallets) => {
-      const walletNames = _.map(wallets, (w) => {
-        return w.name;
+      const walletDTOs = _.map(wallets, (w) => {
+        console.log(w);
+        return { 'id': w.id, 'name': w.name, 'pubKey': w.xPubKey };
       });
-      this.whitelistCandidates = this.whitelistCandidates.concat(walletNames);
+      this.whitelistCandidates = this.whitelistCandidates.concat(walletDTOs);
     });
 
     // fetch users vaults
