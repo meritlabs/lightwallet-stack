@@ -1,8 +1,7 @@
 import * as _ from "lodash";
 
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ConfigService } from "merit/shared/config.service";
+import { IonicPage, NavController } from 'ionic-angular';
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { ProfileService } from "merit/core/profile.service";
@@ -22,7 +21,6 @@ export class CreateVaultGeneralInfoView {
 
   constructor(
     private navCtrl:NavController,
-    private navParams: NavParams, 
     private createVaultService: CreateVaultService, 
     private profileService: ProfileService,
     private walletService: WalletService,
@@ -32,7 +30,7 @@ export class CreateVaultGeneralInfoView {
     this.isNextAvailable = this.formData.vaultName.length > 0;
   }
 
-  async ionViewDidLoad() {
+  ionViewDidLoad() {
     let data = this.createVaultService.getData();
     this.formData.vaultName = data.vaultName;
     this.formData.whitelist = data.whitelist;
