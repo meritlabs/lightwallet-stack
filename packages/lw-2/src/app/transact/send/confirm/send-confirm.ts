@@ -90,10 +90,11 @@ export class SendConfirmView {
       allowSpendUnconfirmed: this.walletSettings.spendUnconfirmed
     }
 
-    this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
+    this.logger.log('ionViewDidLoad send-confirm', this);
+    return this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
       this.logger.error('There was an error in updateTx:', err);
     });
-    this.logger.log('ionViewDidLoad send-confirm', this);
+    
   }
 
   // Show as much as we can about the address. 
@@ -154,28 +155,38 @@ export class SendConfirmView {
       return this.getTxp(_.clone(tx), wallet, opts.dryRun).then((txpOut) => {
         console.log('getTxp got the response: ', txpOut);
 
-        txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
-        this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
-          txpOut.alternativeFeeStr = v;
-        });
+          txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
+          return this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
+            txpOut.alternativeFeeStr = v;
+          
 
-        let per = (txpOut.fee / (txpOut.toAmount + txpOut.fee) * 100);
-        txpOut.feeRatePerStr = per.toFixed(2) + '%';
-        txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
+          let per = (txpOut.fee / (txpOut.toAmount + txpOut.fee) * 100);
+          txpOut.feeRatePerStr = per.toFixed(2) + '%';
+          txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
 
-        tx.txp = txpOut;
-        this.txData = tx;
+          tx.txp = txpOut;
+          this.txData = tx;
 
-        console.log('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
-        this.refresh();
+          console.log('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
+          return Promise.resolve();
+        }).catch((err) => {this.logger.warn("could it be the txFormat?", err)});
+      }).catch((err) => {
+        this.logger.warn("Error in getting a TXP!!", err);
+        return Promise.resolve();
       });
+    }).catch((err) => {
+      this.logger.warn("Error after getting feeRate in UpdateTx", err);
+      return Promise.resolve();
     });
   }
 
   public approve(): Promise<boolean> {
     return this.approveTx(this.txData.txp, this.wallet).then((worked) => {
       return Promise.resolve(this.logger.log('The result of approveTx was: ' + worked));
-    })
+    }).catch((err) => {
+      this.logger.warn("Failed to approve transaction.");
+      this.logger.warn(err);
+    });
   }
 
   private approveTx(tx, wallet): Promise<boolean> {
@@ -187,7 +198,7 @@ export class SendConfirmView {
 
       return this.getTxp(tx, wallet, false).then((ctxp) => {
 
-        let confirmTx = () => {
+        let confirmTx = (): Promise<any> => {
           return new Promise((resolve, reject) => {
             if (this.walletService.isEncrypted(wallet))
               return resolve();
@@ -205,7 +216,7 @@ export class SendConfirmView {
             let message = 'Sending ' + amountStr + ' from your ' + name + ' wallet'; // TODO gettextCatalog
             let okText = 'Confirm'; // TODO gettextCatalog
             let cancelText = 'Cancel'; // TODO gettextCatalog
-            this.popupService.ionicConfirm(null, message, okText, cancelText).then((ok: boolean) => {
+            return this.popupService.ionicConfirm(null, message, okText, cancelText).then((ok: boolean) => {
               return resolve(ok);
             });
           });
@@ -242,51 +253,53 @@ export class SendConfirmView {
    */
   private getTxp(tx, wallet, dryRun): Promise<any> {
     return new Promise((resolve, reject) => {
-        // ToDo: use a credential's (or fc's) function for this
-        if (tx.description && !wallet.credentials.sharedEncryptingKey) {
-          return reject('Need a shared encryption key to add message!');
-        }
-    
-        if (tx.toAmount > Number.MAX_SAFE_INTEGER) {
-          return reject("The amount is too big.  Because, Javascript.");
-        }
-    
-        let txp:any = {};
-    
-        if (tx.script) {
-          txp.outputs = [{
-            'script': tx.script.toHex(),
-            'toAddress': tx.toAddress,
-            'amount': tx.toAmount,
-            'message': tx.description
-          }];
-          txp.addressType = 'P2SH';
-          console.log(tx);
-        } else {
-          txp.outputs = [{
-            'toAddress': tx.toAddress,
-            'amount': tx.toAmount,
-            'message': tx.description
-          }];
-        }
-    
-        if (tx.sendMaxInfo) {
-          txp.inputs = tx.sendMaxInfo.inputs;
-          txp.fee = tx.sendMaxInfo.fee;
-        } else {
-          if (this.txData.usingCustomFee) {
-            txp.feePerKb = tx.feeRate;
-          } else txp.feeLevel = tx.feeLevel;
-        }
-    
-        txp.message = tx.description;
-    
-        if (tx.paypro) {
-          txp.payProUrl = tx.paypro.url;
-        }
-        txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
-        txp.dryRun = dryRun;
-        return this.walletService.createTx(wallet, txp);
+      // ToDo: use a credential's (or fc's) function for this
+      if (tx.description && !wallet.credentials.sharedEncryptingKey) {
+        return reject('Need a shared encryption key to add message!');
+      }
+  
+      if (tx.toAmount > Number.MAX_SAFE_INTEGER) {
+        return reject("The amount is too big.  Because, Javascript.");
+      }
+  
+      let txp:any = {};
+  
+      if (tx.script) {
+        txp.outputs = [{
+          'script': tx.script.toHex(),
+          'toAddress': tx.toAddress,
+          'amount': tx.toAmount,
+          'message': tx.description
+        }];
+        txp.addressType = 'P2SH';
+        console.log(tx);
+      } else {
+        txp.outputs = [{
+          'toAddress': tx.toAddress,
+          'amount': tx.toAmount,
+          'message': tx.description
+        }];
+      }
+  
+      if (tx.sendMaxInfo) {
+        txp.inputs = tx.sendMaxInfo.inputs;
+        txp.fee = tx.sendMaxInfo.fee;
+      } else {
+        if (this.txData.usingCustomFee) {
+          txp.feePerKb = tx.feeRate;
+        } else txp.feeLevel = tx.feeLevel;
+      }
+  
+      txp.message = tx.description;
+  
+      if (tx.paypro) {
+        txp.payProUrl = tx.paypro.url;
+      }
+      txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
+      txp.dryRun = dryRun;
+      return this.walletService.createTx(wallet, txp).then((ctxp) => {
+        return resolve(ctxp);
+      });
     });
   }
 
