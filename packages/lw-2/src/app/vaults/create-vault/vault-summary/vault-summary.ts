@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ConfigService } from "merit/shared/config.service";
+import { IonicPage, NavController } from 'ionic-angular';
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
 
 @IonicPage({
@@ -16,7 +15,6 @@ export class CreateVaultSummaryView {
 
   constructor(
     private navCtrl:NavController,
-    private navParams: NavParams,
     private createVaultService: CreateVaultService,
   ){}
 
