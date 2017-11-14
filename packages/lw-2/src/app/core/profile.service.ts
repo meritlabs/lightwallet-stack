@@ -649,11 +649,10 @@ export class ProfileService {
     });
   }
 
-  public getWallets(opts?: any): Promise<any> {
+  public getWallets(opts: any = {}): Promise<any> {
 
     return new Promise((resolve, reject) => {
 
-      opts = opts || {};
       console.log("Getting wallets");
       console.log(this.wallets);
       let ret = _.values(this.wallets);
