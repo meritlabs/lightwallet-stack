@@ -244,7 +244,7 @@ export class API extends EventEmitter implements IAPI {
   }
     
   _initNotifications(opts: any = {}): any {
-    const interval = opts.notificationIntervalSeconds || 5;
+    const interval = opts.notificationIntervalSeconds || 5; // TODO: Be able to turn this off during development mode; pollutes request stream..  
     const self = this;
     self.notificationsIntervalId = setInterval(function() {
       self._fetchLatestNotifications(interval).catch((err) => {

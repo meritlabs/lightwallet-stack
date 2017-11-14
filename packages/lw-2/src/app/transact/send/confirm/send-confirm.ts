@@ -31,6 +31,7 @@ export class SendConfirmView {
   // Statics
   private static CONFIRM_LIMIT_USD = 20;
   private static FEE_TOO_HIGH_LIMIT_PER = 15;
+  
 
   private txData: {
     toAddress: any,
@@ -171,9 +172,9 @@ export class SendConfirmView {
     });
   }
 
-  public approve(): void {
-    this.approveTx(this.txData.txp, this.wallet).then((worked) => {
-      this.logger.log('The result of approveTx was: ' + worked);
+  public approve(): Promise<boolean> {
+    return this.approveTx(this.txData.txp, this.wallet).then((worked) => {
+      return Promise.resolve(this.logger.log('The result of approveTx was: ' + worked));
     })
   }
 
@@ -186,18 +187,28 @@ export class SendConfirmView {
 
       return this.getTxp(tx, wallet, false).then((ctxp) => {
 
-        let confirmTx = (cb) => {
-          if (this.walletService.isEncrypted(wallet))
-            return cb();
+        let confirmTx = () => {
+          return new Promise((resolve, reject) => {
+            if (this.walletService.isEncrypted(wallet))
+              return resolve();
   
-          var amountUsd = parseFloat(this.txFormatService.formatToUSD(ctxp.toAmount));
-          if (amountUsd <= SendConfirmView.CONFIRM_LIMIT_USD)
-            return cb();
+            let amountUsd: number;
+            this.txFormatService.formatToUSD(ctxp.amount).then((value: string) => {
+              amountUsd = parseFloat(value);
+            });
   
-          var message = 'Sending {{tx.amountStr}} from your {{wallet.name}} wallet';
-          var okText = 'Confirm';
-          var cancelText = 'Cancel';
-          this.popupService.ionicConfirm(null, message, okText, cancelText);
+            if (amountUsd <= SendConfirmView.CONFIRM_LIMIT_USD)
+              return resolve();
+  
+            let amountStr = tx.amountStr;
+            let name = wallet.name;
+            let message = 'Sending ' + amountStr + ' from your ' + name + ' wallet'; // TODO gettextCatalog
+            let okText = 'Confirm'; // TODO gettextCatalog
+            let cancelText = 'Cancel'; // TODO gettextCatalog
+            this.popupService.ionicConfirm(null, message, okText, cancelText).then((ok: boolean) => {
+              return resolve(ok);
+            });
+          });
         };
   
         let publishAndSign = (): Promise<any> => {
@@ -210,10 +221,17 @@ export class SendConfirmView {
           }
   
           // TODO: custom status handler?
-          return this.walletService.publishAndSign(wallet, ctxp, _.noop).then(() => {
+          return this.walletService.publishAndSign(wallet, ctxp, _.noop).then((txp: any) => {
             this.notificationService.subscribe(wallet, ctxp);
           });
         };
+
+        return confirmTx().then((success: boolean) => {
+          if (!success) {
+            this.logger.warn("Error with confirming transaction.");
+          }
+          return publishAndSign();
+        });
       });
     });
   }
@@ -305,16 +323,20 @@ export class SendConfirmView {
     this.showAddress = !this.showAddress;
   };
 
-  chooseFeeLevel(): void {
+  private chooseFeeLevel(): void {
     this._chooseFeeLevel(this.txData, this.wallet);
   }
 
-  selectWallet() {
+  private selectWallet() {
     let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
     modal.present();
     modal.onDidDismiss((wallet) => {
       if (wallet) this.wallet = wallet;
     });
+  }
+
+  private showSendError(err: string = ''): any {
+    this.popupService.ionicConfirm("Could not confirm transaction.", err, "Ok", "Cancel");    
   }
 
 }
