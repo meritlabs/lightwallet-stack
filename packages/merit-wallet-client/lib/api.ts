@@ -7,7 +7,6 @@ import { Logger } from "./log";
 import { Credentials } from './credentials';
 import { ErrorTypes as Errors } from './errors';
 
-const log = Logger.getInstance();
 const $ = require('preconditions').singleton();
 let util = require('util');
 let async = require('async');
@@ -194,15 +193,15 @@ export class API extends EventEmitter implements IAPI {
     this.payProHttp = null; // Only for testing
     this.doNotVerifyPayPro = opts.doNotVerifyPayPro;
     this.timeout = opts.timeout || 50000;
-    this.logLevel = opts.logLevel || 'silent';
-    this.log = log; 
+    this.logLevel = opts.logLevel || 'debug';
+    this.log = Logger.getInstance();; 
 
-    log.setLevel(this.logLevel);
+    this.log.setLevel(this.logLevel);
   }
 
 
   initNotifications(): Promise<any> {
-    log.warn('DEPRECATED: use initialize() instead.');
+    this.log.warn('DEPRECATED: use initialize() instead.');
     return this.initialize({});
   };
 
@@ -331,7 +330,7 @@ export class API extends EventEmitter implements IAPI {
    * @param {Array} txps
    * @param {String} encryptingKey
    */
-  _processTxps(txps): Promise<any> {
+  _processTxps(txps): Promise<void> {
     let self = this;
     return new Promise((resolve, reject) => {
       
@@ -392,7 +391,7 @@ export class API extends EventEmitter implements IAPI {
     } else {
       ret = new Error(body.error || JSON.stringify(body));
     }
-    log.error(ret);
+    this.log.error(ret);
     return ret;
   };
 
@@ -627,7 +626,7 @@ export class API extends EventEmitter implements IAPI {
       return reject(new Error('No Private Key!'));
       
       //Second option, lets try to add an access
-      log.info('Copayer not found, trying to add access');
+      this.log.info('Copayer not found, trying to add access');
       this.addAccess({}).then(() => {
         
         return this.openWallet();
@@ -652,7 +651,7 @@ export class API extends EventEmitter implements IAPI {
    */
   importFromMnemonic(words: string, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      log.debug('Importing from 12 Words');
+      this.log.debug('Importing from 12 Words');
 
       function derive(nonCompliantDerivation) {
         return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, {
@@ -664,7 +663,7 @@ export class API extends EventEmitter implements IAPI {
       try {
         this.credentials = derive(false);
       } catch (e) {
-        log.info('Mnemonic error:', e);
+        this.log.info('Mnemonic error:', e);
         return reject(Errors.INVALID_BACKUP);
       }
 
@@ -691,12 +690,12 @@ export class API extends EventEmitter implements IAPI {
   * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is imported.
   */
   importFromExtendedPrivateKey(xPrivKey: any, opts: any = {}): Promise<any> {
-    log.debug('Importing from Extended Private Key');
+    this.log.debug('Importing from Extended Private Key');
 
     try {
       this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
-      log.info('xPriv error:', e);
+      this.log.info('xPriv error:', e);
       return new Promise((resolve, reject) => { reject(Errors.INVALID_BACKUP); });
     };
 
@@ -716,11 +715,11 @@ export class API extends EventEmitter implements IAPI {
   importFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any = {}): Promise<any> {
     $.checkArgument(arguments.length == 5, "DEPRECATED: should receive 5 arguments");
 
-    log.debug('Importing from Extended Private Key');
+    this.log.debug('Importing from Extended Private Key');
     try {
       this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
-      log.info('xPriv error:', e);
+      this.log.info('xPriv error:', e);
       return new Promise((resolve, reject) => { reject(Errors.INVALID_BACKUP); });
     };
 
@@ -794,7 +793,7 @@ export class API extends EventEmitter implements IAPI {
             tx.serialize();
   
           } catch (ex) {
-            log.error('Could not build transaction from private key', ex);
+            this.log.error('Could not build transaction from private key', ex);
             reject(Errors.COULD_NOT_BUILD_TRANSACTION);
           }
           return resolve(tx);
@@ -906,7 +905,7 @@ export class API extends EventEmitter implements IAPI {
       tx.serialize();
 
     } catch (ex) {
-      log.error('Could not build transaction from private key', ex);
+      this.log.error('Could not build transaction from private key', ex);
       return Errors.COULD_NOT_BUILD_TRANSACTION;
     }
     return tx;
@@ -946,7 +945,7 @@ export class API extends EventEmitter implements IAPI {
           }
         } else {
           // this should only happen in AIR-GAPPED flows
-          log.warn('Could not verify copayers key (missing wallet Private Key)');
+          this.log.warn('Could not verify copayers key (missing wallet Private Key)');
         }
 
         this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
@@ -1023,7 +1022,7 @@ export class API extends EventEmitter implements IAPI {
         }
 
         if (res.body)
-          log.debug(util.inspect(res.body, {
+          this.log.debug(util.inspect(res.body, {
             depth: 10
           }));
 
@@ -1034,7 +1033,7 @@ export class API extends EventEmitter implements IAPI {
           if (!res.status)
             return reject(Errors.CONNECTION_ERROR);
 
-          log.error('HTTP Error:' + res.status);
+          this.log.error('HTTP Error:' + res.status);
 
           if (!res.body)
             return reject(new Error(res.status));
@@ -1461,7 +1460,7 @@ export class API extends EventEmitter implements IAPI {
   _checkKeyDerivation(): any {
     let isInvalid = (this.keyDerivationOk === false);
     if (isInvalid) {
-      log.error('Key derivation for this device is not working as expected');
+      this.log.error('Key derivation for this device is not working as expected');
     }
     return !isInvalid;
   };
@@ -1493,12 +1492,12 @@ export class API extends EventEmitter implements IAPI {
       if (!_.includes(['testnet', 'livenet'], network)) return reject(new Error('Invalid network'));
 
       if (!this.credentials) {
-        log.info('Generating new keys');
+        this.log.info('Generating new keys');
         this.seedFromRandom({
           network: network
         });
       } else {
-        log.info('Using existing keys');
+        this.log.info('Using existing keys');
       }
 
       if (network != this.credentials.network) {
@@ -1674,7 +1673,7 @@ export class API extends EventEmitter implements IAPI {
         try {
           customData = JSON.parse(Utils.decryptMessage(me.customData, this.credentials.personalEncryptingKey));
         } catch (e) {
-          log.warn('Could not decrypt customData:', me.customData);
+          this.log.warn('Could not decrypt customData:', me.customData);
         }
         if (!customData) return resolve();
 
@@ -1877,15 +1876,18 @@ export class API extends EventEmitter implements IAPI {
 
 
     let args = this._getCreateTxProposalArgs(opts);
+    this.log.error("######");
 
     return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
-      this._processTxps(txp);
+      return this._processTxps(txp).then(() => {
 
-      if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey)) {
-        return Promise.reject(Errors.SERVER_COMPROMISED);
-      }
-
-      Promise.resolve(txp);
+        if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey)) {
+          return Promise.reject(Errors.SERVER_COMPROMISED);
+        }
+        this.log.error("TXP");
+        this.log.error(txp);
+        return Promise.resolve(txp);
+      });
     });
   };
 
@@ -2130,7 +2132,7 @@ export class API extends EventEmitter implements IAPI {
           try {
             signatures = this._signTxp(txp, password);
           } catch (ex) {
-            log.error('Error signing tx', ex);
+            this.log.error('Error signing tx', ex);
             return reject(ex);
           }
         }
@@ -2523,7 +2525,7 @@ export class API extends EventEmitter implements IAPI {
    * @return {undefined}
    */
   validateEasyScript(scriptId): Promise<any> {
-    log.warn("Validating: " + scriptId);
+    this.log.warn("Validating: " + scriptId);
 
     let url = '/v1/easyreceive/validate/' + scriptId;
     this._doGetRequest(url);
