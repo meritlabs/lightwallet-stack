@@ -181,7 +181,7 @@ export class SendConfirmView {
   }
 
   public approve(): Promise<boolean> {
-    return this.approveTx(this.txData.txp, this.wallet).then((worked) => {
+    return this.approveTx(this.txData, this.wallet).then((worked) => {
       return Promise.resolve(this.logger.log('The result of approveTx was: ' + worked));
     }).catch((err) => {
       this.logger.warn("Failed to approve transaction.");
@@ -190,13 +190,15 @@ export class SendConfirmView {
   }
 
   private approveTx(tx, wallet): Promise<boolean> {
+    this.logger.warn("Finally approving.");
+    this.logger.warn(tx);
     return new Promise((resolve, reject) => {
       if (!tx || !wallet) {
         this.logger.warn("No transaction or wallet data in approval.");
         return resolve(false);
       } 
 
-      return this.getTxp(tx, wallet, false).then((ctxp) => {
+      return this.getTxp(_.clone(tx), wallet, false).then((ctxp) => {
 
         let confirmTx = (): Promise<any> => {
           return new Promise((resolve, reject) => {
@@ -204,36 +206,32 @@ export class SendConfirmView {
               return resolve();
   
             let amountUsd: number;
-            this.txFormatService.formatToUSD(ctxp.amount).then((value: string) => {
+            return this.txFormatService.formatToUSD(ctxp.amount).then((value: string) => {
               amountUsd = parseFloat(value);
-            });
-  
-            if (amountUsd <= SendConfirmView.CONFIRM_LIMIT_USD)
-              return resolve();
-  
-            let amountStr = tx.amountStr;
-            let name = wallet.name;
-            let message = 'Sending ' + amountStr + ' from your ' + name + ' wallet'; // TODO gettextCatalog
-            let okText = 'Confirm'; // TODO gettextCatalog
-            let cancelText = 'Cancel'; // TODO gettextCatalog
-            return this.popupService.ionicConfirm(null, message, okText, cancelText).then((ok: boolean) => {
-              return resolve(ok);
+           
+    
+              if (amountUsd <= SendConfirmView.CONFIRM_LIMIT_USD)
+                return resolve();
+    
+              let amountStr = tx.amountStr;
+              let name = wallet.name;
+              let message = 'Sending ' + amountStr + ' from your ' + name + ' wallet'; // TODO gettextCatalog
+              let okText = 'Confirm'; // TODO gettextCatalog
+              let cancelText = 'Cancel'; // TODO gettextCatalog
+              return this.popupService.ionicConfirm(null, message, okText, cancelText).then((ok: boolean) => {
+                return resolve(ok);
+              });
             });
           });
         };
   
         let publishAndSign = (): Promise<any> => {
-          
           if (!wallet.canSign() && !wallet.isPrivKeyExternal()) {
             this.logger.info('No signing proposal: No private key');
-  
-            // TODO: custom status handler?
-            return this.walletService.onlyPublish(wallet, ctxp, _.noop);
+            return Promise.resolve(this.walletService.onlyPublish(wallet, ctxp, _.noop));
           }
-  
-          // TODO: custom status handler?
           return this.walletService.publishAndSign(wallet, ctxp, _.noop).then((txp: any) => {
-            this.notificationService.subscribe(wallet, ctxp);
+            return Promise.resolve(this.notificationService.subscribe(wallet, txp));
           });
         };
 
@@ -241,8 +239,16 @@ export class SendConfirmView {
           if (!success) {
             this.logger.warn("Error with confirming transaction.");
           }
-          return publishAndSign();
+          return publishAndSign().then(() => {
+            return resolve(true);
+          }).catch((err: any) => {
+            this.logger.warn("Could not publishAndSign: ", err);
+          });
+        }).catch((err: any) => {
+          this.logger.warn("Could not confirmTx: ", err);
         });
+      }).catch((err) => {
+        this.logger.warn("Never got the TXP!: ", err);        
       });
     });
   }
@@ -252,6 +258,9 @@ export class SendConfirmView {
    * TODO: TxP type should be created.
    */
   private getTxp(tx, wallet, dryRun): Promise<any> {
+    this.logger.warn("In GetTXP");
+    this.logger.warn(tx);
+    this.logger.warn(wallet);
     return new Promise((resolve, reject) => {
       // ToDo: use a credential's (or fc's) function for this
       if (tx.description && !wallet.credentials.sharedEncryptingKey) {
