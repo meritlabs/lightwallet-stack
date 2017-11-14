@@ -62,7 +62,7 @@ export class TxFormatService {
     });
   };
 
-  formatAlternativeStr(micros: number) {
+  formatAlternativeStr(micros: number): Promise<any> {
     return new Promise((resolve, reject) => {
       if (isNaN(micros)) resolve();
       let settings = this.config.get().wallet.settings;
@@ -71,7 +71,7 @@ export class TxFormatService {
       let v1FormatFiat = new FiatAmount(v1);
       if (!v1FormatFiat) resolve(null);
 
-      resolve(v1FormatFiat.amount + ' ' + settings.alternativeIsoCode);
+      return resolve(v1FormatFiat.amount + ' ' + settings.alternativeIsoCode);
     });
   };
 
