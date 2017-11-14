@@ -714,7 +714,7 @@ export class WalletService {
         let opts = {
           limitTx: txid
         };
-        this.getTxHistory(wallet, opts).then((txHistory: any) => {
+        return this.getTxHistory(wallet, opts).then((txHistory: any) => {
           finish(txHistory);
         }).catch((err) => {
           return reject(err);
@@ -737,7 +737,7 @@ export class WalletService {
       if (isHistoryCached() && !opts.force) return resolve(wallet.completeHistory);
 
       this.logger.debug('Updating Transaction History');
-      this.updateLocalTxHistory(wallet, opts).then((txs: any) => {
+      return this.updateLocalTxHistory(wallet, opts).then((txs: any) => {
         if (opts.limitTx) {
           return resolve(txs);
         };
@@ -805,7 +805,7 @@ export class WalletService {
       if (_.isEmpty(txp) || _.isEmpty(wallet))
         return reject('MISSING_PARAMETER');
 
-      wallet.removeTxProposal(txp).then(() => {
+      return wallet.removeTxProposal(txp).then(() => {
         this.logger.debug('Transaction removed');
         this.invalidateCache(wallet);
         // $rootScope.$emit('Local/TxAction', wallet.id);   
@@ -847,7 +847,7 @@ export class WalletService {
       prefs.language = "English" // This line was hardcoded - TODO: prefs.language = uxLanguage.getCurrentLanguage();
       // prefs.unit = walletSettings.unitCode; // TODO: remove, not used
 
-      updateRemotePreferencesFor(_.clone(clients), prefs).then(() => {
+      return updateRemotePreferencesFor(_.clone(clients), prefs).then(() => {
         this.logger.debug('Remote preferences saved for' + _.map(clients, (x: any) => {
           return x.credentials.walletId;
         }).join(','));

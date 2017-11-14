@@ -24,7 +24,7 @@ export class ProfileService {
   public wallets: Map<string, Wallet> = new Map<string, Wallet>();
   public profile: Profile = new Profile();
 
-  private UPDATE_PERIOD = 15;
+  private UPDATE_PERIOD = 500;
   private throttledBwsEvent: any;
   private validationLock: boolean = false;
   private errors: any = this.bwcService.getErrors();

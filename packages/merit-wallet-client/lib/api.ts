@@ -1876,7 +1876,8 @@ export class API extends EventEmitter implements IAPI {
 
 
     let args = this._getCreateTxProposalArgs(opts);
-    this.log.error("######");
+    this.log.warn("######");
+    this.log.warn(args);
 
     return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
       return this._processTxps(txp).then(() => {
