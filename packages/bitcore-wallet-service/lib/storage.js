@@ -708,7 +708,7 @@ Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {
         return cb();
       }
 
-      var txs = _.pluck(result, 'tx');
+      var txs = _.map(result, 'tx');
       return cb(null, txs);
     });
   })
@@ -823,7 +823,7 @@ Storage.prototype.fetchActiveAddresses = function(walletId, cb) {
     if (err) return cb(err);
     if (_.isEmpty(result)) return cb();
 
-    return cb(null, _.compact(_.pluck(result, 'key')));
+    return cb(null, _.compact(_.map(result, 'key')));
   });
 };
 

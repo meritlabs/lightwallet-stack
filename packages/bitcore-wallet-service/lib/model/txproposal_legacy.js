@@ -103,7 +103,7 @@ TxProposal.prototype.getRawTx = function() {
 
 TxProposal.prototype.getTotalAmount = function() {
   if (this.type == TxProposal.Types.MULTIPLEOUTPUTS || this.type == TxProposal.Types.EXTERNAL) {
-    return _.pluck(this.outputs, 'amount')
+    return _.map(this.outputs, 'amount')
       .reduce(function(total, n) {
         return total + n;
       }, 0);
@@ -113,11 +113,11 @@ TxProposal.prototype.getTotalAmount = function() {
 };
 
 TxProposal.prototype.getActors = function() {
-  return _.pluck(this.actions, 'copayerId');
+  return _.map(this.actions, 'copayerId');
 };
 
 TxProposal.prototype.getApprovers = function() {
-  return _.pluck(
+  return _.map(
     _.filter(this.actions, {
       type: 'accept'
     }), 'copayerId');

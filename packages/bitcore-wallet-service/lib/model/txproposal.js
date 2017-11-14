@@ -120,7 +120,7 @@ TxProposal.prototype.toObject = function() {
 
 TxProposal.prototype.setInputs = function(inputs) {
   this.inputs = inputs || [];
-  this.inputPaths = _.pluck(inputs, 'path') || [];
+  this.inputPaths = _.map(inputs, 'path') || [];
 };
 
 TxProposal.prototype._updateStatus = function() {
@@ -280,7 +280,7 @@ TxProposal.prototype.getTotalAmount = function() {
  * @return {String[]} copayerIds that performed actions in this proposal (accept / reject)
  */
 TxProposal.prototype.getActors = function() {
-  return _.pluck(this.actions, 'copayerId');
+  return _.map(this.actions, 'copayerId');
 };
 
 
@@ -290,7 +290,7 @@ TxProposal.prototype.getActors = function() {
  * @return {String[]} copayerIds that approved the tx proposal (accept)
  */
 TxProposal.prototype.getApprovers = function() {
-  return _.pluck(
+  return _.map(
     _.filter(this.actions, {
       type: 'accept'
     }), 'copayerId');
