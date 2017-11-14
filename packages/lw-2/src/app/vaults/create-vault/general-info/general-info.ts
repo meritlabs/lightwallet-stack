@@ -39,12 +39,15 @@ export class CreateVaultGeneralInfoView {
 
     // fetch users wallets
     this.updateAllWallets().then((wallets) => {
-      this.whitelistCandidates.concat(wallets);
+      const walletNames = _.map(wallets, (w) => {
+        return w.name;
+      });
+      this.whitelistCandidates = this.whitelistCandidates.concat(walletNames);
     });
 
     // fetch users vaults
     this.updateAllWVaults().then((vaults) => {
-      this.whitelistCandidates.concat(vaults);
+      this.whitelistCandidates = this.whitelistCandidates.concat(vaults);
     });
   }
 
@@ -53,13 +56,19 @@ export class CreateVaultGeneralInfoView {
     this.navCtrl.push('CreateVaultDepositView');
   }
 
-  private updateAllWallets() {
-    return this.profileService.getWallets();
+  private updateAllWallets(): Promise<Array<any>> {
+    const wallets = this.profileService.getWallets().then((ws) => {
+      return Promise.all(_.map(ws, async (wallet:any) => {
+        wallet.status = await this.walletService.getStatus(wallet);
+        return wallet; 
+      }));
+    });
+    return wallets;
   }
 
-  private updateAllWVaults() {
+  private updateAllWVaults(): Promise<Array<any>> {
     return new Promise((resolve, reject) => {
-      resolve([]);
+      return resolve([]);
     });
   }
 }

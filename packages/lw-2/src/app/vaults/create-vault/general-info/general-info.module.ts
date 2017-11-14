@@ -4,7 +4,6 @@ import { IonicPageModule } from 'ionic-angular';
 import { CreateVaultGeneralInfoView } from 'merit/vaults/create-vault/general-info/general-info';
 
 import { WalletService } from "merit/wallets/wallet.service";
-import { ProfileService } from "merit/core/profile.service";
 import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
 
 @NgModule({
@@ -12,7 +11,6 @@ import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
     CreateVaultGeneralInfoView,
   ],
   providers: [
-    ProfileService,
     WalletService,
     MnemonicService,
   ],
