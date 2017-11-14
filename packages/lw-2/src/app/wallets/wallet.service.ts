@@ -758,7 +758,9 @@ export class WalletService {
   }
 
   public createTx(wallet: MeritWalletClient, txp: any): Promise<any> {
-      return wallet.createTxProposal(txp);
+    return wallet.createTxProposal(txp).then((ctxp) => {
+      return Promise.resolve(ctxp);
+    });
   }
 
   public publishTx(wallet: MeritWalletClient, txp: any): Promise<any> {
