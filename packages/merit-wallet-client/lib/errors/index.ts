@@ -18,7 +18,9 @@ export const BwcError: BwcErrorConstructor = <any>class BwcError {
     Object.defineProperty(this, 'message', {
       get: () => message,
     });
-    Error.captureStackTrace(this, this.constructor);
+    if(Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
   }
 };
 
