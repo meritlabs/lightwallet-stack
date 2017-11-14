@@ -619,22 +619,21 @@ export class API extends EventEmitter implements IAPI {
       
       
       // First option, grab wallet info from BWS.
-      this.openWallet().then((ret) => { 
+      return this.openWallet().then((ret) => { 
+          
+          // Is the error other than "copayer was not found"? || or no priv key.
+        if (this.isPrivKeyExternal())
+        return reject(new Error('No Private Key!'));
         
-        // Is the error other than "copayer was not found"? || or no priv key.
-      if (this.isPrivKeyExternal())
-      return reject(new Error('No Private Key!'));
-      
-      //Second option, lets try to add an access
-      this.log.info('Copayer not found, trying to add access');
-      this.addAccess({}).then(() => {
-        
-        return this.openWallet();
-      }).catch((err) => {
-          return reject(Errors.WALLET_DOES_NOT_EXIST);
+        //Second option, lets try to add an access
+        this.log.info('Copayer not found, trying to add access');
+        return this.addAccess({}).then(() => {
+          return this.openWallet();
+        }).catch((err) => {
+            return reject(Errors.WALLET_DOES_NOT_EXIST);
+        });
       });
     });
-  });
   };
 
   /**
@@ -696,7 +695,7 @@ export class API extends EventEmitter implements IAPI {
       this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       this.log.info('xPriv error:', e);
-      return new Promise((resolve, reject) => { reject(Errors.INVALID_BACKUP); });
+      return new Promise((resolve, reject) => { return reject(Errors.INVALID_BACKUP); });
     };
 
     return this._import();
@@ -720,7 +719,7 @@ export class API extends EventEmitter implements IAPI {
       this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       this.log.info('xPriv error:', e);
-      return new Promise((resolve, reject) => { reject(Errors.INVALID_BACKUP); });
+      return new Promise((resolve, reject) => { return reject(Errors.INVALID_BACKUP); });
     };
 
     return this._import();
@@ -770,7 +769,7 @@ export class API extends EventEmitter implements IAPI {
       let privateKey = new Bitcore.PrivateKey(_privateKey);
       let address = privateKey.publicKey.toAddress();
 
-        this.getUtxos({
+        return this.getUtxos({
           addresses: address.toString(),
         }).then((utxos) => {
           if (!_.isArray(utxos) || utxos.length == 0) return reject(new Error('No utxos found'));
@@ -794,7 +793,7 @@ export class API extends EventEmitter implements IAPI {
   
           } catch (ex) {
             this.log.error('Could not build transaction from private key', ex);
-            reject(Errors.COULD_NOT_BUILD_TRANSACTION);
+            return reject(Errors.COULD_NOT_BUILD_TRANSACTION);
           }
           return resolve(tx);
         });
@@ -817,7 +816,7 @@ export class API extends EventEmitter implements IAPI {
       let result:any = {}
       return this.createAddress({}).then((addr) => {
         if (addr.publicKeys.length < 1) {
-          reject(Error('Error creating an address for easySend'));
+          return reject(Error('Error creating an address for easySend'));
         }
         let pubKey = Bitcore.PublicKey.fromString(addr.publicKeys[0]);
 
@@ -840,7 +839,7 @@ export class API extends EventEmitter implements IAPI {
           secret: rcvPair.secret.toString('hex')
         };
 
-        resolve(result);
+        return resolve(result);
       });
         
     });
@@ -1070,12 +1069,12 @@ export class API extends EventEmitter implements IAPI {
 
     let doLogin = (): Promise<any> => {
       return new Promise((resolve, reject) => {   
-        this._login().then((s) => {
+        return this._login().then((s) => {
           if (!s) return reject(Errors.NOT_AUTHORIZED);
           this.session = s;
-          resolve();
+          return resolve();
         }).catch((err) => {
-          reject(err);
+          return reject(err);
         });
       });
     };
@@ -1440,7 +1439,7 @@ export class API extends EventEmitter implements IAPI {
       
       $.checkArgument(network || _.includes(['livenet', 'testnet'], network));
       
-      this._doGetRequest('/v1/feelevels/?network=' + (network || 'livenet')).then((result) => {
+      return this._doGetRequest('/v1/feelevels/?network=' + (network || 'livenet')).then((result) => {
         return resolve(result);
       }).catch((err) => {
         return reject(err);
@@ -1605,8 +1604,7 @@ export class API extends EventEmitter implements IAPI {
       };
       
 
-      return this._doPostRequest('/v1/wallets/', args)
-      .then((body) => {
+      return this._doPostRequest('/v1/wallets/', args).then((body) => {
         if (!walletId) {
           walletId = body.walletId;
         }  
@@ -1914,7 +1912,7 @@ export class API extends EventEmitter implements IAPI {
     };
 
     let url = '/v1/txproposals/' + opts.txp.id + '/publish/';
-    this._doPostRequest(url, args).then((txp) => {
+    return this._doPostRequest(url, args).then((txp) => {
       this._processTxps(txp);
       return Promise.resolve(txp);
     });
@@ -2060,7 +2058,7 @@ export class API extends EventEmitter implements IAPI {
       return Promise.each(txps, (txp) => {
         if (!opts.doNotVerify) {
           // TODO: Find a way to run this check in parallel.
-          this.getPayPro(txp).then((paypro)  => {
+          return this.getPayPro(txp).then((paypro)  => {
             if (!Verifier.checkTxProposal(this.credentials, txp, {
               paypro: paypro,
             })) {
@@ -2068,21 +2066,21 @@ export class API extends EventEmitter implements IAPI {
             }
           });
         }
-        }).then(() => {
-          let result: any;
-          if (opts.forAirGapped) {
-            result = {
-              txps: JSON.parse(JSON.stringify(txps)),
-              encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
-              unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
-              m: this.credentials.m,
-              n: this.credentials.n,
-            };
-          } else {
-            result = txps;
-          }
-          Promise.resolve(result);
-        });
+      }).then(() => {
+        let result: any;
+        if (opts.forAirGapped) {
+          result = {
+            txps: JSON.parse(JSON.stringify(txps)),
+            encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
+            unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
+            m: this.credentials.m,
+            n: this.credentials.n,
+          };
+        } else {
+          result = txps;
+        }
+        Promise.resolve(result);
+      });
     });
   };
 
@@ -2119,7 +2117,7 @@ export class API extends EventEmitter implements IAPI {
           return reject(Errors.ENCRYPTED_PRIVATE_KEY);
       }
 
-      this.getPayPro(txp).then((paypro) => {
+      return this.getPayPro(txp).then((paypro) => {
         let isLegit = Verifier.checkTxProposal(this.credentials, txp, {
           paypro: paypro,
         });
@@ -2143,7 +2141,7 @@ export class API extends EventEmitter implements IAPI {
           signatures: signatures
         };
 
-        this._doPostRequest(url, args).then((txp) => {
+        return this._doPostRequest(url, args).then((txp) => {
           this._processTxps(txp);
           return resolve(txp);
         });
