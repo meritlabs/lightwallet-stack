@@ -310,15 +310,16 @@ export class API extends EventEmitter implements IAPI {
   };
 
   _processTxNotes(notes): void {
+    let self = this;
 
     if (!notes) return;
 
-    let encryptingKey = this.credentials.sharedEncryptingKey;
+    let encryptingKey = self.credentials.sharedEncryptingKey;
     _.each([].concat(notes), function(note) {
       note.encryptedBody = note.body;
-      note.body = this._decryptMessage(note.body, encryptingKey);
+      note.body = self._decryptMessage(note.body, encryptingKey);
       note.encryptedEditedByName = note.editedByName;
-      note.editedByName = this._decryptMessage(note.editedByName, encryptingKey);
+      note.editedByName = self._decryptMessage(note.editedByName, encryptingKey);
     });
   };
 
@@ -331,30 +332,31 @@ export class API extends EventEmitter implements IAPI {
    * @param {String} encryptingKey
    */
   _processTxps(txps): Promise<any> {
+    let self = this;
     return new Promise((resolve, reject) => {
       
       if (!txps) return resolve();
 
-      let encryptingKey = this.credentials.sharedEncryptingKey;
+      let encryptingKey = self.credentials.sharedEncryptingKey;
       _.each([].concat(txps), function(txp) {
         txp.encryptedMessage = txp.message;
-        txp.message = this._decryptMessage(txp.message, encryptingKey) || null;
-        txp.creatorName = this._decryptMessage(txp.creatorName, encryptingKey);
+        txp.message = self._decryptMessage(txp.message, encryptingKey) || null;
+        txp.creatorName = self._decryptMessage(txp.creatorName, encryptingKey);
 
         _.each(txp.actions, function(action) {
-          action.copayerName = this._decryptMessage(action.copayerName, encryptingKey);
-          action.comment = this._decryptMessage(action.comment, encryptingKey);
+          action.copayerName = self._decryptMessage(action.copayerName, encryptingKey);
+          action.comment = self._decryptMessage(action.comment, encryptingKey);
           // TODO get copayerName from Credentials -> copayerId to copayerName
           // action.copayerName = null;
         });
         _.each(txp.outputs, function(output) {
           output.encryptedMessage = output.message;
-          output.message = this._decryptMessage(output.message, encryptingKey) || null;
+          output.message = self._decryptMessage(output.message, encryptingKey) || null;
         });
         txp.hasUnconfirmedInputs = _.some(txp.inputs, function(input: any) {
           return input.confirmations == 0;
         });
-        this._processTxNotes(txp.note);
+        self._processTxNotes(txp.note);
       });
       return resolve();
     });    

@@ -127,26 +127,31 @@ export class SendConfirmView {
     }
 
     updateAmount();
+    this.logger.log('updateTx updated amount', tx, wallet);
     this.refresh();
 
     // End of quick refresh, before wallet is selected.
     if (!wallet) return Promise.resolve();
 
+    this.logger.log('updateTx getting fee rate', tx, wallet);
     return this.feeService.getFeeRate(wallet.network, this.configFeeLevel).then((feeRate) => {
 
+      this.logger.log('updateTx got a fee rate', tx, wallet);
       if (tx.usingCustomFee) tx.feeRate = feeRate;
       tx.feeLevelName = this.feeService.feeOpts[tx.feeLevel];
 
       if (!wallet) return Promise.resolve();
 
+      this.logger.log('updateTx has a wallet', tx, wallet);
       // txp already generated for this wallet?
       if (!_.isEmpty(tx.txp)) {
         this.refresh();
         return Promise.resolve();
       }
 
+      this.logger.log('updateTx getting a txp', tx, wallet);
       return this.getTxp(_.clone(tx), wallet, opts.dryRun).then((txpOut) => {
-        this.logger.log('getTxp got the response: ', txpOut);
+        console.log('getTxp got the response: ', txpOut);
 
         txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
         this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
@@ -160,9 +165,8 @@ export class SendConfirmView {
         tx.txp = txpOut;
         this.txData = tx;
 
-        this.logger.log('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
+        console.log('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
         this.refresh();
-        return Promise.resolve();
       });
     });
   }
