@@ -131,7 +131,7 @@ export class Logger implements LoggerWithLevels {
       if (Error.stackTraceLimit && this.level == 'debug') {
         let old = Error.stackTraceLimit;
         Error.stackTraceLimit = 2;
-        let stack;
+        let stack = new Error().stack;
         let lines = stack.split('\n');
         let caller = lines[2];
         caller = ':' + caller.substr(6);
