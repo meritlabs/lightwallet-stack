@@ -567,12 +567,15 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
       // TODO: Even sooner, we should have more descriptive error states coming back
       // from the blockchain explorer.
       log.warn("Got an error in unlock: " + errMsg);
-      if ('provided code does not exist in the chain'.indexOf(errMsg)) {
+      if (_.includes(errMsg.message, 'provided code does not exist in the chain')) {
         return cb(Errors.UNLOCK_CODE_INVALID);
       } 
-      if ('unlockwalletwithaddress: Address is already beaconed.'.indexOf(errMsg)) {
+      if (_.includes(errMsg.message, 'unlockwalletwithaddress: Address is already beaconed.')) {
         return cb(Errors.UNLOCKED_ALREADY);
       } 
+      // An error we don't know about.
+      log.warn("Received unknown error while unlocking wallet: ", errMsg.message);
+      return cb(errMsg.message);
     }
 
     unlocked = true;
