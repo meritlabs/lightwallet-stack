@@ -49,7 +49,7 @@ export class PopupService {
           }
         ]
       });
-      confirm.present();
+      return confirm.present();
     });
   };
 
