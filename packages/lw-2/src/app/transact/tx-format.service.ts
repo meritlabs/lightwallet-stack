@@ -76,6 +76,7 @@ export class TxFormatService {
   };
 
   processTx(tx: any) {
+    let self = this;
     if (!tx || tx.action == 'invalid')
       return tx;
 
@@ -90,17 +91,17 @@ export class TxFormatService {
           tx.hasMultiplesOutputs = true;
         }
         tx.amount = _.reduce(tx.outputs, function (total: any, o: any) {
-          o.amountStr = this.formatAmountStr(o.amount);
-          o.alternativeAmountStr = this.formatAlternativeStr(o.amount);
+          o.amountStr = self.formatAmountStr(o.amount);
+          o.alternativeAmountStr = self.formatAlternativeStr(o.amount);
           return total + o.amount;
         }, 0);
       }
       tx.toAddress = tx.outputs[0].toAddress;
     }
 
-    tx.amountStr = this.formatAmountStr(tx.amount);
-    tx.alternativeAmountStr = this.formatAlternativeStr(tx.amount);
-    tx.feeStr = this.formatAmountStr(tx.fee || tx.fees);
+    tx.amountStr = self.formatAmountStr(tx.amount);
+    tx.alternativeAmountStr = self.formatAlternativeStr(tx.amount);
+    tx.feeStr = self.formatAmountStr(tx.fee || tx.fees);
 
     if (tx.amountStr) {
       tx.amountValueStr = tx.amountStr.split(' ')[0];
