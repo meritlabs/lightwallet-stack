@@ -940,6 +940,7 @@ export class API extends EventEmitter implements IAPI {
   prepareVault(type: number, opts: any = {}) {
     if(type == 0) {
       let tag = opts.masterPubKey.toAddress().hashBuffer;
+      console.log('tag:', tag);
 
       let params = [
         opts.spendPubKey.toBuffer(),
@@ -951,8 +952,12 @@ export class API extends EventEmitter implements IAPI {
       params.push(tag);
       params.push(type);
 
+      console.log('params:', params);
+
       let redeemScript = Bitcore.Script.buildSimpleVaultScript(tag);
-      let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params)
+      console.log('redeemScript:', redeemScript);
+      let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
+      console.log('scriptPubKey:', scriptPubKey);
 
       let vault = {
         type: type,
@@ -963,6 +968,7 @@ export class API extends EventEmitter implements IAPI {
         redeemScript: redeemScript,
         scriptPubKey: scriptPubKey,
       };
+      console.log('vault:', vault);
 
       return vault;
     } else {
