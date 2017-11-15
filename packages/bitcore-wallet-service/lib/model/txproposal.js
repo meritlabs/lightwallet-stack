@@ -51,7 +51,7 @@ TxProposal.create = function(opts) {
   x.excludeUnconfirmedUtxos = opts.excludeUnconfirmedUtxos;
 
   x.addressType = opts.addressType || (x.walletN > 1 ? Constants.SCRIPT_TYPES.P2SH : Constants.SCRIPT_TYPES.P2PKH);
-  $.checkState(_.contains(_.values(Constants.SCRIPT_TYPES), x.addressType));
+  $.checkState(_.includes(_.values(Constants.SCRIPT_TYPES), x.addressType));
 
   x.customData = opts.customData;
 
@@ -59,7 +59,7 @@ TxProposal.create = function(opts) {
   try {
     x.network = opts.network || Bitcore.Address(x.outputs[0].toAddress).toObject().network;
   } catch (ex) {}
-  $.checkState(_.contains(_.values(Constants.NETWORKS), x.network));
+  $.checkState(_.includes(_.values(Constants.NETWORKS), x.network));
 
   x.setInputs(opts.inputs);
   x.fee = opts.fee;
@@ -138,7 +138,7 @@ TxProposal.prototype._buildTx = function() {
 
   var t = new Bitcore.Transaction();
 
-  $.checkState(_.contains(_.values(Constants.SCRIPT_TYPES), self.addressType));
+  $.checkState(_.includes(_.values(Constants.SCRIPT_TYPES), self.addressType));
 
   switch (self.addressType) {
     case Constants.SCRIPT_TYPES.P2SH:
@@ -379,7 +379,7 @@ TxProposal.prototype.isTemporary = function() {
 };
 
 TxProposal.prototype.isPending = function() {
-  return !_.contains(['temporary', 'broadcasted', 'rejected'], this.status);
+  return !_.includes(['temporary', 'broadcasted', 'rejected'], this.status);
 };
 
 TxProposal.prototype.isAccepted = function() {

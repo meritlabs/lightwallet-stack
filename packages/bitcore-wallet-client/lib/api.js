@@ -1048,7 +1048,7 @@ API._buildSecret = function(walletId, walletPrivKey, network) {
   }
   var widHex = new Buffer(walletId.replace(/-/g, ''), 'hex');
   var widBase58 = new Bitcore.encoding.Base58(widHex).toString();
-  return _.padRight(widBase58, 22, '0') + walletPrivKey.toWIF() + (network == 'testnet' ? 'T' : 'L');
+  return _.padEnd(widBase58, 22, '0') + walletPrivKey.toWIF() + (network == 'testnet' ? 'T' : 'L');
 };
 
 API.parseSecret = function(secret) {
