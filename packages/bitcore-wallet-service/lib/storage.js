@@ -387,7 +387,7 @@ Storage.prototype.storeReferral = function(referral, cb) {
  */
 Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs, cb) {
   function makeId(timestamp) {
-    return _.padLeft(timestamp, 14, '0') + _.repeat('0', 4);
+    return _.padStart(timestamp, 14, '0') + _.repeat('0', 4);
   };
 
   var self = this;

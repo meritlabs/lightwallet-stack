@@ -22,7 +22,7 @@ function BlockChainExplorer(opts) {
   var log = opts.log || log; //If we don't have a unified logger, use npmlog.
 
   $.checkState(PROVIDERS[provider], 'Provider ' + provider + ' not supported');
-  $.checkState(_.contains(_.keys(PROVIDERS[provider]), network), 'Network ' + network + ' not supported by this provider');
+  $.checkState(_.includes(_.keys(PROVIDERS[provider]), network), 'Network ' + network + ' not supported by this provider');
 
   var url = opts.url || PROVIDERS[provider][network];
 

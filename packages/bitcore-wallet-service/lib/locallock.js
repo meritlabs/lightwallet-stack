@@ -19,7 +19,7 @@ Lock.prototype._runOne = function(token) {
     running: true
   })) return;
 
-  var task = _.first(self.tasks[token]);
+  var task = _.head(self.tasks[token]);
   if (!task) return;
 
   task.running = true;
@@ -51,7 +51,7 @@ Lock.prototype.locked = function(token, wait, max, userTask) {
 
   if (wait > 0) {
     setTimeout(function() {
-      if (task.running || !_.contains(self.tasks[token], task)) return;
+      if (task.running || !_.includes(self.tasks[token], task)) return;
       self.tasks[token] = _.without(self.tasks[token], task);
       task.fn(new Error('Could not acquire lock ' + token));
     }, wait);
