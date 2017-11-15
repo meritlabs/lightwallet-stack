@@ -182,8 +182,8 @@ export class WalletService {
           }
 
           // Selected unit
-          cache.unitToMicro = config.settings.unitToMicro;
-          cache.satToUnit = 1 / cache.unitToMicro;
+          cache.unitToSatoshi = config.settings.unitToSatoshi;
+          cache.satToUnit = 1 / cache.unitToSatoshi;
 
           //STR
           cache.totalBalanceStr = this.txFormatService.formatAmountStr(cache.totalBalanceSat);
@@ -979,15 +979,15 @@ export class WalletService {
 
         let minFee = this.getMinFee(wallet, levels, resp.length);
 
-        let balance = _.sumBy(resp, 'micros');
+        let balance = _.sumBy(resp, 'satoshis');
 
         // for 2 outputs
         let lowAmount = this.getLowAmount(wallet, levels);
         let lowUtxos = _.filter(resp, (x: any) => {
-          return x.micros < lowAmount;
+          return x.satoshis < lowAmount;
         });
 
-        let totalLow = _.sumBy(lowUtxos, 'micros');
+        let totalLow = _.sumBy(lowUtxos, 'satoshis');
         return resolve({
           allUtxos: resp || [],
           lowUtxos: lowUtxos || [],
@@ -1389,7 +1389,7 @@ export class WalletService {
   getWalletAnv(wallet:Wallet):Promise<number> {
     return new Promise((resolve, reject) => {
       return resolve(
-       (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
+       (wallet.status && wallet.status.totalBalanceSatoshis) ? wallet.status.totalBalanceSatoshis : 0
       )
     });
   }

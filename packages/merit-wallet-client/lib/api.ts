@@ -759,7 +759,7 @@ export class API extends EventEmitter implements IAPI {
       return this.getUtxos({
         addresses: address.toString(),
       }).then((utxos) => {
-        return resolve(_.sumBy(utxos, 'micros'));
+        return resolve(_.sumBy(utxos, 'satoshis'));
       });
     });
   };
@@ -775,7 +775,7 @@ export class API extends EventEmitter implements IAPI {
           if (!_.isArray(utxos) || utxos.length == 0) return reject(new Error('No utxos found'));
           
           let fee = opts.fee || 10000;
-          let amount = _.sumBy(utxos, 'micros') - fee;
+          let amount = _.sumBy(utxos, 'satoshis') - fee;
           if (amount <= 0) return reject(Errors.INSUFFICIENT_FUNDS);
   
           let tx;
@@ -871,8 +871,8 @@ export class API extends EventEmitter implements IAPI {
     let inputAddress = input.txn.scriptId;
 
     let fee = opts.fee || 10000;
-    let microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
-    let amount =  microAmount - fee;
+    let satoshiAmount = Bitcore.Unit.fromMRT(input.txn.amount).toSatoshis();
+    let amount =  satoshiAmount - fee;
     if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
 
     let tx = new Bitcore.Transaction();
@@ -885,7 +885,7 @@ export class API extends EventEmitter implements IAPI {
         new Bitcore.Transaction.Input.PayToScriptHashInput({
           output: Bitcore.Transaction.Output.fromObject({
             script: p2shScript,
-            micros: microAmount
+            satoshis: satoshiAmount
           }),
           prevTxId: input.txn.txid,
           outputIndex: input.txn.index,
@@ -1851,11 +1851,11 @@ export class API extends EventEmitter implements IAPI {
    * @param {string} opts.txProposalId - Optional. If provided it will be used as this TX proposal ID. Should be unique in the scope of the wallet.
    * @param {Array} opts.outputs - List of outputs.
    * @param {string} opts.outputs[].toAddress - Destination address.
-   * @param {number} opts.outputs[].amount - Amount to transfer in micro.
+   * @param {number} opts.outputs[].amount - Amount to transfer in satoshi.
    * @param {string} opts.outputs[].message - A message to attach to this output.
    * @param {string} opts.message - A message to attach to this transaction.
    * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level for this TX ('priority', 'normal', 'economy', 'superEconomy').
-   * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in micro).
+   * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in satoshi).
    * @param {string} opts.changeAddress - Optional. Use this address as the change address for the tx. The address should belong to the wallet. In the case of singleAddress wallets, the first main address will be used.
    * @param {Boolean} opts.sendMax - Optional. Send maximum amount of funds that make sense under the specified fee/feePerKb conditions. (defaults to false).
    * @param {string} opts.payProUrl - Optional. Paypro URL for peers to verify TX
@@ -2250,7 +2250,7 @@ export class API extends EventEmitter implements IAPI {
         PayPro.send({
           http: this.payProHttp,
           url: txp.payProUrl,
-          amountMicros: txp.amount,
+          amountSatoshis: txp.amount,
           refundAddr: txp.changeAddress.address,
           merchant_data: paypro.merchant_data,
           rawTx: t.serialize({
@@ -2464,7 +2464,7 @@ export class API extends EventEmitter implements IAPI {
    * Returns send max information.
    * @param {String} opts
    * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level ('priority', 'normal', 'economy', 'superEconomy').
-   * @param {number} opts.feePerKb - Optional. Specify the fee per KB (in micro).
+   * @param {number} opts.feePerKb - Optional. Specify the fee per KB (in satoshi).
    * @param {Boolean} opts.excludeUnconfirmedUtxos - Indicates it if should use (or not) the unconfirmed utxos
    * @param {Boolean} opts.returnInputs - Indicates it if should return (or not) the inputs
    */

@@ -10,7 +10,7 @@ export class FeeLevelModal {
   public feeLevel: any;
   public noSave: any;
   public customFeePerKB: any;
-  public feePerMicrosByte: any;
+  public feePerSatoshisByte: any;
   public avgConfirmationTime?: any;
   public showMinWarning: Boolean;
   public showMaxWarning: Boolean;
@@ -30,7 +30,7 @@ export class FeeLevelModal {
     this.feeLevel = navParams.data.feeLevel;
     this.noSave = navParams.data.noSave;
     this.customFeePerKB = navParams.data.customFeePerKB;
-    this.feePerMicrosByte = navParams.data.feePerMicrosByte;
+    this.feePerSatoshisByte = navParams.data.feePerSatoshisByte;
   }
   public ok(): void {
     this.viewCtrl.dismiss({
