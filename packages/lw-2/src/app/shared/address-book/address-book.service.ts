@@ -7,6 +7,8 @@ import { BwcService } from 'merit/core/bwc.service';
 import { BwcError } from 'merit/core/bwc-error.model';
 import { PersistenceService } from 'merit/core/persistence.service';
 
+import { Contacts, Contact, ContactField, ContactName } from '@ionic-native/contacts';
+
 declare var navigator:any;
 
 /**
@@ -20,9 +22,11 @@ export class AddressBookService {
     private logger: Logger,
     private bwcService: BwcService,
     private bwcErrorService: BwcError,
-    private persistenceService: PersistenceService
+    private persistenceService: PersistenceService,
+    private contacts:Contacts
   ) {
     this.bitcore = this.bwcService.getBitcore();
+
   }
 
   get = function(addr, cb) {
@@ -67,9 +71,16 @@ export class AddressBookService {
     return cb();
   };
 
-  getAllDeviceContacts = function(cb) {
-    return this.searchContacts('', cb);
-  };
+  public getAllDeviceContacts():Promise<Array<any>> {
+    return new Promise((resolve, reject) => {
+      this.contacts.find(['displayName', 'name', 'phoneNumbers', 'emails'], {filter: "", multiple: true}).then((contacts) => {
+        return resolve(contacts);
+      }).catch((err) => {
+        this.logger.warn(err);
+        return resolve([]); 
+      })
+    }) 
+  }
 
   add = function(entry, cb) {
     var network = (new this.bitcore.Address(entry.address)).network.name;

@@ -31,7 +31,7 @@ export class TxFormatService {
     if (settings.unitCode == 'sat') return micros;
 
     //TODO : now only works for english, specify opts to change thousand separator and decimal separator
-    var opts = {
+    let opts = {
       fullPrecision: !!fullPrecision
     };
     return this.bwc.getUtils().formatAmount(micros, settings.unitCode, opts);
@@ -45,16 +45,16 @@ export class TxFormatService {
   toFiat(micros: number, code: string): Promise<any> {
     return new Promise((resolve, reject) => {
       if (isNaN(micros)) resolve();
-      var v1;
+      let v1;
       v1 = this.rate.toFiat(micros, code);
       if (!v1) resolve(null);
       resolve(v1.toFixed(2));
     });
   }
 
-  formatToUSD(micros: number) {
+  formatToUSD(micros: number): Promise<any> {
     return new Promise((resolve, reject) => {
-      var v1;
+      let v1;
       if (isNaN(micros)) resolve();
       v1 = this.rate.toFiat(micros, 'USD');
       if (!v1) resolve(null);
@@ -62,16 +62,16 @@ export class TxFormatService {
     });
   };
 
-  formatAlternativeStr(micros: number) {
+  formatAlternativeStr(micros: number): Promise<any> {
     return new Promise((resolve, reject) => {
       if (isNaN(micros)) resolve();
       let settings = this.config.get().wallet.settings;
 
-      var v1 = parseFloat((this.rate.toFiat(micros, settings.alternativeIsoCode)).toFixed(2));
-      var v1FormatFiat = new FiatAmount(v1);
+      let v1 = parseFloat((this.rate.toFiat(micros, settings.alternativeIsoCode)).toFixed(2));
+      let v1FormatFiat = new FiatAmount(v1);
       if (!v1FormatFiat) resolve(null);
 
-      resolve(v1FormatFiat + ' ' + settings.alternativeIsoCode);
+      return resolve(v1FormatFiat.amount + ' ' + settings.alternativeIsoCode);
     });
   };
 
@@ -82,7 +82,7 @@ export class TxFormatService {
     // New transaction output format
     if (tx.outputs && tx.outputs.length) {
 
-      var outputsNr = tx.outputs.length;
+      let outputsNr = tx.outputs.length;
 
       if (tx.action != 'received') {
         if (outputsNr > 1) {
@@ -112,10 +112,10 @@ export class TxFormatService {
 
   formatPendingTxps(txps) {
     this.pendingTxProposalsCountForUs = 0;
-    var now = Math.floor(Date.now() / 1000);
+    let now = Math.floor(Date.now() / 1000);
 
     /* To test multiple outputs...
-    var txp = {
+    let txp = {
       message: 'test multi-output',
       fee: 1000,
       createdOn: new Date() / 1000,
@@ -150,7 +150,7 @@ export class TxFormatService {
 
       tx = this.processTx(tx);
 
-      var action: any = _.find(tx.actions, {
+      let action: any = _.find(tx.actions, {
         copayerId: tx.wallet.copayerId
       });
 
@@ -176,11 +176,11 @@ export class TxFormatService {
   parseAmount(amount: any, currency: string) {
     let settings = this.config.get()['wallet']['settings']; // TODO
 
-    var satToBtc = 1 / 100000000;
-    var unitToMicro = settings.unitToMicro;
-    var amountUnitStr;
-    var amountSat;
-    var alternativeIsoCode = settings.alternativeIsoCode;
+    let satToBtc = 1 / 100000000;
+    let unitToMicro = settings.unitToMicro;
+    let amountUnitStr;
+    let amountSat;
+    let alternativeIsoCode = settings.alternativeIsoCode;
 
     // If fiat currency
     if (currency != 'BCH' && currency != 'BTC' && currency != 'sat') {
@@ -205,9 +205,9 @@ export class TxFormatService {
   satToUnit(amount: any) {
     let settings = this.config.get()['wallet']['settings']; // TODO
 
-    var unitToMicro = settings.unitToMicro;
-    var satToUnit = 1 / unitToMicro;
-    var unitDecimals = settings.unitDecimals;
+    let unitToMicro = settings.unitToMicro;
+    let satToUnit = 1 / unitToMicro;
+    let unitDecimals = settings.unitDecimals;
     return parseFloat((amount * satToUnit).toFixed(unitDecimals));
   };
 

@@ -451,9 +451,10 @@ export class ProfileService {
       let walletId: string = wallet.credentials.walletId
 
       if (!this.profile.addWallet(JSON.parse(wallet.export()))) {
-        return reject("Wallet already in " + this.appService.info.nameCase); // TODO gettextCatalog
+        return this.appService.getInfo().then((appInfo) => {
+          return reject("Wallet already in " + appInfo.nameCase); // TODO gettextCatalog
+        });
       }
-
 
       let skipKeyValidation: boolean = this.shouldSkipValidation(walletId);
       if (!skipKeyValidation)

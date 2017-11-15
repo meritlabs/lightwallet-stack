@@ -15,7 +15,7 @@ import {FeedbackService} from "../feedback/feedback.service";
 import {EasyReceiveService} from "merit/easy-receive/easy-receive.service";
 
 import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { AddressBookService } from "merit/shared/address-book/address-book.service";
+import { AddressBookModule } from "merit/shared/address-book/address-book.module";
 
 @NgModule({
   declarations: [
@@ -28,13 +28,13 @@ import { AddressBookService } from "merit/shared/address-book/address-book.servi
     AppUpdateService,
     FeedbackService,
     EasyReceiveService,
-    AddressBookService,
     InAppBrowser,
     MnemonicService,
     LanguageService
   ],
   imports: [
     MomentModule,
+    AddressBookModule, 
     IonicPageModule.forChild(WalletsView)
   ],
 })

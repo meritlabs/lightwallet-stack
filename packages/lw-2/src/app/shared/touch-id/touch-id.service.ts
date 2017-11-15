@@ -109,12 +109,12 @@ export class TouchIdService {
 
   checkWallet(wallet: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!this.isAvailable()) reject();
+      if (!this.isAvailable()) return resolve(); //TODO: Decide how to propogate this.
       if (this.isNeeded(wallet)) {
         this.check().then(() => {
-          resolve();
+          return resolve();
         }).catch(() => {
-          reject();
+          return reject();
         });
       };
     });

@@ -649,8 +649,8 @@ export class WalletService {
 
   // Approx utxo amount, from which the uxto is economically redeemable
   private getMinFee(wallet: IMeritWalletClient, feeLevels: any, nbOutputs?: number): number {
-    let level: any = _.find(feeLevels[wallet.network], {
-      level: 'normal',
+    let level: any = _.find(feeLevels[wallet.network],  (levs) => {
+      return levs.level == 'normal';
     });
     let lowLevelRate = parseInt((level.feePerKb / 1000).toFixed(0));
 
@@ -758,7 +758,9 @@ export class WalletService {
   }
 
   public createTx(wallet: IMeritWalletClient, txp: any): Promise<any> {
-      return wallet.createTxProposal(txp);
+    return wallet.createTxProposal(txp).then((ctxp) => {
+      return ctxp;
+    });
   }
 
   public publishTx(wallet: IMeritWalletClient, txp: any): Promise<any> {
@@ -811,9 +813,8 @@ export class WalletService {
     });
   }
 
-  public updateRemotePreferences(clients: any, prefs: any): Promise<any> {
+  public updateRemotePreferences(clients: any, prefs: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      prefs = prefs || {};
 
       if (!_.isArray(clients))
         clients = [clients];
@@ -1069,7 +1070,7 @@ export class WalletService {
 
   public handleEncryptedWallet(wallet: IMeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!this.isEncrypted(wallet)) return reject();
+      if (!this.isEncrypted(wallet)) return resolve();
       this.askPassword(wallet.name, 'Enter Spending Password').then((password: string) => { //TODO gettextcatalog
         if (!password) return reject('No password');
         if (!wallet.checkPassword(password)) return reject('Wrong password');
@@ -1108,8 +1109,8 @@ export class WalletService {
 
   public prepare(wallet: IMeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.touchidService.checkWallet(wallet).then(() => {
-        this.handleEncryptedWallet(wallet).then((password: string) => {
+      return this.touchidService.checkWallet(wallet).then(() => {
+        return this.handleEncryptedWallet(wallet).then((password: string) => {
           return resolve(password);
         }).catch((err) => {
           return reject(err);

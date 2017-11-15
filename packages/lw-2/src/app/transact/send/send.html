@@ -14,18 +14,25 @@
         <div class="item item-heading send-heading"><span translate>Recipient</span></div>
         <div class="item input search-wrapper" [class.focus]="searchFocus">
           <i class="icon icon-svg abs-v-center"><img class="svg" src="img/icon-bitcoin-symbol.svg"></i>
-          <div class="item-icon-right">
-            <input type="text" class="search-input" placeholder="Search or enter merit address" [(ngModel)]="formData.search" (ngModelChange)="findContact(formData.search)" ng-model-onblur (focus)="searchInFocus()" (blur)="searchBlurred()">
-            <i class="icon icon-svg qr abs-v-center separator-left" on-tap="openScanner()"><img src="img/scan-ico.svg"></i>
+          <ion-item class="item-icon-right">
+            <ion-input type="text" class="search-input" placeholder="Search or enter merit address" 
+            [(ngModel)]="formData.search" (ionChange)="findContact(formData.search)" 
+             (focus)="searchInFocus()" (blur)="searchBlurred()"></ion-input> 
+             <button (click)="openScanner()" ion-button icon-only item-right clear>
+                <ion-icon name="qr-scanner"  color="primary"></ion-icon>
+             </button> 
+          </ion-item>
           </div>
-        </div>
       </div>
     </div>
+
+
     <div class="list">
+
       <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList" (click)="goToAmount(item)">
         <i class="icon big-icon-svg">
-          <gravatar class="send-gravatar" [name]="item.name" width="30" [email]="item.email" ></gravatar>
-        </i>
+         <gravatar class="send-gravatar" [name]="item.name" width="30" height="30" [email]="item.emails ? item.emails[0] : item.email" ></gravatar>
+        </i>  
         {{item.name}}
         <i class="icon bp-arrow-right"></i>
       </a>
