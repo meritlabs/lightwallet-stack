@@ -887,6 +887,7 @@ export class WalletService {
 // create and store a wallet
   public createWallet(opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
+      opts.bwsurl = opts.bwsurl || this.configService.get().bws.url;
       return this.doCreateWallet(opts).then((walletClient: any) => {
         return this.profileService.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl

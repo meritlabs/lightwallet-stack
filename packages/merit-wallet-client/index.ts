@@ -6,7 +6,7 @@ export class MeritWalletClient extends MeritClient {
   private static _instance: MeritWalletClient;
   public errors;
   private constructor(opts:any = {}) {
-    super({opts});
+    super(opts);
     this.errors = BwcError;
   }
 

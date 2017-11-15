@@ -4,13 +4,20 @@ import { Injectable } from '@angular/core';
 // Depends on creating typings and publishing the pkg.
 import { MeritWalletClient } from './../../../../merit-wallet-client';
 
+import { ConfigService } from 'merit/shared/config.service';
+
 @Injectable()
 export class BwcService {
   private BWC: any;
   public buildTx: any; // = BWC.buildTx;
   public parseSecret: any; // = BWC.parseSecret;
   
-  constructor() {
+  constructor(
+    private configService:ConfigService
+  ) {
+    let opts = {
+          bwsurl: this.configService.get().bws.url
+    };
     this.BWC = this.getClient(null, null);
     this.buildTx = this.BWC.buildTx;
     this.parseSecret = this.BWC.parseSecret;
