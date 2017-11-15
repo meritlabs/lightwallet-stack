@@ -40,7 +40,7 @@ export class CreateVaultDepositView {
     this.formData.amountAvailable = data.amountAvailable;
     this.checkNextAvailable();
 
-    this.updateAllWallets().then((wallets: Array<Wallet>) => {
+    this.getAllWallets().then((wallets: Array<Wallet>) => {
       _.each(wallets, (w) => console.log(w));
       const computed = this.computeBalances(wallets);
       const mrt = this.bitcore.Unit.fromMicros(computed).toMRT();
@@ -53,7 +53,7 @@ export class CreateVaultDepositView {
     this.navCtl.push('CreateVaultMasterKeyView');
   }
 
-  private updateAllWallets(): Promise<Array<Wallet>> {
+  private getAllWallets(): Promise<Array<Wallet>> {
     const wallets = this.profileService.getWallets().then((ws) => {
       return Promise.all(_.map(ws, async (wallet: any) => { //ToDo: type it correctly Wallet and IMeritWalletClient are not interchangable
         wallet.status = await this.walletService.getStatus(wallet);
