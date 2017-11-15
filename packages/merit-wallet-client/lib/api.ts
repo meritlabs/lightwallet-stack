@@ -1874,9 +1874,6 @@ export class API extends EventEmitter implements IAPI {
 
 
     let args = this._getCreateTxProposalArgs(opts);
-    this.log.warn("######");
-    this.log.warn(args);
-
     return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
       return this._processTxps(txp).then(() => {
 
@@ -2311,8 +2308,9 @@ export class API extends EventEmitter implements IAPI {
 
     let url = '/v1/txhistory/' + qs;
     return this._doGetRequest(url).then((txs) => {
-      this._processTxps(txs);
-      return Promise.resolve(txs);
+      return this._processTxps(txs).then(()=> {
+        return Promise.resolve(txs);
+      });
     });
   };
 
