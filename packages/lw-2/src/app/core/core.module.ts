@@ -122,7 +122,7 @@ export function createTranslateLoader(http: Http) {
         //   } 
         {
             provide: APP_INITIALIZER,
-            useFactory: (app: AppService) => () => app.load(),
+            useFactory: (app: AppService) => () => app.getInfo(),
             deps: [AppService, LanguageService],
             multi: true
         }

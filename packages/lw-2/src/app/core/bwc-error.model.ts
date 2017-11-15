@@ -15,7 +15,7 @@ export class BwcError {
 
   //TODO
   public msg(err: any, prefix?: string): string {
-    return "TODO: bwcError msg(err, prefix)";
+    return `bwcError: ${prefix} ${err}`;
   }
 
   public cb(err: string, prefix?: string): Promise<any> {

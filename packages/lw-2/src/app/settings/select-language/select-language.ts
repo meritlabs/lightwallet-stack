@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import {AlertController} from "ionic-angular/index";
-import { ExternalLinkService } from "merit/shared/external-link.service";
+
 
 
 @IonicPage()
@@ -18,7 +18,6 @@ export class SelectLanguageModal {
     public navCtrl: NavController,
     public navParams: NavParams,
     private  alertCtrl:AlertController,
-    private externalService:ExternalLinkService,
     private viewCtrl:ViewController
   ) {
     this.currentLanguage = this.navParams.get('currentLanguage');
@@ -38,7 +37,9 @@ export class SelectLanguageModal {
       message: 'You can see the latest developments and contribute to this open source app by visiting our project on GitHub',
       buttons: [
         {text: 'Cancel', role: 'cancel', handler: () => {}},
-        {text: 'Open GitHub', handler: () => {this.externalService.open(url)} }
+        {text: 'Open GitHub', handler: () => {
+          //todo open it 
+        } }
       ]
     });
 

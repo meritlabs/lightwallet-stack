@@ -1063,7 +1063,7 @@ describe('Wallet service', function() {
         should.exist(status.wallet.copayers[0].requestPubKey);
         should.exist(status.wallet.copayers[0].customData);
         // Do not return other copayer's custom data
-        _.each(_.rest(status.wallet.copayers), function(copayer) {
+        _.each(_.tail(status.wallet.copayers), function(copayer) {
           should.not.exist(copayer.customData);
         });
         done();
@@ -3627,7 +3627,7 @@ describe('Wallet service', function() {
             should.exist(txp);
             var amounts = _.map(txp.inputs, 'micros');
             amounts.length.should.equal(30);
-            _.all(amounts, function(amount, i) {
+            _.every(amounts, function(amount, i) {
               if (i == 0) return true;
               return amount < amounts[i - 1];
             }).should.be.false;
@@ -3667,7 +3667,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(3);
-            _.all(txp.inputs, function(input) {
+            _.every(txp.inputs, function(input) {
               return input == 100e2;
             });
             done();
@@ -3849,7 +3849,7 @@ describe('Wallet service', function() {
           server.createTx(txOpts, function(err, txp) {
             should.not.exist(err);
             should.exist(txp);
-            _.all(txp.inputs, function(input) {
+            _.every(txp.inputs, function(input) {
               return input == 100e2;
             });
             done();
@@ -4584,7 +4584,7 @@ describe('Wallet service', function() {
           should.exist(info);
           var amounts = _.map(info.inputs, 'micros');
           amounts.length.should.equal(30);
-          _.all(amounts, function(amount, i) {
+          _.every(amounts, function(amount, i) {
             if (i == 0) return true;
             return amount < amounts[i - 1];
           }).should.be.false;
@@ -5725,14 +5725,14 @@ describe('Wallet service', function() {
     it('should pull notifications after a given notification id', function(done) {
       server.getNotifications({}, function(err, notifications) {
         should.not.exist(err);
-        var from = _.first(_.takeRight(notifications, 2)).id; // second to last
+        var from = _.head(_.takeRight(notifications, 2)).id; // second to last
         server.getNotifications({
           notificationId: from,
           minTs: +Date.now() - (60 * 1000),
         }, function(err, res) {
           should.not.exist(err);
           res.length.should.equal(1);
-          res[0].id.should.equal(_.first(_.takeRight(notifications)).id);
+          res[0].id.should.equal(_.head(_.takeRight(notifications)).id);
           done();
         });
       });
@@ -5740,7 +5740,7 @@ describe('Wallet service', function() {
     it('should return empty if no notifications found after a given id', function(done) {
       server.getNotifications({}, function(err, notifications) {
         should.not.exist(err);
-        var from = _.first(_.takeRight(notifications)).id; // last one
+        var from = _.head(_.takeRight(notifications)).id; // last one
         server.getNotifications({
           notificationId: from,
         }, function(err, res) {
@@ -6629,7 +6629,7 @@ describe('Wallet service', function() {
         }, function(err, txs) {
           should.not.exist(err);
           txs.length.should.equal(20);
-          _.first(txs).confirmations.should.equal(501);
+          _.head(txs).confirmations.should.equal(501);
           _.last(txs).confirmations.should.equal(520);
 
           blockchainExplorer.getBlockchainHeight = sinon.stub().callsArgWith(0, null, 2000);
@@ -6646,7 +6646,7 @@ describe('Wallet service', function() {
                 limit: 30,
               }, function(err, txs) {
                 should.not.exist(err);
-                _.first(txs).confirmations.should.equal(1001);
+                _.head(txs).confirmations.should.equal(1001);
                 _.last(txs).confirmations.should.equal(1020);
 
                 server.storage.storeTxHistoryCache.restore();
@@ -6691,7 +6691,7 @@ describe('Wallet service', function() {
         }, function(err, txs) {
           should.not.exist(err);
           txs.length.should.equal(20);
-          _.first(txs).confirmations.should.equal(500);
+          _.head(txs).confirmations.should.equal(500);
           _.last(txs).confirmations.should.equal(519);
 
           server.storage.storeTxHistoryCache.restore();
@@ -6729,7 +6729,7 @@ describe('Wallet service', function() {
         }, function(err, txs) {
           should.not.exist(err);
           txs.length.should.equal(20);
-          _.first(txs).confirmations.should.equal(0);
+          _.head(txs).confirmations.should.equal(0);
           _.last(txs).confirmations.should.equal(19);
 
           server.storage.storeTxHistoryCache.restore();

@@ -43,32 +43,34 @@ export class MeritLightWallet {
   private initializeApp() {
     
     this.platform.ready().then((readySource) => {
-      this.logger.info(
-        'platform ready (' + readySource + '): ' +
-        this.appService.info.nameCase +
-        ' - v' + this.appService.info.version +
-        ' #' + this.appService.info.commitHash);
-
-      if (this.platform.is('cordova')) {
-        this.statusBar.styleLightContent();
-        this.splashScreen.hide();
-      }
-      Promise.longStackTraces();
-      process.on('unhandledRejection', console.log.bind(console));      
-      // Check Profile
-      this.profileService.loadAndBindProfile().then((profile: any) => {
-        
-        this.openLockModal();
-        if (profile) {
-          this.rootComponent = 'TransactView';
-        } else {
-          //this.profileService.createProfile();
-          this.rootComponent = 'OnboardingView';
+      this.appService.getInfo().then((appInfo) => {
+        this.logger.info(
+          'platform ready (' + readySource + '): ' +
+          appInfo.nameCase +
+          ' - v' + appInfo.version +
+          ' #' + appInfo.commitHash);
+  
+        if (this.platform.is('cordova')) {
+          this.statusBar.styleLightContent();
+          this.splashScreen.hide();
         }
-      }).catch((err: any) => {
-        this.logger.warn(err);
-        //TODO: Send them somewhere better.
-        this.rootComponent = 'OnboardingView';
+        Promise.longStackTraces();
+        process.on('unhandledRejection', console.log.bind(console))      
+        // Check Profile
+        this.profileService.loadAndBindProfile().then((profile: any) => {
+          
+          this.openLockModal();
+          if (profile) {
+            this.rootComponent = 'TransactView';
+          } else {
+            //this.profileService.createProfile();
+            this.rootComponent = 'OnboardingView';
+          }
+        }).catch((err: any) => {
+          this.logger.warn(err);
+          //TODO: Send them somewhere better.
+          this.rootComponent = 'OnboardingView';
+        });
       });
     });
   }
