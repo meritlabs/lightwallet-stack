@@ -184,8 +184,8 @@ TxProposal.prototype._buildTx = function() {
   }
 
   // Validate actual inputs vs outputs independently of Bitcore
-  var totalInputs = _.sum(t.inputs, 'output.micros');
-  var totalOutputs = _.sum(t.outputs, 'micros');
+  var totalInputs = _.sumBy(t.inputs, 'output.micros');
+  var totalOutputs = _.sumBy(t.outputs, 'micros');
 
   $.checkState(totalInputs > 0 && totalOutputs > 0 && totalInputs >= totalOutputs);
   $.checkState(totalInputs - totalOutputs <= Defaults.MAX_TX_FEE);
@@ -271,7 +271,7 @@ TxProposal.prototype.estimateFee = function() {
  * @return {Number} total amount of all outputs excluding change output
  */
 TxProposal.prototype.getTotalAmount = function() {
-  return _.sum(this.outputs, 'amount');
+  return _.sumBy(this.outputs, 'amount');
 };
 
 /**
