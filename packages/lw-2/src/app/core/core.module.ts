@@ -16,8 +16,8 @@ import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { AppService } from 'merit/core/app-settings.service';
 import { TransactModule } from 'merit/transact/transact.module';
-import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
+//import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
+//import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { TouchID } from '@ionic-native/touch-id';
 import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
@@ -43,9 +43,9 @@ import { LedgerService } from 'merit/shared/ledger.service';
   to evolve the application.
 */
 
-export function createTranslateLoader(http: Http) {
-    return new TranslatePoHttpLoader(http, 'assets/i18n', '.po');
-  }
+//export function createTranslateLoader(http: Http) {
+//    return new TranslatePoHttpLoader(http, 'assets/i18n', '.po');
+//  }
 
   // Ideally, we can remove the transaction dependency.
 @NgModule({ 
@@ -53,13 +53,13 @@ export function createTranslateLoader(http: Http) {
         CommonModule,
         TransactModule,
         HttpModule,
-        TranslateModule.forRoot({
-            loader: {
-              provide: TranslateLoader,
-              useFactory: createTranslateLoader,
-              deps: [Http]
-            }
-          })        
+        //TranslateModule.forRoot({
+        //    loader: {
+        //      provide: TranslateLoader,
+        //      useFactory: createTranslateLoader,
+        //      deps: [Http]
+        //    }
+        //  })
     ],
     exports: [],
     declarations: [
