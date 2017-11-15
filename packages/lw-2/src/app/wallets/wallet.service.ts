@@ -501,7 +501,7 @@ export class WalletService {
               };
 
               requestLimit = LIMIT;
-              getNewTxs(newTxs, skip);
+              return resolve(getNewTxs(newTxs, skip));
             }).catch((err) => {
               this.logger.warn(this.bwcErrorService.msg(err, 'Server Error')); //TODO
               if (err instanceof this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
