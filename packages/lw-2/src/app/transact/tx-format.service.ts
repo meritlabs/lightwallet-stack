@@ -91,28 +91,23 @@ export class TxFormatService {
           tx.hasMultiplesOutputs = true;
         }
         tx.amount = _.reduce(tx.outputs, function (total: any, o: any) {
-          o.amountStr = self.formatAmountStr(o.amount);
-          self.formatAlternativeStr(o.amount).then((altStr) => {
-            o.alternativeAmountStr = altStr;
-            return total + o.amount;
-          })
+          return total + o.amount;
         }, 0);
       }
       tx.toAddress = tx.outputs[0].toAddress;
     }
 
     tx.amountStr = self.formatAmountStr(tx.amount);
-    self.formatAlternativeStr(tx.amount).then((altStr) => {
-      tx.alternativeAmountStr = altStr;
-      tx.feeStr = self.formatAmountStr(tx.fee || tx.fees);
-  
-      if (tx.amountStr) {
-        tx.amountValueStr = tx.amountStr.split(' ')[0];
-        tx.amountUnitStr = tx.amountStr.split(' ')[1];
-      }
-  
-      return tx;
-    });
+    //TODO: This causes an unresolved promise herror.  
+    tx.alternativeAmountStr = Promise.resolve(self.formatAlternativeStr(tx.amount)).value();
+    tx.feeStr = self.formatAmountStr(tx.fee || tx.fees);
+
+    if (tx.amountStr) {
+      tx.amountValueStr = tx.amountStr.split(' ')[0];
+      tx.amountUnitStr = tx.amountStr.split(' ')[1];
+    }
+
+    return tx;
   };
 
   formatPendingTxps(txps) {
