@@ -5,6 +5,7 @@ import { CreateVaultService } from "merit/vaults/create-vault/create-vault.servi
 import { WalletService } from "merit/wallets/wallet.service";
 import { ProfileService } from "merit/core/profile.service";
 import { Wallet } from "merit/wallets/wallet.model";
+import { BwcService } from "merit/core/bwc.service";
 
 @IonicPage({
   defaultHistory: ['ProfileView']
@@ -17,12 +18,14 @@ export class CreateVaultDepositView {
 
   public formData = { amountToDeposit: 0.0, amountAvailable: 0.0 };
   public isNextAvailable = false;
+  private bitcore = null;
 
   constructor(
     private navCtl: NavController,
     private createVaultService: CreateVaultService,
     private profileService: ProfileService,
     private walletService: WalletService,
+    private bwcService: BwcService,
   ) {}
 
   checkNextAvailable() {
@@ -30,6 +33,8 @@ export class CreateVaultDepositView {
   }
 
   ionViewDidLoad() {
+    this.bitcore = this.bwcService.getBitcore();
+    
     let data = this.createVaultService.getData();
     this.formData.amountToDeposit = data.amountToDeposit;
     this.formData.amountAvailable = data.amountAvailable;
@@ -37,8 +42,9 @@ export class CreateVaultDepositView {
 
     this.updateAllWallets().then((wallets: Array<Wallet>) => {
       _.each(wallets, (w) => console.log(w));
-      const summ = this.computeBalances(wallets);
-      console.log(summ);
+      const computed = this.computeBalances(wallets);
+      const mrt = this.bitcore.Unit.fromMicros(computed).toMRT();
+      this.formData.amountAvailable = mrt;
     });
   }
 
@@ -59,7 +65,6 @@ export class CreateVaultDepositView {
 
   private computeBalances(wallets: Array<Wallet>) {
     return _.reduce(wallets, (acc: number, w: Wallet) => {
-      console.log(acc, w.status.balance.availableConfirmedAmount);
       return acc + w.status.balance.availableConfirmedAmount;
     }, 0);
   }
