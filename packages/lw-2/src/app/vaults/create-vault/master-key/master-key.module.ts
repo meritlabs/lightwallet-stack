@@ -5,6 +5,7 @@ import { CreateVaultMasterKeyView } from 'merit/vaults/create-vault/master-key/m
 
 import { ConfigService } from "merit/shared/config.service";
 import { PopupService } from "merit/core/popup.service";
+import { BwcService } from 'merit/core/bwc.service';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import { PopupService } from "merit/core/popup.service";
   providers: [
     ConfigService,
     PopupService,
+    BwcService,
   ],
   imports: [
     IonicPageModule.forChild(CreateVaultMasterKeyView),
