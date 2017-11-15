@@ -25,7 +25,7 @@ export class TxFormatService {
     console.log('Hello TxFormatService Service');
   }
 
-  formatAmount(satoshis: number, fullPrecision?: boolean) {
+  formatAmount(satoshis: number, fullPrecision?: boolean): any {
     let settings = this.config.get().wallet.settings;
 
     if (settings.unitCode == 'sat') return satoshis;
@@ -37,7 +37,7 @@ export class TxFormatService {
     return this.bwc.getUtils().formatAmount(satoshis, settings.unitCode, opts);
   }
 
-  formatAmountStr(satoshis: number) {
+  formatAmountStr(satoshis: number): any {
     if (isNaN(satoshis)) return;
     return this.formatAmount(satoshis) + ' MRT';
   }
@@ -92,25 +92,27 @@ export class TxFormatService {
         }
         tx.amount = _.reduce(tx.outputs, function (total: any, o: any) {
           o.amountStr = self.formatAmountStr(o.amount);
-          o.alternativeAmountStr = self.formatAlternativeStr(o.amount).value();
-          console.log("Fockers.");
-          console.log(o.alternativeAmountStr);
-          return total + o.amount;
+          self.formatAlternativeStr(o.amount).then((altStr) => {
+            o.alternativeAmountStr = altStr;
+            return total + o.amount;
+          })
         }, 0);
       }
       tx.toAddress = tx.outputs[0].toAddress;
     }
 
     tx.amountStr = self.formatAmountStr(tx.amount);
-    tx.alternativeAmountStr = self.formatAlternativeStr(tx.amount).value();
-    tx.feeStr = self.formatAmountStr(tx.fee || tx.fees);
-
-    if (tx.amountStr) {
-      tx.amountValueStr = tx.amountStr.split(' ')[0];
-      tx.amountUnitStr = tx.amountStr.split(' ')[1];
-    }
-
-    return tx;
+    self.formatAlternativeStr(tx.amount).then((altStr) => {
+      tx.alternativeAmountStr = altStr;
+      tx.feeStr = self.formatAmountStr(tx.fee || tx.fees);
+  
+      if (tx.amountStr) {
+        tx.amountValueStr = tx.amountStr.split(' ')[0];
+        tx.amountUnitStr = tx.amountStr.split(' ')[1];
+      }
+  
+      return tx;
+    });
   };
 
   formatPendingTxps(txps) {
