@@ -1564,7 +1564,7 @@ describe('client API', function() {
           should.not.exist(err);
           // utxos.length.should.equal(2);
           utxos.length.should.equal(3); // for singleAddress = true
-          _.sum(utxos, 'micros').should.equal(3 * 1e8); // for singleAddress = true
+          _.sumBy(utxos, 'micros').should.equal(3 * 1e8); // for singleAddress = true
           done();
         });
       });
@@ -2019,7 +2019,7 @@ describe('client API', function() {
         txp.status.should.equal('temporary');
         txp.message.should.equal('hello');
         txp.outputs.length.should.equal(2);
-        _.sum(txp.outputs, 'amount').should.equal(3e8);
+        _.sumBy(txp.outputs, 'amount').should.equal(3e8);
         txp.outputs[0].message.should.equal('world');
         _.uniq(txp.outputs, 'toAddress').length.should.equal(1);
         _.uniq(_.map(txp.outputs, 'toAddress'))[0].should.equal(toAddress);
