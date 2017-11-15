@@ -65,7 +65,7 @@ function checkRequired(obj, args, cb) {
   var missing = Utils.getMissingFields(obj, args);
   if (_.isEmpty(missing)) return true;
   if (_.isFunction(cb))
-    cb(new ClientError('Required argument ' + _.first(missing) + ' missing.'));
+    cb(new ClientError('Required argument ' + _.head(missing) + ' missing.'));
   return false;
 };
 
@@ -341,7 +341,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
     return cb(new ClientError('Invalid combination of required copayers / total copayers'));
 
   opts.network = opts.network || 'livenet';
-  if (!_.contains(['livenet', 'testnet'], opts.network))
+  if (!_.includes(['livenet', 'testnet'], opts.network))
     return cb(new ClientError('Invalid network'));
 
   opts.supportBIP44AndP2PKH = _.isBoolean(opts.supportBIP44AndP2PKH) ? opts.supportBIP44AndP2PKH : true;
@@ -517,7 +517,7 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
       var bc = self._getBlockchainExplorer(network);
       bc.getTransaction(opts.identifier, function(err, tx) {
         if (err || !tx) return nextNetwork(err, false);
-        var outputs = _.first(self._normalizeTxHistory(tx)).outputs;
+        var outputs = _.head(self._normalizeTxHistory(tx)).outputs;
         var toAddresses = _.map(outputs, 'address');
         async.detect(toAddresses, function(addressStr, nextAddress) {
           self.storage.fetchAddress(addressStr, function(err, address) {
@@ -964,7 +964,7 @@ WalletService.prototype.savePreferences = function(opts, cb) {
   }, {
     name: 'unit',
     isValid: function(value) {
-      return _.isString(value) && _.contains(['mrt', 'bit'], value.toLowerCase());
+      return _.isString(value) && _.includes(['mrt'], value.toLowerCase());
     },
   }];
 
@@ -1087,7 +1087,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
   function getFirstAddress(wallet, cb) {
     self.storage.fetchAddresses(self.walletId, function(err, addresses) {
       if (err) return cb(err);
-      if (!_.isEmpty(addresses)) return cb(null, _.first(addresses))
+      if (!_.isEmpty(addresses)) return cb(null, _.head(addresses))
       return createNewAddress(wallet, cb);
     });
   };
@@ -1223,7 +1223,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
 
         if (utxos.length == 0) return cb(null, []);
         allUtxos = utxos;
-        utxoIndex = _.indexBy(allUtxos, utxoKey);
+        utxoIndex = _.keyBy(allUtxos, utxoKey);
         return next();
       });
     },
@@ -1266,7 +1266,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
     function(next) {
       // Let's filter through and classify all outputs.  
       // We specifically want to know if they are change or belong to us.
-      var indexedAddresses = _.indexBy(allAddresses, 'address');
+      var indexedAddresses = _.keyBy(allAddresses, 'address');
       _.each(allUtxos, function(utxo){
         var address = indexedAddresses[utxo.address];
         utxo.isMine = !!address;
@@ -1276,7 +1276,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
     },
     function(next) {
       // Needed for the clients to sign UTXOs
-      var addressToPath = _.indexBy(allAddresses, 'address');
+      var addressToPath = _.keyBy(allAddresses, 'address');
       _.each(allUtxos, function(utxo) {
         utxo.path = addressToPath[utxo.address].path;
         utxo.publicKeys = addressToPath[utxo.address].publicKeys;
@@ -1337,7 +1337,7 @@ WalletService.prototype._getBalanceFromAddresses = function(addresses, cb) {
 
     // Compute balance by address
     var byAddress = {};
-    _.each(_.indexBy(_.sortBy(utxos, 'address'), 'address'), function(value, key) {
+    _.each(_.keyBy(_.sortBy(utxos, 'address'), 'address'), function(value, key) {
       byAddress[key] = {
         address: key,
         path: value.path,
@@ -1405,7 +1405,7 @@ WalletService.prototype._getActiveAddresses = function(cb) {
 
       var result = _.union(active, recent);
 
-      var index = _.indexBy(allAddresses, 'address');
+      var index = _.keyBy(allAddresses, 'address');
       result = _.compact(_.map(result, function(r) {
         return index[r];
       }));
@@ -1860,7 +1860,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
       selected = [];
       if (!_.isEmpty(bigInputs)) {
-        var input = _.first(bigInputs);
+        var input = _.head(bigInputs);
         log.debug('Using big input: ', Utils.formatUtxos(input));
         total = input.micros;
         fee = Math.round(baseTxpFee + feePerInput);
@@ -2154,7 +2154,7 @@ WalletService.prototype.createTx = function(opts, cb) {
       self.storage.fetchAddresses(self.walletId, function(err, addresses) {
         if (err) return cb(err);
         if (_.isEmpty(addresses)) return cb(new ClientError('The wallet has no addresses'));
-        return cb(null, _.first(addresses));
+        return cb(null, _.head(addresses));
       });
     } else {
       if (opts.changeAddress) {
@@ -2321,7 +2321,7 @@ WalletService.prototype.publishTx = function(opts, cb) {
           if (err) return cb(err);
 
           var txpInputs = _.map(txp.inputs, utxoKey);
-          var utxosIndex = _.indexBy(utxos, utxoKey);
+          var utxosIndex = _.keyBy(utxos, utxoKey);
           var unavailable = _.some(txpInputs, function(i) {
             var utxo = utxosIndex[i];
             return !utxo || utxo.locked;
@@ -2863,7 +2863,7 @@ WalletService._initBlockchainHeightCache = function() {
 
 WalletService._clearBlockchainHeightCache = function(network) {
   WalletService._initBlockchainHeightCache();
-  if (!_.contains(['livenet', 'testnet'], network)) {
+  if (!_.includes(['livenet', 'testnet'], network)) {
     log.error('Incorrect network in new block: ' + network);
     return;
   }
@@ -2916,9 +2916,9 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
     return cb(Errors.HISTORY_LIMIT_EXCEEDED);
 
   function decorate(wallet, txs, addresses, proposals, notes) {
-    var indexedAddresses = _.indexBy(addresses, 'address');
-    var indexedProposals = _.indexBy(proposals, 'txid');
-    var indexedNotes = _.indexBy(notes, 'txid');
+    var indexedAddresses = _.keyBy(addresses, 'address');
+    var indexedProposals = _.keyBy(proposals, 'txid');
+    var indexedNotes = _.keyBy(notes, 'txid');
 
     function sum(items, isMine, isChange) {
       var filter = {};
@@ -3352,7 +3352,7 @@ WalletService.prototype.getFiatRate = function(opts, cb) {
 
 WalletService.prototype.validateAddress = function(address, network, cb) {
   network = network || 'livenet';
-  if (!_.contains(['livenet', 'testnet'], network)) {
+  if (!_.includes(['livenet', 'testnet'], network)) {
     return cb(new ClientError('Invalid network'));
   }
 

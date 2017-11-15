@@ -13,7 +13,7 @@ AddressManager.create = function(opts) {
 
   x.version = 2;
   x.derivationStrategy = opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP45;
-  $.checkState(_.contains(_.values(Constants.DERIVATION_STRATEGIES), x.derivationStrategy));
+  $.checkState(_.includes(_.values(Constants.DERIVATION_STRATEGIES), x.derivationStrategy));
 
   x.receiveAddressIndex = 0;
   x.changeAddressIndex = 0;
