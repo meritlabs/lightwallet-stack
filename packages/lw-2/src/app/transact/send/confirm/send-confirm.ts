@@ -1,6 +1,6 @@
 import { ConfigService } from './../../../shared/config.service';
 import { Component } from '@angular/core';
-import { NavController, NavParams, IonicPage, ModalController } from 'ionic-angular';
+import { NavController, NavParams, IonicPage, ModalController, LoadingController } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { NotificationService } from 'merit/shared/notification.service';
@@ -65,7 +65,8 @@ export class SendConfirmView {
     private txFormatService: TxFormatService,
     private popupService: PopupService,
     private modalCtrl: ModalController,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private loadingCtrl: LoadingController
   ) { 
     console.log("Hello SendConfirm View");
   }
@@ -181,11 +182,18 @@ export class SendConfirmView {
   }
 
   public approve(): Promise<boolean> {
-    return this.approveTx(this.txData, this.wallet).then((worked) => {
-      return Promise.resolve(this.logger.log('The result of approveTx was: ' + worked));
-    }).catch((err) => {
-      this.logger.warn("Failed to approve transaction.");
-      this.logger.warn(err);
+    let loadingSpinner = this.loadingCtrl.create({
+      content: "Sending transaction...",
+      dismissOnPageChange: true    });
+    return loadingSpinner.present().then(() => {
+      this.approveTx(this.txData, this.wallet).then((worked) => {
+        loadingSpinner.dismiss();
+        this.navCtrl.push('WalletsView');
+        return Promise.resolve(worked);
+      }).catch((err) => {
+        this.logger.warn("Failed to approve transaction.");
+        this.logger.warn(err);
+      });
     });
   }
 
