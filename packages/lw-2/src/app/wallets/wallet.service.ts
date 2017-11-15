@@ -789,7 +789,9 @@ export class WalletService {
       if (txp.status != 'accepted')
         return reject('TX_NOT_ACCEPTED');
 
-      return Promise.resolve(wallet.broadcastTxProposal(txp));
+      return resolve(txp);
+    }).then((txp) => {
+      return wallet.broadcastTxProposal(txp);
     });
   }
 
@@ -1154,31 +1156,25 @@ export class WalletService {
   public publishAndSign(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
     return new Promise((resolve, reject) => {
       // Already published?
+      let walletPassword = '';
       if (txp.status == 'pending') {
         return this.prepare(wallet).then((password: string) => {
-          this.signAndBroadcast(wallet, txp, password, customStatusHandler).then((broadcastedTxp: any) => {
-            return resolve(broadcastedTxp);
-          }).catch((err) => {
-            return reject(err);
-          });
+          return this.signAndBroadcast(wallet, txp, password, customStatusHandler);
+        }).then((broadcastedTxp: any) => {
+          return resolve(broadcastedTxp);
         }).catch((err) => {
           return reject(this.bwcErrorService.msg(err));
         });
       } else {
         return this.prepare(wallet).then((password: string) => {
+          walletPassword = password;
           this.spinnerService.setSpinnerStatus('sendingTx', true, customStatusHandler);
-          return this.publishTx(wallet, txp).then((publishedTxp: any) => {
-            this.spinnerService.setSpinnerStatus('sendingTx', false, customStatusHandler);
-            return this.signAndBroadcast(wallet, publishedTxp, password, customStatusHandler).then((broadcastedTxp: any) => {
-              return resolve(broadcastedTxp);
-            }).catch((err) => {
-              return reject(err);
-            });
-          }).catch((err) => {
-            this.spinnerService.setSpinnerStatus('sendingTx', false, customStatusHandler);
-            return reject(this.bwcErrorService.msg(err));
-          });
+          return this.publishTx(wallet, txp);
+        }).then((publishedTxp: any) => {
+          this.spinnerService.setSpinnerStatus('sendingTx', false, customStatusHandler);
+          return this.signAndBroadcast(wallet, publishedTxp, walletPassword, customStatusHandler);
         }).catch((err) => {
+          this.spinnerService.setSpinnerStatus('sendingTx', false, customStatusHandler);
           return reject(this.bwcErrorService.msg(err));
         });
       };
