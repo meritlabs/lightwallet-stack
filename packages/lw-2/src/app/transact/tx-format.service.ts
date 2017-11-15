@@ -92,7 +92,9 @@ export class TxFormatService {
         }
         tx.amount = _.reduce(tx.outputs, function (total: any, o: any) {
           o.amountStr = self.formatAmountStr(o.amount);
-          o.alternativeAmountStr = self.formatAlternativeStr(o.amount);
+          o.alternativeAmountStr = self.formatAlternativeStr(o.amount).value();
+          console.log("Fockers.");
+          console.log(o.alternativeAmountStr);
           return total + o.amount;
         }, 0);
       }
@@ -100,7 +102,7 @@ export class TxFormatService {
     }
 
     tx.amountStr = self.formatAmountStr(tx.amount);
-    tx.alternativeAmountStr = self.formatAlternativeStr(tx.amount);
+    tx.alternativeAmountStr = self.formatAlternativeStr(tx.amount).value();
     tx.feeStr = self.formatAmountStr(tx.fee || tx.fees);
 
     if (tx.amountStr) {
