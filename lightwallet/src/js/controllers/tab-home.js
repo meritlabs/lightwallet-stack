@@ -81,38 +81,42 @@ angular.module('copayApp.controllers').controller('tabHomeController',
             easyReceiveRejectionHandler(receipt, input);
         });
     }
-    var getPasswordPendingEasyReceipt = function (receipt) {
+    var getPasswordPendingEasyReceipt = function (receipt, network) {
+      network = network || "testnet";
       popupService.showPrompt(
         "You've got Merit from " + receipt.senderName + " !",
         "Enter the Password",
         {ok:"I'll Take It", cancel: "Nah"},
         function(pass){
           if(pass) {
-            easyReceiveService.validateEasyReceiptOnBlockchain(receipt, pass, function(isValid, input) {
+            easyReceiveService.validateEasyReceiptOnBlockchain(receipt, pass, network,
+              function(isValid, input) {
               if(isValid) {
                 showGotMeritPrompt(input, receipt);
               } else {
-                getPasswordPendingEasyReceipt(receipt);
+                getPasswordPendingEasyReceipt(receipt, network);
               }
             });
           } else {
-            easyReceiveRejectionHandler(receipt, input);
+            easyReceiveRejectionHandler(receipt);
           }
         });
     }
 
     // Get the pending easyReceipt from memory; pass it to handler.
-    $scope.getPendingEasyReceipt = function () {
+    $scope.getPendingEasyReceipt = function (network) {
+      network = network || "testnet";
       easyReceiveService.getPendingEasyReceipt(function(err, receipt) {
         if (err || lodash.isEmpty(receipt)) {
           $log.debug("Unable to load pending easyReceipt.");
         } else {
           $log.debug("Loading easyReceipt into memory.", receipt);
-          easyReceiveService.validateEasyReceiptOnBlockchain(receipt, "", function(isValid, input) {
+          easyReceiveService.validateEasyReceiptOnBlockchain(receipt, "", network,
+            function(isValid, input) {
             if(isValid) {
               showGotMeritPrompt(input, receipt);
             } else {
-              getPasswordPendingEasyReceipt(receipt);
+              getPasswordPendingEasyReceipt(receipt, network);
             }
           });
         }

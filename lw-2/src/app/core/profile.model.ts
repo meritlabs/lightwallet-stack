@@ -12,6 +12,7 @@ export class Profile {
 
   constructor() {
     this.version = '1.0.0';
+    this.credentials = [];
   }
 
   public create(opts?: any): any {

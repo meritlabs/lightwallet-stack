@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
+import { Promise } from 'bluebird';
+
 import * as _ from 'lodash';
 
 @Injectable()
@@ -78,10 +80,7 @@ export class RateService {
       .catch((error) => console.log("Error", error));
   }
 
-  getRate(code, chain) {
-    if (chain == 'bch')
-      return this._ratesBCH[code];
-    else
+  getRate(code) {
       return this._rates[code];
   };
   
@@ -89,12 +88,12 @@ export class RateService {
     return this._alternatives;
   };
   
-  toFiat(satoshis, code, chain) {
-    return satoshis * this.SAT_TO_BTC * this.getRate(code, chain);
+  toFiat(satoshis, code) {
+    return satoshis * this.SAT_TO_BTC * this.getRate(code);
   };
 
-  fromFiat(amount, code, chain) {
-    return amount / this.getRate(code, chain) * this.BTC_TO_SAT;
+  fromFiat(amount, code) {
+    return amount / this.getRate(code) * this.BTC_TO_SAT;
   };
 
   listAlternatives(sort: boolean) {

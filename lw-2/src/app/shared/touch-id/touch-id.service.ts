@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { PlatformService } from 'merit/core/platform.service';
 import { ConfigService } from 'merit/shared/config.service';
+import { Promise } from 'bluebird';
+
 
 import { TouchID } from '@ionic-native/touch-id';
 import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';

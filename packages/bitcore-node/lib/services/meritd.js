@@ -192,7 +192,7 @@ Merit.prototype.getAPIMethods = function() {
 
     // Merit Specific RPC
     ['generatereferralcode',  this, this.generateReferralCode, 0],
-    ['unlockwallet',          this, this.unlockWallet,         2],
+    ['unlockWallet',          this, this.unlockWallet,         2],
     ['validatereferralcode',  this, this.validateReferralCode, 1],
     ['getInputForEasySend', this, this.getInputForEasySend, 1],
     ['getanv',                this, this.getANV, 1],
@@ -1194,7 +1194,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       txid: delta.txid,
       outputIndex: delta.index,
       script: script.toHex(),
-      micros: delta.micros,
+      satoshis: delta.satoshis,
       isCoinbase: delta.isCoinbase,
       timestamp: delta.timestamp
     };
@@ -1211,7 +1211,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
 
     for (var i = 0; i < mempoolDeltas.length; i++) {
       var delta = mempoolDeltas[i];
-      if (delta.prevtxid && delta.micros <= 0) {
+      if (delta.prevtxid && delta.satoshis <= 0) {
         if (!spentOutputs[delta.prevtxid]) {
           spentOutputs[delta.prevtxid] = [delta.prevout];
         } else {
@@ -2241,7 +2241,7 @@ Merit.prototype.unlockWallet = function(code, address, callback) {
   var self = this;
 
   if ((typeof code === 'string' || code instanceof String) && (typeof address === 'string' || address instanceof String)) {
-    self.client.unlockwalletwithaddress(address, code, function(err, response) {
+    self.client.unlockWalletWithAddress(address, code, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {

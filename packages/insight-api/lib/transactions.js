@@ -97,8 +97,6 @@ TxController.prototype.transformTransaction = function(transaction, options, cal
   transformed.valueIn = transaction.inputMicros / 1e8;
   transformed.fees = transaction.feeMicros / 1e8;
 
-  console.log("Transformed TXN: ");
-  console.log(transformed);
   callback(null, transformed);
 };
 

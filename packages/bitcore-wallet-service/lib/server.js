@@ -372,7 +372,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
         unlockCode: opts.beacon, 
         address: unlockAddress
       }
-      self._unlockAddress(unlockParams, function(err, result){
+      self.unlockAddress(unlockParams, function(err, result){
         if (err) {
           return acb(err);
         }
@@ -547,7 +547,7 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
  * @param {String} opts.network The relevant network to execute this command (livenet/testnet)
  */
 
-WalletService.prototype._unlockAddress = function (opts, cb) {
+WalletService.prototype.unlockAddress = function (opts, cb) {
   var self = this;
   opts = opts || {};
 
@@ -558,23 +558,21 @@ WalletService.prototype._unlockAddress = function (opts, cb) {
   if (!opts.address) {
     cb(new ClientError('No unlock address provided.'));
   }
-
-  var network = opts.network || 'testnet';  // TODO: Support livenet formally.
-  var bc = self._getBlockchainExplorer(network);
-  var unlocked = false;
   
-  bc.unlockWallet(opts.unlockCode, opts.address.toString(), function(errMsg, result) {
+  var unlocked = false;
+  localMeritDaemon.unlockWallet(opts.unlockCode, opts.address.toString(), function(errMsg, result) {
 
     if (errMsg)  {
       // TODO: Use Error codes instead of string matching.
       // TODO: Even sooner, we should have more descriptive error states coming back
       // from the blockchain explorer.
-      console.log("Got an error in unlock: " + errMsg);
-      if (errMsg == "Error querying the blockchain") {
-        return cb(Errors.UNLOCK_STILL_PENDING);
-      } else {
+      log.warn("Got an error in unlock: " + errMsg);
+      if ('provided code does not exist in the chain'.indexOf(errMsg)) {
         return cb(Errors.UNLOCK_CODE_INVALID);
-      }
+      } 
+      if ('unlockwalletwithaddress: Address is already beaconed.'.indexOf(errMsg)) {
+        return cb(Errors.UNLOCKED_ALREADY);
+      } 
     }
 
     unlocked = true;
@@ -1067,7 +1065,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
       unlockCode: wallet.shareCode,
       address: address.address
     }
-    self._unlockAddress(unlockParams, function(err, result){
+    self.unlockAddress(unlockParams, function(err, result){
       if (err) return cb(err);
       
       self.storage.storeAddressAndWallet(wallet, address, function(err) {
@@ -1180,7 +1178,7 @@ WalletService.prototype._getUtxos = function(addresses, cb) {
     if (err) return cb(err);
 
     var utxos = _.map(utxos, function(utxo) {
-      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations', 'isCoinbase', 'isMature']);
+      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations', 'isCoinbase', 'isMature', 'isMine', 'isChange']);
       u.confirmations = u.confirmations || 0;
       u.locked = false;
       u.micros = _.isNumber(u.micros) ? +u.micros : Utils.strip(u.amount * 1e8);
@@ -1263,6 +1261,17 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
       });
     },
     function(next) {
+      // Let's filter through and classify all outputs.  
+      // We specifically want to know if they are change or belong to us.
+      var indexedAddresses = _.indexBy(allAddresses, 'address');
+      _.each(allUtxos, function(utxo){
+        var address = indexedAddresses[utxo.address];
+        utxo.isMine = !!address;
+        utxo.isChange = address ? address.isChange : false;
+      });
+      return next();
+    },
+    function(next) {
       // Needed for the clients to sign UTXOs
       var addressToPath = _.indexBy(allAddresses, 'address');
       _.each(allUtxos, function(utxo) {
@@ -1298,9 +1307,12 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
   var balance = {
     totalAmount: _.sum(utxos, 'micros'),
     lockedAmount: _.sum(_.filter(utxos, 'locked'), 'micros'),
+    // We believe it makes sense to show change as confirmed.  This is sensical because a transaction
+    // will either be rejected or accepted in its entirety.  (Eg. It is not that some Vouts will be 
+    // accepted while others will be denied.)
     totalConfirmedAmount: _.sum(
       _.filter(utxos, function(utxo) {
-        return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0));
+        return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) || (utxo.isMine && utxo.isChange && utxo.micros >= 0));
       }),
     'micros'),
     lockedConfirmedAmount: _.sum(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
@@ -1316,7 +1328,7 @@ WalletService.prototype._getBalanceFromAddresses = function(addresses, cb) {
   var self = this;
 
   self._getUtxosForCurrentWallet(addresses, function(err, utxos) {
-    if (err) return cb(err);
+        if (err) return cb(err);
 
     var balance = self._totalizeUtxos(utxos);
 
@@ -1990,16 +2002,17 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
     var output = opts.outputs[i];
     output.valid = false;
 
-    if (!checkRequired(output, ['toAddress', 'amount'])) {
-      return new ClientError('Argument missing in output #' + (i + 1) + '.');
-    }
-
     var toAddress = {};
     try {
-      toAddress = new Bitcore.Address(output.toAddress);
+      if (checkRequired(output, ['toAddress', 'amount'])) {
+        toAddress = new Bitcore.Address(output.toAddress);
+      } else {
+        return new ClientError('Argument missing in output #' + (i + 1) + '.');
+      }
     } catch (ex) {
-      return Errors.INVALID_ADDRESS;
+      return new ClientError('exception checking address: ' + ex);
     }
+
     if (toAddress.network != wallet.getNetworkName()) {
       return Errors.INCORRECT_ADDRESS_NETWORK;
     }
@@ -2013,6 +2026,7 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
 
     output.valid = true;
   }
+
   return null;
 };
 
@@ -2188,8 +2202,10 @@ WalletService.prototype.createTx = function(opts, cb) {
                 unlockCode: wallet.shareCode,
                 address: changeAddress.address
               }
-              self._unlockAddress(unlockParams, function(err, result){
-                if (err) return next(err);
+              self.unlockAddress(unlockParams, function(err, result){
+                // If the change address is unlocked already, we can continue with 
+                // the creation of the TXN.
+                if (err && !(err == Errors.UNLOCKED_ALREADY)) return next(err);
               });
               next();
             });
@@ -2212,6 +2228,7 @@ WalletService.prototype.createTx = function(opts, cb) {
               feeLevel: opts.feeLevel,
               feePerKb: feePerKb,
               payProUrl: opts.payProUrl,
+              network: wallet.getNetworkName(),
               walletM: wallet.m,
               walletN: wallet.n,
               excludeUnconfirmedUtxos: !!opts.excludeUnconfirmedUtxos,
@@ -2246,6 +2263,7 @@ WalletService.prototype.createTx = function(opts, cb) {
     });
   });
 };
+
 WalletService.prototype._verifyRequestPubKey = function(requestPubKey, signature, xPubKey) {
   var pub = (new Bitcore.HDPublicKey(xPubKey)).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
   return Utils.verifyMessage(requestPubKey, signature, pub.toString());

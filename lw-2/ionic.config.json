@@ -1,6 +1,6 @@
 {
-  "name": "lw-2",
-  "app_id": "",
+  "name": "Merit Lightwallet",
+  "app_id": "me.merit.LightWallet",
   "type": "ionic-angular",
   "integrations": {}
 }

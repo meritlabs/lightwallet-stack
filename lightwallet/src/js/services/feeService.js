@@ -37,7 +37,7 @@ angular.module('copayApp.services').factory('feeService', function($log, $timeou
         level: feeLevel
       });
 
-      if (!feeLevelRate || !feeLevelRate.feePerKB) {
+      if (!feeLevelRate || !feeLevelRate.feePerKb) {
         return cb({
           message: gettextCatalog.getString("Could not get dynamic fee for level: {{feeLevel}} on network {{network}}", {
             feeLevel: feeLevel,
@@ -48,7 +48,7 @@ angular.module('copayApp.services').factory('feeService', function($log, $timeou
 
       var feeRate = feeLevelRate.feePerKB;
 
-      if (!fromCache) $log.debug('Dynamic fee: ' + feeLevel + '/' + network + ' ' + (feeLevelRate.feePerKB / 1000).toFixed() + ' Micros/B');
+      if (!fromCache) $log.debug('Dynamic fee: ' + feeLevel + '/' + network + ' ' + (feeLevelRate.feePerKb / 1000).toFixed() + ' Micros/B');
 
       return cb(null, feeRate);
     });

@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, App, LoadingController, ToastController } from 'ionic-angular';
 import { WalletService } from 'merit/wallets/wallet.service';
-import {ToastConfig} from "merit/core/toast.config";
+import { ToastConfig } from "merit/core/toast.config";
+import { Promise } from 'bluebird';
+
 
 // Unlock view for wallet
 @IonicPage({
@@ -45,14 +47,16 @@ export class UnlockView {
           /** todo store wallet */
 
           this.app.getRootNav().setRoot('TransactView');
+          resolve(wallet);
         }).catch((err) => {
           loader.dismiss();
           this.unlockState = 'fail';
           this.toastCtrl.create({ message: err, cssClass: ToastConfig.CLASS_ERROR }).present();
+          reject(err);
         });
       }
-
     });
+    
   }
 
 }

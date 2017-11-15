@@ -91,7 +91,7 @@ angular.module('copayApp.services')
      * One to search the blockchain for the script. 
      * The other to actually unlock it. 
      */
-    service.validateEasyReceiptOnBlockchain = function (receipt, optionalPassword, cb) {
+    service.validateEasyReceiptOnBlockchain = function (receipt, optionalPassword, network, cb) {
       // Check if the easyScript is on the blockchain.
 
       // Get the bwsUrl from the configService.  
@@ -100,8 +100,8 @@ angular.module('copayApp.services')
       var walletClient = bwcService.getClient(null, opts);
       receipt.onBlockChain = false;
 
-      var scriptData = service._generateEasyScript(receipt, optionalPassword);
-      var scriptId= bitcore.Address.payingTo(scriptData.script, 'testnet'); 
+      var scriptData = service._generateEasyScript(receipt, optionalPassword, network);
+      var scriptId = bitcore.Address.payingTo(scriptData.script, network);
 
       walletClient.validateEasyScript(scriptId, function(err, txn){
         if (err || txn.result.found == false) {
@@ -164,7 +164,7 @@ angular.module('copayApp.services')
 
 
 
-    service._generateEasyScript = function (receipt, optionalPassword) {
+    service._generateEasyScript = function (receipt, optionalPassword, network) {
       var secret = ledger.hexToString(receipt.secret);
       var receivePrv = bitcore.PrivateKey.forEasySend(secret, optionalPassword);
       var receivePub = bitcore.PublicKey.fromPrivateKey(receivePrv).toBuffer();
@@ -175,10 +175,12 @@ angular.module('copayApp.services')
         senderPubKey
       ];
 
+      var script = bitcore.Script.buildEasySendOut(publicKeys, receipt.blockTimeout, network);
+
       return {
         privateKey: receivePrv,
         publicKey: receivePub,
-        script: bitcore.Script.buildEasySendOut(publicKeys, receipt.blockTimeout)
+        script: script
       };
     }
 

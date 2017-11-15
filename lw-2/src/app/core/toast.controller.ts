@@ -4,7 +4,10 @@ import {ToastController as IonicToastController, Toast, ToastOptions} from "ioni
 import {ToastConfig} from "./toast.config";
 
 @Injectable()
-export class ToastController extends IonicToastController {
+export class MeritToastController {
+
+  constructor(private toastCtrl:IonicToastController) {
+  }
 
   create(opts?: ToastOptions): Toast {
 
@@ -13,7 +16,7 @@ export class ToastController extends IonicToastController {
     if (!opts.duration) opts.duration  =  ToastConfig.DURATION;
     if (!opts.cssClass) opts.cssClass  =  ToastConfig.CLASS_MESSAGE;
 
-    return super.create(opts);
+    return this.toastCtrl.create(opts);
   }
 
 }

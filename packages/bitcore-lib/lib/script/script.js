@@ -44,6 +44,11 @@ var Script = function Script(from) {
 
 Script.prototype.set = function(obj) {
   this.chunks = obj.chunks || this.chunks;
+  this._isInput = obj.isInput;
+  this._isOutput = obj.isOutput;
+  
+  this._network = obj._network || obj.network || Networks.defaultNetwork;
+
   return this;
 };
 
@@ -803,7 +808,7 @@ Script.buildP2SHMultisigIn = function(pubkeys, threshold, signatures, opts) {
  * @param {number} blockTimeout - amount of blocks the transaction can be buried under 
  *                                until it isn't redeemable anymore.
  */
-Script.buildEasySendOut = function(publicKeys, blockTimeout) {
+Script.buildEasySendOut = function(publicKeys, blockTimeout, network) {
   $.checkArgument(publicKeys.length >= 2,
     'Number of required public keys must be two or more');
 
@@ -811,6 +816,7 @@ Script.buildEasySendOut = function(publicKeys, blockTimeout) {
 
   var script = new Script();
   script.chunks = [];
+  script._network = network;
 
   var blockTimeoutBN = BN.fromNumber(blockTimeout);
   script.add(blockTimeoutBN.toScriptNumBuffer());
@@ -1008,6 +1014,7 @@ Script.prototype._getOutputAddressInfo = function() {
   var info = {};
   if (this.isScriptHashOut()) {
     info.hashBuffer = this.getData();
+    info.network = this._network || Networks.defaultNetwork;
     info.type = Address.PayToScriptHash;
   } else if (this.isPublicKeyHashOut()) {
     info.hashBuffer = this.getData();

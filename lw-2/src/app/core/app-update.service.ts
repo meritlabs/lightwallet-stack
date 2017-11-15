@@ -15,7 +15,7 @@ export class AppUpdateService {
   //TODO It's a mock now!!
   public isUpdateAvailable():Promise<boolean> {
     return new Promise((rs, rj) => {
-      rs(true);
+      rs(false);
     })
   }
 

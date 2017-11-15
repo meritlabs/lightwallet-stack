@@ -249,7 +249,6 @@ InsightAPI.prototype.setupRoutes = function(app) {
   // Wallet
   var wallet = new WalletController(this.node);
 
-  app.post('/wallet/unlock', wallet.unlock.bind(wallet));
   app.get('/anv', wallet.getANV.bind(wallet));
   app.get('/rewards', wallet.getRewards.bind(wallet));
 

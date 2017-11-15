@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpModule, Http } from '@angular/http';
 
@@ -22,14 +22,14 @@ import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { TouchID } from '@ionic-native/touch-id';
 import { PopupService } from 'merit/core/popup.service';
 import { SpinnerService } from 'merit/core/spinner.service';
+import { TransactView } from 'merit/transact/transact';
+import { OnboardingView } from 'merit/onboard/onboarding.view';
 
 import { MomentModule } from 'angular2-moment';
 
-
 import { ConfigService } from 'merit/shared/config.service';
-import {ConfigServiceMock} from "merit/shared/config.service.mock";
-import {ProfileServiceMock} from "./profile.service.mock";
-import {TxFormatServiceMock} from "../transact/tx-format.sevice.mock";
+import {MeritToastController} from "merit/core/toast.controller";
+
 
 /* 
   The core module exists to make commonly used singleton services available 
@@ -41,11 +41,12 @@ import {TxFormatServiceMock} from "../transact/tx-format.sevice.mock";
 export function createTranslateLoader(http: Http) {
     return new TranslatePoHttpLoader(http, 'assets/i18n', '.po');
   }
-
+ 
+  // Ideally, we can remove the transaction dependency.
 @NgModule({
     imports: [
         CommonModule,
-        TransactModule, // Ideally, we can remove this dependency.
+        TransactModule,
         HttpModule,
         TranslateModule.forRoot({
             loader: {
@@ -56,7 +57,8 @@ export function createTranslateLoader(http: Http) {
           })        
     ],
     exports: [],
-    declarations: [],
+    declarations: [
+    ],
     providers: [
         Logger,
         StatusBar,
@@ -70,31 +72,25 @@ export function createTranslateLoader(http: Http) {
             multi: false
         },
         PlatformService,
-        {
-          provide: ProfileService,
-          useClass: ProfileServiceMock
-        },
-        //{
-        //  provide: LanguageService,
-        //    deps: [TranslateService],
-        //    multi: false
-        //},
-        {
-          provide: TxFormatService,
-          useClass: TxFormatServiceMock
-        },
+        ProfileService,
+        LanguageService,
+        TxFormatService,
         AppService,
+        ConfigService,
         {
-          provide: ConfigService,
-          useClass: ConfigServiceMock
-         },
-        //{
-        //    provide: TouchIdService,
-        //    deps: [TouchID],
-        //    multi: false
-        //},
-        //PopupService,
-        //SpinnerService
+            provide: APP_INITIALIZER,
+            useFactory: (app: AppService) => () => app.load(),
+            deps: [AppService, LanguageService],
+            multi: true
+        },
+        PopupService,
+        SpinnerService,
+      {
+          provide: TouchIdService,
+          deps: [TouchID],
+          multi: false
+      },
+      MeritToastController
     ]
 })
 

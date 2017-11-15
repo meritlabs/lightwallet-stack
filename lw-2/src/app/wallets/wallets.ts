@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, ToastController, AlertController, Events} from 'ionic-angular';
 import { Wallet } from "./wallet.model";
-import { ProfileService } from "./../core/profile.service";
+
+import * as _ from "lodash";
+import { Promise } from 'bluebird';
+import { ProfileService } from "merit/core/profile.service";
 import { FeedbackService } from "merit/feedback/feedback.service"
 import { Feedback } from "merit/feedback/feedback.model"
 import { AppUpdateService } from "merit/core/app-update.service";
@@ -12,12 +15,17 @@ import {ConfigService} from "merit/shared/config.service";
 
 import {EasyReceiveService} from "merit/easy-receive/easy-receive.service";
 import {Logger} from "merit/core/logger";
-import {WalletService} from "./wallet.service";
+import { WalletService } from "merit/wallets/wallet.service";
 import {EasyReceipt} from "merit/easy-receive/easy-receipt.model";
 import {TxFormatService} from "merit/transact/tx-format.service";
 import {AddressbookService} from "merit/addressbook/addressbook.service";
 
 
+/* 
+  Using bluebird promises! 
+  This gives us the ability to map over items and 
+  engage in async requests.
+*/ 
 @IonicPage()
 @Component({
   selector: 'view-wallets',
@@ -60,20 +68,16 @@ export class WalletsView {
   ) {
   }
 
-  //doRefresh(refresher) {
-  //  refresher.complete();
-  //}
-
-
-  private getWallets():Promise<Array<Wallet>> {
+  private async getWallets():Promise<Array<Wallet>> {
     if (!this.wallets) {
-      this.wallets = this.profileService.getWallets();
+      this.wallets = await this.updateAllWallets();
     }
 
     return this.wallets;
   }
 
-  ionViewDidLoad() {
+  public async ionViewDidLoad() {
+
 
     this.registerListeners();
 
@@ -83,12 +87,12 @@ export class WalletsView {
 
     this.processEasyReceive();
 
-    this.newReleaseExists = this.appUpdateService.isUpdateAvailable();
-    this.feedbackNeeded   = this.feedbackService.isFeedBackNeeded();
+    this.newReleaseExists = await this.appUpdateService.isUpdateAvailable();
+    this.feedbackNeeded   = await this.feedbackService.isFeedBackNeeded();
 
-    this.addressbook = this.addressbookService.list();
+    this.addressbook = await this.addressbookService.list();
 
-    this.txpsData = this.profileService.getTxps({limit: 3});
+    this.txpsData = await this.profileService.getTxps({limit: 3});
     if (this.configService.get().recentTransactions.enabled) {
       this.recentTransactionsEnabled = true;
       this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
@@ -138,8 +142,10 @@ export class WalletsView {
    */
   private processEasyReceive() {
     this.easyReceiveService.getPendingReceipt().then((receipt) => {
-      let checkPass = receipt.checkPassword;
-      this.showEasyReceiveModal(receipt, checkPass);
+      if (receipt) {
+        let checkPass = receipt.checkPassword;
+        this.showEasyReceiveModal(receipt, checkPass);
+      }
     });
   }
 
@@ -220,7 +226,7 @@ export class WalletsView {
     if (!wallet.isComplete) {
       this.navCtrl.push('CopayersView')
     } else {
-      this.navCtrl.push('WalletView', {walletId: wallet.id, wallet: wallet});
+      this.navCtrl.push('WalletDetailsView', {walletId: wallet.id, wallet: wallet});
     }
   }
 
@@ -252,6 +258,15 @@ export class WalletsView {
 
   toImportWallet() {
     this.navCtrl.push('ImportView');
+  }
+
+  private async updateAllWallets() {
+    let wallets = await this.profileService.getWallets();
+    return await Promise.all(_.map(wallets, async (wallet) => {
+      wallet.status = await this.walletService.getStatus(wallet);
+      return wallet;
+    }));
+
   }
 
   openTransactionDetails(transaction) {
