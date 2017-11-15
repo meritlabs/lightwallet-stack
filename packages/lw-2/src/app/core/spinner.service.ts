@@ -75,7 +75,7 @@ export class SpinnerService {
 
   // Decide if we want them to automatically dismiss after sometime. 
   private renderSpinner(): void {
-    let loadingMessage = this.loadingMessages[_.first(this.currentlyRunning)] || "Loading...";
+    let loadingMessage = this.loadingMessages[_.head(this.currentlyRunning)] || "Loading...";
     const loading = this.loadingCtrl.create({
       content: loadingMessage
     });
