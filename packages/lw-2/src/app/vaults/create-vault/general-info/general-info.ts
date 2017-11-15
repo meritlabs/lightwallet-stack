@@ -38,8 +38,7 @@ export class CreateVaultGeneralInfoView {
     // fetch users wallets
     this.updateAllWallets().then((wallets) => {
       const walletDTOs = _.map(wallets, (w) => {
-        console.log(w);
-        return { 'id': w.id, 'name': w.name, 'pubKey': w.xPubKey };
+        return { 'id': w.id, 'name': w.name, 'pubKey': w.credentials.xPubKey };
       });
       this.whitelistCandidates = this.whitelistCandidates.concat(walletDTOs);
     });
