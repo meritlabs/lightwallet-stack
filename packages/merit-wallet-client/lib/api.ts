@@ -84,6 +84,7 @@ export interface IAPI {
   getMnemonic(): any;
   mnemonicHasPassphrase(): any;
   clearMnemonic(): any;
+  getNewMnemonic(data: any): any;
   seedFromExtendedPrivateKey(xPrivKey: any, opts: any): void;
   seedFromMnemonic(words: Array<string>, opts: any): any;
   seedFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any): any;
@@ -551,6 +552,9 @@ export class API extends EventEmitter implements IAPI {
     return this.credentials.clearMnemonic();
   };
 
+  getNewMnemonic(data: any): any {
+    return new Mnemonic(data);
+  }
 
   /**
    * Seed from extended private key

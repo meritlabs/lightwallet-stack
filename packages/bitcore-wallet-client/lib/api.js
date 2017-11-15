@@ -812,7 +812,7 @@ API.prototype.buildEasySendRedeemTransaction = function(input, destinationAddres
   return tx;
 };
 
-API.prototype.createVault = function(type, opts) {
+API.prototype.prepareVault = function(type, opts) {
   if(type == 0) {
     let tag = opts.masterPubKey.toAddress().hashBuffer;
 
