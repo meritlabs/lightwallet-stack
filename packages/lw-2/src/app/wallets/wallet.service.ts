@@ -9,7 +9,6 @@ import { BwcError } from 'merit/core/bwc-error.model';
 import { RateService } from 'merit/transact/rate.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { PopupService } from 'merit/core/popup.service';
-import { SpinnerService } from 'merit/core/spinner.service';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
@@ -60,7 +59,6 @@ export class WalletService {
     private bwcErrorService: BwcError,
     private rateService: RateService,
     private popupService: PopupService,
-    private spinnerService: SpinnerService,
     private touchidService: TouchIdService,
     private languageService: LanguageService, 
     private mnemonicService: MnemonicService
@@ -867,10 +865,8 @@ export class WalletService {
   public recreate(wallet: MeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
       this.logger.debug('Recreating wallet:', wallet.id);
-      this.spinnerService.setSpinnerStatus('recreating', true);
       wallet.recreateWallet((err: any) => {
         wallet.notAuthorized = false;
-        this.spinnerService.setSpinnerStatus('recreating', false);
         if (err) return reject(err);
         return resolve();
       });
@@ -1084,10 +1080,8 @@ export class WalletService {
 
   public reject(wallet: MeritWalletClient, txp: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.spinnerService.setSpinnerStatus('rejectTx', true);
       return this.rejectTx(wallet, txp).then((txpr: any) => {
         this.invalidateCache(wallet);
-        this.spinnerService.setSpinnerStatus('rejectTx', false);
         //$rootScope.$emit('Local/TxAction', wallet.id);
         return resolve(txpr);
       }).catch((err) => {
@@ -1098,10 +1092,8 @@ export class WalletService {
 
   public onlyPublish(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.spinnerService.setSpinnerStatus('sendingTx', true, customStatusHandler);
       return this.publishTx(wallet, txp).then((publishedTxp) => {
         this.invalidateCache(wallet);
-        this.spinnerService.setSpinnerStatus('sendingTx', false, customStatusHandler);
         //$rootScope.$emit('Local/TxAction', wallet.id);
         return resolve();
       }).catch((err) => {
