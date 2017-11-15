@@ -885,7 +885,8 @@ Script.buildSimpleVaultScript = function(tag) {
   $.checkArgument(tag, 'Tag must be present');
 
   var s = new Script();
-  var tagBytes = BN.fromString(tag);
+  console.log('before tag b', tag);
+  // var tagBytes = BN.fromString(tag);
 
   s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] <tag>| 
    .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] | 
@@ -912,7 +913,7 @@ Script.buildSimpleVaultScript = function(tag) {
    .add(             5                       )// <spend key> <renew key> [addresses] <num addresss> 4 |
    .add(Opcode.      OP_ADD                  )// <spend key> <renew key> [addresses] <total args> |
    .add(Opcode.      OP_TOALTSTACK           )// <spend key> <renew key> [addresses] | <total args>
-   .add(Opcode.      tagBytes                )// <spend key> <renew key> [addresses] <tag> | 
+   .add(             tag                     )// <spend key> <renew key> [addresses] <tag> | 
    .add(             0                       )// <spend key> <renew key> [addresses] <tag> <vault type> |
    .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> | 
    .add(             1                       )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> |
@@ -942,7 +943,7 @@ Script.buildSimpleVaultScript = function(tag) {
 
 Script.buildParameterizedP2SH = function(script, params) {
   let s = new Script();
-  let destBytes = BN.fromString(dest);
+
   s.add(Opcode.OP_HASH160)
    .add(script instanceof Address ? script.hashBuffer : Hash.sha256ripemd160(script.toBuffer()))
    .add(Opcode.OP_EQUALVERIFY);
