@@ -48,9 +48,9 @@ export class SendConfirmView {
   private wallet: Wallet;
   private wallets: Array<Wallet>;
   private walletSettings: any;
-  private unitToMicro: number;
+  private unitToSatoshi: number;
   private unitDecimals: number;
-  private microToUnit: number;
+  private satoshiToUnit: number;
   private configFeeLevel: string;
   private showAddress: Boolean = true;
 
@@ -77,16 +77,16 @@ export class SendConfirmView {
     let toAmount = this.navParams.get('toAmount');
     this.walletSettings = this.configService.get().wallet.settings;
     this.wallet = this.navParams.get('wallet');
-    this.unitToMicro = this.walletSettings.unitToMicro;
+    this.unitToSatoshi = this.walletSettings.unitToSatoshi;
     this.unitDecimals = this.walletSettings.unitDecimals;
-    this.microToUnit = 1 / this.unitToMicro;
+    this.satoshiToUnit = 1 / this.unitToSatoshi;
     this.configFeeLevel = this.walletSettings.feeLevel ? this.walletSettings.feeLevel : 'normal';
 
     this.txData = {
       toAddress:  this.navParams.get('toAddress'),
       txp: {},
       toName: this.navParams.get('toAddress') || '',
-      toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
+      toAmount: toAmount * this.unitToSatoshi, // TODO: get the right number from amount page
       allowSpendUnconfirmed: this.walletSettings.spendUnconfirmed
     }
 
@@ -321,7 +321,7 @@ export class SendConfirmView {
 
     if (this.txData.usingCustomFee) {
       scope.customFeePerKB = tx.feeRate;
-      scope.feePerMicrosByte = tx.feeRate / 1000;
+      scope.feePerSatoshisByte = tx.feeRate / 1000;
     }
 
     let feeLevelModel = this.modalCtrl.create(FeeLevelModal, scope, {

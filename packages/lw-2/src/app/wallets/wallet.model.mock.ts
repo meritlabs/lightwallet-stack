@@ -3,7 +3,7 @@ export class WalletMock extends Wallet {
 
   id:string = '1';
   name:string =  'Wallet Mock';
-  status:Object = {totalBalanceStr: '0 bits', totalBalanceAlternative: '0.0', alternativeIsoCode: 'USD', totalBalanceMicros: 0, spendableAmount: 0};
+  status:Object = {totalBalanceStr: '0 bits', totalBalanceAlternative: '0.0', alternativeIsoCode: 'USD', totalBalanceSatoshis: 0, spendableAmount: 0};
   balanceHidden:boolean =  false;
   color:string=  'darkred';
   locked:boolean = false;
