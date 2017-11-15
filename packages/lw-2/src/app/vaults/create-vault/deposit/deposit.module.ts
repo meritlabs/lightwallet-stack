@@ -3,14 +3,18 @@ import { IonicPageModule } from 'ionic-angular';
 
 import { CreateVaultDepositView } from 'merit/vaults/create-vault/deposit/deposit';
 
-import { ConfigService } from "merit/shared/config.service";
+import { WalletService } from "merit/wallets/wallet.service";
+import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
+import { BwcService } from "merit/core/bwc.service";
 
 @NgModule({
   declarations: [
     CreateVaultDepositView,
   ],
   providers: [
-    ConfigService,
+    WalletService,
+    MnemonicService,
+    BwcService,
   ],
   imports: [
     IonicPageModule.forChild(CreateVaultDepositView),
