@@ -741,6 +741,9 @@ export class WalletService {
 
       this.logger.debug('Updating Transaction History');
       return this.updateLocalTxHistory(wallet, opts).then((txs: any) => {
+        this.logger.debug('updateLocalTxHistory returns: ');
+        this.logger.debug(txs);
+        
         if (opts.limitTx) {
           return resolve(txs);
         };

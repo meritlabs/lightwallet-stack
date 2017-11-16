@@ -1,10 +1,10 @@
 'use strict';
 
 import * as _ from 'lodash';
-import * as sjcl from 'sjcl';
-import * as Stringify from 'json-stable-stringify';
 
 const $ = require('preconditions').singleton();
+let sjcl = require('sjcl');
+let Stringify = require('json-stable-stringify');
 let Bitcore = require('bitcore-lib');
 let Address = Bitcore.Address;
 let PrivateKey = Bitcore.PrivateKey;
