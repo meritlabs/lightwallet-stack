@@ -1,15 +1,18 @@
 import { Component } from "@angular/core";
-import { NavParams } from 'ionic-angular';
+import { IonicPage, NavParams } from 'ionic-angular';
 import { TxFormatService } from "merit/transact/tx-format.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { ProfileService } from "merit/core/profile.service";
 import { Logger } from "merit/core/logger";
 
+@IonicPage({
+  defaultHistory: ['WalletsView']
+})
 @Component({
   selector: 'tx-details-view',
   templateUrl: 'tx-details.html'
 })
-export class TxDetailsPage {
+export class TxDetailsView {
   public title: string;
   public wallet: any;
   public tx: any;
