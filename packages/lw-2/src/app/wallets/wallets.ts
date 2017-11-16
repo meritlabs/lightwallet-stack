@@ -117,14 +117,15 @@ export class WalletsView {
       this.txpsData = this.profileService.getTxps({limit: 3});
     });
 
-    this.events.subscribe('Local/TxAction', (e, walletId) => {
-      this.getWallets().then((wallets) => {
-        wallets.forEach((wallet) => {
-          if (wallet.id == walletId) {
-            updateWalletStatus(wallet);
-          }
-        });
-      });
+    this.events.subscribe('Local:Tx:Broadcast', (broadcastedTxp) => {
+      this.logger.info("Got a Local:Tx:Broadcast event with: ", broadcastedTxp);
+      // this.getWallets().then((wallets) => {
+      //   wallets.forEach((wallet) => {
+      //     if (wallet.id == walletId) {
+      //       updateWalletStatus(wallet);
+      //     }
+      //   });
+      // });
     });
 
     this.events.subscribe('easyReceiveEvent', (e, receipt:EasyReceipt) => {
