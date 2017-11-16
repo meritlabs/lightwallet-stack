@@ -10,7 +10,7 @@ import { Logger } from 'merit/core/logger';
   defaultHistory: ['WalletsView']
 })
 @Component({
-  selector: 'view-wallet',
+  selector: 'wallet-details-view',
   templateUrl: 'wallet-details.html',
 })
 export class WalletDetailsView {
