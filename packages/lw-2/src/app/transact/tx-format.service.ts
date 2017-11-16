@@ -7,6 +7,7 @@ import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { Promise } from 'bluebird';
 
 import * as _ from "lodash";
+import { Logger } from 'merit/core/logger';
 
 /* 
   Ideally, this service gets loaded when it is needed.
@@ -20,7 +21,8 @@ export class TxFormatService {
   constructor(
     private bwc: BwcService,
     private rate: RateService,
-    private config: ConfigService
+    private config: ConfigService,
+    private logger: Logger
   ) {
     console.log('Hello TxFormatService Service');
   }
@@ -106,6 +108,8 @@ export class TxFormatService {
       tx.amountValueStr = tx.amountStr.split(' ')[0];
       tx.amountUnitStr = tx.amountStr.split(' ')[1];
     }
+
+    this.logger.warn("ProcessTx Return Value: ", tx);
 
     return tx;
   };
