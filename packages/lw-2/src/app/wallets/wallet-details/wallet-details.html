@@ -19,8 +19,8 @@
         </ion-icon>
         <div class="action">{{tx.action}}</div>
         <div class="detail">
-          <div class="amount">{{amountStr | toUnit }} DickFace</div>
-          <div class="date">{{tx.time * 1000 | amTimeAgo}} RickFace</div>
+          <div class="amount">{{tx.amountStr}}</div>
+          <div class="date">{{tx.time * 1000 | amTimeAgo}}</div>
         </div>
       </button>
     </ion-list>
