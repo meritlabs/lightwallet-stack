@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
-import { EventEmitter } from 'eventemitter3';
 import { Common } from './common';
 import { Logger } from "./log";
 import { Credentials } from './credentials';
 import { ErrorTypes as Errors } from './errors';
 
 const $ = require('preconditions').singleton();
+let EventEmitter = require('eventemitter3');
 let util = require('util');
 let async = require('async');
 let Bitcore = require('bitcore-lib');
@@ -17,6 +17,7 @@ let url = require('url');
 let querystring = require('querystring');
 let Stringify = require('json-stable-stringify');
 let Bip38 = require('bip38');
+let Promise = require('bluebird');
 
 let request = require('superagent');
 
@@ -26,7 +27,6 @@ let Utils = Common.Utils;
 
 let Package = require('../package.json');
 
-import { Promise } from 'bluebird';
 
 /**
  * Merit Wallet Client; (re-)written in typescript.
@@ -1093,9 +1093,7 @@ export class API extends EventEmitter implements IAPI {
     
 
     return loginIfNeeded().then(() => {
-      return this._doRequest(method, url, args, true).then((body, header) => {
-        return this._doRequest(method, url, args, true);
-      });
+      return this._doRequest(method, url, args, true);
     });
 };
 
@@ -1785,7 +1783,7 @@ export class API extends EventEmitter implements IAPI {
   savePreferences(preferences: any): Promise<any> {
     $.checkState(this.credentials);
 
-    this._doPutRequest('/v1/preferences/', preferences);
+    return this._doPutRequest('/v1/preferences/', preferences);
 };
 
 
@@ -1831,7 +1829,7 @@ export class API extends EventEmitter implements IAPI {
         addresses: [].concat(opts.addresses).join(',')
       });
     }
-    this._doGetRequest(url);
+    return this._doGetRequest(url);
   };
 
   _getCreateTxProposalArgs(opts: any): any {
@@ -2528,6 +2526,6 @@ export class API extends EventEmitter implements IAPI {
     this.log.warn("Validating: " + scriptId);
 
     let url = '/v1/easyreceive/validate/' + scriptId;
-    this._doGetRequest(url);
+    return this._doGetRequest(url);
   };
 }
