@@ -294,7 +294,7 @@ BlockchainMonitor.prototype._handleTxConfirmations = function(network, hash) {
     self.storage.fetchActiveTxConfirmationSubs(null, function(err, subs) {
       if (err) return;
       if (_.isEmpty(subs)) return;
-      var indexedSubs = _.indexBy(subs, 'txid');
+      var indexedSubs = _.keyBy(subs, 'txid');
       var triggered = [];
       _.each(txids, function(txid) {
         if (indexedSubs[txid]) triggered.push(indexedSubs[txid]);
@@ -328,7 +328,7 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
         return;
       }
 
-      const indexedSubs = _.indexBy(subs, 'codeHash');
+      const indexedSubs = _.keyBy(subs, 'codeHash');
       const triggered = _.reduce(referrals, function(acc, reftx) {
         if (!indexedSubs[reftx]) return acc;
 

@@ -222,7 +222,7 @@ PushNotificationsService.prototype._getRecipientsList = function(notification, n
 
       var recipientPreferences = _.compact(_.map(preferences, function(p) {
 
-        if (!_.contains(self.availableLanguages, p.language)) {
+        if (!_.includes(self.availableLanguages, p.language)) {
           if (p.language)
             log.warn('Language for notifications "' + p.language + '" not available.');
           p.language = self.defaultLanguage;
@@ -235,7 +235,7 @@ PushNotificationsService.prototype._getRecipientsList = function(notification, n
         };
       }));
 
-      recipientPreferences = _.indexBy(recipientPreferences, 'copayerId');
+      recipientPreferences = _.keyBy(recipientPreferences, 'copayerId');
 
       var recipientsList = _.compact(_.map(wallet.copayers, function(copayer) {
         if ((copayer.id == notification.creatorId && notificationType.notifyCreatorOnly) ||
@@ -381,7 +381,7 @@ PushNotificationsService.prototype._compileTemplate = function(template, extensi
   }
   return {
     subject: lines[0],
-    body: _.rest(lines).join('\n'),
+    body: _.tail(lines).join('\n'),
   };
 };
 
