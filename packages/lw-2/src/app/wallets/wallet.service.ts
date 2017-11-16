@@ -509,7 +509,7 @@ export class WalletService {
               return resolve(getNewTxs(newTxs, skip));
             }).catch((err) => {
               this.logger.warn(this.bwcErrorService.msg(err, 'Server Error')); //TODO
-              if (err instanceof this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
+              if (err == this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
                 this.logger.info('Retrying history download in 5 secs...');
                 return reject(setTimeout(() => {
                   return getNewTxs(newTxs, skip);
@@ -1268,7 +1268,7 @@ export class WalletService {
         return newWallet.doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
         }).then((err) => {
           //Ignore error is copayer already in wallet
-          if (err && !(err instanceof this.errors.COPAYER_IN_WALLET)) return reject(err);
+          if (err && !(err == this.errors.COPAYER_IN_WALLET)) return reject(err);
           if (++i == wallet.credentials.publicKeyRing.length) return resolve();
         });
       });
