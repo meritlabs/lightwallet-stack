@@ -186,14 +186,14 @@ export class SendConfirmView {
       content: "Sending transaction...",
       dismissOnPageChange: true    });
     return loadingSpinner.present().then(() => {
-      this.approveTx(this.txData, this.wallet).then((worked) => {
-        loadingSpinner.dismiss();
-        this.navCtrl.push('WalletsView');
-        return Promise.resolve(worked);
-      }).catch((err) => {
-        this.logger.warn("Failed to approve transaction.");
-        this.logger.warn(err);
-      });
+      return this.approveTx(this.txData, this.wallet);
+    }).then((worked) => {
+      loadingSpinner.dismiss();
+      this.navCtrl.push('WalletsView');
+      return Promise.resolve(worked);
+    }).catch((err) => {
+      this.logger.warn("Failed to approve transaction.");
+      this.logger.warn(err);
     });
   }
 
