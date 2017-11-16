@@ -35,7 +35,7 @@
     "bluebird": "^3.5.1",
     "eventemitter3": "^2.0.3",
     "json-stable-stringify": "^1.0.0",
-    "lodash": "^4.14.4",
+    "lodash": "^4.17.4",
     "preconditions": "^1.0.8",
     "sjcl": "1.0.3",
     "superagent": "^3.4.1"

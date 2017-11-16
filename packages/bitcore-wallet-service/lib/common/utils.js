@@ -109,7 +109,7 @@ Utils.formatAmount = function(satoshis, unit, opts) {
   };
 
   $.shouldBeNumber(satoshis);
-  $.checkArgument(_.contains(_.keys(UNITS), unit));
+  $.checkArgument(_.includes(_.keys(UNITS), unit));
 
   function addSeparators(nStr, thousands, decimal, minDecimals) {
     nStr = nStr.replace('.', decimal);
@@ -167,7 +167,7 @@ Utils.parseVersion = function(version) {
     v.agent = version;
     return v;
   }
-  v.agent = _.contains(['bwc', 'bws'], x[0]) ? 'bwc' : x[0];
+  v.agent = _.includes(['bwc', 'bws'], x[0]) ? 'bwc' : x[0];
   x = x[1].split('.');
   v.major = parseInt(x[0]);
   v.minor = parseInt(x[1]);

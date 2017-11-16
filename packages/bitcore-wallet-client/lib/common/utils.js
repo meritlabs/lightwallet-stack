@@ -119,7 +119,7 @@ Utils.deriveAddress = function(scriptType, publicKeyRing, path, m, network) {
   return {
     address: bitcoreAddress.toString(),
     path: path,
-    publicKeys: _.invoke(publicKeys, 'toString'),
+    publicKeys: _.invokeMap(publicKeys, 'toString'),
   };
 };
 
