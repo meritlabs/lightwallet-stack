@@ -1,17 +1,17 @@
 'use strict';
 
-var bitcore = require('bitcore-lib');
-var async = require('async');
-var TxController = require('./transactions');
-var Common = require('./common');
+const bitcore = require('bitcore-lib');
+const async = require('async');
+const TxController = require('./transactions');
+const Common = require('./common');
+
+const COINBASE_MATURITY = bitcore.Block.COINBASE_MATURITY;
 
 function AddressController(node) {
   this.node = node;
   this.txController = new TxController(node);
   this.common = new Common({log: this.node.log});
-}
-
-const COINBASE_MATURITY = 100;
+};
 
 AddressController.prototype.show = function(req, res) {
   var self = this;
@@ -186,7 +186,8 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
     utxo.ts = utxoArg.timestamp;
   }
   if (utxo.isCoinbase) {
-    utxo.isMature = utxo.confirmations >= COINBASE_MATURITY ? true : false;
+    let maturity = COINBASE_MATURITY[this.node.network.name];
+    utxo.isMature = utxo.confirmations >= maturity ? true : false;
   }
   return utxo;
 };
