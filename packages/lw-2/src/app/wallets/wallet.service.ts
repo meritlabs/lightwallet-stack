@@ -415,9 +415,13 @@ export class WalletService {
         if (!txsFromServer.length)
           return resolve();
 
-        res = _.takeWhile(txsFromServer, (tx) => {
-          return tx.txid != endingTxid;
-        });
+        if (endingTxid) {
+          res = _.takeWhile(txsFromServer, (tx) => {
+            return tx.txid != endingTxid;
+          });
+        } else {
+          res = txsFromServer;
+        }
 
         let result = {
           res: res,
@@ -489,7 +493,7 @@ export class WalletService {
                 foundLimitTx = _.find(newTxs, {
                   txid: opts.limitTx,
                 });
-                if (foundLimitTx) {
+                if (!_.isEmpty(foundLimitTx)) {
                   this.logger.debug('Found limitTX: ' + opts.limitTx);
                   return resolve(foundLimitTx);
                 }
@@ -558,7 +562,7 @@ export class WalletService {
           return updateNotes().then(() => {
 
             // <HACK>
-            if (foundLimitTx) {
+            if (!_.isEmpty(foundLimitTx)) {
               this.logger.debug('Tx history read until limitTx: ' + opts.limitTx);
               return resolve(newHistory);
             }
