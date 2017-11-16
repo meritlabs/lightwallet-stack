@@ -2454,9 +2454,9 @@ export class API extends EventEmitter {
    * @return {undefined}
    */
   validateEasyScript(scriptId): Promise<any> {
-    log.warn("Validating: " + scriptId);
+    log.warn("Validating easyscript: " + scriptId);
 
     let url = '/v1/easyreceive/validate/' + scriptId;
-    this._doGetRequest(url);
+    return this._doGetRequest(url);
   };
 }
