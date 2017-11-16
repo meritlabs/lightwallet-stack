@@ -28,7 +28,7 @@ describe('MultiSigScriptHashInput', function() {
     txId: '66e64ef8a3b384164b78453fa8c8194de9a473ba14f89485a0e433699daec140',
     outputIndex: 0,
     script: new Script(address),
-    micros: 1000000
+    satoshis: 1000000
   };
   it('can count missing signatures', function() {
     var transaction = new Transaction()
@@ -54,14 +54,14 @@ describe('MultiSigScriptHashInput', function() {
       .to(address, 1000000);
     var input = transaction.inputs[0];
 
-    _.all(input.publicKeysWithoutSignature(), function(publicKeyMissing) {
+    _.every(input.publicKeysWithoutSignature(), function(publicKeyMissing) {
       var serialized = publicKeyMissing.toString();
       return serialized === public1.toString() ||
               serialized === public2.toString() ||
               serialized === public3.toString();
     }).should.equal(true);
     transaction.sign(privateKey1);
-    _.all(input.publicKeysWithoutSignature(), function(publicKeyMissing) {
+    _.every(input.publicKeysWithoutSignature(), function(publicKeyMissing) {
       var serialized = publicKeyMissing.toString();
       return serialized === public2.toString() ||
               serialized === public3.toString();

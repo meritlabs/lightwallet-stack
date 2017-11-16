@@ -43,7 +43,7 @@ Address.fromObj = function(obj) {
 };
 
 Address._deriveAddress = function(scriptType, publicKeyRing, path, m, network) {
-  $.checkArgument(_.contains(_.values(Constants.SCRIPT_TYPES), scriptType));
+  $.checkArgument(_.includes(_.values(Constants.SCRIPT_TYPES), scriptType));
 
   var publicKeys = _.map(publicKeyRing, function(item) {
     var xpub = new Bitcore.HDPublicKey(item.xPubKey);
@@ -64,7 +64,7 @@ Address._deriveAddress = function(scriptType, publicKeyRing, path, m, network) {
   return {
     address: bitcoreAddress.toString(),
     path: path,
-    publicKeys: _.invoke(publicKeys, 'toString'),
+    publicKeys: _.invokeMap(publicKeys, 'toString'),
   };
 };
 

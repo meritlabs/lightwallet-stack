@@ -1,0 +1,36 @@
+@import "../onboarding-module";
+view-unlock {
+  @extend %module-onboarding;
+
+  input {
+    background: white;
+    width: 100%;
+    height: 40px;
+    line-height: 35px;
+    padding: 0 10px;
+    font-size: 16px;
+    border-radius: 2px;
+    border: 2px solid #aaa;
+    margin-bottom: 1.5rem;
+    vertical-align: top;
+  }
+  input::-webkit-input-placeholder {
+    color: rgba(0,0,0,0.4);
+  }
+
+  .illustration.control {
+    background:  url('../assets/img/onboarding/tour-control.svg');
+  }
+
+  .bottom-buttons {
+    display: flex;
+    flex-direction: row;
+  }
+
+  input.failed {
+    background: color($colors, 'danger');
+    color: white;
+  }
+
+
+}

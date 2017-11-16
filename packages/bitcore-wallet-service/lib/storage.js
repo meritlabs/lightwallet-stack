@@ -12,6 +12,8 @@ var mongodb = require('mongodb');
 
 var Model = require('./model');
 
+var Bitcore = require('bitcore-lib');
+
 var collections = {
   WALLETS: 'wallets',
   TXS: 'txs',
@@ -28,6 +30,7 @@ var collections = {
   PUSH_NOTIFICATION_SUBS: 'push_notification_subs',
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
   REFERRAL_TX_CONFIRMATION_SUBS: 'referral_confirmation_subs',
+  VAULTS: 'vaults',
 };
 
 var Storage = function(opts) {
@@ -92,7 +95,13 @@ Storage.prototype._createIndexes = function() {
     codeHash: 1,
   })
   this.db.collection(collections.SESSIONS).createIndex({
-    copayerId: 1
+    copayerId: 1,
+  });
+  this.db.collection(collections.VAULTS).createIndex({
+    copayerId: 1,
+  });
+  this.db.collection(collections.VAULTS).createIndex({
+    txId: 1,
   });
 };
 
@@ -387,7 +396,7 @@ Storage.prototype.storeReferral = function(referral, cb) {
  */
 Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs, cb) {
   function makeId(timestamp) {
-    return _.padLeft(timestamp, 14, '0') + _.repeat('0', 4);
+    return _.padStart(timestamp, 14, '0') + _.repeat('0', 4);
   };
 
   var self = this;
@@ -708,7 +717,7 @@ Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {
         return cb();
       }
 
-      var txs = _.pluck(result, 'tx');
+      var txs = _.map(result, 'tx');
       return cb(null, txs);
     });
   })
@@ -823,7 +832,7 @@ Storage.prototype.fetchActiveAddresses = function(walletId, cb) {
     if (err) return cb(err);
     if (_.isEmpty(result)) return cb();
 
-    return cb(null, _.compact(_.pluck(result, 'key')));
+    return cb(null, _.compact(_.map(result, 'key')));
   });
 };
 
@@ -1067,6 +1076,51 @@ Storage.prototype._dump = function(cb, fn) {
       });
     }, cb);
   });
+};
+
+/**
+ * Vaults
+ */
+Storage.prototype.fetchVaults = function(copayerId, cb) {
+  this.db.collection(collections.VAULTS).find({
+    copayerId,
+  }).toArray(function(err, result) {
+    if (err) return cb(err);
+
+    if (!result) return cb();
+
+    return cb(null, result);
+  });
+};
+
+Storage.prototype.storeVault = function(copayerId, vaultTx, cb) {
+  this.db.collection(collections.VAULTS).insertOne({
+    copayerId,
+    ...vaultTx,
+  }, {
+    w: 1
+  }, cb);
+};
+
+Storage.prototype.fetchVaultByTxId = function(txId, cb) {
+  this.db.collection(collections.VAULTS).findOne({
+    txId,
+  }, function(err, result) {
+    if (err) return cb(err);
+    if (!result) return cb();
+
+    return cb(null, result);
+  });
+};
+
+Storage.prototype.setVaultConfirmed = function(txId, cb) {
+  tx.status = Bitcore.Vault.Vault.VaultStates.APPROVED;
+  this.db.collection(collections.VAULTS).findAndModify({
+    txId,
+  }, tx, {
+    new: true,
+    upsert: true,
+  }, cb);
 };
 
 Storage.collections = collections;

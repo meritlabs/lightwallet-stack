@@ -212,9 +212,9 @@ helpers.randomTXID = function() {
   return Bitcore.crypto.Hash.sha256(new Buffer(Math.random() * 100000)).toString('hex');;
 };
 
-helpers.toMicro = function(mrt) {
+helpers.toSatoshi = function(mrt) {
   if (_.isArray(mrt)) {
-    return _.map(mrt, helpers.toMicro);
+    return _.map(mrt, helpers.toSatoshi);
   } else {
     return Utils.strip(mrt * 1e8);
   }
@@ -228,7 +228,7 @@ helpers._parseAmount = function(str) {
 
   if (_.isNumber(str)) str = str.toString();
 
-  var re = /^((?:\d+c)|u)?\s*([\d\.]+)\s*(mrt|bit|micros)?$/;
+  var re = /^((?:\d+c)|u)?\s*([\d\.]+)\s*(mrt|bit|satoshis)?$/;
   var match = str.match(re);
 
   if (!match) throw new Error('Could not parse amount ' + str);
@@ -246,7 +246,7 @@ helpers._parseAmount = function(str) {
     case 'bit':
       result.amount = Utils.strip(+match[2] * 1e2);
       break
-    case 'micros':
+    case 'satoshis':
       result.amount = Utils.strip(+match[2]);
       break;
   };
@@ -295,7 +295,7 @@ helpers.stubUtxos = function(server, wallet, amounts, opts, cb) {
         return {
           txid: helpers.randomTXID(),
           vout: _.random(0, 10),
-          micros: parsed.amount,
+          satoshis: parsed.amount,
           scriptPubKey: scriptPubKey.toBuffer().toString('hex'),
           address: address.address,
           confirmations: parsed.confirmations,
@@ -311,7 +311,7 @@ helpers.stubUtxos = function(server, wallet, amounts, opts, cb) {
 
       blockchainExplorer.getUtxos = function(addresses, cb) {
         var selected = _.filter(helpers._utxos, function(utxo) {
-          return _.contains(addresses, utxo.address);
+          return _.includes(addresses, utxo.address);
         });
         return cb(null, selected);
       };
@@ -366,7 +366,7 @@ helpers.stubFeeLevels = function(levels) {
 
 helpers.stubAddressActivity = function(activeAddresses) {
   blockchainExplorer.getAddressActivity = function(address, cb) {
-    return cb(null, _.contains(activeAddresses, address));
+    return cb(null, _.includes(activeAddresses, address));
   };
 };
 
@@ -445,7 +445,7 @@ helpers.historyCacheTest = function(items) {
       vout: 0,
       n: 0,
       addr: "2NAVFnsHqy5JvqDJydbHPx393LFqFFBQ89V",
-      valueMicros: 45753,
+      valueSatoshis: 45753,
       value: 0.00045753,
     }],
     vout: [{

@@ -1,0 +1,48 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>Advanced</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+    <ion-list margin-top>
+        <ion-item>
+            <ion-label translate>Use Unconfirmed Funds</ion-label>
+            <ion-toggle [(ngModel)]="spendUnconfirmed" (ionChange)="spendUnconfirmedChange()">
+            </ion-toggle>
+        </ion-item>
+        <ion-item>
+            <ion-label class="white-space-normal">
+                If enabled, wallets will also try to spend unconfirmed funds. This option may cause transaction delays.
+            </ion-label>
+        </ion-item>
+    </ion-list>
+
+
+    <ion-list>
+        <ion-item>
+            <ion-label translate>Recent Transaction Card</ion-label>
+            <ion-toggle [(ngModel)]="recentTransactionsEnabled" (ionChange)="recentTransactionChange()">
+            </ion-toggle>
+        </ion-item>
+        <ion-item>
+            <ion-label class="white-space-normal">
+                If enabled, the Recent Transactions card - a list of transactions occuring across all wallets - will appear in the Home tab.
+            </ion-label>
+        </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <ion-item>
+            <ion-label translate>Hide Next Steps Card</ion-label>
+            <ion-toggle [(ngModel)]="nextStepsEnabled" (ionChange)="nextStepsChange()">
+            </ion-toggle>
+        </ion-item>
+    </ion-list>
+
+
+</ion-content>

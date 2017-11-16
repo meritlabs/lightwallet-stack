@@ -1,0 +1,36 @@
+{
+    "packageName": "lightwallet-stack",
+    "packageDescription": "Merit LightWallet",
+    "packageNameId": "me.merit.LightWallet",
+    "themeColor": "#192c3a",
+    "userVisibleName": "Merit",
+    "purposeLine": "Merit Bitcoin Wallet",
+    "bundleName": "merit",
+    "appUri": "merit",
+    "name": "merit",
+    "nameNoSpace": "merit",
+    "nameCase": "Merit",
+    "nameCaseNoSpace": "Merit",
+    "gitHubRepoName": "merit",
+    "gitHubRepoUrl": "git://github.com/meritlabs/lightwallet-stack.git",
+    "gitHubRepoBugs": "https://github.com/meritlabs/lightwallet-stack/issues",
+    "disclaimerUrl": "https://merit.me/disclaimer",
+    "url": "https://merit.me",
+    "appDescription": "Merit LightWallet",
+    "winAppName": "MeritWallet",
+    "WindowsStoreIdentityName": "NoneYet",
+    "WindowsStoreDisplayName": "Merit - Secure Wallet",
+    "windowsAppId": "noneyet",
+    "pushSenderId": "noneyet",
+    "description": "A Secure Merit LightWallet",
+    "version": "3.8.2",
+    "androidVersion": "382001",
+    "commitHash": "1234",
+    "_extraCSS": null,
+    "_enabledExtensions": {
+      "coinbase": true,
+      "glidera": true,
+      "amazon": true
+    }
+  }
+  

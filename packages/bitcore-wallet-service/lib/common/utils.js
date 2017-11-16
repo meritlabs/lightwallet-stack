@@ -89,27 +89,27 @@ Utils._tryVerifyMessage = function(hash, sig, publicKeyBuffer) {
   }
 };
 
-Utils.formatAmount = function(micros, unit, opts) {
+Utils.formatAmount = function(satoshis, unit, opts) {
   var UNITS = {
     mrt: {
-      toMicros: 100000000,
+      toSatoshis: 100000000,
       maxDecimals: 6,
       minDecimals: 2,
     },
     bit: {
-      toMicros: 100,
+      toSatoshis: 100,
       maxDecimals: 0,
       minDecimals: 0,
     },
-    micros: {
-      toMicros: 1,
+    satoshis: {
+      toSatoshis: 1,
       maxDecimals: 0,
       minDecimals: 0,
     }
   };
 
-  $.shouldBeNumber(micros);
-  $.checkArgument(_.contains(_.keys(UNITS), unit));
+  $.shouldBeNumber(satoshis);
+  $.checkArgument(_.includes(_.keys(UNITS), unit));
 
   function addSeparators(nStr, thousands, decimal, minDecimals) {
     nStr = nStr.replace('.', decimal);
@@ -129,7 +129,7 @@ Utils.formatAmount = function(micros, unit, opts) {
   opts = opts || {};
 
   var u = _.assign(UNITS[unit], opts);
-  var amount = (micros / u.toMicros).toFixed(u.maxDecimals);
+  var amount = (satoshis / u.toSatoshis).toFixed(u.maxDecimals);
   return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u.minDecimals);
 };
 
@@ -143,7 +143,7 @@ Utils.formatAmountInMrt = function(amount) {
 Utils.formatUtxos = function(utxos) {
   if (_.isEmpty(utxos)) return 'none';
   return _.map([].concat(utxos), function(i) {
-    var amount = Utils.formatAmountInMrt(i.micros);
+    var amount = Utils.formatAmountInMrt(i.satoshis);
     var confirmations = i.confirmations ? i.confirmations + 'c' : 'u';
     return amount + '/' + confirmations;
   }).join(', ');
@@ -167,7 +167,7 @@ Utils.parseVersion = function(version) {
     v.agent = version;
     return v;
   }
-  v.agent = _.contains(['bwc', 'bws'], x[0]) ? 'bwc' : x[0];
+  v.agent = _.includes(['bwc', 'bws'], x[0]) ? 'bwc' : x[0];
   x = x[1].split('.');
   v.major = parseInt(x[0]);
   v.minor = parseInt(x[1]);

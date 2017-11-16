@@ -1,0 +1,39 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title translate>New Contact</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <ion-list *ngIf="contact">
+        <ion-item>
+            <ion-label translate>Name</ion-label>
+            <ion-input text-right [(ngModel)]="contact.name"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label translate>Email</ion-label>
+            <ion-input text-right type="email" [(ngModel)]="contact.email"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label translate>Phone Number</ion-label>
+            <ion-input text-right [(ngModel)]="contact.phoneNumber"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label translate>Merit Address</ion-label>
+            <ion-input text-right [(ngModel)]="contact.meritAddress"></ion-input>
+            <button class="scan-button">
+                <button (click)="openScanner()" ion-button icon-only item-right clear >
+                    <ion-icon name="qr-scanner"  color="primary"></ion-icon>
+                </button>
+            </button>
+        </ion-item>
+    </ion-list>
+
+    <div class="control-buttons">
+        <button  (click)="add()" ion-button [disabled]="!contact?.isValid()">Save</button>
+    </div>
+
+</ion-content>

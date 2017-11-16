@@ -1063,7 +1063,7 @@ describe('Wallet service', function() {
         should.exist(status.wallet.copayers[0].requestPubKey);
         should.exist(status.wallet.copayers[0].customData);
         // Do not return other copayer's custom data
-        _.each(_.rest(status.wallet.copayers), function(copayer) {
+        _.each(_.tail(status.wallet.copayers), function(copayer) {
           should.not.exist(copayer.customData);
         });
         done();
@@ -1085,7 +1085,7 @@ describe('Wallet service', function() {
             status.pendingTxps.length.should.equal(1);
             var balance = status.balance;
             balance.totalAmount.should.equal(3e8);
-            balance.lockedAmount.should.equal(tx.inputs[0].micros);
+            balance.lockedAmount.should.equal(tx.inputs[0].satoshis);
             balance.availableAmount.should.equal(balance.totalAmount - balance.lockedAmount);
             done();
           });
@@ -1191,13 +1191,13 @@ describe('Wallet service', function() {
         async.mapSeries(_.range(N), function(i, cb) {
           server.createAddress({}, cb);
         }, function(err, addresses) {
-          var x = _.pluck(addresses, 'path');
+          var x = _.map(addresses, 'path');
           addresses.length.should.equal(N);
           _.each(_.range(N), function(i) {
             addresses[i].path.should.equal('m/2147483647/0/' + i);
           });
           // No two identical addresses
-          _.uniq(_.pluck(addresses, 'address')).length.should.equal(N);
+          _.uniq(_.map(addresses, 'address')).length.should.equal(N);
           done();
         });
       });
@@ -1245,7 +1245,7 @@ describe('Wallet service', function() {
             addresses[i].path.should.equal('m/0/' + i);
           });
           // No two identical addresses
-          _.uniq(_.pluck(addresses, 'address')).length.should.equal(N);
+          _.uniq(_.map(addresses, 'address')).length.should.equal(N);
           done();
         });
       });
@@ -1315,7 +1315,7 @@ describe('Wallet service', function() {
             addresses[i].path.should.equal('m/0/' + i);
           });
           // No two identical addresses
-          _.uniq(_.pluck(addresses, 'address')).length.should.equal(N);
+          _.uniq(_.map(addresses, 'address')).length.should.equal(N);
           done();
         });
       });
@@ -1579,7 +1579,7 @@ describe('Wallet service', function() {
           should.not.exist(err);
           should.exist(utxos);
           utxos.length.should.equal(2);
-          _.sum(utxos, 'micros').should.equal(3 * 1e8);
+          _.sumBy(utxos, 'satoshis').should.equal(3 * 1e8);
           server.getMainAddresses({}, function(err, addresses) {
             var utxo = utxos[0];
             var address = _.find(addresses, {
@@ -1597,15 +1597,15 @@ describe('Wallet service', function() {
       helpers.stubUtxos(server, wallet, [1, 2, 3], function(utxos) {
         // _.uniq(utxos, 'address').length.should.be.above(1); // for singleAddress = true
         var address = utxos[0].address;
-        var amount = _.sum(_.filter(utxos, {
+        var amount = _.sumBy(_.filter(utxos, {
           address: address
-        }), 'micros');
+        }), 'satoshis');
         server.getUtxos({
           addresses: [address]
         }, function(err, utxos) {
           should.not.exist(err);
           should.exist(utxos);
-          _.sum(utxos, 'micros').should.equal(amount);
+          _.sumBy(utxos, 'satoshis').should.equal(amount);
           done();
         });
       });
@@ -1810,21 +1810,21 @@ describe('Wallet service', function() {
         server.getBalance({}, function(err, balance) {
           should.not.exist(err);
           should.exist(balance);
-          balance.totalAmount.should.equal(helpers.toMicro(4));
+          balance.totalAmount.should.equal(helpers.toSatoshi(4));
           balance.lockedAmount.should.equal(0);
-          balance.availableAmount.should.equal(helpers.toMicro(4));
+          balance.availableAmount.should.equal(helpers.toSatoshi(4));
 
-          balance.totalConfirmedAmount.should.equal(helpers.toMicro(4));
+          balance.totalConfirmedAmount.should.equal(helpers.toSatoshi(4));
           balance.lockedConfirmedAmount.should.equal(0);
-          balance.availableConfirmedAmount.should.equal(helpers.toMicro(4));
+          balance.availableConfirmedAmount.should.equal(helpers.toSatoshi(4));
 
           should.exist(balance.byAddress);
           balance.byAddress.length.should.equal(1);
-          balance.byAddress[0].amount.should.equal(helpers.toMicro(4));
+          balance.byAddress[0].amount.should.equal(helpers.toSatoshi(4));
           server.getMainAddresses({}, function(err, addresses) {
             should.not.exist(err);
-            var addresses = _.uniq(_.pluck(addresses, 'address'));
-            _.intersection(addresses, _.pluck(balance.byAddress, 'address')).length.should.equal(1);
+            var addresses = _.uniq(_.map(addresses, 'address'));
+            _.intersection(addresses, _.map(balance.byAddress, 'address')).length.should.equal(1);
             done();
           });
         });
@@ -1865,7 +1865,7 @@ describe('Wallet service', function() {
           server.getBalance({}, function(err, balance) {
             should.not.exist(err);
             balance.byAddress.length.should.equal(1);
-            balance.byAddress[0].amount.should.equal(helpers.toMicro(1));
+            balance.byAddress[0].amount.should.equal(helpers.toSatoshi(1));
             balance.byAddress[0].address.should.equal(utxos[0].address);
             done();
           });
@@ -1911,19 +1911,19 @@ describe('Wallet service', function() {
         }, function(err, balance) {
           should.not.exist(err);
           should.exist(balance);
-          balance.totalAmount.should.equal(helpers.toMicro(4));
+          balance.totalAmount.should.equal(helpers.toSatoshi(4));
           balance.lockedAmount.should.equal(0);
-          balance.availableAmount.should.equal(helpers.toMicro(4));
+          balance.availableAmount.should.equal(helpers.toSatoshi(4));
 
-          balance.totalConfirmedAmount.should.equal(helpers.toMicro(4));
+          balance.totalConfirmedAmount.should.equal(helpers.toSatoshi(4));
           balance.lockedConfirmedAmount.should.equal(0);
-          balance.availableConfirmedAmount.should.equal(helpers.toMicro(4));
+          balance.availableConfirmedAmount.should.equal(helpers.toSatoshi(4));
 
           should.exist(balance.byAddress);
           // balance.byAddress.length.should.equal(2);
           balance.byAddress.length.should.equal(1);
-          balance.byAddress[0].amount.should.equal(helpers.toMicro(4));
-          // balance.byAddress[1].amount.should.equal(helpers.toMicro(2));
+          balance.byAddress[0].amount.should.equal(helpers.toSatoshi(4));
+          // balance.byAddress[1].amount.should.equal(helpers.toSatoshi(2));
           setTimeout(done, 100);
         });
       });
@@ -1961,7 +1961,7 @@ describe('Wallet service', function() {
           }, function(err, balance) {
             should.not.exist(err);
             should.exist(balance);
-            balance.totalAmount.should.equal(helpers.toMicro(3));
+            balance.totalAmount.should.equal(helpers.toSatoshi(3));
             next();
           });
         },
@@ -1990,7 +1990,7 @@ describe('Wallet service', function() {
           }, function(err, balance) {
             should.not.exist(err);
             should.exist(balance);
-            balance.totalAmount.should.equal(helpers.toMicro(3));
+            balance.totalAmount.should.equal(helpers.toSatoshi(3));
             next();
           });
         },
@@ -2003,7 +2003,7 @@ describe('Wallet service', function() {
             var last = _.last(notifications);
             last.type.should.equal('BalanceUpdated');
             var balance = last.data;
-            balance.totalAmount.should.equal(helpers.toMicro(3.5));
+            balance.totalAmount.should.equal(helpers.toSatoshi(3.5));
             next();
           });
         },
@@ -2041,7 +2041,7 @@ describe('Wallet service', function() {
           }, function(err, balance) {
             should.not.exist(err);
             should.exist(balance);
-            balance.totalAmount.should.equal(helpers.toMicro(3));
+            balance.totalAmount.should.equal(helpers.toSatoshi(3));
             next();
           });
         },
@@ -2062,7 +2062,7 @@ describe('Wallet service', function() {
           }, function(err, balance) {
             should.not.exist(err);
             should.exist(balance);
-            balance.totalAmount.should.equal(helpers.toMicro(3.5));
+            balance.totalAmount.should.equal(helpers.toSatoshi(3.5));
             next();
           });
         },
@@ -2104,7 +2104,7 @@ describe('Wallet service', function() {
           }, function(err, balance) {
             should.not.exist(err);
             should.exist(balance);
-            balance.totalAmount.should.equal(helpers.toMicro(3));
+            balance.totalAmount.should.equal(helpers.toSatoshi(3));
             next();
           });
         },
@@ -2124,7 +2124,7 @@ describe('Wallet service', function() {
           }, function(err, balance) {
             should.not.exist(err);
             should.exist(balance);
-            balance.totalAmount.should.equal(helpers.toMicro(3.5));
+            balance.totalAmount.should.equal(helpers.toSatoshi(3.5));
             next();
           });
         },
@@ -2174,7 +2174,7 @@ describe('Wallet service', function() {
           }, function(err, balance) {
             should.not.exist(err);
             should.exist(balance);
-            balance.totalAmount.should.equal(helpers.toMicro(3));
+            balance.totalAmount.should.equal(helpers.toSatoshi(3));
             next();
           });
         },
@@ -2471,7 +2471,7 @@ describe('Wallet service', function() {
             tx.isRejected().should.equal.false;
             tx.isPending().should.equal.true;
             tx.isTemporary().should.equal.true;
-            tx.amount.should.equal(helpers.toMicro(0.8));
+            tx.amount.should.equal(helpers.toSatoshi(0.8));
             tx.feePerKb.should.equal(123e2);
             should.not.exist(tx.feeLevel);
             server.getPendingTxs({}, function(err, txs) {
@@ -2583,7 +2583,7 @@ describe('Wallet service', function() {
                 should.not.exist(err);
                 should.exist(tx);
                 tx.inputs.length.should.equal(2);
-                var txids = _.pluck(tx.inputs, 'txid');
+                var txids = _.map(tx.inputs, 'txid');
                 txids.should.contain(utxos[0].txid);
                 txids.should.contain(utxos[2].txid);
                 done();
@@ -2626,12 +2626,12 @@ describe('Wallet service', function() {
             server.createTx(txOpts, function(err, tx) {
               should.not.exist(err);
               should.exist(tx);
-              tx.amount.should.equal(helpers.toMicro(0.8));
+              tx.amount.should.equal(helpers.toSatoshi(0.8));
               should.not.exist(tx.feePerKb);
               tx.fee.should.equal(1000e2);
               var t = tx.getBitcoreTx();
               t.getFee().should.equal(1000e2);
-              t.getChangeOutput().micros.should.equal(3e8 - 0.8e8 - 1000e2);
+              t.getChangeOutput().satoshis.should.equal(3e8 - 0.8e8 - 1000e2);
               done();
             });
           });
@@ -2789,7 +2789,7 @@ describe('Wallet service', function() {
               should.exist(txp);
               server.getNotifications({}, function(err, notifications) {
                 should.not.exist(err);
-                _.pluck(notifications, 'type').should.not.contain('NewTxProposal');
+                _.map(notifications, 'type').should.not.contain('NewTxProposal');
                 var publishOpts = helpers.getProposalSignatureOpts(txp, TestData.copayers[0].privKey_1H_0);
                 server.publishTx(publishOpts, function(err) {
                   should.not.exist(err);
@@ -3102,7 +3102,7 @@ describe('Wallet service', function() {
 
       it('should support creating a tx with no change address', function(done) {
         helpers.stubUtxos(server, wallet, [1, 2], function() {
-          var max = 3e8 - 7000; // Fees for this tx at 100bits/kB = 7000 micros
+          var max = 3e8 - 7000; // Fees for this tx at 100bits/kB = 7000 satoshis
           var txOpts = {
             outputs: [{
               toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
@@ -3115,7 +3115,7 @@ describe('Wallet service', function() {
             should.exist(txp);
             var t = txp.getBitcoreTx().toObject();
             t.outputs.length.should.equal(1);
-            t.outputs[0].micros.should.equal(max);
+            t.outputs[0].satoshis.should.equal(max);
             done();
           });
         });
@@ -3238,7 +3238,7 @@ describe('Wallet service', function() {
             should.exist(tx);
             var bitcoreTx = tx.getBitcoreTx();
             bitcoreTx.outputs.length.should.equal(1);
-            bitcoreTx.outputs[0].micros.should.equal(tx.amount);
+            bitcoreTx.outputs[0].satoshis.should.equal(tx.amount);
             done();
           });
         });
@@ -3292,7 +3292,7 @@ describe('Wallet service', function() {
                 server.getBalance({}, function(err, balance) {
                   should.not.exist(err);
                   balance.totalAmount.should.equal(3.6e8);
-                  var amountInputs = _.sum(txs[0].inputs, 'micros');
+                  var amountInputs = _.sumBy(txs[0].inputs, 'satoshis');
                   balance.lockedAmount.should.equal(amountInputs);
                   balance.lockedAmount.should.be.below(balance.totalAmount);
                   balance.availableAmount.should.equal(balance.totalAmount - balance.lockedAmount);
@@ -3372,7 +3372,7 @@ describe('Wallet service', function() {
             t.getFee().should.equal(tx.fee);
             should.not.exist(t.getChangeOutput());
             t.toObject().inputs.length.should.equal(tx.inputs.length);
-            t.toObject().outputs[0].micros.should.equal(tx.amount);
+            t.toObject().outputs[0].satoshis.should.equal(tx.amount);
             done();
           });
         });
@@ -3392,20 +3392,20 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             var t = txp.getBitcoreTx();
-            var changeOutput = t.getChangeOutput().micros;
-            var outputs = _.without(_.pluck(t.outputs, 'micros'), changeOutput);
+            var changeOutput = t.getChangeOutput().satoshis;
+            var outputs = _.without(_.map(t.outputs, 'satoshis'), changeOutput);
 
-            outputs.should.not.deep.equal(_.pluck(txOpts.outputs, 'amount'));
+            outputs.should.not.deep.equal(_.map(txOpts.outputs, 'amount'));
             txOpts.noShuffleOutputs = true;
             server.createTx(txOpts, function(err, txp) {
               should.not.exist(err);
               should.exist(txp);
 
               t = txp.getBitcoreTx();
-              changeOutput = t.getChangeOutput().micros;
-              outputs = _.without(_.pluck(t.outputs, 'micros'), changeOutput);
+              changeOutput = t.getChangeOutput().satoshis;
+              outputs = _.without(_.map(t.outputs, 'satoshis'), changeOutput);
 
-              outputs.should.deep.equal(_.pluck(txOpts.outputs, 'amount'));
+              outputs.should.deep.equal(_.map(txOpts.outputs, 'amount'));
               done();
             });
           });
@@ -3558,7 +3558,7 @@ describe('Wallet service', function() {
             tx.inputs.length.should.equal(2);
             server.getBalance({}, function(err, balance) {
               should.not.exist(err);
-              balance.lockedConfirmedAmount.should.equal(helpers.toMicro(2.5));
+              balance.lockedConfirmedAmount.should.equal(helpers.toSatoshi(2.5));
               balance.availableConfirmedAmount.should.equal(0);
               txOpts.outputs[0].amount = 0.01e8;
               server.createTx(txOpts, function(err, tx) {
@@ -3606,7 +3606,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(35000);
+            txp.inputs[0].satoshis.should.equal(35000);
 
             done();
           });
@@ -3618,16 +3618,16 @@ describe('Wallet service', function() {
           var txOpts = {
             outputs: [{
               toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
-              amount: _.sum(utxos, 'micros') - 0.5e8,
+              amount: _.sumBy(utxos, 'satoshis') - 0.5e8,
             }],
             feePerKb: 100e2,
           };
           server.createTx(txOpts, function(err, txp) {
             should.not.exist(err);
             should.exist(txp);
-            var amounts = _.pluck(txp.inputs, 'micros');
+            var amounts = _.map(txp.inputs, 'satoshis');
             amounts.length.should.equal(30);
-            _.all(amounts, function(amount, i) {
+            _.every(amounts, function(amount, i) {
               if (i == 0) return true;
               return amount < amounts[i - 1];
             }).should.be.false;
@@ -3648,7 +3648,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(3);
-            txp.inputs[0].micros.should.equal(10000);
+            txp.inputs[0].satoshis.should.equal(10000);
 
             done();
           });
@@ -3667,7 +3667,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(3);
-            _.all(txp.inputs, function(input) {
+            _.every(txp.inputs, function(input) {
               return input == 100e2;
             });
             done();
@@ -3687,7 +3687,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(1e8);
+            txp.inputs[0].satoshis.should.equal(1e8);
             done();
           });
         });
@@ -3709,7 +3709,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(1e8);
+            txp.inputs[0].satoshis.should.equal(1e8);
             Defaults.UTXO_SELECTION_MAX_SINGLE_UTXO_FACTOR = _old;
             done();
           });
@@ -3730,7 +3730,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(1e8);
+            txp.inputs[0].satoshis.should.equal(1e8);
 
             done();
           });
@@ -3749,7 +3749,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(9e8);
+            txp.inputs[0].satoshis.should.equal(9e8);
             done();
           });
         });
@@ -3772,7 +3772,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(100e8);
+            txp.inputs[0].satoshis.should.equal(100e8);
             Defaults.UTXO_SELECTION_MIN_TX_AMOUNT_VS_UTXO_FACTOR = _old1;
             Defaults.MAX_TX_SIZE_IN_KB = _old2;
             done();
@@ -3849,7 +3849,7 @@ describe('Wallet service', function() {
           server.createTx(txOpts, function(err, txp) {
             should.not.exist(err);
             should.exist(txp);
-            _.all(txp.inputs, function(input) {
+            _.every(txp.inputs, function(input) {
               return input == 100e2;
             });
             done();
@@ -3869,7 +3869,7 @@ describe('Wallet service', function() {
             should.not.exist(err);
             should.exist(txp);
             txp.inputs.length.should.equal(1);
-            txp.inputs[0].micros.should.equal(1e8);
+            txp.inputs[0].satoshis.should.equal(1e8);
             done();
           });
         });
@@ -3913,7 +3913,7 @@ describe('Wallet service', function() {
         });
       });
       it('should correct fee if resulting change would be below threshold', function(done) {
-        helpers.stubUtxos(server, wallet, ['200bit', '500micros'], function() {
+        helpers.stubUtxos(server, wallet, ['200bit', '500satoshis'], function() {
           var txOpts = {
             outputs: [{
               toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
@@ -3924,7 +3924,7 @@ describe('Wallet service', function() {
           server.createTx(txOpts, function(err, txp) {
             should.not.exist(err);
             txp.inputs.length.should.equal(1);
-            (_.sum(txp.inputs, 'micros') - txp.outputs[0].amount - txp.fee).should.equal(0);
+            (_.sumBy(txp.inputs, 'satoshis') - txp.outputs[0].amount - txp.fee).should.equal(0);
             var changeOutput = txp.getBitcoreTx().getChangeOutput();
             should.not.exist(changeOutput);
             done();
@@ -4262,7 +4262,7 @@ describe('Wallet service', function() {
           }, function(err, notes) {
             should.not.exist(err);
             notes.length.should.equal(2);
-            _.difference(_.pluck(notes, 'txid'), ['123', '456']).should.be.empty;
+            _.difference(_.map(notes, 'txid'), ['123', '456']).should.be.empty;
             next();
           });
         },
@@ -4582,9 +4582,9 @@ describe('Wallet service', function() {
         }, function(err, info) {
           should.not.exist(err);
           should.exist(info);
-          var amounts = _.pluck(info.inputs, 'micros');
+          var amounts = _.map(info.inputs, 'satoshis');
           amounts.length.should.equal(30);
-          _.all(amounts, function(amount, i) {
+          _.every(amounts, function(amount, i) {
             if (i == 0) return true;
             return amount < amounts[i - 1];
           }).should.be.false;
@@ -5585,7 +5585,7 @@ describe('Wallet service', function() {
         limit: 8
       }, function(err, txps) {
         should.not.exist(err);
-        var times = _.pluck(txps, 'createdOn');
+        var times = _.map(txps, 'createdOn');
         times.should.deep.equal([100, 90, 80, 70, 60]);
         done();
       });
@@ -5596,7 +5596,7 @@ describe('Wallet service', function() {
         limit: 5
       }, function(err, txps) {
         should.not.exist(err);
-        var times = _.pluck(txps, 'createdOn');
+        var times = _.map(txps, 'createdOn');
         times.should.deep.equal([50, 40, 30, 20, 10]);
         done();
       });
@@ -5606,7 +5606,7 @@ describe('Wallet service', function() {
         limit: 4
       }, function(err, txps) {
         should.not.exist(err);
-        var times = _.pluck(txps, 'createdOn');
+        var times = _.map(txps, 'createdOn');
         times.should.deep.equal([100, 90, 80, 70]);
         done();
       });
@@ -5614,7 +5614,7 @@ describe('Wallet service', function() {
     it('should pull all txs', function(done) {
       server.getTxs({}, function(err, txps) {
         should.not.exist(err);
-        var times = _.pluck(txps, 'createdOn');
+        var times = _.map(txps, 'createdOn');
         times.should.deep.equal([100, 90, 80, 70, 60, 50, 40, 30, 20, 10]);
         done();
       });
@@ -5626,7 +5626,7 @@ describe('Wallet service', function() {
           maxTs: 70,
         }, function(err, txps) {
           should.not.exist(err);
-          var times = _.pluck(txps, 'createdOn');
+          var times = _.map(txps, 'createdOn');
           times.should.deep.equal([70, 60, 50]);
           done();
         });
@@ -5669,13 +5669,13 @@ describe('Wallet service', function() {
     it('should pull all notifications', function(done) {
       server.getNotifications({}, function(err, notifications) {
         should.not.exist(err);
-        var types = _.pluck(notifications, 'type');
+        var types = _.map(notifications, 'type');
         // types.should.deep.equal(['NewCopayer', 'NewAddress', 'NewAddress', 'NewTxProposal', 'NewTxProposal', 'NewTxProposal']);
         types.should.deep.equal(['NewCopayer', 'NewAddress', 'NewTxProposal', 'NewTxProposal', 'NewTxProposal']); // for singleAddress = true
-        var walletIds = _.uniq(_.pluck(notifications, 'walletId'));
+        var walletIds = _.uniq(_.map(notifications, 'walletId'));
         walletIds.length.should.equal(1);
         walletIds[0].should.equal(wallet.id);
-        var creators = _.uniq(_.compact(_.pluck(notifications, 'creatorId')));
+        var creators = _.uniq(_.compact(_.map(notifications, 'creatorId')));
         creators.length.should.equal(1);
         creators[0].should.equal(wallet.copayers[0].id);
         done();
@@ -5702,9 +5702,9 @@ describe('Wallet service', function() {
             minTs: +Date.now() - (60 * 1000),
           }, function(err, notifications) {
             should.not.exist(err);
-            var types = _.pluck(notifications, 'type');
+            var types = _.map(notifications, 'type');
             types.should.deep.equal(['NewTxProposal', 'NewTxProposal', 'NewBlock']);
-            var walletIds = _.uniq(_.pluck(notifications, 'walletId'));
+            var walletIds = _.uniq(_.map(notifications, 'walletId'));
             walletIds.length.should.equal(1);
             walletIds[0].should.equal(wallet.id);
             done();
@@ -5717,7 +5717,7 @@ describe('Wallet service', function() {
         minTs: +Date.now() - (60 * 1000),
       }, function(err, notifications) {
         should.not.exist(err);
-        var types = _.pluck(notifications, 'type');
+        var types = _.map(notifications, 'type');
         types.should.deep.equal(['NewTxProposal', 'NewTxProposal']);
         done();
       });
@@ -5725,14 +5725,14 @@ describe('Wallet service', function() {
     it('should pull notifications after a given notification id', function(done) {
       server.getNotifications({}, function(err, notifications) {
         should.not.exist(err);
-        var from = _.first(_.takeRight(notifications, 2)).id; // second to last
+        var from = _.head(_.takeRight(notifications, 2)).id; // second to last
         server.getNotifications({
           notificationId: from,
           minTs: +Date.now() - (60 * 1000),
         }, function(err, res) {
           should.not.exist(err);
           res.length.should.equal(1);
-          res[0].id.should.equal(_.first(_.takeRight(notifications)).id);
+          res[0].id.should.equal(_.head(_.takeRight(notifications)).id);
           done();
         });
       });
@@ -5740,7 +5740,7 @@ describe('Wallet service', function() {
     it('should return empty if no notifications found after a given id', function(done) {
       server.getNotifications({}, function(err, notifications) {
         should.not.exist(err);
-        var from = _.first(_.takeRight(notifications)).id; // last one
+        var from = _.head(_.takeRight(notifications)).id; // last one
         server.getNotifications({
           notificationId: from,
         }, function(err, res) {
@@ -5784,7 +5784,7 @@ describe('Wallet service', function() {
           }, function(err, notifications) {
             should.not.exist(err);
             notifications.length.should.equal(2);
-            var types = _.pluck(notifications, 'type');
+            var types = _.map(notifications, 'type');
             types.should.deep.equal(['TxProposalAcceptedBy', 'TxProposalFinallyAccepted']);
             done();
           });
@@ -5803,7 +5803,7 @@ describe('Wallet service', function() {
           }, function(err, notifications) {
             should.not.exist(err);
             notifications.length.should.equal(2);
-            var types = _.pluck(notifications, 'type');
+            var types = _.map(notifications, 'type');
             types.should.deep.equal(['TxProposalRejectedBy', 'TxProposalFinallyRejected']);
             done();
           });
@@ -5829,7 +5829,7 @@ describe('Wallet service', function() {
             }, function(err, notifications) {
               should.not.exist(err);
               notifications.length.should.equal(3);
-              var types = _.pluck(notifications, 'type');
+              var types = _.map(notifications, 'type');
               types.should.deep.equal(['TxProposalAcceptedBy', 'TxProposalFinallyAccepted', 'NewOutgoingTx']);
               done();
             });
@@ -5859,7 +5859,7 @@ describe('Wallet service', function() {
             }, function(err, notifications) {
               should.not.exist(err);
               notifications.length.should.equal(3);
-              var types = _.pluck(notifications, 'type');
+              var types = _.map(notifications, 'type');
               types.should.deep.equal(['TxProposalAcceptedBy', 'TxProposalFinallyAccepted', 'NewOutgoingTxByThirdParty']);
               done();
             });
@@ -6235,7 +6235,7 @@ describe('Wallet service', function() {
                 time: Date.now() / 1000,
                 inputs: [{
                   address: tx.inputs[0].address,
-                  amount: utxos[0].micros,
+                  amount: utxos[0].satoshis,
                 }],
                 outputs: [{
                   address: changeAddresses[0].address,
@@ -6357,7 +6357,7 @@ describe('Wallet service', function() {
         server.getTxHistory(testCase.opts, function(err, txs) {
           should.not.exist(err);
           should.exist(txs);
-          _.pluck(txs, 'time').should.deep.equal(testCase.expected);
+          _.map(txs, 'time').should.deep.equal(testCase.expected);
           next();
         });
       }, done);
@@ -6629,7 +6629,7 @@ describe('Wallet service', function() {
         }, function(err, txs) {
           should.not.exist(err);
           txs.length.should.equal(20);
-          _.first(txs).confirmations.should.equal(501);
+          _.head(txs).confirmations.should.equal(501);
           _.last(txs).confirmations.should.equal(520);
 
           blockchainExplorer.getBlockchainHeight = sinon.stub().callsArgWith(0, null, 2000);
@@ -6646,7 +6646,7 @@ describe('Wallet service', function() {
                 limit: 30,
               }, function(err, txs) {
                 should.not.exist(err);
-                _.first(txs).confirmations.should.equal(1001);
+                _.head(txs).confirmations.should.equal(1001);
                 _.last(txs).confirmations.should.equal(1020);
 
                 server.storage.storeTxHistoryCache.restore();
@@ -6691,7 +6691,7 @@ describe('Wallet service', function() {
         }, function(err, txs) {
           should.not.exist(err);
           txs.length.should.equal(20);
-          _.first(txs).confirmations.should.equal(500);
+          _.head(txs).confirmations.should.equal(500);
           _.last(txs).confirmations.should.equal(519);
 
           server.storage.storeTxHistoryCache.restore();
@@ -6729,7 +6729,7 @@ describe('Wallet service', function() {
         }, function(err, txs) {
           should.not.exist(err);
           txs.length.should.equal(20);
-          _.first(txs).confirmations.should.equal(0);
+          _.head(txs).confirmations.should.equal(0);
           _.last(txs).confirmations.should.equal(19);
 
           server.storage.storeTxHistoryCache.restore();
@@ -6760,7 +6760,7 @@ describe('Wallet service', function() {
             should.exist(txs);
             txs.length.should.equal(5);
             var s = h.slice(i, i + 5);
-            _.pluck(txs, 'txid').should.deep.equal(_.pluck(s, 'txid'));
+            _.map(txs, 'txid').should.deep.equal(_.map(s, 'txid'));
             fromCache.should.equal(false);
             next();
           });
@@ -6774,7 +6774,7 @@ describe('Wallet service', function() {
               should.exist(txs);
               txs.length.should.equal(5);
               var s = h.slice(i, i + 5);
-              _.pluck(txs, 'txid').should.deep.equal(_.pluck(s, 'txid'));
+              _.map(txs, 'txid').should.deep.equal(_.map(s, 'txid'));
               fromCache.should.equal(i >= Defaults.CONFIRMATIONS_TO_START_CACHING && i < 200);
               next();
             });
@@ -6793,7 +6793,7 @@ describe('Wallet service', function() {
             should.exist(txs);
             txs.length.should.equal(5);
             var s = h.slice(i, i + 5);
-            _.pluck(txs, 'txid').should.deep.equal(_.pluck(s, 'txid'));
+            _.map(txs, 'txid').should.deep.equal(_.map(s, 'txid'));
             fromCache.should.equal(false);
             next();
           });
@@ -6807,7 +6807,7 @@ describe('Wallet service', function() {
               should.exist(txs);
               txs.length.should.equal(7);
               var s = h.slice(i, i + 7);
-              _.pluck(txs, 'txid').should.deep.equal(_.pluck(s, 'txid'));
+              _.map(txs, 'txid').should.deep.equal(_.map(s, 'txid'));
               fromCache.should.equal(i >= Defaults.CONFIRMATIONS_TO_START_CACHING);
               next();
             });
@@ -6827,7 +6827,7 @@ describe('Wallet service', function() {
             should.exist(txs);
             txs.length.should.equal(5);
             var s = h.slice(i, i + 5);
-            _.pluck(txs, 'txid').should.deep.equal(_.pluck(s, 'txid'));
+            _.map(txs, 'txid').should.deep.equal(_.map(s, 'txid'));
             fromCache.should.equal(false);
             next();
           });
@@ -6853,7 +6853,7 @@ describe('Wallet service', function() {
                 should.exist(txs);
                 txs.length.should.equal(5);
                 var s = h.slice(i, i + 5);
-                _.pluck(txs, 'txid').should.deep.equal(_.pluck(s, 'txid'));
+                _.map(txs, 'txid').should.deep.equal(_.map(s, 'txid'));
                 fromCache.should.equal(i >= Defaults.CONFIRMATIONS_TO_START_CACHING && !reset);
                 next();
               });
@@ -6902,7 +6902,7 @@ describe('Wallet service', function() {
             server.storage.fetchAddresses(wallet.id, function(err, addresses) {
               should.exist(addresses);
               addresses.length.should.equal(expectedPaths.length);
-              var paths = _.pluck(addresses, 'path');
+              var paths = _.map(addresses, 'path');
               _.difference(paths, expectedPaths).length.should.equal(0);
               server.createAddress({}, function(err, address) {
                 // address.path.should.equal('m/0/3');
@@ -6934,7 +6934,7 @@ describe('Wallet service', function() {
             server.storage.fetchAddresses(wallet.id, function(err, addresses) {
               should.exist(addresses);
               addresses.length.should.equal(expectedPaths.length);
-              var paths = _.pluck(addresses, 'path');
+              var paths = _.map(addresses, 'path');
               _.difference(paths, expectedPaths).length.should.equal(0);
               server.createAddress({}, function(err, address) {
                 should.not.exist(err);
@@ -7005,9 +7005,9 @@ describe('Wallet service', function() {
           function(next) {
             helpers.stubUtxos(server, wallet, [1, 2, 3], function(utxos) {
               should.exist(utxos);
-              helpers.stubAddressActivity(_.pluck(utxos, 'address'));
+              helpers.stubAddressActivity(_.map(utxos, 'address'));
               server.getBalance({}, function(err, balance) {
-                balance.totalAmount.should.equal(helpers.toMicro(6));
+                balance.totalAmount.should.equal(helpers.toSatoshi(6));
                 next(null, server, wallet);
               });
             });
@@ -7030,7 +7030,7 @@ describe('Wallet service', function() {
             server.scan({}, function(err) {
               should.not.exist(err);
               server.getBalance(wallet.id, function(err, balance) {
-                balance.totalAmount.should.equal(helpers.toMicro(6));
+                balance.totalAmount.should.equal(helpers.toSatoshi(6));
                 next();
               })
             });
@@ -7097,7 +7097,7 @@ describe('Wallet service', function() {
             server.storage.fetchAddresses(wallet.id, function(err, addresses) {
               should.exist(addresses);
               addresses.length.should.equal(expectedPaths.length);
-              var paths = _.pluck(addresses, 'path');
+              var paths = _.map(addresses, 'path');
               _.difference(paths, expectedPaths).length.should.equal(0);
               server.createAddress({}, function(err, address) {
                 should.not.exist(err);
@@ -7132,7 +7132,7 @@ describe('Wallet service', function() {
           server.storage.fetchAddresses(wallet.id, function(err, addresses) {
             should.exist(addresses);
             addresses.length.should.equal(expectedPaths.length);
-            var paths = _.pluck(addresses, 'path');
+            var paths = _.map(addresses, 'path');
             _.difference(paths, expectedPaths).length.should.equal(0);
             done();
           })
@@ -7180,7 +7180,7 @@ describe('Wallet service', function() {
             server.storage.fetchAddresses(wallet.id, function(err, addresses) {
               should.exist(addresses);
               addresses.length.should.equal(expectedPaths.length);
-              var paths = _.pluck(addresses, 'path');
+              var paths = _.map(addresses, 'path');
               _.difference(paths, expectedPaths).length.should.equal(0);
               server.createAddress({}, function(err, address) {
                 should.not.exist(err);

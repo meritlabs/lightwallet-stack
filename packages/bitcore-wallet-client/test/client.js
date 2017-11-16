@@ -32,9 +32,9 @@ var Errors = require('../lib/errors');
 
 var helpers = {};
 
-helpers.toMicro = function(mrt) {
+helpers.toSatoshi = function(mrt) {
   if (_.isArray(mrt)) {
-    return _.map(mrt, helpers.toMicro);
+    return _.map(mrt, helpers.toSatoshi);
   } else {
     return parseFloat((mrt * 1e8).toPrecision(12));
   }
@@ -93,7 +93,7 @@ helpers.generateUtxos = function(scriptType, publicKeyRing, path, requiredSignat
     var obj = {
       txid: Bitcore.crypto.Hash.sha256(new Buffer(i)).toString('hex'),
       vout: 100,
-      micros: helpers.toMicro(amount),
+      satoshis: helpers.toSatoshi(amount),
       scriptPubKey: scriptPubKey.toBuffer().toString('hex'),
       address: address.address,
       path: path,
@@ -232,7 +232,7 @@ blockchainExplorerMock.getTransactions = function(addresses, from, to, cb) {
 };
 
 blockchainExplorerMock.getAddressActivity = function(address, cb) {
-  var activeAddresses = _.pluck(blockchainExplorerMock.utxos || [], 'address');
+  var activeAddresses = _.map(blockchainExplorerMock.utxos || [], 'address');
   return cb(null, _.includes(activeAddresses, address));
 };
 
@@ -521,7 +521,7 @@ describe('client API', function() {
         var t2 = new Bitcore.Transaction(t);
         t2.inputs.length.should.equal(2);
         t2.outputs.length.should.equal(2);
-        t2.outputs[0].micros.should.equal(1200);
+        t2.outputs[0].satoshis.should.equal(1200);
       });
       it('should build a tx correctly (BIP44)', function() {
         var toAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
@@ -620,7 +620,7 @@ describe('client API', function() {
             to: sinon.stub(),
             change: sinon.stub(),
             outputs: [{
-              micros: 1000,
+              satoshis: 1000,
             }],
             fee: sinon.stub(),
           }
@@ -706,11 +706,11 @@ describe('client API', function() {
         should.not.exist(bitcoreError);
         t.outputs.length.should.equal(4);
         t.outputs[0].script.toHex().should.equal(txp.outputs[0].script);
-        t.outputs[0].micros.should.equal(txp.outputs[0].amount);
+        t.outputs[0].satoshis.should.equal(txp.outputs[0].amount);
         t.outputs[1].script.toHex().should.equal(txp.outputs[1].script);
-        t.outputs[1].micros.should.equal(txp.outputs[1].amount);
+        t.outputs[1].satoshis.should.equal(txp.outputs[1].amount);
         t.outputs[2].script.toHex().should.equal(txp.outputs[2].script);
-        t.outputs[2].micros.should.equal(txp.outputs[2].amount);
+        t.outputs[2].satoshis.should.equal(txp.outputs[2].amount);
         var changeScript = Bitcore.Script.fromAddress(txp.changeAddress.address).toHex();
         t.outputs[3].script.toHex().should.equal(changeScript);
       });
@@ -1002,7 +1002,7 @@ describe('client API', function() {
 
         var notifications = [];
         clients[0]._fetchLatestNotifications(5, function() {
-          _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete']);
+          _.map(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete']);
           clock.tick(2000);
           notifications = [];
           clients[0]._fetchLatestNotifications(5, function() {
@@ -1011,7 +1011,7 @@ describe('client API', function() {
             clients[1].createAddress(function(err, x) {
               should.not.exist(err);
               clients[0]._fetchLatestNotifications(5, function() {
-                _.pluck(notifications, 'type').should.deep.equal(['NewAddress']);
+                _.map(notifications, 'type').should.deep.equal(['NewAddress']);
                 clock.tick(2000);
                 notifications = [];
                 clients[0]._fetchLatestNotifications(5, function() {
@@ -1166,7 +1166,7 @@ describe('client API', function() {
           clients[0].openWallet(function(err, walletStatus) {
             should.not.exist(err);
             should.exist(walletStatus);
-            _.difference(_.pluck(walletStatus.copayers, 'name'), ['creator', 'guest']).length.should.equal(0);
+            _.difference(_.map(walletStatus.copayers, 'name'), ['creator', 'guest']).length.should.equal(0);
             if (++checks == 2) done();
           });
         });
@@ -1564,7 +1564,7 @@ describe('client API', function() {
           should.not.exist(err);
           // utxos.length.should.equal(2);
           utxos.length.should.equal(3); // for singleAddress = true
-          _.sum(utxos, 'micros').should.equal(3 * 1e8); // for singleAddress = true
+          _.sumBy(utxos, 'satoshis').should.equal(3 * 1e8); // for singleAddress = true
           done();
         });
       });
@@ -1582,7 +1582,7 @@ describe('client API', function() {
       clients[0].getFeeLevels('livenet', function(err, levels) {
         should.not.exist(err);
         should.exist(levels);
-        _.difference(['priority', 'normal', 'economy'], _.pluck(levels, 'level')).should.be.empty;
+        _.difference(['priority', 'normal', 'economy'], _.map(levels, 'level')).should.be.empty;
         done();
       });
     });
@@ -1783,11 +1783,11 @@ describe('client API', function() {
       clients[0].getSendMaxInfo(opts, function(err, result) {
         should.not.exist(err);
         result.inputs.length.should.not.equal(0);
-        var totalMicros = 0;
+        var totalSatoshis = 0;
         _.each(result.inputs, function(i) {
-          totalMicros = totalMicros + i.micros;
+          totalSatoshis = totalSatoshis + i.satoshis;
         });
-        result.amount.should.be.equal(totalMicros - result.fee);
+        result.amount.should.be.equal(totalSatoshis - result.fee);
         done();
       });
     });
@@ -1935,8 +1935,8 @@ describe('client API', function() {
         should.not.exist(err);
         // notifications.length.should.equal(3);
         notifications.length.should.equal(2); // for singleAddress = true
-        // _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete', 'NewAddress']);
-        _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete']); // for singleAddress = true
+        // _.map(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete', 'NewAddress']);
+        _.map(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete']); // for singleAddress = true
         clients[0].getNotifications({
           lastNotificationId: _.last(notifications).id
         }, function(err, notifications) {
@@ -1959,16 +1959,16 @@ describe('client API', function() {
         should.not.exist(err);
         // notifications.length.should.equal(3);
         notifications.length.should.equal(2); // for singleAddress = true
-        // _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete', 'NewAddress']);
-        _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete']); // for singleAddress = true
+        // _.map(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete', 'NewAddress']);
+        _.map(notifications, 'type').should.deep.equal(['NewCopayer', 'WalletComplete']); // for singleAddress = true
         clients[0].getNotifications({
           includeOwn: true,
         }, function(err, notifications) {
           should.not.exist(err);
           // notifications.length.should.equal(5);
           notifications.length.should.equal(4);
-          // _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'NewCopayer', 'WalletComplete', 'NewAddress', 'NewAddress']);
-          _.pluck(notifications, 'type').should.deep.equal(['NewCopayer', 'NewCopayer', 'WalletComplete', 'NewAddress']);
+          // _.map(notifications, 'type').should.deep.equal(['NewCopayer', 'NewCopayer', 'WalletComplete', 'NewAddress', 'NewAddress']);
+          _.map(notifications, 'type').should.deep.equal(['NewCopayer', 'NewCopayer', 'WalletComplete', 'NewAddress']);
           done();
         });
       });
@@ -2019,10 +2019,10 @@ describe('client API', function() {
         txp.status.should.equal('temporary');
         txp.message.should.equal('hello');
         txp.outputs.length.should.equal(2);
-        _.sum(txp.outputs, 'amount').should.equal(3e8);
+        _.sumBy(txp.outputs, 'amount').should.equal(3e8);
         txp.outputs[0].message.should.equal('world');
         _.uniq(txp.outputs, 'toAddress').length.should.equal(1);
-        _.uniq(_.pluck(txp.outputs, 'toAddress'))[0].should.equal(toAddress);
+        _.uniq(_.map(txp.outputs, 'toAddress'))[0].should.equal(toAddress);
         txp.hasUnconfirmedInputs.should.equal(false);
         txp.feeLevel.should.equal('normal');
         txp.feePerKb.should.equal(123e2);
@@ -3433,7 +3433,7 @@ describe('client API', function() {
             clients[0].getTxHistory(testCase.opts, function(err, txs) {
               should.not.exist(err);
               should.exist(txs);
-              var times = _.pluck(txs, 'time');
+              var times = _.map(txs, 'time');
               times.should.deep.equal(testCase.expected);
               next();
             });
@@ -3554,7 +3554,7 @@ describe('client API', function() {
           }, function(err, notes) {
             should.not.exist(err);
             notes.length.should.equal(2);
-            _.difference(_.pluck(notes, 'txid'), ['123', '456']).should.be.empty;
+            _.difference(_.map(notes, 'txid'), ['123', '456']).should.be.empty;
             next();
           });
         },
@@ -4007,7 +4007,7 @@ describe('client API', function() {
                   recoveryClient.getStatus({}, function(err, status) {
                     should.not.exist(err);
                     status.wallet.name.should.equal('mywallet');
-                    _.difference(_.pluck(status.wallet.copayers, 'name'), ['creator', 'copayer 1']).length.should.equal(0);
+                    _.difference(_.map(status.wallet.copayers, 'name'), ['creator', 'copayer 1']).length.should.equal(0);
                     recoveryClient.createAddress(function(err, addr2) {
                       should.not.exist(err);
                       should.exist(addr2);
@@ -4118,7 +4118,7 @@ describe('client API', function() {
                       should.not.exist(err);
                       recoveryClient.getStatus({}, function(err, status) {
                         should.not.exist(err);
-                        _.difference(_.pluck(status.wallet.copayers, 'name'), ['creator', 'copayer 1']).length.should.equal(0);
+                        _.difference(_.map(status.wallet.copayers, 'name'), ['creator', 'copayer 1']).length.should.equal(0);
                         recoveryClient.createAddress(function(err, addr2) {
                           should.not.exist(err);
                           should.exist(addr2);
@@ -4680,14 +4680,14 @@ describe('client API', function() {
             should.not.exist(err);
             recoveryClient.getStatus({}, function(err, status) {
               should.not.exist(err);
-              _.pluck(status.wallet.copayers, 'name').sort().should.deep.equal(['123', '234', '345']);
+              _.map(status.wallet.copayers, 'name').sort().should.deep.equal(['123', '234', '345']);
               var t2 = ImportData.copayers[1];
               var c2p = helpers.newClient(newApp);
               c2p.createWalletFromOldCopay(t2.username, t2.password, t2.ls[w], function(err) {
                 should.not.exist(err);
                 c2p.getStatus({}, function(err, status) {
                   should.not.exist(err);
-                  _.pluck(status.wallet.copayers, 'name').sort().should.deep.equal(['123', '234', '345']);
+                  _.map(status.wallet.copayers, 'name').sort().should.deep.equal(['123', '234', '345']);
                   done();
                 });
               });
@@ -5071,7 +5071,7 @@ describe('client API', function() {
           should.exist(tx);
           tx.outputs.length.should.equal(1);
           var output = tx.outputs[0];
-          output.micros.should.equal(123 * 1e8 - 10000);
+          output.satoshis.should.equal(123 * 1e8 - 10000);
           var script = new Bitcore.Script.buildPublicKeyHashOut(Bitcore.Address.fromString('1GG3JQikGC7wxstyavUBDoCJ66bWLLENZC'));
           output.script.toString('hex').should.equal(script.toString('hex'));
           done();

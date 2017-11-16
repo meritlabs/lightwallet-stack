@@ -1,0 +1,29 @@
+<ion-header>
+    <ion-navbar color="secondary">
+        <ion-title translate></ion-title>
+        <ion-buttons end>
+            <button ion-button (click)="close()">
+                close
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+
+    <ion-card  padding>
+        <div translate>
+
+            <div class="icon">
+                <img src="assets/img/qr-code.svg">
+            </div>
+
+            QR Scanner not available
+
+            <div>{{err}}</div>
+        </div>
+    </ion-card>
+
+
+</ion-content>
