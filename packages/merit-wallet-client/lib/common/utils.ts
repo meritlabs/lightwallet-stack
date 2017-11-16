@@ -140,8 +140,8 @@ export module Utils {
     return this.verifyMessage(requestPubKey, signature, pub.toString());
   };
 
-  export const  formatAmount = function(micros, unit, opts) {
-    $.shouldBeNumber(micros);
+  export const  formatAmount = function(satoshis, unit, opts) {
+    $.shouldBeNumber(satoshis);
     $.checkArgument(_.includes(_.keys(Constants.UNITS), unit));
 
     function clipDecimals(number, decimals) {
@@ -169,7 +169,7 @@ export module Utils {
 
     let u = Constants.UNITS[unit];
     let precision = opts.fullPrecision ? 'full' : 'short';
-    let amount = clipDecimals((micros / u.toMicros), u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
+    let amount = clipDecimals((satoshis / u.toSatoshis), u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
     return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u[precision].minDecimals);
   };
 
@@ -197,7 +197,7 @@ export module Utils {
         if (o.script) {
           t.addOutput(new Bitcore.Transaction.Output({
             script: o.script,
-            micros: o.amount
+            satoshis: o.amount
           }));
         } else {
           t.to(o.toAddress, o.amount);
@@ -223,10 +223,10 @@ export module Utils {
 
     // Validate inputs vs outputs independently of Bitcore
     let totalInputs = _.reduce(txp.inputs, function(memo, i) {
-      return +i.micros + memo;
+      return +i.satoshis + memo;
     }, 0);
     let totalOutputs = _.reduce(t.outputs, function(memo, o) {
-      return +o.micros + memo;
+      return +o.satoshis + memo;
     }, 0);
 
     $.checkState(totalInputs - totalOutputs >= 0);
