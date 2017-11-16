@@ -153,7 +153,7 @@ export class WalletService {
       // TODO!!: Make this return a promise and properly promisify the stack.
       let cacheBalance = (wallet: IMeritWalletClient, balance: any): Promise<any> => {
         return new Promise((resolve, reject) => {
-          if (!balance) resolve();
+          if (!balance) return resolve();
 
           let configGet: any = this.configService.get();
           let config: any = configGet.wallet;
@@ -182,8 +182,8 @@ export class WalletService {
           }
 
           // Selected unit
-          cache.unitToMicro = config.settings.unitToMicro;
-          cache.satToUnit = 1 / cache.unitToMicro;
+          cache.unitToSatoshi = config.settings.unitToSatoshi;
+          cache.satToUnit = 1 / cache.unitToSatoshi;
 
           //STR
           cache.totalBalanceStr = this.txFormatService.formatAmountStr(cache.totalBalanceSat);
@@ -314,7 +314,7 @@ export class WalletService {
 
   public getAddress(wallet: IMeritWalletClient, forceNew: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceService.getLastAddress(wallet.id).then((addr) => {
+      return this.persistenceService.getLastAddress(wallet.id).then((addr) => {
         if (!forceNew && addr) return resolve(addr);
 
         if (!wallet.isComplete())
@@ -387,7 +387,7 @@ export class WalletService {
   private getSavedTxs(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      this.persistenceService.getTxHistory(walletId).then((txs: any) => {
+      return this.persistenceService.getTxHistory(walletId).then((txs: any) => {
         let localTxs = [];
 
         if (!txs) {
@@ -410,7 +410,7 @@ export class WalletService {
     return new Promise((resolve, reject) => {
       let res = [];
 
-      wallet.getTxHistory({
+      return wallet.getTxHistory({
         skip: skip,
         limit: limit
       }).then((txsFromServer: Array<any>) => {
@@ -461,7 +461,7 @@ export class WalletService {
         };
       };
 
-      this.getSavedTxs(walletId).then((txsFromLocal: any) => {
+      return this.getSavedTxs(walletId).then((txsFromLocal: any) => {
 
         fixTxsUnit(txsFromLocal);
 
@@ -475,7 +475,7 @@ export class WalletService {
 
         let getNewTxs = (newTxs: Array<any>, skip: number): Promise<any> => {
           return new Promise((resolve, reject) => {
-            this.getTxsFromServer(wallet, skip, endingTxid, requestLimit).then((result: any) => {
+            return this.getTxsFromServer(wallet, skip, endingTxid, requestLimit).then((result: any) => {
 
               var res = result.res;
               var shouldContinue = result.shouldContinue ? result.shouldContinue : false;
@@ -517,7 +517,7 @@ export class WalletService {
           });
         };
 
-        getNewTxs([], 0).then((txs: any) => {
+        return getNewTxs([], 0).then((txs: any) => {
 
           let array: Array<any> = _.compact(txs.concat(confirmedTxs));
           let newHistory = _.uniqBy(array, (x: any) => {
@@ -530,7 +530,7 @@ export class WalletService {
               if (!endingTs) return resolve();
 
               this.logger.debug('Syncing notes from: ' + endingTs);
-              wallet.getTxNotes({
+              return wallet.getTxNotes({
                 minTs: endingTs
               }).then((notes: any) => {
                 _.each(notes, (note: any) => {
@@ -557,7 +557,7 @@ export class WalletService {
 
           updateLowAmount(txs);
 
-          updateNotes().then(() => {
+          return updateNotes().then(() => {
 
             // <HACK>
             if (foundLimitTx) {
@@ -714,7 +714,7 @@ export class WalletService {
         let opts = {
           limitTx: txid
         };
-        this.getTxHistory(wallet, opts).then((txHistory: any) => {
+        return this.getTxHistory(wallet, opts).then((txHistory: any) => {
           finish(txHistory);
         }).catch((err) => {
           return reject(err);
@@ -737,7 +737,7 @@ export class WalletService {
       if (isHistoryCached() && !opts.force) return resolve(wallet.completeHistory);
 
       this.logger.debug('Updating Transaction History');
-      this.updateLocalTxHistory(wallet, opts).then((txs: any) => {
+      return this.updateLocalTxHistory(wallet, opts).then((txs: any) => {
         if (opts.limitTx) {
           return resolve(txs);
         };
@@ -788,7 +788,9 @@ export class WalletService {
       if (txp.status != 'accepted')
         return reject('TX_NOT_ACCEPTED');
 
-      return Promise.resolve(wallet.broadcastTxProposal(txp));
+      return resolve(txp);
+    }).then((txp) => {
+      return wallet.broadcastTxProposal(txp);
     });
   }
 
@@ -804,7 +806,7 @@ export class WalletService {
       if (_.isEmpty(txp) || _.isEmpty(wallet))
         return reject('MISSING_PARAMETER');
 
-      wallet.removeTxProposal(txp).then(() => {
+      return wallet.removeTxProposal(txp).then(() => {
         this.logger.debug('Transaction removed');
         this.invalidateCache(wallet);
         // $rootScope.$emit('Local/TxAction', wallet.id);   
@@ -846,7 +848,7 @@ export class WalletService {
       prefs.language = "English" // This line was hardcoded - TODO: prefs.language = uxLanguage.getCurrentLanguage();
       // prefs.unit = walletSettings.unitCode; // TODO: remove, not used
 
-      updateRemotePreferencesFor(_.clone(clients), prefs).then(() => {
+      return updateRemotePreferencesFor(_.clone(clients), prefs).then(() => {
         this.logger.debug('Remote preferences saved for' + _.map(clients, (x: any) => {
           return x.credentials.walletId;
         }).join(','));
@@ -924,15 +926,15 @@ export class WalletService {
       opts.networkName = walletData.network;
       this.logger.debug('Joining Wallet:', opts);
 
-      this.seedWallet(opts).then((walletClient: any) => {
+      return this.seedWallet(opts).then((walletClient: any) => {
         walletClient.joinWallet(opts.secret, opts.myName || 'me', {
         }, (err: any) => {
           if (err) {
-            this.bwcErrorService.cb(err, 'Could not join wallet').then((msg: string) => { //TODO getTextCatalog
+            return this.bwcErrorService.cb(err, 'Could not join wallet').then((msg: string) => { //TODO getTextCatalog
               return reject(msg);
             });
           } else {
-            this.profileService.addAndBindWalletClient(walletClient, {
+            return this.profileService.addAndBindWalletClient(walletClient, {
               bwsurl: opts.bwsurl
             }).then((wallet: IMeritWalletClient) => {
               return resolve(wallet);
@@ -953,7 +955,7 @@ export class WalletService {
   public expireAddress(wallet: IMeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
       this.logger.debug('Cleaning Address ' + wallet.id);
-      this.persistenceService.clearLastAddress(wallet.id).then(() => {
+      return this.persistenceService.clearLastAddress(wallet.id).then(() => {
         return resolve();
       }).catch((err: any) => {
         return reject(err);
@@ -978,15 +980,15 @@ export class WalletService {
 
         let minFee = this.getMinFee(wallet, levels, resp.length);
 
-        let balance = _.sumBy(resp, 'micros');
+        let balance = _.sumBy(resp, 'satoshis');
 
         // for 2 outputs
         let lowAmount = this.getLowAmount(wallet, levels);
         let lowUtxos = _.filter(resp, (x: any) => {
-          return x.micros < lowAmount;
+          return x.satoshis < lowAmount;
         });
 
-        let totalLow = _.sumBy(lowUtxos, 'micros');
+        let totalLow = _.sumBy(lowUtxos, 'satoshis');
         return resolve({
           allUtxos: resp || [],
           lowUtxos: lowUtxos || [],
@@ -1024,7 +1026,7 @@ export class WalletService {
   // An alert dialog
   private askPassword(name: string, title: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.popupService.ionicPrompt(title, name, null, null).then((res: any) => {
+      return this.popupService.ionicPrompt(title, name, null, null).then((res: any) => {
         return resolve(res);
       }).catch((err: any) => {
         return reject(err);
@@ -1036,10 +1038,10 @@ export class WalletService {
     return new Promise((resolve, reject) => {
       var title = 'Enter new spending password'; //TODO gettextcatalog
       var warnMsg = 'Your wallet key will be encrypted. The Spending Password cannot be recovered. Be sure to write it down.'; //TODO gettextcatalog
-      this.askPassword(warnMsg, title).then((password: string) => {
+      return this.askPassword(warnMsg, title).then((password: string) => {
         if (!password) return reject('no password'); //TODO gettextcatalog
         title = 'Confirm your new spending password'; //TODO gettextcatalog
-        this.askPassword(warnMsg, title).then((password2: string) => {
+        return this.askPassword(warnMsg, title).then((password2: string) => {
           if (!password2 || password != password2) return reject('password mismatch');
           wallet.encryptPrivateKey(password, {});
           return resolve();
@@ -1056,7 +1058,7 @@ export class WalletService {
   public decrypt(wallet: IMeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
       this.logger.debug('Disabling private key encryption for' + wallet.name);
-      this.askPassword(null, 'Enter Spending Password').then((password: string) => {  //TODO gettextcatalog
+      return this.askPassword(null, 'Enter Spending Password').then((password: string) => {  //TODO gettextcatalog
         if (!password) return reject('no password');
         try {
           wallet.decryptPrivateKey(password);
@@ -1071,7 +1073,7 @@ export class WalletService {
   public handleEncryptedWallet(wallet: IMeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!this.isEncrypted(wallet)) return resolve();
-      this.askPassword(wallet.name, 'Enter Spending Password').then((password: string) => { //TODO gettextcatalog
+      return this.askPassword(wallet.name, 'Enter Spending Password').then((password: string) => { //TODO gettextcatalog
         if (!password) return reject('No password');
         if (!wallet.checkPassword(password)) return reject('Wrong password');
         return resolve(password);
@@ -1082,7 +1084,7 @@ export class WalletService {
   public reject(wallet: IMeritWalletClient, txp: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this.spinnerService.setSpinnerStatus('rejectTx', true);
-      this.rejectTx(wallet, txp).then((txpr: any) => {
+      return this.rejectTx(wallet, txp).then((txpr: any) => {
         this.invalidateCache(wallet);
         this.spinnerService.setSpinnerStatus('rejectTx', false);
         //$rootScope.$emit('Local/TxAction', wallet.id);
@@ -1096,7 +1098,7 @@ export class WalletService {
   public onlyPublish(wallet: IMeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this.spinnerService.setSpinnerStatus('sendingTx', true, customStatusHandler);
-      this.publishTx(wallet, txp).then((publishedTxp) => {
+      return this.publishTx(wallet, txp).then((publishedTxp) => {
         this.invalidateCache(wallet);
         this.spinnerService.setSpinnerStatus('sendingTx', false, customStatusHandler);
         //$rootScope.$emit('Local/TxAction', wallet.id);
@@ -1124,14 +1126,10 @@ export class WalletService {
   private signAndBroadcast(wallet: IMeritWalletClient, publishedTxp: any, password: any, customStatusHandler: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      this.spinnerService.setSpinnerStatus('signingTx', true, customStatusHandler);
-      this.signTx(wallet, publishedTxp, password).then((signedTxp: any) => {
-        this.spinnerService.setSpinnerStatus('signingTx', false, customStatusHandler);
+      return this.signTx(wallet, publishedTxp, password).then((signedTxp: any) => {
         this.invalidateCache(wallet);
         if (signedTxp.status == 'accepted') {
-          this.spinnerService.setSpinnerStatus('broadcastingTx', true, customStatusHandler);
-          this.broadcastTx(wallet, signedTxp).then((broadcastedTxp: any) => {
-            this.spinnerService.setSpinnerStatus('broadcastingTx', false, customStatusHandler);
+          return this.broadcastTx(wallet, signedTxp).then((broadcastedTxp: any) => {
             //$rootScope.$emit('Local/TxAction', wallet.id);
             return resolve(broadcastedTxp);
           }).catch((err) => {
@@ -1153,30 +1151,22 @@ export class WalletService {
   public publishAndSign(wallet: IMeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
     return new Promise((resolve, reject) => {
       // Already published?
+      let walletPassword = '';
       if (txp.status == 'pending') {
-        this.prepare(wallet).then((password: string) => {
-          this.signAndBroadcast(wallet, txp, password, customStatusHandler).then((broadcastedTxp: any) => {
+        return this.prepare(wallet).then((password: string) => {
+          return this.signAndBroadcast(wallet, txp, password, customStatusHandler)
+            .then((broadcastedTxp: any) => {
             return resolve(broadcastedTxp);
           }).catch((err) => {
-            return reject(err);
-          });
-        }).catch((err) => {
-          return reject(this.bwcErrorService.msg(err));
-        });
-      } else {
-        this.prepare(wallet).then((password: string) => {
-          this.spinnerService.setSpinnerStatus('sendingTx', true, customStatusHandler);
-          this.publishTx(wallet, txp).then((publishedTxp: any) => {
-            this.spinnerService.setSpinnerStatus('sendingTx', false, customStatusHandler);
-            this.signAndBroadcast(wallet, publishedTxp, password, customStatusHandler).then((broadcastedTxp: any) => {
-              return resolve(broadcastedTxp);
-            }).catch((err) => {
-              return reject(err);
-            });
-          }).catch((err) => {
-            this.spinnerService.setSpinnerStatus('sendingTx', false, customStatusHandler);
             return reject(this.bwcErrorService.msg(err));
           });
+        });
+      } else {
+        return this.prepare(wallet).then((password: string) => {
+          walletPassword = password;
+          return this.publishTx(wallet, txp);
+        }).then((publishedTxp: any) => {
+          return resolve(this.signAndBroadcast(wallet, publishedTxp, walletPassword, customStatusHandler));
         }).catch((err) => {
           return reject(this.bwcErrorService.msg(err));
         });
@@ -1231,7 +1221,7 @@ export class WalletService {
       };
       opts.touchIdFor[wallet.id] = enabled;
 
-      this.touchidService.checkWallet(wallet).then(() => {
+      return this.touchidService.checkWallet(wallet).then(() => {
         this.configService.set(opts);
         return resolve();
       }).catch((err) => {
@@ -1245,7 +1235,7 @@ export class WalletService {
 
   public getKeys(wallet: IMeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.prepare(wallet).then((password: string) => {
+      return this.prepare(wallet).then((password: string) => {
         let keys;
         try {
           keys = wallet.getKeys(password);
@@ -1275,7 +1265,8 @@ export class WalletService {
 
       _.each(wallet.credentials.publicKeyRing, (item) => {
         let name = item.copayerName || ('copayer ' + copayer++);
-        newWallet.doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, { }).then((err) => {
+        return newWallet.doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
+        }).then((err) => {
           //Ignore error is copayer already in wallet
           if (err && !(err instanceof this.errors.COPAYER_IN_WALLET)) return reject(err);
           if (++i == wallet.credentials.publicKeyRing.length) return resolve();
@@ -1327,7 +1318,7 @@ export class WalletService {
       if (opts.mnemonic) {
         try {
           // TODO: Type the walletClient
-          this.mnemonicService.seedFromMnemonic(opts, walletClient).then((walletClient: any) => {
+          return this.mnemonicService.seedFromMnemonic(opts, walletClient).then((walletClient: any) => {
             return resolve(walletClient)
           });
         } catch (ex) {
@@ -1387,7 +1378,7 @@ export class WalletService {
   getWalletAnv(wallet:Wallet):Promise<number> {
     return new Promise((resolve, reject) => {
       return resolve(
-       (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
+       (wallet.status && wallet.status.totalBalanceSatoshis) ? wallet.status.totalBalanceSatoshis : 0
       )
     });
   }

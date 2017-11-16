@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
 import { Logger } from 'merit/core/logger';
-import { LoadingController } from 'ionic-angular';
+import { LoadingController, NavController } from 'ionic-angular';
 
 import * as _ from 'lodash';
 
@@ -10,8 +10,7 @@ import * as _ from 'lodash';
 export class SpinnerService {
   constructor(
     private logger: Logger,
-    public loadingCtrl: LoadingController
-  ) {
+    public loadingCtrl: LoadingController  ) {
     console.log("Loaded the spinner service.");
   }
 
@@ -57,16 +56,20 @@ export class SpinnerService {
     'topup': 'Top up in progress...'
   };
   private currentlyRunning:string[] = [];
+  private currentSpinner: any;
 
-  public setSpinnerStatus(processName: string, runningNow: boolean, customStatusHandler?: any): void {
+  public setSpinnerStatus(processName: string, runningNow: boolean, sendToView?: string): void {
     this.logger.info("Setting spinner status for: " + processName + "to: " + runningNow);
 
     if (runningNow) {
       this.currentlyRunning.push(processName);
     } else {
-      _.remove(this.currentlyRunning, processName);
+      _.pull(this.currentlyRunning, processName);
     }
-    this.renderSpinner();    
+    this.logger.warn("What is currently running?");
+    this.logger.warn(this.currentlyRunning);
+    this.logger.warn("lodash version is: ", _.VERSION);
+    this.renderSpinner(sendToView);    
   }
 
   public getSpinnerStatus(processName: string): boolean {
@@ -74,16 +77,23 @@ export class SpinnerService {
   }
 
   // Decide if we want them to automatically dismiss after sometime. 
-  private renderSpinner(): void {
+  private renderSpinner(andThenGoTo?: string): void {
     let loadingMessage = this.loadingMessages[_.head(this.currentlyRunning)] || "Loading...";
-    const loading = this.loadingCtrl.create({
-      content: loadingMessage
+    this.currentSpinner = this.loadingCtrl.create({
+      content: loadingMessage,
+      dismissOnPageChange: true,
+      duration: 5000
     });
     
     if (!_.isEmpty(this.currentlyRunning)) {
-      loading.present();
+      //TODO: This returns a promise.  Need to resolve it somehow.  
+      //Or, at least, tag a handler...
+      this.currentSpinner.present().then(() => {
+        return Promise.resolve();
+      });
     } else {
-      loading.dismissAll();
+      this.logger.warn("Attempting to DismissAll");
+      this.currentSpinner.dismissAll();
     }
   }
 }

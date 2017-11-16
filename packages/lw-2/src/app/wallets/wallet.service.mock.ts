@@ -27,7 +27,7 @@ export class WalletServiceMock {
   getWalletAnv(wallet:Wallet):Promise<any> {
     return new Promise((resolve, reject) => {
       resolve(
-        (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
+        (wallet.status && wallet.status.totalBalanceSatoshis) ? wallet.status.totalBalanceSatoshis : 0
       )
     });
   }
@@ -40,7 +40,7 @@ export class WalletServiceMock {
 
   public getStatus(wallet:any, opts:any):Promise<any> {
     return new Promise((resolve, reject) => {
-      resolve({totalBalanceStr: '0 bits', totalBalanceAlternative: '0.0', alternativeIsoCode: 'USD', totalBalanceMicros: 0, spendableAmount: 0});
+      resolve({totalBalanceStr: '0 bits', totalBalanceAlternative: '0.0', alternativeIsoCode: 'USD', totalBalanceSatoshis: 0, spendableAmount: 0});
     })
   }
 

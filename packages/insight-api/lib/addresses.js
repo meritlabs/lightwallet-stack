@@ -34,19 +34,19 @@ AddressController.prototype.show = function(req, res) {
 };
 
 AddressController.prototype.balance = function(req, res) {
-  this.addressSummarySubQuery(req, res, 'balanceMicros');
+  this.addressSummarySubQuery(req, res, 'balanceSatoshis');
 };
 
 AddressController.prototype.totalReceived = function(req, res) {
-  this.addressSummarySubQuery(req, res, 'totalReceivedMicros');
+  this.addressSummarySubQuery(req, res, 'totalReceivedSatoshis');
 };
 
 AddressController.prototype.totalSent = function(req, res) {
-  this.addressSummarySubQuery(req, res, 'totalSentMicros');
+  this.addressSummarySubQuery(req, res, 'totalSentSatoshis');
 };
 
 AddressController.prototype.unconfirmedBalance = function(req, res) {
-  this.addressSummarySubQuery(req, res, 'unconfirmedBalanceMicros');
+  this.addressSummarySubQuery(req, res, 'unconfirmedBalanceSatoshis');
 };
 
 AddressController.prototype.addressSummarySubQuery = function(req, res, param) {
@@ -70,13 +70,13 @@ AddressController.prototype.getAddressSummary = function(address, options, callb
     var transformed = {
       addrStr: address,
       balance: summary.balance / 1e8,
-      balanceMicros: summary.balance,
+      balanceSatoshis: summary.balance,
       totalReceived: summary.totalReceived / 1e8,
-      totalReceivedMicros: summary.totalReceived,
+      totalReceivedSatoshis: summary.totalReceived,
       totalSent: summary.totalSpent / 1e8,
-      totalSentMicros: summary.totalSpent,
+      totalSentSatoshis: summary.totalSpent,
       unconfirmedBalance: summary.unconfirmedBalance / 1e8,
-      unconfirmedBalanceMicros: summary.unconfirmedBalance,
+      unconfirmedBalanceSatoshis: summary.unconfirmedBalance,
       unconfirmedTxApperances: summary.unconfirmedAppearances, // misspelling - ew
       txApperances: summary.appearances, // yuck
       transactions: summary.txids
@@ -173,7 +173,7 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
     vout: utxoArg.outputIndex,
     scriptPubKey: utxoArg.script,
     amount: utxoArg.satoshis / 1e8,
-    micros: utxoArg.satoshis, 
+    satoshis: utxoArg.satoshis, 
     isCoinbase: utxoArg.isCoinbase 
   }; // ToDo: update after changes in meritd
   if (utxoArg.height && utxoArg.height > 0) {

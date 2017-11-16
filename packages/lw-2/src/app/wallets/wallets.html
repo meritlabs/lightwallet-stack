@@ -183,7 +183,7 @@
                     <span *ngIf="wallet.n > 1">
                         {{wallet.m}}-of-{{wallet.n}}
                     </span>
-                    <ion-icon *ngIf="wallet.status && !wallet.balanceHidden && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
+                    <ion-icon *ngIf="wallet.status && !wallet.balanceHidden && (wallet.status.totalBalanceSatoshis != wallet.status.spendableAmount)"
                     name="timer-outline"></ion-icon>
 
                     <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>
