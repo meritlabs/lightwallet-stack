@@ -1046,6 +1046,7 @@ export class API extends EventEmitter implements IAPI {
         return resolve(res.body, res.header);
       }).catch((err) => {
         this.log.warn("Cannot complete request to server: ", err);
+        return resolve();
       });
     });
   };
