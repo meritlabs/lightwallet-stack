@@ -150,7 +150,7 @@ TxProposal.prototype.reject = function(copayerId, reason) {
 };
 
 TxProposal.prototype.isPending = function() {
-  return !_.contains(['broadcasted', 'rejected'], this.status);
+  return !_.includes(['broadcasted', 'rejected'], this.status);
 };
 
 TxProposal.prototype.isAccepted = function() {
