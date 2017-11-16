@@ -1,13 +1,14 @@
 'use strict';
 
-var bitcore = require('bitcore-lib');
-var _ = bitcore.deps._;
-var $ = bitcore.util.preconditions;
-var Common = require('./common');
-var async = require('async');
+const bitcore = require('bitcore-lib');
+const _ = bitcore.deps._;
+const $ = bitcore.util.preconditions;
+const Common = require('./common');
+const async = require('async');
 
-var MAXINT = 0xffffffff; // Math.pow(2, 32) - 1;
-const COINBASE_MATURITY = 100;
+const COINBASE_MATURITY = bitcore.Block.COINBASE_MATURITY;
+
+const MAXINT = 0xffffffff; // Math.pow(2, 32) - 1;
 
 
 function TxController(node) {
@@ -89,8 +90,9 @@ TxController.prototype.transformTransaction = function(transaction, options, cal
   }
 
   if(transaction.isCoinbase) {
+    let maturity = COINBASE_MATURITY[this.node.network.name];
     transformed.isCoinbase = true; 
-    transformed.isMature = transformed.confirmations >= COINBASE_MATURITY ? true : false;
+    transformed.isMature = transformed.confirmations >= maturity ? true : false;
   }
 
   transformed.valueOut = transaction.outputSatoshis / 1e8;
