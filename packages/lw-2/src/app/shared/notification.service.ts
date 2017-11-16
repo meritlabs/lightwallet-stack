@@ -33,6 +33,9 @@ export class NotificationService {
 
   public subscribe(client, subject: Subject): Promise<any> {
     let methodPrefix = this.getMethodPrefix(subject);
+    if (!subject || !subject.id) {
+      return Promise.reject();
+    }
     
     //TODO: Rewrite BWC with promises.
     let subCall = Promise.promisify(client[methodPrefix + 'ConfirmationSubscribe'](subject.id, {}, function(){}));
