@@ -23,7 +23,7 @@
     "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "dependencies": {
-    "bitcore-lib": "^0.15.0"
+    "bitcore-lib": "^0.9.9"
   },
   "devDependencies": {
     "bitcore-build": "bitpay/bitcore-build",
