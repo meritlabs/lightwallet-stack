@@ -169,6 +169,8 @@ export interface IAPI {
   referralTxConfirmationSubscribe(opts: any): Promise<any>;
   referralTxConfirmationUnsubscribe(codeHash: string): Promise<any>;
   validateEasyScript(scriptId: string): Promise<any>;
+  getVaults();
+  createVault(vaultTxProposal: any);
 }
 
 export class API extends EventEmitter implements IAPI {
@@ -961,12 +963,15 @@ export class API extends EventEmitter implements IAPI {
 
       let vault = {
         type: type,
+        amount: opts.amount,
         tag: opts.masterPubKey.toAddress().hashBuffer,
         whitelist: opts.whitelist,
         spendPubKey: opts.spendPubKey,
         masterPubKey: opts.masterPubKey,
         redeemScript: redeemScript,
         scriptPubKey: scriptPubKey,
+        address: scriptPubKey.toAddress(),
+        coins: []
       };
       console.log('vault:', vault);
 
@@ -2623,5 +2628,27 @@ export class API extends EventEmitter implements IAPI {
 
     let url = '/v1/easyreceive/validate/' + scriptId;
     this._doGetRequest(url);
+  };
+
+  /**
+  * Vaulting 
+  */
+  getVaults() {
+    $.checkState(this.credentials);
+
+    var self = this;
+
+    var url = '/v1/vaults/';
+    return this._doGetRequest(url);
+
+  };
+
+  createVault(vaultTxProposal: any) {
+    $.checkState(this.credentials);
+
+    var self = this;
+
+    var url = '/v1/vaults/';
+    return this._doPostRequest(url, vaultTxProposal);
   };
 }

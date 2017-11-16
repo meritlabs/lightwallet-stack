@@ -116,6 +116,10 @@ export module Utils {
         $.checkState(_.isArray(publicKeys) && publicKeys.length == 1);
         bitcoreAddress = Address.fromPublicKey(publicKeys[0], network);
         break;
+      case Constants.SCRIPT_TYPES.PP2SH:
+        //TODO Does it even make sense to call this function with PP2SH address type?
+        $.checkState(false);
+        break;
     }
 
     return {

@@ -3508,16 +3508,20 @@ WalletService.prototype.createVault = function(opts, cb) {
         return next();
       });
     },
-    // function(next) {
-    //   var bc = self._getBlockchainExplorer(opts.network);
-      
-    //   bc.broadcast(opts, function(err, txid) {
-    //     if (err) return cb(err);
-        
-    //     opts.txid = txid;
-    //     return next();
-    //   });
-    // }, // Enable me later when transaction is constructed successfully
+    function(next) {
+      //TODO: Loop
+      var txp = Model.TxProposal.fromObj(opts.coins[0]);
+      var bc = self._getBlockchainExplorer(txp.network);
+
+      var rawTx = txp.getRawTx();
+      bc.broadcast(rawTx, function(err, txid) {
+        if (err) return cb(err);
+
+        txp.txid = txid;
+        opts.coins[0] = txp;
+        return next();
+      });
+    }, // Enable me later when transaction is constructed successfully
     function(next) {
       self.getVaults(opts, cb);
 
