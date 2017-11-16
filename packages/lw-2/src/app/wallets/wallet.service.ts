@@ -15,7 +15,7 @@ import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { Promise } from 'bluebird';
 import { MeritWalletClient } from './../../../../merit-wallet-client';
-
+import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
 import { Wallet } from "./wallet.model";
@@ -61,7 +61,8 @@ export class WalletService {
     private popupService: PopupService,
     private touchidService: TouchIdService,
     private languageService: LanguageService, 
-    private mnemonicService: MnemonicService
+    private mnemonicService: MnemonicService,
+    private events: Events
   ) {
     console.log('Hello WalletService Service');
   }
@@ -1098,7 +1099,7 @@ export class WalletService {
     return new Promise((resolve, reject) => {
       return this.publishTx(wallet, txp).then((publishedTxp) => {
         this.invalidateCache(wallet);
-        //$rootScope.$emit('Local/TxAction', wallet.id);
+        this.events.publish('Local:Tx:Publish', publishedTxp);
         return resolve();
       }).catch((err) => {
         return reject(this.bwcErrorService.msg(err));
@@ -1127,6 +1128,7 @@ export class WalletService {
         this.invalidateCache(wallet);
         if (signedTxp.status == 'accepted') {
           return this.broadcastTx(wallet, signedTxp).then((broadcastedTxp: any) => {
+            this.events.publish('Local:Tx:Broadcast', broadcastedTxp);            
             //$rootScope.$emit('Local/TxAction', wallet.id);
             return resolve(broadcastedTxp);
           }).catch((err) => {
@@ -1134,6 +1136,7 @@ export class WalletService {
           });
         } else {
           //$rootScope.$emit('Local/TxAction', wallet.id);
+          this.events.publish('Local:Tx:Signed', signedTxp);                      
           return resolve(signedTxp);
         };
       }).catch((err) => {
