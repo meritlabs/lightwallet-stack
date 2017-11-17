@@ -950,9 +950,9 @@ export class API extends EventEmitter implements IAPI {
       ];
 
       params = params.concat(opts.whitelist);
-      params.push(opts.whitelist.length);
+      params.push(Bitcore.Opcode.smallInt(opts.whitelist.length));
       params.push(tag);
-      params.push(type);
+      params.push(Bitcore.Opcode.smallInt(type));
 
       console.log('params:', params);
 
