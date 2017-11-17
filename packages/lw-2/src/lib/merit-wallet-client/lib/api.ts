@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
-import { EventEmitter } from 'eventemitter3';
 import { Common } from './common';
 import { Logger } from "./log";
 import { Credentials } from './credentials';
 import { ErrorTypes as Errors } from './errors';
 
 const $ = require('preconditions').singleton();
+let EventEmitter = require('eventemitter3');
 let util = require('util');
 let async = require('async');
 let Bitcore = require('bitcore-lib');
@@ -17,6 +17,7 @@ let url = require('url');
 let querystring = require('querystring');
 let Stringify = require('json-stable-stringify');
 let Bip38 = require('bip38');
+let Promise = require('bluebird');
 
 let request = require('superagent');
 
@@ -24,9 +25,8 @@ let Constants = Common.Constants;
 let Defaults = Common.Defaults;
 let Utils = Common.Utils;
 
-let Package = require('../package.json');
+let Package = require('../../../../package.json');
 
-import { Promise } from 'bluebird';
 
 /**
  * Merit Wallet Client; (re-)written in typescript.
@@ -147,7 +147,7 @@ export interface IAPI {
   validateEasyScript(scriptId: string): Promise<any>;
 }
 
-export class API extends EventEmitter implements IAPI {
+export class API implements IAPI {
   private static BASE_URL = 'http://localhost:3232/bws/api';
   private request: any;
   private baseUrl: string;
@@ -165,6 +165,7 @@ export class API extends EventEmitter implements IAPI {
   private notificationsIntervalId: any;
   private keyDerivationOk: boolean;
   private session: any;
+  private eventEmitter: any;
   
   // Mutated from other services (namely wallet.service and profile.service)
   public id: string; // TODO: Re-evaluate where this belongs.
@@ -184,10 +185,8 @@ export class API extends EventEmitter implements IAPI {
   public name: string;
   public color: string; 
   
-
-  
   constructor(opts: InitOptions) {
-    super();
+    this.eventEmitter = new EventEmitter.EventEmitter();
     this.request = opts.request || request;
     this.baseUrl = opts.baseUrl || API.BASE_URL;
     this.payProHttp = null; // Only for testing
@@ -759,7 +758,7 @@ export class API extends EventEmitter implements IAPI {
       return this.getUtxos({
         addresses: address.toString(),
       }).then((utxos) => {
-        return resolve(_.sumBy(utxos, 'satoshis'));
+        return resolve(_.sumBy(utxos, 'micros'));
       });
     });
   };
@@ -775,7 +774,7 @@ export class API extends EventEmitter implements IAPI {
           if (!_.isArray(utxos) || utxos.length == 0) return reject(new Error('No utxos found'));
           
           let fee = opts.fee || 10000;
-          let amount = _.sumBy(utxos, 'satoshis') - fee;
+          let amount = _.sumBy(utxos, 'micros') - fee;
           if (amount <= 0) return reject(Errors.INSUFFICIENT_FUNDS);
   
           let tx;
@@ -871,8 +870,8 @@ export class API extends EventEmitter implements IAPI {
     let inputAddress = input.txn.scriptId;
 
     let fee = opts.fee || 10000;
-    let satoshiAmount = Bitcore.Unit.fromMRT(input.txn.amount).toSatoshis();
-    let amount =  satoshiAmount - fee;
+    let microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
+    let amount =  microAmount - fee;
     if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
 
     let tx = new Bitcore.Transaction();
@@ -885,7 +884,7 @@ export class API extends EventEmitter implements IAPI {
         new Bitcore.Transaction.Input.PayToScriptHashInput({
           output: Bitcore.Transaction.Output.fromObject({
             script: p2shScript,
-            satoshis: satoshiAmount
+            micros: microAmount
           }),
           prevTxId: input.txn.txid,
           outputIndex: input.txn.index,
@@ -949,7 +948,7 @@ export class API extends EventEmitter implements IAPI {
 
         this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
 
-        this.emit('walletCompleted', wallet);
+        this.eventEmitter.emit('walletCompleted', wallet);
 
         return resolve(ret);
       });
@@ -1044,6 +1043,9 @@ export class API extends EventEmitter implements IAPI {
           return reject(Errors.ECONNRESET_ERROR);
 
         return resolve(res.body, res.header);
+      }).catch((err) => {
+        this.log.warn("Cannot complete request to server: ", err);
+        return resolve();
       });
     });
   };
@@ -1090,9 +1092,7 @@ export class API extends EventEmitter implements IAPI {
     
 
     return loginIfNeeded().then(() => {
-      return this._doRequest(method, url, args, true).then((body, header) => {
-        return this._doRequest(method, url, args, true);
-      });
+      return this._doRequest(method, url, args, true);
     });
 };
 
@@ -1105,11 +1105,15 @@ export class API extends EventEmitter implements IAPI {
    * @param {Callback} cb
    */
   _doPostRequest(url: string, args: any): Promise<any> {
-    return this._doRequest('post', url, args, false);
+    return this._doRequest('post', url, args, false).catch((err) => {
+      this.log.warn("Were not able to complete getRequest: ", err);
+    });;
   };
 
   _doPutRequest(url: string, args: any): Promise<any> {
-    return this._doRequest('put', url, args, false);
+    return this._doRequest('put', url, args, false).catch((err) => {
+      this.log.warn("Were not able to complete getRequest: ", err);
+    });;
   };
 
   /**
@@ -1122,13 +1126,17 @@ export class API extends EventEmitter implements IAPI {
   _doGetRequest(url: string): Promise<any> {
     url += url.indexOf('?') > 0 ? '&' : '?';
     url += 'r=' + _.random(10000, 99999);
-    return this._doRequest('get', url, {}, false);
+    return this._doRequest('get', url, {}, false).catch((err) => {
+      this.log.warn("Were not able to complete getRequest: ", err);
+    });
   };
 
   _doGetRequestWithLogin(url: string): Promise<any> {
     url += url.indexOf('?') > 0 ? '&' : '?';
     url += 'r=' + _.random(10000, 99999);
-    return this._doRequestWithLogin('get', url, {});
+    return this._doRequestWithLogin('get', url, {}).catch((err) => {
+      this.log.warn("Were not able to complete getRequest: ", err);
+    });;
   };
 
   /**
@@ -1716,7 +1724,7 @@ export class API extends EventEmitter implements IAPI {
     }
 
     return this._doGetRequestWithLogin(url).then((result) => {
-      let notifications = _.filter(result, function(notification) {
+      let notifications = _.filter(result, function(notification: any) {
         return opts.includeOwn || (notification.creatorId != this.credentials.copayerId);
       });
 
@@ -1782,7 +1790,7 @@ export class API extends EventEmitter implements IAPI {
   savePreferences(preferences: any): Promise<any> {
     $.checkState(this.credentials);
 
-    this._doPutRequest('/v1/preferences/', preferences);
+    return this._doPutRequest('/v1/preferences/', preferences);
 };
 
 
@@ -1828,7 +1836,7 @@ export class API extends EventEmitter implements IAPI {
         addresses: [].concat(opts.addresses).join(',')
       });
     }
-    this._doGetRequest(url);
+    return this._doGetRequest(url);
   };
 
   _getCreateTxProposalArgs(opts: any): any {
@@ -1851,11 +1859,11 @@ export class API extends EventEmitter implements IAPI {
    * @param {string} opts.txProposalId - Optional. If provided it will be used as this TX proposal ID. Should be unique in the scope of the wallet.
    * @param {Array} opts.outputs - List of outputs.
    * @param {string} opts.outputs[].toAddress - Destination address.
-   * @param {number} opts.outputs[].amount - Amount to transfer in satoshi.
+   * @param {number} opts.outputs[].amount - Amount to transfer in micro.
    * @param {string} opts.outputs[].message - A message to attach to this output.
    * @param {string} opts.message - A message to attach to this transaction.
    * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level for this TX ('priority', 'normal', 'economy', 'superEconomy').
-   * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in satoshi).
+   * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in micro).
    * @param {string} opts.changeAddress - Optional. Use this address as the change address for the tx. The address should belong to the wallet. In the case of singleAddress wallets, the first main address will be used.
    * @param {Boolean} opts.sendMax - Optional. Send maximum amount of funds that make sense under the specified fee/feePerKb conditions. (defaults to false).
    * @param {string} opts.payProUrl - Optional. Paypro URL for peers to verify TX
@@ -2247,7 +2255,7 @@ export class API extends EventEmitter implements IAPI {
         PayPro.send({
           http: this.payProHttp,
           url: txp.payProUrl,
-          amountSatoshis: txp.amount,
+          amountMicros: txp.amount,
           refundAddr: txp.changeAddress.address,
           merchant_data: paypro.merchant_data,
           rawTx: t.serialize({
@@ -2462,7 +2470,7 @@ export class API extends EventEmitter implements IAPI {
    * Returns send max information.
    * @param {String} opts
    * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level ('priority', 'normal', 'economy', 'superEconomy').
-   * @param {number} opts.feePerKb - Optional. Specify the fee per KB (in satoshi).
+   * @param {number} opts.feePerKb - Optional. Specify the fee per KB (in micro).
    * @param {Boolean} opts.excludeUnconfirmedUtxos - Indicates it if should use (or not) the unconfirmed utxos
    * @param {Boolean} opts.returnInputs - Indicates it if should return (or not) the inputs
    */
@@ -2525,6 +2533,6 @@ export class API extends EventEmitter implements IAPI {
     this.log.warn("Validating: " + scriptId);
 
     let url = '/v1/easyreceive/validate/' + scriptId;
-    this._doGetRequest(url);
+    return this._doGetRequest(url);
   };
 }

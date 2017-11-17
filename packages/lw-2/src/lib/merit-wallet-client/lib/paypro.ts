@@ -1,4 +1,4 @@
-import { Promise } from 'bluebird';
+let Promise = require('bluebird');
 
 export module PayPro {
   let $ = require('preconditions').singleton();
@@ -185,7 +185,7 @@ export module PayPro {
   };
 
 
-  let _createPayment = (merchant_data, rawTx, refundAddr, amountSatoshis) => {
+  let _createPayment = (merchant_data, rawTx, refundAddr, amountMicros) => {
     let pay = new BitcorePayPro();
     pay = pay.makePayment();
 
@@ -197,7 +197,7 @@ export module PayPro {
     let txBuf = new Buffer(rawTx, 'hex');
     pay.set('transactions', [txBuf]);
 
-    let refund_outputs = _getPayProRefundOutputs(refundAddr, amountSatoshis);
+    let refund_outputs = _getPayProRefundOutputs(refundAddr, amountMicros);
     if (refund_outputs)
       pay.set('refund_to', refund_outputs);
 
@@ -220,9 +220,9 @@ export module PayPro {
       .checkArgument(opts.url)
       .checkArgument(opts.rawTx)
       .checkArgument(opts.refundAddr)
-      .checkArgument(opts.amountSatoshis);
+      .checkArgument(opts.amountMicros);
 
-    let payment = _createPayment(opts.merchant_data, opts.rawTx, opts.refundAddr, opts.amountSatoshis);
+    let payment = _createPayment(opts.merchant_data, opts.rawTx, opts.refundAddr, opts.amountMicros);
 
     let http = _getHttp(opts);
     opts.method = 'POST';

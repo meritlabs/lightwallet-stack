@@ -144,13 +144,13 @@ export class ProfileService {
       });;
 
       console.log("Binding 3");    
-      wallet.removeAllListeners();
+      wallet.eventEmitter.removeAllListeners();
 
-      wallet.on('report', (n: any) => {
+      wallet.eventEmitter.on('report', (n: any) => {
         this.logger.info('BWC Report:' + n);
       });
 
-      wallet.on('notification', (n: any) => {
+      wallet.eventEmitter.on('notification', (n: any) => {
         this.logger.debug('BWC Notification:', n);
 
         if (n.type == "NewBlock" && n.data.network == "testnet") {
@@ -160,7 +160,7 @@ export class ProfileService {
 
       console.log("Binding 4");    
 
-      wallet.on('walletCompleted', () => {
+      wallet.eventEmitter.on('walletCompleted', () => {
         this.logger.debug('Wallet completed');
 
         this.updateCredentials(JSON.parse(wallet.export())).then(() => {
@@ -918,10 +918,10 @@ export class ProfileService {
         let walletsWithMerit = _.filter(allWallets, (wallet:any) => {
           return (wallet.status && wallet.status.totalBalanceSat > 0);
         });
-        let totalSatoshis = _.reduce(walletsWithMerit, (totalBalance, filteredWallet) => {
+        let totalMicros = _.reduce(walletsWithMerit, (totalBalance, filteredWallet) => {
             return totalBalance + filteredWallet.status.totalBalanceSat;
           }, 0);
-        return (totalSatoshis > 0) ? resolve(true) : resolve(false);
+        return (totalMicros > 0) ? resolve(true) : resolve(false);
       });
     });
   }
