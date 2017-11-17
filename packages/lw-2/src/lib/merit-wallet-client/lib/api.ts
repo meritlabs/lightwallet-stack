@@ -1105,11 +1105,15 @@ export class API implements IAPI {
    * @param {Callback} cb
    */
   _doPostRequest(url: string, args: any): Promise<any> {
-    return this._doRequest('post', url, args, false);
+    return this._doRequest('post', url, args, false).catch((err) => {
+      this.log.warn("Were not able to complete getRequest: ", err);
+    });;
   };
 
   _doPutRequest(url: string, args: any): Promise<any> {
-    return this._doRequest('put', url, args, false);
+    return this._doRequest('put', url, args, false).catch((err) => {
+      this.log.warn("Were not able to complete getRequest: ", err);
+    });;
   };
 
   /**
@@ -1122,13 +1126,17 @@ export class API implements IAPI {
   _doGetRequest(url: string): Promise<any> {
     url += url.indexOf('?') > 0 ? '&' : '?';
     url += 'r=' + _.random(10000, 99999);
-    return this._doRequest('get', url, {}, false);
+    return this._doRequest('get', url, {}, false).catch((err) => {
+      this.log.warn("Were not able to complete getRequest: ", err);
+    });
   };
 
   _doGetRequestWithLogin(url: string): Promise<any> {
     url += url.indexOf('?') > 0 ? '&' : '?';
     url += 'r=' + _.random(10000, 99999);
-    return this._doRequestWithLogin('get', url, {});
+    return this._doRequestWithLogin('get', url, {}).catch((err) => {
+      this.log.warn("Were not able to complete getRequest: ", err);
+    });;
   };
 
   /**
