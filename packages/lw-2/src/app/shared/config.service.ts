@@ -26,7 +26,7 @@ interface Config {
       idleDurationMin: number;
       settings: {
         unitName: string;
-        unitToSatoshi: number;
+        unitToMicro: number;
         unitDecimals: number;
         unitCode: string;
         alternativeName: string;
@@ -118,7 +118,7 @@ const configDefault: Config = {
     idleDurationMin: 4,
     settings: {
       unitName: 'MRT',
-      unitToSatoshi: 100000000,
+      unitToMicro: 100000000,
       unitDecimals: 8,
       unitCode: 'mrt',
       alternativeName: 'US Dollar',
