@@ -17,7 +17,9 @@ export class VaultsView {
   ){}
 
   ionViewDidLoad() {
+    console.log('loading vaults block');
     this.vaultService.getVaults().then((vaults) => {
+      console.log('got vaults', vaults);
       this.vaults = vaults;
     });
   }
