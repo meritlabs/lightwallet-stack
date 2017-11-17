@@ -41,7 +41,7 @@ var errors = {
   INVALID_PARAMETERS: "Invalid paramaters sent to server."
 };
 
-var errorObjects = _.zipObject(_.map(errors, function(msg, code) {
+var errorObjects = _.fromPairs(_.map(errors, function(msg, code) {
   return [code, new ClientError(code, msg)];
 }));
 
