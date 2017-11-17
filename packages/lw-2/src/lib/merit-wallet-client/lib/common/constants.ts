@@ -21,7 +21,7 @@ export module Constants {
 
   export const UNITS = {
     mrt: {
-      toSatoshis: 100000000,
+      toMicros: 100000000,
       full: {
         maxDecimals: 8,
         minDecimals: 8,
@@ -32,7 +32,7 @@ export module Constants {
       }
     },
     bit: {
-      toSatoshis: 100,
+      toMicros: 100,
       full: {
         maxDecimals: 2,
         minDecimals: 2,
