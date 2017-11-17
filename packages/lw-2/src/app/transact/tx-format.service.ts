@@ -46,11 +46,11 @@ export class TxFormatService {
 
   toFiat(micros: number, code: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (isNaN(micros)) resolve();
+      if (isNaN(micros)) return resolve();
       let v1;
       v1 = this.rate.toFiat(micros, code);
-      if (!v1) resolve(null);
-      resolve(v1.toFixed(2));
+      if (!v1) return resolve(null);
+      return resolve(v1.toFixed(2));
     });
   }
 
@@ -66,12 +66,12 @@ export class TxFormatService {
 
   formatAlternativeStr(micros: number): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (isNaN(micros)) resolve();
+      if (isNaN(micros)) return resolve();
       let settings = this.config.get().wallet.settings;
 
       let v1 = parseFloat((this.rate.toFiat(micros, settings.alternativeIsoCode)).toFixed(2));
       let v1FormatFiat = new FiatAmount(v1);
-      if (!v1FormatFiat) resolve(null);
+      if (!v1FormatFiat) return resolve(null);
 
       return resolve(v1FormatFiat.amount + ' ' + settings.alternativeIsoCode);
     });
