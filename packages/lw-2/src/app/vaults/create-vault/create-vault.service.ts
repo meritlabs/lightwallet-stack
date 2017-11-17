@@ -14,7 +14,7 @@ export class CreateVaultService {
   private model = {
     vaultName: '',
     whitelist: [],
-    amountToDeposit: 0.0,
+    amountToDeposit: "0.0",
     amountAvailable: 10000,
     masterKey: null,
     masterKeyMnemonic: '',
@@ -42,7 +42,7 @@ export class CreateVaultService {
     this.model = {
       vaultName: '',
       whitelist: [],
-      amountToDeposit: 0.0,
+      amountToDeposit: "0.0",
       amountAvailable: 10000,
       masterKey: null,
       masterKeyMnemonic: '',
@@ -80,12 +80,19 @@ export class CreateVaultService {
 
     } else {
 
-      let wallet = this.model.whitelist[0];
-      let spendPubKey = this.bitcore.HDPublicKey.fromString(wallet.pubKey);
+      let wallet = this.model.selectedWallet;
+
+      let spendPubKey = this.bitcore.HDPublicKey.fromString(wallet.credentials.xPubKey);
       let vault = this.vaultFromModel(spendPubKey);
 
-      return this.getTxp(vault, false).then((txp) => {
-        vault.coins.push(txp);
+      return this.getTxp(vault, true).then((txp) => {
+        return this.walletService.prepare(wallet).then((password: string) => {
+          return { password: password, txp: txp};
+        });
+      }).then((args) => {
+        return this.walletService.signTx(wallet, args.txp, args.password);
+      }).then((signedTxp: any) => {
+        vault.coins.push(signedTxp);
         return vault;
       }).then((vault) => {
         return this.walletClient.createVault(vault);
