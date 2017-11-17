@@ -170,6 +170,7 @@ Address._classifyFromVersion = function(buffer) {
 
   var pubkeyhashNetwork = Networks.get(buffer[0], 'pubkeyhash');
   var scripthashNetwork = Networks.get(buffer[0], 'scripthash');
+  var paramScripthashNetwork = Networks.get(buffer[0], 'paramscripthash');
 
   if (pubkeyhashNetwork) {
     version.network = pubkeyhashNetwork;
@@ -177,6 +178,9 @@ Address._classifyFromVersion = function(buffer) {
   } else if (scripthashNetwork) {
     version.network = scripthashNetwork;
     version.type = Address.PayToScriptHash;
+  } else if (paramScripthashNetwork) {
+    version.network = paramScripthashNetwork;
+    version.type = Address.ParameterizedPayToScriptHash;
   }
 
   return version;

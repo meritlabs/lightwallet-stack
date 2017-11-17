@@ -61,7 +61,7 @@ export class CreateVaultService {
     return this.walletClient.prepareVault(0, {
       amount: amount,
       whitelist: whitelist,
-      masterPubKey: this.model.masterKey.toPublicKey(),
+      masterPubKey: this.model.masterKey.publicKey,
       spendPubKey: spendPubKey
     });
   }
@@ -85,11 +85,23 @@ export class CreateVaultService {
       let spendPubKey = this.bitcore.HDPublicKey.fromString(wallet.credentials.xPubKey);
       let vault = this.vaultFromModel(spendPubKey);
 
-      return this.getTxp(vault, true).then((txp) => {
+      var unlock = {
+        unlockCode: wallet.shareCode,
+        address: vault.address.toString(),
+        network: wallet.credentials.network
+      };
+
+      return wallet.unlockAddress(unlock).then((err1, res1) => {
+        return this.getTxp(vault, false)
+      }).then((txp) => {
         return this.walletService.prepare(wallet).then((password: string) => {
           return { password: password, txp: txp};
         });
-      }).then((args) => {
+      }).then((args: any) => {
+        return this.walletService.publishTx(wallet, args.txp).then((pubTxp)=> {
+          return { password: args.password, txp: pubTxp};
+        });
+      }).then((args: any) => {
         return this.walletService.signTx(wallet, args.txp, args.password);
       }).then((signedTxp: any) => {
         vault.coins.push(signedTxp);
