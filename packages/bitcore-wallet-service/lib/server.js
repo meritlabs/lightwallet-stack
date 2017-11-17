@@ -2910,7 +2910,7 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
 WalletService.prototype.getTxHistory = function(opts, cb) {
   var self = this;
   if (opts.skip < 0 || opts.skip == opts.limit) {
-    console.log("Invalid parameters sent to getTxHistory.");
+    log.warn("Invalid parameters sent to getTxHistory.");
     return cb(Errors.INVALID_PARAMETERS);
   }
 
@@ -3067,6 +3067,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           if (err) return next(err);
           if (!res || !res[0]) return next();
 
+          log.warn("GNT: getTxHistoryCache");
+          log.warn(res);
           txs = res;
           fromCache = true;
 
@@ -3081,7 +3083,12 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
+          log.warn("GNT: getTransaction, raw");
+          console.log(rawTxs);
           txs = self._normalizeTxHistory(rawTxs);
+          log.warn("GNT: getTransaction, after normalization");
+          console.log(txs);
+
           totalItems = total;
           return next();
         });
@@ -3111,6 +3118,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
               tx.confirmations = height - tx.blockheight + 1;
             }
           });
+          log.warn("After blockHeight check");
+          console.log(txs);
           next();
         });
       },
@@ -3170,16 +3179,19 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           getNormalizedTxs(addresses, from, to, next);
         },
         function(txs, next) {
-          console.log("Show me the juice of a spruce goose.");
+          log.warn("Show me the juice of a spruce goose.");
           console.log(txs);
 
           if (_.isEmpty(txs.items)) {
-            return next(new Error("No transactions available in this range."), null);
+            return next(null, []);
           }
+
+          // TODO: Re-evaluate this because we are already paginating our gets. 
           // Fetch all proposals in [t - 7 days, t + 1 day]
           var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
           var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
 
+          
           async.parallel([
 
             function(done) {
@@ -3204,13 +3216,23 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       ], function(err, res) {
         if (err) return cb(err);
 
-        var finalTxs = decorate(wallet, res.txs.items, addresses, res.txps, res.notes);
+        log.warn("What happened after parallel?");
+        console.log(res);
+
+        if (!res.txs) {
+          var finalTxs = decorate(wallet, [], addresses, [], []);
+          res.txs = { 
+            fromCache: false
+          };
+        } else {
+          var finalTxs = decorate(wallet, res.txs.items, addresses, res.txps, res.notes);
+        }
 
         tagLowFees(wallet, finalTxs, function(err) {
           if (err)
             log.warn('Failed to tag unconfirmed with low fee');
 
-          if (res.txs.fromCache)
+          if (res.txs && res.txs.fromCache)
             log.debug("History from cache for:", self.walletId, from, to);
 
           return cb(null, finalTxs, !!res.txs.fromCache);
