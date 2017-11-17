@@ -126,7 +126,7 @@ export module Verifier {
     $.checkArgument(txp.creatorId);
     $.checkState(credentials.isComplete());
 
-    var creatorKeys = _.find(credentials.publicKeyRing, function(item) {
+    var creatorKeys = _.find(credentials.publicKeyRing, function(item: any) {
       if (Utils.xPubToCopayerId(item.xPubKey) === txp.creatorId) return true;
     });
 
