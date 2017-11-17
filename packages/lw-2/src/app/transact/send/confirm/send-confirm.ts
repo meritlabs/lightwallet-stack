@@ -48,9 +48,9 @@ export class SendConfirmView {
   private wallet: Wallet;
   private wallets: Array<Wallet>;
   private walletSettings: any;
-  private unitToSatoshi: number;
+  private unitToMicro: number;
   private unitDecimals: number;
-  private satoshiToUnit: number;
+  private microToUnit: number;
   private configFeeLevel: string;
   private showAddress: Boolean = true;
 
@@ -78,16 +78,16 @@ export class SendConfirmView {
     let toAmount = this.navParams.get('toAmount');
     this.walletSettings = this.configService.get().wallet.settings;
     this.wallet = this.navParams.get('wallet');
-    this.unitToSatoshi = this.walletSettings.unitToSatoshi;
+    this.unitToMicro = this.walletSettings.unitToMicro;
     this.unitDecimals = this.walletSettings.unitDecimals;
-    this.satoshiToUnit = 1 / this.unitToSatoshi;
+    this.microToUnit = 1 / this.unitToMicro;
     this.configFeeLevel = this.walletSettings.feeLevel ? this.walletSettings.feeLevel : 'normal';
 
     this.txData = {
       toAddress:  this.navParams.get('toAddress'),
       txp: {},
       toName: this.navParams.get('toAddress') || '',
-      toAmount: toAmount * this.unitToSatoshi, // TODO: get the right number from amount page
+      toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
       allowSpendUnconfirmed: this.walletSettings.spendUnconfirmed
     }
 
@@ -239,7 +239,9 @@ export class SendConfirmView {
             return Promise.resolve(this.walletService.onlyPublish(wallet, ctxp, _.noop));
           }
           return this.walletService.publishAndSign(wallet, ctxp, _.noop).then((txp: any) => {
-            return Promise.resolve(this.notificationService.subscribe(wallet, txp));
+            //return Promise.resolve(this.notificationService.subscribe(wallet, txp));
+            this.logger.warn("We should have subscribed at this point in publishAndSign: ", txp);
+            return Promise.resolve();
           });
         };
 
@@ -329,7 +331,7 @@ export class SendConfirmView {
 
     if (this.txData.usingCustomFee) {
       scope.customFeePerKB = tx.feeRate;
-      scope.feePerSatoshisByte = tx.feeRate / 1000;
+      scope.feePerMicrosByte = tx.feeRate / 1000;
     }
 
     let feeLevelModel = this.modalCtrl.create(FeeLevelModal, scope, {
