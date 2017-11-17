@@ -1579,7 +1579,7 @@ describe('Wallet service', function() {
           should.not.exist(err);
           should.exist(utxos);
           utxos.length.should.equal(2);
-          _.sum(utxos, 'micros').should.equal(3 * 1e8);
+          _.sumBy(utxos, 'micros').should.equal(3 * 1e8);
           server.getMainAddresses({}, function(err, addresses) {
             var utxo = utxos[0];
             var address = _.find(addresses, {
@@ -1605,7 +1605,7 @@ describe('Wallet service', function() {
         }, function(err, utxos) {
           should.not.exist(err);
           should.exist(utxos);
-          _.sum(utxos, 'micros').should.equal(amount);
+          _.sumBy(utxos, 'micros').should.equal(amount);
           done();
         });
       });
@@ -3292,7 +3292,7 @@ describe('Wallet service', function() {
                 server.getBalance({}, function(err, balance) {
                   should.not.exist(err);
                   balance.totalAmount.should.equal(3.6e8);
-                  var amountInputs = _.sum(txs[0].inputs, 'micros');
+                  var amountInputs = _.sumBy(txs[0].inputs, 'micros');
                   balance.lockedAmount.should.equal(amountInputs);
                   balance.lockedAmount.should.be.below(balance.totalAmount);
                   balance.availableAmount.should.equal(balance.totalAmount - balance.lockedAmount);
@@ -3618,7 +3618,7 @@ describe('Wallet service', function() {
           var txOpts = {
             outputs: [{
               toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
-              amount: _.sum(utxos, 'micros') - 0.5e8,
+              amount: _.sumBy(utxos, 'micros') - 0.5e8,
             }],
             feePerKb: 100e2,
           };
@@ -3924,7 +3924,7 @@ describe('Wallet service', function() {
           server.createTx(txOpts, function(err, txp) {
             should.not.exist(err);
             txp.inputs.length.should.equal(1);
-            (_.sum(txp.inputs, 'micros') - txp.outputs[0].amount - txp.fee).should.equal(0);
+            (_.sumBy(txp.inputs, 'micros') - txp.outputs[0].amount - txp.fee).should.equal(0);
             var changeOutput = txp.getBitcoreTx().getChangeOutput();
             should.not.exist(changeOutput);
             done();

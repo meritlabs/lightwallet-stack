@@ -644,7 +644,7 @@ API.prototype.getBalanceFromPrivateKey = function(privateKey, cb) {
     addresses: address.toString(),
   }, function(err, utxos) {
     if (err) return cb(err);
-    return cb(null, _.sum(utxos, 'micros'));
+    return cb(null, _.sumBy(utxos, 'micros'));
   });
 };
 
@@ -669,7 +669,7 @@ API.prototype.buildTxFromPrivateKey = function(privateKey, destinationAddress, o
       if (!_.isArray(utxos) || utxos.length == 0) return next(new Error('No utxos found'));
 
       var fee = opts.fee || 10000;
-      var amount = _.sum(utxos, 'micros') - fee;
+      var amount = _.sumBy(utxos, 'micros') - fee;
       if (amount <= 0) return next(new Errors.INSUFFICIENT_FUNDS);
 
       var tx;

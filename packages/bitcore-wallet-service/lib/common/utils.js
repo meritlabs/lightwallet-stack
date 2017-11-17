@@ -109,7 +109,7 @@ Utils.formatAmount = function(micros, unit, opts) {
   };
 
   $.shouldBeNumber(micros);
-  $.checkArgument(_.contains(_.keys(UNITS), unit));
+  $.checkArgument(_.includes(_.keys(UNITS), unit));
 
   function addSeparators(nStr, thousands, decimal, minDecimals) {
     nStr = nStr.replace('.', decimal);
