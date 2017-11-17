@@ -144,13 +144,13 @@ export class ProfileService {
       });;
 
       console.log("Binding 3");    
-      wallet.removeAllListeners();
+      wallet.eventEmitter.removeAllListeners();
 
-      wallet.on('report', (n: any) => {
+      wallet.eventEmitter.on('report', (n: any) => {
         this.logger.info('BWC Report:' + n);
       });
 
-      wallet.on('notification', (n: any) => {
+      wallet.eventEmitter.on('notification', (n: any) => {
         this.logger.debug('BWC Notification:', n);
 
         if (n.type == "NewBlock" && n.data.network == "testnet") {
@@ -160,7 +160,7 @@ export class ProfileService {
 
       console.log("Binding 4");    
 
-      wallet.on('walletCompleted', () => {
+      wallet.eventEmitter.on('walletCompleted', () => {
         this.logger.debug('Wallet completed');
 
         this.updateCredentials(JSON.parse(wallet.export())).then(() => {

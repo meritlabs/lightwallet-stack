@@ -215,17 +215,17 @@ export module Utils {
       });
       $.checkState(t.outputs.length == outputOrder.length);
       t.sortOutputs(function(outputs) {
-        return _.map(outputOrder, function(i) {
+        return _.map(outputOrder, function(i: any) {
           return outputs[i];
         });
       });
     }
 
     // Validate inputs vs outputs independently of Bitcore
-    let totalInputs = _.reduce(txp.inputs, function(memo, i) {
+    let totalInputs = _.reduce(txp.inputs, function(memo, i: any) {
       return +i.satoshis + memo;
     }, 0);
-    let totalOutputs = _.reduce(t.outputs, function(memo, o) {
+    let totalOutputs = _.reduce(t.outputs, function(memo, o: any) {
       return +o.satoshis + memo;
     }, 0);
 

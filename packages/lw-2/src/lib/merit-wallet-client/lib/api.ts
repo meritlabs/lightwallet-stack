@@ -25,7 +25,7 @@ let Constants = Common.Constants;
 let Defaults = Common.Defaults;
 let Utils = Common.Utils;
 
-let Package = require('../package.json');
+let Package = require('../../../../package.json');
 
 
 /**
@@ -147,7 +147,7 @@ export interface IAPI {
   validateEasyScript(scriptId: string): Promise<any>;
 }
 
-export class API extends EventEmitter implements IAPI {
+export class API implements IAPI {
   private static BASE_URL = 'http://localhost:3232/bws/api';
   private request: any;
   private baseUrl: string;
@@ -165,6 +165,7 @@ export class API extends EventEmitter implements IAPI {
   private notificationsIntervalId: any;
   private keyDerivationOk: boolean;
   private session: any;
+  private eventEmitter: any;
   
   // Mutated from other services (namely wallet.service and profile.service)
   public id: string; // TODO: Re-evaluate where this belongs.
@@ -184,10 +185,8 @@ export class API extends EventEmitter implements IAPI {
   public name: string;
   public color: string; 
   
-
-  
   constructor(opts: InitOptions) {
-    super();
+    this.eventEmitter = new EventEmitter.EventEmitter();
     this.request = opts.request || request;
     this.baseUrl = opts.baseUrl || API.BASE_URL;
     this.payProHttp = null; // Only for testing
@@ -949,7 +948,7 @@ export class API extends EventEmitter implements IAPI {
 
         this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
 
-        this.emit('walletCompleted', wallet);
+        this.eventEmitter.emit('walletCompleted', wallet);
 
         return resolve(ret);
       });
@@ -1717,7 +1716,7 @@ export class API extends EventEmitter implements IAPI {
     }
 
     return this._doGetRequestWithLogin(url).then((result) => {
-      let notifications = _.filter(result, function(notification) {
+      let notifications = _.filter(result, function(notification: any) {
         return opts.includeOwn || (notification.creatorId != this.credentials.copayerId);
       });
 
