@@ -7,11 +7,14 @@ import { BwcService } from 'merit/core/bwc.service';
 export class VaultsService {
 
     constructor(
-        bwcService: BwcService,
-    ) {}
+        private bwcService: BwcService,
+    ) {
+        console.log('hello VaultsService');
+    }
 
     getVaults(): Promise<Array<any>> {
-        return Promise.resolve([]);
+        console.log('getting vaults');
+        return this.bwcService.getClient({}, null).getVaults();
     }
 
 }

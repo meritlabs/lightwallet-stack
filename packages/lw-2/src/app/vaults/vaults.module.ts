@@ -14,7 +14,6 @@ import { BwcService } from 'merit/core/bwc.service';
     MnemonicService,
     VaultsService,
     WalletService,
-    BwcService,
   ],
   imports: [
     IonicPageModule.forChild(VaultsView)
