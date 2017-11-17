@@ -413,7 +413,7 @@ export class WalletService {
         skip: skip,
         limit: limit
       }).then((txsFromServer: Array<any>) => {
-        if (!txsFromServer.length)
+        if (!txsFromServer || !txsFromServer.length)
           return resolve();
 
         if (endingTxid) {
@@ -423,12 +423,12 @@ export class WalletService {
         } else {
           res = txsFromServer;
         }
-
+        
         let result = {
           res: res,
           shouldContinue: res.length >= limit
         };
-
+        
         return resolve(result);
       });
     });
@@ -479,6 +479,11 @@ export class WalletService {
         let getNewTxs = (newTxs: Array<any>, skip: number): Promise<any> => {
           return new Promise((resolve, reject) => {
             return this.getTxsFromServer(wallet, skip, endingTxid, requestLimit).then((result: any) => {
+              // If we haven't bubbled up an error in the promise chain, and this is empty, 
+              // then we can assume there are no TXs for this wallet. 
+              if (!result) {
+                return resolve([]);
+              }
 
               var res = result.res;
               var shouldContinue = result.shouldContinue ? result.shouldContinue : false;
@@ -1139,7 +1144,7 @@ export class WalletService {
           });
         } else {
           //$rootScope.$emit('Local/TxAction', wallet.id);
-          this.events.publish('Local:Tx:Signed', signedTxp);                      
+          //this.events.publish('Local:Tx:Signed', signedTxp);                      
           return resolve(signedTxp);
         };
       }).catch((err) => {
