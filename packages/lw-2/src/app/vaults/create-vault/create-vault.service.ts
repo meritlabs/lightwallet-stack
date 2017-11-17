@@ -85,14 +85,14 @@ export class CreateVaultService {
       let spendPubKey = this.bitcore.HDPublicKey.fromString(wallet.credentials.xPubKey);
       let vault = this.vaultFromModel(spendPubKey);
 
-      var unlock = {
+      let unlock = {
         unlockCode: wallet.shareCode,
         address: vault.address.toString(),
         network: wallet.credentials.network
       };
 
       return wallet.unlockAddress(unlock).then((err1, res1) => {
-        return this.getTxp(vault, false)
+        return this.getTxp(vault, false);
       }).then((txp) => {
         return this.walletService.prepare(wallet).then((password: string) => {
           return { password: password, txp: txp};
