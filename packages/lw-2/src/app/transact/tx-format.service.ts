@@ -181,7 +181,7 @@ export class TxFormatService {
     let settings = this.config.get()['wallet']['settings']; // TODO
 
     let satToBtc = 1 / 100000000;
-    let unitToMicro = settings.unitToSatoshi;
+    let unitToMicro = settings.unitToMicro;
     let amountUnitStr;
     let amountSat;
     let alternativeIsoCode = settings.alternativeIsoCode;
@@ -209,7 +209,7 @@ export class TxFormatService {
   satToUnit(amount: any) {
     let settings = this.config.get()['wallet']['settings']; // TODO
 
-    let unitToMicro = settings.unitToSatoshi;
+    let unitToMicro = settings.unitToMicro;
     let satToUnit = 1 / unitToMicro;
     let unitDecimals = settings.unitDecimals;
     return parseFloat((amount * satToUnit).toFixed(unitDecimals));
