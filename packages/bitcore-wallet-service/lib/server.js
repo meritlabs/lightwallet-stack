@@ -3172,6 +3172,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         function(txs, next) {
           console.log("Show me the juice of a spruce goose.");
           console.log(txs);
+
+          if (_.isEmpty(txs.items)) {
+            return next(new Error("No transactions available in this range."), null);
+          }
           // Fetch all proposals in [t - 7 days, t + 1 day]
           var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
           var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
