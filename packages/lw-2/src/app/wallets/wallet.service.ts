@@ -14,7 +14,7 @@ import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { Promise } from 'bluebird';
-import { MeritWalletClient } from './../../../../merit-wallet-client';
+import { MeritWalletClient } from './../../lib/merit-wallet-client';
 import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';

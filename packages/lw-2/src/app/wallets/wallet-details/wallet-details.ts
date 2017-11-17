@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from '../../../../../merit-wallet-client/index';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 import { Logger } from 'merit/core/logger';
 
 
