@@ -2909,6 +2909,10 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
  */
 WalletService.prototype.getTxHistory = function(opts, cb) {
   var self = this;
+  if (opts.skip < 0 || opts.skip == opts.limit) {
+    console.log("Invalid parameters sent to getTxHistory.");
+    return cb(Errors.INVALID_PARAMETERS);
+  }
 
 
   opts = opts || {};
@@ -3166,9 +3170,11 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           getNormalizedTxs(addresses, from, to, next);
         },
         function(txs, next) {
+          console.log("Show me the juice of a spruce goose.");
+          console.log(txs);
           // Fetch all proposals in [t - 7 days, t + 1 day]
-          var minTs = _.min(txs.items, 'time').time - 7 * 24 * 3600;
-          var maxTs = _.max(txs.items, 'time').time + 1 * 24 * 3600;
+          var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
+          var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
 
           async.parallel([
 
