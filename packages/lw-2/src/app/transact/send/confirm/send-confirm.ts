@@ -239,7 +239,9 @@ export class SendConfirmView {
             return Promise.resolve(this.walletService.onlyPublish(wallet, ctxp, _.noop));
           }
           return this.walletService.publishAndSign(wallet, ctxp, _.noop).then((txp: any) => {
-            return Promise.resolve(this.notificationService.subscribe(wallet, txp));
+            //return Promise.resolve(this.notificationService.subscribe(wallet, txp));
+            this.logger.warn("We should have subscribed at this point in publishAndSign: ", txp);
+            return Promise.resolve();
           });
         };
 
