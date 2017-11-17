@@ -17,9 +17,6 @@ export class CreateVaultMasterKeyView {
 
   public formData = { masterKey: null, masterKeyMnemonic: null};
 
-  private walletClient: IMeritWalletClient;
-  private bitcore: any
-
   constructor(
     private navCtrl:NavController,
     private navParams: NavParams,
@@ -30,15 +27,14 @@ export class CreateVaultMasterKeyView {
 
   ionViewDidLoad() {
 
-    this.walletClient = this.bwcService.getClient(null, {});
-    this.bitcore = this.bwcService.getBitcore();
+    const bitcore = this.bwcService.getBitcore();
 
     let data = this.createVaultService.getData();
 
     if(!data.masterKey) {
-      let network = this.navParams.data.network || 'testnet';
-      let masterKey = this.bitcore.PrivateKey.fromRandom(network);
-      let masterKeyMnemonic = this.walletClient.getNewMnemonic(masterKey.toBuffer());
+      let network = data.selectedWallet.credentials.network || 'testnet';
+      let masterKey = bitcore.PrivateKey.fromRandom(network);
+      let masterKeyMnemonic = data.selectedWallet.getNewMnemonic(masterKey.toBuffer());
 
       data.masterKey = masterKey;
       data.masterKeyMnemonic = masterKeyMnemonic;
