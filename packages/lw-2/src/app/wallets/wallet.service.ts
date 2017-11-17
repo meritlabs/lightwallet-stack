@@ -14,8 +14,8 @@ import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { Promise } from 'bluebird';
-import { MeritWalletClient } from './../../../../merit-wallet-client';
-
+import { MeritWalletClient } from './../../lib/merit-wallet-client';
+import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
 import { Wallet } from "./wallet.model";
@@ -61,7 +61,8 @@ export class WalletService {
     private popupService: PopupService,
     private touchidService: TouchIdService,
     private languageService: LanguageService, 
-    private mnemonicService: MnemonicService
+    private mnemonicService: MnemonicService,
+    private events: Events
   ) {
     console.log('Hello WalletService Service');
   }
@@ -180,8 +181,8 @@ export class WalletService {
           }
 
           // Selected unit
-          cache.unitToSatoshi = config.settings.unitToSatoshi;
-          cache.satToUnit = 1 / cache.unitToSatoshi;
+          cache.unitToMicro = config.settings.unitToMicro;
+          cache.satToUnit = 1 / cache.unitToMicro;
 
           //STR
           cache.totalBalanceStr = this.txFormatService.formatAmountStr(cache.totalBalanceSat);
@@ -412,7 +413,7 @@ export class WalletService {
         skip: skip,
         limit: limit
       }).then((txsFromServer: Array<any>) => {
-        if (!txsFromServer.length)
+        if (!txsFromServer || !txsFromServer.length)
           return resolve();
 
         if (endingTxid) {
@@ -422,12 +423,12 @@ export class WalletService {
         } else {
           res = txsFromServer;
         }
-
+        
         let result = {
           res: res,
           shouldContinue: res.length >= limit
         };
-
+        
         return resolve(result);
       });
     });
@@ -478,7 +479,14 @@ export class WalletService {
         let getNewTxs = (newTxs: Array<any>, skip: number): Promise<any> => {
           return new Promise((resolve, reject) => {
             return this.getTxsFromServer(wallet, skip, endingTxid, requestLimit).then((result: any) => {
+              // If we haven't bubbled up an error in the promise chain, and this is empty, 
+              // then we can assume there are no TXs for this wallet. 
+              if (!result) {
+                return resolve([]);
+              }
 
+              this.logger.warn("@@ RESULT from getTxsFromServer");
+              this.logger.warn(result);
               var res = result.res;
               var shouldContinue = result.shouldContinue ? result.shouldContinue : false;
 
@@ -508,7 +516,7 @@ export class WalletService {
               return resolve(getNewTxs(newTxs, skip));
             }).catch((err) => {
               this.logger.warn(this.bwcErrorService.msg(err, 'Server Error')); //TODO
-              if (err instanceof this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
+              if (err == this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
                 this.logger.info('Retrying history download in 5 secs...');
                 return reject(setTimeout(() => {
                   return getNewTxs(newTxs, skip);
@@ -740,6 +748,9 @@ export class WalletService {
 
       this.logger.debug('Updating Transaction History');
       return this.updateLocalTxHistory(wallet, opts).then((txs: any) => {
+        this.logger.debug('updateLocalTxHistory returns: ');
+        this.logger.debug(txs);
+        
         if (opts.limitTx) {
           return resolve(txs);
         };
@@ -981,15 +992,15 @@ export class WalletService {
 
         let minFee = this.getMinFee(wallet, levels, resp.length);
 
-        let balance = _.sumBy(resp, 'satoshis');
+        let balance = _.sumBy(resp, 'micros');
 
         // for 2 outputs
         let lowAmount = this.getLowAmount(wallet, levels);
         let lowUtxos = _.filter(resp, (x: any) => {
-          return x.satoshis < lowAmount;
+          return x.micros < lowAmount;
         });
 
-        let totalLow = _.sumBy(lowUtxos, 'satoshis');
+        let totalLow = _.sumBy(lowUtxos, 'micros');
         return resolve({
           allUtxos: resp || [],
           lowUtxos: lowUtxos || [],
@@ -1098,7 +1109,7 @@ export class WalletService {
     return new Promise((resolve, reject) => {
       return this.publishTx(wallet, txp).then((publishedTxp) => {
         this.invalidateCache(wallet);
-        //$rootScope.$emit('Local/TxAction', wallet.id);
+        this.events.publish('Local:Tx:Publish', publishedTxp);
         return resolve();
       }).catch((err) => {
         return reject(this.bwcErrorService.msg(err));
@@ -1127,6 +1138,7 @@ export class WalletService {
         this.invalidateCache(wallet);
         if (signedTxp.status == 'accepted') {
           return this.broadcastTx(wallet, signedTxp).then((broadcastedTxp: any) => {
+            this.events.publish('Local:Tx:Broadcast', broadcastedTxp);            
             //$rootScope.$emit('Local/TxAction', wallet.id);
             return resolve(broadcastedTxp);
           }).catch((err) => {
@@ -1134,6 +1146,7 @@ export class WalletService {
           });
         } else {
           //$rootScope.$emit('Local/TxAction', wallet.id);
+          //this.events.publish('Local:Tx:Signed', signedTxp);                      
           return resolve(signedTxp);
         };
       }).catch((err) => {
@@ -1265,7 +1278,7 @@ export class WalletService {
         return newWallet.doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
         }).then((err) => {
           //Ignore error is copayer already in wallet
-          if (err && !(err instanceof this.errors.COPAYER_IN_WALLET)) return reject(err);
+          if (err && !(err == this.errors.COPAYER_IN_WALLET)) return reject(err);
           if (++i == wallet.credentials.publicKeyRing.length) return resolve();
         });
       });
@@ -1375,7 +1388,7 @@ export class WalletService {
   getWalletAnv(wallet:Wallet):Promise<number> {
     return new Promise((resolve, reject) => {
       return resolve(
-       (wallet.status && wallet.status.totalBalanceSatoshis) ? wallet.status.totalBalanceSatoshis : 0
+       (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
       )
     });
   }

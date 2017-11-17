@@ -1,10 +1,10 @@
 'use strict';
 
 import * as _ from 'lodash';
-import * as sjcl from 'sjcl';
-import * as Stringify from 'json-stable-stringify';
 
 const $ = require('preconditions').singleton();
+let sjcl = require('sjcl');
+let Stringify = require('json-stable-stringify');
 let Bitcore = require('bitcore-lib');
 let Address = Bitcore.Address;
 let PrivateKey = Bitcore.PrivateKey;
@@ -140,8 +140,8 @@ export module Utils {
     return this.verifyMessage(requestPubKey, signature, pub.toString());
   };
 
-  export const  formatAmount = function(satoshis, unit, opts) {
-    $.shouldBeNumber(satoshis);
+  export const  formatAmount = function(micros, unit, opts) {
+    $.shouldBeNumber(micros);
     $.checkArgument(_.includes(_.keys(Constants.UNITS), unit));
 
     function clipDecimals(number, decimals) {
@@ -169,7 +169,7 @@ export module Utils {
 
     let u = Constants.UNITS[unit];
     let precision = opts.fullPrecision ? 'full' : 'short';
-    let amount = clipDecimals((satoshis / u.toSatoshis), u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
+    let amount = clipDecimals((micros / u.toMicros), u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
     return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u[precision].minDecimals);
   };
 
@@ -197,7 +197,7 @@ export module Utils {
         if (o.script) {
           t.addOutput(new Bitcore.Transaction.Output({
             script: o.script,
-            satoshis: o.amount
+            micros: o.amount
           }));
         } else {
           t.to(o.toAddress, o.amount);
@@ -215,18 +215,18 @@ export module Utils {
       });
       $.checkState(t.outputs.length == outputOrder.length);
       t.sortOutputs(function(outputs) {
-        return _.map(outputOrder, function(i) {
+        return _.map(outputOrder, function(i: any) {
           return outputs[i];
         });
       });
     }
 
     // Validate inputs vs outputs independently of Bitcore
-    let totalInputs = _.reduce(txp.inputs, function(memo, i) {
-      return +i.satoshis + memo;
+    let totalInputs = _.reduce(txp.inputs, function(memo: any, i: any) {
+      return +i.micros + memo;
     }, 0);
-    let totalOutputs = _.reduce(t.outputs, function(memo, o) {
-      return +o.satoshis + memo;
+    let totalOutputs = _.reduce(t.outputs, function(memo: any, o: any) {
+      return +o.micros + memo;
     }, 0);
 
     $.checkState(totalInputs - totalOutputs >= 0);
