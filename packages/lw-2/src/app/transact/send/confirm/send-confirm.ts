@@ -47,7 +47,7 @@ export class SendConfirmView {
   };
   private wallet: Wallet;
   private wallets: Array<Wallet>;
-  private walletSettings: any;
+  private walletConfig: any;
   private unitToMicro: number;
   private unitDecimals: number;
   private microToUnit: number;
@@ -69,29 +69,30 @@ export class SendConfirmView {
     private loadingCtrl: LoadingController
   ) { 
     console.log("Hello SendConfirm View");
+    this.walletConfig = this.configService.get().wallet;
+    
   }
 
   async ionViewDidLoad() {
     this.wallets = await this.profileService.getWallets();
-    this.logger.log('ionViewDidLoad ConfirmView');
-    this.logger.log('Params', this.navParams);
     let toAmount = this.navParams.get('toAmount');
-    this.walletSettings = this.configService.get().wallet.settings;
+    this.walletConfig = this.configService.get().wallet;
     this.wallet = this.navParams.get('wallet');
-    this.unitToMicro = this.walletSettings.unitToMicro;
-    this.unitDecimals = this.walletSettings.unitDecimals;
+    this.unitToMicro = this.walletConfig.settings.unitToMicro;
+    this.unitDecimals = this.walletConfig.settings.unitDecimals;
     this.microToUnit = 1 / this.unitToMicro;
-    this.configFeeLevel = this.walletSettings.feeLevel ? this.walletSettings.feeLevel : 'normal';
+    this.configFeeLevel = this.walletConfig.settings.feeLevel ? this.walletConfig.settings.feeLevel : 'normal';
 
     this.txData = {
       toAddress:  this.navParams.get('toAddress'),
       txp: {},
       toName: this.navParams.get('toAddress') || '',
       toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
-      allowSpendUnconfirmed: this.walletSettings.spendUnconfirmed
+      allowSpendUnconfirmed: this.walletConfig.spendUnconfirmed
     }
 
-    this.logger.log('ionViewDidLoad send-confirm', this);
+
+    this.logger.log('ionViewDidLoad txData', this.txData);
     return this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
       this.logger.error('There was an error in updateTx:', err);
     });
