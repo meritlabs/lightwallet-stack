@@ -23,7 +23,6 @@ import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { TouchID } from '@ionic-native/touch-id';
 import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
 import { PopupService } from 'merit/core/popup.service';
-import { SpinnerService } from 'merit/core/spinner.service';
 import { TransactView } from 'merit/transact/transact';
 import { OnboardingView } from 'merit/onboard/onboarding.view';
 
@@ -95,7 +94,6 @@ export function createTranslateLoader(http: Http) {
         BwcService,
         BwcError,
         PopupService,
-        SpinnerService,
         MeritToastController, 
         {
             provide: PersistenceService,
