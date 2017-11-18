@@ -45772,10 +45772,10 @@ module.exports = Array.isArray || function (arr) {
      * @returns {number} Returns the sum.
      * @example
      *
-     * _.sum([4, 6]);
+     * _.sumBy([4, 6]);
      * // => 10
      *
-     * _.sum({ 'a': 4, 'b': 6 });
+     * _.sumBy({ 'a': 4, 'b': 6 });
      * // => 10
      *
      * var objects = [
@@ -45783,13 +45783,13 @@ module.exports = Array.isArray || function (arr) {
      *   { 'n': 6 }
      * ];
      *
-     * _.sum(objects, function(object) {
+     * _.sumBy(objects, function(object) {
      *   return object.n;
      * });
      * // => 10
      *
      * // using the `_.property` callback shorthand
-     * _.sum(objects, 'n');
+     * _.sumBy(objects, 'n');
      * // => 10
      */
     function sum(collection, iteratee, thisArg) {

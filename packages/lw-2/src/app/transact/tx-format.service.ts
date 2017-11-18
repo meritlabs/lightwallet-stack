@@ -7,6 +7,7 @@ import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { Promise } from 'bluebird';
 
 import * as _ from "lodash";
+import { Logger } from 'merit/core/logger';
 
 /* 
   Ideally, this service gets loaded when it is needed.
@@ -20,56 +21,57 @@ export class TxFormatService {
   constructor(
     private bwc: BwcService,
     private rate: RateService,
-    private config: ConfigService
+    private config: ConfigService,
+    private logger: Logger
   ) {
     console.log('Hello TxFormatService Service');
   }
 
-  formatAmount(satoshis: number, fullPrecision?: boolean) {
+  formatAmount(micros: number, fullPrecision?: boolean): any {
     let settings = this.config.get().wallet.settings;
 
-    if (settings.unitCode == 'sat') return satoshis;
+    if (settings.unitCode == 'sat') return micros;
 
     //TODO : now only works for english, specify opts to change thousand separator and decimal separator
     let opts = {
       fullPrecision: !!fullPrecision
     };
-    return this.bwc.getUtils().formatAmount(satoshis, settings.unitCode, opts);
+    return this.bwc.getUtils().formatAmount(micros, settings.unitCode, opts);
   }
 
-  formatAmountStr(satoshis: number) {
-    if (isNaN(satoshis)) return;
-    return this.formatAmount(satoshis) + ' MRT';
+  formatAmountStr(micros: number): any {
+    if (isNaN(micros)) return;
+    return this.formatAmount(micros) + ' MRT';
   }
 
-  toFiat(satoshis: number, code: string): Promise<any> {
+  toFiat(micros: number, code: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (isNaN(satoshis)) resolve();
+      if (isNaN(micros)) return resolve();
       let v1;
-      v1 = this.rate.toFiat(satoshis, code);
-      if (!v1) resolve(null);
-      resolve(v1.toFixed(2));
+      v1 = this.rate.toFiat(micros, code);
+      if (!v1) return resolve(null);
+      return resolve(v1.toFixed(2));
     });
   }
 
-  formatToUSD(satoshis: number): Promise<any> {
+  formatToUSD(micros: number): Promise<any> {
     return new Promise((resolve, reject) => {
       let v1;
-      if (isNaN(satoshis)) resolve();
-      v1 = this.rate.toFiat(satoshis, 'USD');
+      if (isNaN(micros)) resolve();
+      v1 = this.rate.toFiat(micros, 'USD');
       if (!v1) resolve(null);
       resolve(v1.toFixed(2));
     });
   };
 
-  formatAlternativeStr(satoshis: number): Promise<any> {
+  formatAlternativeStr(micros: number): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (isNaN(satoshis)) resolve();
+      if (isNaN(micros)) return resolve();
       let settings = this.config.get().wallet.settings;
 
-      let v1 = parseFloat((this.rate.toFiat(satoshis, settings.alternativeIsoCode)).toFixed(2));
+      let v1 = parseFloat((this.rate.toFiat(micros, settings.alternativeIsoCode)).toFixed(2));
       let v1FormatFiat = new FiatAmount(v1);
-      if (!v1FormatFiat) resolve(null);
+      if (!v1FormatFiat) return resolve(null);
 
       return resolve(v1FormatFiat.amount + ' ' + settings.alternativeIsoCode);
     });
@@ -91,8 +93,6 @@ export class TxFormatService {
           tx.hasMultiplesOutputs = true;
         }
         tx.amount = _.reduce(tx.outputs, function (total: any, o: any) {
-          o.amountStr = self.formatAmountStr(o.amount);
-          o.alternativeAmountStr = self.formatAlternativeStr(o.amount);
           return total + o.amount;
         }, 0);
       }
@@ -100,13 +100,16 @@ export class TxFormatService {
     }
 
     tx.amountStr = self.formatAmountStr(tx.amount);
-    tx.alternativeAmountStr = self.formatAlternativeStr(tx.amount);
+    //TODO: This causes an unresolved promise herror.  
+    tx.alternativeAmountStr = Promise.resolve(self.formatAlternativeStr(tx.amount)).value();
     tx.feeStr = self.formatAmountStr(tx.fee || tx.fees);
 
     if (tx.amountStr) {
       tx.amountValueStr = tx.amountStr.split(' ')[0];
       tx.amountUnitStr = tx.amountStr.split(' ')[1];
     }
+
+    this.logger.warn("ProcessTx Return Value: ", tx);
 
     return tx;
   };
@@ -178,7 +181,7 @@ export class TxFormatService {
     let settings = this.config.get()['wallet']['settings']; // TODO
 
     let satToBtc = 1 / 100000000;
-    let unitToSatoshi = settings.unitToSatoshi;
+    let unitToMicro = settings.unitToMicro;
     let amountUnitStr;
     let amountSat;
     let alternativeIsoCode = settings.alternativeIsoCode;
@@ -194,7 +197,7 @@ export class TxFormatService {
       amount = (amountSat * satToBtc).toFixed(8);
       currency = 'MRT';
     } else {
-      amountSat = parseInt((amount * unitToSatoshi).toFixed(0));
+      amountSat = parseInt((amount * unitToMicro).toFixed(0));
       amountUnitStr = this.formatAmountStr(amountSat);
       // convert unit to BTC or BCH
       amount = (amountSat * satToBtc).toFixed(8);
@@ -206,8 +209,8 @@ export class TxFormatService {
   satToUnit(amount: any) {
     let settings = this.config.get()['wallet']['settings']; // TODO
 
-    let unitToSatoshi = settings.unitToSatoshi;
-    let satToUnit = 1 / unitToSatoshi;
+    let unitToMicro = settings.unitToMicro;
+    let satToUnit = 1 / unitToMicro;
     let unitDecimals = settings.unitDecimals;
     return parseFloat((amount * satToUnit).toFixed(unitDecimals));
   };
