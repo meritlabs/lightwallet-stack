@@ -43,7 +43,7 @@ export class CreateVaultDepositView {
     this.getAllWallets().then((wallets: Array<Wallet>) => {
       _.each(wallets, (w) => console.log(w));
       const computed = wallets[0].status.balance.availableConfirmedAmount;
-      const mrt = this.bitcore.Unit.fromSatoshis(computed).toMRT();
+      const mrt = this.bitcore.Unit.fromMicros(computed).toMRT();
       this.formData.selectedWallet = wallets[0];
       this.formData.amountAvailable = mrt;
     });

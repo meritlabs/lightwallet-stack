@@ -52,7 +52,7 @@ export class CreateVaultService {
 
   private vaultFromModel(spendPubKey: any) {
     //currently only supports type 0 which is a whitelisted vault.
-    const amount = this.bitcore.Unit.fromMRT(parseFloat(this.model.amountToDeposit)).toSatoshis();
+    const amount = this.bitcore.Unit.fromMRT(parseFloat(this.model.amountToDeposit)).toMicros();
     const whitelist = _.map(this.model.whitelist, (w) => { 
       let key = this.bitcore.HDPublicKey.fromString(w.pubKey);
       return key.toBuffer();
