@@ -17,6 +17,9 @@ import {EasyReceiveService} from "merit/easy-receive/easy-receive.service";
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AddressBookModule } from "merit/shared/address-book/address-book.module";
 
+import { VaultsService } from 'merit/vaults/vaults.service';
+
+
 @NgModule({
   declarations: [
     WalletsView,
@@ -30,7 +33,8 @@ import { AddressBookModule } from "merit/shared/address-book/address-book.module
     EasyReceiveService,
     InAppBrowser,
     MnemonicService,
-    LanguageService
+    LanguageService,
+    VaultsService,
   ],
   imports: [
     MomentModule,

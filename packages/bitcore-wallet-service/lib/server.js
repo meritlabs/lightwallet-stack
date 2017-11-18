@@ -1069,7 +1069,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
       address: address.address
     }
     self.unlockAddress(unlockParams, function(err, result){
-      if (err) return cb(err);
+      if (err && err != Errors.UNLOCKED_ALREADY) return cb(err);
       
       self.storage.storeAddressAndWallet(wallet, address, function(err) {
         if (err) return cb(err);
@@ -2209,7 +2209,7 @@ WalletService.prototype.createTx = function(opts, cb) {
               self.unlockAddress(unlockParams, function(err, result){
                 // If the change address is unlocked already, we can continue with 
                 // the creation of the TXN.
-                if (err && !(err == Errors.UNLOCKED_ALREADY)) return next(err);
+                if (err && (err != Errors.UNLOCKED_ALREADY)) return next(err);
               });
               next();
             });
@@ -3540,16 +3540,20 @@ WalletService.prototype.createVault = function(opts, cb) {
         return next();
       });
     },
-    // function(next) {
-    //   var bc = self._getBlockchainExplorer(opts.network);
-      
-    //   bc.broadcast(opts, function(err, txid) {
-    //     if (err) return cb(err);
-        
-    //     opts.txid = txid;
-    //     return next();
-    //   });
-    // }, // Enable me later when transaction is constructed successfully
+    function(next) {
+      //TODO: Loop
+      var txp = Model.TxProposal.fromObj(opts.coins[0]);
+      var bc = self._getBlockchainExplorer(txp.network);
+
+      var rawTx = txp.getRawTx();
+      bc.broadcast(rawTx, function(err, txid) {
+        if (err) return cb(err);
+
+        txp.txid = txid;
+        opts.coins[0] = txp;
+        return next();
+      });
+    }, // Enable me later when transaction is constructed successfully
     function(next) {
       self.getVaults(opts, cb);
 
