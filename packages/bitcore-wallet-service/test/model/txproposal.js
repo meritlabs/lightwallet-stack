@@ -149,7 +149,7 @@ var aTXP = function(type) {
     "inputs": [{
       "txid": "6ee699846d2d6605f96d20c7cc8230382e5da43342adb11b499bbe73709f06ab",
       "vout": 8,
-      "satoshis": 100000000,
+      "micros": 100000000,
       "scriptPubKey": "a914a8a9648754fbda1b6c208ac9d4e252075447f36887",
       "address": "3H4pNP6J4PW4NnvdrTg37VvZ7h2QWuAwtA",
       "path": "m/2147483647/0/1",

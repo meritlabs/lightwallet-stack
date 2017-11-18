@@ -57,7 +57,7 @@ export class FeeService {
         });
       }
       let feeRate = feeLevelRate.feePerKb;
-      if (!levelData.fromCache) self.logger.debug('Dynamic fee: ' + feeLevel + '/' + network + ' ' + (feeLevelRate.feePerKb / 1000).toFixed() + ' Satoshis/B');
+      if (!levelData.fromCache) self.logger.debug('Dynamic fee: ' + feeLevel + '/' + network + ' ' + (feeLevelRate.feePerKb / 1000).toFixed() + ' Micros/B');
       return feeRate;
     });
   };
