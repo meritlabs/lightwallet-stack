@@ -1,33 +1,37 @@
 import { Injectable } from '@angular/core';
 
 import { PlatformService } from 'merit/core/platform.service';
+import { Logger } from 'merit/core/logger';
 
 @Injectable()
 export class LedgerService {
 
+    public description:any;
+
+    public static LEDGER_CHROME_ID:string = "kkdpmhnladdopljabkgpacgpliggeeaf";
+    
+
     constructor(
-        private platformInfo:PlatformService
-    ) {}
-
-    private static LEDGER_CHROME_ID = "kkdpmhnladdopljabkgpacgpliggeeaf";
-
-    public static description = {
-        id: 'ledger',
-        name: 'Ledger',
-        longName: 'Ledger Hardware Wallet',
-        isEmbeddedHardware: false,
-        supportsTestnet: false
+        private platformInfo:PlatformService,
+        private logger:Logger
+    ) {
+        this.description = {
+          id: 'ledger',
+          name: 'Ledger',
+          longName: 'Ledger Hardware Wallet',
+          isEmbeddedHardware: false,
+          supportsTestnet: false,
+          supported: this.platformInfo.supportsLedger
+        };
     }
 
     public hexToArray(s) {
         var bstr = new ByteString(s, GP.HEX).toBuffer();
         var a = new Uint8Array(bstr.length);
-
         Array.prototype.forEach.call(bstr, 
           function (ch, i) { 
             a[i] = (ch+'').charCodeAt(0);
           });
-  
         return a;
     }
 
@@ -172,8 +176,8 @@ class ByteString {
 
     constructor(value, private encoding) {
         this.hasBuffer = (typeof Buffer != 'undefined');
-
-        if (this.hasBuffer && (value instanceof Buffer)) {
+        this.hasBuffer = false;  //todo fix this check
+        if (this.hasBuffer && (value instanceof Buffer)) { 
             this.value  = value; 
             this.encoding = GP.HEX; 
          } else {
