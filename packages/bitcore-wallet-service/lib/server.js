@@ -191,6 +191,7 @@ WalletService.getInstance = function(opts) {
     }
   }
 
+  // ToDo: Limit the number of services in memory at any given time.  Or, perhaps, destroy instances.  
   var server = new WalletService();
   server._setClientVersion(opts.clientVersion);
   return server;
@@ -221,15 +222,10 @@ WalletService.getInstanceWithAuth = function(opts, cb) {
       if (err) return cb(err);
       if (!copayer) return cb(new ClientError(Errors.codes.NOT_AUTHORIZED, 'Copayer not found'));
 
-      if (!copayer.isSupportStaff) {
-        var isValid = !!server._getSigningKey(opts.message, opts.signature, copayer.requestPubKeys);
-        if (!isValid)
-          return cb(new ClientError(Errors.codes.NOT_AUTHORIZED, 'Invalid signature'));
-        server.walletId = copayer.walletId;
-      } else {
-        server.walletId = opts.walletId || copayer.walletId;
-        server.copayerIsSupportStaff = true;
-      }
+      var isValid = !!server._getSigningKey(opts.message, opts.signature, copayer.requestPubKeys);
+      if (!isValid)
+        return cb(new ClientError(Errors.codes.NOT_AUTHORIZED, 'Invalid signature'));
+      server.walletId = copayer.walletId;
 
       server.copayerId = opts.copayerId;
       return cb(null, server);
@@ -1027,6 +1023,7 @@ WalletService.prototype._canCreateAddress = function(ignoreMaxGap, cb) {
     })) return cb(null, true);
 
     var bc = self._getBlockchainExplorer(latestAddresses[0].network);
+    if (!bc) return cb(new Error('Could not get blockchain explorer instance'));
     var activityFound = false;
     var i = latestAddresses.length;
     async.whilst(function() {
@@ -2013,6 +2010,10 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
     var output = opts.outputs[i];
     output.valid = false;
 
+    if (!checkRequired(output, ['toAddress', 'amount'])) {
+      return new ClientError('Argument missing in output #' + (i + 1) + '.');
+    }
+
     var toAddress = {};
     try {
       if (checkRequired(output, ['toAddress', 'amount'])) {
@@ -2325,7 +2326,9 @@ WalletService.prototype.publishTx = function(opts, cb) {
         }
 
         // Verify UTXOs are still available
-        self.getUtxos({}, function(err, utxos) {
+        self._getUtxosForCurrentWallet({
+          addresses: txp.inputs,
+        }, function(err, utxos) {
           if (err) return cb(err);
 
           var txpInputs = _.map(txp.inputs, utxoKey);
@@ -2501,6 +2504,7 @@ WalletService.prototype.removePendingTx = function(opts, cb) {
 
 WalletService.prototype._broadcastRawTx = function(network, raw, cb) {
   var bc = this._getBlockchainExplorer(network);
+  if (!bc) return cb(new Error('Could not get blockchain explorer instance'));
   bc.broadcast(raw, function(err, txid) {
     if (err) return cb(err);
     return cb(null, txid);
@@ -2529,6 +2533,7 @@ WalletService.prototype.broadcastRawTx = function(opts, cb) {
 WalletService.prototype._checkTxInBlockchain = function(txp, cb) {
   if (!txp.txid) return cb();
   var bc = this._getBlockchainExplorer(txp.getNetworkName());
+  if (!bc) return cb(new Error('Could not get blockchain explorer instance'));
   bc.getTransaction(txp.txid, function(err, tx) {
     if (err) return cb(err);
     return cb(null, !!tx);
@@ -2887,6 +2892,7 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
 
   function fetchFromBlockchain(cb) {
     var bc = self._getBlockchainExplorer(network);
+    if (!bc) return cb(new Error('Could not get blockchain explorer instance'));
     bc.getBlockchainHeight(function(err, height) {
       if (!err && height > 0) {
         cache.current = height;
@@ -2969,7 +2975,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           amount = amountOut;
           action = 'moved';
         } else {
-          amount = amountIn - amountOut - amountOutChange - (amountIn > 0 ? tx.fees : 0);
+          amount = amountIn - amountOut - amountOutChange - ((amountIn > 0 && amountOutChange >0 ) ? tx.fees : 0);
           action = amount > 0 ? 'sent' : 'received';
         }
 
@@ -3087,6 +3093,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
         var addressStrs = _.map(addresses, 'address');
         var bc = self._getBlockchainExplorer(network);
+        if (!bc) return next(new Error('Could not get blockchain explorer instance'));
+
+        log.info('Querying txs for: %s addrs', addresses.length);
+
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
@@ -3263,6 +3273,7 @@ WalletService.prototype.scan = function(opts, cb) {
 
   function checkActivity(address, network, cb) {
     var bc = self._getBlockchainExplorer(network);
+    if (!bc) return cb(new Error('Could not get blockchain explorer instance'));
     bc.getAddressActivity(address, cb);
   };
 
@@ -3328,8 +3339,8 @@ WalletService.prototype.scan = function(opts, cb) {
               if (err) return cb(err);
               wallet.scanStatus = error ? 'error' : 'success';
               self.storage.storeWallet(wallet, function() {
-                return cb(error);
-              });
+                  return cb(error);
+                });
             })
           });
         });
