@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "*.ts"
+  ],
+  "exclude": [
+  ],
+  "compileOnSave": false
+}
