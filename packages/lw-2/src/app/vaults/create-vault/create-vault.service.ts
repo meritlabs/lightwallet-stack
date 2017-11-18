@@ -62,7 +62,7 @@ export class CreateVaultService {
       amount: amount,
       whitelist: whitelist,
       masterPubKey: this.model.masterKey.publicKey,
-      spendPubKey: spendPubKey
+      spendPubKey: spendPubKey,
     });
   }
 
@@ -107,6 +107,7 @@ export class CreateVaultService {
         vault.coins.push(signedTxp);
         return vault;
       }).then((vault) => {
+        vault.name = this.model.vaultName;
         return this.walletClient.createVault(vault);
       }).then((resp) => {
         this.resetModel();
@@ -132,7 +133,6 @@ export class CreateVaultService {
         inputs: null, //Let merit wallet service figure out the inputs based
                       //on the selected wallet.
         feeLevel: feeLevel,
-        message: vault.name,
         excludeUnconfirmedUtxos: true,
         dryRun: dryRun,
       };
