@@ -521,15 +521,19 @@ export class WalletService {
                 };
   
                 requestLimit = LIMIT;
-                return resolve(getNewTxs(newTxs, skip));
+                return getNewTxs(newTxs, skip).then((txs) => {
+                  return resolve(txs);
+                });
               }); 
             }).catch((err) => {
               this.logger.warn(this.bwcErrorService.msg(err, 'Server Error')); //TODO
               if (err == this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
                 this.logger.info('Retrying history download in 5 secs...');
-                return reject(setTimeout(() => {
-                  return getNewTxs(newTxs, skip);
-                }, 5000));
+                return setTimeout(() => {
+                  return getNewTxs(newTxs, skip).then((txs) => {
+                    return resolve (txs);
+                  });
+                }, 5000);
               };
               return reject(err);
             });
