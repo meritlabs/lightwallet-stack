@@ -1760,6 +1760,9 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
   };
 
   function select(utxos, cb) {
+    if (_.isEmpty(utxos)) {
+      cb(new Error("No Utxos"), null, null);
+    }
     var totalValueInUtxos = _.sumBy(utxos, 'micros');
 
     var netValueInUtxos = totalValueInUtxos - baseTxpFee - (utxos.length * feePerInput);
@@ -1849,6 +1852,10 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         if (changeAmount > 0 && changeAmount <= dustThreshold) {
           log.debug('Change below dust threshold (' + Utils.formatAmountInMrt(dustThreshold) + '). Incrementing fee to remove change.');
           // Remove dust change by incrementing fee
+      
+          if(!changeAmount) {
+            changeAmount = 0;
+          }
           fee += changeAmount;
         }
 
