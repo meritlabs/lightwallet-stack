@@ -66,8 +66,12 @@ function Address(data, network, type) {
     throw new TypeError('Second argument must be "livenet" or "testnet".');
   }
 
-  if (type && (type !== Address.PayToPublicKeyHash && type !== Address.PayToScriptHash)) {
-    throw new TypeError('Third argument must be "pubkeyhash" or "scripthash".');
+  if (type && 
+      (type !== Address.PayToPublicKeyHash && 
+       type !== Address.PayToScriptHash && 
+       type !== Address.ParameterizedPayToScriptHash)) {
+
+    throw new TypeError('Third argument must be "pubkeyhash", "scripthash", or "paramscripthash" .');
   }
 
   var info = this._classifyArguments(data, network, type);
@@ -166,6 +170,7 @@ Address._classifyFromVersion = function(buffer) {
 
   var pubkeyhashNetwork = Networks.get(buffer[0], 'pubkeyhash');
   var scripthashNetwork = Networks.get(buffer[0], 'scripthash');
+  var paramScripthashNetwork = Networks.get(buffer[0], 'paramscripthash');
 
   if (pubkeyhashNetwork) {
     version.network = pubkeyhashNetwork;
@@ -173,6 +178,9 @@ Address._classifyFromVersion = function(buffer) {
   } else if (scripthashNetwork) {
     version.network = scripthashNetwork;
     version.type = Address.PayToScriptHash;
+  } else if (paramScripthashNetwork) {
+    version.network = paramScripthashNetwork;
+    version.type = Address.ParameterizedPayToScriptHash;
   }
 
   return version;

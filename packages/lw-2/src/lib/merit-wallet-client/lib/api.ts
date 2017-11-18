@@ -170,6 +170,8 @@ export interface IAPI {
   referralTxConfirmationSubscribe(opts: any): Promise<any>;
   referralTxConfirmationUnsubscribe(codeHash: string): Promise<any>;
   validateEasyScript(scriptId: string): Promise<any>;
+  getVaults();
+  createVault(vaultTxProposal: any);
 }
 
 export class API implements IAPI {
@@ -940,7 +942,6 @@ export class API implements IAPI {
   prepareVault(type: number, opts: any = {}) {
     if(type == 0) {
       let tag = opts.masterPubKey.toAddress().hashBuffer;
-      console.log('tag:', tag);
 
       let params = [
         opts.spendPubKey.toBuffer(),
@@ -948,27 +949,27 @@ export class API implements IAPI {
       ];
 
       params = params.concat(opts.whitelist);
-      params.push(opts.whitelist.length);
+      params.push(Bitcore.Opcode.smallInt(opts.whitelist.length));
       params.push(tag);
-      params.push(type);
-
-      console.log('params:', params);
+      params.push(Bitcore.Opcode.smallInt(type));
 
       let redeemScript = Bitcore.Script.buildSimpleVaultScript(tag);
-      console.log('redeemScript:', redeemScript);
       let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
-      console.log('scriptPubKey:', scriptPubKey);
+
+      const network = opts.masterPubKey.network.name;
 
       let vault = {
         type: type,
+        amount: opts.amount,
         tag: opts.masterPubKey.toAddress().hashBuffer,
         whitelist: opts.whitelist,
         spendPubKey: opts.spendPubKey,
         masterPubKey: opts.masterPubKey,
         redeemScript: redeemScript,
         scriptPubKey: scriptPubKey,
+        address: scriptPubKey.toAddress(network),
+        coins: []
       };
-      console.log('vault:', vault);
 
       return vault;
     } else {
@@ -2005,7 +2006,6 @@ export class API implements IAPI {
 
     $.checkState(parseInt(opts.txp.version) >= 3);
 
-
     let t = Utils.buildTx(opts.txp);
     let hash = t.uncheckedSerialize();
     let args = {
@@ -2630,5 +2630,27 @@ export class API implements IAPI {
 
     let url = '/v1/easyreceive/validate/' + scriptId;
     return this._doGetRequest(url);
+  };
+
+  /**
+  * Vaulting 
+  */
+  getVaults() {
+    $.checkState(this.credentials);
+
+    var self = this;
+
+    var url = '/v1/vaults/';
+    return this._doGetRequest(url);
+
+  };
+
+  createVault(vaultTxProposal: any) {
+    $.checkState(this.credentials);
+
+    var self = this;
+
+    var url = '/v1/vaults/';
+    return this._doPostRequest(url, vaultTxProposal);
   };
 }

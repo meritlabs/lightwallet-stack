@@ -194,6 +194,9 @@ Script.fromString = function(str) {
     var opcode = Opcode(token);
     var opcodenum = opcode.toNumber();
 
+    console.log("OPCODE:", token);
+    console.log("opcodenum:", opcodenum);
+
     if (_.isUndefined(opcodenum)) {
       opcodenum = parseInt(token);
       if (opcodenum > 0 && opcodenum < Opcode.OP_PUSHDATA1) {
@@ -204,6 +207,9 @@ Script.fromString = function(str) {
         });
         i = i + 2;
       } else {
+        console.log("BAD OPCODE!!!!");
+        console.log(token);
+        console.log(opcodenum);
         throw new Error('Invalid script: ' + JSON.stringify(str));
       }
     } else if (opcodenum === Opcode.OP_PUSHDATA1 ||
@@ -893,7 +899,7 @@ Script.buildSimpleVaultScript = function(tag) {
    .add(Opcode. OP_NTOALTSTACK               )// <out index> <sig> <mode> | [addresses]
    .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> <spend key> | [addresses] <renew key>
    .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> | [addresses] <renew key> <spend key>
-   .add(        0                            )// <sig> <mode> 0 | [addresses] <renew key> <spend key>
+   .add(        Opcode.smallInt(0)           )// <sig> <mode> 0 | [addresses] <renew key> <spend key>
    .add(Opcode. OP_EQUAL                     )// <sig> <bool> | [addresses] <renew key> <spend key>
    .add(Opcode. OP_IF                        )// <sig> | [addresses] <renew key> <spend key>
    .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <renew key>
@@ -902,25 +908,25 @@ Script.buildSimpleVaultScript = function(tag) {
    .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses] <renew key> <spend key>
    .add(Opcode.      OP_FROMALTSTACK         )// <spend key> | [addresses] <renew key>
    .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> | [addresses]
-   .add(             0                       )// <spend key> <renew key> <0 args> | [addresses]
-   .add(             0                       )// <spend key> <renew key> <0 args> <out index>| [addresses]
+   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <0 args> | [addresses]
+   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <0 args> <out index>| [addresses]
    .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> <0 args> <out index> [addresses] |
    .add(Opcode.      OP_NDUP                 )// <spend key> <renew key> <0 args> <out index> [addresses] [addresses] |
    .add(Opcode.      OP_NTOALTSTACK          )// <spend key> <renew key> <0 args> <out index> [addresses] | [addresses]
    .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )// <spend key> <renew key> | [addresses]
    .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> [addresses] |
    .add(Opcode.      OP_DUP                  )// <spend key> <renew key> [addresses] <num addresss> |
-   .add(             5                       )// <spend key> <renew key> [addresses] <num addresss> 4 |
+   .add(             Opcode.smallInt(5)      )// <spend key> <renew key> [addresses] <num addresss> 4 |
    .add(Opcode.      OP_ADD                  )// <spend key> <renew key> [addresses] <total args> |
    .add(Opcode.      OP_TOALTSTACK           )// <spend key> <renew key> [addresses] | <total args>
    .add(             tag                     )// <spend key> <renew key> [addresses] <tag> | 
-   .add(             0                       )// <spend key> <renew key> [addresses] <tag> <vault type> |
+   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> [addresses] <tag> <vault type> |
    .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> | 
-   .add(             1                       )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> |
-   .add(             's'                     )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> |
-   .add(             1                       )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> <num addresses>|
+   .add(             Opcode.smallInt(1)      )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> |
+   .add(             "s"                     )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> |
+   .add(             Opcode.smallInt(1)      )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> <num addresses>|
    .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )// |
-   .add(             2                       )// 2 |
+   .add(             Opcode.smallInt(2)      )// 2 |
    .add(Opcode.      OP_OUTPUTCOUNT          )// <count>
    .add(Opcode.      OP_EQUAL                )// <bool>
    .add(Opcode. OP_ELSE                      )
@@ -928,12 +934,12 @@ Script.buildSimpleVaultScript = function(tag) {
    .add(Opcode.      OP_DROP                 )// <sig> | [addresses] <renew key>
    .add(Opcode.      OP_FROMALTSTACK         )// <sig> <renew key> | [addresses]  
    .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses]
-   .add(             0                       )// <total args> | [addresses]
-   .add(             0                       )// <total args> <out index> | [addresses]
-   .add(             's'                     )// <total args> <out index> <self> | [addresses]
-   .add(             1                       )// <total args> <out index> <self> <num addresses>| [addresses]
+   .add(             Opcode.smallInt(0)      )// <total args> | [addresses]
+   .add(             Opcode.smallInt(0)      )// <total args> <out index> | [addresses]
+   .add(             "s"                     )// <total args> <out index> <self> | [addresses]
+   .add(             Opcode.smallInt(1)      )// <total args> <out index> <self> <num addresses>| [addresses]
    .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )//  | [addresses]
-   .add(             1                       )// 1 | [addresses]
+   .add(             Opcode.smallInt(1)      )// 1 | [addresses]
    .add(Opcode.      OP_OUTPUTCOUNT          )// 1 <count> | [addresses]
    .add(Opcode.      OP_EQUAL                )// <bool> | [addresses]
    .add(Opcode. OP_ENDIF);
@@ -955,7 +961,7 @@ Script.buildParameterizedP2SH = function(script, params) {
   }
 
   s.add(Opcode.OP_DEPTH)
-   .add(size)
+   .add(Opcode.smallInt(size))
    .add(Opcode.OP_GREATERTHANOREQUAL);
 
   return s;

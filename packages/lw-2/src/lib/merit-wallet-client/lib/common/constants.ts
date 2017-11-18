@@ -3,6 +3,7 @@ export module Constants {
   export const SCRIPT_TYPES = {
     P2SH: 'P2SH',
     P2PKH: 'P2PKH',
+    PP2SH: 'PP2SH',
   };
   
   export const DERIVATION_STRATEGIES = {

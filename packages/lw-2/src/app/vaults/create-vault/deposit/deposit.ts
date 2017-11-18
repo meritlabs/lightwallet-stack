@@ -16,7 +16,7 @@ import { BwcService } from "merit/core/bwc.service";
 })
 export class CreateVaultDepositView {
 
-  public formData = { amountToDeposit: 0.0, amountAvailable: 0.0 };
+  public formData = { amountToDeposit: 0.0, amountAvailable: 0.0, selectedWallet: null };
   public isNextAvailable = false;
   private bitcore = null;
 
@@ -42,8 +42,9 @@ export class CreateVaultDepositView {
 
     this.getAllWallets().then((wallets: Array<Wallet>) => {
       _.each(wallets, (w) => console.log(w));
-      const computed = this.computeBalances(wallets);
+      const computed = wallets[0].status.balance.availableConfirmedAmount;
       const mrt = this.bitcore.Unit.fromMicros(computed).toMRT();
+      this.formData.selectedWallet = wallets[0];
       this.formData.amountAvailable = mrt;
     });
   }
@@ -61,11 +62,5 @@ export class CreateVaultDepositView {
       }));
     });
     return wallets;
-  }
-
-  private computeBalances(wallets: Array<Wallet>) {
-    return _.reduce(wallets, (acc: number, w: Wallet) => {
-      return acc + w.status.balance.availableConfirmedAmount;
-    }, 0);
   }
 }

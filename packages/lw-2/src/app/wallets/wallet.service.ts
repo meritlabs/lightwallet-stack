@@ -94,24 +94,6 @@ export class WalletService {
         let txps = status.pendingTxps;
         let now = Math.floor(Date.now() / 1000);
 
-        /* To test multiple outputs...
-        var txp = {
-          message: 'test multi-output',
-          fee: 1000,
-          createdOn: new Date() / 1000,
-          outputs: []
-        };
-        function addOutput(n) {
-          txp.outputs.push({
-            amount: 600,
-            toAddress: '2N8bhEwbKtMvR2jqMRcTCQqzHP6zXGToXcK',
-            message: 'output #' + (Number(n) + 1)
-          });
-        };
-        _.times(150, addOutput);
-        txps.push(txp);
-        */
-
         _.each(txps, (tx: any) => {
 
           tx = this.txFormatService.processTx(tx);
@@ -677,6 +659,9 @@ export class WalletService {
       default:
       case 'P2SH':
         return wallet.m * 72 + wallet.n * 36 + 44;
+      case 'PP2SH':
+        //TODO: Figure out a better estimate
+        return 147;
     };
   }
 
