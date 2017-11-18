@@ -15,7 +15,6 @@ var Defaults = Common.Defaults;
 var WalletService = require('./server');
 var Stats = require('./stats');
 
-log.disableColor();
 log.debug = log.verbose;
 log.level = 'verbose';
 
@@ -128,7 +127,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       if (!opts.disableLogs)
         log.error(req.url + ' :' + code + ':' + m);
 
-      return sres.status(code || 500).json({
+      return res.status(code || 500).json({
         error: m,
       }).end();
     }
@@ -189,7 +188,10 @@ ExpressApp.prototype.start = function(opts, cb) {
       auth.session = credentials.session;
     }
     WalletService.getInstanceWithAuth(auth, function(err, server) {
-      if (err) return returnError(err, res, req);
+      if (err) {
+        log.debug("Could not get Wallet Instance with Auth");        
+        return returnError(err, res, req);
+      }
 
       // For logging
       req.walletId = server.walletId;
