@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, ToastController, AlertController, Events} from 'ionic-angular';
 import { VaultsService } from 'merit/vaults/vaults.service';
+import { ProfileService } from 'merit/core/profile.service';
 
 
 @IonicPage()
@@ -13,15 +14,13 @@ export class VaultsView {
 
   constructor(
     private navCtrl:NavController,
+    private profileService: ProfileService,
     private vaultService: VaultsService,
   ){}
 
   ionViewDidLoad() {
     console.log('loading vaults block');
-    this.vaultService.getVaults().then((vaults) => {
-      console.log('got vaults', vaults);
-      this.vaults = vaults;
-    });
+    this.vaults = this.vaultService.getVaultList();
   }
 
   toAddWallet() {

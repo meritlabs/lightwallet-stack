@@ -1,20 +1,26 @@
 import { Injectable } from '@angular/core';
 
-import { BwcService } from 'merit/core/bwc.service';
+import { ProfileService } from 'merit/core/profile.service';
 
 
 @Injectable()
 export class VaultsService {
 
-    constructor(
-        private bwcService: BwcService,
-    ) {
-        console.log('hello VaultsService');
-    }
+  constructor(
+    private profileService: ProfileService
+  ) {
+    console.log('hello VaultsService');
+  }
 
-    getVaults(): Promise<Array<any>> {
-        console.log('getting vaults');
-        return this.bwcService.getClient({}, null).getVaults();
-    }
+  getVaultList(): Array<any> {
+    return this.profileService.getVaults();
+  }
 
+  getVaults(): Promise<Array<any>> {
+    return Promise.resolve([]);
+  }
+
+  addVault(vault: any): Promise<boolean> {
+    return this.profileService.addVault(vault);
+  }
 }
