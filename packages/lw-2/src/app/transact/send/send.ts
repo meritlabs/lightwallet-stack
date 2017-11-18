@@ -11,7 +11,7 @@ import { SendService } from 'merit/transact/send/send.service';
 import { Logger } from 'merit/core/logger';
 
 import * as _ from 'lodash';
-import { MeritWalletClient } from '../../../../../merit-wallet-client/index';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts

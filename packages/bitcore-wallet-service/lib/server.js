@@ -1181,10 +1181,10 @@ WalletService.prototype._getUtxos = function(addresses, cb) {
     if (err) return cb(err);
 
     var utxos = _.map(utxos, function(utxo) {
-      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'satoshis', 'confirmations', 'isCoinbase', 'isMature', 'isMine', 'isChange']);
+      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations', 'isCoinbase', 'isMature', 'isMine', 'isChange']);
       u.confirmations = u.confirmations || 0;
       u.locked = false;
-      u.satoshis = _.isNumber(u.satoshis) ? +u.satoshis : Utils.strip(u.amount * 1e8);
+      u.micros = _.isNumber(u.micros) ? +u.micros : Utils.strip(u.amount * 1e8);
       delete u.amount;
       return u;
     });
@@ -1309,17 +1309,17 @@ WalletService.prototype.getUtxos = function(opts, cb) {
 WalletService.prototype._totalizeUtxos = function(utxos) {
 
   var balance = {
-    totalAmount: _.sumBy(utxos, 'satoshis'),
-    lockedAmount: _.sumBy(_.filter(utxos, 'locked'), 'satoshis'),
+    totalAmount: _.sumBy(utxos, 'micros'),
+    lockedAmount: _.sumBy(_.filter(utxos, 'locked'), 'micros'),
     // We believe it makes sense to show change as confirmed.  This is sensical because a transaction
     // will either be rejected or accepted in its entirety.  (Eg. It is not that some Vouts will be 
     // accepted while others will be denied.)
     totalConfirmedAmount: _.sumBy(
       _.filter(utxos, function(utxo) {
-        return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) || (utxo.isMine && utxo.isChange && utxo.satoshis >= 0));
+        return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) || (utxo.isMine && utxo.isChange && utxo.micros >= 0));
       }),
-    'satoshis'),
-    lockedConfirmedAmount: _.sumBy(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'satoshis'),
+    'micros'),
+    lockedConfirmedAmount: _.sumBy(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
   };
   balance.availableAmount = balance.totalAmount - balance.lockedAmount;
   balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
@@ -1347,7 +1347,7 @@ WalletService.prototype._getBalanceFromAddresses = function(addresses, cb) {
     });
 
     _.each(utxos, function(utxo) {
-      byAddress[utxo.address].amount += utxo.satoshis;
+      byAddress[utxo.address].amount += utxo.micros;
     });
 
     balance.byAddress = _.values(byAddress);
@@ -1465,7 +1465,7 @@ WalletService.prototype.getBalance = function(opts, cb) {
  * Return info needed to send all funds in the wallet
  * @param {Object} opts
  * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level for this TX ('priority', 'normal', 'economy', 'superEconomy') as defined in Defaults.FEE_LEVELS.
- * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in satoshi).
+ * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in micro).
  * @param {string} opts.excludeUnconfirmedUtxos[=false] - Optional. Do not use UTXOs of unconfirmed transactions as inputs
  * @param {string} opts.returnInputs[=false] - Optional. Return the list of UTXOs that would be included in the tx.
  * @returns {Object} sendMaxInfo
@@ -1520,7 +1520,7 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         inputs = _.filter(inputs, 'confirmations');
       }
       inputs = _.sortBy(inputs, function(input) {
-        return -input.satoshis;
+        return -input.micros;
       });
 
       if (_.isEmpty(inputs)) return cb(null, info);
@@ -1544,18 +1544,18 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         var feePerInput = sizePerInput * txp.feePerKb / 1000.;
 
         var partitionedByAmount = _.partition(inputs, function(input) {
-          return input.satoshis > feePerInput;
+          return input.micros > feePerInput;
         });
 
         info.utxosBelowFee = partitionedByAmount[1].length;
-        info.amountBelowFee = _.sum(partitionedByAmount[1], 'satoshis');
+        info.amountBelowFee = _.sumBy(partitionedByAmount[1], 'micros');
         inputs = partitionedByAmount[0];
 
         _.each(inputs, function(input, i) {
           var sizeInKb = (baseTxpSize + (i + 1) * sizePerInput) / 1000.;
           if (sizeInKb > Defaults.MAX_TX_SIZE_IN_KB) {
             info.utxosAboveMaxSize = inputs.length - i;
-            info.amountAboveMaxSize = _.sum(_.slice(inputs, i), 'satoshis');
+            info.amountAboveMaxSize = _.sumBy(_.slice(inputs, i), 'micros');
             return false;
           }
           txp.inputs.push(input);
@@ -1564,7 +1564,7 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         if (_.isEmpty(txp.inputs)) return cb(null, info);
 
         var fee = txp.getEstimatedFee();
-        var amount = _.sum(txp.inputs, 'satoshis') - fee;
+        var amount = _.sumBy(txp.inputs, 'micros') - fee;
 
         if (amount < Defaults.MIN_OUTPUT_AMOUNT) return cb(null, info);
 
@@ -1619,7 +1619,7 @@ WalletService.prototype._sampleFeeLevels = function(network, points, cb) {
  * Returns fee levels for the current state of the network.
  * @param {Object} opts
  * @param {string} [opts.network = 'livenet'] - The Merit network to estimate fee levels from.
- * @returns {Object} feeLevels - A list of fee levels & associated amount per kB in satoshi.
+ * @returns {Object} feeLevels - A list of fee levels & associated amount per kB in micro.
  */
 WalletService.prototype.getFeeLevels = function(opts, cb) {
   var self = this;
@@ -1743,7 +1743,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     // We should ensure that utxos are not locked and are mature enough.
     return _.filter(utxos, function(utxo) {
       if (utxo.locked) return false;
-      if (utxo.satoshis <= feePerInput) return false;
+      if (utxo.micros <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
       if (excludeIndex[utxo.txid + ":" + utxo.vout]) return false;
       if (utxo.isCoinbase && !utxo.isMature) return false;
@@ -1760,7 +1760,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
   };
 
   function select(utxos, cb) {
-    var totalValueInUtxos = _.sum(utxos, 'satoshis');
+    var totalValueInUtxos = _.sumBy(utxos, 'micros');
 
     var netValueInUtxos = totalValueInUtxos - baseTxpFee - (utxos.length * feePerInput);
 
@@ -1777,12 +1777,12 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     log.debug('Big input threshold ' + Utils.formatAmountInMrt(bigInputThreshold));
 
     var partitions = _.partition(utxos, function(utxo) {
-      return utxo.satoshis > bigInputThreshold;
+      return utxo.micros > bigInputThreshold;
     });
 
-    var bigInputs = _.sortBy(partitions[0], 'satoshis');
+    var bigInputs = _.sortBy(partitions[0], 'micros');
     var smallInputs = _.sortBy(partitions[1], function(utxo) {
-      return -utxo.satoshis;
+      return -utxo.micros;
     });
 
     log.debug('Considering ' + bigInputs.length + ' big inputs (' + Utils.formatUtxos(bigInputs) + ')');
@@ -1797,13 +1797,13 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     _.each(smallInputs, function(input, i) {
       log.debug('Input #' + i + ': ' + Utils.formatUtxos(input));
 
-      var netInputAmount = input.satoshis - feePerInput;
+      var netInputAmount = input.micros - feePerInput;
 
       log.debug('The input contributes ' + Utils.formatAmountInMrt(netInputAmount));
 
       selected.push(input);
 
-      total += input.satoshis;
+      total += input.micros;
       netTotal += netInputAmount;
 
       var txpSize = baseTxpSize + selected.length * sizePerInput;
@@ -1863,7 +1863,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       if (!_.isEmpty(bigInputs)) {
         var input = _.head(bigInputs);
         log.debug('Using big input: ', Utils.formatUtxos(input));
-        total = input.satoshis;
+        total = input.micros;
         fee = Math.round(baseTxpFee + feePerInput);
         netTotal = total - fee;
         selected = [input];
@@ -1957,7 +1957,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       var err = self._checkTx(txp);
 
       if (!err) {
-        var change = _.sum(txp.inputs, 'satoshis') - _.sum(txp.outputs, 'amount') - txp.fee;
+        var change = _.sumBy(txp.inputs, 'micros') - _.sumBy(txp.outputs, 'amount') - txp.fee;
         log.debug('Successfully built transaction. Total fees: ' + Utils.formatAmountInMrt(txp.fee) + ', total change: ' + Utils.formatAmountInMrt(change));
       } else {
         log.warn('Error building transaction', err);
@@ -2129,11 +2129,11 @@ WalletService.prototype._getFeePerKb = function(wallet, opts, cb) {
  * @param {string} opts.txProposalId - Optional. If provided it will be used as this TX proposal ID. Should be unique in the scope of the wallet.
  * @param {Array} opts.outputs - List of outputs.
  * @param {string} opts.outputs[].toAddress - Destination address.
- * @param {number} opts.outputs[].amount - Amount to transfer in satoshi.
+ * @param {number} opts.outputs[].amount - Amount to transfer in micro.
  * @param {string} opts.outputs[].message - A message to attach to this output.
  * @param {string} opts.message - A message to attach to this transaction.
  * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level for this TX ('priority', 'normal', 'economy', 'superEconomy') as defined in Defaults.FEE_LEVELS.
- * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in satoshi).
+ * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in micro).
  * @param {string} opts.changeAddress - Optional. Use this address as the change address for the tx. The address should belong to the wallet. In the case of singleAddress wallets, the first main address will be used.
  * @param {Boolean} opts.sendMax - Optional. Send maximum amount of funds that make sense under the specified fee/feePerKb conditions. (defaults to false).
  * @param {string} opts.payProUrl - Optional. Paypro URL for peers to verify TX
@@ -2816,7 +2816,7 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
     var inputs = _.map(tx.vin, function(item) {
       return {
         address: item.addr,
-        amount: item.valueSatoshis,
+        amount: item.valueMicros,
       }
     });
 
@@ -2909,6 +2909,10 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
  */
 WalletService.prototype.getTxHistory = function(opts, cb) {
   var self = this;
+  if (opts.skip < 0 || opts.skip == opts.limit) {
+    log.warn("Invalid parameters sent to getTxHistory.");
+    return cb(Errors.INVALID_PARAMETERS);
+  }
 
 
   opts = opts || {};
@@ -2925,7 +2929,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       var filter = {};
       if (_.isBoolean(isMine)) filter.isMine = isMine;
       if (_.isBoolean(isChange)) filter.isChange = isChange;
-      return _.sum(_.filter(items, filter), 'amount');
+      return _.sumBy(_.filter(items, filter), 'amount');
     };
 
     function classify(items) {
@@ -3063,6 +3067,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           if (err) return next(err);
           if (!res || !res[0]) return next();
 
+          log.warn("GNT: getTxHistoryCache");
+          log.warn(res);
           txs = res;
           fromCache = true;
 
@@ -3077,7 +3083,12 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
+          log.warn("GNT: getTransaction, raw");
+          console.log(rawTxs);
           txs = self._normalizeTxHistory(rawTxs);
+          log.warn("GNT: getTransaction, after normalization");
+          console.log(txs);
+
           totalItems = total;
           return next();
         });
@@ -3107,6 +3118,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
               tx.confirmations = height - tx.blockheight + 1;
             }
           });
+          log.warn("After blockHeight check");
+          console.log(txs);
           next();
         });
       },
@@ -3166,10 +3179,19 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           getNormalizedTxs(addresses, from, to, next);
         },
         function(txs, next) {
-          // Fetch all proposals in [t - 7 days, t + 1 day]
-          var minTs = _.min(txs.items, 'time').time - 7 * 24 * 3600;
-          var maxTs = _.max(txs.items, 'time').time + 1 * 24 * 3600;
+          log.warn("Show me the juice of a spruce goose.");
+          console.log(txs);
 
+          if (_.isEmpty(txs.items)) {
+            return next(null, []);
+          }
+
+          // TODO: Re-evaluate this because we are already paginating our gets. 
+          // Fetch all proposals in [t - 7 days, t + 1 day]
+          var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
+          var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
+
+          
           async.parallel([
 
             function(done) {
@@ -3194,13 +3216,23 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       ], function(err, res) {
         if (err) return cb(err);
 
-        var finalTxs = decorate(wallet, res.txs.items, addresses, res.txps, res.notes);
+        log.warn("What happened after parallel?");
+        console.log(res);
+
+        if (!res.txs) {
+          var finalTxs = decorate(wallet, [], addresses, [], []);
+          res.txs = { 
+            fromCache: false
+          };
+        } else {
+          var finalTxs = decorate(wallet, res.txs.items, addresses, res.txps, res.notes);
+        }
 
         tagLowFees(wallet, finalTxs, function(err) {
           if (err)
             log.warn('Failed to tag unconfirmed with low fee');
 
-          if (res.txs.fromCache)
+          if (res.txs && res.txs.fromCache)
             log.debug("History from cache for:", self.walletId, from, to);
 
           return cb(null, finalTxs, !!res.txs.fromCache);

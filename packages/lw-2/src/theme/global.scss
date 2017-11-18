@@ -1,0 +1,18 @@
+
+// Position
+// --------------------------------------------------
+
+$global-colors: (
+  light-grey: #9B9B9B,
+  labels:     #6C6C6E,
+);
+
+.bottom-absolute {
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  padding: 15px 15px 1vw 15px;
+  .button {
+    margin: 1.2rem 0.2rem;
+  }
+}

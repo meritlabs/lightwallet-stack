@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BwcService } from 'merit/core/bwc.service';
 import { WalletService } from "merit/wallets/wallet.service";
 import { Logger } from 'merit/core/logger';
-import { MeritWalletClient, IMeritWalletClient} from './../../../../../merit-wallet-client';
+import { MeritWalletClient, IMeritWalletClient} from './../../../lib/merit-wallet-client';
 import * as _ from 'lodash';
 
 @Injectable()

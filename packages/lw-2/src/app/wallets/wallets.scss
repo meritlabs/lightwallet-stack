@@ -9,4 +9,22 @@ view-wallets {
   .add-item .wallet-icon {
     padding: 0 7px;
   }
+   img {
+    &.icon-wallet {
+      width: 35px !important;
+      background-color: color($colors, primary);
+    }
+  }
+
+  .header-icon {
+    font-size: 1.7rem !important;
+    color: silver;
+    margin: 0 !important;
+    padding: 10px !important;
+  }
+
+  .error {
+    color: color($colors, danger) !important;
+  }
+
 }

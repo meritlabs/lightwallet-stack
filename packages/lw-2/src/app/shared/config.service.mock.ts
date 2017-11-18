@@ -17,7 +17,7 @@ interface Config {
     idleDurationMin: number;
     settings: {
       unitName: string;
-      unitToSatoshi: number;
+      unitToMicro: number;
       unitDecimals: number;
       unitCode: string;
       alternativeName: string;
@@ -120,7 +120,7 @@ export class ConfigServiceMock {
           idleDurationMin: 4,
           settings: {
           unitName: 'MRT',
-            unitToSatoshi: 100000000,
+            unitToMicro: 100000000,
             unitDecimals: 8,
             unitCode: 'mrt',
             alternativeName: 'US Dollar',
@@ -209,7 +209,7 @@ export class ConfigServiceMock {
         idleDurationMin: 4,
         settings: {
           unitName: 'MRT',
-          unitToSatoshi: 100000000,
+          unitToMicro: 100000000,
           unitDecimals: 8,
           unitCode: 'mrt',
           alternativeName: 'US Dollar',
