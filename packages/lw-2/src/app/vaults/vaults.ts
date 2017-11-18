@@ -22,5 +22,6 @@ export class VaultsView {
 
   toVault(vault) {
     console.log('toVault', vault);
+    this.navCtrl.push('VaultDetailsView', { vaultId: vault._id, vault: vault });
   }
 }
