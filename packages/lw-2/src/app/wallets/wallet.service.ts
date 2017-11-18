@@ -19,6 +19,7 @@ import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
 import { Wallet } from "./wallet.model";
+import { error } from 'util';
 
 
 /* Refactor CheckList:
@@ -89,7 +90,7 @@ export class WalletService {
       opts = opts || {};
       var walletId = wallet.id;
 
-      let processPendingTxps = (status: any) => {
+      let processPendingTxps = (status: any): Promise<any> => {
         status = status || {};
         let txps = status.pendingTxps;
         let now = Math.floor(Date.now() / 1000);
@@ -112,41 +113,47 @@ export class WalletService {
         txps.push(txp);
         */
 
-        _.each(txps, (tx: any) => {
+        return Promise.each(txps, (tx: any) => {
 
-          tx = this.txFormatService.processTx(tx);
+          return this.txFormatService.processTx(tx).then((pTx) => {
+             // no future transactions...
+            if (pTx.createdOn > now)
+              pTx.createdOn = now;
 
-          // no future transactions...
-          if (tx.createdOn > now)
-            tx.createdOn = now;
+            pTx.wallet = wallet;
 
-          tx.wallet = wallet;
+            if (!pTx.wallet) {
+              this.logger.error("no wallet at pTxp?");
+              return;
+            }
 
-          if (!tx.wallet) {
-            this.logger.error("no wallet at txp?");
-            return;
-          }
+            let action: any = _.find(pTx.actions, {
+              copayerId: pTx.wallet.copayerId
+            });
 
-          let action: any = _.find(tx.actions, {
-            copayerId: tx.wallet.copayerId
+            if (!action && pTx.status == 'pending') {
+              pTx.pendingForUs = true;
+            }
+
+            if (action && action.type == 'accept') {
+              pTx.statusForUs = 'accepted';
+            } else if (action && action.type == 'reject') {
+              pTx.statusForUs = 'rejected';
+            } else {
+              pTx.statusForUs = 'pending';
+            }
+
+            if (!pTx.deleteLockTime)
+              pTx.canBeRemoved = true;
+
+            return Promise.resolve(pTx);
           });
 
-          if (!action && tx.status == 'pending') {
-            tx.pendingForUs = true;
-          }
-
-          if (action && action.type == 'accept') {
-            tx.statusForUs = 'accepted';
-          } else if (action && action.type == 'reject') {
-            tx.statusForUs = 'rejected';
-          } else {
-            tx.statusForUs = 'pending';
-          }
-
-          if (!tx.deleteLockTime)
-            tx.canBeRemoved = true;
+         
+        }).then((pTxps) => {
+          wallet.pendingTxps = pTxps;
+          return Promise.resolve();
         });
-        wallet.pendingTxps = txps;
       };
 
       // TODO!!: Make this return a promise and properly promisify the stack.
@@ -259,8 +266,9 @@ export class WalletService {
           if (isStatusCached() && !opts.force) {
             this.logger.debug('Wallet status cache hit:' + wallet.id);
             return cacheStatus(wallet.cachedStatus).then(()=> {
-              processPendingTxps(wallet.cachedStatus);
-              return resolve(wallet.cachedStatus);
+              return processPendingTxps(wallet.cachedStatus).then(() => {
+                return resolve(wallet.cachedStatus);
+              });
             }).catch((err) => {
               this.logger.debug('Error in caching status:' + err);              
             });
@@ -281,15 +289,15 @@ export class WalletService {
               }, this.WALLET_STATUS_DELAY_BETWEEN_TRIES * tries);
             }
 
-            processPendingTxps(status);
-
-            this.logger.debug('Got Wallet Status for:' + wallet.credentials.walletName);
-            this.logger.debug(status);
-
-            return cacheStatus(status).then(() => {
-              wallet.scanning = status.wallet && status.wallet.scanStatus == 'running';
-              return resolve(status);
-            });            
+            return processPendingTxps(status).then(() => {
+              this.logger.debug('Got Wallet Status for:' + wallet.credentials.walletName);
+              this.logger.debug(status);
+  
+              return cacheStatus(status).then(() => {
+                wallet.scanning = status.wallet && status.wallet.scanStatus == 'running';
+                return resolve(status);
+              });            
+            });
           }).catch((err) => {
             this.logger.error("Could not get the status!");
             this.logger.error(err);
@@ -305,7 +313,7 @@ export class WalletService {
         return resolve(status);
       }).catch((err) => {
         this.logger.warn("Error getting status: ", err);
-        return reject("Error getting status: " + err);
+        return reject(new Error("Error getting status: " + err));
       });
     });
 
@@ -317,7 +325,7 @@ export class WalletService {
         if (!forceNew && addr) return resolve(addr);
 
         if (!wallet.isComplete())
-          return reject('WALLET_NOT_COMPLETE');
+          return reject(new Error('WALLET_NOT_COMPLETE'));
 
         return this.createAddress(wallet).then((_addr) => {
           if (_.isEmpty(_addr)) {
@@ -377,7 +385,7 @@ export class WalletService {
         }
         // No specific error matched above, run through the errorService callback filter.
         return this.bwcErrorService.cb(err, prefix).then((msg) => {
-          return reject(msg);
+          return reject(new Error(msg));
         });
       });
     });
@@ -490,30 +498,32 @@ export class WalletService {
               var res = result.res;
               var shouldContinue = result.shouldContinue ? result.shouldContinue : false;
 
-              newTxs = newTxs.concat(this.processNewTxs(wallet, _.compact(res)));
-              progressFn(newTxs.concat(txsFromLocal), newTxs.length);
-              skip = skip + requestLimit;
-              this.logger.debug('Syncing TXs. Got:' + newTxs.length + ' Skip:' + skip, ' EndingTxid:', endingTxid, ' Continue:', shouldContinue);
-
-              // TODO Dirty <HACK>
-              // do not sync all history, just looking for a single TX.
-              if (opts.limitTx) {
-                foundLimitTx = _.find(newTxs, {
-                  txid: opts.limitTx,
-                });
-                if (!_.isEmpty(foundLimitTx)) {
-                  this.logger.debug('Found limitTX: ' + opts.limitTx);
-                  return resolve(foundLimitTx);
+              return this.processNewTxs(wallet, _.compact(res)).then((pTxs) => {
+                newTxs = newTxs.concat(pTxs);
+                progressFn(newTxs.concat(txsFromLocal), newTxs.length);
+                skip = skip + requestLimit;
+                this.logger.debug('Syncing TXs. Got:' + newTxs.length + ' Skip:' + skip, ' EndingTxid:', endingTxid, ' Continue:', shouldContinue);
+  
+                // TODO Dirty <HACK>
+                // do not sync all history, just looking for a single TX.
+                if (opts.limitTx) {
+                  foundLimitTx = _.find(newTxs, {
+                    txid: opts.limitTx,
+                  });
+                  if (!_.isEmpty(foundLimitTx)) {
+                    this.logger.debug('Found limitTX: ' + opts.limitTx);
+                    return resolve(foundLimitTx);
+                  }
                 }
-              }
-              // </HACK>
-              if (!shouldContinue) {
-                this.logger.debug('Finished Sync: New / soft confirmed Txs: ' + newTxs.length);
-                return resolve(newTxs);
-              };
-
-              requestLimit = LIMIT;
-              return resolve(getNewTxs(newTxs, skip));
+                // </HACK>
+                if (!shouldContinue) {
+                  this.logger.debug('Finished Sync: New / soft confirmed Txs: ' + newTxs.length);
+                  return resolve(newTxs);
+                };
+  
+                requestLimit = LIMIT;
+                return resolve(getNewTxs(newTxs, skip));
+              }); 
             }).catch((err) => {
               this.logger.warn(this.bwcErrorService.msg(err, 'Server Error')); //TODO
               if (err == this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
@@ -605,7 +615,7 @@ export class WalletService {
     });
   }
 
-  private processNewTxs(wallet: MeritWalletClient, txs: any): Array<any> {
+  private processNewTxs(wallet: MeritWalletClient, txs: any): Promise<Array<any>> {
     let configGet: any = this.configService.get();
     let config: any = configGet.wallet.settings;
     let now = Math.floor(Date.now() / 1000);
@@ -613,34 +623,36 @@ export class WalletService {
     let ret = [];
     wallet.hasUnsafeConfirmed = false;
 
-    _.each(txs, (tx: any) => {
-      tx = this.txFormatService.processTx(tx);
+    return Promise.each(txs, (tx: any) => {
+      return this.txFormatService.processTx(tx).then((pTx) => {
+        // no future transactions...
+        if (pTx.time > now)
+          pTx.time = now;
 
-      // no future transactions...
-      if (tx.time > now)
-        tx.time = now;
+        if (pTx.confirmations >= this.SAFE_CONFIRMATIONS) {
+          pTx.safeConfirmed = this.SAFE_CONFIRMATIONS + '+';
+        } else {
+          pTx.safeConfirmed = false;
+          wallet.hasUnsafeConfirmed = true;
+        };
 
-      if (tx.confirmations >= this.SAFE_CONFIRMATIONS) {
-        tx.safeConfirmed = this.SAFE_CONFIRMATIONS + '+';
-      } else {
-        tx.safeConfirmed = false;
-        wallet.hasUnsafeConfirmed = true;
-      };
+        if (pTx.note) {
+          delete pTx.note.encryptedEditedByName;
+          delete pTx.note.encryptedBody;
+        };
 
-      if (tx.note) {
-        delete tx.note.encryptedEditedByName;
-        delete tx.note.encryptedBody;
-      };
-
-      if (!txHistoryUnique[tx.txid]) {
-        ret.push(tx);
-        txHistoryUnique[tx.txid] = true;
-      } else {
-        this.logger.debug('Ignoring duplicate TX in history: ' + tx.txid)
-      };
+        if (!txHistoryUnique[pTx.txid]) {
+          ret.push(pTx);
+          txHistoryUnique[pTx.txid] = true;
+        } else {
+          this.logger.debug('Ignoring duplicate TX in history: ' + pTx.txid)
+        };
+        return Promise.resolve();
+      });
+    }).then(() => {
+      return Promise.resolve(ret);
     });
 
-    return ret;
   }
 
   private removeAndMarkSoftConfirmedTx(txs: any): Array<any> {
@@ -714,7 +726,7 @@ export class WalletService {
           txid: txid
         });
 
-        if (!tx) return reject('Could not get transaction');
+        if (!tx) return reject(new Error('Could not get transaction'));
         return resolve(tx);
       };
 
@@ -780,7 +792,7 @@ export class WalletService {
   public publishTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     return new Promise((resolve, reject) => {
       if (_.isEmpty(txp) || _.isEmpty(wallet))
-        return reject('MISSING_PARAMETER');
+        return reject(new Error('MISSING_PARAMETER'));
       return resolve(wallet.publishTxProposal({
         txp: txp
       }));
@@ -789,7 +801,7 @@ export class WalletService {
 
   public signTx(wallet: MeritWalletClient, txp: any, password: string): Promise<any> {
     if (!wallet || !txp)
-      return Promise.reject('MISSING_PARAMETER');
+      return Promise.reject(new Error('MISSING_PARAMETER'));
 
       return wallet.signTxProposal(txp, password);
   }
@@ -797,10 +809,10 @@ export class WalletService {
   public broadcastTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     return new Promise((resolve, reject) => {
       if (_.isEmpty(txp) || _.isEmpty(wallet))
-        return reject('MISSING_PARAMETER');
+        return reject(new Error('MISSING_PARAMETER'));
 
       if (txp.status != 'accepted')
-        return reject('TX_NOT_ACCEPTED');
+        return reject(new Error('TX_NOT_ACCEPTED'));
 
       return resolve(txp);
     }).then((txp) => {
@@ -810,7 +822,7 @@ export class WalletService {
 
   public rejectTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     if (_.isEmpty(txp) || _.isEmpty(wallet))
-      return Promise.reject('MISSING_PARAMETER');
+      return Promise.reject(new Error('MISSING_PARAMETER'));
 
     return wallet.rejectTxProposal(txp, null);
   }
@@ -818,7 +830,7 @@ export class WalletService {
   public removeTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     return new Promise((resolve, reject) => {
       if (_.isEmpty(txp) || _.isEmpty(wallet))
-        return reject('MISSING_PARAMETER');
+        return reject(new Error('MISSING_PARAMETER'));
 
       return wallet.removeTxProposal(txp).then(() => {
         this.logger.debug('Transaction removed');
@@ -929,11 +941,11 @@ export class WalletService {
         if (_.find(this.profileService.profile.credentials, {
           'walletId': walletData.walletId
         })) {
-          return reject('Cannot join the same wallet more that once'); // TODO getTextCatalog
+          return reject(new Error('Cannot join the same wallet more that once')); // TODO getTextCatalog
         }
       } catch (ex) {
         this.logger.debug(ex);
-        return reject('Bad wallet invitation'); // TODO getTextCatalog
+        return reject(new Error('Bad wallet invitation')); // TODO getTextCatalog
       }
       opts.networkName = walletData.network;
       this.logger.debug('Joining Wallet:', opts);
@@ -1051,10 +1063,10 @@ export class WalletService {
       var title = 'Enter new spending password'; //TODO gettextcatalog
       var warnMsg = 'Your wallet key will be encrypted. The Spending Password cannot be recovered. Be sure to write it down.'; //TODO gettextcatalog
       return this.askPassword(warnMsg, title).then((password: string) => {
-        if (!password) return reject('no password'); //TODO gettextcatalog
+        if (!password) return reject(new Error('no password')); //TODO gettextcatalog
         title = 'Confirm your new spending password'; //TODO gettextcatalog
         return this.askPassword(warnMsg, title).then((password2: string) => {
-          if (!password2 || password != password2) return reject('password mismatch');
+          if (!password2 || password != password2) return reject(new Error('password mismatch'));
           wallet.encryptPrivateKey(password);
           return resolve();
         }).catch((err) => {
@@ -1071,7 +1083,7 @@ export class WalletService {
     return new Promise((resolve, reject) => {
       this.logger.debug('Disabling private key encryption for' + wallet.name);
       return this.askPassword(null, 'Enter Spending Password').then((password: string) => {  //TODO gettextcatalog
-        if (!password) return reject('no password');
+        if (!password) return reject(new Error('no password'));
         try {
           wallet.decryptPrivateKey(password);
         } catch (e) {
@@ -1086,8 +1098,8 @@ export class WalletService {
     return new Promise((resolve, reject) => {
       if (!this.isEncrypted(wallet)) return resolve();
       return this.askPassword(wallet.name, 'Enter Spending Password').then((password: string) => { //TODO gettextcatalog
-        if (!password) return reject('No password');
-        if (!wallet.checkPassword(password)) return reject('Wrong password');
+        if (!password) return reject(new Error('No password'));
+        if (!wallet.checkPassword(password)) return reject(new Error('Wrong password'));
         return resolve(password);
       });
     });
@@ -1196,7 +1208,7 @@ export class WalletService {
 
       // not supported yet
       if (wallet.credentials.derivationStrategy != 'BIP44' || !wallet.canSign())
-        return reject('Exporting via QR not supported for this wallet'); //TODO gettextcatalog
+        return reject(new Error('Exporting via QR not supported for this wallet')); //TODO gettextcatalog
 
       var keys = this.getKeysWithPassword(wallet, password);
 
@@ -1333,7 +1345,7 @@ export class WalletService {
           });
         } catch (ex) {
           this.logger.info(ex);
-          return reject('Could not create: Invalid wallet recovery phrase'); // TODO getTextCatalog
+          return reject(new Error('Could not create: Invalid wallet recovery phrase')); // TODO getTextCatalog
         }
       } else if (opts.extendedPrivateKey) {
         try {
@@ -1344,7 +1356,7 @@ export class WalletService {
           });
         } catch (ex) {
           this.logger.warn(ex);
-          return reject('Could not create using the specified extended private key'); // TODO GetTextCatalog
+          return reject(new Error('Could not create using the specified extended private key')); // TODO GetTextCatalog
         }
       } else if (opts.extendedPublicKey) {
         try {
@@ -1355,7 +1367,7 @@ export class WalletService {
           walletClient.credentials.hwInfo = opts.hwInfo;
         } catch (ex) {
           this.logger.warn("Creating wallet from Extended Public Key Arg:", ex, opts);
-          return reject('Could not create using the specified extended public key'); // TODO GetTextCatalog
+          return reject(new Error('Could not create using the specified extended public key')); // TODO GetTextCatalog
         }
       } else {
         let lang = this.languageService.getCurrent();
