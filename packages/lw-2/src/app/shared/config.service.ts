@@ -21,8 +21,8 @@ interface Config {
   wallet: {
     requiredCopayers: number;
       totalCopayers: number;
-      spendUnconfirmed: boolean;
       reconnectDelay: number;
+      spendUnconfirmed: boolean;
       idleDurationMin: number;
       settings: {
         unitName: string;
@@ -113,7 +113,7 @@ const configDefault: Config = {
   wallet: {
     requiredCopayers: 2,
     totalCopayers: 3,
-    spendUnconfirmed: false,
+    spendUnconfirmed: true,
     reconnectDelay: 5000,
     idleDurationMin: 4,
     settings: {
