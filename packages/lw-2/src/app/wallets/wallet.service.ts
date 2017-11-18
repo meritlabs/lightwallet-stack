@@ -19,7 +19,6 @@ import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
 import { Wallet } from "./wallet.model";
-import { error } from 'util';
 
 
 /* Refactor CheckList:
