@@ -944,6 +944,7 @@ export class ProfileService {
   }
 
   public getVaults(): Array<any> {
+    console.log('Getting vaults');
     return this.profile.vaults;
   }
 

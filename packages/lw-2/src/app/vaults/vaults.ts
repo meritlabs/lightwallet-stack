@@ -16,11 +16,16 @@ export class VaultsView {
     private navCtrl:NavController,
     private profileService: ProfileService,
     private vaultService: VaultsService,
-  ){}
-
-  ionViewDidLoad() {
+  ){
     console.log('loading vaults block');
     this.vaults = this.vaultService.getVaultList();
+  }
+
+  ionViewDidLoad() {
+  }
+
+  toVaultSummary(vault:any) {
+    console.log(vault);
   }
 
   toAddWallet() {

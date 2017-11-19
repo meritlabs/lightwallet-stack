@@ -14,6 +14,7 @@ export class Profile {
   constructor() {
     this.version = '1.0.0';
     this.credentials = [];
+    this.vaults = [];
   }
 
   public create(opts?: any): any {
