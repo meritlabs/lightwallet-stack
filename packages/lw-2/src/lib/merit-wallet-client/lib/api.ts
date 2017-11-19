@@ -166,6 +166,7 @@ export class API implements IAPI {
   private keyDerivationOk: boolean;
   private session: any;
   private eventEmitter: any;
+  private static DEBUG_MODE: boolean = false; 
   
   // Mutated from other services (namely wallet.service and profile.service)
   public id: string; // TODO: Re-evaluate where this belongs.
@@ -1019,7 +1020,11 @@ export class API implements IAPI {
           return reject(Errors.CONNECTION_ERROR);
         }
 
-        if (res.body) {
+        /**
+         * Universal MWC Logger.  It will log all output returned from BWS
+         * if the private static DEBUG_MODE is set to true above.  
+         */    
+        if (res.body && API.DEBUG_MODE) {
           this.log.info("BWS Response: ");
           this.log.info(util.inspect(res.body, {
             depth: 10
