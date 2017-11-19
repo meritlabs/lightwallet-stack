@@ -22,7 +22,7 @@ export module Verifier {
    * @param {String} address
    * @returns {Boolean} true or false
    */
-  export let checkAddress = function(credentials, address) {
+  export let checkAddress = function(credentials, address): boolean {
     $.checkState(credentials.isComplete());
 
     var local = Utils.deriveAddress(address.type || credentials.addressType, credentials.publicKeyRing, address.path, credentials.m, credentials.network);
@@ -37,7 +37,7 @@ export module Verifier {
    * @param {Array} copayers
    * @returns {Boolean} true or false
    */
-  export let checkCopayers = function(credentials, copayers) {
+  export let checkCopayers = function(credentials, copayers): boolean {
     $.checkState(credentials.walletPrivKey);
     var walletPubKey = Bitcore.PrivateKey.fromString(credentials.walletPrivKey).toPublicKey().toString();
 
@@ -79,7 +79,7 @@ export module Verifier {
     return true;
   };
 
-  export let checkProposalCreation = function(args, txp, encryptingKey) {
+  export let checkProposalCreation = function(args, txp, encryptingKey): boolean {
     function strEqual(str1, str2) {
       return ((!str1 && !str2) || (str1 === str2));
     }
@@ -122,7 +122,7 @@ export module Verifier {
     return true;
   };
 
-  export let checkTxProposalSignature = function(credentials, txp) {
+  export let checkTxProposalSignature = function(credentials, txp): boolean {
     $.checkArgument(txp.creatorId);
     $.checkState(credentials.isComplete());
 
@@ -166,7 +166,7 @@ export module Verifier {
   };
 
 
-  export let checkPaypro = function(txp, payproOpts) {
+  export let checkPaypro = function(txp, payproOpts): boolean {
     var toAddress, amount;
 
     if (parseInt(txp.version) >= 3) {
@@ -189,7 +189,7 @@ export module Verifier {
    * @param {Object} Optional: paypro
    * @param {Boolean} isLegit
    */
-  export let checkTxProposal = function(credentials, txp, opts) {
+  export let checkTxProposal = function(credentials, txp, opts): boolean {
     opts = opts || {};
 
     if (!this.checkTxProposalSignature(credentials, txp))
