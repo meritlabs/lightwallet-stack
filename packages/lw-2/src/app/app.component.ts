@@ -54,7 +54,9 @@ export class MeritLightWallet {
           this.statusBar.styleLightContent();
           this.splashScreen.hide();
         }
-        Promise.longStackTraces();
+        Promise.config({
+          longStackTraces: true
+        });
         process.on('unhandledRejection', console.log.bind(console));
         Promise.onPossiblyUnhandledRejection((error) => {
           throw error;
