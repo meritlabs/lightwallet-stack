@@ -73,7 +73,6 @@ export class WalletsView {
 
 
   public async ionViewDidLoad() {
-    console.log("Wallets.ts ionViewDidLoad");
 
     this.registerListeners();
     this.newReleaseExists = await this.appUpdateService.isUpdateAvailable();
@@ -261,20 +260,14 @@ export class WalletsView {
 
 
   private async getWallets():Promise<Array<Wallet>> {
-    console.log("needWalletStatuses");
-    console.log(this.needWalletStatuses());
     if (this.needWalletStatuses()) {
       this.wallets = await this.updateAllWallets();     
     }
-    console.log("@@Got wallets with statuses");    
-    console.log(this.wallets);    
     return this.wallets;
   }
 
   private async updateAllWallets() {
     let wallets = await this.profileService.getWallets();
-    console.log("@@got the wallets")
-    console.log(wallets)
     // Get the statuses of all the wallets.
     return await Promise.all(_.map(wallets, async (wallet:any) => {
       wallet.status = await this.walletService.getStatus(wallet);

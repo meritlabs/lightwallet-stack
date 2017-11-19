@@ -112,8 +112,6 @@ export class SendConfirmView {
   private refresh(): void {}
 
   private updateTx(tx, wallet, opts): Promise<void> {
-    this.logger.log('updateTx called', tx, wallet);
-
     if (opts.clearCache) {
       tx.txp = {};
     }
@@ -131,31 +129,25 @@ export class SendConfirmView {
     }
 
     updateAmount();
-    this.logger.log('updateTx updated amount', tx, wallet);
     this.refresh();
 
     // End of quick refresh, before wallet is selected.
     if (!wallet) return Promise.resolve();
 
-    this.logger.log('updateTx getting fee rate', tx, wallet);
     return this.feeService.getFeeRate(wallet.network, this.configFeeLevel).then((feeRate) => {
 
-      this.logger.log('updateTx got a fee rate', tx, wallet);
       if (tx.usingCustomFee) tx.feeRate = feeRate;
       tx.feeLevelName = this.feeService.feeOpts[tx.feeLevel];
 
       if (!wallet) return Promise.resolve();
 
-      this.logger.log('updateTx has a wallet', tx, wallet);
       // txp already generated for this wallet?
       if (!_.isEmpty(tx.txp)) {
         this.refresh();
         return Promise.resolve();
       }
 
-      this.logger.log('updateTx getting a txp', tx, wallet);
       return this.getTxp(_.clone(tx), wallet, opts.dryRun).then((txpOut) => {
-        console.log('getTxp got the response: ', txpOut);
 
           txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
           return this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
@@ -169,7 +161,6 @@ export class SendConfirmView {
           tx.txp = txpOut;
           this.txData = tx;
 
-          console.log('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
           return Promise.resolve();
         }).catch((err) => {this.logger.warn("could it be the txFormat?", err)});
       }).catch((err) => {
@@ -199,8 +190,6 @@ export class SendConfirmView {
   }
 
   private approveTx(tx, wallet): Promise<boolean> {
-    this.logger.warn("Finally approving.");
-    this.logger.warn(tx);
     return new Promise((resolve, reject) => {
       if (!tx || !wallet) {
         this.logger.warn("No transaction or wallet data in approval.");
@@ -239,7 +228,6 @@ export class SendConfirmView {
           }
           return this.walletService.publishAndSign(wallet, ctxp, _.noop).then((txp: any) => {
             //return Promise.resolve(this.notificationService.subscribe(wallet, txp));
-            this.logger.warn("We should have subscribed at this point in publishAndSign: ", txp);
             return Promise.resolve();
           });
         };
@@ -267,9 +255,6 @@ export class SendConfirmView {
    * TODO: TxP type should be created.
    */
   private getTxp(tx, wallet, dryRun): Promise<any> {
-    this.logger.warn("In GetTXP");
-    this.logger.warn(tx);
-    this.logger.warn(wallet);
     return new Promise((resolve, reject) => {
       // ToDo: use a credential's (or fc's) function for this
       if (tx.description && !wallet.credentials.sharedEncryptingKey) {
@@ -290,7 +275,6 @@ export class SendConfirmView {
           'message': tx.description
         }];
         txp.addressType = 'P2SH';
-        console.log(tx);
       } else {
         txp.outputs = [{
           'toAddress': tx.toAddress,
