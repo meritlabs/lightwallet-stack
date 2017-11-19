@@ -1162,14 +1162,9 @@ export class WalletService {
           return this.broadcastTx(wallet, signedTxp).then((broadcastedTxp: any) => {
             console.log("@@SB: AfterBroadCast");          
        
-            //this.events.publish('Local:Tx:Broadcast', broadcastedTxp);            
+            this.events.publish('Local:Tx:Broadcast', broadcastedTxp);            
             //$rootScope.$emit('Local/TxAction', wallet.id);
-            return Promise.resolve(broadcastedTxp);
-          }).then((bTxp) => {
-            console.log("@@SB: After AfterBroadCast");          
-            
-            //this.events.publish('Local:Tx:Broadcast', bTxp);
-            return resolve(bTxp);            
+            return resolve(broadcastedTxp);          
           }).catch((err) => {
             return reject(this.bwcErrorService.msg(err));
           });
@@ -1177,7 +1172,7 @@ export class WalletService {
           console.log("@@SB: ElseBlock");          
           
           //$rootScope.$emit('Local/TxAction', wallet.id);
-          //this.events.publish('Local:Tx:Signed', signedTxp);                      
+          this.events.publish('Local:Tx:Signed', signedTxp);                      
           return resolve(signedTxp);
         };
       }).catch((err) => {
