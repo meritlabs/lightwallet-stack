@@ -1019,10 +1019,12 @@ export class API implements IAPI {
           return reject(Errors.CONNECTION_ERROR);
         }
 
-        if (res.body)
-          this.log.debug(util.inspect(res.body, {
+        if (res.body) {
+          this.log.info("BWS Response: ");
+          this.log.info(util.inspect(res.body, {
             depth: 10
           }));
+        }
 
         if (res.status !== 200) {
           if (res.status === 404)
@@ -1107,13 +1109,13 @@ export class API implements IAPI {
   _doPostRequest(url: string, args: any): Promise<any> {
     return this._doRequest('post', url, args, false).catch((err) => {
       this.log.warn("Were not able to complete getRequest: ", err);
-    });;
+    });
   };
 
   _doPutRequest(url: string, args: any): Promise<any> {
     return this._doRequest('put', url, args, false).catch((err) => {
       this.log.warn("Were not able to complete getRequest: ", err);
-    });;
+    });
   };
 
   /**
@@ -1202,7 +1204,7 @@ export class API implements IAPI {
     return t.uncheckedSerialize();
   };
 
-  signTxp(txp: any, derivedXPrivKey) :any {
+  signTxp(txp: any, derivedXPrivKey):any {
     //Derive proper key to sign, for each input
     let privs = [];
     let derived = {};
@@ -1805,18 +1807,15 @@ export class API implements IAPI {
    *  paypro.memo
    */
   // TODO: Promisify (if we keep PayPro functionality.)
-  fetchPayPro(opts: any, cb: Function): void {
+  fetchPayPro(opts: any): Promise<any> {
     $.checkArgument(opts)
       .checkArgument(opts.payProUrl);
 
-    PayPro.get({
+    return PayPro.get({
       url: opts.payProUrl,
       http: this.payProHttp,
-    }, function(err, paypro) {
-      if (err)
-        return cb(err);
-
-      return cb(null, paypro);
+    }).then((paypro) => {
+      return Promise.resolve(paypro);
     });
   };
 
@@ -1918,8 +1917,9 @@ export class API implements IAPI {
 
     let url = '/v1/txproposals/' + opts.txp.id + '/publish/';
     return this._doPostRequest(url, args).then((txp) => {
-      this._processTxps(txp);
-      return Promise.resolve(txp);
+      return this._processTxps(txp).then(() => {
+        return Promise.resolve(txp);
+      });
     });
   };
 
@@ -2058,33 +2058,33 @@ export class API implements IAPI {
 
 
     return this._doGetRequest('/v1/txproposals/').then((txps) => {
-      this._processTxps(txps);
-
-      return Promise.each(txps, (txp) => {
-        if (!opts.doNotVerify) {
-          // TODO: Find a way to run this check in parallel.
-          return this.getPayPro(txp).then((paypro)  => {
-            if (!Verifier.checkTxProposal(this.credentials, txp, {
-              paypro: paypro,
-            })) {
-              Promise.reject(Errors.SERVER_COMPROMISED);
-            }
-          });
-        }
-      }).then(() => {
-        let result: any;
-        if (opts.forAirGapped) {
-          result = {
-            txps: JSON.parse(JSON.stringify(txps)),
-            encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
-            unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
-            m: this.credentials.m,
-            n: this.credentials.n,
-          };
-        } else {
-          result = txps;
-        }
-        Promise.resolve(result);
+      return this._processTxps(txps).then(() => {
+        return Promise.each(txps, (txp) => {
+          if (!opts.doNotVerify) {
+            // TODO: Find a way to run this check in parallel.
+            return this.getPayPro(txp).then((paypro)  => {
+              if (!Verifier.checkTxProposal(this.credentials, txp, {
+                paypro: paypro,
+              })) {
+                Promise.reject(Errors.SERVER_COMPROMISED);
+              }
+            });
+          }
+        }).then(() => {
+          let result: any;
+          if (opts.forAirGapped) {
+            result = {
+              txps: JSON.parse(JSON.stringify(txps)),
+              encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
+              unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
+              m: this.credentials.m,
+              n: this.credentials.n,
+            };
+          } else {
+            result = txps;
+          }
+          Promise.resolve(result);
+        });
       });
     });
   };
@@ -2094,11 +2094,13 @@ export class API implements IAPI {
     if (!txp.payProUrl || this.doNotVerifyPayPro)
       return Promise.resolve();
 
-    PayPro.get({
+    return PayPro.get({
       url: txp.payProUrl,
       http: this.payProHttp,
-    }, function(err, paypro) {
-      if (err) return Promise.reject(new Error('Cannot check transaction now:' + err));
+    }).then((paypro) => {
+      if (!paypro) {
+        return Promise.reject(new Error('Cannot check paypro transaction now.'));
+      } 
       return Promise.resolve(paypro);
     });
   };
@@ -2133,12 +2135,7 @@ export class API implements IAPI {
         let signatures = txp.signatures;
 
         if (_.isEmpty(signatures)) {
-          try {
-            signatures = this._signTxp(txp, password);
-          } catch (ex) {
-            this.log.error('Error signing tx', ex);
-            return reject(ex);
-          }
+          signatures = this._signTxp(txp, password);
         }
 
         let url = '/v1/txproposals/' + txp.id + '/signatures/';
@@ -2147,8 +2144,9 @@ export class API implements IAPI {
         };
 
         return this._doPostRequest(url, args).then((txp) => {
-          this._processTxps(txp);
-          return resolve(txp);
+          return this._processTxps(txp).then(() => {
+            return resolve(txp);
+          });
         });
       });
     });
@@ -2209,8 +2207,9 @@ export class API implements IAPI {
       reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || '',
     };
     return this._doPostRequest(url, args).then((txp) => {
-      this._processTxps(txp);
-      return Promise.resolve(txp);
+      return this._processTxps(txp).then(() => {
+        return Promise.resolve(txp);
+      });
     });
   }
 
@@ -2234,7 +2233,9 @@ export class API implements IAPI {
   private _doBroadcast(txp): Promise<any> {
     let url = '/v1/txproposals/' + txp.id + '/broadcast/';
     return this._doPostRequest(url, {}).then((txp) => {
-      return Promise.resolve(this._processTxps(txp));
+      return this._processTxps(txp).then(() => {
+        return Promise.resolve(txp);
+      });
     });
   };
 
@@ -2246,13 +2247,15 @@ export class API implements IAPI {
   * @return {Callback} cb - Return error or object
   */
   broadcastTxProposal(txp): Promise<any> {
+    this.log.warn("Inside broadCastTxProposal");
     $.checkState(this.credentials && this.credentials.isComplete());
     return this.getPayPro(txp).then((paypro) => {
       if (paypro) {
+        this.log.warn("WE ARE PAYPRO");
         let t = Utils.buildTx(txp);
         this._applyAllSignatures(txp, t);
 
-        PayPro.send({
+        return PayPro.send({
           http: this.payProHttp,
           url: txp.payProUrl,
           amountMicros: txp.amount,
@@ -2263,15 +2266,18 @@ export class API implements IAPI {
             disableLargeFees: true,
             disableDustOutputs: true
           }),
-        }, function(err, ack, memo) {
-          if (err) return Promise.Reject(err);
-          this._doBroadcast(txp, function(err, txp) {
+        }).then(({ack, memo}) => {
+          if (!ack) return Promise.Reject(new Error("No response from PayPro"));
+          return this._doBroadcast(txp).then((txp) => {
             this.log.info(memo);
             return Promise.resolve(txp);
           });
         });
       } else {
-        return Promise.resolve(this._doBroadcast(txp));
+        this.log.warn("NO PAYPRO");      
+        return this._doBroadcast(txp).then(() => {
+          return Promise.resolve(txp);
+        });
       }
     });
   };
@@ -2333,7 +2339,9 @@ export class API implements IAPI {
 
     let url = '/v1/txproposals/' + id;
     return this._doGetRequest(url).then((txp) => {
-      return Promise.resolve(this._processTxps(txp));
+      return this._processTxps(txp).then(() => {
+        return Promise.resolve();
+      });
     });
   };
 
