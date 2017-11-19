@@ -803,10 +803,13 @@ export class WalletService {
   }
 
   public signTx(wallet: MeritWalletClient, txp: any, password: string): Promise<any> {
-    if (!wallet || !txp)
+    if (!wallet || !txp) {
       return Promise.reject(new Error('MISSING_PARAMETER'));
+    }
 
-      return wallet.signTxProposal(txp, password);
+    return wallet.signTxProposal(txp, password).then((signedTxp) => {
+      return Promise.resolve(signedTxp);
+    });
   }
 
   public broadcastTx(wallet: MeritWalletClient, txp: any): Promise<any> {
@@ -817,9 +820,9 @@ export class WalletService {
       if (txp.status != 'accepted')
         return reject(new Error('TX_NOT_ACCEPTED'));
 
-      return resolve(txp);
-    }).then((txp) => {
-      return wallet.broadcastTxProposal(txp);
+      return wallet.broadcastTxProposal(txp).then((txp) => {
+        return resolve(txp);
+      });
     });
   }
 
@@ -1147,19 +1150,32 @@ export class WalletService {
   }
 
   private signAndBroadcast(wallet: MeritWalletClient, publishedTxp: any, password: any, customStatusHandler: any): Promise<any> {
+    console.log("@@SB: ENTRY");          
+    
     return new Promise((resolve, reject) => {
 
       return this.signTx(wallet, publishedTxp, password).then((signedTxp: any) => {
+       console.log("@@SB: After Sign");          
+    
         this.invalidateCache(wallet);
         if (signedTxp.status == 'accepted') {
           return this.broadcastTx(wallet, signedTxp).then((broadcastedTxp: any) => {
-            this.events.publish('Local:Tx:Broadcast', broadcastedTxp);            
+            console.log("@@SB: AfterBroadCast");          
+       
+            //this.events.publish('Local:Tx:Broadcast', broadcastedTxp);            
             //$rootScope.$emit('Local/TxAction', wallet.id);
-            return resolve(broadcastedTxp);
+            return Promise.resolve(broadcastedTxp);
+          }).then((bTxp) => {
+            console.log("@@SB: After AfterBroadCast");          
+            
+            //this.events.publish('Local:Tx:Broadcast', bTxp);
+            return resolve(bTxp);            
           }).catch((err) => {
             return reject(this.bwcErrorService.msg(err));
           });
         } else {
+          console.log("@@SB: ElseBlock");          
+          
           //$rootScope.$emit('Local/TxAction', wallet.id);
           //this.events.publish('Local:Tx:Signed', signedTxp);                      
           return resolve(signedTxp);
@@ -1174,10 +1190,13 @@ export class WalletService {
   }
 
   public publishAndSign(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
+    console.log("@@PS: ENTER");
     return new Promise((resolve, reject) => {
       // Already published?
       let walletPassword = '';
       if (txp.status == 'pending') {
+      console.log("@@PS: PENDING");
+    
         return this.prepare(wallet).then((password: string) => {
           return this.signAndBroadcast(wallet, txp, password, customStatusHandler)
             .then((broadcastedTxp: any) => {
@@ -1187,11 +1206,18 @@ export class WalletService {
           });
         });
       } else {
+        console.log("@@PS: NOT PENDING");
+    
         return this.prepare(wallet).then((password: string) => {
+          console.log("@@PS: AFTER PREPARE");
+    
           walletPassword = password;
           return this.publishTx(wallet, txp);
         }).then((publishedTxp: any) => {
-          return resolve(this.signAndBroadcast(wallet, publishedTxp, walletPassword, customStatusHandler));
+          console.log("@@PS: AFTER PublishTx");          
+          return this.signAndBroadcast(wallet, publishedTxp, walletPassword, customStatusHandler);
+        }).then((signedTxp) => {
+          return resolve(signedTxp);
         }).catch((err) => {
           return reject(this.bwcErrorService.msg(err));
         });
