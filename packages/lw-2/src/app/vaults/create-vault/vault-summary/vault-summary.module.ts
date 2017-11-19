@@ -4,6 +4,8 @@ import { IonicPageModule } from 'ionic-angular';
 import { CreateVaultSummaryView } from 'merit/vaults/create-vault/vault-summary/vault-summary';
 
 import { ConfigService } from "merit/shared/config.service";
+import { ProfileService } from 'merit/core/profile.service';
+import { BwcService } from 'merit/core/bwc.service';
 
 @NgModule({
   declarations: [
@@ -11,6 +13,8 @@ import { ConfigService } from "merit/shared/config.service";
   ],
   providers: [
     ConfigService,
+    BwcService,
+    ProfileService,
   ],
   imports: [
     IonicPageModule.forChild(CreateVaultSummaryView),

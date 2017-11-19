@@ -924,4 +924,28 @@ export class ProfileService {
       });
     });
   }
+
+  public addVault(vault: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.profile.addVault(vault);
+      this.persistenceService.storeProfile(this.profile).then(() => {
+        return resolve();
+      });
+    });
+  }
+
+  public updateVault(vault: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.profile.updateVault(vault);
+      this.persistenceService.storeProfile(this.profile).then(() => {
+        return resolve();
+      });
+    });
+  }
+
+  public getVaults(): Array<any> {
+    console.log('Getting vaults');
+    return this.profile.vaults;
+  }
+
 }

@@ -5,6 +5,7 @@ export class Profile {
   public version: string;
   public createdOn: Number;
   public credentials: Array<any>;
+  public vaults: Array<any>;
   public disclaimerAccepted: boolean;
   public checked: Object;
   public checkedUA?: any;
@@ -13,6 +14,7 @@ export class Profile {
   constructor() {
     this.version = '1.0.0';
     this.credentials = [];
+    this.vaults = [];
   }
 
   public create(opts?: any): any {
@@ -20,6 +22,7 @@ export class Profile {
     let x = new Profile();
     x.createdOn = Date.now();
     x.credentials = opts.credentials || [];
+    x.vaults = opts.vaults || [];
     x.disclaimerAccepted = false;
     x.checked = {};
     return x;
@@ -30,6 +33,7 @@ export class Profile {
 
     x.createdOn = obj.createdOn;
     x.credentials = obj.credentials;
+    x.vaults = obj.vaults;
     x.disclaimerAccepted = obj.disclaimerAccepted;
     x.checked = obj.checked || {};
     x.checkedUA = obj.checkedUA || {};
@@ -97,11 +101,7 @@ export class Profile {
       return false;
 
     this.credentials = this.credentials.map((c: any) => {
-      if (c.walletId != credentials.walletId) {
-        return c;
-      } else {
-        return credentials
-      }
+      return c.walletId != credentials.walletId ? c : credentials;
     });
 
     this.dirty = true;
@@ -114,6 +114,53 @@ export class Profile {
 
     this.credentials = this.credentials.filter(function (c) {
       return c.walletId != walletId;
+    });
+
+    this.dirty = true;
+    return true;
+  };
+
+  public hasVault(id: string): boolean {
+    for (let i in this.vaults) {
+      let c = this.vaults[i];
+      if (c.id == id) return true;
+    };
+    return false;
+  };
+
+  public addVault(vault: any): boolean {
+    if (!vault.id)
+      throw 'vault must have .id';
+
+    if (this.hasVault(vault.id))
+      return false;
+
+    this.vaults.push(vault);
+    this.dirty = true;
+    return true;
+  };
+
+  public updateVault(vault: any): boolean {
+    if (!vault.id)
+      throw 'vault must have .id';
+
+    if (!this.hasVault(vault.id))
+      return false;
+
+    this.vaults = this.vaults.map((c: any) => {
+      return c.id != vault.id ? c : vault;
+    });
+
+    this.dirty = true;
+    return true;
+  };
+
+  public deleteVault(vaultId: string): boolean {
+    if (!this.hasVault(vaultId))
+      return false;
+
+    this.vaults = this.vaults.filter(function (c) {
+      return c.vaultId != vaultId;
     });
 
     this.dirty = true;

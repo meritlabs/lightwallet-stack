@@ -55,12 +55,11 @@ export class CreateVaultDepositView {
   }
 
   private getAllWallets(): Promise<Array<Wallet>> {
-    const wallets = this.profileService.getWallets().then((ws) => {
+    return this.profileService.getWallets().then((ws) => {
       return Promise.all(_.map(ws, async (wallet: any) => { //ToDo: type it correctly Wallet and IMeritWalletClient are not interchangable
         wallet.status = await this.walletService.getStatus(wallet);
         return wallet; 
       }));
     });
-    return wallets;
   }
 }

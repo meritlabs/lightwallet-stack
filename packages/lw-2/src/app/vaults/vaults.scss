@@ -1,0 +1,30 @@
+@import '../transact/transact-module';
+view-vaults {
+  @extend %module-transact;
+
+  ion-navbar img {
+    height: 18px;
+  }
+
+  .add-item .vault-icon {
+    padding: 0 7px;
+  }
+   img {
+    &.icon-vault {
+      width: 35px !important;
+      background-color: color($colors, primary);
+    }
+  }
+
+  .header-icon {
+    font-size: 1.7rem !important;
+    color: silver;
+    margin: 0 !important;
+    padding: 10px !important;
+  }
+
+  .error {
+    color: color($colors, danger) !important;
+  }
+
+}
