@@ -210,9 +210,8 @@ export class SendConfirmView {
       return this.getTxp(_.clone(tx), wallet, false).then((ctxp) => {
 
         let confirmTx = (): Promise<any> => {
-          return new Promise((resolve, reject) => {
             if (this.walletService.isEncrypted(wallet))
-              return resolve();
+              return Promise.resolve();
   
             let amountUsd: number;
             return this.txFormatService.formatToUSD(ctxp.amount).then((value: string) => {
@@ -220,7 +219,7 @@ export class SendConfirmView {
            
     
               if (amountUsd <= SendConfirmView.CONFIRM_LIMIT_USD)
-                return resolve();
+                return Promise.resolve();
     
               let amountStr = tx.amountStr;
               let name = wallet.name;
@@ -228,10 +227,9 @@ export class SendConfirmView {
               let okText = 'Confirm'; // TODO gettextCatalog
               let cancelText = 'Cancel'; // TODO gettextCatalog
               return this.popupService.ionicConfirm(null, message, okText, cancelText).then((ok: boolean) => {
-                return resolve(ok);
+                return Promise.resolve(ok);
               });
             });
-          });
         };
   
         let publishAndSign = (): Promise<any> => {
