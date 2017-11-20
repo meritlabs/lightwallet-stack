@@ -22,8 +22,7 @@ export class ReceiveView {
 
   public protocolHandler: string;
   public address: string;
-  public formattedAddress:string;
-  public qrAddress: string;
+  public qrAddress:string;
   public amount:number;
   public amountMerit:number;
   public availableUnits:Array<string>;
@@ -68,7 +67,6 @@ export class ReceiveView {
     this.socialSharing.canShareVia('email').then(() => {
       this.socialSharingAvailable = true;
     }).catch((err) => {
-      console.log(err);
       this.socialSharingAvailable = false;
     })
 
@@ -103,8 +101,7 @@ export class ReceiveView {
   }
 
   share() {
-    //todo implement social sharing
-    this.socialSharing.share('merit:'+this.address);
+    this.socialSharing.share(this.qrAddress);
   }
 
   copyToClipboard(address) {
@@ -135,21 +132,16 @@ export class ReceiveView {
   }
 
   changeAmount() {
-    console.log('changing amount', this.amount, this.amountCurrency, this.configService.get().wallet.settings.unitName);
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
       this.amountMerit = this.amount;
-      console.log('111');
     } else {
-      console.log('222');
       this.amountMerit = this.rateService.fromFiat(this.amount, this.amountCurrency);
     }
-    console.log(this.amountMerit);
     this.formatAddress();
   }
 
   private formatAddress() {
-    this.qrAddress = this.protocolHandler + ":" + this.address;
-    this.formattedAddress = `${this.protocolHandler}:${this.address}${this.amountMerit ? '?amount='+this.amountMerit : ''}`;
+    this.qrAddress = `${this.protocolHandler}:${this.address}${this.amountMerit ? '?amount='+this.amountMerit : ''}`;
   }
 
 }
