@@ -50,7 +50,6 @@ export class WalletsView {
 
   public recentTransactionsEnabled;
 
-
   constructor(
     public navParams: NavParams,
     private navCtrl:NavController,
@@ -69,17 +68,21 @@ export class WalletsView {
     private events:Events,
     private addressbookService:AddressBookService
   ) {
+    this.logger.warn("Hellop WalletsView!");
+    
   }
 
 
   public async ionViewDidLoad() {
+    this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
+    
 
     this.registerListeners();
     this.newReleaseExists = await this.appUpdateService.isUpdateAvailable();
     this.feedbackNeeded   = await this.feedbackService.isFeedBackNeeded();
     this.addressbook = await this.addressbookService.list(() => {});
 
-    Promise.resolve(this.getWallets().then((wallets) => {
+    return this.getWallets().then((wallets) => {
       this.calculateNetworkAmount(wallets);
       this.processEasyReceive();
       this.txpsData = this.profileService.getTxps({limit: 3});
@@ -87,32 +90,21 @@ export class WalletsView {
         this.recentTransactionsEnabled = true;
         this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
       }
+      return Promise.resolve();
     })
     .catch((err) => {
       console.log("@@ERROR IN Updating statuses.")
       console.log(err)
-    })
-  );
+    });
   }
 
   private registerListeners() {
 
-    let updateWalletStatus = (wallet) => {
-      this.walletService.getStatus(wallet, {}).then((status) => {
-        wallet.status = status;
-      }).catch((err) => {
-        this.logger.error("Unable to get wallet status!");
-      });
-    };
+
 
     this.events.subscribe('bwsEvent', (e, walletId, type, n) => {
-      this.getWallets().then((wallets) => {
-        wallets.forEach((wallet) => {
-          if (wallet.id == walletId) {
-            updateWalletStatus(wallet);
-          }
-        });
-      });
+      this.logger.info("Got a bwsEvent event with: ", walletId, type, n);
+      
       this.txpsData = this.profileService.getTxps({limit: 3});
     });
 
@@ -220,7 +212,7 @@ export class WalletsView {
   }
 
 
-  openWallet(wallet) {
+  private openWallet(wallet) {
     if (!wallet.isComplete) {
       this.navCtrl.push('CopayersView')
     } else {
@@ -228,15 +220,15 @@ export class WalletsView {
     }
   }
 
-  rateApp(mark) {
+  private rateApp(mark) {
     this.feedbackData.mark = mark;
   }
 
-  cancelFeedback() {
+  private cancelFeedback() {
     this.feedbackData.mark = null;
   }
 
-  sendFeedback() {
+  private sendFeedback() {
     this.feedbackNeeded = false;
     this.feedbackService.sendFeedback(this.feedbackData).catch(() => {
       this.toastCtrl.create({
@@ -246,20 +238,23 @@ export class WalletsView {
     })
   }
 
-  toLatestRelease() {
+  private toLatestRelease() {
     this.inAppBrowser.create(this.configService.get().release.url);
   }
 
-  toAddWallet() {
+  private toAddWallet() {
     this.navCtrl.push('CreateWalletView');
   }
 
-  toImportWallet() {
+  private toImportWallet() {
     this.navCtrl.push('ImportView');
   }
 
-
+  // This method returns all wallets with statuses.  
+  // Statuses include balances and other important metadata 
+  // needed to power the display. 
   private async getWallets():Promise<Array<Wallet>> {
+    this.logger.warn("getWallets() in wallets.ts");
     if (this.needWalletStatuses()) {
       this.wallets = await this.updateAllWallets();     
     }
@@ -267,6 +262,7 @@ export class WalletsView {
   }
 
   private async updateAllWallets() {
+    this.logger.warn("updateAllWallets() in wallets.ts");    
     let wallets = await this.profileService.getWallets();
     // Get the statuses of all the wallets.
     return await Promise.all(_.map(wallets, async (wallet:any) => {
@@ -278,15 +274,15 @@ export class WalletsView {
     });
   }
 
-  openTransactionDetails(transaction) {
+  private openTransactionDetails(transaction) {
     this.navCtrl.push('TransactionView', {transaction: transaction});
   }
 
-  toTxpDetails() {
+  private toTxpDetails() {
     this.navCtrl.push('TxpView');
   }
 
-  txpCreatedWithinPastDay(txp) {
+  private txpCreatedWithinPastDay(txp) {
     var createdOn= new Date(txp.createdOn*1000);
     return ((new Date()).getTime() - createdOn.getTime()) < (1000 * 60 * 60 * 24);
   }
@@ -302,6 +298,10 @@ export class WalletsView {
       }
     });
     return false;
+  }
+
+  private openRecentTxDetail(tx:any): any {
+    this.navCtrl.push('TxDetailsView', {txId: tx.txid, tx: tx})
   }
 
 }
