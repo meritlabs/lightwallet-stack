@@ -48,6 +48,18 @@ var PUSHNOTIFICATIONS_TYPES = {
   'ReferralWasRejected': {
     filename: 'referral_rejected',
     notifyCreatorOnly: true,
+  },
+  'NewIncomingVaultTx': {
+    filename: 'new_incoming_vault',
+    notifyCreatorOnly: true,
+  },
+  'VaultConfirmation': {
+    filename: 'vault_confirmation',
+    notifyCreatorOnly: true,
+  },
+  'VaultWasRejected': {
+    filename: 'vault_rejected',
+    notifyCreatorOnly: true,
   }
 };
 

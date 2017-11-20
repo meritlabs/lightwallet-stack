@@ -650,11 +650,10 @@ export class ProfileService {
     });
   }
 
-  public getWallets(opts?: any): Promise<any> {
+  public getWallets(opts: any = {}): Promise<any> {
 
     return new Promise((resolve, reject) => {
 
-      opts = opts || {};
       console.log("Getting wallets");
       console.log(this.wallets);
       let ret = _.values(this.wallets);
@@ -924,5 +923,28 @@ export class ProfileService {
         return (totalMicros > 0) ? resolve(true) : resolve(false);
       });
     });
+  }
+
+  public addVault(vault: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.profile.addVault(vault);
+      this.persistenceService.storeProfile(this.profile).then(() => {
+        return resolve();
+      });
+    });
+  }
+
+  public updateVault(vault: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.profile.updateVault(vault);
+      this.persistenceService.storeProfile(this.profile).then(() => {
+        return resolve();
+      });
+    });
+  }
+
+  public getVaults(): Array<any> {
+    console.log('Getting vaults');
+    return this.profile.vaults;
   }
 }

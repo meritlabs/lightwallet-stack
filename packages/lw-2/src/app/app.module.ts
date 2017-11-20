@@ -9,6 +9,7 @@ import { TransactView } from 'merit/transact/transact';
 import { MomentModule } from 'angular2-moment';
 import { CoreModule } from 'merit/core/core.module';
 
+
 @NgModule({
   declarations:[
     MeritLightWallet,

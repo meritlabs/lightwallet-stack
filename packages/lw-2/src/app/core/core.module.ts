@@ -11,6 +11,7 @@ import { BwcError } from 'merit/core/bwc-error.model';
 import { PlatformService } from 'merit/core/platform.service';
 
 import { ProfileService } from 'merit/core/profile.service';
+import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
 
 import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
@@ -28,7 +29,9 @@ import { OnboardingView } from 'merit/onboard/onboarding.view';
 import { MomentModule } from 'angular2-moment';
 
 import { ConfigService } from 'merit/shared/config.service';
-import {MeritToastController} from "merit/core/toast.controller";
+import { MeritToastController } from "merit/core/toast.controller";
+import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
+import { WalletService } from "merit/wallets/wallet.service";
 
 
 /* 
@@ -104,9 +107,12 @@ export function createTranslateLoader(http: Http) {
         TxFormatService,
         AppService,
         ConfigService,
+        WalletService,
+        MnemonicService,
         AndroidFingerprintAuth, 
         TouchID, 
         TouchIdService,  
+        CreateVaultService,
         //   {
         //       provide: TouchIdService,
         //   deps: [TouchID],

@@ -20,7 +20,7 @@ var PublicKey = require('./publickey');
  * `Address.PayToPublicKeyHash` (value is the `'pubkeyhash'` string)
  * or `Address.PayToScriptHash` (the string `'scripthash'`). The network is an instance of {@link Network}.
  * You can quickly check whether an address is of a given kind by using the methods
- * `isPayToPublicKeyHash` and `isPayToScriptHash`
+ * `isPayToPublicKeyHash`, `isPayToScriptHash`
  *
  * @example
  * ```javascript
@@ -66,8 +66,12 @@ function Address(data, network, type) {
     throw new TypeError('Second argument must be "livenet" or "testnet".');
   }
 
-  if (type && (type !== Address.PayToPublicKeyHash && type !== Address.PayToScriptHash)) {
-    throw new TypeError('Third argument must be "pubkeyhash" or "scripthash".');
+  if (type && 
+      (type !== Address.PayToPublicKeyHash && 
+       type !== Address.PayToScriptHash && 
+       type !== Address.ParameterizedPayToScriptHash)) {
+
+    throw new TypeError('Third argument must be "pubkeyhash", "scripthash", or "paramscripthash" .');
   }
 
   var info = this._classifyArguments(data, network, type);
@@ -116,6 +120,8 @@ Address.prototype._classifyArguments = function(data, network, type) {
 Address.PayToPublicKeyHash = 'pubkeyhash';
 /** @static */
 Address.PayToScriptHash = 'scripthash';
+/** @static */
+Address.ParameterizedPayToScriptHash = 'paramscripthash';
 
 /**
  * @param {Buffer} hash - An instance of a hash Buffer
@@ -164,6 +170,7 @@ Address._classifyFromVersion = function(buffer) {
 
   var pubkeyhashNetwork = Networks.get(buffer[0], 'pubkeyhash');
   var scripthashNetwork = Networks.get(buffer[0], 'scripthash');
+  var paramScripthashNetwork = Networks.get(buffer[0], 'paramscripthash');
 
   if (pubkeyhashNetwork) {
     version.network = pubkeyhashNetwork;
@@ -171,6 +178,9 @@ Address._classifyFromVersion = function(buffer) {
   } else if (scripthashNetwork) {
     version.network = scripthashNetwork;
     version.type = Address.PayToScriptHash;
+  } else if (paramScripthashNetwork) {
+    version.network = paramScripthashNetwork;
+    version.type = Address.ParameterizedPayToScriptHash;
   }
 
   return version;
@@ -455,6 +465,14 @@ Address.prototype.isPayToPublicKeyHash = function() {
  */
 Address.prototype.isPayToScriptHash = function() {
   return this.type === Address.PayToScriptHash;
+};
+
+/**
+ * Returns true if an address is of parameterized pay to script hash type
+ * @return boolean
+ */
+Address.prototype.isParameterizedPayToScriptHash = function() {
+  return this.type === Address.ParameterizedPayToScriptHash;
 };
 
 /**

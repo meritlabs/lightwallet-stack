@@ -149,6 +149,12 @@ TxProposal.prototype._buildTx = function() {
     case Constants.SCRIPT_TYPES.P2PKH:
       t.from(self.inputs);
       break;
+    case Constants.SCRIPT_TYPES.PP2SH:
+      _.each(self.inputs, function(i) {
+        $.checkState(i.publicKeys, 'Inputs should include public keys');
+        t.from(i, i.publicKeys, self.requiredSignatures);
+      });
+      break;
   }
 
   _.each(self.outputs, function(o) {
@@ -236,6 +242,9 @@ TxProposal.prototype.getEstimatedSizeForSingleInput = function() {
     default:
     case Constants.SCRIPT_TYPES.P2SH:
       return this.requiredSignatures * 72 + this.walletN * 36 + 44;
+    case Constants.SCRIPT_TYPES.PP2SH:
+      //TODO: Figure out a better estimate
+      return 147;
   }
 };
 
