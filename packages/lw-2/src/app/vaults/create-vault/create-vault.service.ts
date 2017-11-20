@@ -119,6 +119,8 @@ export class CreateVaultService {
         });
       }).then(() => {
         this.resetModel();
+      }).catch((err) => {
+        console.log('Error while creating vault:', err);
       });
     }
   }
