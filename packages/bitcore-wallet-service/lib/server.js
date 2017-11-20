@@ -3532,27 +3532,37 @@ WalletService.prototype.createVault = function(opts, cb) {
   
   opts.status = Bitcore.Vault.Vault.VaultStates.PENDING;
 
+  let vaultId = '';
+
   async.series([
     function(next) {
       self.storage.storeVault(self.copayerId, opts, function(err, result) {
         if (err) return cb(err);
+
+        console.log('Saved', result.insertedId, result.ops[0]);
+        vaultId = result.insertedId;
 
         return next();
       });
     },
     function(next) {
       //TODO: Loop
+      console.log('preparing tx');
       var txp = Model.TxProposal.fromObj(opts.coins[0]);
       var bc = self._getBlockchainExplorer(txp.network);
 
       var rawTx = txp.getRawTx();
       bc.broadcast(rawTx, function(err, txid) {
+        console.log('broadcasted', err, txid);
         if (err) return cb(err);
 
         txp.txid = txid;
+        opts.id = vaultId;
         opts.coins[0] = txp;
+        opts.initialTxId = txid;
 
         self.storage.updateVault(self.copayerId, opts, function(err, result) {
+          console.log('updated');
           if (err) return cb(err);
   
           return next();

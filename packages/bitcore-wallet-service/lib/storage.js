@@ -1103,6 +1103,7 @@ Storage.prototype.storeVault = function(copayerId, vaultTx, cb) {
 };
 
 Storage.prototype.updateVault = function(copayerId, vaultTx, cb) {
+  console.log('ToStore:', vaultTx.id, vaultTx);
   this.db.collection(collections.VAULTS).update({
     copayerId,
     id: vaultTx.id,
