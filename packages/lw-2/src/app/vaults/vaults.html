@@ -7,7 +7,18 @@
             Create new vault
         </h2>
     </button>
-    <button ion-item *ngFor="let vault of vaults" (click)="console.log(vault)">
-        vault 
+    <button ion-item *ngFor="let vault of vaults" (click)="toVault(vault)">
+        <i class="wallet-icon" item-start [class.default]="!vault.color">
+            <img src="assets/img/icon-lock-white.svg"  [style.background]="vault.color" >
+        </i>
+        <h2 translate>{{ vault.name || vault._id }}</h2>
+        <p>
+            <span *ngIf="vault.status == 'pending'" class="assertive" translate>Pending</span>
+            <span *ngIf="vault.status != 'pending'">
+                <span>
+                    {{ vault.amount }}
+                </span>
+            </span>
+        </p>
     </button>
 </ion-list>

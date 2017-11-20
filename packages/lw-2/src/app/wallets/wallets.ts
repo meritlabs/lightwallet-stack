@@ -19,6 +19,7 @@ import { WalletService } from "merit/wallets/wallet.service";
 import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 import { TxFormatService } from "merit/transact/tx-format.service";
 import { AddressBookService } from "merit/shared/address-book/address-book.service";
+import { VaultsService } from 'merit/vaults/vaults.service';
 
 
 /* 
@@ -40,6 +41,7 @@ export class WalletsView {
   private totalAmountFormatted;
 
   public wallets;
+  public vaults;
   public newReleaseExists;
   public feedbackNeeded;
   public feedbackData =  new Feedback();
@@ -67,7 +69,8 @@ export class WalletsView {
     private walletService:WalletService,
     private txFormatService:TxFormatService,
     private events:Events,
-    private addressbookService:AddressBookService
+    private addressbookService:AddressBookService,
+    private vaultsService: VaultsService,
   ) {
   }
 
@@ -88,12 +91,21 @@ export class WalletsView {
         this.recentTransactionsEnabled = true;
         this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
       }
-    })
-    .catch((err) => {
+      return wallets;
+    }).then((wallets) => {
+      if (_.isEmpty(wallets)) {
+        Promise.resolve(null); //ToDo: add proper error handling;
+      }
+      return _.head(wallets);
+    }).then((walletClient) => {
+      return this.vaultsService.getVaults(walletClient);
+    }).then((vaults) => {
+      console.log('getting vaults', vaults);
+      this.vaults = vaults;
+    }).catch((err) => {
       console.log("@@ERROR IN Updating statuses.")
       console.log(err)
-    })
-  );
+    }));
   }
 
   private registerListeners() {

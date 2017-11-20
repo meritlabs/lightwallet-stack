@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 
 import { BwcService } from 'merit/core/bwc.service';
 
+import { IMeritWalletClient } from './../../lib/merit-wallet-client';
+
 
 @Injectable()
 export class VaultsService {
@@ -12,9 +14,9 @@ export class VaultsService {
         console.log('hello VaultsService');
     }
 
-    getVaults(): Promise<Array<any>> {
+    getVaults(walletClient: IMeritWalletClient): Promise<Array<any>> {
         console.log('getting vaults');
-        return this.bwcService.getClient({}, null).getVaults();
+        return walletClient.getVaults();
     }
 
 }

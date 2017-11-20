@@ -376,7 +376,7 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) 
     async.each(txids, function(txId) {
       log.info(`Checking if TX with id ${txId} is vault TX`);
 
-      self.storage.fetchVaultByTxId(txId, function(err, tx) {
+      self.storage.fetchVaultByInitialTxId(txId, function(err, tx) {
         if (err) {
           log.error(`Error while fetching data for vault with txid: ${txId}`);
           return;
