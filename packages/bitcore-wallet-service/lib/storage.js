@@ -101,7 +101,7 @@ Storage.prototype._createIndexes = function() {
     copayerId: 1,
   });
   this.db.collection(collections.VAULTS).createIndex({
-    txId: 1,
+    initialTxId: 1,
   });
 };
 
@@ -1102,10 +1102,21 @@ Storage.prototype.storeVault = function(copayerId, vaultTx, cb) {
   }, cb);
 };
 
-Storage.prototype.fetchVaultByTxId = function(txId, cb) {
+Storage.prototype.updateVault = function(copayerId, vaultTx, cb) {
+  this.db.collection(collections.VAULTS).update({
+    copayerId,
+    id: vaultTx.id,
+  }, vaultTx, {
+    w: 1,
+    upsert: true,
+  }, cb);
+};
+
+Storage.prototype.fetchVaultByInitialTxId = function(txId, cb) {
   this.db.collection(collections.VAULTS).findOne({
-    txId,
+    initialTxId: txId,
   }, function(err, result) {
+    console.log('in fetch fn', err, result);
     if (err) return cb(err);
     if (!result) return cb();
 

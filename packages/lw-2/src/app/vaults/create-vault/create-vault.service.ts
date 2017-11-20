@@ -3,6 +3,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { WalletService } from "merit/wallets/wallet.service";
 import { Logger } from 'merit/core/logger';
 import { MeritWalletClient, IMeritWalletClient} from './../../../lib/merit-wallet-client';
+import { ProfileService } from 'merit/core/profile.service';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -23,8 +24,9 @@ export class CreateVaultService {
   constructor(
     private bwcService: BwcService,
     private walletService: WalletService,
-    private logger: Logger) {
-
+    private logger: Logger,
+    private profileService: ProfileService,
+  ) {
     this.bitcore = this.bwcService.getBitcore();
   }
 
@@ -62,7 +64,7 @@ export class CreateVaultService {
       amount: amount,
       whitelist: whitelist,
       masterPubKey: this.model.masterKey.publicKey,
-      spendPubKey: spendPubKey
+      spendPubKey: spendPubKey,
     });
   }
 
@@ -107,9 +109,18 @@ export class CreateVaultService {
         vault.coins.push(signedTxp);
         return vault;
       }).then((vault) => {
+        vault.name = this.model.vaultName;
         return this.walletClient.createVault(vault);
       }).then((resp) => {
+        return this.profileService.addVault({
+          id: vault.address,
+          copayerId: wallet.credentials.copayerId,
+          name: this.model.vaultName,
+        });
+      }).then(() => {
         this.resetModel();
+      }).catch((err) => {
+        console.log('Error while creating vault:', err);
       });
     }
   }
@@ -132,7 +143,6 @@ export class CreateVaultService {
         inputs: null, //Let merit wallet service figure out the inputs based
                       //on the selected wallet.
         feeLevel: feeLevel,
-        message: vault.name,
         excludeUnconfirmedUtxos: true,
         dryRun: dryRun,
       };

@@ -3532,10 +3532,14 @@ WalletService.prototype.createVault = function(opts, cb) {
   
   opts.status = Bitcore.Vault.Vault.VaultStates.PENDING;
 
+  let vaultId = '';
+
   async.series([
     function(next) {
       self.storage.storeVault(self.copayerId, opts, function(err, result) {
         if (err) return cb(err);
+
+        vaultId = result.insertedId;
 
         return next();
       });
@@ -3550,8 +3554,15 @@ WalletService.prototype.createVault = function(opts, cb) {
         if (err) return cb(err);
 
         txp.txid = txid;
+        opts.id = vaultId;
         opts.coins[0] = txp;
-        return next();
+        opts.initialTxId = txid;
+
+        self.storage.updateVault(self.copayerId, opts, function(err, result) {
+          if (err) return cb(err);
+  
+          return next();
+        });
       });
     }, // Enable me later when transaction is constructed successfully
     function(next) {
