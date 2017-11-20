@@ -3,12 +3,15 @@ import { IonicPage, NavController, NavParams, ModalController, LoadingController
 
 import { ProfileService } from "merit/core/profile.service";
 import { Wallet } from "merit/wallets/wallet.model";
-import { WalletService } from "../../wallets/wallet.service";
-import { ToastConfig } from "../../core/toast.config";
+import { WalletService } from "merit/wallets/wallet.service";
+import { ToastConfig } from "merit/core/toast.config";
 import { MeritToastController } from "../../core/toast.controller";
 import { Logger } from "../../core/logger";
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Clipboard } from '@ionic-native/clipboard';
+
+import { RateService } from 'merit/transact/rate.service';
+import {ConfigService} from "merit/shared/config.service";
 
 @IonicPage()
 @Component({
@@ -19,7 +22,12 @@ export class ReceiveView {
 
   public protocolHandler: string;
   public address: string;
+  public formattedAddress:string;
   public qrAddress: string;
+  public amount:number;
+  public amountMerit:number;
+  public availableUnits:Array<string>;
+  public amountCurrency:string;
 
   public wallets;
   public wallet;
@@ -37,10 +45,16 @@ export class ReceiveView {
     private toastCtrl:MeritToastController,
     private logger:Logger,
     private socialSharing: SocialSharing,
-    private clipboard:Clipboard
+    private clipboard:Clipboard,
+    private rateService:RateService,
+    private configService:ConfigService
   ) {
-    this.protocolHandler = "bitcoin";
-
+    this.protocolHandler = "merit";
+    this.availableUnits = [
+      this.configService.get().wallet.settings.unitCode,
+      this.configService.get().wallet.settings.alternativeIsoCode
+    ];
+    this.amountCurrency = this.availableUnits[0];
   }
 
   async ionViewDidLoad() {
@@ -60,23 +74,13 @@ export class ReceiveView {
 
   }
 
-  requestSpecificAmount() {
-    let modal = this.modalCtrl.create('AmountView');
-    modal.onDidDismiss((amount) => {
-       //todo do something
-    });
-
-    modal.present();
-  }
-
   generateAddress(forceNew?: boolean) {
     this.addressGenerationInProgress = true;
 
     this.walletService.getAddress(this.wallet, forceNew).then((address) => {
-
       this.address = address;
-      this.qrAddress = this.protocolHandler + ":" + this.address;
       this.addressGenerationInProgress = false;
+      this.formatAddress();
     }).catch((err) => {
       this.addressGenerationInProgress = false;
       this.address = null;
@@ -123,6 +127,29 @@ export class ReceiveView {
       && this.wallet
       && this.wallet.isComplete()
     );
+  }
+
+  toggleCurrency() {
+    this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
+    this.changeAmount();
+  }
+
+  changeAmount() {
+    console.log('changing amount', this.amount, this.amountCurrency, this.configService.get().wallet.settings.unitName);
+    if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
+      this.amountMerit = this.amount;
+      console.log('111');
+    } else {
+      console.log('222');
+      this.amountMerit = this.rateService.fromFiat(this.amount, this.amountCurrency);
+    }
+    console.log(this.amountMerit);
+    this.formatAddress();
+  }
+
+  private formatAddress() {
+    this.qrAddress = this.protocolHandler + ":" + this.address;
+    this.formattedAddress = `${this.protocolHandler}:${this.address}${this.amountMerit ? '?amount='+this.amountMerit : ''}`;
   }
 
 }
