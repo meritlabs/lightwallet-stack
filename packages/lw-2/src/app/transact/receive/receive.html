@@ -26,22 +26,7 @@
     <div class="container" *ngIf="wallet && wallet.isComplete() && qrAddress && !addressGenerationInProgress">
 
         <qr-code *ngIf="address" [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
-        <div  class="address" (click)="copyToClipboard(address)"  ngxClipboard [cbContent]="address">{{address}}</div>
-
-
-        <div>
-            <button ion-button clear [hidden]="!address" class="button-request" (click)="requestSpecificAmount()">
-                <span>Request Specific amount </span>
-                <ion-icon name="arrow-forward"></ion-icon>
-            </button>
-        </div>
-
-
-        <div>
-            <button ion-button clear  [hidden]="!address" class="button-address" (click)="generateAddress(forceNew = true)">
-                <span>Generate new address</span>
-            </button>
-        </div>
+        <div  class="address" (click)="copyToClipboard(address)"  ngxClipboard [cbContent]="address">{{formattedAddress}}</div>
 
     </div>
 
@@ -65,31 +50,41 @@
         </ion-item>
 
 
-        <ion-item *ngIf="wallet" (click)="selectWallet()">
-            <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
-                <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
-            </i>
+        <span *ngIf="wallet">
 
-            <h2 translate>{{wallet.name || wallet._id}}</h2>
-            <p>
-                <span *ngIf="!wallet.isComplete()" class="assertive" translate>Incomplete</span>
-                <span *ngIf="wallet.isComplete()">
-                <span *ngIf="wallet.status && !wallet.balanceHidden">
-                {{wallet.status.totalBalanceStr ? wallet.status.totalBalanceStr : ( wallet.cachedBalance ? wallet.cachedBalance   + (wallet.cachedBalanceUpdatedOn ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn  * 1000 | amTimeAgo) : '') : ''  ) }}
-                </span>
-                <span *ngIf="wallet.balanceHidden" translate>
-                [Balance Hidden]
-                </span>
-                <span *ngIf="wallet.n > 1">
-                {{wallet.m}}-of-{{wallet.n}}
-                </span>
-                <ion-icon *ngIf="!wallet.balanceHidden && wallet.status && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
-                name="timer-outline"></ion-icon>
+            <div class="row">
+                <span class="label" text-left>Amount</span>
+                <input [style.flex]="1" text-right [(ngModel)]="amount" (ngModelChange)="changeAmount()" [placeholder]="'Request specific amount (optional)'">
+                <button ion-button clear color="primary" (click)="toggleCurrency()">
+                    {{amountCurrency}}
+                </button>
+            </div>
 
-                <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>
+
+            <div class="row">
+                <span class="label" text-left >Address</span>
+                <span item-right text-right [style.flex]="1" >
+                    {{address}}
                 </span>
-            </p>
-        </ion-item>
+                <button ion-button icon-only clear color="primary" (click)="generateAddress(forceNew = true)"  class="select-button">
+                    <ion-icon name="refresh"></ion-icon>
+                </button>
+            </div>
+
+             <div class="label" class="row" (click)="selectWallet()">
+                 <span text-left class="label">Receive in</span>
+                 <span item-right text-right [style.flex]="1">
+                     {{wallet.name || wallet._id}}
+                     <button ion-button icon-only clear color="primary"  class="select-button">
+                         <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
+                             <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
+                         </i>
+                     </button>
+                 </span>
+             </div>
+
+        </span>
+
 
 
     </ion-toolbar>
