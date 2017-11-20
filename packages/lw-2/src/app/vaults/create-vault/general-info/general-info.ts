@@ -50,7 +50,8 @@ export class CreateVaultGeneralInfoView {
     this.getAllWVaults().then((vaults) => {
       const vaultDTOs = _.map(vaults, (v) => {
         const name = v.name || v._id;
-        return { 'id': v.id, 'name': name, 'pubKey': v.spendPubKey.xpubkey }; // it does not seem to work. need other key here.
+        const key = v.spendPubKey ? v.spendPubKey.xpubkey : ''; // Prevent errors
+        return { 'id': v.id, 'name': name, 'pubKey': key }; // it does not seem to work. need other key here.
       });
       this.whitelistCandidates = this.whitelistCandidates.concat(vaultDTOs);
     });

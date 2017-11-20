@@ -3551,7 +3551,12 @@ WalletService.prototype.createVault = function(opts, cb) {
 
         txp.txid = txid;
         opts.coins[0] = txp;
-        return next();
+
+        self.storage.updateVault(self.copayerId, opts, function(err, result) {
+          if (err) return cb(err);
+  
+          return next();
+        });
       });
     }, // Enable me later when transaction is constructed successfully
     function(next) {
