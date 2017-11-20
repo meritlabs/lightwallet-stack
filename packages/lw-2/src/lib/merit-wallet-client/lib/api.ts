@@ -243,7 +243,9 @@ export class API implements IAPI {
   }
     
   _initNotifications(opts: any = {}): any {
-    const interval = opts.notificationIntervalSeconds || 5; // TODO: Be able to turn this off during development mode; pollutes request stream..  
+    this.log.warn("Initializing notifications with opts: ");
+    console.log(opts);
+    const interval = opts.notificationIntervalSeconds || 50; // TODO: Be able to turn this off during development mode; pollutes request stream..  
     const self = this;
     self.notificationsIntervalId = setInterval(function() {
       self._fetchLatestNotifications(interval).catch((err) => {
