@@ -12,7 +12,7 @@ export class VaultsView {
   @Input() vaults = [];
 
   constructor(
-    private navCtrl:NavController,
+    private navCtrl: NavController,
     private vaultService: VaultsService,
   ){}
 
@@ -21,7 +21,6 @@ export class VaultsView {
   }
 
   toVault(vault) {
-    console.log('toVault', vault);
     this.navCtrl.push('VaultDetailsView', { vaultId: vault._id, vault: vault });
   }
 }

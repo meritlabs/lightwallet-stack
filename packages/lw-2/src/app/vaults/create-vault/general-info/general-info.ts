@@ -38,7 +38,7 @@ export class CreateVaultGeneralInfoView {
     this.formData.whitelist = data.whitelist;
 
     // fetch users wallets
-    this.updateAllWallets().then((wallets) => {
+    this.getAllWallets().then((wallets) => {
       const walletDTOs = _.map(wallets, (w) => {
         const name = w.name || w._id;
         return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey };
@@ -47,12 +47,12 @@ export class CreateVaultGeneralInfoView {
     });
 
     // fetch users vaults
-    this.updateAllWVaults().then((vaults) => {
-      const walletDTOs = _.map(vaults, (w) => {
-        const name = w.name || w._id;
-        return { 'id': w.id, 'name': name, 'pubKey': w.xPubKey };
+    this.getAllWVaults().then((vaults) => {
+      const vaultDTOs = _.map(vaults, (v) => {
+        const name = v.name || v._id;
+        return { 'id': v.id, 'name': name, 'pubKey': v.spendPubKey.xpubkey }; // it does not seem to work. need other key here.
       });
-      this.whitelistCandidates = this.whitelistCandidates.concat(walletDTOs);
+      this.whitelistCandidates = this.whitelistCandidates.concat(vaultDTOs);
     });
   }
 
@@ -61,7 +61,7 @@ export class CreateVaultGeneralInfoView {
     this.navCtrl.push('CreateVaultDepositView');
   }
 
-  private updateAllWallets(): Promise<Array<any>> {
+  private getAllWallets(): Promise<Array<any>> {
     const wallets = this.profileService.getWallets().then((ws) => {
       return Promise.all(_.map(ws, async (wallet:any) => {
         wallet.status = await this.walletService.getStatus(wallet);
@@ -71,7 +71,7 @@ export class CreateVaultGeneralInfoView {
     return wallets;
   }
 
-  private updateAllWVaults(): Promise<Array<any>> {
+  private getAllWVaults(): Promise<Array<any>> {
     return this.profileService.getWallets().then((ws) => {
       if (_.isEmpty(ws)) {
         Promise.resolve(null); //ToDo: add proper error handling;
