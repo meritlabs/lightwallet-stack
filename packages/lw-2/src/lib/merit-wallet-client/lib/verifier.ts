@@ -146,7 +146,6 @@ export module Verifier {
     }
     if (!creatorSigningPubKey) return false;
 
-
     var hash;
     if (parseInt(txp.version) >= 3) {
       var t = Utils.buildTx(txp);

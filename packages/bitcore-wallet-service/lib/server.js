@@ -1069,7 +1069,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
       address: address.address
     }
     self.unlockAddress(unlockParams, function(err, result){
-      if (err) return cb(err);
+      if (err && err != Errors.UNLOCKED_ALREADY) return cb(err);
       
       self.storage.storeAddressAndWallet(wallet, address, function(err) {
         if (err) return cb(err);
@@ -2209,7 +2209,7 @@ WalletService.prototype.createTx = function(opts, cb) {
               self.unlockAddress(unlockParams, function(err, result){
                 // If the change address is unlocked already, we can continue with 
                 // the creation of the TXN.
-                if (err && !(err == Errors.UNLOCKED_ALREADY)) return next(err);
+                if (err && (err != Errors.UNLOCKED_ALREADY)) return next(err);
               });
               next();
             });
@@ -3512,6 +3512,71 @@ WalletService.prototype.referralTxConfirmationUnsubscribe = function(opts, cb) {
   const self = this;
 
   self.storage.removeReferralTxConfirmationSub(self.copayerId, opts.codeHash, cb);
+};
+
+/**
+ * Vaulting
+ */
+WalletService.prototype.getVaults = function(opts, cb) {
+  const self = this;
+
+  self.storage.fetchVaults(self.copayerId, function(err, result) {
+    if (err) return cb(err);
+
+    return cb(null, result);
+  });
+};
+
+WalletService.prototype.createVault = function(opts, cb) {
+  const self = this;
+  
+  opts.status = Bitcore.Vault.Vault.VaultStates.PENDING;
+
+  let vaultId = '';
+
+  async.series([
+    function(next) {
+      self.storage.storeVault(self.copayerId, opts, function(err, result) {
+        if (err) return cb(err);
+
+        vaultId = result.insertedId;
+
+        return next();
+      });
+    },
+    function(next) {
+      //TODO: Loop
+      var txp = Model.TxProposal.fromObj(opts.coins[0]);
+      var bc = self._getBlockchainExplorer(txp.network);
+
+      var rawTx = txp.getRawTx();
+      bc.broadcast(rawTx, function(err, txid) {
+        if (err) return cb(err);
+
+        txp.txid = txid;
+        opts.id = vaultId;
+        opts.coins[0] = txp;
+        opts.initialTxId = txid;
+
+        self.storage.updateVault(self.copayerId, opts, function(err, result) {
+          if (err) return cb(err);
+  
+          return next();
+        });
+      });
+    }, // Enable me later when transaction is constructed successfully
+    function(next) {
+      self.getVaults(opts, cb);
+
+      return next();
+    }
+  ]);
+};
+
+WalletService.prototype.renewVault = function(opts, cb) {
+  const self = this;
+
+  return cb(null, {});
 };
 
 module.exports = WalletService;
