@@ -34,7 +34,7 @@ export class Profile {
     x.disclaimerAccepted = obj.disclaimerAccepted;
     x.checked = obj.checked || {};
     x.checkedUA = obj.checkedUA || {};
-    x.vaults = obj.vaults;
+    x.vaults = obj.vaults || [];
 
     if (x.credentials[0] && typeof x.credentials[0] != 'object')
       throw ("credentials should be an object");

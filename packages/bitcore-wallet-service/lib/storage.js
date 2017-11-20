@@ -1102,6 +1102,16 @@ Storage.prototype.storeVault = function(copayerId, vaultTx, cb) {
   }, cb);
 };
 
+Storage.prototype.updateVault = function(copayerId, vaultTx, cb) {
+  this.db.collection(collections.VAULTS).update({
+    copayerId,
+    id: vaultTx.id,
+  }, vaultTx, {
+    w: 1,
+    upsert: true,
+  }, cb);
+};
+
 Storage.prototype.fetchVaultByTxId = function(txId, cb) {
   this.db.collection(collections.VAULTS).findOne({
     txId,
