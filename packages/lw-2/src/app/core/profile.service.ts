@@ -730,6 +730,7 @@ export class ProfileService {
   }
 
   public getNotifications(opts: any): Promise<any> {
+    this.logger.warn("Getting Notificatiosn; Why?");
     return new Promise((resolve, reject) => {
       opts = opts ? opts : {};
 
