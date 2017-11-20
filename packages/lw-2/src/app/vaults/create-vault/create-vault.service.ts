@@ -3,6 +3,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { WalletService } from "merit/wallets/wallet.service";
 import { Logger } from 'merit/core/logger';
 import { MeritWalletClient, IMeritWalletClient} from './../../../lib/merit-wallet-client';
+import { ProfileService } from 'merit/core/profile.service';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -23,8 +24,9 @@ export class CreateVaultService {
   constructor(
     private bwcService: BwcService,
     private walletService: WalletService,
-    private logger: Logger) {
-
+    private logger: Logger,
+    private profileService: ProfileService,
+  ) {
     this.bitcore = this.bwcService.getBitcore();
   }
 
@@ -110,6 +112,12 @@ export class CreateVaultService {
         vault.name = this.model.vaultName;
         return this.walletClient.createVault(vault);
       }).then((resp) => {
+        return this.profileService.addVault({
+          id: vault.address,
+          copayerId: wallet.credentials.copayerId,
+          name: this.model.vaultName,
+        });
+      }).then(() => {
         this.resetModel();
       });
     }
