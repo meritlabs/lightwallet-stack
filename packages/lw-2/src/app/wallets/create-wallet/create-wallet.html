@@ -19,7 +19,7 @@
 
         <ion-item>
             <ion-label translate>Unlock code</ion-label>
-            <ion-input text-right [placeholder]="'Paste it here'" [(ngModel)]="formData.beacon"></ion-input>
+            <ion-input text-right [placeholder]="'Paste it here'" [(ngModel)]="formData.unlockCode"></ion-input>
         </ion-item>
 
         <ion-item-divider translate>Advanced</ion-item-divider>
@@ -102,13 +102,6 @@
             <ion-input text-right [placeholder]="'BIP32 path for address derivation'" [(ngModel)]="formData.derivationPath"></ion-input>
         </ion-item>
 
-
-        <ion-item *ngIf="formData.seedSource?.supportsTestnet" >
-            <ion-label translate>Testnet</ion-label>
-            <ion-toggle [(ngModel)]="formData.testnetEnabled"></ion-toggle>
-        </ion-item>
-
-
         <ion-item>
             <ion-label>
                 <span translate>Single Address Wallet</span>
@@ -122,7 +115,7 @@
 
 
     <div class="control-buttons">
-        <button ion-button [disabled]="!isCreationEnabled()" translate>
+        <button ion-button [disabled]="!isCreationEnabled()" translate (click)="createWallet()">
             Create new wallet
         </button>
     </div>
