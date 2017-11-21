@@ -21,7 +21,15 @@
             
         <ion-item *ngFor="let address of whitelist">
             <ion-label class="whitelist-item">
-                {{ address }}
+                <i class="wallet-icon" item-start *ngIf="address.type == 'vault'">
+                    <img src="assets/img/icon-lock-white.svg" >
+                </i>
+                <i class="wallet-icon" item-start *ngIf="address.type == 'wallet'">
+                    <img src="assets/img/icon-wallet.svg" >
+                </i>
+                <p>
+                    {{ address.name }}
+                </p>
             </ion-label>
         </ion-item>
     </ion-list>

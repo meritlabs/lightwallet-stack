@@ -18,7 +18,7 @@ import { VaultsService } from 'merit/vaults/vaults.service';
     SharedModule,
   ],
   providers: [
-    VaultsService
+    VaultsService,
   ]
 })
 export class VaultDetailsModule {}
