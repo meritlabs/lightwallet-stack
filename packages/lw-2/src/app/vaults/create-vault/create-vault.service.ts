@@ -45,18 +45,23 @@ export class CreateVaultService {
       vaultName: '',
       whitelist: [],
       amountToDeposit: "0.0",
-      amountAvailable: 10000,
+      amountAvailable: 0,
       masterKey: null,
       masterKeyMnemonic: '',
       selectedWallet: null}
       
   }
 
-  private vaultFromModel(spendPubKey: any) {
+  private vaultFromModel(spendPubKey: any, whitelistedAddresses: Array<any>) {
     //currently only supports type 0 which is a whitelisted vault.
     const amount = this.bitcore.Unit.fromMRT(parseFloat(this.model.amountToDeposit)).toMicros();
-    const whitelist = _.map(this.model.whitelist, (w) => { 
-      let key = this.bitcore.HDPublicKey.fromString(w.pubKey);
+    const whitelist = _.map(whitelistedAddresses, (w: any) => {
+      let key; 
+      if (w.type == 'wallet') {
+        key = this.bitcore.HDPublicKey.fromString(w.pubKey);
+      } else {
+        key = this.bitcore.Address.fromString(w.pubKey);
+      }
       return key.toBuffer();
     });
 
@@ -74,7 +79,7 @@ export class CreateVaultService {
 
       return this.walletService.getAddress(this.walletClient, false).then((addresses) => {
         let spendPubKey = this.bitcore.PublicKey.fromString(addresses.publicKeys[0]);
-        let vault = this.vaultFromModel(spendPubKey);
+        let vault = this.vaultFromModel(spendPubKey, []);
 
         this.resetModel();
         return vault;
@@ -85,7 +90,8 @@ export class CreateVaultService {
       let wallet = this.model.selectedWallet;
 
       let spendPubKey = this.bitcore.HDPublicKey.fromString(wallet.credentials.xPubKey);
-      let vault = this.vaultFromModel(spendPubKey);
+
+      let vault = this.vaultFromModel(spendPubKey, this.model.whitelist);
 
       let unlock = {
         unlockCode: wallet.shareCode,
