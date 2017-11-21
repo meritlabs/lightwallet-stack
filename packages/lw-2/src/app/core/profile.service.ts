@@ -26,7 +26,7 @@ export class ProfileService {
   public wallets: Map<string, Wallet> = new Map<string, Wallet>();
   public profile: Profile = new Profile();
 
-  private UPDATE_PERIOD = 500;
+  private UPDATE_PERIOD = 10;
   private throttledBwsEvent: any;
   private validationLock: boolean = false;
   private errors: any = this.bwcService.getErrors();
@@ -132,63 +132,60 @@ export class ProfileService {
       this.updateWalletSettings(wallet);
       this.wallets[walletId] = wallet;
 
-      this.needsBackup(wallet).then((val: any) => {
-        wallet.needsBackup = val;
-      }).catch((err) => {
-        console.log("NeedsBackup Failed!");
-        console.log(err);
-      });
+      return this.needsBackup(wallet).then((val: any) => {
+        return wallet.needsBackup = val;
+      }).then(() => {
+        return this.balanceIsHidden(wallet).then((val: any) => {
+          return wallet.balanceHidden = val;
+      }).then(() => {
+        wallet.eventEmitter.removeAllListeners();
 
-      this.balanceIsHidden(wallet).then((val: any) => {
-        wallet.balanceHidden = val;
-      }).catch((err) => {
-        console.log("BalanceIsHiddent");
-      });;
-
-      wallet.eventEmitter.removeAllListeners();
-
-      wallet.eventEmitter.on('report', (n: any) => {
-        this.logger.info('BWC Report:' + n);
-      });
-
-      wallet.eventEmitter.on('notification', (n: any) => {
-        this.logger.debug('BWC Notification:', n);
-
-        if (n.type == "NewBlock" && n.data.network == "testnet") {
-          this.throttledBwsEvent(n, wallet);
-        } else this.newBwsEvent(n, wallet);
-      });
-
-
-      wallet.eventEmitter.on('walletCompleted', () => {
-        this.logger.debug('Wallet completed');
-
-        this.updateCredentials(JSON.parse(wallet.export())).then(() => {
-          //$rootScope.$emit('Local/WalletCompleted', walletId); TODO
+        wallet.eventEmitter.on('report', (n: any) => {
+          this.logger.info('BWC Report:' + n);
         });
-      });
 
-      return wallet.initialize({
-        notificationIncludeOwn: true,
+        wallet.eventEmitter.on('notification', (n: any) => {
+          this.logger.debug('BWC Notification:', n);
+
+          if (n.type == "NewBlock" && n.data.network == "testnet") {
+            this.throttledBwsEvent(n, wallet);
+          } else this.newBwsEvent(n, wallet);
+        });
+
+
+        wallet.eventEmitter.on('walletCompleted', () => {
+          this.logger.debug('Wallet completed');
+
+          return this.updateCredentials(JSON.parse(wallet.export())).then(() => {
+            this.events.publish('Local:WalletCompleted', walletId); 
+            return Promise.resolve(); // not sure this is needed
+          });
+        });
+      }).then(() => {
+        return wallet.initialize({
+          notificationIncludeOwn: true,
+        });
       }).then(() => {
         wallet.setNotificationsInterval(this.UPDATE_PERIOD);
-        wallet.openWallet().then(() => {
-          if (wallet.status !== true)
+        return wallet.openWallet();
+      }).then(() => {
+        if (wallet.status !== true) {
           this.logger.debug('Wallet + ' + walletId + ' status:' + wallet.status);
-          return resolve();
-        });
-      }).catch((err) => {
-        this.logger.error('Could not init notifications err:', err);
+        }
         return resolve();
+      }).catch((err) => {
+        this.logger.error('Could not bind the wallet client:', err);
+        return reject(new Error("Could not bind wallet client!"));
       });
 
-      /* TODO $rootScope.$on('Local/SettingsUpdated', (e: any, walletId: string) => {
-        if (!walletId || walletId == wallet.id) {
-          this.logger.debug('Updating settings for wallet:' + wallet.id);
-          this.updateWalletSettings(wallet);
-        }
-      }); */
+        /* TODO $rootScope.$on('Local/SettingsUpdated', (e: any, walletId: string) => {
+          if (!walletId || walletId == wallet.id) {
+            this.logger.debug('Updating settings for wallet:' + wallet.id);
+            this.updateWalletSettings(wallet);
+          }
+        }); */
 
+      });
     });
   }
 
@@ -726,7 +723,7 @@ export class ProfileService {
   }
 
   public getNotifications(opts: any): Promise<any> {
-    this.logger.warn("Getting Notificatiosn; Why?");
+    this.logger.warn("Explicitly getting notifications; Why?");
     return new Promise((resolve, reject) => {
       opts = opts ? opts : {};
 
