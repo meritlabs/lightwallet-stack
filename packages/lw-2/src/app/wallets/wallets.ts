@@ -218,15 +218,14 @@ export class WalletsView {
   private calculateNetworkAmount(wallets:Array<Wallet>) {
     this.totalAmount = 0;
 
-    let coin = ''; //todo what to use here??
-    this.totalAmountFormatted =  this.txFormatService.parseAmount(this.totalAmount, 'MRT');
+    this.totalAmountFormatted = this.txFormatService.parseAmount(this.totalAmount, 'MRT').amountUnitStr;
+
 
     wallets.forEach((wallet) => {
-      this.walletService.getWalletAnv(wallet).then((amount) => {
+      this.walletService.getANV(wallet).then((amount) => {
 
-        let coin = ''; //todo what to use here??
         this.totalAmount += amount;
-        this.totalAmountFormatted =  this.txFormatService.parseAmount(this.totalAmount, 'MRT');
+        this.totalAmountFormatted = this.txFormatService.parseAmount(this.totalAmount, 'MRT').amountUnitStr;
       });
 
     });

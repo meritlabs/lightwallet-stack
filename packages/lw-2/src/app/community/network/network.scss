@@ -2,13 +2,41 @@
 view-network {
   @extend %module-transact;
 
-  ion-footer {
-    .item-inner {
-      border-bottom: none !important;
+  .wallet-icon {
+    padding-left: 0 !important;
+    img {
+      height: 26px !important;
+      width: 36px;
+      display: inline-block;
+      border-radius: 4px;
+      box-shadow: none !important;
+      padding: 4px 8px;
+      vertical-align: middle;
     }
-    .toolbar-background {
-      background: white;
+    &.default img {
+      background: $wallet-default-color;
+    }
+    &.locked img {
+      background: $wallet-locked-color !important;
     }
   }
+
+  ion-item {
+    white-space: nowrap;
+    ion-label {
+      button {
+        height: 20px;
+        width: 20px;
+        vertical-align: middle;
+        padding: 0 5px;
+        ion-icon {
+          margin-top: -10px;
+          font-size: 20px !important;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+
 
 }
