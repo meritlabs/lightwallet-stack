@@ -158,14 +158,13 @@ export class API implements IAPI {
   private privateKeyEncryptionOpts: any = {
     iter: 10000
   };
-  public credentials: any; // TODO: Make private with getters/setters
+  public credentials: Credentials; // TODO: Make private with getters/setters
   private notificationIncludeOwn: boolean;
   private log: any;
   private lastNotificationId: string;
   private notificationsIntervalId: any;
   private keyDerivationOk: boolean;
   private session: any;
-  private eventEmitter: any;
   private static DEBUG_MODE: boolean = false; 
   
   // Mutated from other services (namely wallet.service and profile.service)
@@ -185,6 +184,13 @@ export class API implements IAPI {
   public needsBackup: boolean;
   public name: string;
   public color: string; 
+  public started: boolean;
+  public copayerId: string;
+  public unlocked: boolean;
+  public shareCode: string;
+  public balanceHidden: boolean;
+  public eventEmitter: any;
+  public status: any; 
   
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -194,9 +200,8 @@ export class API implements IAPI {
     this.doNotVerifyPayPro = opts.doNotVerifyPayPro;
     this.timeout = opts.timeout || 50000;
     this.logLevel = opts.logLevel || 'debug';
-    this.log = Logger.getInstance();; 
-
-    this.log.setLevel(this.logLevel);
+    this.log = Logger.getInstance();
+    this.log.setLevel(this.logLevel)
   }
 
 
@@ -245,7 +250,7 @@ export class API implements IAPI {
   _initNotifications(opts: any = {}): any {
     this.log.warn("Initializing notifications with opts: ");
     console.log(opts);
-    const interval = opts.notificationIntervalSeconds || 50; // TODO: Be able to turn this off during development mode; pollutes request stream..  
+    const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode; pollutes request stream..  
     const self = this;
     self.notificationsIntervalId = setInterval(function() {
       self._fetchLatestNotifications(interval).catch((err) => {
@@ -928,32 +933,32 @@ export class API implements IAPI {
       return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
         let wallet = ret.wallet;
 
-        this._processStatus(ret);
-
-        if (!this.credentials.hasWalletInfo()) {
-          let me:any = _.find(wallet.copayers, {
-            id: this.credentials.copayerId
-          });
-          this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode);
-        }
-
-        if (wallet.status != 'complete')
-          return resolve();
-
-        if (this.credentials.walletPrivKey) {
-          if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
-            return reject(Errors.SERVER_COMPROMISED);
+        return this._processStatus(ret).then(() => {
+          if (!this.credentials.hasWalletInfo()) {
+            let me:any = _.find(wallet.copayers, {
+              id: this.credentials.copayerId
+            });
+            this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode, wallet.codeHash);
           }
-        } else {
-          // this should only happen in AIR-GAPPED flows
-          this.log.warn('Could not verify copayers key (missing wallet Private Key)');
-        }
-
-        this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
-
-        this.eventEmitter.emit('walletCompleted', wallet);
-
-        return resolve(ret);
+  
+          if (wallet.status != 'complete')
+            return resolve();
+  
+          if (this.credentials.walletPrivKey) {
+            if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
+              return reject(Errors.SERVER_COMPROMISED);
+            }
+          } else {
+            // this should only happen in AIR-GAPPED flows
+            this.log.warn('Could not verify copayers key (missing wallet Private Key)');
+          }
+  
+          this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
+  
+          this.eventEmitter.emit('walletCompleted', wallet);
+  
+          return resolve(ret);
+        });
       });
     });
   };
@@ -1581,7 +1586,7 @@ export class API implements IAPI {
         dryRun: !!opts.dryRun,
       }).then((wallet) => {
         if (!opts.dryRun) {
-          this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.beacon, wallet.shareCode);
+          this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.beacon, wallet.shareCode, wallet.codeHash);
         }
         return resolve(wallet);        
       }).catch((ex) => {
@@ -2523,7 +2528,9 @@ export class API implements IAPI {
         let c = this.credentials;
         result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
       }
-      return Promise.resolve(this._processStatus(result));
+      return this._processStatus(result).then(() => {
+        return Promise.resolve();
+      });
     });
   };
 
