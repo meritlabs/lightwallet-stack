@@ -77,6 +77,7 @@ export class Credentials {
   public publicKeyRing: any;
   public unlocked: boolean;
   public shareCode: string;
+  public hwInfo: string;
 
 
 
