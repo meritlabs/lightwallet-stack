@@ -413,7 +413,7 @@ export class Credentials {
     this.sharedEncryptingKey = Utils.privateKeyToAESKey(walletPrivKey);
   };
 
-  public addWalletInfo = function(walletId, walletName, m, n, copayerName, beacon, shareCode, codeHash) {
+  public addWalletInfo = function(walletId, walletName, m, n, copayerName, beacon, shareCode, codeHash): void  {
     this.walletId = walletId;
     this.walletName = walletName;
     this.m = m;

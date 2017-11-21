@@ -12,6 +12,8 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { Profile } from 'merit/core/profile.model';
 import { Wallet } from 'merit/wallets/wallet.model';
 import { Promise } from 'bluebird';
+import { Events } from 'ionic-angular/util/events';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 /* 
@@ -39,7 +41,8 @@ export class ProfileService {
     private platformService: PlatformService,
     private appService: AppService,
     private languageService: LanguageService,
-    private txFormatService: TxFormatService
+    private txFormatService: TxFormatService,
+    private events: Events    
   ) {
     console.log("Hello ProfileService!");
     this.throttledBwsEvent = _.throttle((n, wallet) => {
@@ -105,14 +108,14 @@ export class ProfileService {
   }
 
   // Adds a WalletService client (BWC) into the wallet.  
-  private bindWalletClient(wallet: any, opts?: any): Promise<boolean> {
+  private bindWalletClient(wallet: MeritWalletClient, opts?: any): Promise<boolean> {
+    console.log("Binding the wallet client!");
     return new Promise((resolve, reject) => {
       console.log("Binding 1");    
       opts = opts ? opts : {};
       var walletId = wallet.credentials.walletId;
 
       if ((this.wallets[walletId] && this.wallets[walletId].started) && !opts.force) {
-        console.log("Sqwiddler in the night.");
         reject(false);
       }
 
@@ -129,7 +132,6 @@ export class ProfileService {
       this.updateWalletSettings(wallet);
       this.wallets[walletId] = wallet;
 
-      console.log("Binding 2");    
       this.needsBackup(wallet).then((val: any) => {
         wallet.needsBackup = val;
       }).catch((err) => {
@@ -143,7 +145,6 @@ export class ProfileService {
         console.log("BalanceIsHiddent");
       });;
 
-      console.log("Binding 3");    
       wallet.eventEmitter.removeAllListeners();
 
       wallet.eventEmitter.on('report', (n: any) => {
@@ -158,7 +159,6 @@ export class ProfileService {
         } else this.newBwsEvent(n, wallet);
       });
 
-      console.log("Binding 4");    
 
       wallet.eventEmitter.on('walletCompleted', () => {
         this.logger.debug('Wallet completed');
@@ -168,22 +168,19 @@ export class ProfileService {
         });
       });
 
-      wallet.initialize({
+      return wallet.initialize({
         notificationIncludeOwn: true,
-      }, (err: any) => {
-        if (err) {
-          console.log("Binding 5");    
-          this.logger.error('Could not init notifications err:', err);
-          return;
-        }
-        console.log("Binding 6");    
+      }).then(() => {
         wallet.setNotificationsInterval(this.UPDATE_PERIOD);
-        wallet.openWallet((err: any) => {
+        wallet.openWallet().then(() => {
           if (wallet.status !== true)
           this.logger.debug('Wallet + ' + walletId + ' status:' + wallet.status);
+          return resolve();
         });
+      }).catch((err) => {
+        this.logger.error('Could not init notifications err:', err);
+        return resolve();
       });
-      console.log("Binding 6");    
 
       /* TODO $rootScope.$on('Local/SettingsUpdated', (e: any, walletId: string) => {
         if (!walletId || walletId == wallet.id) {
@@ -192,7 +189,6 @@ export class ProfileService {
         }
       }); */
 
-      resolve(true);
     });
   }
 
@@ -209,7 +205,7 @@ export class ProfileService {
     if (wallet.cachedTxps)
       wallet.cachedTxps.isValid = false;
 
-    //$rootScope.$emit('bwsEvent', wallet.id, n.type, n); TODO
+    this.events.publish('bwsEvent', wallet.id, n.type, n); 
   }
 
   public updateCredentials(credentials: any): Promise<boolean> {
