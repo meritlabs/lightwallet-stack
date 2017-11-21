@@ -13,12 +13,13 @@ import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
-import { Promise } from 'bluebird';
-import { IMeritWalletClient } from './../../lib/merit-wallet-client';
+import * as Promise from 'bluebird';
+import { MeritWalletClient, IMeritWalletClient } from './../../lib/merit-wallet-client';
 import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
 import { Wallet } from "./wallet.model";
+import { setTimeout } from 'timers';
 
 
 /* Refactor CheckList:
@@ -67,7 +68,9 @@ export class WalletService {
     console.log('Hello WalletService Service');
   }
 
-
+  private setTimeoutPromise = Promise.promisify((delay: number, cb) => {
+      setTimeout(cb, delay);
+  });
 
   private invalidateCache(wallet: IMeritWalletClient) {
     if (wallet.cachedStatus)
@@ -257,10 +260,10 @@ export class WalletService {
             let currentStatusHash = walletStatusHash(status);
             this.logger.debug('Status update. hash:' + currentStatusHash + ' Try:' + tries);
             if (opts.untilItChanges && initStatusHash == currentStatusHash && tries < this.WALLET_STATUS_MAX_TRIES && walletId == wallet.credentials.walletId) {
-              return setTimeout(() => {
+              return this.setTimeoutPromise(this.WALLET_STATUS_DELAY_BETWEEN_TRIES * tries).then(() => {
                 this.logger.debug('Retrying update... ' + walletId + ' Try:' + tries)
                 return _getStatus(initStatusHash, ++tries);
-              }, this.WALLET_STATUS_DELAY_BETWEEN_TRIES * tries);
+              });
             }
 
             processPendingTxps(status);
@@ -343,9 +346,9 @@ export class WalletService {
         if (err == this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
           this.logger.warn(err);
           this.logger.warn("Attempting to create address again.");
-          return setTimeout(() => {
+          return this.setTimeoutPromise(5000).then(() => {
             this.createAddress(wallet);
-          }, 5000);
+          });
         } else if (err == this.errors.MAIN_ADDRESS_GAP_REACHED || (err.message && err.message == 'MAIN_ADDRESS_GAP_REACHED')) {
           this.logger.warn(err);
           this.logger.warn("Using main address instead.");
@@ -1243,8 +1246,8 @@ export class WalletService {
     });
   };
 
-  public getSendMaxInfo(wallet: IMeritWalletClient, opts: any = {}): Promise<any> {
-    wallet.getSendMaxInfo(opts);
+  public getSendMaxInfo(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
+    return wallet.getSendMaxInfo(opts);
   };
 
   public getProtocolHandler(wallet: IMeritWalletClient): string {

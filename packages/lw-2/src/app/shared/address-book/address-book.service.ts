@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 
 import { Logger } from 'merit/core/logger';

@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, App, ToastController, AlertControl
 import { Wallet } from "./wallet.model";
 
 import * as _ from "lodash";
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 import { ProfileService } from "merit/core/profile.service";
 import { FeedbackService } from "merit/feedback/feedback.service"
 import { Feedback } from "merit/feedback/feedback.model"
