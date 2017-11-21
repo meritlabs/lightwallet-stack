@@ -3535,7 +3535,13 @@ WalletService.prototype.createVault = function(opts, cb) {
   let vaultId = '';
 
   const readableWhitelist = _.map(opts.whitelist, (wl) => {
-    return new Buffer(wl.data).toString();
+    let entry;
+    if (wl.data.length == 21) {
+      entry = Bitcore.Address.fromBuffer(new Buffer(wl.data)).toString();
+    } else {
+      entry = Bitcore.HDPublicKey.fromBuffer(new Buffer(wl.data)).toString();
+    }
+    return entry;
   });
   const toStore = _.cloneDeep(opts);
   toStore.whitelist = readableWhitelist;
