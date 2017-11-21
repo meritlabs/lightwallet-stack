@@ -14,8 +14,6 @@ import { VaultsService } from 'merit/vaults/vaults.service';
   ],
   providers: [
     MnemonicService,
-    WalletService,
-    BwcService,
     VaultsService,
   ],
   imports: [
