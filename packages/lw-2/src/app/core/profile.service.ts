@@ -329,7 +329,7 @@ export class ProfileService {
             return resolve();
           }
 
-          _.each(profile.credentials, (credentials) => {
+          return Promise.each(profile.credentials, (credentials) => {
             return this.bindWallet(credentials).then((bound: number) => {
               i++;
               totalBound += bound;
@@ -361,6 +361,7 @@ export class ProfileService {
     });
   }
 
+  // TODO: Revisit this implementation.
   public storeProfileIfDirty(): void {
     if (this.profile.dirty) {
       this.persistenceService.storeProfile(this.profile).then((err: any) => {
@@ -553,12 +554,12 @@ export class ProfileService {
       var walletClient = this.bwcService.getClient(null, opts);
       this.logger.debug('Importing Wallet XPubKey');
 
-      walletClient.importFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
+      return walletClient.importFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
         account: opts.account || 0,
         derivationStrategy: opts.derivationStrategy || 'BIP44',
       }).then(() => {
 
-        this.addAndBindWalletClient(walletClient, {
+        return this.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
         }).then((wallet: any) => {
           return resolve(wallet);
@@ -599,7 +600,9 @@ export class ProfileService {
       if (!skipKeyValidation) this.runValidation(walletClient, 500);
 
       this.logger.info('Binding wallet:' + credentials.walletId + ' Validating?:' + !skipKeyValidation);
-      return resolve(this.bindWalletClient(walletClient));
+      return this.bindWalletClient(walletClient).then(() => {
+        return resolve();
+      });
     });
   }
 
@@ -619,14 +622,15 @@ export class ProfileService {
 
       delete this.wallets[walletId];
 
-      this.persistenceService.removeAllWalletData(walletId).catch((err: any) => {
-        this.logger.warn(err);
-      });
-
-      this.persistenceService.storeProfile(this.profile).then(() => {
-        return resolve();
+      return this.persistenceService.removeAllWalletData(walletId)
+      .then(() => {
+        return this.persistenceService.storeProfile(this.profile).then(() => {
+          return resolve();
+        }).catch((err: any) => {
+          return reject(err);
+        });
       }).catch((err: any) => {
-        return reject(err);
+        this.logger.warn(err);
       });
     });
   };
@@ -635,7 +639,7 @@ export class ProfileService {
   public setDisclaimerAccepted(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.profile.disclaimerAccepted = true;
-      this.persistenceService.storeProfile(this.profile).then(() => {
+      return this.persistenceService.storeProfile(this.profile).then(() => {
         return resolve();
       }).catch((err) => {
         return reject(err);
