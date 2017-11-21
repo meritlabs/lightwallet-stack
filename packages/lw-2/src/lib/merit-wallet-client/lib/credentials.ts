@@ -75,7 +75,9 @@ export class Credentials {
   public n: any;
   public beacon: string;
   public publicKeyRing: any;
-  
+  public unlocked: boolean;
+  public shareCode: string;
+
 
 
   private static wordsForLang = {
