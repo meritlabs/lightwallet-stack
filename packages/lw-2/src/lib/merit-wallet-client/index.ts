@@ -19,8 +19,7 @@ export class MeritWalletClient extends MeritClient implements IMeritWalletClient
   public static getInstance(opts:any = {}): MeritWalletClient {
     return (this._instance || new MeritWalletClient(opts));
   }
-
-  sdsa
+  sdsa;
 }
 
 

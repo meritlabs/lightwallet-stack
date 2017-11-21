@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, App, LoadingController, ToastController, NavController } from 'ionic-angular';
+import { IonicPage, App, LoadingController, NavController } from 'ionic-angular';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ToastConfig } from "merit/core/toast.config";
 import { Promise } from 'bluebird';
+import { MeritToastController } from "merit/core/toast.controller";
 
 
 // Unlock view for wallet
@@ -21,7 +22,7 @@ export class UnlockView {
   constructor(
     private app:App,
     private walletService: WalletService,
-    private toastCtrl: ToastController,
+    private toastCtrl: MeritToastController,
     private loaderCtrl: LoadingController, 
     private navCtrl: NavController
   ) {
@@ -52,8 +53,7 @@ export class UnlockView {
         }).catch((err) => {
           loader.dismiss();
           this.unlockState = 'fail';
-          this.toastCtrl.create({ message: err, cssClass: ToastConfig.CLASS_ERROR }).present();
-          return reject(err);
+          this.toastCtrl.create({ message: JSON.stringify(err), cssClass: ToastConfig.CLASS_ERROR }).present();
         });
       }
     });
