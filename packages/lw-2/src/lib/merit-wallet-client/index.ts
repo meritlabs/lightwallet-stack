@@ -12,13 +12,14 @@ export class MeritWalletClient extends MeritClient implements IMeritWalletClient
   private static _instance: MeritWalletClient;
   public errors;
   private constructor(opts:any = {}) {
-    super(opts);
+    super({opts});
     this.errors = BwcError;
   }
 
   public static getInstance(opts:any = {}): MeritWalletClient {
     return (this._instance || new MeritWalletClient(opts));
   }
+  sdsa;
 }
 
 
