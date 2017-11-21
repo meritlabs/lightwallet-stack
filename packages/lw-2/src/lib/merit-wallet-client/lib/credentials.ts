@@ -63,6 +63,19 @@ export class Credentials {
   public addressType: any;
   public xPrivKeyEncrypted: any;
   public version: string;
+  public sharedEncryptingKey: string;
+  public walletPrivKey: string;
+  public copayerId: string;
+  public requestPrivKey: string;
+  public requestPubKey: string; 
+  public personalEncryptingKey: string; 
+  public walletId: string; 
+  public walletName: string; 
+  public m: any;
+  public n: any;
+  public beacon: string;
+  public publicKeyRing: any;
+  
 
 
   private static wordsForLang = {
