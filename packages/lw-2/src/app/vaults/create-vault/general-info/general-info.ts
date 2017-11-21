@@ -6,6 +6,8 @@ import { CreateVaultService } from "merit/vaults/create-vault/create-vault.servi
 import { WalletService } from "merit/wallets/wallet.service";
 import { ProfileService } from "merit/core/profile.service";
 import { VaultsService } from 'merit/vaults/vaults.service';
+import { BwcService } from 'merit/core/bwc.service';
+
 
 @IonicPage({
   defaultHistory: ['ProfileView']
@@ -19,6 +21,7 @@ export class CreateVaultGeneralInfoView {
   public formData = { vaultName: '', whitelist: [] };
   public isNextAvailable = false;
   public whitelistCandidates = [];
+  public bitcore = null;
 
   constructor(
     private navCtrl:NavController,
@@ -26,7 +29,11 @@ export class CreateVaultGeneralInfoView {
     private profileService: ProfileService,
     private walletService: WalletService,
     private vaultsService: VaultsService,
-  ){}
+    private bwc: BwcService,
+  ){
+    this.bitcore = this.bwc.getBitcore();
+    console.log('bitcore', this.bitcore);
+  }
 
   checkNextAvailable() {
     this.isNextAvailable = this.formData.vaultName.length > 0;
@@ -41,8 +48,9 @@ export class CreateVaultGeneralInfoView {
     this.getAllWallets().then((wallets) => {
       const walletDTOs = _.map(wallets, (w) => {
         const name = w.name || w._id;
-        return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey };
+        return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
       });
+      console.log('walletDTOs', walletDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(walletDTOs);
     });
 
@@ -50,9 +58,11 @@ export class CreateVaultGeneralInfoView {
     this.getAllWVaults().then((vaults) => {
       const vaultDTOs = _.map(vaults, (v) => {
         const name = v.name || v._id;
-        const key = v.spendPubKey ? v.spendPubKey.xpubkey : ''; // Prevent errors
-        return { 'id': v.id, 'name': name, 'pubKey': key }; // it does not seem to work. need other key here.
+        const key = new this.bitcore.Address(v.address).toString();
+        console.log(key);
+        return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' }; 
       });
+      console.log('walletDTOs', vaultDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(vaultDTOs);
     });
   }
