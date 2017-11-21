@@ -50,8 +50,8 @@ export class ReceiveView {
   ) {
     this.protocolHandler = "merit";
     this.availableUnits = [
-      this.configService.get().wallet.settings.unitCode,
-      this.configService.get().wallet.settings.alternativeIsoCode
+      this.configService.get().wallet.settings.unitCode.toUpperCase(),
+      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
     ];
     this.amountCurrency = this.availableUnits[0];
   }
@@ -132,6 +132,7 @@ export class ReceiveView {
   }
 
   changeAmount() {
+
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
       this.amountMerit = this.amount;
     } else {
