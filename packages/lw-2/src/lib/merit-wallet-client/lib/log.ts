@@ -33,11 +33,6 @@ export class Logger implements LoggerWithLevels {
   private name: string;
   private level: string;
 
-  public getLevels = function() {
-    return this.levels;
-  };
-
-
   private levels = {
     'silent': -1,
     'debug': 0,
@@ -47,6 +42,14 @@ export class Logger implements LoggerWithLevels {
     'error': 4,
     'fatal': 5
   };
+
+  public getLevels = function() {
+    return this.levels;
+  };
+
+  public getLevel: () => string = function() {
+    return this.level;
+  }
 
   public silent(message: string, ...supportingDetails: any[]): void {
     this.logMessage('silent', message)
@@ -161,7 +164,7 @@ export class Logger implements LoggerWithLevels {
    * @param {string} level - the name of the logging level
    */
   public setLevel = function(level) {
-    this.level = level;
+    this.level = this.levels.hasOwnProperty(level) ? level : 'silent';
   };
 
    /**

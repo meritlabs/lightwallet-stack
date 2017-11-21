@@ -24,6 +24,11 @@ export class BlockchainExplorerMock implements BlockchainExplorerMock {
   private txHistory: any[];
   private feeLevels: any[];
 
+  constructor() {
+    this.lastBroadcasted = null;
+    this.reset();
+  }
+
   public getUtxos(addresses: any[]): Promise<any[]> {
     var selected = _.filter(this.utxos, (utxo) => {
       return _.includes(addresses, utxo.address);
