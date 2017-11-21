@@ -102,7 +102,7 @@ export class WalletsView {
 
 
 
-    this.events.subscribe('bwsEvent', (e, walletId, type, n) => {
+    this.events.subscribe('bwsEvent', (walletId, type, n) => {
       this.logger.info("Got a bwsEvent event with: ", walletId, type, n);
       
       this.txpsData = this.profileService.getTxps({limit: 3});
