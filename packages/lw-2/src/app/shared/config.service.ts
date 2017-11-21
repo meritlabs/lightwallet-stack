@@ -129,7 +129,8 @@ const configDefault: Config = {
 
   // Bitcore wallet service URL
   bws: {
-    url: 'http://localhost:3232/bws/api'
+    //url: 'http://localhost:3232/bws/api'
+    url: 'http://192.168.1.2:3232/bws/api'
   },
 
   download: {
