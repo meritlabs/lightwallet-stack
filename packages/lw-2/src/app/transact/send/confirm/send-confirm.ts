@@ -13,7 +13,7 @@ import { FeeService } from 'merit/shared/fee/fee.service';
 import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 
 import * as  _  from 'lodash';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 /**
  * The confirm view is the final step in the transaction sending process 
@@ -185,7 +185,7 @@ export class SendConfirmView {
     let loadingSpinner = this.loadingCtrl.create({
       content: "Sending transaction...",
       dismissOnPageChange: true    });
-    return loadingSpinner.present().then(() => {
+    return Promise.resolve(loadingSpinner.present()).then(() => {
       return this.approveTx(this.txData, this.wallet);
     }).then((worked) => {
       loadingSpinner.dismiss();
@@ -194,6 +194,7 @@ export class SendConfirmView {
     }).catch((err) => {
       this.logger.warn("Failed to approve transaction.");
       this.logger.warn(err);
+      return Promise.reject(err);
     });
   }
 

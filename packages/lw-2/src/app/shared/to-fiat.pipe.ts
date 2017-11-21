@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { ConfigService } from 'merit/shared/config.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 @Pipe({ name: 'toFiat' })
 export class ToFiatPipe implements PipeTransform {
