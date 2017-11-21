@@ -717,6 +717,15 @@ export class ProfileService {
 
   }
 
+  public getHeadWalletClient(): Promise<any> {
+    return this.getWallets().then((ws) => {
+      if (_.isEmpty(ws)) {
+        Promise.resolve(null);
+      }
+      return _.head(ws);
+    });
+  }
+
   public toggleHideBalanceFlag(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.wallets[walletId].balanceHidden = !this.wallets[walletId].balanceHidden;

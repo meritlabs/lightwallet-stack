@@ -1188,6 +1188,8 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
   var utxos = self.utxosCache.get(cacheKey);
 
   function transformUnspentOutput(delta) {
+    console.log("TODO: Get actual scriptPubKey from blockchain, not some thing below");
+    console.log(delta);
     var script = bitcore.Script.fromAddress(delta.address);
     return {
       address: delta.address,

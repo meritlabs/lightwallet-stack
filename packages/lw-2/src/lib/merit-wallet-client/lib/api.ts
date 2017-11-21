@@ -172,6 +172,7 @@ export interface IAPI {
   validateEasyScript(scriptId: string): Promise<any>;
   getVaults();
   createVault(vaultTxProposal: any);
+  getVaultCoins(vaultAddress: any);
 }
 
 export class API implements IAPI {
@@ -2653,4 +2654,8 @@ export class API implements IAPI {
     var url = '/v1/vaults/';
     return this._doPostRequest(url, vaultTxProposal);
   };
+
+  getVaultCoins(vaultAddress: any) {
+    return this.getUtxos({addresses: [vaultAddress]});
+  }
 }
