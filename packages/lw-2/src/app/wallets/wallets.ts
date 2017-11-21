@@ -221,7 +221,7 @@ export class WalletsView {
     let coin = ''; //todo what to use here??
     this.totalAmountFormatted =  this.txFormatService.parseAmount(this.totalAmount, 'MRT');
 
-    wallets.forEach((wallet) => {
+    _.each(wallets, (wallet) => {
       this.walletService.getWalletAnv(wallet).then((amount) => {
 
         let coin = ''; //todo what to use here??
