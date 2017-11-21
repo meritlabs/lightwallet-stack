@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ConfigService } from "merit/shared/config.service";
+import { WalletService } from "merit/wallets/wallet.service";
 
 
 @IonicPage({
@@ -12,14 +13,15 @@ import { ConfigService } from "merit/shared/config.service";
 })
 export class CreateWalletView {
 
-  public formData = {walletName: '', beacon: '', bwsurl: '', seedSource: '', seedOptions: [], encrypted: false, passphrase: '', createPassphrase: '', repeatPassword: ''};
+  public formData = {walletName: '', unlockCode: '', bwsurl: '', seedSource: '', seedOptions: [], encrypted: false, passphrase: '', createPassphrase: '', repeatPassword: ''};
 
   public seedOptions = [];
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private config:ConfigService
+    private config:ConfigService,
+    private walletService:WalletService
   ) {
     this.formData.bwsurl = config.getDefaults().bws.url;
 
@@ -37,7 +39,10 @@ export class CreateWalletView {
   }
 
   isCreationEnabled() {
-    return true;
+    return (
+      this.formData.unlockCode
+      && this.formData.walletName
+    );
   }
 
   ionViewDidLoad() {
@@ -49,6 +54,21 @@ export class CreateWalletView {
     this.formData.createPassphrase = '';
     this.formData.repeatPassword   = '';
     this.formData.passphrase       = '';
+  }
+  
+  createWallet() {
+    let opts = {
+      name: this.formData.walletName,
+      unlockCode: this.formData.unlockCode,
+      bwsurl: this.formData.bwsurl,
+      networkName: 'testnet', //todo temp!
+      m: 1, //todo temp!
+      n: 1 //todo temp!
+    };
+    
+    this.walletService.createWallet(opts).then(() => {
+      this.navCtrl.pop();
+    })
   }
 }
 
