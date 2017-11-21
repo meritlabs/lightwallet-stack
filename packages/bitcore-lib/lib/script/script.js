@@ -1103,6 +1103,8 @@ Script.fromAddress = function(address) {
     return Script.buildScriptHashOut(address);
   } else if (address.isPayToPublicKeyHash()) {
     return Script.buildPublicKeyHashOut(address);
+  } else if (address.isParameterizedPayToScriptHash()) {
+    return new Script();
   }
   throw new errors.Script.UnrecognizedAddress(address);
 };

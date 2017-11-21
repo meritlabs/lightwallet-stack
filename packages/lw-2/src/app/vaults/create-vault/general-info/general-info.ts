@@ -47,7 +47,7 @@ export class CreateVaultGeneralInfoView {
     });
 
     // fetch users vaults
-    this.getAllWVaults().then((vaults) => {
+    this.getAllVaults().then((vaults) => {
       const vaultDTOs = _.map(vaults, (v) => {
         const name = v.name || v._id;
         const key = v.spendPubKey ? v.spendPubKey.xpubkey : ''; // Prevent errors
@@ -72,13 +72,11 @@ export class CreateVaultGeneralInfoView {
     return wallets;
   }
 
-  private getAllWVaults(): Promise<Array<any>> {
-    return this.profileService.getWallets().then((ws) => {
-      if (_.isEmpty(ws)) {
-        Promise.resolve(null); //ToDo: add proper error handling;
+  private getAllVaults(): Promise<Array<any>> {
+    return this.profileService.getHeadWalletClient().then((walletClient) => {
+      if(!walletClient) {
+        return null;
       }
-      return _.head(ws);
-    }).then((walletClient) => {
       return this.vaultsService.getVaults(walletClient);
     });
   }
