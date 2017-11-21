@@ -31,7 +31,7 @@ var BlockHeader = function BlockHeader(arg) {
   this.timestamp = info.time;
   this.bits = info.bits;
   this.nonce = info.nonce;
-  this.nodesCount = info.nodesCount;
+  this.edgesBits = info.edgesBits;
   this.edgesRatio = info.edgesRatio;
   this.cycle = info.cycle;
 
@@ -87,7 +87,7 @@ BlockHeader._fromObject = function _fromObject(data) {
     timestamp: data.time,
     bits: data.bits,
     nonce: data.nonce,
-    nodesCount: data.nodesCount,
+    edgesBits: data.edgesBits,
     edgesRatio: data.edgesRatio,
     cycle: data.cycle
   };
@@ -148,7 +148,7 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br) {
   info.time = br.readUInt32LE();
   info.bits = br.readUInt32LE();
   info.nonce = br.readUInt32LE();
-  info.nodesCount = br.readUInt8(8);
+  info.edgesBits = br.readUInt8(8);
   info.edgesRatio = br.readUInt8(8);
 
   const cycleNonces = br.readVarintNum();
@@ -181,7 +181,7 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     time: this.time,
     bits: this.bits,
     nonce: this.nonce,
-    nodesCount: this.nodesCount,
+    edgesBits: this.edgesBits,
     edgesRatio: this.edgesRatio,
     cycle: this.cycle
   };
