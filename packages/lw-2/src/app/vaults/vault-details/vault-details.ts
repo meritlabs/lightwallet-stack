@@ -20,6 +20,7 @@ export class VaultDetailsView {
 
   private bitcore:any;
   public vault: any;
+  public whitelist: Array<any>;
 
 
   constructor(
@@ -34,7 +35,7 @@ export class VaultDetailsView {
     // things fast and smooth.  We can refresh as needed.
     this.vault = this.navParams.get('vault');
     this.bitcore = bwcService.getBitcore();
-
+    this.whitelist = this.vault.whitelist;
     console.log("Inside the vault-details view.");
     console.log(this.vault);
 
