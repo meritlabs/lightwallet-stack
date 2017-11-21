@@ -14,6 +14,7 @@ import { Logger } from 'merit/core/logger';
 export class VaultDetailsView {
 
   public vault: any;
+  public whitelist: Array<any>;
 
   constructor(
     public navCtrl: NavController,
@@ -24,6 +25,7 @@ export class VaultDetailsView {
     // passed in from the wallets (list) view.  This enables us to keep
     // things fast and smooth.  We can refresh as needed.
     this.vault = this.navParams.get('vault');
+    this.whitelist = this.vault.whitelist;
     console.log("Inside the vault-details view.");
     console.log(this.vault);
   }
