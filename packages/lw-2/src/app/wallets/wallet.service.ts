@@ -1368,14 +1368,28 @@ export class WalletService {
     });
   }
 
-  // todo its a mock now!!
-  getWalletAnv(wallet:Wallet):Promise<number> {
+  public getANV(wallet):Promise<any> {
     return new Promise((resolve, reject) => {
-      return resolve(
-       (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
-      )
+      return this.getAddress(wallet,false).then((address) => {
+        return wallet.getANV(address).then((anv) => {
+          return resolve(anv);
+        })
+      });
     });
   }
+
+  public getRewards(wallet):Promise<any> {
+    return new Promise((resolve, reject) => {
+      return this.getAddress(wallet,false).then((address) => {
+        return wallet.getRewards(address).then((rewards) => {
+           let addressRewards = _.find(rewards, { address: address });
+           if (!addressRewards) return reject();
+           return resolve(addressRewards);
+        });
+      });
+    });
+  }
+
   
   
 }
