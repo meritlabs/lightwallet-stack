@@ -1,6 +1,9 @@
+import * as _ from 'lodash';
+import * as Promise from 'bluebird';
+
+//import { Promise } from 'bluebird';
 import { Injectable } from '@angular/core';
 import { Logger } from 'merit/core/logger';
-import * as _ from 'lodash';
 import { PersistenceService } from 'merit/core/persistence.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { BwcService } from 'merit/core/bwc.service';
@@ -11,9 +14,8 @@ import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { Profile } from 'merit/core/profile.model';
 import { Wallet } from 'merit/wallets/wallet.model';
-import { Promise } from 'bluebird';
 import { Events } from 'ionic-angular/util/events';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { MeritWalletClient, IMeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 /* 
