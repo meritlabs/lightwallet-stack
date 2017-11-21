@@ -296,7 +296,7 @@ export class ProfileService {
   */ 
   public loadAndBindProfile(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceService.getProfile().then((profile: any) => {
+      return this.persistenceService.getProfile().then((profile: any) => {
 
         if (!profile) {
           return resolve();
@@ -333,7 +333,7 @@ export class ProfileService {
           }
 
           _.each(profile.credentials, (credentials) => {
-            this.bindWallet(credentials).then((bound: number) => {
+            return this.bindWallet(credentials).then((bound: number) => {
               i++;
               totalBound += bound;
               if (i == l) {
@@ -425,7 +425,7 @@ export class ProfileService {
       return this.addAndBindWalletClient(walletClient, {
         bwsurl: opts.bwsurl
       }).then((walletId: string) => {
-        this.setMetaData(walletClient, addressBook).then(() => {
+        return this.setMetaData(walletClient, addressBook).then(() => {
           return resolve(walletClient);
         }).catch((err: any) => {
           this.logger.warn(err);
@@ -497,7 +497,7 @@ export class ProfileService {
 
   private setMetaData(wallet: any, addressBook: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceService.getAddressbook(wallet.credentials.network).then((localAddressBook: any) => {
+      return this.persistenceService.getAddressbook(wallet.credentials.network).then((localAddressBook: any) => {
         let localAddressBook1 = {};
         try {
           localAddressBook1 = JSON.parse(localAddressBook);
