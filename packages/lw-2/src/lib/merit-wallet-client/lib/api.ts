@@ -60,6 +60,7 @@ export interface IAPI {
   keyDerivationOk: boolean;
   session: any;
   DEBUG_MODE: boolean;
+  BASE_URL: string;
   
   // Mutated from other services (namely wallet.service and profile.service)
   id: string; // TODO: Re-evaluate where this belongs.
@@ -187,7 +188,7 @@ export interface IAPI {
 }
 
 export class API implements IAPI {
-  public static BASE_URL = 'http://localhost:3232/bws/api';
+  public BASE_URL = 'http://localhost:3232/bws/api';
   public request: any;
   public baseUrl: string;
   public payProHttp: string;
@@ -204,7 +205,7 @@ export class API implements IAPI {
   public notificationsIntervalId: any;
   public keyDerivationOk: boolean;
   public session: any;
-  public static DEBUG_MODE: boolean = false; 
+  public DEBUG_MODE: boolean = false; 
   
   // Mutated from other services (namely wallet.service and profile.service)
   public id: string; // TODO: Re-evaluate where this belongs.
@@ -234,7 +235,7 @@ export class API implements IAPI {
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
     this.request = opts.request || request;
-    this.baseUrl = opts.baseUrl || API.BASE_URL;
+    this.baseUrl = opts.baseUrl || this.BASE_URL;
     this.payProHttp = null; // Only for testing
     this.doNotVerifyPayPro = opts.doNotVerifyPayPro;
     this.timeout = opts.timeout || 50000;
@@ -265,6 +266,7 @@ export class API implements IAPI {
   };
 
   _fetchLatestNotifications(interval): Promise<any> {      
+    this.log.info("_fetchLatestNotifications called.");
       let opts:any = {
         lastNotificationId: this.lastNotificationId,
         includeOwn: this.notificationIncludeOwn,
@@ -279,8 +281,9 @@ export class API implements IAPI {
           this.lastNotificationId = (_.last(notifications) as any).id;
         }
 
-        return Promise.each(notifications, function(notification) {
-          this.emit('notification', notification);
+        return Promise.each(notifications, (notification) => {
+          this.log.info("Emitting a notification event.  Does anyone care?");    
+          this.eventEmitter.emit('notification', notification);
         }).then(() => {
           return Promise.resolve();
         });
@@ -334,7 +337,7 @@ export class API implements IAPI {
    * @param {String} message
    * @param {String} encryptingKey
    */
-  private _encryptMessage = function(message, encryptingKey) {
+  private _encryptMessage(message, encryptingKey) {
     if (!message) return null;
     return Utils.encryptMessage(message, encryptingKey);
   };
@@ -347,7 +350,7 @@ export class API implements IAPI {
    * @param {String} message
    * @param {String} encryptingKey
    */
-  private _decryptMessage = function(message, encryptingKey) {
+  private _decryptMessage(message, encryptingKey) {
     if (!message) return '';
     try {
       return Utils.decryptMessage(message, encryptingKey);
@@ -1073,7 +1076,7 @@ export class API implements IAPI {
          * Universal MWC Logger.  It will log all output returned from BWS
          * if the private static DEBUG_MODE is set to true above.  
          */    
-        if (res.body && API.DEBUG_MODE) {
+        if (res.body && this.DEBUG_MODE) {
           this.log.info("BWS Response: ");
           this.log.info(util.inspect(res.body, {
             depth: 10
