@@ -45,7 +45,46 @@ export interface InitOptions {
 
 export interface IAPI {
   // fields
-  credentials: any;
+  credentials: Credentials;
+  request: any;
+  baseUrl: string;
+  payProHttp: string;
+  doNotVerifyPayPro: boolean;
+  timeout: number;
+  logLevel: string;
+  privateKeyEncryptionOpts: any;
+  notificationIncludeOwn: boolean;
+  log: any;
+  lastNotificationId: string;
+  notificationsIntervalId: any;
+  keyDerivationOk: boolean;
+  session: any;
+  DEBUG_MODE: boolean;
+  
+  // Mutated from other services (namely wallet.service and profile.service)
+  id: string; // TODO: Re-evaluate where this belongs.
+  completeHistory: any; // This is mutated from Wallet.Service.ts; for now.
+  cachedStatus: any; 
+  cachedActivity: any; 
+  cachedTxps: any;
+  pendingTxps: any;
+  totalBalanceSat: number;
+  scanning: boolean; 
+  hasUnsafeConfirmed: boolean;
+  network: string;
+  n: number;
+  m: number;
+  notAuthorized: boolean;
+  needsBackup: boolean;
+  name: string;
+  color: string; 
+  started: boolean;
+  copayerId: string;
+  unlocked: boolean;
+  shareCode: string;
+  balanceHidden: boolean;
+  eventEmitter: any;
+  status: any; 
 
   // functions
   initNotifications(): Promise<any>;
@@ -148,24 +187,24 @@ export interface IAPI {
 }
 
 export class API implements IAPI {
-  private static BASE_URL = 'http://localhost:3232/bws/api';
-  private request: any;
-  private baseUrl: string;
-  private payProHttp: string;
-  private doNotVerifyPayPro: boolean;
-  private timeout: number;
-  private logLevel: string;
-  private privateKeyEncryptionOpts: any = {
+  public static BASE_URL = 'http://localhost:3232/bws/api';
+  public request: any;
+  public baseUrl: string;
+  public payProHttp: string;
+  public doNotVerifyPayPro: boolean;
+  public timeout: number;
+  public logLevel: string;
+  public privateKeyEncryptionOpts: any = {
     iter: 10000
   };
-  public credentials: Credentials; // TODO: Make private with getters/setters
-  private notificationIncludeOwn: boolean;
-  private log: any;
-  private lastNotificationId: string;
-  private notificationsIntervalId: any;
-  private keyDerivationOk: boolean;
-  private session: any;
-  private static DEBUG_MODE: boolean = false; 
+  public credentials: Credentials; // TODO: Make public with getters/setters
+  public notificationIncludeOwn: boolean;
+  public log: any;
+  public lastNotificationId: string;
+  public notificationsIntervalId: any;
+  public keyDerivationOk: boolean;
+  public session: any;
+  public static DEBUG_MODE: boolean = false; 
   
   // Mutated from other services (namely wallet.service and profile.service)
   public id: string; // TODO: Re-evaluate where this belongs.
@@ -240,8 +279,10 @@ export class API implements IAPI {
           this.lastNotificationId = (_.last(notifications) as any).id;
         }
 
-        _.each(notifications, function(notification) {
+        return Promise.each(notifications, function(notification) {
           this.emit('notification', notification);
+        }).then(() => {
+          return Promise.resolve();
         });
       });
 
@@ -930,36 +971,37 @@ export class API implements IAPI {
       if (this.credentials.isComplete() && this.credentials.hasWalletInfo())
         return resolve(true); // wallet is already open
 
-      return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
-        let wallet = ret.wallet;
+      return resolve();
+      // return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
+      //   let wallet = ret.wallet;
 
-        return this._processStatus(ret).then(() => {
-          if (!this.credentials.hasWalletInfo()) {
-            let me:any = _.find(wallet.copayers, {
-              id: this.credentials.copayerId
-            });
-            this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode, wallet.codeHash);
-          }
+      //   return this._processStatus(ret).then(() => {
+      //     if (!this.credentials.hasWalletInfo()) {
+      //       let me:any = _.find(wallet.copayers, {
+      //         id: this.credentials.copayerId
+      //       });
+      //       this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode, wallet.codeHash);
+      //     }
   
-          if (wallet.status != 'complete')
-            return resolve();
+      //     if (wallet.status != 'complete')
+      //       return resolve();
   
-          if (this.credentials.walletPrivKey) {
-            if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
-              return reject(Errors.SERVER_COMPROMISED);
-            }
-          } else {
-            // this should only happen in AIR-GAPPED flows
-            this.log.warn('Could not verify copayers key (missing wallet Private Key)');
-          }
+      //     if (this.credentials.walletPrivKey) {
+      //       if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
+      //         return reject(Errors.SERVER_COMPROMISED);
+      //       }
+      //     } else {
+      //       // this should only happen in AIR-GAPPED flows
+      //       this.log.warn('Could not verify copayers key (missing wallet Private Key)');
+      //     }
   
-          this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
+      //     this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
   
-          this.eventEmitter.emit('walletCompleted', wallet);
+      //     this.eventEmitter.emit('walletCompleted', wallet);
   
-          return resolve(ret);
-        });
-      });
+      //     return resolve(ret);
+      //   });
+      // });
     });
   };
 
@@ -1645,7 +1687,6 @@ export class API implements IAPI {
     });
   };
 
-  // TODO: Promisify!
   private _processWallet(wallet): Promise<any> {
     return new Promise((resolve, reject) => {
       let encryptingKey = this.credentials.sharedEncryptingKey;
@@ -1713,7 +1754,9 @@ export class API implements IAPI {
       processCustomData(status), 
       this._processWallet(status.wallet),
       this._processTxps(status.pendingTxps)
-    ]);
+    ]).then(() => {
+      return Promise.resolve();
+    });
   }
 
 
@@ -2351,7 +2394,7 @@ export class API implements IAPI {
 
     let url = '/v1/txproposals/' + id;
     return this._doGetRequest(url).then((txp) => {
-      return this._processTxps(txp).then(() => {
+      this._processTxps(txp).then(() => {
         return Promise.resolve();
       });
     });
@@ -2381,7 +2424,8 @@ export class API implements IAPI {
   getTxNote(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
     return this._doGetRequest('/v1/txnotes/' + opts.txid + '/').then((note) => {
-      return Promise.resolve(this._processTxNotes(note));
+      this._processTxNotes(note);
+      return Promise.resolve();
     });
   }
 
@@ -2398,7 +2442,8 @@ export class API implements IAPI {
       opts.body = this._encryptMessage(opts.body, this.credentials.sharedEncryptingKey);
     }
     return this._doPutRequest('/v1/txnotes/' + opts.txid + '/', opts).then((note) => {
-      return Promise.resolve(this._processTxNotes(note));
+      this._processTxNotes(note);
+      return Promise.resolve();
     });
   };
 
