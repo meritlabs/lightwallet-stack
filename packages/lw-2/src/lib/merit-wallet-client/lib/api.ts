@@ -295,12 +295,11 @@ export class API implements IAPI {
     this.log.warn("Initializing notifications with opts: ");
     console.log(opts);
     const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode; pollutes request stream..  
-    const self = this;
-    self.notificationsIntervalId = setInterval(function() {
-      self._fetchLatestNotifications(interval).catch((err) => {
+    this.notificationsIntervalId = setInterval(() => {
+      this._fetchLatestNotifications(interval).catch((err) => {
         if (err) {
           if (err == Errors.NOT_FOUND || err == Errors.NOT_AUTHORIZED) {
-            self._disposeNotifications();
+            this._disposeNotifications();
           }
         }
       });
@@ -360,16 +359,13 @@ export class API implements IAPI {
   };
 
   _processTxNotes(notes): void {
-    let self = this;
-
     if (!notes) return;
-
-    let encryptingKey = self.credentials.sharedEncryptingKey;
-    _.each([].concat(notes), function(note) {
+    let encryptingKey = this.credentials.sharedEncryptingKey;
+    _.each([].concat(notes), (note) => {
       note.encryptedBody = note.body;
-      note.body = self._decryptMessage(note.body, encryptingKey);
+      note.body = this._decryptMessage(note.body, encryptingKey);
       note.encryptedEditedByName = note.editedByName;
-      note.editedByName = self._decryptMessage(note.editedByName, encryptingKey);
+      note.editedByName = this._decryptMessage(note.editedByName, encryptingKey);
     });
   };
 
@@ -382,31 +378,30 @@ export class API implements IAPI {
    * @param {String} encryptingKey
    */
   _processTxps(txps): Promise<void> {
-    let self = this;
     return new Promise((resolve, reject) => {
       
       if (!txps) return resolve();
 
-      let encryptingKey = self.credentials.sharedEncryptingKey;
-      _.each([].concat(txps), function(txp) {
+      let encryptingKey = this.credentials.sharedEncryptingKey;
+      _.each([].concat(txps), (txp) => {
         txp.encryptedMessage = txp.message;
-        txp.message = self._decryptMessage(txp.message, encryptingKey) || null;
-        txp.creatorName = self._decryptMessage(txp.creatorName, encryptingKey);
+        txp.message = this._decryptMessage(txp.message, encryptingKey) || null;
+        txp.creatorName = this._decryptMessage(txp.creatorName, encryptingKey);
 
-        _.each(txp.actions, function(action) {
-          action.copayerName = self._decryptMessage(action.copayerName, encryptingKey);
-          action.comment = self._decryptMessage(action.comment, encryptingKey);
+        _.each(txp.actions, (action) => {
+          action.copayerName = this._decryptMessage(action.copayerName, encryptingKey);
+          action.comment = this._decryptMessage(action.comment, encryptingKey);
           // TODO get copayerName from Credentials -> copayerId to copayerName
           // action.copayerName = null;
         });
-        _.each(txp.outputs, function(output) {
+        _.each(txp.outputs, (output) => {
           output.encryptedMessage = output.message;
-          output.message = self._decryptMessage(output.message, encryptingKey) || null;
+          output.message = this._decryptMessage(output.message, encryptingKey) || null;
         });
-        txp.hasUnconfirmedInputs = _.some(txp.inputs, function(input: any) {
+        txp.hasUnconfirmedInputs = _.some(txp.inputs, (input: any) => {
           return input.confirmations == 0;
         });
-        self._processTxNotes(txp.note);
+        this._processTxNotes(txp.note);
       });
       return resolve();
     });    
@@ -1897,13 +1892,11 @@ export class API implements IAPI {
   };
 
   _getCreateTxProposalArgs(opts: any): any {
-    let self = this;
-
     let args = _.cloneDeep(opts);
-    args.message = self._encryptMessage(opts.message, self.credentials.sharedEncryptingKey) || null;
+    args.message = this._encryptMessage(opts.message, this.credentials.sharedEncryptingKey) || null;
     args.payProUrl = opts.payProUrl || null;
-    _.each(args.outputs, function(o) {
-      o.message = self._encryptMessage(o.message, self.credentials.sharedEncryptingKey) || null;
+    _.each(args.outputs, (o) => {
+      o.message = this._encryptMessage(o.message, this.credentials.sharedEncryptingKey) || null;
     });
 
     return args;
