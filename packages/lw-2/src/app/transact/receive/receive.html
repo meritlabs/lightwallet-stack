@@ -54,7 +54,7 @@
 
             <div class="row">
                 <span class="label" text-left>Amount</span>
-                <input [style.flex]="1" text-right [(ngModel)]="amount" (ngModelChange)="changeAmount()" [placeholder]="'Request specific amount (optional)'">
+                <input type="number" [style.flex]="1" text-right pattern="[0-9\.]" [(ngModel)]="amount" (ngModelChange)="changeAmount()" [placeholder]="'Request specific amount (optional)'">
                 <button ion-button clear color="primary" (click)="toggleCurrency()">
                     {{amountCurrency}}
                 </button>
@@ -63,7 +63,7 @@
 
             <div class="row">
                 <span class="label" text-left >Address</span>
-                <span item-right text-right [style.flex]="1" >
+                <span item-right text-right [style.flex]="1" [style.font-size]="'10px'">
                     {{address}}
                 </span>
                 <button ion-button icon-only clear color="primary" (click)="generateAddress(forceNew = true)"  class="select-button">
