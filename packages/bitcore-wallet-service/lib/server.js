@@ -3534,9 +3534,16 @@ WalletService.prototype.createVault = function(opts, cb) {
 
   let vaultId = '';
 
+  const readableWhitelist = _.map(opts.whitelist, (wl) => {
+    return new Buffer(wl.data).toString();
+  });
+  const toStore = _.cloneDeep(opts);
+  toStore.whitelist = readableWhitelist;
+  console.log(toStore);
+
   async.series([
     function(next) {
-      self.storage.storeVault(self.copayerId, opts, function(err, result) {
+      self.storage.storeVault(self.copayerId, toStore, function(err, result) {
         if (err) return cb(err);
 
         vaultId = result.insertedId;
@@ -3554,11 +3561,11 @@ WalletService.prototype.createVault = function(opts, cb) {
         if (err) return cb(err);
 
         txp.txid = txid;
-        opts.id = vaultId;
-        opts.coins[0] = txp;
-        opts.initialTxId = txid;
+        toStore.id = vaultId;
+        toStore.coins[0] = txp;
+        toStore.initialTxId = txid;
 
-        self.storage.updateVault(self.copayerId, opts, function(err, result) {
+        self.storage.updateVault(self.copayerId, toStore, function(err, result) {
           if (err) return cb(err);
   
           return next();
