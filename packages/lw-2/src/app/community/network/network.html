@@ -7,44 +7,79 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
 
-</ion-content>
-
-<ion-footer >
-    <ion-toolbar>
-
-        <ion-item *ngIf="!wallet">
-            <ion-label translate>You don't have any wallet</ion-label>
-        </ion-item>
-
-
-        <ion-item *ngIf="wallet" (click)="selectWallet()">
-            <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
+    <ion-card *ngFor="let wallet of wallets">
+        <ion-card-header>
+            <i class="wallet-icon" [class.locked]="wallet.locked" [class.default]="!wallet.color">
                 <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
             </i>
+            {{wallet.name}}
+        </ion-card-header>
 
-            <h2 translate>{{wallet.name || wallet._id}}</h2>
-            <p>
-                <span *ngIf="!wallet.isComplete()" class="assertive" translate>Incomplete</span>
-                <span *ngIf="wallet.isComplete()">
-                <span *ngIf="!wallet.balanceHidden">
-                    {{wallet.status.totalBalanceStr ? wallet.status.totalBalanceStr : ( wallet.cachedBalance ? wallet.cachedBalance   + (wallet.cachedBalanceUpdatedOn ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn  * 1000 | amTimeAgo) : '') : ''  ) }}
+        <ion-item >
+            <ion-label>Total Amount</ion-label>
+            <ion-label item-right text-right>
+                <span *ngIf="wallet.amount">{{wallet.amount}}</span>
+                <span *ngIf="!wallet.amount">
+                    <ion-spinner></ion-spinner>
                 </span>
-                <span *ngIf="wallet.balanceHidden" translate>
-                    [Balance Hidden]
-                </span>
-                <span *ngIf="wallet.n > 1">
-                    {{wallet.m}}-of-{{wallet.n}}
-                </span>
-                <ion-icon *ngIf="!wallet.balanceHidden && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
-                          name="timer-outline"></ion-icon>
-
-                <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>
-                </span>
-            </p>
+            </ion-label>
         </ion-item>
 
+        <ion-item>
+            <ion-label>Referral Code</ion-label>
+            <ion-label item-right text-right>
+                <span *ngIf="wallet.shareCode">
+                    <span (click)="copyToClipboard(wallet.shareCode)"  ngxClipboard [cbContent]="wallet.shareCode">{{wallet.shareCode}}</span>
+                    <button ion-button icon-only clear color="primary" (click)="shareCode(wallet.shareCode)">
+                        <ion-icon name="share"></ion-icon>
+                    </button>
+                </span>
+                <span *ngIf="!wallet.shareCode">
+                    <ion-spinner></ion-spinner>
+                </span>
+            </ion-label>
+        </ion-item>
 
-    </ion-toolbar>
-</ion-footer>
+        <ion-item>
+            <ion-label>Address</ion-label>
+            <ion-label item-right text-right>
+                <span *ngIf="wallet.address">
+                    <span (click)="copyToClipboard(wallet.address)"  ngxClipboard [cbContent]="wallet.address">{{wallet.address}}</span>
+                    <button ion-button icon-only clear color="primary" (click)="shareAddress(wallet.address)">
+                        <ion-icon name="share"></ion-icon>
+                    </button>
+                </span>
+                <span *ngIf="!wallet.address">
+                    <ion-spinner></ion-spinner>
+                </span>
+            </ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Mining rewards</ion-label>
+            <ion-label item-right text-right>
+                <span *ngIf="wallet.miningRewards">
+                    {{wallet.miningRewards}}
+                </span>
+                <span *ngIf="!wallet.miningRewards">
+                  <ion-spinner></ion-spinner>
+                </span>
+            </ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label>Ambassador rewards</ion-label>
+            <ion-label item-right text-right>
+                <span *ngIf="wallet.ambassadorRewards">
+                    {{wallet.ambassadorRewards}}
+                </span>
+                <span *ngIf="!wallet.ambassadorRewards">
+                    <ion-spinner></ion-spinner>
+                </span>
+            </ion-label>
+        </ion-item>
+    </ion-card>
+
+
+</ion-content>
