@@ -38,7 +38,7 @@ export class BwcService {
     return this.BWC.Utils;
   }
 
-  public getClient(walletData, opts: any = {}): IMeritWalletClient {
+  public getClient(walletData, opts: any = {}): MeritWalletClient {
     //note opts use `bwsurl` all lowercase;
     let bwc = MeritWalletClient.getInstance({
       baseUrl: opts.bwsurl || 'http://localhost:3232/bws/api',
