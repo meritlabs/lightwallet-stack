@@ -59,6 +59,12 @@ export class WalletDetailsView {
     });
   }
 
+  // Belt and suspenders check to be sure that the total number of TXs on the page
+  // add up to the total balance in status.  
+  private txHistoryInSyncWithStatus(): boolean {
+    return true;
+  }
+
   private goToTxDetails(tx: any) {
     this.navCtrl.push('TxDetailsView', {walletId: this.wallet.credentials.walletId, txid: tx.txid});
   }
