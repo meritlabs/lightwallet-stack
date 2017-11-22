@@ -218,7 +218,6 @@ export class WalletsView {
     return Promise.resolve(10000);
   }
 
-
   private openWallet(wallet) {
     if (!wallet.isComplete) {
       this.navCtrl.push('CopayersView')
