@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, App, LoadingController, ToastController, NavController } from 'ionic-angular';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ToastConfig } from "merit/core/toast.config";
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 
 // Unlock view for wallet
