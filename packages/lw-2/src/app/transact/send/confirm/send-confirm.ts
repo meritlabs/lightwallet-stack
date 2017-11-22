@@ -13,7 +13,8 @@ import { FeeService } from 'merit/shared/fee/fee.service';
 import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 
 import * as  _  from 'lodash';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 /**
  * The confirm view is the final step in the transaction sending process 
@@ -46,7 +47,7 @@ export class SendConfirmView {
     usingCustomFee?: boolean
   };
   private wallet: Wallet;
-  private wallets: Array<Wallet>;
+  private wallets: Array<MeritWalletClient>;
   private walletSettings: any;
   private unitToMicro: number;
   private unitDecimals: number;
@@ -71,8 +72,8 @@ export class SendConfirmView {
     console.log("Hello SendConfirm View");
   }
 
-  async ionViewDidLoad() {
-    this.wallets = await this.profileService.getWallets();
+  ionViewDidLoad() {
+    this.updateWallets();
     this.logger.log('ionViewDidLoad ConfirmView');
     this.logger.log('Params', this.navParams);
     let toAmount = this.navParams.get('toAmount');
@@ -105,6 +106,12 @@ export class SendConfirmView {
     }
     // TODO: Check AddressBook
     return this.txData.toAddress || "no one";
+  }
+
+  private updateWallets(): Promise<void> {
+    return this.profileService.getWallets().then((wallets) => {
+      this.wallets = wallets;
+    });
   }
 
   // TODO: implement
@@ -184,8 +191,9 @@ export class SendConfirmView {
   public approve(): Promise<boolean> {
     let loadingSpinner = this.loadingCtrl.create({
       content: "Sending transaction...",
-      dismissOnPageChange: true    });
-    return loadingSpinner.present().then(() => {
+      dismissOnPageChange: true
+    });
+    return Promise.resolve(loadingSpinner.present()).then((res) => {
       return this.approveTx(this.txData, this.wallet);
     }).then((worked) => {
       loadingSpinner.dismiss();
@@ -194,6 +202,7 @@ export class SendConfirmView {
     }).catch((err) => {
       this.logger.warn("Failed to approve transaction.");
       this.logger.warn(err);
+      return Promise.reject(err);
     });
   }
 

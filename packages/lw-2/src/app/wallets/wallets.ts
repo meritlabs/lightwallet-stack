@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, App, ToastController, AlertControl
 import { Wallet } from "./wallet.model";
 
 import * as _ from "lodash";
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 import { ProfileService } from "merit/core/profile.service";
 import { FeedbackService } from "merit/feedback/feedback.service"
 import { Feedback } from "merit/feedback/feedback.model"
@@ -20,6 +20,7 @@ import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 import { TxFormatService } from "merit/transact/tx-format.service";
 import { AddressBookService } from "merit/shared/address-book/address-book.service";
 import { VaultsService } from 'merit/vaults/vaults.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 /* 
@@ -91,6 +92,7 @@ export class WalletsView {
         this.recentTransactionsEnabled = true;
         this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
       }
+      this.wallets = wallets;
       return wallets;
     }).then((wallets) => {
       if (_.isEmpty(wallets)) {
@@ -215,7 +217,7 @@ export class WalletsView {
     this.easyReceiveService.rejectEasyReceipt(receipt);
   }
 
-  private calculateNetworkAmount(wallets:Array<Wallet>) {
+  private calculateNetworkAmount(wallets:Array<MeritWalletClient>) {
     this.totalAmount = 0;
 
     let coin = ''; //todo what to use here??
@@ -272,29 +274,29 @@ export class WalletsView {
   }
 
 
-  private async getWallets():Promise<Array<Wallet>> {
+  private getWallets(): Promise<MeritWalletClient[]> {
     console.log("needWalletStatuses");
     console.log(this.needWalletStatuses());
     if (this.needWalletStatuses()) {
-      this.wallets = await this.updateAllWallets();     
+      return this.updateAllWallets().then((wallets) => {
+        this.wallets = wallets;
+        return wallets;
+      });
     }
     console.log("@@Got wallets with statuses");    
     console.log(this.wallets);    
-    return this.wallets;
+    return Promise.resolve(this.wallets);
   }
 
-  private async updateAllWallets() {
-    let wallets = await this.profileService.getWallets();
-    console.log("@@got the wallets")
-    console.log(wallets)
-    // Get the statuses of all the wallets.
-    return await Promise.all(_.map(wallets, async (wallet:any) => {
-      wallet.status = await this.walletService.getStatus(wallet);
-      return wallet; 
-    })).catch((err) => {
-      console.log("Error updating wallets");
-      console.log(err);
-    });
+  private updateAllWallets(): Promise<MeritWalletClient[]> {
+    return this.profileService.getWallets().each((wallet) => {
+      return this.walletService.getStatus(wallet).then((status) => {
+        wallet.status = status;
+        return wallet;
+      }).catch((err) => {
+        Promise.reject(new Error('could not update wallets' + err));
+      });
+    })
   }
 
   openTransactionDetails(transaction) {
