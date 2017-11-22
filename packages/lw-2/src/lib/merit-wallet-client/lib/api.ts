@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as Promise from 'bluebird';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { Common } from './common';
@@ -17,7 +18,6 @@ let url = require('url');
 let querystring = require('querystring');
 let Stringify = require('json-stable-stringify');
 let Bip38 = require('bip38');
-let Promise = require('bluebird');
 
 let request = require('superagent');
 
@@ -26,8 +26,6 @@ let Defaults = Common.Defaults;
 let Utils = Common.Utils;
 
 let Package = require('../../../../package.json');
-
-import { Promise } from 'bluebird';
 
 const DEFAULT_NET = 'testnet';
 const DEFAULT_FEE = 10000;
@@ -66,6 +64,13 @@ export interface IAPI {
   needsBackup: boolean;
   name: string;
   color: string; 
+  started: boolean;
+  copayerId: string;
+  unlocked: boolean;
+  shareCode: string;
+  balanceHidden: boolean;
+  eventEmitter: any;
+  status: any; 
 
   // functions
   initNotifications(): Promise<any>;
@@ -182,7 +187,6 @@ export class API implements IAPI {
   private payProHttp: string;
   private doNotVerifyPayPro: boolean;
   private timeout: number;
-  private logLevel: string;
   private privateKeyEncryptionOpts: any = {
     iter: 10000
   };
@@ -193,7 +197,6 @@ export class API implements IAPI {
   private notificationsIntervalId: any;
   private keyDerivationOk: boolean;
   private session: any;
-  private eventEmitter: any;
   
   // Mutated from other services (namely wallet.service and profile.service)
   public id: string; // TODO: Re-evaluate where this belongs.
@@ -212,6 +215,14 @@ export class API implements IAPI {
   public needsBackup: boolean;
   public name: string;
   public color: string; 
+  public logLevel: string;
+  public started: boolean;
+  public copayerId: string;
+  public unlocked: boolean;
+  public shareCode: string;
+  public balanceHidden: boolean;
+  public eventEmitter: any;
+  public status: any; 
   
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -220,7 +231,7 @@ export class API implements IAPI {
     this.payProHttp = null; // Only for testing
     this.doNotVerifyPayPro = opts.doNotVerifyPayPro;
     this.timeout = opts.timeout || 50000;
-    this.logLevel = opts.logLevel || 'debug';
+    this.logLevel = opts.logLevel || 'silent';
     this.log = Logger.getInstance();; 
 
     this.log.setLevel(this.logLevel);
@@ -698,7 +709,7 @@ export class API implements IAPI {
 
       return this._import().then((ret) => {
         return resolve(ret);
-      }).then((err) => {
+      }).catch((err) => {
         if (err == Errors.INVALID_BACKUP) return reject(err);
         if (err == Errors.NOT_AUTHORIZED || err == Errors.WALLET_DOES_NOT_EXIST) {
           let altCredentials = derive(true);
@@ -1071,7 +1082,7 @@ export class API implements IAPI {
    * @param {Object} args
    * @param {Callback} cb
    */
-  _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<any> {
+  _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<{body: any, header: any}> {
     return new Promise((resolve, reject) => {
       
 
@@ -1140,7 +1151,7 @@ export class API implements IAPI {
         if (res.body === '{"error":"read ECONNRESET"}')
           return reject(Errors.ECONNRESET_ERROR);
 
-        return resolve(res.body, res.header);
+        return resolve(res);
       }).catch((err) => {
         this.log.warn("Cannot complete request to server: ", err);
         return resolve();
@@ -1191,6 +1202,8 @@ export class API implements IAPI {
 
     return loginIfNeeded().then(() => {
       return this._doRequest(method, url, args, true);
+    }).then((res) => {
+      return res.body;
     });
 };
 
@@ -1203,13 +1216,17 @@ export class API implements IAPI {
    * @param {Callback} cb
    */
   _doPostRequest(url: string, args: any): Promise<any> {
-    return this._doRequest('post', url, args, false).catch((err) => {
+    return this._doRequest('post', url, args, false).then((res) => {
+      return res.body;
+    }).catch((err) => {
       this.log.warn("Were not able to complete getRequest: ", err);
     });;
   };
 
   _doPutRequest(url: string, args: any): Promise<any> {
-    return this._doRequest('put', url, args, false).catch((err) => {
+    return this._doRequest('put', url, args, false).then((res) => {
+      return res.body;
+    }).catch((err) => {
       this.log.warn("Were not able to complete getRequest: ", err);
     });;
   };
@@ -1224,7 +1241,9 @@ export class API implements IAPI {
   _doGetRequest(url: string): Promise<any> {
     url += url.indexOf('?') > 0 ? '&' : '?';
     url += 'r=' + _.random(10000, 99999);
-    return this._doRequest('get', url, {}, false).catch((err) => {
+    return this._doRequest('get', url, {}, false).then((res) => {
+      return res.body;
+    }).catch((err) => {
       this.log.warn("Were not able to complete getRequest: ", err);
     });
   };
@@ -1245,7 +1264,9 @@ export class API implements IAPI {
    * @param {Callback} cb
    */
   private _doDeleteRequest(url: string): Promise<any> {
-    return this._doRequest('delete', url, {}, false);
+    return this._doRequest('delete', url, {}, false).then((res) => {
+      return res.body;
+    });
   };
 
   private _buildSecret = function(walletId, walletPrivKey, network) {
@@ -1719,7 +1740,7 @@ export class API implements IAPI {
         return this.openWallet();
       }).then(() => {
         let i = 1;
-        return Promise.each(this.credentials.publicKeyRing, function(item, next) {
+        return Promise.each(this.credentials.publicKeyRing, function(item: any, next) {
           let name = item.copayerName || ('copayer ' + i++);
           return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
             supportBIP44AndP2PKH: supportBIP44AndP2PKH
@@ -2003,7 +2024,7 @@ export class API implements IAPI {
   publishTxProposal(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     $.checkArgument(opts)
-      .checkArgument(opts.txp);
+    $.checkArgument(opts.txp);
 
     $.checkState(parseInt(opts.txp.version) >= 3);
 
@@ -2017,6 +2038,8 @@ export class API implements IAPI {
     return this._doPostRequest(url, args).then((txp) => {
       this._processTxps(txp);
       return Promise.resolve(txp);
+    }).catch((err) => {
+      return Promise.reject(new Error('error in post /v1/txproposals/' + err));
     });
   };
 
@@ -2134,11 +2157,13 @@ export class API implements IAPI {
    *
    * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
    */
-  getBalance(opts:any = {}): Promise<any> {
+  getBalance(opts:any = {}): Promise<number> {
     $.checkState(this.credentials && this.credentials.isComplete());
     let url = '/v1/balance/';
     if (opts.twoStep) url += '?twoStep=1';
-    return this._doGetRequest(url);
+    return this._doGetRequest(url).then((balance) => {
+      return balance.availableAmount;
+    });
   };
 
   /**
@@ -2361,7 +2386,7 @@ export class API implements IAPI {
             disableDustOutputs: true
           }),
         }, function(err, ack, memo) {
-          if (err) return Promise.Reject(err);
+          if (err) return Promise.reject(err);
           this._doBroadcast(txp, function(err, txp) {
             this.log.info(memo);
             return Promise.resolve(txp);

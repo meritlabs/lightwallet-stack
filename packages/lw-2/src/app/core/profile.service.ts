@@ -11,7 +11,8 @@ import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { Profile } from 'merit/core/profile.model';
 import { Wallet } from 'merit/wallets/wallet.model';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 /* 
@@ -21,7 +22,7 @@ import { Promise } from 'bluebird';
 */ 
 @Injectable()
 export class ProfileService {
-  public wallets: Map<string, Wallet> = new Map<string, Wallet>();
+  public wallets: Map<string, MeritWalletClient> = new Map<string, MeritWalletClient>();
   public profile: Profile = new Profile();
 
   private UPDATE_PERIOD = 500;
@@ -650,13 +651,13 @@ export class ProfileService {
     });
   }
 
-  public getWallets(opts: any = {}): Promise<any> {
+  public getWallets(opts: any = {}): Promise<MeritWalletClient[]> {
 
     return new Promise((resolve, reject) => {
 
       console.log("Getting wallets");
       console.log(this.wallets);
-      let ret = _.values(this.wallets);
+      let ret: MeritWalletClient[] = _.values(this.wallets);
 
       if (opts.network) {
         ret = _.filter(ret, (x: any) => {
