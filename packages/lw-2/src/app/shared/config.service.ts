@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Logger } from 'merit/core/logger';
 import { Events } from 'ionic-angular';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 import { PersistenceService } from 'merit/core/persistence.service';
 
@@ -21,8 +21,8 @@ interface Config {
   wallet: {
     requiredCopayers: number;
       totalCopayers: number;
-      spendUnconfirmed: boolean;
       reconnectDelay: number;
+      spendUnconfirmed: boolean;
       idleDurationMin: number;
       settings: {
         unitName: string;
@@ -113,7 +113,7 @@ const configDefault: Config = {
   wallet: {
     requiredCopayers: 2,
     totalCopayers: 3,
-    spendUnconfirmed: false,
+    spendUnconfirmed: true,
     reconnectDelay: 5000,
     idleDurationMin: 4,
     settings: {
@@ -129,8 +129,7 @@ const configDefault: Config = {
 
   // Bitcore wallet service URL
   bws: {
-    //url: 'http://localhost:3232/bws/api'
-    url: 'http://192.168.1.2:3232/bws/api'
+    url: 'http://localhost:3232/bws/api'
   },
 
   download: {

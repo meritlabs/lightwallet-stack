@@ -3,7 +3,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import { Logger } from 'merit/core/logger';
 
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 const request = require('superagent');
 
 import * as _ from 'lodash';
@@ -52,9 +52,8 @@ export class RateService {
         }
       })
       .catch((errorBTC) => {
-        console.log("JUICED ERROR: ", errorBTC);
+        console.log("Error applying rates to wallet: ", errorBTC);
         return resolve();
-        //reject(errorBTC);
       });
     });
   }
@@ -67,7 +66,10 @@ export class RateService {
           return reject("Error connecting to rate service.");
         }
         return resolve(res.body);
-      });
+      }).catch((errorBTC) => {
+        console.log("Error connecting to rate service: ", errorBTC);
+        return resolve();
+      });;
     });
   }
 

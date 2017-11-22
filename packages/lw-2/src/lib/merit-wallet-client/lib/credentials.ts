@@ -63,6 +63,22 @@ export class Credentials {
   public addressType: any;
   public xPrivKeyEncrypted: any;
   public version: string;
+  public sharedEncryptingKey: string;
+  public walletPrivKey: string;
+  public copayerId: string;
+  public requestPrivKey: string;
+  public requestPubKey: string; 
+  public personalEncryptingKey: string; 
+  public walletId: string; 
+  public walletName: string; 
+  public m: any;
+  public n: any;
+  public beacon: string;
+  public publicKeyRing: any;
+  public unlocked: boolean;
+  public shareCode: string;
+  public hwInfo: string;
+
 
 
   private static wordsForLang = {
@@ -413,7 +429,7 @@ export class Credentials {
     this.sharedEncryptingKey = Utils.privateKeyToAESKey(walletPrivKey);
   };
 
-  public addWalletInfo = function(walletId, walletName, m, n, copayerName, beacon, shareCode, codeHash) {
+  public addWalletInfo = function(walletId, walletName, m, n, copayerName, beacon, shareCode, codeHash): void  {
     this.walletId = walletId;
     this.walletName = walletName;
     this.m = m;

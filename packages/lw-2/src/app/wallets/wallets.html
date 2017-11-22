@@ -11,8 +11,7 @@
 
 <ion-content>
 
-    <!--<ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>-->
-
+    <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
     <ion-item-divider translate>
         Features
@@ -153,18 +152,6 @@
         Wallets
     </ion-item-divider>
     <ion-list>
-        <button ion-item (click)="toAddWallet()" class="add-item">
-            <h2 translate>
-                Create new wallet
-            </h2>
-        </button>
-
-        <button ion-item (click)="toImportWallet()" class="add-item">
-            <h2 translate>
-                Import wallet
-            </h2>
-        </button>
-
         <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)">
             <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
                 <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
@@ -191,6 +178,38 @@
         </button>
     </ion-list>
 
+    <span *ngIf="recentTransactionsEnabled && recentTransactionsData[0]">
+        <ion-item-divider translate>
+            <span>Recent Transactions</span>
+            <span class="badge badge-assertive m5t m10r" *ngIf="recentTransactionsData && recentTransactionsData.length>3"> {{notificationsN}}</span>
+        </ion-item-divider>
+        <ion-list>
+            <button ion-item *ngFor="let recentTx of recentTransactionsData" click="openRecentTxDetail(recentTx)">
+                <div>
+                    <span>{{notification.actionStr}}</span>
+                    <div class="wallet-activity-amount">{{notification.amountStr}}</div>
+                </div>
+            </button>
+        </ion-list>
+    </span>
+
+    <ion-item-divider translate>
+        Add New Wallet
+    </ion-item-divider>
+    <ion-list>
+        <button ion-item (click)="toAddWallet()" class="add-item">
+            <h2 translate>
+                Create new wallet
+            </h2>
+        </button>
+
+        <button ion-item (click)="toImportWallet()" class="add-item">
+            <h2 translate>
+                Import wallet
+            </h2>
+        </button>
+    </ion-list>
+    
     <view-vaults [vaults]="vaults"></view-vaults>
 
 </ion-content>
