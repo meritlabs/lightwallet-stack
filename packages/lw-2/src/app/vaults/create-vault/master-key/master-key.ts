@@ -50,7 +50,10 @@ export class CreateVaultMasterKeyView {
   confirm() {
     this.popupService.ionicConfirm(
       'Master key', 'Did you copy the master key?', 'Yes', 'No')
-      .then(() => this.toVautlSummary());
+      .then((result: boolean) => {
+        if (result) this.toVautlSummary();
+        return;
+      });
   }
 
   toVautlSummary() {
