@@ -56,15 +56,14 @@ export class SendView {
   ) {
     console.log("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
-    this.updateHasFunds();
     this.formData = { search: '' };
   }
 
-  ionViewDidLoad() {
+  async ionViewDidLoad() {
+    await this.updateHasFunds();
     this.originalContacts = [];
     this.initDeviceContacts();
     this.hasWallets();
-    this.updateHasFunds();
   }
 
   private hasWallets(): boolean {
@@ -74,6 +73,7 @@ export class SendView {
   private updateHasFunds(): Promise<void> {
     return this.profileService.hasFunds().then((hasFunds) => {
       this.hasFunds = hasFunds;
+      return Promise.resolve();
     });
   }
 
