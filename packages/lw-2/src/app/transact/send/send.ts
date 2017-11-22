@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import * as Promise from 'bluebird';
 
-import { Wallet } from 'merit/wallets/wallet.model';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';

@@ -25,7 +25,7 @@ export class TxDetailsView {
     private profileService: ProfileService,
     private logger:Logger 
   ) {
-    this.wallet = this.walletService.getWallet(this.navParams.data.walletId);
+    this.wallet = this.walletService.getWallet(this.navParams.get('data.walletId'));
     this.tx = {};
     this.confirmations = null;
   }
