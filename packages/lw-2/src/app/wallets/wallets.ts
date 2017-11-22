@@ -84,7 +84,6 @@ export class WalletsView {
   }
 
   public async ionViewDidLoad() {
-
       this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
       this.registerListeners();
       this.updateAllInfo();
@@ -139,6 +138,7 @@ export class WalletsView {
       return this.profileService.getTxps({limit: 3}).then((txps) => {
         this.txpsData = txps;        
       });
+
     }).then(() => {
       return this.subscribeToPromise('Local:Tx:Broadcast').then((broadcastedTxp) => {
         this.logger.info("Got a Local:Tx:Broadcast event with: ", broadcastedTxp);
@@ -294,6 +294,7 @@ export class WalletsView {
     return this.updateAllWallets().then((wallets) => {
       return wallets;
     });
+
   }
 
   private updateAllWallets(): Promise<MeritWalletClient[]> {
@@ -302,7 +303,7 @@ export class WalletsView {
         wallet.status = status;
         return wallet;
       }).catch((err) => {
-        return Promise.reject(new Error('could not update wallets' + err));
+        Promise.reject(new Error('could not update wallets' + err));
       });
     })
   }
