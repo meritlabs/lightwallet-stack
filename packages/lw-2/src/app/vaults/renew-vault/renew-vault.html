@@ -1,0 +1,44 @@
+<ion-header>
+        
+    <ion-navbar color="secondary" >
+        <ion-title translate>Reset Vault</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+    <ion-list margin-top>
+        <ion-item>
+            <ion-label translate>Vault name</ion-label>
+            <ion-input text-right [placeholder]="'My Vault'" [(ngModel)]="formData.vaultName"></ion-input>
+        </ion-item>
+    </ion-list>
+
+    <!-- <ion-list>
+        <ion-item>
+            <ion-label translate>Master key</ion-label>
+            <ion-input text-right [placeholder]="'THE KEY'" [(ngModel)]="formData.masterKey" [disabled]="true"></ion-input>
+        </ion-item>
+    </ion-list> -->
+
+    <!-- <ion-list>
+        <ion-item>
+            <ion-label translate>Whitelist</ion-label>
+        </ion-item>
+            
+        <ion-item *ngFor="let address of formData.whitelist">
+            <ion-label class="whitelist-item">
+                {{ address.name }}
+            </ion-label>
+        </ion-item>
+    </ion-list> -->
+
+    <div class="control-buttons">
+        <button ion-button type="button" translate (click)="confirmReset()">
+            Reset
+        </button>
+    </div>
+
+</ion-content>
