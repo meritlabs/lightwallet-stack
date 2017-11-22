@@ -3,7 +3,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import { Logger } from 'merit/core/logger';
 
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 const request = require('superagent');
 
 import * as _ from 'lodash';

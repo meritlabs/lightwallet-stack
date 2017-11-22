@@ -231,10 +231,11 @@ angular.module('copayApp.services')
         return ((config.bwsFor && config.bwsFor[walletId]) || defaults.bws.url);
       };
 
-
       var client = bwcService.getClient(JSON.stringify(credentials), {
         bwsurl: getBWSURL(credentials.walletId),
       });
+
+      window.Client = client;
 
       var skipKeyValidation = shouldSkipValidation(credentials.walletId);
       if (!skipKeyValidation)

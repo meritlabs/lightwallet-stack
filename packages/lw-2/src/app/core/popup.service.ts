@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 
 @Injectable()

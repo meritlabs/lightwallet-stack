@@ -92,7 +92,7 @@ export module Verifier {
       if (!strEqual(o1.toAddress, o2.toAddress)) return false;
       if (!strEqual(o1.script, o2.script)) return false;
       if (o1.amount != o2.amount) return false;
-      var decryptedMessage = null;
+      let decryptedMessage = null;
       try {
         decryptedMessage = Utils.decryptMessage(o2.message, encryptingKey);
       } catch (e) {
@@ -110,7 +110,7 @@ export module Verifier {
     if (_.isNumber(args.feePerKb) && (txp.feePerKb != args.feePerKb)) return false;
     if (!strEqual(txp.payProUrl, args.payProUrl)) return false;
 
-    var decryptedMessage = null;
+    let decryptedMessage = null;
     try {
       decryptedMessage = Utils.decryptMessage(args.message, encryptingKey);
     } catch (e) {
@@ -145,7 +145,6 @@ export module Verifier {
       creatorSigningPubKey = creatorKeys.requestPubKey;
     }
     if (!creatorSigningPubKey) return false;
-
 
     var hash;
     if (parseInt(txp.version) >= 3) {

@@ -15,7 +15,7 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { Profile } from 'merit/core/profile.model';
 import { Wallet } from 'merit/wallets/wallet.model';
 import { Events } from 'ionic-angular/util/events';
-import { MeritWalletClient, IMeritWalletClient } from 'src/lib/merit-wallet-client';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 /* 
@@ -25,7 +25,7 @@ import { MeritWalletClient, IMeritWalletClient } from 'src/lib/merit-wallet-clie
 */ 
 @Injectable()
 export class ProfileService {
-  public wallets: Map<string, Wallet> = new Map<string, Wallet>();
+  public wallets: Map<string, MeritWalletClient> = new Map<string, MeritWalletClient>();
   public profile: Profile = new Profile();
 
   private UPDATE_PERIOD = 10;
@@ -649,14 +649,13 @@ export class ProfileService {
     });
   }
 
-  public getWallets(opts?: any): Promise<any> {
+  public getWallets(opts: any = {}): Promise<MeritWalletClient[]> {
 
     return new Promise((resolve, reject) => {
 
-      opts = opts || {};
       console.log("Getting wallets");
       console.log(this.wallets);
-      let ret = _.values(this.wallets);
+      let ret: MeritWalletClient[] = _.values(this.wallets);
 
       if (opts.network) {
         ret = _.filter(ret, (x: any) => {
@@ -926,5 +925,28 @@ export class ProfileService {
         return (totalMicros > 0) ? resolve(true) : resolve(false);
       });
     });
+  }
+
+  public addVault(vault: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.profile.addVault(vault);
+      this.persistenceService.storeProfile(this.profile).then(() => {
+        return resolve();
+      });
+    });
+  }
+
+  public updateVault(vault: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.profile.updateVault(vault);
+      this.persistenceService.storeProfile(this.profile).then(() => {
+        return resolve();
+      });
+    });
+  }
+
+  public getVaults(): Array<any> {
+    console.log('Getting vaults');
+    return this.profile.vaults;
   }
 }

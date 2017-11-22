@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, App, ToastController, AlertControl
 import { Wallet } from "./wallet.model";
 
 import * as _ from "lodash";
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 import { ProfileService } from "merit/core/profile.service";
 import { FeedbackService } from "merit/feedback/feedback.service"
 import { Feedback } from "merit/feedback/feedback.model"
@@ -19,6 +19,8 @@ import { WalletService } from "merit/wallets/wallet.service";
 import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 import { TxFormatService } from "merit/transact/tx-format.service";
 import { AddressBookService } from "merit/shared/address-book/address-book.service";
+import { VaultsService } from 'merit/vaults/vaults.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 /* 
@@ -40,6 +42,7 @@ export class WalletsView {
   private totalAmountFormatted;
 
   public wallets;
+  public vaults;
   public newReleaseExists;
   public feedbackNeeded;
   public feedbackData =  new Feedback();
@@ -66,7 +69,8 @@ export class WalletsView {
     private walletService:WalletService,
     private txFormatService:TxFormatService,
     private events:Events,
-    private addressbookService:AddressBookService
+    private addressbookService:AddressBookService,
+    private vaultsService: VaultsService,
   ) {
     this.logger.warn("Hellop WalletsView!");
     
@@ -83,6 +87,10 @@ export class WalletsView {
     this.addressbook = await this.addressbookService.list(() => {});
 
     return this.getWallets().then((wallets) => {
+      this.wallets = wallets;             
+      if (_.isEmpty(wallets)) {
+        return Promise.resolve(null); //ToDo: add proper error handling;
+      }
       return this.calculateNetworkAmount(wallets);
      }).then((cNetworkAmount) => {
        this.totalAmount = cNetworkAmount;
@@ -96,6 +104,11 @@ export class WalletsView {
          this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
        }
        return Promise.resolve();
+      }).then(() => {
+        return this.vaultsService.getVaults(_.head(this.wallets));
+      }).then((vaults) => {
+        console.log('getting vaults', vaults);
+        this.vaults = vaults;
      }).catch((err) => {
       console.log("@@ERROR IN Updating statuses.")
       console.log(err)
@@ -251,22 +264,22 @@ export class WalletsView {
   private async getWallets():Promise<Array<Wallet>> {
     this.logger.warn("getWallets() in wallets.ts");
     if (this.needWalletStatuses()) {
-      this.wallets = await this.updateAllWallets();     
+      return this.updateAllWallets().then((wallets) => {
+        return wallets;
+      });
     }
-    return this.wallets;
+    return Promise.resolve(this.wallets);
   }
 
-  private async updateAllWallets() {
-    this.logger.warn("updateAllWallets() in wallets.ts");    
-    let wallets = await this.profileService.getWallets();
-    // Get the statuses of all the wallets.
-    return await Promise.all(_.map(wallets, async (wallet:any) => {
-      wallet.status = await this.walletService.getStatus(wallet);
-      return wallet; 
-    })).catch((err) => {
-      console.log("Error updating wallets");
-      console.log(err);
-    });
+  private updateAllWallets(): Promise<MeritWalletClient[]> {
+    return this.profileService.getWallets().each((wallet) => {
+      return this.walletService.getStatus(wallet).then((status) => {
+        wallet.status = status;
+        return wallet;
+      }).catch((err) => {
+        Promise.reject(new Error('could not update wallets' + err));
+      });
+    })
   }
 
   private openTransactionDetails(transaction) {

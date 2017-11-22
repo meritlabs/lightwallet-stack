@@ -131,7 +131,6 @@ InsightAPI.prototype._getRateLimiter = function() {
 };
 
 InsightAPI.prototype.setupRoutes = function(app) {
-
   var self = this;
 
   //Enable rate limiter
