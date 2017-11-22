@@ -64,6 +64,13 @@ export interface IAPI {
   needsBackup: boolean;
   name: string;
   color: string; 
+  started: boolean;
+  copayerId: string;
+  unlocked: boolean;
+  shareCode: string;
+  balanceHidden: boolean;
+  eventEmitter: any;
+  status: any; 
 
   // functions
   initNotifications(): Promise<any>;
@@ -189,7 +196,6 @@ export class API implements IAPI {
   private notificationsIntervalId: any;
   private keyDerivationOk: boolean;
   private session: any;
-  private eventEmitter: any;
   
   // Mutated from other services (namely wallet.service and profile.service)
   public id: string; // TODO: Re-evaluate where this belongs.
@@ -209,6 +215,13 @@ export class API implements IAPI {
   public name: string;
   public color: string; 
   public logLevel: string;
+  public started: boolean;
+  public copayerId: string;
+  public unlocked: boolean;
+  public shareCode: string;
+  public balanceHidden: boolean;
+  public eventEmitter: any;
+  public status: any; 
   
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -2010,7 +2023,7 @@ export class API implements IAPI {
   publishTxProposal(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     $.checkArgument(opts)
-      .checkArgument(opts.txp);
+    $.checkArgument(opts.txp);
 
     $.checkState(parseInt(opts.txp.version) >= 3);
 
@@ -2024,6 +2037,8 @@ export class API implements IAPI {
     return this._doPostRequest(url, args).then((txp) => {
       this._processTxps(txp);
       return Promise.resolve(txp);
+    }).catch((err) => {
+      return Promise.reject(new Error('error in post /v1/txproposals/' + err));
     });
   };
 
@@ -2141,11 +2156,13 @@ export class API implements IAPI {
    *
    * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
    */
-  getBalance(opts:any = {}): Promise<any> {
+  getBalance(opts:any = {}): Promise<number> {
     $.checkState(this.credentials && this.credentials.isComplete());
     let url = '/v1/balance/';
     if (opts.twoStep) url += '?twoStep=1';
-    return this._doGetRequest(url);
+    return this._doGetRequest(url).then((balance) => {
+      return balance.availableAmount;
+    });
   };
 
   /**

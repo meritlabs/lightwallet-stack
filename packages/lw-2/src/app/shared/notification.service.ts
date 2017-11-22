@@ -39,7 +39,7 @@ export class NotificationService {
     
     //TODO: Rewrite BWC with promises.
     let subCall = Promise.promisify(client[methodPrefix + 'ConfirmationSubscribe'](subject.id, {}, function(){}));
-    return subCall.then((res) => {
+    return subCall().then((res) => {
       Promise.resolve(this.persistenceService.setTxConfirmNotification(subject.id, subject));
     });
   }

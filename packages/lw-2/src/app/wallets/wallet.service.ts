@@ -771,6 +771,8 @@ export class WalletService {
       return resolve(wallet.publishTxProposal({
         txp: txp
       }));
+    }).catch((err) => {
+      Promise.reject(new Error('error publishing tx: ' + err));
     });
   }
 
@@ -1152,7 +1154,7 @@ export class WalletService {
       if (txp.status == 'pending') {
         return this.prepare(wallet).then((password: string) => {
           return this.signAndBroadcast(wallet, txp, password, customStatusHandler)
-            .then((broadcastedTxp: any) => {
+          .then((broadcastedTxp: any) => {
             return resolve(broadcastedTxp);
           }).catch((err) => {
             return reject(this.bwcErrorService.msg(err));
@@ -1372,12 +1374,8 @@ export class WalletService {
   }
 
   // todo its a mock now!!
-  getWalletAnv(wallet:Wallet):Promise<number> {
-    return new Promise((resolve, reject) => {
-      return resolve(
-       (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
-      )
-    });
+  getWalletAnv(wallet: IMeritWalletClient):Promise<number> {
+    return wallet.getBalance({});
   }
   
   
