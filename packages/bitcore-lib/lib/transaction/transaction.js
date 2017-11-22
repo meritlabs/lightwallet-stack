@@ -303,14 +303,40 @@ Transaction.prototype.fromBufferReader = function(reader) {
 
   this.version = reader.readInt32LE();
   sizeTxIns = reader.readVarintNum();
+
+  // checking for SegWit
+  var hasWitness = false;
+  if (sizeTxIns === 0 && reader.buf[reader.pos] !== 0) {
+    hasWitness = reader.readVarintNum();
+    sizeTxIns = reader.readVarintNum();
+  }
+
   for (i = 0; i < sizeTxIns; i++) {
     var input = Input.fromBufferReader(reader);
     this.inputs.push(input);
+  
   }
   sizeTxOuts = reader.readVarintNum();
+
   for (i = 0; i < sizeTxOuts; i++) {
     this.outputs.push(Output.fromBufferReader(reader));
   }
+
+  // If we have a witness, then let's actually set the witnesses on relevant 
+  // inputs
+  if (hasWitness) {
+    for ( var k = 0; k < sizeTxIns; k++ ) {
+      var itemCount = reader.readVarintNum();
+      var witnesses = [];
+     for ( var l = 0; itemCount > l; l++ ) {
+        var size = reader.readVarintNum();
+        var item = reader.read(size);
+        witnesses.push(item);
+      }
+      this.inputs[k].setWitnesses(witnesses);
+    }
+  }
+
   this.nLockTime = reader.readUInt32LE();
   return this;
 };
