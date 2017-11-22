@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Wallet } from "./../../wallets/wallet.model";
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()
 export class UnlockService {
 
-  unlockWallet():Array<Wallet> {
+  unlockWallet():Array<MeritWalletClient> {
     return [];
   }
 

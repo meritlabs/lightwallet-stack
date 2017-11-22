@@ -11,6 +11,7 @@ export interface IMeritWalletClient extends IMeritClient {
 export class MeritWalletClient extends MeritClient implements IMeritWalletClient {
   private static _instance: MeritWalletClient;
   public errors;
+  public sdsa;
   private constructor(opts:any = {}) {
     super(opts);
     this.errors = BwcError;

@@ -1,11 +1,12 @@
+import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { ProfileService } from "merit/core/profile.service";
-import { Wallet } from "merit/wallets/wallet.model";
 import { BwcService } from "merit/core/bwc.service";
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @IonicPage({
   defaultHistory: ['ProfileView']
@@ -40,7 +41,7 @@ export class CreateVaultDepositView {
     this.formData.amountAvailable = data.amountAvailable;
     this.checkNextAvailable();
 
-    this.getAllWallets().then((wallets: Array<Wallet>) => {
+    this.getAllWallets().then((wallets: Array<MeritWalletClient>) => {
       _.each(wallets, (w) => console.log(w));
       const computed = wallets[0].status.balance.availableConfirmedAmount;
       const mrt = this.bitcore.Unit.fromMicros(computed).toMRT();
@@ -54,7 +55,7 @@ export class CreateVaultDepositView {
     this.navCtl.push('CreateVaultMasterKeyView');
   }
 
-  private getAllWallets(): Promise<Array<Wallet>> {
+  private getAllWallets(): Promise<Array<MeritWalletClient>> {
     return this.profileService.getWallets().then((ws) => {
       return Promise.all(_.map(ws, async (wallet: any) => { //ToDo: type it correctly Wallet and IMeritWalletClient are not interchangable
         wallet.status = await this.walletService.getStatus(wallet);

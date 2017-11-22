@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, LoadingController } from 'ionic-angular';
 
 import { ProfileService } from "merit/core/profile.service";
-import { Wallet } from "merit/wallets/wallet.model";
 import { WalletService } from "merit/wallets/wallet.service";
 import { ToastConfig } from "merit/core/toast.config";
 import { MeritToastController } from "../../core/toast.controller";
@@ -11,7 +10,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { Clipboard } from '@ionic-native/clipboard';
 
 import { RateService } from 'merit/transact/rate.service';
-import {ConfigService} from "merit/shared/config.service";
+import { ConfigService } from "merit/shared/config.service";
 
 @IonicPage()
 @Component({

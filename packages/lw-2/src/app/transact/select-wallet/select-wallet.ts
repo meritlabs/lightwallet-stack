@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { ProfileService } from "merit/core/profile.service";
-import { Wallet } from "merit/wallets/wallet.model";
 
 @IonicPage()
 @Component({
