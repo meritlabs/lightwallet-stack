@@ -96,7 +96,7 @@ export class ProfileService {
     return new Promise((resolve, reject) => {
 
       this.persistenceService.getHideBalanceFlag(wallet.credentials.walletId).then((shouldHideBalance: string) => {
-        var hideBalance = (shouldHideBalance == 'true') ? true : false;
+        var hideBalance = (shouldHideBalance == 'true' || shouldHideBalance == true) ? true : false;
         return resolve(hideBalance);
       }).catch((err) => {
         this.logger.error(err);

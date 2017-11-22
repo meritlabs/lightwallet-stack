@@ -33,7 +33,7 @@ import { Wallet } from "./wallet.model";
 export class WalletService {
 
   // TODO: Implement wallet model.
-  private wallets: any = {}
+  private wallets: any = {};
 
   // Ratio low amount warning (fee/amount) in incoming TX
   private LOW_AMOUNT_RATIO: number = 0.15;
@@ -1030,24 +1030,9 @@ export class WalletService {
     });
   };
 
-  public encrypt(wallet: IMeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      var title = 'Enter new spending password'; //TODO gettextcatalog
-      var warnMsg = 'Your wallet key will be encrypted. The Spending Password cannot be recovered. Be sure to write it down.'; //TODO gettextcatalog
-      return this.askPassword(warnMsg, title).then((password: string) => {
-        if (!password) return reject('no password'); //TODO gettextcatalog
-        title = 'Confirm your new spending password'; //TODO gettextcatalog
-        return this.askPassword(warnMsg, title).then((password2: string) => {
-          if (!password2 || password != password2) return reject('password mismatch');
-          wallet.encryptPrivateKey(password, {});
-          return resolve();
-        }).catch((err) => {
-          return reject(err);
-        });
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
+  public encrypt(wallet: IMeritWalletClient, password): Promise<any> {
+    console.log("encrypting");
+    return Promise.resolve(wallet.encryptPrivateKey(password, {}));
 
   };
 
@@ -1242,6 +1227,21 @@ export class WalletService {
       });
     });
   };
+
+  public setHiddenBalanceOption(walletId: string, hideBalance:boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.wallets[walletId]) this.wallets[walletId] = {};
+      this.wallets[walletId].balanceHidden = hideBalance;
+      this.persistenceService.setHideBalanceFlag(walletId, this.wallets[walletId].balanceHidden+'').then(() => {
+        return resolve();
+      }).catch((err: any) => {
+        return reject(err);
+      });
+    });
+
+
+  }
+
 
   public getSendMaxInfo(wallet: IMeritWalletClient, opts: any = {}): Promise<any> {
     wallet.getSendMaxInfo(opts);
