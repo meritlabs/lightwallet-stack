@@ -47,7 +47,24 @@ export interface InitOptions {
 
 export interface IAPI {
   // fields
-  credentials: any;
+  credentials: Credentials;
+  request: any;
+  baseUrl: string;
+  payProHttp: string;
+  doNotVerifyPayPro: boolean;
+  timeout: number;
+  logLevel: string;
+  privateKeyEncryptionOpts: any;
+  notificationIncludeOwn: boolean;
+  log: any;
+  lastNotificationId: string;
+  notificationsIntervalId: any;
+  keyDerivationOk: boolean;
+  session: any;
+  DEBUG_MODE: boolean;
+  BASE_URL: string;
+  
+  // Mutated from other services (namely wallet.service and profile.service)
   id: string; // TODO: Re-evaluate where this belongs.
   completeHistory: any; // This is mutated from Wallet.Service.ts; for now.
   cachedStatus: any; 
@@ -71,6 +88,7 @@ export interface IAPI {
   balanceHidden: boolean;
   eventEmitter: any;
   status: any; 
+  secret: any;
 
   // functions
   initNotifications(): Promise<any>;
@@ -180,22 +198,24 @@ export interface IAPI {
 }
 
 export class API implements IAPI {
-  private static BASE_URL = 'http://localhost:3232/bws/api';
-  private request: any;
-  private baseUrl: string;
-  private payProHttp: string;
-  private doNotVerifyPayPro: boolean;
-  private timeout: number;
-  private privateKeyEncryptionOpts: any = {
+  public BASE_URL = 'http://localhost:3232/bws/api';
+  public request: any;
+  public baseUrl: string;
+  public payProHttp: string;
+  public doNotVerifyPayPro: boolean;
+  public timeout: number;
+  public logLevel: string;
+  public privateKeyEncryptionOpts: any = {
     iter: 10000
   };
-  public credentials: any; // TODO: Make private with getters/setters
-  private notificationIncludeOwn: boolean;
-  private log: any;
-  private lastNotificationId: string;
-  private notificationsIntervalId: any;
-  private keyDerivationOk: boolean;
-  private session: any;
+  public credentials: Credentials; // TODO: Make public with getters/setters
+  public notificationIncludeOwn: boolean;
+  public log: any;
+  public lastNotificationId: string;
+  public notificationsIntervalId: any;
+  public keyDerivationOk: boolean;
+  public session: any;
+  public DEBUG_MODE: boolean = false; 
   
   // Mutated from other services (namely wallet.service and profile.service)
   public id: string; // TODO: Re-evaluate where this belongs.
@@ -214,7 +234,6 @@ export class API implements IAPI {
   public needsBackup: boolean;
   public name: string;
   public color: string; 
-  public logLevel: string;
   public started: boolean;
   public copayerId: string;
   public unlocked: boolean;
@@ -222,18 +241,18 @@ export class API implements IAPI {
   public balanceHidden: boolean;
   public eventEmitter: any;
   public status: any; 
+  public secret: string;
   
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
     this.request = opts.request || request;
-    this.baseUrl = opts.baseUrl || API.BASE_URL;
+    this.baseUrl = opts.baseUrl || this.BASE_URL;
     this.payProHttp = null; // Only for testing
     this.doNotVerifyPayPro = opts.doNotVerifyPayPro;
     this.timeout = opts.timeout || 50000;
-    this.logLevel = opts.logLevel || 'silent';
-    this.log = Logger.getInstance();; 
-
-    this.log.setLevel(this.logLevel);
+    this.logLevel = opts.logLevel || 'debug';
+    this.log = Logger.getInstance();
+    this.log.setLevel(this.logLevel)
   }
 
 
@@ -258,6 +277,7 @@ export class API implements IAPI {
   };
 
   _fetchLatestNotifications(interval): Promise<any> {      
+    this.log.info("_fetchLatestNotifications called.");
       let opts:any = {
         lastNotificationId: this.lastNotificationId,
         includeOwn: this.notificationIncludeOwn,
@@ -272,21 +292,24 @@ export class API implements IAPI {
           this.lastNotificationId = (_.last(notifications) as any).id;
         }
 
-        _.each(notifications, function(notification) {
-          this.emit('notification', notification);
+        return Promise.each(notifications, (notification) => {
+          this.log.info("Emitting a notification event.  Does anyone care?");    
+          this.eventEmitter.emit('notification', notification);
+          return Promise.resolve();
         });
       });
 
   }
     
   _initNotifications(opts: any = {}): any {
-    const interval = opts.notificationIntervalSeconds || 5; // TODO: Be able to turn this off during development mode; pollutes request stream..  
-    const self = this;
-    self.notificationsIntervalId = setInterval(function() {
-      self._fetchLatestNotifications(interval).catch((err) => {
+    this.log.warn("Initializing notifications with opts: ");
+    console.log(opts);
+    const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode; pollutes request stream..  
+    this.notificationsIntervalId = setInterval(() => {
+      this._fetchLatestNotifications(interval).catch((err) => {
         if (err) {
           if (err == Errors.NOT_FOUND || err == Errors.NOT_AUTHORIZED) {
-            self._disposeNotifications();
+            this._disposeNotifications();
           }
         }
       });
@@ -323,7 +346,7 @@ export class API implements IAPI {
    * @param {String} message
    * @param {String} encryptingKey
    */
-  private _encryptMessage = function(message, encryptingKey) {
+  private _encryptMessage(message, encryptingKey) {
     if (!message) return null;
     return Utils.encryptMessage(message, encryptingKey);
   };
@@ -336,7 +359,7 @@ export class API implements IAPI {
    * @param {String} message
    * @param {String} encryptingKey
    */
-  private _decryptMessage = function(message, encryptingKey) {
+  private _decryptMessage(message, encryptingKey) {
     if (!message) return '';
     try {
       return Utils.decryptMessage(message, encryptingKey);
@@ -346,16 +369,13 @@ export class API implements IAPI {
   };
 
   _processTxNotes(notes): void {
-    let self = this;
-
     if (!notes) return;
-
-    let encryptingKey = self.credentials.sharedEncryptingKey;
-    _.each([].concat(notes), function(note) {
+    let encryptingKey = this.credentials.sharedEncryptingKey;
+    _.each([].concat(notes), (note) => {
       note.encryptedBody = note.body;
-      note.body = self._decryptMessage(note.body, encryptingKey);
+      note.body = this._decryptMessage(note.body, encryptingKey);
       note.encryptedEditedByName = note.editedByName;
-      note.editedByName = self._decryptMessage(note.editedByName, encryptingKey);
+      note.editedByName = this._decryptMessage(note.editedByName, encryptingKey);
     });
   };
 
@@ -368,31 +388,30 @@ export class API implements IAPI {
    * @param {String} encryptingKey
    */
   _processTxps(txps): Promise<void> {
-    let self = this;
     return new Promise((resolve, reject) => {
       
       if (!txps) return resolve();
 
-      let encryptingKey = self.credentials.sharedEncryptingKey;
-      _.each([].concat(txps), function(txp) {
+      let encryptingKey = this.credentials.sharedEncryptingKey;
+      _.each([].concat(txps), (txp) => {
         txp.encryptedMessage = txp.message;
-        txp.message = self._decryptMessage(txp.message, encryptingKey) || null;
-        txp.creatorName = self._decryptMessage(txp.creatorName, encryptingKey);
+        txp.message = this._decryptMessage(txp.message, encryptingKey) || null;
+        txp.creatorName = this._decryptMessage(txp.creatorName, encryptingKey);
 
-        _.each(txp.actions, function(action) {
-          action.copayerName = self._decryptMessage(action.copayerName, encryptingKey);
-          action.comment = self._decryptMessage(action.comment, encryptingKey);
+        _.each(txp.actions, (action) => {
+          action.copayerName = this._decryptMessage(action.copayerName, encryptingKey);
+          action.comment = this._decryptMessage(action.comment, encryptingKey);
           // TODO get copayerName from Credentials -> copayerId to copayerName
           // action.copayerName = null;
         });
-        _.each(txp.outputs, function(output) {
+        _.each(txp.outputs, (output) => {
           output.encryptedMessage = output.message;
-          output.message = self._decryptMessage(output.message, encryptingKey) || null;
+          output.message = this._decryptMessage(output.message, encryptingKey) || null;
         });
-        txp.hasUnconfirmedInputs = _.some(txp.inputs, function(input: any) {
+        txp.hasUnconfirmedInputs = _.some(txp.inputs, (input: any) => {
           return input.confirmations == 0;
         });
-        self._processTxNotes(txp.note);
+        this._processTxNotes(txp.note);
       });
       return resolve();
     });    
@@ -1030,35 +1049,36 @@ export class API implements IAPI {
       if (this.credentials.isComplete() && this.credentials.hasWalletInfo())
         return resolve(true); // wallet is already open
 
+      return resolve();
       return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
         let wallet = ret.wallet;
 
-        this._processStatus(ret);
-
-        if (!this.credentials.hasWalletInfo()) {
-          let me:any = _.find(wallet.copayers, {
-            id: this.credentials.copayerId
-          });
-          this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode);
-        }
-
-        if (wallet.status != 'complete')
-          return resolve();
-
-        if (this.credentials.walletPrivKey) {
-          if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
-            return reject(Errors.SERVER_COMPROMISED);
+        return this._processStatus(ret).then(() => {
+          if (!this.credentials.hasWalletInfo()) {
+            let me:any = _.find(wallet.copayers, {
+              id: this.credentials.copayerId
+            });
+            this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode, wallet.codeHash);
           }
-        } else {
-          // this should only happen in AIR-GAPPED flows
-          this.log.warn('Could not verify copayers key (missing wallet Private Key)');
-        }
-
-        this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
-
-        this.eventEmitter.emit('walletCompleted', wallet);
-
-        return resolve(ret);
+  
+          if (wallet.status != 'complete')
+            return resolve();
+  
+          if (this.credentials.walletPrivKey) {
+            if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
+              return reject(Errors.SERVER_COMPROMISED);
+            }
+          } else {
+            // this should only happen in AIR-GAPPED flows
+            this.log.warn('Could not verify copayers key (missing wallet Private Key)');
+          }
+  
+          this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
+  
+          this.eventEmitter.emit('walletCompleted', wallet);
+  
+          return resolve(ret);
+        });
       });
     });
   };
@@ -1127,10 +1147,16 @@ export class API implements IAPI {
           return reject(Errors.CONNECTION_ERROR);
         }
 
-        if (res.body)
-          this.log.debug(util.inspect(res.body, {
+        /**
+         * Universal MWC Logger.  It will log all output returned from BWS
+         * if the private static DEBUG_MODE is set to true above.  
+         */    
+        if (res.body && this.DEBUG_MODE) {
+          this.log.info("BWS Response: ");
+          this.log.info(util.inspect(res.body, {
             depth: 10
           }));
+        }
 
         if (res.status !== 200) {
           if (res.status === 404)
@@ -1219,7 +1245,7 @@ export class API implements IAPI {
       return res.body;
     }).catch((err) => {
       this.log.warn("Were not able to complete getRequest: ", err);
-    });;
+    });
   };
 
   _doPutRequest(url: string, args: any): Promise<any> {
@@ -1227,7 +1253,7 @@ export class API implements IAPI {
       return res.body;
     }).catch((err) => {
       this.log.warn("Were not able to complete getRequest: ", err);
-    });;
+    });
   };
 
   /**
@@ -1320,7 +1346,7 @@ export class API implements IAPI {
     return t.uncheckedSerialize();
   };
 
-  signTxp(txp: any, derivedXPrivKey) :any {
+  signTxp(txp: any, derivedXPrivKey):any {
     //Derive proper key to sign, for each input
     let privs = [];
     let derived = {};
@@ -1690,7 +1716,7 @@ export class API implements IAPI {
         dryRun: !!opts.dryRun,
       }).then((wallet) => {
         if (!opts.dryRun) {
-          this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.beacon, wallet.shareCode);
+          this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.beacon, wallet.shareCode, wallet.codeHash);
         }
         return resolve(wallet);        
       }).catch((ex) => {
@@ -1749,7 +1775,6 @@ export class API implements IAPI {
     });
   };
 
-  // TODO: Promisify!
   private _processWallet(wallet): Promise<any> {
     return new Promise((resolve, reject) => {
       let encryptingKey = this.credentials.sharedEncryptingKey;
@@ -1817,7 +1842,9 @@ export class API implements IAPI {
       processCustomData(status), 
       this._processWallet(status.wallet),
       this._processTxps(status.pendingTxps)
-    ]);
+    ]).then(() => {
+      return Promise.resolve();
+    });
   }
 
 
@@ -1923,18 +1950,15 @@ export class API implements IAPI {
    *  paypro.memo
    */
   // TODO: Promisify (if we keep PayPro functionality.)
-  fetchPayPro(opts: any, cb: Function): void {
+  fetchPayPro(opts: any): Promise<any> {
     $.checkArgument(opts)
       .checkArgument(opts.payProUrl);
 
-    PayPro.get({
+    return PayPro.get({
       url: opts.payProUrl,
       http: this.payProHttp,
-    }, function(err, paypro) {
-      if (err)
-        return cb(err);
-
-      return cb(null, paypro);
+    }).then((paypro) => {
+      return Promise.resolve(paypro);
     });
   };
 
@@ -1958,13 +1982,11 @@ export class API implements IAPI {
   };
 
   _getCreateTxProposalArgs(opts: any): any {
-    let self = this;
-
     let args = _.cloneDeep(opts);
-    args.message = self._encryptMessage(opts.message, self.credentials.sharedEncryptingKey) || null;
+    args.message = this._encryptMessage(opts.message, this.credentials.sharedEncryptingKey) || null;
     args.payProUrl = opts.payProUrl || null;
-    _.each(args.outputs, function(o) {
-      o.message = self._encryptMessage(o.message, self.credentials.sharedEncryptingKey) || null;
+    _.each(args.outputs, (o) => {
+      o.message = this._encryptMessage(o.message, this.credentials.sharedEncryptingKey) || null;
     });
 
     return args;
@@ -2035,8 +2057,9 @@ export class API implements IAPI {
 
     let url = '/v1/txproposals/' + opts.txp.id + '/publish/';
     return this._doPostRequest(url, args).then((txp) => {
-      this._processTxps(txp);
-      return Promise.resolve(txp);
+      return this._processTxps(txp).then(() => {
+        return Promise.resolve(txp);
+      });
     }).catch((err) => {
       return Promise.reject(new Error('error in post /v1/txproposals/' + err));
     });
@@ -2179,33 +2202,33 @@ export class API implements IAPI {
 
 
     return this._doGetRequest('/v1/txproposals/').then((txps) => {
-      this._processTxps(txps);
-
-      return Promise.each(txps, (txp) => {
-        if (!opts.doNotVerify) {
-          // TODO: Find a way to run this check in parallel.
-          return this.getPayPro(txp).then((paypro)  => {
-            if (!Verifier.checkTxProposal(this.credentials, txp, {
-              paypro: paypro,
-            })) {
-              Promise.reject(Errors.SERVER_COMPROMISED);
-            }
-          });
-        }
-      }).then(() => {
-        let result: any;
-        if (opts.forAirGapped) {
-          result = {
-            txps: JSON.parse(JSON.stringify(txps)),
-            encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
-            unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
-            m: this.credentials.m,
-            n: this.credentials.n,
-          };
-        } else {
-          result = txps;
-        }
-        Promise.resolve(result);
+      return this._processTxps(txps).then(() => {
+        return Promise.each(txps, (txp) => {
+          if (!opts.doNotVerify) {
+            // TODO: Find a way to run this check in parallel.
+            return this.getPayPro(txp).then((paypro)  => {
+              if (!Verifier.checkTxProposal(this.credentials, txp, {
+                paypro: paypro,
+              })) {
+                Promise.reject(Errors.SERVER_COMPROMISED);
+              }
+            });
+          }
+        }).then(() => {
+          let result: any;
+          if (opts.forAirGapped) {
+            result = {
+              txps: JSON.parse(JSON.stringify(txps)),
+              encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
+              unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
+              m: this.credentials.m,
+              n: this.credentials.n,
+            };
+          } else {
+            result = txps;
+          }
+          Promise.resolve(result);
+        });
       });
     });
   };
@@ -2215,11 +2238,13 @@ export class API implements IAPI {
     if (!txp.payProUrl || this.doNotVerifyPayPro)
       return Promise.resolve();
 
-    PayPro.get({
+    return PayPro.get({
       url: txp.payProUrl,
       http: this.payProHttp,
-    }, function(err, paypro) {
-      if (err) return Promise.reject(new Error('Cannot check transaction now:' + err));
+    }).then((paypro) => {
+      if (!paypro) {
+        return Promise.reject(new Error('Cannot check paypro transaction now.'));
+      } 
       return Promise.resolve(paypro);
     });
   };
@@ -2254,12 +2279,7 @@ export class API implements IAPI {
         let signatures = txp.signatures;
 
         if (_.isEmpty(signatures)) {
-          try {
-            signatures = this._signTxp(txp, password);
-          } catch (ex) {
-            this.log.error('Error signing tx', ex);
-            return reject(ex);
-          }
+          signatures = this._signTxp(txp, password);
         }
 
         let url = '/v1/txproposals/' + txp.id + '/signatures/';
@@ -2268,8 +2288,9 @@ export class API implements IAPI {
         };
 
         return this._doPostRequest(url, args).then((txp) => {
-          this._processTxps(txp);
-          return resolve(txp);
+          return this._processTxps(txp).then(() => {
+            return resolve(txp);
+          });
         });
       });
     });
@@ -2330,8 +2351,9 @@ export class API implements IAPI {
       reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || '',
     };
     return this._doPostRequest(url, args).then((txp) => {
-      this._processTxps(txp);
-      return Promise.resolve(txp);
+      return this._processTxps(txp).then(() => {
+        return Promise.resolve(txp);
+      });
     });
   }
 
@@ -2355,7 +2377,9 @@ export class API implements IAPI {
   private _doBroadcast(txp): Promise<any> {
     let url = '/v1/txproposals/' + txp.id + '/broadcast/';
     return this._doPostRequest(url, {}).then((txp) => {
-      return Promise.resolve(this._processTxps(txp));
+      return this._processTxps(txp).then(() => {
+        return Promise.resolve(txp);
+      });
     });
   };
 
@@ -2367,13 +2391,15 @@ export class API implements IAPI {
   * @return {Callback} cb - Return error or object
   */
   broadcastTxProposal(txp): Promise<any> {
+    this.log.warn("Inside broadCastTxProposal");
     $.checkState(this.credentials && this.credentials.isComplete());
     return this.getPayPro(txp).then((paypro) => {
       if (paypro) {
+        this.log.warn("WE ARE PAYPRO");
         let t = Utils.buildTx(txp);
         this._applyAllSignatures(txp, t);
 
-        PayPro.send({
+        return PayPro.send({
           http: this.payProHttp,
           url: txp.payProUrl,
           amountMicros: txp.amount,
@@ -2384,16 +2410,11 @@ export class API implements IAPI {
             disableLargeFees: true,
             disableDustOutputs: true
           }),
-        }, function(err, ack, memo) {
-          if (err) return Promise.reject(err);
-          this._doBroadcast(txp, function(err, txp) {
-            this.log.info(memo);
-            return Promise.resolve(txp);
-          });
         });
-      } else {
-        return Promise.resolve(this._doBroadcast(txp));
       }
+      return Promise.resolve();
+    }).then(() => {
+        return this._doBroadcast(txp);
     });
   };
 
@@ -2454,7 +2475,9 @@ export class API implements IAPI {
 
     let url = '/v1/txproposals/' + id;
     return this._doGetRequest(url).then((txp) => {
-      return Promise.resolve(this._processTxps(txp));
+      this._processTxps(txp).then(() => {
+        return Promise.resolve();
+      });
     });
   };
 
@@ -2482,7 +2505,8 @@ export class API implements IAPI {
   getTxNote(opts:any = {}): Promise<any> {
     $.checkState(this.credentials);
     return this._doGetRequest('/v1/txnotes/' + opts.txid + '/').then((note) => {
-      return Promise.resolve(this._processTxNotes(note));
+      this._processTxNotes(note);
+      return Promise.resolve();
     });
   }
 
@@ -2499,7 +2523,8 @@ export class API implements IAPI {
       opts.body = this._encryptMessage(opts.body, this.credentials.sharedEncryptingKey);
     }
     return this._doPutRequest('/v1/txnotes/' + opts.txid + '/', opts).then((note) => {
-      return Promise.resolve(this._processTxNotes(note));
+      this._processTxNotes(note);
+      return Promise.resolve();
     });
   };
 
@@ -2629,7 +2654,7 @@ export class API implements IAPI {
         let c = this.credentials;
         result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
       }
-      return Promise.resolve(this._processStatus(result));
+      return this._processStatus(result);
     });
   };
 
