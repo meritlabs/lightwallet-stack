@@ -112,6 +112,10 @@ export class VaultDetailsView {
     });
   }
 
+  toResetVault() {
+    this.navCtrl.push('VaultRenewView', { vaultId: this.vault._id, vault: this.vault });
+  }
+
   private getAllWallets(): Promise<Array<any>> {
     const wallets = this.profileService.getWallets().then((ws) => {
       return Promise.all(_.map(ws, async (wallet:any) => {
