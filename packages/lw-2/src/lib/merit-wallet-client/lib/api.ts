@@ -1,28 +1,24 @@
 import * as _ from 'lodash';
 import * as Promise from 'bluebird';
+import * as util from 'util';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { Common } from './common';
 import { Logger } from "./log";
 import { Credentials } from './credentials';
 import { ErrorTypes as Errors } from './errors';
+import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 
 const $ = require('preconditions').singleton();
 let EventEmitter = require('eventemitter3');
-let util = require('util');
-let async = require('async');
 let Bitcore = require('bitcore-lib');
 let Mnemonic = require('bitcore-mnemonic');
-let sjcl = require('sjcl');
-let url = require('url');
 let querystring = require('querystring');
-let Stringify = require('json-stable-stringify');
 let Bip38 = require('bip38');
 
 let request = require('superagent');
 
 let Constants = Common.Constants;
-let Defaults = Common.Defaults;
 let Utils = Common.Utils;
 
 let Package = require('../../../../package.json');
@@ -866,7 +862,7 @@ export class API implements IAPI {
    * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
    * @param {Callback}    cb
    */
-  buildEasySendScript(opts:any = {}): Promise<any> {
+  buildEasySendScript(opts:any = {}): Promise<EasySend> {
     return new Promise((resolve, reject) => {
       
       let result:any = {}
@@ -2689,17 +2685,12 @@ export class API implements IAPI {
   getVaults() {
     $.checkState(this.credentials);
 
-    var self = this;
-
     var url = '/v1/vaults/';
     return this._doGetRequest(url);
-
   };
 
   createVault(vaultTxProposal: any) {
     $.checkState(this.credentials);
-
-    var self = this;
 
     var url = '/v1/vaults/';
     return this._doPostRequest(url, vaultTxProposal);
