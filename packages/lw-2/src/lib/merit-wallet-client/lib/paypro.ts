@@ -1,5 +1,5 @@
-let Promise = require('bluebird');
 let request = require('superagent');
+import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 
 

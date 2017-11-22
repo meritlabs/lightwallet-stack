@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, LoadingController } from 'ionic-angular';
 
 import { ProfileService } from "merit/core/profile.service";
-import { Wallet } from "merit/wallets/wallet.model";
 import { WalletService } from "../../wallets/wallet.service";
 import { ToastConfig } from "../../core/toast.config";
 import { MeritToastController } from "../../core/toast.controller";

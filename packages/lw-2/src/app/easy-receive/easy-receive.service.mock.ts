@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {EasyReceipt} from "./easy-receipt.model";
-import {Wallet} from "merit/wallets/wallet.model";
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()
 export class EasyReceiveServiceMock {
@@ -23,7 +23,7 @@ export class EasyReceiveServiceMock {
     })
   }
 
-  public acceptEasyReceipt(receipt:EasyReceipt, wallet:Wallet, input:number, destinationAddress:any):Promise<EasyReceipt> {
+  public acceptEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input:number, destinationAddress:any):Promise<EasyReceipt> {
     return new Promise((resolve, reject) => {
       resolve(receipt);
     })

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, ToastController, AlertController, Events} from 'ionic-angular';
-import { Wallet } from "./wallet.model";
 
 import * as _ from "lodash";
 import * as Promise from 'bluebird';
@@ -117,7 +116,7 @@ export class WalletsView {
 
   private registerListeners(): Promise<any> {
 
-    return this.subscribeToPromise('bwsEvent').then((walletId, type, n) => {
+    return this.subscribeToPromise('bwsEvent').then(({walletId, type, n}) => {
       this.logger.info("Got a bwsEvent event with: ", walletId, type, n);
       
       return this.profileService.getTxps({limit: 3}).then((txps) => {
@@ -215,7 +214,7 @@ export class WalletsView {
     this.easyReceiveService.rejectEasyReceipt(receipt);
   }
 
-  private calculateNetworkAmount(wallets:Array<Wallet>): Promise<any> {
+  private calculateNetworkAmount(wallets:Array<MeritWalletClient>): Promise<any> {
     return Promise.resolve(10000);
   }
 
@@ -261,7 +260,7 @@ export class WalletsView {
   // This method returns all wallets with statuses.  
   // Statuses include balances and other important metadata 
   // needed to power the display. 
-  private async getWallets():Promise<Array<Wallet>> {
+  private getWallets():Promise<Array<MeritWalletClient>> {
     this.logger.warn("getWallets() in wallets.ts");
     if (this.needWalletStatuses()) {
       return this.updateAllWallets().then((wallets) => {

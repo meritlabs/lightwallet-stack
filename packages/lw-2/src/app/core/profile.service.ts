@@ -13,7 +13,6 @@ import { AppService } from 'merit/core/app-settings.service';
 import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { Profile } from 'merit/core/profile.model';
-import { Wallet } from 'merit/wallets/wallet.model';
 import { Events } from 'ionic-angular/util/events';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
@@ -610,7 +609,7 @@ export class ProfileService {
 
 
   
-  public deleteWalletClient(wallet: any): Promise<any> {
+  public deleteWalletClient(wallet: MeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
 
       var walletId = wallet.credentials.walletId;
@@ -618,7 +617,7 @@ export class ProfileService {
       var config = this.configService.get();
 
       this.logger.debug('Deleting Wallet:', wallet.credentials.walletName);
-      wallet.removeAllListeners();
+      wallet.eventEmitter.removeAllListeners();
 
       this.profile.deleteWallet(walletId);
 
@@ -633,6 +632,7 @@ export class ProfileService {
         });
       }).catch((err: any) => {
         this.logger.warn(err);
+        return reject();
       });
     });
   };
@@ -879,8 +879,7 @@ export class ProfileService {
       let MAX = 100;
       opts = opts ? opts : {};
 
-      let w: any;
-      return this.getWallets().then((w) => {
+      return this.getWallets().then((w:MeritWalletClient[]) => {
         if (_.isEmpty(w)) {
           return reject('No wallets available');
         }

@@ -8,7 +8,6 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { PopupService } from 'merit/core/popup.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
-import { Wallet } from 'merit/wallets/wallet.model';
 import { FeeService } from 'merit/shared/fee/fee.service';
 import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 
@@ -46,7 +45,7 @@ export class SendConfirmView {
     allowSpendUnconfirmed?: boolean,
     usingCustomFee?: boolean
   };
-  private wallet: Wallet;
+  private wallet: MeritWalletClient;
   private walletConfig: any;
   private wallets: Array<MeritWalletClient>;
   private unitToMicro: number;
@@ -203,7 +202,7 @@ export class SendConfirmView {
 
         let confirmTx = (): Promise<any> => {
             if (this.walletService.isEncrypted(wallet))
-              return Promise.resolve();
+              return Promise.resolve(false);
   
             let amountUsd: number;
             return this.txFormatService.formatToUSD(ctxp.amount).then((value: string) => {
@@ -211,7 +210,7 @@ export class SendConfirmView {
            
     
               if (amountUsd <= SendConfirmView.CONFIRM_LIMIT_USD)
-                return Promise.resolve();
+                return Promise.resolve(false);
     
               let amountStr = tx.amountStr;
               let name = wallet.name;
