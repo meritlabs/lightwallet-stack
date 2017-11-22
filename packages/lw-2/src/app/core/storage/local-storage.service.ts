@@ -3,7 +3,7 @@ import { Logger } from 'merit/core/logger';
 import * as _ from 'lodash';
 
 import { MeritStorage, KeyAlreadyExistsError } from 'merit/core/storage/storage.interface';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 
 @Injectable()

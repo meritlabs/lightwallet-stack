@@ -3,7 +3,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { Logger } from 'merit/core/logger';
 
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -58,7 +58,7 @@ export class FeeService {
       }
       let feeRate = feeLevelRate.feePerKb;
       if (!levelData.fromCache) self.logger.debug('Dynamic fee: ' + feeLevel + '/' + network + ' ' + (feeLevelRate.feePerKb / 1000).toFixed() + ' Micros/B');
-      return feeRate;
+      return Promise.resolve(feeRate);
     });
   };
 

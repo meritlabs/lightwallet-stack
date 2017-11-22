@@ -1,3 +1,4 @@
+import * as Promise from 'bluebird';
 import * as _ from "lodash";
 
 import { Component } from '@angular/core';
@@ -46,7 +47,7 @@ export class CreateVaultGeneralInfoView {
 
     // fetch users wallets
     this.getAllWallets().then((wallets) => {
-      const walletDTOs = _.map(wallets, (w) => {
+      const walletDTOs = _.map(wallets, (w: any) => {
         const name = w.name || w._id;
         return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
       });
@@ -56,7 +57,7 @@ export class CreateVaultGeneralInfoView {
 
     // fetch users vaults
     this.getAllWVaults().then((vaults) => {
-      const vaultDTOs = _.map(vaults, (v) => {
+      const vaultDTOs = _.map(vaults, (v:any) => {
         const name = v.name || v._id;
         const key = new this.bitcore.Address(v.address).toString();
         console.log(key);
@@ -83,9 +84,9 @@ export class CreateVaultGeneralInfoView {
   }
 
   private getAllWVaults(): Promise<Array<any>> {
-    return this.profileService.getWallets().then((ws) => {
+    return this.profileService.getWallets().then((ws: any[]) => {
       if (_.isEmpty(ws)) {
-        Promise.resolve(null); //ToDo: add proper error handling;
+        Promise.reject(new Error('getAllWVaults failed')); //ToDo: add proper error handling;
       }
       return _.head(ws);
     }).then((walletClient) => {
