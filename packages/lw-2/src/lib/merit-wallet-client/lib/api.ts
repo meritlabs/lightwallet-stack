@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as Promise from 'bluebird';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { Common } from './common';
@@ -17,7 +18,6 @@ let url = require('url');
 let querystring = require('querystring');
 let Stringify = require('json-stable-stringify');
 let Bip38 = require('bip38');
-let Promise = require('bluebird');
 
 let request = require('superagent');
 
@@ -27,6 +27,8 @@ let Utils = Common.Utils;
 
 let Package = require('../../../../package.json');
 
+const DEFAULT_NET = 'testnet';
+const DEFAULT_FEE = 10000;
 
 /**
  * Merit Wallet Client; (re-)written in typescript.
@@ -104,6 +106,7 @@ export interface IAPI {
   getMnemonic(): any;
   mnemonicHasPassphrase(): any;
   clearMnemonic(): any;
+  getNewMnemonic(data: any): any;
   seedFromExtendedPrivateKey(xPrivKey: any, opts: any): void;
   seedFromMnemonic(words: Array<string>, opts: any): any;
   seedFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any): any;
@@ -118,6 +121,9 @@ export interface IAPI {
   buildTxFromPrivateKey(privateKey: any, destinationAddress: any, opts: any): Promise<any>;
   buildEasySendScript(opts: any): Promise<any>;
   buildEasySendRedeemTransaction(input: any, destinationAddress: any, opts: any): any;
+  prepareVault(type: number, opts: any) : any;
+  createSpendFromVaultTx(opts: any) : any;
+  buildRenewVaultTx(opts: any) : any;
   openWallet(): Promise<any>;
   _getHeaders(method: string, url: string, args: any): any;
   _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<any>;
@@ -132,6 +138,7 @@ export interface IAPI {
   _getCurrentSignatures(txp: any): any;
   _addSignaturesToBitcoreTx(txp: any, t: any, signatures: any, xpub: any): any;
   _applyAllSignatures(txp: any, t: any): any;
+  doJoinWallet(walletId: any, walletPrivKey: any, xPubKey: any, requestPubKey: any, copayerName: string, opts:any) : Promise<any>;
   isComplete(): any;
   isPrivKeyEncrypted(): any;
   isPrivKeyExternal(): any;
@@ -185,6 +192,8 @@ export interface IAPI {
   referralTxConfirmationSubscribe(opts: any): Promise<any>;
   referralTxConfirmationUnsubscribe(codeHash: string): Promise<any>;
   validateEasyScript(scriptId: string): Promise<any>;
+  getVaults();
+  createVault(vaultTxProposal: any);
 }
 
 export class API implements IAPI {
@@ -575,6 +584,9 @@ export class API implements IAPI {
     return this.credentials.clearMnemonic();
   };
 
+  getNewMnemonic(data: any): any {
+    return new Mnemonic(data);
+  }
 
   /**
    * Seed from extended private key
@@ -714,7 +726,7 @@ export class API implements IAPI {
 
       return this._import().then((ret) => {
         return resolve(ret);
-      }).then((err) => {
+      }).catch((err) => {
         if (err == Errors.INVALID_BACKUP) return reject(err);
         if (err == Errors.NOT_AUTHORIZED || err == Errors.WALLET_DOES_NOT_EXIST) {
           let altCredentials = derive(true);
@@ -820,7 +832,7 @@ export class API implements IAPI {
         }).then((utxos) => {
           if (!_.isArray(utxos) || utxos.length == 0) return reject(new Error('No utxos found'));
           
-          let fee = opts.fee || 10000;
+          let fee = opts. fee || DEFAULT_FEE;
           let amount = _.sumBy(utxos, 'micros') - fee;
           if (amount <= 0) return reject(Errors.INSUFFICIENT_FUNDS);
   
@@ -916,7 +928,7 @@ export class API implements IAPI {
     //unspent Txo and use script to create scriptSig
     let inputAddress = input.txn.scriptId;
 
-    let fee = opts.fee || 10000;
+    let fee = opts. fee || DEFAULT_FEE;
     let microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
     let amount =  microAmount - fee;
     if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
@@ -953,6 +965,73 @@ export class API implements IAPI {
       this.log.error('Could not build transaction from private key', ex);
       return Errors.COULD_NOT_BUILD_TRANSACTION;
     }
+    return tx;
+  };
+
+  prepareVault(type: number, opts: any = {}) {
+    if(type == 0) {
+      let tag = opts.masterPubKey.toAddress().hashBuffer;
+
+      let params = [
+        opts.spendPubKey.toBuffer(),
+        opts.masterPubKey.toBuffer(),
+      ];
+
+      params = params.concat(opts.whitelist);
+      params.push(Bitcore.Opcode.smallInt(opts.whitelist.length));
+      params.push(tag);
+      params.push(Bitcore.Opcode.smallInt(type));
+
+      let redeemScript = Bitcore.Script.buildSimpleVaultScript(tag);
+      let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
+
+      const network = opts.masterPubKey.network.name;
+
+      let vault = {
+        type: type,
+        amount: opts.amount,
+        tag: opts.masterPubKey.toAddress().hashBuffer,
+        whitelist: opts.whitelist,
+        spendPubKey: opts.spendPubKey,
+        masterPubKey: opts.masterPubKey,
+        redeemScript: redeemScript,
+        scriptPubKey: scriptPubKey,
+        address: scriptPubKey.toAddress(network),
+        coins: []
+      };
+
+      return vault;
+    } else {
+      throw new Error('Unsupported vault type');
+    }
+  }
+
+  /**
+   * Create spend tx for vault
+   */
+  createSpendFromVaultTx(opts: any = {}) {
+
+    var network = opts.network || DEFAULT_NET;
+    var fee = opts. fee || DEFAULT_FEE;
+
+    var tx = new Bitcore.Transaction();
+    tx.fee(fee);
+
+    return tx;
+  };
+
+  /**
+   * Renew vault
+   * Will make all pending tx invalid
+   */
+  buildRenewVaultTx(opts: any = {}) {
+
+    var network = opts.network || DEFAULT_NET;
+    var fee = opts. fee || DEFAULT_FEE;
+
+    var tx = new Bitcore.Transaction();
+    tx.fee(fee);
+
     return tx;
   };
 
@@ -1021,7 +1100,7 @@ export class API implements IAPI {
    * @param {Object} args
    * @param {Callback} cb
    */
-  _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<any> {
+  _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<{body: any, header: any}> {
     return new Promise((resolve, reject) => {
       
 
@@ -1096,7 +1175,7 @@ export class API implements IAPI {
         if (res.body === '{"error":"read ECONNRESET"}')
           return reject(Errors.ECONNRESET_ERROR);
 
-        return resolve(res.body, res.header);
+        return resolve(res);
       }).catch((err) => {
         this.log.warn("Cannot complete request to server: ", err);
         return resolve();
@@ -1147,6 +1226,8 @@ export class API implements IAPI {
 
     return loginIfNeeded().then(() => {
       return this._doRequest(method, url, args, true);
+    }).then((res) => {
+      return res.body;
     });
 };
 
@@ -1159,13 +1240,17 @@ export class API implements IAPI {
    * @param {Callback} cb
    */
   _doPostRequest(url: string, args: any): Promise<any> {
-    return this._doRequest('post', url, args, false).catch((err) => {
+    return this._doRequest('post', url, args, false).then((res) => {
+      return res.body;
+    }).catch((err) => {
       this.log.warn("Were not able to complete getRequest: ", err);
     });
   };
 
   _doPutRequest(url: string, args: any): Promise<any> {
-    return this._doRequest('put', url, args, false).catch((err) => {
+    return this._doRequest('put', url, args, false).then((res) => {
+      return res.body;
+    }).catch((err) => {
       this.log.warn("Were not able to complete getRequest: ", err);
     });
   };
@@ -1180,7 +1265,9 @@ export class API implements IAPI {
   _doGetRequest(url: string): Promise<any> {
     url += url.indexOf('?') > 0 ? '&' : '?';
     url += 'r=' + _.random(10000, 99999);
-    return this._doRequest('get', url, {}, false).catch((err) => {
+    return this._doRequest('get', url, {}, false).then((res) => {
+      return res.body;
+    }).catch((err) => {
       this.log.warn("Were not able to complete getRequest: ", err);
     });
   };
@@ -1201,7 +1288,9 @@ export class API implements IAPI {
    * @param {Callback} cb
    */
   private _doDeleteRequest(url: string): Promise<any> {
-    return this._doRequest('delete', url, {}, false);
+    return this._doRequest('delete', url, {}, false).then((res) => {
+      return res.body;
+    });
   };
 
   private _buildSecret = function(walletId, walletPrivKey, network) {
@@ -1353,7 +1442,7 @@ export class API implements IAPI {
    * @param {String} opts.customData
    * @param {Callback} cb
    */
-  public doJoinWallet(walletId, walletPrivKey, xPubKey, requestPubKey, copayerName, opts:any = {}): Promise<any> {
+  public doJoinWallet(walletId: any, walletPrivKey: any, xPubKey: any, requestPubKey: any, copayerName: string, opts:any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
 
       // Adds encrypted walletPrivateKey to CustomData
@@ -1549,7 +1638,7 @@ export class API implements IAPI {
 
       if (opts) $.shouldBeObject(opts);
 
-      let network = opts.network || 'livenet';
+      let network = opts.network || DEFAULT_NET;
       if (!_.includes(['testnet', 'livenet'], network)) return reject(new Error('Invalid network'));
 
       if (!this.credentials) {
@@ -1675,7 +1764,7 @@ export class API implements IAPI {
         return this.openWallet();
       }).then(() => {
         let i = 1;
-        return Promise.each(this.credentials.publicKeyRing, function(item, next) {
+        return Promise.each(this.credentials.publicKeyRing, function(item: any, next) {
           let name = item.copayerName || ('copayer ' + i++);
           return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
             supportBIP44AndP2PKH: supportBIP44AndP2PKH
@@ -1955,10 +2044,9 @@ export class API implements IAPI {
   publishTxProposal(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     $.checkArgument(opts)
-      .checkArgument(opts.txp);
+    $.checkArgument(opts.txp);
 
     $.checkState(parseInt(opts.txp.version) >= 3);
-
 
     let t = Utils.buildTx(opts.txp);
     let hash = t.uncheckedSerialize();
@@ -1971,6 +2059,8 @@ export class API implements IAPI {
       return this._processTxps(txp).then(() => {
         return Promise.resolve(txp);
       });
+    }).catch((err) => {
+      return Promise.reject(new Error('error in post /v1/txproposals/' + err));
     });
   };
 
@@ -2088,11 +2178,13 @@ export class API implements IAPI {
    *
    * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
    */
-  getBalance(opts:any = {}): Promise<any> {
+  getBalance(opts:any = {}): Promise<number> {
     $.checkState(this.credentials && this.credentials.isComplete());
     let url = '/v1/balance/';
     if (opts.twoStep) url += '?twoStep=1';
-    return this._doGetRequest(url);
+    return this._doGetRequest(url).then((balance) => {
+      return balance.availableAmount;
+    });
   };
 
   /**
@@ -2597,5 +2689,27 @@ export class API implements IAPI {
 
     let url = '/v1/easyreceive/validate/' + scriptId;
     return this._doGetRequest(url);
+  };
+
+  /**
+  * Vaulting 
+  */
+  getVaults() {
+    $.checkState(this.credentials);
+
+    var self = this;
+
+    var url = '/v1/vaults/';
+    return this._doGetRequest(url);
+
+  };
+
+  createVault(vaultTxProposal: any) {
+    $.checkState(this.credentials);
+
+    var self = this;
+
+    var url = '/v1/vaults/';
+    return this._doPostRequest(url, vaultTxProposal);
   };
 }

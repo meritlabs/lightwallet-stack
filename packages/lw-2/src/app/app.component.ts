@@ -12,7 +12,7 @@ import { TransactView } from 'merit/transact/transact';
 import { OnboardingView } from 'merit/onboard/onboarding.view';
 import { FingerprintLockView } from 'merit/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
-import { Promise } from 'bluebird'; 
+import * as Promise from 'bluebird'; 
 
 
 @Component({

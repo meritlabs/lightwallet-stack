@@ -13,12 +13,13 @@ import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 import { MeritWalletClient } from './../../lib/merit-wallet-client';
 import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
 import { Wallet } from "./wallet.model";
+import { setTimeout } from 'timers';
 
 
 /* Refactor CheckList:
@@ -67,8 +68,6 @@ export class WalletService {
     console.log('Hello WalletService Service');
   }
 
-
-
   private invalidateCache(wallet: MeritWalletClient) {
     if (wallet.cachedStatus)
       wallet.cachedStatus.isValid = false;
@@ -93,24 +92,6 @@ export class WalletService {
         status = status || {};
         let txps = status.pendingTxps;
         let now = Math.floor(Date.now() / 1000);
-
-        /* To test multiple outputs...
-        var txp = {
-          message: 'test multi-output',
-          fee: 1000,
-          createdOn: new Date() / 1000,
-          outputs: []
-        };
-        function addOutput(n) {
-          txp.outputs.push({
-            amount: 600,
-            toAddress: '2N8bhEwbKtMvR2jqMRcTCQqzHP6zXGToXcK',
-            message: 'output #' + (Number(n) + 1)
-          });
-        };
-        _.times(150, addOutput);
-        txps.push(txp);
-        */
 
         return Promise.each(txps, (tx: any) => {
 
@@ -276,16 +257,16 @@ export class WalletService {
           tries = tries || 0;
 
           this.logger.debug('Updating Status:', wallet.credentials.walletName, tries);
-          return wallet.getStatus().then((status) => {
+          return wallet.getStatus({}).then((status) => {
             console.log("@@@ WHAT IS STATUS From WC GetStatus?")
             console.log(status)
             let currentStatusHash = walletStatusHash(status);
             this.logger.debug('Status update. hash:' + currentStatusHash + ' Try:' + tries);
             if (opts.untilItChanges && initStatusHash == currentStatusHash && tries < this.WALLET_STATUS_MAX_TRIES && walletId == wallet.credentials.walletId) {
-              return setTimeout(() => {
+              return Promise.delay(this.WALLET_STATUS_DELAY_BETWEEN_TRIES * tries).then(() => {
                 this.logger.debug('Retrying update... ' + walletId + ' Try:' + tries)
                 return _getStatus(initStatusHash, ++tries);
-              }, this.WALLET_STATUS_DELAY_BETWEEN_TRIES * tries);
+              });
             }
 
             return processPendingTxps(status).then(() => {
@@ -368,9 +349,9 @@ export class WalletService {
         if (err == this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
           this.logger.warn(err);
           this.logger.warn("Attempting to create address again.");
-          return setTimeout(() => {
+          return Promise.delay(5000).then(() => {
             this.createAddress(wallet);
-          }, 5000);
+          });
         } else if (err == this.errors.MAIN_ADDRESS_GAP_REACHED || (err.message && err.message == 'MAIN_ADDRESS_GAP_REACHED')) {
           this.logger.warn(err);
           this.logger.warn("Using main address instead.");
@@ -692,6 +673,9 @@ export class WalletService {
       default:
       case 'P2SH':
         return wallet.m * 72 + wallet.n * 36 + 44;
+      case 'PP2SH':
+        //TODO: Figure out a better estimate
+        return 147;
     };
   }
 
@@ -787,8 +771,7 @@ export class WalletService {
 
   public createTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     return wallet.createTxProposal(txp).then((ctxp) => {
-      
-      return Promise.resolve(ctxp);
+      return ctxp;
     });
   }
 
@@ -799,6 +782,8 @@ export class WalletService {
       return resolve(wallet.publishTxProposal({
         txp: txp
       }));
+    }).catch((err) => {
+      Promise.reject(new Error('error publishing tx: ' + err));
     });
   }
 
@@ -1073,7 +1058,7 @@ export class WalletService {
         title = 'Confirm your new spending password'; //TODO gettextcatalog
         return this.askPassword(warnMsg, title).then((password2: string) => {
           if (!password2 || password != password2) return reject(new Error('password mismatch'));
-          wallet.encryptPrivateKey(password);
+          wallet.encryptPrivateKey(password, {});
           return resolve();
         }).catch((err) => {
           return reject(err);
@@ -1194,7 +1179,7 @@ export class WalletService {
     
         return this.prepare(wallet).then((password: string) => {
           return this.signAndBroadcast(wallet, txp, password, customStatusHandler)
-            .then((broadcastedTxp: any) => {
+          .then((broadcastedTxp: any) => {
             return resolve(broadcastedTxp);
           }).catch((err) => {
             return reject(this.bwcErrorService.msg(err));
@@ -1296,7 +1281,7 @@ export class WalletService {
   };
 
   public getSendMaxInfo(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
-    wallet.getSendMaxInfo(opts);
+    return wallet.getSendMaxInfo(opts);
   };
 
   public getProtocolHandler(wallet: MeritWalletClient): string {
@@ -1421,12 +1406,8 @@ export class WalletService {
   }
 
   // todo its a mock now!!
-  getWalletAnv(wallet:Wallet):Promise<number> {
-    return new Promise((resolve, reject) => {
-      return resolve(
-       (wallet.status && wallet.status.totalBalanceMicros) ? wallet.status.totalBalanceMicros : 0
-      )
-    });
+  getWalletAnv(wallet: MeritWalletClient):Promise<number> {
+    return wallet.getBalance({});
   }
   
   

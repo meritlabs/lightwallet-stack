@@ -7572,6 +7572,7 @@ Script.types.PUBKEY_IN = 'Spend from public key';
 Script.types.PUBKEYHASH_OUT = 'Pay to public key hash';
 Script.types.PUBKEYHASH_IN = 'Spend from public key hash';
 Script.types.SCRIPTHASH_OUT = 'Pay to script hash';
+Script.types.PARAMETERIZED_SCRIPTHASH_OUT = 'Parameterized Pay to script hash';
 Script.types.SCRIPTHASH_IN = 'Spend from script hash';
 Script.types.MULTISIG_OUT = 'Pay to multisig';
 Script.types.MULTISIG_IN = 'Spend from multisig';

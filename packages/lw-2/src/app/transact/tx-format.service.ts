@@ -4,7 +4,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { RateService } from 'merit/transact/rate.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 import * as _ from "lodash";
 import { Logger } from 'merit/core/logger';
