@@ -880,21 +880,23 @@ export class ProfileService {
       let MAX = 100;
       opts = opts ? opts : {};
 
-      let w = this.getWallets();
-      if (_.isEmpty(w)) {
-        return reject('No wallets available');
-      }
-
-      let txps = [];
-
-      _.each(w, (x: any) => {
-        if (x && x.pendingTxps)
-          txps = txps.concat(x.pendingTxps);
+      let w: any;
+      return this.getWallets().then((w) => {
+        if (_.isEmpty(w)) {
+          return reject('No wallets available');
+        }
+  
+        let txps = [];
+  
+        _.each(w, (x: any) => {
+          if (x && x.pendingTxps)
+            txps = txps.concat(x.pendingTxps);
+        });
+        let n = txps.length;
+        txps = _.sortBy(txps, 'pendingForUs', 'createdOn');
+        txps = _.compact(_.flatten(txps)).slice(0, opts.limit || MAX);
+        return resolve({ txps: txps, n: n });
       });
-      let n = txps.length;
-      txps = _.sortBy(txps, 'pendingForUs', 'createdOn');
-      txps = _.compact(_.flatten(txps)).slice(0, opts.limit || MAX);
-      return resolve({ txps: txps, n: n });
     });
   };
 
