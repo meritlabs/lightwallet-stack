@@ -77,65 +77,73 @@ export class WalletsView {
     this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
     
 
-    this.registerListeners();
+    await this.registerListeners();
     this.newReleaseExists = await this.appUpdateService.isUpdateAvailable();
     this.feedbackNeeded   = await this.feedbackService.isFeedBackNeeded();
     this.addressbook = await this.addressbookService.list(() => {});
 
     return this.getWallets().then((wallets) => {
-      this.calculateNetworkAmount(wallets);
-      this.processEasyReceive();
-      this.txpsData = this.profileService.getTxps({limit: 3});
-      if (this.configService.get().recentTransactions.enabled) {
-        this.recentTransactionsEnabled = true;
-        this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
-      }
-      return Promise.resolve();
-    })
-    .catch((err) => {
+      return this.calculateNetworkAmount(wallets);
+     }).then((cNetworkAmount) => {
+       this.totalAmount = cNetworkAmount;
+       return this.processEasyReceive();
+     }).then(() => {
+       return this.profileService.getTxps({limit: 3});
+     }).then((txps) => {
+      this.txpsData = txps;
+       if (this.configService.get().recentTransactions.enabled) {
+         this.recentTransactionsEnabled = true;
+         this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
+       }
+       return Promise.resolve();
+     }).catch((err) => {
       console.log("@@ERROR IN Updating statuses.")
       console.log(err)
     });
   }
 
-  private registerListeners() {
+  private registerListeners(): Promise<any> {
 
-
-
-    this.events.subscribe('bwsEvent', (walletId, type, n) => {
+    return this.subscribeToPromise('bwsEvent').then((walletId, type, n) => {
       this.logger.info("Got a bwsEvent event with: ", walletId, type, n);
       
-      this.txpsData = this.profileService.getTxps({limit: 3});
+      return this.profileService.getTxps({limit: 3}).then((txps) => {
+        this.txpsData = txps;        
+      });
+    }).then(() => {
+      return this.subscribeToPromise('Local:Tx:Broadcast').then((broadcastedTxp) => {
+        this.logger.info("Got a Local:Tx:Broadcast event with: ", broadcastedTxp);
+        // this.getWallets().then((wallets) => {
+        //   wallets.forEach((wallet) => {
+        //     if (wallet.id == walletId) {
+        //       updateWalletStatus(wallet);
+        //     }
+        //   });
+        // });
+      });
+    }).then(() => {
+      return this.subscribeToPromise('easyReceiveEvent').then((receipt:EasyReceipt) => {
+        let checkPass = receipt.checkPassword;
+        this.showEasyReceiveModal(receipt, checkPass);
+        return Promise.resolve();
+      });
+    }).catch((err) => {
+      this.logger.warn("Error registering event listeners.");
     });
-
-    this.events.subscribe('Local:Tx:Broadcast', (broadcastedTxp) => {
-      this.logger.info("Got a Local:Tx:Broadcast event with: ", broadcastedTxp);
-      // this.getWallets().then((wallets) => {
-      //   wallets.forEach((wallet) => {
-      //     if (wallet.id == walletId) {
-      //       updateWalletStatus(wallet);
-      //     }
-      //   });
-      // });
-    });
-
-    this.events.subscribe('easyReceiveEvent', (e, receipt:EasyReceipt) => {
-      let checkPass = receipt.checkPassword;
-      this.showEasyReceiveModal(receipt, checkPass);
-    });
-
   }
 
+  private subscribeToPromise = Promise.promisify(this.events.subscribe);
 
   /**
    * checks if pending easyreceive exists and if so, open it
    */
-  private processEasyReceive() {
-    this.easyReceiveService.getPendingReceipt().then((receipt) => {
+  private processEasyReceive(): Promise<any> {
+    return this.easyReceiveService.getPendingReceipt().then((receipt) => {
       if (receipt) {
         let checkPass = receipt.checkPassword;
         this.showEasyReceiveModal(receipt, checkPass);
       }
+      return Promise.resolve();
     });
   }
 
@@ -194,21 +202,8 @@ export class WalletsView {
     this.easyReceiveService.rejectEasyReceipt(receipt);
   }
 
-  private calculateNetworkAmount(wallets:Array<Wallet>) {
-    this.totalAmount = 0;
-
-    let coin = ''; //todo what to use here??
-    this.totalAmountFormatted =  this.txFormatService.parseAmount(this.totalAmount, 'MRT');
-
-    wallets.forEach((wallet) => {
-      this.walletService.getWalletAnv(wallet).then((amount) => {
-
-        let coin = ''; //todo what to use here??
-        this.totalAmount += amount;
-        this.totalAmountFormatted =  this.txFormatService.parseAmount(this.totalAmount, 'MRT');
-      });
-
-    });
+  private calculateNetworkAmount(wallets:Array<Wallet>): Promise<any> {
+    return Promise.resolve(10000);
   }
 
 
