@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { File, DirectoryEntry, FileEntry } from '@ionic-native/file';
 import { Platform } from 'ionic-angular';
 import { MeritStorage, KeyAlreadyExistsError } from 'merit/core/storage/storage.interface';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 
 @Injectable()
@@ -33,7 +33,7 @@ export class FileStorage implements MeritStorage {
       return Promise.reject(err);
     };
 
-    return this.platform.ready().then(() => {
+    return Promise.resolve(this.platform.ready()).then((res) => {
       window.requestFileSystem(1, 0, onSuccess, onFailure);
     });
   }
@@ -45,8 +45,7 @@ export class FileStorage implements MeritStorage {
     }
 
     var url = this.file.dataDirectory;
-    return this.file.resolveDirectoryUrl(url)
-      .catch(err => {
+    return Promise.resolve(this.file.resolveDirectoryUrl(url)).catch(err => {
         let msg = 'Could not resolve filesystem ' + url;
         this.log.warn(msg, err);
         throw err || new Error(msg);
