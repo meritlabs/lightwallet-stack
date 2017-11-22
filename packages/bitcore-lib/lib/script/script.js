@@ -947,6 +947,24 @@ Script.buildSimpleVaultScript = function(tag) {
   return s;
 };
 
+/**
+ * Build a vault input which selects mode
+ * be one of the public keys used in the easysend out script.
+ * @param {buffer} signature to be append to the script
+ * @returns {Script}
+ */
+Script.buildVaultRenewIn = function(signature, vaultScript) {
+  var s = new Script();
+  var sigBuf = BufferUtil.concat([
+    signature.toDER(),
+    BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)
+  ]);
+  s.add(sigBuf);
+  s.add(Opcode.smallInt(1)); //renew mode is 1
+  s.add(vaultScript.toBuffer());
+  return s;
+};
+
 Script.buildParameterizedP2SH = function(script, params) {
   let s = new Script();
 

@@ -72,6 +72,8 @@ PublicKey.prototype._classifyArgs = function(data, extra) {
     compressed: _.isUndefined(extra.compressed) || extra.compressed
   };
 
+  console.log("PUBKEY");
+  console.log(data);
   // detect type of data
   if (data instanceof Point) {
     info.point = data;

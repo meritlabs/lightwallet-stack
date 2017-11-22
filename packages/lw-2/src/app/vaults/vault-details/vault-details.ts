@@ -55,10 +55,19 @@ export class VaultDetailsView {
 
         let address = this.bitcore.Address.fromObject(this.vault.address);
 
-        console.log("VAULT COINS: ");
         console.log(address.toString());
         console.log(this.vault);
         console.log(coins);
+
+        let network = walletClient.credentials.network;
+        let dummyKey = this.bitcore.PrivateKey.fromRandom(network);
+
+        let tx = walletClient.buildRenewVaultTx(coins, this.vault, dummyKey, {network: network});
+
+        console.log("RENEW TX");
+        console.log(tx.toString());
+        console.log(tx);
+        console.log(tx.serialize());
       });
     });
   }
