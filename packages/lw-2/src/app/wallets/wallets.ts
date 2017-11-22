@@ -231,7 +231,7 @@ export class WalletsView {
     this.easyReceiveService.rejectEasyReceipt(receipt);
   }
 
-  private calculateNetworkAmount(wallets:Array<Wallet>) {
+  private calculateNetworkAmount(wallets:Array<any>) {
     this.totalAmount = 0;
 
     this.totalAmountFormatted = this.txFormatService.parseAmount(this.totalAmount, 'MRT').amountUnitStr;
