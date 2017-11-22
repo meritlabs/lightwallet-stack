@@ -1009,36 +1009,24 @@ export class API implements IAPI {
    */
   buildRenewVaultTx(utxos: any[], newVault: any, masterKey: any, opts: any = {}) {
 
-    console.log("TX 1");
     var network = opts.network || DEFAULT_NET;
     var fee = opts.fee || DEFAULT_FEE;
 
-    console.log("TX 2");
     let totalAmount = _.reduce(utxos, (sum, utxo) => {
       return sum + utxo.micros;
-    });
-    console.log(totalAmount);
+    }, 0);
 
-    console.log("TX 3");
     let amount =  totalAmount - fee;
     if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
 
-    console.log("TX 4");
-    var tx = new Bitcore.Transaction();
-    tx.fee(fee);
+    let redeemScript = new Bitcore.Script(newVault.redeemScript);
 
-    console.log("TX 5");
+    var tx = new Bitcore.Transaction();
+
     try {
 
-      let redeemScript = new Bitcore.Script(newVault.redeemScript);
-
-    console.log("TX 6");
-      let toAddress = Bitcore.Address.fromObject(newVault.address);
-
-      let tag = newVault.tag;
-
-    console.log("TX 7");
       if(newVault.type == 0) {
+        let tag = newVault.tag;
 
         let params = [
           Bitcore.HDPublicKey.fromObject(newVault.spendPubKey).toBuffer(),
@@ -1050,52 +1038,43 @@ export class API implements IAPI {
         params.push(tag);
         params.push(Bitcore.Opcode.smallInt(newVault.type));
 
-    console.log("TX 8");
         let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
 
-    console.log("TX 9");
         tx.addOutput(new Bitcore.Transaction.Output({
           script: scriptPubKey,
-          micros: totalAmount
+          micros: amount
         }));
 
-    console.log("TX 10");
         tx.fee(fee)
-    console.log("TX 11");
 
         _.each(utxos, (utxo) => {
-    console.log("TX 12");
           tx.addInput(
-            new Bitcore.Transaction.Input({
+            new Bitcore.Transaction.Input.PayToScriptHashInput({
               prevTxId: utxo.txid,
               outputIndex: utxo.outputIndex,
-              script: utxo.script
-            }));
+              script: utxo.scriptPubKey
+            }, redeemScript, utxo.scriptPubKey), 
+            utxo.scriptPubKey, utxo.micros);
 
-    console.log("TX 13");
           let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
           let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript);
 
           tx.inputs[tx.inputs.length-1].setScript(inputScript);
         });
 
-    console.log("TX 14");
         // Make sure the tx can be serialized
         tx.serialize();
-        return tx;
 
       } else {
-    console.log("TX 15");
         this.log.error('Vault type is not supported:', newVault.type);
         return Errors.COULD_NOT_BUILD_TRANSACTION;
       }
     } catch (ex) {
-    console.log("TX 16");
-    console.log(ex);
       this.log.error('Could not build transaction from private key', ex);
       return Errors.COULD_NOT_BUILD_TRANSACTION;
     }
-    console.log("TX 17");
+
+    return tx;
   };
 
   /**
