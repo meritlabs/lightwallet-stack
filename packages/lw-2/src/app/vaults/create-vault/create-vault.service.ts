@@ -4,13 +4,14 @@ import { WalletService } from "merit/wallets/wallet.service";
 import { Logger } from 'merit/core/logger';
 import { MeritWalletClient, IMeritWalletClient} from './../../../lib/merit-wallet-client';
 import { ProfileService } from 'merit/core/profile.service';
+import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 
 @Injectable()
 export class CreateVaultService {
 
   private bitcore: any;
-  private walletClient: IMeritWalletClient;
+  private walletClient: MeritWalletClient;
 
   private model = {
     vaultName: '',

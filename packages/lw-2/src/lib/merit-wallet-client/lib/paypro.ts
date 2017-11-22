@@ -1,110 +1,66 @@
-let Promise = require('bluebird');
+let request = require('superagent');
+import * as Promise from 'bluebird';
+import * as _ from 'lodash';
+
+
+
 
 export module PayPro {
+  const TIMEOUT = 5000;
   let $ = require('preconditions').singleton();
   
   let Bitcore = require('bitcore-lib');
   let BitcorePayPro = require('bitcore-payment-protocol');
 
-  let _nodeRequest = (opts, cb) => {
-    opts.agent = false;
-    let http = opts.httpNode || (opts.proto === 'http' ? require("http") : require("https"));
-
-    let fn = opts.method == 'POST' ? 'post' : 'get';
-
-    http[fn](opts, function(res) {
-      if (res.statusCode != 200)
-        return cb(new Error('HTTP Request Error'));
-
-      let data:any = []; // List of Buffer objects
-      res.on("data", function(chunk) {
-        data.push(chunk); // Append Buffer object
-      });
-      res.on("end", function() {
-        data = Buffer.concat(data); // Make one large Buffer of it
-        return cb(null, data);
-      });
-    });
-  };
-
-  let _browserRequest = (opts, cb) => {
-    let method = (opts.method || 'GET').toUpperCase();
-    let url = opts.url;
-    let req = opts;
-
-    req.headers = req.headers || {};
-    req.body = req.body || req.data || '';
-
-    let xhr = opts.xhr || new XMLHttpRequest();
-    xhr.open(method, url, true);
-
-    Object.keys(req.headers).forEach(function(key) {
-      let val = req.headers[key];
-      if (key === 'Content-Length') return;
-      if (key === 'Content-Transfer-Encoding') return;
-      xhr.setRequestHeader(key, val);
-    });
-    xhr.responseType = 'arraybuffer';
-
-    xhr.onload = (event) => {
-      let response = xhr.response;
-      return cb(null, new Uint8Array(response));
-    };
-
-    xhr.onerror = (event) => {
-      let status;
-      if (xhr.status === 0 || !xhr.statusText) {
-        status = 'HTTP Request Error';
-      } else {
-        status = xhr.statusText;
+  let _request = (opts:any): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      let fn = opts.method == 'POST' ? 'post' : 'get';
+      if (!opts.url) {
+        return reject(new Error("No URL for PayPro request."));
       }
-      return cb(new Error(status));
-    };
+      let reqUrl = opts.url;
 
-    if (req.body) {
-      xhr.send(req.body);
-    } else {
-      xhr.send(null);
-    }
-  };
+      let r = request[fn](reqUrl);
+      r.accept('json');
 
-  let _getHttp = (opts) => {
-    let match = opts.url.match(/^((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/);
+      let headers = opts.headers || {};
+      //req.body = req.body || req.data || '';
+      _.each(headers, (v, k) => {
+        if (v) r.set(k,v);
+      });
 
-    opts.proto = RegExp.$2;
-    opts.host = RegExp.$3;
-    opts.path = RegExp.$4 + RegExp.$6;
-    if (opts.http) return opts.http;
+      r.timeout(TIMEOUT);
 
-    let env = opts.env;
-    if (!env)
-      env = (process && (typeof process === 'object')) ? 'node' : 'browser';
+      return r.then((res) => {
+        if (!res) {
+          return reject(new Error("No reply from PayPro"));
+        }
 
-    let http;
-    return (env == "node") ? _nodeRequest : http = _browserRequest;;
-  };
+        return resolve(res);
+      });
+    });
+   
+  }
 
-  export let get = (opts, cb): void => {
+  export let get = (opts): Promise<any> => {
     $.checkArgument(opts && opts.url);
 
-    let http = _getHttp(opts);
     opts.headers = opts.headers || {
       'Accept': BitcorePayPro.PAYMENT_REQUEST_CONTENT_TYPE,
       'Content-Type': 'application/octet-stream',
     };
 
-    http(opts, function(err, dataBuffer) {
-      if (err) return cb(err);
+    return _request(opts).then((res) => {
       let request, verified, signature, serializedDetails;
       try {
-        let body = BitcorePayPro.PaymentRequest.decode(dataBuffer);
+        let body = BitcorePayPro.PaymentRequest.decode(res.body);
         request = (new BitcorePayPro()).makePaymentRequest(body);
         signature = request.get('signature');
         serializedDetails = request.get('serialized_payment_details');
         // Verify the signature
         verified = request.verify(true);
       } catch (e) {
-        return cb(new Error('Could not parse payment protocol: ' + e));
+        return Promise.reject(new Error('Could not parse payment protocol: ' + e));
       }
 
       // Get the payment details
@@ -114,7 +70,7 @@ export module PayPro {
 
       let outputs = pd.get('outputs');
       if (outputs.length > 1)
-        return cb(new Error('Payment Protocol Error: Requests with more that one output are not supported'))
+        return Promise.reject(new Error('Payment Protocol Error: Requests with more that one output are not supported'))
 
       let output = outputs[0];
 
@@ -144,7 +100,7 @@ export module PayPro {
         ok = ok && verified.chainVerified;
       }
 
-      return cb(null, {
+      return Promise.resolve({
         verified: ok,
         caTrusted: verified.caTrusted,
         caName: verified.caName,
@@ -215,36 +171,37 @@ export module PayPro {
     return view;
   };
 
-  export let send = (opts, cb) => {
-    $.checkArgument(opts.merchant_data)
-      .checkArgument(opts.url)
-      .checkArgument(opts.rawTx)
-      .checkArgument(opts.refundAddr)
-      .checkArgument(opts.amountMicros);
+  export let send = (opts: any): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      $.checkArgument(opts.merchant_data)
+        .checkArgument(opts.url)
+        .checkArgument(opts.rawTx)
+        .checkArgument(opts.refundAddr)
+        .checkArgument(opts.amountMicros);
 
-    let payment = _createPayment(opts.merchant_data, opts.rawTx, opts.refundAddr, opts.amountMicros);
+      let payment = _createPayment(opts.merchant_data, opts.rawTx, opts.refundAddr, opts.amountMicros);
 
-    let http = _getHttp(opts);
-    opts.method = 'POST';
-    opts.headers = opts.headers || {
-      'Accept': BitcorePayPro.PAYMENT_ACK_CONTENT_TYPE,
-      'Content-Type': BitcorePayPro.PAYMENT_CONTENT_TYPE,
-      // 'Content-Type': 'application/octet-stream',
-    };
-    opts.body = payment;
+      opts.method = 'POST';
+      opts.headers = opts.headers || {
+        'Accept': BitcorePayPro.PAYMENT_ACK_CONTENT_TYPE,
+        'Content-Type': BitcorePayPro.PAYMENT_CONTENT_TYPE,
+        // 'Content-Type': 'application/octet-stream',
+      };
+      opts.body = payment;
 
-    http(opts, function(err, rawData) {
-      if (err) return cb(err);
-      let memo;
-      if (rawData) {
-        try {
-          let data = BitcorePayPro.PaymentACK.decode(rawData);
-          let pp = new BitcorePayPro();
-          let ack = pp.makePaymentACK(data);
-          memo = ack.get('memo');
-        } catch (e) {};
-      }
-      return cb(null, rawData, memo);
+      return _request(opts).then((rawData) => {
+        if (!rawData) return reject(new Error("No RawData from PayPro sending event."));
+        let memo;
+          try {
+            let data = BitcorePayPro.PaymentACK.decode(rawData);
+            let pp = new BitcorePayPro();
+            let ack = pp.makePaymentACK(data);
+            memo = ack.get('memo');
+          } catch (e) {
+            console.log("Error in PayPro Payment Ack: " + e);
+          };
+        return resolve({rawData, memo});
+      });
     });
   };
 }
