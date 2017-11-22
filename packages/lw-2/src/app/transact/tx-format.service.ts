@@ -140,7 +140,7 @@ export class TxFormatService {
     txps.push(txp);
     */
 
-    return Promise.each(txps, (tx) => {
+    return Promise.each(txps, (tx: any) => {
 
       // no future transactions...
       if (tx.createdOn > now)

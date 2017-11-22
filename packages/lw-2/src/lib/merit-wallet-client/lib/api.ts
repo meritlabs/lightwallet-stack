@@ -88,6 +88,7 @@ export interface IAPI {
   balanceHidden: boolean;
   eventEmitter: any;
   status: any; 
+  secret: any;
 
   // functions
   initNotifications(): Promise<any>;
@@ -240,6 +241,7 @@ export class API implements IAPI {
   public balanceHidden: boolean;
   public eventEmitter: any;
   public status: any; 
+  public secret: string;
   
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -293,7 +295,6 @@ export class API implements IAPI {
         return Promise.each(notifications, (notification) => {
           this.log.info("Emitting a notification event.  Does anyone care?");    
           this.eventEmitter.emit('notification', notification);
-        }).then(() => {
           return Promise.resolve();
         });
       });
@@ -1049,36 +1050,36 @@ export class API implements IAPI {
         return resolve(true); // wallet is already open
 
       return resolve();
-      // return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
-      //   let wallet = ret.wallet;
+      return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
+        let wallet = ret.wallet;
 
-      //   return this._processStatus(ret).then(() => {
-      //     if (!this.credentials.hasWalletInfo()) {
-      //       let me:any = _.find(wallet.copayers, {
-      //         id: this.credentials.copayerId
-      //       });
-      //       this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode, wallet.codeHash);
-      //     }
+        return this._processStatus(ret).then(() => {
+          if (!this.credentials.hasWalletInfo()) {
+            let me:any = _.find(wallet.copayers, {
+              id: this.credentials.copayerId
+            });
+            this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode, wallet.codeHash);
+          }
   
-      //     if (wallet.status != 'complete')
-      //       return resolve();
+          if (wallet.status != 'complete')
+            return resolve();
   
-      //     if (this.credentials.walletPrivKey) {
-      //       if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
-      //         return reject(Errors.SERVER_COMPROMISED);
-      //       }
-      //     } else {
-      //       // this should only happen in AIR-GAPPED flows
-      //       this.log.warn('Could not verify copayers key (missing wallet Private Key)');
-      //     }
+          if (this.credentials.walletPrivKey) {
+            if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
+              return reject(Errors.SERVER_COMPROMISED);
+            }
+          } else {
+            // this should only happen in AIR-GAPPED flows
+            this.log.warn('Could not verify copayers key (missing wallet Private Key)');
+          }
   
-      //     this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
+          this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
   
-      //     this.eventEmitter.emit('walletCompleted', wallet);
+          this.eventEmitter.emit('walletCompleted', wallet);
   
-      //     return resolve(ret);
-      //   });
-      // });
+          return resolve(ret);
+        });
+      });
     });
   };
 
@@ -2409,19 +2410,11 @@ export class API implements IAPI {
             disableLargeFees: true,
             disableDustOutputs: true
           }),
-        }).then(({ack, memo}) => {
-          if (!ack) return Promise.Reject(new Error("No response from PayPro"));
-          return this._doBroadcast(txp).then((txp) => {
-            this.log.info(memo);
-            return Promise.resolve(txp);
-          });
-        });
-      } else {
-        this.log.warn("NO PAYPRO");      
-        return this._doBroadcast(txp).then(() => {
-          return Promise.resolve(txp);
         });
       }
+      return Promise.resolve();
+    }).then(() => {
+        return this._doBroadcast(txp);
     });
   };
 
@@ -2661,9 +2654,7 @@ export class API implements IAPI {
         let c = this.credentials;
         result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
       }
-      return this._processStatus(result).then(() => {
-        return Promise.resolve();
-      });
+      return this._processStatus(result);
     });
   };
 

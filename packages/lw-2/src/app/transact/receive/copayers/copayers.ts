@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Wallet } from "merit/wallets/wallet.model";
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 @IonicPage({
@@ -13,7 +13,7 @@ import { Wallet } from "merit/wallets/wallet.model";
 })
 export class CopayersView {
 
-  wallet:Wallet;
+  wallet:MeritWalletClient;
 
   constructor(
     public navCtrl: NavController,
