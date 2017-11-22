@@ -179,7 +179,7 @@
         </button>
     </ion-list>
 
-    <span *ngIf="recentTransactionsEnabled && recentTransactionsData[0]">
+    <span *ngIf="recentTransactionsEnabled && recentTransactionsData.length > 0">
         <ion-item-divider translate>
             <span>Recent Transactions</span>
             <span class="badge badge-assertive m5t m10r" *ngIf="recentTransactionsData && recentTransactionsData.length>3"> {{notificationsN}}</span>

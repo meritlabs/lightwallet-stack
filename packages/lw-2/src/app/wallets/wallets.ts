@@ -47,8 +47,8 @@ export class WalletsView {
   public feedbackData =  new Feedback();
 
   public addressbook;
-  public txpsData;
-  public recentTransactionsData;
+  public txpsData: any[] = [];
+  public recentTransactionsData: any[] = [];
 
   public recentTransactionsEnabled;
 
@@ -100,9 +100,10 @@ export class WalletsView {
       this.txpsData = txps;
        if (this.configService.get().recentTransactions.enabled) {
          this.recentTransactionsEnabled = true;
-         this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
+         return this.profileService.getNotifications({limit: 3}).then((notifications) => {
+          this.recentTransactionsData = notifications;
+         });
        }
-       return Promise.resolve();
       }).then(() => {
         return this.vaultsService.getVaults(_.head(this.wallets));
       }).then((vaults) => {
@@ -116,11 +117,25 @@ export class WalletsView {
 
   private registerListeners(): Promise<any> {
 
-    return this.subscribeToPromise('bwsEvent').then(({walletId, type, n}) => {
-      this.logger.info("Got a bwsEvent event with: ", walletId, type, n);
+    return this.subscribeToPromise('Remote:IncomingTxProposal').then(({walletId, type, n}) => {
+      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
       
       return this.profileService.getTxps({limit: 3}).then((txps) => {
         this.txpsData = txps;        
+      });
+    }).then(() => {
+      return this.subscribeToPromise('Remote:IncomingTx').then(({walletId, type, n}) => {
+        this.logger.info("RL: Got a incomingTx event with: ", walletId, type, n);
+        
+        this.recentTransactionsData.push(n);
+      });
+    }).then(() => {
+      return this.subscribeToPromise('Remote:NewBlock').then(({walletId, type, n}) => {
+        this.logger.info("RL: Got a incomingTx event with: ", walletId, type, n);
+        
+        return this.profileService.getTxps({limit: 3}).then((txps) => {
+          this.txpsData = txps;        
+        });
       });
     }).then(() => {
       return this.subscribeToPromise('Local:Tx:Broadcast').then((broadcastedTxp) => {
