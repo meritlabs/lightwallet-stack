@@ -16,6 +16,7 @@ import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import * as Promise from 'bluebird';
 import { MeritWalletClient } from './../../lib/merit-wallet-client';
 import { IMeritWalletClient } from "../../lib/merit-wallet-client/index";
+
 import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
@@ -1268,11 +1269,7 @@ export class WalletService {
         return reject(err);
       });
     });
-
-
   }
-
-
   public getSendMaxInfo(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
     return wallet.getSendMaxInfo(opts);
   };
