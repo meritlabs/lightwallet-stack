@@ -40,7 +40,7 @@ export class CreateVaultGeneralInfoView {
 
     // fetch users wallets
     this.getAllWallets().then((wallets) => {
-      const walletDTOs = _.map(wallets, (w) => {
+      const walletDTOs = _.map(wallets, (w: any) => {
         const name = w.name || w._id;
         return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey };
       });
@@ -49,7 +49,7 @@ export class CreateVaultGeneralInfoView {
 
     // fetch users vaults
     this.getAllVaults().then((vaults) => {
-      const vaultDTOs = _.map(vaults, (v) => {
+      const vaultDTOs = _.map(vaults, (v: any) => {
         const name = v.name || v._id;
         const key = v.spendPubKey ? v.spendPubKey.xpubkey : ''; // Prevent errors
         return { 'id': v.id, 'name': name, 'pubKey': key }; // it does not seem to work. need other key here.
