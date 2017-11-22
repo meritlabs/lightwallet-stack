@@ -28,7 +28,6 @@ export class ProfileService {
   public profile: Profile = new Profile();
 
   private UPDATE_PERIOD = 10;
-  private throttledBwsEvent: any;
   private validationLock: boolean = false;
   private errors: any = this.bwcService.getErrors();
   private queue: Array<any> = [];
@@ -46,10 +45,11 @@ export class ProfileService {
     private events: Events    
   ) {
     console.log("Hello ProfileService!");
-    this.throttledBwsEvent = _.throttle((n, wallet) => {
-      this.newBwsEvent(n, wallet);
-    }, 10000);
   }
+
+  private throttledBwsEvent = _.throttle((n, wallet) => {
+    this.propogateBwsEvent(n, wallet);
+  }, 10000);
 
   private updateWalletSettings(wallet: any): void {
     let config: any = this.configService.get();
@@ -150,7 +150,7 @@ export class ProfileService {
 
           if (n.type == "NewBlock" && n.data.network == "testnet") {
             this.throttledBwsEvent(n, wallet);
-          } else this.newBwsEvent(n, wallet);
+          } else this.propogateBwsEvent(n, wallet);
         });
 
 
@@ -190,7 +190,15 @@ export class ProfileService {
     });
   }
 
-  private newBwsEvent(n: any, wallet: any): void {
+  /**
+   * This method is called when we receive a 'notification' event
+   * from the EventEmitter on the MeritWalletClient. 
+   * 
+   * Here we filter event types and propogate them to the rest of the application via 
+   * Ionic Events.
+   */
+  private propogateBwsEvent(n: any, wallet: any): void {
+    this.logger.info("We are in newBwsEvent on profileService");
     if (wallet.cachedStatus)
       wallet.cachedStatus.isValid = false;
 
@@ -203,7 +211,31 @@ export class ProfileService {
     if (wallet.cachedTxps)
       wallet.cachedTxps.isValid = false;
 
-    this.events.publish('bwsEvent', wallet.id, n.type, n); 
+    let eventName: string;
+    this.logger.info("TYPE TYPE");
+    this.logger.info(n.type);
+    switch (n.type) {
+      case 'NewBlock': 
+        eventName = 'Remote:NewBlock';
+        break;
+      case 'IncomingTx': 
+        eventName = 'Remote:IncomingTx';
+        break;
+      case 'IncomingCoinbase': 
+        eventName = 'Remote:IncomingCoinbase';
+        break;
+      case 'IncomingEasySend': 
+        eventName = 'Remote:IncomingEasySend';
+        break;
+      case 'IncomingTxProposal': 
+        eventName = 'Remote:IncomingTxProposal';
+        break;
+      default: 
+        eventName = 'Remote:GenericBwsEvent';
+        break;
+    }
+    this.logger.info("Publishing an event with this name: " + eventName);
+    this.events.publish(eventName, wallet.id, n.type, n); 
   }
 
   public updateCredentials(credentials: any): Promise<boolean> {
