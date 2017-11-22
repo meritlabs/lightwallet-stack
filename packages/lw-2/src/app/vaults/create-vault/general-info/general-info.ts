@@ -1,3 +1,4 @@
+import * as Promise from 'bluebird';
 import * as _ from "lodash";
 
 import { Component } from '@angular/core';
@@ -73,9 +74,9 @@ export class CreateVaultGeneralInfoView {
   }
 
   private getAllWVaults(): Promise<Array<any>> {
-    return this.profileService.getWallets().then((ws) => {
+    return this.profileService.getWallets().then((ws: any[]) => {
       if (_.isEmpty(ws)) {
-        Promise.resolve(null); //ToDo: add proper error handling;
+        Promise.reject(new Error('getAllWVaults failed')); //ToDo: add proper error handling;
       }
       return _.head(ws);
     }).then((walletClient) => {
