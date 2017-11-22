@@ -47,7 +47,7 @@ export class WalletsView {
   public feedbackData =  new Feedback();
 
   public addressbook;
-  public txpsData;
+  public txpsData: any[] = [];
   public recentTransactionsData: any[] = [];
 
   public recentTransactionsEnabled;
