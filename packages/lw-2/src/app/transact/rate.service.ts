@@ -52,9 +52,8 @@ export class RateService {
         }
       })
       .catch((errorBTC) => {
-        console.log("JUICED ERROR: ", errorBTC);
+        console.log("Error applying rates to wallet: ", errorBTC);
         return resolve();
-        //reject(errorBTC);
       });
     });
   }
@@ -67,7 +66,10 @@ export class RateService {
           return reject("Error connecting to rate service.");
         }
         return resolve(res.body);
-      });
+      }).catch((errorBTC) => {
+        console.log("Error connecting to rate service: ", errorBTC);
+        return resolve();
+      });;
     });
   }
 

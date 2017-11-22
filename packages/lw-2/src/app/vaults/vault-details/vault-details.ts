@@ -65,7 +65,6 @@ export class VaultDetailsView {
         let tx = walletClient.buildRenewVaultTx(coins, this.vault, dummyKey, {network: network});
 
         console.log("RENEW TX");
-        console.log(tx.toString());
         console.log(tx);
         console.log(tx.serialize());
       });

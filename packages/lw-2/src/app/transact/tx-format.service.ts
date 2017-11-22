@@ -77,8 +77,9 @@ export class TxFormatService {
     });
   };
 
-  processTx(tx: any) {
+  processTx(tx: any): Promise<any> {
     let self = this;
+
     if (!tx || tx.action == 'invalid')
       return tx;
 
@@ -101,9 +102,10 @@ export class TxFormatService {
 
     tx.amountStr = self.formatAmountStr(tx.amount);
     //TODO: This causes an unresolved promise herror.  
-    tx.alternativeAmountStr = Promise.resolve(self.formatAlternativeStr(tx.amount)).value();
+   return self.formatAlternativeStr(tx.amount).then((altStr) => {
+    tx.alternativeAmountStr = altStr;
     tx.feeStr = self.formatAmountStr(tx.fee || tx.fees);
-
+    
     if (tx.amountStr) {
       tx.amountValueStr = tx.amountStr.split(' ')[0];
       tx.amountUnitStr = tx.amountStr.split(' ')[1];
@@ -111,10 +113,12 @@ export class TxFormatService {
 
     this.logger.warn("ProcessTx Return Value: ", tx);
 
-    return tx;
+    return Promise.resolve(tx);
+   });
+    
   };
 
-  formatPendingTxps(txps) {
+  formatPendingTxps(txps): Promise<any> {
     this.pendingTxProposalsCountForUs = 0;
     let now = Math.floor(Date.now() / 1000);
 
@@ -136,7 +140,7 @@ export class TxFormatService {
     txps.push(txp);
     */
 
-    _.each(txps, function (tx) {
+    return Promise.each(txps, (tx: any) => {
 
       // no future transactions...
       if (tx.createdOn > now)
@@ -152,29 +156,37 @@ export class TxFormatService {
         return;
       }
 
-      tx = this.processTx(tx);
-
-      let action: any = _.find(tx.actions, {
-        copayerId: tx.wallet.copayerId
+      return this.processTx(tx).then((pTx) => {
+        let processedTx = pTx;
+        let action: any = _.find(processedTx.actions, {
+          copayerId: processedTx.wallet.copayerId
+        });
+  
+        if (!action && processedTx.status == 'pending') {
+          processedTx.pendingForUs = true;
+        }
+  
+        if (action && action.type == 'accept') {
+          processedTx.statusForUs = 'accepted';
+        } else if (action && action.type == 'reject') {
+          processedTx.statusForUs = 'rejected';
+        } else {
+          processedTx.statusForUs = 'pending';
+        }
+  
+        if (!processedTx.deleteLockTime)
+          processedTx.canBeRemoved = true;
+        
+        return Promise.resolve(processedTx);
       });
-
-      if (!action && tx.status == 'pending') {
-        tx.pendingForUs = true;
-      }
-
-      if (action && action.type == 'accept') {
-        tx.statusForUs = 'accepted';
-      } else if (action && action.type == 'reject') {
-        tx.statusForUs = 'rejected';
-      } else {
-        tx.statusForUs = 'pending';
-      }
-
-      if (!tx.deleteLockTime)
-        tx.canBeRemoved = true;
+        
+    }).then((txps) => {
+      this.logger.warn("What are the TXPs after promise all?");
+      this.logger.warn(txps);
+      return Promise.resolve(txps);
     });
 
-    return txps;
+     
   };
 
   parseAmount(amount: any, currency: string) {

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import {EasyReceipt} from "./easy-receipt.model";
-import {Wallet} from "merit/wallets/wallet.model";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import * as Promise from 'bluebird';
+
 
 @Injectable()
 export class EasyReceiveService {
