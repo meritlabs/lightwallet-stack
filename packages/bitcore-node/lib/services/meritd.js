@@ -1187,21 +1187,6 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
   var cacheKey = addresses.join('');
   var utxos = self.utxosCache.get(cacheKey);
 
-  function transformUnspentOutput(delta) {
-    console.log("TODO: Get actual scriptPubKey from blockchain, not some thing below");
-    console.log(delta);
-    var script = bitcore.Script.fromAddress(delta.address);
-    return {
-      address: delta.address,
-      txid: delta.txid,
-      outputIndex: delta.index,
-      script: script.toHex(),
-      satoshis: delta.satoshis,
-      isCoinbase: delta.isCoinbase,
-      timestamp: delta.timestamp
-    };
-  }
-
   function updateWithMempool(confirmedUtxos, mempoolDeltas) {
     /* jshint maxstatements: 20 */
     if (!mempoolDeltas || !mempoolDeltas.length) {
@@ -1221,7 +1206,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
         }
         isSpentOutputs = true;
       } else {
-        mempoolUnspentOutputs.push(transformUnspentOutput(delta));
+        mempoolUnspentOutputs.push(delta);
       }
     }
 

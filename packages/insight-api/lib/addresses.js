@@ -170,7 +170,7 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
   var utxo = {
     address: utxoArg.address,
     txid: utxoArg.txid,
-    vout: utxoArg.outputIndex,
+    vout: utxoArg.index,
     scriptPubKey: utxoArg.script,
     amount: utxoArg.satoshis / 1e8,
     micros: utxoArg.satoshis, 
