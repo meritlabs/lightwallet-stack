@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Wallet } from "./../../wallets/wallet.model";
-import { ProfileService } from "./../../core/profile.service";
+import { ProfileService } from "merit/core/profile.service";
 import { ModalController } from "ionic-angular/index";
 
 // Network View 

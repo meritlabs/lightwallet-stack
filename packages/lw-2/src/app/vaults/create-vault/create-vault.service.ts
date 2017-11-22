@@ -11,7 +11,7 @@ import * as _ from 'lodash';
 export class CreateVaultService {
 
   private bitcore: any;
-  private walletClient: IMeritWalletClient;
+  private walletClient: MeritWalletClient;
 
   private model = {
     vaultName: '',
