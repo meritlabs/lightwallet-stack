@@ -1,7 +1,13 @@
 <ion-header no-border>
     <ion-navbar transparent>
       <ion-title>{{wallet.name}}</ion-title>
+      <ion-buttons end>
+            <button ion-button icon-only (click)="goToEditWallet()">
+                <ion-icon name="settings"></ion-icon>
+            </button>
+      </ion-buttons>
     </ion-navbar>
+
   </ion-header>
   
   <ion-content>

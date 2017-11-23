@@ -1,8 +1,5 @@
-view-create-wallet {
+view-select-color {
 
-  ion-input.incorrect {
-    background: color($colors, 'danger');
-  }
 
   .wallet-icon {
     img {
@@ -19,8 +16,5 @@ view-create-wallet {
     }
   }
 
-  .warning ion-label{
-    white-space: normal;
-  }
 
 }
