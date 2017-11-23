@@ -51,7 +51,7 @@ TxProposal.create = function(opts) {
   x.excludeUnconfirmedUtxos = opts.excludeUnconfirmedUtxos;
 
   x.addressType = opts.addressType || (x.walletN > 1 ? Constants.SCRIPT_TYPES.P2SH : Constants.SCRIPT_TYPES.P2PKH);
-  $.checkState(_.contains(_.values(Constants.SCRIPT_TYPES), x.addressType));
+  $.checkState(_.includes(_.values(Constants.SCRIPT_TYPES), x.addressType));
 
   x.customData = opts.customData;
 
@@ -59,7 +59,7 @@ TxProposal.create = function(opts) {
   try {
     x.network = opts.network || Bitcore.Address(x.outputs[0].toAddress).toObject().network;
   } catch (ex) {}
-  $.checkState(_.contains(_.values(Constants.NETWORKS), x.network));
+  $.checkState(_.includes(_.values(Constants.NETWORKS), x.network));
 
   x.setInputs(opts.inputs);
   x.fee = opts.fee;
@@ -120,7 +120,7 @@ TxProposal.prototype.toObject = function() {
 
 TxProposal.prototype.setInputs = function(inputs) {
   this.inputs = inputs || [];
-  this.inputPaths = _.pluck(inputs, 'path') || [];
+  this.inputPaths = _.map(inputs, 'path') || [];
 };
 
 TxProposal.prototype._updateStatus = function() {
@@ -137,8 +137,7 @@ TxProposal.prototype._buildTx = function() {
   var self = this;
 
   var t = new Bitcore.Transaction();
-
-  $.checkState(_.contains(_.values(Constants.SCRIPT_TYPES), self.addressType));
+  $.checkState(_.includes(_.values(Constants.SCRIPT_TYPES), self.addressType));
 
   switch (self.addressType) {
     case Constants.SCRIPT_TYPES.P2SH:
@@ -149,6 +148,12 @@ TxProposal.prototype._buildTx = function() {
       break;
     case Constants.SCRIPT_TYPES.P2PKH:
       t.from(self.inputs);
+      break;
+    case Constants.SCRIPT_TYPES.PP2SH:
+      _.each(self.inputs, function(i) {
+        $.checkState(i.publicKeys, 'Inputs should include public keys');
+        t.from(i, i.publicKeys, self.requiredSignatures);
+      });
       break;
   }
 
@@ -184,8 +189,8 @@ TxProposal.prototype._buildTx = function() {
   }
 
   // Validate actual inputs vs outputs independently of Bitcore
-  var totalInputs = _.sum(t.inputs, 'output.micros');
-  var totalOutputs = _.sum(t.outputs, 'micros');
+  var totalInputs = _.sumBy(t.inputs, 'output.micros');
+  var totalOutputs = _.sumBy(t.outputs, 'micros');
 
   $.checkState(totalInputs > 0 && totalOutputs > 0 && totalInputs >= totalOutputs);
   $.checkState(totalInputs - totalOutputs <= Defaults.MAX_TX_FEE);
@@ -237,6 +242,9 @@ TxProposal.prototype.getEstimatedSizeForSingleInput = function() {
     default:
     case Constants.SCRIPT_TYPES.P2SH:
       return this.requiredSignatures * 72 + this.walletN * 36 + 44;
+    case Constants.SCRIPT_TYPES.PP2SH:
+      //TODO: Figure out a better estimate
+      return 147;
   }
 };
 
@@ -271,7 +279,7 @@ TxProposal.prototype.estimateFee = function() {
  * @return {Number} total amount of all outputs excluding change output
  */
 TxProposal.prototype.getTotalAmount = function() {
-  return _.sum(this.outputs, 'amount');
+  return _.sumBy(this.outputs, 'amount');
 };
 
 /**
@@ -280,7 +288,7 @@ TxProposal.prototype.getTotalAmount = function() {
  * @return {String[]} copayerIds that performed actions in this proposal (accept / reject)
  */
 TxProposal.prototype.getActors = function() {
-  return _.pluck(this.actions, 'copayerId');
+  return _.map(this.actions, 'copayerId');
 };
 
 
@@ -290,7 +298,7 @@ TxProposal.prototype.getActors = function() {
  * @return {String[]} copayerIds that approved the tx proposal (accept)
  */
 TxProposal.prototype.getApprovers = function() {
-  return _.pluck(
+  return _.map(
     _.filter(this.actions, {
       type: 'accept'
     }), 'copayerId');
@@ -379,7 +387,7 @@ TxProposal.prototype.isTemporary = function() {
 };
 
 TxProposal.prototype.isPending = function() {
-  return !_.contains(['temporary', 'broadcasted', 'rejected'], this.status);
+  return !_.includes(['temporary', 'broadcasted', 'rejected'], this.status);
 };
 
 TxProposal.prototype.isAccepted = function() {

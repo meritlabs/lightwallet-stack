@@ -1,18 +1,19 @@
 import { ConfigService } from './../../../shared/config.service';
 import { Component } from '@angular/core';
-import { NavController, NavParams, IonicPage, ModalController } from 'ionic-angular';
+import { NavController, NavParams, IonicPage, ModalController, LoadingController } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { NotificationService } from 'merit/shared/notification.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { PopupService } from 'merit/core/popup.service';
+import { ProfileService } from 'merit/core/profile.service';
 import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
-import { Wallet } from 'merit/wallets/wallet.model';
 import { FeeService } from 'merit/shared/fee/fee.service';
 import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 
 import * as  _  from 'lodash';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 /**
  * The confirm view is the final step in the transaction sending process 
@@ -30,6 +31,7 @@ export class SendConfirmView {
   // Statics
   private static CONFIRM_LIMIT_USD = 20;
   private static FEE_TOO_HIGH_LIMIT_PER = 15;
+  
 
   private txData: {
     toAddress: any,
@@ -43,8 +45,9 @@ export class SendConfirmView {
     allowSpendUnconfirmed?: boolean,
     usingCustomFee?: boolean
   };
-  private wallet: Wallet;
-  private walletSettings: any;
+  private wallet: MeritWalletClient;
+  private walletConfig: any;
+  private wallets: Array<MeritWalletClient>;
   private unitToMicro: number;
   private unitDecimals: number;
   private microToUnit: number;
@@ -55,40 +58,45 @@ export class SendConfirmView {
     private configService: ConfigService,
     private navCtrl: NavController, 
     private navParams: NavParams,
+    private profileService: ProfileService,
     private logger: Logger,
     private feeService: FeeService,
     private walletService: WalletService,
     private txFormatService: TxFormatService,
     private popupService: PopupService,
     private modalCtrl: ModalController,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private loadingCtrl: LoadingController
   ) { 
     console.log("Hello SendConfirm View");
+    this.walletConfig = this.configService.get().wallet;
+    
   }
 
-  ionViewDidLoad() {
-    this.logger.log('ionViewDidLoad ConfirmView');
-    this.logger.log('Params', this.navParams);
+  async ionViewDidLoad() {
+    this.wallets = await this.profileService.getWallets();
     let toAmount = this.navParams.get('toAmount');
-    this.walletSettings = this.configService.get().wallet.settings;
+    this.walletConfig = this.configService.get().wallet;
     this.wallet = this.navParams.get('wallet');
-    this.unitToMicro = this.walletSettings.unitToMicro;
-    this.unitDecimals = this.walletSettings.unitDecimals;
+    this.unitToMicro = this.walletConfig.settings.unitToMicro;
+    this.unitDecimals = this.walletConfig.settings.unitDecimals;
     this.microToUnit = 1 / this.unitToMicro;
-    this.configFeeLevel = this.walletSettings.feeLevel ? this.walletSettings.feeLevel : 'normal';
+    this.configFeeLevel = this.walletConfig.settings.feeLevel ? this.walletConfig.settings.feeLevel : 'normal';
 
     this.txData = {
       toAddress:  this.navParams.get('toAddress'),
       txp: {},
       toName: this.navParams.get('toAddress') || '',
       toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
-      allowSpendUnconfirmed: this.walletSettings.spendUnconfirmed
+      allowSpendUnconfirmed: this.walletConfig.spendUnconfirmed
     }
 
-    this.updateTx(this.txData, this.wallet, {}).catch((err) => {
+
+    this.logger.log('ionViewDidLoad txData', this.txData);
+    return this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
       this.logger.error('There was an error in updateTx:', err);
     });
-    this.logger.log('ionViewDidLoad send-confirm', this);
+    
   }
 
   // Show as much as we can about the address. 
@@ -104,8 +112,6 @@ export class SendConfirmView {
   private refresh(): void {}
 
   private updateTx(tx, wallet, opts): Promise<void> {
-    this.logger.log('updateTx called', tx, wallet);
-
     if (opts.clearCache) {
       tx.txp = {};
     }
@@ -136,29 +142,52 @@ export class SendConfirmView {
       if (!wallet) return Promise.resolve();
 
       // txp already generated for this wallet?
-      if (tx.txp) {
+      if (!_.isEmpty(tx.txp)) {
         this.refresh();
         return Promise.resolve();
       }
 
       return this.getTxp(_.clone(tx), wallet, opts.dryRun).then((txpOut) => {
 
-        txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
-        this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
-          txpOut.alternativeFeeStr = v;
-        });
+          txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
+          return this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
+            txpOut.alternativeFeeStr = v;
+          
 
-        let per = (txpOut.fee / (txpOut.toAmount + txpOut.fee) * 100);
-        txpOut.feeRatePerStr = per.toFixed(2) + '%';
-        txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
+          let per = (txpOut.fee / (txpOut.toAmount + txpOut.fee) * 100);
+          txpOut.feeRatePerStr = per.toFixed(2) + '%';
+          txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
 
-        tx.txp = txpOut;
-        this.txData = tx;
+          tx.txp = txpOut;
+          this.txData = tx;
 
-        this.logger.log('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
-        this.refresh();
+          return Promise.resolve();
+        }).catch((err) => {this.logger.warn("could it be the txFormat?", err)});
+      }).catch((err) => {
+        this.logger.warn("Error in getting a TXP!!", err);
         return Promise.resolve();
       });
+    }).catch((err) => {
+      this.logger.warn("Error after getting feeRate in UpdateTx", err);
+      return Promise.resolve();
+    });
+  }
+
+  public approve(): Promise<boolean> {
+    let loadingSpinner = this.loadingCtrl.create({
+      content: "Sending transaction...",
+      dismissOnPageChange: true
+    });
+    return Promise.resolve(loadingSpinner.present()).then((res) => {
+      return this.approveTx(this.txData, this.wallet);
+    }).then((worked) => {
+      loadingSpinner.dismiss();
+      this.navCtrl.push('WalletsView');
+      return Promise.resolve(worked);
+    }).catch((err) => {
+      this.logger.warn("Failed to approve transaction.");
+      this.logger.warn(err);
+      return Promise.reject(err);
     });
   }
 
@@ -169,36 +198,56 @@ export class SendConfirmView {
         return resolve(false);
       } 
 
-      return this.getTxp(tx, wallet, false).then((ctxp) => {
+      return this.getTxp(_.clone(tx), wallet, false).then((ctxp) => {
 
-        let confirmTx = (cb) => {
-          if (this.walletService.isEncrypted(wallet))
-            return cb();
+        let confirmTx = (): Promise<any> => {
+            if (this.walletService.isEncrypted(wallet))
+              return Promise.resolve(false);
   
-          var amountUsd = parseFloat(this.txFormatService.formatToUSD(ctxp.toAmount));
-          if (amountUsd <= SendConfirmView.CONFIRM_LIMIT_USD)
-            return cb();
-  
-          var message = 'Sending {{tx.amountStr}} from your {{wallet.name}} wallet';
-          var okText = 'Confirm';
-          var cancelText = 'Cancel';
-          this.popupService.ionicConfirm(null, message, okText, cancelText);
+            let amountUsd: number;
+            return this.txFormatService.formatToUSD(ctxp.amount).then((value: string) => {
+              amountUsd = parseFloat(value);
+           
+    
+              if (amountUsd <= SendConfirmView.CONFIRM_LIMIT_USD)
+                return Promise.resolve(false);
+    
+              let amountStr = tx.amountStr;
+              let name = wallet.name;
+              let message = 'Sending ' + amountStr + ' from your ' + name + ' wallet'; // TODO gettextCatalog
+              let okText = 'Confirm'; // TODO gettextCatalog
+              let cancelText = 'Cancel'; // TODO gettextCatalog
+              return this.popupService.ionicConfirm(null, message, okText, cancelText).then((ok: boolean) => {
+                return Promise.resolve(ok);
+              });
+            });
         };
   
         let publishAndSign = (): Promise<any> => {
-          
           if (!wallet.canSign() && !wallet.isPrivKeyExternal()) {
             this.logger.info('No signing proposal: No private key');
-  
-            // TODO: custom status handler?
-            return this.walletService.onlyPublish(wallet, ctxp, _.noop);
+            return Promise.resolve(this.walletService.onlyPublish(wallet, ctxp, _.noop));
           }
-  
-          // TODO: custom status handler?
-          return this.walletService.publishAndSign(wallet, ctxp, _.noop).then(() => {
-            this.notificationService.subscribe(wallet, ctxp);
+          return this.walletService.publishAndSign(wallet, ctxp, _.noop).then((txp: any) => {
+            //return Promise.resolve(this.notificationService.subscribe(wallet, txp));
+            return Promise.resolve();
           });
         };
+
+        return confirmTx().then((success: boolean) => {
+          if (!success) {
+            this.logger.warn("Error with confirming transaction.");
+          }
+          return publishAndSign().then(() => {
+            return resolve(true);
+          }).catch((err: any) => {
+            this.logger.warn("Could not publishAndSign: ", err);
+          });
+        }).catch((err: any) => {
+          this.logger.warn("Could not confirmTx: ", err);
+        });
+      }).catch((err) => {
+        this.logger.warn("Never got the TXP!: ", err);        
       });
     });
   }
@@ -209,55 +258,56 @@ export class SendConfirmView {
    */
   private getTxp(tx, wallet, dryRun): Promise<any> {
     return new Promise((resolve, reject) => {
-        // ToDo: use a credential's (or fc's) function for this
-        if (tx.description && !wallet.credentials.sharedEncryptingKey) {
-          return reject('Need a shared encryption key to add message!');
-        }
-    
-        if (tx.toAmount > Number.MAX_SAFE_INTEGER) {
-          return reject("The amount is too big.  Because, Javascript.");
-        }
-    
-        let txp:any = {};
-    
-        if (tx.script) {
-          txp.outputs = [{
-            'script': tx.script.toHex(),
-            'toAddress': tx.toAddress,
-            'amount': tx.toAmount,
-            'message': tx.description
-          }];
-          txp.addressType = 'P2SH';
-          console.log(tx);
-        } else {
-          txp.outputs = [{
-            'toAddress': tx.toAddress,
-            'amount': tx.toAmount,
-            'message': tx.description
-          }];
-        }
-    
-        if (tx.sendMaxInfo) {
-          txp.inputs = tx.sendMaxInfo.inputs;
-          txp.fee = tx.sendMaxInfo.fee;
-        } else {
-          if (this.txData.usingCustomFee) {
-            txp.feePerKb = tx.feeRate;
-          } else txp.feeLevel = tx.feeLevel;
-        }
-    
-        txp.message = tx.description;
-    
-        if (tx.paypro) {
-          txp.payProUrl = tx.paypro.url;
-        }
-        txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
-        txp.dryRun = dryRun;
-        return resolve(this.walletService.createTx(wallet, txp));
+      // ToDo: use a credential's (or fc's) function for this
+      if (tx.description && !wallet.credentials.sharedEncryptingKey) {
+        return reject('Need a shared encryption key to add message!');
+      }
+  
+      if (tx.toAmount > Number.MAX_SAFE_INTEGER) {
+        return reject("The amount is too big.  Because, Javascript.");
+      }
+  
+      let txp:any = {};
+  
+      if (tx.script) {
+        txp.outputs = [{
+          'script': tx.script.toHex(),
+          'toAddress': tx.toAddress,
+          'amount': tx.toAmount,
+          'message': tx.description
+        }];
+        txp.addressType = 'P2SH';
+      } else {
+        txp.outputs = [{
+          'toAddress': tx.toAddress,
+          'amount': tx.toAmount,
+          'message': tx.description
+        }];
+      }
+  
+      if (tx.sendMaxInfo) {
+        txp.inputs = tx.sendMaxInfo.inputs;
+        txp.fee = tx.sendMaxInfo.fee;
+      } else {
+        if (this.txData.usingCustomFee) {
+          txp.feePerKb = tx.feeRate;
+        } else txp.feeLevel = tx.feeLevel;
+      }
+  
+      txp.message = tx.description;
+  
+      if (tx.paypro) {
+        txp.payProUrl = tx.paypro.url;
+      }
+      txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
+      txp.dryRun = dryRun;
+      return this.walletService.createTx(wallet, txp).then((ctxp) => {
+        return resolve(ctxp);
+      });
     });
   }
 
-  chooseFeeLevel(tx, wallet) {
+  private _chooseFeeLevel(tx, wallet) {
     
     let scope: any = {};
     scope.network = tx.network;
@@ -289,5 +339,21 @@ export class SendConfirmView {
   public toggleAddress() {
     this.showAddress = !this.showAddress;
   };
+
+  private chooseFeeLevel(): void {
+    this._chooseFeeLevel(this.txData, this.wallet);
+  }
+
+  private selectWallet() {
+    let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
+    modal.present();
+    modal.onDidDismiss((wallet) => {
+      if (wallet) this.wallet = wallet;
+    });
+  }
+
+  private showSendError(err: string = ''): any {
+    this.popupService.ionicConfirm("Could not confirm transaction.", err, "Ok", "Cancel");    
+  }
 
 }

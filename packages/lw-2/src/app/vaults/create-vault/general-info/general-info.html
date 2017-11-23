@@ -1,0 +1,36 @@
+<ion-header>
+        
+    <ion-navbar color="secondary" >
+        <ion-title translate>Create Vault</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+    <ion-list margin-top>
+        <ion-item>
+            <ion-label translate>Vault name</ion-label>
+            <ion-input text-right [placeholder]="'My Vault'" [(ngModel)]="formData.vaultName" (ngModelChange)="checkNextAvailable()"></ion-input>
+        </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <ion-item>
+            <ion-label translate>Whitelist</ion-label>
+            <ion-select [(ngModel)]="formData.whitelist" okText="Okay" cancelText="Dismiss" multiple="true">
+                <ion-option *ngFor="let address of whitelistCandidates;trackBy:address?.id" [value]="address">
+                    {{address.name}} <span class="wallet-type">({{ address.type }})</span>
+                </ion-option>
+            </ion-select>
+        </ion-item>
+    </ion-list>
+
+    <div class="control-buttons">
+        <button ion-button type="button" translate (click)="toDeposit()" [(disabled)]="!isNextAvailable" >
+            Next
+        </button>
+    </div>
+
+</ion-content>
