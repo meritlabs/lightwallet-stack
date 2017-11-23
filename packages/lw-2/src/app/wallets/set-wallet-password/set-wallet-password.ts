@@ -58,7 +58,7 @@ export class SetWalletPasswordView {
 
 
     if (this.isWalletEncrypted) {
-      this.walletService.decrypt(this.wallet).then(() => {
+      this.walletService.decrypt(this.wallet, this.formData.currentPassword).then(() => {
         return encrypt();
       }).catch((err) => {
         return this.toastCtrl.create({
