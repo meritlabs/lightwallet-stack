@@ -1,3 +1,25 @@
 view-export-wallet {
 
+  .wallet-icon {
+    text-align: center;
+    padding-top: 20px;
+    display: block;
+    img {
+      height: 56px;
+      width: 70px;
+      display: inline-block;
+      border-radius: 4px;
+      box-shadow: none;
+      padding: 4px 8px;
+      vertical-align: middle;
+    }
+    &.default img {
+      background: $wallet-default-color;
+    }
+  }
+
+  h2 {
+    text-align: center;
+  }
+
 }
