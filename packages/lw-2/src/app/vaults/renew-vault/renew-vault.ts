@@ -7,6 +7,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { ProfileService } from 'merit/core/profile.service';
+import { IMeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @IonicPage({
   segment: 'vault/:vaultId/renew',
@@ -22,6 +23,7 @@ export class VaultRenewView {
   public formData = { vaultName: '', masterKey: '', whitelist: [] };
   public whitelistCandidates: Array<any> = [];
   private bitcore: any = null;
+  private walletClient: IMeritWalletClient;
 
   constructor(
     private navCtrl:NavController,
@@ -36,8 +38,8 @@ export class VaultRenewView {
     this.bitcore = this.bwc.getBitcore();
   }
 
-  ionViewDidLoad() {
-    this.updateWhitelist();
+  async ionViewDidLoad() {
+    await this.updateWhitelist();
     this.formData.vaultName = this.vault.name;
     this.formData.masterKey = '';
   }
@@ -63,7 +65,23 @@ export class VaultRenewView {
   }
 
   regenerateMasterKey() {
-      console.log('regenerate');
+    let network = this.walletClient.credentials.network || 'testnet';
+    let masterKey = this.bitcore.PrivateKey.fromRandom(network);
+    let masterKeyMnemonic = this.walletClient.getNewMnemonic(masterKey.toBuffer());
+
+    this.formData.masterKey = masterKey;
+
+    this.popupService.ionicAlert(
+        'Master key',
+        masterKeyMnemonic,
+        'I copied the Master Key.'
+    );
+  }
+
+  compareWhitelistEntries(e1: any, e2: any): boolean {
+    const result =  e1.type == e2.type && e1.id == e2.id;
+    console.log('result', result, e1, e2);
+    return result;
   }
 
   private updateWhitelist(): Promise<any> {
@@ -98,6 +116,7 @@ export class VaultRenewView {
 
   private getAllWallets(): Promise<Array<any>> {
     const wallets = this.profileService.getWallets().then((ws) => {
+      this.walletClient = _.head(ws);
       return Promise.all(_.map(ws, async (wallet:any) => {
         wallet.status = await this.walletService.getStatus(wallet);
         return wallet; 
@@ -113,6 +132,7 @@ export class VaultRenewView {
       }
       return _.head(ws);
     }).then((walletClient) => {
+      this.walletClient = walletClient;
       return this.vaultsService.getVaults(walletClient);
     });
   }
