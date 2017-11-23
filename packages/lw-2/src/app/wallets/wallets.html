@@ -170,9 +170,9 @@
                     <span *ngIf="wallet.n > 1">
                         {{wallet.m}}-of-{{wallet.n}}
                     </span>
-                    <span class="detail-fiat">
+                    <div class="detail-fiat">
                         {{wallet.status.totalBalanceAlternativeStr}}
-                    </span>
+                    </div>
                     <ion-icon *ngIf="wallet.status && !wallet.balanceHidden && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
                     name="timer-outline"></ion-icon>
 
