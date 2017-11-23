@@ -68,4 +68,8 @@ export class WalletDetailsView {
   private goToTxDetails(tx: any) {
     this.navCtrl.push('TxDetailsView', {walletId: this.wallet.credentials.walletId, txid: tx.txid});
   }
+
+  goToEditWallet() {
+    this.navCtrl.push('EditWalletView', {wallet: this.wallet});
+  }
 }

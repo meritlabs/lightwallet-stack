@@ -193,28 +193,36 @@ export class TxFormatService {
     let settings = this.config.get()['wallet']['settings']; // TODO
 
     let satToBtc = 1 / 100000000;
+    let  microsToMrt = 1 / 100000000;
     let unitToMicro = settings.unitToMicro;
     let amountUnitStr;
-    let amountSat;
+    let amountMicros;
     let alternativeIsoCode = settings.alternativeIsoCode;
 
     // If fiat currency
-    if (currency != 'BCH' && currency != 'BTC' && currency != 'sat') {
-      amountUnitStr = new FiatAmount(amount) + ' ' + currency;
-      amountSat = this.rate.fromFiat(amount, currency).toFixed(0);
-    } else if (currency == 'sat') {
-      amountSat = amount;
-      amountUnitStr = this.formatAmountStr(amountSat);
-      // convert sat to BTC or BCH
-      amount = (amountSat * satToBtc).toFixed(8);
+    if (currency != 'bits' && currency != 'MRT' && currency != 'micros') {
+      amountUnitStr = amount + ' ' + currency;
+      amountMicros = this.rate.fromFiat(amount, currency).toFixed(0);
+    } else if (currency == 'micros') {
+      amountMicros = amount;
+      amountUnitStr = this.formatAmountStr(amountMicros);
+      // convert micros to MRT
+      amount = (amountMicros * microsToMrt).toFixed(8);
       currency = 'MRT';
     } else {
-      amountSat = parseInt((amount * unitToMicro).toFixed(0));
-      amountUnitStr = this.formatAmountStr(amountSat);
-      // convert unit to BTC or BCH
-      amount = (amountSat * satToBtc).toFixed(8);
+      amountMicros = parseInt((amount * unitToMicro).toFixed(0));
+      amountUnitStr = this.formatAmountStr(amountMicros);
+      // convert unit to MRT
+      amount = (amountMicros * microsToMrt).toFixed(8);
       currency = 'MRT';
     }
+    return {
+      amount: amount,
+      currency: currency,
+      alternativeIsoCode: alternativeIsoCode,
+      amountMicros: amountMicros,
+      amountUnitStr: amountUnitStr
+    };
 
   };
 
