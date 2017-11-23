@@ -105,6 +105,7 @@ export class WalletsView {
         return this.calculateNetworkAmount(wallets);
       }).then((cNetworkAmount) => {
         this.totalAmount = cNetworkAmount;
+        this.totalAmountFormatted = this.txFormatService.parseAmount(this.totalAmount, 'micros').amountUnitStr;
         return this.processEasyReceive();
       }).then(() => {
         return this.profileService.getTxps({limit: 3});
@@ -231,20 +232,14 @@ export class WalletsView {
     this.easyReceiveService.rejectEasyReceipt(receipt);
   }
 
-  private calculateNetworkAmount(wallets:Array<any>) {
-    this.totalAmount = 0;
-
-    this.totalAmountFormatted = this.txFormatService.parseAmount(this.totalAmount, 'MRT').amountUnitStr;
-
+  private calculateNetworkAmount(wallets:Array<any>):Promise<any> {
+    let totalAmount = 0;
 
     wallets.forEach((wallet) => {
-      this.walletService.getANV(wallet).then((amount) => {
-
-        this.totalAmount += amount;
-        this.totalAmountFormatted = this.txFormatService.parseAmount(this.totalAmount, 'MRT').amountUnitStr;
-      });
-
+      totalAmount += wallet.status.totalBalanceSat;
     });
+
+    return Promise.resolve(totalAmount);
   }
 
   private openWallet(wallet) {
