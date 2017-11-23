@@ -9,6 +9,19 @@ import { BwcService } from 'merit/core/bwc.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { IMeritWalletClient } from 'src/lib/merit-wallet-client';
 
+export interface IWhitelistEntry {
+    id: string,
+    name: string,
+    pubKey: string,
+    type: string,
+}
+
+export interface IVaultRenewViewModel {
+    vaultName: string, 
+    masterKey: string,
+    whitelist: Array<IWhitelistEntry>,
+}
+
 @IonicPage({
   segment: 'vault/:vaultId/renew',
   defaultHistory: ['VaultDetailsView']
@@ -19,9 +32,9 @@ import { IMeritWalletClient } from 'src/lib/merit-wallet-client';
 })
 export class VaultRenewView {
 
-  public vault: any;
-  public formData = { vaultName: '', masterKey: '', whitelist: [] };
-  public whitelistCandidates: Array<any> = [];
+  public vault: any = null;
+  public formData: IVaultRenewViewModel = { vaultName: '', masterKey: '', whitelist: [] };
+  public whitelistCandidates: Array<IWhitelistEntry> = [];
   private bitcore: any = null;
   private walletClient: IMeritWalletClient;
 
@@ -78,10 +91,8 @@ export class VaultRenewView {
     );
   }
 
-  compareWhitelistEntries(e1: any, e2: any): boolean {
-    const result =  e1.type == e2.type && e1.id == e2.id;
-    console.log('result', result, e1, e2);
-    return result;
+  compareWhitelistEntries(e1: IWhitelistEntry, e2: IWhitelistEntry): boolean {
+    return e1.type == e2.type && e1.id == e2.id;
   }
 
   private updateWhitelist(): Promise<any> {
@@ -101,14 +112,16 @@ export class VaultRenewView {
           return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' }; 
         });
       }),
-    ]).then((arr: Array<Array<any>>) => {
+    ]).then((arr: Array<Array<IWhitelistEntry>>) => {
       const whitelistCandidates = _.flatten(arr);
       this.whitelistCandidates = whitelistCandidates;
       _.each(this.vault.whitelist, (wl) => {
         const found = _.find(whitelistCandidates, { pubKey: wl });
+        const results = [];
         if (found) {
-          this.formData.whitelist.push(found);
+          results.push(found);
         }
+        this.formData.whitelist = results; // Do not push to model directly, it will break change detection in Angular
       });
       console.log(this.whitelistCandidates, this.formData.whitelist);
     });

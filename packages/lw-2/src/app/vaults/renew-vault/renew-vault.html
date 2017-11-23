@@ -31,7 +31,12 @@
     <ion-list>
         <ion-item>
             <ion-label translate>Whitelist</ion-label>
-            <ion-select [(ngModel)]="formData.whitelist" [compareWith]="compareWhitelistEntries" okText="Ok" cancelText="Dismiss" multiple="true" >
+            <ion-select 
+                [compareWith]="compareWhitelistEntries" 
+                [(ngModel)]="formData.whitelist" 
+                okText="Ok" 
+                cancelText="Dismiss" 
+                multiple="true" >
                 <ion-option *ngFor="let address of whitelistCandidates" [value]="address">
                     {{address.name}} <span class="wallet-type">({{ address.type }})</span>
                 </ion-option>
