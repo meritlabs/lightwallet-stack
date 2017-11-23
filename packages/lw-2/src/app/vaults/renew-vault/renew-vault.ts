@@ -8,6 +8,7 @@ import { VaultsService } from 'merit/vaults/vaults.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { IMeritWalletClient } from 'src/lib/merit-wallet-client';
+import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service';
 
 export interface IWhitelistEntry {
     id: string,
@@ -46,6 +47,7 @@ export class VaultRenewView {
     private walletService: WalletService,
     private vaultsService: VaultsService,  
     private profileService: ProfileService,
+    private renewVaultService: RenewVaultService,
   ){
     this.vault = this.navParams.get('vault');
     this.bitcore = this.bwc.getBitcore();
@@ -69,9 +71,7 @@ export class VaultRenewView {
   }
 
   toVault() {
-      return new Promise((resolve, reject) => {
-        resolve(true);
-      }).then(() => {
+      return this.renewVaultService.renewVault().then(() => {
         this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
         return;
       })

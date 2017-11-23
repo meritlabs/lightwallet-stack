@@ -8,6 +8,7 @@ import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { PopupService } from "merit/core/popup.service";
+import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { PopupService } from "merit/core/popup.service";
   providers: [
     PopupService,
     VaultsService,
+    RenewVaultService,
   ],
   imports: [
     IonicPageModule.forChild(VaultRenewView),
