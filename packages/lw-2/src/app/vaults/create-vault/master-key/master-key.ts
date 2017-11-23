@@ -31,7 +31,7 @@ export class CreateVaultMasterKeyView {
 
     let data = this.createVaultService.getData();
 
-    if(!data.masterKey) {
+    if (!data.masterKey) {
       let network = data.selectedWallet.credentials.network || 'testnet';
       let masterKey = bitcore.PrivateKey.fromRandom(network);
       let masterKeyMnemonic = data.selectedWallet.getNewMnemonic(masterKey.toBuffer());

@@ -1,7 +1,12 @@
+import * as _ from 'lodash';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { PopupService } from "merit/core/popup.service";
 import * as Promise from 'bluebird';
+import { WalletService } from 'merit/wallets/wallet.service';
+import { VaultsService } from 'merit/vaults/vaults.service';
+import { BwcService } from 'merit/core/bwc.service';
+import { ProfileService } from 'merit/core/profile.service';
 
 @IonicPage({
   segment: 'vault/:vaultId/renew',
@@ -14,19 +19,27 @@ import * as Promise from 'bluebird';
 export class VaultRenewView {
 
   public vault: any;
-  
-  public formData = { vaultName: '' };
+  public formData = { vaultName: '', masterKey: '', whitelist: [] };
+  public whitelistCandidates: Array<any> = [];
+  private bitcore: any = null;
 
   constructor(
     private navCtrl:NavController,
     public navParams: NavParams,
     private popupService: PopupService,
+    private bwc: BwcService,  
+    private walletService: WalletService,
+    private vaultsService: VaultsService,  
+    private profileService: ProfileService,
   ){
     this.vault = this.navParams.get('vault');
+    this.bitcore = this.bwc.getBitcore();
   }
 
   ionViewDidLoad() {
-    this.formData.vaultName = '';
+    this.updateWhitelist();
+    this.formData.vaultName = this.vault.name;
+    this.formData.masterKey = '';
   }
 
   confirmRenew() {
@@ -47,5 +60,60 @@ export class VaultRenewView {
         this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
         return;
       })
+  }
+
+  regenerateMasterKey() {
+      console.log('regenerate');
+  }
+
+  private updateWhitelist(): Promise<any> {
+    return Promise.all([
+      // fetch users wallets
+      this.getAllWallets().then((wallets) => {
+        return _.map(wallets, (w) => {
+          const name = w.name || w._id;
+          return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
+        });
+      }), 
+      // fetch users vaults
+      this.getAllWVaults().then((vaults) => {
+        return _.map(vaults, (v) => {
+          const name = v.name || v._id;
+          const key = new this.bitcore.Address(v.address).toString();
+          return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' }; 
+        });
+      }),
+    ]).then((arr: Array<Array<any>>) => {
+      const whitelistCandidates = _.flatten(arr);
+      this.whitelistCandidates = whitelistCandidates;
+      _.each(this.vault.whitelist, (wl) => {
+        const found = _.find(whitelistCandidates, { pubKey: wl });
+        if (found) {
+          this.formData.whitelist.push(found);
+        }
+      });
+      console.log(this.whitelistCandidates, this.formData.whitelist);
+    });
+  }
+
+  private getAllWallets(): Promise<Array<any>> {
+    const wallets = this.profileService.getWallets().then((ws) => {
+      return Promise.all(_.map(ws, async (wallet:any) => {
+        wallet.status = await this.walletService.getStatus(wallet);
+        return wallet; 
+      }));
+    })
+    return wallets;
+  }
+
+  private getAllWVaults(): Promise<Array<any>> {
+    return this.profileService.getWallets().then((ws: any[]) => {
+      if (_.isEmpty(ws)) {
+        Promise.reject(new Error('getAllWVaults failed')); //ToDo: add proper error handling;
+      }
+      return _.head(ws);
+    }).then((walletClient) => {
+      return this.vaultsService.getVaults(walletClient);
+    });
   }
 }

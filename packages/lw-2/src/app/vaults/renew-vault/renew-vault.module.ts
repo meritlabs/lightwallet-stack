@@ -15,6 +15,7 @@ import { PopupService } from "merit/core/popup.service";
   ],
   providers: [
     PopupService,
+    VaultsService,
   ],
   imports: [
     IonicPageModule.forChild(VaultRenewView),

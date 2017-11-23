@@ -16,24 +16,28 @@
         </ion-item>
     </ion-list>
 
-    <!-- <ion-list>
+    <ion-list>
         <ion-item>
             <ion-label translate>Master key</ion-label>
             <ion-input text-right [placeholder]="'THE KEY'" [(ngModel)]="formData.masterKey" [disabled]="true"></ion-input>
         </ion-item>
-    </ion-list> -->
+        <ion-item>
+            <button ion-button type="button" translate (click)="regenerateMasterKey()">
+                Generate new
+            </button>
+        </ion-item>
+    </ion-list>
 
-    <!-- <ion-list>
+    <ion-list>
         <ion-item>
             <ion-label translate>Whitelist</ion-label>
+            <ion-select [(ngModel)]="formData.whitelist" okText="Okay" cancelText="Dismiss" multiple="true">
+                <ion-option *ngFor="let address of whitelistCandidates;trackBy:address?.id" [value]="address">
+                    {{address.name}} <span class="wallet-type">({{ address.type }})</span>
+                </ion-option>
+            </ion-select>
         </ion-item>
-            
-        <ion-item *ngFor="let address of formData.whitelist">
-            <ion-label class="whitelist-item">
-                {{ address.name }}
-            </ion-label>
-        </ion-item>
-    </ion-list> -->
+    </ion-list>
 
     <div class="control-buttons">
         <button ion-button type="button" translate (click)="confirmRenew()">
