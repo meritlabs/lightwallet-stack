@@ -115,7 +115,45 @@ export class WalletsView {
     });
   }
 
+  private processIncomingTransaction(n:any): void {
+    this.logger.info("processIncomingTransaction");
+    if (_.isEmpty(n)) {
+      return;
+    }
+
+    if (n.type) {
+      switch (n.type) {
+        case 'IncomingTx': 
+          n.actionStr = 'Payment Received';
+          break;
+        default: 
+          n.actionStr = 'Recent Transaction';
+          break
+      }
+    }
+
+    this.logger.warn("Before if block");
+    if (n.data && n.data.amount) {
+      this.logger.warn("Inside if block");
+      n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
+      Promise.resolve(this.txFormatService.formatAlternativeStr(n.data.amount).then((formattedStr) => {
+        n.fiatAmountStr = formattedStr;
+        this.recentTransactionsData.push(n);
+      }));
+    }
+
+    this.logger.warn("FINAL N");
+    this.logger.warn(n);
+
+  }
+
   private registerListeners(): Promise<any> {
+
+    this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
+      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
+      
+      this.processIncomingTransaction(n);      
+    });
 
     return this.subscribeToPromise('Remote:IncomingTxProposal').then(({walletId, type, n}) => {
       this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
@@ -126,6 +164,18 @@ export class WalletsView {
     }).then(() => {
       return this.subscribeToPromise('Remote:IncomingTx').then(({walletId, type, n}) => {
         this.logger.info("RL: Got a incomingTx event with: ", walletId, type, n);
+        
+        this.recentTransactionsData.push(n);
+      });
+    }).then(() => {
+      return this.subscribeToPromise('Remote:IncomingCoinbase').then(({walletId, type, n}) => {
+        this.logger.info("RL: Got a incomingCoinbase event with: ", walletId, type, n);
+        
+        this.recentTransactionsData.push(n);
+      });
+    }).then(() => {
+      return this.subscribeToPromise('Remote:IncomingEasySend').then(({walletId, type, n}) => {
+        this.logger.info("RL: Got a incomingEasySend event with: ", walletId, type, n);
         
         this.recentTransactionsData.push(n);
       });
