@@ -1044,23 +1044,19 @@ export class WalletService {
     });
   };
 
-  public encrypt(wallet: IMeritWalletClient, password): Promise<any> {
+  public encrypt(wallet: IMeritWalletClient, password:string): Promise<any> {
     console.log("encrypting");
     return Promise.resolve(wallet.encryptPrivateKey(password, {}));
   };
 
-  public decrypt(wallet: MeritWalletClient): Promise<any> {
+  public decrypt(wallet: MeritWalletClient, password:string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.logger.debug('Disabling private key encryption for' + wallet.name);
-      return this.askPassword(null, 'Enter Spending Password').then((password: string) => {  //TODO gettextcatalog
-        if (!password) return reject(new Error('no password'));
-        try {
-          wallet.decryptPrivateKey(password);
-        } catch (e) {
-          return reject(e);
-        }
-        return resolve();
-      });
+      try {
+        wallet.decryptPrivateKey(password);
+      } catch (e) {
+        return reject(e);
+      }
+      return resolve();
     });
   }
 
