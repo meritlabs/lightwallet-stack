@@ -21,4 +21,4 @@ import { PopupService } from "merit/core/popup.service";
     IonicPageModule.forChild(VaultRenewView),
   ],
 })
-export class CreateVaultComponentModule {}
+export class VaultRenewViewModule {}
