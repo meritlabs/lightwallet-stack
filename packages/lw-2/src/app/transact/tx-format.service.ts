@@ -73,7 +73,30 @@ export class TxFormatService {
       let v1FormatFiat = new FiatAmount(v1);
       if (!v1FormatFiat) return resolve(null);
 
-      return resolve(v1FormatFiat.amount + ' ' + settings.alternativeIsoCode);
+      let currencySymbolPrefix: string; 
+      let currencySymbolSuffix: string; 
+
+      // TODO: Break into function and cover all currencies.
+      switch (settings.alternativeIsoCode) {
+        case "USD": 
+          currencySymbolPrefix = "$";
+          break;
+        case "EUR": 
+          currencySymbolPrefix = "€";
+          break;
+        default: 
+          currencySymbolPrefix = "";
+          break;
+      }
+
+      // TODO: Break into function and cover all currencies.
+      switch (settings.alternativeIsoCode) {
+        default: 
+          currencySymbolSuffix = "";
+          break;
+      }
+
+      return resolve(currencySymbolPrefix + v1FormatFiat.amount + ' ' + currencySymbolSuffix) ;
     });
   };
 

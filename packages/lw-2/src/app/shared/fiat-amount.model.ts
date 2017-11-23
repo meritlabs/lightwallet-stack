@@ -11,7 +11,8 @@ export class FiatAmount {
       GROUP_SEP: string 
   };
   public amount: number;
-
+  public amountStr: string;
+  
   constructor(amount: number) {
     console.log('Hello FiatAmount Model');
     this.formats = {
@@ -20,8 +21,11 @@ export class FiatAmount {
       GROUP_SEP: ","
     }
     this.amount = this.formatFiatAmount(amount);
+    this.amountStr = this.formatAmountStr(amount);
   }
 
+  // Inserts commas and decimals to formal an amount. 
+  // Example: 123456789.12 -> 123,456,789.12 
   formatFiatAmount(amount: number) {
     var value: any;
     var sep: any;
@@ -53,5 +57,9 @@ export class FiatAmount {
     }
     return 0;
   }
-
+  
+  formatAmountStr(amount: number): string {
+    return this.formats.CURRENCY_SYM + this.formatFiatAmount(amount); 
+  }
+  
 }
