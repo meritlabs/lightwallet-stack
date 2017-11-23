@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import {EasyReceipt} from "merit/easy-receive/easy-receipt.model";
-import { Wallet } from "merit/wallets/wallet.model";
 import { Logger } from 'merit/core/logger';
 import { PersistenceService } from 'merit/core/persistence.service';
 import { FeeService } from 'merit/shared/fee/fee.service'

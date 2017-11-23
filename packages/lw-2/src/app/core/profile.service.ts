@@ -351,7 +351,7 @@ export class ProfileService {
 
 
   // todo move to Starter module, with minimal dependencies
-  public getProfile():Promise<Profile> {
+  public getProfile():Promise<any> {
       if (this.profile) {
         return Promise.resolve(this.profile);
       } else {
