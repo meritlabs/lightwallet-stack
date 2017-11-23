@@ -2622,9 +2622,9 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
       txid: txp.txid,
     };
     if (opts.byThirdParty) {
-      self._notifyTxProposalAction('NewOutgoingTxByThirdParty', txp, extraArgs);
+      self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
     } else {
-      self._notifyTxProposalAction('NewOutgoingTx', txp, extraArgs);
+      self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);
     }
 
     self.storage.softResetTxHistoryCache(self.walletId, function() {
