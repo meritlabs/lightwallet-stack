@@ -7,15 +7,8 @@ import { VaultsService } from 'merit/vaults/vaults.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { Logger } from 'merit/core/logger';
-
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
 import { WalletService } from "merit/wallets/wallet.service";
-import { ProfileService } from "merit/core/profile.service";
-import { VaultsService } from 'merit/vaults/vaults.service';
-import { BwcService } from 'merit/core/bwc.service';
-
-
-
 
 @IonicPage({
   segment: 'vault/:vaultId',
@@ -27,11 +20,9 @@ import { BwcService } from 'merit/core/bwc.service';
 })
 export class VaultDetailsView {
 
-  private bitcore:any;
   public vault: any;
   public whitelist: Array<any> = [];
   private bitcore: any = null;
-
 
   constructor(
     public navCtrl: NavController,
