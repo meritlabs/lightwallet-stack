@@ -1,12 +1,15 @@
 import * as Promise from 'bluebird';
-import { Injectable } from "@angular/core";
-import { MeritWalletClient } from "src/lib/merit-wallet-client";
+import { Injectable } from '@angular/core';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { BwcError } from 'src/lib/merit-wallet-client/lib/errors';
 import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 
 @Injectable()
 export class EasySendService {
-  constructor() {}
+  constructor(
+    private socialSharing: SocialSharing;
+  ) {}
   public createEasySendScriptHash(wallet: MeritWalletClient): Promise<EasySend> {
 
     // TODO: get a passphrase from the user
@@ -33,7 +36,20 @@ export class EasySendService {
       });
     }).catch((err) => {
       return Promise.reject(new BwcError('error building easysend script' + err));
-    })
+    });
+  }
 
+  public sendSMS(phoneNumber: string, url: string): Promise<any> {
+    return Promise.resolve(this.socialSharing.shareViaSMS(url, phoneNumber)).catch((err) => {
+      return Promise.reject(new BwcError('error sending sms: ' + err));
+    });
+  }
+
+  public sendEmail(emailAddress: string, url: string): Promise<any> {
+    return Promise.resolve().then(this.socialSharing.canShareViaEmail).then(() => {
+      return this.socialSharing.shareViaEmail(url, 'Someone sent you some Merit', [emailAddress]);
+    }).catch((err) => {
+      return Promise.reject(new BwcError('error sending email: ' + err));
+    })
   }
 }
