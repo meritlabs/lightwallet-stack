@@ -135,7 +135,7 @@ export class WalletService {
         });
       };
 
-      // TODO!!: Make this return a promise and properly promisify the stack.
+      //TODO: Separate, clarify, and tighten usage of Rate and Tx-Format service below.
       let cacheBalance = (wallet: MeritWalletClient, balance: any): Promise<any> => {
         return new Promise((resolve, reject) => {
           if (!balance) return resolve();
@@ -176,10 +176,10 @@ export class WalletService {
           cache.availableBalanceStr = this.txFormatService.formatAmountStr(cache.availableBalanceSat);
           cache.spendableBalanceStr = this.txFormatService.formatAmountStr(cache.spendableAmount);
           cache.pendingBalanceStr = this.txFormatService.formatAmountStr(cache.pendingAmount);
-
+          
           cache.alternativeName = config.settings.alternativeName;
           cache.alternativeIsoCode = config.settings.alternativeIsoCode;
-
+          
           // Check address
           return this.isAddressUsed(wallet, balance.byAddress).then((used) => {
             console.log("Used##");
@@ -195,12 +195,14 @@ export class WalletService {
             return this.rateService.whenAvailable().then(() => {
 
               let totalBalanceAlternative = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
+              let totalBalanceAlternativeStr = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
               let pendingBalanceAlternative = this.rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode);
               let lockedBalanceAlternative = this.rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
               let spendableBalanceAlternative = this.rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode);
               let alternativeConversionRate = this.rateService.toFiat(100000000, cache.alternativeIsoCode);
 
               cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
+              cache.totalBalanceAlternativeStr = cache.totalBalanceAlternative.amountStr;
               cache.pendingBalanceAlternative = new FiatAmount(pendingBalanceAlternative);
               cache.lockedBalanceAlternative = new FiatAmount(lockedBalanceAlternative);
               cache.spendableBalanceAlternative = new FiatAmount(spendableBalanceAlternative);
