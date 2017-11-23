@@ -11,6 +11,7 @@ import { Logger } from 'merit/core/logger';
 
 import * as _ from 'lodash';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { AddressBook } from 'merit/shared/address-book/contact/contact.model';
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
@@ -38,6 +39,7 @@ export class SendView {
   private searchFocus: boolean;
   private hasFunds: boolean;
   private hasOwnedMerit: boolean; 
+  private network: string;
 
   
   public hasContacts:boolean; 
@@ -93,7 +95,7 @@ export class SendView {
     });
   }
 
-  private addressBookToContactList(ab): Promise<any[]> {
+  private addressBookToContactList(ab: AddressBook): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let cl = _.map(ab, function(v:any, k) {
         let item:any = {
@@ -114,10 +116,9 @@ export class SendView {
     });
   };
 
-  private initContactList(): Promise<any> {
-    let addressBookList = Promise.promisify(this.addressBookService.list);
-    return addressBookList().then((ab) => {
-      this.hasContacts = _.isEmpty(ab) ? false : true;
+  private initContactList(): Promise<void> {
+    return this.addressBookService.list(this.network).then((ab) => {
+      this.hasContacts = !_.isEmpty(ab);
 
       return this.addressBookToContactList(ab).then((completeContacts) => {
         this.originalContacts = this.originalContacts.concat(completeContacts);

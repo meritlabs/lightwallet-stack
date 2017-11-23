@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Contact } from "merit/shared/address-book/contact/contact.model";
+import { MeritContact, isValidMeritContact, emptyMeritContact } from "merit/shared/address-book/contact/contact.model";
 
 // Add Contact Screen
 @IonicPage()
@@ -10,7 +10,7 @@ import { Contact } from "merit/shared/address-book/contact/contact.model";
 })
 export class AddContactView {
 
-  public contact:Contact;
+  public contact:MeritContact;
 
   constructor(
     public navCtrl: NavController,
@@ -20,7 +20,11 @@ export class AddContactView {
   }
 
   ionViewDidLoad() {
-    this.contact = new Contact();
+    this.contact = emptyMeritContact();
+  }
+
+  isValid(): boolean {
+    return isValidMeritContact(this.contact);
   }
 
   openQrScanner() {
