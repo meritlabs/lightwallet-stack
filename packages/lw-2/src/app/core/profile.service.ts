@@ -1,6 +1,9 @@
+import * as _ from 'lodash';
+import * as Promise from 'bluebird';
+
+//import { Promise } from 'bluebird';
 import { Injectable } from '@angular/core';
 import { Logger } from 'merit/core/logger';
-import * as _ from 'lodash';
 import { PersistenceService } from 'merit/core/persistence.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { BwcService } from 'merit/core/bwc.service';
@@ -10,8 +13,8 @@ import { AppService } from 'merit/core/app-settings.service';
 import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { Profile } from 'merit/core/profile.model';
-import { Wallet } from 'merit/wallets/wallet.model';
-import { Promise } from 'bluebird';
+import { Events } from 'ionic-angular/util/events';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 /* 
@@ -21,11 +24,10 @@ import { Promise } from 'bluebird';
 */ 
 @Injectable()
 export class ProfileService {
-  public wallets: Map<string, Wallet> = new Map<string, Wallet>();
+  public wallets: Map<string, MeritWalletClient> = new Map<string, MeritWalletClient>();
   public profile: Profile = new Profile();
 
-  private UPDATE_PERIOD = 15;
-  private throttledBwsEvent: any;
+  private UPDATE_PERIOD = 10;
   private validationLock: boolean = false;
   private errors: any = this.bwcService.getErrors();
   private queue: Array<any> = [];
@@ -39,13 +41,15 @@ export class ProfileService {
     private platformService: PlatformService,
     private appService: AppService,
     private languageService: LanguageService,
-    private txFormatService: TxFormatService
+    private txFormatService: TxFormatService,
+    private events: Events    
   ) {
     console.log("Hello ProfileService!");
-    this.throttledBwsEvent = _.throttle((n, wallet) => {
-      this.newBwsEvent(n, wallet);
-    }, 10000);
   }
+
+  private throttledBwsEvent = _.throttle((n, wallet) => {
+    this.propogateBwsEvent(n, wallet);
+  }, 10000);
 
   private updateWalletSettings(wallet: any): void {
     let config: any = this.configService.get();
@@ -105,14 +109,14 @@ export class ProfileService {
   }
 
   // Adds a WalletService client (BWC) into the wallet.  
-  private bindWalletClient(wallet: any, opts?: any): Promise<boolean> {
+  private bindWalletClient(wallet: MeritWalletClient, opts?: any): Promise<boolean> {
+    console.log("Binding the wallet client!");
     return new Promise((resolve, reject) => {
       console.log("Binding 1");    
       opts = opts ? opts : {};
       var walletId = wallet.credentials.walletId;
 
       if ((this.wallets[walletId] && this.wallets[walletId].started) && !opts.force) {
-        console.log("Sqwiddler in the night.");
         reject(false);
       }
 
@@ -129,74 +133,72 @@ export class ProfileService {
       this.updateWalletSettings(wallet);
       this.wallets[walletId] = wallet;
 
-      console.log("Binding 2");    
-      this.needsBackup(wallet).then((val: any) => {
-        wallet.needsBackup = val;
-      }).catch((err) => {
-        console.log("NeedsBackup Failed!");
-        console.log(err);
-      });
+      return this.needsBackup(wallet).then((val: any) => {
+        return wallet.needsBackup = val;
+      }).then(() => {
+        return this.balanceIsHidden(wallet).then((val: any) => {
+          return wallet.balanceHidden = val;
+      }).then(() => {
+        wallet.eventEmitter.removeAllListeners();
 
-      this.balanceIsHidden(wallet).then((val: any) => {
-        wallet.balanceHidden = val;
-      }).catch((err) => {
-        console.log("BalanceIsHiddent");
-      });;
-
-      console.log("Binding 3");    
-      wallet.removeAllListeners();
-
-      wallet.on('report', (n: any) => {
-        this.logger.info('BWC Report:' + n);
-      });
-
-      wallet.on('notification', (n: any) => {
-        this.logger.debug('BWC Notification:', n);
-
-        if (n.type == "NewBlock" && n.data.network == "testnet") {
-          this.throttledBwsEvent(n, wallet);
-        } else this.newBwsEvent(n, wallet);
-      });
-
-      console.log("Binding 4");    
-
-      wallet.on('walletCompleted', () => {
-        this.logger.debug('Wallet completed');
-
-        this.updateCredentials(JSON.parse(wallet.export())).then(() => {
-          //$rootScope.$emit('Local/WalletCompleted', walletId); TODO
+        wallet.eventEmitter.on('report', (n: any) => {
+          this.logger.info('BWC Report:' + n);
         });
-      });
 
-      wallet.initialize({
-        notificationIncludeOwn: true,
-      }, (err: any) => {
-        if (err) {
-          console.log("Binding 5");    
-          this.logger.error('Could not init notifications err:', err);
-          return;
-        }
-        console.log("Binding 6");    
+        wallet.eventEmitter.on('notification', (n: any) => {
+          this.logger.debug('BWC Notification:', n);
+
+          if (n.type == "NewBlock" && n.data.network == "testnet") {
+            this.throttledBwsEvent(n, wallet);
+          } else this.propogateBwsEvent(n, wallet);
+        });
+
+
+        wallet.eventEmitter.on('walletCompleted', () => {
+          this.logger.debug('Wallet completed');
+
+          return this.updateCredentials(JSON.parse(wallet.export())).then(() => {
+            this.events.publish('Local:WalletCompleted', walletId); 
+            return Promise.resolve(); // not sure this is needed
+          });
+        });
+      }).then(() => {
+        return wallet.initialize({
+          notificationIncludeOwn: true,
+        });
+      }).then(() => {
         wallet.setNotificationsInterval(this.UPDATE_PERIOD);
-        wallet.openWallet((err: any) => {
-          if (wallet.status !== true)
+        return wallet.openWallet();
+      }).then(() => {
+        if (wallet.status !== true) {
           this.logger.debug('Wallet + ' + walletId + ' status:' + wallet.status);
-        });
-      });
-      console.log("Binding 6");    
-
-      /* TODO $rootScope.$on('Local/SettingsUpdated', (e: any, walletId: string) => {
-        if (!walletId || walletId == wallet.id) {
-          this.logger.debug('Updating settings for wallet:' + wallet.id);
-          this.updateWalletSettings(wallet);
         }
-      }); */
+        return resolve();
+      }).catch((err) => {
+        this.logger.error('Could not bind the wallet client:', err);
+        return reject(new Error("Could not bind wallet client!"));
+      });
 
-      resolve(true);
+        /* TODO $rootScope.$on('Local/SettingsUpdated', (e: any, walletId: string) => {
+          if (!walletId || walletId == wallet.id) {
+            this.logger.debug('Updating settings for wallet:' + wallet.id);
+            this.updateWalletSettings(wallet);
+          }
+        }); */
+
+      });
     });
   }
 
-  private newBwsEvent(n: any, wallet: any): void {
+  /**
+   * This method is called when we receive a 'notification' event
+   * from the EventEmitter on the MeritWalletClient. 
+   * 
+   * Here we filter event types and propogate them to the rest of the application via 
+   * Ionic Events.
+   */
+  private propogateBwsEvent(n: any, wallet: any): void {
+    this.logger.info("We are in newBwsEvent on profileService");
     if (wallet.cachedStatus)
       wallet.cachedStatus.isValid = false;
 
@@ -209,7 +211,31 @@ export class ProfileService {
     if (wallet.cachedTxps)
       wallet.cachedTxps.isValid = false;
 
-    //$rootScope.$emit('bwsEvent', wallet.id, n.type, n); TODO
+    let eventName: string;
+    this.logger.info("TYPE TYPE");
+    this.logger.info(n.type);
+    switch (n.type) {
+      case 'NewBlock': 
+        eventName = 'Remote:NewBlock';
+        break;
+      case 'IncomingTx': 
+        eventName = 'Remote:IncomingTx';
+        break;
+      case 'IncomingCoinbase': 
+        eventName = 'Remote:IncomingCoinbase';
+        break;
+      case 'IncomingEasySend': 
+        eventName = 'Remote:IncomingEasySend';
+        break;
+      case 'IncomingTxProposal': 
+        eventName = 'Remote:IncomingTxProposal';
+        break;
+      default: 
+        eventName = 'Remote:GenericBwsEvent';
+        break;
+    }
+    this.logger.info("Publishing an event with this name: " + eventName);
+    this.events.publish(eventName, wallet.id, n.type, n); 
   }
 
   public updateCredentials(credentials: any): Promise<boolean> {
@@ -300,7 +326,7 @@ export class ProfileService {
   */ 
   public loadAndBindProfile(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceService.getProfile().then((profile: any) => {
+      return this.persistenceService.getProfile().then((profile: any) => {
 
         if (!profile) {
           return resolve();
@@ -362,8 +388,8 @@ export class ProfileService {
             return resolve();
           }
 
-          _.each(profile.credentials, (credentials) => {
-            this.bindWallet(credentials).then((bound: number) => {
+          return Promise.each(profile.credentials, (credentials) => {
+            return this.bindWallet(credentials).then((bound: number) => {
               i++;
               totalBound += bound;
               if (i == l) {
@@ -394,6 +420,7 @@ export class ProfileService {
     });
   }
 
+  // TODO: Revisit this implementation.
   public storeProfileIfDirty(): void {
     if (this.profile.dirty) {
       this.persistenceService.storeProfile(this.profile).then((err: any) => {
@@ -455,7 +482,7 @@ export class ProfileService {
       return this.addAndBindWalletClient(walletClient, {
         bwsurl: opts.bwsurl
       }).then((walletId: string) => {
-        this.setMetaData(walletClient, addressBook).then(() => {
+        return this.setMetaData(walletClient, addressBook).then(() => {
           return resolve(walletClient);
         }).catch((err: any) => {
           this.logger.warn(err);
@@ -527,7 +554,7 @@ export class ProfileService {
 
   private setMetaData(wallet: any, addressBook: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.persistenceService.getAddressbook(wallet.credentials.network).then((localAddressBook: any) => {
+      return this.persistenceService.getAddressbook(wallet.credentials.network).then((localAddressBook: any) => {
         let localAddressBook1 = {};
         try {
           localAddressBook1 = JSON.parse(localAddressBook);
@@ -586,12 +613,12 @@ export class ProfileService {
       var walletClient = this.bwcService.getClient(null, opts);
       this.logger.debug('Importing Wallet XPubKey');
 
-      walletClient.importFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
+      return walletClient.importFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
         account: opts.account || 0,
         derivationStrategy: opts.derivationStrategy || 'BIP44',
       }).then(() => {
 
-        this.addAndBindWalletClient(walletClient, {
+        return this.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
         }).then((wallet: any) => {
           return resolve(wallet);
@@ -632,13 +659,15 @@ export class ProfileService {
       if (!skipKeyValidation) this.runValidation(walletClient, 500);
 
       this.logger.info('Binding wallet:' + credentials.walletId + ' Validating?:' + !skipKeyValidation);
-      return resolve(this.bindWalletClient(walletClient));
+      return this.bindWalletClient(walletClient).then(() => {
+        return resolve();
+      });
     });
   }
 
 
   
-  public deleteWalletClient(wallet: any): Promise<any> {
+  public deleteWalletClient(wallet: MeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
 
       var walletId = wallet.credentials.walletId;
@@ -646,20 +675,22 @@ export class ProfileService {
       var config = this.configService.get();
 
       this.logger.debug('Deleting Wallet:', wallet.credentials.walletName);
-      wallet.removeAllListeners();
+      wallet.eventEmitter.removeAllListeners();
 
       this.profile.deleteWallet(walletId);
 
       delete this.wallets[walletId];
 
-      this.persistenceService.removeAllWalletData(walletId).catch((err: any) => {
-        this.logger.warn(err);
-      });
-
-      this.persistenceService.storeProfile(this.profile).then(() => {
-        return resolve();
+      return this.persistenceService.removeAllWalletData(walletId)
+      .then(() => {
+        return this.persistenceService.storeProfile(this.profile).then(() => {
+          return resolve();
+        }).catch((err: any) => {
+          return reject(err);
+        });
       }).catch((err: any) => {
-        return reject(err);
+        this.logger.warn(err);
+        return reject();
       });
     });
   };
@@ -668,7 +699,7 @@ export class ProfileService {
   public setDisclaimerAccepted(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.profile.disclaimerAccepted = true;
-      this.persistenceService.storeProfile(this.profile).then(() => {
+      return this.persistenceService.storeProfile(this.profile).then(() => {
         return resolve();
       }).catch((err) => {
         return reject(err);
@@ -676,14 +707,13 @@ export class ProfileService {
     });
   }
 
-  public getWallets(opts?: any): Promise<any> {
+  public getWallets(opts: any = {}): Promise<MeritWalletClient[]> {
 
     return new Promise((resolve, reject) => {
 
-      opts = opts || {};
       console.log("Getting wallets");
       console.log(this.wallets);
-      let ret = _.values(this.wallets);
+      let ret: MeritWalletClient[] = _.values(this.wallets);
 
       if (opts.network) {
         ret = _.filter(ret, (x: any) => {
@@ -756,6 +786,7 @@ export class ProfileService {
   }
 
   public getNotifications(opts: any): Promise<any> {
+    this.logger.warn("Explicitly getting notifications; Why?");
     return new Promise((resolve, reject) => {
       opts = opts ? opts : {};
 
@@ -906,21 +937,22 @@ export class ProfileService {
       let MAX = 100;
       opts = opts ? opts : {};
 
-      let w = this.getWallets();
-      if (_.isEmpty(w)) {
-        return reject('No wallets available');
-      }
-
-      let txps = [];
-
-      _.each(w, (x: any) => {
-        if (x && x.pendingTxps)
-          txps = txps.concat(x.pendingTxps);
+      return this.getWallets().then((w:MeritWalletClient[]) => {
+        if (_.isEmpty(w)) {
+          return reject('No wallets available');
+        }
+  
+        let txps = [];
+  
+        _.each(w, (x: any) => {
+          if (x && x.pendingTxps)
+            txps = txps.concat(x.pendingTxps);
+        });
+        let n = txps.length;
+        txps = _.sortBy(txps, 'pendingForUs', 'createdOn');
+        txps = _.compact(_.flatten(txps)).slice(0, opts.limit || MAX);
+        return resolve({ txps: txps, n: n });
       });
-      let n = txps.length;
-      txps = _.sortBy(txps, 'pendingForUs', 'createdOn');
-      txps = _.compact(_.flatten(txps)).slice(0, opts.limit || MAX);
-      return resolve({ txps: txps, n: n });
     });
   };
 
@@ -950,5 +982,28 @@ export class ProfileService {
         return (totalMicros > 0) ? resolve(true) : resolve(false);
       });
     });
+  }
+
+  public addVault(vault: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.profile.addVault(vault);
+      this.persistenceService.storeProfile(this.profile).then(() => {
+        return resolve();
+      });
+    });
+  }
+
+  public updateVault(vault: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.profile.updateVault(vault);
+      this.persistenceService.storeProfile(this.profile).then(() => {
+        return resolve();
+      });
+    });
+  }
+
+  public getVaults(): Array<any> {
+    console.log('Getting vaults');
+    return this.profile.vaults;
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PlatformService } from 'merit/core/platform.service';
 import { ConfigService } from 'merit/shared/config.service';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 import { TouchID } from '@ionic-native/touch-id';
 import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
@@ -109,12 +109,12 @@ export class TouchIdService {
 
   checkWallet(wallet: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!this.isAvailable()) reject();
+      if (!this.isAvailable()) return resolve(); //TODO: Decide how to propogate this.
       if (this.isNeeded(wallet)) {
         this.check().then(() => {
-          resolve();
+          return resolve();
         }).catch(() => {
-          reject();
+          return reject();
         });
       };
     });

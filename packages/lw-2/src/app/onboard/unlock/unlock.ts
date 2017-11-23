@@ -5,6 +5,7 @@ import { ToastConfig } from "merit/core/toast.config";
 import { Promise } from 'bluebird';
 import { EasyReceiveService } from "merit/easy-receive/easy-receive.service";
 import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
+import * as Promise from 'bluebird';
 
 
 // Unlock view for wallet

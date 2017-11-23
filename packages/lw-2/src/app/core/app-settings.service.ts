@@ -8,7 +8,7 @@ import { ConfigService } from 'merit/shared/config.service';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { Observable } from 'rxjs/Observable';
 
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 
 // TODO: Improve implementation

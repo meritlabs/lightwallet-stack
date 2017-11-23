@@ -16,7 +16,6 @@
     "sourceMap": true,
     "target": "esnext",
     "paths": {
-      "@app/*": [ "src/app/*" ],
       "merit/*": [ "src/app/*" ]
     }
   },

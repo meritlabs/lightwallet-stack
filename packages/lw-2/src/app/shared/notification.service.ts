@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 import { Logger } from 'merit/core/logger';
 import { BwcService } from 'merit/core/bwc.service';
 import { ConfigService } from 'merit/shared/config.service';
@@ -33,11 +33,14 @@ export class NotificationService {
 
   public subscribe(client, subject: Subject): Promise<any> {
     let methodPrefix = this.getMethodPrefix(subject);
+    if (!subject || !subject.id) {
+      return Promise.reject(new Error('Missing subject'));
+    }
     
     //TODO: Rewrite BWC with promises.
     let subCall = Promise.promisify(client[methodPrefix + 'ConfirmationSubscribe'](subject.id, {}, function(){}));
-    return subCall.then((res) => {
-      this.persistenceService.setTxConfirmNotification(subject.id, subject);
+    return subCall().then((res) => {
+      Promise.resolve(this.persistenceService.setTxConfirmNotification(subject.id, subject));
     });
   }
 

@@ -11,6 +11,7 @@ import { BwcError } from 'merit/core/bwc-error.model';
 import { PlatformService } from 'merit/core/platform.service';
 
 import { ProfileService } from 'merit/core/profile.service';
+import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
 
 import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
@@ -22,14 +23,15 @@ import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { TouchID } from '@ionic-native/touch-id';
 import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
 import { PopupService } from 'merit/core/popup.service';
-import { SpinnerService } from 'merit/core/spinner.service';
 import { TransactView } from 'merit/transact/transact';
 import { OnboardingView } from 'merit/onboard/onboarding.view';
 
 import { MomentModule } from 'angular2-moment';
 
 import { ConfigService } from 'merit/shared/config.service';
-import {MeritToastController} from "merit/core/toast.controller";
+import { MeritToastController } from "merit/core/toast.controller";
+import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
+import { WalletService } from "merit/wallets/wallet.service";
 
 import { DeepLinkService } from "merit/core/deep-link.service";
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
@@ -71,7 +73,6 @@ export function createTranslateLoader(http: Http) {
         BwcService,
         BwcError,
         PopupService,
-        SpinnerService,
         MeritToastController, 
         DeepLinkService,
         {
@@ -92,6 +93,9 @@ export function createTranslateLoader(http: Http) {
         EasyReceiveService, 
         DeepLinkService,
         LedgerService,
+        WalletService,
+        MnemonicService,
+        CreateVaultService,
         {
             provide: APP_INITIALIZER,
             useFactory: (app: AppService) => () => app.getInfo(),

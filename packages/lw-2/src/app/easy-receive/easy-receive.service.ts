@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {EasyReceipt} from "merit/easy-receive/easy-receipt.model";
+import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 import { Wallet } from "merit/wallets/wallet.model";
 import { Logger } from 'merit/core/logger';
 import { PersistenceService } from 'merit/core/persistence.service';
@@ -7,6 +7,7 @@ import { FeeService } from 'merit/shared/fee/fee.service'
 import { BwcService } from 'merit/core/bwc.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { LedgerService } from 'merit/shared/ledger.service';
+import * as Promise from 'bluebird';
 
 @Injectable()
 export class EasyReceiveService { 
@@ -76,6 +77,7 @@ export class EasyReceiveService {
   }
 
   public validateEasyReceiptOnBlockchain(receipt:EasyReceipt, password = '', network = 'testnet'):Promise<any> {
+
     return new Promise((resolve, reject) => {
       let opts:any = {
         bwsurl: this.configService.getDefaults().bws.url

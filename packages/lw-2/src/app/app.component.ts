@@ -15,10 +15,8 @@ import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
 import { DeepLinkService } from 'merit/core/deep-link.service';
 
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
-
-import { Promise } from 'bluebird';
-
 import * as _ from 'lodash';
+import * as Promise from 'bluebird'; 
 
 
 @Component({
@@ -42,9 +40,14 @@ export class MeritLightWallet {
     private app:App
   ) {
 
-    Promise.longStackTraces();
     process.on('unhandledRejection', console.log.bind(console));
-
+    Promise.config({
+        longStackTraces: true
+    });
+    process.on('unhandledRejection', console.log.bind(console));
+    Promise.onPossiblyUnhandledRejection((error) => {
+      throw error;
+  });      
 
     this.platform.ready().then((readySource) => {
         this.appService.getInfo().then((appInfo) => {
@@ -107,8 +110,6 @@ export class MeritLightWallet {
         this.statusBar.styleLightContent();
         this.splashScreen.hide();
       }
-      Promise.longStackTraces();
-      process.on('unhandledRejection', console.log.bind(console));      
       // Check Profile
       this.profileService.loadAndBindProfile().then((profile: any) => {
         
@@ -118,11 +119,24 @@ export class MeritLightWallet {
         } else {
           //this.profileService.createProfile();
           this.rootComponent = 'OnboardingView';
+
         }
-      }).catch((err: any) => {
-        this.logger.warn(err);
-        //TODO: Send them somewhere better.
-        this.rootComponent = 'OnboardingView';
+
+        // Check Profile
+        this.profileService.loadAndBindProfile().then((profile: any) => {
+          
+          this.openLockModal();
+          if (profile) {
+            this.rootComponent = 'TransactView';
+          } else {
+            //this.profileService.createProfile();
+            this.rootComponent = 'OnboardingView';
+          }
+        }).catch((err: any) => {
+          this.logger.warn(err);
+          //TODO: Send them somewhere better.
+          this.rootComponent = 'OnboardingView';
+        });
       });
   }
 
