@@ -293,7 +293,6 @@ export class API implements IAPI {
         }
 
         return Promise.each(notifications, (notification) => {
-          this.log.info("Emitting a notification event.  Does anyone care?");    
           this.eventEmitter.emit('notification', notification);
           return Promise.resolve();
         });
