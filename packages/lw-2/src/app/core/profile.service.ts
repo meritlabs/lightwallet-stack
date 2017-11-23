@@ -27,7 +27,7 @@ export class ProfileService {
   public wallets: Map<string, MeritWalletClient> = new Map<string, MeritWalletClient>();
   public profile: Profile = new Profile();
 
-  private UPDATE_PERIOD = 10;
+  private UPDATE_PERIOD = 3;
   private validationLock: boolean = false;
   private errors: any = this.bwcService.getErrors();
   private queue: Array<any> = [];
@@ -768,9 +768,9 @@ export class ProfileService {
       let MAX = 30;
 
       let typeFilter = {
-        'NewOutgoingTx': 1,
-        'NewIncomingTx': 1,
-        'NewIncomingCoinbase': 1
+        'OutgoingTx': 1,
+        'IncomingTx': 1,
+        'IncomingCoinbase': 1
       };
 
       this.getWallets().then((wallets) => {
