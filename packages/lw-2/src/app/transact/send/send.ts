@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
-import { Wallet } from 'merit/wallets/wallet.model';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
@@ -11,7 +10,7 @@ import { SendService } from 'merit/transact/send/send.service';
 import { Logger } from 'merit/core/logger';
 
 import * as _ from 'lodash';
-import { MeritWalletClient } from '../../../../../merit-wallet-client/index';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
@@ -56,21 +55,26 @@ export class SendView {
   ) {
     console.log("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
-    this.hasFunds = this.profileService.hasFunds();
     this.formData = { search: '' };
   }
 
-  ionViewDidLoad() {
+  async ionViewDidLoad() {
+    await this.updateHasFunds();
     this.originalContacts = [];
     this.initDeviceContacts();
     this.hasWallets();
-    this.hasFunds = this.profileService.hasFunds();
   }
 
   private hasWallets(): boolean {
     return (_.isEmpty(this.wallets) ? false : true);
   }
   
+  private updateHasFunds(): Promise<void> {
+    return this.profileService.hasFunds().then((hasFunds) => {
+      this.hasFunds = hasFunds;
+      return Promise.resolve();
+    });
+  }
 
   private updateWalletList(): Promise<any> {
     let walletList:Array<any> = [];
@@ -89,7 +93,7 @@ export class SendView {
     });
   }
 
-  private addressBookToContactList(ab): Promise<any> {
+  private addressBookToContactList(ab): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let cl = _.map(ab, function(v:any, k) {
         let item:any = {
@@ -111,13 +115,14 @@ export class SendView {
   };
 
   private initContactList(): Promise<any> {
-    let addressBookList = Promise.promisify(this.addressBookService.list({})); 
-    return addressBookList.then((ab) => {
+    let addressBookList = Promise.promisify(this.addressBookService.list);
+    return addressBookList().then((ab) => {
       this.hasContacts = _.isEmpty(ab) ? false : true;
 
-      let completeContacts = this.addressBookToContactList(ab);  
-      this.originalContacts = this.originalContacts.concat(completeContacts);
-      this.showMoreContacts = completeContacts.length > SendView.CONTACTS_SHOW_LIMIT;
+      return this.addressBookToContactList(ab).then((completeContacts) => {
+        this.originalContacts = this.originalContacts.concat(completeContacts);
+        this.showMoreContacts = completeContacts.length > SendView.CONTACTS_SHOW_LIMIT;
+      });
     });
   }
 

@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, ToastController, AlertController, Events} from 'ionic-angular';
-import { Wallet } from "./wallet.model";
 
 import * as _ from "lodash";
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 import { ProfileService } from "merit/core/profile.service";
 import { FeedbackService } from "merit/feedback/feedback.service"
 import { Feedback } from "merit/feedback/feedback.model"
@@ -19,6 +18,8 @@ import { WalletService } from "merit/wallets/wallet.service";
 import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 import { TxFormatService } from "merit/transact/tx-format.service";
 import { AddressBookService } from "merit/shared/address-book/address-book.service";
+import { VaultsService } from 'merit/vaults/vaults.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 /* 
@@ -40,16 +41,16 @@ export class WalletsView {
   private totalAmountFormatted;
 
   public wallets;
+  public vaults;
   public newReleaseExists;
   public feedbackNeeded;
   public feedbackData =  new Feedback();
 
   public addressbook;
-  public txpsData;
-  public recentTransactionsData;
+  public txpsData: any[] = [];
+  public recentTransactionsData: any[] = [];
 
   public recentTransactionsEnabled;
-
 
   constructor(
     public navParams: NavParams,
@@ -67,72 +68,97 @@ export class WalletsView {
     private walletService:WalletService,
     private txFormatService:TxFormatService,
     private events:Events,
-    private addressbookService:AddressBookService
+    private addressbookService:AddressBookService,
+    private vaultsService: VaultsService,
   ) {
+    this.logger.warn("Hellop WalletsView!");
+    
   }
 
 
   public async ionViewDidLoad() {
-    console.log("Wallets.ts ionViewDidLoad");
+    this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
+    
 
-    this.registerListeners();
+    await this.registerListeners();
     this.newReleaseExists = await this.appUpdateService.isUpdateAvailable();
     this.feedbackNeeded   = await this.feedbackService.isFeedBackNeeded();
     this.addressbook = await this.addressbookService.list(() => {});
 
-    Promise.resolve(this.getWallets().then((wallets) => {
-      this.calculateNetworkAmount(wallets);
-      this.processEasyReceive();
-      this.txpsData = this.profileService.getTxps({limit: 3});
-      if (this.configService.get().recentTransactions.enabled) {
-        this.recentTransactionsEnabled = true;
-        this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
+    return this.getWallets().then((wallets) => {
+      this.wallets = wallets;             
+      if (_.isEmpty(wallets)) {
+        return Promise.resolve(null); //ToDo: add proper error handling;
       }
-    })
-    .catch((err) => {
+      return this.calculateNetworkAmount(wallets);
+     }).then((cNetworkAmount) => {
+       this.totalAmount = cNetworkAmount;
+       return this.processEasyReceive();
+     }).then(() => {
+       return this.profileService.getTxps({limit: 3});
+     }).then((txps) => {
+      this.txpsData = txps;
+       if (this.configService.get().recentTransactions.enabled) {
+         this.recentTransactionsEnabled = true;
+         return this.profileService.getNotifications({limit: 3}).then((notifications) => {
+          this.recentTransactionsData = notifications;
+         });
+       }
+      }).then(() => {
+        return this.vaultsService.getVaults(_.head(this.wallets));
+      }).then((vaults) => {
+        console.log('getting vaults', vaults);
+        this.vaults = vaults;
+     }).catch((err) => {
       console.log("@@ERROR IN Updating statuses.")
       console.log(err)
-    })
-  );
+    });
   }
 
-  private registerListeners() {
+  private registerListeners(): Promise<any> {
 
-    let updateWalletStatus = (wallet) => {
-      this.walletService.getStatus(wallet, {}).then((status) => {
-        wallet.status = status;
-      }).catch((err) => {
-        this.logger.error("Unable to get wallet status!");
+    return this.subscribeToPromise('Remote:IncomingTxProposal').then(({walletId, type, n}) => {
+      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
+      
+      return this.profileService.getTxps({limit: 3}).then((txps) => {
+        this.txpsData = txps;        
       });
-    };
-
-    this.events.subscribe('bwsEvent', (e, walletId, type, n) => {
-      this.getWallets().then((wallets) => {
-        wallets.forEach((wallet) => {
-          if (wallet.id == walletId) {
-            updateWalletStatus(wallet);
-          }
+    }).then(() => {
+      return this.subscribeToPromise('Remote:IncomingTx').then(({walletId, type, n}) => {
+        this.logger.info("RL: Got a incomingTx event with: ", walletId, type, n);
+        
+        this.recentTransactionsData.push(n);
+      });
+    }).then(() => {
+      return this.subscribeToPromise('Remote:NewBlock').then(({walletId, type, n}) => {
+        this.logger.info("RL: Got a incomingTx event with: ", walletId, type, n);
+        
+        return this.profileService.getTxps({limit: 3}).then((txps) => {
+          this.txpsData = txps;        
         });
       });
-      this.txpsData = this.profileService.getTxps({limit: 3});
-    });
-
-    this.events.subscribe('Local/TxAction', (e, walletId) => {
-      this.getWallets().then((wallets) => {
-        wallets.forEach((wallet) => {
-          if (wallet.id == walletId) {
-            updateWalletStatus(wallet);
-          }
-        });
+    }).then(() => {
+      return this.subscribeToPromise('Local:Tx:Broadcast').then((broadcastedTxp) => {
+        this.logger.info("Got a Local:Tx:Broadcast event with: ", broadcastedTxp);
+        // this.getWallets().then((wallets) => {
+        //   wallets.forEach((wallet) => {
+        //     if (wallet.id == walletId) {
+        //       updateWalletStatus(wallet);
+        //     }
+        //   });
+        // });
       });
-    });
-
-    this.events.subscribe('easyReceiveEvent', (e, receipt:EasyReceipt) => {
-      this.processEasyReceive();
+    }).then(() => {
+      return this.subscribeToPromise('easyReceiveEvent').then((receipt:EasyReceipt) => {
+        this.processEasyReceive();
+      });
+    }).catch((err) => {
+      this.logger.warn("Error registering event listeners.");
     });
 
   }
 
+  private subscribeToPromise = Promise.promisify(this.events.subscribe);
 
   /**
    * checks if pending easyreceive exists and if so, open it
@@ -150,6 +176,7 @@ export class WalletsView {
         });
 
       }
+      return Promise.resolve();
     });
   }
 
@@ -264,25 +291,11 @@ export class WalletsView {
    
   }
 
-  private calculateNetworkAmount(wallets:Array<Wallet>) {
-    this.totalAmount = 0;
-
-    let coin = ''; //todo what to use here??
-    this.totalAmountFormatted =  this.txFormatService.parseAmount(this.totalAmount, 'MRT');
-
-    wallets.forEach((wallet) => {
-      this.walletService.getWalletAnv(wallet).then((amount) => {
-
-        let coin = ''; //todo what to use here??
-        this.totalAmount += amount;
-        this.totalAmountFormatted =  this.txFormatService.parseAmount(this.totalAmount, 'MRT');
-      });
-
-    });
+  private calculateNetworkAmount(wallets:Array<MeritWalletClient>): Promise<any> {
+    return Promise.resolve(10000);
   }
 
-
-  openWallet(wallet) {
+  private openWallet(wallet) {
     if (!wallet.isComplete) {
       this.navCtrl.push('CopayersView')
     } else {
@@ -290,15 +303,15 @@ export class WalletsView {
     }
   }
 
-  rateApp(mark) {
+  private rateApp(mark) {
     this.feedbackData.mark = mark;
   }
 
-  cancelFeedback() {
+  private cancelFeedback() {
     this.feedbackData.mark = null;
   }
 
-  sendFeedback() {
+  private sendFeedback() {
     this.feedbackNeeded = false;
     this.feedbackService.sendFeedback(this.feedbackData).catch(() => {
       this.toastCtrl.create({
@@ -308,53 +321,51 @@ export class WalletsView {
     })
   }
 
-  toLatestRelease() {
+  private toLatestRelease() {
     this.inAppBrowser.create(this.configService.get().release.url);
   }
 
-  toAddWallet() {
+  private toAddWallet() {
     this.navCtrl.push('CreateWalletView');
   }
 
-  toImportWallet() {
+  private toImportWallet() {
     this.navCtrl.push('ImportView');
   }
 
-
-  private async getWallets():Promise<Array<Wallet>> {
-    console.log("needWalletStatuses");
-    console.log(this.needWalletStatuses());
+  // This method returns all wallets with statuses.  
+  // Statuses include balances and other important metadata 
+  // needed to power the display. 
+  private getWallets():Promise<Array<MeritWalletClient>> {
+    this.logger.warn("getWallets() in wallets.ts");
     if (this.needWalletStatuses()) {
-      this.wallets = await this.updateAllWallets();     
+      return this.updateAllWallets().then((wallets) => {
+        return wallets;
+      });
     }
-    console.log("@@Got wallets with statuses");    
-    console.log(this.wallets);    
-    return this.wallets;
+    return Promise.resolve(this.wallets);
   }
 
-  private async updateAllWallets() {
-    let wallets = await this.profileService.getWallets();
-    console.log("@@got the wallets")
-    console.log(wallets)
-    // Get the statuses of all the wallets.
-    return await Promise.all(_.map(wallets, async (wallet:any) => {
-      wallet.status = await this.walletService.getStatus(wallet);
-      return wallet; 
-    })).catch((err) => {
-      console.log("Error updating wallets");
-      console.log(err);
-    });
+  private updateAllWallets(): Promise<MeritWalletClient[]> {
+    return this.profileService.getWallets().each((wallet) => {
+      return this.walletService.getStatus(wallet).then((status) => {
+        wallet.status = status;
+        return wallet;
+      }).catch((err) => {
+        Promise.reject(new Error('could not update wallets' + err));
+      });
+    })
   }
 
-  openTransactionDetails(transaction) {
+  private openTransactionDetails(transaction) {
     this.navCtrl.push('TransactionView', {transaction: transaction});
   }
 
-  toTxpDetails() {
+  private toTxpDetails() {
     this.navCtrl.push('TxpView');
   }
 
-  txpCreatedWithinPastDay(txp) {
+  private txpCreatedWithinPastDay(txp) {
     var createdOn= new Date(txp.createdOn*1000);
     return ((new Date()).getTime() - createdOn.getTime()) < (1000 * 60 * 60 * 24);
   }
@@ -370,6 +381,10 @@ export class WalletsView {
       }
     });
     return false;
+  }
+
+  private openRecentTxDetail(tx:any): any {
+    this.navCtrl.push('TxDetailsView', {txId: tx.txid, tx: tx})
   }
 
 }

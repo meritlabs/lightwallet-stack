@@ -3,7 +3,7 @@ import { Logger } from 'merit/core/logger';
 import { BwcService } from 'merit/core/bwc.service';
 import { BwcError } from 'merit/core/bwc-error.model';
 import { ProfileService } from 'merit/core/profile.service';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 
 

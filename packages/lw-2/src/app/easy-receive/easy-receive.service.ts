@@ -7,6 +7,10 @@ import { FeeService } from 'merit/shared/fee/fee.service'
 import { BwcService } from 'merit/core/bwc.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { LedgerService } from 'merit/shared/ledger.service';
+import { EasyReceipt } from "./easy-receipt.model";
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import * as Promise from 'bluebird';
+
 
 @Injectable()
 export class EasyReceiveService { 
@@ -76,6 +80,7 @@ export class EasyReceiveService {
   }
 
   public validateEasyReceiptOnBlockchain(receipt:EasyReceipt, password = '', network = 'testnet'):Promise<any> {
+
     return new Promise((resolve, reject) => {
       let opts:any = {
         bwsurl: this.configService.getDefaults().bws.url

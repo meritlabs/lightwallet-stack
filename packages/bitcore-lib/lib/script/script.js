@@ -194,6 +194,9 @@ Script.fromString = function(str) {
     var opcode = Opcode(token);
     var opcodenum = opcode.toNumber();
 
+    console.log("OPCODE:", token);
+    console.log("opcodenum:", opcodenum);
+
     if (_.isUndefined(opcodenum)) {
       opcodenum = parseInt(token);
       if (opcodenum > 0 && opcodenum < Opcode.OP_PUSHDATA1) {
@@ -204,6 +207,9 @@ Script.fromString = function(str) {
         });
         i = i + 2;
       } else {
+        console.log("BAD OPCODE!!!!");
+        console.log(token);
+        console.log(opcodenum);
         throw new Error('Invalid script: ' + JSON.stringify(str));
       }
     } else if (opcodenum === Opcode.OP_PUSHDATA1 ||
@@ -410,6 +416,18 @@ Script.prototype.isScriptHashOut = function() {
 };
 
 /**
+ * @returns {boolean} if this is a p2sh output script
+ */
+Script.prototype.isParameterizedScriptHashOut = function() {
+  var buf = this.toBuffer();
+  return (buf.length > 25 &&
+    buf[0] === Opcode.OP_HASH160 &&
+    buf[1] === 0x14 &&
+    buf[buf.length - 3] === Opcode.OP_DEPTH &&
+    buf[buf.length - 1] === Opcode.OP_GREATERTHANOREQUAL);
+};
+
+/**
  * @returns {boolean} if this is a p2sh input script
  * Note that these are frequently indistinguishable from pubkeyhashin
  */
@@ -506,14 +524,18 @@ Script.prototype.isDataOut = function() {
  * @returns {Buffer}
  */
 Script.prototype.getData = function() {
-  if (this.isDataOut() || this.isScriptHashOut()) {
+  if (
+      this.isDataOut() ||
+      this.isScriptHashOut() ||
+      this.isParameterizedScriptHashOut()) {
+
     if (_.isUndefined(this.chunks[1])) {
       return new Buffer(0);
     } else {
       return new Buffer(this.chunks[1].buf);
     }
-  }
-  if (this.isPublicKeyHashOut()) {
+
+  } else if (this.isPublicKeyHashOut()) {
     return new Buffer(this.chunks[2].buf);
   }
   throw new Error('Unrecognized script type to get data from');
@@ -537,6 +559,7 @@ Script.types.PUBKEY_IN = 'Spend from public key';
 Script.types.PUBKEYHASH_OUT = 'Pay to public key hash';
 Script.types.PUBKEYHASH_IN = 'Spend from public key hash';
 Script.types.SCRIPTHASH_OUT = 'Pay to script hash';
+Script.types.PARAMETERIZED_SCRIPTHASH_OUT = 'Parameterized Pay to script hash';
 Script.types.SCRIPTHASH_IN = 'Spend from script hash';
 Script.types.MULTISIG_OUT = 'Pay to multisig';
 Script.types.MULTISIG_IN = 'Spend from multisig';
@@ -564,6 +587,7 @@ Script.outputIdentifiers.PUBKEY_OUT = Script.prototype.isPublicKeyOut;
 Script.outputIdentifiers.PUBKEYHASH_OUT = Script.prototype.isPublicKeyHashOut;
 Script.outputIdentifiers.MULTISIG_OUT = Script.prototype.isMultisigOut;
 Script.outputIdentifiers.SCRIPTHASH_OUT = Script.prototype.isScriptHashOut;
+Script.outputIdentifiers.PARAMETERIZED_SCRIPTHASH_OUT = Script.prototype.isParameterizedScriptHashOut;
 Script.outputIdentifiers.DATA_OUT = Script.prototype.isDataOut;
 
 /**
@@ -863,6 +887,86 @@ Script.buildEasySendIn = function(signature, easyScript) {
   return s;
 };
 
+Script.buildSimpleVaultScript = function(tag) {
+  $.checkArgument(tag, 'Tag must be present');
+
+  var s = new Script();
+  console.log('before tag b', tag);
+  // var tagBytes = BN.fromString(tag);
+
+  s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] <tag>| 
+   .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] | 
+   .add(Opcode. OP_NTOALTSTACK               )// <out index> <sig> <mode> | [addresses]
+   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> <spend key> | [addresses] <renew key>
+   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> | [addresses] <renew key> <spend key>
+   .add(        Opcode.smallInt(0)           )// <sig> <mode> 0 | [addresses] <renew key> <spend key>
+   .add(Opcode. OP_EQUAL                     )// <sig> <bool> | [addresses] <renew key> <spend key>
+   .add(Opcode. OP_IF                        )// <sig> | [addresses] <renew key> <spend key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <renew key>
+   .add(Opcode.      OP_DUP                  )// <sig> <spend key> <spend key> | [addresses] <renew key>
+   .add(Opcode.      OP_TOALTSTACK           )// <sig> <spend key> | [addresses] <renew key> <spend key>
+   .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses] <renew key> <spend key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> | [addresses] <renew key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> | [addresses]
+   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <0 args> | [addresses]
+   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <0 args> <out index>| [addresses]
+   .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> <0 args> <out index> [addresses] |
+   .add(Opcode.      OP_NDUP                 )// <spend key> <renew key> <0 args> <out index> [addresses] [addresses] |
+   .add(Opcode.      OP_NTOALTSTACK          )// <spend key> <renew key> <0 args> <out index> [addresses] | [addresses]
+   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )// <spend key> <renew key> | [addresses]
+   .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> [addresses] |
+   .add(Opcode.      OP_DUP                  )// <spend key> <renew key> [addresses] <num addresss> |
+   .add(             Opcode.smallInt(5)      )// <spend key> <renew key> [addresses] <num addresss> 4 |
+   .add(Opcode.      OP_ADD                  )// <spend key> <renew key> [addresses] <total args> |
+   .add(Opcode.      OP_TOALTSTACK           )// <spend key> <renew key> [addresses] | <total args>
+   .add(             tag                     )// <spend key> <renew key> [addresses] <tag> | 
+   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> [addresses] <tag> <vault type> |
+   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> | 
+   .add(             Opcode.smallInt(1)      )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> |
+   .add(             "s"                     )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> |
+   .add(             Opcode.smallInt(1)      )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> <num addresses>|
+   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )// |
+   .add(             Opcode.smallInt(2)      )// 2 |
+   .add(Opcode.      OP_OUTPUTCOUNT          )// <count>
+   .add(Opcode.      OP_EQUAL                )// <bool>
+   .add(Opcode. OP_ELSE                      )
+   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <renew key>
+   .add(Opcode.      OP_DROP                 )// <sig> | [addresses] <renew key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <renew key> | [addresses]  
+   .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses]
+   .add(             Opcode.smallInt(0)      )// <total args> | [addresses]
+   .add(             Opcode.smallInt(0)      )// <total args> <out index> | [addresses]
+   .add(             "s"                     )// <total args> <out index> <self> | [addresses]
+   .add(             Opcode.smallInt(1)      )// <total args> <out index> <self> <num addresses>| [addresses]
+   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )//  | [addresses]
+   .add(             Opcode.smallInt(1)      )// 1 | [addresses]
+   .add(Opcode.      OP_OUTPUTCOUNT          )// 1 <count> | [addresses]
+   .add(Opcode.      OP_EQUAL                )// <bool> | [addresses]
+   .add(Opcode. OP_ENDIF);
+
+  return s;
+};
+
+Script.buildParameterizedP2SH = function(script, params) {
+  let s = new Script();
+
+  s.add(Opcode.OP_HASH160)
+   .add(script instanceof Address ? script.hashBuffer : Hash.sha256ripemd160(script.toBuffer()))
+   .add(Opcode.OP_EQUALVERIFY);
+
+  let size = 0;
+  for(let i = 0; i < params.length; i++) {
+    s.add(params[i]);
+    size++;
+  }
+
+  s.add(Opcode.OP_DEPTH)
+   .add(Opcode.smallInt(size))
+   .add(Opcode.OP_GREATERTHANOREQUAL);
+
+  return s;
+};
+
 /**
  * @returns {Script} a new pay to public key hash output for the given
  * address or public key
@@ -1032,6 +1136,10 @@ Script.prototype._getOutputAddressInfo = function() {
     info.hashBuffer = this.getData();
     info.network = this._network || Networks.defaultNetwork;
     info.type = Address.PayToScriptHash;
+  } else if (this.isParameterizedScriptHashOut()) {
+    info.hashBuffer = this.getData();
+    info.network = this._network || Networks.defaultNetwork;
+    info.type = Address.ParameterizedPayToScriptHash;
   } else if (this.isPublicKeyHashOut()) {
     info.hashBuffer = this.getData();
     info.type = Address.PayToPublicKeyHash;

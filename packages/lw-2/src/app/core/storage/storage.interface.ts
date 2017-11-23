@@ -1,5 +1,5 @@
 import { InjectionToken } from '@angular/core';
-import { Promise } from 'bluebird';
+import * as Promise from 'bluebird';
 
 
 export interface MeritStorage {

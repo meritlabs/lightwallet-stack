@@ -12,6 +12,7 @@ import { TransactView } from 'merit/transact/transact';
 import { OnboardingView } from 'merit/onboard/onboarding.view';
 import { FingerprintLockView } from 'merit/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
+<<<<<<< HEAD
 import { DeepLinkService } from 'merit/core/deep-link.service';
 
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
@@ -19,6 +20,9 @@ import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { Promise } from 'bluebird';
 
 import * as _ from 'lodash';
+=======
+import * as Promise from 'bluebird'; 
+>>>>>>> major/modernize
 
 
 @Component({
@@ -42,9 +46,14 @@ export class MeritLightWallet {
     private app:App
   ) {
 
-    Promise.longStackTraces();
     process.on('unhandledRejection', console.log.bind(console));
-
+    Promise.config({
+      longStackTraces: true
+    });
+    process.on('unhandledRejection', console.log.bind(console));
+    Promise.onPossiblyUnhandledRejection((error) => {
+      throw error;
+    });
 
     this.platform.ready().then((readySource) => {
         this.appService.getInfo().then((appInfo) => {
@@ -123,6 +132,7 @@ export class MeritLightWallet {
         this.logger.warn(err);
         //TODO: Send them somewhere better.
         this.rootComponent = 'OnboardingView';
+
       });
   }
 

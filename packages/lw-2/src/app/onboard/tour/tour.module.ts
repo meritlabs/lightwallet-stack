@@ -12,4 +12,4 @@ import { TourView } from 'merit/onboard/tour/tour';
     IonicPageModule.forChild(TourView),
   ],
 })
-export class TourComponentModule {}
+export class TourModule {}

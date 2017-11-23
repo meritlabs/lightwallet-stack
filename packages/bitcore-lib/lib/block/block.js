@@ -30,6 +30,11 @@ function Block(arg) {
 // https://github.com/bitcoin/bitcoin/blob/b5fa132329f0377d787a4a21c1686609c2bfaece/src/primitives/block.h#L14
 Block.MAX_BLOCK_SIZE = 1000000;
 
+Block.COINBASE_MATURITY = {
+  livenet: 100,
+  testnet: 5,
+};
+
 /**
  * @param {*} - A Buffer, JSON string or Object
  * @returns {Object} - An object representing block data
