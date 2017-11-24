@@ -3071,6 +3071,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
     var useCache = addresses.length >= Defaults.HISTORY_CACHE_ADDRESS_THRESOLD;
     var network = Bitcore.Address(addresses[0].address).toObject().network;
 
+    log.warn("Using cache or not?");
+    log.warn(useCache);
+    fromCache = false;
+
     async.series([
 
       function(next) {
@@ -3080,8 +3084,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           if (err) return next(err);
           if (!res || !res[0]) return next();
 
-          log.warn("GNT: getTxHistoryCache");
-          log.warn(res);
           txs = res;
           fromCache = true;
 
@@ -3100,8 +3102,11 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
+          log.info("@@TX History RAW: ", rawTxs.length);
           txs = self._normalizeTxHistory(rawTxs);
 
+          log.info("@@TX History Normalized: ", txs.length);
+          
           totalItems = total;
           return next();
         });
