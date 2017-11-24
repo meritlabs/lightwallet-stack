@@ -51,11 +51,10 @@ export class ProfileService {
     this.propogateBwsEvent(n, wallet);
   }, 10000);
 
-  private updateWalletSettings(wallet: any): void {
+  private updateWalletSettings(wallet: MeritWalletClient): void {
     let config: any = this.configService.get();
     let defaults: any = this.configService.getDefaults();
     // this.config.whenAvailable(function (config) { TODO
-    wallet.usingCustomBWS = config.bwsFor && config.bwsFor[wallet.id] && (config.bwsFor[wallet.id] != defaults.bws.url);
     wallet.name = (config.aliasFor && config.aliasFor[wallet.id]) || wallet.credentials.walletName;
     wallet.color = (config.colorFor && config.colorFor[wallet.id]);
     wallet.email = config.emailFor && config.emailFor[wallet.id];
@@ -71,7 +70,7 @@ export class ProfileService {
     });
   }
 
-  private requiresBackup(wallet: any): boolean {
+  private requiresBackup(wallet: MeritWalletClient): boolean {
     if (wallet.isPrivKeyExternal()) return false;
     if (!wallet.credentials.mnemonic) return false;
     if (wallet.credentials.network == 'testnet') return false;
@@ -79,7 +78,7 @@ export class ProfileService {
     return true;
   }
 
-  private needsBackup(wallet: any): Promise<boolean> {
+  private needsBackup(wallet: MeritWalletClient): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (!this.requiresBackup(wallet)) {
         return resolve(false);
@@ -96,7 +95,7 @@ export class ProfileService {
     })
   }
 
-  private balanceIsHidden(wallet: any): Promise<boolean> {
+  private balanceIsHidden(wallet: MeritWalletClient): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
       this.persistenceService.getHideBalanceFlag(wallet.credentials.walletId).then((shouldHideBalance: string) => {
@@ -167,11 +166,11 @@ export class ProfileService {
           notificationIncludeOwn: true,
         });
       }).then(() => {
-        wallet.setNotificationsInterval(this.UPDATE_PERIOD);
+        //wallet.setNotificationsInterval(this.UPDATE_PERIOD);
         return wallet.openWallet();
-      }).then(() => {
+      }).then((openWallet) => {
         if (wallet.status !== true) {
-          this.logger.debug('Wallet + ' + walletId + ' status:' + wallet.status);
+          this.logger.debug('Wallet + ' + walletId + ' status:' + openWallet.status);
         }
         return resolve();
       }).catch((err) => {
@@ -197,7 +196,7 @@ export class ProfileService {
    * Here we filter event types and propogate them to the rest of the application via 
    * Ionic Events.
    */
-  private propogateBwsEvent(n: any, wallet: any): void {
+  private propogateBwsEvent(n: any, wallet: MeritWalletClient): void {
     this.logger.info("We are in newBwsEvent on profileService");
     if (wallet.cachedStatus)
       wallet.cachedStatus.isValid = false;
@@ -257,7 +256,7 @@ export class ProfileService {
     });
   }
 
-  private addLastKnownBalance(wallet: any): Promise<any> {
+  private addLastKnownBalance(wallet: MeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
       let now = Math.floor(Date.now() / 1000);
       let showRange = 600; // 10min;
@@ -283,7 +282,7 @@ export class ProfileService {
     });
   }
 
-  private runValidation(wallet: any, delay?: number, retryDelay?: number) {
+  private runValidation(wallet: MeritWalletClient, delay?: number, retryDelay?: number) {
 
     delay = delay ? delay : 500;
     retryDelay = retryDelay ? retryDelay : 50;
@@ -301,24 +300,25 @@ export class ProfileService {
     let walletId = wallet.credentials.walletId;
 
     this.logger.debug('ValidatingWallet: ' + walletId + ' skip Device:' + skipDeviceValidation);
-    setTimeout(() => {
-      wallet.validateKeyDerivation({
-        skipDeviceValidation: skipDeviceValidation,
-      }, (err: any, isOK: any) => {
-        this.validationLock = false;
+    wallet.validateKeyDerivation({
+      skipDeviceValidation: skipDeviceValidation,
+    })
+    .timeout(1000, "Validating wallet timed out")
+    .then((isOK: boolean) => {
+      this.validationLock = false;
 
-        this.logger.debug('ValidatingWallet End:  ' + walletId + ' isOK:' + isOK);
-        if (isOK) {
-          this.profile.setChecked(this.platformService.ua, walletId);
-        } else {
-          this.logger.warn('Key Derivation failed for wallet:' + walletId);
-          this.persistenceService.clearLastAddress(walletId).then(() => {
-          });
-        };
+      this.logger.debug('ValidatingWallet End:  ' + walletId + ' isOK:' + isOK);
+      if (isOK) {
+        this.profile.setChecked(this.platformService.ua, walletId);
+      } else {
+        this.logger.warn('Key Derivation failed for wallet:' + walletId);
+        this.persistenceService.clearLastAddress(walletId).then(() => {
+        });
+      };
 
-        this.storeProfileIfDirty();
-      });
-    }, delay);
+      this.storeProfileIfDirty();
+    });
+    
   }
 
   /* 
@@ -469,7 +469,7 @@ export class ProfileService {
   }
 
   // Adds and bind a new client to the profile
-  public addAndBindWalletClient(wallet: any, opts: any): Promise<any> {
+  public addAndBindWalletClient(wallet: MeritWalletClient, opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!wallet || !wallet.credentials) {
         return reject('Could not access wallet'); // TODO gettextCatalog
@@ -526,7 +526,7 @@ export class ProfileService {
     return this.profile.isChecked(this.platformService.ua, walletId) || this.platformService.isIOS;
   }
 
-  private setMetaData(wallet: any, addressBook: any): Promise<any> {
+  private setMetaData(wallet: MeritWalletClient, addressBook: any): Promise<any> {
     return new Promise((resolve, reject) => {
       return this.persistenceService.getAddressbook(wallet.credentials.network).then((localAddressBook: any) => {
         let localAddressBook1 = {};
@@ -562,7 +562,7 @@ export class ProfileService {
       walletClient.importFromExtendedPrivateKey(xPrivKey, opts).then(() => {
         // this.addAndBindWalletClient(walletClient, {
         //   bwsurl: opts.bwsurl
-        // }).then((wallet: any) => {
+        // }).then((wallet: MeritWalletClient) => {
         //   return resolve(wallet);
         // }).catch((err: any) => {
         //   return reject(err);
@@ -594,7 +594,7 @@ export class ProfileService {
 
         return this.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
-        }).then((wallet: any) => {
+        }).then((wallet: MeritWalletClient) => {
           return resolve(wallet);
         }).catch((err: any) => {
           return reject(err);
@@ -784,12 +784,12 @@ export class ProfileService {
         let notifications = [];
   
   
-        let isActivityCached = (wallet: any): boolean => {
+        let isActivityCached = (wallet: MeritWalletClient): boolean => {
           return wallet.cachedActivity && wallet.cachedActivity.isValid;
         }
   
   
-        let updateNotifications = (wallet: any): Promise<any> => {
+        let updateNotifications = (wallet: MeritWalletClient): Promise<any> => {
           return new Promise((resolve, reject) => {
   
             if (isActivityCached(wallet) && !opts.force) {
@@ -799,16 +799,16 @@ export class ProfileService {
             wallet.getNotifications({
               timeSpan: TIME_STAMP,
               includeOwn: true,
-            }, (err: any, n: any) => {
-              if (err) {
-                return reject(err);
-              }
+            }).then(() => (n: any) => {
+              
               wallet.cachedActivity = {
                 n: n.slice(-MAX),
                 isValid: true,
               };
   
               return resolve();
+            }).catch((err) => {
+              return reject(err);
             });
           });
         }
@@ -870,7 +870,7 @@ export class ProfileService {
           return finale;
         }
   
-        _.each(w, (wallet: any) => {
+        _.each(w, (wallet: MeritWalletClient) => {
           updateNotifications(wallet).then(() => {
             j++;
             let n = _.filter(wallet.cachedActivity.n, (x: any) => {

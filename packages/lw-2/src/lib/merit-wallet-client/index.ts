@@ -1,14 +1,10 @@
-import { MeritClient, IMeritClient } from './lib/index';
+import { MeritClient } from './lib/index';
 
 let BwcError = require('./lib/errors');
 
-export interface IMeritWalletClient extends IMeritClient {
-  sdsa: any;
-  errors: any;
-};
 
 // Singleton to ensure that conserve and handle memory most effectively.
-export class MeritWalletClient extends MeritClient implements IMeritWalletClient {
+export class MeritWalletClient extends MeritClient {
   private static _instance: MeritWalletClient;
   public errors;
   private constructor(opts:any = {}) {

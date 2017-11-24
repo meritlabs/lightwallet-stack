@@ -3,7 +3,7 @@ import * as Promise from 'bluebird';
 
 import { BwcService } from 'merit/core/bwc.service';
 
-import { IMeritWalletClient } from './../../lib/merit-wallet-client';
+import { MeritWalletClient } from './../../lib/merit-wallet-client';
 
 
 @Injectable()
@@ -15,7 +15,7 @@ export class VaultsService {
         console.log('hello VaultsService');
     }
 
-    getVaults(walletClient: IMeritWalletClient): Promise<Array<any>> {
+    getVaults(walletClient: MeritWalletClient): Promise<Array<any>> {
         console.log('getting vaults');
         return walletClient.getVaults();
     }
