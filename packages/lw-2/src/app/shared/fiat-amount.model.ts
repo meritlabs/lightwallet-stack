@@ -14,7 +14,6 @@ export class FiatAmount {
   public amountStr: string;
   
   constructor(amount: number) {
-    console.log('Hello FiatAmount Model');
     this.formats = {
       CURRENCY_SYM: "$",
       DECIMAL_SEP: ".",

@@ -134,8 +134,6 @@ export class TxFormatService {
       tx.amountUnitStr = tx.amountStr.split(' ')[1];
     }
 
-    this.logger.warn("ProcessTx Return Value: ", tx);
-
     return Promise.resolve(tx);
    });
     

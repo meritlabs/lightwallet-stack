@@ -182,8 +182,6 @@ export class WalletService {
           
           // Check address
           return this.isAddressUsed(wallet, balance.byAddress).then((used) => {
-            console.log("Used##");
-            console.log(used);
             if (used) {
               this.logger.debug('Address used. Creating new');
               // Force new address
@@ -257,10 +255,7 @@ export class WalletService {
 
           tries = tries || 0;
 
-          this.logger.debug('Updating Status:', wallet.credentials.walletName, tries);
           return wallet.getStatus({}).then((status) => {
-            console.log("@@@ WHAT IS STATUS From WC GetStatus?")
-            console.log(status)
             let currentStatusHash = walletStatusHash(status);
             this.logger.debug('Status update. hash:' + currentStatusHash + ' Try:' + tries);
             if (opts.untilItChanges && initStatusHash == currentStatusHash && tries < this.WALLET_STATUS_MAX_TRIES && walletId == wallet.credentials.walletId) {
@@ -271,9 +266,6 @@ export class WalletService {
             }
 
             return processPendingTxps(status).then(() => {
-              this.logger.debug('Got Wallet Status for:' + wallet.credentials.walletName);
-              this.logger.debug(status);
-
               return cacheStatus(status).then(() => {
                 wallet.scanning = status.wallet && status.wallet.scanStatus == 'running';
                 return resolve(status);
@@ -289,7 +281,6 @@ export class WalletService {
       };
 
       return _getStatus(walletStatusHash(null), 0).then((status) => {
-        console.log("Got status from _getStatus");
         console.log(status);
         return resolve(status);
       }).catch((err) => {
@@ -465,7 +456,7 @@ export class WalletService {
         progressFn(txsFromLocal, 0);
         wallet.completeHistory = txsFromLocal;
 
-        let getNewTxs = (newTxs: Array<any>, skip: number): Promise<any> => {
+        let getNewTxs = (newTxs: Array<any> = [], skip: number): Promise<any> => {
           return new Promise((resolve, reject) => {
             return this.getTxsFromServer(wallet, skip, endingTxid, requestLimit).then((result: any) => {
               // If we haven't bubbled up an error in the promise chain, and this is empty, 

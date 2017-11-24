@@ -14,15 +14,9 @@ export class BwcService {
     this.BWC = this.getClient(null);
     this.buildTx = this.BWC.buildTx;
     this.parseSecret = this.BWC.parseSecret;
-    console.log('Hello BwcService Service');
-    console.log("the client: ")
-    console.log(this.BWC)
   }
   
   public getBitcore() {
-    console.log("Getting bitcore")
-    console.log(this.BWC)
-    console.log(this.BWC.Bitcore)
     return this.BWC.Bitcore;
   }
 
