@@ -118,11 +118,12 @@ export class VaultRenewView {
       }),
     ]).then((arr: Array<Array<IWhitelistEntry>>) => {
       const whitelistCandidates = _.flatten(arr);
-      this.whitelistCandidates = whitelistCandidates;
+      const filtered = _.reject(whitelistCandidates, { id: this.vault._id });
+      this.whitelistCandidates = filtered;
       _.each(this.vault.whitelist, (wl) => {
-        const found = _.find(whitelistCandidates, { pubKey: wl });
+        const found = _.find(filtered, { pubKey: wl });
         const results = [];
-        if (found) {
+        if (found && found.id != this.vault.id) {
           results.push(found);
         }
         this.formData.whitelist = results; // Do not push to model directly, it will break change detection in Angular
