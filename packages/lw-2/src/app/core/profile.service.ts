@@ -748,6 +748,10 @@ export class ProfileService {
 
   }
 
+  public getWallet(walletId: string): MeritWalletClient {
+    return this.wallets[walletId];
+  }
+
   public toggleHideBalanceFlag(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.wallets[walletId].balanceHidden = !this.wallets[walletId].balanceHidden;
