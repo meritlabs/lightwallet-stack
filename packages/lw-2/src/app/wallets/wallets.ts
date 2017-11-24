@@ -155,6 +155,7 @@ export class WalletsView {
       if (!this.wallets[foundIndex]) {
         return;
       }
+      this.walletService.invalidateCache(this.wallets[foundIndex]);
       this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
         this.wallets[foundIndex].status = status;
       });
@@ -396,7 +397,7 @@ export class WalletsView {
   }
 
   private openRecentTxDetail(tx:any): any {
-    this.navCtrl.push('TxDetailsView', {walletId: tx.walletId, txId: tx.txid})
+    this.navCtrl.push('TxDetailsView', {walletId: tx.walletId, txId: tx.data.txid})
   }
 
 }

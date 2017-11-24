@@ -67,7 +67,7 @@ export class WalletService {
     console.log('Hello WalletService Service');
   }
 
-  private invalidateCache(wallet: MeritWalletClient) {
+  public invalidateCache(wallet: MeritWalletClient) {
     if (wallet.cachedStatus)
       wallet.cachedStatus.isValid = false;
 
@@ -476,18 +476,17 @@ export class WalletService {
                 skip = skip + requestLimit;
                 this.logger.debug('Syncing TXs. Got:' + newTxs.length + ' Skip:' + skip, ' EndingTxid:', endingTxid, ' Continue:', shouldContinue);
 
-                // TODO Dirty <HACK>
-                // do not sync all history, just looking for a single TX.
+                // TODO: do not sync all history, just looking for a single TX.
+                // Needs corresponding BWS method.
                 if (opts.limitTx) {
                   foundLimitTx = _.find(newTxs, {
                     txid: opts.limitTx,
                   });
                   if (!_.isEmpty(foundLimitTx)) {
                     this.logger.debug('Found limitTX: ' + opts.limitTx);
-                    return resolve(foundLimitTx);
+                    return resolve([foundLimitTx]);
                   }
                 }
-                // </HACK>
                 if (!shouldContinue) {
                   this.logger.debug('Finished Sync: New / soft confirmed Txs: ' + newTxs.length);
                   return resolve(newTxs);
@@ -513,8 +512,7 @@ export class WalletService {
           });
         };
 
-        return getNewTxs([], 0).then((txs: any) => {
-
+        return getNewTxs([], 0).then((txs: any[]) => {
           let array: Array<any> = _.compact(txs.concat(confirmedTxs));
           let newHistory = _.uniqBy(array, (x: any) => {
             return x.txid;
@@ -575,7 +573,7 @@ export class WalletService {
 
             return this.persistenceService.setTxHistory(historyToSave, walletId).then(() => {
               this.logger.debug('Tx History saved.');
-              return resolve();
+              return resolve(newHistory);
             }).catch((err) => {
               return reject(err);
             });
