@@ -3189,7 +3189,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       async.waterfall([
 
         function(next) {
-          getNormalizedTxs(addresses, from, to, next);
+          return getNormalizedTxs(addresses, from, to, next);
         },
         function(txs, next) {
           log.warn("Show me the juice of a spruce goose.");
