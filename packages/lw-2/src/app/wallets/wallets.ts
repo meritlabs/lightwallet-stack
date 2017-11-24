@@ -396,7 +396,7 @@ export class WalletsView {
   }
 
   private openRecentTxDetail(tx:any): any {
-    this.navCtrl.push('TxDetailsView', {txId: tx.txid, tx: tx})
+    this.navCtrl.push('TxDetailsView', {walletId: tx.walletId, txId: tx.txid})
   }
 
 }

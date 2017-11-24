@@ -188,7 +188,7 @@
             <span class="badge badge-assertive m5t m10r" *ngIf="recentTransactionsData && recentTransactionsData.length>3"> {{recentTransactionsData.length}}</span>
         </ion-item-divider>
         <ion-list>
-            <button ion-item *ngFor="let recentTx of recentTransactionsData" click="openRecentTxDetail(recentTx)">
+            <button ion-item *ngFor="let recentTx of recentTransactionsData" (click)="openRecentTxDetail(recentTx)">
                 <div>
                     <span>{{recentTx.actionStr}}</span>
                     <div class="detail">

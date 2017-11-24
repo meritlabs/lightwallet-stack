@@ -31,16 +31,19 @@ export class TxDetailsView {
   }
 
   ionViewDidEnter() {
-    const txid = this.navParams.get('txid');
+    const txId = this.navParams.get('txId');
 
-    this.walletService.getTx(this.wallet, txid).then((tx) => {
+    this.walletService.getTx(this.wallet, txId).then((tx) => {
       this.tx = tx;
       if (this.tx.action == 'sent') this.title = 'Sent Funds';
       if (this.tx.action == 'received') this.title = 'Received Funds';
       if (this.tx.action == 'moved') this.title = 'Moved Funds';
 
-      if (this.tx.safeConfirmed) this.confirmations = this.tx.safeConfirmed;
-      else if (this.tx.confirmations > 6)  this.confirmations = '6+';
+      if (this.tx.safeConfirmed) { this.confirmations = this.tx.safeConfirmed;
+      }
+      else if (this.tx.confirmations > 6) {
+        this.confirmations = '6+';
+      }
     }).catch((err) => {
       console.log(err);
     });
