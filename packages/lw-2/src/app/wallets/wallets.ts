@@ -41,7 +41,7 @@ export class WalletsView {
   private totalAmount;
   private totalAmountFormatted;
 
-  public wallets;
+  public wallets: MeritWalletClient[];
   public vaults;
   public newReleaseExists;
   public feedbackNeeded;
@@ -145,10 +145,22 @@ export class WalletsView {
       });
     }
 
-    this.logger.warn("FINAL N");
-    this.logger.warn(n);
+    // Update the status of the wallet in question.
+    // TODO: Consider revisiting the mutation approach here. 
+    if (n.walletId) {
 
+      // Do we have wallet with this ID in the view?
+      // If not, let's skip. 
+      let foundIndex = _.findIndex(this.wallets, {'id': n.walletId});
+      if (!this.wallets[foundIndex]) {
+        return;
+      }
+      this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
+        this.wallets[foundIndex].status = status;
+      });
+      
   }
+}
 
   /**
    * Here, we register listeners that act on relevent Ionic Events
