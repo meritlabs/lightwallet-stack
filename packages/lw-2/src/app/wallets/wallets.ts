@@ -81,12 +81,14 @@ export class WalletsView {
     this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
     
 
-    await this.registerListeners();
+    this.registerListeners();
     this.newReleaseExists = await this.appUpdateService.isUpdateAvailable();
     this.feedbackNeeded   = await this.feedbackService.isFeedBackNeeded();
     this.addressbook = await this.addressbookService.list(() => {});
 
-    return this.getWallets().then((wallets) => {
+    await this.getWallets().then((wallets) => {
+      this.logger.error("Did we get wallets?");
+      this.logger.error(wallets);
       this.wallets = wallets;             
       if (_.isEmpty(wallets)) {
         return Promise.resolve(null); //ToDo: add proper error handling;
@@ -110,6 +112,7 @@ export class WalletsView {
       }).then((vaults) => {
         console.log('getting vaults', vaults);
         this.vaults = vaults;
+        return Promise.resolve();
      }).catch((err) => {
       console.log("@@ERROR IN Updating statuses.")
       console.log(err)
@@ -168,7 +171,7 @@ export class WalletsView {
    * These listeners process event data, and also retrieve additional data
    * as needed.
    */
-  private registerListeners(): Promise<any> {
+  private registerListeners(): void {
 
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
       this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
@@ -182,59 +185,7 @@ export class WalletsView {
       this.processIncomingTransactionEvent(n);      
     });
 
-    return this.subscribeToPromise('Remote:IncomingTxProposal').then(({walletId, type, n}) => {
-      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
-      
-      return this.profileService.getTxps({limit: 3}).then((txps) => {
-        this.txpsData = txps;        
-      });
-    }).then(() => {
-      return this.subscribeToPromise('Remote:IncomingTx').then(({walletId, type, n}) => {
-        this.logger.info("RL PROMISE: Got a incomingTx event with: ", walletId, type, n);
-        
-      });
-    }).then(() => {
-      return this.subscribeToPromise('Remote:IncomingCoinbase').then(({walletId, type, n}) => {
-        this.logger.info("RL PROMISE: Got a incomingCoinbase event with: ", walletId, type, n);
-    
-      });
-    }).then(() => {
-      return this.subscribeToPromise('Remote:IncomingEasySend').then(({walletId, type, n}) => {
-        this.logger.info("RL: Got a incomingEasySend event with: ", walletId, type, n);
-        
-        this.recentTransactionsData.push(n);
-      });
-    }).then(() => {
-      return this.subscribeToPromise('Remote:NewBlock').then(({walletId, type, n}) => {
-        this.logger.info("RL: Got a incomingTx event with: ", walletId, type, n);
-        
-        return this.profileService.getTxps({limit: 3}).then((txps) => {
-          this.txpsData = txps;        
-        });
-      });
-    }).then(() => {
-      return this.subscribeToPromise('Local:Tx:Broadcast').then((broadcastedTxp) => {
-        this.logger.info("Got a Local:Tx:Broadcast event with: ", broadcastedTxp);
-        // this.getWallets().then((wallets) => {
-        //   wallets.forEach((wallet) => {
-        //     if (wallet.id == walletId) {
-        //       updateWalletStatus(wallet);
-        //     }
-        //   });
-        // });
-      });
-    }).then(() => {
-      return this.subscribeToPromise('easyReceiveEvent').then((receipt:EasyReceipt) => {
-        let checkPass = receipt.checkPassword;
-        this.showEasyReceiveModal(receipt, checkPass);
-        return Promise.resolve();
-      });
-    }).catch((err) => {
-      this.logger.warn("Error registering event listeners.");
-    });
   }
-
-  private subscribeToPromise = Promise.promisify(this.events.subscribe);
 
   /**
    * checks if pending easyreceive exists and if so, open it

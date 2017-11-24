@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 
 // TODO: Import the NPM package directly. 
 // Depends on creating typings and publishing the pkg.
-import { MeritWalletClient, IMeritWalletClient } from './../../lib/merit-wallet-client';
+import { MeritWalletClient } from './../../lib/merit-wallet-client';
 
 @Injectable()
 export class BwcService {
-  private BWC: IMeritWalletClient;
+  private BWC: MeritWalletClient;
   public buildTx: Function; // = BWC.buildTx;
   public parseSecret: Function; // = BWC.parseSecret;
   
