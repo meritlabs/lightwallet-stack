@@ -9,6 +9,8 @@ import { ProfileService } from 'merit/core/profile.service';
 import { Logger } from 'merit/core/logger';
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
 import { WalletService } from "merit/wallets/wallet.service";
+import { IMeritWalletClient } from 'src/lib/merit-wallet-client';
+
 
 @IonicPage({
   segment: 'vault/:vaultId',
@@ -22,7 +24,9 @@ export class VaultDetailsView {
 
   public vault: any;
   public whitelist: Array<any> = [];
+  public coins: Array<any> = [];
   private bitcore: any = null;
+  private walletClient: IMeritWalletClient;
 
   constructor(
     public navCtrl: NavController,
@@ -72,6 +76,7 @@ export class VaultDetailsView {
           return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' }; 
         });
       }),
+      // fetch coins
     ]).then((arr: Array<Array<any>>) => {
       const whitelistCandidates = _.flatten(arr);
       _.each(this.vault.whitelist, (wl) => {
@@ -79,26 +84,6 @@ export class VaultDetailsView {
         if (found) {
           this.whitelist.push(found);
         }
-      });
-    });
-
-    this.profileService.getHeadWalletClient().then((walletClient) => {
-      this.vaultsService.getVaultCoins(walletClient, this.vault).then((coins) => {
-
-        let address = this.bitcore.Address.fromObject(this.vault.address);
-
-        console.log(address.toString());
-        console.log(this.vault);
-        console.log(coins);
-
-        let network = walletClient.credentials.network;
-        let dummyKey = this.bitcore.PrivateKey.fromRandom(network);
-
-        let tx = walletClient.buildRenewVaultTx(coins, this.vault, dummyKey, {network: network});
-
-        console.log("RENEW TX");
-        console.log(tx);
-        console.log(tx.serialize());
       });
     });
   }
@@ -124,6 +109,7 @@ export class VaultDetailsView {
       }
       return _.head(ws);
     }).then((walletClient) => {
+      this.walletClient = walletClient;
       return this.vaultsService.getVaults(walletClient);
     });
   }
