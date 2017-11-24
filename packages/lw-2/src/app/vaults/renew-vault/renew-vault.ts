@@ -71,10 +71,14 @@ export class VaultRenewView {
   }
 
   toVault() {
-      return this.renewVaultService.renewVault().then(() => {
-        this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
-        return;
-      })
+    const newVault = _.cloneDeep(this.vault);
+    newVault.whitelist = this.formData.whitelist;
+    newVault.masterKey = this.formData.masterKey;
+    newVault.vaultName = this.formData.vaultName;
+    return this.renewVaultService.renewVault(newVault, this.formData.masterKey).then(() => {
+      this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
+      return;
+    });
   }
 
   regenerateMasterKey() {
