@@ -8,6 +8,7 @@ import { MeritToastController } from "../../core/toast.controller";
 import { Logger } from "../../core/logger";
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Clipboard } from '@ionic-native/clipboard';
+import { PlatformService } from 'merit/core/platform.service';
 
 @IonicPage()
 @Component({
@@ -36,10 +37,11 @@ export class ReceiveView {
     private toastCtrl:MeritToastController,
     private logger:Logger,
     private socialSharing: SocialSharing,
-    private clipboard:Clipboard
+    private clipboard:Clipboard,
+    private platformService: PlatformService
   ) {
-    this.protocolHandler = "bitcoin";
-
+    this.protocolHandler = "merit";
+    this.socialSharingAvailable = this.platformService.isCordova;
   }
 
   async ionViewDidLoad() {
@@ -49,14 +51,6 @@ export class ReceiveView {
       this.wallet = this.wallets[0];
       this.generateAddress();
     }
-
-    this.socialSharing.canShareVia('email').then(() => {
-      this.socialSharingAvailable = true;
-    }).catch((err) => {
-      console.log(err);
-      this.socialSharingAvailable = false;
-    })
-
   }
 
   requestSpecificAmount() {
