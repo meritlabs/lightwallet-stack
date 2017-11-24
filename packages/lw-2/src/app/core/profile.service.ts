@@ -685,8 +685,6 @@ export class ProfileService {
 
     return new Promise((resolve, reject) => {
 
-      console.log("Getting wallets");
-      console.log(this.wallets);
       let ret: MeritWalletClient[] = _.values(this.wallets);
 
       if (opts.network) {
@@ -764,7 +762,6 @@ export class ProfileService {
   }
 
   public getNotifications(opts: any): Promise<any> {
-    this.logger.warn("Explicitly getting notifications; Why?");
     return new Promise((resolve, reject) => {
       opts = opts ? opts : {};
 

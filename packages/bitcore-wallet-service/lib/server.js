@@ -3100,11 +3100,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
-          log.warn("GNT: getTransaction, raw");
-          console.log(rawTxs);
           txs = self._normalizeTxHistory(rawTxs);
-          log.warn("GNT: getTransaction, after normalization");
-          console.log(txs);
 
           totalItems = total;
           return next();
