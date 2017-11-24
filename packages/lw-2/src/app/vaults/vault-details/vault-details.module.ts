@@ -5,6 +5,8 @@ import { ToUnitPipe } from 'merit/shared/to-unit.pipe';
 import { ToFiatPipe } from 'merit/shared/to-fiat.pipe';
 import { SharedModule } from 'merit/shared/shared.module';
 import { VaultsService } from 'merit/vaults/vaults.service';
+import { MomentModule } from 'angular2-moment';
+
 
 /*
   ToDo: Work to get this lazy-loadable as possible. 
@@ -16,6 +18,7 @@ import { VaultsService } from 'merit/vaults/vaults.service';
   imports: [
     IonicPageModule.forChild(VaultDetailsView),
     SharedModule,
+    MomentModule,
   ],
   providers: [
     VaultsService,

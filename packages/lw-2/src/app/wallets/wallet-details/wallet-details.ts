@@ -51,6 +51,7 @@ export class WalletDetailsView {
   private getWalletHistory(force: boolean = false ): void {
     this.logger.warn("GEtting history)");
     this.walletService.getTxHistory(this.wallet, {force: force}).then((walletHistory) => {
+      console.log('walletHistory', walletHistory);
       this.wallet.completeHistory = walletHistory;
       this.logger.warn("@@@@");
       this.logger.warn(this.wallet.completeHistory);

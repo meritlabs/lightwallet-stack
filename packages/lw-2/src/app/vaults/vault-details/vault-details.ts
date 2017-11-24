@@ -10,6 +10,7 @@ import { Logger } from 'merit/core/logger';
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { IMeritWalletClient } from 'src/lib/merit-wallet-client';
+import { TxFormatService } from "merit/transact/tx-format.service";
 
 
 @IonicPage({
@@ -36,6 +37,7 @@ export class VaultDetailsView {
     private walletService: WalletService,
     private vaultsService: VaultsService,
     private bwc: BwcService,
+    private txFormatService:TxFormatService,
   ) {
     // We can assume that the wallet data has already been fetched and 
     // passed in from the wallets (list) view.  This enables us to keep
@@ -54,11 +56,11 @@ export class VaultDetailsView {
   ionViewWillEnter() {
   }
 
-  ionViewDidLoad() {
+  async ionViewDidLoad() {
     console.log("Vault-Detail View Did Load.");
     console.log(this.vault);
 
-    Promise.all([
+    await Promise.all([
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
@@ -88,6 +90,16 @@ export class VaultDetailsView {
       });
       this.whitelist = results;
     });
+
+    await this.getCoins().then((coins) => {
+      this.walletClient._processTxps(coins);
+      _.each(coins, (tx: any) => {
+        tx.amountStr = this.txFormatService.formatAmountStr(tx.micros);
+        tx.feeStr = this.txFormatService.formatAmountStr(tx.fees);
+      });
+      this.coins = coins;
+      console.log('coins', coins);
+    });
   }
 
   toResetVault() {
@@ -114,5 +126,11 @@ export class VaultDetailsView {
       this.walletClient = walletClient;
       return this.vaultsService.getVaults(walletClient);
     });
+  }
+
+  private getCoins(): Promise<Array<any>> {
+    return this.profileService.getHeadWalletClient().then((walletClient) => {
+      return this.vaultsService.getVaultCoins(walletClient, this.vault);
+    })
   }
 }
