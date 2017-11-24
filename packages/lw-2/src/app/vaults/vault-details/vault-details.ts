@@ -79,12 +79,14 @@ export class VaultDetailsView {
       // fetch coins
     ]).then((arr: Array<Array<any>>) => {
       const whitelistCandidates = _.flatten(arr);
+      const results = [];
       _.each(this.vault.whitelist, (wl) => {
         const found = _.find(whitelistCandidates, { pubKey: wl });
         if (found) {
-          this.whitelist.push(found);
+          results.push(found);
         }
       });
+      this.whitelist = results;
     });
   }
 
