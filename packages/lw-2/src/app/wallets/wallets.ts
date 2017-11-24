@@ -20,6 +20,7 @@ import { TxFormatService } from "merit/transact/tx-format.service";
 import { AddressBookService } from "merit/shared/address-book/address-book.service";
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { FiatAmount } from 'merit/shared/fiat-amount.model';
 
 
 /* 
@@ -115,7 +116,7 @@ export class WalletsView {
     });
   }
 
-  private processIncomingTransaction(n:any): void {
+  private processIncomingTransactionEvent(n:any): void {
     this.logger.info("processIncomingTransaction");
     if (_.isEmpty(n)) {
       return;
@@ -126,20 +127,22 @@ export class WalletsView {
         case 'IncomingTx': 
           n.actionStr = 'Payment Received';
           break;
+        case 'IncomingCoinbase': 
+          n.actionStr = 'Mining Reward';
+          break;
         default: 
           n.actionStr = 'Recent Transaction';
           break
       }
     }
 
-    this.logger.warn("Before if block");
+    // TODO: Localize
     if (n.data && n.data.amount) {
-      this.logger.warn("Inside if block");
       n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
-      Promise.resolve(this.txFormatService.formatAlternativeStr(n.data.amount).then((formattedStr) => {
-        n.fiatAmountStr = formattedStr;
+      this.txFormatService.formatToUSD(n.data.amount).then((usdAmount) => {
+        n.fiatAmountStr = new FiatAmount(usdAmount).amountStr;
         this.recentTransactionsData.push(n);
-      }));
+      });
     }
 
     this.logger.warn("FINAL N");
@@ -147,12 +150,23 @@ export class WalletsView {
 
   }
 
+  /**
+   * Here, we register listeners that act on relevent Ionic Events
+   * These listeners process event data, and also retrieve additional data
+   * as needed.
+   */
   private registerListeners(): Promise<any> {
 
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
       this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
       
-      this.processIncomingTransaction(n);      
+      this.processIncomingTransactionEvent(n);      
+    });
+    
+    this.events.subscribe('Remote:IncomingCoinbase', (walletId, type, n) => {
+      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
+      
+      this.processIncomingTransactionEvent(n);      
     });
 
     return this.subscribeToPromise('Remote:IncomingTxProposal').then(({walletId, type, n}) => {
@@ -163,15 +177,13 @@ export class WalletsView {
       });
     }).then(() => {
       return this.subscribeToPromise('Remote:IncomingTx').then(({walletId, type, n}) => {
-        this.logger.info("RL: Got a incomingTx event with: ", walletId, type, n);
+        this.logger.info("RL PROMISE: Got a incomingTx event with: ", walletId, type, n);
         
-        this.recentTransactionsData.push(n);
       });
     }).then(() => {
       return this.subscribeToPromise('Remote:IncomingCoinbase').then(({walletId, type, n}) => {
-        this.logger.info("RL: Got a incomingCoinbase event with: ", walletId, type, n);
-        
-        this.recentTransactionsData.push(n);
+        this.logger.info("RL PROMISE: Got a incomingCoinbase event with: ", walletId, type, n);
+    
       });
     }).then(() => {
       return this.subscribeToPromise('Remote:IncomingEasySend').then(({walletId, type, n}) => {
