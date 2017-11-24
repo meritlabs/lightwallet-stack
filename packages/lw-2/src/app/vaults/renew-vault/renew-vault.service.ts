@@ -3,7 +3,7 @@ import * as Promise from 'bluebird';
 import { BwcService } from 'merit/core/bwc.service';
 import { WalletService } from "merit/wallets/wallet.service";
 import { Logger } from 'merit/core/logger';
-import { MeritWalletClient, IMeritWalletClient} from './../../../lib/merit-wallet-client';
+import { IMeritWalletClient} from './../../../lib/merit-wallet-client';
 import { ProfileService } from 'merit/core/profile.service';
 import * as _ from 'lodash';
 import { VaultsService } from 'merit/vaults/vaults.service';
@@ -48,7 +48,23 @@ export class RenewVaultService {
     
             console.log("RENEW TX");
             console.log(tx);
-        });
+            return tx;
+        }).then((txp) => {
+            return this.walletService.prepare(this.walletClient).then((password: string) => {
+              return { password: password, txp: txp};
+            });
+        }).then((args: any) => {
+            return this.walletService.publishTx(this.walletClient, args.txp).then((pubTxp)=> {
+              return { password: args.password, txp: pubTxp};
+            });
+        }).then((args: any) => {
+            return this.walletService.signTx(this.walletClient, args.txp, args.password);
+        }).then((txp) => {
+            return this.walletClient.broadcastRawTx(txp);
+        }).catch((err) => {
+            console.log('Error while renewing vault:', err);
+            throw err;
+        });;
     }
 
 }
