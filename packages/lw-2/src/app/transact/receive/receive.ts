@@ -9,6 +9,7 @@ import { Logger } from "../../core/logger";
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Clipboard } from '@ionic-native/clipboard';
 import { PlatformService } from 'merit/core/platform.service';
+import { Events } from 'ionic-angular/util/events';
 
 @IonicPage()
 @Component({
@@ -38,7 +39,8 @@ export class ReceiveView {
     private logger:Logger,
     private socialSharing: SocialSharing,
     private clipboard:Clipboard,
-    private platformService: PlatformService
+    private platformService: PlatformService,
+    private events: Events
   ) {
     this.protocolHandler = "merit";
     this.socialSharingAvailable = this.platformService.isCordova;
@@ -51,6 +53,14 @@ export class ReceiveView {
       this.wallet = this.wallets[0];
       this.generateAddress();
     }
+
+    // Get a new address if we just received an incoming TX (on an address we already have)
+    this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
+      this.logger.info("Got an incomingTx on receive screen: ", n);
+      if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
+        this.generateAddress(true);
+      }
+    })
   }
 
   requestSpecificAmount() {
