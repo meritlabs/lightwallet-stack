@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 export interface AddressBook { [key:string]:MeritContact; } 
 export interface MeritContact {
   name:string;
@@ -8,7 +10,7 @@ export interface MeritContact {
 
 export let isValidMeritContact = (contact: MeritContact): boolean => {
   // TODO: implement
-  return true;
+  return !(_.isEmpty(contact.meritAddress)  || _.isEmpty(contact.name));
 }
 
 export let emptyMeritContact = (): MeritContact => {

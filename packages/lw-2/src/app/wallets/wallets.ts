@@ -89,51 +89,51 @@ export class WalletsView {
       this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
       this.registerListeners();
       this.updateAllInfo();
-
   }
 
   private updateAllInfo():Promise<any> {
-    return new Promise((resolve, reject) => {
-
-      this.newReleaseExists = this.appUpdateService.isUpdateAvailable();
-      this.feedbackNeeded   = this.feedbackService.isFeedBackNeeded();
-      this.addressbook = this.addressbookService.list(() => {});
-
-      return this.getWallets().then((wallets) => {
+    this.registerListeners();
+    return Promise.resolve(this.appUpdateService.isUpdateAvailable()).then((available) => {
+      this.newReleaseExists = available;
+      return this.feedbackService.isFeedBackNeeded();
+    }).then((feedbackNeeded) => {
+      this.feedbackNeeded = feedbackNeeded;
+      return this.addressbookService.list('testnet');
+    }).then((addressBook) => {
+      this.addressbook = addressBook;
+      return this.getWallets();
+    }).then((wallets) => {
         this.wallets = wallets;
         if (_.isEmpty(wallets)) {
           return Promise.resolve(null); //ToDo: add proper error handling;
         }
         return this.calculateNetworkAmount(wallets);
-      }).then((cNetworkAmount) => {
-        this.totalNetworkValue = cNetworkAmount;
-        this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
-        this.txFormatService.formatToUSD(this.totalNetworkValue).then((usdAmount) => {
-          this.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
-        });
-        return this.processEasyReceive();
-      }).then(() => {
-        return this.profileService.getTxps({limit: 3});
-      }).then((txps) => {
-        this.txpsData = txps;
-        if (this.configService.get().recentTransactions.enabled) {
-          this.recentTransactionsEnabled = true;
-          return this.profileService.getNotifications({limit: 3}).then((notifications) => {
-            this.recentTransactionsData = notifications;
-           });
-        }
-      }).then(() => {
-        return this.vaultsService.getVaults(_.head(this.wallets));
-      }).then((vaults) => {
-        console.log('getting vaults', vaults);
-        this.vaults = vaults;
-        return resolve();
-      }).catch((err) => {
-        console.log("@@ERROR IN Updating statuses.");
-        console.log(err);
-        return reject();
+    }).then((cNetworkAmount) => {
+      this.totalNetworkValue = cNetworkAmount;
+      this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
+      this.txFormatService.formatToUSD(this.totalNetworkValue).then((usdAmount) => {
+        this.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
       });
-
+      return this.processEasyReceive();
+    }).then(() => {
+      return this.profileService.getTxps({limit: 3});
+    }).then((txps) => {
+      this.txpsData = txps;
+      if (this.configService.get().recentTransactions.enabled) {
+        this.recentTransactionsEnabled = true;
+        return this.profileService.getNotifications({limit: 3}).then((notifications) => {
+          this.recentTransactionsData = notifications;
+        });
+      }
+    }).then(() => {
+      return this.vaultsService.getVaults(_.head(this.wallets));
+    }).then((vaults) => {
+      console.log('getting vaults', vaults);
+      this.vaults = vaults;
+      return Promise.resolve();
+    }).catch((err) => {
+      console.log("@@ERROR IN Updating statuses.");
+      console.log(err);
     });
   }
 
