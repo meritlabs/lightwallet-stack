@@ -6,6 +6,7 @@ import { PersistenceService } from 'merit/core/persistence.service';
 
 import { Contacts, Contact, ContactFieldType, IContactFindOptions } from '@ionic-native/contacts';
 import { MeritContact, AddressBook } from 'merit/shared/address-book/contact/contact.model';
+import { PlatformService } from 'merit/core/platform.service';
 
 /**
  * This service looks up entered addresses against the address book.
@@ -14,12 +15,12 @@ import { MeritContact, AddressBook } from 'merit/shared/address-book/contact/con
 export class AddressBookService {
   constructor(
     private persistenceService: PersistenceService,
+    private platformService: PlatformService,
     private contacts:Contacts
   ) {}
 
   public get(addr: string, network: string): Promise<MeritContact> {
-    return this.persistenceService.getAddressbook(network).then((ab) => {
-      let addressBook: AddressBook = JSON.parse(ab);
+    return this.getAddressbook(network).then((addressBook) => {
       if (addressBook && addressBook[addr]) {
         return Promise.resolve(addressBook[addr]);
       }
@@ -30,8 +31,7 @@ export class AddressBookService {
   };
 
   public list(network: string): Promise<AddressBook> {
-    return this.persistenceService.getAddressbook(network).then((ab) => {
-      let addressBook: AddressBook = JSON.parse(ab);
+    return this.getAddressbook(network).then((addressBook) => {
       return Promise.resolve(addressBook);
     }).catch((err) => {
       return Promise.reject(new Error('error listing addressBook: ' + err));
@@ -41,6 +41,8 @@ export class AddressBookService {
   public searchContacts(term: string): Promise<Contact[]> {
     let options: IContactFindOptions = {filter: term};
     let fields: ContactFieldType[] = ['name', 'phoneNumbers', 'emails'];
+
+    if(!this.platformService.isMobile) return Promise.resolve([]);
 
     return Promise.resolve(this.contacts.find(fields, options)).catch((err) => {
       return Promise.reject(new Error('failed to search contacts: ' + err))
@@ -52,8 +54,7 @@ export class AddressBookService {
   }
 
   public add(entry: MeritContact, network: string): Promise<AddressBook> {
-    return this.persistenceService.getAddressbook(network).then((ab) => {
-      let addressBook: AddressBook = JSON.parse(ab);
+    return this.getAddressbook(network).then((addressBook) => {
       if (addressBook[entry.meritAddress]) return Promise.reject(new Error('contact already exists'));
       addressBook[entry.meritAddress] = entry;
       return Promise.resolve(JSON.stringify(addressBook));
@@ -65,8 +66,7 @@ export class AddressBookService {
   };
 
   public remove(addr: string, network: string): Promise<AddressBook> {
-    return this.persistenceService.getAddressbook(network).then((ab) => {
-      let addressBook: AddressBook = JSON.parse(ab);
+    return this.getAddressbook(network).then((addressBook) => {
       if (_.isEmpty(addressBook)) return Promise.reject(new Error('Addressbook is empty'));
       if (!addressBook[addr]) return Promise.reject(new Error('Entry does not exist'));
       delete addressBook[addr];
@@ -78,10 +78,16 @@ export class AddressBookService {
     });
   };
 
-  removeAll(network: string): Promise<void> {
+  public removeAll(network: string): Promise<void> {
     return this.persistenceService.removeAddressbook(network).catch((err) => {
       return Promise.reject(new Error('could not removeAll contacts: ' + err))
     });
   };
 
+  private getAddressbook(network: string): Promise<AddressBook> {
+    return this.persistenceService.getAddressbook(network).then((ab) => {
+      if(_.isEmpty) return {};
+      return JSON.parse(ab);
+    });
+  }
 }

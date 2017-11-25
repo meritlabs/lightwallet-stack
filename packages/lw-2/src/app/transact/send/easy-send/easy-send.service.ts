@@ -8,7 +8,7 @@ import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 @Injectable()
 export class EasySendService {
   constructor(
-    private socialSharing: SocialSharing;
+    private socialSharing: SocialSharing
   ) {}
   public createEasySendScriptHash(wallet: MeritWalletClient): Promise<EasySend> {
 
