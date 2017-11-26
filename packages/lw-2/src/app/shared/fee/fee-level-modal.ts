@@ -26,11 +26,11 @@ export class FeeLevelModal {
     private feeService: FeeService,
     private viewCtrl: ViewController
   ) {
-    this.network = navParams.data.network;
-    this.feeLevel = navParams.data.feeLevel;
-    this.noSave = navParams.data.noSave;
-    this.customFeePerKB = navParams.data.customFeePerKB;
-    this.feePerMicrosByte = navParams.data.feePerMicrosByte;
+    this.network = this.navParams.get('network');
+    this.feeLevel = this.navParams.get('feeLevel');
+    this.noSave = this.navParams.get('noSave');
+    this.customFeePerKB = this.navParams.get('customFeePerKB');
+    this.feePerMicrosByte = this.navParams.get('feePerMicrosByte');
   }
   public ok(): void {
     this.viewCtrl.dismiss({

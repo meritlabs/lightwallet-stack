@@ -20,6 +20,7 @@ import { TxFormatService } from "merit/transact/tx-format.service";
 import { AddressBookService } from "merit/shared/address-book/address-book.service";
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { FiatAmount } from 'merit/shared/fiat-amount.model';
 
 
 /* 
@@ -40,7 +41,7 @@ export class WalletsView {
   private totalAmount;
   private totalAmountFormatted;
 
-  public wallets;
+  public wallets: MeritWalletClient[];
   public vaults;
   public newReleaseExists;
   public feedbackNeeded;
@@ -132,7 +133,71 @@ export class WalletsView {
     });
   }
 
+  private processIncomingTransactionEvent(n:any): void {
+    this.logger.info("processIncomingTransaction");
+    if (_.isEmpty(n)) {
+      return;
+    }
+
+    if (n.type) {
+      switch (n.type) {
+        case 'IncomingTx': 
+          n.actionStr = 'Payment Received';
+          break;
+        case 'IncomingCoinbase': 
+          n.actionStr = 'Mining Reward';
+          break;
+        default: 
+          n.actionStr = 'Recent Transaction';
+          break
+      }
+    }
+
+    // TODO: Localize
+    if (n.data && n.data.amount) {
+      n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
+      this.txFormatService.formatToUSD(n.data.amount).then((usdAmount) => {
+        n.fiatAmountStr = new FiatAmount(usdAmount).amountStr;
+        this.recentTransactionsData.push(n);
+      });
+    }
+
+    // Update the status of the wallet in question.
+    // TODO: Consider revisiting the mutation approach here. 
+    if (n.walletId) {
+
+      // Do we have wallet with this ID in the view?
+      // If not, let's skip. 
+      let foundIndex = _.findIndex(this.wallets, {'id': n.walletId});
+      if (!this.wallets[foundIndex]) {
+        return;
+      }
+      this.walletService.invalidateCache(this.wallets[foundIndex]);
+      this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
+        this.wallets[foundIndex].status = status;
+      });
+      
+  }
+}
+
+  /**
+   * Here, we register listeners that act on relevent Ionic Events
+   * These listeners process event data, and also retrieve additional data
+   * as needed.
+   */
   private registerListeners(): Promise<any> {
+
+    this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
+      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
+      
+      this.processIncomingTransactionEvent(n);      
+    });
+    
+    this.events.subscribe('Remote:IncomingCoinbase', (walletId, type, n) => {
+      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
+      
+      this.processIncomingTransactionEvent(n);      
+    });
 
     return this.subscribeToPromise('Remote:IncomingTxProposal').then(({walletId, type, n}) => {
       this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
@@ -143,7 +208,17 @@ export class WalletsView {
 
     }).then(() => {
       return this.subscribeToPromise('Remote:IncomingTx').then(({walletId, type, n}) => {
-        this.logger.info("RL: Got a incomingTx event with: ", walletId, type, n);
+        this.logger.info("RL PROMISE: Got a incomingTx event with: ", walletId, type, n);
+        
+      });
+    }).then(() => {
+      return this.subscribeToPromise('Remote:IncomingCoinbase').then(({walletId, type, n}) => {
+        this.logger.info("RL PROMISE: Got a incomingCoinbase event with: ", walletId, type, n);
+    
+      });
+    }).then(() => {
+      return this.subscribeToPromise('Remote:IncomingEasySend').then(({walletId, type, n}) => {
+        this.logger.info("RL: Got a incomingEasySend event with: ", walletId, type, n);
         
         this.recentTransactionsData.push(n);
       });
@@ -345,7 +420,7 @@ export class WalletsView {
   }
 
   private openRecentTxDetail(tx:any): any {
-    this.navCtrl.push('TxDetailsView', {txId: tx.txid, tx: tx})
+    this.navCtrl.push('TxDetailsView', {walletId: tx.walletId, txId: tx.data.txid})
   }
 
 }

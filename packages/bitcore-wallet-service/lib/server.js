@@ -2622,9 +2622,9 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
       txid: txp.txid,
     };
     if (opts.byThirdParty) {
-      self._notifyTxProposalAction('NewOutgoingTxByThirdParty', txp, extraArgs);
+      self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
     } else {
-      self._notifyTxProposalAction('NewOutgoingTx', txp, extraArgs);
+      self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);
     }
 
     self.storage.softResetTxHistoryCache(self.walletId, function() {
@@ -3071,6 +3071,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
     var useCache = addresses.length >= Defaults.HISTORY_CACHE_ADDRESS_THRESOLD;
     var network = Bitcore.Address(addresses[0].address).toObject().network;
 
+    fromCache = false;
+
     async.series([
 
       function(next) {
@@ -3080,8 +3082,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           if (err) return next(err);
           if (!res || !res[0]) return next();
 
-          log.warn("GNT: getTxHistoryCache");
-          log.warn(res);
           txs = res;
           fromCache = true;
 
@@ -3100,11 +3100,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
-          log.warn("GNT: getTransaction, raw");
-          console.log(rawTxs);
           txs = self._normalizeTxHistory(rawTxs);
-          log.warn("GNT: getTransaction, after normalization");
-          console.log(txs);
 
           totalItems = total;
           return next();
