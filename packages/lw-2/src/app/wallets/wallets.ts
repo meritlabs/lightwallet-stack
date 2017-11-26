@@ -38,9 +38,10 @@ import { FiatAmount } from 'merit/shared/fiat-amount.model';
 })
 export class WalletsView {
 
-  private totalAmount;
-  private totalAmountFormatted;
-
+  private totalNetworkValue;
+  private totalNetworkValueMicros;
+  private totalNetworkValueFiat;
+  
   public wallets: MeritWalletClient[];
   public vaults;
   public newReleaseExists;
@@ -105,8 +106,11 @@ export class WalletsView {
         }
         return this.calculateNetworkAmount(wallets);
       }).then((cNetworkAmount) => {
-        this.totalAmount = cNetworkAmount;
-        this.totalAmountFormatted = this.txFormatService.parseAmount(this.totalAmount, 'micros').amountUnitStr;
+        this.totalNetworkValue = cNetworkAmount;
+        this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
+        this.txFormatService.formatToUSD(this.totalNetworkValue).then((usdAmount) => {
+          this.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
+        });
         return this.processEasyReceive();
       }).then(() => {
         return this.profileService.getTxps({limit: 3});
@@ -185,7 +189,7 @@ export class WalletsView {
    * These listeners process event data, and also retrieve additional data
    * as needed.
    */
-  private registerListeners(): Promise<any> {
+  private registerListeners(): void {
 
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
       this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
@@ -199,60 +203,7 @@ export class WalletsView {
       this.processIncomingTransactionEvent(n);      
     });
 
-    return this.subscribeToPromise('Remote:IncomingTxProposal').then(({walletId, type, n}) => {
-      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
-      
-      return this.profileService.getTxps({limit: 3}).then((txps) => {
-        this.txpsData = txps;        
-      });
-
-    }).then(() => {
-      return this.subscribeToPromise('Remote:IncomingTx').then(({walletId, type, n}) => {
-        this.logger.info("RL PROMISE: Got a incomingTx event with: ", walletId, type, n);
-        
-      });
-    }).then(() => {
-      return this.subscribeToPromise('Remote:IncomingCoinbase').then(({walletId, type, n}) => {
-        this.logger.info("RL PROMISE: Got a incomingCoinbase event with: ", walletId, type, n);
-    
-      });
-    }).then(() => {
-      return this.subscribeToPromise('Remote:IncomingEasySend').then(({walletId, type, n}) => {
-        this.logger.info("RL: Got a incomingEasySend event with: ", walletId, type, n);
-        
-        this.recentTransactionsData.push(n);
-      });
-    }).then(() => {
-      return this.subscribeToPromise('Remote:NewBlock').then(({walletId, type, n}) => {
-        this.logger.info("RL: Got a incomingTx event with: ", walletId, type, n);
-        
-        return this.profileService.getTxps({limit: 3}).then((txps) => {
-          this.txpsData = txps;        
-        });
-      });
-    }).then(() => {
-      return this.subscribeToPromise('Local:Tx:Broadcast').then((broadcastedTxp) => {
-        this.logger.info("Got a Local:Tx:Broadcast event with: ", broadcastedTxp);
-        // this.getWallets().then((wallets) => {
-        //   wallets.forEach((wallet) => {
-        //     if (wallet.id == walletId) {
-        //       updateWalletStatus(wallet);
-        //     }
-        //   });
-        // });
-      });
-    }).then(() => {
-      return this.subscribeToPromise('easyReceiveEvent').then((receipt:EasyReceipt) => {
-        this.processEasyReceive();
-        return Promise.resolve();
-      });
-    }).catch((err) => {
-      this.logger.warn("Error registering event listeners.");
-    });
   }
-
-  private subscribeToPromise = Promise.promisify(this.events.subscribe);
-
   /**
    * checks if pending easyreceive exists and if so, open it
    */

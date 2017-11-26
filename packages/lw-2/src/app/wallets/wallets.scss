@@ -31,34 +31,33 @@ view-wallets {
     display: -webkit-inline-box !important;
   }
 
-  .wallets {
+  .category {
     .detail {
       position: absolute;
       right: 40px;
-      margin: 2px 0;
       text-align: center;
       .amount {
         color: color($colors, primary);
         font-size: 16px;
       }
     }
+  }
+
+  .wallets {
+    @extend .category;
+    .detail {
+      margin: 2px 0;
+    }
+  }
+
+  .network {
+    @extend .wallets;
   }
 
   .recent-txns {
-
+    @extend .category;
     .detail {
-      position: absolute;
-      right: 40px;
       bottom: 4px;
-      text-align: center;
-      .amount {
-        color: color($colors, primary);
-        font-size: 16px;
-      }
-      .date {
-        font-size: 12.5px;
-      }
     }
   }
-
 }
