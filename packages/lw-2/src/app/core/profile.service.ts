@@ -360,7 +360,7 @@ export class ProfileService {
   }
 
   // todo move to Starter module, with minimal dependencies
-  private  loadProfile() {
+  private  loadProfile():Promise<Profile> {
     return new Promise((resolve, reject) => {
       this.persistenceService.getProfile().then((profile: any) => {
         if (!profile) return resolve();
