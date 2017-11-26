@@ -83,7 +83,7 @@ export class EditWalletView {
               this.app.getRootNav().setRoot('WalletsView');
             }).catch((err) => {
               this.toastCtrl.create({
-                text: JSON.stringify(err),
+                message: JSON.stringify(err),
                 cssClass: ToastConfig.CLASS_ERROR
               })
             });

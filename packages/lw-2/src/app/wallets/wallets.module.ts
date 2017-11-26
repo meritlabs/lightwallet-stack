@@ -34,7 +34,7 @@ import { VaultsService } from 'merit/vaults/vaults.service';
     InAppBrowser,
     MnemonicService,
     LanguageService,
-    LedgerService
+    LedgerService,
     VaultsService
   ],
   imports: [
