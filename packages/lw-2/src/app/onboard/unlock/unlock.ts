@@ -47,7 +47,10 @@ export class UnlockView {
 
           /** todo store wallet */
 
-          this.navCtrl.push('TransactView');
+          // Now that we are unlocked, we no longer need these other views in the stack, 
+          // so we shall destroy them.
+          this.navCtrl.setRoot('TransactView');
+          this.navCtrl.popToRoot();
           return resolve(wallet);
         }).catch((err) => {
           loader.dismiss();

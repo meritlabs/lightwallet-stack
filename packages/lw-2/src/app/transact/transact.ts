@@ -25,7 +25,7 @@ export class TransactView {
     public navCtrl: NavController,
     public navParams: NavParams
   ) {
-
+    console.log("@@Hello TRANSACT VIEW!");
   }
 
   ionViewDidLoad() {
