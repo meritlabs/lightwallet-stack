@@ -347,6 +347,32 @@ export class ProfileService {
     });
   }
 
+
+
+
+  // todo move to Starter module, with minimal dependencies
+  public getProfile():Promise<Profile> {
+      if (this.profile) {
+        return Promise.resolve(this.profile);
+      } else {
+        return this.loadProfile();
+      }
+  }
+
+  // todo move to Starter module, with minimal dependencies
+  private  loadProfile():Promise<Profile> {
+    return new Promise((resolve, reject) => {
+      this.persistenceService.getProfile().then((profile: any) => {
+        if (!profile) return resolve();
+        
+        this.profile = new Profile();
+        this.profile = this.profile.fromObj(profile);
+        resolve(profile);
+      });
+    }); 
+  }
+
+
   public bindProfile(profile: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let config = this.configService.get();
