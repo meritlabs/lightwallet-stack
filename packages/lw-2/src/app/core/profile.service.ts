@@ -166,12 +166,12 @@ export class ProfileService {
           notificationIncludeOwn: true,
         });
       }).then(() => {
-        //wallet.setNotificationsInterval(this.UPDATE_PERIOD);
         return wallet.openWallet();
       }).then((openWallet) => {
         if (wallet.status !== true) {
           this.logger.debug('Wallet + ' + walletId + ' status:' + openWallet.status);
         }
+        //wallet.setNotificationsInterval(this.UPDATE_PERIOD);
         return resolve();
       }).catch((err) => {
         this.logger.error('Could not bind the wallet client:', err);
