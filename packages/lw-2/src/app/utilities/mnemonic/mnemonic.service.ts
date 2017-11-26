@@ -12,14 +12,18 @@ import * as _ from 'lodash';
 @Injectable()
 export class MnemonicService {
 
+  private errors: any;
+
   constructor(
       private logger: Logger, 
       private profileService: ProfileService,
       private bwcService: BwcService,
       private bwcErrorService: BwcError
-  ){}
+  ){
+    this.errors = this.bwcService.getErrors();
+  }
 
-  private errors: any = this.bwcService.getErrors();
+
   
 
   public importMnemonic(words: string, opts: any): Promise<any> {

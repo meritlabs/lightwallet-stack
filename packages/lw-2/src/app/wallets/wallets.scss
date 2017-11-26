@@ -27,4 +27,38 @@ view-wallets {
     color: color($colors, danger) !important;
   }
 
+  .label {
+    display: -webkit-inline-box !important;
+  }
+
+  .wallets {
+    .detail {
+      position: absolute;
+      right: 40px;
+      margin: 2px 0;
+      text-align: center;
+      .amount {
+        color: color($colors, primary);
+        font-size: 16px;
+      }
+    }
+  }
+
+  .recent-txns {
+
+    .detail {
+      position: absolute;
+      right: 40px;
+      bottom: 4px;
+      text-align: center;
+      .amount {
+        color: color($colors, primary);
+        font-size: 16px;
+      }
+      .date {
+        font-size: 12.5px;
+      }
+    }
+  }
+
 }

@@ -73,7 +73,30 @@ export class TxFormatService {
       let v1FormatFiat = new FiatAmount(v1);
       if (!v1FormatFiat) return resolve(null);
 
-      return resolve(v1FormatFiat.amount + ' ' + settings.alternativeIsoCode);
+      let currencySymbolPrefix: string; 
+      let currencySymbolSuffix: string; 
+
+      // TODO: Break into function and cover all currencies.
+      switch (settings.alternativeIsoCode) {
+        case "USD": 
+          currencySymbolPrefix = "$";
+          break;
+        case "EUR": 
+          currencySymbolPrefix = "€";
+          break;
+        default: 
+          currencySymbolPrefix = "";
+          break;
+      }
+
+      // TODO: Break into function and cover all currencies.
+      switch (settings.alternativeIsoCode) {
+        default: 
+          currencySymbolSuffix = "";
+          break;
+      }
+
+      return resolve(currencySymbolPrefix + v1FormatFiat.amount + ' ' + currencySymbolSuffix) ;
     });
   };
 
@@ -110,8 +133,6 @@ export class TxFormatService {
       tx.amountValueStr = tx.amountStr.split(' ')[0];
       tx.amountUnitStr = tx.amountStr.split(' ')[1];
     }
-
-    this.logger.warn("ProcessTx Return Value: ", tx);
 
     return Promise.resolve(tx);
    });
@@ -193,28 +214,36 @@ export class TxFormatService {
     let settings = this.config.get()['wallet']['settings']; // TODO
 
     let satToBtc = 1 / 100000000;
+    let  microsToMrt = 1 / 100000000;
     let unitToMicro = settings.unitToMicro;
     let amountUnitStr;
-    let amountSat;
+    let amountMicros;
     let alternativeIsoCode = settings.alternativeIsoCode;
 
     // If fiat currency
-    if (currency != 'BCH' && currency != 'BTC' && currency != 'sat') {
-      amountUnitStr = new FiatAmount(amount) + ' ' + currency;
-      amountSat = this.rate.fromFiat(amount, currency).toFixed(0);
-    } else if (currency == 'sat') {
-      amountSat = amount;
-      amountUnitStr = this.formatAmountStr(amountSat);
-      // convert sat to BTC or BCH
-      amount = (amountSat * satToBtc).toFixed(8);
+    if (currency != 'bits' && currency != 'MRT' && currency != 'micros') {
+      amountUnitStr = amount + ' ' + currency;
+      amountMicros = this.rate.fromFiat(amount, currency).toFixed(0);
+    } else if (currency == 'micros') {
+      amountMicros = amount;
+      amountUnitStr = this.formatAmountStr(amountMicros);
+      // convert micros to MRT
+      amount = (amountMicros * microsToMrt).toFixed(8);
       currency = 'MRT';
     } else {
-      amountSat = parseInt((amount * unitToMicro).toFixed(0));
-      amountUnitStr = this.formatAmountStr(amountSat);
-      // convert unit to BTC or BCH
-      amount = (amountSat * satToBtc).toFixed(8);
+      amountMicros = parseInt((amount * unitToMicro).toFixed(0));
+      amountUnitStr = this.formatAmountStr(amountMicros);
+      // convert unit to MRT
+      amount = (amountMicros * microsToMrt).toFixed(8);
       currency = 'MRT';
     }
+    return {
+      amount: amount,
+      currency: currency,
+      alternativeIsoCode: alternativeIsoCode,
+      amountMicros: amountMicros,
+      amountUnitStr: amountUnitStr
+    };
 
   };
 

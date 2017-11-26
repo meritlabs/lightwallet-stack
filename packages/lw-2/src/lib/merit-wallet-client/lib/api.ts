@@ -301,8 +301,6 @@ export class API implements IAPI {
   }
     
   _initNotifications(opts: any = {}): any {
-    this.log.warn("Initializing notifications with opts: ");
-    console.log(opts);
     const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode; pollutes request stream..  
     this.notificationsIntervalId = setInterval(() => {
       this._fetchLatestNotifications(interval).catch((err) => {
@@ -1675,17 +1673,21 @@ export class API implements IAPI {
 
       // Create wallet
       return this._doPostRequest('/v1/wallets/', args).then((res) => {
-        let walletId = res.walletId;
-        let walletShareCode = res.shareCode;
-        let walletCodeHash = res.codeHash;
-        c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
+        if (res) {
+          let walletId = res.walletId;
+          let walletShareCode = res.shareCode;
+          let walletCodeHash = res.codeHash;
+          c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
 
 
-        let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
+          let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
-        return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then((wallet) => {
+          return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then((wallet) => {
             return resolve(n > 1 ? secret : null);
           });
+        } else {
+          return reject('Error: '+res);
+        }
       });
     });    
   };
