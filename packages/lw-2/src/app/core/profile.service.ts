@@ -27,7 +27,7 @@ export class ProfileService {
   public wallets: Map<string, MeritWalletClient> = new Map<string, MeritWalletClient>();
   public profile: Profile = new Profile();
 
-  private UPDATE_PERIOD = 10;
+  private UPDATE_PERIOD = 3;
   private validationLock: boolean = false;
   private errors: any = this.bwcService.getErrors();
   private queue: Array<any> = [];
@@ -685,8 +685,6 @@ export class ProfileService {
 
     return new Promise((resolve, reject) => {
 
-      console.log("Getting wallets");
-      console.log(this.wallets);
       let ret: MeritWalletClient[] = _.values(this.wallets);
 
       if (opts.network) {
@@ -748,6 +746,10 @@ export class ProfileService {
 
   }
 
+  public getWallet(walletId: string): MeritWalletClient {
+    return this.wallets[walletId];
+  }
+
   public toggleHideBalanceFlag(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.wallets[walletId].balanceHidden = !this.wallets[walletId].balanceHidden;
@@ -760,7 +762,6 @@ export class ProfileService {
   }
 
   public getNotifications(opts: any): Promise<any> {
-    this.logger.warn("Explicitly getting notifications; Why?");
     return new Promise((resolve, reject) => {
       opts = opts ? opts : {};
 
@@ -768,9 +769,9 @@ export class ProfileService {
       let MAX = 30;
 
       let typeFilter = {
-        'NewOutgoingTx': 1,
-        'NewIncomingTx': 1,
-        'NewIncomingCoinbase': 1
+        'OutgoingTx': 1,
+        'IncomingTx': 1,
+        'IncomingCoinbase': 1
       };
 
       this.getWallets().then((wallets) => {

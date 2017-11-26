@@ -151,7 +151,7 @@
     <ion-item-divider translate>
         Wallets
     </ion-item-divider>
-    <ion-list>
+    <ion-list class="wallets">
         <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)">
             <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
                 <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
@@ -159,8 +159,8 @@
             <h2 translate>{{wallet.name || wallet._id}}</h2>
             <p>
                 <span *ngIf="!wallet.isComplete()" class="assertive" translate>Incomplete</span>
-                <span *ngIf="wallet.isComplete()">
-                    <span *ngIf="!wallet.balanceHidden && wallet.status">
+                <span class="detail" *ngIf="wallet.isComplete()">
+                    <span class="amount" *ngIf="!wallet.balanceHidden && wallet.status">
                         {{wallet.status.totalBalanceStr ? wallet.status.totalBalanceStr : ( wallet.cachedBalance ? wallet.cachedBalance   + (wallet.cachedBalanceUpdatedOn ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn  * 1000 | amTimeAgo) : '') : ''  ) }}
                     </span>
                     <span *ngIf="wallet.balanceHidden" translate>
@@ -169,6 +169,9 @@
                     <span *ngIf="wallet.n > 1">
                         {{wallet.m}}-of-{{wallet.n}}
                     </span>
+                    <div class="detail-fiat">
+                        {{wallet.status.totalBalanceAlternativeStr}}
+                    </div>
                     <ion-icon *ngIf="wallet.status && !wallet.balanceHidden && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
                     name="timer-outline"></ion-icon>
 
@@ -178,16 +181,19 @@
         </button>
     </ion-list>
 
-    <span *ngIf="recentTransactionsEnabled && recentTransactionsData.length > 0">
+    <span class="recent-txns" *ngIf="recentTransactionsEnabled && recentTransactionsData.length > 0">
         <ion-item-divider translate>
             <span>Recent Transactions</span>
-            <span class="badge badge-assertive m5t m10r" *ngIf="recentTransactionsData && recentTransactionsData.length>3"> {{notificationsN}}</span>
+            <span class="badge badge-assertive m5t m10r" *ngIf="recentTransactionsData && recentTransactionsData.length>3"> {{recentTransactionsData.length}}</span>
         </ion-item-divider>
         <ion-list>
-            <button ion-item *ngFor="let recentTx of recentTransactionsData" click="openRecentTxDetail(recentTx)">
+            <button ion-item *ngFor="let recentTx of recentTransactionsData" (click)="openRecentTxDetail(recentTx)">
                 <div>
-                    <span>{{notification.actionStr}}</span>
-                    <div class="wallet-activity-amount">{{notification.amountStr}}</div>
+                    <span>{{recentTx.actionStr}}</span>
+                    <div class="detail">
+                        <div class="amount">{{recentTx.amountStr}}</div>
+                        <div class="date">{{recentTx.fiatAmountStr}}</div>
+                    </div>
                 </div>
             </button>
         </ion-list>
