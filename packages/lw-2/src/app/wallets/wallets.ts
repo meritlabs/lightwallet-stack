@@ -20,6 +20,7 @@ import { TxFormatService } from "merit/transact/tx-format.service";
 import { AddressBookService } from "merit/shared/address-book/address-book.service";
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { FiatAmount } from 'merit/shared/fiat-amount.model';
 
 
 /* 
@@ -40,7 +41,7 @@ export class WalletsView {
   private totalAmount;
   private totalAmountFormatted;
 
-  public wallets;
+  public wallets: MeritWalletClient[];
   public vaults;
   public newReleaseExists;
   public feedbackNeeded;
@@ -75,47 +76,128 @@ export class WalletsView {
     
   }
 
+  public doRefresh(refresher) {
+    this.updateAllInfo().then(() => {
+      refresher.complete();
+    }).catch(() => {
+      refresher.complete();
+    });
+  }
 
   public async ionViewDidLoad() {
-    this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
-    
+      this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
+      this.registerListeners();
+      this.updateAllInfo();
 
-    await this.registerListeners();
-    this.newReleaseExists = await this.appUpdateService.isUpdateAvailable();
-    this.feedbackNeeded   = await this.feedbackService.isFeedBackNeeded();
-    this.addressbook = await this.addressbookService.list(() => {});
+  }
 
-    return this.getWallets().then((wallets) => {
-      this.wallets = wallets;             
-      if (_.isEmpty(wallets)) {
-        return Promise.resolve(null); //ToDo: add proper error handling;
-      }
-      return this.calculateNetworkAmount(wallets);
-     }).then((cNetworkAmount) => {
-       this.totalAmount = cNetworkAmount;
-       return this.processEasyReceive();
-     }).then(() => {
-       return this.profileService.getTxps({limit: 3});
-     }).then((txps) => {
-      this.txpsData = txps;
-       if (this.configService.get().recentTransactions.enabled) {
-         this.recentTransactionsEnabled = true;
-         return this.profileService.getNotifications({limit: 3}).then((notifications) => {
-          this.recentTransactionsData = notifications;
-         });
-       }
+  private updateAllInfo():Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      this.newReleaseExists = this.appUpdateService.isUpdateAvailable();
+      this.feedbackNeeded   = this.feedbackService.isFeedBackNeeded();
+      this.addressbook = this.addressbookService.list(() => {});
+
+      return this.getWallets().then((wallets) => {
+        this.wallets = wallets;
+        if (_.isEmpty(wallets)) {
+          return Promise.resolve(null); //ToDo: add proper error handling;
+        }
+        return this.calculateNetworkAmount(wallets);
+      }).then((cNetworkAmount) => {
+        this.totalAmount = cNetworkAmount;
+        this.totalAmountFormatted = this.txFormatService.parseAmount(this.totalAmount, 'micros').amountUnitStr;
+        return this.processEasyReceive();
+      }).then(() => {
+        return this.profileService.getTxps({limit: 3});
+      }).then((txps) => {
+        this.txpsData = txps;
+        if (this.configService.get().recentTransactions.enabled) {
+          this.recentTransactionsEnabled = true;
+          this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
+        }
+        return Promise.resolve();
+
       }).then(() => {
         return this.vaultsService.getVaults(_.head(this.wallets));
       }).then((vaults) => {
         console.log('getting vaults', vaults);
         this.vaults = vaults;
-     }).catch((err) => {
-      console.log("@@ERROR IN Updating statuses.")
-      console.log(err)
+        return resolve();
+      }).catch((err) => {
+        console.log("@@ERROR IN Updating statuses.");
+        console.log(err);
+        return reject();
+      });
+
     });
   }
 
+  private processIncomingTransactionEvent(n:any): void {
+    this.logger.info("processIncomingTransaction");
+    if (_.isEmpty(n)) {
+      return;
+    }
+
+    if (n.type) {
+      switch (n.type) {
+        case 'IncomingTx': 
+          n.actionStr = 'Payment Received';
+          break;
+        case 'IncomingCoinbase': 
+          n.actionStr = 'Mining Reward';
+          break;
+        default: 
+          n.actionStr = 'Recent Transaction';
+          break
+      }
+    }
+
+    // TODO: Localize
+    if (n.data && n.data.amount) {
+      n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
+      this.txFormatService.formatToUSD(n.data.amount).then((usdAmount) => {
+        n.fiatAmountStr = new FiatAmount(usdAmount).amountStr;
+        this.recentTransactionsData.push(n);
+      });
+    }
+
+    // Update the status of the wallet in question.
+    // TODO: Consider revisiting the mutation approach here. 
+    if (n.walletId) {
+
+      // Do we have wallet with this ID in the view?
+      // If not, let's skip. 
+      let foundIndex = _.findIndex(this.wallets, {'id': n.walletId});
+      if (!this.wallets[foundIndex]) {
+        return;
+      }
+      this.walletService.invalidateCache(this.wallets[foundIndex]);
+      this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
+        this.wallets[foundIndex].status = status;
+      });
+      
+  }
+}
+
+  /**
+   * Here, we register listeners that act on relevent Ionic Events
+   * These listeners process event data, and also retrieve additional data
+   * as needed.
+   */
   private registerListeners(): Promise<any> {
+
+    this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
+      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
+      
+      this.processIncomingTransactionEvent(n);      
+    });
+    
+    this.events.subscribe('Remote:IncomingCoinbase', (walletId, type, n) => {
+      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
+      
+      this.processIncomingTransactionEvent(n);      
+    });
 
     return this.subscribeToPromise('Remote:IncomingTxProposal').then(({walletId, type, n}) => {
       this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
@@ -123,9 +205,20 @@ export class WalletsView {
       return this.profileService.getTxps({limit: 3}).then((txps) => {
         this.txpsData = txps;        
       });
+
     }).then(() => {
       return this.subscribeToPromise('Remote:IncomingTx').then(({walletId, type, n}) => {
-        this.logger.info("RL: Got a incomingTx event with: ", walletId, type, n);
+        this.logger.info("RL PROMISE: Got a incomingTx event with: ", walletId, type, n);
+        
+      });
+    }).then(() => {
+      return this.subscribeToPromise('Remote:IncomingCoinbase').then(({walletId, type, n}) => {
+        this.logger.info("RL PROMISE: Got a incomingCoinbase event with: ", walletId, type, n);
+    
+      });
+    }).then(() => {
+      return this.subscribeToPromise('Remote:IncomingEasySend').then(({walletId, type, n}) => {
+        this.logger.info("RL: Got a incomingEasySend event with: ", walletId, type, n);
         
         this.recentTransactionsData.push(n);
       });
@@ -290,8 +383,14 @@ export class WalletsView {
    
   }
 
-  private calculateNetworkAmount(wallets:Array<MeritWalletClient>): Promise<any> {
-    return Promise.resolve(10000);
+  private calculateNetworkAmount(wallets:Array<any>):Promise<any> {
+    let totalAmount = 0;
+
+    wallets.forEach((wallet) => {
+      totalAmount += wallet.status.totalBalanceSat;
+    });
+
+    return Promise.resolve(totalAmount);
   }
 
   private openWallet(wallet) {
@@ -337,12 +436,11 @@ export class WalletsView {
   // needed to power the display. 
   private getWallets():Promise<Array<MeritWalletClient>> {
     this.logger.warn("getWallets() in wallets.ts");
-    if (this.needWalletStatuses()) {
-      return this.updateAllWallets().then((wallets) => {
-        return wallets;
-      });
-    }
-    return Promise.resolve(this.wallets);
+
+    return this.updateAllWallets().then((wallets) => {
+      return wallets;
+    });
+
   }
 
   private updateAllWallets(): Promise<MeritWalletClient[]> {
@@ -383,7 +481,7 @@ export class WalletsView {
   }
 
   private openRecentTxDetail(tx:any): any {
-    this.navCtrl.push('TxDetailsView', {txId: tx.txid, tx: tx})
+    this.navCtrl.push('TxDetailsView', {walletId: tx.walletId, txId: tx.data.txid})
   }
 
 }

@@ -24,11 +24,14 @@ var PUSHNOTIFICATIONS_TYPES = {
   'NewTxProposal': {
     filename: 'new_tx_proposal',
   },
-  'NewOutgoingTx': {
-    filename: 'new_outgoing_tx',
+  'OutgoingTx': {
+    filename: 'outgoing_tx',
   },
-  'NewIncomingTx': {
-    filename: 'new_incoming_tx',
+  'IncomingTx': {
+    filename: 'incoming_tx',
+  },
+  'IncomingCoinbase': {
+    filename: 'incoming_coinbase',
   },
   'TxProposalFinallyRejected': {
     filename: 'txp_finally_rejected',
