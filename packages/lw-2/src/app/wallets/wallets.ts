@@ -114,10 +114,10 @@ export class WalletsView {
         this.txpsData = txps;
         if (this.configService.get().recentTransactions.enabled) {
           this.recentTransactionsEnabled = true;
-          this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
+          return this.profileService.getNotifications({limit: 3}).then((notifications) => {
+            this.recentTransactionsData = notifications;
+           });
         }
-        return Promise.resolve();
-
       }).then(() => {
         return this.vaultsService.getVaults(_.head(this.wallets));
       }).then((vaults) => {
