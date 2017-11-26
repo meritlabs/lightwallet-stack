@@ -256,11 +256,11 @@ export class WalletsView {
   /**
    * checks if pending easyreceive exists and if so, open it
    */
-  private processEasyReceive() {
-    this.easyReceiveService.getPendingReceipts().then((receipts) => {
+  private processEasyReceive(): Promise<any> {
+    return this.easyReceiveService.getPendingReceipts().then((receipts) => {
       if (receipts[0]) {
 
-        this.easyReceiveService.validateEasyReceiptOnBlockchain(receipts[0], '').then((data) => {
+        return this.easyReceiveService.validateEasyReceiptOnBlockchain(receipts[0], '').then((data) => {
           if (data) {
             this.showConfirmEasyReceivePrompt(receipts[0], data);
           } else { //requires password
