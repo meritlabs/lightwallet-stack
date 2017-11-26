@@ -1,15 +1,17 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, LoadingController, Events } from 'ionic-angular';
 
 import { ProfileService } from "merit/core/profile.service";
-import { WalletService } from "../../wallets/wallet.service";
-import { ToastConfig } from "../../core/toast.config";
-import { MeritToastController } from "../../core/toast.controller";
-import { Logger } from "../../core/logger";
+import { WalletService } from "merit/wallets/wallet.service";
+import { ToastConfig } from "merit/core/toast.config";
+import { MeritToastController } from "merit/core/toast.controller";
+import { Logger } from "merit/core/logger";
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Clipboard } from '@ionic-native/clipboard';
 import { PlatformService } from 'merit/core/platform.service';
-import { Events } from 'ionic-angular/util/events';
+
+import { RateService } from 'merit/transact/rate.service'; 
+import { ConfigService } from "merit/shared/config.service";
 
 @IonicPage()
 @Component({
@@ -20,7 +22,11 @@ export class ReceiveView {
 
   public protocolHandler: string;
   public address: string;
-  public qrAddress: string;
+  public qrAddress:string;
+  public amount:number;
+  public amountMerit:number;
+  public availableUnits:Array<string>;
+  public amountCurrency:string;
 
   public wallets;
   public wallet;
@@ -39,11 +45,16 @@ export class ReceiveView {
     private logger:Logger,
     private socialSharing: SocialSharing,
     private clipboard:Clipboard,
-    private platformService: PlatformService,
+    private rateService:RateService,
+    private configService:ConfigService,
     private events: Events
   ) {
     this.protocolHandler = "merit";
-    this.socialSharingAvailable = this.platformService.isCordova;
+    this.availableUnits = [
+      this.configService.get().wallet.settings.unitCode.toUpperCase(),
+      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
+    ];
+    this.amountCurrency = this.availableUnits[0];
   }
 
   async ionViewDidLoad() {
@@ -63,23 +74,13 @@ export class ReceiveView {
     })
   }
 
-  requestSpecificAmount() {
-    let modal = this.modalCtrl.create('AmountView');
-    modal.onDidDismiss((amount) => {
-       //todo do something
-    });
-
-    modal.present();
-  }
-
   generateAddress(forceNew?: boolean) {
     this.addressGenerationInProgress = true;
 
     this.walletService.getAddress(this.wallet, forceNew).then((address) => {
-
       this.address = address;
-      this.qrAddress = this.protocolHandler + ":" + this.address;
       this.addressGenerationInProgress = false;
+      this.formatAddress();
     }).catch((err) => {
       this.addressGenerationInProgress = false;
       this.address = null;
@@ -102,8 +103,7 @@ export class ReceiveView {
   }
 
   share() {
-    //todo implement social sharing
-    this.socialSharing.share('merit:'+this.address);
+    this.socialSharing.share(this.qrAddress);
   }
 
   copyToClipboard(address) {
@@ -126,6 +126,25 @@ export class ReceiveView {
       && this.wallet
       && this.wallet.isComplete()
     );
+  }
+
+  toggleCurrency() {
+    this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
+    this.changeAmount();
+  }
+
+  changeAmount() {
+
+    if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
+      this.amountMerit = this.amount;
+    } else {
+      this.amountMerit = this.rateService.fromFiat(this.amount, this.amountCurrency);
+    }
+    this.formatAddress();
+  }
+
+  private formatAddress() {
+    this.qrAddress = `${this.protocolHandler}:${this.address}${this.amountMerit ? '?amount='+this.amountMerit : ''}`;
   }
 
 }

@@ -15,6 +15,8 @@ import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import * as Promise from 'bluebird';
 import { MeritWalletClient } from './../../lib/merit-wallet-client';
+import { IMeritWalletClient } from "../../lib/merit-wallet-client/index";
+
 import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
@@ -33,7 +35,7 @@ import { setTimeout } from 'timers';
 export class WalletService {
 
   // TODO: Implement wallet model.
-  private wallets: any = {}
+  private wallets: any = {};
 
   // Ratio low amount warning (fee/amount) in incoming TX
   private LOW_AMOUNT_RATIO: number = 0.15;
@@ -1033,39 +1035,19 @@ export class WalletService {
     });
   };
 
-  public encrypt(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      var title = 'Enter new spending password'; //TODO gettextcatalog
-      var warnMsg = 'Your wallet key will be encrypted. The Spending Password cannot be recovered. Be sure to write it down.'; //TODO gettextcatalog
-      return this.askPassword(warnMsg, title).then((password: string) => {
-        if (!password) return reject(new Error('no password')); //TODO gettextcatalog
-        title = 'Confirm your new spending password'; //TODO gettextcatalog
-        return this.askPassword(warnMsg, title).then((password2: string) => {
-          if (!password2 || password != password2) return reject(new Error('password mismatch'));
-          wallet.encryptPrivateKey(password, {});
-          return resolve();
-        }).catch((err) => {
-          return reject(err);
-        });
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-
+  public encrypt(wallet: IMeritWalletClient, password:string): Promise<any> {
+    console.log("encrypting");
+    return Promise.resolve(wallet.encryptPrivateKey(password, {}));
   };
 
-  public decrypt(wallet: MeritWalletClient): Promise<any> {
+  public decrypt(wallet: MeritWalletClient, password:string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.logger.debug('Disabling private key encryption for' + wallet.name);
-      return this.askPassword(null, 'Enter Spending Password').then((password: string) => {  //TODO gettextcatalog
-        if (!password) return reject(new Error('no password'));
-        try {
-          wallet.decryptPrivateKey(password);
-        } catch (e) {
-          return reject(e);
-        }
-        return resolve();
-      });
+      try {
+        wallet.decryptPrivateKey(password);
+      } catch (e) {
+        return reject(e);
+      }
+      return resolve();
     });
   }
 
@@ -1264,6 +1246,17 @@ export class WalletService {
     });
   };
 
+  public setHiddenBalanceOption(walletId: string, hideBalance:boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.wallets[walletId]) this.wallets[walletId] = {};
+      this.wallets[walletId].balanceHidden = hideBalance;
+      this.persistenceService.setHideBalanceFlag(walletId, this.wallets[walletId].balanceHidden+'').then(() => {
+        return resolve();
+      }).catch((err: any) => {
+        return reject(err);
+      });
+    });
+  }
   public getSendMaxInfo(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
     return wallet.getSendMaxInfo(opts);
   };
@@ -1389,10 +1382,26 @@ export class WalletService {
     });
   }
 
-  // todo its a mock now!!
-  getWalletAnv(wallet: MeritWalletClient): Promise<number> {
-    return wallet.getBalance({});
+  public getANV(wallet):Promise<any> {
+    return new Promise((resolve, reject) => {
+      return this.getAddress(wallet,false).then((address) => {
+        return wallet.getANV(address).then((anv) => {
+          return resolve(anv);
+        })
+      });
+    });
   }
 
+  public getRewards(wallet):Promise<any> {
+    return new Promise((resolve, reject) => {
+      return this.getAddress(wallet,false).then((address) => {
+        return wallet.getRewards(address).then((rewards) => {
+           let addressRewards = _.find(rewards, { address: address });
+           if (!addressRewards) return reject();
+           return resolve(addressRewards);
+        });
+      });
+    });
+  }
 
 }

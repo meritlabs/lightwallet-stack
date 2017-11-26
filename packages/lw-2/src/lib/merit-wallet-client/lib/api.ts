@@ -1522,17 +1522,21 @@ export class API {
 
       // Create wallet
       return this._doPostRequest('/v1/wallets/', args).then((res) => {
-        let walletId = res.walletId;
-        let walletShareCode = res.shareCode;
-        let walletCodeHash = res.codeHash;
-        c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
+        if (res) {
+          let walletId = res.walletId;
+          let walletShareCode = res.shareCode;
+          let walletCodeHash = res.codeHash;
+          c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
 
 
-        let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
+          let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
-        return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then((wallet) => {
+          return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then((wallet) => {
             return resolve(n > 1 ? secret : null);
           });
+        } else {
+          return reject('Error: '+res);
+        }
       });
     });    
   };

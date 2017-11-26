@@ -1,13 +1,12 @@
-view-create-wallet {
-
-  ion-input.incorrect {
-    background: color($colors, 'danger');
-  }
+view-export-wallet {
 
   .wallet-icon {
+    text-align: center;
+    padding-top: 20px;
+    display: block;
     img {
-      height: 26px;
-      width: 36px;
+      height: 56px;
+      width: 70px;
       display: inline-block;
       border-radius: 4px;
       box-shadow: none;
@@ -19,8 +18,8 @@ view-create-wallet {
     }
   }
 
-  .warning ion-label{
-    white-space: normal;
+  h2 {
+    text-align: center;
   }
 
 }
