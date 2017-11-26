@@ -116,8 +116,9 @@ export class ProfileService {
       opts = opts ? opts : {};
       var walletId = wallet.credentials.walletId;
 
+      // Wallet is already bound
       if ((this.wallets[walletId] && this.wallets[walletId].started) && !opts.force) {
-        reject(false);
+        resolve(false);
       }
 
       // INIT WALLET VIEWMODEL
@@ -173,7 +174,7 @@ export class ProfileService {
         if (wallet.status !== true) {
           this.logger.debug('Wallet + ' + walletId + ' status:' + wallet.status);
         }
-        return resolve();
+        return resolve(true);
       }).catch((err) => {
         this.logger.error('Could not bind the wallet client:', err);
         return reject(new Error("Could not bind wallet client!"));
@@ -389,9 +390,9 @@ export class ProfileService {
           }
 
           return Promise.each(profile.credentials, (credentials) => {
-            return this.bindWallet(credentials).then((bound: number) => {
+            return this.bindWallet(credentials).then((client: any) => {
               i++;
-              totalBound += bound;
+              totalBound += 1;
               if (i == l) {
                 this.logger.info('Bound ' + totalBound + ' out of ' + l + ' wallets');
                 return resolve();
@@ -481,9 +482,9 @@ export class ProfileService {
 
       return this.addAndBindWalletClient(walletClient, {
         bwsurl: opts.bwsurl
-      }).then((walletId: string) => {
-        return this.setMetaData(walletClient, addressBook).then(() => {
-          return resolve(walletClient);
+      }).then((wallet: any) => {
+        return this.setMetaData(wallet, addressBook).then(() => {
+          return resolve(wallet);
         }).catch((err: any) => {
           this.logger.warn(err);
           return reject(err);
@@ -513,9 +514,10 @@ export class ProfileService {
       if (!skipKeyValidation)
         this.runValidation(wallet);
 
-      return this.bindWalletClient(wallet).then((success)=> {
-        if (success) {
-          console.log("Nailed it.");
+      return this.bindWalletClient(wallet).then((alreadyBound: boolean)=> {
+        if (!alreadyBound) {
+          this.logger.info("WalletClient already bound; skipping profile storage...");
+          return resolve();
         }
      
         let saveBwsUrl = (): Promise<any> => {
@@ -659,8 +661,8 @@ export class ProfileService {
       if (!skipKeyValidation) this.runValidation(walletClient, 500);
 
       this.logger.info('Binding wallet:' + credentials.walletId + ' Validating?:' + !skipKeyValidation);
-      return this.bindWalletClient(walletClient).then(() => {
-        return resolve();
+      return this.bindWalletClient(walletClient).then((alreadyBound: boolean) => {
+        return resolve(walletClient);
       });
     });
   }
