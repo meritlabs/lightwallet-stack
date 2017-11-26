@@ -22,23 +22,6 @@ export class EasyReceiveView {
     private profileService:ProfileService
   ) {
 
-    this.easyReceiveService.extractReceiptFromParams(this.navParams.get('receipt')).then((receipt) => {
-      this.easyReceiveService.storePendingReceipt(receipt).then(() => {
-        this.profileService.getWallets().then((wallets) => {
-          //todo do proper check if user is logged in
-          if (true) { //temp
-            this.app.getRootNav().setRoot('TransactView');
-          } else {
-            this.app.getRootNav().setRoot('OnboardingView');
-          }
-        })
-      });
-    });
-
-  }
-
-  ionViewDidLoad() {
-    //do something here
   }
 
 }

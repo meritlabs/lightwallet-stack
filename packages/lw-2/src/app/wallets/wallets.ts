@@ -76,46 +76,60 @@ export class WalletsView {
     
   }
 
+  public doRefresh(refresher) {
+    this.updateAllInfo().then(() => {
+      refresher.complete();
+    }).catch(() => {
+      refresher.complete();
+    });
+  }
 
   public async ionViewDidLoad() {
-    this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
-    
+      this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
+      this.registerListeners();
+      this.updateAllInfo();
 
-    this.registerListeners();
-    this.newReleaseExists = await this.appUpdateService.isUpdateAvailable();
-    this.feedbackNeeded   = await this.feedbackService.isFeedBackNeeded();
-    this.addressbook = await this.addressbookService.list(() => {});
+  }
 
-    await this.getWallets().then((wallets) => {
-      this.logger.error("Did we get wallets?");
-      this.logger.error(wallets);
-      this.wallets = wallets;             
-      if (_.isEmpty(wallets)) {
-        return Promise.resolve(null); //ToDo: add proper error handling;
-      }
-      return this.calculateNetworkAmount(wallets);
-     }).then((cNetworkAmount) => {
-       this.totalAmount = cNetworkAmount;
-       return this.processEasyReceive();
-     }).then(() => {
-       return this.profileService.getTxps({limit: 3});
-     }).then((txps) => {
-      this.txpsData = txps;
-       if (this.configService.get().recentTransactions.enabled) {
-         this.recentTransactionsEnabled = true;
-         return this.profileService.getNotifications({limit: 3}).then((notifications) => {
-          this.recentTransactionsData = notifications;
-         });
-       }
+  private updateAllInfo():Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      this.newReleaseExists = this.appUpdateService.isUpdateAvailable();
+      this.feedbackNeeded   = this.feedbackService.isFeedBackNeeded();
+      this.addressbook = this.addressbookService.list(() => {});
+
+      return this.getWallets().then((wallets) => {
+        this.wallets = wallets;
+        if (_.isEmpty(wallets)) {
+          return Promise.resolve(null); //ToDo: add proper error handling;
+        }
+        return this.calculateNetworkAmount(wallets);
+      }).then((cNetworkAmount) => {
+        this.totalAmount = cNetworkAmount;
+        this.totalAmountFormatted = this.txFormatService.parseAmount(this.totalAmount, 'micros').amountUnitStr;
+        return this.processEasyReceive();
+      }).then(() => {
+        return this.profileService.getTxps({limit: 3});
+      }).then((txps) => {
+        this.txpsData = txps;
+        if (this.configService.get().recentTransactions.enabled) {
+          this.recentTransactionsEnabled = true;
+          return this.profileService.getNotifications({limit: 3}).then((notifications) => {
+            this.recentTransactionsData = notifications;
+           });
+        }
       }).then(() => {
         return this.vaultsService.getVaults(_.head(this.wallets));
       }).then((vaults) => {
         console.log('getting vaults', vaults);
         this.vaults = vaults;
-        return Promise.resolve();
-     }).catch((err) => {
-      console.log("@@ERROR IN Updating statuses.")
-      console.log(err)
+        return resolve();
+      }).catch((err) => {
+        console.log("@@ERROR IN Updating statuses.");
+        console.log(err);
+        return reject();
+      });
+
     });
   }
 
@@ -190,73 +204,141 @@ export class WalletsView {
   /**
    * checks if pending easyreceive exists and if so, open it
    */
-  private processEasyReceive(): Promise<any> {
-    return this.easyReceiveService.getPendingReceipt().then((receipt) => {
-      if (receipt) {
-        let checkPass = receipt.checkPassword;
-        this.showEasyReceiveModal(receipt, checkPass);
+  private processEasyReceive() {
+    this.easyReceiveService.getPendingReceipts().then((receipts) => {
+      if (receipts[0]) {
+
+        this.easyReceiveService.validateEasyReceiptOnBlockchain(receipts[0], '').then((data) => {
+          if (data) {
+            this.showConfirmEasyReceivePrompt(receipts[0], data);
+          } else { //requires password
+            this.showPasswordEasyReceivePrompt(receipts[0]);
+          }
+        });
       }
       return Promise.resolve();
     });
   }
 
-  private showEasyReceiveModal = (receipt:EasyReceipt, checkPassword:boolean) => {
-    let inputs = checkPassword ?  [{name: 'password', placeholder: 'Enter password',type: 'password'}] : [];
+  private showPasswordEasyReceivePrompt(receipt:EasyReceipt, highlightInvalidInput = false) {
+
+    console.log('show alert', highlightInvalidInput); 
 
     this.alertController.create({
       title: `You've got merit from ${receipt.senderName}!`,
-      inputs: inputs,
+      cssClass: highlightInvalidInput ? 'invalid-input-prompt' : '', 
+      inputs:  [{name: 'password', placeholder: 'Enter password',type: 'password'}],
       buttons: [
-        {text: 'Cancel', role: 'cancel', handler: () => {
+        {text: 'Ignore', role: 'cancel', handler: () => {
           this.logger.info('You have declined easy receive');
-          this.rejectEasyReceipt(receipt);
-        }
-        },
-        {text: "Ok", handler: (data) => {
-          if (!data.password) {
-            this.showEasyReceiveModal(receipt, checkPassword);
-          } else {
-            this.acceptEasyReceipt(receipt, data.password);
+            this.easyReceiveService.deletePendingReceipt(receipt).then(() => {
+              this.processEasyReceive();
+            });
           }
+        },
+        {text: 'Validate', handler: (data) => {
+          if (!data || !data.password) {
+            this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the moment 
+          } else {
+            this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, data.password).then((data) => {
+                if (!data) { // incorrect
+                  this.showPasswordEasyReceivePrompt(receipt, true);
+                } else {
+                  this.showConfirmEasyReceivePrompt(receipt, data);
+                }
+            });
+           }
+          }
+        }
+      ]
+    }).present(); 
+  }
+
+  private showConfirmEasyReceivePrompt(receipt:EasyReceipt, data) {
+  
+    this.alertController.create({
+      title: `You've got ${data.txn.amount} Merit!`,
+      buttons: [
+        {text: 'Reject', role: 'cancel', handler: () => {
+            this.rejectEasyReceipt(receipt, data).then(() => {
+                this.processEasyReceive();
+            });
+          }
+        },
+        {text: 'Accept', handler: () => { 
+          this.acceptEasyReceipt(receipt, data).then(() => {
+            this.processEasyReceive();
+        });
         }}
       ]
-    }).present();
-  };
+    });
+  }
 
-  private acceptEasyReceipt(receipt:EasyReceipt, password:string) {
 
-    this.getWallets().then((wallets) => {
+  private acceptEasyReceipt(receipt:EasyReceipt, data:any):Promise<any> {
 
-      let wallet = wallets[0];
-      let forceNewAddress = false;
-      this.walletService.getAddress(wallet, forceNewAddress).then((address) => {
+    return new Promise((resolve, reject) => {
+      
+      this.getWallets().then((wallets) => {
+        
+          let wallet = wallets[0];
+          if (!wallet) return reject('no wallet');
+          let forceNewAddress = false;
+          this.walletService.getAddress(wallet, forceNewAddress).then((address) => {
 
-        let input = 1;
-        this.easyReceiveService.acceptEasyReceipt(receipt, wallet , input, address).catch((err) => {
-          this.toastCtrl.create({
-            message: err,
-            cssClass: ToastConfig.CLASS_ERROR
+            this.easyReceiveService.acceptEasyReceipt(receipt, wallet , data, address).then((acceptanceTx) => {
+                this.logger.info('accepted easy send', acceptanceTx);
+                resolve();
+            });
+    
+          }).catch((err) => {
+            this.toastCtrl.create({
+              message: "There was an error getting the Merit",
+              cssClass: ToastConfig.CLASS_ERROR
+            });
+            reject(); 
           });
-        })
-
-      }).catch((err) => {
-        this.toastCtrl.create({
-          message: err,
-          cssClass: ToastConfig.CLASS_ERROR
-        });
+        
       });
 
     });
-
   }
 
-  private rejectEasyReceipt(receipt:EasyReceipt) {
-    // todo reject
-    this.easyReceiveService.rejectEasyReceipt(receipt);
+  private rejectEasyReceipt(receipt:EasyReceipt, data):Promise<any> {
+    
+    return new Promise((resolve, reject) => {
+      
+      this.profileService.getWallets().then((wallets) => {
+        
+           //todo implement wallet selection UI 
+          let wallet = wallets[0];
+          if (!wallet) return reject('no wallet'); 
+  
+          this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data).then(() => {
+              this.logger.info('Easy send returned');
+              resolve(); 
+          }).catch(() => {
+              this.toastCtrl.create({
+                  message: 'There was an error rejecting the Merit',
+                  cssClass: ToastConfig.CLASS_ERROR
+              }).present();
+              reject(); 
+          });
+    
+        });
+    });
+
+   
   }
 
-  private calculateNetworkAmount(wallets:Array<MeritWalletClient>): Promise<any> {
-    return Promise.resolve(10000);
+  private calculateNetworkAmount(wallets:Array<any>):Promise<any> {
+    let totalAmount = 0;
+
+    wallets.forEach((wallet) => {
+      totalAmount += wallet.status.totalBalanceSat;
+    });
+
+    return Promise.resolve(totalAmount);
   }
 
   private openWallet(wallet) {
@@ -302,12 +384,11 @@ export class WalletsView {
   // needed to power the display. 
   private getWallets():Promise<Array<MeritWalletClient>> {
     this.logger.warn("getWallets() in wallets.ts");
-    if (this.needWalletStatuses()) {
-      return this.updateAllWallets().then((wallets) => {
-        return wallets;
-      });
-    }
-    return Promise.resolve(this.wallets);
+
+    return this.updateAllWallets().then((wallets) => {
+      return wallets;
+    });
+
   }
 
   private updateAllWallets(): Promise<MeritWalletClient[]> {
