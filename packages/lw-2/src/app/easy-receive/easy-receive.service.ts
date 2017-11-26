@@ -35,11 +35,11 @@ export class EasyReceiveService {
 
       if (receipt.isValid()) {
         return this.persistanceService.addPendingEasyReceipt(receipt).then(() => {
-            resolve(receipt);
+            return resolve(receipt);
         });
       } else {
         this.logger.warn('receipt is invalid', receipt); 
-        reject('receipt is invalid');
+        return reject('receipt is invalid');
       }
 
     });
@@ -47,9 +47,9 @@ export class EasyReceiveService {
 
   public getPendingReceipts():Promise<Array<EasyReceipt>> {
     return new Promise((resolve, reject) => {
-      this.persistanceService.getPendingsEasyReceipts().then((receipts) => {
+      return this.persistanceService.getPendingsEasyReceipts().then((receipts) => {
           if (!receipts) receipts = [];
-          resolve(receipts); 
+          return resolve(receipts); 
       });
     });
     
@@ -70,7 +70,7 @@ export class EasyReceiveService {
 
         return this.spendEasyReceipt(receipt, wallet, input, senderAddress);
       } catch (e) {
-        reject(e);
+        return reject(e);
       } 
     })
   }
@@ -90,9 +90,9 @@ export class EasyReceiveService {
       return walletClient.validateEasyScript(scriptId).then((txn) => {
         if (txn.result.found == false) {
           this.logger.warn("Could not validate easyScript on the blockchain.");
-          resolve(false);
+          return resolve(false);
         } else {
-          resolve({
+          return resolve({
             txn: txn.result,
             privateKey: scriptData.privateKey,
             publicKey: scriptData.publicKey,
@@ -102,7 +102,7 @@ export class EasyReceiveService {
         }
       }).catch((err) => {
         this.logger.warn("Could not validate easyScript on the blockchain.", err);
-        resolve(false);
+        return resolve(false);
       });
 
     });
@@ -139,7 +139,7 @@ export class EasyReceiveService {
            network: wallet.network
          }, (err, cb) => {
            if (err) return reject(err);
-           this.persistanceService.deletePendingEasyReceipt(receipt).then(() => {
+           return this.persistanceService.deletePendingEasyReceipt(receipt).then(() => {
                return resolve();
            });
          })
