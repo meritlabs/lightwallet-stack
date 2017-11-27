@@ -5,6 +5,8 @@ import { WalletService } from "merit/wallets/wallet.service";
 import { ProfileService } from "merit/core/profile.service";
 import { Logger } from "merit/core/logger";
 
+const CONFIRMATION_THRESHOLD = 6;
+
 @IonicPage({
   defaultHistory: ['WalletsView']
 })
@@ -40,7 +42,7 @@ export class TxDetailsView {
       if (this.tx.action == 'moved') this.title = 'Moved Funds';
 
       if (this.tx.safeConfirmed) this.confirmations = this.tx.safeConfirmed;
-      else if (this.tx.confirmations > 6)  this.confirmations = '6+';
+      else if (this.tx.confirmations > CONFIRMATION_THRESHOLD)  this.confirmations = `${CONFIRMATION_THRESHOLD}+`;
     }).catch((err) => {
       console.log(err);
     });

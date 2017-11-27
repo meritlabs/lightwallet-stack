@@ -95,6 +95,7 @@ export class VaultDetailsView {
     await this.getVaultTxHistory().then((txs) => {
       console.log(txs);
       this.transactions = txs;
+      this.vault.completeHistory = txs;
     });
   }
 
@@ -102,9 +103,12 @@ export class VaultDetailsView {
     this.navCtrl.push('VaultRenewView', { vaultId: this.vault._id, vault: this.vault });
   }
 
-  // goToTxDetails(tx: any) {
-  //   this.navCtrl.push('TxDetailsView', { vaultId: this.vault._id, vault: this.vault, txid: tx.txid });
-  // }
+  goToTxDetails(tx: any) {
+    this.navCtrl.push(
+      'TxDetailsView',
+      { wallet: this.walletClient, walletId: this.walletClient.credentials.walletId, vaultId: this.vault._id, vault: this.vault, txid: tx.txid }
+    );
+  }
 
   private getAllWallets(): Promise<Array<any>> {
     const wallets = this.profileService.getWallets().then((ws) => {
