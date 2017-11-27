@@ -9,6 +9,7 @@ import { ProfileService } from "merit/core/profile.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { MeritToastController } from "merit/core/toast.controller";
 import { DerivationPathService } from "merit/utilities/mnemonic/derivation-path.service";
+import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
 
 
 @IonicPage({
@@ -37,7 +38,9 @@ export class ImportView {
     bwsUrl: '',
     backupFile: null,
     backupFileBlob:'',
-    filePassword: ''
+    filePassword: '',
+    network: '',
+    hasPassphrase: false
   };
 
   public loadFileInProgress = false;
@@ -54,7 +57,8 @@ export class ImportView {
     private walletService:WalletService,
     private derivationPathService:DerivationPathService,
     private modalCtrl:ModalController,
-    private app:App
+    private app:App,
+    private mnemonicService:MnemonicService
   ) {
 
     this.formData.bwsUrl = config.getDefaults().bws.url;
@@ -68,13 +72,19 @@ export class ImportView {
 
   openScanner() {
     let modal = this.modalCtrl.create('ImportScanView');
-    modal.onDidDismiss((words) => {
-      if (words) {
-        this.formData.words = words;
+    modal.onDidDismiss((data) => {
+      if (data) {
+        let parts = data.split('|');
+        this.formData.words = parts[1];
+        this.formData.network = parts[2];
+        this.formData.derivationPath = parts[3];
+        this.formData.hasPassphrase = parts[4];
       }
     });
     modal.present();
   }
+
+
 
   openFilePicker() {
     this.input.nativeElement.click();
@@ -105,7 +115,7 @@ export class ImportView {
     }
     let opts:any = {
       account: pathData.account,
-      networkNAme: pathData.networkName,
+      networkName: pathData.networkName,
       derivationStrategy: pathData.derivationStrategy
     };
 
@@ -117,11 +127,16 @@ export class ImportView {
       importCall = this.profileService.importExtendedPublicKey(opts);
     } else {
       opts.passphrase = this.formData.phrasePassword;
-      importCall = this.profileService.importMnemonic(this.formData.words, opts);
+      importCall = this.mnemonicService.importMnemonic(this.formData.words, opts);
     }
 
     importCall.then((wallet) => {
       this.processCreatedWallet(wallet);
+    }).catch((err) => {
+      this.toastCtrl.create({
+        message: (err && err.message) ? err.message : 'Failed to import wallet',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
     });
 
   }
@@ -160,6 +175,7 @@ export class ImportView {
   }
 
   private processCreatedWallet(wallet, loader?) {
+     console.log('PROCESSING');
     //this.walletService.updateRemotePreferences(wallet, {}).then(() => {
     this.profileService.setBackupFlag(wallet.credentials.walletId);
     if (loader) loader.dismiss();

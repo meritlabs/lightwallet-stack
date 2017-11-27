@@ -49,8 +49,8 @@ export class ExportWalletView {
   ionViewDidLoad() {
 
     let setQrInfo = (password) => {
-      console.log('set qr info');
       this.walletsService.getEncodedWalletInfo(this.wallet, password).then((info) => {
+        console.log('qr info', info);
         this.qrcode = info;
       });
     };
