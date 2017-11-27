@@ -1,11 +1,14 @@
 import * as _ from 'lodash';
 
 export interface AddressBook { [key:string]:MeritContact; } 
-export interface MeritContact {
+
+export interface Searchable { searchTerm: string }
+export interface MeritContact extends Searchable {
   name:string;
   email:string;
   phoneNumber:string;
   meritAddress:string;
+  sendMethod:string;
 }
 
 export let isValidMeritContact = (contact: MeritContact): boolean => {
@@ -18,6 +21,8 @@ export let emptyMeritContact = (): MeritContact => {
     name: '',
     phoneNumber: '',
     email: '',
-    meritAddress: ''
+    meritAddress: '',
+    searchTerm: '',
+    sendMethod: ''
   });
 }

@@ -11,7 +11,7 @@ import { Logger } from 'merit/core/logger';
 
 import * as _ from 'lodash';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
-import { AddressBook, MeritContact } from 'merit/shared/address-book/contact/contact.model';
+import { AddressBook, MeritContact, emptyMeritContact, Searchable } from 'merit/shared/address-book/contact/contact.model';
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
@@ -155,13 +155,13 @@ export class SendView {
     //TODO: Lifecycle tick if needed
   }
 
-  private findMatchingContacts(list, term):Array<any> {
+  private findMatchingContacts<T extends Searchable>(list: T[], term: string): T[] {
     return _.filter(list, (item) => {
       return _.includes(item.searchTerm.toLowerCase(), term.toLowerCase());
     });
   }
 
-  private contactWithSendMethod(contact, search: string) {
+  private contactWithSendMethod(contact, search: string): MeritContact {
     let obj = _.clone(contact);
 
     let email = _.find(obj.emails, (x: string) => {
@@ -191,23 +191,17 @@ export class SendView {
     return obj;
   }
 
-  private emptyContact = {
-      name: '',
-      phoneNumber: '',
-      email: '',
-      meritAddress: '',
-      sendMethod: ''
-  }
+  private emptyContact = emptyMeritContact();
 
-  private justMeritAddress(meritAddress: string) {
+  private justMeritAddress(meritAddress: string): MeritContact {
     return _.defaults({meritAddress: meritAddress, sendMethod: 'address'}, this.emptyContact);
   }
 
-  private justPhoneNumber(phoneNumber: string) {
+  private justPhoneNumber(phoneNumber: string): MeritContact {
     return _.defaults({phoneNumber: phoneNumber, sendMethod: 'sms'}, this.emptyContact);
   }
 
-  private justEmail(email: string) {
+  private justEmail(email: string): MeritContact {
     return _.defaults({email: email, sendMethod: 'email'}, this.emptyContact);
   }
 
@@ -268,7 +262,13 @@ export class SendView {
   }
 
   private goToAmount(item) {
-    return this.navCtrl.push('SendAmountView', {recipient: item});
+    return this.profileService.getWallets().then((wallets) => {
+      return this.navCtrl.push('SendAmountView', {
+        wallet: wallets[0],
+        sending: true,
+        recipient: item
+      });
+    });
   }
 
   // TODO: Let's consider a better way to handle these multi-hop transitions.
