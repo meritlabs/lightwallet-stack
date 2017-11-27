@@ -40,6 +40,7 @@ export interface InitOptions {
   timeout?: number;
   logLevel?: string;
 }
+
 export class API {
   public BASE_URL = 'http://localhost:3232/bws/api';
   public request: any;
@@ -938,6 +939,95 @@ export class API {
 
       } else {
         this.log.error('Vault type is not supported:', newVault.type);
+        return Errors.COULD_NOT_BUILD_TRANSACTION;
+      }
+    } catch (ex) {
+      this.log.error('Could not build transaction from private key', ex);
+      return Errors.COULD_NOT_BUILD_TRANSACTION;
+    }
+
+    return tx;
+  };
+
+  /**
+   * Renew vault
+   * Will make all pending tx invalid
+   */
+  buildSpendVaultTx(vault: any, coins: any[], spendKey: any, amount: number, address:any, opts: any = {}) {
+
+    var network = opts.network || DEFAULT_NET;
+    var fee = opts.fee || DEFAULT_FEE;
+
+    let availableAmount = _.reduce(coins, (sum, utxo) => {
+      return sum + utxo.micros;
+    }, 0);
+
+    if (amount <= availableAmount) return Errors.INSUFFICIENT_FUNDS;
+
+    let selectedCoins = [];
+    let selectedAmount = 0;
+    for(let c = 0; c < coins.length && selectedAmount < amount; c++) {
+      let coin = coins[c];
+      
+      selectedAmount += coin.micros;
+      selectedCoins.push(coin);
+    }
+
+    //should never be true
+    if(selectedAmount < amount) return Errors.INSUFFICIENT_FUNDS;
+
+    let change = selectedAmount - amount;
+
+    let redeemScript = new Bitcore.Script(vault.redeemScript);
+
+    var tx = new Bitcore.Transaction();
+
+    try {
+
+      if(vault.type == 0) {
+
+        let toAddress = Bitcore.Address.fromString(address);
+        tx.to(toAddress, amount - fee);
+
+        let params = [
+          Bitcore.HDPublicKey.fromObject(vault.spendPubKey).toBuffer(),
+          new Bitcore.PublicKey(vault.masterPubKey, {network: network}).toBuffer(),
+        ];
+
+        params = params.concat(vault.whitelist);
+        params.push(Bitcore.Opcode.smallInt(vault.whitelist.length));
+        params.push(vault.tag);
+        params.push(Bitcore.Opcode.smallInt(vault.type));
+
+        let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
+
+        tx.addOutput(new Bitcore.Transaction.Output({
+          script: scriptPubKey,
+          micros: change
+        }));
+
+        tx.fee(fee)
+
+        _.each(selectedCoins, (coin) => {
+          tx.addInput(
+            new Bitcore.Transaction.Input.PayToScriptHashInput({
+              prevTxId: coin.txid,
+              outputIndex: coin.outputIndex,
+              script: coin.scriptPubKey
+            }, redeemScript, coin.scriptPubKey), 
+            coin.scriptPubKey, coin.micros);
+
+          let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
+          let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript);
+
+          tx.inputs[tx.inputs.length-1].setScript(inputScript);
+        });
+
+        // Make sure the tx can be serialized
+        tx.serialize();
+
+      } else {
+        this.log.error('Vault type is not supported:', vault.type);
         return Errors.COULD_NOT_BUILD_TRANSACTION;
       }
     } catch (ex) {

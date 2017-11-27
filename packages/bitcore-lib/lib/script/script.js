@@ -940,20 +940,42 @@ Script.buildSimpleVaultScript = function(tag) {
 };
 
 /**
- * Build a vault input which selects mode
- * be one of the public keys used in the easysend out script.
- * @param {buffer} signature to be append to the script
+ * @param {mode} Mode to select, 0 is spend, and 1 is renew.
+ * @param {signature} signature to be append to the script
+ * @param {vaultScript} The vault script that was signed.
  * @returns {Script}
  */
-Script.buildVaultRenewIn = function(signature, vaultScript) {
+Script.buildVaultIn = function(mode, signature, vaultScript) {
   var s = new Script();
   var sigBuf = BufferUtil.concat([
     signature.toDER(),
     BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)
   ]);
   s.add(sigBuf);
-  s.add(Opcode.smallInt(1)); //renew mode is 1
+  s.add(Opcode.smallInt(mode)); //spend is 0, and renew mode is 1
   s.add(vaultScript.toBuffer());
+  return s;
+};
+
+/**
+ * Build a vault input which selects renew mode
+ * @param {signature} signature to be append to the script
+ * @param {vaultScript} The vault script that was signed.
+ * @returns {Script}
+ */
+Script.buildVaultRenewIn = function(signature, vaultScript) {
+  return Script.buildVaultIn(1, signature, vaultScript);
+};
+
+
+/**
+ * Build a vault input which selects spend mode
+ * @param {signature} signature to be append to the script
+ * @param {vaultScript} Vault script that was signed.
+ * @returns {Script}
+ */
+Script.buildVaultRenewIn = function(signature, vaultScript) {
+  return Script.buildVaultIn(0, signature, vaultScript);
   return s;
 };
 
