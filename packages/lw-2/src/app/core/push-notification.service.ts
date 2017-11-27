@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Logger } from '@nsalaun/ng-logger';
 import { NavController, App } from 'ionic-angular';
 import { FCM } from '@ionic-native/fcm';
 
@@ -12,6 +11,7 @@ import { AppService } from 'merit/core/app-settings.service';
 import { BwcService } from 'merit/core/bwc.service';
 
 import * as _ from 'lodash';
+import { Logger } from "merit/core/logger";
 
 @Injectable()
 export class PushNotificationsService {
@@ -65,6 +65,7 @@ export class PushNotificationsService {
         }
       });
     } else { 
+      this.logger.info("WebAppPush:: Push notification subscription happens here.");
       // We are in the web app (not a mobile native app)
       // TODO: Decide if we want to strategically supporting this case.  
       //var firebase = require('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
