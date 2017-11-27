@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpModule, Http } from '@angular/http';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { FCM } from '@ionic-native/fcm';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Logger } from "./logger";
 import { BwcService } from 'merit/core/bwc.service';
@@ -96,6 +97,7 @@ export function createTranslateLoader(http: Http) {
         WalletService,
         MnemonicService,
         CreateVaultService,
+        FCM,
         {
             provide: APP_INITIALIZER,
             useFactory: (app: AppService) => () => app.getInfo(),
