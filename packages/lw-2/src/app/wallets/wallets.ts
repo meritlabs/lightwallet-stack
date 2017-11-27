@@ -38,9 +38,10 @@ import { FiatAmount } from 'merit/shared/fiat-amount.model';
 })
 export class WalletsView {
 
-  private totalAmount;
-  private totalAmountFormatted;
-
+  private totalNetworkValue;
+  private totalNetworkValueMicros;
+  private totalNetworkValueFiat;
+  
   public wallets: MeritWalletClient[];
   public vaults;
   public newReleaseExists;
@@ -105,8 +106,11 @@ export class WalletsView {
         }
         return this.calculateNetworkAmount(wallets);
       }).then((cNetworkAmount) => {
-        this.totalAmount = cNetworkAmount;
-        this.totalAmountFormatted = this.txFormatService.parseAmount(this.totalAmount, 'micros').amountUnitStr;
+        this.totalNetworkValue = cNetworkAmount;
+        this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
+        this.txFormatService.formatToUSD(this.totalNetworkValue).then((usdAmount) => {
+          this.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
+        });
         return this.processEasyReceive();
       }).then(() => {
         return this.profileService.getTxps({limit: 3});
@@ -200,15 +204,14 @@ export class WalletsView {
     });
 
   }
-
   /**
    * checks if pending easyreceive exists and if so, open it
    */
-  private processEasyReceive() {
-    this.easyReceiveService.getPendingReceipts().then((receipts) => {
+  private processEasyReceive(): Promise<any> {
+    return this.easyReceiveService.getPendingReceipts().then((receipts) => {
       if (receipts[0]) {
 
-        this.easyReceiveService.validateEasyReceiptOnBlockchain(receipts[0], '').then((data) => {
+        return this.easyReceiveService.validateEasyReceiptOnBlockchain(receipts[0], '').then((data) => {
           if (data) {
             this.showConfirmEasyReceivePrompt(receipts[0], data);
           } else { //requires password
