@@ -24,7 +24,7 @@ import { setTimeout } from 'timers';
 /* Refactor CheckList:
   - Bwc Error provider
   - Remove ongoingProcess provider, and handle Loading indicators in controllers
-  - Decouple the tight dependencies on ProfileService; and create logical separation concerns 
+  - Decouple the tight dependencies on ProfileService; and create logical separation concerns
   - Ensure that anything returning a promise has promises through the stack.
 */
 
@@ -466,8 +466,8 @@ export class WalletService {
         let getNewTxs = (newTxs: Array<any>, skip: number): Promise<any> => {
           return new Promise((resolve, reject) => {
             return this.getTxsFromServer(wallet, skip, endingTxid, requestLimit).then((result: any) => {
-              // If we haven't bubbled up an error in the promise chain, and this is empty, 
-              // then we can assume there are no TXs for this wallet. 
+              // If we haven't bubbled up an error in the promise chain, and this is empty,
+              // then we can assume there are no TXs for this wallet.
               if (!result) {
                 return resolve([]);
               }
@@ -716,7 +716,7 @@ export class WalletService {
         return resolve(tx);
       };
 
-      if (wallet.completeHistory && wallet.completeHistory.isValid) {
+      if (wallet && wallet.completeHistory && wallet.completeHistory.isValid) {
         finish(wallet.completeHistory);
       } else {
         let opts = {
@@ -819,7 +819,7 @@ export class WalletService {
       return wallet.removeTxProposal(txp).then(() => {
         this.logger.debug('Transaction removed');
         this.invalidateCache(wallet);
-        // $rootScope.$emit('Local/TxAction', wallet.id);   
+        // $rootScope.$emit('Local/TxAction', wallet.id);
         return resolve();
       });
     });
@@ -1331,7 +1331,7 @@ export class WalletService {
     });
   }
 
-  // TODO: Rename this.  
+  // TODO: Rename this.
   private seedWallet(opts: any): Promise<IMeritWalletClient> {
     return new Promise((resolve, reject) => {
 

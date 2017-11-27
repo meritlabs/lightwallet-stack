@@ -29,8 +29,10 @@
         <img src="assets/img/icon-wallet.svg" class="icon-wallet">
       </ion-avatar>
       <h2 translate>To</h2>
-      <p *ngIf="tx.action != 'sent'">{{wallet.name || '...'}}</p>
-      <p *ngIf="tx.action == 'sent'">{{tx.addressTo || '...'}}</p>
+      <p *ngIf="tx.action != 'sent' && wallet">{{ wallet.name || '...' }}</p>
+      <p *ngIf="tx.action != 'sent' && vault">{{ vault.name || '...' }}</p>
+      
+      <p *ngIf="tx.action == 'sent'">{{ tx.addressTo || '...' }}</p>
     </ion-item>
 
     <ion-item *ngIf="tx.action == 'sent'">
