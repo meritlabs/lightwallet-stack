@@ -33,13 +33,18 @@ var EMAIL_TYPES = {
     notifyDoer: false,
     notifyOthers: true,
   },
-  'NewOutgoingTx': {
-    filename: 'new_outgoing_tx',
+  'OutgoingTx': {
+    filename: 'outgoing_tx',
     notifyDoer: true,
     notifyOthers: true,
   },
-  'NewIncomingTx': {
-    filename: 'new_incoming_tx',
+  'IncomingTx': {
+    filename: 'incoming_tx',
+    notifyDoer: true,
+    notifyOthers: true,
+  },
+  'IncomingCoinbase': {
+    filename: 'incoming_coinbase',
     notifyDoer: true,
     notifyOthers: true,
   },
@@ -264,7 +269,7 @@ EmailService.prototype._getDataForTemplate = function(notification, recipient, c
       data.rejectorsNames = rejectors.join(', ');
     }
 
-    if (_.includes(['NewIncomingTx', 'NewOutgoingTx'], notification.type) && data.txid) {
+    if (_.includes(['IncomingTx', 'OutgoingTx'], notification.type) && data.txid) {
       var urlTemplate = self.publicTxUrlTemplate[wallet.network];
       if (urlTemplate) {
         try {

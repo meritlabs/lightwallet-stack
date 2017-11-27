@@ -12,8 +12,8 @@ var Uuid = require('uuid');
  * txProposalFinallyRejected - txProposalId
  * txProposalFinallyAccepted - txProposalId
  *
- * NewIncomingTx (address, txid)
- * NewOutgoingTx - (txProposalId, txid)
+ * IncomingTx (address, txid)
+ * OutgoingTx - (txProposalId, txid)
  *
  * data Examples:
  * { amount: 'xxx', address: 'xxx'}

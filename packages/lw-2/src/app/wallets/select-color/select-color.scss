@@ -1,0 +1,20 @@
+view-select-color {
+
+
+  .wallet-icon {
+    img {
+      height: 26px;
+      width: 36px;
+      display: inline-block;
+      border-radius: 4px;
+      box-shadow: none;
+      padding: 4px 8px;
+      vertical-align: middle;
+    }
+    &.default img {
+      background: $wallet-default-color;
+    }
+  }
+
+
+}

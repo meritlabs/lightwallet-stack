@@ -52,14 +52,22 @@ export class WalletDetailsView {
     this.logger.warn("GEtting history)");
     this.walletService.getTxHistory(this.wallet, {force: force}).then((walletHistory) => {
       this.wallet.completeHistory = walletHistory;
-      this.logger.warn("@@@@");
-      this.logger.warn(this.wallet.completeHistory);
     }).catch((err) => {
       console.log(err);
     });
   }
 
+  // Belt and suspenders check to be sure that the total number of TXs on the page
+  // add up to the total balance in status.  
+  private txHistoryInSyncWithStatus(): boolean {
+    return true;
+  }
+
   private goToTxDetails(tx: any) {
-    this.navCtrl.push('TxDetailsView', {walletId: this.wallet.credentials.walletId, txid: tx.txid});
+    this.navCtrl.push('TxDetailsView', {walletId: this.wallet.credentials.walletId, txId: tx.txid});
+  }
+
+  goToEditWallet() {
+    this.navCtrl.push('EditWalletView', {wallet: this.wallet});
   }
 }

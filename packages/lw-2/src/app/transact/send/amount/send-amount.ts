@@ -31,8 +31,8 @@ export class SendAmountView {
   
   ionViewDidLoad() {
     console.log('Params', this.navParams.data);
-    this.address = this.navParams.data.address;
-    this.sending = this.navParams.data.sending;
+    this.address = this.navParams.get('address');
+    this.sending = this.navParams.get('sending');
   }
   
   @HostListener('document:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
@@ -161,6 +161,6 @@ export class SendAmountView {
 
   finish() {
     // TODO: We should always be sending from view.
-    this.navCtrl.push('SendConfirmView', {toAddress: this.address, toAmount: parseInt(this.globalResult), wallet: this.navParams.data.wallet, toName: 'Donken Heinz'});
+    this.navCtrl.push('SendConfirmView', {toAddress: this.address, toAmount: parseInt(this.globalResult), wallet: this.navParams.get('wallet'), toName: 'Donken Heinz'});
   }
 }
