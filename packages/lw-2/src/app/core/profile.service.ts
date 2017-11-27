@@ -542,12 +542,6 @@ export class ProfileService {
     });
   }
 
-  public importMnemonic(words, opts) {
-    return new Promise((resolve, reject) => {
-        resolve({status: {}});  
-    });
-  }
-
   public importExtendedPrivateKey(xPrivKey: string, opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
 

@@ -43,16 +43,6 @@
             <ion-input text-right [(ngModel)]="formData.derivationPath" [placeholder]="'BIP32 path for address derivation'"></ion-input>
         </ion-item>
 
-        <ion-item>
-            <ion-label translate>From Hardware Wallet</ion-label>
-            <ion-toggle [(ngModel)]="formData.fromHardwareWallet"></ion-toggle>
-        </ion-item>
-
-        <ion-item>
-            <ion-label translate>Testnet</ion-label>
-            <ion-toggle [(ngModel)]="formData.testnet"></ion-toggle>
-        </ion-item>
-
         <ion-item margin-bottom>
             <ion-label translate>Wallet Service Url</ion-label>
             <ion-input text-right [(ngModel)]="formData.bwsUrl"></ion-input>
