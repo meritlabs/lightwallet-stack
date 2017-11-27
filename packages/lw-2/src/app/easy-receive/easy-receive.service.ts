@@ -23,7 +23,7 @@ export class EasyReceiveService {
   public validateAndSaveParams(params:any):Promise<EasyReceipt> {
     return new Promise((resolve, reject) => {
 
-      this.logger.debug(`parsing easy params ${params}`);
+      this.logger.debug(`Parsing easy params ${params}`);
         
       let receipt = new EasyReceipt({});
       receipt.unlockCode = params.uc;
@@ -38,8 +38,10 @@ export class EasyReceiveService {
             return resolve(receipt);
         });
       } else {
-        this.logger.warn('receipt is invalid', receipt); 
-        return reject('receipt is invalid');
+        this.logger.warn('EasyReceipt parameters are invalid: ', receipt);
+        // We resolve if the easyReceipt is invalid because it does not
+        // affect the control flow.
+        return resolve(null);
       }
 
     });
@@ -123,7 +125,7 @@ export class EasyReceiveService {
        );
    
        let rawTxLength = testTx.serialize().length;
-       this.feeService.getCurrentFeeRate(wallet.network).then((feePerKB) => {
+       return this.feeService.getCurrentFeeRate(wallet.network).then((feePerKB) => {
    
          //TODO: Don't use magic numbers
          opts.fee = Math.round((feePerKB * rawTxLength) / 2000);
@@ -134,11 +136,10 @@ export class EasyReceiveService {
            opts
          );
    
-         wallet.broadcastRawTx({
+         return wallet.broadcastRawTx({
            rawTx: tx.serialize(),
            network: wallet.network
-         }, (err, cb) => {
-           if (err) return reject(err);
+         }).then( (tx) => {
            return this.persistanceService.deletePendingEasyReceipt(receipt).then(() => {
                return resolve();
            });

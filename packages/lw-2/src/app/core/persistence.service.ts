@@ -10,7 +10,7 @@ import { FileStorage } from 'merit/core/storage/file-storage.service';
 import { RamStorage } from 'merit/core/storage/ram-storage.service';
 import * as Promise from 'bluebird';
 
-import {EasyReceipt} from "merit/easy-receive/easy-receipt.model";
+import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 
 
 
@@ -84,14 +84,14 @@ export class PersistenceService {
 
   addPendingEasyReceipt(receipt:EasyReceipt) {
     return new Promise((resolve, reject) => {
-      this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
+      return this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
         if (!receipts) receipts = [];
         receipts = receipts.filter((r) => {
-          JSON.stringify(r) != JSON.stringify(receipt)
+          return !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
         }) // prevent storing of the same receipt twice
         receipts.push(receipt)
-        this.storage.set(Keys.EASY_RECEIPTS, receipts).then(() => {
-          resolve();
+        return this.storage.set(Keys.EASY_RECEIPTS, receipts).then(() => {
+          return resolve();
         })
       });
     });
@@ -104,14 +104,14 @@ export class PersistenceService {
   deletePendingEasyReceipt(receipt:EasyReceipt) {
     
     return new Promise((resolve, reject) => {
-        this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
+        return this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
           if (!receipts) receipts = [];
 
 
-          this.storage.set(Keys.EASY_RECEIPTS, receipts.filter((r) => {
-            JSON.stringify(r) != JSON.stringify(receipt)
+          return this.storage.set(Keys.EASY_RECEIPTS, receipts.filter((r) => {
+            return !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
           })).then(() => {
-            resolve();
+            return resolve();
           })
         });
     });

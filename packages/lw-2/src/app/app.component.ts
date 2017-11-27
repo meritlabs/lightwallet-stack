@@ -53,23 +53,30 @@ export class MeritLightWallet {
         this.appService.getInfo().then((appInfo) => {
           this.logger.info(`
             platform ready (${readySource}): -v ${appInfo.version} # ${appInfo.commitHash}
-        `);
+          `);
         });
 
-        this.initializeApp();
+        return this.initializeApp();
     });
 
+
     this.platform.resume.subscribe(() => {
-      this.deepLinkService.getBranchData(() => {}).then((data) => {
-        if (data && !_.isEmpty(data)) {
-          this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt) => {
-            this.profileService.getProfile().then((profile) => {
-              let viewToNavigate = (profile.credentials && profile.credentials.length) ?
-                'TransactView' : 'UnlockView';
-              this.app.getRootNavs()[0].setRoot(viewToNavigate);
-            });
-          });
-        }
+      return this.deepLinkService.getBranchData(() => {}).then((data) => {
+        return this.profileService.getProfile().then((profile) => {
+
+            if (data && !_.isEmpty(data)) {
+              if (data.sk && data.se) {
+                return this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt) => {
+                    let viewToNavigate = (profile.credentials && profile.credentials.length) ?
+                      'TransactView' : 'UnlockView';
+                    this.app.getRootNavs()[0].setRoot(viewToNavigate);
+                  });
+              } else if (data.uc && !profile.credentials) {
+                return this.app.getRootNavs()[0].setRoot('UnlockView');
+              }
+            }
+        });
+
       });
     })
 
@@ -139,6 +146,7 @@ export class MeritLightWallet {
         });
       });
   }
+
 
   private openLockModal() {
     let config: any = this.configService.get();
