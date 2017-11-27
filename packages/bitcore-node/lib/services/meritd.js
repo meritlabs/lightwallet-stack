@@ -1512,7 +1512,9 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
     ));
   }
 
+  console.log('before getAddressTxids', addresses);
   self.getAddressTxids(addresses, options, function(err, txids) {
+    console.log('after getAddressTxids', err, txids);
     if (err) {
       return callback(err);
     }

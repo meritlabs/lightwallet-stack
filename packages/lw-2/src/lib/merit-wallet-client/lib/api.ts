@@ -196,6 +196,7 @@ export interface IAPI {
   getVaults();
   createVault(vaultTxProposal: any);
   getVaultCoins(vaultAddress: any);
+  getVaultTxHistory(vaultId: string, network: string): Promise<Array<any>>;
 }
 
 export class API implements IAPI {
@@ -2758,13 +2759,19 @@ export class API implements IAPI {
   createVault(vaultTxProposal: any) {
     $.checkState(this.credentials);
 
-    var self = this;
-
     var url = '/v1/vaults/';
     return this._doPostRequest(url, vaultTxProposal);
   };
 
+
   getVaultCoins(vaultAddress: any) {
     return this.getUtxos({addresses: [vaultAddress]});
-  }
+  };
+
+  getVaultTxHistory(vaultId: string, network: string): Promise<Array<any>> {
+    $.checkState(this.credentials);
+
+    var url = `/v1/vaults/${vaultId}/txhistory?network=${network}`;
+    return this._doGetRequest(url);
+  };
 }
