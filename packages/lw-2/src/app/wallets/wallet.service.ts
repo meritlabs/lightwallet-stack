@@ -15,7 +15,6 @@ import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import * as Promise from 'bluebird';
 import { MeritWalletClient } from './../../lib/merit-wallet-client';
-import { IMeritWalletClient } from "../../lib/merit-wallet-client/index";
 
 import { Events } from 'ionic-angular';
 
@@ -1035,7 +1034,7 @@ export class WalletService {
     });
   };
 
-  public encrypt(wallet: IMeritWalletClient, password:string): Promise<any> {
+  public encrypt(wallet: MeritWalletClient, password:string): Promise<any> {
     console.log("encrypting");
     return Promise.resolve(wallet.encryptPrivateKey(password, {}));
   };

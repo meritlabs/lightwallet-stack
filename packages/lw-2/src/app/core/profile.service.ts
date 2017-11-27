@@ -196,7 +196,7 @@ export class ProfileService {
    * Here we filter event types and propogate them to the rest of the application via 
    * Ionic Events.
    */
-  private propogateBwsEvent(n: any, wallet: MeritWalletClient): void {
+  public propogateBwsEvent(n: any, wallet: MeritWalletClient): void {
     this.logger.info("We are in newBwsEvent on profileService");
     if (wallet.cachedStatus)
       wallet.cachedStatus.isValid = false;
