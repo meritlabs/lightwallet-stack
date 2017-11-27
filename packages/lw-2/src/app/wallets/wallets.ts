@@ -48,7 +48,7 @@ export class WalletsView {
 
   public addressbook;
   public txpsData: any[] = [];
-  public recentTransactionsData: any[] = [];
+  public recentTransactionsData;
 
   public recentTransactionsEnabled;
 
@@ -91,17 +91,19 @@ export class WalletsView {
   }
 
   private updateAllInfo():Promise<any> {
-    return new Promise((resolve, reject) => {
 
-      this.newReleaseExists = this.appUpdateService.isUpdateAvailable();
-      this.feedbackNeeded   = this.feedbackService.isFeedBackNeeded();
-      this.addressbook = this.addressbookService.list(() => {});
+    this.newReleaseExists = this.appUpdateService.isUpdateAvailable();
+    this.feedbackNeeded   = this.feedbackService.isFeedBackNeeded();
+    this.addressbook      = this.addressbookService.list(() => {});
+
+
+    return new Promise((resolve, reject) => {
 
       return this.getWallets().then((wallets) => {
         this.wallets = wallets;
-        if (_.isEmpty(wallets)) {
-          return Promise.resolve(null); //ToDo: add proper error handling;
-        }
+        //if (_.isEmpty(wallets)) {
+        //  return Promise.resolve(null); //ToDo: add proper error handling;
+        //}
         return this.calculateNetworkAmount(wallets);
       }).then((cNetworkAmount) => {
         this.totalAmount = cNetworkAmount;
@@ -118,7 +120,11 @@ export class WalletsView {
         return Promise.resolve();
 
       }).then(() => {
-        return this.vaultsService.getVaults(_.head(this.wallets));
+        if (_.isEmpty(this.wallets)) {
+          return Promise.resolve([]);
+        } else {
+          return this.vaultsService.getVaults(_.head(this.wallets));
+        }
       }).then((vaults) => {
         console.log('getting vaults', vaults);
         this.vaults = vaults;

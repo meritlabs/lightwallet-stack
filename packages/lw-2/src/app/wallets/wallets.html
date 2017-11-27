@@ -17,7 +17,7 @@
         Features
     </ion-item-divider>
 
-    <span *ngIf="feedbackNeeded">
+    <span *ngIf="feedbackNeeded|async">
         <ion-item  translate>
             <ion-label>Please rate our app</ion-label>
             <span item-right>
@@ -41,7 +41,7 @@
     </span>
 
 
-    <ion-item *ngIf="newReleaseExists" translate (click)="toLatestRelease()">
+    <ion-item *ngIf="newReleaseExists|async" translate (click)="toLatestRelease()">
         <ion-label translate>New version of app available!</ion-label>
         <button ion-button clear item-right><ion-icon name="link"></ion-icon></button>
     </ion-item>
@@ -59,7 +59,7 @@
         {{totalAmountFormatted}}
     </ion-item>
 
-    <span *ngIf="txpsData?.txpsN && addressbook">
+    <span *ngIf="txpsData?.txpsN && addressbook|async">
         <ion-item-divider translate >
             Payment Proposals
             <ion-badge item-right>{{txpsData?.txpsN}}</ion-badge>
