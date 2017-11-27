@@ -93,7 +93,7 @@ export class WalletsView {
 
   private updateAllInfo():Promise<any> {
     this.registerListeners();
-    return Promise.resolve(this.appUpdateService.isUpdateAvailable()).then((available) => {
+    return this.appUpdateService.isUpdateAvailable().then((available) => {
       this.newReleaseExists = available;
       return this.feedbackService.isFeedBackNeeded();
     }).then((feedbackNeeded) => {
