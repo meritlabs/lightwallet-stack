@@ -125,7 +125,7 @@ export class EasyReceiveService {
        );
    
        let rawTxLength = testTx.serialize().length;
-       this.feeService.getCurrentFeeRate(wallet.network).then((feePerKB) => {
+       return this.feeService.getCurrentFeeRate(wallet.network).then((feePerKB) => {
    
          //TODO: Don't use magic numbers
          opts.fee = Math.round((feePerKB * rawTxLength) / 2000);
@@ -136,11 +136,10 @@ export class EasyReceiveService {
            opts
          );
    
-         wallet.broadcastRawTx({
+         return wallet.broadcastRawTx({
            rawTx: tx.serialize(),
            network: wallet.network
-         }, (err, cb) => {
-           if (err) return reject(err);
+         }).then( (tx) => {
            return this.persistanceService.deletePendingEasyReceipt(receipt).then(() => {
                return resolve();
            });

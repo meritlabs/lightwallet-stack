@@ -274,7 +274,7 @@ export class WalletsView {
         });
         }}
       ]
-    });
+    }).present();
   }
 
 
