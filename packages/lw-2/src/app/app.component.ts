@@ -17,6 +17,8 @@ import { DeepLinkService } from 'merit/core/deep-link.service';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import * as _ from 'lodash';
 import * as Promise from 'bluebird'; 
+import { PushNotificationsService } from 'merit/core/push-notification.service';
+import { FCM } from '@ionic-native/fcm';
 
 
 @Component({
@@ -37,7 +39,9 @@ export class MeritLightWallet {
     private configService: ConfigService,
     private deepLinkService: DeepLinkService,
     private easyReceiveService: EasyReceiveService,
-    private app:App
+    private app:App,
+    private FCM: FCM,
+    private pushNotificationService: PushNotificationsService
   ) {
 
     process.on('unhandledRejection', console.log.bind(console));
