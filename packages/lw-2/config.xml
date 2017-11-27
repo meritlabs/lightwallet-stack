@@ -100,11 +100,12 @@
     <plugin name="phonegap-plugin-barcodescanner" spec="^6.0.8">
         <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
     </plugin>
-      <branch-config>
+    <branch-config>
         <branch-key value="key_live_edqKoEEX0yip4cpCBjbnXlpkqBmai2VN" />
         <uri-scheme value="merit" />
         <link-domain value="c213.app.link" />
         <ios-team-release value="MLJ7SU96NS" />
     </branch-config>
     <plugin name="branch-cordova-sdk" spec="^2.6.16" />
+    <plugin name="cordova-plugin-fcm" spec="^2.1.2" />
 </widget>
