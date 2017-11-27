@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { NavController, App } from 'ionic-angular';
+import { NavController, App, Platform } from 'ionic-angular';
 import { FCM } from '@ionic-native/fcm';
 
 //providers
@@ -30,7 +30,8 @@ export class PushNotificationsService {
     public appService: AppService,
     private app: App,
     private bwcService: BwcService,
-    private FCMPlugin: FCM
+    private FCMPlugin: FCM,
+    private platform: Platform
   ) {
     console.log('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
@@ -38,6 +39,8 @@ export class PushNotificationsService {
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
 
     if (this.usePushNotifications) {
+
+      this.platform.ready().then((readySource) => {      
 
       this.FCMPlugin.onTokenRefresh().subscribe((token: any) => {
         if (!this._token) return;
@@ -64,6 +67,7 @@ export class PushNotificationsService {
           this.profileService.propogateBwsEvent(data, this.profileService.getWallet(data.walletId));
         }
       });
+    });
     } else { 
       this.logger.info("WebAppPush:: Push notification subscription happens here.");
       // We are in the web app (not a mobile native app)
@@ -71,8 +75,8 @@ export class PushNotificationsService {
       //var firebase = require('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
       //var fbMessaging = require('https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js');
     }
-
   }
+
 
   public init(): void {
     if (!this.usePushNotifications || this._token) return;
