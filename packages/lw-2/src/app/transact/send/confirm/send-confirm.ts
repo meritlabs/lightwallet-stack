@@ -33,7 +33,7 @@ export class SendConfirmView {
   private static CONFIRM_LIMIT_USD = 20;
   private static FEE_TOO_HIGH_LIMIT_PER = 15;
   
-
+  private recipient: any;
   private txData: {
     toAddress: any,
     toAmount: number,
@@ -83,16 +83,17 @@ export class SendConfirmView {
     this.wallet = this.navParams.get('wallet');
     this.unitToMicro = this.walletConfig.settings.unitToMicro;
     this.configFeeLevel = this.walletConfig.settings.feeLevel ? this.walletConfig.settings.feeLevel : 'normal';
+    this.recipient = this.navParams.get('recipient');
 
     this.txData = {
-      toAddress:  this.navParams.get('toAddress'),
+      toAddress:  this.recipient.meritAddress,
       txp: {},
-      toName: this.navParams.get('toAddress') || '',
+      toName: this.recipient.name || '',
       toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
       allowSpendUnconfirmed: this.walletConfig.spendUnconfirmed
     }
 
-    if(!this.txData.toAddress) {
+    if(this.recipient.sendMethod != 'address') {
       await this.updateEasySendData();
     }
     this.logger.log('ionViewDidLoad txData', this.txData);
