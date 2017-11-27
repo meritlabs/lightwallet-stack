@@ -65,7 +65,8 @@ export class MeritLightWallet {
 
     this.platform.resume.subscribe(() => {
       this.deepLinkService.getBranchData(() => {}).then((data) => {
-        if (data && !_.isEmpty(data)) {
+        // Only attempt to process the EasyReceipt if we have the core parameters.  
+        if (data && !_.isEmpty(data) && (data.sk && data.se)) {
           this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt) => {
             this.profileService.getProfile().then((profile) => {
               let viewToNavigate = (profile.credentials && profile.credentials.length) ?
