@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import * as Promise from 'bluebird'; 
+import * as Promise from 'bluebird';
 
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
@@ -26,6 +26,7 @@ export class VaultDetailsView {
   public vault: any;
   public whitelist: Array<any> = [];
   public coins: Array<any> = [];
+  public transactions: Array<any> = [];
   private bitcore: any = null;
   private walletClient: IMeritWalletClient;
 
@@ -39,14 +40,14 @@ export class VaultDetailsView {
     private bwc: BwcService,
     private txFormatService:TxFormatService,
   ) {
-    // We can assume that the wallet data has already been fetched and 
+    // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
     // things fast and smooth.  We can refresh as needed.
     this.vault = this.navParams.get('vault');
     this.bitcore = this.bwc.getBitcore();
     this.whitelist = this.vault.whitelist;
     console.log("Inside the vault-details view.");
-    console.log(this.vault);
+    console.log('Vault to display:', this.vault);
 
   }
 
@@ -68,14 +69,14 @@ export class VaultDetailsView {
         });
 
 
-        
-      }), 
+
+      }),
       // fetch users vaults
       this.getAllWVaults().then((vaults) => {
         return _.map(vaults, (v) => {
           const name = v.name || v._id;
           const key = new this.bitcore.Address(v.address).toString();
-          return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' }; 
+          return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' };
         });
       }),
       // fetch coins
@@ -91,14 +92,9 @@ export class VaultDetailsView {
       this.whitelist = results;
     });
 
-    await this.getCoins().then((coins) => {
-      this.walletClient._processTxps(coins);
-      _.each(coins, (tx: any) => {
-        tx.amountStr = this.txFormatService.formatAmountStr(tx.micros);
-        tx.feeStr = this.txFormatService.formatAmountStr(tx.fees);
-      });
-      this.coins = coins;
-      console.log('coins', coins);
+    await this.getVaultTxHistory().then((txs) => {
+      console.log(txs);
+      this.transactions = txs;
     });
   }
 
@@ -106,11 +102,15 @@ export class VaultDetailsView {
     this.navCtrl.push('VaultRenewView', { vaultId: this.vault._id, vault: this.vault });
   }
 
+  // goToTxDetails(tx: any) {
+  //   this.navCtrl.push('TxDetailsView', { vaultId: this.vault._id, vault: this.vault, txid: tx.txid });
+  // }
+
   private getAllWallets(): Promise<Array<any>> {
     const wallets = this.profileService.getWallets().then((ws) => {
       return Promise.all(_.map(ws, async (wallet:any) => {
         wallet.status = await this.walletService.getStatus(wallet);
-        return wallet; 
+        return wallet;
       }));
     })
     return wallets;
@@ -131,6 +131,12 @@ export class VaultDetailsView {
   private getCoins(): Promise<Array<any>> {
     return this.profileService.getHeadWalletClient().then((walletClient) => {
       return this.vaultsService.getVaultCoins(walletClient, this.vault);
-    })
-  }
+    });
+  };
+
+  private getVaultTxHistory(): Promise<Array<any>> {
+    return this.profileService.getHeadWalletClient().then((walletClient) => {
+      return this.vaultsService.getVaultTxHistory(walletClient, this.vault);
+    });
+  };
 }

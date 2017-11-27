@@ -13,6 +13,7 @@ var mongodb = require('mongodb');
 var Model = require('./model');
 
 var Bitcore = require('bitcore-lib');
+var ObjectID = mongodb.ObjectID;
 
 var collections = {
   WALLETS: 'wallets',
@@ -1116,7 +1117,31 @@ Storage.prototype.fetchVaultByInitialTxId = function(txId, cb) {
   this.db.collection(collections.VAULTS).findOne({
     initialTxId: txId,
   }, function(err, result) {
-    console.log('in fetch fn', err, result);
+    if (err) return cb(err);
+    if (!result) return cb();
+
+    return cb(null, result);
+  });
+};
+
+Storage.prototype.fetchVaultById = function(id, cb) {
+  this.db.collection(collections.VAULTS).findOne({
+    _id: new ObjectID(id),
+  }, function(err, result) {
+    console.log('in fetch', err, result);
+    if (err) return cb(err);
+    if (!result) return cb();
+
+    return cb(null, result);
+  });
+};
+
+Storage.prototype.fetchVaultByCopayerId = function(copayerId, id, cb) {
+  this.db.collection(collections.VAULTS).findOne({
+    copayerId,
+    _id: new ObjectID(id),
+  }, function(err, result) {
+    console.log('in fetch', err, result);
     if (err) return cb(err);
     if (!result) return cb();
 

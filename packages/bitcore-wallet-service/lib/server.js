@@ -3604,6 +3604,337 @@ WalletService.prototype.createVault = function(opts, cb) {
   ]);
 };
 
+WalletService.prototype.getVaultTxHistory = function(opts, cb) {
+  console.log('getVaultTxHistory', opts);
+
+  var self = this;
+  
+  function decorate(txs, addresses, proposals, notes) {
+    var indexedAddresses = _.keyBy(addresses, 'address');
+    var indexedProposals = _.keyBy(proposals, 'txid');
+    var indexedNotes = _.keyBy(notes, 'txid');
+
+    function sum(items, isMine, isChange) {
+      var filter = {};
+      if (_.isBoolean(isMine)) filter.isMine = isMine;
+      if (_.isBoolean(isChange)) filter.isChange = isChange;
+      return _.sumBy(_.filter(items, filter), 'amount');
+    };
+
+    function classify(items) {
+      return _.map(items, function(item) {
+        var address = indexedAddresses[item.address];
+        return {
+          address: item.address,
+          amount: item.amount,
+          isMine: !!address,
+          isChange: false,
+        }
+      });
+    };
+
+    return _.map(txs, function(tx) {
+
+      var amountIn, amountOut, amountOutChange;
+      var amount, action, addressTo;
+      var inputs, outputs;
+
+      if (tx.outputs.length || tx.inputs.length) {
+
+        inputs = classify(tx.inputs);
+        outputs = classify(tx.outputs);
+
+        amountIn = sum(inputs, true);
+        amountOut = sum(outputs, true, false);
+        amountOutChange = sum(outputs, true, true);
+        if (amountIn == (amountOut + amountOutChange + (amountIn > 0 ? tx.fees : 0))) {
+          amount = amountOut;
+          action = 'moved';
+        } else {
+          amount = amountIn - amountOut - amountOutChange - ((amountIn > 0 && amountOutChange >0 ) ? tx.fees : 0);
+          action = amount > 0 ? 'sent' : 'received';
+        }
+
+        amount = Math.abs(amount);
+        if (action == 'sent' || action == 'moved') {
+          var firstExternalOutput = _.find(outputs, {
+            isMine: false
+          });
+          addressTo = firstExternalOutput ? firstExternalOutput.address : 'N/A';
+        };
+      } else {
+        action = 'invalid';
+        amount = 0;
+      }
+
+      function formatOutput(o) {
+        return {
+          amount: o.amount,
+          address: o.address
+        }
+      };
+
+      var newTx = {
+        txid: tx.txid,
+        action: action,
+        amount: amount,
+        fees: tx.fees,
+        time: tx.time,
+        addressTo: addressTo,
+        confirmations: tx.confirmations,
+        isCoinbase: tx.isCoinbase,
+        isMature: tx.isMature
+      };
+
+      if (_.isNumber(tx.size) && tx.size > 0) {
+        newTx.feePerKb = +(tx.fees * 1000 / tx.size).toFixed();
+      }
+
+      if (opts.includeExtendedInfo) {
+        newTx.inputs = _.map(inputs, function(input) {
+          return _.pick(input, 'address', 'amount', 'isMine');
+        });
+        newTx.outputs = _.map(outputs, function(output) {
+          return _.pick(output, 'address', 'amount', 'isMine');
+        });
+      } else {
+        outputs = _.filter(outputs, {
+          isChange: false
+        });
+        if (action == 'received') {
+          outputs = _.filter(outputs, {
+            isMine: true
+          });
+        }
+        newTx.outputs = _.map(outputs, formatOutput);
+      }
+
+      var proposal = indexedProposals[tx.txid];
+      if (proposal) {
+        newTx.createdOn = proposal.createdOn;
+        newTx.proposalId = proposal.id;
+        newTx.proposalType = proposal.type;
+        newTx.creatorName = proposal.creatorName;
+        newTx.message = proposal.message;
+        newTx.actions = _.map(proposal.actions, function(action) {
+          return _.pick(action, ['createdOn', 'type', 'copayerId', 'copayerName', 'comment']);
+        });
+        _.each(newTx.outputs, function(output) {
+          var query = {
+            toAddress: output.address,
+            amount: output.amount
+          };
+          var txpOut = _.find(proposal.outputs, query);
+          output.message = txpOut ? txpOut.message : null;
+        });
+        newTx.customData = proposal.customData;
+        // newTx.sentTs = proposal.sentTs;
+        // newTx.merchant = proposal.merchant;
+        //newTx.paymentAckMemo = proposal.paymentAckMemo;
+      }
+
+      var note = indexedNotes[tx.txid];
+      if (note) {
+        newTx.note = _.pick(note, ['body', 'editedBy', 'editedByName', 'editedOn']);
+      }
+
+      return newTx;
+    });
+  };
+
+  function getNormalizedTxs(addresses, from, to, cb) {
+    var txs, fromCache, totalItems;
+    var useCache = addresses.length >= Defaults.HISTORY_CACHE_ADDRESS_THRESOLD;
+    var network = opts.network;
+
+    async.series([
+
+      function(next) {
+        if (!useCache) return next();
+
+        self.storage.getTxHistoryCache(self.walletId, from, to, function(err, res) {
+          if (err) return next(err);
+          if (!res || !res[0]) return next();
+
+          log.warn("GNT: getTxHistoryCache");
+          log.warn(res);
+          txs = res;
+          fromCache = true;
+
+          return next()
+        });
+      },
+      function(next) {
+        if (txs) return next();
+
+        var addressStrs = addresses.join(',');
+        var bc = self._getBlockchainExplorer(network);
+        if (!bc) return next(new Error('Could not get blockchain explorer instance'));
+
+        log.info('Querying txs for: %s addrs', addresses.length);
+
+        bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
+          if (err) return next(err);
+
+          log.warn("GNT: getTransaction, raw");
+          console.log(rawTxs);
+          txs = self._normalizeTxHistory(rawTxs);
+          log.warn("GNT: getTransaction, after normalization");
+          console.log(txs);
+
+          totalItems = total;
+          return next();
+        });
+      },
+      function(next) {
+        if (!useCache || fromCache) return next();
+
+        var txsToCache = _.filter(txs, function(i) {
+          return i.confirmations >= Defaults.CONFIRMATIONS_TO_START_CACHING;
+        }).reverse();
+
+        if (!txsToCache.length) return next();
+
+        var fwdIndex = totalItems - to;
+        if (fwdIndex < 0) fwdIndex = 0;
+        self.storage.storeTxHistoryCache(self.walletId, totalItems, fwdIndex, txsToCache, next);
+      },
+      function(next) {
+        if (!useCache || !fromCache) return next();
+        if (!txs) return next();
+
+        // Fix tx confirmations for cached txs
+        self._getBlockchainHeight(network, function(err, height) {
+          if (err || !height) return next(err);
+          _.each(txs, function(tx) {
+            if (tx.blockheight >= 0) {
+              tx.confirmations = height - tx.blockheight + 1;
+            }
+          });
+          log.warn("After blockHeight check");
+          console.log(txs);
+          next();
+        });
+      },
+    ], function(err) {
+      if (err) return cb(err);
+
+      return cb(null, {
+        items: txs,
+        fromCache: fromCache
+      });
+    });
+  };
+
+  function tagLowFees(txs, cb) {
+    var unconfirmed = _.filter(txs, {
+      confirmations: 0
+    });
+    if (_.isEmpty(unconfirmed)) return cb();
+
+    self.getFeeLevels({
+      network: opts.network
+    }, function(err, levels) {
+      if (err) {
+        log.warn('Could not fetch fee levels', err);
+      } else {
+        var level = _.find(levels, {
+          level: 'superEconomy'
+        });
+        if (!level || !level.nbBlocks) {
+          log.debug('Cannot compute super economy fee level from blockchain');
+        } else {
+          var minFeePerKb = level.feePerKb;
+          _.each(unconfirmed, function(tx) {
+            tx.lowFees = tx.feePerKb < minFeePerKb;
+          });
+        }
+      }
+      return cb();
+    });
+  };
+
+  this.storage.fetchVaultByCopayerId(self.copayerId, opts.id, function (err, vault) {
+    console.log(vault.address);
+    
+    var address = new Bitcore.Address(vault.address).toString();
+    console.log(address);
+    var addresses = [address];
+      if (err) return cb(err);
+      if (addresses.length == 0) return cb(null, []);
+
+      var from = opts.skip || 0;
+      var to = from + opts.limit;
+
+
+      async.waterfall([
+
+        function(next) {
+          getNormalizedTxs(addresses, from, to, next);
+        },
+        function(txs, next) {
+          log.warn("Show me the juice of a spruce goose.");
+          console.log(txs);
+
+          if (_.isEmpty(txs.items)) {
+            return next(null, []);
+          }
+
+          // TODO: Re-evaluate this because we are already paginating our gets. 
+          // Fetch all proposals in [t - 7 days, t + 1 day]
+          var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
+          var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
+
+          
+          async.parallel([
+
+            function(done) {
+              self.storage.fetchTxs(self.walletId, {
+                minTs: minTs,
+                maxTs: maxTs
+              }, done);
+            },
+            function(done) {
+              self.storage.fetchTxNotes(self.walletId, {
+                minTs: minTs
+              }, done);
+            },
+          ], function(err, res) {
+            return next(err, {
+              txs: txs,
+              txps: res[0],
+              notes: res[1]
+            });
+          });
+        },
+      ], function(err, res) {
+        if (err) return cb(err);
+
+        log.warn("What happened after parallel?");
+        console.log(res);
+
+        if (!res.txs) {
+          var finalTxs = decorate([], addresses, [], []);
+          res.txs = { 
+            fromCache: false
+          };
+        } else {
+          var finalTxs = decorate(res.txs.items, addresses, res.txps, res.notes);
+        }
+
+        tagLowFees(finalTxs, function(err) {
+          if (err)
+            log.warn('Failed to tag unconfirmed with low fee');
+
+          if (res.txs && res.txs.fromCache)
+            log.debug("History from cache for:", self.walletId, from, to);
+
+          return cb(null, finalTxs, !!res.txs.fromCache);
+        });
+      });
+    });
+};
+
 WalletService.prototype.renewVault = function(opts, cb) {
   const self = this;
 

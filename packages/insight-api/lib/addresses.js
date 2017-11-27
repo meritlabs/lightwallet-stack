@@ -4,6 +4,7 @@ const bitcore = require('bitcore-lib');
 const async = require('async');
 const TxController = require('./transactions');
 const Common = require('./common');
+const _ = require('lodash');
 
 const COINBASE_MATURITY = bitcore.Block.COINBASE_MATURITY;
 
@@ -110,6 +111,10 @@ AddressController.prototype.check = function(req, res, next, addresses) {
     }, res);
   }
 
+  addresses = _.reject(addresses, function (addr) {
+    return _.isEmpty(addr);
+  });
+
   for(var i = 0; i < addresses.length; i++) {
     try {
       var a = new bitcore.Address(addresses[i]);
@@ -209,7 +214,10 @@ AddressController.prototype.multitxs = function(req, res, next) {
 
   options.to = parseInt(req.query.to) || parseInt(req.body.to) || parseInt(options.from) + 10;
 
+  console.log('before getAddressHistory');
+
   self.node.getAddressHistory(req.addrs, options, function(err, result) {
+    console.log('after getAddressHistory', err, result);
     if(err) {
       return self.common.handleErrors(err, res);
     }
@@ -217,6 +225,7 @@ AddressController.prototype.multitxs = function(req, res, next) {
     var transformOptions = self._getTransformOptions(req);
 
     self.transformAddressHistoryForMultiTxs(result.items, transformOptions, function(err, items) {
+      console.log('after transformAddressHistoryForMultiTxs', err, items);
       if (err) {
         return self.common.handleErrors(err, res);
       }
