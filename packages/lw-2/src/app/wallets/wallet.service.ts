@@ -357,9 +357,7 @@ export class WalletService {
           });
         }
         // No specific error matched above, run through the errorService callback filter.
-        return this.bwcErrorService.cb(err, prefix).then((msg) => {
-          return reject(new Error(msg));
-        });
+        return reject(new Error(this.bwcErrorService.cb(err, prefix)));
       });
     });
   }
@@ -930,9 +928,7 @@ export class WalletService {
         walletClient.joinWallet(opts.secret, opts.myName || 'me', {
         }, (err: any) => {
           if (err) {
-            return this.bwcErrorService.cb(err, 'Could not join wallet').then((msg: string) => { //TODO getTextCatalog
-              return reject(msg);
-            });
+            return reject(new Error(this.bwcErrorService.cb(err, 'Could not join wallet')));
           } else {
             return this.profileService.addAndBindWalletClient(walletClient, {
               bwsurl: opts.bwsurl
@@ -1308,7 +1304,7 @@ export class WalletService {
             return resolve(walletClient);
           });
         }).catch((err: any) => {
-          return reject(this.bwcErrorService.cb(err, 'Error creating wallet'));
+          return reject(new Error(this.bwcErrorService.cb(err, 'Error creating wallet')));
         });
       }, 5000);
     });
