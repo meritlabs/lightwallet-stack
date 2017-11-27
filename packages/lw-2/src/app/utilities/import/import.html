@@ -35,7 +35,7 @@
         <ion-item-divider translate>Options</ion-item-divider>
         <ion-item>
             <ion-label translate>Password</ion-label>
-            <ion-input text-right [(ngModel)]="formData.phrasePassword" [placeholder]="'Recovery phrase password (optional)'"></ion-input>
+            <ion-input text-right [(ngModel)]="formData.phrasePassword"  autocomplete="off" [placeholder]="'Recovery phrase password (optional)'"></ion-input>
         </ion-item>
 
         <ion-item>
@@ -78,7 +78,7 @@
         </ion-item>
         <ion-item>
             <ion-label translate>Password</ion-label>
-            <ion-input text-right [(ngModel)]="formData.filePassword" [placeholder]="'Your password'"></ion-input>
+            <ion-input text-right [(ngModel)]="formData.filePassword" type="password" autocomplete="off" [placeholder]="'File password'"></ion-input>
         </ion-item>
 
         <ion-item margin-bottom margin-top>
@@ -86,7 +86,7 @@
             <ion-input text-right [(ngModel)]="formData.bwsUrl"></ion-input>
         </ion-item>
 
-        <button class="action-button" margin-top block (click)="importBlob()" ion-button translate>Import</button>
+        <button class="action-button" margin-top block (click)="importBlob()" ion-button translate [disabled]="!fileImportAllowed()">Import</button>
 
     </span>
 

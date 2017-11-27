@@ -48,6 +48,7 @@ export class EditWalletView {
     let modal = this.modalCtrl.create('SelectColorView', {color: this.wallet.color});
     modal.onDidDismiss((color) => {
       if (color) {
+        this.wallet.color = color;
         let colorOpts = {colorFor: {}};
         colorOpts.colorFor[this.wallet.id] = color;
         this.configService.set(colorOpts);
@@ -83,7 +84,7 @@ export class EditWalletView {
               this.app.getRootNav().setRoot('WalletsView');
             }).catch((err) => {
               this.toastCtrl.create({
-                text: JSON.stringify(err),
+                message: JSON.stringify(err),
                 cssClass: ToastConfig.CLASS_ERROR
               })
             });

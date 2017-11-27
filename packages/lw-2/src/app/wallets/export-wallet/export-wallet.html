@@ -19,8 +19,8 @@
 <ion-content>
     <span  *ngIf="accessGranted">
 
-        <i class="wallet-icon default" item-start>
-            <img src="assets/img/icon-wallet.svg" >
+        <i class="wallet-icon default" [class.default]="!wallet.color">
+            <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
         </i>
         <h2>{{wallet.name}}</h2>
 
@@ -45,7 +45,8 @@
         </span>
         <span *ngIf="segment == 'code'">
 
-            <qr-code *ngIf="address" [value]="exportWalletInfo" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
+            <qr-code *ngIf="qrcode" [value]="qrcode" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
+            <br>
 
             From the destination device, go to Add wallet &gt; Import wallet and scan this QR code
 
