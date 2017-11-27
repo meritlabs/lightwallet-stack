@@ -913,7 +913,7 @@ export class ProfileService {
 
       return this.getWallets().then((w:MeritWalletClient[]) => {
         if (_.isEmpty(w)) {
-          return reject('No wallets available');
+          return resolve({txps: [], n: 0});
         }
   
         let txps = [];
