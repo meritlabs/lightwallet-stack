@@ -1045,8 +1045,8 @@ export class WalletService {
   };
 
   public encrypt(wallet: IMeritWalletClient, password:string): Promise<any> {
-    console.log("encrypting");
-    return Promise.resolve(wallet.encryptPrivateKey(password, {}));
+      wallet.encryptPrivateKey(password, {});
+      return this.profileService.updateCredentials(wallet.credentials);
   };
 
   public decrypt(wallet: MeritWalletClient, password:string): Promise<any> {

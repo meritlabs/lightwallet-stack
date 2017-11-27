@@ -1,5 +1,5 @@
 view-export-wallet {
-
+  text-align: center;
   .wallet-icon {
     text-align: center;
     padding-top: 20px;
@@ -16,6 +16,10 @@ view-export-wallet {
     &.default img {
       background: $wallet-default-color;
     }
+  }
+
+  qr-code {
+   display: block;
   }
 
   h2 {
