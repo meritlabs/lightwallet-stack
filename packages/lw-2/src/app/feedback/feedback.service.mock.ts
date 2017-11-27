@@ -1,6 +1,7 @@
+import * as Promise from 'bluebird';
 import { Injectable } from '@angular/core';
-import {Logger} from "merit/core/logger";
-import {Feedback} from "./feedback.model";
+import { Logger } from "merit/core/logger";
+import { Feedback } from "./feedback.model";
 
 @Injectable()
 export class FeedbackServiceMock {
@@ -14,15 +15,11 @@ export class FeedbackServiceMock {
   }
 
   public isFeedBackNeeded():Promise<boolean> {
-    return new Promise((rs, rj) => {
-      rs(true);
-    });
+    return Promise.resolve(true);
   }
 
   public sendFeedback(feedback:Feedback):Promise<any> {
-    return new Promise((rs, rj) => {
-      rs(true);
-    });
+    return Promise.resolve(true);
   }
 
 }
