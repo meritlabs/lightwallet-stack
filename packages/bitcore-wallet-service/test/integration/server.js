@@ -5830,7 +5830,7 @@ describe('Wallet service', function() {
               should.not.exist(err);
               notifications.length.should.equal(3);
               var types = _.map(notifications, 'type');
-              types.should.deep.equal(['TxProposalAcceptedBy', 'TxProposalFinallyAccepted', 'NewOutgoingTx']);
+              types.should.deep.equal(['TxProposalAcceptedBy', 'TxProposalFinallyAccepted', 'OutgoingTx']);
               done();
             });
           });
@@ -5860,7 +5860,7 @@ describe('Wallet service', function() {
               should.not.exist(err);
               notifications.length.should.equal(3);
               var types = _.map(notifications, 'type');
-              types.should.deep.equal(['TxProposalAcceptedBy', 'TxProposalFinallyAccepted', 'NewOutgoingTxByThirdParty']);
+              types.should.deep.equal(['TxProposalAcceptedBy', 'TxProposalFinallyAccepted', 'OutgoingTxByThirdParty']);
               done();
             });
           });

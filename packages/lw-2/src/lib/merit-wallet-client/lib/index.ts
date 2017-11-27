@@ -31,6 +31,7 @@ export class MeritClient extends Client implements IMeritClient {
   public Utils: any = Utils;
   public sjcl: any = sjcl;
   public Bitcore: Bitcore = Bitcore;
+  public sdsa:any;
 
   constructor(opts:any = {}) {
     super(opts);

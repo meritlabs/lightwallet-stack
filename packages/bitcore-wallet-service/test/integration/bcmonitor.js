@@ -75,7 +75,7 @@ describe('Blockchain monitor', function() {
         server.getNotifications({}, function(err, notifications) {
           should.not.exist(err);
           var notification = _.find(notifications, {
-            type: 'NewIncomingTx'
+            type: 'IncomingTx'
           });
           should.exist(notification);
           notification.walletId.should.equal(wallet.id);
@@ -105,7 +105,7 @@ describe('Blockchain monitor', function() {
           server.getNotifications({}, function(err, notifications) {
             should.not.exist(err);
             var notification = _.filter(notifications, {
-              type: 'NewIncomingTx'
+              type: 'IncomingTx'
             });
             notification.length.should.equal(1);
             done();

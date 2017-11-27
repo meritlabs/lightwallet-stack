@@ -2622,9 +2622,9 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
       txid: txp.txid,
     };
     if (opts.byThirdParty) {
-      self._notifyTxProposalAction('NewOutgoingTxByThirdParty', txp, extraArgs);
+      self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
     } else {
-      self._notifyTxProposalAction('NewOutgoingTx', txp, extraArgs);
+      self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);
     }
 
     self.storage.softResetTxHistoryCache(self.walletId, function() {
@@ -3071,6 +3071,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
     var useCache = addresses.length >= Defaults.HISTORY_CACHE_ADDRESS_THRESOLD;
     var network = Bitcore.Address(addresses[0].address).toObject().network;
 
+    fromCache = false;
+
     async.series([
 
       function(next) {
@@ -3080,8 +3082,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           if (err) return next(err);
           if (!res || !res[0]) return next();
 
-          log.warn("GNT: getTxHistoryCache");
-          log.warn(res);
           txs = res;
           fromCache = true;
 
@@ -3100,11 +3100,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
-          log.warn("GNT: getTransaction, raw");
-          console.log(rawTxs);
           txs = self._normalizeTxHistory(rawTxs);
-          log.warn("GNT: getTransaction, after normalization");
-          console.log(txs);
 
           totalItems = total;
           return next();
@@ -3552,9 +3548,22 @@ WalletService.prototype.createVault = function(opts, cb) {
 
   let vaultId = '';
 
+  const readableWhitelist = _.map(opts.whitelist, (wl) => {
+    let entry;
+    if (wl.data.length == 21) {
+      entry = Bitcore.Address.fromBuffer(new Buffer(wl.data)).toString();
+    } else {
+      entry = Bitcore.HDPublicKey.fromBuffer(new Buffer(wl.data)).toString();
+    }
+    return entry;
+  });
+  const toStore = _.cloneDeep(opts);
+  toStore.whitelist = readableWhitelist;
+  console.log(toStore);
+
   async.series([
     function(next) {
-      self.storage.storeVault(self.copayerId, opts, function(err, result) {
+      self.storage.storeVault(self.copayerId, toStore, function(err, result) {
         if (err) return cb(err);
 
         vaultId = result.insertedId;
@@ -3572,11 +3581,11 @@ WalletService.prototype.createVault = function(opts, cb) {
         if (err) return cb(err);
 
         txp.txid = txid;
-        opts.id = vaultId;
-        opts.coins[0] = txp;
-        opts.initialTxId = txid;
+        toStore.id = vaultId;
+        toStore.coins[0] = txp;
+        toStore.initialTxId = txid;
 
-        self.storage.updateVault(self.copayerId, opts, function(err, result) {
+        self.storage.updateVault(self.copayerId, toStore, function(err, result) {
           if (err) return cb(err);
   
           return next();
