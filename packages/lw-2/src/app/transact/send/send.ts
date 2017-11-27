@@ -191,6 +191,26 @@ export class SendView {
     return obj;
   }
 
+  private emptyContact = {
+      name: '',
+      phoneNumber: '',
+      email: '',
+      meritAddress: '',
+      sendMethod: ''
+  }
+
+  private justMeritAddress(meritAddress: string) {
+    return _.defaults({meritAddress: meritAddress, sendMethod: 'address'}, this.emptyContact);
+  }
+
+  private justPhoneNumber(phoneNumber: string) {
+    return _.defaults({phoneNumber: phoneNumber, sendMethod: 'sms'}, this.emptyContact);
+  }
+
+  private justEmail(email: string) {
+    return _.defaults({email: email, sendMethod: 'email'}, this.emptyContact);
+  }
+
   private openScanner(): void {
     let modal = this.modalCtrl.create('ImportScanView');
     modal.onDidDismiss((code) => {
@@ -225,7 +245,7 @@ export class SendView {
                 this.navCtrl.push('SendAmountView', {
                   wallet: wallets[0],
                   sending: true,
-                  address: search
+                  recipient: this.justMeritAddress(search)
                 });
               });
         } else {
@@ -248,15 +268,7 @@ export class SendView {
   }
 
   private goToAmount(item) {
-    return this.navCtrl.push('amount', {
-      recipientType: item.recipientType,
-      toAddress: item.meritAddress,
-      toName: item.name,
-      toEmail: item.email,
-      toPhoneNumber: item.phoneNumber,
-      sendMethod: item.sendMethod,
-      toColor: item.color
-    });
+    return this.navCtrl.push('SendAmountView', {recipient: item});
   }
 
   // TODO: Let's consider a better way to handle these multi-hop transitions.
