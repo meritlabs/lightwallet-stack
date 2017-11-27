@@ -172,6 +172,7 @@ class ByteString {
 
     constructor(value, private encoding) {
         this.hasBuffer = (typeof Buffer != 'undefined');
+        this.hasBuffer = false;
 
         if (this.hasBuffer && (value instanceof Buffer)) {
             this.value  = value; 
