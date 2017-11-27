@@ -163,8 +163,6 @@ ExpressApp.prototype.start = function(opts, cb) {
     opts = opts || {};
 
     var util = require('util');
-    log.warn("GSWA: Entry");
-    //log.warn(util.inspect(res, false, null, true));
   
 
     var credentials = getCredentials(req);
@@ -175,7 +173,6 @@ ExpressApp.prototype.start = function(opts, cb) {
       }), res, req);
     }
 
-    log.warn("GSWA: Past Cred Checek");
 
     var auth = {
       copayerId: credentials.copayerId,
@@ -197,9 +194,6 @@ ExpressApp.prototype.start = function(opts, cb) {
       req.walletId = server.walletId;
       req.copayerId = server.copayerId;
 
-      log.warn("GSWA: Pre-callback");
-      //log.warn(util.inspect(res, false, 3, true));
-      //log.warn(util.inspect(server, false, null, true));
       return cb(server);
     });
   };
