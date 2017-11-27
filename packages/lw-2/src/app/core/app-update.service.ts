@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import {Http} from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import {Logger} from "merit/core/logger";
 
 @Injectable()
@@ -8,7 +8,7 @@ export class AppUpdateService {
 
 
   constructor(
-    private http:Http,
+    private http:HttpClient,
     private logger:Logger
   ) {}
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import {Http} from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import {Feedback} from "./feedback.model";
 import {Logger} from "merit/core/logger";
 import {ConfigService} from "merit/shared/config.service";
@@ -10,7 +10,7 @@ import {ConfigService} from "merit/shared/config.service";
 export class FeedbackService {
 
   constructor(
-    private http:Http,
+    private http:HttpClient,
     private logger:Logger,
     private configService:ConfigService
   ) {
