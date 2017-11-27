@@ -1,6 +1,7 @@
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpModule, Http } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { FCM } from '@ionic-native/fcm';
@@ -19,7 +20,8 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { AppService } from 'merit/core/app-settings.service';
 import { TransactModule } from 'merit/transact/transact.module';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { TouchID } from '@ionic-native/touch-id';
 import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
@@ -38,6 +40,7 @@ import { DeepLinkService } from "merit/core/deep-link.service";
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 
 import { LedgerService } from 'merit/shared/ledger.service';
+import { PushNotificationsService } from 'merit/core/push-notification.service';
 
 /* 
   The core module exists to make commonly used singleton services available 
@@ -46,8 +49,8 @@ import { LedgerService } from 'merit/shared/ledger.service';
   to evolve the application.
 */
 
-export function createTranslateLoader(http: Http) {
-    return new TranslatePoHttpLoader(http, 'assets/i18n', '.po');
+export function createTranslateLoader(http: HttpClient) {
+    return new TranslateHttpLoader(http, 'assets/i18n');
   }
 
   // Ideally, we can remove the transaction dependency.
@@ -55,12 +58,12 @@ export function createTranslateLoader(http: Http) {
     imports: [
         CommonModule,
         TransactModule,
-        HttpModule,
+        HttpClientModule,
         TranslateModule.forRoot({
             loader: {
               provide: TranslateLoader,
               useFactory: createTranslateLoader,
-              deps: [Http]
+              deps: [HttpClient]
             }
           })        
     ],
@@ -97,6 +100,8 @@ export function createTranslateLoader(http: Http) {
         WalletService,
         MnemonicService,
         CreateVaultService,
+        PushNotificationsService,
+        HttpClient,
         FCM,
         {
             provide: APP_INITIALIZER,
