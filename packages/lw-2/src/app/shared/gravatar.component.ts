@@ -18,9 +18,9 @@ export class GravatarComponent {
     public emailHash: string;
 
     ngOnInit() {
-      this.emailHash = Md5.hashStr(this.email.toLowerCase() || '').toString();
+      if(this.email) {
+        this.emailHash = Md5.hashStr(this.email.toLowerCase() || '').toString();
+      }
     }
-
-
 
 }

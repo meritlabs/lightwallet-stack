@@ -4,6 +4,8 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { ToastConfig } from "merit/core/toast.config";
 import { MeritToastController } from "merit/core/toast.controller";
 import * as Promise from 'bluebird';
+import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
+import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 
 
 // Unlock view for wallet
@@ -19,20 +21,30 @@ export class UnlockView {
   public unlockState:'success'|'fail';
   public formData = {unlockCode: ''};
 
+  public easyReceipt:EasyReceipt;
+
   constructor(
     private app:App,
     private walletService: WalletService,
     private toastCtrl: MeritToastController,
     private loaderCtrl: LoadingController, 
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private easyReceiveService:EasyReceiveService
   ) {
+      
   }
 
   ionViewDidLoad() {
-    //do something here
+    
+    this.easyReceiveService.getPendingReceipts().then((receipts) => {
+      this.easyReceipt = receipts.pop();
+      if (this.easyReceipt) this.formData.unlockCode = this.easyReceipt.unlockCode;
+    });
+
   }
 
   createAndUnlockWallet(): Promise<any> {
+    
     return new Promise((resolve, reject) => {
 
       if (!this.formData.unlockCode) {
@@ -48,6 +60,8 @@ export class UnlockView {
 
           /** todo store wallet */
 
+          // this.app.getRootNav().setRoot('TransactView');
+          // this.app.getRootNav().popToRoot('TransactView');
           this.navCtrl.push('TransactView');
           return resolve(wallet);
         }).catch((err) => {

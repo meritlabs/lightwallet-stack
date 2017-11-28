@@ -236,8 +236,8 @@ AddressController.prototype.transformAddressHistoryForMultiTxs = function(txinfo
 
   var items = txinfos.map(function(txinfo) {
     return txinfo.tx;
-  }).filter(function(value, index, self) {
-    return self.indexOf(value) === index;
+  }).filter(function(value, index, itemArr) {
+    return itemArr.indexOf(value) === index;
   });
 
   async.map(
