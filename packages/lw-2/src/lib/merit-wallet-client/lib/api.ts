@@ -1082,6 +1082,9 @@ export class API implements IAPI {
           tx.inputs[tx.inputs.length-1].setScript(inputScript);
         });
 
+        tx.version = 4;
+        tx.addressType = 'PP2SH';
+
         // Make sure the tx can be serialized
         tx.serialize();
 
@@ -2104,23 +2107,25 @@ export class API implements IAPI {
    * @returns {Callback} cb - Return error or null
    */
   publishTxProposal(opts: any): Promise<any> {
-    $.checkState(this.credentials && this.credentials.isComplete());
+    console.log('publishTxProposal', this.credentials, opts);
+    $.checkState(this.credentials && this.credentials.isComplete(), 'no authorization data');
     $.checkArgument(opts)
-    $.checkArgument(opts.txp);
+    $.checkArgument(opts.txp, 'txp is required');
 
     $.checkState(parseInt(opts.txp.version) >= 3);
+    console.log('after checks');
 
     let t = Utils.buildTx(opts.txp);
+    console.log('after utils');
     let hash = t.uncheckedSerialize();
     let args = {
       proposalSignature: Utils.signMessage(hash, this.credentials.requestPrivKey)
     };
+    console.log('before tx submit');
 
     let url = '/v1/txproposals/' + opts.txp.id + '/publish/';
     return this._doPostRequest(url, args).then((txp) => {
-      return this._processTxps(txp).then(() => {
-        return Promise.resolve(txp);
-      });
+      return this._processTxps(txp);
     }).catch((err) => {
       return Promise.reject(new Error('error in post /v1/txproposals/' + err));
     });

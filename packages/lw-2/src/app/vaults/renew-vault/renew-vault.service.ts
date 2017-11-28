@@ -28,6 +28,8 @@ export class RenewVaultService {
     renewVault(vault: any, masterKey: any): Promise<any> {
         console.log('vault to renew', vault);
         console.log('master key', masterKey);
+        let transaction = null;
+        let pwd = '';
         return this.profileService.getHeadWalletClient().then((walletClient) => {
           if (!this.walletClient) {
               this.walletClient = walletClient;
@@ -42,22 +44,26 @@ export class RenewVaultService {
             console.log(coins);
     
             let network = this.walletClient.credentials.network;
-            let dummyKey = this.bitcore.PrivateKey.fromRandom(network);
+            let dummyKey = this.bitcore.PrivateKey.fromRandom(network); // ToDo: change me?
     
-            let tx = this.walletClient.buildRenewVaultTx(coins, vault, masterKey, {network: network});
+            let tx = this.walletClient.buildRenewVaultTx(coins, vault, dummyKey, {network: network});
     
             console.log("RENEW TX");
             console.log(tx);
             return tx;
         }).then((txp) => {
-            return this.walletService.prepare(this.walletClient).then((password: string) => {
-              return { password: password, txp: txp};
-            });
+            transaction = txp;
+            return this.walletService.prepare(this.walletClient);
+        }).then((password: string) => {
+            pwd = password;
+            return { password: password, txp: transaction };
         }).then((args: any) => {
-            return this.walletService.publishTx(this.walletClient, args.txp).then((pubTxp)=> {
-              return { password: args.password, txp: pubTxp};
-            });
+            console.log('publish:', args);
+            return this.walletService.publishTx(this.walletClient, args.txp);
+        }).then((pubTxp) => {
+            return { password: pwd, txp: pubTxp};
         }).then((args: any) => {
+            console.log('sign:', args, args.txp, args.password);
             return this.walletService.signTx(this.walletClient, args.txp, args.password);
         }).then((txp) => {
             return this.walletClient.broadcastRawTx(txp);

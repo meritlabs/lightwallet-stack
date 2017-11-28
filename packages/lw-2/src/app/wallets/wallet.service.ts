@@ -778,11 +778,11 @@ export class WalletService {
     return new Promise((resolve, reject) => {
       if (_.isEmpty(txp) || _.isEmpty(wallet))
         return reject(new Error('MISSING_PARAMETER'));
-      return resolve(wallet.publishTxProposal({
+      return wallet.publishTxProposal({
         txp: txp
-      }));
+      });
     }).catch((err) => {
-      Promise.reject(new Error('error publishing tx: ' + err));
+      return Promise.reject(new Error('error publishing tx: ' + err));
     });
   }
 
