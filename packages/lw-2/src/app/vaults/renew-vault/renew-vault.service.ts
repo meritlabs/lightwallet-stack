@@ -28,8 +28,7 @@ export class RenewVaultService {
     renewVault(vault: any, masterKey: any): Promise<any> {
         console.log('vault to renew', vault);
         console.log('master key', masterKey);
-        let transaction = null;
-        let pwd = '';
+
         return this.profileService.getHeadWalletClient().then((walletClient) => {
           if (!this.walletClient) {
               this.walletClient = walletClient;
@@ -50,23 +49,10 @@ export class RenewVaultService {
     
             console.log("RENEW TX");
             console.log(tx);
-            return tx;
-        }).then((txp) => {
-            transaction = txp;
-            return this.walletService.prepare(this.walletClient);
-        }).then((password: string) => {
-            pwd = password;
-            return { password: password, txp: transaction };
-        }).then((args: any) => {
-            console.log('publish:', args);
-            return this.walletService.publishTx(this.walletClient, args.txp);
-        }).then((pubTxp) => {
-            return { password: pwd, txp: pubTxp};
-        }).then((args: any) => {
-            console.log('sign:', args, args.txp, args.password);
-            return this.walletService.signTx(this.walletClient, args.txp, args.password);
-        }).then((txp) => {
-            return this.walletClient.broadcastRawTx(txp);
+            console.log('Serialized: ', tx.serialize());
+            return { rawTx: tx, network: network };
+        }).then((tx) => {
+            return this.walletClient.broadcastRawTx(tx);
         }).catch((err) => {
             console.log('Error while renewing vault:', err);
             throw err;
