@@ -149,7 +149,7 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br) {
   info.bits = br.readUInt32LE();
   info.nonce = br.readUInt32LE();
   info.edgesBits = br.readUInt8(8);
-  info.edgesRatio = br.readUInt8(8);
+  info.edgesRatio = br.readUInt16LE();
 
   const cycleNonces = br.readVarintNum();
   info.cycle = [];
