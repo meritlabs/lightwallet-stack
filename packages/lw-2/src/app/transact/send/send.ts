@@ -104,7 +104,7 @@ export class SendView {
       let cl = _.map(ab, (v:any, k) => {
         let item:any = {
           name: _.isObject(v) ? v.name : v,
-          meritaddress: k,
+          meritAddress: k,
           email: _.isObject(v) ? v.email : null,
           phoneNumber: _.isObject(v) ? v.phoneNumber : null,
           sendMethod: 'address',
