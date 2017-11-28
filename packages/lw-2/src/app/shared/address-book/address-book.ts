@@ -16,7 +16,8 @@ import { Logger } from 'merit/core/logger';
 })
 export class AddressBookView {
 
-  addressBook: AddressBook;
+  loading:boolean;
+  contacts:Array<any> = [];
 
   constructor(
     public navCtrl: NavController,
@@ -26,26 +27,30 @@ export class AddressBookView {
   ) {
   }
 
-  async ionViewWillEnter() {
-    await this.updateAddressBook().then(() => {
-      this.logger.warn('got addressbook:');
-      this.logger.warn(this.addressBook);
+  ionViewWillEnter() {
+    this.loading = true;
+    this.updateContacts().then(() => {
+      this.loading = false;
+    })
+  }
+
+  private updateContacts() {
+    return new Promise((resolve, reject) => {
+      this.addressBookService.getAddressbook('testnet').then((addressbook) => {
+        this.contacts  = _.map(addressbook, (value) => value);
+        resolve();
+      });
     });
   }
 
-  getContactList(): MeritContact[] {
-    return _.map(this.addressBook, (value) => value);
-  }
-
-  updateAddressBook(): Promise<void> {
-    return this.addressBookService.list('testnet').then((addressBook) => {
-      this.addressBook = addressBook;
-      return Promise.resolve();
+  doRefresh(refresher) {
+    this.updateContacts().then(() => {
+      refresher.complete()
     });
   }
 
   hasContacts(): boolean {
-    return !_.isEmpty(this.addressBook);
+    return !_.isEmpty(this.contacts);
   }
 
   toAddContact() {

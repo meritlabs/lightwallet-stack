@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { MeritContact, isValidMeritContact, emptyMeritContact } from "merit/shared/address-book/contact/contact.model";
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { Logger } from 'merit/core/logger';
@@ -21,6 +21,7 @@ export class AddContactView {
     private addressBookService: AddressBookService,
     private logger: Logger,
     private popupService: PopupService,
+    private modalCtrl:ModalController
   ) {
     this.contact = emptyMeritContact();
   }
@@ -32,8 +33,14 @@ export class AddContactView {
     return isValidMeritContact(this.contact);
   }
 
-  openQrScanner() {
-
+  openScanner() {
+    let modal = this.modalCtrl.create('ImportScanView');
+    modal.onDidDismiss((address) => {
+      if (address) {
+        this.contact.meritAddress = address;
+      }
+    });
+    modal.present();
   }
 
   async add() {

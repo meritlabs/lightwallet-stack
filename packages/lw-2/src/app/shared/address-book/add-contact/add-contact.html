@@ -21,10 +21,10 @@
             <ion-label translate>Phone Number</ion-label>
             <ion-input text-right [(ngModel)]="contact.phoneNumber"></ion-input>
         </ion-item>
-        <ion-item>
+        <ion-item class="address-item">
             <ion-label translate>Merit Address</ion-label>
             <ion-input text-right [(ngModel)]="contact.meritAddress"></ion-input>
-            <button class="scan-button">
+            <button class="scan-button" item-end>
                 <button (click)="openScanner()" ion-button icon-only item-right clear >
                     <ion-icon name="qr-scanner"  color="primary"></ion-icon>
                 </button>

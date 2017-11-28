@@ -14,8 +14,9 @@
 
 <ion-content>
 
+    <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
-    <ion-card *ngIf="!hasContacts()" padding>
+    <ion-card *ngIf="!loading && !hasContacts()" padding>
         <div translate>
 
             <div class="icon">
@@ -26,9 +27,18 @@
         </div>
     </ion-card>
 
-        <div class="control-buttons">
-            <button  (click)="toAddContact()" ion-button >Add contact</button>
-        </div>
+    <div class="control-buttons" *ngIf="!hasContacts()">
+        <button  (click)="toAddContact()" ion-button >Add contact</button>
+    </div>
+
+    <ion-list *ngIf="hasContacts()">
+        <button ion-item *ngFor="let contact of contacts">
+            <ion-avatar class="icon big-icon-svg" item-left>
+                <gravatar class="send-gravatar" [name]="contact.name" width="30" height="30" [email]="contact.email" ></gravatar>
+            </ion-avatar>
+            <h4>{{contact.name}}</h4>
+        </button>
+    </ion-list>
 
 
 </ion-content>
