@@ -71,7 +71,7 @@ export class ImportView {
       if (words) {
         this.formData.words = words;
       }
-    })
+    });
     modal.present();
   }
 

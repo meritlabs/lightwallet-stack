@@ -23,12 +23,6 @@ export class SessionLogView {
   }
 
   ionViewDidLoad() {
-    //TODO TEMP!
-    this.logger.error('test', 'test');
-    this.logger.warn('test', 'test');
-    this.logger.info('test', 'test');
-    this.logger.debug('test', 'test');
-
 
     this.filterLogs();
   }
