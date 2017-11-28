@@ -45,7 +45,7 @@ export class SettingsView {
   }
 
   toAddressbook() {
-    this.navCtrl.push('AddressbookView');
+    this.navCtrl.push('AddressBookView');
   }
 
   logout() {
