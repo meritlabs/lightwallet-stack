@@ -215,7 +215,7 @@ export module Utils {
     }
 
     console.log(txp);
-    t.fee(txp._fee);
+    t.fee(txp.fee);
     t.change(txp.changeAddress.address);
 
     // Shuffle outputs for improved privacy
