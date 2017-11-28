@@ -67,12 +67,9 @@ export class VaultDetailsView {
           const name = w.name || w._id;
           return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
         });
-
-
-
       }),
       // fetch users vaults
-      this.getAllWVaults().then((vaults) => {
+      this.getAllVaults().then((vaults) => {
         return _.map(vaults, (v) => {
           const name = v.name || v._id;
           const key = new this.bitcore.Address(v.address).toString();
@@ -120,7 +117,7 @@ export class VaultDetailsView {
     return wallets;
   }
 
-  private getAllWVaults(): Promise<Array<any>> {
+  private getAllVaults(): Promise<Array<any>> {
     return this.profileService.getWallets().then((ws) => {
       if (_.isEmpty(ws)) {
         Promise.resolve(null); //ToDo: add proper error handling;

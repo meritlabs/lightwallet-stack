@@ -27,15 +27,15 @@ export class TxDetailsView {
     private profileService: ProfileService,
     private logger:Logger 
   ) {
-    this.wallet = this.walletService.getWallet(this.navParams.get('data.walletId'));
+    this.wallet = this.walletService.getWallet(this.navParams.get('walletId'));
     this.tx = {};
     this.confirmations = null;
   }
 
   ionViewDidEnter() {
-    const txid = this.navParams.data.txid;
+    const txId = this.navParams.get('txId');
 
-    this.walletService.getTx(this.wallet, txid).then((tx) => {
+    this.walletService.getTx(this.wallet, txId).then((tx) => {
       this.tx = tx;
       if (this.tx.action == 'sent') this.title = 'Sent Funds';
       if (this.tx.action == 'received') this.title = 'Received Funds';
