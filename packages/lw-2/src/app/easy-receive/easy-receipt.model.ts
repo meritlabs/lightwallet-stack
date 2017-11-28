@@ -1,6 +1,11 @@
 export class EasyReceipt  {
 
-  senderName: '';
+  unlockCode:string;
+  senderName:string;
+  secret:string;
+  senderPublicKey:string;
+  blockTimeout:number;
+  deepLinkURL:string;
   checkPassword:boolean;
 
   constructor(fields:any) {
@@ -8,5 +13,14 @@ export class EasyReceipt  {
       this[f] = fields[f];
     }
   } 
+  
+  isValid() {
+    return (
+      this.unlockCode 
+      && this.senderPublicKey 
+      && this.secret 
+      && this.blockTimeout
+    );
+  }
 
 }

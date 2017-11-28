@@ -98,6 +98,11 @@ ion-item textarea {
   }
 }
 
+.invalid-input-prompt input {
+  background: color($colors, 'danger') !important;
+  color: white !important; 
+}
+
 // Variables
 $v-dark-gray:                                        #445 !default;
 $v-tab-send-icon:                                    url('../img/tab-icons/ico-send.svg') !default;

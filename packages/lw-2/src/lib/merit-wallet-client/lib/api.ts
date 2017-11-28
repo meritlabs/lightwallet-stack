@@ -1,28 +1,24 @@
 import * as _ from 'lodash';
 import * as Promise from 'bluebird';
+import * as util from 'util';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { Common } from './common';
 import { Logger } from "./log";
 import { Credentials } from './credentials';
 import { ErrorTypes as Errors } from './errors';
+import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 
 const $ = require('preconditions').singleton();
 let EventEmitter = require('eventemitter3');
-let util = require('util');
-let async = require('async');
 let Bitcore = require('bitcore-lib');
 let Mnemonic = require('bitcore-mnemonic');
-let sjcl = require('sjcl');
-let url = require('url');
 let querystring = require('querystring');
-let Stringify = require('json-stable-stringify');
 let Bip38 = require('bip38');
 
 let request = require('superagent');
 
 let Constants = Common.Constants;
-let Defaults = Common.Defaults;
 let Utils = Common.Utils;
 
 let Package = require('../../../../package.json');
@@ -295,7 +291,6 @@ export class API implements IAPI {
         }
 
         return Promise.each(notifications, (notification) => {
-          this.log.info("Emitting a notification event.  Does anyone care?");    
           this.eventEmitter.emit('notification', notification);
           return Promise.resolve();
         });
@@ -304,8 +299,6 @@ export class API implements IAPI {
   }
     
   _initNotifications(opts: any = {}): any {
-    this.log.warn("Initializing notifications with opts: ");
-    console.log(opts);
     const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode; pollutes request stream..  
     this.notificationsIntervalId = setInterval(() => {
       this._fetchLatestNotifications(interval).catch((err) => {
@@ -871,7 +864,7 @@ export class API implements IAPI {
    * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
    * @param {Callback}    cb
    */
-  buildEasySendScript(opts:any = {}): Promise<any> {
+  buildEasySendScript(opts:any = {}): Promise<EasySend> {
     return new Promise((resolve, reject) => {
       
       let result:any = {}
@@ -1740,17 +1733,21 @@ export class API implements IAPI {
 
       // Create wallet
       return this._doPostRequest('/v1/wallets/', args).then((res) => {
-        let walletId = res.walletId;
-        let walletShareCode = res.shareCode;
-        let walletCodeHash = res.codeHash;
-        c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
+        if (res) {
+          let walletId = res.walletId;
+          let walletShareCode = res.shareCode;
+          let walletCodeHash = res.codeHash;
+          c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
 
 
-        let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
+          let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
-        return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then((wallet) => {
+          return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then((wallet) => {
             return resolve(n > 1 ? secret : null);
           });
+        } else {
+          return reject('Error: '+res);
+        }
       });
     });    
   };
@@ -2754,11 +2751,8 @@ export class API implements IAPI {
   getVaults() {
     $.checkState(this.credentials);
 
-    var self = this;
-
     var url = '/v1/vaults/';
     return this._doGetRequest(url);
-
   };
 
   createVault(vaultTxProposal: any) {

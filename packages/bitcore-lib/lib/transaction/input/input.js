@@ -58,6 +58,7 @@ Input.prototype._fromObject = function(params) {
   } else {
     prevTxId = params.prevTxId;
   }
+  this.witnesesses = [];
   this.output = params.output ?
     (params.output instanceof Output ? params.output : new Output(params.output)) : undefined;
   this.prevTxId = prevTxId || params.txidbuf;
@@ -191,6 +192,21 @@ Input.prototype.isNull = function() {
 
 Input.prototype._estimateSize = function() {
   return this.toBufferWriter().toBuffer().length;
+};
+
+Input.prototype.hasWitnesses = function() {
+  if (this.witnesses && this.witnesses.length >0) {
+    return true;
+  }
+  return false; 
+}
+
+Input.prototype.getWitnesses = function () {
+  return this.witnesses;
+};
+
+Input.prototype.setWitnesses = function(witnesses) {
+  this.witnesses = witnesses;
 };
 
 module.exports = Input;

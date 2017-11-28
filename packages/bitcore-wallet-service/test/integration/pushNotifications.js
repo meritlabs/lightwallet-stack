@@ -95,7 +95,7 @@ describe('Push notifications', function() {
           should.not.exist(err);
 
           // Simulate incoming tx notification
-          server._notify('NewIncomingTx', {
+          server._notify('IncomingTx', {
             txid: '999',
             address: address,
             amount: 12300000,
@@ -122,7 +122,7 @@ describe('Push notifications', function() {
         should.not.exist(err);
 
         // Simulate incoming tx notification
-        server._notify('NewIncomingTx', {
+        server._notify('IncomingTx', {
           txid: '999',
           address: address,
           amount: 12300000,
@@ -143,7 +143,7 @@ describe('Push notifications', function() {
         should.not.exist(err);
 
         // Simulate incoming tx notification
-        server._notify('NewIncomingTx', {
+        server._notify('IncomingTx', {
           txid: '999',
           address: address,
           amount: 12300000,
@@ -250,7 +250,7 @@ describe('Push notifications', function() {
           should.not.exist(err);
 
           // Simulate incoming tx notification
-          server._notify('NewIncomingTx', {
+          server._notify('IncomingTx', {
             txid: '999',
             address: address,
             amount: 12300000,
@@ -285,7 +285,7 @@ describe('Push notifications', function() {
         should.not.exist(err);
 
         // Simulate incoming tx notification
-        server._notify('NewIncomingTx', {
+        server._notify('IncomingTx', {
           txid: '999',
           address: address,
           amount: 12300000,
@@ -307,7 +307,7 @@ describe('Push notifications', function() {
         should.not.exist(err);
 
         // Simulate incoming tx notification
-        server._notify('NewIncomingTx', {
+        server._notify('IncomingTx', {
           txid: '999',
           address: address,
           amount: 12300000,

@@ -1,0 +1,57 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>Export Wallet</ion-title>
+    </ion-navbar>
+    <ion-toolbar color="secondary">
+        <ion-segment [(ngModel)]="segment">
+            <ion-segment-button value="file">
+                File/Text
+            </ion-segment-button>
+            <ion-segment-button value="code">
+                QR Code
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+    <span  *ngIf="accessGranted">
+
+        <i class="wallet-icon default" item-start>
+            <img src="assets/img/icon-wallet.svg" >
+        </i>
+        <h2>{{wallet.name}}</h2>
+
+        <span *ngIf="segment == 'file'">
+
+            <ion-item>
+                <ion-label>Set up password</ion-label>
+                <ion-input type="password" [(ngModel)]="formData.password" text-right></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>Repeat password</ion-label>
+                <ion-input type="password" [(ngModel)]="formData.repeatPassword" text-right></ion-input>
+            </ion-item>
+
+            <div class="control-buttons" margin>
+                <button ion-button [disabled]="!saveEnabled()" translate (click)="download()">
+                    Download
+                </button>
+            </div>
+
+        </span>
+        <span *ngIf="segment == 'code'">
+
+            <qr-code *ngIf="address" [value]="exportWalletInfo" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
+
+            From the destination device, go to Add wallet &gt; Import wallet and scan this QR code
+
+        </span>
+
+    </span>
+
+
+</ion-content>
