@@ -203,9 +203,10 @@ export module Utils {
         $.checkState(o.script || o.toAddress, 'Output should have either toAddress or script specified');
         console.log('address check passed');
         if (o.script) {
+          $.checkState(o.amount || o.micros, 'Output should have either amount or micros specified');
           t.addOutput(new Bitcore.Transaction.Output({
             script: o.script,
-            micros: o.amount
+            micros: o.amount || o.micros,
           }));
         } else {
           t.to(o.toAddress, o.amount);
@@ -213,7 +214,8 @@ export module Utils {
       });
     }
 
-    t.fee(txp.fee);
+    console.log(txp);
+    t.fee(txp._fee);
     t.change(txp.changeAddress.address);
 
     // Shuffle outputs for improved privacy
