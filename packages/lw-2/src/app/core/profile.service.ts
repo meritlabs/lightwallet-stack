@@ -774,6 +774,15 @@ export class ProfileService {
 
   }
 
+  public getHeadWalletClient(): Promise<any> {
+    return this.getWallets().then((ws) => {
+      if (_.isEmpty(ws)) {
+        Promise.resolve(null);
+      }
+      return _.head(ws);
+    });
+  }
+
   public getWallet(walletId: string): MeritWalletClient {
     return this.wallets[walletId];
   }

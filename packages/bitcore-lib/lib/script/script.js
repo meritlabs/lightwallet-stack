@@ -194,9 +194,6 @@ Script.fromString = function(str) {
     var opcode = Opcode(token);
     var opcodenum = opcode.toNumber();
 
-    console.log("OPCODE:", token);
-    console.log("opcodenum:", opcodenum);
-
     if (_.isUndefined(opcodenum)) {
       opcodenum = parseInt(token);
       if (opcodenum > 0 && opcodenum < Opcode.OP_PUSHDATA1) {
@@ -207,9 +204,6 @@ Script.fromString = function(str) {
         });
         i = i + 2;
       } else {
-        console.log("BAD OPCODE!!!!");
-        console.log(token);
-        console.log(opcodenum);
         throw new Error('Invalid script: ' + JSON.stringify(str));
       }
     } else if (opcodenum === Opcode.OP_PUSHDATA1 ||
@@ -891,8 +885,6 @@ Script.buildSimpleVaultScript = function(tag) {
   $.checkArgument(tag, 'Tag must be present');
 
   var s = new Script();
-  console.log('before tag b', tag);
-  // var tagBytes = BN.fromString(tag);
 
   s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] <tag>| 
    .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] | 
@@ -944,6 +936,24 @@ Script.buildSimpleVaultScript = function(tag) {
    .add(Opcode.      OP_EQUAL                )// <bool> | [addresses]
    .add(Opcode. OP_ENDIF);
 
+  return s;
+};
+
+/**
+ * Build a vault input which selects mode
+ * be one of the public keys used in the easysend out script.
+ * @param {buffer} signature to be append to the script
+ * @returns {Script}
+ */
+Script.buildVaultRenewIn = function(signature, vaultScript) {
+  var s = new Script();
+  var sigBuf = BufferUtil.concat([
+    signature.toDER(),
+    BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)
+  ]);
+  s.add(sigBuf);
+  s.add(Opcode.smallInt(1)); //renew mode is 1
+  s.add(vaultScript.toBuffer());
   return s;
 };
 
@@ -1103,6 +1113,8 @@ Script.fromAddress = function(address) {
     return Script.buildScriptHashOut(address);
   } else if (address.isPayToPublicKeyHash()) {
     return Script.buildPublicKeyHashOut(address);
+  } else if (address.isParameterizedPayToScriptHash()) {
+    return new Script();
   }
   throw new errors.Script.UnrecognizedAddress(address);
 };
