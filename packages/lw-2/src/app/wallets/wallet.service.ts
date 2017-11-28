@@ -778,6 +778,7 @@ export class WalletService {
     return new Promise((resolve, reject) => {
       if (_.isEmpty(txp) || _.isEmpty(wallet))
         return reject(new Error('MISSING_PARAMETER'));
+        
       return wallet.publishTxProposal({
         txp: txp
       });

@@ -16,6 +16,7 @@ function Output(args) {
   if (!(this instanceof Output)) {
     return new Output(args);
   }
+  console.log('output constructor', args);
   if (_.isObject(args)) {
     this.micros = args.micros;
     if (bufferUtil.isBuffer(args.script)) {
@@ -55,6 +56,7 @@ Object.defineProperty(Output.prototype, 'micros', {
     return this._micros;
   },
   set: function(num) {
+    console.log('output setter', num);
     if (num instanceof BN) {
       this._microsBN = num;
       this._micros = num.toNumber();

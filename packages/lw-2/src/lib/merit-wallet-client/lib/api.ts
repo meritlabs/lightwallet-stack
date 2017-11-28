@@ -1062,10 +1062,10 @@ export class API implements IAPI {
 
         tx.addOutput(new Bitcore.Transaction.Output({
           script: scriptPubKey,
-          micros: amount
+          micros: amount,
         }));
 
-        tx.fee(fee)
+        tx.fee(fee);
 
         _.each(utxos, (utxo) => {
           tx.addInput(

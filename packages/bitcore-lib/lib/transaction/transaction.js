@@ -661,6 +661,7 @@ Transaction.prototype.hasAllUtxoInfo = function() {
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.fee = function(amount) {
+  console.log('fee', amount);
   $.checkArgument(_.isNumber(amount), 'amount must be a number');
   this._fee = amount;
   this._updateChangeOutput();
@@ -676,6 +677,7 @@ Transaction.prototype.fee = function(amount) {
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.feePerKb = function(amount) {
+  console.log('feePerKb', amount);
   $.checkArgument(_.isNumber(amount), 'amount must be a number');
   this._feePerKb = amount;
   this._updateChangeOutput();
