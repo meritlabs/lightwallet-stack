@@ -52,8 +52,6 @@ export class WalletDetailsView {
     this.logger.warn("GEtting history)");
     this.walletService.getTxHistory(this.wallet, {force: force}).then((walletHistory) => {
       this.wallet.completeHistory = walletHistory;
-      this.logger.warn("@@@@");
-      this.logger.warn(this.wallet.completeHistory);
     }).catch((err) => {
       console.log(err);
     });
@@ -66,7 +64,7 @@ export class WalletDetailsView {
   }
 
   private goToTxDetails(tx: any) {
-    this.navCtrl.push('TxDetailsView', {walletId: this.wallet.credentials.walletId, txid: tx.txid});
+    this.navCtrl.push('TxDetailsView', {walletId: this.wallet.credentials.walletId, txId: tx.txid});
   }
 
   goToEditWallet() {

@@ -151,7 +151,7 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
         };
 
         var notification = Notification.create({
-          type: 'NewOutgoingTxByThirdParty',
+          type: 'OutgoingTxByThirdParty',
           data: args,
           walletId: walletId,
         });
@@ -185,7 +185,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
       if (!address || address.isChange) return next();
 
       var walletId = address.walletId;
-      var notificationType = data.isCoinbase ? 'NewIncomingCoinbase' : 'NewIncomingTx';
+      var notificationType = data.isCoinbase ? 'IncomingCoinbase' : 'IncomingTx';
       
       log.info(notificationType + ' for wallet ' + walletId + ' [' + out.amount + 'micros -> ' + out.address + ']');
 

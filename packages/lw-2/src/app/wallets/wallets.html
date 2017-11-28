@@ -46,18 +46,27 @@
         <button ion-button clear item-right><ion-icon name="link"></ion-icon></button>
     </ion-item>
 
+    <div >
 
-    <ion-item-divider translate>
-        Network
-    </ion-item-divider>
+        <ion-item-divider translate>
+            Network
+        </ion-item-divider>
 
-    <ion-item >
-        <i class="wallet-icon default" item-start>
-            <img src="assets/img/icon-wallet.svg" >
-        </i>
-        <h2 translate>Total value of your network</h2>
-        {{totalAmountFormatted}}
-    </ion-item>
+        <ion-list class="network">
+            <ion-item>
+                <i class="wallet-icon default" item-start>
+                    <img src="assets/img/icon-wallet.svg" >
+                </i>
+                <h2 translate>Total value of your network</h2>
+                <div class="detail">
+                    <div class="amount">{{totalNetworkValueMicros}}</div>
+                    <div class="detail-fiat">
+                            {{totalNetworkValueFiat}}
+                    </div>
+                </div>
+            </ion-item>
+        </ion-list>
+    </div>
 
     <span *ngIf="txpsData?.txpsN && addressbook|async">
         <ion-item-divider translate >
@@ -93,65 +102,10 @@
     </span>
 
 
-    <span *ngIf="recentTransactionsEnabled && recentTransactions?.total">
-        <ion-item-divider translate >
-            Recent Transactions
-            <ion-badge item-right>{{recentTransactions?.total}}</ion-badge>
-        </ion-item-divider>
-        <ion-list>
-            <ion-item *ngFor="let notification of recentTransactions?.notifications" (click)="toNotificationDetail(notification)">
-
-                <div *ngIf="notification.type == 'NewCopayer' && notification.wallet.n > 1" translate>Copayer joined</div>
-                <div *ngIf="notification.type == 'NewCopayer' && notification.wallet.n == 1" translate>Wallet created</div>
-                <div *ngIf="notification.type == 'NewOutgoingTx'">
-                    <span translate>Payment Sent</span>
-                    <div>{{notification.amountStr}}</div>
-                </div>
-                <div *ngIf="notification.type == 'NewIncomingTx'">
-                    <span translate>Payment Received</span>
-                    <div>{{notification.amountStr}}</div>
-                </div>
-                <div *ngIf="notification.type == 'NewIncomingCoinbase'">
-                    <span translate>Mining Reward</span>
-                    <div>{{notification.amountStr}}</div>
-                </div>
-                <div *ngIf="notification.type == 'TxProposalRemoved'">
-                    <span translate>Proposal Deleted</span>:
-                    <b>{{notification.message}}</b>
-                    <div>{{notification.amountStr}}</div>
-                </div>
-                <div *ngIf="notification.type == 'TxProposalRejectedBy'">
-                    <span translate>Proposal Rejected</span>:
-                    <b>{{notification.message}}</b>
-                    <div>{{notification.amountStr}}</div>
-                </div>
-                <div *ngIf="notification.type == 'NewTxProposal'">
-                    <span translate>New Proposal</span>:
-                    <b>{{notification.message}}</b>
-                    <div>{{notification.amountStr}}</div>
-                </div>
-                <div *ngIf="notification.type == 'TxProposalAcceptedBy'">
-                    <span translate>Proposal Accepted</span>:
-                    <b>{{notification.message}}</b>
-                    <div>{{notification.amountStr}}</div>
-                </div>
-
-                <p>
-                    <ion-icon name="radio-button-on" [ngClass]="{'wallet-color-default': !notification.wallet.color}" [style.color]="notification.wallet.color"></ion-icon>
-                    <span *ngIf="notification.creatorName">{{notification.creatorName}}</span>
-                    <span>{{notification.wallet.name}}</span>
-                    <span>{{ notification.createdOn * 1000 | amTimeAgo}}</span>
-                </p>
-
-            </ion-item>
-        </ion-list>
-    </span>
-
-
     <ion-item-divider translate>
         Wallets
     </ion-item-divider>
-    <ion-list>
+    <ion-list class="wallets">
         <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)">
             <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
                 <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
@@ -159,8 +113,8 @@
             <h2 translate>{{wallet.name || wallet._id}}</h2>
             <p>
                 <span *ngIf="!wallet.isComplete()" class="assertive" translate>Incomplete</span>
-                <span *ngIf="wallet.isComplete()">
-                    <span *ngIf="!wallet.balanceHidden && wallet.status">
+                <span class="detail" *ngIf="wallet.isComplete()">
+                    <span class="amount" *ngIf="!wallet.balanceHidden && wallet.status">
                         {{wallet.status.totalBalanceStr ? wallet.status.totalBalanceStr : ( wallet.cachedBalance ? wallet.cachedBalance   + (wallet.cachedBalanceUpdatedOn ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn  * 1000 | amTimeAgo) : '') : ''  ) }}
                     </span>
                     <span *ngIf="wallet.balanceHidden" translate>
@@ -169,6 +123,9 @@
                     <span *ngIf="wallet.n > 1">
                         {{wallet.m}}-of-{{wallet.n}}
                     </span>
+                    <div class="detail-fiat">
+                        {{wallet.status.totalBalanceAlternativeStr}}
+                    </div>
                     <ion-icon *ngIf="wallet.status && !wallet.balanceHidden && (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)"
                     name="timer-outline"></ion-icon>
 
@@ -178,16 +135,19 @@
         </button>
     </ion-list>
 
-    <span *ngIf="recentTransactionsEnabled && recentTransactionsData.length > 0">
+    <span class="recent-txns" *ngIf="recentTransactionsEnabled && recentTransactionsData.length > 0">
         <ion-item-divider translate>
             <span>Recent Transactions</span>
-            <span class="badge badge-assertive m5t m10r" *ngIf="recentTransactionsData && recentTransactionsData.length>3"> {{notificationsN}}</span>
+            <span class="badge badge-assertive m5t m10r" *ngIf="recentTransactionsData && recentTransactionsData.length>3"> {{recentTransactionsData.length}}</span>
         </ion-item-divider>
         <ion-list>
-            <button ion-item *ngFor="let recentTx of recentTransactionsData" click="openRecentTxDetail(recentTx)">
+            <button ion-item *ngFor="let recentTx of recentTransactionsData" (click)="openRecentTxDetail(recentTx)">
                 <div>
-                    <span>{{notification.actionStr}}</span>
-                    <div class="wallet-activity-amount">{{notification.amountStr}}</div>
+                    <span>{{recentTx.actionStr}}</span>
+                    <div class="detail">
+                        <div class="amount">{{recentTx.amountStr}}</div>
+                        <div class="date">{{recentTx.fiatAmountStr}}</div>
+                    </div>
                 </div>
             </button>
         </ion-list>

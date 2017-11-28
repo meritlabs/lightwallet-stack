@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="me.merit.LightWallet" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="me.merit.LightWalletTest" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Merit</name>
     <description>Merit Wallet</description>
     <author email="support@merit.me" href="">
-    MeritLabs Inc.
+    MeritLabs Inc. 
     </author>
     <content src="index.html" />
     <access origin="*" />
@@ -100,4 +100,11 @@
     <plugin name="phonegap-plugin-barcodescanner" spec="^6.0.8">
         <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
     </plugin>
+      <branch-config>
+        <branch-key value="key_live_edqKoEEX0yip4cpCBjbnXlpkqBmai2VN" />
+        <uri-scheme value="merit" />
+        <link-domain value="c213.app.link" />
+        <ios-team-release value="MLJ7SU96NS" />
+    </branch-config>
+    <plugin name="branch-cordova-sdk" spec="^2.6.16" />
 </widget>

@@ -27,7 +27,7 @@ export class ProfileService {
   public wallets: Map<string, MeritWalletClient> = new Map<string, MeritWalletClient>();
   public profile: Profile = new Profile();
 
-  private UPDATE_PERIOD = 10;
+  private UPDATE_PERIOD = 3;
   private validationLock: boolean = false;
   private errors: any = this.bwcService.getErrors();
   private queue: Array<any> = [];
@@ -116,8 +116,9 @@ export class ProfileService {
       opts = opts ? opts : {};
       var walletId = wallet.credentials.walletId;
 
+      // Wallet is already bound
       if ((this.wallets[walletId] && this.wallets[walletId].started) && !opts.force) {
-        reject(false);
+        resolve(false);
       }
 
       // INIT WALLET VIEWMODEL
@@ -173,7 +174,7 @@ export class ProfileService {
         if (wallet.status !== true) {
           this.logger.debug('Wallet + ' + walletId + ' status:' + wallet.status);
         }
-        return resolve();
+        return resolve(true);
       }).catch((err) => {
         this.logger.error('Could not bind the wallet client:', err);
         return reject(new Error("Could not bind wallet client!"));
@@ -347,6 +348,32 @@ export class ProfileService {
     });
   }
 
+
+
+
+  // todo move to Starter module, with minimal dependencies
+  public getProfile():Promise<Profile> {
+      if (this.profile) {
+        return Promise.resolve(this.profile);
+      } else {
+        return this.loadProfile();
+      }
+  }
+
+  // todo move to Starter module, with minimal dependencies
+  private  loadProfile():Promise<Profile> {
+    return new Promise((resolve, reject) => {
+      this.persistenceService.getProfile().then((profile: any) => {
+        if (!profile) return resolve();
+        
+        this.profile = new Profile();
+        this.profile = this.profile.fromObj(profile);
+        resolve(profile);
+      });
+    }); 
+  }
+
+
   public bindProfile(profile: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let config = this.configService.get();
@@ -363,9 +390,9 @@ export class ProfileService {
           }
 
           return Promise.each(profile.credentials, (credentials) => {
-            return this.bindWallet(credentials).then((bound: number) => {
+            return this.bindWallet(credentials).then((client: any) => {
               i++;
-              totalBound += bound;
+              totalBound += 1;
               if (i == l) {
                 this.logger.info('Bound ' + totalBound + ' out of ' + l + ' wallets');
                 return resolve();
@@ -455,9 +482,9 @@ export class ProfileService {
 
       return this.addAndBindWalletClient(walletClient, {
         bwsurl: opts.bwsurl
-      }).then((walletId: string) => {
-        return this.setMetaData(walletClient, addressBook).then(() => {
-          return resolve(walletClient);
+      }).then((wallet: any) => {
+        return this.setMetaData(wallet, addressBook).then(() => {
+          return resolve(wallet);
         }).catch((err: any) => {
           this.logger.warn(err);
           return reject(err);
@@ -487,9 +514,10 @@ export class ProfileService {
       if (!skipKeyValidation)
         this.runValidation(wallet);
 
-      return this.bindWalletClient(wallet).then((success)=> {
-        if (success) {
-          console.log("Nailed it.");
+      return this.bindWalletClient(wallet).then((alreadyBound: boolean)=> {
+        if (!alreadyBound) {
+          this.logger.info("WalletClient already bound; skipping profile storage...");
+          return resolve();
         }
      
         let saveBwsUrl = (): Promise<any> => {
@@ -622,8 +650,8 @@ export class ProfileService {
       if (!skipKeyValidation) this.runValidation(walletClient, 500);
 
       this.logger.info('Binding wallet:' + credentials.walletId + ' Validating?:' + !skipKeyValidation);
-      return this.bindWalletClient(walletClient).then(() => {
-        return resolve();
+      return this.bindWalletClient(walletClient).then((alreadyBound: boolean) => {
+        return resolve(walletClient);
       });
     });
   }
@@ -674,8 +702,6 @@ export class ProfileService {
 
     return new Promise((resolve, reject) => {
 
-      console.log("Getting wallets");
-      console.log(this.wallets);
       let ret: MeritWalletClient[] = _.values(this.wallets);
 
       if (opts.network) {
@@ -737,6 +763,10 @@ export class ProfileService {
 
   }
 
+  public getWallet(walletId: string): MeritWalletClient {
+    return this.wallets[walletId];
+  }
+
   public toggleHideBalanceFlag(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.wallets[walletId].balanceHidden = !this.wallets[walletId].balanceHidden;
@@ -749,7 +779,6 @@ export class ProfileService {
   }
 
   public getNotifications(opts: any): Promise<any> {
-    this.logger.warn("Explicitly getting notifications; Why?");
     return new Promise((resolve, reject) => {
       opts = opts ? opts : {};
 
@@ -757,9 +786,9 @@ export class ProfileService {
       let MAX = 30;
 
       let typeFilter = {
-        'NewOutgoingTx': 1,
-        'NewIncomingTx': 1,
-        'NewIncomingCoinbase': 1
+        'OutgoingTx': 1,
+        'IncomingTx': 1,
+        'IncomingCoinbase': 1
       };
 
       this.getWallets().then((wallets) => {
