@@ -9,4 +9,38 @@
 
 <ion-content>
 
+    <div class="gravatar-content">
+        <i class="icon big-icon-svg">
+            <gravatar class="send-gravatar" [name]="contact.name" width="30" height="30" [email]="contact.email" ></gravatar>
+        </i>
+    </div>
+
+    <ion-list>
+        <ion-item class="item item-text-wrap">
+            <ion-label item-start>Name</ion-label>
+            <ion-label item-end>{{contact.name}}</ion-label>
+        </ion-item>
+        <ion-item class="item item-text-wrap" ng-show="contact.email">
+            <ion-label item-start>Email</ion-label>
+            <ion-label item-end>{{contact.email}}</ion-label>
+        </ion-item>
+        <ion-item class="item item-text-wrap"*ngIf="contact.phoneNumber">
+            <ion-label item-start>Phone Number</ion-label>
+            <ion-label item-end>{{contact.phoneNumber}}</ion-label>
+        </ion-item>
+        <ion-item class="item item-text-wrap" copy-to-clipboard="contact.address">
+            <ion-label item-start>Address</ion-label>
+            <ion-label item-end>{{contact.address}}</ion-label>
+        </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <button ion-item (click)="goToSendView()">
+            Send Money
+        </button>
+        <button ion-item (click)="remove()">
+           Remove
+        </button>
+    </ion-list>
+
 </ion-content>

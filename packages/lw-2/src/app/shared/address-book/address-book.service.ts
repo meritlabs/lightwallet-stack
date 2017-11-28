@@ -85,9 +85,12 @@ export class AddressBookService {
   };
 
   private getAddressbook(network: string): Promise<AddressBook> {
-    return this.persistenceService.getAddressbook(network).then((ab) => {
-      if(_.isEmpty) return {};
-      return JSON.parse(ab);
+    return new Promise((resolve, reject) => {
+      return this.persistenceService.getAddressbook(network).then((ab) => {
+        if(_.isEmpty(ab)) ab = {};
+        resolve(ab);
+        //resolve(JSON.parse(ab))
+      });
     });
   }
 }
