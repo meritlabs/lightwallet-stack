@@ -120,7 +120,7 @@ export interface IAPI {
   buildEasySendRedeemTransaction(input: any, destinationAddress: any, opts: any): any;
   prepareVault(type: number, opts: any) : any;
   createSpendFromVaultTx(opts: any) : any;
-  buildRenewVaultTx(opts: any) : any;
+  buildRenewVaultTx(utxos: any[], newVault: any, masterKey: any, opts: any) : any;
   openWallet(): Promise<any>;
   _getHeaders(method: string, url: string, args: any): any;
   _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<any>;
@@ -191,6 +191,7 @@ export interface IAPI {
   validateEasyScript(scriptId: string): Promise<any>;
   getVaults();
   createVault(vaultTxProposal: any);
+  getVaultCoins(vaultAddress: any);
 }
 
 export class API implements IAPI {
@@ -1018,13 +1019,72 @@ export class API implements IAPI {
    * Renew vault
    * Will make all pending tx invalid
    */
-  buildRenewVaultTx(opts: any = {}) {
+  buildRenewVaultTx(utxos: any[], newVault: any, masterKey: any, opts: any = {}) {
 
     var network = opts.network || DEFAULT_NET;
-    var fee = opts. fee || DEFAULT_FEE;
+    var fee = opts.fee || DEFAULT_FEE;
+
+    let totalAmount = _.reduce(utxos, (sum, utxo) => {
+      return sum + utxo.micros;
+    }, 0);
+
+    let amount =  totalAmount - fee;
+    if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
+
+    let redeemScript = new Bitcore.Script(newVault.redeemScript);
 
     var tx = new Bitcore.Transaction();
-    tx.fee(fee);
+
+    try {
+
+      if(newVault.type == 0) {
+        let tag = newVault.tag;
+
+        let params = [
+          Bitcore.HDPublicKey.fromObject(newVault.spendPubKey).toBuffer(),
+          new Bitcore.PublicKey(newVault.masterPubKey, {network: network}).toBuffer(),
+        ];
+
+        params = params.concat(newVault.whitelist);
+        params.push(Bitcore.Opcode.smallInt(newVault.whitelist.length));
+        params.push(tag);
+        params.push(Bitcore.Opcode.smallInt(newVault.type));
+
+        let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
+
+        tx.addOutput(new Bitcore.Transaction.Output({
+          script: scriptPubKey,
+          micros: amount
+        }));
+
+        tx.fee(fee)
+
+        _.each(utxos, (utxo) => {
+          tx.addInput(
+            new Bitcore.Transaction.Input.PayToScriptHashInput({
+              prevTxId: utxo.txid,
+              outputIndex: utxo.outputIndex,
+              script: utxo.scriptPubKey
+            }, redeemScript, utxo.scriptPubKey), 
+            utxo.scriptPubKey, utxo.micros);
+
+          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
+          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript);
+
+          tx.inputs[tx.inputs.length-1].setScript(inputScript);
+        });
+
+        // Make sure the tx can be serialized
+        tx.serialize();
+
+      } else {
+        this.log.error('Vault type is not supported:', newVault.type);
+        return Errors.COULD_NOT_BUILD_TRANSACTION;
+      }
+    } catch (ex) {
+      this.log.error('Could not build transaction from private key', ex);
+      return Errors.COULD_NOT_BUILD_TRANSACTION;
+    }
 
     return tx;
   };
@@ -2695,4 +2755,8 @@ export class API implements IAPI {
     var url = '/v1/vaults/';
     return this._doPostRequest(url, vaultTxProposal);
   };
+
+  getVaultCoins(vaultAddress: any) {
+    return this.getUtxos({addresses: [vaultAddress]});
+  }
 }
