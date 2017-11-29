@@ -92,7 +92,7 @@ export class PushNotificationsService {
 
       //Keep in mind the function will return null if the token has not been established yet.
       this.FCMPlugin.getToken().then((token: any) => {
-        this.logger.info('Get token for push notifications: ' + token);
+        this.logger.info('Got token for push notifications: ' + token);
         this._token = token;
         this.enable();
       });
