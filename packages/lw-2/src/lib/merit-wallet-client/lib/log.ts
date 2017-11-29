@@ -135,7 +135,10 @@ export class Logger implements LoggerWithLevels {
         let stack = new Error().stack;
         let lines = stack.split('\n');
         let caller = lines[2];
-        caller = ':' + caller.substr(6);
+        
+        if (caller) {
+          caller = ':' + caller.substr(6);
+        }
         Error.stackTraceLimit = old;
 
         let str = '[' + levelName + (caller || '') + '] ' + arguments[0],
