@@ -44,11 +44,11 @@ export class MeritLightWallet {
     private pushNotificationService: PushNotificationsService
   ) {
 
-    process.on('unhandledRejection', console.log.bind(console));
+    process.on('unhandledRejection', this.logger.info.bind(console));
     Promise.config({
         longStackTraces: true
     });
-    process.on('unhandledRejection', console.log.bind(console));
+    process.on('unhandledRejection', this.logger.info.bind(console));
     Promise.onPossiblyUnhandledRejection((error) => {
       throw error;
   });      

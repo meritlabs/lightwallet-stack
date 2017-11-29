@@ -53,7 +53,7 @@ export class SendView {
     private addressBookService:AddressBookService,
     private modalCtrl:ModalController
   ) {
-    console.log("Hello SendView!!");
+    this.logger.info("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
     this.formData = { search: '' };
   }

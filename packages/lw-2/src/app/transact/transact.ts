@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
+import { Logger } from 'merit/core/logger';
 
 // Transact is the proposed name of the umbrella for the primary actions 
 // That exist through the tabs on the bottom of the screen. 
@@ -23,9 +24,10 @@ export class TransactView {
 
   constructor(
     public navCtrl: NavController,
-    public navParams: NavParams
+    public navParams: NavParams,
+    private logger: Logger
   ) {
-    console.log("@@Hello TRANSACT VIEW!");
+    this.logger.info("Hello TRANSACT VIEW!");
   }
 
   ionViewDidLoad() {

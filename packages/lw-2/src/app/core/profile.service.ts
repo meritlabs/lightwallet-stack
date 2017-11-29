@@ -44,7 +44,7 @@ export class ProfileService {
     private txFormatService: TxFormatService,
     private events: Events    
   ) {
-    console.log("Hello ProfileService!");
+    this.logger.info("Hello ProfileService!");
   }
 
   private throttledBwsEvent = _.throttle((n, wallet) => {
@@ -109,9 +109,9 @@ export class ProfileService {
 
   // Adds a WalletService client (BWC) into the wallet.  
   private bindWalletClient(wallet: MeritWalletClient, opts?: any): Promise<boolean> {
-    console.log("Binding the wallet client!");
+    this.logger.info("Binding the wallet client!");
     return new Promise((resolve, reject) => {
-      console.log("Binding 1");    
+      this.logger.info("Binding 1");    
       opts = opts ? opts : {};
       var walletId = wallet.credentials.walletId;
 
@@ -541,8 +541,8 @@ export class ProfileService {
           });
         });
       }).catch((err) => {
-        console.log("We got errored");
-        console.log(err);
+        this.logger.info("We got errored");
+        this.logger.info(err);
         return reject(err);
       });
 
@@ -1005,7 +1005,7 @@ export class ProfileService {
   }
 
   public getVaults(): Array<any> {
-    console.log('Getting vaults');
+    this.logger.info('Getting vaults');
     return this.profile.vaults;
   }
 }

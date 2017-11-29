@@ -23,7 +23,7 @@ export class RateService {
   constructor(
     private logger: Logger    
   ) {
-    console.log('Hello RateService Service');
+    this.logger.info('Hello RateService Service');
     this._rates = {};
     this._alternatives = [];
     this.SAT_TO_BTC = 1 / 1e8;
@@ -52,7 +52,7 @@ export class RateService {
         }
       })
       .catch((errorBTC) => {
-        console.log("Error applying rates to wallet: ", errorBTC);
+        this.logger.warn("Error applying rates to wallet: ", errorBTC);
         return resolve();
       });
     });
@@ -67,7 +67,7 @@ export class RateService {
         }
         return resolve(res.body);
       }).catch((errorBTC) => {
-        console.log("Error connecting to rate service: ", errorBTC);
+        this.logger.warn("Error connecting to rate service: ", errorBTC);
         return resolve();
       });;
     });
