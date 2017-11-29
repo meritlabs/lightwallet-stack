@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
+import { Logger } from 'merit/core/logger';
 
 @IonicPage()
 @Component({
@@ -25,7 +26,11 @@ export class SendAmountView {
   private reNr: RegExp = /^[1234567890\.]$/;
   private reOp: RegExp = /^[\*\+\-\/]$/;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams, 
+    private log: Logger
+  ) {
     this.amount = '';
     this.allowSend = false;
   }
@@ -145,7 +150,7 @@ export class SendAmountView {
 
   processResult(val: number) {
     // TODO: implement this function correctly - Need: txFormatService, isFiat, $filter
-    console.log("processResult TODO");
+    this.log.info("processResult TODO");
     /*if (this.availableUnits[this.unitIndex].isFiat) return $filter('formatFiatAmount')(val);
     else return txFormatService.formatAmount(val.toFixed(unitDecimals) * unitToMicro, true);*/
   };

@@ -2,7 +2,7 @@
   "name": "merit-lightwallet",
   "description": "Merit LightWallet application",
   "author": "Merit Foundation",
-  "version": "1.1.0",  
+  "version": "1.1.0",
   "keywords": [
     "merit",
     "wallet",
@@ -25,16 +25,16 @@
     "@angular/compiler-cli": "4.4.4",
     "@angular/core": "4.4.4",
     "@angular/forms": "4.4.4",
-    "@angular/http": "4.4.4",
     "@angular/platform-browser": "4.4.4",
     "@angular/platform-browser-dynamic": "4.4.4",
     "@angular/tsc-wrapped": "^4.4.6",
-    "@biesbjerg/ngx-translate-po-http-loader": "1.0.1",
+    "@ngx-translate/http-loader": "^2.0.0",
     "@ionic-native/android-fingerprint-auth": "4.3.2",
     "@ionic-native/barcode-scanner": "^4.4.0",
     "@ionic-native/clipboard": "^4.3.3",
     "@ionic-native/contacts": "^4.3.3",
     "@ionic-native/core": "4.3.2",
+    "@ionic-native/fcm": "^4.4.2",
     "@ionic-native/file": "4.3.2",
     "@ionic-native/in-app-browser": "^4.3.2",
     "@ionic-native/social-sharing": "^4.3.3",
@@ -65,6 +65,7 @@
     "cordova-plugin-android-fingerprint-auth": "~1.4.0",
     "cordova-plugin-contacts": "~2.3.1",
     "cordova-plugin-device": "~1.1.4",
+    "cordova-plugin-fcm": "^2.1.2",
     "cordova-plugin-file": "~4.3.3",
     "cordova-plugin-inappbrowser": "~1.7.1",
     "cordova-plugin-ionic-webview": "^1.1.11",
@@ -95,7 +96,7 @@
     "@types/bluebird": "^3.5.18",
     "@types/node": "^8.0.47",
     "typescript": "2.5.3",
-    "ios-deploy": "^1.9.2",    
+    "ios-deploy": "^1.9.2",
     "bitcore-wallet-service": "^1.18.0",
     "browserify": "^13.1.0",
     "chai": "^1.9.1",
@@ -138,7 +139,8 @@
       "phonegap-plugin-barcodescanner": {
         "CAMERA_USAGE_DESCRIPTION": " "
       },
-      "branch-cordova-sdk": {}
+      "branch-cordova-sdk": {},
+      "cordova-plugin-fcm": {}
     },
     "platforms": [
       "ios",

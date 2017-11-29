@@ -182,12 +182,12 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
         log.error('Could not fetch addresses from the db');
         return next(err);
       }
-      if (!address || address.isChange) return next();
+      if (!address || address.isChange) return next(null);
 
       var walletId = address.walletId;
       var notificationType = data.isCoinbase ? 'IncomingCoinbase' : 'IncomingTx';
       
-      log.info(notificationType + ' for wallet ' + walletId + ' [' + out.amount + 'micros -> ' + out.address + ']');
+      log.info(notificationType + ' for wallet ' + walletId + ' [' + out.amount + ' micros -> ' + out.address + ']');
 
       var fromTs = Date.now() - 24 * 3600 * 1000;
       self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
@@ -197,7 +197,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
         });
         if (alreadyNotified) {
           log.info('The incoming tx ' + data.txid + ' was already notified');
-          return next();
+          return next(null);
         }
 
         var notification = Notification.create({
@@ -261,7 +261,7 @@ BlockchainMonitor.prototype._handleTxConfirmations = function(network, hash) {
   var self = this;
 
   function processTriggeredSubs(subs, cb) {
-    async.each(subs, function(sub) {
+    async.each(subs, function(sub, cb) {
       log.info('New tx confirmation ' + sub.txid);
       sub.isActive = false;
       self.storage.storeTxConfirmationSub(sub, function(err) {
@@ -279,6 +279,7 @@ BlockchainMonitor.prototype._handleTxConfirmations = function(network, hash) {
         });
         self._storeAndBroadcastNotification(notification, cb);
       });
+      return cb(null);
     });
   };
 
@@ -336,13 +337,13 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
         return acc;
       }, []);
 
-      async.each(triggered, function(sub) {
+      async.each(triggered, function(sub, cb) {
         log.info('New referral confirmation ' + sub.codeHash);
         sub.isActive = false;
         self.storage.storeTxConfirmationSub(sub, function(err) {
           if (err) {
             log.error(`Could not update confirmation with codeHash: ${sub.codeHash}`);
-            return;
+            return cb(err);
           }
 
           const notification = Notification.create({
@@ -355,6 +356,7 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
             log.info(`Referral confirmation with code ${sub.codeHash} successfully sent`);
           });
         });
+        return cb(null);
       });
     });
   });
@@ -373,7 +375,7 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) 
     }
 
     log.info('Received tx in block to check vaults: ', txids);
-    async.each(txids, function(txId) {
+    async.each(txids, function(txId, cb) {
       log.info(`Checking if TX with id ${txId} is vault TX`);
 
       self.storage.fetchVaultByInitialTxId(txId, function(err, tx) {
@@ -404,6 +406,7 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) 
           });
         });
       });
+      return cb(null);
     });
   });
 };

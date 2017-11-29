@@ -15,7 +15,6 @@ import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import * as Promise from 'bluebird';
 import { MeritWalletClient } from './../../lib/merit-wallet-client';
-import { IMeritWalletClient } from "../../lib/merit-wallet-client/index";
 
 import { Events } from 'ionic-angular';
 
@@ -66,7 +65,7 @@ export class WalletService {
     private mnemonicService: MnemonicService,
     private events: Events
   ) {
-    console.log('Hello WalletService Service');
+    this.logger.info('Hello WalletService Service');
   }
 
   public invalidateCache(wallet: MeritWalletClient) {
@@ -283,7 +282,7 @@ export class WalletService {
       };
 
       return _getStatus(walletStatusHash(null), 0).then((status) => {
-        console.log(status);
+        this.logger.info(status);
         return resolve(status);
       }).catch((err) => {
         this.logger.warn("Error getting status: ", err);
@@ -358,9 +357,7 @@ export class WalletService {
           });
         }
         // No specific error matched above, run through the errorService callback filter.
-        return this.bwcErrorService.cb(err, prefix).then((msg) => {
-          return reject(new Error(msg));
-        });
+        return reject(new Error(this.bwcErrorService.cb(err, prefix)));
       });
     });
   }
@@ -899,6 +896,7 @@ export class WalletService {
           return resolve(wallet);
         });
       }).catch((err: any) => {
+        this.logger.warn("Error creating wallet: ", err);
         return reject(err);
       });
     });
@@ -931,9 +929,7 @@ export class WalletService {
         walletClient.joinWallet(opts.secret, opts.myName || 'me', {
         }, (err: any) => {
           if (err) {
-            return this.bwcErrorService.cb(err, 'Could not join wallet').then((msg: string) => { //TODO getTextCatalog
-              return reject(msg);
-            });
+            return reject(new Error(this.bwcErrorService.cb(err, 'Could not join wallet')));
           } else {
             return this.profileService.addAndBindWalletClient(walletClient, {
               bwsurl: opts.bwsurl
@@ -1035,8 +1031,8 @@ export class WalletService {
     });
   };
 
-  public encrypt(wallet: IMeritWalletClient, password:string): Promise<any> {
-    console.log("encrypting");
+  public encrypt(wallet: MeritWalletClient, password:string): Promise<any> {
+    this.logger.info("encrypting");
     return Promise.resolve(wallet.encryptPrivateKey(password, {}));
   };
 
@@ -1101,17 +1097,17 @@ export class WalletService {
   }
 
   private signAndBroadcast(wallet: MeritWalletClient, publishedTxp: any, password: any, customStatusHandler: any): Promise<any> {
-    console.log("@@SB: ENTRY");
+    this.logger.info("@@SB: ENTRY");
 
     return new Promise((resolve, reject) => {
 
       return this.signTx(wallet, publishedTxp, password).then((signedTxp: any) => {
-        console.log("@@SB: After Sign");
+        this.logger.info("@@SB: After Sign");
 
         this.invalidateCache(wallet);
         if (signedTxp.status == 'accepted') {
           return this.broadcastTx(wallet, signedTxp).then((broadcastedTxp: any) => {
-            console.log("@@SB: AfterBroadCast");
+            this.logger.info("@@SB: AfterBroadCast");
 
             this.events.publish('Local:Tx:Broadcast', broadcastedTxp);
             //$rootScope.$emit('Local/TxAction', wallet.id);
@@ -1120,7 +1116,7 @@ export class WalletService {
             return reject(this.bwcErrorService.msg(err));
           });
         } else {
-          console.log("@@SB: ElseBlock");
+          this.logger.info("@@SB: ElseBlock");
 
           //$rootScope.$emit('Local/TxAction', wallet.id);
           this.events.publish('Local:Tx:Signed', signedTxp);
@@ -1136,12 +1132,12 @@ export class WalletService {
   }
 
   public publishAndSign(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
-    console.log("@@PS: ENTER");
+    this.logger.info("@@PS: ENTER");
     return new Promise((resolve, reject) => {
       // Already published?
       let walletPassword = '';
       if (txp.status == 'pending') {
-        console.log("@@PS: PENDING");
+        this.logger.info("@@PS: PENDING");
 
         return this.prepare(wallet).then((password: string) => {
           return this.signAndBroadcast(wallet, txp, password, customStatusHandler)
@@ -1152,15 +1148,15 @@ export class WalletService {
             });
         });
       } else {
-        console.log("@@PS: NOT PENDING");
+        this.logger.info("@@PS: NOT PENDING");
 
         return this.prepare(wallet).then((password: string) => {
-          console.log("@@PS: AFTER PREPARE");
+          this.logger.info("@@PS: AFTER PREPARE");
 
           walletPassword = password;
           return this.publishTx(wallet, txp);
         }).then((publishedTxp: any) => {
-          console.log("@@PS: AFTER PublishTx");
+          this.logger.info("@@PS: AFTER PublishTx");
           return this.signAndBroadcast(wallet, publishedTxp, walletPassword, customStatusHandler);
         }).then((signedTxp) => {
           return resolve(signedTxp);
@@ -1293,7 +1289,7 @@ export class WalletService {
 
       this.logger.debug('Creating Wallet:', showOpts);
       setTimeout(() => {
-        return this.seedWallet(opts).then((walletClient: any) => {
+        return this.seedWallet(opts).then((walletClient: MeritWalletClient) => {
 
           let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
           let myName = opts.myName || 'me'; // TODO GetTextCatalog
@@ -1309,7 +1305,8 @@ export class WalletService {
             return resolve(walletClient);
           });
         }).catch((err: any) => {
-          return reject(this.bwcErrorService.cb(err, 'Error creating wallet'));
+          this.logger.warn("Error creating wallet in DCW: ", err);
+          return reject(new Error(this.bwcErrorService.cb(err, 'Error creating wallet')));
         });
       }, 5000);
     });

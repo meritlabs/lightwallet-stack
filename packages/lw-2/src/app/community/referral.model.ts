@@ -4,7 +4,7 @@ export class Referral {
   public cKeyId: string; 
   public id: string;
 
-  constructor(){
-    console.log("Hello Referral Model!");
+  constructor(
+  ){
   }
 }

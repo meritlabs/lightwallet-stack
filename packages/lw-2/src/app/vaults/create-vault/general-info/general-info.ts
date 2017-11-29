@@ -8,6 +8,7 @@ import { WalletService } from "merit/wallets/wallet.service";
 import { ProfileService } from "merit/core/profile.service";
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { BwcService } from 'merit/core/bwc.service';
+import { Logger } from 'merit/core/logger';
 
 
 @IonicPage({
@@ -31,9 +32,10 @@ export class CreateVaultGeneralInfoView {
     private walletService: WalletService,
     private vaultsService: VaultsService,
     private bwc: BwcService,
+    private logger: Logger
   ){
     this.bitcore = this.bwc.getBitcore();
-    console.log('bitcore', this.bitcore);
+    this.logger.info('bitcore', this.bitcore);
   }
 
   checkNextAvailable() {
@@ -51,7 +53,7 @@ export class CreateVaultGeneralInfoView {
         const name = w.name || w._id;
         return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
       });
-      console.log('walletDTOs', walletDTOs);
+      this.logger.info('walletDTOs', walletDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(walletDTOs);
     });
 
@@ -60,10 +62,10 @@ export class CreateVaultGeneralInfoView {
       const vaultDTOs = _.map(vaults, (v: any) => {
         const name = v.name || v._id;
         const key = new this.bitcore.Address(v.address).toString();
-        console.log(key);
+        this.logger.info(key);
         return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' }; 
       });
-      console.log('walletDTOs', vaultDTOs);
+      this.logger.info('walletDTOs', vaultDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(vaultDTOs);
     });
   }
