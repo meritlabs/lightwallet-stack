@@ -10,7 +10,7 @@
         "client_info": {
           "mobilesdk_app_id": "1:1091326413792:android:c60e95c518bea670",
           "android_client_info": {
-            "package_name": "me.merit.LightWallet"
+            "package_name": "me.merit.LightWalletTest"
           }
         },
         "oauth_client": [
