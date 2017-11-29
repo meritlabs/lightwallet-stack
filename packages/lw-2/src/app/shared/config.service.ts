@@ -91,6 +91,7 @@ interface Config {
 
   emailNotifications: {
     enabled: boolean;
+    emailAddress: string;
   };
 
   log: {
@@ -130,7 +131,7 @@ const configDefault: Config = {
 
   // Bitcore wallet service URL
   bws: {
-    url: 'http://localhost:3232/bws/api'
+    url: 'http://kemists.pagekite.me/bws/api'
   },
 
   download: {
@@ -184,7 +185,8 @@ const configDefault: Config = {
   },
 
   emailNotifications: {
-    enabled: false
+    enabled: false,
+    emailAddress: ''
   },
 
   log: {
