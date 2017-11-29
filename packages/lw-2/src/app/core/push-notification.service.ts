@@ -33,7 +33,7 @@ export class PushNotificationsService {
     private FCMPlugin: FCM,
     private platform: Platform
   ) {
-    console.log('Hello PushNotificationsService Service');
+    this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;

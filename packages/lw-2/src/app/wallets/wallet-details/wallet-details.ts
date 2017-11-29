@@ -27,8 +27,8 @@ export class WalletDetailsView {
     // passed in from the wallets (list) view.  This enables us to keep
     // things fast and smooth.  We can refresh as needed.
     this.wallet = this.navParams.get('wallet');
-    console.log("Inside the wallet-details view.");
-    console.log(this.wallet);
+    this.logger.info("Inside the wallet-details view.");
+    this.logger.info(this.wallet);
   }
 
   ionViewWillLeave() {
@@ -39,13 +39,13 @@ export class WalletDetailsView {
   }
 
   ionViewDidLoad() {
-    console.log("Wallet-Detail View Did Load.");
-    console.log(this.wallet);
+    this.logger.info("Wallet-Detail View Did Load.");
+    this.logger.info(this.wallet);
     //do something here
   }
 
   goToBackup() {
-    console.log('not implemented yet');
+    this.logger.info('not implemented yet');
   }
 
   private getWalletHistory(force: boolean = false ): void {
@@ -53,7 +53,7 @@ export class WalletDetailsView {
     this.walletService.getTxHistory(this.wallet, {force: force}).then((walletHistory) => {
       this.wallet.completeHistory = walletHistory;
     }).catch((err) => {
-      console.log(err);
+      this.logger.info(err);
     });
   }
 

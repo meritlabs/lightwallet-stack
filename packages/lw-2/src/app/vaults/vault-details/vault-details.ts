@@ -40,8 +40,8 @@ export class VaultDetailsView {
     // things fast and smooth.  We can refresh as needed.
     this.vault = this.navParams.get('vault');
     this.bitcore = this.bwc.getBitcore();
-    console.log("Inside the vault-details view.");
-    console.log(this.vault);
+    this.logger.info("Inside the vault-details view.");
+    this.logger.info(this.vault);
   }
 
   ionViewWillLeave() {
@@ -51,8 +51,8 @@ export class VaultDetailsView {
   }
 
   ionViewDidLoad() {
-    console.log("Vault-Detail View Did Load.");
-    console.log(this.vault);
+    this.logger.info("Vault-Detail View Did Load.");
+    this.logger.info(this.vault);
 
     //do something here
     Promise.all([

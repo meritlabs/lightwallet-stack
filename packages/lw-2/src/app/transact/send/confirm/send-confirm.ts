@@ -68,7 +68,7 @@ export class SendConfirmView {
     private notificationService: NotificationService,
     private loadingCtrl: LoadingController
   ) { 
-    console.log("Hello SendConfirm View");
+    this.logger.info("Hello SendConfirm View");
     this.walletConfig = this.configService.get().wallet;
     
   }

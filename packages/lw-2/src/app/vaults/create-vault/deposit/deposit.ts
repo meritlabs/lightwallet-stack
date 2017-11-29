@@ -7,6 +7,7 @@ import { WalletService } from "merit/wallets/wallet.service";
 import { ProfileService } from "merit/core/profile.service";
 import { BwcService } from "merit/core/bwc.service";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { Logger } from 'merit/core/logger';
 
 @IonicPage({
   defaultHistory: ['ProfileView']
@@ -27,6 +28,7 @@ export class CreateVaultDepositView {
     private profileService: ProfileService,
     private walletService: WalletService,
     private bwcService: BwcService,
+    private logger: Logger
   ) {}
 
   checkNextAvailable() {
@@ -42,7 +44,7 @@ export class CreateVaultDepositView {
     this.checkNextAvailable();
 
     this.getAllWallets().then((wallets: Array<MeritWalletClient>) => {
-      _.each(wallets, (w) => console.log(w));
+      _.each(wallets, (w) => this.logger.info(w));
       const computed = wallets[0].status.balance.availableConfirmedAmount;
       const mrt = this.bitcore.Unit.fromMicros(computed).toMRT();
       this.formData.selectedWallet = wallets[0];

@@ -45,7 +45,7 @@ export class TxDetailsView {
         this.confirmations = '6+';
       }
     }).catch((err) => {
-      console.log(err);
+      this.logger.info(err);
     });
   }
 

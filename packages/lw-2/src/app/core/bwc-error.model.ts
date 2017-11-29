@@ -9,7 +9,7 @@ export class BwcError {
   constructor(
     private log: Logger, 
   ) { 
-    console.log('Hello BwcError model');
+    this.log.info('Hello BwcError model');
   }
 
 

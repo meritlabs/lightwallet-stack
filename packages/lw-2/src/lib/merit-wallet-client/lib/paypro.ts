@@ -1,11 +1,14 @@
 let request = require('superagent');
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
+import { Logger } from "./log";
 
 
 
 
 export module PayPro {
+  const logger = Logger.getInstance();
+  logger.setLevel('debug');
   const TIMEOUT = 5000;
   let $ = require('preconditions').singleton();
   
@@ -134,7 +137,7 @@ export module PayPro {
       throw new Error('Unrecognized address type ' + addr.type);
     }
 
-    //  console.log('PayPro refund address set to:', addrStr,s);
+    //  this.logger.info('PayPro refund address set to:', addrStr,s);
     output.set('script', s.toBuffer());
     output.set('amount', amount);
     return [output];
@@ -198,7 +201,7 @@ export module PayPro {
             let ack = pp.makePaymentACK(data);
             memo = ack.get('memo');
           } catch (e) {
-            console.log("Error in PayPro Payment Ack: " + e);
+            logger.info("Error in PayPro Payment Ack: " + e);
           };
         return resolve({rawData, memo});
       });

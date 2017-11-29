@@ -125,12 +125,12 @@ export class WalletsView {
       }).then(() => {
         return this.vaultsService.getVaults(_.head(this.wallets));
       }).then((vaults) => {
-        console.log('getting vaults', vaults);
+        this.logger.info('getting vaults', vaults);
         this.vaults = vaults;
         return resolve();
       }).catch((err) => {
-        console.log("@@ERROR IN Updating statuses.");
-        console.log(err);
+        this.logger.info("@@ERROR IN Updating statuses.");
+        this.logger.info(err);
         return reject();
       });
 
@@ -225,7 +225,7 @@ export class WalletsView {
 
   private showPasswordEasyReceivePrompt(receipt:EasyReceipt, highlightInvalidInput = false) {
 
-    console.log('show alert', highlightInvalidInput); 
+    this.logger.info('show alert', highlightInvalidInput); 
 
     this.alertController.create({
       title: `You've got merit from ${receipt.senderName}!`,
