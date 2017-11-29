@@ -5,6 +5,7 @@ import * as Promise from 'bluebird';
 
 import { TouchID } from '@ionic-native/touch-id';
 import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
+import { Logger } from 'merit/core/logger';
 
 @Injectable()
 export class TouchIdService {
@@ -15,7 +16,8 @@ export class TouchIdService {
     private touchId: TouchID,
     private androidFingerprintAuth: AndroidFingerprintAuth,
     private platform: PlatformService,
-    private config: ConfigService
+    private config: ConfigService,
+    private log: Logger
   ) { }
 
   init() {
@@ -27,7 +29,7 @@ export class TouchIdService {
     this.touchId.isAvailable()
       .then(
       res => this._isAvailable = true,
-      err => console.log("Fingerprint is not available")
+      err => this.log.info("Fingerprint is not available")
       );
   }
 
@@ -36,7 +38,7 @@ export class TouchIdService {
       .then(
       res => {
         if (res.isAvailable) this._isAvailable = true
-        else console.log("Fingerprint is not available")
+        else this.log.info("Fingerprint is not available")
       });
   }
 
@@ -55,18 +57,18 @@ export class TouchIdService {
       this.androidFingerprintAuth.encrypt({ clientId: 'Copay' })
         .then(result => {
           if (result.withFingerprint) {
-            console.log('Successfully authenticated with fingerprint.');
+            this.log.info('Successfully authenticated with fingerprint.');
             resolve();
           } else if (result.withBackup) {
-            console.log('Successfully authenticated with backup password!');
+            this.log.info('Successfully authenticated with backup password!');
             resolve();
-          } else console.log('Didn\'t authenticate!');
+          } else this.log.info('Didn\'t authenticate!');
         }).catch(error => {
           if (error === this.androidFingerprintAuth.ERRORS.FINGERPRINT_CANCELLED) {
-            console.log('Fingerprint authentication cancelled');
+            this.log.warn('Fingerprint authentication cancelled');
             reject();
           } else {
-            console.error(error);
+            this.log.error(error);
             resolve();
           };
         });

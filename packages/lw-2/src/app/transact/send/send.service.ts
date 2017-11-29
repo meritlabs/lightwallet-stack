@@ -22,7 +22,7 @@ export class SendService {
     private config: ConfigService,    
     private logger: Logger    
   ) {
-    console.log('Hello SendService');
+    this.logger.info('Hello SendService');
     this.bitcore = this.bwcService.getBitcore();
   }
 

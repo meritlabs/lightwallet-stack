@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { Logger } from 'merit/core/logger';
 import 'rxjs/add/operator/map';
 
@@ -50,7 +50,7 @@ export class AppService {
   private jsonPath: string = 'assets/appConfig.json';
 
   constructor(
-    public http: Http,
+    public http: HttpClient,
     private logger: Logger,
     private language: LanguageService,
     private config: ConfigService,
@@ -85,7 +85,6 @@ export class AppService {
 
 
   private loadInfo(): Observable<AppSettings> {
-    return this.http.get(this.jsonPath)
-      .map((res: Response) => res.json());
+    return <any>this.http.get(this.jsonPath);
   }
 }

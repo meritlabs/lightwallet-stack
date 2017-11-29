@@ -224,7 +224,7 @@ export class WalletsView {
 
   private showPasswordEasyReceivePrompt(receipt:EasyReceipt, highlightInvalidInput = false) {
 
-    console.log('show alert', highlightInvalidInput); 
+    this.logger.info('show alert', highlightInvalidInput); 
 
     this.alertController.create({
       title: `You've got merit from ${receipt.senderName}!`,
@@ -273,7 +273,7 @@ export class WalletsView {
         });
         }}
       ]
-    });
+    }).present();
   }
 
 

@@ -5,6 +5,7 @@ import { ToastConfig } from "merit/core/toast.config";
 import { MeritToastController } from "merit/core/toast.controller";
 import { ConfigService } from "merit/shared/config.service";
 import { WalletService } from "merit/wallets/wallet.service";
+import { Logger } from 'merit/core/logger';
 
 
 @IonicPage()
@@ -25,10 +26,11 @@ export class EditWalletView {
     private app:App,
     private toastCtrl:MeritToastController,
     private configService:ConfigService,
-    private walletService:WalletService
+    private walletService:WalletService,
+    private logger: Logger
   ) {
       this.wallet = this.navParams.get('wallet');
-      console.log(this.wallet);
+      this.logger.info(this.wallet);
   }
 
   changeBalanceHidden(isHidden) {
