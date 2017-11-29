@@ -6,6 +6,7 @@ import { MeritToastController } from "merit/core/toast.controller";
 import * as Promise from 'bluebird';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
+import { Logger } from 'merit/core/logger';
 
 
 // Unlock view for wallet
@@ -29,7 +30,8 @@ export class UnlockView {
     private toastCtrl: MeritToastController,
     private loaderCtrl: LoadingController, 
     private navCtrl: NavController,
-    private easyReceiveService:EasyReceiveService
+    private easyReceiveService: EasyReceiveService,
+    private logger: Logger
   ) {
       
   }
@@ -55,7 +57,7 @@ export class UnlockView {
         loader.present();
 
         return this.walletService.createDefaultWallet(this.formData.unlockCode).then((wallet) => {
-          console.debug('created wallet', wallet);
+          this.logger.debug('created wallet', wallet);
           loader.dismiss();
 
           /** todo store wallet */
@@ -68,6 +70,7 @@ export class UnlockView {
         }).catch((err) => {
           loader.dismiss();
           this.unlockState = 'fail';
+          this.logger.debug("Could not unlock wallet: ", err);
           this.toastCtrl.create({ message: JSON.stringify(err), cssClass: ToastConfig.CLASS_ERROR }).present();
         });
       }
