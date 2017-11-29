@@ -7,6 +7,7 @@ import * as Promise from 'bluebird';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { Logger } from 'merit/core/logger';
+import { NavParams } from 'ionic-angular/navigation/nav-params';
 
 
 // Unlock view for wallet
@@ -30,6 +31,7 @@ export class UnlockView {
     private toastCtrl: MeritToastController,
     private loaderCtrl: LoadingController, 
     private navCtrl: NavController,
+    private navParams: NavParams,
     private easyReceiveService: EasyReceiveService,
     private logger: Logger
   ) {
@@ -37,9 +39,12 @@ export class UnlockView {
   }
 
   ionViewDidLoad() {
+    // An unlock code from a friend sharing the link. 
+    this.formData.unlockCode = this.navParams.get('unlockCode') || '';
     
     this.easyReceiveService.getPendingReceipts().then((receipts) => {
       this.easyReceipt = receipts.pop();
+      // The unlock code from a pending easyReceipt takes priority.
       if (this.easyReceipt) this.formData.unlockCode = this.easyReceipt.unlockCode;
     });
 
