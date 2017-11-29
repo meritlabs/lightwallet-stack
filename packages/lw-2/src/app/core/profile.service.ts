@@ -842,7 +842,7 @@ export class ProfileService {
             wallet.getNotifications({
               timeSpan: TIME_STAMP,
               includeOwn: true,
-            }).then(() => (n: any) => {
+            }).then((n: any) => {
               
               wallet.cachedActivity = {
                 n: n.slice(-MAX),
