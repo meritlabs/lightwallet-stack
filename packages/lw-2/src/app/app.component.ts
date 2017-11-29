@@ -19,6 +19,7 @@ import * as _ from 'lodash';
 import * as Promise from 'bluebird';
 import { PushNotificationsService } from 'merit/core/push-notification.service';
 import { FCM } from '@ionic-native/fcm';
+import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 
 
 @Component({
@@ -65,127 +66,52 @@ export class MeritLightWallet {
 
 
     this.platform.resume.subscribe(() => {
-      this.logger.info("Inside Subscribe :: 1")
-      return this.deepLinkService.getBranchData(() => { }).then((data) => {
-        this.logger.info("Inside Subscribe :: 2")
-
-        return this.profileService.getProfile().then((profile) => {
-          this.logger.info("Inside Subscribe :: 3")
-
-          // We have branch data, let's check it for an easySend
-          if (data && !_.isEmpty(data)) {
-            if (data.sk && data.se) {
-              this.logger.info("Inside Subscribe :: 4")
-
-              return this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt) => {
-                let viewToNavigate = (profile.credentials && profile.credentials.length) ?
-                  'TransactView' : 'UnlockView';
-                return this.app.getRootNavs()[0].setRoot(viewToNavigate);
-              });
-            }
-          }
-          if (!profile.credentials) {
-            this.logger.info("Inside Subscribe :: 5")
-
-            // User is new
-            if (data.uc) {
-              this.logger.info("Inside Subscribe :: 6")
-
-              // User has an unlockCode from a link they clicked
-              this.app.getRootNavs()[0].setRoot('UnlockView', { unlockCode: data.uc });
-            } else {
-              this.logger.info("Inside Subscribe :: 7")
-
-              return this.app.getRootNavs()[0].setRoot('TourView');
-            }
-          } else {
-            this.logger.info("Inside Subscribe :: 8")
-
-            // User is returning
-            return this.app.getRootNavs()[0].setRoot('TransactView');
-          }
-        });
-      });
-    })
-
+      this.loadProfileAndEasySend();
+    });
   }
+
+  /**
+   * Check the status of the profile, and load the right next view.
+   */
+   private loadProfileAndEasySend(): void {
+    this.profileService.getProfile().then((profile) => {
+      // If the user has credentials and a profile, then let's send them to the transact
+      // view
+      this.rootComponent = (profile && profile.credentials && profile.credentials.length) ?
+      'TransactView' : 'OnboardingView';
+
+      this.deepLinkService.getBranchData(() => { }).then((data) => {
+        // If the branch params contain the minimum params needed for an easyReceipt, then
+        // let's validate and save them. 
+        if (data && !_.isEmpty(data) && data.sk && data.se) {
+          this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt: EasyReceipt) => {
+            if ( easyReceipt && !(profile && profile.credentials && profile.credentials.length) ) {
+              // User received easySend, but has no wallets yet. 
+              // Skip to unlock view.
+              this.rootComponent = 'UnlockView'
+            }
+          }).catch((err) => {
+            this.logger.warn("Error validating and saving easySend params: ", err)
+          });
+        } 
+      }).catch((err) => {
+        this.logger.error(err);
+      })
+    });
+
+   }
 
   /*
      Upon loading the app (first time or later), we must
      load and bind the persisted profile (if it exists).
   */
   private initializeApp() {
-    this.logger.info("Inside Initialize :: 1")
-
-    this.profileService.getProfile().then((profile) => {
-      this.logger.info("Inside Initialize :: 2")
-
-
-      this.deepLinkService.getBranchData(() => { }).then((data) => {
-        this.logger.info("Inside Initialize :: 3")
-
-        if (data && !_.isEmpty(data)) {
-          this.logger.info("Inside Initialize :: 4")
-
-          this.easyReceiveService.validateAndSaveParams(data).then(() => {
-            this.logger.info("Inside Initialize :: 5")
-            this.logger.info("What's the profile here?: ", profile)
-
-            this.rootComponent = (profile.credentials && profile.credentials.length) ?
-              'TransactView' : 'UnlockView';
-          }).catch(() => {
-            this.logger.info("Inside Initialize :: 6")
-
-            this.rootComponent = (profile.credentials && profile.credentials.length) ?
-              'TransactView' : 'OnboardingView';
-          });
-        } else {
-          this.logger.info("Inside Initialize :: 7")
-
-          this.rootComponent = (profile.credentials && profile.credentials.length) ?
-            'TransactView' : 'OnboardingView';
-        }
-
-      }).catch((err) => {
-        this.logger.error(err);
-        this.rootComponent = 'OnboardingView';
-      })
-
-
-    });
-
+    this.loadProfileAndEasySend();
+    
     if (this.platform.is('cordova')) {
       this.statusBar.styleLightContent();
       this.splashScreen.hide();
     }
-    // Check Profile
-    this.profileService.loadAndBindProfile().then((profile: any) => {
-
-      this.openLockModal();
-      if (profile) {
-        this.rootComponent = 'TransactView';
-      } else {
-        //this.profileService.createProfile();
-        this.rootComponent = 'OnboardingView';
-
-      }
-
-      // Check Profile
-      this.profileService.loadAndBindProfile().then((profile: any) => {
-
-        this.openLockModal();
-        if (profile) {
-          this.rootComponent = 'TransactView';
-        } else {
-          //this.profileService.createProfile();
-          this.rootComponent = 'OnboardingView';
-        }
-      }).catch((err: any) => {
-        this.logger.warn(err);
-        //TODO: Send them somewhere better.
-        this.rootComponent = 'OnboardingView';
-      });
-    });
   }
 
 
