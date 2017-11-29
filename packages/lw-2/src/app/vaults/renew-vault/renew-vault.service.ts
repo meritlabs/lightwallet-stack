@@ -14,6 +14,7 @@ export class RenewVaultService {
 
     private bitcore: any;
     private walletClient: IMeritWalletClient = null;
+    private vault: any;
 
     constructor(
         private bwcService: BwcService,

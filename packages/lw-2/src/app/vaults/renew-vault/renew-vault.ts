@@ -47,7 +47,6 @@ export class VaultRenewView {
     private walletService: WalletService,
     private vaultsService: VaultsService,  
     private profileService: ProfileService,
-    private renewVaultService: RenewVaultService,
   ){
     this.vault = this.navParams.get('vault');
     this.bitcore = this.bwc.getBitcore();
@@ -75,10 +74,7 @@ export class VaultRenewView {
     newVault.whitelist = this.formData.whitelist;
     newVault.masterKey = this.formData.masterKey;
     newVault.vaultName = this.formData.vaultName;
-    return this.renewVaultService.renewVault(newVault, this.formData.masterKey).then(() => {
-      this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
-      return;
-    });
+    this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault });      
   }
 
   regenerateMasterKey() {
