@@ -397,7 +397,7 @@ export class WalletsView {
     return this.profileService.getWallets().each((wallet) => {
       return this.walletService.getStatus(wallet).then((status) => {
         wallet.status = status;
-        return wallet;
+        return Promise.resolve(wallet);
       }).catch((err) => {
         Promise.reject(new Error('could not update wallets' + err));
       });
