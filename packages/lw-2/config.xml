@@ -5,7 +5,7 @@
     <author email="support@merit.me" href="">
     MeritLabs Inc. 
     </author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.1.110:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -78,6 +78,14 @@
         <splash height="480" src="resources/ios/splash/Default~iphone.png" width="320" />
         <splash height="2732" src="resources/ios/splash/Default@2x~universal~anyany.png" width="2732" />
     </platform>
+    <branch-config>
+        <branch-key value="key_live_edqKoEEX0yip4cpCBjbnXlpkqBmai2VN" />
+        <uri-scheme value="merit" />
+        <link-domain value="c213.app.link" />
+        <ios-team-release value="MLJ7SU96NS" />
+    </branch-config>
+    <allow-navigation href="http://192.168.1.110:8100" />
+    <allow-navigation href="http://192.168.1.139:8100" />
     <engine name="ios" spec="~4.3.1" />
     <engine name="android" spec="^6.3.0" />
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.2.1" />
@@ -100,12 +108,6 @@
     <plugin name="phonegap-plugin-barcodescanner" spec="^6.0.8">
         <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
     </plugin>
-    <branch-config>
-        <branch-key value="key_live_edqKoEEX0yip4cpCBjbnXlpkqBmai2VN" />
-        <uri-scheme value="merit" />
-        <link-domain value="c213.app.link" />
-        <ios-team-release value="MLJ7SU96NS" />
-    </branch-config>
-    <plugin name="branch-cordova-sdk" spec="^2.6.16" />
+    <plugin name="branch-cordova-sdk" spec="^2.6.18" />
     <plugin name="cordova-plugin-fcm" spec="^2.1.2" />
 </widget>
