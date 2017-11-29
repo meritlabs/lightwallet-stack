@@ -37,8 +37,23 @@ export class AddressBookView {
   private updateContacts() {
     return new Promise((resolve, reject) => {
       this.addressBookService.getAddressbook('testnet').then((addressbook) => {
-        this.contacts  = _.map(addressbook, (value) => value);
-        resolve();
+        let meritContacts  = _.map(addressbook, (value) => value);
+
+        this.addressBookService.getAllDeviceContacts().then((deviceContacts) => {
+
+          this.contacts = meritContacts.concat(deviceContacts);
+
+          this.contacts.sort((a,b) => {
+            if ( (a.meritAddress && b.meritAddress) || (!a.meritAddress && !b.meritAddress) ) {
+              return a.name > b.name ? 1 : -1;
+            } else {
+              return a.meritAddress ? -1 : 1;
+            }
+          });
+          resolve();
+
+        });
+
       });
     });
   }
@@ -54,7 +69,7 @@ export class AddressBookView {
   }
 
   toAddContact() {
-    this.navCtrl.push('AddContactView');
+    this.navCtrl.push('EditContactView');
   }
 
   toContact(contact) {
