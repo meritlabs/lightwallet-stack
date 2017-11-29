@@ -87,7 +87,7 @@ export class VaultDetailsView {
 
     await this.getVaultTxHistory().then((txs) => {
       console.log(txs);
-      this.transactions = txs;
+      this.transactions = _.map(txs, this.processTx.bind(this));
       this.vault.completeHistory = txs;
     });
 
@@ -145,5 +145,19 @@ export class VaultDetailsView {
       this.vault.altAmountStr = new FiatAmount(this.vault.altAmount);
       this.vault.amountStr = this.txFormatService.formatAmountStr(this.vault.amount);
     });
+  }
+
+  private processTx(tx: any): any {
+    console.log('this', this);
+    const thisAddr = new this.bitcore.Address(this.vault.address).toString();
+    const summ = _.reduce(tx.outputs, (acc: number, output: any) => {
+      if (output.address != thisAddr) {
+        return acc;
+      }
+      return acc + output.amount;
+    }, 0);
+    console.log('output summ', summ);
+    tx.amountStr = this.txFormatService.formatAmountStr(summ);
+    return tx;
   }
 }
