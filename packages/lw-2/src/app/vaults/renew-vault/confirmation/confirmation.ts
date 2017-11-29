@@ -50,7 +50,9 @@ export class VaultRenewConfirmationView {
         const opts = { network: this.vault.address.network };
         const creds = this.walletClient.getFromMnemonic(words, opts);
         console.log('credentials', creds);
-        return this.renewVaultService.renewVault(this.updatedVault, creds.xPrivKey).then(() => {
+        const xMasterKey = new this.bitcore.HDPrivateKey.fromString(creds.xPrivKey);
+        console.log('xMasterKey', xMasterKey);
+        return this.renewVaultService.renewVault(this.updatedVault, xMasterKey).then(() => {
             this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
             return;
         });
