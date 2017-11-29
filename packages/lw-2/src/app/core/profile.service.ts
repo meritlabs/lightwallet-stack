@@ -324,7 +324,7 @@ export class ProfileService {
   /* 
     Profile-related Methods
   */ 
-  public loadAndBindProfile(): Promise<any> {
+  public loadAndBindProfile(): Promise<Profile> {
     return new Promise((resolve, reject) => {
       return this.persistenceService.getProfile().then((profile: any) => {
 
@@ -333,6 +333,12 @@ export class ProfileService {
         }
         this.profile = new Profile();
         this.profile = this.profile.fromObj(profile);
+
+        // There is no profile, let's not bother binding
+        if (_.isEmpty(profile)) {
+          return resolve(); 
+        }
+        
         // Deprecated: storageService.tryToMigrate
         this.logger.debug('Profile read');
         return this.bindProfile(this.profile).then(() => {
@@ -350,17 +356,18 @@ export class ProfileService {
 
 
 
-  // todo move to Starter module, with minimal dependencies
+  // TODO: move to Starter module, with minimal dependencies
   public getProfile():Promise<Profile> {
-      if (this.profile) {
+      // If there are no credentials, we assume that the profile has not been bound.  
+      if (this.profile && this.profile.credentials.length > 0) {
         return Promise.resolve(this.profile);
       } else {
-        return this.loadProfile();
+        return this.loadAndBindProfile();
       }
   }
 
   // todo move to Starter module, with minimal dependencies
-  private  loadProfile():Promise<Profile> {
+  private loadProfile():Promise<Profile> {
     return new Promise((resolve, reject) => {
       this.persistenceService.getProfile().then((profile: any) => {
         if (!profile) return resolve();
@@ -388,18 +395,18 @@ export class ProfileService {
             return resolve();
           }
 
-          return Promise.each(profile.credentials, (credentials) => {
+          return resolve(Promise.each(profile.credentials, (credentials) => {
             return this.bindWallet(credentials).then((client: any) => {
               i++;
               totalBound += 1;
               if (i == l) {
                 this.logger.info('Bound ' + totalBound + ' out of ' + l + ' wallets');
-                return resolve();
+                return Promise.resolve();
               }
             }).catch((err) => {
               return reject(err);
             });
-          });
+          }));
         });
       };
 
