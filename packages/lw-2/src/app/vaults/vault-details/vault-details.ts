@@ -101,7 +101,7 @@ export class VaultDetailsView {
   goToTxDetails(tx: any) {
     this.navCtrl.push(
       'TxDetailsView',
-      { wallet: this.walletClient, walletId: this.walletClient.credentials.walletId, vaultId: this.vault._id, vault: this.vault, txid: tx.txid }
+      { wallet: this.walletClient, walletId: this.walletClient.credentials.walletId, vaultId: this.vault._id, vault: this.vault, txId: tx.txid }
     );
   }
 
