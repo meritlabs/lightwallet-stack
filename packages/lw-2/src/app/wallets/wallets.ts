@@ -134,7 +134,7 @@ export class WalletsView {
       }).catch((err) => {
         console.log("@@ERROR IN Updating statuses.");
         console.log(err);
-        return reject();
+        return resolve();
       });
       return this.processEasyReceive();
     }).then(() => {
