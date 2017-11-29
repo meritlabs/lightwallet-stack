@@ -321,6 +321,7 @@ export class Credentials {
 
     let deriveFn = _.noop;
     let network = this._getNetworkFromExtendedKey(this.xPrivKey || this.xPubKey);
+    console.log(this.network, network);
     if (this.network) {
       $.checkState(this.network == network);
     } else {

@@ -193,6 +193,7 @@ export interface IAPI {
   createVault(vaultTxProposal: any);
   getVaultCoins(vaultAddress: any);
   getVaultTxHistory(vaultId: string, network: string): Promise<Array<any>>;
+  getFromMnemonic(words: Array<string>, opts: any): Credentials;
 }
 
 export class API implements IAPI {
@@ -2769,5 +2770,9 @@ export class API implements IAPI {
 
     var url = `/v1/vaults/${vaultId}/txhistory?network=${network}`;
     return this._doGetRequest(url);
+  };
+
+  getFromMnemonic(words: Array<string>, opts: any = {}): Credentials {
+    return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
   };
 }
