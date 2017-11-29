@@ -896,6 +896,7 @@ export class WalletService {
           return resolve(wallet);
         });
       }).catch((err: any) => {
+        this.logger.warn("Error creating wallet: ", err);
         return reject(err);
       });
     });
@@ -1288,7 +1289,7 @@ export class WalletService {
 
       this.logger.debug('Creating Wallet:', showOpts);
       setTimeout(() => {
-        return this.seedWallet(opts).then((walletClient: any) => {
+        return this.seedWallet(opts).then((walletClient: MeritWalletClient) => {
 
           let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
           let myName = opts.myName || 'me'; // TODO GetTextCatalog
@@ -1304,6 +1305,7 @@ export class WalletService {
             return resolve(walletClient);
           });
         }).catch((err: any) => {
+          this.logger.warn("Error creating wallet in DCW: ", err);
           return reject(new Error(this.bwcErrorService.cb(err, 'Error creating wallet')));
         });
       }, 5000);
