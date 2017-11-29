@@ -1,18 +1,28 @@
 addressbook-view {
-    
-      ion-card {
-        text-align: center;
-        .icon {
-          height: 50px;
-          width: 50px;
-          box-shadow: 3px 3px 3px rgba(0,0,0,0.2);
-          margin: 0 auto;
-          margin-bottom: 15px;
-          padding: 5px;
-          background: rgba(233, 150, 122, 0.1);
-          border-radius: 3px;
-        }
-      }
-    
+
+  ion-card {
+    text-align: center;
+    .icon {
+      height: 50px;
+      width: 50px;
+      box-shadow: 3px 3px 3px rgba(0,0,0,0.2);
+      margin: 0 auto;
+      margin-bottom: 15px;
+      padding: 5px;
+      background: rgba(233, 150, 122, 0.1);
+      border-radius: 3px;
     }
-    
+  }
+
+  .merit-avatar {
+    height: 24px;
+    width: 24px;
+    min-height: 24px;
+    min-width: 24px;
+    img {
+      height: 24px;
+      width: 24px;
+    }
+  }
+
+}
