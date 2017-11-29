@@ -737,7 +737,7 @@ export class API {
           senderName: 'Someone', // TODO: get user name or drop sender name from data
           senderPubKey: pubKey.toString(),
           secret: rcvPair.secret.toString('hex'),
-          unlockcode: this.shareCode,
+          unlockCode: opts.unlockCode,
           blockTimeout: timeout,
         };
 
