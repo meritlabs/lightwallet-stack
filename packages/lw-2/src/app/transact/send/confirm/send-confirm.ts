@@ -15,6 +15,7 @@ import * as  _  from 'lodash';
 import * as Promise from 'bluebird';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
+import { easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 
 /**
  * The confirm view is the final step in the transaction sending process 
@@ -46,8 +47,7 @@ export class SendConfirmView {
     allowSpendUnconfirmed?: boolean,
     usingCustomFee?: boolean,
     script?: any,
-    senderPublicKey?: any,
-    easySendSecret?: string
+    easySendURL?: string
   };
   private wallet: MeritWalletClient;
   private walletConfig: any;
@@ -181,8 +181,7 @@ export class SendConfirmView {
     return this.easySendService.createEasySendScriptHash(this.wallet).then((easySend) => {
       this.txData.script = easySend.script;
       this.txData.script.isOutput = true;
-      this.txData.easySendSecret = easySend.secret;
-      this.txData.senderPublicKey = easySend.senderPubKey;
+      this.txData.easySendURL = easySendURL(easySend);
       this.txData.toAddress = this.txData.script.toAddress().toString();
       return Promise.resolve();
     })

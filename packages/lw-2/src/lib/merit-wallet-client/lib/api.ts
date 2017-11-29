@@ -734,8 +734,11 @@ export class API {
         result = {
           receiverPubKey: rcvPair.key.publicKey,
           script: script.toScriptHashOut(),
+          senderName: 'Someone', // TODO: get user name or drop sender name from data
           senderPubKey: pubKey.toString(),
-          secret: rcvPair.secret.toString('hex')
+          secret: rcvPair.secret.toString('hex'),
+          unlockcode: this.shareCode,
+          blockTimeout: timeout,
         };
 
         return resolve(result);
