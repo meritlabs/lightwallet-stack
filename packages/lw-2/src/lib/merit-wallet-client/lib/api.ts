@@ -2081,16 +2081,16 @@ export class API implements IAPI {
     $.checkState(this.credentials.sharedEncryptingKey);
     $.checkArgument(opts);
 
-
     let args = this._getCreateTxProposalArgs(opts);
     return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
+      if(txp.code && txp.code == "INSUFFICIENT_FUNDS") {
+        return Promise.reject(Errors.INSUFFICIENT_FUNDS);
+      }
       return this._processTxps(txp).then(() => {
 
         if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey)) {
           return Promise.reject(Errors.SERVER_COMPROMISED);
         }
-        this.log.error("TXP");
-        this.log.error(txp);
         return Promise.resolve(txp);
       });
     });
@@ -2110,19 +2110,16 @@ export class API implements IAPI {
     $.checkArgument(opts.txp, 'txp is required');
 
     $.checkState(parseInt(opts.txp.version) >= 3);
-    console.log('after checks');
 
     let t = Utils.buildTx(opts.txp);
-    console.log('after utils');
     let hash = t.uncheckedSerialize();
     let args = {
       proposalSignature: Utils.signMessage(hash, this.credentials.requestPrivKey)
     };
-    console.log('before tx submit');
 
     let url = '/v1/txproposals/' + opts.txp.id + '/publish/';
     return this._doPostRequest(url, args).then((txp) => {
-      return this._processTxps(txp);
+      return txp;
     }).catch((err) => {
       return Promise.reject(new Error('error in post /v1/txproposals/' + err));
     });
