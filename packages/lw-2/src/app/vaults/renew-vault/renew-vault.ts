@@ -74,7 +74,7 @@ export class VaultRenewView {
     newVault.whitelist = this.formData.whitelist;
     newVault.masterKey = this.formData.masterKey;
     newVault.vaultName = this.formData.vaultName;
-    this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault });      
+    this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });      
   }
 
   regenerateMasterKey() {
