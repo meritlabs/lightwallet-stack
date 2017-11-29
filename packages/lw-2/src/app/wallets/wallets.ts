@@ -118,10 +118,8 @@ export class WalletsView {
       });
       return this.processEasyReceive();
     }).then(() => {
-      console.log('getting vaults');
       return this.vaultsService.getVaults(_.head(this.wallets));
     }).then((vaults) => {
-      console.log('getting vaults', vaults);
       _.each(vaults, (vault) => {
         vault.altAmount = this.rateService.toFiat(vault.amount, _.head(this.wallets).cachedStatus.alternativeIsoCode);
         vault.altAmountStr = new FiatAmount(vault.altAmount);

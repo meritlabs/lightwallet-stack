@@ -7,8 +7,8 @@
 <ion-content>
 
     <div class="balance-header">
-        <div class="balance-str">{{ vault.amount }}</div>
-        <div class="balance-alt-str"> {{ alternativeBalanceStr | toFiat : vault.amount | async }}</div>
+        <div class="balance-str">{{ vault.amountStr }}</div>
+        <div class="balance-alt-str"> {{ vault.altAmountStr.amountStr }}</div>
         <div *ngIf="vault.status == 'pending'" class="assertive">
             <span translate>Pending</span>
         </div>
@@ -24,7 +24,7 @@
             <ion-label translate>Whitelist</ion-label>
         </ion-item>
 
-        <ion-item *ngFor="let address of whitelist">
+        <ion-item class="vault-item" *ngFor="let address of whitelist">
             <ion-label class="whitelist-item">
                 <i class="wallet-icon" item-start *ngIf="address.type == 'vault'">
                     <img src="assets/img/icon-lock-white.svg" >

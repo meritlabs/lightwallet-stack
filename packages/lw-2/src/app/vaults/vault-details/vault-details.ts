@@ -11,6 +11,8 @@ import { CreateVaultService } from "merit/vaults/create-vault/create-vault.servi
 import { WalletService } from "merit/wallets/wallet.service";
 import { IMeritWalletClient } from 'src/lib/merit-wallet-client';
 import { TxFormatService } from "merit/transact/tx-format.service";
+import { FiatAmount } from 'merit/shared/fiat-amount.model';
+import { RateService } from 'merit/transact/rate.service';
 
 
 @IonicPage({
@@ -39,6 +41,7 @@ export class VaultDetailsView {
     private vaultsService: VaultsService,
     private bwc: BwcService,
     private txFormatService:TxFormatService,
+    private rateService: RateService,
   ) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
@@ -48,13 +51,6 @@ export class VaultDetailsView {
     this.whitelist = this.vault.whitelist;
     console.log("Inside the vault-details view.");
     console.log('Vault to display:', this.vault);
-
-  }
-
-  ionViewWillLeave() {
-  }
-
-  ionViewWillEnter() {
   }
 
   async ionViewDidLoad() {
@@ -94,6 +90,8 @@ export class VaultDetailsView {
       this.transactions = txs;
       this.vault.completeHistory = txs;
     });
+
+    await this.formatAmounts();
   }
 
   toResetVault() {
@@ -140,4 +138,12 @@ export class VaultDetailsView {
       return this.vaultsService.getVaultTxHistory(walletClient, this.vault);
     });
   };
+
+  private formatAmounts(): void {
+    this.profileService.getHeadWalletClient().then((walletClient: IMeritWalletClient) => {
+      this.vault.altAmount = this.rateService.toFiat(this.vault.amount,walletClient.cachedStatus.alternativeIsoCode);
+      this.vault.altAmountStr = new FiatAmount(this.vault.altAmount);
+      this.vault.amountStr = this.txFormatService.formatAmountStr(this.vault.amount);
+    });
+  }
 }
