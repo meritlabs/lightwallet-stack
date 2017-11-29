@@ -11,6 +11,7 @@ import { Logger } from 'merit/core/logger';
 
 import * as _ from 'lodash';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { AddressBook, MeritContact, emptyMeritContact, Searchable } from 'merit/shared/address-book/contact/contact.model';
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
@@ -27,17 +28,18 @@ export class SendView {
   private walletsToTransfer: Array<any>; // Eventually array of wallets
   private showTransferCard: boolean;
   private wallets: Array<MeritWalletClient>;
-  private originalContacts: Array<any>;
-  private  deviceContacts: Array<any>; // On your phone or mobile device.
+  private originalContacts: Array<MeritContact>;
+  private deviceContacts: Array<any>; // On your phone or mobile device.
   private currentContactsPage = 0;
   private showMoreContacts: boolean = false;
-  private filteredList: Array<any>; 
+  private filteredList: Array<MeritContact>; 
   private formData: { 
     search: string
   };
   private searchFocus: boolean;
   private hasFunds: boolean;
   private hasOwnedMerit: boolean; 
+  private network: string;
 
   
   public hasContacts:boolean; 
@@ -59,10 +61,14 @@ export class SendView {
   }
 
   async ionViewDidLoad() {
-    await this.updateHasFunds();
-    this.originalContacts = [];
-    this.initDeviceContacts();
-    this.hasWallets();
+    await this.updateHasFunds().then(() => {
+      this.originalContacts = [];
+      this.initList();
+      this.initContactList();
+      return this.initDeviceContacts();
+    }).catch((err) => {
+      return this.popupService.ionicAlert('SendView Error:', err.toString());
+    });
   }
 
   private hasWallets(): boolean {
@@ -93,19 +99,15 @@ export class SendView {
     });
   }
 
-  private addressBookToContactList(ab): Promise<any[]> {
+  private addressBookToContactList(ab: AddressBook): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      let cl = _.map(ab, function(v:any, k) {
+      let cl = _.map(ab, (v:any, k) => {
         let item:any = {
           name: _.isObject(v) ? v.name : v,
-          address: k,
+          meritAddress: k,
           email: _.isObject(v) ? v.email : null,
           phoneNumber: _.isObject(v) ? v.phoneNumber : null,
-          recipientType: 'contact',
           sendMethod: 'address',
-          getAddress: function(cb) {
-            return cb(null, k);
-          },
         };
         item.searchTerm = item.name + item.email + item.phoneNumber;
         return item;
@@ -114,10 +116,9 @@ export class SendView {
     });
   };
 
-  private initContactList(): Promise<any> {
-    let addressBookList = Promise.promisify(this.addressBookService.list);
-    return addressBookList().then((ab) => {
-      this.hasContacts = _.isEmpty(ab) ? false : true;
+  private initContactList(): Promise<void> {
+    return this.addressBookService.list(this.network).then((ab) => {
+      this.hasContacts = !_.isEmpty(ab);
 
       return this.addressBookToContactList(ab).then((completeContacts) => {
         this.originalContacts = this.originalContacts.concat(completeContacts);
@@ -129,22 +130,17 @@ export class SendView {
   private initDeviceContacts(): Promise<any> {
 
     return this.addressBookService.getAllDeviceContacts().then((contacts) => {
-      contacts = _.filter(contacts, (contact:any) => {
+      contacts = _.filter(contacts, (contact) => {
         return !(_.isEmpty(contact.emails) && _.isEmpty(contact.phoneNumbers));
       });
-      this.deviceContacts = _.map(contacts, function(contact:any) {
+      this.deviceContacts = _.map(contacts, (contact) => {
         var item:any = {
           name: contact.name.formatted,
-          emails: _.map(contact.emails, function(o:any) { return o.value; }),
-          phoneNumbers: _.map(contact.phoneNumbers, function(o:any) { return o.value; }),
+          emails: _.map(contact.emails, (email)  => email.value),
+          phoneNumbers: _.map(contact.phoneNumbers, (phoneNumber) => phoneNumber.value),
           address: '',
-          getAddress: function(cb) { return cb(); }
         };
-        item.searchTerm = item.name + _.reduce(
-          item.emails.concat(item.phoneNumbers),
-          function(l, r) { return l + r; },
-          ''
-        );
+        item.searchTerm = item.name + _.sum(item.emails.concat(item.phoneNumbers));
         return item;
       });
  
@@ -159,16 +155,16 @@ export class SendView {
     //TODO: Lifecycle tick if needed
   }
 
-  private findMatchingContacts(list, term):Array<any> {
+  private findMatchingContacts<T extends Searchable>(list: T[], term: string): T[] {
     return _.filter(list, (item) => {
       return _.includes(item.searchTerm.toLowerCase(), term.toLowerCase());
     });
   }
 
-  private contactWithSendMethod(contact, search) {
-    var obj = _.clone(contact);
+  private contactWithSendMethod(contact, search: string): MeritContact {
+    let obj = _.clone(contact);
 
-    var email = _.find(obj.emails, function(x:any) {
+    let email = _.find(obj.emails, (x: string) => {
       return _.includes(x.toLowerCase(), search.toLowerCase());
     });
     if (email) {
@@ -178,7 +174,7 @@ export class SendView {
       return obj;
     }
 
-    var phoneNumber = _.find(obj.phoneNumbers, function(x:any) {
+    let phoneNumber = _.find(obj.phoneNumbers, (x: string) => {
       return _.includes(x.toLowerCase(), search.toLowerCase());
     });
     if (phoneNumber) {
@@ -193,6 +189,20 @@ export class SendView {
     obj.phoneNumber = _.find(obj.phoneNumbers) || '';
     obj.sendMethod = obj.phoneNumber ? 'sms' : 'email';
     return obj;
+  }
+
+  private emptyContact = emptyMeritContact();
+
+  private justMeritAddress(meritAddress: string): MeritContact {
+    return _.defaults({meritAddress: meritAddress, sendMethod: 'address'}, this.emptyContact);
+  }
+
+  private justPhoneNumber(phoneNumber: string): MeritContact {
+    return _.defaults({phoneNumber: phoneNumber, sendMethod: 'sms'}, this.emptyContact);
+  }
+
+  private justEmail(email: string): MeritContact {
+    return _.defaults({email: email, sendMethod: 'email'}, this.emptyContact);
   }
 
   private openScanner(): void {
@@ -229,7 +239,7 @@ export class SendView {
                 this.navCtrl.push('SendAmountView', {
                   wallet: wallets[0],
                   sending: true,
-                  address: search
+                  recipient: this.justMeritAddress(search)
                 });
               });
         } else {
@@ -252,23 +262,12 @@ export class SendView {
   }
 
   private goToAmount(item) {
-    item.getAddress(function(err, addr) {
-      if (err) {
-        //Error is already formated
-        return this.popupService.ionicAlert(err);
-      }
-      if (addr) {
-        this.logger.debug('Got toAddress:' + addr + ' | ' + item.name);
-      }
-      return this.navCtrl.go('amount', {
-        recipientType: item.recipientType,
-        toAddress: addr,
-        toName: item.name,
-        toEmail: item.email,
-        toPhoneNumber: item.phoneNumber,
-        sendMethod: item.sendMethod,
-        toColor: item.color
-      })
+    return this.profileService.getWallets().then((wallets) => {
+      return this.navCtrl.push('SendAmountView', {
+        wallet: wallets[0],
+        sending: true,
+        recipient: item
+      });
     });
   }
 

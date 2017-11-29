@@ -8,6 +8,8 @@ import { WalletsModule } from "merit/wallets/wallets.module";
 import { NotificationService } from 'merit/shared/notification.service';
 import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 import { FeeService } from 'merit/shared/fee/fee.service';
+import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 /*
   The final step of sending a transaction.  
@@ -24,6 +26,8 @@ import { FeeService } from 'merit/shared/fee/fee.service';
   providers: [
     WalletService,
     NotificationService,
+    EasySendService,
+    SocialSharing,
     FeeService,
     FeeLevelModal
   ]

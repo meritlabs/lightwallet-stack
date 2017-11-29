@@ -1,28 +1,24 @@
 import * as _ from 'lodash';
 import * as Promise from 'bluebird';
+import * as util from 'util';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { Common } from './common';
 import { Logger } from "./log";
 import { Credentials } from './credentials';
 import { ErrorTypes as Errors } from './errors';
+import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 
 const $ = require('preconditions').singleton();
 let EventEmitter = require('eventemitter3');
-let util = require('util');
-let async = require('async');
 let Bitcore = require('bitcore-lib');
 let Mnemonic = require('bitcore-mnemonic');
-let sjcl = require('sjcl');
-let url = require('url');
 let querystring = require('querystring');
-let Stringify = require('json-stable-stringify');
 let Bip38 = require('bip38');
 
 let request = require('superagent');
 
 let Constants = Common.Constants;
-let Defaults = Common.Defaults;
 let Utils = Common.Utils;
 
 let Package = require('../../../../package.json');
@@ -713,7 +709,7 @@ export class API {
    * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
    * @param {Callback}    cb
    */
-  buildEasySendScript(opts:any = {}): Promise<any> {
+  buildEasySendScript(opts:any = {}): Promise<EasySend> {
     return new Promise((resolve, reject) => {
       
       let result:any = {}
@@ -869,13 +865,72 @@ export class API {
    * Renew vault
    * Will make all pending tx invalid
    */
-  buildRenewVaultTx(opts: any = {}) {
+  buildRenewVaultTx(utxos: any[], newVault: any, masterKey: any, opts: any = {}) {
 
     var network = opts.network || DEFAULT_NET;
-    var fee = opts. fee || DEFAULT_FEE;
+    var fee = opts.fee || DEFAULT_FEE;
+
+    let totalAmount = _.reduce(utxos, (sum, utxo) => {
+      return sum + utxo.micros;
+    }, 0);
+
+    let amount =  totalAmount - fee;
+    if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
+
+    let redeemScript = new Bitcore.Script(newVault.redeemScript);
 
     var tx = new Bitcore.Transaction();
-    tx.fee(fee);
+
+    try {
+
+      if(newVault.type == 0) {
+        let tag = newVault.tag;
+
+        let params = [
+          Bitcore.HDPublicKey.fromObject(newVault.spendPubKey).toBuffer(),
+          new Bitcore.PublicKey(newVault.masterPubKey, {network: network}).toBuffer(),
+        ];
+
+        params = params.concat(newVault.whitelist);
+        params.push(Bitcore.Opcode.smallInt(newVault.whitelist.length));
+        params.push(tag);
+        params.push(Bitcore.Opcode.smallInt(newVault.type));
+
+        let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
+
+        tx.addOutput(new Bitcore.Transaction.Output({
+          script: scriptPubKey,
+          micros: amount
+        }));
+
+        tx.fee(fee)
+
+        _.each(utxos, (utxo) => {
+          tx.addInput(
+            new Bitcore.Transaction.Input.PayToScriptHashInput({
+              prevTxId: utxo.txid,
+              outputIndex: utxo.outputIndex,
+              script: utxo.scriptPubKey
+            }, redeemScript, utxo.scriptPubKey), 
+            utxo.scriptPubKey, utxo.micros);
+
+          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
+          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript);
+
+          tx.inputs[tx.inputs.length-1].setScript(inputScript);
+        });
+
+        // Make sure the tx can be serialized
+        tx.serialize();
+
+      } else {
+        this.log.error('Vault type is not supported:', newVault.type);
+        return Errors.COULD_NOT_BUILD_TRANSACTION;
+      }
+    } catch (ex) {
+      this.log.error('Could not build transaction from private key', ex);
+      return Errors.COULD_NOT_BUILD_TRANSACTION;
+    }
 
     return tx;
   };
@@ -2538,19 +2593,18 @@ export class API {
   getVaults() {
     $.checkState(this.credentials);
 
-    var self = this;
-
     var url = '/v1/vaults/';
     return this._doGetRequest(url);
-
   };
 
   createVault(vaultTxProposal: any) {
     $.checkState(this.credentials);
 
-    var self = this;
-
     var url = '/v1/vaults/';
     return this._doPostRequest(url, vaultTxProposal);
   };
+
+  getVaultCoins(vaultAddress: any) {
+    return this.getUtxos({addresses: [vaultAddress]});
+  }
 }

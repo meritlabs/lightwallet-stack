@@ -58,8 +58,8 @@ export class CreateVaultGeneralInfoView {
     });
 
     // fetch users vaults
-    this.getAllWVaults().then((vaults) => {
-      const vaultDTOs = _.map(vaults, (v:any) => {
+    this.getAllVaults().then((vaults) => {
+      const vaultDTOs = _.map(vaults, (v: any) => {
         const name = v.name || v._id;
         const key = new this.bitcore.Address(v.address).toString();
         this.logger.info(key);
@@ -85,13 +85,11 @@ export class CreateVaultGeneralInfoView {
     return wallets;
   }
 
-  private getAllWVaults(): Promise<Array<any>> {
-    return this.profileService.getWallets().then((ws: any[]) => {
-      if (_.isEmpty(ws)) {
-        Promise.reject(new Error('getAllWVaults failed')); //ToDo: add proper error handling;
+  private getAllVaults(): Promise<Array<any>> {
+    return this.profileService.getHeadWalletClient().then((walletClient) => {
+      if(!walletClient) {
+        return null;
       }
-      return _.head(ws);
-    }).then((walletClient) => {
       return this.vaultsService.getVaults(walletClient);
     });
   }
