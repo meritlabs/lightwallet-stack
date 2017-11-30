@@ -148,7 +148,6 @@ export class VaultDetailsView {
   }
 
   private processTx(tx: any): any {
-    console.log('this', this);
     const thisAddr = new this.bitcore.Address(this.vault.address).toString();
     const summ = _.reduce(tx.outputs, (acc: number, output: any) => {
       if (output.address != thisAddr) {
@@ -156,7 +155,7 @@ export class VaultDetailsView {
       }
       return acc + output.amount;
     }, 0);
-    console.log('output summ', summ);
+
     tx.amountStr = this.txFormatService.formatAmountStr(summ);
     return tx;
   }

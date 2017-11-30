@@ -28,6 +28,7 @@ export class TxDetailsView {
   public vault: any;
   private bitcore: any;
   public amountStr: string;
+  private txId: string;
   
   constructor(
     private navParams: NavParams,
@@ -41,6 +42,7 @@ export class TxDetailsView {
   ) {
     this.wallet = this.walletService.getWallet(this.navParams.get('walletId'));
     this.vault = this.navParams.get('vault');
+    this.txId = this.navParams.get('txId');
     this.bitcore = this.bws.getBitcore();
     
     this.tx = {};
@@ -48,15 +50,12 @@ export class TxDetailsView {
   }
 
   ionViewDidEnter() {
-    const txId = this.navParams.get('txId');
     const vault = this.navParams.get('vault');
 
     if (vault) {
-      console.log('it`s vault TX');
       const finish = (list: any) => {
-        console.log('searching list', list, txId);
         let tx = _.find(list, {
-          txid: txId
+          txid: this.txId
         });
 
         if (!tx) throw new Error('Could not get transaction');
@@ -65,24 +64,11 @@ export class TxDetailsView {
 
       this.vaultService.getVaultTxHistory(this.wallet, vault).then((txs) => {
         const tx = finish(txs);
-        this.tx = tx;
-        if (this.tx.action == 'sent') this.title = 'Sent Funds';
-        if (this.tx.action == 'received') this.title = 'Received Funds';
-        if (this.tx.action == 'moved') this.title = 'Moved Funds';
-
-        if (this.tx.safeConfirmed) this.confirmations = this.tx.safeConfirmed;
-        else if (this.tx.confirmations > CONFIRMATION_THRESHOLD)  this.confirmations = `${CONFIRMATION_THRESHOLD}+`;
+        return this.updateTxDetails(tx);
       });
     } else {
-      this.walletService.getTx(this.wallet, txId).then((tx) => {
-        console.log(tx);
-        this.tx = tx;
-        if (this.tx.action == 'sent') this.title = 'Sent Funds';
-        if (this.tx.action == 'received') this.title = 'Received Funds';
-        if (this.tx.action == 'moved') this.title = 'Moved Funds';
-
-        if (this.tx.safeConfirmed) this.confirmations = this.tx.safeConfirmed;
-        else if (this.tx.confirmations > CONFIRMATION_THRESHOLD)  this.confirmations = `${CONFIRMATION_THRESHOLD}+`;
+      this.walletService.getTx(this.wallet, this.txId).then((tx) => {
+        return this.updateTxDetails(tx);
       }).catch((err) => {
         console.log(err);
       });
@@ -98,7 +84,6 @@ export class TxDetailsView {
   }
 
   private processTx(tx: any): any {
-    console.log('this', this);
     const thisAddr = new this.bitcore.Address(this.vault.address).toString();
     const summ = _.reduce(tx.outputs, (acc: number, output: any) => {
       if (output.address != thisAddr) {
@@ -106,14 +91,25 @@ export class TxDetailsView {
       }
       return acc + output.amount;
     }, 0);
-    console.log('output summ', summ);
+
     tx.amount = summ;
     const amountStr = this.txFormatService.formatAmountStr(summ);
     tx.amountStr = amountStr;
     this.amountStr = amountStr;
     tx.altAmount = this.rateService.toFiat(tx.amount, this.wallet.cachedStatus.alternativeIsoCode);
     tx.altAmountStr = new FiatAmount(tx.altAmount);
+
     return tx;
+  }
+
+  private updateTxDetails(tx: any): void {
+    this.tx = tx;
+    if (this.tx.action == 'sent') this.title = 'Sent Funds';
+    if (this.tx.action == 'received') this.title = 'Received Funds';
+    if (this.tx.action == 'moved') this.title = 'Moved Funds';
+
+    if (this.tx.safeConfirmed) this.confirmations = this.tx.safeConfirmed;
+    else if (this.tx.confirmations > CONFIRMATION_THRESHOLD)  this.confirmations = `${CONFIRMATION_THRESHOLD}+`;
   }
 
 }
