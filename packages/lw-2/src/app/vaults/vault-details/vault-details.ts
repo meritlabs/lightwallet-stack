@@ -105,6 +105,10 @@ export class VaultDetailsView {
     );
   }
 
+  spendToAddress(address): void {
+    console.log('to spend tx');
+  }
+
   private getAllWallets(): Promise<Array<any>> {
     const wallets = this.profileService.getWallets().then((ws) => {
       return Promise.all(_.map(ws, async (wallet:any) => {
