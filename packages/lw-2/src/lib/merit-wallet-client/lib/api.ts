@@ -962,7 +962,8 @@ export class API {
       return sum + utxo.micros;
     }, 0);
 
-    if (amount <= availableAmount) return Errors.INSUFFICIENT_FUNDS;
+    console.log('amount vs availableAmount', amount, availableAmount);
+    if (amount >= availableAmount) throw Errors.INSUFFICIENT_FUNDS;
 
     let selectedCoins = [];
     let selectedAmount = 0;
@@ -974,7 +975,8 @@ export class API {
     }
 
     //should never be true
-    if(selectedAmount < amount) return Errors.INSUFFICIENT_FUNDS;
+    console.log('selected vs amount');
+    if(selectedAmount < amount) throw Errors.INSUFFICIENT_FUNDS;
 
     let change = selectedAmount - amount;
 
@@ -982,6 +984,7 @@ export class API {
 
     var tx = new Bitcore.Transaction();
 
+    console.log('before try');
     try {
 
       if(vault.type == 0) {
@@ -1028,11 +1031,11 @@ export class API {
 
       } else {
         this.log.error('Vault type is not supported:', vault.type);
-        return Errors.COULD_NOT_BUILD_TRANSACTION;
+        throw Errors.COULD_NOT_BUILD_TRANSACTION;
       }
     } catch (ex) {
       this.log.error('Could not build transaction from private key', ex);
-      return Errors.COULD_NOT_BUILD_TRANSACTION;
+      throw Errors.COULD_NOT_BUILD_TRANSACTION;
     }
 
     return tx;
