@@ -68,7 +68,18 @@ export class PushNotificationsService {
           // Notification was received in foreground. Let's propogate the event
           // (using Ionic Events) to the relevant view.
           this.logger.info("Let's propogate the event!");
-          this.profileService.propogateBwsEvent(data, this.profileService.getWallet(data.walletId));
+          if (data.walletId) {
+            let wallet: MeritWalletClient = this.profileService.getWallet(data.walletId);
+            if (!_.isEmpty(wallet)) {
+              // Let's re-shape the event to match the notificatons stored in BWS
+              let shapedEvent = {
+                data: _.pick(data, ['amount', 'address', 'txid']),
+                type: data.type,
+                walletId: data.walletId
+              }
+              this.profileService.propogateBwsEvent(shapedEvent, wallet);
+            }
+          }
         }
       });
     });
