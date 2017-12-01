@@ -3,14 +3,11 @@ import * as Promise from 'bluebird';
 
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Logger } from 'merit/core/logger';
-
-import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
-import { WalletService } from "merit/wallets/wallet.service";
-import { ProfileService } from "merit/core/profile.service";
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { BwcService } from 'merit/core/bwc.service';
-
+import { ProfileService } from 'merit/core/profile.service';
+import { WalletService } from "merit/wallets/wallet.service";
+import { Logger } from 'merit/core/logger';
 
 @IonicPage({
   segment: 'vault/:vaultId',
@@ -40,8 +37,8 @@ export class VaultDetailsView {
     // things fast and smooth.  We can refresh as needed.
     this.vault = this.navParams.get('vault');
     this.bitcore = this.bwc.getBitcore();
-    console.log("Inside the vault-details view.");
-    console.log(this.vault);
+    this.logger.info("Inside the vault-details view.");
+    this.logger.info(this.vault);
   }
 
   ionViewWillLeave() {
@@ -51,23 +48,42 @@ export class VaultDetailsView {
   }
 
   ionViewDidLoad() {
-    console.log("Vault-Detail View Did Load.");
-    console.log(this.vault);
+    this.logger.info("Vault-Detail View Did Load.");
+    this.logger.info(this.vault);
 
-    //do something here
+    //This is just a an example of how to build the vault rewew transaction
+    //Simply outputs a sample transaction using a dummy master key.
+    //TODO Delete Me when renew works.
+    this.profileService.getHeadWalletClient().then((walletClient) => {
+      this.vaultsService.getVaultCoins(walletClient, this.vault).then((coins) => {
+
+        let address = this.bitcore.Address.fromObject(this.vault.address);
+
+        console.log(address.toString());
+        console.log(this.vault);
+        console.log(coins);
+
+        let network = walletClient.credentials.network;
+        let dummyKey = this.bitcore.PrivateKey.fromRandom(network);
+
+        let tx = walletClient.buildRenewVaultTx(coins, this.vault, dummyKey, {network: network});
+
+        console.log("RENEW TX");
+        console.log(tx);
+        console.log(tx.serialize());
+      });
+    });
+
     Promise.all([
       this.getAllWallets().then((wallets) => {
-        return _.map(wallets, (w) => {
+        return _.map(wallets, (w:any) => {
           const name = w.name || w._id;
           return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
         });
-
-
-        
       }), 
       // fetch users vaults
       this.getAllWVaults().then((vaults) => {
-        return _.map(vaults, (v) => {
+        return _.map(vaults, (v:any) => {
           const name = v.name || v._id;
           const key = new this.bitcore.Address(v.address).toString();
           return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' }; 

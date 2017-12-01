@@ -24,7 +24,7 @@ export class TxFormatService {
     private config: ConfigService,
     private logger: Logger
   ) {
-    console.log('Hello TxFormatService Service');
+    this.logger.info('Hello TxFormatService Service');
   }
 
   formatAmount(micros: number, fullPrecision?: boolean): any {
@@ -173,7 +173,7 @@ export class TxFormatService {
 
 
       if (!tx.wallet) {
-        console.log("no wallet at txp?");
+        this.logger.info("no wallet at txp?");
         return;
       }
 

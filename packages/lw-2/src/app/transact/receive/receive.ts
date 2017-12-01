@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, LoadingController, Events } from 'ionic-angular';
 
 import { ProfileService } from "merit/core/profile.service";
 import { WalletService } from "merit/wallets/wallet.service";
@@ -8,6 +8,7 @@ import { MeritToastController } from "merit/core/toast.controller";
 import { Logger } from "merit/core/logger";
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Clipboard } from '@ionic-native/clipboard';
+import { PlatformService } from 'merit/core/platform.service';
 
 import { RateService } from 'merit/transact/rate.service'; 
 import { ConfigService } from "merit/shared/config.service";
@@ -45,7 +46,8 @@ export class ReceiveView {
     private socialSharing: SocialSharing,
     private clipboard:Clipboard,
     private rateService:RateService,
-    private configService:ConfigService
+    private configService:ConfigService,
+    private events: Events
   ) {
     this.protocolHandler = "merit";
     this.availableUnits = [
@@ -63,12 +65,13 @@ export class ReceiveView {
       this.generateAddress();
     }
 
-    this.socialSharing.canShareVia('email').then(() => {
-      this.socialSharingAvailable = true;
-    }).catch((err) => {
-      this.socialSharingAvailable = false;
+    // Get a new address if we just received an incoming TX (on an address we already have)
+    this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
+      this.logger.info("Got an incomingTx on receive screen: ", n);
+      if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
+        this.generateAddress(true);
+      }
     })
-
   }
 
   generateAddress(forceNew?: boolean) {

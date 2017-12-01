@@ -1,0 +1,42 @@
+{
+    "project_info": {
+      "project_number": "1091326413792",
+      "firebase_url": "https://prime-service-181121.firebaseio.com",
+      "project_id": "prime-service-181121",
+      "storage_bucket": "prime-service-181121.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:1091326413792:android:c60e95c518bea670",
+          "android_client_info": {
+            "package_name": "me.merit.LightWalletTest"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "1091326413792-gle6nvsk3auqtd7hj0vahug4icf9pph4.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "APIKEY"
+          }
+        ],
+        "services": {
+          "analytics_service": {
+            "status": 1
+          },
+          "appinvite_service": {
+            "status": 1,
+            "other_platform_oauth_client": []
+          },
+          "ads_service": {
+            "status": 2
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

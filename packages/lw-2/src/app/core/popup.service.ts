@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
 import * as Promise from 'bluebird';
+import { Logger } from 'merit/core/logger';
 
 
 @Injectable()
 export class PopupService {
-  constructor(public alertCtrl: AlertController) {
+  constructor(
+    public alertCtrl: AlertController,
+    private log: Logger
+  ) {
   }
 
   public ionicAlert(title: string, subTitle?: string, okText?: string): Promise<any> {
@@ -17,7 +21,7 @@ export class PopupService {
           {
             text: okText,
             handler: () => {
-              console.log('Ok clicked');
+              this.log.info('Ok clicked');
               return resolve();
             }
           }
@@ -36,14 +40,14 @@ export class PopupService {
           {
             text: cancelText,
             handler: () => {
-              console.log('Disagree clicked');
+              this.log.info('Disagree clicked');
               return resolve(false);
             }
           },
           {
             text: okText,
             handler: () => {
-              console.log('Agree clicked');
+              this.log.info('Agree clicked');
               return resolve(true);
             }
           }
@@ -68,14 +72,14 @@ export class PopupService {
           {
             text: cancelText ? cancelText : 'Cancel',
             handler: data => {
-              console.log('Cancel clicked');
+              this.log.info('Cancel clicked');
               return resolve(null);
             }
           },
           {
             text: okText ? okText : 'OK',
             handler: data => {
-              console.log('Saved clicked');
+              this.log.info('Saved clicked');
               return resolve(data[0]);
             }
           }

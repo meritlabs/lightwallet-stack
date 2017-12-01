@@ -32,7 +32,6 @@ var BlockHeader = function BlockHeader(arg) {
   this.bits = info.bits;
   this.nonce = info.nonce;
   this.edgesBits = info.edgesBits;
-  this.edgesRatio = info.edgesRatio;
   this.cycle = info.cycle;
 
   if (info.hash) {
@@ -88,7 +87,6 @@ BlockHeader._fromObject = function _fromObject(data) {
     bits: data.bits,
     nonce: data.nonce,
     edgesBits: data.edgesBits,
-    edgesRatio: data.edgesRatio,
     cycle: data.cycle
   };
   return info;
@@ -149,7 +147,6 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br) {
   info.bits = br.readUInt32LE();
   info.nonce = br.readUInt32LE();
   info.edgesBits = br.readUInt8(8);
-  info.edgesRatio = br.readUInt8(8);
 
   const cycleNonces = br.readVarintNum();
   info.cycle = [];
@@ -182,7 +179,6 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     bits: this.bits,
     nonce: this.nonce,
     edgesBits: this.edgesBits,
-    edgesRatio: this.edgesRatio,
     cycle: this.cycle
   };
 };
