@@ -285,11 +285,11 @@ export class ProfileService {
   private runValidation(wallet: MeritWalletClient, delay?: number, retryDelay?: number) {
 
     delay = delay ? delay : 500;
-    retryDelay = retryDelay ? retryDelay : 50;
+    retryDelay = retryDelay ? retryDelay : 500;
 
     if (this.validationLock) {
       return setTimeout(() => {
-        this.logger.debug('ValidatingWallet Locked: Retrying in: ' + retryDelay);
+        //this.logger.debug('ValidatingWallet Locked: Retrying in: ' + retryDelay);
         return this.runValidation(wallet, delay, retryDelay);
       }, retryDelay);
     }

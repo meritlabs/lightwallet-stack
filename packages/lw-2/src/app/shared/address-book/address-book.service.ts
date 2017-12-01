@@ -50,6 +50,16 @@ export class AddressBookService {
   };
 
   public getAllDeviceContacts(): Promise<Contact[]> {
+  //public getAllDeviceContacts(): Promise<any> {
+    //let array = [{
+    //  name: {formatted: 'Test'},
+    //  phoneNumbers: [{type: 'test', value: '123', pref: false}],
+    //  emails: [{type: 'test', value: 't@t', pref: false}],
+    //  photos: [],
+    //  urls: []
+    //}];
+    //console.log("ARRAY", array);
+    //return Promise.resolve(array);
     return this.searchContacts('');
   }
 
