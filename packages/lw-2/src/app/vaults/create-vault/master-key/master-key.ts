@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
 import { PopupService } from "merit/core/popup.service";
 import { BwcService } from 'merit/core/bwc.service';
-import { MeritWalletClient, IMeritWalletClient} from './../../../../lib/merit-wallet-client';
+import { MeritWalletClient } from './../../../../lib/merit-wallet-client';
 
 @IonicPage({
   defaultHistory: ['ProfileView']

@@ -8,6 +8,7 @@ import { WalletService } from "merit/wallets/wallet.service";
 import { ProfileService } from "merit/core/profile.service";
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { BwcService } from 'merit/core/bwc.service';
+import { Logger } from 'merit/core/logger';
 
 
 @IonicPage({
@@ -31,9 +32,10 @@ export class CreateVaultGeneralInfoView {
     private walletService: WalletService,
     private vaultsService: VaultsService,
     private bwc: BwcService,
+    private logger: Logger
   ){
     this.bitcore = this.bwc.getBitcore();
-    console.log('bitcore', this.bitcore);
+    this.logger.info('bitcore', this.bitcore);
   }
 
   checkNextAvailable() {
@@ -51,19 +53,19 @@ export class CreateVaultGeneralInfoView {
         const name = w.name || w._id;
         return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
       });
-      console.log('walletDTOs', walletDTOs);
+      this.logger.info('walletDTOs', walletDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(walletDTOs);
     });
 
     // fetch users vaults
-    this.getAllWVaults().then((vaults) => {
-      const vaultDTOs = _.map(vaults, (v:any) => {
+    this.getAllVaults().then((vaults) => {
+      const vaultDTOs = _.map(vaults, (v: any) => {
         const name = v.name || v._id;
         const key = new this.bitcore.Address(v.address).toString();
-        console.log(key);
+        this.logger.info(key);
         return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' }; 
       });
-      console.log('walletDTOs', vaultDTOs);
+      this.logger.info('walletDTOs', vaultDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(vaultDTOs);
     });
   }
@@ -83,13 +85,11 @@ export class CreateVaultGeneralInfoView {
     return wallets;
   }
 
-  private getAllWVaults(): Promise<Array<any>> {
-    return this.profileService.getWallets().then((ws: any[]) => {
-      if (_.isEmpty(ws)) {
-        Promise.reject(new Error('getAllWVaults failed')); //ToDo: add proper error handling;
+  private getAllVaults(): Promise<Array<any>> {
+    return this.profileService.getHeadWalletClient().then((walletClient) => {
+      if(!walletClient) {
+        return null;
       }
-      return _.head(ws);
-    }).then((walletClient) => {
       return this.vaultsService.getVaults(walletClient);
     });
   }

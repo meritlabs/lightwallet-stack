@@ -9,7 +9,7 @@ export class BwcError {
   constructor(
     private log: Logger, 
   ) { 
-    console.log('Hello BwcError model');
+    this.log.info('Hello BwcError model');
   }
 
 
@@ -18,10 +18,8 @@ export class BwcError {
     return `bwcError: ${prefix} ${err}`;
   }
 
-  public cb(err: string, prefix?: string): Promise<any> {
-    return new Promise((resolve, reject)=> {
-      resolve(this.msg(err, prefix));
-    });      
+  public cb(err: string, prefix?: string): string {
+      return this.msg(err, prefix);
   };
 
   private getErrorText(name: string): string {

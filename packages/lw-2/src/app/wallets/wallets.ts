@@ -138,6 +138,11 @@ export class WalletsView {
       });
       return this.processEasyReceive();
     }).then(() => {
+      console.log('getting vaults');
+      return this.vaultsService.getVaults(_.head(this.wallets));
+    }).then((vaults) => {
+      console.log('getting vaults', vaults);
+      this.vaults = vaults;
       return this.profileService.getTxps({limit: 3});
     }).then((txps) => {
       this.txpsData = txps;
@@ -147,12 +152,6 @@ export class WalletsView {
           this.recentTransactionsData = notifications;
         });
       }
-    }).then(() => {
-      return this.vaultsService.getVaults(_.head(this.wallets));
-    }).then((vaults) => {
-      console.log('getting vaults', vaults);
-      this.vaults = vaults;
-      return Promise.resolve();
     }).catch((err) => {
       console.log("@@ERROR IN Updating statuses.");
       console.log(err);
@@ -247,7 +246,7 @@ export class WalletsView {
 
   private showPasswordEasyReceivePrompt(receipt:EasyReceipt, highlightInvalidInput = false) {
 
-    console.log('show alert', highlightInvalidInput); 
+    this.logger.info('show alert', highlightInvalidInput); 
 
     this.alertController.create({
       title: `You've got merit from ${receipt.senderName}!`,
@@ -296,7 +295,7 @@ export class WalletsView {
         });
         }}
       ]
-    });
+    }).present();
   }
 
 

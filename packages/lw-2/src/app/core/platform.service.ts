@@ -15,12 +15,15 @@ export class PlatformService {
   isDevel: boolean;
   supportsLedger:boolean;
 
-  constructor(private platform: Platform, private log: Logger) {
+  constructor(
+    private platform: Platform, 
+    private log: Logger
+  ) {
     let chrome: any;
     var ua = navigator ? navigator.userAgent : null;
 
     if (!ua) {
-      console.log('Could not determine navigator. Using fixed string');
+      this.log.info('Could not determine navigator. Using fixed string');
       ua = 'dummy user-agent';
     }
 

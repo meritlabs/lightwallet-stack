@@ -28,7 +28,7 @@ export class NotificationService {
     private profileService: ProfileService,
     private persistenceService: PersistenceService
   ) {
-    console.log('Hello Notification Service');
+    this.logger.info('Hello Notification Service');
   }
 
   public subscribe(client, subject: Subject): Promise<any> {
