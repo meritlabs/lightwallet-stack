@@ -11,39 +11,48 @@
     <ion-list>
 
         <ion-avatar class="icon big-icon-svg" item-start>
-            <gravatar class="send-gravatar" [name]="contact.name" width="30" height="30" [email]="contact.email"></gravatar>
+            <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
+            <gravatar class="send-gravatar" [name]="contact.name.formatted" width="30" height="30" [email]="contact.emails[0]?.value || ''" *ngIf="!contact.photos.length"></gravatar>
         </ion-avatar>
 
         <ion-item>
             <ion-label item-start>Name</ion-label>
-            <ion-label item-end text-right>{{contact.name}}</ion-label>
+            <ion-label item-end text-right>{{contact.name.formatted}}</ion-label>
         </ion-item>
-        <ion-item class="item item-text-wrap" ng-show="contact.email">
+        <ion-item  *ngFor="let email of contact.emails">
             <ion-label item-start>Email</ion-label>
-            <ion-label item-end text-right>{{contact.email}}</ion-label>
+            <ion-label item-end text-right>{{email.value}}</ion-label>
         </ion-item>
-        <ion-item class="item item-text-wrap"*ngIf="contact.phoneNumber">
-            <ion-label item-start>Phone Number</ion-label>
-            <ion-label item-end text-right>{{contact.phoneNumber}}</ion-label>
+        <ion-item *ngFor="let phoneNumber of contact.phoneNumbers">
+            <ion-label item-start>Phone</ion-label>
+            <ion-label item-end text-right>{{phoneNumber.value}}</ion-label>
         </ion-item>
-        <ion-item class="item item-text-wrap" copy-to-clipboard="contact.address">
+        <ion-item class="item item-text-wrap" *ngIf="contact.meritAddresses.length">
             <ion-label item-start>Address</ion-label>
-            <ion-label item-end text-right>{{contact.meritAddress}}</ion-label>
+            <!-- TODO show proper address -->
+            <ion-label item-end text-right>{{contact.meritAddresses[0].value}}</ion-label>
         </ion-item>
-        <ion-item >
-            <button ion-button outline item-right (click)="toEditContact()">
-                Edit info
-            </button>
+        <ion-item class="item item-text-wrap">
+            <ion-label item-start>Store in device contacts</ion-label>
+            <ion-label item-end text-right>{{contact.storeOnDevice ? 'Yes' : 'No'}}</ion-label>
         </ion-item>
+
     </ion-list>
 
+
+    <ion-list>
+        <button ion-item (click)="toEditContact()">
+            Edit Info
+        </button>
+    </ion-list>
 
     <ion-list>
         <button ion-item (click)="toSendAmount()">
             Send Money
         </button>
     </ion-list>
-    <ion-list>
+
+    <ion-list *ngIf="!contact.storeOnDevice">
         <button ion-item (click)="remove()">
            Remove
         </button>
