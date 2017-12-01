@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 let Bitcore = require('bitcore-lib');
 
 
-export interface AddressBook { [key:string]:MeritContact; } 
+export interface AddressBook { [key:string]:MeritContact; }
 
 export interface Searchable { searchTerm: string }
 export interface MeritContact extends Searchable {
@@ -19,7 +19,7 @@ export let isValidMeritContact = (contact: MeritContact): boolean => {
     return (!_.isEmpty(address) && Bitcore.Address.isValid(address));
   };
 
-  return (isAddressValid(contact.meritAddress) && contact.name);
+  return (isAddressValid(contact.meritAddress) && !_.isEmpty(contact.name));
 
 };
 
@@ -32,4 +32,4 @@ export let emptyMeritContact = (): MeritContact => {
     searchTerm: '',
     sendMethod: ''
   });
-}
+};

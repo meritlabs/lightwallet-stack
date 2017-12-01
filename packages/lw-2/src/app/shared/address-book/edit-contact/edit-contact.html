@@ -11,24 +11,34 @@
     <ion-list *ngIf="newContact">
         <ion-item>
             <ion-label translate>Name</ion-label>
-            <ion-input text-right [(ngModel)]="newContact.name"></ion-input>
+            <ion-input text-right [(ngModel)]="newContact.name.formatted"></ion-input>
         </ion-item>
-        <ion-item>
+        <ion-item *ngFor="let email of newContact.emails">
             <ion-label translate>Email</ion-label>
-            <ion-input text-right type="email" [(ngModel)]="newContact.email"></ion-input>
+            <ion-input text-right type="email" [(ngModel)]="email.value"></ion-input>
         </ion-item>
         <ion-item>
-            <ion-label translate>Phone Number</ion-label>
-            <ion-input text-right [(ngModel)]="newContact.phoneNumber"></ion-input>
+            <button ion-button outline item-right>Add Email</button>
         </ion-item>
-        <ion-item class="address-item">
+        <ion-item *ngFor="let phoneNumber of newContact.phoneNumbers">
+            <ion-label translate>Phone Number</ion-label>
+            <ion-input text-right [(ngModel)]="phoneNumber.value"></ion-input>
+        </ion-item>
+        <ion-item>
+            <button ion-button outline item-right>Add Phone Number</button>
+        </ion-item>
+        <ion-item class="address-item" *ngIf="newContact.meritAddresses.length">
             <ion-label translate>Merit Address</ion-label>
-            <ion-input text-right [(ngModel)]="newContact.meritAddress"></ion-input>
+            <ion-input text-right [(ngModel)]="newContact.meritAddresses[0].address"></ion-input>
             <button class="scan-button" item-end>
                 <button (click)="openScanner()" ion-button icon-only item-right clear >
                     <ion-icon name="qr-scanner"  color="primary"></ion-icon>
                 </button>
             </button>
+        </ion-item>
+        <ion-item>
+            <ion-label>Store in device contacts</ion-label>
+            <ion-toggle [(ngModel)]="newContact.storeOnDevice"></ion-toggle>
         </ion-item>
     </ion-list>
 
