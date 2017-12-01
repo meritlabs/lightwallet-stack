@@ -33,6 +33,8 @@ export class VaultSpendAmountView {
     private unitIndex: number = 0;
     private reNr: RegExp = /^[1234567890\.]$/;
     private reOp: RegExp = /^[\*\+\-\/]$/;
+    private vault: any = null;
+    private wallet: any = null;
 
     constructor(
         public navCtrl: NavController, 
@@ -46,7 +48,8 @@ export class VaultSpendAmountView {
     ionViewDidLoad() {
         console.log('Params', this.navParams.data);
         this.recipient = this.navParams.get('recipient');
-        console.log('recipient', this.recipient);
+        this.wallet = this.navParams.get('wallet');
+        this.vault = this.navParams.get('vault');
         this.sending = this.navParams.get('sending');
         this.displayName = !_.isEmpty(this.recipient.name) ? this.recipient.name : this.recipient.meritAddress;
     }
@@ -166,6 +169,6 @@ export class VaultSpendAmountView {
       };
 
       finish() {
-        this.navCtrl.push('VaultSpendConfirmView', {});
+        this.navCtrl.push('VaultSpendConfirmView', { recipient: this.recipient, toAmount: parseInt(this.globalResult), wallet: this.navParams.get('wallet'), vault: this.vault });
       }
 }

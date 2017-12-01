@@ -359,6 +359,7 @@ export class SendConfirmView {
     })
     feeLevelModel.present();
   };
+  
   public toggleAddress() {
     this.showAddress = !this.showAddress;
   };
