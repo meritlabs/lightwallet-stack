@@ -166,6 +166,11 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
               if (err) return next(err);
 
               var notifications = _.map(subs, function(sub) {
+                var returnData = {
+                  walletId: notification.walletId,
+                  copayerId: recipient.copayerId
+                }
+                _.assign(returnData, notification.data, {type: notification.type});
                 return {
                   to: sub.token,
                   priority: 'high',
@@ -177,10 +182,7 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
                     click_action: "FCM_PLUGIN_ACTIVITY",
                     icon: "fcm_push_icon",
                   },
-                  data: {
-                    walletId: sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(notification.walletId)),
-                    copayerId: sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(recipient.copayerId))
-                  },
+                  data: returnData
                 };
               });
               return next(err, notifications);
