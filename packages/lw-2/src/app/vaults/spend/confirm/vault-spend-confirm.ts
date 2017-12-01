@@ -53,6 +53,7 @@ export class VaultSpendConfirmView {
   private unitToMicro: number;
   private configFeeLevel: string;
   private showAddress: Boolean = true;
+  private coins: Array<any> = [];
 
   constructor(
     private configService: ConfigService,
@@ -82,28 +83,34 @@ export class VaultSpendConfirmView {
     this.configFeeLevel = this.walletConfig.settings.feeLevel ? this.walletConfig.settings.feeLevel : 'normal';
     this.recipient = this.navParams.get('recipient');
     this.vault = this.navParams.get('vault');
+    this.coins = this.navParams.get('coins');
     console.log('vault', this.vault);
 
     this.txData = {
-      toAddress:  this.recipient.meritAddress,
+      toAddress:  this.recipient.pubKey,
       txp: {},
       toName: this.recipient.name || '',
       toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
-      allowSpendUnconfirmed: this.walletConfig.spendUnconfirmed
     }
 
-    this.logger.log('ionViewDidLoad txData', this.txData);
+    await this.prepareTx();
     
+    this.logger.log('ionViewDidLoad txData', this.txData);
   }
 
   public displayName(): string {
     if (this.txData.toName) {
       return this.txData.toName;
     }
-    // TODO: Check AddressBook
     return this.txData.toAddress || "no one";
+  }
 
-    
+  public prepareTx(): Promise<any> {
+    const amount = this.navParams.get('toAmount');
+    console.log(this.wallet);
+    const txp =  this.wallet.buildSpendVaultTx(this.vault, this.coins, '', amount, '', {});
+    this.txData.txp = txp;
+    return txp;
   }
 
   public approve(): Promise<boolean> {
@@ -125,115 +132,12 @@ export class VaultSpendConfirmView {
   }
 
   private approveTx(tx, wallet): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (!tx || !wallet) {
-        this.logger.warn("No transaction or wallet data in approval.");
-        return resolve(false);
-      } 
-
-      return this.getTxp(_.clone(tx), wallet, false).then((ctxp) => {
-
-        let confirmTx = (): Promise<any> => {
-            if (this.walletService.isEncrypted(wallet))
-              return Promise.resolve(false);
-  
-            let amountUsd: number;
-            return this.txFormatService.formatToUSD(ctxp.amount).then((value: string) => {
-              amountUsd = parseFloat(value);
-           
-    
-              if (amountUsd <= VaultSpendConfirmView.CONFIRM_LIMIT_USD)
-                return Promise.resolve(false);
-    
-              let amountStr = tx.amountStr;
-              let name = wallet.name;
-              let message = 'Sending ' + amountStr + ' from your ' + name + ' wallet'; // TODO gettextCatalog
-              let okText = 'Confirm'; // TODO gettextCatalog
-              let cancelText = 'Cancel'; // TODO gettextCatalog
-              return this.popupService.ionicConfirm(null, message, okText, cancelText).then((ok: boolean) => {
-                return Promise.resolve(ok);
-              });
-            });
-        };
-  
-        let publishAndSign = (): Promise<any> => {
-          if (!wallet.canSign() && !wallet.isPrivKeyExternal()) {
-            this.logger.info('No signing proposal: No private key');
-            return Promise.resolve(this.walletService.onlyPublish(wallet, ctxp, _.noop));
-          }
-          return this.walletService.publishAndSign(wallet, ctxp, _.noop).then((txp: any) => {
-            //return Promise.resolve(this.notificationService.subscribe(wallet, txp));
-            return Promise.resolve();
-          });
-        };
-
-        return confirmTx().then((success: boolean) => {
-          if (!success) {
-            this.logger.warn("Error with confirming transaction.");
-          }
-          return publishAndSign().then(() => {
-            return resolve(true);
-          }).catch((err: any) => {
-            this.logger.warn("Could not publishAndSign: ", err);
-          });
-        }).catch((err: any) => {
-          this.logger.warn("Could not confirmTx: ", err);
-        });
-      }).catch((err) => {
-        this.logger.warn("Never got the TXP!: ", err);        
-      });
-    });
+    return Promise.resolve(true);
   }
 
   private getTxp(tx, wallet, dryRun): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // ToDo: use a credential's (or fc's) function for this
-      if (tx.description && !wallet.credentials.sharedEncryptingKey) {
-        return reject('Need a shared encryption key to add message!');
-      }
-  
-      if (tx.toAmount > Number.MAX_SAFE_INTEGER) {
-        return reject("The amount is too big.  Because, Javascript.");
-      }
-  
-      let txp:any = {};
-  
-      if (tx.script) {
-        txp.outputs = [{
-          'script': tx.script.toHex(),
-          'toAddress': tx.toAddress,
-          'amount': tx.toAmount,
-          'message': tx.description
-        }];
-        txp.addressType = 'P2SH';
-      } else {
-        txp.outputs = [{
-          'toAddress': tx.toAddress,
-          'amount': tx.toAmount,
-          'message': tx.description
-        }];
-      }
-  
-      if (tx.sendMaxInfo) {
-        txp.inputs = tx.sendMaxInfo.inputs;
-        txp.fee = tx.sendMaxInfo.fee;
-      } else {
-        if (this.txData.usingCustomFee) {
-          txp.feePerKb = tx.feeRate;
-        } else txp.feeLevel = tx.feeLevel;
-      }
-  
-      txp.message = tx.description;
-  
-      if (tx.paypro) {
-        txp.payProUrl = tx.paypro.url;
-      }
-      txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
-      txp.dryRun = dryRun;
-      return this.walletService.createTx(wallet, txp).then((ctxp) => {
-        return resolve(ctxp);
-      });
-    });
+    const amount = this.navParams.get('toAmount');
+    return this.wallet.buildSpendVaultTx(this.vault, this.coins, '', amount, '', {});
   }
 
   private _chooseFeeLevel(tx, wallet) {
