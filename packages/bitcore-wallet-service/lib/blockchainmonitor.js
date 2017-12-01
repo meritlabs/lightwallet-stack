@@ -18,6 +18,7 @@ var WalletService = require('./server');
 function BlockchainMonitor() {};
 
 BlockchainMonitor.prototype.start = function(opts, cb) {
+  console.warn("**** Starting Blockchain Monitor");
   opts = opts || {};
 
   var self = this;
