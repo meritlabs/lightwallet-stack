@@ -1149,7 +1149,7 @@ Storage.prototype.fetchVaultByCopayerId = function(copayerId, id, cb) {
   });
 };
 
-Storage.prototype.setVaultConfirmed = function(txId, cb) {
+Storage.prototype.setVaultConfirmed = function(tx, txId, cb) {
   tx.status = Bitcore.Vault.Vault.VaultStates.APPROVED;
   this.db.collection(collections.VAULTS).findAndModify({
     txId,

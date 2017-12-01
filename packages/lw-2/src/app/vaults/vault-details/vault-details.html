@@ -6,20 +6,20 @@
 
 <ion-content>
 
-    <div class="balance-header">
-        <div class="balance-str">{{ vault.amount }}</div>
-        <div class="balance-alt-str"> {{ alternativeBalanceStr | toFiat : vault.amount | async }}</div>
-        <div *ngIf="vault.status == 'pending'" class="assertive">
-            <span translate>Pending</span>
-        </div>
-        <div class="vault-actions">
-            <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()">
-                Reset
-            </button>
-        </div>
-    </div>
 
     <ion-list>
+        <div class="balance-header">
+            <div class="balance-str">{{ vault.amount }}</div>
+            <div class="balance-alt-str"> {{ alternativeBalanceStr | toFiat : vault.amount | async }}</div>
+            <div *ngIf="vault.status == 'pending'" class="assertive">
+                <span translate>Pending</span>
+            </div>
+            <div class="vault-actions">
+                <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()">
+                    Reset
+                </button>
+            </div>
+        </div>
         <ion-item>
             <ion-label translate>Whitelist</ion-label>
         </ion-item>
