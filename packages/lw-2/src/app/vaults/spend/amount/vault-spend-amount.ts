@@ -169,7 +169,8 @@ export class VaultSpendAmountView {
       };
 
       finish() {
+        console.log(this.navParams.get('coins'));
         this.navCtrl.push('VaultSpendConfirmView', 
-          { recipient: this.recipient, toAmount: parseInt(this.globalResult), wallet: this.navParams.get('wallet'), vault: this.vault, coins: this.navParams.get('coins') });
+          { recipient: this.recipient, toAmount: parseFloat(this.globalResult), wallet: this.navParams.get('wallet'), vault: this.vault, coins: this.navParams.get('coins') });
       }
 }

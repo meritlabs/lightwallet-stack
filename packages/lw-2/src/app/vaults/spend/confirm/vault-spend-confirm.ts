@@ -31,21 +31,7 @@ export class VaultSpendConfirmView {
     private static FEE_TOO_HIGH_LIMIT_PER = 15;
 
   private recipient: any;
-  private txData: {
-    toAddress: any,
-    toAmount: number,
-    toName: string, 
-    description?: string, 
-    recipientType?: any, 
-    toEmail?: string, 
-    toPhoneNumber?: string,
-    txp: any,
-    allowSpendUnconfirmed?: boolean,
-    usingCustomFee?: boolean,
-    script?: any,
-    senderPublicKey?: any,
-    easySendSecret?: string
-  };
+  private txData: any = null;
   private wallet: MeritWalletClient;
   private vault: any;
   private walletConfig: any;
@@ -105,12 +91,23 @@ export class VaultSpendConfirmView {
     return this.txData.toAddress || "no one";
   }
 
-  public prepareTx(): Promise<any> {
-    const amount = this.navParams.get('toAmount');
-    console.log(this.wallet);
-    const txp =  this.wallet.buildSpendVaultTx(this.vault, this.coins, '', amount, '', {});
-    this.txData.txp = txp;
-    return txp;
+  public prepareTx() {
+    const amount = this.txData.toAmount;
+    this.updateAmount();
+    const txp =  this.wallet.buildSpendVaultTx(this.vault, this.coins, this.vault.spendKey, amount, this.recipient.pubKey, {});
+    console.log(txp);
+  }
+
+  private updateAmount(): any {
+    if (!this.txData.toAmount) return;
+
+    // Amount
+    this.txData.amountStr = this.txFormatService.formatAmountStr(this.txData.toAmount);   
+    this.txData.amountValueStr = this.txData.amountStr.split(' ')[0];
+    this.txData.amountUnitStr = this.txData.amountStr.split(' ')[1];
+    this.txFormatService.formatAlternativeStr(this.txData.toAmount).then((v) => {
+      this.txData.alternativeAmountStr = v;
+    });
   }
 
   public approve(): Promise<boolean> {
