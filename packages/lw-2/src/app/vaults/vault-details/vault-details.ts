@@ -106,8 +106,13 @@ export class VaultDetailsView {
   }
 
   spendToAddress(address): void {
-    this.profileService.getHeadWalletClient().then((wallet) => {
-      this.navCtrl.push('VaultSpendAmountView', { recipient: address, wallet: wallet, vault: this.vault, coins: this.coins });
+    let wallet = null;
+    this.profileService.getHeadWalletClient().then((w) => {
+      wallet = w;
+      return this.vaultsService.getVaultCoins(w, this.vault);
+    }).then((coins) => {
+      this.coins = coins;
+      this.navCtrl.push('VaultSpendAmountView', { recipient: address, wallet: wallet, vault: this.vault, coins: coins });
     });
   }
 
