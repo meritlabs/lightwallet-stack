@@ -14,6 +14,7 @@ import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 import * as  _  from 'lodash';
 import * as Promise from 'bluebird';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 
 /**
  * The confirm view is the final step in the transaction sending process 
@@ -32,7 +33,7 @@ export class SendConfirmView {
   private static CONFIRM_LIMIT_USD = 20;
   private static FEE_TOO_HIGH_LIMIT_PER = 15;
   
-
+  private recipient: any;
   private txData: {
     toAddress: any,
     toAmount: number,
@@ -43,14 +44,15 @@ export class SendConfirmView {
     toPhoneNumber?: string,
     txp: any,
     allowSpendUnconfirmed?: boolean,
-    usingCustomFee?: boolean
+    usingCustomFee?: boolean,
+    script?: any,
+    senderPublicKey?: any,
+    easySendSecret?: string
   };
   private wallet: MeritWalletClient;
   private walletConfig: any;
   private wallets: Array<MeritWalletClient>;
   private unitToMicro: number;
-  private unitDecimals: number;
-  private microToUnit: number;
   private configFeeLevel: string;
   private showAddress: Boolean = true;
 
@@ -66,9 +68,10 @@ export class SendConfirmView {
     private popupService: PopupService,
     private modalCtrl: ModalController,
     private notificationService: NotificationService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private easySendService: EasySendService
   ) { 
-    console.log("Hello SendConfirm View");
+    this.logger.info("Hello SendConfirm View");
     this.walletConfig = this.configService.get().wallet;
     
   }
@@ -79,21 +82,22 @@ export class SendConfirmView {
     this.walletConfig = this.configService.get().wallet;
     this.wallet = this.navParams.get('wallet');
     this.unitToMicro = this.walletConfig.settings.unitToMicro;
-    this.unitDecimals = this.walletConfig.settings.unitDecimals;
-    this.microToUnit = 1 / this.unitToMicro;
     this.configFeeLevel = this.walletConfig.settings.feeLevel ? this.walletConfig.settings.feeLevel : 'normal';
+    this.recipient = this.navParams.get('recipient');
 
     this.txData = {
-      toAddress:  this.navParams.get('toAddress'),
+      toAddress:  this.recipient.meritAddress,
       txp: {},
-      toName: this.navParams.get('toAddress') || '',
+      toName: this.recipient.name || '',
       toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
       allowSpendUnconfirmed: this.walletConfig.spendUnconfirmed
     }
 
-
+    if(this.recipient.sendMethod != 'address') {
+      await this.updateEasySendData();
+    }
     this.logger.log('ionViewDidLoad txData', this.txData);
-    return this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
+    await this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
       this.logger.error('There was an error in updateTx:', err);
     });
     
@@ -171,6 +175,17 @@ export class SendConfirmView {
       this.logger.warn("Error after getting feeRate in UpdateTx", err);
       return Promise.resolve();
     });
+  }
+
+  private updateEasySendData(): Promise<void> {
+    return this.easySendService.createEasySendScriptHash(this.wallet).then((easySend) => {
+      this.txData.script = easySend.script;
+      this.txData.script.isOutput = true;
+      this.txData.easySendSecret = easySend.secret;
+      this.txData.senderPublicKey = easySend.senderPubKey;
+      this.txData.toAddress = this.txData.script.toAddress().toString();
+      return Promise.resolve();
+    })
   }
 
   public approve(): Promise<boolean> {
@@ -353,7 +368,7 @@ export class SendConfirmView {
   }
 
   private showSendError(err: string = ''): any {
-    this.popupService.ionicConfirm("Could not confirm transaction.", err, "Ok", "Cancel");    
+    this.popupService.ionicConfirm("Could not confirm transaction.", err, "Ok", "Cancel");
   }
 
 }

@@ -6,6 +6,8 @@ import { MeritToastController } from "merit/core/toast.controller";
 import * as Promise from 'bluebird';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
+import { Logger } from 'merit/core/logger';
+import { NavParams } from 'ionic-angular/navigation/nav-params';
 
 
 // Unlock view for wallet
@@ -29,15 +31,20 @@ export class UnlockView {
     private toastCtrl: MeritToastController,
     private loaderCtrl: LoadingController, 
     private navCtrl: NavController,
-    private easyReceiveService:EasyReceiveService
+    private navParams: NavParams,
+    private easyReceiveService: EasyReceiveService,
+    private logger: Logger
   ) {
       
   }
 
   ionViewDidLoad() {
+    // An unlock code from a friend sharing the link. 
+    this.formData.unlockCode = this.navParams.get('unlockCode') || '';
     
     this.easyReceiveService.getPendingReceipts().then((receipts) => {
       this.easyReceipt = receipts.pop();
+      // The unlock code from a pending easyReceipt takes priority.
       if (this.easyReceipt) this.formData.unlockCode = this.easyReceipt.unlockCode;
     });
 
@@ -55,18 +62,20 @@ export class UnlockView {
         loader.present();
 
         return this.walletService.createDefaultWallet(this.formData.unlockCode).then((wallet) => {
-          console.debug('created wallet', wallet);
+          this.logger.debug('created wallet', wallet);
           loader.dismiss();
 
           /** todo store wallet */
 
-          // this.app.getRootNav().setRoot('TransactView');
-          // this.app.getRootNav().popToRoot('TransactView');
-          this.navCtrl.push('TransactView');
+          // Now that we are unlocked, we no longer need these other views in the stack, 
+          // so we shall destroy them.
+          this.navCtrl.setRoot('TransactView');
+          this.navCtrl.popToRoot();
           return resolve(wallet);
         }).catch((err) => {
           loader.dismiss();
           this.unlockState = 'fail';
+          this.logger.debug("Could not unlock wallet: ", err);
           this.toastCtrl.create({ message: JSON.stringify(err), cssClass: ToastConfig.CLASS_ERROR }).present();
         });
       }

@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
+import { Logger } from 'merit/core/logger';
 
 @IonicPage()
 @Component({
@@ -10,12 +11,13 @@ import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
 })
 export class SendAmountView {
 
-  public address: string;
+  public recipient: any;
   public amount: string;
   public smallFont: boolean;
   public allowSend: boolean;
   public globalResult: string;
   public sending: boolean;
+  public displayName: string;
   
   private LENGTH_EXPRESSION_LIMIT = 19;
   private SMALL_FONT_SIZE_LIMIT = 10;
@@ -24,15 +26,20 @@ export class SendAmountView {
   private reNr: RegExp = /^[1234567890\.]$/;
   private reOp: RegExp = /^[\*\+\-\/]$/;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams, 
+    private log: Logger
+  ) {
     this.amount = '';
     this.allowSend = false;
   }
   
   ionViewDidLoad() {
     console.log('Params', this.navParams.data);
-    this.address = this.navParams.get('address');
+    this.recipient = this.navParams.get('recipient');
     this.sending = this.navParams.get('sending');
+    this.displayName = !_.isEmpty(this.recipient.name) ? this.recipient.name : this.recipient.meritAddress;
   }
   
   @HostListener('document:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
@@ -143,7 +150,7 @@ export class SendAmountView {
 
   processResult(val: number) {
     // TODO: implement this function correctly - Need: txFormatService, isFiat, $filter
-    console.log("processResult TODO");
+    this.log.info("processResult TODO");
     /*if (this.availableUnits[this.unitIndex].isFiat) return $filter('formatFiatAmount')(val);
     else return txFormatService.formatAmount(val.toFixed(unitDecimals) * unitToMicro, true);*/
   };
@@ -161,6 +168,6 @@ export class SendAmountView {
 
   finish() {
     // TODO: We should always be sending from view.
-    this.navCtrl.push('SendConfirmView', {toAddress: this.address, toAmount: parseInt(this.globalResult), wallet: this.navParams.get('wallet'), toName: 'Donken Heinz'});
+    this.navCtrl.push('SendConfirmView', {recipient: this.recipient, toAmount: parseInt(this.globalResult), wallet: this.navParams.get('wallet'), toName: 'Donken Heinz'});
   }
 }

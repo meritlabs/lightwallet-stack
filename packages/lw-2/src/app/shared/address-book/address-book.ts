@@ -1,6 +1,10 @@
+import * as _ from 'lodash';
+import * as Promise from 'bluebird';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ContactsService } from "merit/shared/contacts.service";
+import { AddressBookService } from 'merit/shared/address-book/address-book.service';
+import { AddressBook, MeritContact } from 'merit/shared/address-book/contact/contact.model';
+import { Logger } from 'merit/core/logger';
 
 
 @IonicPage({
@@ -12,17 +16,36 @@ import { ContactsService } from "merit/shared/contacts.service";
 })
 export class AddressBookView {
 
-  contacts = [];
+  addressBook: AddressBook;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private contactsService:ContactsService
+    private addressBookService: AddressBookService,
+    private logger: Logger,
   ) {
   }
 
-  ionViewDidLoad() {
-    this.contacts = this.contactsService.getContacts();
+  async ionViewWillEnter() {
+    await this.updateAddressBook().then(() => {
+      this.logger.warn('got addressbook:');
+      this.logger.warn(this.addressBook);
+    });
+  }
+
+  getContactList(): MeritContact[] {
+    return _.map(this.addressBook, (value) => value);
+  }
+
+  updateAddressBook(): Promise<void> {
+    return this.addressBookService.list('testnet').then((addressBook) => {
+      this.addressBook = addressBook;
+      return Promise.resolve();
+    });
+  }
+
+  hasContacts(): boolean {
+    return !_.isEmpty(this.addressBook);
   }
 
   toAddContact() {
@@ -32,9 +55,4 @@ export class AddressBookView {
   toContact(contact) {
     this.navCtrl.push('ContactView', {contact: contact});
   }
-
-
-
-
-
 }

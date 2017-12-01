@@ -27,6 +27,5 @@ export class TransactionProposal {
   public usingCustomFee?: boolean = false;
 
   constructor() {
-    console.log("Hello Transaction model.");
   }
 }

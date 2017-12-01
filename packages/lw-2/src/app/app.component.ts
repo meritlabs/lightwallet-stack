@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { Platform, ModalController, App} from 'ionic-angular';
+import { Platform, ModalController, App } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
-import { AppService } from 'merit/core/app-settings.service'; 
+import { AppService } from 'merit/core/app-settings.service';
 import { ConfigService } from 'merit/shared/config.service';
 
 import { TransactView } from 'merit/transact/transact';
@@ -16,7 +16,10 @@ import { DeepLinkService } from 'merit/core/deep-link.service';
 
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import * as _ from 'lodash';
-import * as Promise from 'bluebird'; 
+import * as Promise from 'bluebird';
+import { PushNotificationsService } from 'merit/core/push-notification.service';
+import { FCM } from '@ionic-native/fcm';
+import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 
 
 @Component({
@@ -27,8 +30,8 @@ export class MeritLightWallet {
   public rootComponent;
 
   constructor(
-    private platform: Platform, 
-    private statusBar: StatusBar, 
+    private platform: Platform,
+    private statusBar: StatusBar,
     private splashScreen: SplashScreen,
     private profileService: ProfileService,
     private logger: Logger,
@@ -37,114 +40,78 @@ export class MeritLightWallet {
     private configService: ConfigService,
     private deepLinkService: DeepLinkService,
     private easyReceiveService: EasyReceiveService,
-    private app:App
+    private app: App,
+    private FCM: FCM,
+    private pushNotificationService: PushNotificationsService
   ) {
 
-    process.on('unhandledRejection', console.log.bind(console));
+    process.on('unhandledRejection', this.logger.info.bind(console));
     Promise.config({
-        longStackTraces: true
+      longStackTraces: true
     });
-    process.on('unhandledRejection', console.log.bind(console));
+    process.on('unhandledRejection', this.logger.info.bind(console));
     Promise.onPossiblyUnhandledRejection((error) => {
       throw error;
-  });      
+    });
 
     this.platform.ready().then((readySource) => {
-        this.appService.getInfo().then((appInfo) => {
-          this.logger.info(`
+      this.appService.getInfo().then((appInfo) => {
+        this.logger.info(`
             platform ready (${readySource}): -v ${appInfo.version} # ${appInfo.commitHash}
           `);
-        });
+      });
 
-        return this.initializeApp();
+      return this.initializeApp();
     });
 
 
     this.platform.resume.subscribe(() => {
-      return this.deepLinkService.getBranchData(() => {}).then((data) => {
-        return this.profileService.getProfile().then((profile) => {
-
-            if (data && !_.isEmpty(data)) {
-              if (data.sk && data.se) {
-                return this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt) => {
-                    let viewToNavigate = (profile.credentials && profile.credentials.length) ?
-                      'TransactView' : 'UnlockView';
-                    this.app.getRootNavs()[0].setRoot(viewToNavigate);
-                  });
-              } else if (data.uc && !profile.credentials) {
-                return this.app.getRootNavs()[0].setRoot('UnlockView');
-              }
-            }
-        });
-
-      });
-    })
-
+      this.loadProfileAndEasySend();
+    });
   }
+
+  /**
+   * Check the status of the profile, and load the right next view.
+   */
+   private loadProfileAndEasySend(): void {
+    this.profileService.getProfile().then((profile) => {
+      // If the user has credentials and a profile, then let's send them to the transact
+      // view
+      this.rootComponent = (profile && profile.credentials && profile.credentials.length) ?
+      'TransactView' : 'OnboardingView';
+
+      this.deepLinkService.getBranchData(() => { }).then((data) => {
+        // If the branch params contain the minimum params needed for an easyReceipt, then
+        // let's validate and save them. 
+        if (data && !_.isEmpty(data) && data.sk && data.se) {
+          this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt: EasyReceipt) => {
+            if ( easyReceipt && !(profile && profile.credentials && profile.credentials.length) ) {
+              // User received easySend, but has no wallets yet. 
+              // Skip to unlock view.
+              this.rootComponent = 'UnlockView'
+            }
+          }).catch((err) => {
+            this.logger.warn("Error validating and saving easySend params: ", err)
+          });
+        } 
+      }).catch((err) => {
+        this.logger.error(err);
+      })
+    });
+
+   }
 
   /*
      Upon loading the app (first time or later), we must
      load and bind the persisted profile (if it exists).
-  */ 
+  */
   private initializeApp() {
-
-      this.profileService.getProfile().then((profile) => {
-
-        this.deepLinkService.getBranchData(() => {}).then((data) => {
-
-          if (data && !_.isEmpty(data)) {
-            this.easyReceiveService.validateAndSaveParams(data).then(() => {
-              this.rootComponent = (profile.credentials && profile.credentials.length) ?
-                 'TransactView' : 'UnlockView';
-            }).catch(() => {
-              this.rootComponent = (profile.credentials && profile.credentials.length) ?
-                 'TransactView' : 'OnboardingView';
-            });
-          } else {
-            this.rootComponent = (profile.credentials && profile.credentials.length) ?
-             'TransactView' : 'OnboardingView';
-          }
-
-        }).catch((err) => {
-          this.logger.error(err); 
-          this.rootComponent = 'OnboardingView';
-        })
-
-
-      });
-
-      if (this.platform.is('cordova')) {
-        this.statusBar.styleLightContent();
-        this.splashScreen.hide();
-      }
-      // Check Profile
-      this.profileService.loadAndBindProfile().then((profile: any) => {
-        
-        this.openLockModal();
-        if (profile) {
-          this.rootComponent = 'TransactView';
-        } else {
-          //this.profileService.createProfile();
-          this.rootComponent = 'OnboardingView';
-
-        }
-
-        // Check Profile
-        this.profileService.loadAndBindProfile().then((profile: any) => {
-          
-          this.openLockModal();
-          if (profile) {
-            this.rootComponent = 'TransactView';
-          } else {
-            //this.profileService.createProfile();
-            this.rootComponent = 'OnboardingView';
-          }
-        }).catch((err: any) => {
-          this.logger.warn(err);
-          //TODO: Send them somewhere better.
-          this.rootComponent = 'OnboardingView';
-        });
-      });
+    this.loadProfileAndEasySend();
+    
+    if (this.platform.is('cordova')) {
+      this.statusBar.styleLightContent();
+      this.splashScreen.hide();
+    }
   }
 
 

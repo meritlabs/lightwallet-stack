@@ -1,28 +1,24 @@
 import * as _ from 'lodash';
 import * as Promise from 'bluebird';
+import * as util from 'util';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { Common } from './common';
 import { Logger } from "./log";
 import { Credentials } from './credentials';
 import { ErrorTypes as Errors } from './errors';
+import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 
 const $ = require('preconditions').singleton();
 let EventEmitter = require('eventemitter3');
-let util = require('util');
-let async = require('async');
 let Bitcore = require('bitcore-lib');
 let Mnemonic = require('bitcore-mnemonic');
-let sjcl = require('sjcl');
-let url = require('url');
 let querystring = require('querystring');
-let Stringify = require('json-stable-stringify');
 let Bip38 = require('bip38');
 
 let request = require('superagent');
 
 let Constants = Common.Constants;
-let Defaults = Common.Defaults;
 let Utils = Common.Utils;
 
 let Package = require('../../../../package.json');
@@ -44,160 +40,7 @@ export interface InitOptions {
   timeout?: number;
   logLevel?: string;
 }
-
-export interface IAPI {
-  // fields
-  credentials: Credentials;
-  request: any;
-  baseUrl: string;
-  payProHttp: string;
-  doNotVerifyPayPro: boolean;
-  timeout: number;
-  logLevel: string;
-  privateKeyEncryptionOpts: any;
-  notificationIncludeOwn: boolean;
-  log: any;
-  lastNotificationId: string;
-  notificationsIntervalId: any;
-  keyDerivationOk: boolean;
-  session: any;
-  DEBUG_MODE: boolean;
-  BASE_URL: string;
-  
-  // Mutated from other services (namely wallet.service and profile.service)
-  id: string; // TODO: Re-evaluate where this belongs.
-  completeHistory: any; // This is mutated from Wallet.Service.ts; for now.
-  cachedStatus: any; 
-  cachedActivity: any; 
-  cachedTxps: any;
-  pendingTxps: any;
-  totalBalanceSat: number;
-  scanning: boolean; 
-  hasUnsafeConfirmed: boolean;
-  network: string;
-  n: number;
-  m: number;
-  notAuthorized: boolean;
-  needsBackup: boolean;
-  name: string;
-  color: string; 
-  started: boolean;
-  copayerId: string;
-  unlocked: boolean;
-  shareCode: string;
-  balanceHidden: boolean;
-  eventEmitter: any;
-  status: any; 
-  secret: any;
-
-  // functions
-  initNotifications(): Promise<any>;
-  initialize(opts: any): Promise<any>;
-  dispose(): any;
-  _fetchLatestNotifications(interval: number): Promise<any>;
-  _initNotifications(opts: any): any;
-  _disposeNotifications(): void;
-  setNotificationsInterval(notificationIntervalSeconds): any;
-  _processTxNotes(notes: any): void;
-  _processTxps(txps: Array<any>): Promise<any>;
-  seedFromRandom(opts: any): any;
-  validateKeyDerivation(opts: any): Promise<any>;
-  seedFromRandomWithMnemonic(opts: any): any;
-  seedFromRandomWithMnemonic(opts: any): any;
-  getMnemonic(): any;
-  mnemonicHasPassphrase(): any;
-  clearMnemonic(): any;
-  getNewMnemonic(data: any): any;
-  seedFromExtendedPrivateKey(xPrivKey: any, opts: any): void;
-  seedFromMnemonic(words: Array<string>, opts: any): any;
-  seedFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any): any;
-  export(opts: any): any;
-  import(str: string): any;
-  _import(): Promise<any>;
-  importFromMnemonic(words: string, opts: any): Promise<any>;
-  importFromExtendedPrivateKey(xPrivKey: any, opts: any): Promise<any>;
-  importFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any): Promise<any>;
-  decryptBIP38PrivateKey(encryptedPrivateKeyBase58: any, passphrase: string, opts: any): Promise<any>;
-  getBalanceFromPrivateKey(privateKey: any): Promise<any>;
-  buildTxFromPrivateKey(privateKey: any, destinationAddress: any, opts: any): Promise<any>;
-  buildEasySendScript(opts: any): Promise<any>;
-  buildEasySendRedeemTransaction(input: any, destinationAddress: any, opts: any): any;
-  prepareVault(type: number, opts: any) : any;
-  createSpendFromVaultTx(opts: any) : any;
-  buildRenewVaultTx(opts: any) : any;
-  openWallet(): Promise<any>;
-  _getHeaders(method: string, url: string, args: any): any;
-  _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<any>;
-  _doPostRequest(url: string, args: any): Promise<any>;
-  _doPutRequest(url: string, args: any): Promise<any>;
-  _doGetRequest(url: string): Promise<any>;
-  _doGetRequestWithLogin(url: string): Promise<any>;
-  parseSecret(secret: string): any;
-  buildTx(txp: any): any;
-  getRawTx(txp: any): any;
-  signTxp(txp: any, derivedXPrivKey) :any;
-  _getCurrentSignatures(txp: any): any;
-  _addSignaturesToBitcoreTx(txp: any, t: any, signatures: any, xpub: any): any;
-  _applyAllSignatures(txp: any, t: any): any;
-  doJoinWallet(walletId: any, walletPrivKey: any, xPubKey: any, requestPubKey: any, copayerName: string, opts:any) : Promise<any>;
-  isComplete(): any;
-  isPrivKeyEncrypted(): any;
-  isPrivKeyExternal(): any;
-  getPrivKeyExternalSourceName(): any
-  getKeys(password: string): any;
-  checkPassword(password: string): any;
-  canSign(): any;
-  encryptPrivateKey(password: string, opts: any): any;
-  decryptPrivateKey(password: string): any;
-  getFeeLevels(network: string): Promise<any>;
-  createWallet(walletName: string, copayerName: string, m: number, n: number, opts: any): Promise<any>;
-  joinWallet(secret: string, copayerName: string, opts: any): Promise<any>;
-  recreateWallet(c: any): Promise<any>;
-  getNotifications(opts: any): Promise<any>;
-  getStatus(opts: any): Promise<any>;
-  getANV(addr: any): Promise<any>;
-  getRewards(address: any): Promise<any>;
-  getPreferences(): Promise<any>;
-  savePreferences(preferences: any): Promise<any>;
-  fetchPayPro(opts: any, cb: Function);
-  getUtxos(opts: any): Promise<any>;
-  _getCreateTxProposalArgs(opts: any): any;
-  createTxProposal(opts: any): Promise<any>;
-  publishTxProposal(opts: any): Promise<any>;
-  unlockAddress(opts: any): Promise<any>;
-  createAddress(opts: any): Promise<any>;
-  addAccess(opts: any): Promise<any>;
-  validateAddress(address: string, network: string): Promise<any>;
-  getMainAddresses(opts: any): Promise<any>;
-  getBalance(opts: any): Promise<any>;
-  getTxProposals(opts: any): Promise<any>;
-  signTxProposal(txp: any, password: string): Promise<any>;
-  signTxProposalFromAirGapped(txp: any, encryptedPkr: string, m: number, n: number, password: string): Promise<any>;
-  rejectTxProposal(txp: any, reason: any): Promise<any>;
-  broadcastRawTx(opts: any): Promise<any>;
-  broadcastTxProposal(txp: any): Promise<any>;
-  removeTxProposal(txp: any): Promise<any>;
-  getTxHistory(opts: any): Promise<any>;
-  getTx(id: any): Promise<any>;
-  startScan(opts: any): Promise<any>;
-  getTxNote(opts: any): Promise<any>;
-  editTxNote(opts: any): Promise<any>;
-  getTxNotes(opts: any): Promise<any>;
-  getFiatRate(opts: any): Promise<any>;
-  pushNotificationsSubscribe(opts: any): Promise<any>;
-  pushNotificationsUnsubscribe(token: string): Promise<any>;
-  txConfirmationSubscribe(opts: any): Promise<any>;
-  txConfirmationUnsubscribe(txid: string): Promise<any>;
-  getSendMaxInfo(opts: any): Promise<any>;
-  getStatusByIdentifier(opts: any): Promise<any>;
-  referralTxConfirmationSubscribe(opts: any): Promise<any>;
-  referralTxConfirmationUnsubscribe(codeHash: string): Promise<any>;
-  validateEasyScript(scriptId: string): Promise<any>;
-  getVaults();
-  createVault(vaultTxProposal: any);
-}
-
-export class API implements IAPI {
+export class API {
   public BASE_URL = 'http://localhost:3232/bws/api';
   public request: any;
   public baseUrl: string;
@@ -242,6 +85,9 @@ export class API implements IAPI {
   public eventEmitter: any;
   public status: any; 
   public secret: string;
+  public email: string;
+  public cachedBalance: string;
+  public cachedBalanceUpdatedOn: string;
   
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -256,17 +102,12 @@ export class API implements IAPI {
   }
 
 
-  initNotifications(): Promise<any> {
-    this.log.warn('DEPRECATED: use initialize() instead.');
-    return this.initialize({});
-  };
-
   // Do we need an initialize now?  Constructor should be able to handle.
   initialize(opts): Promise<any> {
     return new Promise((resolve, reject) => {
       $.checkState(this.credentials);
       this.notificationIncludeOwn = !!opts.notificationIncludeOwn;
-      this._initNotifications(opts);
+      //this._initNotifications(opts);
       return resolve();
     });
   };
@@ -303,7 +144,9 @@ export class API implements IAPI {
   _initNotifications(opts: any = {}): any {
     const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode; pollutes request stream..  
     this.notificationsIntervalId = setInterval(() => {
-      this._fetchLatestNotifications(interval).catch((err) => {
+      this._fetchLatestNotifications(interval).then(() => {
+        this.log.warn("Init Notifications done");
+      }).catch((err) => {
         if (err) {
           if (err == Errors.NOT_FOUND || err == Errors.NOT_AUTHORIZED) {
             this._disposeNotifications();
@@ -866,7 +709,7 @@ export class API implements IAPI {
    * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
    * @param {Callback}    cb
    */
-  buildEasySendScript(opts:any = {}): Promise<any> {
+  buildEasySendScript(opts:any = {}): Promise<EasySend> {
     return new Promise((resolve, reject) => {
       
       let result:any = {}
@@ -1022,13 +865,72 @@ export class API implements IAPI {
    * Renew vault
    * Will make all pending tx invalid
    */
-  buildRenewVaultTx(opts: any = {}) {
+  buildRenewVaultTx(utxos: any[], newVault: any, masterKey: any, opts: any = {}) {
 
     var network = opts.network || DEFAULT_NET;
-    var fee = opts. fee || DEFAULT_FEE;
+    var fee = opts.fee || DEFAULT_FEE;
+
+    let totalAmount = _.reduce(utxos, (sum, utxo) => {
+      return sum + utxo.micros;
+    }, 0);
+
+    let amount =  totalAmount - fee;
+    if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
+
+    let redeemScript = new Bitcore.Script(newVault.redeemScript);
 
     var tx = new Bitcore.Transaction();
-    tx.fee(fee);
+
+    try {
+
+      if(newVault.type == 0) {
+        let tag = newVault.tag;
+
+        let params = [
+          Bitcore.HDPublicKey.fromObject(newVault.spendPubKey).toBuffer(),
+          new Bitcore.PublicKey(newVault.masterPubKey, {network: network}).toBuffer(),
+        ];
+
+        params = params.concat(newVault.whitelist);
+        params.push(Bitcore.Opcode.smallInt(newVault.whitelist.length));
+        params.push(tag);
+        params.push(Bitcore.Opcode.smallInt(newVault.type));
+
+        let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
+
+        tx.addOutput(new Bitcore.Transaction.Output({
+          script: scriptPubKey,
+          micros: amount
+        }));
+
+        tx.fee(fee)
+
+        _.each(utxos, (utxo) => {
+          tx.addInput(
+            new Bitcore.Transaction.Input.PayToScriptHashInput({
+              prevTxId: utxo.txid,
+              outputIndex: utxo.outputIndex,
+              script: utxo.scriptPubKey
+            }, redeemScript, utxo.scriptPubKey), 
+            utxo.scriptPubKey, utxo.micros);
+
+          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
+          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript);
+
+          tx.inputs[tx.inputs.length-1].setScript(inputScript);
+        });
+
+        // Make sure the tx can be serialized
+        tx.serialize();
+
+      } else {
+        this.log.error('Vault type is not supported:', newVault.type);
+        return Errors.COULD_NOT_BUILD_TRANSACTION;
+      }
+    } catch (ex) {
+      this.log.error('Could not build transaction from private key', ex);
+      return Errors.COULD_NOT_BUILD_TRANSACTION;
+    }
 
     return tx;
   };
@@ -1040,13 +942,15 @@ export class API implements IAPI {
    * @fires API#walletCompleted
    */
   openWallet(): Promise<any> {
+    this.log.warn("Opening wallet");
     return new Promise((resolve, reject) => {
     
       $.checkState(this.credentials);
-      if (this.credentials.isComplete() && this.credentials.hasWalletInfo())
+      if (this.credentials.isComplete() && this.credentials.hasWalletInfo()) {
+        this.log.warn("WALLET OPEN");    
         return resolve(true); // wallet is already open
+      }
 
-      return resolve();
       return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
         let wallet = ret.wallet;
 
@@ -2689,19 +2593,18 @@ export class API implements IAPI {
   getVaults() {
     $.checkState(this.credentials);
 
-    var self = this;
-
     var url = '/v1/vaults/';
     return this._doGetRequest(url);
-
   };
 
   createVault(vaultTxProposal: any) {
     $.checkState(this.credentials);
 
-    var self = this;
-
     var url = '/v1/vaults/';
     return this._doPostRequest(url, vaultTxProposal);
   };
+
+  getVaultCoins(vaultAddress: any) {
+    return this.getUtxos({addresses: [vaultAddress]});
+  }
 }

@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, App, AlertController, ModalControl
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { ConfigService } from "merit/shared/config.service"; 
 import { EmailService } from 'merit/shared/email.service';
+import { Logger } from 'merit/core/logger';
 
 @IonicPage()
 @Component({
@@ -30,7 +31,8 @@ export class SettingsView {
     private inAppBrowser:InAppBrowser,
     private modalCtrl:ModalController,
     private configService:ConfigService,
-    private emailService:EmailService
+    private emailService:EmailService,
+    private logger:Logger
   ) {
     let config = this.configService.get();
     this.currentUnitName = config.wallet.settings.unitName;
@@ -45,7 +47,7 @@ export class SettingsView {
   }
 
   toAddressbook() {
-    this.navCtrl.push('AddressbookView');
+    this.navCtrl.push('AddressBookView');
   }
 
   logout() {
@@ -70,7 +72,7 @@ export class SettingsView {
     let modal = this.modalCtrl.create('SelectUnitModal', {currentUnit: this.currentUnitName, availableUnits: [ /* available units */] });
     modal.present();
     modal.onDidDismiss((unit) => {
-      console.log(unit);
+      this.logger.info(unit);
       if (unit) this.currentUnitName = unit;
     });
   }

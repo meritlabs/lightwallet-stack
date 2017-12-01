@@ -12,14 +12,18 @@ export class FileStorage implements MeritStorage {
   fs: FileSystem;
   dir: DirectoryEntry;
 
-  constructor(private file: File, private platform: Platform, private log: Logger) {
+  constructor(
+    private file: File, 
+    private platform: Platform, 
+    private log: Logger
+  ) {
   }
 
   init(): Promise<void> {
     if (this.fs && this.dir) return Promise.resolve();
 
     let onSuccess = (fs: FileSystem): Promise<void> => {
-      console.log('File system started: ', fs.name, fs.root.name);
+      this.log.info('File system started: ', fs.name, fs.root.name);
       this.fs = fs;
       return this.getDir().then(dir => {
         if (!dir.nativeURL) return;

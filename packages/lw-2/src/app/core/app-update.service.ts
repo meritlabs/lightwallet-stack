@@ -1,23 +1,19 @@
+import * as Promise from 'bluebird';
 import { Injectable } from '@angular/core';
 
-import {Http} from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import {Logger} from "merit/core/logger";
 
 @Injectable()
 export class AppUpdateService {
 
-
   constructor(
-    private http:Http,
+    private http:HttpClient,
     private logger:Logger
   ) {}
 
   //TODO It's a mock now!!
   public isUpdateAvailable():Promise<boolean> {
-    return new Promise((rs, rj) => {
-      rs(false);
-    })
+    return Promise.resolve(false);
   }
-
-
 }
