@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angu
 import { MeritContact } from 'merit/shared/address-book/contact/contact.model';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { ProfileService } from "merit/core/profile.service";
+import { DomSanitizer } from '@angular/platform-browser';
 
 @IonicPage()
 @Component({
@@ -19,7 +20,8 @@ export class ContactView {
     private navParams:NavParams,
     private addressBookService: AddressBookService,
     private alertCtrl:AlertController,
-    private profileService:ProfileService
+    private profileService:ProfileService,
+    private sanitizer:DomSanitizer
   ) {
     this.contact = this.navParams.get('contact');
   }
@@ -28,7 +30,7 @@ export class ContactView {
     this.getWallets();
   }
 
-  private getWallets():Promise<any> {
+  private getWallets() {
 
     if (this.wallets) {
       return Promise.resolve(this.wallets);
@@ -72,6 +74,10 @@ export class ContactView {
 
   toEditContact() {
     this.navCtrl.push('EditContactView', {contact: this.contact})
+  }
+
+  sanitizePhotoUrl(url:string) {
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
 
