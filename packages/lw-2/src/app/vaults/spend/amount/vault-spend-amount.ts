@@ -43,6 +43,14 @@ export class VaultSpendAmountView {
         this.allowSend = false;
     }
 
+    ionViewDidLoad() {
+        console.log('Params', this.navParams.data);
+        this.recipient = this.navParams.get('recipient');
+        console.log('recipient', this.recipient);
+        this.sending = this.navParams.get('sending');
+        this.displayName = !_.isEmpty(this.recipient.name) ? this.recipient.name : this.recipient.meritAddress;
+    }
+
     @HostListener('document:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
         if (!event.key) return;
         if (event.which === 8) {
