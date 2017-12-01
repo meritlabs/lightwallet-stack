@@ -106,7 +106,8 @@ export class VaultDetailsView {
   }
 
   spendToAddress(address): void {
-    this.navCtrl.push('VaultSpendAmountView');
+    console.log(address);
+    this.navCtrl.push('VaultSpendAmountView', { recipient: address });
   }
 
   private getAllWallets(): Promise<Array<any>> {
