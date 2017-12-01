@@ -22,7 +22,7 @@ var PUSHNOTIFICATIONS_TYPES = {
     filename: 'wallet_complete',
   },
   'NewTxProposal': {
-    filename: 'new_tx_proposal',
+    filename: 'incoming_tx_proposal',
   },
   'OutgoingTx': {
     filename: 'outgoing_tx',
@@ -41,7 +41,7 @@ var PUSHNOTIFICATIONS_TYPES = {
     notifyCreatorOnly: true,
   },
   'NewIncomingReferralTx': {
-    filename: 'new_incoming_referral',
+    filename: 'incoming_referral',
     notifyCreatorOnly: true,
   },
   'ReferralConfirmation': {
@@ -53,7 +53,7 @@ var PUSHNOTIFICATIONS_TYPES = {
     notifyCreatorOnly: true,
   },
   'NewIncomingVaultTx': {
-    filename: 'new_incoming_vault',
+    filename: 'incoming_vault',
     notifyCreatorOnly: true,
   },
   'VaultConfirmation': {
@@ -69,6 +69,7 @@ var PUSHNOTIFICATIONS_TYPES = {
 function PushNotificationsService() {};
 
 PushNotificationsService.prototype.start = function(opts, cb) {
+  console.warn("**** Starting Push Notification Service");  
   var self = this;
   opts = opts || {};
   self.request = opts.request || defaultRequest;
@@ -155,6 +156,9 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
           self._readAndApplyTemplates(notification, notifType, recipientsList, next);
         },
         function(contents, next) {
+          log.warn("What are the contents?");
+          var util = require('util');
+          console.log(util.inspect(contents, true, null, false));
           async.map(recipientsList, function(recipient, next) {
             var content = contents[recipient.language];
 
@@ -272,6 +276,7 @@ PushNotificationsService.prototype._getRecipientsList = function(notification, n
 PushNotificationsService.prototype._readAndApplyTemplates = function(notification, notifType, recipientsList, cb) {
   var self = this;
 
+  var util = require('util');
   async.map(recipientsList, function(recipient, next) {
     async.waterfall([
 
@@ -279,6 +284,8 @@ PushNotificationsService.prototype._readAndApplyTemplates = function(notificatio
         self._getDataForTemplate(notification, recipient, next);
       },
       function(data, next) {
+        log.warn("GetDataForTemplate");
+        log.warn(data);
         async.map(['plain', 'html'], function(type, next) {
           self._loadTemplate(notifType, recipient, '.' + type, function(err, template) {
             if (err && type == 'html') return next();
@@ -289,17 +296,27 @@ PushNotificationsService.prototype._readAndApplyTemplates = function(notificatio
             });
           });
         }, function(err, res) {
-          return next(err, _.zipObject(res));
+          log.warn("LODASH VERSION");
+          log.warn(_.VERSION);
+          log.warn("mapped stuff: ");
+          log.warn(util.inspect(res, false, null, true));
+          return next(err, _.fromPairs(_.filter(res, function(pair) {
+            return (!_.isEmpty(pair));
+          })));
         });
       },
       function(result, next) {
-        next(null, result);
+        next(null, result); //What is the purpose of this? 
       },
     ], function(err, res) {
+      log.warn("End of waterfall");      
+      log.warn(res);      
       next(err, [recipient.language, res]);
     });
   }, function(err, res) {
-    return cb(err, _.zipObject(res));
+    log.warn("End of map");      
+    log.warn(res);      
+    return cb(err, _.fromPairs(res));
   });
 };
 
@@ -401,6 +418,7 @@ PushNotificationsService.prototype._compileTemplate = function(template, extensi
 };
 
 PushNotificationsService.prototype._makeRequest = function(opts, cb) {
+  log.info("PNS: Making Request");
   var self = this;
 
   self.request({
