@@ -103,6 +103,23 @@ ion-item textarea {
   color: white !important; 
 }
 
+[class^="merit-icon"] {
+  mask-size: contain;
+  mask-position: 50% 50%;
+  mask-repeat: no-repeat;
+  background: currentColor;
+  display: inline-block;
+
+}
+
+.merit-icon-merit { mask-image: url(../assets/img/icons/merit.svg); }
+.merit-icon-merit-2 { mask-image: url(../assets/img/merit.svg); }
+.merit-icon-qr-code { mask-image: url(../assets/img/icons/qr-code.svg); }
+.merit-icon-wallet { mask-image: url(../assets/img/icon-wallet.svg); }
+.merit-icon-wallet-add { mask-image: url(../assets/img/icons/wallet-add.svg); }
+.merit-icon-wallet-import { mask-image: url(../assets/img/icons/wallet-import.svg); }
+.merit-icon-wallet-lock { mask-image: url(../assets/img/icons/wallet-lock.svg); }
+
 // Variables
 $v-dark-gray:                                        #445 !default;
 $v-tab-send-icon:                                    url('../img/tab-icons/ico-send.svg') !default;

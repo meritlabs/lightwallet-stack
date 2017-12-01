@@ -11,27 +11,28 @@
 
     <ion-list>
 
+        <!--<ion-item-divider translate>-->
+            <!--Information-->
+        <!--</ion-item-divider>-->
+
+
+        <!--<ion-item (click)="help()">-->
+            <!--<ion-icon name="help-circle" item-start></ion-icon>-->
+            <!--<ion-label>Help &amp; support</ion-label>-->
+        <!--</ion-item>-->
+
+        <!--<ion-item (click)="toFeedback()">-->
+            <!--<ion-icon name="mail" item-start></ion-icon>-->
+            <!--<ion-label translate>Send feedback</ion-label>-->
+        <!--</ion-item>-->
+
         <ion-item-divider translate>
-            Information
+            Preferences
         </ion-item-divider>
         <ion-item (click)="toAddressbook()">
             <ion-icon name="contacts" item-start></ion-icon>
             <ion-label translate>Address book</ion-label>
         </ion-item>
-
-        <ion-item (click)="help()">
-            <ion-icon name="help-circle" item-start></ion-icon>
-            <ion-label>Help &amp; support</ion-label>
-        </ion-item>
-
-        <ion-item (click)="toFeedback()">
-            <ion-icon name="mail" item-start></ion-icon>
-            <ion-label translate>Send feedback</ion-label>
-        </ion-item>
-
-        <ion-item-divider translate>
-            Preferences
-        </ion-item-divider>
         <ion-item>
             <ion-icon name="notifications" item-start></ion-icon>
             <ion-label translate>Email Notifications</ion-label>
@@ -72,10 +73,6 @@
         <ion-item (click)="toAbout()">
             <ion-icon name="apps" item-start></ion-icon>
             About {{appName}}
-        </ion-item>
-        <ion-item >
-            <ion-label translate>Logout</ion-label>
-            <button outline (click)="logout()" item-right color="secondary" ion-button translate>Logout</button>
         </ion-item>
     </ion-list>
 

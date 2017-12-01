@@ -2,9 +2,14 @@
 view-onboarding {
   @extend %module-onboarding;
 
+  //img {
+  //  height: 5%;
+  //  margin-top: 20%;
+  //}
   img {
-    height: 5%;
-    margin-top: 20%;
+    height: 40%;
+    margin: 20% auto;
+    max-width: 75%;
   }
   .bottom-buttons {
     height: 60px !important;

@@ -96,7 +96,6 @@
     "@types/bluebird": "^3.5.18",
     "@types/node": "^8.0.47",
     "typescript": "2.5.3",
-    "ios-deploy": "^1.9.2",
     "bitcore-wallet-service": "^1.18.0",
     "browserify": "^13.1.0",
     "chai": "^1.9.1",

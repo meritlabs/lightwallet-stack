@@ -1,21 +1,28 @@
-$wallet-default-color: rgb(1, 148, 119);
+$wallet-default-color: #068cca;
 $wallet-locked-color: #999;
 
 %module-transact {
 
   .wallet-icon {
-    padding: 7px;
-    img {
       height: 36px;
       border-radius: 4px;
       box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 12px 0px;
       padding: 4px 8px;
-      vertical-align: middle;
-    }
-    &.default img {
+      [class^="merit-icon"] {
+        height: 20px;
+        background: white;
+      }
+    //img {
+    //  height: 36px;
+    //  border-radius: 4px;
+    //  box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 12px 0px;
+    //  padding: 4px 8px;
+    //  vertical-align: middle;
+    //}
+    &.default {
       background: $wallet-default-color;
     }
-    &.locked img {
+    &.locked {
       background: $wallet-locked-color !important;
     }
   }

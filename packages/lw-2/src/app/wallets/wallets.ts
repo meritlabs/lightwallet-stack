@@ -87,19 +87,17 @@ export class WalletsView {
 
   public async ionViewDidLoad() {
       this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
-      this.registerListeners();
       this.updateAllInfo();
   }
 
   private updateAllInfo():Promise<any> {
+
+    // Feedback and Update tools are temporary disabled
+    //this.newReleaseExists = this.appUpdateService.isUpdateAvailable();
+    //this.feedbackNeeded   = this.feedbackService.isFeedBackNeeded();
+
     this.registerListeners();
-    return this.appUpdateService.isUpdateAvailable().then((available) => {
-      this.newReleaseExists = available;
-      return this.feedbackService.isFeedBackNeeded();
-    }).then((feedbackNeeded) => {
-      this.feedbackNeeded = feedbackNeeded;
-      return this.addressbookService.list('testnet');
-    }).then((addressBook) => {
+    return this.addressbookService.list('testnet').then((addressBook) => {
       this.addressbook = addressBook;
       return this.getWallets();
     }).then((wallets) => {
