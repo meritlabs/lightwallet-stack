@@ -2,6 +2,21 @@
 view-wallets {
   @extend %module-transact;
 
+  ion-list {
+    margin-bottom: 10px !important;
+  }
+
+  [class^="merit-icon"] {
+    width: 30px;
+    height: 30px;
+    margin-top: 5px;
+    background: rgb(0, 148, 119);
+  }
+
+  .merit-icon-merit {
+    background: color($colors, primary);
+  }
+
   ion-navbar img {
     height: 18px;
   }
@@ -31,33 +46,78 @@ view-wallets {
     display: -webkit-inline-box !important;
   }
 
-  .category {
+  ion-item {
+    h2 {
+      white-space: normal;
+    }
     .detail {
-      position: absolute;
-      right: 40px;
       text-align: center;
       .amount {
         color: color($colors, primary);
         font-size: 16px;
       }
+      .detail-fiat {
+        color: rgba(0,0,0,0.6);
+        font-size: 12px;
+      }
+      .balance-hidden {
+        color: rgba(0,0,0,0.6);
+      }
     }
   }
 
-  .wallets {
-    @extend .category;
-    .detail {
-      margin: 2px 0;
+  ion-avatar img {
+    height: 20px;
+    border-radius: 0 !important;
+  }
+
+  ion-avatar.btn {
+    height: 36px;
+    border-radius: 4px;
+    //box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 12px 0px;
+    padding: 0 4px;
+    background: color($colors, primary);
+    line-height: 36px;
+    text-align: center;
+    ion-icon {
+      height: 36px;
+      line-height: 36px;
+      width: 36px;
+      text-align: center;
+      color: white;
+      font-weight: 900;
+      vertical-align: middle;
+      margin-top: -1px;
     }
   }
 
-  .network {
-    @extend .wallets;
-  }
-
-  .recent-txns {
-    @extend .category;
-    .detail {
-      bottom: 4px;
-    }
-  }
+  //.category {
+  //  .detail {
+  //    position: absolute;
+  //    right: 40px;
+  //    text-align: center;
+  //    .amount {
+  //      color: color($colors, primary);
+  //      font-size: 16px;
+  //    }
+  //  }
+  //}
+  //
+  //.wallets {
+  //  @extend .category;
+  //  .detail {
+  //    margin: 2px 0;
+  //  }
+  //}
+  //
+  //.network {
+  //  @extend .wallets;
+  //}
+  //
+  //.recent-txns {
+  //  @extend .category;
+  //  .detail {
+  //    bottom: 4px;
+  //  }
+  //}
 }

@@ -50,6 +50,7 @@ export class EditWalletView {
     let modal = this.modalCtrl.create('SelectColorView', {color: this.wallet.color});
     modal.onDidDismiss((color) => {
       if (color) {
+        this.wallet.color = color;
         let colorOpts = {colorFor: {}};
         colorOpts.colorFor[this.wallet.id] = color;
         this.configService.set(colorOpts);
