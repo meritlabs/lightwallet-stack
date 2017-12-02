@@ -40,7 +40,6 @@ export class PushNotificationsService {
     this.isAndroid = this.platformService.isAndroid;
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
     
-    this.logger.info('Shall we use PNs?: ', this.usePushNotifications);
     if (this.usePushNotifications) {
 
       this.platform.ready().then((readySource) => {      
@@ -67,7 +66,6 @@ export class PushNotificationsService {
         } else {
           // Notification was received in foreground. Let's propogate the event
           // (using Ionic Events) to the relevant view.
-          this.logger.info("Let's propogate the event!");
           if (data.walletId) {
             let wallet: MeritWalletClient = this.profileService.getWallet(data.walletId);
             if (!_.isEmpty(wallet)) {
@@ -94,13 +92,10 @@ export class PushNotificationsService {
 
 
   public init(): void {
-    this.logger.info("Initializing pushNotifications right Meow.");
     if (!this.usePushNotifications || this._token) return;
     this.configService.load().then(() => {
       if (!this.configService.get().pushNotificationsEnabled) return;
-
       this.logger.info('Starting push notification registration...');
-
       //Keep in mind the function will return null if the token has not been established yet.
       this.FCMPlugin.getToken().then((token: any) => {
         this.logger.info('Got token for push notifications: ' + token);
