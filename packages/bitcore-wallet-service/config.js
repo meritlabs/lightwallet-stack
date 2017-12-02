@@ -54,12 +54,12 @@ var config = {
     },
   },
   pushNotificationsOpts: {
-    templatePath: './lib/templates',
+    templatePath: './packages/bitcore-wallet-service/lib/templates', // this must be relative to bitcore-node runner
     defaultLanguage: 'en',
     defaultUnit: 'mrt',
     subjectPrefix: '',
     pushServerUrl: 'https://fcm.googleapis.com/fcm',
-    authorizationKey: 'key',
+    authorizationKey: 'REPLACE-WITH-ENV-VAR',
   },
   // fiatRateServiceOpts: {
   //   defaultProvider: 'BitPay',
