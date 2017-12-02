@@ -164,20 +164,35 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
 
 BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
   var self = this;
-
   if (!data || !data.vout) return;
 
+  // Let's format the object to be easier to process below.
   var outs = _.compact(_.map(data.vout, function(v) {
-    var addr = _.keys(v)[0];
+        var addr = _.keys(v)[0];
 
-    return {
-      address: addr,
-      amount: +v[addr]
-    };
+        return {
+          address: addr,
+          amount: +v[addr]
+        };
   }));
-  if (_.isEmpty(outs)) return;
 
-  async.each(outs, function(out, next) {
+  // Let's roll up any vouts that go to the same address.
+  // TODO: Probably a more efficient way to do the below.
+  var filteredOutputs = [];
+  _.forEach(outs, (out) => {
+    var oIndex = _.findIndex(filteredOutputs, {address: out.address});
+    if (filteredOutputs[oIndex]) {
+      var accumulatedOutput = filteredOutputs[oIndex];
+      accumulatedOutput.amount += out.amount;
+      filteredOutputs.splice(oIndex, 1, accumulatedOutput);
+    } else {
+      filteredOutputs.push(out);
+    }   
+  });
+
+  if (_.isEmpty(filteredOutputs)) return;
+
+  async.each(filteredOutputs, function(out, next) {
     self.storage.fetchAddress(out.address, function(err, address) {
       if (err) {
         log.error('Could not fetch addresses from the db');
