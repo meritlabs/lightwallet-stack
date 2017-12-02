@@ -30,9 +30,5 @@ export class TransactView {
     this.logger.info("Hello TRANSACT VIEW!");
   }
 
-  ionViewDidLoad() {
-    //do something here
-    this.tabRef.select(0);
-  }
 
 }
