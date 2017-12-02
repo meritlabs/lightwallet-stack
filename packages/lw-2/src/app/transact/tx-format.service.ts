@@ -39,6 +39,7 @@ export class TxFormatService {
     return this.bwc.getUtils().formatAmount(micros, settings.unitCode, opts);
   }
 
+  // Todo: Improve
   formatAmountStr(micros: number): any {
     if (isNaN(micros)) return;
     return this.formatAmount(micros) + ' MRT';

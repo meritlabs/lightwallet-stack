@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ApplicationRef, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, ToastController, AlertController, Events} from 'ionic-angular';
 
 import * as _ from "lodash";
@@ -21,6 +21,7 @@ import { AddressBookService } from "merit/shared/address-book/address-book.servi
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
+
 
 
 /* 
@@ -72,9 +73,10 @@ export class WalletsView {
     private events:Events,
     private addressbookService:AddressBookService,
     private vaultsService: VaultsService,
+    private applicationRef: ApplicationRef, 
+    private zone: NgZone
   ) {
     this.logger.warn("Hellop WalletsView!");
-    
   }
 
   public doRefresh(refresher) {
@@ -88,11 +90,10 @@ export class WalletsView {
   public async ionViewDidLoad() {
       this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
       this.registerListeners();
-      this.updateAllInfo();
+      await this.updateAllInfo();
   }
 
   private updateAllInfo():Promise<any> {
-    this.registerListeners();
     return this.appUpdateService.isUpdateAvailable().then((available) => {
       this.newReleaseExists = available;
       return this.feedbackService.isFeedBackNeeded();
@@ -116,10 +117,8 @@ export class WalletsView {
       });
       return this.processEasyReceive();
     }).then(() => {
-      console.log('getting vaults');
       return this.vaultsService.getVaults(_.head(this.wallets));
     }).then((vaults) => {
-      console.log('getting vaults', vaults);
       this.vaults = vaults;
       return this.profileService.getTxps({limit: 3});
     }).then((txps) => {
@@ -131,56 +130,62 @@ export class WalletsView {
         });
       }
     }).catch((err) => {
-      console.log("@@ERROR IN Updating statuses.");
+      console.log("Error in Updating statuses.");
       console.log(err);
     });
   }
 
   private processIncomingTransactionEvent(n:any): void {
-    this.logger.info("processIncomingTransaction");
-    if (_.isEmpty(n)) {
-      return;
-    }
-
-    if (n.type) {
-      switch (n.type) {
-        case 'IncomingTx': 
-          n.actionStr = 'Payment Received';
-          break;
-        case 'IncomingCoinbase': 
-          n.actionStr = 'Mining Reward';
-          break;
-        default: 
-          n.actionStr = 'Recent Transaction';
-          break
-      }
-    }
-
-    // TODO: Localize
-    if (n.data && n.data.amount) {
-      n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
-      this.txFormatService.formatToUSD(n.data.amount).then((usdAmount) => {
-        n.fiatAmountStr = new FiatAmount(usdAmount).amountStr;
-        this.recentTransactionsData.push(n);
-      });
-    }
-
-    // Update the status of the wallet in question.
-    // TODO: Consider revisiting the mutation approach here. 
-    if (n.walletId) {
-
-      // Do we have wallet with this ID in the view?
-      // If not, let's skip. 
-      let foundIndex = _.findIndex(this.wallets, {'id': n.walletId});
-      if (!this.wallets[foundIndex]) {
+      if (_.isEmpty(n)) {
         return;
       }
-      this.walletService.invalidateCache(this.wallets[foundIndex]);
-      this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
-        this.wallets[foundIndex].status = status;
-      });
-      
-  }
+
+      if (n.type) {
+        switch (n.type) {
+          case 'IncomingTx': 
+            n.actionStr = 'Payment Received';
+            break;
+          case 'IncomingCoinbase': 
+            n.actionStr = 'Mining Reward';
+            break;
+          default: 
+            n.actionStr = 'Recent Transaction';
+            break
+        }
+      }
+
+      // TODO: Localize
+      if (n.data && n.data.amount) {
+        n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
+        this.txFormatService.formatToUSD(n.data.amount).then((usdAmount) => {
+          n.fiatAmountStr = new FiatAmount(usdAmount).amountStr;
+          // We use angular's NgZone here to ensure that the view re-renders with new data.
+          // There may be a better way to do this.  
+          // TODO: Investigate why events.subscribe() does not appear to run inside 
+          // the angular zone.
+          this.zone.run(() => {
+            this.recentTransactionsData.push(n);
+          });
+        });
+      }
+
+      // Update the status of the wallet in question.
+      // TODO: Consider revisiting the mutation approach here. 
+      if (n.walletId) {
+        // Check if we have a wallet with the notification ID in the view.
+        // If not, let's skip. 
+        let foundIndex = _.findIndex(this.wallets, {'id': n.walletId});
+        if (!this.wallets[foundIndex]) {
+          return;
+        }
+        this.walletService.invalidateCache(this.wallets[foundIndex]);
+        this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
+          // Using angular's NgZone to ensure that the view knows to re-render.
+          this.zone.run(() => {
+            this.wallets[foundIndex].status = status;
+          });
+        });
+    }
 }
 
   /**
@@ -190,14 +195,15 @@ export class WalletsView {
    */
   private registerListeners(): void {
 
+    
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
-      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
+      this.logger.info("RL: Got an IncomingTx event with: ", walletId, type, n);
       
       this.processIncomingTransactionEvent(n);      
     });
     
     this.events.subscribe('Remote:IncomingCoinbase', (walletId, type, n) => {
-      this.logger.info("RL: Got a IncomingTxProposal event with: ", walletId, type, n);
+      this.logger.info("RL: Got an IncomingCoinbase event with: ", walletId, type, n);
       
       this.processIncomingTransactionEvent(n);      
     });
@@ -295,7 +301,7 @@ export class WalletsView {
     
           }).catch((err) => {
             this.toastCtrl.create({
-              message: "There was an error getting the Merit",
+              message: "There was an error retrieving your incoming payment.",
               cssClass: ToastConfig.CLASS_ERROR
             });
             reject(); 
@@ -314,7 +320,7 @@ export class WalletsView {
         
            //todo implement wallet selection UI 
           let wallet = wallets[0];
-          if (!wallet) return reject('no wallet'); 
+          if (!wallet) return reject(new Error('Could not retrieve wallet.')); 
   
           this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data).then(() => {
               this.logger.info('Easy send returned');
@@ -397,7 +403,7 @@ export class WalletsView {
     return this.profileService.getWallets().each((wallet) => {
       return this.walletService.getStatus(wallet).then((status) => {
         wallet.status = status;
-        return wallet;
+        return Promise.resolve(wallet);
       }).catch((err) => {
         Promise.reject(new Error('could not update wallets' + err));
       });
