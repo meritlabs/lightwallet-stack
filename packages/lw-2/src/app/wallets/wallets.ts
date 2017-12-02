@@ -301,7 +301,7 @@ export class WalletsView {
     
           }).catch((err) => {
             this.toastCtrl.create({
-              message: "There was an error getting the Merit",
+              message: "There was an error retrieving your incoming payment.",
               cssClass: ToastConfig.CLASS_ERROR
             });
             reject(); 
@@ -320,7 +320,7 @@ export class WalletsView {
         
            //todo implement wallet selection UI 
           let wallet = wallets[0];
-          if (!wallet) return reject('no wallet'); 
+          if (!wallet) return reject(new Error('Could not retrieve wallet.')); 
   
           this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data).then(() => {
               this.logger.info('Easy send returned');
