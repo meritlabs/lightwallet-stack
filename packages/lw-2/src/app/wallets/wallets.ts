@@ -117,10 +117,8 @@ export class WalletsView {
       });
       return this.processEasyReceive();
     }).then(() => {
-      console.log('getting vaults');
       return this.vaultsService.getVaults(_.head(this.wallets));
     }).then((vaults) => {
-      console.log('getting vaults', vaults);
       this.vaults = vaults;
       return this.profileService.getTxps({limit: 3});
     }).then((txps) => {
@@ -132,13 +130,12 @@ export class WalletsView {
         });
       }
     }).catch((err) => {
-      console.log("@@ERROR IN Updating statuses.");
+      console.log("Error in Updating statuses.");
       console.log(err);
     });
   }
 
   private processIncomingTransactionEvent(n:any): void {
-      this.logger.info("processIncomingTransaction");
       if (_.isEmpty(n)) {
         return;
       }
@@ -162,21 +159,20 @@ export class WalletsView {
         n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
         this.txFormatService.formatToUSD(n.data.amount).then((usdAmount) => {
           n.fiatAmountStr = new FiatAmount(usdAmount).amountStr;
-          // This makes angular see the change. 
+          // We use angular's NgZone here to ensure that the view re-renders with new data.
+          // There may be a better way to do this.  
+          // TODO: Investigate why events.subscribe() does not appear to run inside 
+          // the angular zone.
           this.zone.run(() => {
-            //this.recentTransactionsData = newTransactions;
             this.recentTransactionsData.push(n);
           });
-          
-            //this.applicationRef.tick();
-          //});
         });
       }
 
       // Update the status of the wallet in question.
       // TODO: Consider revisiting the mutation approach here. 
       if (n.walletId) {
-        // Do we have wallet with this ID in the view?
+        // Check if we have a wallet with the notification ID in the view.
         // If not, let's skip. 
         let foundIndex = _.findIndex(this.wallets, {'id': n.walletId});
         if (!this.wallets[foundIndex]) {
@@ -184,12 +180,12 @@ export class WalletsView {
         }
         this.walletService.invalidateCache(this.wallets[foundIndex]);
         this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
+          // Using angular's NgZone to ensure that the view knows to re-render.
           this.zone.run(() => {
             this.wallets[foundIndex].status = status;
           });
         });
     }
-    // Because we didn't use an observable or the httpClient, the app does not know to refresh here.
 }
 
   /**
