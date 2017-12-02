@@ -84,7 +84,7 @@
     "json-stable-stringify": "^1.0.0",
     "ngx-clipboard": "^8.1.1",
     "phonegap-plugin-barcodescanner": "^6.0.8",
-    "preconditions": "^1.0.8",
+    "preconditions": "^2.2.0",
     "rxjs": "5.4.3",
     "sjcl": "^1.0.3",
     "superagent": "^3.4.1",

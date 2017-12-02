@@ -144,8 +144,7 @@ export module Utils {
     return this.verifyMessage(requestPubKey, signature, pub.toString());
   };
 
-  export const  formatAmount = function(micros, unit, opts) {
-    $.shouldBeNumber(micros);
+  export const  formatAmount = function(micros: number, unit: string, opts: any) {
     $.checkArgument(_.includes(_.keys(Constants.UNITS), unit));
 
     function clipDecimals(number, decimals) {
