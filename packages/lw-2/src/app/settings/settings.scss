@@ -1,7 +1,7 @@
 view-settings {
 
   ion-label, ion-icon {
-    color: #666;
+    color: color($colors, primary);
   }
 
   ion-label p {

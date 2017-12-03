@@ -9,11 +9,14 @@
 
 <ion-content>
 
-    <div *ngIf="hasFunds">
+    <div *ngIf="true || hasFunds">
       <div class="send-header-wrapper">
         <div class="item item-heading send-heading"><span translate>Recipient</span></div>
         <div class="item input search-wrapper" [class.focus]="searchFocus">
-          <i class="icon icon-svg abs-v-center"><img class="svg" src="img/icon-bitcoin-symbol.svg"></i>
+          <i class="icon icon-svg abs-v-center">
+              <!--<img class="svg" src="assets/img/merit.svg" style="height: 30px; width: 30px; background: green">          -->
+              <i class="merit-icon-merit"></i>
+          </i>
           <ion-item class="item-icon-right">
             <ion-input type="text" class="search-input" placeholder="Search or enter merit address" 
             [(ngModel)]="formData.search" (ionChange)="findContact(formData.search)" 
@@ -27,7 +30,7 @@
     </div>
 
 
-    <div class="list">
+    <div class="list" *ngIf="false">
 
       <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList" (click)="goToAmount(item)">
         <i class="icon big-icon-svg">
@@ -40,7 +43,8 @@
         Show more
       </div>
     </div>
-    <div class="list">
+
+    <div class="list" *ngIf="false">
       <div *ngIf="!checkingBalance && (!hasFunds || !hasWallets)">
         <div class="card sendTip">
           <div class="item item-icon-right item-heading"></div>
@@ -84,7 +88,7 @@
           <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList"
             (click)="goToAmount(item)">
           <i class="icon big-icon-svg" *ngIf="item.recipientType == 'wallet'">
-            <img src="img/icon-wallet.svg" [class.wallet-background-color-default]="!item.color" [style.background]="item.color" class="bg"/>
+            <img src="img/wallet.svg" [class.wallet-background-color-default]="!item.color" [style.background]="item.color" class="bg"/>
           </i>
           {{item.name}}
           <i class="icon bp-arrow-right"></i>
