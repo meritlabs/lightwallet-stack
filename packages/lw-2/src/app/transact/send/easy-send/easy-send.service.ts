@@ -14,6 +14,7 @@ export class EasySendService {
     // TODO: get a passphrase from the user
     let opts = {
       network: wallet.network,
+      unlockCode: wallet.shareCode,
       passphrase: ''
     };
 
@@ -45,7 +46,7 @@ export class EasySendService {
   }
 
   public sendEmail(emailAddress: string, url: string): Promise<any> {
-    return Promise.resolve().then(this.socialSharing.canShareViaEmail).then(() => {
+    return Promise.resolve(this.socialSharing.canShareViaEmail()).then(() => {
       return this.socialSharing.shareViaEmail(url, 'Someone sent you some Merit', [emailAddress]);
     }).catch((err) => {
       return Promise.reject(new Error('error sending email: ' + err));

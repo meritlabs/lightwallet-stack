@@ -15,6 +15,8 @@ import * as  _  from 'lodash';
 import * as Promise from 'bluebird';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
+import { easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
+import { MeritContact } from 'merit/shared/address-book/contact/contact.model';
 
 /**
  * The confirm view is the final step in the transaction sending process 
@@ -33,7 +35,7 @@ export class SendConfirmView {
   private static CONFIRM_LIMIT_USD = 20;
   private static FEE_TOO_HIGH_LIMIT_PER = 15;
   
-  private recipient: any;
+  private recipient: MeritContact;
   private txData: {
     toAddress: any,
     toAmount: number,
@@ -46,8 +48,7 @@ export class SendConfirmView {
     allowSpendUnconfirmed?: boolean,
     usingCustomFee?: boolean,
     script?: any,
-    senderPublicKey?: any,
-    easySendSecret?: string
+    easySendURL?: string
   };
   private wallet: MeritWalletClient;
   private walletConfig: any;
@@ -181,24 +182,32 @@ export class SendConfirmView {
     return this.easySendService.createEasySendScriptHash(this.wallet).then((easySend) => {
       this.txData.script = easySend.script;
       this.txData.script.isOutput = true;
-      this.txData.easySendSecret = easySend.secret;
-      this.txData.senderPublicKey = easySend.senderPubKey;
+      this.txData.easySendURL = easySendURL(easySend);
       this.txData.toAddress = this.txData.script.toAddress().toString();
       return Promise.resolve();
     })
   }
 
-  public approve(): Promise<boolean> {
+  public approve(): Promise<void> {
     let loadingSpinner = this.loadingCtrl.create({
       content: "Sending transaction...",
       dismissOnPageChange: true
     });
     return Promise.resolve(loadingSpinner.present()).then((res) => {
       return this.approveTx(this.txData, this.wallet);
-    }).then((worked) => {
+    }).then(() => {
       loadingSpinner.dismiss();
+      switch (this.recipient.sendMethod) {
+        case 'sms':
+          return this.easySendService.sendSMS(this.recipient.phoneNumber, this.txData.easySendURL);
+        case 'email':
+          return this.easySendService.sendEmail(this.recipient.email, this.txData.easySendURL);
+        default:
+          return Promise.resolve();
+          break;
+      };
+    }).then(() => {
       this.navCtrl.push('WalletsView');
-      return Promise.resolve(worked);
     }).catch((err) => {
       this.logger.warn("Failed to approve transaction.");
       this.logger.warn(err);
@@ -206,11 +215,10 @@ export class SendConfirmView {
     });
   }
 
-  private approveTx(tx, wallet): Promise<boolean> {
+  private approveTx(tx, wallet): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!tx || !wallet) {
-        this.logger.warn("No transaction or wallet data in approval.");
-        return resolve(false);
+        return reject(new Error("No transaction or wallet data in approval."));
       } 
 
       return this.getTxp(_.clone(tx), wallet, false).then((ctxp) => {
@@ -254,7 +262,7 @@ export class SendConfirmView {
             this.logger.warn("Error with confirming transaction.");
           }
           return publishAndSign().then(() => {
-            return resolve(true);
+            return resolve();
           }).catch((err: any) => {
             this.logger.warn("Could not publishAndSign: ", err);
           });
