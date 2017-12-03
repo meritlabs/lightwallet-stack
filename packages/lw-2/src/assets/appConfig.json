@@ -1,7 +1,7 @@
 {
     "packageName": "lightwallet-stack",
     "packageDescription": "Merit LightWallet",
-    "packageNameId": "me.merit.LightWallet",
+    "packageNameId": "me.merit.LightWalletTest",
     "themeColor": "#192c3a",
     "userVisibleName": "Merit",
     "purposeLine": "Merit Bitcoin Wallet",

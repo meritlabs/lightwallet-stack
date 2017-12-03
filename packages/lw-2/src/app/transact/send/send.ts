@@ -191,6 +191,29 @@ export class SendView {
     return obj;
   }
 
+  private couldBeEmail(search: string): boolean {
+    var weakEmailPattern = /^\S+@\S+/
+    return weakEmailPattern.test(search);
+  }
+  private couldBePhoneNumber(search: string): boolean {
+    var weakPhoneNumberPattern = /^[\(\+]?\d+([\(\)\.-]\d*)*$/
+    return weakPhoneNumberPattern.test(search);
+  }
+
+  private contactFromSearchTerm(term: string): MeritContact | null {
+    if(this.couldBeEmail(term)) {
+      let tempContact = this.justEmail(term);
+      tempContact.name = `Send an email to ${term}`;
+      return tempContact;
+    }
+    if(this.couldBePhoneNumber(term)) {
+      let tempContact = this.justPhoneNumber(term);
+      tempContact.name = `Send an sms to ${term}`;
+      return tempContact;
+    }
+    return null;
+  }
+
   private emptyContact = emptyMeritContact();
 
   private justMeritAddress(meritAddress: string): MeritContact {
@@ -258,7 +281,11 @@ export class SendView {
     var deviceResult = this.findMatchingContacts(this.deviceContacts, search);
     this.filteredList = result.concat(_.map(deviceResult, (contact) => {
       return this.contactWithSendMethod(contact, search);
-    }));  
+    }));
+    if(this.filteredList.length < 1) {
+      let tempContact = this.contactFromSearchTerm(search);
+      if(tempContact) this.filteredList.unshift(tempContact);
+    }
   }
 
   private goToAmount(item) {
