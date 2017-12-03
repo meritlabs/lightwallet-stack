@@ -22,7 +22,7 @@ var PUSHNOTIFICATIONS_TYPES = {
     filename: 'wallet_complete',
   },
   'NewTxProposal': {
-    filename: 'new_tx_proposal',
+    filename: 'incoming_tx_proposal',
   },
   'OutgoingTx': {
     filename: 'outgoing_tx',
@@ -41,7 +41,7 @@ var PUSHNOTIFICATIONS_TYPES = {
     notifyCreatorOnly: true,
   },
   'NewIncomingReferralTx': {
-    filename: 'new_incoming_referral',
+    filename: 'incoming_referral',
     notifyCreatorOnly: true,
   },
   'ReferralConfirmation': {
@@ -53,7 +53,7 @@ var PUSHNOTIFICATIONS_TYPES = {
     notifyCreatorOnly: true,
   },
   'NewIncomingVaultTx': {
-    filename: 'new_incoming_vault',
+    filename: 'incoming_vault',
     notifyCreatorOnly: true,
   },
   'VaultConfirmation': {
@@ -69,6 +69,7 @@ var PUSHNOTIFICATIONS_TYPES = {
 function PushNotificationsService() {};
 
 PushNotificationsService.prototype.start = function(opts, cb) {
+  console.warn("**** Starting Push Notification Service");  
   var self = this;
   opts = opts || {};
   self.request = opts.request || defaultRequest;
@@ -162,6 +163,11 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
               if (err) return next(err);
 
               var notifications = _.map(subs, function(sub) {
+                var returnData = {
+                  walletId: notification.walletId,
+                  copayerId: recipient.copayerId
+                }
+                _.assign(returnData, notification.data, {type: notification.type});
                 return {
                   to: sub.token,
                   priority: 'high',
@@ -173,10 +179,7 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
                     click_action: "FCM_PLUGIN_ACTIVITY",
                     icon: "fcm_push_icon",
                   },
-                  data: {
-                    walletId: sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(notification.walletId)),
-                    copayerId: sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(recipient.copayerId))
-                  },
+                  data: returnData
                 };
               });
               return next(err, notifications);
@@ -272,6 +275,7 @@ PushNotificationsService.prototype._getRecipientsList = function(notification, n
 PushNotificationsService.prototype._readAndApplyTemplates = function(notification, notifType, recipientsList, cb) {
   var self = this;
 
+  var util = require('util');
   async.map(recipientsList, function(recipient, next) {
     async.waterfall([
 
@@ -289,7 +293,9 @@ PushNotificationsService.prototype._readAndApplyTemplates = function(notificatio
             });
           });
         }, function(err, res) {
-          return next(err, _.zipObject(res));
+          return next(err, _.fromPairs(_.filter(res, function(pair) {
+            return (!_.isEmpty(pair));
+          })));
         });
       },
       function(result, next) {
@@ -299,7 +305,7 @@ PushNotificationsService.prototype._readAndApplyTemplates = function(notificatio
       next(err, [recipient.language, res]);
     });
   }, function(err, res) {
-    return cb(err, _.zipObject(res));
+    return cb(err, _.fromPairs(res));
   });
 };
 
@@ -401,6 +407,7 @@ PushNotificationsService.prototype._compileTemplate = function(template, extensi
 };
 
 PushNotificationsService.prototype._makeRequest = function(opts, cb) {
+  log.info("PNS: Making Request");
   var self = this;
 
   self.request({

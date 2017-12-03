@@ -91,6 +91,7 @@ interface Config {
 
   emailNotifications: {
     enabled: boolean;
+    emailAddress: string;
   };
 
   log: {
@@ -184,7 +185,8 @@ const configDefault: Config = {
   },
 
   emailNotifications: {
-    enabled: false
+    enabled: false,
+    emailAddress: ''
   },
 
   log: {

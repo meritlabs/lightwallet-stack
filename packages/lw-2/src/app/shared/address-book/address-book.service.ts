@@ -39,7 +39,7 @@ export class AddressBookService {
   };
 
   public searchContacts(term: string): Promise<Contact[]> {
-    let options: IContactFindOptions = {filter: term};
+    let options: IContactFindOptions = {filter: term, multiple: true};
     let fields: ContactFieldType[] = ['name', 'phoneNumbers', 'emails'];
 
     if(!this.platformService.isMobile) return Promise.resolve([]);
