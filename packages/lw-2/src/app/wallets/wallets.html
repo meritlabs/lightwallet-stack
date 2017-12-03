@@ -13,11 +13,11 @@
 
     <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
-    <ion-item-divider translate *ngIf="showFeatureBlock()">
+    <ion-item-divider translate *ngIf="showFeatureBlock">
         Features
     </ion-item-divider>
 
-    <span *ngIf="feedbackNeeded|async">
+    <span *ngIf="feedbackNeeded">
         <ion-item  translate>
             <ion-label>Please rate our app</ion-label>
             <span item-right>
@@ -41,7 +41,7 @@
     </span>
 
 
-    <ion-item *ngIf="newReleaseExists|async" translate (click)="toLatestRelease()">
+    <ion-item *ngIf="newReleaseExists" translate (click)="toLatestRelease()">
         <ion-label translate>New version of app available!</ion-label>
         <button ion-button clear item-right><ion-icon name="link"></ion-icon></button>
     </ion-item>
@@ -70,7 +70,7 @@
         </ion-item>
     </ion-list>
 
-    <span *ngIf="txpsData?.txpsN && addressbook|async">
+    <span *ngIf="txpsData?.txpsN && addressbook">
         <ion-item-divider translate >
             Payment Proposals
             <ion-badge item-right>{{txpsData?.txpsN}}</ion-badge>
@@ -140,7 +140,7 @@
         </ion-item>
     </ion-list>
 
-    <span class="recent-txns" *ngIf="recentTransactionsEnabled && recentTransactionsData.length > 0">
+    <span class="recent-txns" *ngIf="recentTransactionsEnabled && recentTransactionsData && recentTransactionsData.length > 0">
         <ion-item-divider translate>
             <span>Recent Transactions</span>
             <span class="badge badge-assertive m5t m10r" *ngIf="recentTransactionsData && recentTransactionsData.length>3"> {{recentTransactionsData.length}}</span>
