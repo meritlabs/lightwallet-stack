@@ -20,10 +20,6 @@
     </div>
 
     <ion-list>
-        <ion-item>
-            <ion-label translate>Whitelist</ion-label>
-        </ion-item>
-
         <ion-item class="vault-item" *ngFor="let address of whitelist">
             <ion-label class="whitelist-item">
                 <i class="wallet-icon" item-start *ngIf="address.type == 'vault'">

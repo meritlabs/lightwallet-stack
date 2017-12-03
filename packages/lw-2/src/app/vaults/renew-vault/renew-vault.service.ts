@@ -27,9 +27,6 @@ export class RenewVaultService {
     }
 
     renewVault(vault: any, masterKey: any): Promise<any> {
-        console.log('vault to renew', vault);
-        console.log('master key', masterKey);
-
         return this.profileService.getHeadWalletClient().then((walletClient) => {
           if (!this.walletClient) {
               this.walletClient = walletClient;
@@ -38,20 +35,14 @@ export class RenewVaultService {
         }).then((coins) => {
       
             let address = this.bitcore.Address.fromObject(vault.address);
-    
-            console.log(address.toString());
-            console.log(vault);
-            console.log(coins);
-    
             let network = this.walletClient.credentials.network;
-            let dummyKey = this.bitcore.PrivateKey.fromRandom(network); // ToDo: change me?
-    
-            let tx = this.walletClient.buildRenewVaultTx(coins, vault, dummyKey, {network: network});
+
+            let tx = this.walletClient.buildRenewVaultTx(coins, vault, masterKey, {network: network});
     
             console.log("RENEW TX");
-            console.log(tx);
             console.log('Serialized: ', tx.serialize());
-            return { rawTx: tx, network: network };
+
+            return { rawTx: tx.serialize(), network: network };
         }).then((tx) => {
             return this.walletClient.broadcastRawTx(tx);
         }).catch((err) => {
