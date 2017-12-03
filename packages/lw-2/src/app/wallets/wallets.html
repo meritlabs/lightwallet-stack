@@ -13,7 +13,7 @@
 
     <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
-    <ion-item-divider translate *ngIf="feedBackNeeded || newReleaseExists">
+    <ion-item-divider translate *ngIf="showFeatureBlock()">
         Features
     </ion-item-divider>
 
