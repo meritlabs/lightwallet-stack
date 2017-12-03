@@ -7,7 +7,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { ProfileService } from 'merit/core/profile.service';
-import { IMeritWalletClient } from 'src/lib/merit-wallet-client';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service';
 
 export interface IWhitelistEntry {
@@ -37,7 +37,7 @@ export class VaultRenewView {
   public formData: IVaultRenewViewModel = { vaultName: '', masterKey: '', whitelist: [] };
   public whitelistCandidates: Array<IWhitelistEntry> = [];
   private bitcore: any = null;
-  private walletClient: IMeritWalletClient;
+  private walletClient: MeritWalletClient;
 
   constructor(
     private navCtrl:NavController,

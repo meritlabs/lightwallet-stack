@@ -3,17 +3,17 @@ import * as Promise from 'bluebird';
 import { BwcService } from 'merit/core/bwc.service';
 import { WalletService } from "merit/wallets/wallet.service";
 import { Logger } from 'merit/core/logger';
-import { IMeritWalletClient} from './../../../lib/merit-wallet-client';
 import { ProfileService } from 'merit/core/profile.service';
 import * as _ from 'lodash';
 import { VaultsService } from 'merit/vaults/vaults.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 @Injectable()
 export class RenewVaultService {
 
     private bitcore: any;
-    private walletClient: IMeritWalletClient = null;
+    private walletClient: MeritWalletClient = null;
     private vault: any;
 
     constructor(
