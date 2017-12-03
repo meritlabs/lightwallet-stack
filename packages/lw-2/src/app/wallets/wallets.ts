@@ -51,9 +51,10 @@ export class WalletsView {
 
   public addressbook;
   public txpsData: any[] = [];
-  public recentTransactionsData: any[] = [];
+  public recentTransactionsData;
 
   public recentTransactionsEnabled;
+  public network:string;
 
   constructor(
     public navParams: NavParams,
@@ -94,6 +95,9 @@ export class WalletsView {
   }
 
   private updateAllInfo():Promise<any> {
+
+    return new Promise((resolve, reject) => {
+
     return this.appUpdateService.isUpdateAvailable().then((available) => {
       this.newReleaseExists = available;
       return this.feedbackService.isFeedBackNeeded();
@@ -105,33 +109,39 @@ export class WalletsView {
       return this.getWallets();
     }).then((wallets) => {
         this.wallets = wallets;
-        if (_.isEmpty(wallets)) {
-          return Promise.resolve(null); //ToDo: add proper error handling;
-        }
         return this.calculateNetworkAmount(wallets);
-    }).then((cNetworkAmount) => {
-      this.totalNetworkValue = cNetworkAmount;
-      this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
-      this.txFormatService.formatToUSD(this.totalNetworkValue).then((usdAmount) => {
-        this.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
+      }).then((cNetworkAmount) => {
+        this.totalNetworkValue = cNetworkAmount;
+        this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
+        this.txFormatService.formatToUSD(this.totalNetworkValue).then((usdAmount) => {
+          this.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
+        });
+        return this.processEasyReceive();
+      }).then(() => {
+        return this.profileService.getTxps({limit: 3});
+      }).then((txps) => {
+        this.txpsData = txps;
+        if (this.configService.get().recentTransactions.enabled) {
+          this.recentTransactionsEnabled = true;
+          this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
+        }
+        return Promise.resolve();
+
+      }).then(() => {
+        if (_.isEmpty(this.wallets)) {
+          return Promise.resolve([]);
+        } else {
+          return this.vaultsService.getVaults(_.head(this.wallets));
+        }
+      }).then((vaults) => {
+        this.vaults = vaults;
+        return resolve();
+      }).catch((err) => {
+        console.log("Could not update wallet status(es).");
+        console.log(err);
+        return resolve();
       });
       return this.processEasyReceive();
-    }).then(() => {
-      return this.vaultsService.getVaults(_.head(this.wallets));
-    }).then((vaults) => {
-      this.vaults = vaults;
-      return this.profileService.getTxps({limit: 3});
-    }).then((txps) => {
-      this.txpsData = txps;
-      if (this.configService.get().recentTransactions.enabled) {
-        this.recentTransactionsEnabled = true;
-        return this.profileService.getNotifications({limit: 3}).then((notifications) => {
-          this.recentTransactionsData = notifications;
-        });
-      }
-    }).catch((err) => {
-      console.log("Error in Updating statuses.");
-      console.log(err);
     });
   }
 
