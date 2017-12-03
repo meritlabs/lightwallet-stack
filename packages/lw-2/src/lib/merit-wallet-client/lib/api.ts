@@ -518,8 +518,10 @@ export class API {
       
       
       // First option, grab wallet info from BWS.
-      return this.openWallet().then((ret) => { 
-          
+      return this.openWallet().then((ret) => {
+
+        if (ret) return resolve(ret);
+
           // Is the error other than "copayer was not found"? || or no priv key.
         if (this.isPrivKeyExternal())
         return reject(new Error('No Private Key!'));
@@ -527,7 +529,9 @@ export class API {
         //Second option, lets try to add an access
         this.log.info('Copayer not found, trying to add access');
         return this.addAccess({}).then(() => {
-          return this.openWallet();
+          return this.openWallet().then((ret) => {
+            return resolve(ret);
+          });
         }).catch((err) => {
             return reject(Errors.WALLET_DOES_NOT_EXIST);
         });
@@ -734,8 +738,11 @@ export class API {
         result = {
           receiverPubKey: rcvPair.key.publicKey,
           script: script.toScriptHashOut(),
+          senderName: 'Someone', // TODO: get user name or drop sender name from data
           senderPubKey: pubKey.toString(),
-          secret: rcvPair.secret.toString('hex')
+          secret: rcvPair.secret.toString('hex'),
+          unlockCode: opts.unlockCode,
+          blockTimeout: timeout,
         };
 
         return resolve(result);
@@ -955,6 +962,7 @@ export class API {
         let wallet = ret.wallet;
 
         return this._processStatus(ret).then(() => {
+
           if (!this.credentials.hasWalletInfo()) {
             let me:any = _.find(wallet.copayers, {
               id: this.credentials.copayerId

@@ -66,6 +66,7 @@ export class MeritLightWallet {
 
 
     this.platform.resume.subscribe(() => {
+      this.logger.info("Returning Native App from Background!");
       this.loadProfileAndEasySend();
     });
   }
@@ -77,8 +78,7 @@ export class MeritLightWallet {
     this.profileService.getProfile().then((profile) => {
       // If the user has credentials and a profile, then let's send them to the transact
       // view
-      this.rootComponent = (profile && profile.credentials && profile.credentials.length) ?
-      'TransactView' : 'OnboardingView';
+      this.rootComponent = (profile && profile.credentials && profile.credentials.length) ?'TransactView' : 'OnboardingView';
 
       this.deepLinkService.getBranchData(() => { }).then((data) => {
         // If the branch params contain the minimum params needed for an easyReceipt, then

@@ -34,14 +34,14 @@ export class MnemonicService {
       this.logger.debug('Importing Wallet Mnemonic');
 
       words = this.normalizeMnemonic(words);
-      walletClient.importFromMnemonic(words, {
+      return walletClient.importFromMnemonic(words, {
         network: opts.networkName,
         passphrase: opts.passphrase,
         entropySourcePath: opts.entropySourcePath,
         derivationStrategy: opts.derivationStrategy || 'BIP44',
         account: opts.account || 0
       }).then(() => {
-        this.profileService.addAndBindWalletClient(walletClient, {
+        return this.profileService.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
         }).then((wallet: any) => {
           return resolve(wallet);
@@ -49,10 +49,7 @@ export class MnemonicService {
           return reject(err);
         });
       }).catch((err) => {
-          if (err instanceof this.errors.NOT_AUTHORIZED) {
-            return reject(err);
-          }
-          return (this.bwcErrorService.cb(err, 'Could not import'));
+        reject(err);
       });
     });
   }
