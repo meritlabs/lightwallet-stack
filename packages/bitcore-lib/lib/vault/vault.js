@@ -3,6 +3,7 @@
 var Vault = {
   VaultStates: {
     PENDING: 'pending',
+    RENEWING: 'renewing',
     APPROVED: 'approved',
     REJECTED: 'rejected',
   },

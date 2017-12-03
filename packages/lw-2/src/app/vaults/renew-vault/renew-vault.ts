@@ -71,7 +71,17 @@ export class VaultRenewView {
 
   toVault() {
     const newVault = _.cloneDeep(this.vault);
-    newVault.whitelist = this.formData.whitelist;
+    const whitelist = _.map(this.formData.whitelist, (w: any) => {
+      let key; 
+      if (w.type == 'wallet') {
+        key = this.bitcore.HDPublicKey.fromString(w.pubKey);
+      } else {
+        key = this.bitcore.Address.fromString(w.pubKey);
+      }
+      return key.toBuffer();
+    });
+
+    newVault.whitelist = whitelist;
     newVault.masterKey = this.formData.masterKey;
     newVault.vaultName = this.formData.vaultName;
     this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });      

@@ -305,7 +305,7 @@ export class ProfileService {
     setTimeout(() => {
       wallet.validateKeyDerivation({
         skipDeviceValidation: skipDeviceValidation,
-      }, (err: any, isOK: any) => {
+      }).then((isOK: any) => {
         this.validationLock = false;
 
         this.logger.debug('ValidatingWallet End:  ' + walletId + ' isOK:' + isOK);

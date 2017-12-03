@@ -193,7 +193,6 @@ export interface IAPI {
   createVault(vaultTxProposal: any);
   getVaultCoins(vaultAddress: any);
   getVaultTxHistory(vaultId: string, network: string): Promise<Array<any>>;
-  getFromMnemonic(words: Array<string>, opts: any): Credentials;
 }
 
 export class API implements IAPI {
@@ -582,7 +581,7 @@ export class API implements IAPI {
   };
 
   getNewMnemonic(data: any): any {
-    return new Mnemonic(data);
+    return new Mnemonic(data, Mnemonic.Words.ENGLISH);
   }
 
   /**
@@ -1043,14 +1042,16 @@ export class API implements IAPI {
         let tag = newVault.tag;
 
         let params = [
-          Bitcore.HDPublicKey.fromObject(newVault.spendPubKey).toBuffer(),
+          new Bitcore.PublicKey(newVault.spendPubKey.publicKey, {network: network}).toBuffer(),
           new Bitcore.PublicKey(newVault.masterPubKey, {network: network}).toBuffer(),
         ];
 
         params = params.concat(newVault.whitelist);
         params.push(Bitcore.Opcode.smallInt(newVault.whitelist.length));
-        params.push(tag);
+        params.push(new Buffer(tag));
         params.push(Bitcore.Opcode.smallInt(newVault.type));
+
+        console.log(params);
 
         let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
 
@@ -1066,18 +1067,19 @@ export class API implements IAPI {
             new Bitcore.Transaction.Input.PayToScriptHashInput({
               prevTxId: utxo.txid,
               outputIndex: utxo.outputIndex,
-              script: utxo.scriptPubKey
+              script: redeemScript,
             }, redeemScript, utxo.scriptPubKey), 
             utxo.scriptPubKey, utxo.micros);
-
-          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript);
-
-          tx.inputs[tx.inputs.length-1].setScript(inputScript);
         });
 
         tx.version = 4;
         tx.addressType = 'PP2SH';
+
+        for(let a = 0; a < tx.inputs.length; a++) {
+          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
+          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript);
+          tx.inputs[a].setScript(inputScript);
+        }
 
         // Make sure the tx can be serialized
         tx.serialize();
@@ -2770,9 +2772,5 @@ export class API implements IAPI {
 
     var url = `/v1/vaults/${vaultId}/txhistory?network=${network}`;
     return this._doGetRequest(url);
-  };
-
-  getFromMnemonic(words: Array<string>, opts: any = {}): Credentials {
-    return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
   };
 }

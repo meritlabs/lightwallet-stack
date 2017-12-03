@@ -46,12 +46,13 @@ export class VaultRenewConfirmationView {
 
     private renew() {
         // create master key from mnemonic
-        const words = this.formData.masterKey.split(' ');
-        const opts = { network: this.vault.address.network };
-        const creds = this.walletClient.getFromMnemonic(words, opts);
-        console.log('credentials', creds);
-        const xMasterKey = new this.bitcore.HDPrivateKey.fromString(creds.xPrivKey);
+        const network = this.vault.address.network;
+        const masterKeyMnemonic = this.walletClient.getNewMnemonic(this.formData.masterKey);
+        const xMasterKey = masterKeyMnemonic.toHDPrivateKey('', network);
         console.log('xMasterKey', xMasterKey);
+        console.log('MasterPub', xMasterKey.publicKey.toString());
+        console.log('OrigPubKey', new this.bitcore.PublicKey(this.updatedVault.masterPubKey, network).toString());
+       
         return this.renewVaultService.renewVault(this.updatedVault, xMasterKey).then(() => {
             this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
             return;
