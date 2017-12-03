@@ -179,7 +179,9 @@ export module Utils {
   export const  buildTx = function(txp) {
     let t = new Bitcore.Transaction();
 
+    console.log('before type check', _.includes(_.values(Constants.SCRIPT_TYPES), txp.addressType), _.values(Constants.SCRIPT_TYPES), txp.addressType);
     $.checkState(_.includes(_.values(Constants.SCRIPT_TYPES), txp.addressType));
+    console.log('script type check passed');
 
     switch (txp.addressType) {
       case Constants.SCRIPT_TYPES.P2SH:
@@ -196,11 +198,14 @@ export module Utils {
       t.to(txp.toAddress, txp.amount);
     } else if (txp.outputs) {
       _.each(txp.outputs, function(o) {
+        console.log(o);
         $.checkState(o.script || o.toAddress, 'Output should have either toAddress or script specified');
+        console.log('address check passed');
         if (o.script) {
+          $.checkState(o.amount || o.micros, 'Output should have either amount or micros specified');
           t.addOutput(new Bitcore.Transaction.Output({
             script: o.script,
-            micros: o.amount
+            micros: o.amount || o.micros,
           }));
         } else {
           t.to(o.toAddress, o.amount);
@@ -208,6 +213,7 @@ export module Utils {
       });
     }
 
+    console.log(txp);
     t.fee(txp.fee);
     t.change(txp.changeAddress.address);
 

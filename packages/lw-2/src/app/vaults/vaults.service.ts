@@ -30,5 +30,9 @@ export class VaultsService {
       return walletClient.getVaultCoins(address.toString());
     }
 
+  getVaultTxHistory(walletClient: IMeritWalletClient, vault: any): Promise<Array<any>> {
+    return walletClient.getVaultTxHistory(vault._id, vault.address.network);
+  }
+
 }
   

@@ -787,6 +787,23 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/vaults/:id/txhistory', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      var opts = {};
+      if (req.query.skip) opts.skip = +req.query.skip;
+      if (req.query.limit) opts.limit = +req.query.limit;
+      if (req.query.includeExtendedInfo == '1') opts.includeExtendedInfo = true;
+      opts.network = req.query.network;
+      opts.id = req.params['id'];
+
+      server.getVaultTxHistory(opts, function(err, txs) {
+        if (err) return returnError(err, res, req);
+        res.json(txs);
+        res.end();
+      });
+    });
+  });
+
 
   this.app.use(opts.basePath || '/bws/api', router);
 

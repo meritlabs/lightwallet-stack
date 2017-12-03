@@ -1,0 +1,20 @@
+@import '../transact/transact-module';
+
+view-vaults {
+  @extend %module-transact;
+
+  .vaults {
+    @extend .category;
+    .detail {
+      margin: 2px 0;
+    }
+  }
+
+  h2.vault-name {
+    margin: 14px 0px;
+  }
+
+  ion-label.vault-item {
+      height: 50px;
+  }
+}

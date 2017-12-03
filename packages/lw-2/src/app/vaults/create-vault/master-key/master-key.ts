@@ -30,10 +30,11 @@ export class CreateVaultMasterKeyView {
 
     let data = this.createVaultService.getData();
 
-    if(!data.masterKey) {
+    if (!data.masterKey) {
+      let masterKeyMnemonic = data.selectedWallet.getNewMnemonic(undefined);
+
       let network = data.selectedWallet.credentials.network || 'testnet';
-      let masterKey = bitcore.PrivateKey.fromRandom(network);
-      let masterKeyMnemonic = data.selectedWallet.getNewMnemonic(masterKey.toBuffer());
+      let masterKey = masterKeyMnemonic.toHDPrivateKey('', network);
 
       data.masterKey = masterKey;
       data.masterKeyMnemonic = masterKeyMnemonic;
@@ -49,7 +50,10 @@ export class CreateVaultMasterKeyView {
   confirm() {
     this.popupService.ionicConfirm(
       'Master key', 'Did you copy the master key?', 'Yes', 'No')
-      .then(() => this.toVautlSummary());
+      .then((result: boolean) => {
+        if (result) this.toVautlSummary();
+        return;
+      });
   }
 
   toVautlSummary() {
