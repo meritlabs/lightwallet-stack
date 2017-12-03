@@ -26,7 +26,7 @@
       <div class="item" *ngIf="txData">
         <span class="label" translate>To</span>
         <span class="payment-proposal-to" *ngIf="!recipientType">
-          <img src="img/icon-bitcoin-small.svg">
+          <img src="img/icons/merit.svg">
 
           <div copy-to-clipboard="txData.toAddress" class="ellipsis">
             <span class="m15l size-14" *ngIf="txData.toName">{{displayName()}}</span>
@@ -34,7 +34,7 @@
         </span>
         <div class="wallet" *ngIf="recipientType == 'wallet'">
           <i class="icon big-icon-svg">
-            <img src="img/icon-wallet.svg" [class.wallet-background-color-default]="!toColor" [style.background-color]="toColor" class="bg"
+            <img src="img/wallet.svg" [class.wallet-background-color-default]="!toColor" [style.background-color]="toColor" class="bg"
             />
           </i>
           <div copy-to-clipboard="txData.toAddress" class="ellipsis">
@@ -50,14 +50,14 @@
         <span class="label" translate>From</span>
         <div class="wallet">
           <i class="icon big-icon-svg">
-            <img src="img/icon-wallet.svg" [class.wallet-background-color-default]="!wallet.color" [style.background-color]="wallet.color"
+            <img src="img/wallet.svg" [class.wallet-background-color-default]="!wallet.color" [style.background-color]="wallet.color"
               class="bg" />
           </i>
           <div>{{wallet.name}}</div>
         </div>
         <div class="wallet" *ngIf="!wallet">
           <i class="icon big-icon-svg">
-            <img src="img/icon-wallet.svg" [style.background-color]="grey" class="bg" />
+              <img src="img/wallet.svg" [style.background-color]="grey" class="bg" />
           </i>
           <div>...</div>
         </div>

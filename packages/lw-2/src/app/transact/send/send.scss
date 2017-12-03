@@ -1,4 +1,17 @@
 send-view {
+
+    .abs-v-center {
+      z-index: 999999999 !important;
+    }
+
+    .merit-icon-merit {
+      height: 30px;
+      width: 30px;
+      background: #1abb9b;
+      margin-bottom: 10px;
+      background: color($colors, primary);
+    }
+
     .card {
       margin-top: 0;
       margin-bottom: 0;
