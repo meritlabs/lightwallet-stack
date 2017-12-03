@@ -563,14 +563,9 @@ export class ProfileService {
   private setMetaData(wallet: MeritWalletClient, addressBook: any): Promise<any> {
     return new Promise((resolve, reject) => {
       return this.persistenceService.getAddressbook(wallet.credentials.network).then((localAddressBook: any) => {
-        let localAddressBook1 = {};
-        try {
-          localAddressBook1 = JSON.parse(localAddressBook);
-        } catch (ex) {
-          this.logger.warn(ex);
-        }
-        let mergeAddressBook = _.merge(addressBook, localAddressBook1);
-        this.persistenceService.setAddressbook(wallet.credentials.network, JSON.stringify(addressBook)).then(() => {
+
+        let mergeAddressBook = _.merge(addressBook, (localAddressBook || {}));
+        this.persistenceService.setAddressbook(wallet.credentials.network, mergeAddressBook).then(() => {
           return resolve();
         }).catch((err: any) => {
           return reject(err);
@@ -578,12 +573,6 @@ export class ProfileService {
       }).catch((err: any) => {
         return reject(err);
       });
-    });
-  }
-
-  public importMnemonic(words, opts) {
-    return new Promise((resolve, reject) => {
-        resolve({status: {}});  
     });
   }
 
@@ -957,7 +946,7 @@ export class ProfileService {
 
       return this.getWallets().then((w:MeritWalletClient[]) => {
         if (_.isEmpty(w)) {
-          return reject('No wallets available');
+          return resolve({txps: [], n: 0});
         }
   
         let txps = [];

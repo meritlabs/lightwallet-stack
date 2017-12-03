@@ -36,7 +36,7 @@ export class ImportScanView {
   ionViewDidLoad() {
 
     this.barcodeScanner.scan({formats: 'QR_CODE'}).then((barcodeData) => {
-      this.viewCtrl.dismiss(barcodeData); 
+      this.viewCtrl.dismiss(barcodeData.text);
     }).catch((err) => { 
         this.err = err;  
     });
