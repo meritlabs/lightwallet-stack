@@ -45,8 +45,8 @@ export class WalletsView {
   
   public wallets: MeritWalletClient[];
   public vaults;
-  public newReleaseExists;
-  public feedbackNeeded;
+  public newReleaseExists: boolean;
+  public feedbackNeeded: boolean;
   public feedbackData =  new Feedback();
 
   public addressbook;
@@ -94,6 +94,9 @@ export class WalletsView {
       await this.updateAllInfo();
   }
 
+  public showFeaturesBlock(): boolean {
+    return (this.newReleaseExists || this.feedbackNeeded);
+  }
   private updateAllInfo():Promise<any> {
 
     return new Promise((resolve, reject) => {
