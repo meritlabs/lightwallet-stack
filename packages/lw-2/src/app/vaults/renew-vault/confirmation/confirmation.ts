@@ -7,10 +7,9 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { ProfileService } from 'merit/core/profile.service';
-import { IMeritWalletClient } from 'src/lib/merit-wallet-client';
 import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service';
 import { Credentials } from 'src/lib/merit-wallet-client/lib/credentials';
-import { IMeritClient } from 'src/lib/merit-wallet-client/lib';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @IonicPage({
   segment: 'vault/:vaultId/renew/confirmation',
@@ -26,7 +25,7 @@ export class VaultRenewConfirmationView {
     private vault: any;
     private bitcore: any;
     private formData = { masterKey: '' };
-    private walletClient: IMeritWalletClient = null;
+    private walletClient: MeritWalletClient = null;
 
     constructor(
         private navCtrl:NavController,
