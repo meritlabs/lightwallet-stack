@@ -4,7 +4,7 @@ view-vaults {
   @extend %module-transact;
 
   .vaults {
-    @extend .category;
+    @extend ion-item;
     .detail {
       margin: 2px 0;
     }
