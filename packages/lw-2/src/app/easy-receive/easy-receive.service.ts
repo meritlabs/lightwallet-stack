@@ -24,7 +24,7 @@ export class EasyReceiveService {
     return new Promise((resolve, reject) => {
 
       this.logger.debug(`Parsing easy params ${params}`);
-  
+
       let receipt = new EasyReceipt({});
       receipt.unlockCode = params.uc;
       receipt.secret = params.se; 
@@ -38,8 +38,9 @@ export class EasyReceiveService {
             return resolve(receipt);
         });
       } else {
-        this.logger.warn('EasyReceipt parameters are invalid: ', receipt); 
-        // We resolve if the easyReceipt is invalid because it does not 
+        this.logger.warn('EasyReceipt parameters are invalid: ', receipt);
+        // We resolve if the easyReceipt is invalid because it does not
+
         // affect the control flow.
         return resolve(null);
       }
