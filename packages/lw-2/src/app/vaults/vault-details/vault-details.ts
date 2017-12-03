@@ -11,6 +11,8 @@ import { CreateVaultService } from "merit/vaults/create-vault/create-vault.servi
 import { WalletService } from "merit/wallets/wallet.service";
 import { IMeritWalletClient } from 'src/lib/merit-wallet-client';
 import { TxFormatService } from "merit/transact/tx-format.service";
+import { FiatAmount } from 'merit/shared/fiat-amount.model';
+import { RateService } from 'merit/transact/rate.service';
 
 
 @IonicPage({
@@ -39,6 +41,7 @@ export class VaultDetailsView {
     private vaultsService: VaultsService,
     private bwc: BwcService,
     private txFormatService:TxFormatService,
+    private rateService: RateService,
   ) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
@@ -48,13 +51,6 @@ export class VaultDetailsView {
     this.whitelist = this.vault.whitelist;
     console.log("Inside the vault-details view.");
     console.log('Vault to display:', this.vault);
-
-  }
-
-  ionViewWillLeave() {
-  }
-
-  ionViewWillEnter() {
   }
 
   async ionViewDidLoad() {
@@ -91,9 +87,11 @@ export class VaultDetailsView {
 
     await this.getVaultTxHistory().then((txs) => {
       console.log(txs);
-      this.transactions = txs;
+      this.transactions = _.map(txs, this.processTx.bind(this));
       this.vault.completeHistory = txs;
     });
+
+    await this.formatAmounts();
   }
 
   toResetVault() {
@@ -103,7 +101,7 @@ export class VaultDetailsView {
   goToTxDetails(tx: any) {
     this.navCtrl.push(
       'TxDetailsView',
-      { wallet: this.walletClient, walletId: this.walletClient.credentials.walletId, vaultId: this.vault._id, vault: this.vault, txid: tx.txid }
+      { wallet: this.walletClient, walletId: this.walletClient.credentials.walletId, vaultId: this.vault._id, vault: this.vault, txId: tx.txid }
     );
   }
 
@@ -140,4 +138,25 @@ export class VaultDetailsView {
       return this.vaultsService.getVaultTxHistory(walletClient, this.vault);
     });
   };
+
+  private formatAmounts(): void {
+    this.profileService.getHeadWalletClient().then((walletClient: IMeritWalletClient) => {
+      this.vault.altAmount = this.rateService.toFiat(this.vault.amount,walletClient.cachedStatus.alternativeIsoCode);
+      this.vault.altAmountStr = new FiatAmount(this.vault.altAmount);
+      this.vault.amountStr = this.txFormatService.formatAmountStr(this.vault.amount);
+    });
+  }
+
+  private processTx(tx: any): any {
+    const thisAddr = new this.bitcore.Address(this.vault.address).toString();
+    const summ = _.reduce(tx.outputs, (acc: number, output: any) => {
+      if (output.address != thisAddr) {
+        return acc;
+      }
+      return acc + output.amount;
+    }, 0);
+
+    tx.amountStr = this.txFormatService.formatAmountStr(summ);
+    return tx;
+  }
 }
