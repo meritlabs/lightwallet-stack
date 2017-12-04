@@ -61,8 +61,8 @@ export class VaultDetailsView {
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
-          const key = new this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
-          return { 'id': w.id, 'name': name, 'pubKey': key, 'type': 'wallet' };
+          const key = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
+          return { 'id': w.id, 'name': name, 'pubKey': key, 'type': 'wallet', walletClient: w };
         });
       }),
       // fetch users vaults
@@ -78,7 +78,14 @@ export class VaultDetailsView {
       const whitelistCandidates = _.flatten(arr);
       const results = [];
       _.each(this.vault.whitelist, (wl) => {
-        const found = _.find(whitelistCandidates, { pubKey: wl });
+        let found = _.find(whitelistCandidates, (candidate) => {
+          if (candidate.type === 'vault') {
+            return candidate.pubKey === wl;
+          } 
+
+          const addr = this.bitcore.Address.fromString(wl);
+          return candidate.walletClient.isMine(addr);
+        });
         if (found) {
           results.push(found);
         }

@@ -2722,4 +2722,8 @@ export class API {
     var url = `/v1/vaults/${vaultId}/txhistory?network=${network}`;
     return this._doGetRequest(url);
   };
+
+  isMine(address: any) {
+    return Verifier.checkAddress(this.credentials, address);
+  }
 }
