@@ -21,10 +21,15 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class AddressBookView {
 
   loading:boolean;
+
   contacts:Array<MeritContact> = [];
   filteredContacts:Array<MeritContact> = [];
+  renderingContacts:Array<MeritContact> = [];
 
   searchQuery:string = '';
+
+  contactsOffset = 0;
+  contactsLimit  = 20;
 
   constructor(
     public navCtrl: NavController,
@@ -46,28 +51,41 @@ export class AddressBookView {
   private updateContacts() {
     return new Promise((resolve, reject) => {
 
-      //TODO concat with local addressbook
-      this.addressBookService.getAllDeviceContacts().then((deviceContacts) => {
+      this.contactsOffset = 0;
 
-        console.log('DEVICE CONTACTS', deviceContacts);
-        let contacts = deviceContacts.map((contact) => new MeritContact(contact));
-        contacts.sort((a,b) => {
-          if ((a.meritAddresses.length && b.meritAddresses.length) || (a.meritAddresses.length && b.meritAddresses.length)) {
-            return a.name.formatted > b.name.formatted ? 1 : -1;
-          } else {
-            return a.meritAddresses.length ? -1 : 1;
-          }
+      this.addressBookService.getAddressbook('testnet').then((addressBook) => {
+
+        this.addressBookService.getAllDeviceContacts().then((deviceContacts) => {
+
+          let contacts = deviceContacts.map((contact) => new MeritContact(contact));
+          contacts = contacts.concat( _.map(addressBook, value => value) );
+
+          contacts.sort((a,b) => {
+            if ((a.meritAddresses.length && b.meritAddresses.length) || (a.meritAddresses.length && b.meritAddresses.length)) {
+              return a.name.formatted > b.name.formatted ? 1 : -1;
+            } else {
+              return a.meritAddresses.length ? -1 : 1;
+            }
+          });
+
+          this.contacts = contacts;
+          this.filterContacts();
+          resolve();
         });
 
-        this.contacts = contacts;
-        resolve();
       });
 
     });
   }
 
   private filterContacts() {
-    if (!this.searchQuery) return this.filteredContacts = this.contacts;
+    this.contactsOffset = 0;
+
+    if (!this.searchQuery) {
+      this.filteredContacts = this.contacts;
+      return this.renderingContacts = this.filteredContacts.splice(this.contactsOffset, this.contactsLimit);
+    }
+
 
     let exp = new RegExp(this.searchQuery, 'ig');
     this.filteredContacts = this.contacts.filter((contact) => {
@@ -84,16 +102,25 @@ export class AddressBookView {
         if (phone.value.match(exp)) hasMatches = true;
       });
 
-      //contact.meritAddresses.forEach((address) => {
-      //  //if (address.address.match(exp)) hasMatches = true;
-      //});
+      contact.meritAddresses.forEach((address) => {
+        if (address.address.match(exp)) hasMatches = true;
+      });
 
       return hasMatches;
 
     });
 
+    this.renderingContacts = this.filteredContacts.splice(0, this.contactsLimit);
 
   }
+
+  renderMoreContacts(infiniteScroll) {
+    console.log('RENDERING MORE CONTACTS');
+    this.contactsOffset += this.contactsLimit;
+    this.renderingContacts = this.renderingContacts.concat(this.filterContacts().splice(this.contactsOffset, this.contactsOffset+this.contactsLimit));
+    infiniteScroll.complete();
+  }
+
 
   sanitizePhotoUrl(url:string) {
     return this.sanitizer.bypassSecurityTrustUrl(url);
