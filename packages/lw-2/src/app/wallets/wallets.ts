@@ -45,14 +45,14 @@ export class WalletsView {
   
   public wallets: MeritWalletClient[];
   public vaults;
-  public newReleaseExists;
-  public feedbackNeeded;
+  public newReleaseExists: boolean;
+  public feedbackNeeded: boolean;
+  public showFeaturesBlock: boolean = false;
   public feedbackData =  new Feedback();
 
   public addressbook;
   public txpsData: any[] = [];
-  public recentTransactionsData;
-
+  public recentTransactionsData: any[] = [];
   public recentTransactionsEnabled;
   public network:string;
 
@@ -94,21 +94,27 @@ export class WalletsView {
       await this.updateAllInfo();
   }
 
+  // public async showFeaturesBlock(): Promise<boolean> {
+  //   return (this.newReleaseExists || this.feedbackNeeded);
+  // }
   private updateAllInfo():Promise<any> {
 
     return new Promise((resolve, reject) => {
-
-    return this.appUpdateService.isUpdateAvailable().then((available) => {
-      this.newReleaseExists = available;
-      return this.feedbackService.isFeedBackNeeded();
-    }).then((feedbackNeeded) => {
-      this.feedbackNeeded = feedbackNeeded;
-      return this.addressbookService.list('testnet');
-    }).then((addressBook) => {
-      this.addressbook = addressBook;
-      return this.getWallets();
-    }).then((wallets) => {
+      return this.appUpdateService.isUpdateAvailable().then((available) => {
+        this.newReleaseExists = available;
+        return this.feedbackService.isFeedBackNeeded();
+      }).then((feedbackNeeded) => {
+        this.feedbackNeeded = feedbackNeeded;
+        this.showFeaturesBlock = (feedbackNeeded || this.newReleaseExists);
+        return this.addressbookService.list('testnet');
+      }).then((addressBook) => {
+        this.addressbook = addressBook;
+        return this.getWallets();
+      }).then((wallets) => {
         this.wallets = wallets;
+        if (_.isEmpty(wallets)) {
+          return Promise.resolve(null); //ToDo: add proper error handling;
+        }
         return this.calculateNetworkAmount(wallets);
       }).then((cNetworkAmount) => {
         this.totalNetworkValue = cNetworkAmount;
@@ -123,25 +129,21 @@ export class WalletsView {
         this.txpsData = txps;
         if (this.configService.get().recentTransactions.enabled) {
           this.recentTransactionsEnabled = true;
-          this.recentTransactionsData = this.profileService.getNotifications({limit: 3});
+          return this.profileService.getNotifications({limit: 3}).then((notifications) => {
+            this.recentTransactionsData = notifications;
+          });
         }
-        return Promise.resolve();
-
       }).then(() => {
-        if (_.isEmpty(this.wallets)) {
-          return Promise.resolve([]);
-        } else {
-          return this.vaultsService.getVaults(_.head(this.wallets));
-        }
+        return this.vaultsService.getVaults(_.head(this.wallets));
       }).then((vaults) => {
+        this.logger.info('getting vaults', vaults);
         this.vaults = vaults;
         return resolve();
       }).catch((err) => {
-        console.log("Could not update wallet status(es).");
-        console.log(err);
-        return resolve();
+        this.logger.info("@@ERROR IN Updating statuses.");
+        this.logger.info(err);
+        return reject();
       });
-      return this.processEasyReceive();
     });
   }
 
