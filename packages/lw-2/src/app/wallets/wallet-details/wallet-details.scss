@@ -1,9 +1,18 @@
 // TODO: Improve details spaces and make relative.  
+// TODO: Improve details spaces and make relative.
 wallet-details-view {
+  .scroll-content {
+    margin-top: 0 !important;
+  }
+
   .header {
     color: color($colors, light);
-    background-color: color($colors, primary);
+    background: transparent;
+    .toolbar-background {
+      background: transparent;
+    }
   }
+
   .toolbar {
     background: transparent;
   }
@@ -14,10 +23,14 @@ wallet-details-view {
     color: color($colors, light);
   }
   .balance-header {
+    padding-top: 56px;
+    margin-top: 0;
     color: color($colors, light);
-    background-color: color($colors, primary);
-    height: 22%;
+    height: 200px;
     text-align: center;
+  }
+  .balance-header.default {
+    background-color: $wallet-default-color;
   }
   .balance-str {
    padding-top: 10%;
@@ -47,6 +60,7 @@ wallet-details-view {
     }
     .date {
       font-size: 12.5px;
+      color: #666;
     }
   }
 

@@ -3,26 +3,32 @@ view-network {
   @extend %module-transact;
 
   .wallet-icon {
-    padding-left: 0 !important;
-    img {
-      height: 26px !important;
-      width: 36px;
-      display: inline-block;
-      border-radius: 4px;
-      box-shadow: none !important;
-      padding: 4px 8px;
-      vertical-align: middle;
-    }
-    &.default img {
-      background: $wallet-default-color;
-    }
-    &.locked img {
-      background: $wallet-locked-color !important;
-    }
+    margin-top: -2px;
+    margin-right: 4px;
+    display: inline-block;
+    vertical-align: middle;
+    width: 40px !important;
+    height: 30px !important;
+    box-shadow: none !important;
+  }
+
+  ion-card-header {
+    height: 50px !important;
+    line-height: 50px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 
   ion-item {
     white-space: nowrap;
+    min-height: 35px !important;
+    height: 35px !important;
+    .item-inner {
+      min-height: 35px !important;
+      height: 35px  !important;
+      line-height: 35px !important;
+      padding: 0;
+    }
     ion-label {
       button {
         height: 20px;

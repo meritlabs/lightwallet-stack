@@ -1,5 +1,5 @@
 <ion-header no-border>
-    <ion-navbar transparent>
+    <ion-navbar  [style.background]="wallet.color" [class.default]="!wallet.color">
       <ion-title>{{wallet.name}}</ion-title>
       <ion-buttons end>
             <button ion-button icon-only (click)="goToEditWallet()">
@@ -10,8 +10,8 @@
 
   </ion-header>
   
-  <ion-content>
-    <div class="balance-header" (click)="getTxHistory(true)">
+  <ion-content >
+    <div class="balance-header" (click)="getWalletHistory(true)" [style.background]="wallet.color" [class.default]="!wallet.color">
       <div class="balance-str">{{ wallet.status.totalBalanceStr }}</div>
       <div class="balance-alt-str"> {{ wallet.status.totalBalanceAlternativeStr }}</div>
     </div>
@@ -24,7 +24,7 @@
           <img src="assets/img/icon-moved.svg" *ngIf="tx.action == 'moved'" width="40">
         </ion-icon>
         <div class="action">{{tx.action}}</div>
-        <div class="detail">
+        <div class="detail" item-end>
           <div class="amount">{{tx.amountStr}}</div>
           <div class="date">{{tx.time * 1000 | amTimeAgo}}</div>
         </div>

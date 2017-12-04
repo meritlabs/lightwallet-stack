@@ -11,8 +11,8 @@
 
     <ion-card *ngFor="let wallet of wallets">
         <ion-card-header>
-            <i class="wallet-icon" [class.locked]="wallet.locked" [class.default]="!wallet.color">
-                <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
+            <i class="wallet-icon" [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
+                <img src="assets/img/icon-wallet.svg" >
             </i>
             {{wallet.name}}
         </ion-card-header>
@@ -46,7 +46,9 @@
             <ion-label>Address</ion-label>
             <ion-label item-right text-right>
                 <span *ngIf="wallet.address">
-                    <span (click)="copyToClipboard(wallet.address)"  ngxClipboard [cbContent]="wallet.address">{{wallet.address}}</span>
+
+                    <span (click)="copyToClipboard(wallet.address)"  ngxClipboard [cbContent]="wallet.address">{{wallet.address | slice:0:8 }}...</span>
+
                     <button ion-button icon-only clear color="primary" (click)="shareAddress(wallet.address)">
                         <ion-icon name="share"></ion-icon>
                     </button>
