@@ -33,13 +33,12 @@ export class SpendVaultService {
           }
           return this.vaultsService.getVaultCoins(walletClient, vault);
         }).then((coins) => {
-      
-            let address = this.bitcore.Address.fromObject(vault.address);
             let network = this.walletClient.credentials.network;
 
             let tx = this.walletClient.buildSpendVaultTx(vault, coins, masterKey, amount, address, { network: network });
     
             console.log("SPEND TX");
+            console.log('Plain: ', tx);
             console.log('Serialized: ', tx.serialize());
 
             return { rawTx: tx.serialize(), network: network };
