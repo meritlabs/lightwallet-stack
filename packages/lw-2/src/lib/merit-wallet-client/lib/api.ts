@@ -426,7 +426,7 @@ export class API {
   };
 
   getNewMnemonic(data: any): any {
-    return new Mnemonic(data);
+    return new Mnemonic(data, Mnemonic.Words.ENGLISH);
   }
 
   /**
@@ -894,38 +894,44 @@ export class API {
         let tag = newVault.tag;
 
         let params = [
-          Bitcore.HDPublicKey.fromObject(newVault.spendPubKey).toBuffer(),
+          new Bitcore.PublicKey(newVault.spendPubKey.publicKey, {network: network}).toBuffer(),
           new Bitcore.PublicKey(newVault.masterPubKey, {network: network}).toBuffer(),
         ];
 
         params = params.concat(newVault.whitelist);
         params.push(Bitcore.Opcode.smallInt(newVault.whitelist.length));
-        params.push(tag);
+        params.push(new Buffer(tag));
         params.push(Bitcore.Opcode.smallInt(newVault.type));
+
+        console.log(params);
 
         let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
 
         tx.addOutput(new Bitcore.Transaction.Output({
           script: scriptPubKey,
-          micros: amount
+          micros: amount,
         }));
 
-        tx.fee(fee)
+        tx.fee(fee);
 
         _.each(utxos, (utxo) => {
           tx.addInput(
             new Bitcore.Transaction.Input.PayToScriptHashInput({
               prevTxId: utxo.txid,
               outputIndex: utxo.outputIndex,
-              script: utxo.scriptPubKey
+              script: redeemScript,
             }, redeemScript, utxo.scriptPubKey), 
             utxo.scriptPubKey, utxo.micros);
-
-          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript);
-
-          tx.inputs[tx.inputs.length-1].setScript(inputScript);
         });
+
+        tx.version = 4;
+        tx.addressType = 'PP2SH';
+
+        for(let a = 0; a < tx.inputs.length; a++) {
+          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
+          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript);
+          tx.inputs[a].setScript(inputScript);
+        }
 
         // Make sure the tx can be serialized
         tx.serialize();
@@ -1933,16 +1939,16 @@ export class API {
     $.checkState(this.credentials.sharedEncryptingKey);
     $.checkArgument(opts);
 
-
     let args = this._getCreateTxProposalArgs(opts);
     return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
+      if(txp.code && txp.code == "INSUFFICIENT_FUNDS") {
+        return Promise.reject(Errors.INSUFFICIENT_FUNDS);
+      }
       return this._processTxps(txp).then(() => {
 
         if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey)) {
           return Promise.reject(Errors.SERVER_COMPROMISED);
         }
-        this.log.error("TXP");
-        this.log.error(txp);
         return Promise.resolve(txp);
       });
     });
@@ -1956,9 +1962,10 @@ export class API {
    * @returns {Callback} cb - Return error or null
    */
   publishTxProposal(opts: any): Promise<any> {
-    $.checkState(this.credentials && this.credentials.isComplete());
+    console.log('publishTxProposal', this.credentials, opts);
+    $.checkState(this.credentials && this.credentials.isComplete(), 'no authorization data');
     $.checkArgument(opts)
-    $.checkArgument(opts.txp);
+    $.checkArgument(opts.txp, 'txp is required');
 
     $.checkState(parseInt(opts.txp.version) >= 3);
 
@@ -1970,9 +1977,7 @@ export class API {
 
     let url = '/v1/txproposals/' + opts.txp.id + '/publish/';
     return this._doPostRequest(url, args).then((txp) => {
-      return this._processTxps(txp).then(() => {
-        return Promise.resolve(txp);
-      });
+      return txp;
     }).catch((err) => {
       return Promise.reject(new Error('error in post /v1/txproposals/' + err));
     });
@@ -2612,7 +2617,15 @@ export class API {
     return this._doPostRequest(url, vaultTxProposal);
   };
 
+
   getVaultCoins(vaultAddress: any) {
     return this.getUtxos({addresses: [vaultAddress]});
-  }
+  };
+
+  getVaultTxHistory(vaultId: string, network: string): Promise<Array<any>> {
+    $.checkState(this.credentials);
+
+    var url = `/v1/vaults/${vaultId}/txhistory?network=${network}`;
+    return this._doGetRequest(url);
+  };
 }

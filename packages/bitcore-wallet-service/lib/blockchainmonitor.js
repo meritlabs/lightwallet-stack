@@ -404,7 +404,7 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) 
           return;
         }
 
-        self.storage.setVaultConfirmed(function (err, result) {
+        self.storage.setVaultConfirmed(tx, txId, function (err, result) {
           if (err) {
             log.error(`Could not update vault with txId: ${txId}`)
             return;

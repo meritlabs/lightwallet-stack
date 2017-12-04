@@ -3,8 +3,8 @@ import * as Promise from 'bluebird';
 
 import { BwcService } from 'merit/core/bwc.service';
 
-import { MeritWalletClient } from './../../lib/merit-wallet-client';
 import { Logger } from 'merit/core/logger';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 @Injectable()
@@ -29,6 +29,10 @@ export class VaultsService {
       const address = this.bitcore.Address.fromObject(vault.address);
       return walletClient.getVaultCoins(address.toString());
     }
+
+  getVaultTxHistory(walletClient: MeritWalletClient, vault: any): Promise<Array<any>> {
+    return walletClient.getVaultTxHistory(vault._id, vault.address.network);
+  }
 
 }
   

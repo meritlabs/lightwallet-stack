@@ -6,20 +6,21 @@
 
 <ion-content>
 
-    <div class="balance-header" (click)="getTxHistory(true)">
-        <div class="balance-str">{{ vault.amount }}</div>
-        <div class="balance-alt-str"> {{ alternativeBalanceStr | toFiat : vault.amount | async }}</div>
+    <div class="balance-header">
+        <div class="balance-str">{{ vault.amountStr }}</div>
+        <div class="balance-alt-str"> {{ vault.altAmountStr.amountStr }}</div>
         <div *ngIf="vault.status == 'pending'" class="assertive">
             <span translate>Pending</span>
+        </div>
+        <div class="vault-actions">
+            <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()">
+                Reset
+            </button>
         </div>
     </div>
 
     <ion-list>
-        <ion-item>
-            <ion-label translate>Whitelist</ion-label>
-        </ion-item>
-            
-        <ion-item *ngFor="let address of whitelist">
+        <ion-item class="vault-item" *ngFor="let address of whitelist">
             <ion-label class="whitelist-item">
                 <i class="wallet-icon" item-start *ngIf="address.type == 'vault'">
                     <img src="assets/img/icon-lock-white.svg" >
@@ -32,6 +33,21 @@
                 </p>
             </ion-label>
         </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <button ion-item *ngFor="let tx of transactions" (click)="goToTxDetails(tx)">
+            <ion-icon item-start>
+                <img src="assets/img/icon-receive-history.svg" *ngIf="tx.action == 'received'" width="40">
+                <img src="assets/img/icon-sent.svg" *ngIf="tx.action == 'sent'" width="40">
+                <img src="assets/img/icon-moved.svg" *ngIf="tx.action == 'moved'" width="40">
+            </ion-icon>
+            <div class="action">{{tx.action}}</div>
+            <div class="detail">
+                <div class="amount">{{tx.amountStr}}</div>
+                <div class="date">{{tx.time * 1000 | amTimeAgo}}</div>
+            </div>
+        </button>
     </ion-list>
 
 </ion-content>
