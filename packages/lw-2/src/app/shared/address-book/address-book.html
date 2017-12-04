@@ -23,32 +23,12 @@
             debounce="300">
     </ion-searchbar>
 
-    <!--<ion-card *ngIf="!loading && !hasContacts()" padding>-->
-        <!--<div translate>-->
+    <div *ngIf="loading" text-center>
+        <ion-spinner></ion-spinner>Loading contacts...
+    </div>
 
-            <!--<div class="icon">-->
-                <!--<img src="assets/img/address-book-add.svg">-->
-            <!--</div>-->
-
-            <!--No contacts yet. Get started adding your first one.-->
-        <!--</div>-->
-    <!--</ion-card>-->
-
-    <!--<div class="control-buttons" *ngIf="!hasContacts()">-->
-        <!--<button  (click)="toAddContact()" ion-button >Add contact</button>-->
-    <!--</div>-->
-
-    <ion-list *ngIf="hasContacts()">
-        <!--<ion-item *ngFor="let contact of contacts" (click)="toContact(contact)">-->
-            <!--<ion-avatar class="icon big-icon-svg" item-start>-->
-                <!--<gravatar class="send-gravatar" [name]="contact.name" width="30" height="30" [email]="contact.email" ></gravatar>-->
-            <!--</ion-avatar>-->
-            <!--<h4>{{contact.name}}</h4>-->
-            <!--<ion-avatar item-end *ngIf="contact.meritAddress" class="merit-avatar">-->
-                <!--<img class="merit-logo" src="assets/img/16x16.png">-->
-            <!--</ion-avatar>-->
-        <!--</ion-item>-->
-        <ion-item *ngFor="let contact of filteredContacts" (click)="toContact(contact)">
+    <ion-list *ngIf="!loading">
+        <ion-item *ngFor="let contact of renderingContacts" (click)="toContact(contact)">
             <ion-avatar class="icon big-icon-svg" item-start>
                 <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
                 <gravatar class="send-gravatar" [name]="contact.name.formatted" width="30" height="30" [email]="contact.emails[0]?.value || ''" *ngIf="!contact.photos.length"></gravatar>
@@ -56,6 +36,12 @@
             {{contact.name.formatted}}
             <img item-right src="assets/img/16x16.png" *ngIf="contact.meritAddresses.length">
         </ion-item>
+
+        <ion-infinite-scroll (ionInfinite)="renderMoreContacts($event)" *ngIf="filteredContacts.length > contactsOffset+contactsLimit">
+            <div text-center>
+                <ion-spinner></ion-spinner>Loading contacts...
+            </div>
+        </ion-infinite-scroll>
     </ion-list>
 
 
