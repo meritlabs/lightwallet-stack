@@ -76,7 +76,7 @@ export class WalletsView {
     private vaultsService: VaultsService,
     private applicationRef: ApplicationRef, 
     private zone: NgZone,
-    private rateService: RateService
+    private rateService: RateService,
   ) {
     this.logger.warn("Hellop WalletsView!");
   }
