@@ -974,7 +974,7 @@ Script.buildVaultRenewIn = function(signature, vaultScript) {
  * @param {vaultScript} Vault script that was signed.
  * @returns {Script}
  */
-Script.buildVaultRenewIn = function(signature, vaultScript) {
+Script.buildVaultSpendIn = function(signature, vaultScript) {
   return Script.buildVaultIn(0, signature, vaultScript);
   return s;
 };

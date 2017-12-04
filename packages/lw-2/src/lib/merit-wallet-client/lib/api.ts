@@ -985,12 +985,7 @@ export class API {
     //try {
 
       if(vault.type == 0) {
-        let toAddress = null;
-        if (address.length == 21) {
-          toAddress = Bitcore.Address.fromString(address);
-        } else {
-          toAddress = Bitcore.HDPublicKey.fromString(address).publicKey.toAddress();
-        }
+        let toAddress = Bitcore.Address.fromString(address);
         tx.to(toAddress, amount - fee);
 
         let params = [
@@ -1020,16 +1015,17 @@ export class API {
               script: coin.scriptPubKey
             }, redeemScript, coin.scriptPubKey), 
             coin.scriptPubKey, coin.micros);
-          console.log('before sig');
-          console.log(Bitcore.Transaction.Sighash.sign(tx, spendKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript));
-          let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
-          console.log('after sig');
-          console.log(Bitcore.Script.buildVaultSpendIn(sig, redeemScript));
-          let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript);
-          console.log('after input script');
-
-          tx.inputs[tx.inputs.length-1].setScript(inputScript);
         });
+
+        tx.version = 4;
+        tx.addressType = 'PP2SH';
+
+        console.log('spend key', spendKey);
+        for(let a = 0; a < tx.inputs.length; a++) {
+          let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
+          let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript);
+          tx.inputs[a].setScript(inputScript);
+        }
 
         // Make sure the tx can be serialized
         tx.serialize();

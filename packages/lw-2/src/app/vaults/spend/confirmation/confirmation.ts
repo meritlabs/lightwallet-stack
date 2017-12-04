@@ -51,13 +51,15 @@ export class VaultSpendConfirmationView {
     private spend() {
         // create master key from mnemonic
         const network = this.vault.address.network;
-        const masterKeyMnemonic = this.walletClient.getNewMnemonic(this.formData.masterKey);
-        const xMasterKey = masterKeyMnemonic.toHDPrivateKey('', network);
-        console.log('xMasterKey', xMasterKey);
-        console.log('MasterPub', xMasterKey.publicKey.toString());
-        console.log('OrigPubKey', new this.bitcore.PublicKey(this.vault.masterPubKey, network).toString());
+        // const masterKeyMnemonic = this.walletClient.getNewMnemonic(this.formData.masterKey);
+        // const xMasterKey = masterKeyMnemonic.toHDPrivateKey('', network);
+        // console.log('xMasterKey', xMasterKey);
+        // console.log('MasterPub', xMasterKey.publicKey.toString());
+        // console.log('OrigPubKey', new this.bitcore.PublicKey(this.vault.masterPubKey, network).toString());
+        const spendKey = this.bitcore.HDPrivateKey.fromString(this.walletClient.credentials.xPrivKey);
+        console.log('SPEND KEY', spendKey);
 
-        return this.spendVaultService.spendVault(this.vault, xMasterKey, this.amount, this.address).then(() => {
+        return this.spendVaultService.spendVault(this.vault, spendKey, this.amount, this.address).then(() => {
             this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });    
         });
     }
