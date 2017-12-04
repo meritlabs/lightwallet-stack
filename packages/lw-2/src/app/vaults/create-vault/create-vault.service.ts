@@ -59,7 +59,7 @@ export class CreateVaultService {
     const whitelist = _.map(whitelistedAddresses, (w: any) => {
       let key; 
       if (w.type == 'wallet') {
-        key = this.bitcore.HDPublicKey.fromString(w.pubKey);
+        key = this.bitcore.HDPublicKey.fromString(w.pubKey).publicKey.toAddress();
       } else {
         key = this.bitcore.Address.fromString(w.pubKey);
       }
