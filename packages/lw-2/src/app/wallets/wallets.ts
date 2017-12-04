@@ -100,14 +100,7 @@ export class WalletsView {
   private updateAllInfo():Promise<any> {
 
     return new Promise((resolve, reject) => {
-      return this.appUpdateService.isUpdateAvailable().then((available) => {
-        this.newReleaseExists = available;
-        return this.feedbackService.isFeedBackNeeded();
-      }).then((feedbackNeeded) => {
-        this.feedbackNeeded = feedbackNeeded;
-        this.showFeaturesBlock = (feedbackNeeded || this.newReleaseExists);
-        return this.addressbookService.list('testnet');
-      }).then((addressBook) => {
+      return this.addressbookService.list('testnet').then((addressBook) => {
         this.addressbook = addressBook;
         return this.getWallets();
       }).then((wallets) => {

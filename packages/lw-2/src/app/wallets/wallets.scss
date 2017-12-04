@@ -87,37 +87,7 @@ view-wallets {
       color: white;
       font-weight: 900;
       vertical-align: middle;
-      margin-top: -1px;
     }
   }
 
-  //.category {
-  //  .detail {
-  //    position: absolute;
-  //    right: 40px;
-  //    text-align: center;
-  //    .amount {
-  //      color: color($colors, primary);
-  //      font-size: 16px;
-  //    }
-  //  }
-  //}
-  //
-  //.wallets {
-  //  @extend .category;
-  //  .detail {
-  //    margin: 2px 0;
-  //  }
-  //}
-  //
-  //.network {
-  //  @extend .wallets;
-  //}
-  //
-  //.recent-txns {
-  //  @extend .category;
-  //  .detail {
-  //    bottom: 4px;
-  //  }
-  //}
 }

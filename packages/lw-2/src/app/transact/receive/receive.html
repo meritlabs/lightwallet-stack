@@ -63,7 +63,7 @@
 
             <div class="row">
                 <span class="label" text-left >Address</span>
-                <span item-right text-right [style.flex]="1" [style.font-size]="'10px'">
+                <span item-right text-right [style.flex]="1" [style.font-size]="'10px'" (click)="copyToClipboard(address)" ngxClipboard [cbContent]="qrAddress">
                     {{address}}
                 </span>
                 <button ion-button icon-only clear color="primary" (click)="generateAddress(forceNew = true)"  class="select-button">
@@ -75,9 +75,9 @@
                  <span text-left class="label">Receive in</span>
                  <span item-right text-right [style.flex]="1">
                      {{wallet.name || wallet._id}}
-                     <button ion-button icon-only clear color="primary"  class="select-button">
-                         <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color">
-                             <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
+                     <button ion-button icon-only clear color="primary"  class="wallet-button">
+                         <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
+                             <img src="assets/img/icon-wallet.svg"   >
                          </i>
                      </button>
                  </span>
