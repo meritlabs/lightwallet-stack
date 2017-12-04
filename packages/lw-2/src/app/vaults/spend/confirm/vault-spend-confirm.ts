@@ -79,7 +79,7 @@ export class VaultSpendConfirmView {
       toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
     }
 
-    await this.prepareTx();
+    await this.updateAmount();
     
     this.logger.log('ionViewDidLoad txData', this.txData);
   }
@@ -93,7 +93,7 @@ export class VaultSpendConfirmView {
 
   public prepareTx() {
     const amount = this.txData.toAmount;
-    this.updateAmount();
+    
     const txp =  this.wallet.buildSpendVaultTx(this.vault, this.coins, this.vault.spendKey, amount, this.recipient.pubKey, {});
     console.log(txp);
   }
@@ -110,73 +110,17 @@ export class VaultSpendConfirmView {
     });
   }
 
-  public approve(): Promise<boolean> {
-    let loadingSpinner = this.loadingCtrl.create({
-      content: "Sending transaction...",
-      dismissOnPageChange: true
-    });
-    return Promise.resolve(loadingSpinner.present()).then((res) => {
-      return this.approveTx(this.txData, this.wallet);
-    }).then((worked) => {
-      loadingSpinner.dismiss();
-      this.navCtrl.push('WalletsView');
-      return Promise.resolve(worked);
-    }).catch((err) => {
-      this.logger.warn("Failed to approve transaction.");
-      this.logger.warn(err);
-      return Promise.reject(err);
-    });
+  public approve() {
+    this.navCtrl.push('VaultSpendConfirmationView', 
+      { recipient: this.recipient, wallet: this.navParams.get('wallet'), vault: this.vault, amount: this.txData.toAmount });
   }
 
   private approveTx(tx, wallet): Promise<boolean> {
     return Promise.resolve(true);
   }
-
-  private getTxp(tx, wallet, dryRun): Promise<any> {
-    const amount = this.navParams.get('toAmount');
-    return this.wallet.buildSpendVaultTx(this.vault, this.coins, '', amount, '', {});
-  }
-
-  private _chooseFeeLevel(tx, wallet) {
-    
-    let scope: any = {};
-    scope.network = tx.network;
-    scope.feeLevel = tx.feeLevel;
-    scope.noSave = true;
-
-    if (this.txData.usingCustomFee) {
-      scope.customFeePerKB = tx.feeRate;
-      scope.feePerMicrosByte = tx.feeRate / 1000;
-    }
-
-    let feeLevelModel = this.modalCtrl.create(FeeLevelModal, scope, {
-      enableBackdropDismiss: false
-    })
-    feeLevelModel.onDidDismiss((selectedFeeData) => {
-      this.logger.debug('New fee level choosen:' + selectedFeeData.selectedFee + ' was:' + tx.feeLevel);
-      this.txData.usingCustomFee = selectedFeeData.selectedFee == 'custom' ? true : false;
-      if (tx.feeLevel == selectedFeeData.selectedFee && !this.txData.usingCustomFee) return;
-      tx.feeLevel = selectedFeeData.selectedFee;
-      if (this.txData.usingCustomFee) tx.feeRate = parseInt(selectedFeeData.customFeePerKB);
-
-      // this.updateTx(tx, wallet, {
-      //   clearCache: true,
-      //   dryRun: true
-      // }).then(() => {});
-    })
-    feeLevelModel.present();
-  };
   
   public toggleAddress() {
     this.showAddress = !this.showAddress;
   };
-
-  private chooseFeeLevel(): void {
-    this._chooseFeeLevel(this.txData, this.wallet);
-  }
-
-  private showSendError(err: string = ''): any {
-    this.popupService.ionicConfirm("Could not confirm transaction.", err, "Ok", "Cancel");
-  }
 
 }
