@@ -26,7 +26,7 @@ export class SpendVaultService {
         this.bitcore = bwcService.getBitcore();
     }
 
-    spendVault(vault: any, masterKey: any, amount: number, address: any): Promise<any> {
+    spendVault(vault: any, spendKey: any, amount: number, address: any): Promise<any> {
         return this.profileService.getHeadWalletClient().then((walletClient) => {
           if (!this.walletClient) {
               this.walletClient = walletClient;
@@ -35,7 +35,7 @@ export class SpendVaultService {
         }).then((coins) => {
             let network = this.walletClient.credentials.network;
 
-            let tx = this.walletClient.buildSpendVaultTx(vault, coins, masterKey, amount, address, { network: network });
+            let tx = this.walletClient.buildSpendVaultTx(vault, coins, spendKey, amount, address, { network: network });
     
             console.log("SPEND TX");
             console.log('Plain: ', tx);
