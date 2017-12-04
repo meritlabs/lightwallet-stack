@@ -962,7 +962,6 @@ export class API {
       return sum + utxo.micros;
     }, 0);
 
-    console.log('amount vs availableAmount', amount, availableAmount);
     if (amount >= availableAmount) throw Errors.INSUFFICIENT_FUNDS;
 
     let selectedCoins = [];
@@ -975,7 +974,6 @@ export class API {
     }
 
     //should never be true
-    console.log('selected vs amount');
     if(selectedAmount < amount) throw Errors.INSUFFICIENT_FUNDS;
 
     let change = selectedAmount - amount;
@@ -984,12 +982,15 @@ export class API {
 
     var tx = new Bitcore.Transaction();
 
-    console.log('before try');
-    try {
+    //try {
 
       if(vault.type == 0) {
-
-        let toAddress = Bitcore.Address.fromString(address);
+        let toAddress = null;
+        if (address.length == 21) {
+          toAddress = Bitcore.Address.fromString(address);
+        } else {
+          toAddress = Bitcore.HDPublicKey.fromString(address).publicKey.toAddress();
+        }
         tx.to(toAddress, amount - fee);
 
         let params = [
@@ -1019,9 +1020,13 @@ export class API {
               script: coin.scriptPubKey
             }, redeemScript, coin.scriptPubKey), 
             coin.scriptPubKey, coin.micros);
-
+          console.log('before sig');
+          console.log(Bitcore.Transaction.Sighash.sign(tx, spendKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript));
           let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
+          console.log('after sig');
+          console.log(Bitcore.Script.buildVaultSpendIn(sig, redeemScript));
           let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript);
+          console.log('after input script');
 
           tx.inputs[tx.inputs.length-1].setScript(inputScript);
         });
@@ -1033,10 +1038,10 @@ export class API {
         this.log.error('Vault type is not supported:', vault.type);
         throw Errors.COULD_NOT_BUILD_TRANSACTION;
       }
-    } catch (ex) {
+    /*} catch (ex) {
       this.log.error('Could not build transaction from private key', ex);
       throw Errors.COULD_NOT_BUILD_TRANSACTION;
-    }
+    } */
 
     return tx;
   };
