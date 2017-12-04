@@ -61,7 +61,8 @@ export class VaultDetailsView {
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
-          return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
+          const key = new this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
+          return { 'id': w.id, 'name': name, 'pubKey': key, 'type': 'wallet' };
         });
       }),
       // fetch users vaults
