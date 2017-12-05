@@ -858,15 +858,6 @@ export class ProfileService {
             x.types = [x.type];
   
             if (x.data && x.data.amount) x.amountStr = this.txFormatService.formatAmountStr(x.data.amount);
-  
-            x.action = function () {
-              // TODO?
-              // $state.go('tabs.wallet', {
-              //   walletId: x.walletId,
-              //   txpId: x.txpId,
-              //   txid: x.txid,
-              // });
-            };
           });
   
           // let finale = shown; GROUPING DISABLED!
@@ -929,7 +920,7 @@ export class ProfileService {
               notifications = _.sortBy(notifications, 'createdOn');
               notifications = _.compact(_.flatten(notifications)).slice(0, MAX);
               let total = notifications.length;
-              return resolve({ processArray: process(notifications), total: total });
+              return resolve({ notifications: process(notifications), count: total });
             };
           }).catch((err: any) => {
             this.logger.warn('Error updating notifications:' + err);
