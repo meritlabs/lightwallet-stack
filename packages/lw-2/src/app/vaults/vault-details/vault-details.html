@@ -13,7 +13,10 @@
             <span translate>Pending</span>
         </div>
         <div class="vault-actions">
-            <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()">
+            <button ion-button type="button" class="deposit-btn" translate (click)="toDepositVault()" item-start>
+                Deposit
+            </button>
+            <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()" item-end>
                 Reset
             </button>
         </div>

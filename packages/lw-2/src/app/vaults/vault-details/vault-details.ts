@@ -98,6 +98,10 @@ export class VaultDetailsView {
     this.navCtrl.push('VaultRenewView', { vaultId: this.vault._id, vault: this.vault });
   }
 
+  toDepositVault() {
+    console.log('not implemented yet');
+  }
+
   goToTxDetails(tx: any) {
     this.navCtrl.push(
       'TxDetailsView',
