@@ -35,6 +35,7 @@ import { DepositService } from 'merit/vaults/deposit/deposit.service';
     SocialSharing,
     FeeService,
     FeeLevelModal,
+    DepositService,
   ]
 })
 export class VaultDepositConfirmModule {}

@@ -109,7 +109,7 @@ export class VaultDepositConfirmView {
   }
 
   private deposit() {
-    return this.depositService.depositToVault().then(() => {
+    return this.depositService.depositToVault(this.vault, this.wallet, this.txData.toAmount).then(() => {
       this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });    
     });
   }
