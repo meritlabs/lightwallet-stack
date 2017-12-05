@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as Promise from 'bluebird';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
@@ -20,6 +21,8 @@ export class EditContactView {
   public originalContact:MeritContact;
   public editMode:boolean;
   public newContact:MeritContact;
+  public email: any;
+  public phoneNumber: any;
 
   constructor(
     private navCtrl: NavController,
@@ -89,7 +92,7 @@ export class EditContactView {
 
   }
 
-  addContact() {
+  addContact(): Promise<any> {
 
       if (this.newContact.storeOnDevice) {
         let contact = this.contacts.create();
@@ -97,7 +100,7 @@ export class EditContactView {
         contact.emails = this.newContact.emails;
         contact.phoneNumbers = this.newContact.phoneNumbers;
         contact.urls = this.newContact.urls;
-        return contact.save();
+        return Promise.resolve(contact.save());
       } else {
         return this.addressBookService.add(this.newContact, 'testnet').then((addressBook) => {
           this.logger.warn('added contact, addressBook in storage is:');
@@ -119,7 +122,7 @@ export class EditContactView {
           });
           this.newContact.meritAddresses.forEach((address) => {
             //  //todo add network
-            contact.urls.push({value: 'merit:'+address.address+':testnet', type: 'other', pref: false, id: 1});
+            contact.urls.push({value: 'merit:'+address.address+':testnet', type: 'other', pref: false});
           });
           return contact.save();
       });
@@ -144,7 +147,7 @@ export class EditContactView {
   }
 
   removeEmail() {
-    this.newContact.emails = this.newContact.emails.filter((e) => e.value != email.value);
+    this.newContact.emails = this.newContact.emails.filter((e) => e.value != this.email.value);
   }
 
   addEmail() {
@@ -165,7 +168,7 @@ export class EditContactView {
   }
 
   removePhone() {
-    this.newContact.phoneNumbers = this.newContact.phoneNumbers.filter((e) => e.value != phoneNumbers.value);
+    this.newContact.phoneNumbers = this.newContact.phoneNumbers.filter((e) => e.value != this.phoneNumber.value);
   }
 
 }

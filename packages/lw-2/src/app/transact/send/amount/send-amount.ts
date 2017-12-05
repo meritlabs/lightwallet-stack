@@ -6,6 +6,7 @@ import { Logger } from 'merit/core/logger';
 import { ProfileService } from "merit/core/profile.service";
 import { ConfigService } from "merit/shared/config.service";
 import { RateService } from 'merit/transact/rate.service';
+import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 
 
 @IonicPage()
@@ -15,6 +16,8 @@ import { RateService } from 'merit/transact/rate.service';
 })
 export class SendAmountView {
 
+  public contact: MeritContact;
+  public sendingOptions: any[];
   public recipient: any;
   public amount: string;
   public amountMerit: string;
@@ -50,9 +53,10 @@ export class SendAmountView {
   
   ionViewDidLoad() {
     console.log('Params', this.navParams.data);
-    this.recipient = this.navParams.get('recipient');
+    this.contact = this.navParams.get('contact');
     this.sending = this.navParams.get('sending');
-    this.displayName = !_.isEmpty(this.recipient.name) ? this.recipient.name.formatted : this.recipient.meritAddress;
+    this.displayName = !_.isEmpty(this.contact.name) ? this.contact.name.formatted : this.contact.meritAddresses[0].address;
+    this.populateSendingOptions();
 
     this.profileService.getWallets().then((wallets) => {
       this.wallets = wallets;
@@ -67,6 +71,40 @@ export class SendAmountView {
     ];
     this.amountCurrency = this.availableUnits[0];
   }
+
+  populateSendingOptions() {
+    let empty = {
+      sendMethod: '',
+      meritAddress: '',
+      email: '',
+      phoneNumber: '',
+      label: '',
+    };
+    this.sendingOptions = _.concat(
+      _.map(this.contact.meritAddresses, (addrObject) => {
+        return _.defaults({
+          sendMethod: 'address',
+          meritAddress: addrObject.address,
+          label: addrObject.address
+        }, empty);
+      }),
+      _.map(this.contact.emails, (emailObj) => {
+        return _.defaults({
+          sendMethod: 'email',
+          email: emailObj.value,
+          label: `Email ${emailObj.value}`
+        }, empty);
+      }),
+      _.map(this.contact.phoneNumbers, (phoneNumberObj) => {
+        return _.defaults({
+          sendMethod: 'sms',
+          phoneNumber: phoneNumberObj.value,
+          label: `SMS ${phoneNumberObj.value}`
+        }, empty);
+      })
+    );
+    this.recipient = _.head(this.sendingOptions);
+  };
 
   selectWallet() {
     let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
@@ -86,7 +124,7 @@ export class SendAmountView {
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
       this.amountMerit = this.amount;
     } else {
-      this.amountMerit = this.rateService.fromFiat(this.amount, this.amountCurrency);
+      this.amountMerit = this.rateService.fromFiat(this.amount, this.amountCurrency).toString();
     }
   }
 
