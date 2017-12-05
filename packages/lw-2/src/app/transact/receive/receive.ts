@@ -108,6 +108,8 @@ export class ReceiveView {
 
   copyToClipboard(address) {
 
+    let address = address.split(':')[1] || address;
+
     this.clipboard.copy(address);
 
     this.toastCtrl.create({
