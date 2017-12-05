@@ -140,7 +140,7 @@ export class WalletsView {
 
         if (this.configService.get().recentTransactions.enabled) {
           this.recentTransactionsEnabled = true;
-          this.profileService.getNotifications({limit: 3}).then((notifications) => {
+          return this.profileService.getNotifications({limit: 3}).then((notifications) => {
             this.recentTransactionsData = notifications;
           });
         }
