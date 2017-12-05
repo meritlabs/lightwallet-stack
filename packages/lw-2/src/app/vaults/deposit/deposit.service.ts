@@ -47,7 +47,7 @@ export class DepositService {
             return vault;
         }).then((vault) => {
             vault.name = vault.vaultName;
-            return this.walletClient.createVault(vault);
+            return wallet.createVault(vault);
         }).then((resp) => {
             return this.profileService.addVault({
                 id: vault.address,
@@ -67,6 +67,7 @@ export class DepositService {
         });
 
         const network = vault.address.network;
+        console.log(network);
         const masterKey = new this.bitcore.PublicKey(vault.masterPubKey, network);
         const spendPubKey = new this.bitcore.PublicKey(vault.spendPubKey, network);
 
@@ -79,12 +80,9 @@ export class DepositService {
       }
 
     private getTxp(vault, wallet, dryRun: boolean): Promise<any> {
-        this.logger.warn("In GetTXP");
-        this.logger.warn(vault);
-        this.logger.warn(wallet);
         return this.findFeeLevel(vault.amount).then((feeLevel) => {
             if (vault.amount > Number.MAX_SAFE_INTEGER) {
-            return Promise.reject("The amount is too big.  Because, Javascript.");
+                return Promise.reject("The amount is too big.  Because, Javascript.");
             }
 
             let txp = {
