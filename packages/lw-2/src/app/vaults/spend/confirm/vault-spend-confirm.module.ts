@@ -12,6 +12,7 @@ import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 import { FeeService } from 'merit/shared/fee/fee.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { SpendVaultService } from 'merit/vaults/spend/vault-spend.service';
 
 /*
   ToDo: Work to get this lazy-loadable as possible. 
@@ -31,6 +32,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
     SocialSharing,
     FeeService,
     FeeLevelModal,
+    SpendVaultService,
   ]
 })
 export class VaultSpendConfirmModule {}

@@ -955,8 +955,8 @@ export class API {
    */
   buildSpendVaultTx(vault: any, coins: any[], spendKey: any, amount: number, address:any, opts: any = {}) {
 
-    var network = opts.network || DEFAULT_NET;
-    var fee = opts.fee || DEFAULT_FEE;
+    let network = opts.network || DEFAULT_NET;
+    let fee = opts.fee || DEFAULT_FEE;
 
     let availableAmount = _.reduce(coins, (sum, utxo) => {
       return sum + utxo.micros;
@@ -980,13 +980,13 @@ export class API {
 
     let redeemScript = new Bitcore.Script(vault.redeemScript);
 
-    var tx = new Bitcore.Transaction();
+    let tx = new Bitcore.Transaction();
 
     //try {
 
       if(vault.type == 0) {
         let toAddress = Bitcore.Address.fromString(address);
-        tx.to(toAddress, amount - fee);
+        tx.to(toAddress, amount - fee * 10);
 
         let params = [
           new Bitcore.PublicKey(vault.spendPubKey, {network: network}).toBuffer(),
@@ -1005,7 +1005,8 @@ export class API {
           micros: change
         }));
 
-        tx.fee(fee)
+        tx.fee(fee * 10);
+        console.log('fee', fee * 10, DEFAULT_FEE);
 
         _.each(selectedCoins, (coin) => {
           tx.addInput(
@@ -1020,7 +1021,6 @@ export class API {
         tx.version = 4;
         tx.addressType = 'PP2SH';
 
-        console.log('spend key', spendKey);
         for(let a = 0; a < tx.inputs.length; a++) {
           let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
           let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript);
