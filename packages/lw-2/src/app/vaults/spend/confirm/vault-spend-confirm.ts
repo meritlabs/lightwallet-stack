@@ -10,6 +10,8 @@ import { ProfileService } from 'merit/core/profile.service';
 import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
 import { FeeService } from 'merit/shared/fee/fee.service';
 import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
+import { BwcService } from 'merit/core/bwc.service';
+import { SpendVaultService } from 'merit/vaults/spend/vault-spend.service';
 
 import * as  _  from 'lodash';
 import * as Promise from 'bluebird';
@@ -40,6 +42,7 @@ export class VaultSpendConfirmView {
   private configFeeLevel: string;
   private showAddress: Boolean = true;
   private coins: Array<any> = [];
+  private bitcore: any;
 
   constructor(
     private configService: ConfigService,
@@ -54,10 +57,13 @@ export class VaultSpendConfirmView {
     private modalCtrl: ModalController,
     private notificationService: NotificationService,
     private loadingCtrl: LoadingController,
-    private easySendService: EasySendService
+    private easySendService: EasySendService,
+    private bwc: BwcService,
+    private spendVaultService: SpendVaultService,
   ) { 
     this.logger.info("Hello SendConfirm View");
     this.walletConfig = this.configService.get().wallet;
+    this.bitcore = this.bwc.getBitcore();
   }
 
   async ionViewDidLoad() {
@@ -91,13 +97,6 @@ export class VaultSpendConfirmView {
     return this.txData.toAddress || "no one";
   }
 
-  public prepareTx() {
-    const amount = this.txData.toAmount;
-    
-    const txp =  this.wallet.buildSpendVaultTx(this.vault, this.coins, this.vault.spendKey, amount, this.recipient.pubKey, {network: 'testnet'});
-    console.log(txp);
-  }
-
   private updateAmount(): any {
     if (!this.txData.toAmount) return;
 
@@ -110,14 +109,24 @@ export class VaultSpendConfirmView {
     });
   }
 
-  public approve() {
-    this.navCtrl.push('VaultSpendConfirmationView', 
-      { recipient: this.recipient, wallet: this.navParams.get('wallet'), vault: this.vault, amount: this.txData.toAmount });
+  private spend() {
+    const network = this.vault.address.network;
+    const spendKey = this.bitcore.HDPrivateKey.fromString(this.wallet.credentials.xPrivKey);
+
+    //convert string address to hash buffers
+    let whitelist = _.map(this.vault.whitelist, (w: string) => {
+      return this.bitcore.Address.fromString(w).toBuffer();
+    });
+
+    this.vault.whitelist = whitelist;
+
+    const recepient = this.navParams.get('recipient');
+
+    return this.spendVaultService.spendVault(this.vault, spendKey,  this.txData.toAmount, recepient.pubKey).then(() => {
+      this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });    
+    });
   }
 
-  private approveTx(tx, wallet): Promise<boolean> {
-    return Promise.resolve(true);
-  }
   
   public toggleAddress() {
     this.showAddress = !this.showAddress;

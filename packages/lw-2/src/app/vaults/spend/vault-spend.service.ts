@@ -33,9 +33,9 @@ export class SpendVaultService {
           }
           return this.vaultsService.getVaultCoins(walletClient, vault);
         }).then((coins) => {
-            let network = this.walletClient.credentials.network;
+            const network = this.walletClient.credentials.network;
 
-            let tx = this.walletClient.buildSpendVaultTx(vault, coins, spendKey, amount, address, {});
+            const tx = this.walletClient.buildSpendVaultTx(vault, coins, spendKey, amount, address, {});
     
             console.log("SPEND TX");
             console.log('Plain: ', tx);
