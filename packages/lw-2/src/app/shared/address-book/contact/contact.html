@@ -1,61 +1,44 @@
-<ion-header>
+<ion-header no-border transparent>
 
-    <ion-navbar color="secondary">
-        <ion-title>Contact Info</ion-title>
+    <ion-navbar color="secondary" transparent>
+        <ion-title></ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="toEditContact()">
+                <ion-icon name="settings"></ion-icon>
+            </button>
+        </ion-buttons>
     </ion-navbar>
 
 </ion-header>
 
-<ion-content>
+<ion-content fullscreen>
 
-    <ion-list>
+    <div class="contact-header">
+        <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
+        <h4 class="name">{{contact.name.formatted}}</h4>
+    </div>
 
-        <ion-avatar class="icon big-icon-svg" item-start>
-            <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
-            <gravatar class="send-gravatar" [name]="contact.name.formatted" width="30" height="30" [email]="contact.emails[0]?.value || ''" *ngIf="!contact.photos.length"></gravatar>
-        </ion-avatar>
-
-        <ion-item>
-            <ion-label item-start>Name</ion-label>
-            <ion-label item-end text-right>{{contact.name.formatted}}</ion-label>
+    <ion-list style="position: relative">
+        <ion-fab top right edge (click)="toSendAmount()">
+            <button ion-fab color="primary"><ion-icon name="send"></ion-icon></button>
+        </ion-fab>
+        <ion-item  *ngIf="contact.meritAddresses.length">
+            <ion-label stacked>Merit Address</ion-label>
+            <ion-label>{{contact.meritAddresses[0].address}}</ion-label>
         </ion-item>
         <ion-item  *ngFor="let email of contact.emails">
-            <ion-label item-start>Email</ion-label>
-            <ion-label item-end text-right>{{email.value}}</ion-label>
+            <ion-label stacked>Email</ion-label>
+            <ion-label>{{email.value}}</ion-label>
         </ion-item>
         <ion-item *ngFor="let phoneNumber of contact.phoneNumbers">
-            <ion-label item-start>Phone</ion-label>
-            <ion-label item-end text-right>{{phoneNumber.value}}</ion-label>
+            <ion-label stacked>Phone</ion-label>
+            <ion-label>{{phoneNumber.value}}</ion-label>
         </ion-item>
-        <ion-item class="item item-text-wrap" *ngIf="contact.meritAddresses.length">
-            <ion-label item-start>Address</ion-label>
-            <!-- TODO show proper address -->
-            <ion-label item-end text-right>{{contact.meritAddresses[0].value}}</ion-label>
+        <ion-item >
+            <ion-label stacked>Store in device contacts</ion-label>
+            <ion-label>{{contact.storeOnDevice ? 'Yes' : 'No'}}</ion-label>
         </ion-item>
-        <ion-item class="item item-text-wrap">
-            <ion-label item-start>Store in device contacts</ion-label>
-            <ion-label item-end text-right>{{contact.storeOnDevice ? 'Yes' : 'No'}}</ion-label>
-        </ion-item>
-
     </ion-list>
 
-
-    <ion-list>
-        <button ion-item (click)="toEditContact()">
-            Edit Info
-        </button>
-    </ion-list>
-
-    <ion-list>
-        <button ion-item (click)="toSendAmount()">
-            Send Money
-        </button>
-    </ion-list>
-
-    <ion-list *ngIf="!contact.storeOnDevice">
-        <button ion-item (click)="remove()">
-           Remove
-        </button>
-    </ion-list>
 
 </ion-content>

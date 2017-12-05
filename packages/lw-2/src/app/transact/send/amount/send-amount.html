@@ -1,67 +1,67 @@
 <ion-header>
     
-      <ion-navbar>
-        <ion-title>Amount</ion-title>
-      </ion-navbar>
+  <ion-navbar color="secondary">
+    <ion-title>Amount</ion-title>
+  </ion-navbar>
+
+</ion-header>
     
-    </ion-header>
     
-    
-    <ion-content>
-      <ion-list>
-        <ion-label padding>Recipient</ion-label>
-          <ion-item>
-            <ion-icon name="contact" item-left></ion-icon>
-            <span>{{ displayName }}</span>
-          </ion-item>
-        </ion-list>
-        <div>
-          <div padding>
-            <div>
-              <span>Amount</span>
-            </div>
-            <div>
-              <span>{{ amount || "0.00" }}</span>
-            </div>
-            <div [hidden]="!globalResult">
-              = {{globalResult|| "0.00" }}
-            </div>
-          </div>
-          <div class="keypad">
-            <div class="operator-row">
-              <div class="col operator-send"
-                  [hidden]="!allowSend" (click)="finish()">
-                <ion-icon name="arrow-round-forward"></ion-icon>
-              </div>
-            </div>
+<ion-content>
+    <ion-item-divider>
+        Recipient
+    </ion-item-divider>
+    <ion-list>
+      <ion-item>
+        <ion-icon name="contact" item-left></ion-icon>
+        <span>{{ displayName }}</span>
+      </ion-item>
+    </ion-list>
+</ion-content>
+
+
+<ion-footer >
+    <ion-toolbar>
+
+        <ion-item *ngIf="!wallet">
+            <ion-label translate>You don't have any wallet</ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="!hasFunds()">
+            <ion-label translate>TODO: show BUY MERIT buttons</ion-label>
+        </ion-item>
+
+        <span *ngIf="wallet">
+
             <div class="row">
-              <div class="col digit" (click)="pushDigit('7')">7</div>
-              <div class="col digit" (click)="pushDigit('8')">8</div>
-              <div class="col digit" (click)="pushDigit('9')">9</div>
-              <div class="col operator" (click)="pushOperator('/')">&#247;</div>
+                <span class="label" text-left>Amount</span>
+                <input type="number" [style.flex]="1" text-right pattern="[0-9\.]" [(ngModel)]="amount" (ngModelChange)="changeAmount()" [placeholder]="'Sending amount'">
+                <button ion-button clear color="primary" (click)="toggleCurrency()">
+                    {{amountCurrency}}
+                </button>
             </div>
-    
+
+
             <div class="row">
-              <div class="col digit" (click)="pushDigit('4')">4</div>
-              <div class="col digit" (click)="pushDigit('5')">5</div>
-              <div class="col digit" (click)="pushDigit('6')">6</div>
-              <div class="col operator" (click)="pushOperator('x')">&#215;</div>
+                <span class="label" text-left >Send To</span>
+                <span>
+                    TODO: select sendTo
+                </span>
             </div>
-    
-            <div class="row">
-              <div class="col digit" (click)="pushDigit('1')">1</div>
-              <div class="col digit" (click)="pushDigit('2')">2</div>
-              <div class="col digit" (click)="pushDigit('3')">3</div>
-              <div class="col operator" (click)="pushOperator('+')">&#43;</div>
-            </div>
-    
-            <div class="row">
-              <div class="col digit" (click)="pushDigit('.')">.</div>
-              <div class="col digit" (click)="pushDigit('0')">0</div>
-              <div class="col digit" (click)="removeDigit()"><ion-icon name="backspace"></ion-icon></div>
-              <div class="col operator" (click)="pushOperator('-')">&#45;</div>
-            </div>
-          </div>
-        </div>
-    </ion-content>
-    
+
+             <div class="label" class="row" (click)="selectWallet()">
+                 <span text-left class="label">Wallet</span>
+                 <span item-right text-right [style.flex]="1">
+                     {{wallet.name || wallet._id}}
+                     <button ion-button icon-only clear color="primary"  class="wallet-button">
+                         <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
+                             <img src="assets/img/icon-wallet.svg"   >
+                         </i>
+                     </button>
+                 </span>
+             </div>
+
+        </span>
+
+    </ion-toolbar>
+</ion-footer>

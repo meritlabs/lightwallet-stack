@@ -182,7 +182,7 @@ export class SendView {
     }
   }
 
-  private updateFilteredContacts(search: string): void {
+  public updateFilteredContacts(search: string): void {
 
     // TODO: Improve to be more resilient.
     if(search && search.length > 19) {
