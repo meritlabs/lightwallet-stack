@@ -138,7 +138,7 @@ export class SendView {
   }
 
   private justMeritAddress(meritAddress: string): MeritContact {
-    let contact = new MeritContact(null);
+    let contact = new MeritContact();
     contact.name.formatted = meritAddress;
     contact.meritAddresses.push({
       network: this.network,
@@ -148,13 +148,13 @@ export class SendView {
   }
 
   private justPhoneNumber(phoneNumber: string): MeritContact {
-    let contact = new MeritContact(null);
+    let contact = new MeritContact();
     contact.name.formatted = `Send an SMS to ${phoneNumber}`;
     return contact;
   }
 
   private justEmail(email: string): MeritContact {
-    let contact = new MeritContact(null);
+    let contact = new MeritContact();
     contact.name.formatted = `Send an email to ${email}`;
     return contact;
   }
@@ -187,15 +187,15 @@ export class SendView {
     // TODO: Improve to be more resilient.
     if(search && search.length > 19) {
       this.sendService.isAddressValid(search).then((isValid) => {
-          if (isValid) {
-            this.profileService.getWallets()
-              .then((wallets) => {
-                this.navCtrl.push('SendAmountView', {
-                  wallet: wallets[0],
-                  sending: true,
-                  recipient: this.justMeritAddress(search)
-                });
+        if (isValid) {
+          this.profileService.getWallets()
+            .then((wallets) => {
+              this.navCtrl.push('SendAmountView', {
+                wallet: wallets[0],
+                sending: true,
+                contact: this.justMeritAddress(search)
               });
+            });
         } else {
           this.popupService.ionicAlert('This address has not been invited to the merit network yet!');
         }  
@@ -210,12 +210,12 @@ export class SendView {
 
   }
 
-  private goToAmount(item) {
+  public goToAmount(item) {
     return this.profileService.getWallets().then((wallets) => {
       return this.navCtrl.push('SendAmountView', {
         wallet: wallets[0],
         sending: true,
-        recipient: item
+        contact: item
       });
     });
   }
