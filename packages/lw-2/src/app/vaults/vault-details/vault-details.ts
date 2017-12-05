@@ -53,11 +53,11 @@ export class VaultDetailsView {
     console.log('Vault to display:', this.vault);
   }
 
-  async ionViewDidLoad() {
+  ionViewDidLoad() {
     console.log("Vault-Detail View Did Load.");
     console.log(this.vault);
 
-    await Promise.all([
+    Promise.all([
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
@@ -76,30 +76,38 @@ export class VaultDetailsView {
       // fetch coins
     ]).then((arr: Array<Array<any>>) => {
       const whitelistCandidates = _.flatten(arr);
-      const results = [];
-      _.each(this.vault.whitelist, (wl) => {
-        let found = _.find(whitelistCandidates, (candidate) => {
+      let results = [];
+      return Promise.map(this.vault.whitelist, (wl) => {
+        return Promise.map(whitelistCandidates, (candidate) => {
           if (candidate.type === 'vault') {
-            return candidate.pubKey === wl;
-          } 
-
-          const addr = this.bitcore.Address.fromString(wl);
-          return candidate.walletClient.isMine(addr);
+            if(wl == candidate.pubKey) results.push(candidate);
+          } else { 
+            return candidate.walletClient.getMainAddresses({}).then((addresses) => {
+              let found = _.find(addresses, (e) => { return e.address == wl});
+              if(found) 
+              {
+                candidate.pubKey = wl;
+                results.push(candidate);
+              }
+              return Promise.resolve();
+            });
+          }
+          return Promise.resolve();
         });
-        if (found) {
-          results.push(found);
-        }
+      }).then(() => { 
+        this.whitelist = results;
+        return Promise.resolve();
+      })
+    }).then(() => {
+      return this.getVaultTxHistory().then((txs) => {
+        console.log("vault txs");
+        console.log(txs);
+        this.transactions = _.map(txs, this.processTx.bind(this));
+        this.vault.completeHistory = txs;
+        this.formatAmounts();
+        return Promise.resolve();
       });
-      this.whitelist = results;
     });
-
-    await this.getVaultTxHistory().then((txs) => {
-      console.log(txs);
-      this.transactions = _.map(txs, this.processTx.bind(this));
-      this.vault.completeHistory = txs;
-    });
-
-    await this.formatAmounts();
   }
 
   toResetVault() {

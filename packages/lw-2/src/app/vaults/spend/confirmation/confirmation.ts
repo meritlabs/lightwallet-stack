@@ -57,7 +57,13 @@ export class VaultSpendConfirmationView {
         // console.log('MasterPub', xMasterKey.publicKey.toString());
         // console.log('OrigPubKey', new this.bitcore.PublicKey(this.vault.masterPubKey, network).toString());
         const spendKey = this.bitcore.HDPrivateKey.fromString(this.walletClient.credentials.xPrivKey);
-        console.log('SPEND KEY', spendKey);
+
+        //convert string address to hash buffers
+        let whitelist = _.map(this.vault.whitelist, (w: string) => {
+          return this.bitcore.Address.fromString(w).toBuffer();
+        });
+
+        this.vault.whitelist = whitelist;
 
         return this.spendVaultService.spendVault(this.vault, spendKey, this.amount, this.address).then(() => {
             this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });    

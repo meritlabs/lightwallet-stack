@@ -989,13 +989,13 @@ export class API {
         tx.to(toAddress, amount - fee);
 
         let params = [
-          Bitcore.HDPublicKey.fromObject(vault.spendPubKey).toBuffer(),
+          new Bitcore.PublicKey(vault.spendPubKey, {network: network}).toBuffer(),
           new Bitcore.PublicKey(vault.masterPubKey, {network: network}).toBuffer(),
         ];
 
         params = params.concat(vault.whitelist);
         params.push(Bitcore.Opcode.smallInt(vault.whitelist.length));
-        params.push(vault.tag);
+        params.push(new Buffer(vault.tag));
         params.push(Bitcore.Opcode.smallInt(vault.type));
 
         let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
@@ -2171,18 +2171,17 @@ export class API {
       qs = '?' + args.join('&');
     }
     let url = '/v1/addresses/' + qs;
+    let credentials = this.credentials;
 
-    return new Promise((resolve, reject) => { 
-      return this._doGetRequest(url).then((addresses) => {
-        if (!opts.doNotVerify) {
-          let fake = _.some(addresses, function(address) {
-            return !Verifier.checkAddress(this.credentials, address);
-          });
-          if (fake)
-            return reject(Errors.SERVER_COMPROMISED);
-          }
-        return resolve(addresses);
-      });
+    return this._doGetRequest(url).then((addresses) => {
+      if (!opts.doNotVerify) {
+        let fake = _.some(addresses, function(address) {
+          return !Verifier.checkAddress(credentials, address);
+        });
+        if (fake)
+          return Promise.reject(Errors.SERVER_COMPROMISED);
+      }
+      return Promise.resolve(addresses);
     });
   };
 
