@@ -35,13 +35,13 @@ export class SpendVaultService {
         }).then((coins) => {
             let network = this.walletClient.credentials.network;
 
-            let tx = this.walletClient.buildSpendVaultTx(vault, coins, spendKey, amount, address, { network: network });
+            let tx = this.walletClient.buildSpendVaultTx(vault, coins, spendKey, amount, address, {});
     
             console.log("SPEND TX");
             console.log('Plain: ', tx);
             console.log('Serialized: ', tx.serialize());
 
-            return { rawTx: tx.serialize(), network: network };
+            return { rawTx: tx.serialize(), network: vault.address.network };
         }).then((tx) => {
             return this.walletClient.broadcastRawTx(tx);
         }).catch((err) => {

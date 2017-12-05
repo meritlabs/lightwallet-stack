@@ -888,7 +888,7 @@ Script.buildSimpleVaultScript = function(tag) {
 
   s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] <tag>| 
    .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] | 
-   .add(Opcode. OP_NTOALTSTACK               )// <out index> <sig> <mode> | [addresses]
+   .add(Opcode. OP_NTOALTSTACK               )// <sig> <mode> <spend key> <renew key> | [addresses]
    .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> <spend key> | [addresses] <renew key>
    .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> | [addresses] <renew key> <spend key>
    .add(        Opcode.smallInt(0)           )// <sig> <mode> 0 | [addresses] <renew key> <spend key>

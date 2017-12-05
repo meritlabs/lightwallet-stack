@@ -94,7 +94,7 @@ export class VaultSpendConfirmView {
   public prepareTx() {
     const amount = this.txData.toAmount;
     
-    const txp =  this.wallet.buildSpendVaultTx(this.vault, this.coins, this.vault.spendKey, amount, this.recipient.pubKey, {});
+    const txp =  this.wallet.buildSpendVaultTx(this.vault, this.coins, this.vault.spendKey, amount, this.recipient.pubKey, {network: 'testnet'});
     console.log(txp);
   }
 

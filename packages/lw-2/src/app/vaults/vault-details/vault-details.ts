@@ -83,7 +83,7 @@ export class VaultDetailsView {
             if(wl == candidate.pubKey) results.push(candidate);
           } else { 
             return candidate.walletClient.getMainAddresses({}).then((addresses) => {
-              let found = _.find(addresses, (e) => { return e.address == wl});
+              let found = _.find(addresses, (e: any) => { return e.address == wl});
               if(found) 
               {
                 candidate.pubKey = wl;
