@@ -93,7 +93,7 @@ export class CreateVaultService {
 
       let wallet = this.model.selectedWallet;
 
-      let spendPubKey = this.bitcore.HDPublicKey.fromString(wallet.credentials.xPubKey);
+      let spendPubKey = this.bitcore.HDPrivateKey.fromString(wallet.credentials.xPrivKey).privateKey;
 
       return this.vaultFromModel(spendPubKey.publicKey, this.model.whitelist).then((vault) => {
         let unlock = {

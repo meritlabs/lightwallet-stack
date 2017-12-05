@@ -919,7 +919,7 @@ export class API {
           tx.addInput(
             new Bitcore.Transaction.Input.PayToScriptHashInput({
               prevTxId: utxo.txid,
-              outputIndex: utxo.outputIndex,
+              outputIndex: utxo.vout,
               script: redeemScript,
             }, redeemScript, utxo.scriptPubKey), 
             utxo.scriptPubKey, utxo.micros);
@@ -955,7 +955,7 @@ export class API {
    */
   buildSpendVaultTx(vault: any, coins: any[], spendKey: any, amount: number, address:any, opts: any = {}) {
 
-    var network = opts.network || DEFAULT_NET;
+    var network = vault.address.network;
     var fee = opts.fee || DEFAULT_FEE;
 
     let availableAmount = _.reduce(coins, (sum, utxo) => {
@@ -977,6 +977,15 @@ export class API {
     if(selectedAmount < amount) throw Errors.INSUFFICIENT_FUNDS;
 
     let change = selectedAmount - amount;
+    console.log("AMOUNT");
+    console.log("amount", amount);
+    console.log("selected", selectedAmount);
+    console.log("change", change);
+    console.log("coins", coins);
+    console.log("spendKey.publicKey", spendKey.privateKey.publicKey);
+    console.log("network", network);
+    console.log("vault.spendKey", vault.spendPubKey);
+    console.log("vault.spendKey.pubkey", new Bitcore.PublicKey(vault.spendPubKey, {network: network}));
 
     let redeemScript = new Bitcore.Script(vault.redeemScript);
 
@@ -1011,8 +1020,8 @@ export class API {
           tx.addInput(
             new Bitcore.Transaction.Input.PayToScriptHashInput({
               prevTxId: coin.txid,
-              outputIndex: coin.outputIndex,
-              script: coin.scriptPubKey
+              outputIndex: coin.vout,
+              script: redeemScript
             }, redeemScript, coin.scriptPubKey), 
             coin.scriptPubKey, coin.micros);
         });
