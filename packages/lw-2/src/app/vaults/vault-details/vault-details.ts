@@ -82,8 +82,8 @@ export class VaultDetailsView {
           if (candidate.type === 'vault') {
             if(wl == candidate.pubKey) results.push(candidate);
           } else { 
-            return candidate.walletClient.getMainAddresses({}).then((addresses) => {
-              let found = _.find(addresses, (e) => { return e.address == wl});
+            return candidate.walletClient.getMainAddresses({}).then((addresses: Array<any>) => {
+              const found = _.find(addresses, (e) => { return e.address == wl});
               if(found) 
               {
                 candidate.pubKey = wl;
