@@ -74,32 +74,41 @@ export class MeritLightWallet {
   /**
    * Check the status of the profile, and load the right next view.
    */
-   private loadProfileAndEasySend(): void {
+  private loadProfileAndEasySend(): void {
     this.profileService.getProfile().then((profile) => {
       // If the user has credentials and a profile, then let's send them to the transact
       // view
-      this.rootComponent = (profile && profile.credentials && profile.credentials.length) ?'TransactView' : 'OnboardingView';
+      if (!this.rootComponent) {
+        this.rootComponent = (profile && profile.credentials && profile.credentials.length) ? 'TransactView' : 'OnboardingView';
+      }
 
       this.deepLinkService.getBranchData(() => { }).then((data) => {
         // If the branch params contain the minimum params needed for an easyReceipt, then
         // let's validate and save them. 
         if (data && !_.isEmpty(data) && data.sk && data.se) {
           this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt: EasyReceipt) => {
-            if ( easyReceipt && !(profile && profile.credentials && profile.credentials.length) ) {
-              // User received easySend, but has no wallets yet. 
-              // Skip to unlock view.
-              this.rootComponent = 'UnlockView'
+            // We have an easyReceipt, let's handle the cases of being a new user or an 
+            // existing user.
+            if (easyReceipt) {
+              if (!(profile && profile.credentials && profile.credentials.length)) {
+                // User received easySend, but has no wallets yet. 
+                // Skip to unlock view.
+                this.rootComponent = 'UnlockView'
+              } else {
+                // User is a normal user and needs to be thrown an easyReceive modal.
+                // TODO: THROW MODAL!  
+              }
             }
           }).catch((err) => {
             this.logger.warn("Error validating and saving easySend params: ", err)
           });
-        } 
+        }
       }).catch((err) => {
         this.logger.error(err);
       })
     });
 
-   }
+  }
 
   /*
      Upon loading the app (first time or later), we must
@@ -107,7 +116,7 @@ export class MeritLightWallet {
   */
   private initializeApp() {
     this.loadProfileAndEasySend();
-    
+
     if (this.platform.is('cordova')) {
       this.statusBar.styleLightContent();
       this.splashScreen.hide();
