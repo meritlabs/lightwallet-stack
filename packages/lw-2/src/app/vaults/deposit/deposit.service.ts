@@ -68,8 +68,10 @@ export class DepositService {
 
         const network = vault.address.network;
         console.log(network);
-        const masterKey = new this.bitcore.PublicKey(vault.masterPubKey, network);
-        const spendPubKey = new this.bitcore.PublicKey(vault.spendPubKey, network);
+        const masterKey = new this.bitcore.PublicKey(vault.masterPubKey, { network: network });
+        const spendPubKey = new this.bitcore.PublicKey(vault.spendPubKey, { network: network });
+
+        console.log(masterKey, spendPubKey);
 
         return wallet.prepareVault(0, {
           amount: amount,
@@ -80,12 +82,11 @@ export class DepositService {
       }
 
     private getTxp(vault, wallet, dryRun: boolean): Promise<any> {
-        return this.findFeeLevel(vault.amount).then((feeLevel) => {
-            if (vault.amount > Number.MAX_SAFE_INTEGER) {
-                return Promise.reject("The amount is too big.  Because, Javascript.");
-            }
+        if (vault.amount > Number.MAX_SAFE_INTEGER) {
+            return Promise.reject("The amount is too big.  Because, Javascript.");
+        }
 
-            let txp = {
+        let txp = {
             outputs: [{
                 'toAddress': vault.address.toString(),
                 'script': vault.scriptPubKey.toBuffer().toString('hex'),
@@ -93,16 +94,11 @@ export class DepositService {
             addressType: 'PP2SH',
             inputs: null, //Let merit wallet service figure out the inputs based
                             //on the selected wallet.
-            feeLevel: feeLevel,
+            feeLevel: null,
             excludeUnconfirmedUtxos: true,
             dryRun: dryRun,
-            };
-            return this.walletService.createTx(wallet, txp);
-        });
-    }
-
-    private findFeeLevel(amount: number) : Promise<any> {
-        return Promise.resolve(null);
+        };
+        return this.walletService.createTx(wallet, txp);
     }
 
 }
