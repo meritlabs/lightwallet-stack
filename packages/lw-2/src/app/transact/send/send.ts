@@ -11,7 +11,9 @@ import { Logger } from 'merit/core/logger';
 
 import * as _ from 'lodash';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
-import { AddressBook, MeritContact, emptyMeritContact, Searchable } from 'merit/shared/address-book/contact/contact.model';
+import { emptyMeritContact, Searchable } from 'merit/shared/address-book/contact/contact.model';
+import { AddressBook, MeritContact } from 'merit/shared/address-book/merit-contact.model';
+import { MeritClient } from 'src/lib/merit-wallet-client/lib';
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
@@ -28,11 +30,10 @@ export class SendView {
   private walletsToTransfer: Array<any>; // Eventually array of wallets
   private showTransferCard: boolean;
   private wallets: Array<MeritWalletClient>;
-  private originalContacts: Array<MeritContact>;
-  private deviceContacts: Array<any>; // On your phone or mobile device.
+  private contacts: Array<MeritContact>;
   private currentContactsPage = 0;
   private showMoreContacts: boolean = false;
-  private filteredList: Array<MeritContact>; 
+  private filteredContacts: Array<MeritContact>; 
   private formData: { 
     search: string
   };
@@ -62,10 +63,11 @@ export class SendView {
 
   async ionViewDidLoad() {
     await this.updateHasFunds().then(() => {
-      this.originalContacts = [];
+      this.contacts = [];
       this.initList();
-      this.initContactList();
-      return this.initDeviceContacts();
+      return this.initContactList();
+    }).then(() => {
+      return this.updateFilteredContacts('');
     }).catch((err) => {
       return this.popupService.ionicAlert('SendView Error:', err.toString());
     });
@@ -99,96 +101,25 @@ export class SendView {
     });
   }
 
-  private addressBookToContactList(ab: AddressBook): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      let cl = _.map(ab, (v:any, k) => {
-        let item:any = {
-          name: _.isObject(v) ? v.name : v,
-          meritAddress: k,
-          email: _.isObject(v) ? v.email : null,
-          phoneNumber: _.isObject(v) ? v.phoneNumber : null,
-          sendMethod: 'address',
-        };
-        item.searchTerm = item.name + item.email + item.phoneNumber;
-        return item;
-      });
-      resolve(cl);
-    });
-  };
-
   private initContactList(): Promise<void> {
-    return this.addressBookService.list(this.network).then((ab) => {
-      this.hasContacts = !_.isEmpty(ab);
+    return this.addressBookService.getAllMeritContacts().then((contacts) => {
+      this.hasContacts = !_.isEmpty(contacts);
 
-      return this.addressBookToContactList(ab).then((completeContacts) => {
-        this.originalContacts = this.originalContacts.concat(completeContacts);
-        this.showMoreContacts = completeContacts.length > SendView.CONTACTS_SHOW_LIMIT;
-      });
+      this.contacts = this.contacts.concat(contacts);
+      this.showMoreContacts = contacts.length > SendView.CONTACTS_SHOW_LIMIT;
     });
   }
-
-  private initDeviceContacts(): Promise<any> {
-
-    return this.addressBookService.getAllDeviceContacts().then((contacts) => {
-      contacts = _.filter(contacts, (contact) => {
-        return !(_.isEmpty(contact.emails) && _.isEmpty(contact.phoneNumbers));
-      });
-      this.deviceContacts = _.map(contacts, (contact) => {
-        var item:any = {
-          name: contact.name.formatted,
-          emails: _.map(contact.emails, (email)  => email.value),
-          phoneNumbers: _.map(contact.phoneNumbers, (phoneNumber) => phoneNumber.value),
-          address: '',
-        };
-        item.searchTerm = item.name + _.sum(item.emails.concat(item.phoneNumbers));
-        return item;
-      });
- 
-    });
-  } 
   
   private initList():void {
-    this.filteredList = [];
+    this.filteredContacts = [];
     
     // TODO: Resize this in the best-practices ionic3 wya.  
     //this.content.resize();  
     //TODO: Lifecycle tick if needed
   }
-
-  private findMatchingContacts<T extends Searchable>(list: T[], term: string): T[] {
-    return _.filter(list, (item) => {
-      return _.includes(item.searchTerm.toLowerCase(), term.toLowerCase());
-    });
-  }
-
-  private contactWithSendMethod(contact, search: string): MeritContact {
-    let obj = _.clone(contact);
-
-    let email = _.find(obj.emails, (x: string) => {
-      return _.includes(x.toLowerCase(), search.toLowerCase());
-    });
-    if (email) {
-      obj.email = email;
-      obj.phoneNumber = _.find(obj.phoneNumbers) || '';
-      obj.sendMethod = 'email';
-      return obj;
-    }
-
-    let phoneNumber = _.find(obj.phoneNumbers, (x: string) => {
-      return _.includes(x.toLowerCase(), search.toLowerCase());
-    });
-    if (phoneNumber) {
-      obj.phoneNumber = phoneNumber;
-      obj.email = _.find(obj.emails) || '';
-      obj.sendMethod = 'sms';
-      return obj;
-    }
-
-    // search matched name, default to sms?
-    obj.email = _.find(obj.emails) || '';
-    obj.phoneNumber = _.find(obj.phoneNumbers) || '';
-    obj.sendMethod = obj.phoneNumber ? 'sms' : 'email';
-    return obj;
+  private maybeEmail(contact: MeritContact): string {
+    if (contact.emails.length < 1) return '';
+    return contact.emails[0].value;
   }
 
   private couldBeEmail(search: string): boolean {
@@ -201,37 +132,37 @@ export class SendView {
   }
 
   private contactFromSearchTerm(term: string): MeritContact | null {
-    if(this.couldBeEmail(term)) {
-      let tempContact = this.justEmail(term);
-      tempContact.name = `Send an email to ${term}`;
-      return tempContact;
-    }
-    if(this.couldBePhoneNumber(term)) {
-      let tempContact = this.justPhoneNumber(term);
-      tempContact.name = `Send an sms to ${term}`;
-      return tempContact;
-    }
+    if(this.couldBeEmail(term)) return this.justEmail(term);
+    if(this.couldBePhoneNumber(term)) return this.justPhoneNumber(term);
     return null;
   }
 
-  private emptyContact = emptyMeritContact();
-
   private justMeritAddress(meritAddress: string): MeritContact {
-    return _.defaults({meritAddress: meritAddress, sendMethod: 'address'}, this.emptyContact);
+    let contact = new MeritContact(null);
+    contact.name.formatted = meritAddress;
+    contact.meritAddresses.push({
+      network: this.network,
+      address: meritAddress
+    });
+    return contact;
   }
 
   private justPhoneNumber(phoneNumber: string): MeritContact {
-    return _.defaults({phoneNumber: phoneNumber, sendMethod: 'sms'}, this.emptyContact);
+    let contact = new MeritContact(null);
+    contact.name.formatted = `Send an SMS to ${phoneNumber}`;
+    return contact;
   }
 
   private justEmail(email: string): MeritContact {
-    return _.defaults({email: email, sendMethod: 'email'}, this.emptyContact);
+    let contact = new MeritContact(null);
+    contact.name.formatted = `Send an email to ${email}`;
+    return contact;
   }
 
   private openScanner(): void {
     let modal = this.modalCtrl.create('ImportScanView');
     modal.onDidDismiss((code) => {
-        this.findContact(code); 
+        this.updateFilteredContacts(code); 
     });
     modal.present();
   }
@@ -251,7 +182,7 @@ export class SendView {
     }
   }
 
-  private findContact(search: string): any {
+  private updateFilteredContacts(search: string): void {
 
     // TODO: Improve to be more resilient.
     if(search && search.length > 19) {
@@ -271,20 +202,10 @@ export class SendView {
       })
     }
 
-    this.logger.debug("Inside FindContact");
-    if (!search || search.length < 1) {
-      this.filteredList = [];
-      return;
-    }
-
-    var result = this.findMatchingContacts(this.originalContacts, search);
-    var deviceResult = this.findMatchingContacts(this.deviceContacts, search);
-    this.filteredList = result.concat(_.map(deviceResult, (contact) => {
-      return this.contactWithSendMethod(contact, search);
-    }));
-    if(this.filteredList.length < 1) {
+    this.filteredContacts = this.addressBookService.searchContacts(this.contacts, search);
+    if(this.filteredContacts.length < 1) {
       let tempContact = this.contactFromSearchTerm(search);
-      if(tempContact) this.filteredList.unshift(tempContact);
+      if(tempContact) this.filteredContacts.unshift(tempContact);
     }
 
   }
