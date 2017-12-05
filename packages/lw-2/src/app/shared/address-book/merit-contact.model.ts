@@ -1,6 +1,8 @@
 let Bitcore = require('bitcore-lib');
 
 import { Contact, IContactProperties, IContactName, IContactField } from '@ionic-native/contacts';
+export interface AddressBook { [key:string]:MeritContact; }
+
 
 export class MeritContact implements IContactProperties {
 
