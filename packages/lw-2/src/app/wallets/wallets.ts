@@ -127,18 +127,18 @@ export class WalletsView {
         return this.profileService.getTxps({limit: 3});
       }).then((txps) => {
         this.txpsData = txps;
-        if (this.configService.get().recentTransactions.enabled) {
-          this.recentTransactionsEnabled = true;
-          return this.profileService.getNotifications({limit: 3}).then((notifications) => {
-            this.recentTransactionsData = notifications;
-          });
-        }
-      }).then(() => {
         return this.vaultsService.getVaults(_.head(this.wallets));
       }).then((vaults) => {
         this.logger.info('getting vaults', vaults);
         this.vaults = vaults;
-        return resolve();
+
+        if (this.configService.get().recentTransactions.enabled) {
+          this.recentTransactionsEnabled = true;
+          this.profileService.getNotifications({limit: 3}).then((notifications) => {
+            this.recentTransactionsData = notifications;
+          });
+        }
+        return Promise.resolve();
       }).catch((err) => {
         this.logger.info("@@ERROR IN Updating statuses.");
         this.logger.info(err);
