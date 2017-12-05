@@ -15,36 +15,36 @@
         <div class="item input search-wrapper" [class.focus]="searchFocus">
           <i class="icon icon-svg abs-v-center">
               <!--<img class="svg" src="assets/img/merit.svg" style="height: 30px; width: 30px; background: green">          -->
-              <i class="merit-icon-merit"></i>
+              <!-- <i class="merit-icon-merit"></i> -->
           </i>
           <ion-item class="item-icon-right">
             <ion-input type="text" class="search-input" placeholder="Search or enter merit address" 
-            [(ngModel)]="formData.search" (ionChange)="findContact(formData.search)" 
-             (focus)="searchInFocus()" (blur)="searchBlurred()"></ion-input> 
-             <button (click)="openScanner()" ion-button icon-only item-right clear>
-                <ion-icon name="qr-scanner"  color="primary"></ion-icon>
-             </button> 
+              [(ngModel)]="formData.search"
+              (ionChange)="updateFilteredContacts(formData.search)" 
+              (focus)="searchInFocus()" (blur)="searchBlurred()"></ion-input> 
+            <button (click)="openScanner()" ion-button icon-only item-right clear>
+              <ion-icon name="qr-scanner"  color="primary"></ion-icon>
+            </button> 
           </ion-item>
           </div>
       </div>
     </div>
 
 
-    <div class="list" *ngIf="false">
-
-      <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList" (click)="goToAmount(item)">
-        <i class="icon big-icon-svg">
-         <gravatar class="send-gravatar" [name]="item.name" width="30" height="30" [email]="item.emails ? item.emails[0] : item.email" ></gravatar>
-        </i>  
-        {{item.name}}
-        <i class="icon bp-arrow-right"></i>
-      </a>
+    <ion-list>
+      <ion-item *ngFor="let contact of filteredContacts" (click)="goToAmount(contact)">
+        <ion-avatar class="icon big-icon-svg" item-start>
+          <gravatar class="send-gravatar" [name]="contact.name.formatted" width="30" height="30" [email]="maybeEmail(contact)" ></gravatar>
+        </ion-avatar>  
+        {{contact.name.formatted}}
+        <img item-right src="assets/img/16x16.png" *ngIf="contact.meritAddresses.length">
+      </ion-item>
       <div class="show-more" *ngIf="contactsShowMore" (click)="showMore()" translate>
         Show more
       </div>
-    </div>
+    </ion-list>
 
-    <div class="list" *ngIf="false">
+    <div *ngIf="false">
       <div *ngIf="!checkingBalance && (!hasFunds || !hasWallets)">
         <div class="card sendTip">
           <div class="item item-icon-right item-heading"></div>
@@ -84,7 +84,7 @@
         <div class="item item-heading">
           <span translate>Transfer to Wallet</span>
         </div>
-        <div class="list" *ngIf="hasWallets">
+        <div *ngIf="hasWallets">
           <a class="item item-icon-left item-icon-right" *ngFor="let item of filteredList"
             (click)="goToAmount(item)">
           <i class="icon big-icon-svg" *ngIf="item.recipientType == 'wallet'">

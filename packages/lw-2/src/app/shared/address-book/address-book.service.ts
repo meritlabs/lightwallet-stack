@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { PersistenceService } from 'merit/core/persistence.service';
 
 import { Contacts, Contact, ContactFieldType, IContactFindOptions } from '@ionic-native/contacts';
-import { MeritContact, AddressBook } from 'merit/shared/address-book/contact/contact.model';
+import { MeritContact, AddressBook } from 'merit/shared/address-book/merit-contact.model';
 import { PlatformService } from 'merit/core/platform.service';
 
 /**
@@ -38,7 +38,7 @@ export class AddressBookService {
     });
   };
 
-  public searchContacts(term: string): Promise<Contact[]> {
+  public searchDeviceContacts(term: string): Promise<Contact[]> {
     let options: IContactFindOptions = {filter: term, multiple: true};
     let fields: ContactFieldType[] = ['name', 'phoneNumbers', 'emails'];
 
@@ -50,24 +50,40 @@ export class AddressBookService {
   };
 
   public getAllDeviceContacts(): Promise<Contact[]> {
-  //public getAllDeviceContacts(): Promise<any> {
-    //let array = [{
-    //  name: {formatted: 'Test'},
-    //  phoneNumbers: [{type: 'test', value: '123', pref: false}],
-    //  emails: [{type: 'test', value: 't@t', pref: false}],
-    //  photos: [],
-    //  urls: []
-    //}];
-    //console.log("ARRAY", array);
-    //return Promise.resolve(array);
-    return this.searchContacts('');
+    return this.searchDeviceContacts('');
+  }
+
+  public searchContacts(contacts: MeritContact[], searchQuery: string): MeritContact[] {
+    let exp = new RegExp(searchQuery, 'ig');
+    return _.filter(contacts, (contact) => {
+
+      if (contact.name.formatted.match(exp)) return true;
+      if (_.some(contact.emails, (email) => email.value.match(exp))) return true;
+      if (_.some(contact.phoneNumbers, (phoneNumber) => phoneNumber.value.match(exp))) return true;
+      if (_.some(contact.meritAddresses, (address) => address.address.match(exp))) return true;
+
+      return false;
+
+    });
+  }
+
+  public getAllMeritContacts(): Promise<MeritContact[]> {
+    return this.getAllDeviceContacts().then((deviceContacts) => {
+      return _.map(deviceContacts, (contact) => new MeritContact(contact)).sort((a,b) => {
+        if ((a.meritAddresses.length && b.meritAddresses.length) || (a.meritAddresses.length && b.meritAddresses.length)) {
+          return a.name.formatted > b.name.formatted ? 1 : -1;
+        } else {
+          return a.meritAddresses.length ? -1 : 1;
+        }
+      });
+    });
   }
 
   public add(entry: MeritContact, network: string): Promise<AddressBook> {
     return new Promise((resolve, reject) => {
       return this.getAddressbook(network).then((addressBook) => {
-        if (addressBook[entry.meritAddress]) return reject(new Error('contact already exists'));
-        addressBook[entry.meritAddress] = entry;
+        if (addressBook[entry.meritAddresses[0].address]) return reject(new Error('contact already exists'));
+        addressBook[entry.meritAddresses[0].address] = entry;
         return this.persistenceService.setAddressbook(network, addressBook).then(() => {
           return resolve();
         });
