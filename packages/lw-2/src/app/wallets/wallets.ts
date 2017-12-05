@@ -101,14 +101,7 @@ export class WalletsView {
   private updateAllInfo():Promise<any> {
 
     return new Promise((resolve, reject) => {
-      return this.appUpdateService.isUpdateAvailable().then((available) => {
-        this.newReleaseExists = available;
-        return this.feedbackService.isFeedBackNeeded();
-      }).then((feedbackNeeded) => {
-        this.feedbackNeeded = feedbackNeeded;
-        this.showFeaturesBlock = (feedbackNeeded || this.newReleaseExists);
-        return this.addressbookService.list('testnet');
-      }).then((addressBook) => {
+      return this.addressbookService.list('testnet').then((addressBook) => {
         this.addressbook = addressBook;
         return this.getWallets();
       }).then((wallets) => {
@@ -128,6 +121,16 @@ export class WalletsView {
         return this.profileService.getTxps({limit: 3});
       }).then((txps) => {
         this.txpsData = txps;
+        return this.vaultsService.getVaults(_.head(this.wallets));
+      }).then((vaults) => {
+        this.logger.info('getting vaults', vaults);
+        _.each(vaults, (vault) => {
+          vault.altAmount = this.rateService.toFiat(vault.amount, _.head(this.wallets).cachedStatus.alternativeIsoCode);
+          vault.altAmountStr = new FiatAmount(vault.altAmount);
+          vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
+        });
+        this.vaults = vaults;
+
         if (this.configService.get().recentTransactions.enabled) {
           this.recentTransactionsEnabled = true;
           return this.profileService.getNotifications({limit: 3}).then((notifications) => {
@@ -144,7 +147,7 @@ export class WalletsView {
           vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
         });
         this.vaults = vaults;
-        return resolve();
+        return Promise.resolve();
       }).catch((err) => {
         this.logger.info("@@ERROR IN Updating statuses.");
         this.logger.info(err);

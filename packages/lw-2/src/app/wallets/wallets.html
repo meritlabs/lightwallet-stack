@@ -17,34 +17,34 @@
         Features
     </ion-item-divider>
 
-    <span *ngIf="feedbackNeeded">
-        <ion-item  translate>
-            <ion-label>Please rate our app</ion-label>
-            <span item-right>
-                <button ion-button clear icon-only *ngFor="let mark of [1,2,3,4,5]" (click)="rateApp(mark)">
-                    <ion-icon name="md-star" *ngIf="feedbackData.mark >= mark"></ion-icon>
-                    <ion-icon name="md-star-outline" *ngIf="!feedbackData.mark || feedbackData.mark < mark"></ion-icon>
-                </button>
-            </span>
-        </ion-item>
+    <!--<span *ngIf="feedbackNeeded">-->
+        <!--<ion-item  translate>-->
+            <!--<ion-label>Please rate our app</ion-label>-->
+            <!--<span item-right>-->
+                <!--<button ion-button clear icon-only *ngFor="let mark of [1,2,3,4,5]" (click)="rateApp(mark)">-->
+                    <!--<ion-icon name="md-star" *ngIf="feedbackData.mark >= mark"></ion-icon>-->
+                    <!--<ion-icon name="md-star-outline" *ngIf="!feedbackData.mark || feedbackData.mark < mark"></ion-icon>-->
+                <!--</button>-->
+            <!--</span>-->
+        <!--</ion-item>-->
 
-        <span *ngIf="feedbackData?.mark">
-            <ion-item>
-                <textarea [(ngModel)]="feedbackData.text" [placeholder]="'Add a comment...'">
-                </textarea>
-            </ion-item>
-            <ion-item>
-                <button ion-button item-right clear (click)="cancelFeedback()" translate>Cancel</button>
-                <button ion-button item-right (click)="sendFeedback()" translate>Send</button>
-            </ion-item>
-        </span>
-    </span>
+        <!--<span *ngIf="feedbackData?.mark">-->
+            <!--<ion-item>-->
+                <!--<textarea [(ngModel)]="feedbackData.text" [placeholder]="'Add a comment...'">-->
+                <!--</textarea>-->
+            <!--</ion-item>-->
+            <!--<ion-item>-->
+                <!--<button ion-button item-right clear (click)="cancelFeedback()" translate>Cancel</button>-->
+                <!--<button ion-button item-right (click)="sendFeedback()" translate>Send</button>-->
+            <!--</ion-item>-->
+        <!--</span>-->
+    <!--</span>-->
 
 
-    <ion-item *ngIf="newReleaseExists" translate (click)="toLatestRelease()">
-        <ion-label translate>New version of app available!</ion-label>
-        <button ion-button clear item-right><ion-icon name="link"></ion-icon></button>
-    </ion-item>
+    <!--<ion-item *ngIf="newReleaseExists" translate (click)="toLatestRelease()">-->
+        <!--<ion-label translate>New version of app available!</ion-label>-->
+        <!--<button ion-button clear item-right><ion-icon name="link"></ion-icon></button>-->
+    <!--</ion-item>-->
 
 
     <ion-item-divider translate>
@@ -54,8 +54,6 @@
     <ion-list class="network">
         <ion-item>
             <ion-avatar item-start>
-                <!--<i class="wallet-icon default" item-start>-->
-                    <!--<img src="assets/img/icons/merit.svg">-->
                     <i class="merit-icon-merit"></i>
                 <!--</i>-->
             </ion-avatar>
@@ -108,6 +106,7 @@
         Wallets
     </ion-item-divider>
     <ion-list class="wallets">
+        <ion-spinner *ngIf="!wallets">Loading...</ion-spinner>
         <ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)" class="wallet">
 
             <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color" item-start>
