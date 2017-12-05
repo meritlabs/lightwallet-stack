@@ -1,12 +1,13 @@
+import * as _ from 'lodash';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
-//import { MeritContact, isValidMeritContact, emptyMeritContact } from "merit/shared/address-book/contact/contact.model";
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { Logger } from 'merit/core/logger';
 import { PopupService } from 'merit/core/popup.service';
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
 import { MeritContact } from "merit/shared/address-book/merit-contact.model";
+import { Contacts } from '@ionic-native/contacts';
 
 
 @IonicPage()
@@ -27,15 +28,19 @@ export class EditContactView {
     private logger: Logger,
     private popupService: PopupService,
     private modalCtrl:ModalController,
-    private toastCtrl:MeritToastController
+    private toastCtrl:MeritToastController,
+    private contacts:Contacts
   ) {
 
-    //this.originalContact = this.navParams.get('contact');
-    // editing available for those contacts only, that were added by user, so they have meritAddress
-    // if we work with contact from device, we are not editing it, but adding new MeritContact entity
-    //this.editMode = this.originalContact && this.originalContact.meritAddress;
-    //this.newContact = this.originalContact ? Object.assign({}, this.originalContact) : emptyMeritContact();
-    this.newContact = this.navParams.get('contact');
+    this.originalContact = this.navParams.get('contact');
+
+    if (this.originalContact) {
+      this.editMode = true;
+      this.newContact = MeritContact.fromAddressBookContact(JSON.parse(JSON.stringify(this.originalContact)));
+    } else {
+      this.newContact = new MeritContact();
+    }
+
     if (!this.newContact.meritAddresses.length) {
       this.newContact.meritAddresses.push({network: 'testnet', address: ''});
     }
@@ -61,6 +66,9 @@ export class EditContactView {
       if (address.address.indexOf('merit:') == 0) address.address = address.address.slice(6);
     });
 
+    this.newContact.emails = this.newContact.emails.filter((email) => { return (email.value != '') } );
+    this.newContact.phoneNumbers = this.newContact.phoneNumbers.filter((number) => { return (number.value != '') } );
+
     if (!this.newContact.isValid()) {
       return this.toastCtrl.create({
         message: 'Contact fields are not valid',
@@ -68,59 +76,96 @@ export class EditContactView {
       }).present();
     }
 
-    this.editContact();
-    //if (this.editMode) {
-    //  this.editContact();
-    //} else {
-    //  //this.addContact();
-    //}
+    let modify = this.editMode ? this.editContact() : this.addContact();
+    modify.then(() => {
+      this.originalContact = this.newContact;
+      this.navCtrl.pop();
+    }).catch((err) => {
+      return this.toastCtrl.create({
+        message: 'Error processing contact: ' + err.toString(),
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    });
 
   }
 
   addContact() {
-    //return this.addressBookService.add(this.newContact, 'testnet').then((addressBook) => {
-    //  this.logger.warn('added contact, addressBook in storage is:');
-    //  this.logger.warn(addressBook);
-    //  this.navCtrl.pop();
-    //}).catch((err) => {
-    //  return this.toastCtrl.create({
-    //    message: 'Error adding contact: '+err.toString(),
-    //    cssClass: ToastConfig.CLASS_ERROR
-    //  }).present();
-    //});
+
+      if (this.newContact.storeOnDevice) {
+        let contact = this.newContact.contacts.create();
+        contact.name = this.newContact.name;
+        contact.emails = this.newContact.emails;
+        contact.phoneNumbers = this.newContact.phoneNumbers;
+        contact.urls = this.newContact.urls;
+        return contact.save();
+      } else {
+        return this.addressBookService.add(this.newContact, 'testnet').then((addressBook) => {
+          this.logger.warn('added contact, addressBook in storage is:');
+          this.logger.warn(addressBook);
+        });
+      }
+
   }
 
   editContact() {
 
     if (this.newContact.storeOnDevice) {
-      let contact = this.newContact.nativeModel;
-      contact.phoneNumbers = this.newContact.phoneNumbers;
-      contact.emails = this.newContact.emails;
-      contact.urls = this.newContact.urls.filter((url) => {
-        if (url.type.indexOf('merit') == 0) return false;
+      return this.addressBookService.remove(this.originalContact.meritAddresses[0].address, 'testnet').then(() => {
+          let contact = this.newContact.nativeModel;
+          contact.phoneNumbers = this.newContact.phoneNumbers;
+          contact.emails = this.newContact.emails;
+          contact.urls = this.newContact.urls.filter((url) => {
+            if (url.type.indexOf('merit') == 0) return false;
+          });
+          this.newContact.meritAddresses.forEach((address) => {
+            //  //todo add network
+            contact.urls.push({value: 'merit:'+address.address+':testnet', type: 'other', pref: false, id: 1});
+          });
+          return contact.save();
       });
-      this.newContact.meritAddresses.forEach((address) => {
-        //  //todo add network
-        contact.urls.push({value: 'merit:'+address.address+':testnet', type: 'other', pref: false});
-      });
-      contact.save();
-      this.navCtrl.push('AddressBookView');
+    } else {
+      return this.addressBookService.remove(this.originalContact.meritAddresses[0].address, 'testnet').then(() => {
+        return this.addressBookService.add(this.newContact, 'testnet');
+      })
     }
 
-    //return this.addressBookService.remove(this.originalContact.meritAddress, 'testnet').then(() => {
-    //  return this.addressBookService.add(this.newContact, 'testnet').then((addressBook) => {
-    //    this.logger.warn('added contact, addressBook in storage is:');
-    //    this.logger.warn(addressBook);
-    //    this.originalContact = this.newContact;
-    //    this.navCtrl.push('AddressBookView');
-    //  });
-    //}).catch((err) => {
-    //  return this.toastCtrl.create({
-    //    message: 'Error editing contact: '+err.toString(),
-    //    cssClass: ToastConfig.CLASS_ERROR
-    //  }).present();
-    //});
+  }
 
+  isContactValid() {
+    return this.newContact.isValid();
+  }
+
+  getEmails() {
+    if (this.newContact.emails.length) {
+      return this.newContact.emails;
+    } else {
+      return [{type: 'email', value: ''}];
+    }
+  }
+
+  removeEmail() {
+    this.newContact.emails = this.newContact.emails.filter((e) => e.value != email.value);
+  }
+
+  addEmail() {
+    console.log('adding email');
+    this.newContact.emails.push({type: 'email', value: ''});
+  }
+
+  getPhones() {
+    if (this.newContact.phoneNumbers.length) {
+      return this.newContact.phoneNumbers;
+    } else {
+      return [{type: 'email', value: ''}];
+    }
+  }
+
+  addPhone() {
+    this.newContact.phoneNumbers.push({type: 'email', value: ''});
+  }
+
+  removePhone() {
+    this.newContact.phoneNumbers = this.newContact.phoneNumbers.filter((e) => e.value != phoneNumbers.value);
   }
 
 }

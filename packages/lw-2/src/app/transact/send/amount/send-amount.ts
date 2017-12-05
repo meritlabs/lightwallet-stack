@@ -1,8 +1,12 @@
 import { Component, HostListener } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
 import { Logger } from 'merit/core/logger';
+import { ProfileService } from "merit/core/profile.service";
+import { ConfigService } from "merit/shared/config.service";
+import { RateService } from 'merit/transact/rate.service';
+
 
 @IonicPage()
 @Component({
@@ -13,12 +17,17 @@ export class SendAmountView {
 
   public recipient: any;
   public amount: string;
+  public amountMerit: string;
   public smallFont: boolean;
   public allowSend: boolean;
   public globalResult: string;
   public sending: boolean;
   public displayName: string;
-  
+  public wallets:any;
+  public wallet:any;
+  public amountCurrency:string;
+
+
   private LENGTH_EXPRESSION_LIMIT = 19;
   private SMALL_FONT_SIZE_LIMIT = 10;
   private availableUnits: Array<any> = [];
@@ -29,7 +38,11 @@ export class SendAmountView {
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams, 
-    private log: Logger
+    private log: Logger,
+    private profileService:ProfileService,
+    private configService:ConfigService,
+    private modalCtrl:ModalController,
+    private rateService:RateService
   ) {
     this.amount = '';
     this.allowSend = false;
@@ -39,8 +52,50 @@ export class SendAmountView {
     console.log('Params', this.navParams.data);
     this.recipient = this.navParams.get('recipient');
     this.sending = this.navParams.get('sending');
-    this.displayName = !_.isEmpty(this.recipient.name) ? this.recipient.name : this.recipient.meritAddress;
+    this.displayName = !_.isEmpty(this.recipient.name) ? this.recipient.name.formatted : this.recipient.meritAddress;
+
+    this.profileService.getWallets().then((wallets) => {
+      this.wallets = wallets;
+      if (this.wallets && this.wallets[0]) {
+        this.wallet = this.wallets[0];
+      }
+    });
+
+    this.availableUnits = [
+      this.configService.get().wallet.settings.unitCode.toUpperCase(),
+      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
+    ];
+    this.amountCurrency = this.availableUnits[0];
   }
+
+  selectWallet() {
+    let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
+    modal.present();
+    modal.onDidDismiss((wallet) => {
+      if (wallet) this.wallet = wallet;
+    });
+  }
+
+  toggleCurrency() {
+    this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
+    this.changeAmount();
+  }
+
+  changeAmount() {
+
+    if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
+      this.amountMerit = this.amount;
+    } else {
+      this.amountMerit = this.rateService.fromFiat(this.amount, this.amountCurrency);
+    }
+  }
+
+  hasFunds() {
+    //todo implement
+    return true;
+  }
+
+
   
   @HostListener('document:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
     if (!event.key) return;

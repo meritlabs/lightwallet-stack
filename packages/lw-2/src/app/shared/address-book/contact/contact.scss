@@ -2,6 +2,35 @@ view-contact {
 
   text-align: center;
 
+  ion-header {
+    &:after {
+      display: none;
+    }
+    ion-navbar, .toolbar-background {
+      background: transparent;
+      border: none !important;
+    }
+  }
+
+  .scroll-content {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .contact-header {
+    height: 200px;
+    background: color($colors, secondary);
+    position: relative;
+    h4 {
+      color: color($colors, light);
+      text-align: center;
+      font-size: 24px;
+      position: absolute;
+      bottom: 25px;
+      width: 100%;
+    }
+  }
+
   ion-avatar {
     height: 60px;
     width: 60px;

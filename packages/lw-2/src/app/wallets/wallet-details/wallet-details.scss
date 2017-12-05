@@ -5,11 +5,15 @@ wallet-details-view {
     margin-top: 0 !important;
   }
 
-  .header {
+
+  ion-header {
     color: color($colors, light);
-    background: transparent;
-    .toolbar-background {
+    &:after {
+      display: none;
+    }
+    ion-navbar, .toolbar-background {
       background: transparent;
+      border: none !important;
     }
   }
 
