@@ -99,7 +99,9 @@ export class VaultDetailsView {
   }
 
   toDepositVault() {
-    this.navCtrl.push('VaultDepositAmountView', { vaultId: this.vault._id, vault: this.vault });
+    this.profileService.getHeadWalletClient().then((w) => {
+      this.navCtrl.push('VaultDepositAmountView', { vaultId: this.vault._id, vault: this.vault, wallet: w });
+    });
   }
 
   goToTxDetails(tx: any) {
