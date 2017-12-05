@@ -10,7 +10,7 @@ export class MeritContact implements IContactProperties {
   public phoneNumbers: IContactField[] = [];
   public emails: IContactField[] = [];
   public photos: IContactField[] = [];
-  public urls: IContactField[] = [];
+  public urls: Array<any> = [];
   public meritAddresses:Array<{network:string, address:string}> = [];
   public storeOnDevice:boolean = false;
 
@@ -31,11 +31,11 @@ export class MeritContact implements IContactProperties {
 
     self.nativeModel = contact;
     self.storeOnDevice = true;
-    self.name = contact.name;
-    self.phoneNumbers =  contact.phoneNumbers;
-    self.emails = contact.emails;
-    self.photos = contact.photos;
-    self.urls   = contact.urls;
+    self.name = contact.name || '';
+    self.phoneNumbers =  contact.phoneNumbers || [];
+    self.emails = contact.emails || [];
+    self.photos = contact.photos || [];
+    self.urls   = contact.urls || [];
     self.urls.forEach((url) => {
       if (url.value.indexOf('merit:') == 0) {
         let address = url.type.split(':')[1];
