@@ -15,6 +15,7 @@ import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 import { FeeService } from 'merit/shared/fee/fee.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { DepositService } from 'merit/vaults/deposit/deposit.service';
 
 /*
   ToDo: Work to get this lazy-loadable as possible. 

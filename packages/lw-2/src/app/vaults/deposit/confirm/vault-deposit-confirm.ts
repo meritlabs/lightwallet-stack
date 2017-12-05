@@ -11,6 +11,7 @@ import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
 import { FeeService } from 'merit/shared/fee/fee.service';
 import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 import { BwcService } from 'merit/core/bwc.service';
+import { DepositService } from 'merit/vaults/deposit/deposit.service';
 
 import * as  _  from 'lodash';
 import * as Promise from 'bluebird';
@@ -58,6 +59,7 @@ export class VaultDepositConfirmView {
     private loadingCtrl: LoadingController,
     private easySendService: EasySendService,
     private bwc: BwcService,
+    private depositService: DepositService,
   ) { 
     this.logger.info("Hello SendConfirm View");
     this.walletConfig = this.configService.get().wallet;
@@ -107,9 +109,9 @@ export class VaultDepositConfirmView {
   }
 
   private deposit() {
-    //return this.spendVaultService.spendVault(this.vault, spendKey,  this.txData.toAmount, recepient.pubKey).then(() => {
+    return this.depositService.depositToVault().then(() => {
       this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });    
-    // });
+    });
   }
 
   public toggleAddress() {
