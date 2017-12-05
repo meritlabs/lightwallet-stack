@@ -92,7 +92,7 @@ export class EditContactView {
   addContact() {
 
       if (this.newContact.storeOnDevice) {
-        let contact = this.newContact.contacts.create();
+        let contact = this.contacts.create();
         contact.name = this.newContact.name;
         contact.emails = this.newContact.emails;
         contact.phoneNumbers = this.newContact.phoneNumbers;
