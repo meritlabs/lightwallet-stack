@@ -821,13 +821,17 @@ export class API {
     if(type == 0) {
       let tag = opts.masterPubKey.toAddress().hashBuffer;
 
+      let whitelist = _.map(opts.whitelist, (e) => {
+        return Bitcore.Address.fromBuffer(e).hashBuffer;
+      });
+
       let params = [
         opts.spendPubKey.toBuffer(),
         opts.masterPubKey.toBuffer(),
       ];
 
-      params = params.concat(opts.whitelist);
-      params.push(Bitcore.Opcode.smallInt(opts.whitelist.length));
+      params = params.concat(whitelist);
+      params.push(Bitcore.Opcode.smallInt(whitelist.length));
       params.push(tag);
       params.push(Bitcore.Opcode.smallInt(type));
 
@@ -894,17 +898,19 @@ export class API {
       if(newVault.type == 0) {
         let tag = newVault.tag;
 
+        let whitelist = _.map(newVault.whitelist, (e) => {
+          return Bitcore.Address.fromBuffer(e).hashBuffer;
+        });
+
         let params = [
           new Bitcore.PublicKey(newVault.spendPubKey.publicKey, {network: network}).toBuffer(),
           new Bitcore.PublicKey(newVault.masterPubKey, {network: network}).toBuffer(),
         ];
 
-        params = params.concat(newVault.whitelist);
-        params.push(Bitcore.Opcode.smallInt(newVault.whitelist.length));
+        params = params.concat(whitelist);
+        params.push(Bitcore.Opcode.smallInt(whitelist.length));
         params.push(new Buffer(tag));
         params.push(Bitcore.Opcode.smallInt(newVault.type));
-
-        console.log(params);
 
         let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
 
@@ -977,15 +983,6 @@ export class API {
     if(selectedAmount < amount) throw Errors.INSUFFICIENT_FUNDS;
 
     let change = selectedAmount - amount;
-    console.log("AMOUNT");
-    console.log("amount", amount);
-    console.log("selected", selectedAmount);
-    console.log("change", change);
-    console.log("coins", coins);
-    console.log("spendKey.publicKey", spendKey.privateKey.publicKey);
-    console.log("network", network);
-    console.log("vault.spendKey", vault.spendPubKey);
-    console.log("vault.spendKey.pubkey", new Bitcore.PublicKey(vault.spendPubKey, {network: network}));
 
     let redeemScript = new Bitcore.Script(vault.redeemScript);
 
@@ -1002,8 +999,12 @@ export class API {
           new Bitcore.PublicKey(vault.masterPubKey, {network: network}).toBuffer(),
         ];
 
-        params = params.concat(vault.whitelist);
-        params.push(Bitcore.Opcode.smallInt(vault.whitelist.length));
+        let whitelist = _.map(vault.whitelist, (e) => {
+          return Bitcore.Address.fromBuffer(e).hashBuffer;
+        });
+
+        params = params.concat(whitelist);
+        params.push(Bitcore.Opcode.smallInt(whitelist.length));
         params.push(new Buffer(vault.tag));
         params.push(Bitcore.Opcode.smallInt(vault.type));
 
@@ -1015,7 +1016,6 @@ export class API {
         }));
 
         tx.fee(fee * 10);
-        console.log('fee', fee * 10, DEFAULT_FEE);
 
         _.each(selectedCoins, (coin) => {
           tx.addInput(
