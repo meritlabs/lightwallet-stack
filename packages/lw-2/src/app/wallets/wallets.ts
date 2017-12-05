@@ -21,7 +21,7 @@ import { AddressBookService } from "merit/shared/address-book/address-book.servi
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
-
+import { RateService } from 'merit/transact/rate.service';
 
 
 /* 
@@ -75,7 +75,8 @@ export class WalletsView {
     private addressbookService:AddressBookService,
     private vaultsService: VaultsService,
     private applicationRef: ApplicationRef, 
-    private zone: NgZone
+    private zone: NgZone,
+    private rateService: RateService
   ) {
     this.logger.warn("Hellop WalletsView!");
   }
@@ -130,6 +131,11 @@ export class WalletsView {
         return this.vaultsService.getVaults(_.head(this.wallets));
       }).then((vaults) => {
         this.logger.info('getting vaults', vaults);
+        _.each(vaults, (vault) => {
+          vault.altAmount = this.rateService.toFiat(vault.amount, _.head(this.wallets).cachedStatus.alternativeIsoCode);
+          vault.altAmountStr = new FiatAmount(vault.altAmount);
+          vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
+        });
         this.vaults = vaults;
 
         if (this.configService.get().recentTransactions.enabled) {
