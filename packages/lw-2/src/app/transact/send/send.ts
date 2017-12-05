@@ -286,6 +286,7 @@ export class SendView {
       let tempContact = this.contactFromSearchTerm(search);
       if(tempContact) this.filteredList.unshift(tempContact);
     }
+
   }
 
   private goToAmount(item) {

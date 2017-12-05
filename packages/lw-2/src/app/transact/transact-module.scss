@@ -1,6 +1,3 @@
-$wallet-default-color: #068cca;
-$wallet-locked-color: #999;
-
 %module-transact {
 
   .wallet-icon {
@@ -12,13 +9,6 @@ $wallet-locked-color: #999;
         height: 20px;
         background: white;
       }
-    //img {
-    //  height: 36px;
-    //  border-radius: 4px;
-    //  box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 12px 0px;
-    //  padding: 4px 8px;
-    //  vertical-align: middle;
-    //}
     &.default {
       background: $wallet-default-color;
     }

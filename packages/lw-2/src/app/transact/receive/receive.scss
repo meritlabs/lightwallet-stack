@@ -77,6 +77,23 @@ view-receive {
   }
 
 
+  .wallet-icon {
+    height: 25px !important;
+    line-height: 25px !important;
+    margin: 0 4px;
+    padding: 0 !important;
+    width: 40px;
+    vertical-align: middle;
+    img {
+      //height: 25px !important;
+      //line-height: 25px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      vertical-align: middle;
+    }
+
+  }
+
 
 
 }
