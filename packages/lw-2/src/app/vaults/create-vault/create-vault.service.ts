@@ -53,18 +53,18 @@ export class CreateVaultService {
       
   }
 
-  vaultFromModel(spendPubKey: any, whitelistedAddresses: Array<any>): Promise<any> {
+  private vaultFromModel(spendPubKey: any, whitelistedAddresses: Array<any>): Promise<any> {
     //currently only supports type 0 which is a whitelisted vault.
     const amount = this.bitcore.Unit.fromMRT(parseFloat(this.model.amountToDeposit)).toMicros();
     return Promise.map(whitelistedAddresses, (w: any) => {
       let address; 
       if (w.type == 'wallet') {
-        this.bitcore.HDPublicKey.fromString(w.pubKey).publicKey.toAddress();
+        this.bitcore.HDPublicKey.fromString(w.address).publicKey.toAddress();
         address = this.walletClient.createAddress().then((resp) => {
           return this.bitcore.Address.fromString(resp.address);
         });
       } else {
-        address = Promise.resolve(this.bitcore.Address.fromString(w.pubKey));
+        address = Promise.resolve(this.bitcore.Address.fromString(w.address));
       }
       return address;
     }).then((addrs) => {

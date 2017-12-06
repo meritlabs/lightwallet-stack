@@ -79,7 +79,7 @@ export class VaultSpendConfirmView {
     console.log('vault', this.vault);
 
     this.txData = {
-      toAddress:  this.recipient.pubKey,
+      toAddress:  this.recipient.address,
       txp: {},
       toName: this.recipient.name || '',
       toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
@@ -122,7 +122,7 @@ export class VaultSpendConfirmView {
 
     const recepient = this.navParams.get('recipient');
 
-    return this.spendVaultService.spendVault(this.vault, spendKey,  this.txData.toAmount, recepient.pubKey).then(() => {
+    return this.spendVaultService.spendVault(this.vault, spendKey,  this.txData.toAmount, recepient.address).then(() => {
       this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });    
     });
   }

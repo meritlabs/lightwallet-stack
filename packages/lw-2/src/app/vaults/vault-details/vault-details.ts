@@ -61,32 +61,33 @@ export class VaultDetailsView {
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
-          const key = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
-          return { 'id': w.id, 'name': name, 'pubKey': key, 'type': 'wallet', walletClient: w };
+          const addr = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
+          return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet', walletClient: w };
         });
       }),
       // fetch users vaults
       this.getAllVaults().then((vaults) => {
         return _.map(vaults, (v) => {
           const name = v.name || v._id;
-          const key = new this.bitcore.Address(v.address).toString();
-          return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' };
+          const addr = new this.bitcore.Address(v.address).toString();
+          return { 'id': v._id, 'name': name, 'address': addr, 'type': 'vault' };
         });
       }),
       // fetch coins
     ]).then((arr: Array<Array<any>>) => {
       const whitelistCandidates = _.flatten(arr);
       let results = [];
+
       return Promise.map(this.vault.whitelist, (wl) => {
         return Promise.map(whitelistCandidates, (candidate) => {
           if (candidate.type === 'vault') {
-            if(wl == candidate.pubKey) results.push(candidate);
+            if(wl == candidate.address) results.push(candidate);
           } else { 
             return candidate.walletClient.getMainAddresses({}).then((addresses: Array<any>) => {
               let found = _.find(addresses, (e: any) => { return e.address == wl});
               if(found) 
               {
-                candidate.pubKey = wl;
+                candidate.address = wl;
                 results.push(candidate);
               }
               return Promise.resolve();
