@@ -92,14 +92,14 @@ export class SendAmountView {
         return _.defaults({
           sendMethod: 'email',
           email: emailObj.value,
-          label: `Email ${emailObj.value}`
+          label: `Email:  ${emailObj.value}`
         }, empty);
       }),
       _.map(this.contact.phoneNumbers, (phoneNumberObj) => {
         return _.defaults({
           sendMethod: 'sms',
           phoneNumber: phoneNumberObj.value,
-          label: `SMS ${phoneNumberObj.value}`
+          label: `SMS:  ${phoneNumberObj.value}`
         }, empty);
       })
     );
@@ -111,6 +111,17 @@ export class SendAmountView {
     modal.present();
     modal.onDidDismiss((wallet) => {
       if (wallet) this.wallet = wallet;
+    });
+  }
+
+  selectSendingOption() {
+    let modal = this.modalCtrl.create('SelectSendingOptionModal', {
+      selectedSendingOption: this.recipient,
+      sendingOptions: this.sendingOptions
+    });
+    modal.present();
+    modal.onDidDismiss((recipient) => {
+      if(recipient) this.recipient = recipient;
     });
   }
 
