@@ -137,7 +137,7 @@ export class WalletsView {
             this.recentTransactionsData = notifications;
           });
         }
-        return Promise.resolve(); 
+        return Promise.resolve();
       }).catch((err) => {
         this.logger.info("@@ERROR IN Updating statuses.");
         this.logger.info(err);

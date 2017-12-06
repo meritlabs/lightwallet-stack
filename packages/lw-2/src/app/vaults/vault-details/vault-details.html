@@ -6,33 +6,36 @@
 
 <ion-content>
 
-    <div class="balance-header">
-        <div class="balance-str">{{ vault.amountStr }}</div>
-        <div class="balance-alt-str"> {{ vault.altAmountStr.amountStr }}</div>
-        <div *ngIf="vault.status == 'pending'" class="assertive">
-            <span translate>Pending</span>
+    <ion-list>
+        <div class="balance-header">
+            <div class="balance-str">{{ vault.amountStr }}</div>
+            <div class="balance-alt-str"> {{ vault.altAmountStr.amountStr }}</div>
+            <div *ngIf="vault.status == 'pending'" class="assertive">
+                <span translate>Pending</span>
+            </div>
+            <div class="vault-actions">
+                <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()">
+                    Reset
+                </button>
+            </div>
         </div>
-        <div class="vault-actions">
-            <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()">
-                Reset
-            </button>
-        </div>
-    </div>
+    </ion-list>
 
     <ion-list>
-        <ion-item class="vault-item" *ngFor="let address of whitelist">
-            <ion-label class="whitelist-item">
-                <i class="wallet-icon" item-start *ngIf="address.type == 'vault'">
-                    <img src="assets/img/icon-lock-white.svg" >
-                </i>
-                <i class="wallet-icon" item-start *ngIf="address.type == 'wallet'">
-                    <img src="assets/img/icon-wallet.svg" >
-                </i>
-                <p>
-                    {{ address.name }} <span class="wallet-type">({{ address.type }})</span>
-                </p>
-            </ion-label>
-        </ion-item>
+        <button ion-item *ngFor="let address of whitelist" (click)="spendToAddress(address)">
+            <ion-avatar item-start class="btn whitelist-icon" item-start *ngIf="address.type == 'wallet'">
+                <img src="assets/img/icon-wallet.svg">
+            </ion-avatar>
+            <ion-avatar item-start class="btn whitelist-icon" item-start *ngIf="address.type == 'vault'">
+                <ion-icon name="lock"></ion-icon>
+            </ion-avatar>
+            <p>
+                {{ address.name }} <span class="wallet-type">({{ address.type }})</span>
+            </p>   
+            <div class="spend" item-end>
+                Transfer To
+            </div>
+        </button>
     </ion-list>
 
     <ion-list>
