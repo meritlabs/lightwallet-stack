@@ -29,6 +29,8 @@ export class SendAmountView {
   public wallets:any;
   public wallet:any;
   public amountCurrency:string;
+  public loading:boolean;
+  public hasFunds:boolean;
 
 
   private LENGTH_EXPRESSION_LIMIT = 19;
@@ -53,23 +55,28 @@ export class SendAmountView {
   
   ionViewDidLoad() {
     console.log('Params', this.navParams.data);
-    this.contact = this.navParams.get('contact');
-    this.sending = this.navParams.get('sending');
-    this.displayName = !_.isEmpty(this.contact.name) ? this.contact.name.formatted : this.contact.meritAddresses[0].address;
-    this.populateSendingOptions();
+    this.loading = true;
+    return this.profileService.hasFunds().then((hasFunds) => {
+      this.hasFunds = hasFunds;
+      this.contact = this.navParams.get('contact');
+      this.sending = this.navParams.get('sending');
+      this.displayName = !_.isEmpty(this.contact.name) ? this.contact.name.formatted : this.contact.meritAddresses[0].address;
+      this.populateSendingOptions();
 
-    this.profileService.getWallets().then((wallets) => {
-      this.wallets = wallets;
-      if (this.wallets && this.wallets[0]) {
-        this.wallet = this.wallets[0];
-      }
+      this.profileService.getWallets().then((wallets) => {
+        this.wallets = wallets;
+        if (this.wallets && this.wallets[0]) {
+          this.wallet = this.wallets[0];
+        }
+        this.loading = false;
+      });
+
+      this.availableUnits = [
+        this.configService.get().wallet.settings.unitCode.toUpperCase(),
+        this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
+      ];
+      this.amountCurrency = this.availableUnits[0];
     });
-
-    this.availableUnits = [
-      this.configService.get().wallet.settings.unitCode.toUpperCase(),
-      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
-    ];
-    this.amountCurrency = this.availableUnits[0];
   }
 
   populateSendingOptions() {
@@ -139,12 +146,6 @@ export class SendAmountView {
     }
   }
 
-  hasFunds() {
-    //todo implement
-    return true;
-  }
-
-
   
   @HostListener('document:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
     if (!event.key) return;
@@ -164,7 +165,7 @@ export class SendAmountView {
 
   pushDigit(digit: string) {
     if (this.amount && this.amount.length >= this.LENGTH_EXPRESSION_LIMIT) return;
-    if (this.amount.indexOf('.') > -1 && digit == '.') return;
+    if (this.amount.toString().indexOf('.') > -1 && digit == '.') return;
     // TODO: next line - Need: isFiat
     //if (this.availableUnits[this.unitIndex].isFiat && this.amount.indexOf('.') > -1 && this.amount[this.amount.indexOf('.') + 2]) return;
 

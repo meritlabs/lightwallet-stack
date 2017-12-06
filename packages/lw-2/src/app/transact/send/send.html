@@ -23,15 +23,15 @@
     <ion-item-divider>
         Send to
     </ion-item-divider>
-    <ion-list>
-        <ion-item *ngFor="let contact of renderingContacts" (click)="goToAmount(contact)">
-            <ion-avatar class="icon big-icon-svg" item-start>
-                <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
-                <gravatar class="send-gravatar" [name]="contact.name.formatted" width="30" height="30" [email]="maybeEmail(contact)"></gravatar>
-            </ion-avatar>
-            {{contact.name.formatted}}
-            <img item-right src="assets/img/16x16.png" *ngIf="contact.meritAddresses.length">
-        </ion-item>
+    <ion-list *ngIf="filteredContacts">
+      <ion-item *ngFor="let contact of renderingContacts" (click)="goToAmount(contact)">
+        <ion-avatar class="icon big-icon-svg" item-start>
+            <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
+            <gravatar class="send-gravatar" [name]="contact.name.formatted" width="30" height="30" [email]="maybeEmail(contact)" *ngIf="!contact.photos.length"></gravatar>
+        </ion-avatar>  
+        {{contact.name.formatted}}
+        <img item-right src="assets/img/16x16.png" *ngIf="contact.meritAddresses.length">
+      </ion-item>
     </ion-list>
     <ion-infinite-scroll (ionInfinite)="renderMoreContacts($event)" *ngIf="filteredContacts && filteredContacts.length > contactsOffset+contactsLimit">
         <div text-center>

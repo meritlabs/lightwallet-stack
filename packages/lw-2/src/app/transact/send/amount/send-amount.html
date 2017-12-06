@@ -8,63 +8,58 @@
 
 
 <ion-content>
-    <ion-item-divider>
-        Recipient
-    </ion-item-divider>
-    <ion-list>
-        <ion-item>
-            <ion-icon name="contact" item-left></ion-icon>
-            <span>{{ displayName }}</span>
-        </ion-item>
-    </ion-list>
-</ion-content>
 
 
-<ion-footer>
-    <ion-toolbar>
+    <span *ngIf="wallet && hasFunds" margin-top>
 
-        <ion-item *ngIf="!wallet">
-            <ion-label translate>You don't have any wallet</ion-label>
-        </ion-item>
-
-        <ion-item *ngIf="!hasFunds()">
-            <ion-label translate>TODO: show BUY MERIT buttons</ion-label>
-        </ion-item>
-
-        <span *ngIf="wallet">
-
-            <div class="row">
-                <span class="label" text-left>Amount</span>
-                <input type="number" text-right pattern="[0-9\.]"
-                    [style.flex]="1" 
-                    [(ngModel)]="amount"
-                    (ngModelChange)="changeAmount()"
-                    [placeholder]="'Sending amount'">
-                <button ion-button clear color="primary" (click)="toggleCurrency()">
-                    {{amountCurrency}}
-                </button>
-            </div>
-
-            <div class="row">
-                <span text-left class="label">Send via</span>
-                <span item-right text-right [style.flex]="1" (click)="selectSendingOption()">
-                    {{recipient.label}}
-                </span>
-            </div>
-
-            <div class="label" class="row" (click)="selectWallet()">
-                <span text-left class="label">Wallet</span>
-                <span item-right text-right [style.flex]="1">
-                    {{wallet.name || wallet._id}}
-                    <button ion-button icon-only clear color="primary" class="wallet-button">
-                        <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
-                            <img src="assets/img/icon-wallet.svg">
-                        </i>
-                    </button>
-                </span>
-            </div>
-
+        <span class="row">
+            <span class="label" text-left>Recipient</span>
+            <span text-right [style.flex]="1" padding-right >{{ displayName }}</span>
         </span>
 
-    </ion-toolbar>
-</ion-footer>
+        <div class="row">
+            <span class="label" text-left>Amount</span>
+            <input type="number" text-right pattern="[0-9\.]"
+                   [style.flex]="1"
+                   [(ngModel)]="amount"
+                   (ngModelChange)="changeAmount()"
+                   [placeholder]="'Sending amount'">
+            <button ion-button clear color="primary" (click)="toggleCurrency()">
+                {{amountCurrency}}
+            </button>
+        </div>
+
+        <div class="row">
+            <span text-left class="label">Send via</span>
+            <span item-right text-right [style.flex]="1" (click)="selectSendingOption()" padding-right>
+                {{recipient.label}}
+            </span>
+        </div>
+
+        <div class="label" class="row" (click)="selectWallet()">
+            <span text-left class="label">From</span>
+            <span item-right text-right [style.flex]="1">
+                {{wallet.name || wallet._id}}
+                <button ion-button icon-only clear color="primary" class="wallet-button">
+                    <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
+                        <img src="assets/img/icon-wallet.svg">
+                    </i>
+                </button>
+            </span>
+        </div>
+
+        <div class="control-buttons">
+            <button ion-button primary margin-top (click)="finish()" [disabled]="!allowSend" >Send</button>
+        </div>
+
+    </span>
+
+    <span *ngIf="!loading && !hasFunds">
+        <div text-center padding>Before sending Merit you should buy some!</div>
+        <div class="control-buttons">
+            <button ion-button primary margin-top >Buy Merit</button>
+        </div>
+    </span>
+
+</ion-content>
+
