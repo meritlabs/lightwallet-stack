@@ -882,9 +882,7 @@ export class API {
     var network = opts.network || DEFAULT_NET;
     var fee = opts.fee || DEFAULT_FEE;
 
-    let totalAmount = _.reduce(utxos, (sum, utxo) => {
-      return sum + utxo.micros;
-    }, 0);
+    let totalAmount = _.sumBy(utxos, 'micros');
 
     let amount =  totalAmount - fee;
     if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
@@ -921,7 +919,7 @@ export class API {
 
         tx.fee(fee);
 
-        _.each(utxos, (utxo) => {
+        _.forEach(utxos, (utxo) => {
           tx.addInput(
             new Bitcore.Transaction.Input.PayToScriptHashInput({
               prevTxId: utxo.txid,
@@ -934,11 +932,11 @@ export class API {
         tx.version = 4;
         tx.addressType = 'PP2SH';
 
-        for(let a = 0; a < tx.inputs.length; a++) {
+        _.forEach(tx.inputs, (input) => {
           let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
           let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript);
-          tx.inputs[a].setScript(inputScript);
-        }
+          input.setScript(inputScript);
+        });
 
         // Make sure the tx can be serialized
         tx.serialize();
@@ -964,9 +962,7 @@ export class API {
     var network = vault.address.network;
     var fee = opts.fee || DEFAULT_FEE;
 
-    let availableAmount = _.reduce(coins, (sum, utxo) => {
-      return sum + utxo.micros;
-    }, 0);
+    let availableAmount = _.sumBy(coins, 'micros');
 
     if (amount >= availableAmount) throw Errors.INSUFFICIENT_FUNDS;
 
@@ -1017,7 +1013,7 @@ export class API {
 
         tx.fee(fee * 10);
 
-        _.each(selectedCoins, (coin) => {
+        _.forEach(selectedCoins, (coin) => {
           tx.addInput(
             new Bitcore.Transaction.Input.PayToScriptHashInput({
               prevTxId: coin.txid,
@@ -1030,11 +1026,11 @@ export class API {
         tx.version = 4;
         tx.addressType = 'PP2SH';
 
-        for(let a = 0; a < tx.inputs.length; a++) {
+        _.forEach(tx.inputs, (input) => {
           let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
           let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript);
-          tx.inputs[a].setScript(inputScript);
-        }
+          input.setScript(inputScript);
+        });
 
         // Make sure the tx can be serialized
         tx.serialize();
@@ -2180,12 +2176,11 @@ export class API {
       qs = '?' + args.join('&');
     }
     let url = '/v1/addresses/' + qs;
-    let credentials = this.credentials;
 
     return this._doGetRequest(url).then((addresses) => {
       if (!opts.doNotVerify) {
-        let fake = _.some(addresses, function(address) {
-          return !Verifier.checkAddress(credentials, address);
+        let fake = _.some(addresses, (address) => {
+          return !Verifier.checkAddress(this.credentials, address);
         });
         if (fake)
           return Promise.reject(Errors.SERVER_COMPROMISED);
@@ -2730,8 +2725,4 @@ export class API {
     var url = `/v1/vaults/${vaultId}/txhistory?network=${network}`;
     return this._doGetRequest(url);
   };
-
-  isMine(address: any) {
-    return Verifier.checkAddress(this.credentials, address);
-  }
 }
