@@ -3548,8 +3548,14 @@ WalletService.prototype.createVault = function(opts, cb) {
 
   let vaultId = '';
 
+  console.log(opts.whitelist);
   const readableWhitelist = _.map(opts.whitelist, (wl) => {
+    console.log(wl);
+    if (_.isObject(wl)) {
       return Bitcore.Address.fromBuffer(new Buffer(wl.data)).toString();
+    } 
+    
+    return wl;
   });
   const toStore = _.cloneDeep(opts);
   toStore.whitelist = readableWhitelist;
