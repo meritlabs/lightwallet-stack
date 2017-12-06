@@ -4,6 +4,7 @@ let Bitcore = require('bitcore-lib');
 import { Contact, IContactProperties, IContactName, IContactField } from '@ionic-native/contacts';
 export interface AddressBook { [key:string]:MeritContact; }
 
+export interface IMeritAddress {network:string, address:string}
 
 export class MeritContact implements IContactProperties {
 
@@ -12,9 +13,9 @@ export class MeritContact implements IContactProperties {
   public emails: IContactField[] = [];
   public photos: IContactField[] = [];
   public urls: Array<any> = [];
-  public meritAddresses:Array<{network:string, address:string}> = [];
-  public storeOnDevice:boolean = false;
+  public meritAddresses:Array<IMeritAddress> = [];
 
+  public storeOnDevice:boolean = false;
   public nativeModel:Contact;
 
   isValid() {
@@ -22,54 +23,28 @@ export class MeritContact implements IContactProperties {
     if (!this.meritAddresses.length) return false;
     let isValid = true;
     this.meritAddresses.forEach((address) => {
-      if (!Bitcore.Address.isValid(address.address)) isValid = false;
+      if (!address.network) {
+        isValid = false
+      } else {
+        if (!Bitcore.Address.isValid(address.address)) isValid = false;
+      }
     });
     return isValid;
   }
 
-  public static fromDeviceContact(contact:Contact) {
-    let self = new MeritContact();
+  formatAddress() {
+    this.meritAddresses.forEach((val) => {
+      if (val.address.indexOf('merit:') == 0) val.address = val.address.split(':')[1];
+      try {
+        val.network = Bitcore.Address.fromString(val.address).network.name;
+        console.log('set network!', val.network);
+      } catch (e) { }
+    });
 
-    self.nativeModel = contact;
-    self.storeOnDevice = true;
-    self.name = contact.name || {};
-    self.phoneNumbers =  contact.phoneNumbers || [];
-    self.emails = contact.emails || [];
-    self.photos = contact.photos || [];
-    self.urls   = contact.urls || [];
-    self.meritAddresses = _.chain(self.urls) 
-      .filter((url) => url.value.indexOf('merit:') == 0)
-      .map((url) => {
-        return ({
-          address: url.value.split(':')[1],
-          network: url.value.split(':')[2]
-        });
-      }).value();
-    return self;
-  }
-
-  public static fromAddressBookContact(contact:IContactProperties) {
-    let self = new MeritContact();
-    self.storeOnDevice = false;
-    self.name = contact.name;
-    self.phoneNumbers =  contact.phoneNumbers;
-    self.emails = contact.emails;
-    self.photos = contact.photos;
-    self.urls   = contact.urls;
-    return self;
-  }
-
-  hasNativeModel() {
-    return (!!this.nativeModel);
-  }
-
-  getNativeModel():Contact {
-    if (!this.hasNativeModel()) throw 'No native model';
-    this.nativeModel.name = this.name;
-    this.nativeModel.emails = this.emails;
-    this.nativeModel.phoneNumbers = this.phoneNumbers;
-    this.nativeModel.urls = this.urls;
-    return this.nativeModel;
+    this.urls = this.urls.filter((url) => url.value.indexOf('merit') == -1);
+    this.meritAddresses.forEach((address) => {
+      this.urls.push({value: 'merit:'+address.address+':'+address.network, type: 'other', pref: false, id: 1})
+    })
   }
 
 }
