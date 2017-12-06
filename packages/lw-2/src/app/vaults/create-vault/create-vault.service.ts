@@ -53,24 +53,27 @@ export class CreateVaultService {
       
   }
 
-  private vaultFromModel(spendPubKey: any, whitelistedAddresses: Array<any>) {
+  private vaultFromModel(spendPubKey: any, whitelistedAddresses: Array<any>): Promise<any> {
     //currently only supports type 0 which is a whitelisted vault.
     const amount = this.bitcore.Unit.fromMRT(parseFloat(this.model.amountToDeposit)).toMicros();
-    const whitelist = _.map(whitelistedAddresses, (w: any) => {
-      let key; 
+    return Promise.map(whitelistedAddresses, (w: any) => {
+      let address; 
       if (w.type == 'wallet') {
-        key = this.bitcore.HDPublicKey.fromString(w.pubKey);
+        this.bitcore.HDPublicKey.fromString(w.address).publicKey.toAddress();
+        address = this.walletClient.createAddress().then((resp) => {
+          return this.bitcore.Address.fromString(resp.address);
+        });
       } else {
-        key = this.bitcore.Address.fromString(w.pubKey);
+        address = Promise.resolve(this.bitcore.Address.fromString(w.address));
       }
-      return key.toBuffer();
-    });
-
-    return this.walletClient.prepareVault(0, {
-      amount: amount,
-      whitelist: whitelist,
-      masterPubKey: this.model.masterKey.publicKey,
-      spendPubKey: spendPubKey,
+      return address;
+    }).then((addrs) => {
+      return this.walletClient.prepareVault(0, {
+        amount: amount,
+        whitelist: _.map(addrs, (addr) => addr.toBuffer()),
+        masterPubKey: this.model.masterKey.publicKey,
+        spendPubKey: spendPubKey,
+      });
     });
   }
 
@@ -79,9 +82,9 @@ export class CreateVaultService {
     if(_.isEmpty(this.model.whitelist)) {
 
       return this.walletService.getAddress(this.walletClient, false).then((addresses) => {
-        let spendPubKey = this.bitcore.PublicKey.fromString(addresses.publicKeys[0]);
-        let vault = this.vaultFromModel(spendPubKey, []);
-
+        const spendPubKey = this.bitcore.PublicKey.fromString(addresses.publicKeys[0]);
+        return this.vaultFromModel(spendPubKey, []);
+      }).then((vault) => {
         this.resetModel();
         return vault;
       });
@@ -90,42 +93,45 @@ export class CreateVaultService {
 
       let wallet = this.model.selectedWallet;
 
-      let spendPubKey = this.bitcore.HDPublicKey.fromString(wallet.credentials.xPubKey);
+      let spendPubKey = this.bitcore.HDPrivateKey.fromString(wallet.credentials.xPrivKey).privateKey;
 
-      let vault = this.vaultFromModel(spendPubKey, this.model.whitelist);
+      return this.vaultFromModel(spendPubKey.publicKey, this.model.whitelist).then((vault) => {
+        let unlock = {
+          unlockCode: wallet.shareCode,
+          address: vault.address.toString(),
+          network: wallet.credentials.network
+        };
 
-      let unlock = {
-        unlockCode: wallet.shareCode,
-        address: vault.address.toString(),
-        network: wallet.credentials.network
-      };
-
-      return wallet.unlockAddress(unlock).then((err1, res1) => {
-        return this.getTxp(vault, false);
-      }).then((txp) => {
-        return this.walletService.prepare(wallet).then((password: string) => {
-          return { password: password, txp: txp};
+        return wallet.unlockAddress(unlock).then((err, resp1) => {
+          return this.getTxp(vault, false);
+        }).then((txp) => {
+          console.log('txp', txp);
+          return this.walletService.prepare(wallet).then((password: string) => {
+            return { password: password, txp: txp};
+          });
+        }).then((args: any) => {
+          return this.walletService.publishTx(wallet, args.txp).then((pubTxp)=> {
+            console.log('pubTxp', pubTxp);
+            return { password: args.password, txp: pubTxp};
+          });
+        }).then((args: any) => {
+          return this.walletService.signTx(wallet, args.txp, args.password);
+        }).then((signedTxp: any) => {
+          console.log('signedTxp', signedTxp);
+          vault.coins.push(signedTxp);
+          return vault;
+        }).then((vault) => {
+          vault.name = this.model.vaultName;
+          return this.walletClient.createVault(vault);
+        }).then((resp) => {
+          return this.profileService.addVault({
+            id: vault.address,
+            copayerId: wallet.credentials.copayerId,
+            name: this.model.vaultName,
+          });
+        }).then(() => {
+          this.resetModel();
         });
-      }).then((args: any) => {
-        return this.walletService.publishTx(wallet, args.txp).then((pubTxp)=> {
-          return { password: args.password, txp: pubTxp};
-        });
-      }).then((args: any) => {
-        return this.walletService.signTx(wallet, args.txp, args.password);
-      }).then((signedTxp: any) => {
-        vault.coins.push(signedTxp);
-        return vault;
-      }).then((vault) => {
-        vault.name = this.model.vaultName;
-        return this.walletClient.createVault(vault);
-      }).then((resp) => {
-        return this.profileService.addVault({
-          id: vault.address,
-          copayerId: wallet.credentials.copayerId,
-          name: this.model.vaultName,
-        });
-      }).then(() => {
-        this.resetModel();
       }).catch((err) => {
         this.logger.info('Error while creating vault:', err);
         return Promise.reject(err);
@@ -133,7 +139,7 @@ export class CreateVaultService {
     }
   }
 
-  private getTxp(vault, dryRun: boolean): Promise<any> {
+  private getTxp(vault: any, dryRun: boolean): Promise<any> {
     this.logger.warn("In GetTXP");
     this.logger.warn(vault);
     this.logger.warn(this.model.selectedWallet);

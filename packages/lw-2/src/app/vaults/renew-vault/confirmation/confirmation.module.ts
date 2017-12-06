@@ -3,8 +3,6 @@ import { IonicPageModule } from 'ionic-angular';
 
 import { VaultRenewConfirmationView } from 'merit/vaults/renew-vault/confirmation/confirmation';
 import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service';
-import { VaultsService } from 'merit/vaults/vaults.service';
-
 
 @NgModule({
   declarations: [
@@ -12,7 +10,6 @@ import { VaultsService } from 'merit/vaults/vaults.service';
   ],
   providers: [
     RenewVaultService,
-    VaultsService,
   ],
   imports: [
     IonicPageModule.forChild(VaultRenewConfirmationView),

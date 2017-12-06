@@ -6,67 +6,19 @@
 
 </ion-header>
 
-
 <ion-content>
-
-<!--<<<<<<< HEAD-->
 
     <div class="search-panel">
         <ion-item-divider text-left>Recipient</ion-item-divider>
         <ion-item>
-            <ion-input type="text" class="search-input" placeholder="Search or enter merit address"
-                [(ngModel)]="formData.search"
-                (ionChange)="updateFilteredContacts(formData.search)"
+            <ion-input type="text" class="search-input" placeholder="Search or enter merit address" [(ngModel)]="formData.search" (ionChange)="updateFilteredContacts(formData.search)"
                 (focus)="searchInFocus()" (blur)="searchBlurred()">
             </ion-input>
             <button item-end (click)="openScanner()" ion-button icon-only item-right clear class="qr-button" color="primary">
-                <ion-icon name="qr-scanner"  color="primary"></ion-icon>
+                <ion-icon name="qr-scanner" color="primary"></ion-icon>
             </button>
         </ion-item>
     </div>
-
-
-<!--=======-->
-    <!--<div *ngIf="true || hasFunds">-->
-      <!--<div class="send-header-wrapper">-->
-        <!--<div class="item item-heading send-heading"><span translate>Recipient</span></div>-->
-        <!--<div class="item input search-wrapper" [class.focus]="searchFocus">-->
-          <!--<i class="icon icon-svg abs-v-center">-->
-              <!--&lt;!&ndash;<img class="svg" src="assets/img/merit.svg" style="height: 30px; width: 30px; background: green">          &ndash;&gt;-->
-              <!--&lt;!&ndash; <i class="merit-icon-merit"></i> &ndash;&gt;-->
-          <!--</i>-->
-          <!--<ion-item class="item-icon-right">-->
-            <!--<ion-input type="text" class="search-input" placeholder="Search or enter merit address" -->
-              <!--[(ngModel)]="formData.search"-->
-              <!--(ionChange)="updateFilteredContacts(formData.search)" -->
-              <!--(focus)="searchInFocus()" (blur)="searchBlurred()"></ion-input> -->
-            <!--<button (click)="openScanner()" ion-button icon-only item-right clear>-->
-              <!--<ion-icon name="qr-scanner"  color="primary"></ion-icon>-->
-            <!--</button> -->
-          <!--</ion-item>-->
-          <!--</div>-->
-      <!--</div>-->
-<!--&gt;>>>>>> modernize/unite-contacts-send-flow-->
-    <!--</div>-->
-
-    <!--<ion-list>-->
-
-<!--<<<<<<< HEAD-->
-      <!--<ion-item-divider *ngIf="filteredList?.length">-->
-          <!--Send to-->
-      <!--</ion-item-divider>-->
-
-      <!--<button ion-item class="item item-icon-left item-icon-right" *ngFor="let item of filteredList" (click)="goToAmount(item)">-->
-        <!--<ion-avatar item-start>-->
-         <!--<gravatar [name]="item.name" width="30" height="30" [email]="item.emails ? item.emails[0] : item.email" ></gravatar>-->
-        <!--</ion-avatar>-->
-        <!--<h2>{{item.name}}</h2>-->
-      <!--</button>-->
-      <!--<div class="show-more" *ngIf="contactsShowMore" (click)="showMore()" translate>-->
-        <!--Show more-->
-      <!--</div>-->
-
-    <!--</ion-list>-->
 
     <ion-item-divider>
         Send to
@@ -86,6 +38,5 @@
             <ion-spinner></ion-spinner>Loading contacts...
         </div>
     </ion-infinite-scroll>
-
 
 </ion-content>

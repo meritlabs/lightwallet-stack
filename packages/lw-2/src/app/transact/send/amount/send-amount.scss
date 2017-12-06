@@ -15,12 +15,13 @@ send-amount-view {
   }
 
   .wallet-icon {
-    img{
+    img {
       height: 25px !important;
     }
   }
 
-  span, ion-label {
+  span,
+  ion-label {
     font-size: 12px;
   }
 
@@ -36,9 +37,9 @@ send-amount-view {
   .row {
     height: 50px;
     line-height: 50px;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
-    color: rgba(0,0,0,0.6);
+    color: rgba(0, 0, 0, 0.6);
     overflow: hidden;
     white-space: nowrap;
     background: white;
@@ -61,7 +62,6 @@ send-amount-view {
     border-bottom: 0;
   }
 
-
   .wallet-icon {
     height: 25px !important;
     line-height: 25px !important;
@@ -76,63 +76,5 @@ send-amount-view {
       margin: 0 !important;
       vertical-align: middle;
     }
-
   }
-
-
-
 }
-
-
-//send-amount-view {
-//    .item-md ion-icon[item-left] + .item-inner {
-//      margin: 0px;
-//    }
-//    .keypad {
-//      text-align: center;
-//      font-size: 24px;
-//      font-weight: lighter;
-//      position: absolute;
-//      bottom: 0;
-//      width: 100%;
-//
-//      .row {
-//        padding: 0 !important;
-//        margin: 0 !important;
-//      }
-//
-//      .col {
-//        line-height: 45px;
-//      }
-//
-//      .operator {
-//        font-weight: normal;
-//        cursor: pointer;
-//      }
-//
-//      .operator-row {
-//        width: 25%;
-//        margin-left: 75%;
-//        .operator-send {
-//          font-weight: bolder;
-//          color: #fff;
-//          background-color: #647ce8;
-//          font-size: 36px;
-//          cursor: pointer;
-//
-//          &:active {
-//            background-color: #eaeaea;
-//          }
-//        }
-//      }
-//
-//      .digit{
-//        cursor: pointer;
-//      }
-//
-//      @media(max-height: 480px) {
-//        font-size: 12px;
-//      }
-//    }
-//  }
-//
