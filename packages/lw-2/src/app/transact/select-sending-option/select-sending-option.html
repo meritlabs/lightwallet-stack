@@ -15,7 +15,7 @@
 <ion-content>
 
     <span *ngIf="sendingOptions">
-        <button ion-item *ngFor="let sendingOption of sendingOptions" [class.selected]="selectedSendingOption.id == sendingOption.id" (click)="select(sendingOption)">
+        <button ion-item *ngFor="let sendingOption of sendingOptions" [class.selected]="selectedSendingOption.label == sendingOption.label" (click)="select(sendingOption)">
             <h2 translate>
                 {{sendingOption.label}}
             </h2>
