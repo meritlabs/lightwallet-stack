@@ -45,13 +45,12 @@
                 </button>
             </div>
 
-
-                <ion-item>
-                    <ion-label class="label row">Send via</ion-label>
-                    <ion-select [(ngModel)]="recipient" interface="popover">
-                        <ion-option *ngFor="let option of sendingOptions" [value]="option">{{option.label}}</ion-option>
-                    </ion-select>
-                </ion-item>
+            <div class="row">
+                <span text-left class="label">Send via</span>
+                <span item-right text-right [style.flex]="1" (click)="selectSendingOption()">
+                    {{recipient.label}}
+                </span>
+            </div>
 
             <div class="label" class="row" (click)="selectWallet()">
                 <span text-left class="label">Wallet</span>
