@@ -22,6 +22,7 @@ import { VaultsService } from 'merit/vaults/vaults.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { RateService } from 'merit/transact/rate.service';
+import { Platform } from 'ionic-angular/platform/platform';
 
 
 /* 
@@ -76,9 +77,16 @@ export class WalletsView {
     private vaultsService: VaultsService,
     private applicationRef: ApplicationRef, 
     private zone: NgZone,
-    private rateService: RateService
+    private rateService: RateService, 
+    private platform: Platform
   ) {
     this.logger.warn("Hellop WalletsView!");
+    this.platform.resume.subscribe(() => {
+      this.logger.info("WalletView is going to refresh data on resume.");
+      this.updateAllInfo( {force: true} ).then(() => {
+        this.logger.info("Got updated data in walletsView on resume.")
+      });
+    });
   }
 
   public doRefresh(refresher) {
@@ -98,16 +106,17 @@ export class WalletsView {
   // public async showFeaturesBlock(): Promise<boolean> {
   //   return (this.newReleaseExists || this.feedbackNeeded);
   // }
-  private updateAllInfo():Promise<any> {
-
+  private updateAllInfo( opts: {force: boolean} = {force: false} ):Promise<any> {
     return new Promise((resolve, reject) => {
       return this.addressbookService.list('testnet').then((addressBook) => {
         this.addressbook = addressBook;
-        return this.getWallets();
+        return this.updateAllWallets(opts.force);
       }).then((wallets) => {
+        this.logger.info("Did wallets change?!");
+        this.logger.info(wallets);
         this.wallets = wallets;
         if (_.isEmpty(wallets)) {
-          return Promise.resolve(null); //ToDo: add proper error handling;
+          return resolve(null); //ToDo: add proper error handling;
         }
         return this.calculateNetworkAmount(wallets);
       }).then((cNetworkAmount) => {
@@ -124,7 +133,7 @@ export class WalletsView {
         return this.vaultsService.getVaults(_.head(this.wallets));
       }).then((vaults) => {
         this.logger.info('getting vaults', vaults);
-        _.each(vaults, (vault) => {
+        Promise.map(vaults, (vault) => {
           vault.altAmount = this.rateService.toFiat(vault.amount, _.head(this.wallets).cachedStatus.alternativeIsoCode);
           vault.altAmountStr = new FiatAmount(vault.altAmount);
           vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
@@ -132,12 +141,21 @@ export class WalletsView {
         this.vaults = vaults;
 
         if (this.configService.get().recentTransactions.enabled) {
+          this.logger.info("What is the recentTransactionsEnabled status?");
+          this.logger.info(this.configService.get().recentTransactions.enabled);
           this.recentTransactionsEnabled = true;
-          return this.profileService.getNotifications({limit: 3}).then((notifications) => {
-            this.recentTransactionsData = notifications;
+          return this.profileService.getNotifications({limit: 3}).then((result) => {
+            this.logger.info("Show me the notifications: ", result);
+            this.logger.info("WalletsView Received ${result.total} notifications upon resuming.");
+            _.each(result.notifications, (n: any) => {
+              // We don't need to update the status here because it has 
+              // already been fetched as part of updateAllInfo();
+              this.processIncomingTransactionEvent(n, {updateStatus: false});
+            });
+            return resolve();
           });
-        }
-        return Promise.resolve();
+        } 
+        return resolve();
       }).catch((err) => {
         this.logger.info("@@ERROR IN Updating statuses.");
         this.logger.info(err);
@@ -146,7 +164,7 @@ export class WalletsView {
     });
   }
 
-  private processIncomingTransactionEvent(n:any): void {
+  private processIncomingTransactionEvent(n:any, opts: {updateStatus: boolean} = {updateStatus: false}): void {
       if (_.isEmpty(n)) {
         return;
       }
@@ -182,7 +200,7 @@ export class WalletsView {
 
       // Update the status of the wallet in question.
       // TODO: Consider revisiting the mutation approach here. 
-      if (n.walletId) {
+      if (n.walletId && opts.updateStatus) {
         // Check if we have a wallet with the notification ID in the view.
         // If not, let's skip. 
         let foundIndex = _.findIndex(this.wallets, {'id': n.walletId});
@@ -210,13 +228,13 @@ export class WalletsView {
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
       this.logger.info("RL: Got an IncomingTx event with: ", walletId, type, n);
       
-      this.processIncomingTransactionEvent(n);      
+      this.processIncomingTransactionEvent(n, {updateStatus: true});      
     });
     
     this.events.subscribe('Remote:IncomingCoinbase', (walletId, type, n) => {
       this.logger.info("RL: Got an IncomingCoinbase event with: ", walletId, type, n);
       
-      this.processIncomingTransactionEvent(n);      
+      this.processIncomingTransactionEvent(n, {updateStatus: true});      
     });
 
   }
@@ -298,8 +316,9 @@ export class WalletsView {
 
     return new Promise((resolve, reject) => {
       
-      this.getWallets().then((wallets) => {
-        
+      this.profileService.getWallets().then((wallets) => {
+
+          // TODO: Allow a user to choose which wallet to receive into.
           let wallet = wallets[0];
           if (!wallet) return reject('no wallet');
           let forceNewAddress = false;
@@ -398,23 +417,11 @@ export class WalletsView {
     this.navCtrl.push('ImportView');
   }
 
-  // This method returns all wallets with statuses.  
-  // Statuses include balances and other important metadata 
-  // needed to power the display. 
-  private getWallets():Promise<Array<MeritWalletClient>> {
-    this.logger.warn("getWallets() in wallets.ts");
-
-    return this.updateAllWallets().then((wallets) => {
-      return wallets;
-    });
-
-  }
-
-  private updateAllWallets(): Promise<MeritWalletClient[]> {
-    return this.profileService.getWallets().each((wallet) => {
-      return this.walletService.getStatus(wallet).then((status) => {
+  private updateAllWallets(force: boolean = false): Promise<MeritWalletClient[]> {
+    return this.profileService.getWallets().map((wallet: any) => {
+      return this.walletService.getStatus(wallet, {force: force}).then((status) => {
         wallet.status = status;
-        return Promise.resolve(wallet);
+        return wallet;
       }).catch((err) => {
         Promise.reject(new Error('could not update wallets' + err));
       });
