@@ -8,6 +8,7 @@ import { Contacts, Contact, ContactFieldType, IContactFindOptions } from '@ionic
 import { MeritContact, AddressBook } from 'merit/shared/address-book/merit-contact.model';
 import { PlatformService } from 'merit/core/platform.service';
 import { MeritContactBuilder } from 'merit/shared/address-book/merit-contact.builder';
+import { Logger } from 'merit/core/logger';
 
 
 /**
@@ -19,6 +20,7 @@ export class AddressBookService {
     private persistenceService: PersistenceService,
     private platformService: PlatformService,
     private contacts:Contacts,
+    private logger: Logger,
     private meritContactBuilder:MeritContactBuilder
   ) {}
 
@@ -77,14 +79,22 @@ export class AddressBookService {
       return this.getAddressbook('testnet').then((localContacts) => {
 
         let contacts = _.map(deviceContacts, contact => this.meritContactBuilder.build(contact));
-        contacts = contacts.concat(_.map(localContacts, contact => this.meritContactBuilder.build(contact)));
+        contacts = contacts.concat(_.map(localContacts, contact => contact));
+        contacts = _.reduce(contacts, (clist, contact) => {
+          let currentContact = _.find(clist, {id: contact.id});
+          if(currentContact) {
+            currentContact.meritAddresses = contact.meritAddresses;
+            return clist;
+          }
+          return _.concat(clist, contact);
+        })
 
         return contacts.sort((a,b) => {
-          if ((a.meritAddresses.length && b.meritAddresses.length) || (a.meritAddresses.length && b.meritAddresses.length)) {
+          if (!(_.isEmpty(a.meritAddresses) || _.isEmpty(b.meritAddresses)) || 
+               (_.isEmpty(a.meritAddresses) && (_.isEmpty(b.meritAddresses)))) {
             return a.name.formatted > b.name.formatted ? 1 : -1;
-          } else {
-            return a.meritAddresses.length ? -1 : 1;
           }
+          if(!_.isEmpty(a.meritAddresses)) return -1;
         });
 
       })
@@ -97,7 +107,7 @@ export class AddressBookService {
         if (addressBook[address]) return reject(new Error('contact already exists'));
         addressBook[address] = entry;
         return this.persistenceService.setAddressbook(network, addressBook).then(() => {
-          return resolve();
+          return resolve(addressBook);
         });
       });
     });
@@ -108,7 +118,7 @@ export class AddressBookService {
       this.getAddressbook(network).then((addressBook) => {
         delete addressBook[addr];
         return this.persistenceService.setAddressbook(network, addressBook).then(() => {
-          return resolve();
+          return resolve(addressBook);
         });
       });
     });
