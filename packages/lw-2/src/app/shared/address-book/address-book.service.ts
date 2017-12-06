@@ -93,7 +93,7 @@ export class AddressBookService {
                (_.isEmpty(a.meritAddresses) && (_.isEmpty(b.meritAddresses)))) {
             return a.name.formatted > b.name.formatted ? 1 : -1;
           }
-          if(!_.isEmpty(a.meritAddresses)) return -1;
+           return (!_.isEmpty(a.meritAddresses)) ? -1 : 1;
         });
 
       })
