@@ -43,7 +43,7 @@ export class EditContactView {
       this.editMode = true;
       this.newContact = this.meritContactBuilder.build(this.originalContact);
     } else {
-      this.newContact = this.meritContactBuilder.build();
+      this.newContact = this.meritContactBuilder.build(new MeritContact());
     }
 
     if (!this.newContact.meritAddresses.length) {
