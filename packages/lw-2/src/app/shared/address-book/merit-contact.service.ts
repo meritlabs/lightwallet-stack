@@ -52,7 +52,7 @@ export class MeritContactService {
     let network = contact.meritAddresses[0].network;
     return this.addressBookService.remove(address, network).then(() => {
       this.updateModel(contact);
-      return Promise.resolve(contact.nativeModel.save());
+      return this.addressBookService.add(contact, address, network);
     });
   }
 
