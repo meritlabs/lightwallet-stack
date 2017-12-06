@@ -19,10 +19,8 @@ export class MeritContactBuilder {
 
     if (contact instanceof DeviceContact ) {
       created.nativeModel = contact;
-      created.storeOnDevice = true;
     } else if (contact instanceof MeritContact) {
       if (contact.nativeModel) created.nativeModel = contact.nativeModel;
-      created.storeOnDevice = contact.storeOnDevice;
     } else  {
       let deviceContact = this.deviceContactsService.create();
       try {
@@ -33,7 +31,6 @@ export class MeritContactBuilder {
       } catch (e) {
         //we are in non-cordova environment, just leaving nativeModel empty
       }
-      created.storeOnDevice = false;
     }
 
     created.name = clone(contact.name) || {formatted: ''};
@@ -41,14 +38,7 @@ export class MeritContactBuilder {
     created.emails = clone(contact.emails) || [];
     created.photos = clone(contact.photos) || [];
     created.urls   = clone(contact.urls) || [];
-    created.meritAddresses = _.chain(created.urls)
-      .filter((url) => url.value.indexOf('merit:') == 0)
-      .map((url) => {
-        return ({
-          address: url.value.split(':')[1],
-          network: url.value.split(':')[2]
-        });
-      }).value();
+    created.id = contact.id;
 
     return created;
   }
