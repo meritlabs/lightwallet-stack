@@ -200,13 +200,19 @@ export class WalletsView {
       n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
       this.txFormatService.formatToUSD(n.data.amount).then((usdAmount) => {
         n.fiatAmountStr = new FiatAmount(usdAmount).amountStr;
-        // We use angular's NgZone here to ensure that the view re-renders with new data.
-        // There may be a better way to do this.  
-        // TODO: Investigate why events.subscribe() does not appear to run inside 
-        // the angular zone.
-        this.zone.run(() => {
-          this.recentTransactionsData.push(n);
-        });
+       
+        // Let's make sure we don't have this notification already.
+        let duplicate = _.find(this.recentTransactionsData, n);
+        this.logger.info("duplicate notifications? : ", duplicate);
+        if (_.isEmpty(duplicate)) {
+          // We use angular's NgZone here to ensure that the view re-renders with new data.
+          // There may be a better way to do this.  
+          // TODO: Investigate why events.subscribe() does not appear to run inside 
+          // the angular zone.
+          this.zone.run(() => {
+            this.recentTransactionsData.push(n);
+          });
+        }
       });
     }
 
