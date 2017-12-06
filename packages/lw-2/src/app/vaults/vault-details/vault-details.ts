@@ -113,6 +113,12 @@ export class VaultDetailsView {
     this.navCtrl.push('VaultRenewView', { vaultId: this.vault._id, vault: this.vault });
   }
 
+  toDepositVault() {
+    this.profileService.getHeadWalletClient().then((w) => {
+      this.navCtrl.push('VaultDepositAmountView', { vaultId: this.vault._id, vault: this.vault, wallet: w });
+    });
+  }
+
   goToTxDetails(tx: any) {
     this.navCtrl.push(
       'TxDetailsView',

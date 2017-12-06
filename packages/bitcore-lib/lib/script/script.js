@@ -250,7 +250,7 @@ Script.prototype._chunkToString = function(chunk, type) {
       } else {
         str = str + ' ' + Opcode(opcodenum).toString();
       }
-    } else if (typeof opcodenum !== 'undefined') {
+    } else if (typeof opcodenum != 'undefined') {
       var numstr = opcodenum.toString(16);
       if (numstr.length % 2 !== 0) {
         numstr = '0' + numstr;

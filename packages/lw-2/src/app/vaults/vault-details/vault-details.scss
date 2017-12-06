@@ -53,7 +53,9 @@ vault-details-view {
     
     .vault-actions {
         display: flex;
-        flex-direction: row-reverse;
+        flex-direction: row;
+        justify-content: space-between;
+        padding-left: 5vw;
         padding-right: 5vw;
     }
 
@@ -63,6 +65,16 @@ vault-details-view {
 
         &:hover:not(.disable-hover), &:active:not(.disable-hover) {
             background-color: #F2C8A1;
+            color: #111;
+        }
+    }
+
+    .deposit-btn {
+        background-color: #068cca;
+        color: #ddd;
+
+        &:hover:not(.disable-hover), &:active:not(.disable-hover) {
+            background-color: color($colors, primary);
             color: #111;
         }
     }

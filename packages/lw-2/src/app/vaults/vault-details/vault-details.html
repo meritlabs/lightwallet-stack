@@ -14,7 +14,10 @@
                 <span translate>Pending</span>
             </div>
             <div class="vault-actions">
-                <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()">
+                <button ion-button type="button" class="deposit-btn" translate (click)="toDepositVault()" item-start>
+                    Deposit
+                </button>
+                <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()" item-end>
                     Reset
                 </button>
             </div>
@@ -22,20 +25,19 @@
     </ion-list>
 
     <ion-list>
-        <button ion-item *ngFor="let address of whitelist" (click)="spendToAddress(address)">
-            <ion-avatar item-start class="btn whitelist-icon" item-start *ngIf="address.type == 'wallet'">
-                <img src="assets/img/icon-wallet.svg">
-            </ion-avatar>
-            <ion-avatar item-start class="btn whitelist-icon" item-start *ngIf="address.type == 'vault'">
-                <ion-icon name="lock"></ion-icon>
-            </ion-avatar>
-            <p>
-                {{ address.name }} <span class="wallet-type">({{ address.type }})</span>
-            </p>   
-            <div class="spend" item-end>
-                Transfer To
-            </div>
-        </button>
+        <ion-item class="vault-item" *ngFor="let address of whitelist">
+            <ion-label class="whitelist-item">
+                <i class="wallet-icon" item-start *ngIf="address.type == 'vault'">
+                    <img src="assets/img/icon-lock-white.svg" >
+                </i>
+                <i class="wallet-icon" item-start *ngIf="address.type == 'wallet'">
+                    <img src="assets/img/icon-wallet.svg" >
+                </i>
+                <p>
+                    {{ address.name }} <span class="wallet-type">({{ address.type }})</span>
+                </p>
+            </ion-label>
+        </ion-item>
     </ion-list>
 
     <ion-list>
