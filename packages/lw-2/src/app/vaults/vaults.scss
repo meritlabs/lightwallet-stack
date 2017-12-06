@@ -3,6 +3,17 @@
 view-vaults {
   @extend %module-transact;
 
+  [class^="merit-icon"] {
+    width: 30px;
+    height: 30px;
+    margin-top: 5px;
+    background: color($colors, primary);
+  }
+
+  & ion-avatar.btn.vault-icon {
+    background: #068cca;
+  }
+
   .vaults {
     @extend ion-item;
     .detail {
@@ -12,6 +23,29 @@ view-vaults {
 
   h2.vault-name {
     margin: 14px 0px;
+  }
+
+  ion-item {
+    h2 {
+      white-space: normal;
+    }
+    .detail {
+      text-align: center;
+      color: rgba(0, 0, 0, 0.6);
+
+      .amount {
+        color: color($colors, primary);
+        font-size: 16px;
+      }
+
+      .detail-fiat {
+        font-size: 12px;
+      }
+
+      .detail-status {
+        font-size: 12px;
+      }
+    }
   }
 
   ion-label.vault-item {
