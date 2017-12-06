@@ -101,8 +101,6 @@ export class VaultDetailsView {
       })
     }).then(() => {
       return this.getVaultTxHistory().then((txs) => {
-        console.log("vault txs");
-        console.log(txs);
         this.transactions = _.map(txs, this.processTx.bind(this));
         this.vault.completeHistory = txs;
         this.formatAmounts();
