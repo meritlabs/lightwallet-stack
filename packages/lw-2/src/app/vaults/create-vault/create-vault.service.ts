@@ -133,7 +133,7 @@ export class CreateVaultService {
     }
   }
 
-  private getTxp(vault, dryRun: boolean): Promise<any> {
+  private getTxp(vault: any, dryRun: boolean): Promise<any> {
     this.logger.warn("In GetTXP");
     this.logger.warn(vault);
     this.logger.warn(this.model.selectedWallet);

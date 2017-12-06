@@ -76,7 +76,7 @@ export class WalletsView {
     private vaultsService: VaultsService,
     private applicationRef: ApplicationRef, 
     private zone: NgZone,
-    private rateService: RateService
+    private rateService: RateService,
   ) {
     this.logger.warn("Hellop WalletsView!");
   }
@@ -137,7 +137,7 @@ export class WalletsView {
             this.recentTransactionsData = notifications;
           });
         }
-        return Promise.resolve();
+        return Promise.resolve(); 
       }).catch((err) => {
         this.logger.info("@@ERROR IN Updating statuses.");
         this.logger.info(err);
