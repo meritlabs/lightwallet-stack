@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 let Bitcore = require('bitcore-lib');
 
 import { Contact, IContactProperties, IContactName, IContactField } from '@ionic-native/contacts';
@@ -31,18 +32,19 @@ export class MeritContact implements IContactProperties {
 
     self.nativeModel = contact;
     self.storeOnDevice = true;
-    self.name = contact.name || '';
+    self.name = contact.name || {};
     self.phoneNumbers =  contact.phoneNumbers || [];
     self.emails = contact.emails || [];
     self.photos = contact.photos || [];
     self.urls   = contact.urls || [];
-    self.urls.forEach((url) => {
-      if (url.value.indexOf('merit:') == 0) {
-        let address = url.type.split(':')[1];
-        let network = url.type.split(':')[2];
-        self.meritAddresses.push({network: network, address: address});
-      }
-    });
+    self.meritAddresses = _.chain(self.urls) 
+      .filter((url) => url.value.indexOf('merit:') == 0)
+      .map((url) => {
+        return ({
+          address: url.value.split(':')[1],
+          network: url.value.split(':')[2]
+        });
+      }).value();
     return self;
   }
 
@@ -53,7 +55,6 @@ export class MeritContact implements IContactProperties {
     self.phoneNumbers =  contact.phoneNumbers;
     self.emails = contact.emails;
     self.photos = contact.photos;
-    self.meritAddresses = contact.meritAddresses;
     self.urls   = contact.urls;
     return self;
   }
