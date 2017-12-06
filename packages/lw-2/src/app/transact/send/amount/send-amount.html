@@ -1,26 +1,26 @@
 <ion-header>
-    
-  <ion-navbar color="secondary">
-    <ion-title>Amount</ion-title>
-  </ion-navbar>
+
+    <ion-navbar color="secondary">
+        <ion-title>Amount</ion-title>
+    </ion-navbar>
 
 </ion-header>
-    
-    
+
+
 <ion-content>
     <ion-item-divider>
         Recipient
     </ion-item-divider>
     <ion-list>
-      <ion-item>
-        <ion-icon name="contact" item-left></ion-icon>
-        <span>{{ displayName }}</span>
-      </ion-item>
+        <ion-item>
+            <ion-icon name="contact" item-left></ion-icon>
+            <span>{{ displayName }}</span>
+        </ion-item>
     </ion-list>
 </ion-content>
 
 
-<ion-footer >
+<ion-footer>
     <ion-toolbar>
 
         <ion-item *ngIf="!wallet">
@@ -35,31 +35,34 @@
 
             <div class="row">
                 <span class="label" text-left>Amount</span>
-                <input type="number" [style.flex]="1" text-right pattern="[0-9\.]" [(ngModel)]="amount" (ngModelChange)="changeAmount()" [placeholder]="'Sending amount'">
+                <input type="number" text-right pattern="[0-9\.]"
+                    [style.flex]="1" 
+                    [(ngModel)]="amount"
+                    (ngModelChange)="changeAmount()"
+                    [placeholder]="'Sending amount'">
                 <button ion-button clear color="primary" (click)="toggleCurrency()">
                     {{amountCurrency}}
                 </button>
             </div>
 
-
             <div class="row">
-                <span class="label" text-left >Send To</span>
-                <span>
-                    TODO: select sendTo
+                <span text-left class="label">Send via</span>
+                <span item-right text-right [style.flex]="1" (click)="selectSendingOption()">
+                    {{recipient.label}}
                 </span>
             </div>
 
-             <div class="label" class="row" (click)="selectWallet()">
-                 <span text-left class="label">Wallet</span>
-                 <span item-right text-right [style.flex]="1">
-                     {{wallet.name || wallet._id}}
-                     <button ion-button icon-only clear color="primary"  class="wallet-button">
-                         <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
-                             <img src="assets/img/icon-wallet.svg"   >
-                         </i>
-                     </button>
-                 </span>
-             </div>
+            <div class="label" class="row" (click)="selectWallet()">
+                <span text-left class="label">Wallet</span>
+                <span item-right text-right [style.flex]="1">
+                    {{wallet.name || wallet._id}}
+                    <button ion-button icon-only clear color="primary" class="wallet-button">
+                        <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
+                            <img src="assets/img/icon-wallet.svg">
+                        </i>
+                    </button>
+                </span>
+            </div>
 
         </span>
 
