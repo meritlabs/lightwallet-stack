@@ -10,7 +10,7 @@
     <div class="item head">
       <div class="send-header-wrapper">
         <img src="img/icon-tx-sent-outline.svg">
-        <div class="item item-heading send-heading">
+        <div class="sending-label">
           <span translate>Sending</span>
         </div>
       </div>
@@ -20,10 +20,16 @@
         </div>
         <div class="alternative">{{txData.alternativeAmountStr || '...'}}</div>
       </div>
+      <div class="amount-label" *ngIf="!txData">
+          <div class="amount"><ion-spinner></ion-spinner>
+            <span class="unit"><ion-spinner></ion-spinner></span>
+          </div>
+          <div class="alternative"><ion-spinner></ion-spinner></div>
+        </div>
     </div>
     <div class="info">
 
-      <div class="item" *ngIf="txData">
+      <div class="container-to" *ngIf="txData">
         <span class="label" translate>To</span>
         <span class="payment-proposal-to" *ngIf="!recipientType">
           <img src="img/icons/merit.svg">
@@ -34,8 +40,7 @@
         </span>
         <div class="wallet" *ngIf="recipientType == 'wallet'">
           <i class="icon big-icon-svg">
-            <img src="img/wallet.svg" [class.wallet-background-color-default]="!toColor" [style.background-color]="toColor" class="bg"
-            />
+            <i class="merit-icon-wallet" ></i>            
           </i>
           <div copy-to-clipboard="txData.toAddress" class="ellipsis">
             <span class="wallet-name">{{displayName()}}</span>
@@ -46,24 +51,23 @@
           <span *ngIf="txData.toName">{{displayName()}}</span>
         </div>
       </div>
-      <a class="item item-icon-right" *ngIf="wallet" (click)="selectWallet()">
+      <a class="container-from" *ngIf="wallet" (click)="selectWallet()">
         <span class="label" translate>From</span>
         <div class="wallet">
           <i class="icon big-icon-svg">
-            <img src="img/wallet.svg" [class.wallet-background-color-default]="!wallet.color" [style.background-color]="wallet.color"
-              class="bg" />
+            <i class="merit-icon-wallet" ></i>
           </i>
           <div>{{wallet.name}}</div>
         </div>
         <div class="wallet" *ngIf="!wallet">
           <i class="icon big-icon-svg">
-              <img src="img/wallet.svg" [style.background-color]="grey" class="bg" />
+              <img src="../assets/img/wallet.svg" [style.background-color]="grey" class="bg" />
           </i>
           <div>...</div>
         </div>
         <i class="icon bp-arrow-right"></i>
       </a>
-      <div class="item item-icon-right" *ngIf="wallet" (click)="chooseFeeLevel(tx, wallet)">
+      <div class="item item-icon-right" *ngIf="wallet && txData" (click)="chooseFeeLevel(tx, wallet)">
         <span class="label" translate>Fee: {{txData.feeLevelName}}</span>
         <span class="m10l">{{txData.txp.feeStr || '...'}}</span>
         <span class="item-note m10l">
@@ -75,9 +79,22 @@
             </span>
           </span>
         </span>
-
         <i class="icon bp-arrow-right"></i>
       </div>
+      <div class="item item-icon-right" *ngIf="wallet && !txData" (click)="chooseFeeLevel(tx, wallet)">
+          <span class="label" translate>Fee: <ion-spinner></ion-spinner></span>
+          <span class="m10l"><ion-spinner></ion-spinner></span>
+          <span class="item-note m10l">
+            <span><ion-spinner></ion-spinner>&nbsp;
+              <span class="fee-rate" *ngIf="txData.txp.feeRatePerStr"> &middot;
+                <i class="ion-alert-circled warn" *ngIf="txData.txp.feeToHigh"></i> &nbsp;
+                <span class="fee-rate" [class.warn]="txData.txp.feeToHigh" translate> <ion-spinner></ion-spinner> </span>
+  
+              </span>
+            </span>
+          </span>
+          <i class="icon bp-arrow-right"></i>
+        </div>
       <a class="item item-icon-right" *ngIf="wallet" (click)="showDescriptionPopup(tx)">
         <span class="label" translate>Add Memo</span>
         <span class="item-note m10l">
