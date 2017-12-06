@@ -988,7 +988,7 @@ export class API {
 
     let tx = new Bitcore.Transaction();
 
-    //try {
+    try {
 
       if(vault.type == 0) {
         let toAddress = Bitcore.Address.fromString(address);
@@ -1043,10 +1043,10 @@ export class API {
         this.log.error('Vault type is not supported:', vault.type);
         throw Errors.COULD_NOT_BUILD_TRANSACTION;
       }
-    /*} catch (ex) {
+    } catch (ex) {
       this.log.error('Could not build transaction from private key', ex);
       throw Errors.COULD_NOT_BUILD_TRANSACTION;
-    } */
+    }
 
     return tx;
   };
