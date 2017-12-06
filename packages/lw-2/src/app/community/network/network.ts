@@ -9,6 +9,9 @@ import { MeritToastController } from "merit/core/toast.controller";
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { WalletService } from "merit/wallets/wallet.service";
 import { TxFormatService } from "merit/transact/tx-format.service";
+import * as Promise from 'bluebird'; 
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+
 
 
 // Network View 
@@ -20,7 +23,7 @@ import { TxFormatService } from "merit/transact/tx-format.service";
 })
 export class NetworkView {
 
-  public wallets:any;
+  public wallets:MeritWalletClient[];
 
   constructor(
     public navCtrl: NavController,
@@ -35,21 +38,27 @@ export class NetworkView {
 
   }
 
-  async ionViewDidLoad() {
+  ionViewDidLoad() {
     //do something here
-    this.wallets = await this.profileService.getWallets();
-
-    this.wallets.forEach((wallet:any) => {
-      this.walletService.getANV(wallet).then((anv) => {
-        wallet.amount = this.txFormatService.parseAmount(anv, 'MRT').amountUnitStr;
-      });
-
-      this.walletService.getRewards(wallet).then((data) => {
-        wallet.address = data.address;
-        wallet.miningRewards = this.txFormatService.parseAmount(data.rewards.mining, 'MRT').amountUnitStr;
-        wallet.ambassadorRewards = this.txFormatService.parseAmount(data.rewards.ambassador, 'MRT').amountUnitStr;
+    this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
+      
+      return Promise.map(wallets, (wallet: MeritWalletClient) => {
+        return this.walletService.getANV(wallet).then((anv) => {
+          return wallet.totalNetworkValue = this.txFormatService.parseAmount(anv, 'MRT').amountUnitStr;
+        }).then(() => {
+          return this.walletService.getRewards(wallet).then((data) => {
+            wallet.displayAddress = data.address; // TODO: Evaluate the need for this.
+            wallet.miningRewards = this.txFormatService.parseAmount(data.rewards.mining, 'MRT').amountUnitStr;
+            wallet.ambassadorRewards = this.txFormatService.parseAmount(data.rewards.ambassador, 'MRT').amountUnitStr;
+            return wallet;
+          });
+        });
+      }).then((processedWallets: MeritWalletClient[]) => {
+        this.wallets = processedWallets;
       });
     });
+
+    
 
   }
 
