@@ -9,6 +9,8 @@ import { WalletsModule } from "merit/wallets/wallets.module";
 import { AddressBookView } from 'merit/shared/address-book/address-book';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { Contacts } from '@ionic-native/contacts';
+import { MeritContactBuilder } from "merit/shared/address-book/merit-contact.builder";
+import { MeritContactService } from "merit/shared/address-book/merit-contact.service";
 
 
 // This module manaages the sending of money.
@@ -25,7 +27,9 @@ import { Contacts } from '@ionic-native/contacts';
     WalletService,
     SendService,
     Contacts,
-    AddressBookService 
+    MeritContactBuilder,
+    AddressBookService,
+    MeritContactService
   ],
   exports: [
   ]

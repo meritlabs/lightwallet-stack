@@ -7,6 +7,8 @@ import { PersistenceService } from 'merit/core/persistence.service';
 import { Contacts, Contact, ContactFieldType, IContactFindOptions } from '@ionic-native/contacts';
 import { MeritContact, AddressBook } from 'merit/shared/address-book/merit-contact.model';
 import { PlatformService } from 'merit/core/platform.service';
+import { MeritContactBuilder } from 'merit/shared/address-book/merit-contact.builder';
+
 
 /**
  * This service looks up entered addresses against the address book.
@@ -16,7 +18,8 @@ export class AddressBookService {
   constructor(
     private persistenceService: PersistenceService,
     private platformService: PlatformService,
-    private contacts:Contacts
+    private contacts:Contacts,
+    private meritContactBuilder:MeritContactBuilder
   ) {}
 
   public get(addr: string, network: string): Promise<MeritContact> {
@@ -73,8 +76,8 @@ export class AddressBookService {
 
       return this.getAddressbook('testnet').then((localContacts) => {
 
-        let contacts = _.map(deviceContacts, contact => MeritContact.fromDeviceContact(contact));
-        contacts = contacts.concat(_.map(localContacts, contact => MeritContact.fromAddressBookContact(contact)));
+        let contacts = _.map(deviceContacts, contact => this.meritContactBuilder.build(contact));
+        contacts = contacts.concat(_.map(localContacts, contact => this.meritContactBuilder.build(contact)));
 
         return contacts.sort((a,b) => {
           if ((a.meritAddresses.length && b.meritAddresses.length) || (a.meritAddresses.length && b.meritAddresses.length)) {
@@ -88,11 +91,11 @@ export class AddressBookService {
     });
   }
 
-  public add(entry: MeritContact, network: string): Promise<AddressBook> {
+  public add(entry: MeritContact, address:string, network: string): Promise<AddressBook> {
     return new Promise((resolve, reject) => {
       return this.getAddressbook(network).then((addressBook) => {
-        if (addressBook[entry.meritAddresses[0].address]) return reject(new Error('contact already exists'));
-        addressBook[entry.meritAddresses[0].address] = entry;
+        if (addressBook[address]) return reject(new Error('contact already exists'));
+        addressBook[address] = entry;
         return this.persistenceService.setAddressbook(network, addressBook).then(() => {
           return resolve();
         });
