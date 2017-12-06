@@ -149,49 +149,9 @@ export class SendAmountView {
   
   @HostListener('document:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
     if (!event.key) return;
-    if (event.which === 8) {
-      event.preventDefault();
-      this.removeDigit();
-    }
-
-    if (event.key.match(this.reNr)) {
-      this.pushDigit(event.key);
-    } else if (event.key.match(this.reOp)) {
-      this.pushOperator(event.key);
-    } else if (event.keyCode === 86) {
-      // if (event.ctrlKey || event.metaKey) processClipboard();
-    } else if (event.keyCode === 13) this.finish();
+    if (event.keyCode === 13) this.finish();
+    this.processAmount();
   }
-
-  pushDigit(digit: string) {
-    if (this.amount && this.amount.length >= this.LENGTH_EXPRESSION_LIMIT) return;
-    if (this.amount.toString().indexOf('.') > -1 && digit == '.') return;
-    // TODO: next line - Need: isFiat
-    //if (this.availableUnits[this.unitIndex].isFiat && this.amount.indexOf('.') > -1 && this.amount[this.amount.indexOf('.') + 2]) return;
-
-    this.amount = (this.amount + digit).replace('..', '.');
-    this.checkFontSize();
-    this.processAmount();
-  };
-
-  removeDigit() {
-    this.amount = (this.amount).toString().slice(0, -1);
-    this.processAmount();
-    this.checkFontSize();
-  };
-
-  pushOperator(operator: string) {
-    if (!this.amount || this.amount.length == 0) return;
-    this.amount = this._pushOperator(this.amount, operator);
-  };
-
-  private _pushOperator(val: string, operator: string) {
-    if (!this.isOperator(_.last(val))) {
-      return val + operator;
-    } else {
-      return val.slice(0, -1) + operator;
-    }
-  };
 
   isOperator(val: string) {
     const regex = /[\/\-\+\x\*]/;
@@ -215,19 +175,6 @@ export class SendAmountView {
     if (_.isNumber(result)) {
       this.globalResult = this.isExpression(this.amount) ? '= ' + this.processResult(result) : '';
 
-      // TODO this.globalResult is always undefinded - Need: processResult()
-      /* if (this.availableUnits[this.unitIndex].isFiat) {
-
-        var a = this.fromFiat(result);
-        if (a) {
-          this.alternativeAmount = txFormatService.formatAmount(a * unitToMicro, true);
-        } else {
-          this.alternativeAmount = 'N/A'; //TODO
-          this.allowSend = false;
-        }
-      } else {
-        this.alternativeAmount = $filter('formatFiatAmount')(toFiat(result));
-      } */
       this.globalResult = result.toString();
     }
   };
