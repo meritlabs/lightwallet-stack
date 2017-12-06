@@ -11,6 +11,7 @@ import { WalletService } from "merit/wallets/wallet.service";
 import { TxFormatService } from "merit/transact/tx-format.service";
 import * as Promise from 'bluebird'; 
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { Logger } from 'merit/core/logger';
 
 
 
@@ -33,7 +34,8 @@ export class NetworkView {
     private toastCtrl:MeritToastController,
     private socialSharing: SocialSharing,
     private walletService:WalletService,
-    private txFormatService:TxFormatService
+    private txFormatService:TxFormatService,
+    private logger: Logger
   ) {
 
   }
@@ -47,9 +49,8 @@ export class NetworkView {
           return wallet.totalNetworkValue = this.txFormatService.parseAmount(anv, 'MRT').amountUnitStr;
         }).then(() => {
           return this.walletService.getRewards(wallet).then((data) => {
-            wallet.displayAddress = data.address; // TODO: Evaluate the need for this.
-            wallet.miningRewards = this.txFormatService.parseAmount(data.rewards.mining, 'MRT').amountUnitStr;
-            wallet.ambassadorRewards = this.txFormatService.parseAmount(data.rewards.ambassador, 'MRT').amountUnitStr;
+            wallet.miningRewards = this.txFormatService.parseAmount(data.mining, 'MRT').amountUnitStr;
+            wallet.ambassadorRewards = this.txFormatService.parseAmount(data.ambassador, 'MRT').amountUnitStr;
             return wallet;
           });
         });
