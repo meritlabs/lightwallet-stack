@@ -43,17 +43,17 @@
         </ion-item>
 
         <ion-item>
-            <ion-label>Address</ion-label>
+            <ion-label>Invite Code</ion-label>
             <ion-label item-right text-right>
-                <span *ngIf="wallet.displayAddress">
+                <span *ngIf="wallet.shareCode">
 
-                    <span (click)="copyToClipboard(wallet.displayAddress)"  ngxClipboard [cbContent]="wallet.displayAddress">{{wallet.displayAddress | slice:0:8 }}...</span>
+                    <span (click)="copyToClipboard(wallet.shareCode)"  ngxClipboard [cbContent]="wallet.shareCode">{{wallet.shareCode | slice:0:8 }}...</span>
 
-                    <button ion-button icon-only clear color="primary" (click)="shareAddress(wallet.displayAddress)">
+                    <button ion-button icon-only clear color="primary" (click)="shareAddress(wallet.shareCode)">
                         <ion-icon name="share"></ion-icon>
                     </button>
                 </span>
-                <span *ngIf="!wallet.displayAddress">
+                <span *ngIf="!wallet.shareCode">
                     <ion-spinner></ion-spinner>
                 </span>
             </ion-label>
