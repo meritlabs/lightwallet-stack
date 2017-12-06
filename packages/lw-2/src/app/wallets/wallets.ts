@@ -137,17 +137,6 @@ export class WalletsView {
             this.recentTransactionsData = notifications;
           });
         }
-      }).then(() => {
-        return this.vaultsService.getVaults(_.head(this.wallets));
-      }).then((vaults) => {
-        this.logger.info('getting vaults', vaults);
-        _.each(vaults, (vault) => {
-          vault.altAmount = this.rateService.toFiat(vault.amount, _.head(this.wallets).cachedStatus.alternativeIsoCode);
-          vault.altAmountStr = new FiatAmount(vault.altAmount);
-          vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
-        });
-        this.vaults = vaults;
-        return Promise.resolve();
       }).catch((err) => {
         this.logger.info("@@ERROR IN Updating statuses.");
         this.logger.info(err);
