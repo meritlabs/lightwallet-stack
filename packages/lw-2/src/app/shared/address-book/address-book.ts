@@ -8,7 +8,6 @@ import { Contact } from '@ionic-native/contacts';
 import { MeritContact } from "merit/shared/address-book/merit-contact.model";
 import { DomSanitizer } from '@angular/platform-browser';
 
-
 @IonicPage({
   defaultHistory: ['SettingsView']
 })
@@ -27,7 +26,7 @@ export class AddressBookView {
   searchQuery:string = '';
 
   contactsOffset = 0;
-  contactsLimit  = 20;
+  contactsLimit  = 10;
 
   constructor(
     public navCtrl: NavController,
@@ -57,13 +56,12 @@ export class AddressBookView {
   private filterContacts(): void{
     this.contactsOffset = 0;
     this.filteredContacts = this.addressBookService.searchContacts(this.contacts, this.searchQuery);
-    this.renderingContacts = this.filteredContacts.splice(0, this.contactsLimit);
+    this.renderingContacts = this.filteredContacts.slice(0, this.contactsLimit);
   }
 
   renderMoreContacts(infiniteScroll) {
-    console.log('RENDERING MORE CONTACTS');
     this.contactsOffset += this.contactsLimit;
-    this.renderingContacts = this.renderingContacts.concat(this.filteredContacts.splice(this.contactsOffset, this.contactsOffset+this.contactsLimit));
+    this.renderingContacts = this.renderingContacts.concat(this.filteredContacts.slice(this.contactsOffset, this.contactsOffset+this.contactsLimit));
     infiniteScroll.complete();
   }
 
