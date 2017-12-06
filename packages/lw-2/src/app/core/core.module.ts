@@ -14,6 +14,7 @@ import { PlatformService } from 'merit/core/platform.service';
 
 import { ProfileService } from 'merit/core/profile.service';
 import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
+import { VaultsService } from 'merit/vaults/vaults.service';
 
 import { LanguageService } from 'merit/core/language.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
@@ -100,6 +101,7 @@ export function createTranslateLoader(http: HttpClient) {
         WalletService,
         MnemonicService,
         CreateVaultService,
+        VaultsService,
         PushNotificationsService,
         HttpClient,
         FCM,
