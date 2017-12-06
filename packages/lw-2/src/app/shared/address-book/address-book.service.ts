@@ -79,14 +79,13 @@ export class AddressBookService {
       return this.getAddressbook('testnet').then((localContacts) => {
 
         let contacts = _.map(deviceContacts, contact => this.meritContactBuilder.build(contact));
-        contacts = contacts.concat(_.map(localContacts, contact => contact));
-        contacts = _.reduce(contacts, (clist, contact) => {
-          let currentContact = _.find(clist, {id: contact.id});
+        _.each(_.map(localContacts, contact => contact), (contact) => {
+          let currentContact = _.find(contacts, {id: contact.id});
           if(currentContact) {
             currentContact.meritAddresses = contact.meritAddresses;
-            return clist;
+          } else {
+            contacts.push(contact);
           }
-          return _.concat(clist, contact);
         })
 
         return contacts.sort((a,b) => {
