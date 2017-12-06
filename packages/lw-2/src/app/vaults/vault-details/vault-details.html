@@ -6,18 +6,20 @@
 
 <ion-content>
 
-    <div class="balance-header">
-        <div class="balance-str">{{ vault.amountStr }}</div>
-        <div class="balance-alt-str"> {{ vault.altAmountStr.amountStr }}</div>
-        <div *ngIf="vault.status == 'pending'" class="assertive">
-            <span translate>Pending</span>
+    <ion-list>
+        <div class="balance-header">
+            <div class="balance-str">{{ vault.amountStr }}</div>
+            <div class="balance-alt-str"> {{ vault.altAmountStr.amountStr }}</div>
+            <div *ngIf="vault.status == 'pending'" class="assertive">
+                <span translate>Pending</span>
+            </div>
+            <div class="vault-actions">
+                <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()">
+                    Reset
+                </button>
+            </div>
         </div>
-        <div class="vault-actions">
-            <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()">
-                Reset
-            </button>
-        </div>
-    </div>
+    </ion-list>
 
     <ion-list>
         <button ion-item *ngFor="let address of whitelist" (click)="spendToAddress(address)">
