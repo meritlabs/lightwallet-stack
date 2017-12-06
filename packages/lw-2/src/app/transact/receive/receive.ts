@@ -106,9 +106,9 @@ export class ReceiveView {
     this.socialSharing.share(this.qrAddress);
   }
 
-  copyToClipboard(address) {
+  copyToClipboard(addressString: string) {
 
-    address = address.split(':')[1] || address;
+    const address = addressString.split(':')[1] || addressString;
 
     this.clipboard.copy(address);
 

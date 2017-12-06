@@ -5,7 +5,6 @@ import { SharedModule } from 'merit/shared/shared.module';
 import { MomentModule } from 'angular2-moment/moment.module';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
-import { VaultsService } from 'merit/vaults/vaults.service';
 
 @NgModule({
   declarations: [
@@ -19,7 +18,6 @@ import { VaultsService } from 'merit/vaults/vaults.service';
   providers: [
     WalletService,
     MnemonicService,
-    VaultsService,
   ]
 })
 export class TxDetailsViewModule {}
