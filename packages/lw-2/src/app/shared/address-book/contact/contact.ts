@@ -67,7 +67,7 @@ export class ContactView {
     this.getWallets().then((wallets) => {
       this.navCtrl.push('SendAmountView', {
         sending: true,
-        recipient: this.contact
+        contact: this.contact
       });
     });
   }
