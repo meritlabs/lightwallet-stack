@@ -19,8 +19,14 @@ export class MeritContactBuilder {
 
     if (contact instanceof DeviceContact ) {
       created.nativeModel = contact;
+      created.id = contact.id;
     } else if (contact instanceof MeritContact) {
-      if (contact.nativeModel) created.nativeModel = contact.nativeModel;
+      if (contact.nativeModel) {
+        created.nativeModel = contact.nativeModel;
+        created.id = contact.nativeModel.id;
+      } else {
+        created.id = contact.id || `merit-${new Date().getUTCMilliseconds()}`
+      }
     } else  {
       let deviceContact = this.deviceContactsService.create();
       try {
@@ -38,7 +44,6 @@ export class MeritContactBuilder {
     created.emails = clone(contact.emails) || [];
     created.photos = clone(contact.photos) || [];
     created.urls   = clone(contact.urls) || [];
-    created.id = contact.id;
 
     return created;
   }
