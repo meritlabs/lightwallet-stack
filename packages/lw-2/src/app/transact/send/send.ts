@@ -14,6 +14,7 @@ import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 import { emptyMeritContact, Searchable } from 'merit/shared/address-book/contact/contact.model';
 import { AddressBook, MeritContact } from 'merit/shared/address-book/merit-contact.model';
 import { MeritClient } from 'src/lib/merit-wallet-client/lib';
+import { DomSanitizer } from '@angular/platform-browser';
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
@@ -33,7 +34,8 @@ export class SendView {
   private contacts: Array<MeritContact>;
   private currentContactsPage = 0;
   private showMoreContacts: boolean = false;
-  private filteredContacts: Array<MeritContact>; 
+  public filteredContacts: Array<MeritContact>;
+  public renderingContacts: Array<MeritContact>;
   private formData: { 
     search: string
   };
@@ -42,7 +44,9 @@ export class SendView {
   private hasOwnedMerit: boolean; 
   private network: string;
 
-  
+  contactsOffset = 0;
+  contactsLimit  = 10;
+
   public hasContacts:boolean; 
 
   constructor(
@@ -54,7 +58,8 @@ export class SendView {
     private logger: Logger,
     private sendService: SendService,
     private addressBookService:AddressBookService,
-    private modalCtrl:ModalController
+    private modalCtrl:ModalController,
+    private sanitizer:DomSanitizer
   ) {
     this.logger.info("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
@@ -202,7 +207,10 @@ export class SendView {
       })
     }
 
+    this.contactsOffset  = 0;
     this.filteredContacts = this.addressBookService.searchContacts(this.contacts, search);
+    this.renderingContacts = this.filteredContacts.slice(0, this.contactsLimit);
+
     if(this.filteredContacts.length < 1) {
       let tempContact = this.contactFromSearchTerm(search);
       if(tempContact) this.filteredContacts.unshift(tempContact);
@@ -231,6 +239,16 @@ export class SendView {
     this.navCtrl.push('wallets').then(() => {
       this.navCtrl.push('buy-and-sell');
     });
+  }
+
+  renderMoreContacts(infiniteScroll) {
+    this.contactsOffset += this.contactsLimit;
+    this.renderingContacts = this.renderingContacts.concat(this.filteredContacts.slice(this.contactsOffset, this.contactsOffset+this.contactsLimit));
+    infiniteScroll.complete();
+  }
+
+  sanitizePhotoUrl(url:string) {
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
 }

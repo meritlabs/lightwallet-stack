@@ -37,12 +37,13 @@
             <img item-right src="assets/img/16x16.png" *ngIf="contact.meritAddresses.length">
         </ion-item>
 
-        <ion-infinite-scroll (ionInfinite)="renderMoreContacts($event)" *ngIf="filteredContacts.length > contactsOffset+contactsLimit">
-            <div text-center>
-                <ion-spinner></ion-spinner>Loading contacts...
-            </div>
-        </ion-infinite-scroll>
     </ion-list>
+
+    <ion-infinite-scroll (ionInfinite)="renderMoreContacts($event)" *ngIf="filteredContacts && filteredContacts.length > contactsOffset+contactsLimit">
+        <div text-center>
+            <ion-spinner></ion-spinner>Loading contacts...
+        </div>
+    </ion-infinite-scroll>
 
 
 </ion-content>
