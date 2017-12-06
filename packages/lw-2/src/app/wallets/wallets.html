@@ -11,7 +11,9 @@
 
 <ion-content>
 
-    <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
+    <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
 
     <ion-item-divider translate *ngIf="showFeatureBlock">
         Features
