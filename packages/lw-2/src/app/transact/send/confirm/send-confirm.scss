@@ -55,6 +55,13 @@ page-confirm {
         }
       }
     }
+
+    [class^="merit-icon"] {
+        width: 30px;
+        height: 30px;
+        margin-top: 5px;
+        background: color($colors, primary);
+      }
   
     @mixin wallets-list {
       height: 3.5rem;
