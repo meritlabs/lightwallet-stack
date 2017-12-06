@@ -16,12 +16,21 @@ export class MeritContactService {
   ) {
   }
 
+  private updateModel(contact) {
+
+    contact.nativeModel.name = { 'formatted': contact.name.formatted, 'givenName': contact.name.formatted };
+    contact.nativeModel.emails = contact.emails;
+    contact.nativeModel.phoneNumbers = contact.phoneNumbers;
+    contact.nativeModel.urls = contact.urls;
+  }
+
   public add(contact:MeritContact):Promise<any> {
     if (!contact.isValid()) {
       return Promise.reject('Contact is not valid');
     }
 
     if (contact.storeOnDevice) {
+      this.updateModel(contact);
       return contact.nativeModel.save();
     } else {
       let address = contact.meritAddresses[0].address;
@@ -41,6 +50,7 @@ export class MeritContactService {
     let network = contact.meritAddresses[0].network;
     return this.addressBookService.remove(address, network).then(() => {
       if (contact.storeOnDevice) {
+        this.updateModel(contact);
         return contact.nativeModel.save();
       } else {
         return this.addressBookService.add(contact, address, network);

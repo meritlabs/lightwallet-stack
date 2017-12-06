@@ -50,9 +50,6 @@ export class MeritContactBuilder {
         });
       }).value();
 
-    console.log(created, 'CREATED');
-
-
     return created;
   }
 

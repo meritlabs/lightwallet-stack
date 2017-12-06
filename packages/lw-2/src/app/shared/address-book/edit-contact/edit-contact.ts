@@ -49,16 +49,20 @@ export class EditContactView {
     if (!this.newContact.meritAddresses.length) {
       this.newContact.meritAddresses.push({network: '', address: ''});
     }
+    this.setDefaultValues();
 
+  }
+
+  ionViewDidLoad() {
+  }
+
+  private setDefaultValues() {
     if (!this.newContact.emails.length) {
       this.newContact.emails.push({type: 'other', value: ''});
     }
     if (!this.newContact.phoneNumbers.length) {
       this.newContact.phoneNumbers.push({type: 'other', value: ''});
     }
-  }
-
-  ionViewDidLoad() {
   }
 
   openScanner() {
@@ -95,7 +99,8 @@ export class EditContactView {
       }
       this.navCtrl.pop();
     }).catch((err) => {
-      this.logger.warn(err);
+      this.setDefaultValues();
+      this.logger.warn('Error processing contact', err);
       return this.toastCtrl.create({
         message: 'Error processing contact: ' + err.toString(),
         cssClass: ToastConfig.CLASS_ERROR
