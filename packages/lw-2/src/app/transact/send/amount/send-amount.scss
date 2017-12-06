@@ -7,17 +7,7 @@ send-amount-view {
     font-size: 12px;
   }
 
-  .container {
-    margin-top: 20%;
-  }
-
-  .scroll-content {
-    padding-top: 44px !important; //avg header high TODO get rid of magic numbers!!
-    margin-top: 0 !important;
-  }
-
-  .button-request,
-  .button-address {
+  .button-request, .button-address {
     font-size: 12px;
     height: 25px;
     min-height: 25px;
@@ -44,10 +34,6 @@ send-amount-view {
     position: relative;
   }
 
-  ion-footer {
-    padding: 0;
-  }
-
   .row {
     height: 50px;
     line-height: 50px;
@@ -56,6 +42,7 @@ send-amount-view {
     color: rgba(0, 0, 0, 0.6);
     overflow: hidden;
     white-space: nowrap;
+    background: white;
 
     button {
       padding: 0 !important;
