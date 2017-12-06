@@ -17,6 +17,7 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 import { MeritContact } from 'merit/shared/address-book/contact/contact.model';
+import { FiatAmount } from 'merit/shared/fiat-amount.model';
 
 /**
  * The confirm view is the final step in the transaction sending process 
@@ -128,11 +129,10 @@ export class SendConfirmView {
       tx.amountStr = this.txFormatService.formatAmountStr(tx.toAmount);
       tx.amountValueStr = tx.amountStr.split(' ')[0];
       tx.amountUnitStr = tx.amountStr.split(' ')[1];
-      this.txFormatService.formatAlternativeStr(tx.toAmount).then((v) => {
-        tx.alternativeAmountStr = v;
-        this.logger.info ("Show me the whole TX!!: ", tx);
+      this.txFormatService.formatToUSD(tx.toAmount).then((v) => {
+        tx.alternativeAmountStr = new FiatAmount(v).amountStr;
       });
-      this.txData = tx;
+      this.txData = _.cloneDeep(tx);
     }
 
     updateAmount();
