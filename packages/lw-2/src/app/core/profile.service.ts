@@ -810,9 +810,6 @@ export class ProfileService {
         let w = wallets;
         if (_.isEmpty(w)) return resolve();
 
-        //let l = w.length;
-        let l = 1; //temp!!
-        let j = 0;
         let notifications = [];
 
 

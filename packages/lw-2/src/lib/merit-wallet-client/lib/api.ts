@@ -88,6 +88,10 @@ export class API {
   public email: string;
   public cachedBalance: string;
   public cachedBalanceUpdatedOn: string;
+  public totalNetworkValue: string;
+  public displayAddress: string; 
+  public miningRewards: string; 
+  public ambassadorRewards: string;
   
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -129,7 +133,7 @@ export class API {
       }
       
       return this.getNotifications(opts).then((notifications: any) => {
-        if (notifications.length > 0) {
+        if (notifications && notifications.length > 0) {
           this.lastNotificationId = (_.last(notifications) as any).id;
         }
 
