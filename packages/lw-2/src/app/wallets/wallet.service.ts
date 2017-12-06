@@ -960,9 +960,13 @@ export class WalletService {
     });
   }
 
-  public getMainAddresses(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
+  public getMainAddresses(wallet: MeritWalletClient, opts: any = {}): Promise<Array<any>> {
     opts.reverse = true;
-    return wallet.getMainAddresses(opts);
+    return wallet.getMainAddresses(opts).then((addresses) => {
+      return _.map(addresses, (address: any) => {
+        return address.address;
+      });
+    });
   }
 
   public getBalance(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
@@ -1379,23 +1383,29 @@ export class WalletService {
     });
   }
 
-  public getANV(wallet):Promise<any> {
+  public getANV(wallet: MeritWalletClient):Promise<any> {
+    this.logger.info("Getting ANV!!");
+    this.logger.info(wallet.credentials);
     return new Promise((resolve, reject) => {
-      return this.getAddress(wallet,false).then((address) => {
-        return wallet.getANV(address).then((anv) => {
+      return this.getMainAddresses(wallet).then((addresses) => {
+        this.logger.info("What is the address list?", addresses);
+        return wallet.getANV(addresses).then((anv) => {
+          this.logger.info("What is the ANV: ", anv);
           return resolve(anv);
         })
       });
     });
   }
 
-  public getRewards(wallet):Promise<any> {
+  public getRewards(wallet: MeritWalletClient):Promise<any> {
     return new Promise((resolve, reject) => {
-      return this.getAddress(wallet,false).then((address) => {
-        return wallet.getRewards(address).then((rewards) => {
-           let addressRewards = _.find(rewards, { address: address });
-           if (!addressRewards) return reject();
-           return resolve(addressRewards);
+      return this.getMainAddresses(wallet).then((addresses) => {  
+        this.logger.info("What is the address list?", addresses);        
+        return wallet.getRewards(addresses).then((rewards) => {
+          return resolve (rewards); 
+          // let addressRewards = _.find(rewards, { address: address });
+          //  if (!addressRewards) return reject();
+          //  return resolve(addressRewards);
         });
       });
     });
