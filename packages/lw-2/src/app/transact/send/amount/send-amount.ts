@@ -30,6 +30,7 @@ export class SendAmountView {
   public wallet:any;
   public amountCurrency:string;
   public loading:boolean;
+  public hasFunds:boolean;
 
 
   private LENGTH_EXPRESSION_LIMIT = 19;
@@ -55,7 +56,8 @@ export class SendAmountView {
   ionViewDidLoad() {
     console.log('Params', this.navParams.data);
     this.loading = true;
-    this.updateHasFunds().then(() => {
+    return this.profileService.hasFunds().then((hasFunds) => {
+      this.hasFunds = hasFunds;
       this.contact = this.navParams.get('contact');
       this.sending = this.navParams.get('sending');
       this.displayName = !_.isEmpty(this.contact.name) ? this.contact.name.formatted : this.contact.meritAddresses[0].address;
@@ -74,13 +76,6 @@ export class SendAmountView {
         this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
       ];
       this.amountCurrency = this.availableUnits[0];
-    });
-  }
-
-  private updateHasFunds(): Promise<void> {
-    return this.profileService.hasFunds().then((hasFunds) => {
-      this.hasFunds = hasFunds;
-      return Promise.resolve();
     });
   }
 
