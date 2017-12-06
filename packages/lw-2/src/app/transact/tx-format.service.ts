@@ -58,10 +58,10 @@ export class TxFormatService {
   formatToUSD(micros: number): Promise<any> {
     return new Promise((resolve, reject) => {
       let v1;
-      if (isNaN(micros)) resolve();
+      if (isNaN(micros)) return resolve();
       v1 = this.rate.toFiat(micros, 'USD');
-      if (!v1) resolve(null);
-      resolve(v1.toFixed(2));
+      if (!v1) return resolve(null);
+      return resolve(v1.toFixed(2));
     });
   };
 
