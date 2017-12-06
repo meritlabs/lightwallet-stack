@@ -1,5 +1,5 @@
 import { ConfigService } from './../../../shared/config.service';
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, IonicPage, ModalController, LoadingController } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { WalletService } from 'merit/wallets/wallet.service';
@@ -70,7 +70,8 @@ export class SendConfirmView {
     private modalCtrl: ModalController,
     private notificationService: NotificationService,
     private loadingCtrl: LoadingController,
-    private easySendService: EasySendService
+    private easySendService: EasySendService,
+    private zone: NgZone
   ) { 
     this.logger.info("Hello SendConfirm View");
     this.walletConfig = this.configService.get().wallet;
@@ -95,10 +96,10 @@ export class SendConfirmView {
     }
 
     if(this.recipient.sendMethod != 'address') {
-      await this.updateEasySendData();
+      this.updateEasySendData();
     }
     this.logger.log('ionViewDidLoad txData', this.txData);
-    await this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
+    this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
       this.logger.error('There was an error in updateTx:', err);
     });
     
@@ -123,18 +124,18 @@ export class SendConfirmView {
 
     let updateAmount = () => {
       if (!tx.toAmount) return;
-
       // Amount
       tx.amountStr = this.txFormatService.formatAmountStr(tx.toAmount);
       tx.amountValueStr = tx.amountStr.split(' ')[0];
       tx.amountUnitStr = tx.amountStr.split(' ')[1];
       this.txFormatService.formatAlternativeStr(tx.toAmount).then((v) => {
         tx.alternativeAmountStr = v;
+        this.logger.info ("Show me the whole TX!!: ", tx);
       });
+      this.txData = tx;
     }
 
     updateAmount();
-    this.refresh();
 
     // End of quick refresh, before wallet is selected.
     if (!wallet) return Promise.resolve();
@@ -164,7 +165,9 @@ export class SendConfirmView {
           txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
 
           tx.txp = txpOut;
-          this.txData = tx;
+          this.zone.run(() => {
+            this.txData = tx;
+          });
 
           return Promise.resolve();
         }).catch((err) => {this.logger.warn("could it be the txFormat?", err)});
