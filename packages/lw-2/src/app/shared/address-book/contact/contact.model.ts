@@ -1,4 +1,6 @@
 import * as _ from 'lodash';
+let Bitcore = require('bitcore-lib');
+
 
 export interface AddressBook { [key:string]:MeritContact; } 
 
@@ -12,9 +14,14 @@ export interface MeritContact extends Searchable {
 }
 
 export let isValidMeritContact = (contact: MeritContact): boolean => {
-  // TODO: implement
-  return !(_.isEmpty(contact.meritAddress)  || _.isEmpty(contact.name));
-}
+
+  let isAddressValid = (address) => {
+    return (!_.isEmpty(address) && Bitcore.Address.isValid(address));
+  };
+
+  return (isAddressValid(contact.meritAddress) && contact.name);
+
+};
 
 export let emptyMeritContact = (): MeritContact => {
   return ({

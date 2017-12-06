@@ -45,7 +45,7 @@ export class AddressBookService {
     if(!this.platformService.isMobile) return Promise.resolve([]);
 
     return Promise.resolve(this.contacts.find(fields, options)).catch((err) => {
-      return Promise.reject(new Error('failed to search contacts: ' + err))
+      return Promise.resolve([]);
     })
   };
 
@@ -54,26 +54,26 @@ export class AddressBookService {
   }
 
   public add(entry: MeritContact, network: string): Promise<AddressBook> {
-    return this.getAddressbook(network).then((addressBook) => {
-      if (addressBook[entry.meritAddress]) return Promise.reject(new Error('contact already exists'));
-      addressBook[entry.meritAddress] = entry;
-      return Promise.resolve(JSON.stringify(addressBook));
-    }).then((ab) => {
-      return this.persistenceService.setAddressbook(network, ab).then(() => {
-        return this.list(network);
+    return new Promise((resolve, reject) => {
+      return this.getAddressbook(network).then((addressBook) => {
+        if (addressBook[entry.meritAddress]) return reject(new Error('contact already exists'));
+        addressBook[entry.meritAddress] = entry;
+        return this.persistenceService.setAddressbook(network, addressBook).then(() => {
+          return resolve();
+        });
       });
     });
   };
 
   public remove(addr: string, network: string): Promise<AddressBook> {
-    return this.getAddressbook(network).then((addressBook) => {
-      if (_.isEmpty(addressBook)) return Promise.reject(new Error('Addressbook is empty'));
-      if (!addressBook[addr]) return Promise.reject(new Error('Entry does not exist'));
-      delete addressBook[addr];
-      return Promise.resolve(JSON.stringify(addressBook));
-    }).then((ab) => {
-      return this.persistenceService.setAddressbook(network, ab).then(() => {
-        return this.list(network);
+    return new Promise((resolve, reject) => {
+      this.getAddressbook(network).then((addressBook) => {
+        if (_.isEmpty(addressBook)) return Promise.reject(new Error('Addressbook is empty'));
+        if (!addressBook[addr]) return Promise.reject(new Error('Entry does not exist'));
+        delete addressBook[addr];
+        return this.persistenceService.setAddressbook(network, addressBook).then(() => {
+          return resolve();
+        });
       });
     });
   };
@@ -84,10 +84,12 @@ export class AddressBookService {
     });
   };
 
-  private getAddressbook(network: string): Promise<AddressBook> {
-    return this.persistenceService.getAddressbook(network).then((ab) => {
-      if(_.isEmpty) return {};
-      return JSON.parse(ab);
+  public getAddressbook(network: string): Promise<AddressBook> {
+    return new Promise((resolve, reject) => {
+      return this.persistenceService.getAddressbook(network).then((ab) => {
+        if(_.isEmpty(ab)) ab = {};
+        resolve(ab);
+      });
     });
   }
 }

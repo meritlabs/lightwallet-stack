@@ -5,7 +5,7 @@
 
         <ion-buttons end>
             <button ion-button (click)="toAddContact()" translate>
-                <ion-icon name="plus"></ion-icon>
+                <ion-icon name="add"></ion-icon>
             </button>
         </ion-buttons>
     </ion-navbar>
@@ -14,8 +14,9 @@
 
 <ion-content>
 
+    <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
-    <ion-card *ngIf="!hasContacts()" padding>
+    <ion-card *ngIf="!loading && !hasContacts()" padding>
         <div translate>
 
             <div class="icon">
@@ -26,9 +27,21 @@
         </div>
     </ion-card>
 
-        <div class="control-buttons">
-            <button  (click)="toAddContact()" ion-button >Add contact</button>
-        </div>
+    <div class="control-buttons" *ngIf="!hasContacts()">
+        <button  (click)="toAddContact()" ion-button >Add contact</button>
+    </div>
+
+    <ion-list *ngIf="hasContacts()">
+        <ion-item *ngFor="let contact of contacts" (click)="toContact(contact)">
+            <ion-avatar class="icon big-icon-svg" item-start>
+                <gravatar class="send-gravatar" [name]="contact.name" width="30" height="30" [email]="contact.email" ></gravatar>
+            </ion-avatar>
+            <h4>{{contact.name}}</h4>
+            <ion-avatar item-end *ngIf="contact.meritAddress" class="merit-avatar">
+                <img class="merit-logo" src="assets/img/16x16.png">
+            </ion-avatar>
+        </ion-item>
+    </ion-list>
 
 
 </ion-content>

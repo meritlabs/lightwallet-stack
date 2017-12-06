@@ -1,19 +1,19 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { AddContactView } from 'merit/shared/address-book/add-contact/add-contact';
+import { EditContactView } from 'merit/shared/address-book/edit-contact/edit-contact';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { Contacts } from '@ionic-native/contacts';
 
 @NgModule({
   declarations: [
-    AddContactView,
+    EditContactView,
   ],
   imports: [
-    IonicPageModule.forChild(AddContactView),
+    IonicPageModule.forChild(EditContactView),
   ],
   providers: [
     Contacts,
     AddressBookService,
   ]
 })
-export class AddContactComponentModule {}
+export class EditContactComponentModule {}
