@@ -76,7 +76,7 @@ PublicKey.prototype._classifyArgs = function(data, extra) {
   if (data instanceof Point) {
     info.point = data;
   } else if (data.x && data.y) {
-    info = PublicKey._transformObject(data);
+    info = PublicKey._transformObject(data, extra);
   } else if (typeof(data) === 'string') {
     info = PublicKey._transformDER(new Buffer(data, 'hex'));
   } else if (PublicKey._isBuffer(data)) {
@@ -200,12 +200,13 @@ PublicKey._transformX = function(odd, x) {
  * @returns {Object} An object with keys: point and compressed
  * @private
  */
-PublicKey._transformObject = function(json) {
+PublicKey._transformObject = function(json, extra) {
   var x = new BN(json.x, 'hex');
   var y = new BN(json.y, 'hex');
   var point = new Point(x, y);
   return new PublicKey(point, {
-    compressed: json.compressed
+    compressed: json.compressed,
+    network: extra.network
   });
 };
 

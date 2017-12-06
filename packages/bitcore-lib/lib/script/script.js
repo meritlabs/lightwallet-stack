@@ -250,7 +250,7 @@ Script.prototype._chunkToString = function(chunk, type) {
       } else {
         str = str + ' ' + Opcode(opcodenum).toString();
       }
-    } else {
+    } else if (typeof opcodenum !== 'undefined') {
       var numstr = opcodenum.toString(16);
       if (numstr.length % 2 !== 0) {
         numstr = '0' + numstr;
@@ -888,7 +888,7 @@ Script.buildSimpleVaultScript = function(tag) {
 
   s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] <tag>| 
    .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] | 
-   .add(Opcode. OP_NTOALTSTACK               )// <out index> <sig> <mode> | [addresses]
+   .add(Opcode. OP_NTOALTSTACK               )// <sig> <mode> <spend key> <renew key> | [addresses]
    .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> <spend key> | [addresses] <renew key>
    .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> | [addresses] <renew key> <spend key>
    .add(        Opcode.smallInt(0)           )// <sig> <mode> 0 | [addresses] <renew key> <spend key>
@@ -940,20 +940,42 @@ Script.buildSimpleVaultScript = function(tag) {
 };
 
 /**
- * Build a vault input which selects mode
- * be one of the public keys used in the easysend out script.
- * @param {buffer} signature to be append to the script
+ * @param {mode} Mode to select, 0 is spend, and 1 is renew.
+ * @param {signature} signature to be append to the script
+ * @param {vaultScript} The vault script that was signed.
  * @returns {Script}
  */
-Script.buildVaultRenewIn = function(signature, vaultScript) {
+Script.buildVaultIn = function(mode, signature, vaultScript) {
   var s = new Script();
   var sigBuf = BufferUtil.concat([
     signature.toDER(),
     BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)
   ]);
   s.add(sigBuf);
-  s.add(Opcode.smallInt(1)); //renew mode is 1
+  s.add(Opcode.smallInt(mode)); //spend is 0, and renew mode is 1
   s.add(vaultScript.toBuffer());
+  return s;
+};
+
+/**
+ * Build a vault input which selects renew mode
+ * @param {signature} signature to be append to the script
+ * @param {vaultScript} The vault script that was signed.
+ * @returns {Script}
+ */
+Script.buildVaultRenewIn = function(signature, vaultScript) {
+  return Script.buildVaultIn(1, signature, vaultScript);
+};
+
+
+/**
+ * Build a vault input which selects spend mode
+ * @param {signature} signature to be append to the script
+ * @param {vaultScript} Vault script that was signed.
+ * @returns {Script}
+ */
+Script.buildVaultSpendIn = function(signature, vaultScript) {
+  return Script.buildVaultIn(0, signature, vaultScript);
   return s;
 };
 

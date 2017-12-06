@@ -1,17 +1,16 @@
-// TODO: Improve details spaces and make relative.  
 // TODO: Improve details spaces and make relative.
 wallet-details-view {
   .scroll-content {
     margin-top: 0 !important;
   }
 
-
   ion-header {
     color: color($colors, light);
     &:after {
       display: none;
     }
-    ion-navbar, .toolbar-background {
+    ion-navbar,
+    .toolbar-background {
       background: transparent;
       border: none !important;
     }
@@ -37,7 +36,7 @@ wallet-details-view {
     background-color: $wallet-default-color;
   }
   .balance-str {
-   padding-top: 10%;
+    padding-top: 10%;
     font-size: 35px;
     font-weight: 600;
   }
@@ -57,7 +56,7 @@ wallet-details-view {
     position: absolute;
     right: 40px;
     text-align: end;
-    bottom: 6px; 
+    bottom: 6px;
     .amount {
       color: color($colors, primary);
       font-size: 16px;
@@ -67,5 +66,4 @@ wallet-details-view {
       color: #666;
     }
   }
-
 }

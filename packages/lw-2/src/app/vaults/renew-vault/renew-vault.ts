@@ -13,7 +13,7 @@ import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service'
 export interface IWhitelistEntry {
     id: string,
     name: string,
-    pubKey: string,
+    address: string,
     type: string,
 }
 
@@ -74,9 +74,9 @@ export class VaultRenewView {
     const whitelist = _.map(this.formData.whitelist, (w: any) => {
       let key; 
       if (w.type == 'wallet') {
-        key = this.bitcore.HDPublicKey.fromString(w.pubKey);
+        key = this.bitcore.HDPublicKey.fromString(w.address).publicKey.toAddress();
       } else {
-        key = this.bitcore.Address.fromString(w.pubKey);
+        key = this.bitcore.Address.fromString(w.address);
       }
       return key.toBuffer();
     });
@@ -111,15 +111,16 @@ export class VaultRenewView {
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
-          return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
+          const addr = new this.bitcore.HDPublicKey(w.credentials.xPubKey).publicKey.toString();
+          return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet' };
         });
       }), 
       // fetch users vaults
       this.getAllWVaults().then((vaults) => {
         return _.map(vaults, (v) => {
           const name = v.name || v._id;
-          const key = new this.bitcore.Address(v.address).toString();
-          return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' }; 
+          const addr = new this.bitcore.Address(v.address).toString();
+          return { 'id': v._id, 'name': name, 'address': addr, 'type': 'vault' }; 
         });
       }),
     ]).then((arr: Array<Array<IWhitelistEntry>>) => {
@@ -127,7 +128,7 @@ export class VaultRenewView {
       const filtered = _.reject(whitelistCandidates, { id: this.vault._id });
       this.whitelistCandidates = filtered;
       _.each(this.vault.whitelist, (wl) => {
-        const found = _.find(filtered, { pubKey: wl });
+        const found = _.find(filtered, { address: wl });
         const results = [];
         if (found && found.id != this.vault.id) {
           results.push(found);
