@@ -1,4 +1,7 @@
 @import "../send-module";
 send-confirm-view {
   @extend %send-module;
+  .fee-rate, .recipient-label {
+    margin-right: 0.3em;
+  }
 }
