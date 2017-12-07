@@ -165,7 +165,7 @@ export class VaultDetailsView {
 
   private formatAmounts(): void {
     this.profileService.getHeadWalletClient().then((walletClient: MeritWalletClient) => {
-      this.vault.altAmount = this.rateService.toFiat(this.vault.amount,walletClient.cachedStatus.alternativeIsoCode);
+      this.vault.altAmount = this.rateService.fromMicrosToFiat(this.vault.amount,walletClient.cachedStatus.alternativeIsoCode);
       this.vault.altAmountStr = new FiatAmount(this.vault.altAmount);
       this.vault.amountStr = this.txFormatService.formatAmountStr(this.vault.amount);
     });

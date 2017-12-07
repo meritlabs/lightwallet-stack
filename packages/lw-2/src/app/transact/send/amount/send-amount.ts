@@ -141,7 +141,7 @@ export class SendAmountView {
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
       this.amountMerit = this.amount;
     } else {
-      this.amountMerit = this.rateService.fromFiat(this.amount, this.amountCurrency);
+      this.amountMerit = this.rateService.fromFiatToMerit(this.amount, this.amountCurrency);
     }
   }
 
@@ -170,13 +170,13 @@ export class SendAmountView {
 
   fromFiat(val: number) {
     // TODO: implement next line correctly - Need: rateService
-    //return parseFloat((rateService.fromFiat(val, fiatCode, availableUnits[altUnitIndex].id) * satToUnit).toFixed(unitDecimals));
+    //return parseFloat((rateService.fromFiatToMicros(val, fiatCode, availableUnits[altUnitIndex].id) * satToUnit).toFixed(unitDecimals));
   };
 
   toFiat(val) {
     // TODO: implement next line correctly - Need: rateService
     /*if (!rateService.getRate(fiatCode)) return;
-    return parseFloat((rateService.toFiat(val * unitToMicro, fiatCode, availableUnits[unitIndex].id)).toFixed(2));*/
+    return parseFloat((rateService.fromMicrosToFiat(val * unitToMicro, fiatCode, availableUnits[unitIndex].id)).toFixed(2));*/
   };
 
   finish() {
