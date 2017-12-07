@@ -19,8 +19,8 @@ export class SendAmountView {
   public contact: MeritContact;
   public sendingOptions: any[];
   public recipient: any;
-  public amount: string;
-  public amountMerit: string;
+  public amount: number;
+  public amountMerit: number;
   public smallFont: boolean;
   public allowSend: boolean;
   public globalResult: string;
@@ -49,7 +49,7 @@ export class SendAmountView {
     private modalCtrl:ModalController,
     private rateService:RateService
   ) {
-    this.amount = '';
+    this.amount = 0;
     this.allowSend = false;
   }
   
@@ -134,70 +134,31 @@ export class SendAmountView {
 
   toggleCurrency() {
     this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
-    this.changeAmount();
+    this.updateAmountMerit();
   }
 
-  changeAmount() {
-
+  updateAmountMerit() {
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
       this.amountMerit = this.amount;
     } else {
-      this.amountMerit = this.rateService.fromFiat(this.amount, this.amountCurrency).toString();
+      this.amountMerit = this.rateService.fromFiat(this.amount, this.amountCurrency);
     }
   }
 
-  
   @HostListener('document:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
     if (!event.key) return;
     if (event.keyCode === 13) this.finish();
     this.processAmount();
   }
 
-  isOperator(val: string) {
-    const regex = /[\/\-\+\x\*]/;
-    return regex.test(val);
-  };
-
-  isExpression(val: string) {
-    const regex = /^\.?\d+(\.?\d+)?([\/\-\+\*x]\d?\.?\d+)+$/;
-    return regex.test(val);
-  };
-
   checkFontSize() {
-    if (this.amount && this.amount.length >= this.SMALL_FONT_SIZE_LIMIT) this.smallFont = true;
+    if (this.amount && this.amount.toString().length >= this.SMALL_FONT_SIZE_LIMIT) this.smallFont = true;
     else this.smallFont = false;
   };
 
   processAmount() {
-    var formatedValue = this.format(this.amount);
-    var result = this.evaluate(formatedValue);
-    this.allowSend = _.isNumber(result) && +result > 0;
-    if (_.isNumber(result)) {
-      this.globalResult = this.isExpression(this.amount) ? '= ' + this.processResult(result) : '';
-
-      this.globalResult = result.toString();
-    }
-  };
-
-  format(val: string) {
-    if (!val) return;
-
-    var result = val.toString();
-
-    if (this.isOperator(_.last(val))) result = result.slice(0, -1);
-
-    return result.replace('x', '*');
-  };
-
-  evaluate(val: string) {
-    var result;
-    try {
-      result = eval(val);
-    } catch (e) {
-      return 0;
-    }
-    if (!_.isFinite(result)) return 0;
-    return result;
+    this.updateAmountMerit();
+    this.allowSend = this.amountMerit > 0;
   };
 
   processResult(val: number) {
@@ -220,6 +181,6 @@ export class SendAmountView {
 
   finish() {
     // TODO: We should always be sending from view.
-    this.navCtrl.push('SendConfirmView', {recipient: this.recipient, toAmount: parseInt(this.globalResult), wallet: this.navParams.get('wallet'), toName: 'Donken Heinz'});
+    this.navCtrl.push('SendConfirmView', {recipient: this.recipient, toAmount: this.amountMerit, wallet: this.wallet, toName: 'Donken Heinz'});
   }
 }
