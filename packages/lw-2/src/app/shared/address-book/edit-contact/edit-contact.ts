@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as Promise from 'bluebird';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, AlertController } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { PopupService } from 'merit/core/popup.service';
 import { MeritToastController } from "merit/core/toast.controller";
@@ -34,7 +34,8 @@ export class EditContactView {
     private toastCtrl:MeritToastController,
     private meritContactBuilder:MeritContactBuilder,
     private meritContactService:MeritContactService,
-    private contacts:Contacts
+    private contacts:Contacts,
+    private alertCtrl:AlertController
   ) {
 
     this.originalContact = this.navParams.get('contact');
@@ -121,14 +122,49 @@ export class EditContactView {
     this.newContact.emails.push({type: 'email', value: ''});
   }
 
-
-
   addPhone() {
     this.newContact.phoneNumbers.push({type: 'email', value: ''});
   }
 
   removePhone(phone) {
     this.newContact.phoneNumbers = this.newContact.phoneNumbers.filter((e) => e.value != phone.value);
+  }
+
+  isLocalContact() {
+    console.log(this.originalContact.id);
+    return (this.originalContact.id.indexOf('merit') == 0);
+  }
+
+  removeContact() {
+
+      let confirmMessage = this.isLocalContact()
+        ? 'Are you sure you want to remove Merit contact?'
+        : 'Are you sure you want to delete contact? This action will remove merit data only and will not affect anything in your device contact list';
+
+      let removeHandler = () => {
+        return this.meritContactService.remove(this.originalContact).then(() => {
+          this.navCtrl.remove(2,1);
+          this.navCtrl.pop();
+        });
+      };
+
+      this.alertCtrl.create({
+        title: 'Remove data?',
+        message: confirmMessage,
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {}
+          },
+          {
+            text: 'Remove',
+            handler: () => {
+              removeHandler();
+            }
+          }
+        ]
+      }).present();
   }
 
 }
