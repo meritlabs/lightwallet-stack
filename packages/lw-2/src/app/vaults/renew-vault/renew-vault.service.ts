@@ -46,7 +46,6 @@ export class RenewVaultService {
         }).then((tx) => {
             return this.walletClient.broadcastRawTx(tx);
         }).catch((err) => {
-            console.log('Error while renewing vault:', err);
             throw err;
         });;
     }
