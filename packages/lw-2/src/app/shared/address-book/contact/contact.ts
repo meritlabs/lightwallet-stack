@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, SecurityContext } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { MeritContact } from 'merit/shared/address-book/contact/contact.model';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
@@ -77,7 +77,7 @@ export class ContactView {
   }
 
   sanitizePhotoUrl(url:string) {
-    return this.sanitizer.bypassSecurityTrustUrl(url);
+    return this.sanitizer.sanitize(SecurityContext.URL, url);
   }
 
 

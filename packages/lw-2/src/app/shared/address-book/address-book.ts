@@ -7,6 +7,7 @@ import { Logger } from 'merit/core/logger';
 import { Contact } from '@ionic-native/contacts';
 import { MeritContact } from "merit/shared/address-book/merit-contact.model";
 import { DomSanitizer } from '@angular/platform-browser';
+import { SecurityContext } from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 @IonicPage({
   defaultHistory: ['SettingsView']
@@ -67,7 +68,7 @@ export class AddressBookView {
 
 
   sanitizePhotoUrl(url:string) {
-    return this.sanitizer.bypassSecurityTrustUrl(url);
+    return this.sanitizer.sanitize(SecurityContext.URL, url);
   }
 
   doRefresh(refresher) {

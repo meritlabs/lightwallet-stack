@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, SecurityContext } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import * as Promise from 'bluebird';
 
@@ -248,7 +248,7 @@ export class SendView {
   }
 
   sanitizePhotoUrl(url:string) {
-    return this.sanitizer.bypassSecurityTrustUrl(url);
+    return this.sanitizer.sanitize(SecurityContext.URL, url);
   }
 
 }
