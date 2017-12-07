@@ -112,7 +112,7 @@ ion-item textarea {
 }
 
 .toast-error {
-  toast {
+  .toast-message {
     background: color($colors, 'danger');
   }
 }
