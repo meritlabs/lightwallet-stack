@@ -15,6 +15,7 @@ export interface IWhitelistEntry {
     name: string,
     address: string,
     type: string,
+    walletClient?: any,
 }
 
 export interface IVaultRenewViewModel {
@@ -106,8 +107,8 @@ export class VaultRenewView {
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
-          const addr = new this.bitcore.HDPublicKey(w.credentials.xPubKey).publicKey.toAddress().toString();
-          return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet' };
+          const addr = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
+          return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet', walletClient: w };
         });
       }), 
       // fetch users vaults
@@ -122,13 +123,26 @@ export class VaultRenewView {
       const whitelistCandidates = _.flatten(arr);
       const filtered = _.reject(whitelistCandidates, { id: this.vault._id });
       this.whitelistCandidates = filtered;
-      _.each(this.vault.whitelist, (wl) => {
-        const found = _.find(filtered, { address: wl });
-        const results = [];
-        if (found && found.id != this.vault.id) {
-          results.push(found);
-        }
-        this.formData.whitelist = results; // Do not push to model directly, it will break change detection in Angular
+      
+      return Promise.map(this.vault.whitelist, (wl) => {
+        return Promise.map(whitelistCandidates, (candidate) => {
+          if (candidate.type === 'vault') {
+            if (wl == candidate.address) return candidate;
+          } else { 
+            return candidate.walletClient.getMainAddresses({}).then((addresses: Array<any>) => {
+              const found = _.find(addresses, { address: wl });
+              if (found) {
+                candidate.walletClient = null;
+                return candidate;
+              }
+            });
+          }
+          return null;
+        });
+      }).then((unfilteredWhitelist) => {
+        const results = _.compact(_.flatten(unfilteredWhitelist));
+        this.formData.whitelist = results;
+        return Promise.resolve();
       });
     });
   }
