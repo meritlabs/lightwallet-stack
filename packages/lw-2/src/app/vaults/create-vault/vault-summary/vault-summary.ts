@@ -3,7 +3,7 @@ import { IonicPage, NavController } from 'ionic-angular';
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
 
 @IonicPage({
-  defaultHistory: ['ProfileView']
+  defaultHistory: ['WalletsView']
 })
 @Component({
   selector: 'view-create-vault-summary',

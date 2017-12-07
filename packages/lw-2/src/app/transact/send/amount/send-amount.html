@@ -57,7 +57,7 @@
     <span *ngIf="!loading && !hasFunds">
         <div text-center padding>Before sending Merit you should buy some!</div>
         <div class="control-buttons">
-            <button ion-button primary margin-top >Buy Merit</button>
+            <button ion-button primary margin-top (click)="toBuyAndSell()">Buy Merit</button>
         </div>
     </span>
 
