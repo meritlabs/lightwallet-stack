@@ -127,7 +127,7 @@ export class WalletsView {
         return this.vaultsService.getVaults(_.head(this.wallets));
       }).then((vaults) => {
         _.each(vaults, (vault) => {
-          vault.altAmount = this.rateService.toFiat(vault.amount, _.head(this.wallets).cachedStatus.alternativeIsoCode);
+          vault.altAmount = this.rateService.fromMicrosToFiat(vault.amount, _.head(this.wallets).cachedStatus.alternativeIsoCode);
           vault.altAmountStr = new FiatAmount(vault.altAmount);
           vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
         });
