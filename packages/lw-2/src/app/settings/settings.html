@@ -29,14 +29,13 @@
         <ion-item-divider translate>
             Preferences
         </ion-item-divider>
+        <ion-item (click)="toNotifications()">
+                <ion-icon name="notifications" item-start></ion-icon>
+                Notifications
+              </ion-item>
         <ion-item (click)="toAddressbook()">
             <ion-icon name="contacts" item-start></ion-icon>
             <ion-label translate>Address book</ion-label>
-        </ion-item>
-        <ion-item>
-            <ion-icon name="notifications" item-start></ion-icon>
-            <ion-label translate>Email Notifications</ion-label>
-            <ion-toggle (ionChange)="toggleNotifications($event.value)" [(ngModel)]="emailNotificationsEnabled"></ion-toggle>
         </ion-item>
 
 
