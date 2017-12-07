@@ -12,7 +12,7 @@ import { Logger } from 'merit/core/logger';
 
 
 @IonicPage({
-  defaultHistory: ['ProfileView']
+  defaultHistory: ['WalletsView']
 })
 @Component({
   selector: 'view-create-vault-general',
