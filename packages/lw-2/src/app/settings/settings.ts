@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, AlertController, ModalController } from 'ionic-angular';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { ConfigService } from "merit/shared/config.service"; 
-import { EmailService } from 'merit/shared/email.service';
 import { Logger } from 'merit/core/logger';
 
 @IonicPage()
@@ -31,7 +30,6 @@ export class SettingsView {
     private inAppBrowser:InAppBrowser,
     private modalCtrl:ModalController,
     private configService:ConfigService,
-    private emailService:EmailService,
     private logger:Logger
   ) {
     let config = this.configService.get();
@@ -39,7 +37,6 @@ export class SettingsView {
     this.currentAlternativeName = config.wallet.settings.alternativeName;
     this.emailNotificationsEnabled = config.emailNotifications.enabled; 
 
-    this.latestEmail = this.emailService.getEmailIfEnabled();
   }
 
   ionViewDidLoad() {
@@ -94,6 +91,10 @@ export class SettingsView {
     this.navCtrl.push('SettingsAboutView');
   }
 
+  toNotifications() {
+    this.navCtrl.push('NotificationsView')
+  }
+
   help() {
 
     let url = this.configService.get().help.url;
@@ -113,18 +114,4 @@ export class SettingsView {
 
   }
 
-  toggleNotifications(notificationEnabled) {
-    
-    if (!this.latestEmail) return; //todo check if email is set 
-
-    let opts = {
-      enabled: notificationEnabled,
-      email: this.latestEmail.value
-    };
-
-    this.emailService.updateEmail(opts).then(() => {
-      this.latestEmail = this.emailService.getEmailIfEnabled();
-    })
-
-  }
 }
