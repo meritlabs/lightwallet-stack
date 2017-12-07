@@ -55,7 +55,8 @@ export class SendConfirmView {
   private wallets: Array<MeritWalletClient>;
   private unitToMicro: number;
   private configFeeLevel: string;
-  private showAddress: Boolean = true;
+  private showAddress: boolean = true;
+  private showMerit: boolean = true;
 
   constructor(
     private configService: ConfigService,
@@ -113,6 +114,10 @@ export class SendConfirmView {
     return this.txData.toAddress || "no one";
   }
 
+  public toggleCurrency(): void {
+    this.showMerit = !this.showMerit;
+  }
+
   // TODO: implement
   private refresh(): void {}
 
@@ -159,7 +164,7 @@ export class SendConfirmView {
             txpOut.alternativeFeeStr = v;
           
 
-          let per = (txpOut.fee / (txpOut.toAmount + txpOut.fee) * 100);
+          let per = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
           txpOut.feeRatePerStr = per.toFixed(2) + '%';
           txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
 
