@@ -6,19 +6,19 @@
 
 
 <ion-content>
-  <ion-list>
+  <span margin-top>
 
-    <ion-item class="row">
+    <span class="row">
       <span class="label" text-left translate>Sending</span>
-      <div class="amount-label" item-right *ngIf="txData">
+      <div text-right item-right [style.flex]="1" *ngIf="txData">
         <span class="amount">{{showMerit ? txData.amountValueStr : txData.alternativeAmountStr}}</span>
         <button ion-button clear color="primary" (click)="toggleCurrency()">
             {{showMerit ? "MRT" : "USD"}}
         </button>
       </div>
-    </ion-item>
+    </span>
 
-    <ion-item class="row" *ngIf="txData">
+    <span class="row" *ngIf="txData">
       <span class="label" text-left translate>To</span>
       <span item-right text-right [style.flex]="1">
         {{recipient.label}}
@@ -32,8 +32,8 @@
           <span class="wallet-name">{{displayName()}}</span>
         </div>
       </div>
-    </ion-item>
-    <ion-item class="row" (click)="selectWallet()" *ngIf="wallet">
+    </span>
+    <span class="row" (click)="selectWallet()" *ngIf="wallet">
       <span text-left class="label">From</span>
       <span item-right text-right [style.flex]="1">
         {{wallet.name || wallet._id}}
@@ -43,28 +43,16 @@
           </i>
         </button>
       </span>
-    </ion-item>
-    <ion-item class="row" *ngIf="wallet" (click)="chooseFeeLevel(tx, wallet)">
+    </span>
+    <span class="row" *ngIf="wallet">
       <span text-left class="label">Fee: {{showMerit ? txData.txp.feeStr : txData.txp.alternativeFeeStr}}</span>
-      <span item-right text-right class="fee-rate" *ngIf="txData.txp.feeRatePerStr"> &middot;
+      <span item-right text-right [style.flex]="1" class="fee-rate" *ngIf="txData.txp.feeRatePerStr"> &middot;
         <i class="ion-alert-circled warn" *ngIf="txData.txp.feeToHigh"></i> &nbsp;
         <span class="fee-rate" [class.warn]="txData.txp.feeToHigh" translate> {{txData.txp.feeRatePerStr}} of the sending amount </span>
       </span>
       <i class="icon bp-arrow-right"></i>
-    </ion-item>
-    <ion-item class="info">
-      <a class="item item-icon-right" *ngIf="wallet" (click)="showDescriptionPopup(tx)">
-        <span class="label" translate>Add Memo</span>
-        <span class="item-note m10l">
-          {{txData.description}}
-        </span>
-        <i class="icon bp-arrow-right"></i>
-      </a>
-      <div class="text-center" *ngIf="noWalletMessage">
-        <span class="badge badge-energized">{{noWalletMessage}}</span>
-      </div>
-    </ion-item>
-  </ion-list>
+    </span>
+  </span>
   <div class="control-buttons">
     <button ion-button primary margin-top [disabled]="!wallet" [class.enter]="sendStatus" (click)="approve()">
       <span>Confirm</span>
