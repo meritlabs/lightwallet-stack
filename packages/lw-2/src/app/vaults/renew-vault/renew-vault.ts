@@ -72,12 +72,7 @@ export class VaultRenewView {
   toVault() {
     const newVault = _.cloneDeep(this.vault);
     const whitelist = _.map(this.formData.whitelist, (w: any) => {
-      let key; 
-      if (w.type == 'wallet') {
-        key = this.bitcore.HDPublicKey.fromString(w.address).publicKey.toAddress();
-      } else {
-        key = this.bitcore.Address.fromString(w.address);
-      }
+      let key = this.bitcore.Address.fromString(w.address);
       return key.toBuffer();
     });
 
@@ -102,7 +97,7 @@ export class VaultRenewView {
   }
 
   compareWhitelistEntries(e1: IWhitelistEntry, e2: IWhitelistEntry): boolean {
-    return e1.type == e2.type && e1.id == e2.id;
+    return e1.type == e2.type && e1.address == e2.address;
   }
 
   private updateWhitelist(): Promise<any> {
@@ -111,7 +106,7 @@ export class VaultRenewView {
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
-          const addr = new this.bitcore.HDPublicKey(w.credentials.xPubKey).publicKey.toString();
+          const addr = new this.bitcore.HDPublicKey(w.credentials.xPubKey).publicKey.toAddress().toString();
           return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet' };
         });
       }), 
@@ -135,7 +130,6 @@ export class VaultRenewView {
         }
         this.formData.whitelist = results; // Do not push to model directly, it will break change detection in Angular
       });
-      console.log(this.whitelistCandidates, this.formData.whitelist);
     });
   }
 

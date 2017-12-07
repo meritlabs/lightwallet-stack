@@ -901,7 +901,7 @@ export class API {
         });
 
         let params = [
-          new Bitcore.PublicKey(newVault.spendPubKey.publicKey, {network: network}).toBuffer(),
+          new Bitcore.PublicKey(newVault.spendPubKey, {network: network}).toBuffer(),
           new Bitcore.PublicKey(newVault.masterPubKey, {network: network}).toBuffer(),
         ];
 
