@@ -193,12 +193,12 @@ export class WalletService {
           }).then(() => {
             return this.rateService.whenAvailable().then(() => {
 
-              let totalBalanceAlternative = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
-              let totalBalanceAlternativeStr = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
-              let pendingBalanceAlternative = this.rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode);
-              let lockedBalanceAlternative = this.rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
-              let spendableBalanceAlternative = this.rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode);
-              let alternativeConversionRate = this.rateService.toFiat(100000000, cache.alternativeIsoCode);
+              let totalBalanceAlternative = this.rateService.fromMicrosToFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
+              let totalBalanceAlternativeStr = this.rateService.fromMicrosToFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
+              let pendingBalanceAlternative = this.rateService.fromMicrosToFiat(cache.pendingAmount, cache.alternativeIsoCode);
+              let lockedBalanceAlternative = this.rateService.fromMicrosToFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
+              let spendableBalanceAlternative = this.rateService.fromMicrosToFiat(cache.spendableAmount, cache.alternativeIsoCode);
+              let alternativeConversionRate = this.rateService.fromMicrosToFiat(100000000, cache.alternativeIsoCode);
 
               cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
               cache.totalBalanceAlternativeStr = cache.totalBalanceAlternative.amountStr;

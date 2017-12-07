@@ -81,13 +81,32 @@ export class RateService {
     return this._alternatives;
   };
   
-  toFiat(micros, code) {
+  fromMicrosToFiat(micros, code) {
     return micros * this.SAT_TO_BTC * this.getRate(code);
   };
 
-  fromFiat(amount, code) {
-    return amount / this.getRate(code) * this.BTC_TO_SAT;
+  fromFiatToMicros(amount, code) {
+    let micros = amount / this.getRate(code) * this.BTC_TO_SAT;
+    return Math.ceil(micros);
   };
+
+  fromMeritToFiat(merit, code) {
+    let micros = this.mrtToMicro(merit);
+    return this.fromMicrosToFiat(micros, code);
+  };
+
+  fromFiatToMerit(amount, code) {
+    let micros = this.fromFiatToMicros(amount, code);
+    return this.microsToMrt(micros);
+  };
+
+  mrtToMicro(mrt) {
+    return mrt * this.BTC_TO_SAT;
+  }
+
+  microsToMrt(micros) {
+    return micros * this.SAT_TO_BTC;
+  }
 
   listAlternatives(sort: boolean) {
     var self = this;

@@ -24,7 +24,7 @@ export class ReceiveView {
   public address: string;
   public qrAddress:string;
   public amount:number;
-  public amountMerit:number;
+  public amountMicros:number;
   public availableUnits:Array<string>;
   public amountCurrency:string;
 
@@ -138,17 +138,15 @@ export class ReceiveView {
   changeAmount() {
 
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
-      this.amountMerit = this.amount;
+      this.amountMicros = this.rateService.mrtToMicro(this.amount);
     } else {
-      this.amountMerit = this.rateService.fromFiat(this.amount, this.amountCurrency);
+      this.amountMicros = this.rateService.fromFiatToMicros(this.amount, this.amountCurrency);
     }
     this.formatAddress();
   }
 
   private formatAddress() {
-    this.qrAddress = `${this.protocolHandler}:${this.address}${this.amountMerit ? '?amount='+this.amountMerit : ''}`;
+    this.qrAddress = `${this.protocolHandler}:${this.address}${this.amountMicros ? '?micros='+this.amountMicros : ''}`;
   }
 
 }
-
-
