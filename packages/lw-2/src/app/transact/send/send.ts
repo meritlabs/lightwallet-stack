@@ -122,7 +122,8 @@ export class SendView {
     //this.content.resize();  
     //TODO: Lifecycle tick if needed
   }
-  private maybeEmail(contact: MeritContact): string {
+
+  public maybeEmail(contact: MeritContact): string {
     if (contact.emails.length < 1) return '';
     return contact.emails[0].value;
   }

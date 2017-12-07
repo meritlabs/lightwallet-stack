@@ -15,12 +15,8 @@ export interface MeritContact extends Searchable {
 
 export let isValidMeritContact = (contact: MeritContact): boolean => {
 
-  let isAddressValid = (address) => {
-    return (!_.isEmpty(address) && Bitcore.Address.isValid(address));
-  };
-
-  return (isAddressValid(contact.meritAddress) && !_.isEmpty(contact.name));
-
+  let isAddressValid = !_.isEmpty(contact.meritAddress) && Bitcore.Address.isValid(contact.meritAddress);
+  return (isAddressValid && !_.isEmpty(contact.name));
 };
 
 export let emptyMeritContact = (): MeritContact => {
