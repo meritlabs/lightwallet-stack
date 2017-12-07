@@ -30,7 +30,10 @@ export class DepositService {
         console.log('WALLET', wallet);
         console.log('amount', amount);
 
-        let vaultTx = this.prepareVault(wallet, vault, amount)
+        const copy = _.cloneDeep(vault);
+        copy.amount = this.bitcore.Unit.fromMRT(amount).toMicros();
+
+        let vaultTx = this.prepareVault(wallet, copy, amount)
         console.log('prepared', vaultTx);
         
         return this.getTxp(vaultTx, wallet, false).then((txp) => {
@@ -46,6 +49,8 @@ export class DepositService {
         }).then((signedTxp: any) => {
             return vault;
         }).then((vault) => {
+            vault._id = null;
+            vault.id = null;
             vault.name = vault.vaultName;
             return wallet.createVault(vault);
         }).then((resp) => {

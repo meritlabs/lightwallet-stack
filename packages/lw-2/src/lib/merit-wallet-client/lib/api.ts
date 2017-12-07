@@ -860,20 +860,6 @@ export class API {
   }
 
   /**
-   * Create spend tx for vault
-   */
-  createSpendFromVaultTx(opts: any = {}) {
-
-    var network = opts.network || DEFAULT_NET;
-    var fee = opts. fee || DEFAULT_FEE;
-
-    var tx = new Bitcore.Transaction();
-    tx.fee(fee);
-
-    return tx;
-  };
-
-  /**
    * Renew vault
    * Will make all pending tx invalid
    */
