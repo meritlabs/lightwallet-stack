@@ -46,9 +46,6 @@ export class EditContactView {
       this.newContact = this.meritContactBuilder.build(new MeritContact());
     }
 
-    if (!this.newContact.meritAddresses.length) {
-      this.newContact.meritAddresses.push({network: '', address: ''});
-    }
     this.setDefaultValues();
 
   }
@@ -62,6 +59,9 @@ export class EditContactView {
     }
     if (!this.newContact.phoneNumbers.length) {
       this.newContact.phoneNumbers.push({type: 'other', value: ''});
+    }
+    if (!this.newContact.meritAddresses.length) {
+      this.newContact.meritAddresses.push({network: '', address: ''});
     }
   }
 

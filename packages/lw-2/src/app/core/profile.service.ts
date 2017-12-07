@@ -289,7 +289,6 @@ export class ProfileService {
 
     if (this.validationLock) {
       return setTimeout(() => {
-        //this.logger.debug('ValidatingWallet Locked: Retrying in: ' + retryDelay);
         return this.runValidation(wallet, delay, retryDelay);
       }, retryDelay);
     }
