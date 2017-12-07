@@ -143,7 +143,7 @@ export class WalletsView {
       }).catch((err) => {
         this.logger.info("@@ERROR IN Updating statuses.");
         this.logger.info(err);
-        return reject();
+        return Promise.reject(err);
       });
   }
 
@@ -414,6 +414,7 @@ export class WalletsView {
   private updateAllWallets(): Promise<MeritWalletClient[]> {
     return this.profileService.getWallets().each((wallet) => {
       return this.walletService.getStatus(wallet).then((status) => {
+        this.profileService.updateWalletSettings(wallet);
         wallet.status = status;
         return Promise.resolve(wallet);
       }).catch((err) => {
