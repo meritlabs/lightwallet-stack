@@ -76,29 +76,27 @@ export class VaultDetailsView {
       // fetch coins
     ]).then((arr: Array<Array<any>>) => {
       const whitelistCandidates = _.flatten(arr);
-      let results = [];
 
       return Promise.map(this.vault.whitelist, (wl) => {
         return Promise.map(whitelistCandidates, (candidate) => {
           if (candidate.type === 'vault') {
-            if(wl == candidate.address) results.push(candidate);
+            if (wl == candidate.address) return candidate;
           } else { 
             return candidate.walletClient.getMainAddresses({}).then((addresses: Array<any>) => {
-              let found = _.find(addresses, (e: any) => { return e.address == wl});
-              if(found) 
-              {
-                candidate.address = wl;
-                results.push(candidate);
+              const found = _.find(addresses, { address: wl });
+              if (found) {
+                candidate.walletClient = null;
+                return candidate;
               }
-              return Promise.resolve();
             });
           }
-          return Promise.resolve();
+          return null;
         });
-      }).then(() => { 
+      }).then((unfilteredWhitelist) => {
+        const results = _.compact(_.flatten(unfilteredWhitelist));
         this.whitelist = results;
         return Promise.resolve();
-      })
+      });
     }).then(() => {
       return this.getVaultTxHistory().then((txs) => {
         this.transactions = _.map(txs, this.processTx.bind(this));
