@@ -12,14 +12,24 @@
     <ion-list margin-top>
         <ion-item>
             <ion-label translate>Vault name</ion-label>
-            <ion-input text-right [placeholder]="'My Vault'" [(ngModel)]="formData.vaultName"></ion-input>
+            <ion-input 
+                text-right
+                [placeholder]="'My Vault'"
+                [(ngModel)]="formData.vaultName"
+                (ngModelChange)="checkCanConfirm()">
+            </ion-input>
         </ion-item>
     </ion-list>
 
     <ion-list>
         <ion-item>
             <ion-label translate>Master key</ion-label>
-            <ion-input text-right [placeholder]="'Old key will be used'" [(ngModel)]="formData.masterKey" [disabled]="true"></ion-input>
+            <ion-input
+                text-right
+                [placeholder]="'Old key will be used'"
+                [(ngModel)]="formData.masterKey"
+                [disabled]="true">
+            </ion-input>
         </ion-item>
         <ion-item>
             <button ion-button type="button" translate (click)="regenerateMasterKey()">
@@ -34,6 +44,7 @@
             <ion-select 
                 [compareWith]="compareWhitelistEntries" 
                 [(ngModel)]="formData.whitelist" 
+                (ngModelChange)="checkCanConfirm()"
                 okText="Ok" 
                 cancelText="Dismiss" 
                 multiple="true" >
@@ -45,7 +56,7 @@
     </ion-list>
 
     <div class="control-buttons">
-        <button ion-button type="button" translate (click)="confirmRenew()">
+        <button ion-button type="button" translate (click)="confirmRenew()" [(disabled)]="!canConfirm">
             Reset
         </button>
     </div>

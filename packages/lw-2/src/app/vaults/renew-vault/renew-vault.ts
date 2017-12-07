@@ -37,6 +37,7 @@ export class VaultRenewView {
   public vault: any = null;
   public formData: IVaultRenewViewModel = { vaultName: '', masterKey: '', whitelist: [] };
   public whitelistCandidates: Array<IWhitelistEntry> = [];
+  public canConfirm: boolean;
   private bitcore: any = null;
   private walletClient: MeritWalletClient;
 
@@ -57,6 +58,13 @@ export class VaultRenewView {
     await this.updateWhitelist();
     this.formData.vaultName = this.vault.name;
     this.formData.masterKey = '';
+    this.checkCanConfirm();
+  }
+
+  checkCanConfirm() {
+    this.canConfirm = 
+      this.formData.vaultName.length > 0 && 
+      this.formData.whitelist.length > 0;
   }
 
   confirmRenew() {
