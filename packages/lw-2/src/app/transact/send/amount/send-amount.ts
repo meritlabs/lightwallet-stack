@@ -49,7 +49,6 @@ export class SendAmountView {
     private modalCtrl:ModalController,
     private rateService:RateService
   ) {
-    this.amount = 0;
     this.allowSend = false;
   }
   
