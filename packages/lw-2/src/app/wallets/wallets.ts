@@ -89,10 +89,14 @@ export class WalletsView {
     });
   }
 
-  public async ionViewDidLoad() {
+  public ionViewDidLoad() {
       this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
       this.registerListeners();
-      await this.updateAllInfo();
+
+  }
+
+  public ionViewDidEnter() {
+    this.updateAllInfo();
   }
 
   // public async showFeaturesBlock(): Promise<boolean> {
@@ -100,7 +104,6 @@ export class WalletsView {
   // }
   private updateAllInfo():Promise<any> {
 
-    return new Promise((resolve, reject) => {
       return this.addressbookService.list('testnet').then((addressBook) => {
         this.addressbook = addressBook;
         return this.getWallets();
@@ -123,7 +126,6 @@ export class WalletsView {
         this.txpsData = txps;
         return this.vaultsService.getVaults(_.head(this.wallets));
       }).then((vaults) => {
-        this.logger.info('getting vaults', vaults);
         _.each(vaults, (vault) => {
           vault.altAmount = this.rateService.toFiat(vault.amount, _.head(this.wallets).cachedStatus.alternativeIsoCode);
           vault.altAmountStr = new FiatAmount(vault.altAmount);
@@ -143,7 +145,6 @@ export class WalletsView {
         this.logger.info(err);
         return reject();
       });
-    });
   }
 
   private processIncomingTransactionEvent(n:any): void {
