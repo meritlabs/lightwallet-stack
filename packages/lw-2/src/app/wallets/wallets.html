@@ -81,11 +81,9 @@
         <ion-spinner *ngIf="!wallets">Loading...</ion-spinner>
         <ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)" class="wallet">
 
-            <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color"
-                item-start>
-                <!--<img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >-->
-                <i class="merit-icon-wallet"></i>
-            </i>
+            <ion-avatar item-start class="btn wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
+                <img src="assets/img/icon-wallet.svg">
+            </ion-avatar>
 
             <h2 translate>{{wallet.name || wallet._id}}</h2>
 
