@@ -20,4 +20,8 @@ view-edit-contact {
     height: 18px;
   }
 
+  .delete-button .text {
+    color: color($colors, danger);
+  }
+
 }

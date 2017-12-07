@@ -53,6 +53,11 @@
 
     </ion-list>
 
+    <button ion-item *ngIf="editMode && originalContact.meritAddresses[0]" (click)="removeContact()" class="delete-button" margin-bottom>
+        <div class="text" *ngIf="!isLocalContact()">Remove merit data</div>
+        <div class="text" *ngIf="isLocalContact()">Delete contact</div>
+    </button>
+
     <div class="control-buttons">
         <button  (click)="save()" ion-button [disabled]="!isContactValid()">Save</button>
     </div>

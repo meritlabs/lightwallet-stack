@@ -56,4 +56,10 @@ export class MeritContactService {
     });
   }
 
+  public remove(contact:MeritContact):Promise<any> {
+    let address = contact.meritAddresses[0].address;
+    let network = contact.meritAddresses[0].network;
+    return this.addressBookService.remove(address, network);
+  }
+
 }
