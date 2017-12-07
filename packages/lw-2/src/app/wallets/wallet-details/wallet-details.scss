@@ -26,10 +26,10 @@ wallet-details-view {
     color: color($colors, light);
   }
   .balance-header {
-    padding-top: 56px;
+    padding-bottom: 56px;
     margin-top: 0;
     color: color($colors, light);
-    height: 200px;
+    height: 20%;
     text-align: center;
   }
   .balance-header.default {
