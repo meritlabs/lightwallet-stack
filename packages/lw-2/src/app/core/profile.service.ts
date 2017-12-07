@@ -51,7 +51,7 @@ export class ProfileService {
     this.propogateBwsEvent(n, wallet);
   }, 10000);
 
-  private updateWalletSettings(wallet: MeritWalletClient): void {
+  public updateWalletSettings(wallet: MeritWalletClient): void {
     let config: any = this.configService.get();
     let defaults: any = this.configService.getDefaults();
     // this.config.whenAvailable(function (config) { TODO

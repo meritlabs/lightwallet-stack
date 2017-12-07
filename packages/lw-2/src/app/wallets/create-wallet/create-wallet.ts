@@ -90,7 +90,6 @@ export class CreateWalletView {
       if (this.formData.color) {
         let colorOpts = {colorFor: {}};
         colorOpts.colorFor[wallet.id] = this.formData.color;
-        console.log('COLOR OPTS', colorOpts);
         await this.config.set(colorOpts);
       }
       loader.dismiss();
