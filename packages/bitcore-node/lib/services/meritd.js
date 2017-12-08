@@ -2225,8 +2225,6 @@ Merit.prototype.validateReferralCode = function(referralCode, callback) {
  * @param {Function} callback
  */
 Merit.prototype.unlockWallet = function(code, address, callback) {
-  log.info('unlockWallet Called: ', code);
-  log.info('unlockWallet Called: ', address);
   var self = this;
 
   if ((typeof code === 'string' || code instanceof String) && (typeof address === 'string' || address instanceof String)) {
@@ -2234,7 +2232,6 @@ Merit.prototype.unlockWallet = function(code, address, callback) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
-        log.info('unlockWallet Response: ', response);
         callback(null, response);
       }
     });
@@ -2256,7 +2253,6 @@ Merit.prototype.validateAddress = function(address, callback) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
-        log.info('validateAddress Response: ', response);
         callback(null, response);
       }
     });
