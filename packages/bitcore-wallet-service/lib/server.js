@@ -427,10 +427,15 @@ WalletService.prototype.createWallet = function(opts, cb) {
  */
 WalletService.prototype.getANV = function(opts, cb) {
   opts.network = opts.network || 'livenet';
+  var addresses = opts.keys;
+
+  if (_.isEmpty(addresses)) {
+    return cb(null, 0);
+  }
 
   var bc = this._getBlockchainExplorer(opts.network);
 
-  bc.getANV(opts.keys, function(err, result) {
+  bc.getANV(addresses, function(err, result) {
     cb(err, result);
   });
 };
@@ -443,8 +448,8 @@ WalletService.prototype.getANV = function(opts, cb) {
 WalletService.prototype.getRewards = function(opts, cb) {
   var addresses = opts.addresses;
 
-  if (addresses.length == 0) {
-    return cb(null, []);
+  if (_.isEmpty(addresses)) {
+    return cb(null, {});
   }
 
   var networkName = Bitcore.Address(addresses[0]).toObject().network;
