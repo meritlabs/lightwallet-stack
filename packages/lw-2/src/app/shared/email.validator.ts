@@ -1,6 +1,6 @@
 import { FormControl } from '@angular/forms';
 import { ConfigService } from 'merit/shared/config.service';
-import { EmailNotificationsService } from 'merit/core/email-notification.service';
+import { EmailNotificationsService } from 'merit/core/notification/email-notification.service';
 
 export class EmailValidator {
 
