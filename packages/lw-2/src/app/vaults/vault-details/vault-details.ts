@@ -62,7 +62,7 @@ export class VaultDetailsView {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
           const addr = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
-          return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet', walletClient: w };
+          return { id: w.id, name: name, address: addr, type: 'wallet', walletClientId: w.id , walletClient: w};
         });
       }),
       // fetch users vaults
@@ -70,7 +70,7 @@ export class VaultDetailsView {
         return _.map(vaults, (v) => {
           const name = v.name || v._id;
           const addr = new this.bitcore.Address(v.address).toString();
-          return { 'id': v._id, 'name': name, 'address': addr, 'type': 'vault' };
+          return { id: v._id, name: name, address: addr, type: 'vault' };
         });
       }),
       // fetch coins

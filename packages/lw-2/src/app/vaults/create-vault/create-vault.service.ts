@@ -59,9 +59,11 @@ export class CreateVaultService {
     return Promise.map(whitelistedAddresses, (w: any) => {
       let address; 
       if (w.type == 'wallet') {
-        this.bitcore.HDPublicKey.fromString(w.address).publicKey.toAddress();
-        address = this.walletClient.createAddress().then((resp) => {
-          return this.bitcore.Address.fromString(resp.address);
+        address = this.getAllWallets().then((wallets) => {
+          let foundWallet = _.find(wallets, { id: w.walletClientId });
+          return foundWallet.createAddress().then((resp) => {
+            return this.bitcore.Address.fromString(resp.address);
+          });
         });
       } else {
         address = Promise.resolve(this.bitcore.Address.fromString(w.address));
@@ -166,5 +168,15 @@ export class CreateVaultService {
 
   private findFeeLevel(amount: number) : Promise<any> {
     return Promise.resolve(null);
+  }
+
+  private getAllWallets(): Promise<Array<any>> {
+    return this.profileService.getWallets().map((wallet: any) => {
+      return this.walletService.getStatus(wallet).then((status) => {
+        wallet.status = status;
+        return wallet;
+      });
+    });
+
   }
 }
