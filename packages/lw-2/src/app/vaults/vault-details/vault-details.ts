@@ -86,6 +86,7 @@ export class VaultDetailsView {
               const found = _.find(addresses, { address: wl });
               if (found) {
                 candidate.walletClient = null;
+                candidate.address = wl;
                 return candidate;
               }
             });
