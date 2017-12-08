@@ -2736,4 +2736,8 @@ export class API {
     var url = `/v1/vaults/${vaultId}/txhistory?network=${network}`;
     return this._doGetRequest(url);
   };
+
+  getDefaultFee() {
+    return DEFAULT_FEE;
+  }
 }
