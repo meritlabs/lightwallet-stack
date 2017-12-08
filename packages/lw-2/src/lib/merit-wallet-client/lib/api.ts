@@ -906,7 +906,7 @@ export class API {
         });
 
         let params = [
-          new Bitcore.PublicKey(newVault.spendPubKey.publicKey, { network: network }).toBuffer(),
+          new Bitcore.PublicKey(newVault.spendPubKey, { network: network }).toBuffer(),
           new Bitcore.PublicKey(newVault.masterPubKey, { network: network }).toBuffer()
         ];
 
@@ -2718,13 +2718,19 @@ export class API {
     return this._doGetRequest(url);
   };
 
-  createVault(vaultTxProposal: any) {
+  createVault(vault: any) {
     $.checkState(this.credentials);
 
     var url = '/v1/vaults/';
-    return this._doPostRequest(url, vaultTxProposal);
+    return this._doPostRequest(url, vault);
   };
 
+  renewVault(vault: any) {
+    $.checkState(this.credentials);
+
+    var url = `/v1/vaults/${vault._id}`;
+    return this._doPostRequest(url, vault);
+  };
 
   getVaultCoins(vaultAddress: any) {
     return this.getUtxos({ addresses: [vaultAddress] });
