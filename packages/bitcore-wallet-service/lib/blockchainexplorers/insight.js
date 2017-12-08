@@ -259,14 +259,14 @@ Insight.prototype.validateAddress = function(address, cb) {
   });
 };
 
-Insight.prototype.getANV = function(keys, cb) {
+Insight.prototype.getANV = function(addresses, cb) {
   var self = this;
 
   var args = {
     method: 'GET',
     path: `${this.apiPrefix}/anv`,
     json: {
-      keys: keys
+      addresses: addresses
     }
   };
 
