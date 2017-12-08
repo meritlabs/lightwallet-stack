@@ -3537,8 +3537,6 @@ WalletService.prototype.getVaults = function(opts, cb) {
   self.storage.fetchVaults(self.copayerId, function(err, result) {
     if (err) return cb(err);
 
-    console.log(result);
-
     return cb(null, result);
   });
 };
@@ -3587,7 +3585,6 @@ WalletService.prototype.createVault = function(opts, cb) {
         self._processBroadcast(txp, {
           byThirdParty: true
         },  function(err, txp) {
-          console.log('processes', txp);
           self.storage.updateVault(self.copayerId, toStore, function(err, result) {
             if (err) return cb(err);
   
@@ -3605,8 +3602,6 @@ WalletService.prototype.createVault = function(opts, cb) {
 };
 
 WalletService.prototype.getVaultTxHistory = function(opts, cb) {
-  console.log('getVaultTxHistory', opts);
-
   var self = this;
   
   function decorate(txs, addresses, proposals, notes) {
