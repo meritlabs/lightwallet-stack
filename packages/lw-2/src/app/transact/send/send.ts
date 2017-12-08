@@ -1,5 +1,5 @@
 import { Component, SecurityContext } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, AlertController, NavParams, ModalController } from 'ionic-angular';
 import * as Promise from 'bluebird';
 
 import { WalletService } from 'merit/wallets/wallet.service';
@@ -63,7 +63,8 @@ export class SendView {
     private addressBookService:AddressBookService,
     private modalCtrl:ModalController,
     private sanitizer:DomSanitizer,
-    private toastCtrl:MeritToastController
+    private toastCtrl:MeritToastController,
+    private alertCtrl:AlertController
   ) {
     this.logger.info("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
