@@ -1383,6 +1383,10 @@ export class WalletService {
     });
   }
 
+  /**
+   * Gets the ANV for a list of addresses.  
+   * @param wallet 
+   */
   public getANV(wallet: MeritWalletClient):Promise<any> {
     this.logger.info("Getting ANV!!");
     this.logger.info(wallet.credentials);
@@ -1397,12 +1401,36 @@ export class WalletService {
     });
   }
 
+
+  //: {mining: number, ambassador: number}
+  /** 
+   * Gets the aggregate rewards for a list of addresses.  
+   * @param wallet 
+   * @returns {Reward} An object with the 'mining' and 'ambassador' properties.
+   */
   public getRewards(wallet: MeritWalletClient):Promise<any> {
     return new Promise((resolve, reject) => {
       return this.getMainAddresses(wallet).then((addresses) => {  
         this.logger.info("What is the address list?", addresses);        
-        return wallet.getRewards(addresses).then((rewards) => {
-          return resolve (rewards); 
+        return wallet.getRewards(addresses).then((rewards: any) => {
+          this.logger.info("What are the rewards: ", rewards);
+          let totalRewards: {mining: number, ambassador: number} =  _.reduce(rewards, (totalR: any, reward: any) => {
+            this.logger.info("What is reward in each iteration?: ", reward);
+            if (!_.isEmpty(reward.rewards)) {
+              if (!_.isEmpty(reward.rewards.mining)) {
+                totalR.mining += rewards.reward.mining;
+              }
+              if (!_.isEmpty(reward.rewards.ambassador)) {
+                totalR.ambassador += reward.rewards.ambassador;
+              }
+              this.logger.info("What is totalR in each iteration?: ", totalR);
+            
+              return totalR;
+            }
+          }, {mining: 0, ambassador: 0});
+          this.logger.info("What are the totalRewards: ", totalRewards);
+          
+          return resolve(totalRewards); 
           // let addressRewards = _.find(rewards, { address: address });
           //  if (!addressRewards) return reject();
           //  return resolve(addressRewards);
