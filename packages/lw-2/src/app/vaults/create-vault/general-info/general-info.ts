@@ -53,7 +53,7 @@ export class CreateVaultGeneralInfoView {
     this.getAllWallets().then((wallets) => {
       const walletDTOs = _.map(wallets, (w: any) => {
         const name = w.name || w._id;
-        return { 'id': w.id, 'name': name, 'address': w.credentials.xPubKey, 'type': 'wallet' };
+        return { id: w.id, name: name, address: w.credentials.xPubKey, type: 'wallet', walletClientId: w.id };
       });
       this.logger.info('walletDTOs', walletDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(walletDTOs);
@@ -70,7 +70,7 @@ export class CreateVaultGeneralInfoView {
         const name = v.name || v._id;
         const key = new this.bitcore.Address(v.address).toString();
         this.logger.info(key);
-        return { 'id': v._id, 'name': name, 'address': key, 'type': 'vault' };
+        return { id: v._id, name: name, address: key, type: 'vault' };
       });
       this.logger.info('walletDTOs', vaultDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(vaultDTOs);
