@@ -3555,6 +3555,9 @@ WalletService.prototype.createVault = function(opts, cb) {
   });
   const toStore = _.cloneDeep(opts);
   toStore.whitelist = readableWhitelist;
+  toStore.walletId = self.walletId;
+  toStore.copayerId = self.copayerId;
+
   console.log(toStore);
 
   async.series([
@@ -3563,6 +3566,7 @@ WalletService.prototype.createVault = function(opts, cb) {
         if (err) return cb(err);
 
         vaultId = result.insertedId;
+        toStore.id = vaultId;
 
         return next();
       });
@@ -3577,7 +3581,6 @@ WalletService.prototype.createVault = function(opts, cb) {
         if (err) return cb(err);
 
         txp.txid = txid;
-        toStore.id = vaultId;
         toStore.coins[0] = txp;
         toStore.initialTxId = txid;
 
