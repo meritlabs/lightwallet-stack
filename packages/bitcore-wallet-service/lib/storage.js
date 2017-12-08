@@ -1094,9 +1094,10 @@ Storage.prototype.fetchVaults = function(copayerId, cb) {
   });
 };
 
-Storage.prototype.storeVault = function(copayerId, vaultTx, cb) {
+Storage.prototype.storeVault = function(copayerId, walletId, vaultTx, cb) {
   this.db.collection(collections.VAULTS).insertOne({
     copayerId,
+    walletId,
     ...vaultTx,
   }, {
     w: 1
@@ -1151,8 +1152,8 @@ Storage.prototype.fetchVaultByCopayerId = function(copayerId, id, cb) {
 
 Storage.prototype.setVaultConfirmed = function(tx, txId, cb) {
   tx.status = Bitcore.Vault.Vault.VaultStates.APPROVED;
-  this.db.collection(collections.VAULTS).findAndModify({
-    txId,
+  this.db.collection(collections.VAULTS).update({
+    initialTxId: txId,
   }, tx, {
     new: true,
     upsert: true,
