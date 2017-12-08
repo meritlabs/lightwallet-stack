@@ -27,8 +27,8 @@ const DEFAULT_FEE = 10000;
 
 /**
  * Merit Wallet Client; (re-)written in typescript.
- * TODO: 
- * 
+ * TODO:
+ *
  */
 
 export interface InitOptions {
@@ -41,7 +41,7 @@ export interface InitOptions {
 }
 
 export class API {
-  public BASE_URL = 'https://stage.mws.merit.me/bws/api';  
+  public BASE_URL = 'https://stage.mws.merit.me/bws/api';
   public request: any;
   public baseUrl: string;
   public payProHttp: string;
@@ -162,7 +162,7 @@ export class API {
   }
 
   _initNotifications(opts: any = {}): any {
-    const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode; pollutes request stream..  
+    const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode; pollutes request stream..
     this.notificationsIntervalId = setInterval(() => {
       this._fetchLatestNotifications(interval).then(() => {
         this.log.warn("Init Notifications done");
@@ -721,7 +721,6 @@ export class API {
         return resolve(tx);
       });
     });
-
   };
 
   /**
@@ -885,7 +884,6 @@ export class API {
    * Create spend tx for vault
    */
   createSpendFromVaultTx(opts: any = {}) {
-
     var network = opts.network || Common.Constants.DEFAULT_NET;
     var fee = opts.fee || DEFAULT_FEE;
 
@@ -992,7 +990,7 @@ export class API {
     let selectedAmount = 0;
     for(let c = 0; c < coins.length && selectedAmount < amount; c++) {
       let coin = coins[c];
-      
+
       selectedAmount += coin.micros;
       selectedCoins.push(coin);
     }
@@ -1041,7 +1039,7 @@ export class API {
               prevTxId: coin.txid,
               outputIndex: coin.vout,
               script: redeemScript
-            }, redeemScript, coin.scriptPubKey), 
+            }, redeemScript, coin.scriptPubKey),
             coin.scriptPubKey, coin.micros);
         });
 
@@ -1181,7 +1179,7 @@ export class API {
 
         /**
          * Universal MWC Logger.  It will log all output returned from BWS
-         * if the private static DEBUG_MODE is set to true above.  
+         * if the private static DEBUG_MODE is set to true above.
          */
         if (res.body && this.DEBUG_MODE) {
           this.log.info("BWS Response: ");
@@ -1199,7 +1197,7 @@ export class API {
             return reject(Errors.AUTHENTICATION_ERROR);
           }
 
-          if (!res.status) { 
+          if (!res.status) {
             return reject(Errors.CONNECTION_ERROR);
           }
 
@@ -1692,7 +1690,7 @@ export class API {
    * @param {object} opts (optional: advanced options)
    * @param {string} opts.network[='livenet']
    * @param {string} opts.singleAddress[=false] - The wallet will only ever have one address.
-   * @param {string} opts.beacon - A required unlock code to enable this address on the network.
+   * @param {string} opts.parentAddress - A required parent address to enable this address on the network.
    * @param {String} opts.walletPrivKey - set a walletPrivKey (instead of random)
    * @param {String} opts.id - set a id for wallet (instead of server given)
    * @param cb
@@ -1721,7 +1719,9 @@ export class API {
         return reject(new Error('Existing keys were created for a different network'));
       }
 
-      let walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey();
+      const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey();
+      const pubkey = walletPrivKey.toPublicKey();
+      const address = pubkey.toAddress();
 
       let c = this.credentials;
       c.addWalletPrivateKey(walletPrivKey.toString());
@@ -1731,29 +1731,32 @@ export class API {
         name: encWalletName,
         m: m,
         n: n,
-        pubKey: (new Bitcore.PrivateKey(walletPrivKey)).toPublicKey().toString(),
+        pubKey: pubkey.toString(),
         network: network,
         singleAddress: !!opts.singleAddress,
         id: opts.id,
-        beacon: opts.beacon,
-        unlocked: opts.unlocked,
-        shareCode: opts.shareCode,
       };
 
       // Create wallet
-      return this._doPostRequest('/v1/wallets/', args).then((res) => {
-
+      return this.sendReferral(opts.parentAddress).then(res => {
         if (res) {
-          let walletId = res.walletId;
-          let walletShareCode = res.shareCode;
-          let walletCodeHash = res.codeHash;
-          c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
+          this._doPostRequest('/v1/wallets/', args).then(res => {
+            if (res) {
+              let walletId = res.walletId;
+              let walletShareCode = res.shareCode;
+              let walletCodeHash = res.codeHash;
+              c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
 
+              let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
-          let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
-
-          return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then((wallet) => {
-            return resolve(n > 1 ? secret : null);
+              return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then(
+                wallet => {
+                  return resolve(n > 1 ? secret : null);
+                }
+              );
+            } else {
+              return reject('Error: ' + res);
+            }
           });
         } else {
           return reject(new Error('MWC Error: ' + res));
@@ -1766,13 +1769,71 @@ export class API {
   };
 
   /**
+   * Broadcast raw referral to network
+   * @param parentAddress
+   * @param opts
+   */
+  sendReferral(parentAddress: string, opts: any = {}): Promise<any> {
+    return new Promise((resolve, reject) => {
+      console.log('sending referral. parentAddress: ', parentAddress);
+      console.log('this.credentials: ', this.credentials);
+      if (opts) {
+        $.shouldBeObject(opts);
+      }
+
+      let network = opts.network || DEFAULT_NET;
+      if (!_.includes(['testnet', 'livenet'], network)) {
+        return reject(new Error('Invalid network'));
+      }
+
+      if (network != this.credentials.network) {
+        return reject(new Error('Existing keys were created for a different network'));
+      }
+
+      if (!this.credentials) {
+        this.log.info('Generating new keys');
+        this.seedFromRandom({
+          network: network
+        });
+      } else {
+        this.log.info('Using existing keys');
+      }
+
+      const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey();
+      const pubkey = walletPrivKey.toPublicKey();
+      const address = pubkey.toAddress(network);
+
+      const hash = Bitcore.crypto.Hash.sha256(Buffer.concat([
+        Bitcore.Address.fromString(parentAddress, network).toBuffer(),
+        address.toBuffer(),
+      ]));
+
+      console.log('hash: ', hash.toString('hex'));
+
+      const signature = Bitcore.crypto.ECDSA.sign(hash, walletPrivKey, 'little');
+
+      const referral = new Bitcore.Referral({
+        version: 0,
+        parentAddress: Bitcore.Address.fromString(parentAddress, network),
+        address,
+        addressType: 1,
+        pubkey,
+        signature,
+      });
+
+      return this._doPostRequest('/v1/referral/', { referral: referral.serialize() }).then(res => {
+        console.log('result: ', res);
+      });
+    });
+  };
+  /**
    * Join an existing wallet
    *
    * @param {String} secret
    * @param {String} copayerName
    * @param {Object} opts
    * @param {Boolean} opts.dryRun[=false] - Simulate wallet join
-   * @returns {Promise} 
+   * @returns {Promise}
    */
 
   joinWallet(secret: string, copayerName: string, opts: any = {}): Promise<any> {
@@ -1939,7 +2000,7 @@ export class API {
     if (opts.lastNotificationId) {
       url += '?notificationId=' + opts.lastNotificationId;
     } else if (opts.timeSpan) {
-    
+
       url += '?timeSpan=' + opts.timeSpan;
     }
 
@@ -2762,7 +2823,7 @@ export class API {
   };
 
   /**
-  * Vaulting 
+  * Vaulting
   */
   getVaults() {
     $.checkState(this.credentials);

@@ -191,12 +191,13 @@ Merit.prototype.getAPIMethods = function() {
     ['validateAddress', this, this.validateAddress, 1],
 
     // Merit Specific RPC
-    ['generatereferralcode',  this, this.generateReferralCode, 0],
-    ['unlockWallet',          this, this.unlockWallet,         2],
-    ['validatereferralcode',  this, this.validateReferralCode, 1],
+    ['generatereferralcode', this, this.generateReferralCode, 0],
+    ['unlockWallet', this, this.unlockWallet,         2],
+    ['validatereferralcode', this, this.validateReferralCode, 1],
     ['getInputForEasySend', this, this.getInputForEasySend, 1],
     ['getanv',                this, this.getANV, 1],
     ['getrewards',     this, this.getRewards, 1],
+    ['sendReferral', this, this.sendReferral, 1],
   ];
   return methods;
 };
@@ -2343,6 +2344,25 @@ Merit.prototype.getRewards = function(addressArg, callback) {
     self.rewardsCache.set(cacheKey, response.result);
     callback(null, response.result);
   });
+}
+
+/**
+ * Send raw referral to nodes
+ * @param {String|Referral} referral - The hex string of the referral
+ * @param {Function} callback
+ */
+Merit.prototype.sendReferral = function(referral, callback) {
+  var self = this;
+
+  console.log('sending raw referral to meritd: ', referral);
+
+  this.client.sendRawReferral(referral, function(err, response) {
+    if (err) {
+      return callback(self._wrapRPCError(err));
+    }
+    callback(null, response.result);
+  });
+
 }
 
 /**
