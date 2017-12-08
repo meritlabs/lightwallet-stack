@@ -131,7 +131,7 @@ const configDefault: Config = {
 
   // Bitcore wallet service URL
   bws: {
-    url: 'http://kemists.pagekite.me/bws/api'
+    url: 'http://localhost:3232/bws/api'
   },
 
   download: {

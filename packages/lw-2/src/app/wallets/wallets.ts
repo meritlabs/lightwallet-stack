@@ -155,13 +155,17 @@ export class WalletsView {
   private updateVaults(wallet: MeritWalletClient): Promise<any> {
     return this.vaultsService.getVaults(wallet).then((vaults) => {
       this.logger.info('getting vaults', vaults);
-      Promise.map(vaults, (vault) => {
-        vault.altAmount = this.rateService.fromMeritToFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode);
-        vault.altAmountStr = new FiatAmount(vault.altAmount);
-        vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
+      return Promise.map(vaults, (vault) => {
+        return this.vaultsService.getVaultCoins(wallet, vault).then((coins) => {
+          vault.amount = _.sumBy(coins, 'micros');
+          vault.altAmount = this.rateService.fromMeritToFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode);
+          vault.altAmountStr = new FiatAmount(vault.altAmount);
+          vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
+          return vault;
+        });
+      }).then((vaults) => {
+        this.vaults = vaults;
       });
-      this.vaults = vaults;
-      return Promise.resolve();
   });
   }
 
