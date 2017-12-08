@@ -1,5 +1,5 @@
 import { Component, SecurityContext } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, AlertController, NavParams, ModalController } from 'ionic-angular';
 import * as Promise from 'bluebird';
 
 import { WalletService } from 'merit/wallets/wallet.service';
@@ -15,6 +15,9 @@ import { emptyMeritContact, Searchable } from 'merit/shared/address-book/contact
 import { AddressBook, MeritContact } from 'merit/shared/address-book/merit-contact.model';
 import { MeritClient } from 'src/lib/merit-wallet-client/lib';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ToastConfig } from "merit/core/toast.config";
+import { MeritToastController } from "merit/core/toast.controller";
+
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
@@ -34,8 +37,8 @@ export class SendView {
   private contacts: Array<MeritContact>;
   private currentContactsPage = 0;
   private showMoreContacts: boolean = false;
-  public filteredContacts: Array<MeritContact>;
-  public renderingContacts: Array<MeritContact>;
+  public filteredContacts: Array<MeritContact> = [];
+  public renderingContacts: Array<MeritContact> = [];
   private formData: { 
     search: string
   };
@@ -59,7 +62,9 @@ export class SendView {
     private sendService: SendService,
     private addressBookService:AddressBookService,
     private modalCtrl:ModalController,
-    private sanitizer:DomSanitizer
+    private sanitizer:DomSanitizer,
+    private toastCtrl:MeritToastController,
+    private alertCtrl:AlertController
   ) {
     this.logger.info("Hello SendView!!");
     this.hasOwnedMerit = this.profileService.hasOwnedMerit();
@@ -203,9 +208,16 @@ export class SendView {
               });
             });
         } else {
-          this.popupService.ionicAlert('This address has not been invited to the merit network yet!');
-        }  
-      })
+          this.alertCtrl.create({
+            message: 'This address is invalid or has not been invited to the merit network yet!'
+          }).present();
+        }
+      }).catch((err) => {
+        this.toastCtrl.create({
+        message: err,
+        cssClass: ToastConfig.CLASS_ERROR
+         }).present();
+      });
     }
 
     this.contactsOffset  = 0;

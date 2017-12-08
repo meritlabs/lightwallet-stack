@@ -32,7 +32,7 @@ const DEFAULT_FEE = 10000;
  * 
  */
 
-export interface InitOptions { 
+export interface InitOptions {
   request?: any;
   baseUrl?: string;
   payProHttp?: string;
@@ -59,17 +59,17 @@ export class API {
   public notificationsIntervalId: any;
   public keyDerivationOk: boolean;
   public session: any;
-  public DEBUG_MODE: boolean = false; 
-  
+  public DEBUG_MODE: boolean = false;
+
   // Mutated from other services (namely wallet.service and profile.service)
   public id: string; // TODO: Re-evaluate where this belongs.
   public completeHistory: any; // This is mutated from Wallet.Service.ts; for now.
-  public cachedStatus: any; 
-  public cachedActivity: any; 
+  public cachedStatus: any;
+  public cachedActivity: any;
   public cachedTxps: any;
   public pendingTxps: any;
   public totalBalanceSat: number;
-  public scanning: boolean; 
+  public scanning: boolean;
   public hasUnsafeConfirmed: boolean;
   public network: string;
   public n: number;
@@ -77,19 +77,23 @@ export class API {
   public notAuthorized: boolean;
   public needsBackup: boolean;
   public name: string;
-  public color: string; 
+  public color: string;
   public started: boolean;
   public copayerId: string;
   public unlocked: boolean;
   public shareCode: string;
   public balanceHidden: boolean;
   public eventEmitter: any;
-  public status: any; 
+  public status: any;
   public secret: string;
   public email: string;
   public cachedBalance: string;
   public cachedBalanceUpdatedOn: string;
-  
+  public totalNetworkValue: string;
+  public displayAddress: string;
+  public miningRewards: string;
+  public ambassadorRewards: string;
+
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
     this.request = opts.request || request;
@@ -99,7 +103,8 @@ export class API {
     this.timeout = opts.timeout || 50000;
     this.logLevel = opts.logLevel || 'debug';
     this.log = Logger.getInstance();
-    this.log.setLevel(this.logLevel)
+    this.log.setLevel(this.logLevel);
+    this.log.info("Hello Merit Wallet Client!");
   }
 
 
@@ -118,30 +123,30 @@ export class API {
     this._logout();
   };
 
-  _fetchLatestNotifications(interval): Promise<any> {      
+  _fetchLatestNotifications(interval): Promise<any> {
     this.log.info("_fetchLatestNotifications called.");
-      let opts:any = {
-        lastNotificationId: this.lastNotificationId,
-        includeOwn: this.notificationIncludeOwn,
-      };
-      
-      if (!this.lastNotificationId) {
-        opts.timeSpan = interval + 1;
-      }
-      
-      return this.getNotifications(opts).then((notifications: any) => {
-        if (notifications.length > 0) {
-          this.lastNotificationId = (_.last(notifications) as any).id;
-        }
+    let opts: any = {
+      lastNotificationId: this.lastNotificationId,
+      includeOwn: this.notificationIncludeOwn,
+    };
 
-        return Promise.each(notifications, (notification) => {
-          this.eventEmitter.emit('notification', notification);
-          return Promise.resolve();
-        });
+    if (!this.lastNotificationId) {
+      opts.timeSpan = interval + 1;
+    }
+
+    return this.getNotifications(opts).then((notifications: any) => {
+      if (notifications && notifications.length > 0) {
+        this.lastNotificationId = (_.last(notifications) as any).id;
+      }
+
+      return Promise.each(notifications, (notification) => {
+        this.eventEmitter.emit('notification', notification);
+        return Promise.resolve();
       });
+    });
 
   }
-    
+
   _initNotifications(opts: any = {}): any {
     const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode; pollutes request stream..  
     this.notificationsIntervalId = setInterval(() => {
@@ -156,14 +161,14 @@ export class API {
       });
     }, interval * 1000);
   };
-  
-  _disposeNotifications(): void {  
+
+  _disposeNotifications(): void {
     if (this.notificationsIntervalId) {
       clearInterval(this.notificationsIntervalId);
       this.notificationsIntervalId = null;
     }
   };
-  
+
 
   /**
    * Reset notification polling with new interval
@@ -230,7 +235,7 @@ export class API {
    */
   _processTxps(txps): Promise<void> {
     return new Promise((resolve, reject) => {
-      
+
       if (!txps) return resolve();
 
       let encryptingKey = this.credentials.sharedEncryptingKey;
@@ -255,7 +260,7 @@ export class API {
         this._processTxNotes(txp.note);
       });
       return resolve();
-    });    
+    });
   };
 
   /**
@@ -265,7 +270,7 @@ export class API {
    * @memberof Client.API
    * @param {Object} body
    */
-  private _parseError = function(body: any): Error {
+  private _parseError = function (body: any): Error {
     if (!body) return;
 
     if (_.isString(body)) {
@@ -302,7 +307,7 @@ export class API {
    * @param {Object} args - The arguments in case this is a POST/PUT request
    * @param {String} privKey - Private key to sign the request
    */
-  private _signRequest = function(method, url, args, privKey) {
+  private _signRequest = function (method, url, args, privKey) {
     let message = [method.toLowerCase(), url, JSON.stringify(args)].join('|');
     return Utils.signMessage(message, privKey);
   };
@@ -323,7 +328,7 @@ export class API {
   };
 
 
-  
+
   /**
    * Seed from random
    *
@@ -333,7 +338,7 @@ export class API {
    */
   validateKeyDerivation(opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
-        
+
       let _deviceValidated: boolean;
 
       opts = opts || {};
@@ -366,7 +371,7 @@ export class API {
         let words;
         try {
           words = c.getMnemonic();
-        } catch (ex) {}
+        } catch (ex) { }
 
         let xpriv;
         if (words && (!c.mnemonicHasPassphrase || opts.passphrase)) {
@@ -514,19 +519,19 @@ export class API {
 
   _import(): Promise<any> {
     return new Promise((resolve, reject) => {
-      
+
       $.checkState(this.credentials);
-      
-      
+
+
       // First option, grab wallet info from BWS.
       return this.openWallet().then((ret) => {
 
         if (ret) return resolve(ret);
 
-          // Is the error other than "copayer was not found"? || or no priv key.
+        // Is the error other than "copayer was not found"? || or no priv key.
         if (this.isPrivKeyExternal())
-        return reject(new Error('No Private Key!'));
-        
+          return reject(new Error('No Private Key!'));
+
         //Second option, lets try to add an access
         this.log.info('Copayer not found, trying to add access');
         return this.addAccess({}).then(() => {
@@ -534,7 +539,7 @@ export class API {
             return resolve(ret);
           });
         }).catch((err) => {
-            return reject(Errors.WALLET_DOES_NOT_EXIST);
+          return reject(Errors.WALLET_DOES_NOT_EXIST);
         });
       });
     });
@@ -631,33 +636,33 @@ export class API {
 
   decryptBIP38PrivateKey(encryptedPrivateKeyBase58: any, passphrase: string, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      
+
       let bip38 = new Bip38();
-      
+
       let privateKeyWif;
       try {
         privateKeyWif = bip38.decrypt(encryptedPrivateKeyBase58, passphrase);
       } catch (ex) {
         return reject(new Error('Could not decrypt BIP38 private key: ' + ex));
       }
-      
+
       let privateKey = new Bitcore.PrivateKey(privateKeyWif, 'livenet');
       let address = privateKey.publicKey.toAddress().toString();
       let addrBuff = new Buffer(address, 'ascii');
       let actualChecksum = Bitcore.crypto.Hash.sha256sha256(addrBuff).toString('hex').substring(0, 8);
       let expectedChecksum = Bitcore.encoding.Base58Check.decode(encryptedPrivateKeyBase58).toString('hex').substring(6, 14);
-      
+
       if (actualChecksum != expectedChecksum)
         return reject(new Error('Incorrect passphrase'));
 
       return resolve(privateKeyWif);
     });
   };
-  
+
 
   getBalanceFromPrivateKey(_privateKey: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      
+
       let privateKey = new Bitcore.PrivateKey(_privateKey);
       let address = privateKey.publicKey.toAddress();
       return this.getUtxos({
@@ -669,40 +674,40 @@ export class API {
   };
 
   buildTxFromPrivateKey(_privateKey: any, destinationAddress: any, opts: any = {}): Promise<any> {
-    return new Promise((resolve, reject) => {  
+    return new Promise((resolve, reject) => {
       let privateKey = new Bitcore.PrivateKey(_privateKey);
       let address = privateKey.publicKey.toAddress();
 
-        return this.getUtxos({
-          addresses: address.toString(),
-        }).then((utxos) => {
-          if (!_.isArray(utxos) || utxos.length == 0) return reject(new Error('No utxos found'));
-          
-          let fee = opts. fee || DEFAULT_FEE;
-          let amount = _.sumBy(utxos, 'micros') - fee;
-          if (amount <= 0) return reject(Errors.INSUFFICIENT_FUNDS);
-  
-          let tx;
-          try {
-            let toAddress = Bitcore.Address.fromString(destinationAddress);
-  
-            tx = new Bitcore.Transaction()
-              .from(utxos)
-              .to(toAddress, amount)
-              .fee(fee)
-              .sign(privateKey);
-  
-            // Make sure the tx can be serialized
-            tx.serialize();
-  
-          } catch (ex) {
-            this.log.error('Could not build transaction from private key', ex);
-            return reject(Errors.COULD_NOT_BUILD_TRANSACTION);
-          }
-          return resolve(tx);
-        });
+      return this.getUtxos({
+        addresses: address.toString(),
+      }).then((utxos) => {
+        if (!_.isArray(utxos) || utxos.length == 0) return reject(new Error('No utxos found'));
+
+        let fee = opts.fee || DEFAULT_FEE;
+        let amount = _.sumBy(utxos, 'micros') - fee;
+        if (amount <= 0) return reject(Errors.INSUFFICIENT_FUNDS);
+
+        let tx;
+        try {
+          let toAddress = Bitcore.Address.fromString(destinationAddress);
+
+          tx = new Bitcore.Transaction()
+            .from(utxos)
+            .to(toAddress, amount)
+            .fee(fee)
+            .sign(privateKey);
+
+          // Make sure the tx can be serialized
+          tx.serialize();
+
+        } catch (ex) {
+          this.log.error('Could not build transaction from private key', ex);
+          return reject(Errors.COULD_NOT_BUILD_TRANSACTION);
+        }
+        return resolve(tx);
       });
-    
+    });
+
   };
 
   /**
@@ -714,10 +719,10 @@ export class API {
    * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
    * @param {Callback}    cb
    */
-  buildEasySendScript(opts:any = {}): Promise<EasySend> {
+  buildEasySendScript(opts: any = {}): Promise<EasySend> {
     return new Promise((resolve, reject) => {
-      
-      let result:any = {}
+
+      let result: any = {}
       return this.createAddress({}).then((addr) => {
         if (addr.publicKeys.length < 1) {
           return reject(Error('Error creating an address for easySend'));
@@ -727,15 +732,15 @@ export class API {
         // {key, secret}
         let network = opts.network || 'livenet';
         let rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
-        
+
         let pubKeys = [
           rcvPair.key.publicKey.toBuffer(),
           pubKey.toBuffer()
         ];
-        
+
         let timeout = opts.timeout || 1008;
         let script = Bitcore.Script.buildEasySendOut(pubKeys, timeout, network);
-        
+
         result = {
           receiverPubKey: rcvPair.key.publicKey,
           script: script.toScriptHashOut(),
@@ -748,7 +753,7 @@ export class API {
 
         return resolve(result);
       });
-        
+
     });
   }
 
@@ -777,9 +782,9 @@ export class API {
     //unspent Txo and use script to create scriptSig
     let inputAddress = input.txn.scriptId;
 
-    let fee = opts. fee || DEFAULT_FEE;
+    let fee = opts.fee || DEFAULT_FEE;
     let microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
-    let amount =  microAmount - fee;
+    let amount = microAmount - fee;
     if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
 
     let tx = new Bitcore.Transaction();
@@ -818,7 +823,7 @@ export class API {
   };
 
   prepareVault(type: number, opts: any = {}) {
-    if(type == 0) {
+    if (type == 0) {
       let tag = opts.masterPubKey.toAddress().hashBuffer;
 
       let whitelist = _.map(opts.whitelist, (e) => {
@@ -865,7 +870,7 @@ export class API {
   createSpendFromVaultTx(opts: any = {}) {
 
     var network = opts.network || DEFAULT_NET;
-    var fee = opts. fee || DEFAULT_FEE;
+    var fee = opts.fee || DEFAULT_FEE;
 
     var tx = new Bitcore.Transaction();
     tx.fee(fee);
@@ -884,7 +889,7 @@ export class API {
 
     let totalAmount = _.sumBy(utxos, 'micros');
 
-    let amount =  totalAmount - fee;
+    let amount = totalAmount - fee;
     if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
 
     let redeemScript = new Bitcore.Script(newVault.redeemScript);
@@ -893,7 +898,7 @@ export class API {
 
     try {
 
-      if(newVault.type == 0) {
+      if (newVault.type == 0) {
         let tag = newVault.tag;
 
         let whitelist = _.map(newVault.whitelist, (e) => {
@@ -901,8 +906,8 @@ export class API {
         });
 
         let params = [
-          new Bitcore.PublicKey(newVault.spendPubKey, {network: network}).toBuffer(),
-          new Bitcore.PublicKey(newVault.masterPubKey, {network: network}).toBuffer(),
+          new Bitcore.PublicKey(newVault.spendPubKey.publicKey, { network: network }).toBuffer(),
+          new Bitcore.PublicKey(newVault.masterPubKey, { network: network }).toBuffer()
         ];
 
         params = params.concat(whitelist);
@@ -925,7 +930,7 @@ export class API {
               prevTxId: utxo.txid,
               outputIndex: utxo.vout,
               script: redeemScript,
-            }, redeemScript, utxo.scriptPubKey), 
+            }, redeemScript, utxo.scriptPubKey),
             utxo.scriptPubKey, utxo.micros);
         });
 
@@ -1056,10 +1061,10 @@ export class API {
   openWallet(): Promise<any> {
     this.log.warn("Opening wallet");
     return new Promise((resolve, reject) => {
-    
+
       $.checkState(this.credentials);
       if (this.credentials.isComplete() && this.credentials.hasWalletInfo()) {
-        this.log.warn("WALLET OPEN");    
+        this.log.warn("WALLET OPEN");
         return resolve(true); // wallet is already open
       }
 
@@ -1069,15 +1074,15 @@ export class API {
         return this._processStatus(ret).then(() => {
 
           if (!this.credentials.hasWalletInfo()) {
-            let me:any = _.find(wallet.copayers, {
+            let me: any = _.find(wallet.copayers, {
               id: this.credentials.copayerId
             });
             this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode, wallet.codeHash);
           }
-  
+
           if (wallet.status != 'complete')
             return resolve();
-  
+
           if (this.credentials.walletPrivKey) {
             if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
               return reject(Errors.SERVER_COMPROMISED);
@@ -1086,11 +1091,11 @@ export class API {
             // this should only happen in AIR-GAPPED flows
             this.log.warn('Could not verify copayers key (missing wallet Private Key)');
           }
-  
+
           this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
-  
+
           this.eventEmitter.emit('walletCompleted', wallet);
-  
+
           return resolve(ret);
         });
       });
@@ -1115,9 +1120,9 @@ export class API {
    * @param {Object} args
    * @param {Callback} cb
    */
-  _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<{body: any, header: any}> {
+  _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<{ body: any, header: any }> {
     return new Promise((resolve, reject) => {
-      
+
 
       let headers = this._getHeaders(method, url, args);
 
@@ -1141,7 +1146,7 @@ export class API {
 
       r.accept('json');
 
-      _.each(headers, function(v, k) {
+      _.each(headers, function (v, k) {
         if (v) r.set(k, v);
       });
 
@@ -1164,7 +1169,7 @@ export class API {
         /**
          * Universal MWC Logger.  It will log all output returned from BWS
          * if the private static DEBUG_MODE is set to true above.  
-         */    
+         */
         if (res.body && this.DEBUG_MODE) {
           this.log.info("BWS Response: ");
           this.log.info(util.inspect(res.body, {
@@ -1218,7 +1223,7 @@ export class API {
   private _doRequestWithLogin(method: string, url: string, args: any): Promise<any> {
 
     let doLogin = (): Promise<any> => {
-      return new Promise((resolve, reject) => {   
+      return new Promise((resolve, reject) => {
         return this._login().then((s) => {
           if (!s) return reject(Errors.NOT_AUTHORIZED);
           this.session = s;
@@ -1233,18 +1238,18 @@ export class API {
       return new Promise((resolve, reject) => {
         if (this.session) {
           return resolve();
-        } 
-        return doLogin();   
+        }
+        return doLogin();
       });
     }
-    
+
 
     return loginIfNeeded().then(() => {
       return this._doRequest(method, url, args, true);
     }).then((res) => {
       return res.body;
     });
-};
+  };
 
   /**
    * Do a POST request
@@ -1308,7 +1313,7 @@ export class API {
     });
   };
 
-  private _buildSecret = function(walletId, walletPrivKey, network) {
+  private _buildSecret = function (walletId, walletPrivKey, network) {
     if (_.isString(walletPrivKey)) {
       walletPrivKey = Bitcore.PrivateKey.fromString(walletPrivKey);
     }
@@ -1360,14 +1365,14 @@ export class API {
     return t.uncheckedSerialize();
   };
 
-  signTxp(txp: any, derivedXPrivKey):any {
+  signTxp(txp: any, derivedXPrivKey): any {
     //Derive proper key to sign, for each input
     let privs = [];
     let derived = {};
 
     let xpriv = new Bitcore.HDPrivateKey(derivedXPrivKey);
 
-    _.each(txp.inputs, function(i) {
+    _.each(txp.inputs, function (i) {
       $.checkState(i.path, "Input derivation path not available (signing transaction)")
       if (!derived[i.path]) {
         derived[i.path] = xpriv.deriveChild(i.path).privateKey;
@@ -1377,11 +1382,11 @@ export class API {
 
     let t = Utils.buildTx(txp);
 
-    let signatures = _.map(privs, function(priv, i) {
+    let signatures = _.map(privs, function (priv, i) {
       return t.getSignatures(priv);
     });
 
-    signatures = _.map(_.sortBy(_.flatten(signatures), 'inputIndex'), function(s) {
+    signatures = _.map(_.sortBy(_.flatten(signatures), 'inputIndex'), function (s) {
       return s.signature.toDER().toString('hex');
     });
 
@@ -1398,7 +1403,7 @@ export class API {
       type: 'accept'
     });
 
-    return _.map(acceptedActions, function(x: any) {
+    return _.map(acceptedActions, function (x: any) {
       return {
         signatures: x.signatures,
         xpub: x.xpub,
@@ -1413,7 +1418,7 @@ export class API {
     let i = 0,
       x = new Bitcore.HDPublicKey(xpub);
 
-    _.each(signatures, function(signatureHex) {
+    _.each(signatures, function (signatureHex) {
       let input = txp.inputs[i];
       try {
         let signature = Bitcore.crypto.Signature.fromString(signatureHex);
@@ -1426,7 +1431,7 @@ export class API {
         };
         t.inputs[i].addSignature(t, s);
         i++;
-      } catch (e) {};
+      } catch (e) { };
     });
 
     if (i != txp.inputs.length)
@@ -1439,7 +1444,7 @@ export class API {
     $.checkState(txp.status == 'accepted');
 
     let sigs = this._getCurrentSignatures(txp);
-    _.each(sigs, function(x) {
+    _.each(sigs, function (x) {
       this._addSignaturesToBitcoreTx(txp, t, x.signatures, x.xpub);
     });
   };
@@ -1457,7 +1462,7 @@ export class API {
    * @param {String} opts.customData
    * @param {Callback} cb
    */
-  public doJoinWallet(walletId: any, walletPrivKey: any, xPubKey: any, requestPubKey: any, copayerName: string, opts:any = {}): Promise<any> {
+  public doJoinWallet(walletId: any, walletPrivKey: any, xPubKey: any, requestPubKey: any, copayerName: string, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
 
       // Adds encrypted walletPrivateKey to CustomData
@@ -1487,7 +1492,7 @@ export class API {
           return resolve(body.wallet);
         });
       }).catch((err) => {
-        return reject(err);  
+        return reject(err);
       });
     });
   };
@@ -1565,8 +1570,8 @@ export class API {
   };
 
 
-  private _extractPublicKeyRing = function(copayers) {
-    return _.map(copayers, function(copayer: any) {
+  private _extractPublicKeyRing = function (copayers) {
+    return _.map(copayers, function (copayer: any) {
       let pkr: any = _.pick(copayer, ['xPubKey', 'requestPubKey']);
       pkr.copayerName = copayer.name;
       return pkr;
@@ -1602,9 +1607,9 @@ export class API {
   getFeeLevels(network: string): Promise<any> {
 
     return new Promise((resolve, reject) => {
-      
+
       $.checkArgument(network || _.includes(['livenet', 'testnet'], network));
-      
+
       return this._doGetRequest('/v1/feelevels/?network=' + (network || 'livenet')).then((result) => {
         return resolve(result);
       }).catch((err) => {
@@ -1648,7 +1653,7 @@ export class API {
    */
   createWallet(walletName: string, copayerName: string, m: number, n: number, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      
+
       if (!this._checkKeyDerivation()) return reject(new Error('Cannot create new wallet'));
 
       if (opts) $.shouldBeObject(opts);
@@ -1703,10 +1708,10 @@ export class API {
             return resolve(n > 1 ? secret : null);
           });
         } else {
-          return reject('Error: '+res);
+          return reject('Error: ' + res);
         }
       });
-    });    
+    });
   };
 
   /**
@@ -1736,7 +1741,7 @@ export class API {
         if (!opts.dryRun) {
           this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.beacon, wallet.shareCode, wallet.codeHash);
         }
-        return resolve(wallet);        
+        return resolve(wallet);
       }).catch((ex) => {
         return reject(ex);
       });
@@ -1772,18 +1777,18 @@ export class API {
         supportBIP44AndP2PKH: supportBIP44AndP2PKH,
         beacon: c.beacon
       };
-      
+
 
       return this._doPostRequest('/v1/wallets/', args).then((body) => {
         if (!walletId) {
           walletId = body.walletId;
-        }  
+        }
         return this.addAccess({});
       }).then(() => {
         return this.openWallet();
       }).then(() => {
         let i = 1;
-        return Promise.each(this.credentials.publicKeyRing, function(item: any, next) {
+        return Promise.each(this.credentials.publicKeyRing, function (item: any, next) {
           let name = item.copayerName || ('copayer ' + i++);
           return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
             supportBIP44AndP2PKH: supportBIP44AndP2PKH
@@ -1802,13 +1807,13 @@ export class API {
         wallet.encryptedName = wallet.name;
       }
       wallet.name = name;
-      _.each(wallet.copayers, function(copayer) {
+      _.each(wallet.copayers, function (copayer) {
         let name = Utils.decryptMessage(copayer.name, encryptingKey);
         if (name != copayer.name) {
           copayer.encryptedName = copayer.name;
         }
         copayer.name = name;
-        _.each(copayer.requestPubKeys, function(access) {
+        _.each(copayer.requestPubKeys, function (access) {
           if (!access.name) return;
 
           let name = Utils.decryptMessage(access.name, encryptingKey);
@@ -1827,11 +1832,11 @@ export class API {
 
     let processCustomData = (data): Promise<any> => {
       return new Promise((resolve, reject) => {
-        
+
         let copayers = data.wallet.copayers;
         if (!copayers) return resolve();
 
-        let me:any = _.find(copayers, {
+        let me: any = _.find(copayers, {
           'id': this.credentials.copayerId
         });
         if (!me || !me.customData) return resolve();
@@ -1844,20 +1849,20 @@ export class API {
         }
         if (!customData) return resolve();
 
-        
+
         // Update walletPrivateKey
         if (!this.credentials.walletPrivKey && customData.walletPrivKey) {
           this.credentials.addWalletPrivateKey(customData.walletPrivKey);
         }
-        
+
         // Add it to result
         return resolve(data.customData = customData);
       });
     }
-    
+
     // Resolve all our async calls here, then resolve this wrapping promise.
     return Promise.all([
-      processCustomData(status), 
+      processCustomData(status),
       this._processWallet(status.wallet),
       this._processTxps(status.pendingTxps)
     ]).then(() => {
@@ -1879,6 +1884,7 @@ export class API {
   getNotifications(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
 
+    this.log.warn("Getting notifications from inside of MWC with opts: ", opts);
     let url = '/v1/notifications/';
     if (opts.lastNotificationId) {
       url += '?notificationId=' + opts.lastNotificationId;
@@ -1887,7 +1893,7 @@ export class API {
     }
 
     return this._doGetRequestWithLogin(url).then((result) => {
-      let notifications = _.filter(result, function(notification: any) {
+      let notifications = _.filter(result, function (notification: any) {
         return opts.includeOwn || (notification.creatorId != this.credentials.copayerId);
       });
 
@@ -1902,7 +1908,7 @@ export class API {
    * @param {Boolean} opts.includeExtendedInfo (optional: query extended status)
    * @returns {Callback} cb - Returns error or an object with status information
    */
-  getStatus(opts:any = {}): Promise<any> {
+  getStatus(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     let qs = [];
     qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
@@ -1921,12 +1927,12 @@ export class API {
   };
 
   getANV(addr: any): Promise<any> {
-      $.checkState(this.credentials);
+    $.checkState(this.credentials);
 
-      let keys = [addr];
-      let network = this.credentials.network;
+    let keys = [addr];
+    let network = this.credentials.network;
 
-      return this._doGetRequest('/v1/anv/?network=' + network + '&keys=' + keys.join(','));
+    return this._doGetRequest('/v1/anv/?network=' + network + '&keys=' + keys.join(','));
   }
 
   getRewards(address: any): Promise<any> {
@@ -1954,7 +1960,7 @@ export class API {
     $.checkState(this.credentials);
 
     return this._doPutRequest('/v1/preferences/', preferences);
-};
+  };
 
 
   /**
@@ -2040,7 +2046,10 @@ export class API {
 
     let args = this._getCreateTxProposalArgs(opts);
     return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
-      if(txp.code && txp.code == "INSUFFICIENT_FUNDS") {
+      if (!txp) {
+        return Promise.reject("Could not get transaction proposal from server.");
+      }
+      if (txp.code && txp.code == "INSUFFICIENT_FUNDS") {
         return Promise.reject(Errors.INSUFFICIENT_FUNDS);
       }
       return this._processTxps(txp).then(() => {
@@ -2109,7 +2118,7 @@ export class API {
       return this._doPostRequest('/v1/addresses/', opts).then((address) => {
         if (!Verifier.checkAddress(this.credentials, address)) {
           return reject(Errors.SERVER_COMPROMISED);
-        } 
+        }
         return resolve(address);
       });
     });
@@ -2126,7 +2135,7 @@ export class API {
    *
    * return the accesses Wallet and the requestPrivateKey
    */
-  addAccess(opts:any = {}): Promise<any> {
+  addAccess(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.canSign());
 
     let reqPrivKey = new Bitcore.PrivateKey(opts.generateNewKey ? null : this.credentials.requestPrivKey);
@@ -2165,9 +2174,8 @@ export class API {
    * @param {Numeric} opts.limit (optional) - Limit the resultset. Return all addresses by default.
    * @param {Boolean} [opts.reverse=false] (optional) - Reverse the order of returned addresses.
    */
-  getMainAddresses(opts:any = {}): Promise<any> {
+  getMainAddresses(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-
     let args = [];
     if (opts.limit) args.push('limit=' + opts.limit);
     if (opts.reverse) args.push('reverse=1');
@@ -2177,15 +2185,18 @@ export class API {
     }
     let url = '/v1/addresses/' + qs;
 
-    return this._doGetRequest(url).then((addresses) => {
-      if (!opts.doNotVerify) {
-        let fake = _.some(addresses, (address) => {
-          return !Verifier.checkAddress(this.credentials, address);
-        });
-        if (fake)
-          return Promise.reject(Errors.SERVER_COMPROMISED);
-      }
-      return Promise.resolve(addresses);
+    return new Promise((resolve, reject) => {
+      return this._doGetRequest(url).then((addresses) => {
+        if (!opts.doNotVerify) {
+          let fake = _.some(addresses, (address) => {
+            return !Verifier.checkAddress(this.credentials, address);
+          });
+          if (fake) {
+            return reject(Errors.SERVER_COMPROMISED);
+          }
+        }
+        return resolve(addresses);
+      });
     });
   };
 
@@ -2194,7 +2205,7 @@ export class API {
    *
    * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
    */
-  getBalance(opts:any = {}): Promise<number> {
+  getBalance(opts: any = {}): Promise<number> {
     $.checkState(this.credentials && this.credentials.isComplete());
     let url = '/v1/balance/';
     if (opts.twoStep) url += '?twoStep=1';
@@ -2221,7 +2232,7 @@ export class API {
         return Promise.each(txps, (txp) => {
           if (!opts.doNotVerify) {
             // TODO: Find a way to run this check in parallel.
-            return this.getPayPro(txp).then((paypro)  => {
+            return this.getPayPro(txp).then((paypro) => {
               if (!Verifier.checkTxProposal(this.credentials, txp, {
                 paypro: paypro,
               })) {
@@ -2259,7 +2270,7 @@ export class API {
     }).then((paypro) => {
       if (!paypro) {
         return Promise.reject(new Error('Cannot check paypro transaction now.'));
-      } 
+      }
       return Promise.resolve(paypro);
     });
   };
@@ -2372,16 +2383,16 @@ export class API {
     });
   }
 
-    /**
-   * Broadcast raw transaction
-   *
-   * @param {Object} opts
-   * @param {String} opts.network
-   * @param {String} opts.rawTx
-   * @param {Callback} cb
-   * @return {Callback} cb - Return error or txid
-   */
-  broadcastRawTx(opts:any = {}): Promise<any> {
+  /**
+ * Broadcast raw transaction
+ *
+ * @param {Object} opts
+ * @param {String} opts.network
+ * @param {String} opts.rawTx
+ * @param {Callback} cb
+ * @return {Callback} cb - Return error or txid
+ */
+  broadcastRawTx(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     opts = opts || {};
 
@@ -2429,7 +2440,7 @@ export class API {
       }
       return Promise.resolve();
     }).then(() => {
-        return this._doBroadcast(txp);
+      return this._doBroadcast(txp);
     });
   };
 
@@ -2473,7 +2484,7 @@ export class API {
 
     let url = '/v1/txhistory/' + qs;
     return this._doGetRequest(url).then((txs) => {
-      return this._processTxps(txs).then(()=> {
+      return this._processTxps(txs).then(() => {
         return Promise.resolve(txs);
       });
     });
@@ -2504,7 +2515,7 @@ export class API {
    * @param {Boolean} opts.includeCopayerBranches (defaults to false)
    * @param {Callback} cb
    */
-  startScan(opts:any = {}): Promise<any> {
+  startScan(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     let args = {
       includeCopayerBranches: opts.includeCopayerBranches,
@@ -2517,7 +2528,7 @@ export class API {
    * @param {Object} opts
    * @param {string} opts.txid - The txid to associate this note with
    */
-  getTxNote(opts:any = {}): Promise<any> {
+  getTxNote(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     return this._doGetRequest('/v1/txnotes/' + opts.txid + '/').then((note) => {
       this._processTxNotes(note);
@@ -2532,7 +2543,7 @@ export class API {
    * @param {string} opts.txid - The txid to associate this note with
    * @param {string} opts.body - The contents of the note
    */
-  editTxNote(opts:any = {}): Promise<any> {
+  editTxNote(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     if (opts.body) {
       opts.body = this._encryptMessage(opts.body, this.credentials.sharedEncryptingKey);
@@ -2548,7 +2559,7 @@ export class API {
    * @param {Object} opts
    * @param {string} opts.minTs - The starting timestamp
    */
-  getTxNotes(opts:any = {}): Promise<any> {
+  getTxNotes(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     let args = [];
     if (_.isNumber(opts.minTs)) {
@@ -2572,7 +2583,7 @@ export class API {
    * @param {String} [opts.provider] - A provider of exchange rates (default 'BitPay').
    * @returns {Object} rates - The exchange rate.
    */
-  getFiatRate(opts:any = {}): Promise<any> {
+  getFiatRate(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     let args = [];
     if (opts.ts) args.push('ts=' + opts.ts);
@@ -2594,7 +2605,7 @@ export class API {
    */
   pushNotificationsSubscribe(opts: any): Promise<any> {
     let url = '/v1/pushnotifications/subscriptions/';
-    return this._doPostRequest(url, opts); 
+    return this._doPostRequest(url, opts);
   };
 
   /**
@@ -2625,7 +2636,7 @@ export class API {
   txConfirmationUnsubscribe(txid: string): Promise<any> {
     let url = '/v1/txconfirmations/' + txid;
     return this._doDeleteRequest(url);
-};
+  };
 
   /**
    * Returns send max information.
@@ -2635,7 +2646,7 @@ export class API {
    * @param {Boolean} opts.excludeUnconfirmedUtxos - Indicates it if should use (or not) the unconfirmed utxos
    * @param {Boolean} opts.returnInputs - Indicates it if should return (or not) the inputs
    */
-  public getSendMaxInfo(opts:any = {}): Promise<any> {
+  public getSendMaxInfo(opts: any = {}): Promise<any> {
     let args = [];
 
     if (opts.feeLevel) args.push('feeLevel=' + opts.feeLevel);
@@ -2657,7 +2668,7 @@ export class API {
    * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
    * @param {Boolean} opts.includeExtendedInfo (optional: query extended status)
    */
-  getStatusByIdentifier(opts:any = {}): Promise<any> {
+  getStatusByIdentifier(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     let qs = [];
     qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
@@ -2716,7 +2727,7 @@ export class API {
 
 
   getVaultCoins(vaultAddress: any) {
-    return this.getUtxos({addresses: [vaultAddress]});
+    return this.getUtxos({ addresses: [vaultAddress] });
   };
 
   getVaultTxHistory(vaultId: string, network: string): Promise<Array<any>> {

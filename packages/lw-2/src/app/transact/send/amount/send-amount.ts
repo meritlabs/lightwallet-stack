@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, SecurityContext } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
@@ -7,6 +7,8 @@ import { ProfileService } from "merit/core/profile.service";
 import { ConfigService } from "merit/shared/config.service";
 import { RateService } from 'merit/transact/rate.service';
 import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
+import { TxFormatService } from "merit/transact/tx-format.service";
+import { DomSanitizer } from '@angular/platform-browser';
 
 
 @IonicPage()
@@ -32,6 +34,8 @@ export class SendAmountView {
   public loading:boolean;
   public hasFunds:boolean;
 
+  public availableAmount = {value: 0, formatted: ''};
+
 
   private LENGTH_EXPRESSION_LIMIT = 19;
   private SMALL_FONT_SIZE_LIMIT = 10;
@@ -47,13 +51,15 @@ export class SendAmountView {
     private profileService:ProfileService,
     private configService:ConfigService,
     private modalCtrl:ModalController,
-    private rateService:RateService
+    private rateService:RateService,
+    private txFormatService:TxFormatService,
+    private sanitizer:DomSanitizer
+
   ) {
     this.allowSend = false;
   }
   
   ionViewDidLoad() {
-    console.log('Params', this.navParams.data);
     this.loading = true;
     return this.profileService.hasFunds().then((hasFunds) => {
       this.hasFunds = hasFunds;
@@ -67,6 +73,10 @@ export class SendAmountView {
         if (this.wallets && this.wallets[0]) {
           this.wallet = this.wallets[0];
         }
+
+        this.getAvailableAmount().then((amount) => {
+          this.availableAmount = amount;
+        });
         this.loading = false;
       });
 
@@ -91,7 +101,7 @@ export class SendAmountView {
         return _.defaults({
           sendMethod: 'address',
           meritAddress: addrObject.address,
-          label: addrObject.address
+          label: `Merit: ${addrObject.address}`
         }, empty);
       }),
       _.map(this.contact.emails, (emailObj) => {
@@ -134,6 +144,9 @@ export class SendAmountView {
   toggleCurrency() {
     this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
     this.updateAmountMerit();
+    this.getAvailableAmount().then((amount) => {
+      this.availableAmount = amount;
+    });
   }
 
   updateAmountMerit() {
@@ -142,6 +155,7 @@ export class SendAmountView {
     } else {
       this.amountMerit = this.rateService.fromFiatToMerit(this.amount, this.amountCurrency);
     }
+
   }
 
   @HostListener('document:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
@@ -157,8 +171,14 @@ export class SendAmountView {
 
   processAmount() {
     this.updateAmountMerit();
-    this.allowSend = this.amountMerit > 0;
   };
+
+  sendAllowed() {
+    return (
+      this.amount > 0
+      && this.amount <= this.availableAmount.value
+    )
+  }
 
   processResult(val: number) {
     // TODO: implement this function correctly - Need: txFormatService, isFiat, $filter
@@ -186,4 +206,28 @@ export class SendAmountView {
   toBuyAndSell() {
     this.navCtrl.push('BuyAndSellView');
   }
+
+  private getAvailableAmount():Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let currency = this.amountCurrency.toUpperCase();
+
+      if (!this.wallet || !this.wallet.status) return resolve({value: 0, formatted: '0.0 '+currency});
+
+      let amount = this.wallet.status.spendableAmount;
+
+      if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
+        let formatted = this.txFormatService.formatAmount(amount);
+        return resolve({value: this.rateService.microsToMrt(amount), formatted: formatted+' '+currency});
+      } else {
+        let fiatAmount = this.rateService.fromMicrosToFiat(amount, currency);
+        return resolve({value: fiatAmount, formatted: fiatAmount.toFixed(2)+' '+currency});
+      }
+    });
+  }
+
+  sanitizePhotoUrl(url:string) {
+    return this.sanitizer.sanitize(SecurityContext.URL, url);
+  }
+
 }
