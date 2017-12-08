@@ -40,11 +40,11 @@ export class RenewVaultService {
             let tx = this.walletClient.buildRenewVaultTx(coins, vault, masterKey, {network: network});
     
             console.log("RENEW TX");
+            console.log('tx: ', tx);
             console.log('Serialized: ', tx.serialize());
+            vault.coins = [{ raw: tx.serialize(), network: network}];
 
-            return { rawTx: tx.serialize(), network: network };
-        }).then((tx) => {
-            return this.walletClient.broadcastRawTx(tx);
+            return this.walletClient.renewVault(vault);
         }).catch((err) => {
             throw err;
         });;
