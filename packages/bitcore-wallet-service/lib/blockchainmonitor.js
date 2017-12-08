@@ -406,14 +406,15 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) 
 
         self.storage.setVaultConfirmed(tx, txId, function (err, result) {
           if (err) {
+            log.error(err);
             log.error(`Could not update vault with txId: ${txId}`)
             return;
           }
 
           const notification = Notification.create({
             type: 'VaultConfirmation',
-            creatorId: sub.copayerId,
-            walletId: sub.walletId,
+            creatorId: tx.copayerId,
+            walletId: tx.walletId,
             data: result,
           });
 

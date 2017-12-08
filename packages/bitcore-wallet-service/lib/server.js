@@ -3537,6 +3537,8 @@ WalletService.prototype.getVaults = function(opts, cb) {
   self.storage.fetchVaults(self.copayerId, function(err, result) {
     if (err) return cb(err);
 
+    console.log(result);
+
     return cb(null, result);
   });
 };
@@ -3557,7 +3559,7 @@ WalletService.prototype.createVault = function(opts, cb) {
 
   async.series([
     function(next) {
-      self.storage.storeVault(self.copayerId, toStore, function(err, result) {
+      self.storage.storeVault(self.copayerId, self.walletId, toStore, function(err, result) {
         if (err) return cb(err);
 
         vaultId = result.insertedId;
@@ -3579,10 +3581,15 @@ WalletService.prototype.createVault = function(opts, cb) {
         toStore.coins[0] = txp;
         toStore.initialTxId = txid;
 
-        self.storage.updateVault(self.copayerId, toStore, function(err, result) {
-          if (err) return cb(err);
+        self._processBroadcast(txp, {
+          byThirdParty: true
+        },  function(err, txp) {
+          console.log('processes', txp);
+          self.storage.updateVault(self.copayerId, toStore, function(err, result) {
+            if (err) return cb(err);
   
-          return next();
+            return next();
+          });
         });
       });
     }, // Enable me later when transaction is constructed successfully
