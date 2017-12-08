@@ -84,11 +84,8 @@ export class PushNotificationsService {
       });
     });
     } else { 
-      this.logger.info("WebAppPush:: Push notification subscription happens here.");
-      // We are in the web app (not a mobile native app)
-      // TODO: Decide if we want to strategically supporting this case.  
-      //let firebase = require('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
-      //let fbMessaging = require('https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js');
+      this.logger.info("Push notifications are disabled, enabling long polling.");
+      this.pollingNotificationService.enable();
     }
   }
 
