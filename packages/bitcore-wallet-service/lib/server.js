@@ -322,15 +322,14 @@ WalletService.prototype.logout = function(opts, cb) {
  * @param {string} opts.supportBIP44AndP2PKH[=true] - Client supports BIP44 & P2PKH for new wallets.
  */
 WalletService.prototype.createWallet = function(opts, cb) {
-  var self = this,
-    pubKey,
-    unlockAddress;
+  var self = this, pubKey;
 
-  if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey', 'beacon'], cb)) return;
+  if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey', 'parentAddress'], cb)) return;
 
-  // We should short-circuit the request if there is no unlock code.
+  // We should short-circuit the request if there is no parent address.
   // This belt-and-suspenders check will save time and latency.
-  if (_.isEmpty(opts.beacon)) return cb(Errors.UNLOCK_CODE_INVALID);
+  if (_.isEmpty(opts.parentAddress))
+    return cb(new ClientError('Parent address is empty'));
 
   if (_.isEmpty(opts.name)) return cb(new ClientError('Invalid wallet name'));
   if (!Wallet.verifyCopayerLimits(opts.m, opts.n))
@@ -351,34 +350,10 @@ WalletService.prototype.createWallet = function(opts, cb) {
     return cb(new ClientError('Invalid public key'));
   };
 
-  try {
-    unlockAddress = new Bitcore.Address(pubKey, opts.network);
-  } catch (ex) {
-    return cb(new ClientError('Unable to get address from public key'));
-  };
-
   var newWallet;
-  var unlocked = false;
-  var shareCode = "";
-  var codeHash = "";
+  var unlocked = true;
 
   async.series([
-    function(acb) {
-      var unlockParams = {
-        unlockCode: opts.beacon,
-        address: unlockAddress
-      }
-      self.unlockAddress(unlockParams, function(err, result){
-        if (err) {
-          return acb(err);
-        }
-
-        unlocked = true;
-        shareCode = result.shareCode;
-        codeHash = result.codeHash;
-        return acb(null);
-      });
-    },
     function(acb) {
 
       if (!opts.id)
@@ -401,10 +376,8 @@ WalletService.prototype.createWallet = function(opts, cb) {
         singleAddress: !!opts.singleAddress,
         derivationStrategy: derivationStrategy,
         addressType: addressType,
-        beacon: opts.beacon,
+        parentAddress: opts.parentAddress,
         unlocked: unlocked,
-        shareCode: shareCode,
-        codeHash: codeHash,
       });
       self.storage.storeWallet(wallet, function(err) {
         log.debug('Wallet created', wallet.id, opts.network);
@@ -414,8 +387,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
     }
   ], function(err) {
     var newWalletId = newWallet ? newWallet.id : null;
-    var newWalletShareCode = newWallet ? newWallet.shareCode : null;
-    return cb(err, newWalletId, newWalletShareCode, codeHash);
+    return cb(err, newWalletId);
   });
 };
 
