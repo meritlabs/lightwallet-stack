@@ -1401,7 +1401,6 @@ export class WalletService {
     });
   }
 
-
   //: {mining: number, ambassador: number}
   /** 
    * Gets the aggregate rewards for a list of addresses.  
@@ -1409,31 +1408,25 @@ export class WalletService {
    * @returns {Reward} An object with the 'mining' and 'ambassador' properties.
    */
   public getRewards(wallet: MeritWalletClient):Promise<any> {
+    interface MWSRewardsResponse extends _.NumericDictionary<number> { address: string, rewards: { mining: number, ambassador: number } };
+    interface FilteredRewards { mining: number, ambassador: number }
+    
     return new Promise((resolve, reject) => {
       return this.getMainAddresses(wallet).then((addresses) => {  
-        this.logger.info("What is the address list?", addresses);        
-        return wallet.getRewards(addresses).then((rewards: any) => {
-          this.logger.info("What are the rewards: ", rewards);
-          let totalRewards: {mining: number, ambassador: number} =  _.reduce(rewards, (totalR: any, reward: any) => {
-            this.logger.info("What is reward in each iteration?: ", reward);
+        return wallet.getRewards(addresses).then((rewards: MWSRewardsResponse) => {
+          let totalRewards:FilteredRewards  =  _.reduce(rewards, (totalR: any, reward:any) => {
             if (!_.isEmpty(reward.rewards)) {
-              if (!_.isEmpty(reward.rewards.mining)) {
-                totalR.mining += rewards.reward.mining;
+              if (reward.rewards.mining) {
+                totalR.mining += reward.rewards.mining;
               }
-              if (!_.isEmpty(reward.rewards.ambassador)) {
+              if (reward.rewards.ambassador) {
                 totalR.ambassador += reward.rewards.ambassador;
               }
-              this.logger.info("What is totalR in each iteration?: ", totalR);
-            
               return totalR;
             }
           }, {mining: 0, ambassador: 0});
-          this.logger.info("What are the totalRewards: ", totalRewards);
           
           return resolve(totalRewards); 
-          // let addressRewards = _.find(rewards, { address: address });
-          //  if (!addressRewards) return reject();
-          //  return resolve(addressRewards);
         });
       });
     });
