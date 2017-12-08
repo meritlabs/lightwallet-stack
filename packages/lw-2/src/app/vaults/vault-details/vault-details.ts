@@ -152,10 +152,8 @@ export class VaultDetailsView {
     });
   }
 
-  private getCoins(): Promise<Array<any>> {
-    return this.profileService.getHeadWalletClient().then((walletClient) => {
-      return this.vaultsService.getVaultCoins(walletClient, this.vault);
-    });
+  private getCoins(walletClient: MeritWalletClient): Promise<Array<any>> {
+    return this.vaultsService.getVaultCoins(walletClient, this.vault);
   };
 
   private getVaultTxHistory(): Promise<Array<any>> {
@@ -166,9 +164,12 @@ export class VaultDetailsView {
 
   private formatAmounts(): void {
     this.profileService.getHeadWalletClient().then((walletClient: MeritWalletClient) => {
-      this.vault.altAmount = this.rateService.fromMicrosToFiat(this.vault.amount,walletClient.cachedStatus.alternativeIsoCode);
-      this.vault.altAmountStr = new FiatAmount(this.vault.altAmount);
-      this.vault.amountStr = this.txFormatService.formatAmountStr(this.vault.amount);
+      return this.getCoins(walletClient).then((coins) => {
+        this.vault.amount = _.sumBy(coins, 'micros');
+        this.vault.altAmount = this.rateService.fromMicrosToFiat(this.vault.amount,walletClient.cachedStatus.alternativeIsoCode);
+        this.vault.altAmountStr = new FiatAmount(this.vault.altAmount);
+        this.vault.amountStr = this.txFormatService.formatAmountStr(this.vault.amount);
+      });
     });
   }
 
