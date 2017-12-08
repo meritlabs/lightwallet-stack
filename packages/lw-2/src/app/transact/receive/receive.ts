@@ -87,7 +87,7 @@ export class ReceiveView {
       this.qrAddress = null;
       this.logger.warn('Failed to generate new adrress '+err);
       this.toastCtrl.create({
-        message: 'Failed to generate new adrress: '+err,
+        message: 'Failed to generate new adrress',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     });
@@ -107,6 +107,7 @@ export class ReceiveView {
   }
 
   copyToClipboard(addressString: string) {
+    if (!addressString) return;
 
     const address = addressString.split(':')[1] || addressString;
 

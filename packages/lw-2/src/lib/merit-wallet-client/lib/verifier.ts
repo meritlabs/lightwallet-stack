@@ -23,6 +23,7 @@ export module Verifier {
    * @returns {Boolean} true or false
    */
   export let checkAddress = function(credentials, address): boolean {
+    if (!address) return false;
     $.checkState(credentials.isComplete());
 
     var local = Utils.deriveAddress(address.type || credentials.addressType, credentials.publicKeyRing, address.path, credentials.m, credentials.network);
