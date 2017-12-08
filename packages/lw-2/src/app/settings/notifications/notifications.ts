@@ -4,8 +4,8 @@ import { NavController, NavParams, IonicPage } from 'ionic-angular';
 import { ConfigService } from 'merit/shared/config.service';
 import { AppService } from 'merit/core/app-settings.service';
 import { PlatformService } from 'merit/core/platform.service';
-import { PushNotificationsService } from 'merit/core/push-notification.service';
-import { EmailNotificationsService } from 'merit/core/email-notification.service';
+import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
+import { EmailNotificationsService } from 'merit/core/notification/email-notification.service';
 import { EmailValidator } from 'merit/shared/email.validator';
 
 @IonicPage()
