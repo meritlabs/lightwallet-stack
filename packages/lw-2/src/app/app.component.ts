@@ -19,6 +19,7 @@ import * as _ from 'lodash';
 import * as Promise from 'bluebird';
 import { FCM } from '@ionic-native/fcm';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
+import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
 
 
 @Component({
@@ -41,6 +42,7 @@ export class MeritLightWallet {
     private easyReceiveService: EasyReceiveService,
     private app: App,
     private FCM: FCM,
+    private pushNotificationService: PushNotificationsService
   ) {
 
     process.on('unhandledRejection', this.logger.info.bind(console));

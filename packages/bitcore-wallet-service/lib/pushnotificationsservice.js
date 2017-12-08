@@ -193,7 +193,7 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
           async.each(notifications,
             function(notification, next) {
               self._makeRequest(notification, function(err, response) {
-                if (err) log.error(err);
+                if (err) log.error("Could not send push notification: ", err);
                 if (response) {
                   log.debug('Request status: ', response.statusCode);
                   log.debug('Request message: ', response.statusMessage);
