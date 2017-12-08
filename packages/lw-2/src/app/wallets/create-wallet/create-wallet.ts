@@ -7,7 +7,7 @@ import { ToastConfig } from "merit/core/toast.config";
 
 
 @IonicPage({
-  defaultHistory: ['ProfileView']
+  defaultHistory: ['WalletsView']
 })
 @Component({
   selector: 'view-create-wallet',

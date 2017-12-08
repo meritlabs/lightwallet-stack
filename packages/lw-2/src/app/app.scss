@@ -109,8 +109,14 @@ ion-item textarea {
   mask-repeat: no-repeat;
   background: currentColor;
   display: inline-block;
-
 }
+
+.toast-error {
+  .toast-message {
+    background: color($colors, 'danger');
+  }
+}
+
 
 .merit-icon-merit { mask-image: url(../assets/img/icons/merit.svg); }
 .merit-icon-merit-2 { mask-image: url(../assets/img/merit.svg); }

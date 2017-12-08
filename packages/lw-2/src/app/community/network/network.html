@@ -1,13 +1,17 @@
 <ion-header>
 
     <ion-navbar color="secondary">
-        <ion-title>NetworkView</ion-title>
+        <ion-title>Your Network</ion-title>
     </ion-navbar>
 
 </ion-header>
 
 
 <ion-content>
+
+    <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
 
     <ion-card *ngFor="let wallet of wallets">
         <ion-card-header>
@@ -28,26 +32,11 @@
         </ion-item>
 
         <ion-item>
-            <ion-label>Referral Code</ion-label>
-            <ion-label item-right text-right>
-                <span *ngIf="wallet.shareCode">
-                    <span (click)="copyToClipboard(wallet.shareCode)"  ngxClipboard [cbContent]="wallet.shareCode">{{wallet.shareCode}}</span>
-                    <button ion-button icon-only clear color="primary" (click)="shareCode(wallet.shareCode)">
-                        <ion-icon name="share"></ion-icon>
-                    </button>
-                </span>
-                <span *ngIf="!wallet.shareCode">
-                    <ion-spinner></ion-spinner>
-                </span>
-            </ion-label>
-        </ion-item>
-
-        <ion-item>
             <ion-label>Invite Code</ion-label>
             <ion-label item-right text-right>
                 <span *ngIf="wallet.shareCode">
 
-                    <span (click)="copyToClipboard(wallet.shareCode)"  ngxClipboard [cbContent]="wallet.shareCode">{{wallet.shareCode | slice:0:8 }}...</span>
+                    <span (click)="copyToClipboard(wallet.shareCode)"  ngxClipboard [cbContent]="wallet.shareCode">{{wallet.shareCode | slice:0:10 }}</span>
 
                     <button ion-button icon-only clear color="primary" (click)="shareAddress(wallet.shareCode)">
                         <ion-icon name="share"></ion-icon>

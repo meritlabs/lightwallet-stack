@@ -14,6 +14,7 @@ import * as _ from 'lodash';
 import * as Promise from 'bluebird';
 import { Logger } from "merit/core/logger";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
 
 @Injectable()
 export class PushNotificationsService {
@@ -33,7 +34,8 @@ export class PushNotificationsService {
     private app: App,
     private bwcService: BwcService,
     private FCMPlugin: FCM,
-    private platform: Platform
+    private platform: Platform,
+    private pollingNotificationService: PollingNotificationsService
   ) {
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
@@ -82,11 +84,8 @@ export class PushNotificationsService {
       });
     });
     } else { 
-      this.logger.info("WebAppPush:: Push notification subscription happens here.");
-      // We are in the web app (not a mobile native app)
-      // TODO: Decide if we want to strategically supporting this case.  
-      //let firebase = require('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
-      //let fbMessaging = require('https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js');
+      this.logger.info("Push notifications are disabled, enabling long polling.");
+      this.pollingNotificationService.enable();
     }
   }
 
@@ -122,6 +121,9 @@ export class PushNotificationsService {
     this.profileService.getWallets().then((wallets) => {
       _.forEach(wallets, (walletClient: MeritWalletClient) => {
         this._subscribe(walletClient);
+        // We should be handling real-time updates to the application through either data push or
+        // through long-polling, but not both.  
+        this.pollingNotificationService.disablePolling(walletClient);
       });
      });
     
@@ -136,6 +138,9 @@ export class PushNotificationsService {
     this.profileService.getWallets().then((wallets) => {
       _.forEach(wallets, (walletClient: MeritWalletClient) => {
         this._unsubscribe(walletClient);
+        // We should be handling real-time updates to the application through either data push or
+        // through long-polling, but not both.  
+        this.pollingNotificationService.enablePolling(walletClient);
       });
     })
     this._token = null;

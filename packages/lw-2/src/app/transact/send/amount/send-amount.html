@@ -1,67 +1,81 @@
 <ion-header>
-    
-      <ion-navbar>
+
+    <ion-navbar color="secondary">
         <ion-title>Amount</ion-title>
-      </ion-navbar>
-    
-    </ion-header>
-    
-    
-    <ion-content>
-      <ion-list>
-        <ion-label padding>Recipient</ion-label>
-          <ion-item>
-            <ion-icon name="contact" item-left></ion-icon>
-            <span>{{ displayName }}</span>
-          </ion-item>
-        </ion-list>
-        <div>
-          <div padding>
-            <div>
-              <span>Amount</span>
-            </div>
-            <div>
-              <span>{{ amount || "0.00" }}</span>
-            </div>
-            <div [hidden]="!globalResult">
-              = {{globalResult|| "0.00" }}
-            </div>
-          </div>
-          <div class="keypad">
-            <div class="operator-row">
-              <div class="col operator-send"
-                  [hidden]="!allowSend" (click)="finish()">
-                <ion-icon name="arrow-round-forward"></ion-icon>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col digit" (click)="pushDigit('7')">7</div>
-              <div class="col digit" (click)="pushDigit('8')">8</div>
-              <div class="col digit" (click)="pushDigit('9')">9</div>
-              <div class="col operator" (click)="pushOperator('/')">&#247;</div>
-            </div>
-    
-            <div class="row">
-              <div class="col digit" (click)="pushDigit('4')">4</div>
-              <div class="col digit" (click)="pushDigit('5')">5</div>
-              <div class="col digit" (click)="pushDigit('6')">6</div>
-              <div class="col operator" (click)="pushOperator('x')">&#215;</div>
-            </div>
-    
-            <div class="row">
-              <div class="col digit" (click)="pushDigit('1')">1</div>
-              <div class="col digit" (click)="pushDigit('2')">2</div>
-              <div class="col digit" (click)="pushDigit('3')">3</div>
-              <div class="col operator" (click)="pushOperator('+')">&#43;</div>
-            </div>
-    
-            <div class="row">
-              <div class="col digit" (click)="pushDigit('.')">.</div>
-              <div class="col digit" (click)="pushDigit('0')">0</div>
-              <div class="col digit" (click)="removeDigit()"><ion-icon name="backspace"></ion-icon></div>
-              <div class="col operator" (click)="pushOperator('-')">&#45;</div>
-            </div>
-          </div>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+
+    <span *ngIf="wallet && hasFunds" margin-top>
+
+        <span class="row">
+            <span class="label" text-left>Recipient</span>
+            <span text-right [style.flex]="1" padding-right >
+                {{ displayName }}
+                <span class="avatar">
+                    <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
+                    <gravatar class="send-gravatar"
+                              [name]="contact.name.formatted" width="30" height="30"
+                              [email]="contact.emails[0] ? contact.emails[0].value : ''" *ngIf="!contact.photos.length"></gravatar>
+                </span>
+            </span>
+        </span>
+
+
+        <div class="row">
+            <span text-left class="label">Send via</span>
+            <span item-right text-right [style.flex]="1" (click)="selectSendingOption()" padding-right>
+                {{recipient.label|slice:0:15}}...
+            </span>
         </div>
-    </ion-content>
-    
+
+        <div class="label" class="row" (click)="selectWallet()">
+            <span text-left class="label">From</span>
+            <span item-right text-right [style.flex]="1">
+                {{wallet.name || wallet._id}}
+                <button ion-button icon-only clear color="primary" class="wallet-button">
+                    <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
+                        <img src="assets/img/icon-wallet.svg">
+                    </i>
+                </button>
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="label" text-left>Amount</span>
+            <input type="number" text-right pattern="[0-9\.]"
+                   [style.flex]="1"
+                   [(ngModel)]="amount"
+                   (ngModelChange)="processAmount()"
+                   [placeholder]="'Sending amount'">
+            <button ion-button clear color="primary" (click)="toggleCurrency()">
+                {{amountCurrency}}
+            </button>
+        </div>
+        <div class="row">
+            <span class="label" text-left>Available</span>
+            <span text-right [style.flex]="1" padding-right >
+                {{ availableAmount.formatted }}
+            </span>
+        </div>
+
+
+        <div class="control-buttons">
+            <button ion-button primary margin-top (click)="finish()" [disabled]="!sendAllowed()" >Send</button>
+        </div>
+
+    </span>
+
+    <span *ngIf="!loading && !hasFunds">
+        <div text-center padding>Before sending Merit you should buy some!</div>
+        <div class="control-buttons">
+            <button ion-button primary margin-top (click)="toBuyAndSell()">Buy Merit</button>
+        </div>
+    </span>
+
+</ion-content>
+

@@ -1,22 +1,23 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
-// Contacts view (component)
+
 @IonicPage()
 @Component({
-  selector: 'view-contact',
-  templateUrl: 'contact.html',
+  selector: 'view-buy-and-sell',
+  templateUrl: 'buy-and-sell.html',
 })
-export class ContactView {
+export class BuyAndSellView {
+
 
   constructor(
-    public navCtrl: NavController,
+    private navCtrl: NavController,
+    private navParams: NavParams
   ) {
 
   }
 
   ionViewDidLoad() {
-    //do something here
-
   }
+
 }

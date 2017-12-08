@@ -1,5 +1,5 @@
 import { Component, ApplicationRef, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, ToastController, AlertController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, AlertController, Events } from 'ionic-angular';
 
 import * as _ from "lodash";
 import * as Promise from 'bluebird';
@@ -7,7 +7,9 @@ import { ProfileService } from "merit/core/profile.service";
 import { FeedbackService } from "merit/feedback/feedback.service"
 import { Feedback } from "merit/feedback/feedback.model"
 import { AppUpdateService } from "merit/core/app-update.service";
-import { ToastConfig } from "../core/toast.config";
+import { ToastConfig } from "merit/core/toast.config";
+import { MeritToastController } from "merit/core/toast.controller";
+
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { ConfigService } from "merit/shared/config.service";
@@ -23,6 +25,7 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { RateService } from 'merit/transact/rate.service';
 import { Platform } from 'ionic-angular/platform/platform';
+
 
 
 /* 
@@ -63,7 +66,7 @@ export class WalletsView {
     private app: App,
     private logger: Logger,
     private easyReceiveService: EasyReceiveService,
-    private toastCtrl: ToastController,
+    private toastCtrl: MeritToastController,
     private appUpdateService: AppUpdateService,
     private profileService: ProfileService,
     private feedbackService: FeedbackService,
@@ -97,10 +100,10 @@ export class WalletsView {
     });
   }
 
-  public async ionViewDidLoad() {
+  public ionViewDidEnter() {
     this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
     this.registerListeners();
-    await this.updateAllInfo();
+    this.updateAllInfo();
   }
 
   // public async showFeaturesBlock(): Promise<boolean> {
@@ -108,6 +111,7 @@ export class WalletsView {
   // }
   private updateAllInfo(opts: { force: boolean } = { force: false }): Promise<any> {
     return new Promise((resolve, reject) => {
+
       return this.addressbookService.list('testnet').then((addressBook) => {
         this.addressbook = addressBook;
         return this.updateAllWallets(opts.force);
@@ -116,12 +120,12 @@ export class WalletsView {
           return resolve(null); //ToDo: add proper error handling;
         }
         this.wallets = wallets;
-        
+
         // Now that we have wallets, we will proceed with the following operations in parallel.
         return Promise.join(
-          this.updateNetworkValue(wallets), 
-          this.processEasyReceive(), 
-          this.updateTxps({ limit: 3 }), 
+          this.updateNetworkValue(wallets),
+          this.processEasyReceive(),
+          this.updateTxps({limit: 3}),
           this.updateVaults(_.head(this.wallets)),
           this.fetchNotifications(),
           (res) => {
@@ -132,7 +136,11 @@ export class WalletsView {
       }).catch((err) => {
         this.logger.info("Error updating information for all wallets.");
         this.logger.info(err);
-        return reject();
+        this.toastCtrl.create({
+          message: 'Failed to update information',
+          cssClass: ToastConfig.CLASS_ERROR
+        }).present();
+        return resolve();
       });
     });
   }
@@ -146,14 +154,14 @@ export class WalletsView {
 
   private updateVaults(wallet: MeritWalletClient): Promise<any> {
     return this.vaultsService.getVaults(wallet).then((vaults) => {
-    this.logger.info('getting vaults', vaults);
-    Promise.map(vaults, (vault) => {
-      vault.altAmount = this.rateService.toFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode);
-      vault.altAmountStr = new FiatAmount(vault.altAmount);
-      vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
-    });
-    this.vaults = vaults;
-    return Promise.resolve();
+      this.logger.info('getting vaults', vaults);
+      Promise.map(vaults, (vault) => {
+        vault.altAmount = this.rateService.fromMeritToFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode);
+        vault.altAmountStr = new FiatAmount(vault.altAmount);
+        vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
+      });
+      this.vaults = vaults;
+      return Promise.resolve();
   });
   }
 
@@ -346,7 +354,6 @@ export class WalletsView {
     return new Promise((resolve, reject) => {
 
       this.profileService.getWallets().then((wallets) => {
-
         // TODO: Allow a user to choose which wallet to receive into.
         let wallet = wallets[0];
         if (!wallet) return reject('no wallet');
@@ -456,11 +463,12 @@ export class WalletsView {
 
   private updateAllWallets(force: boolean = false): Promise<MeritWalletClient[]> {
     return this.profileService.getWallets().map((wallet: any) => {
+      this.profileService.updateWalletSettings(wallet);
       return this.walletService.getStatus(wallet, { force: force }).then((status) => {
         wallet.status = status;
         return wallet;
       }).catch((err) => {
-        Promise.reject(new Error('could not update wallets' + err));
+        return Promise.reject(new Error('could not update wallets' + err));
       });
     })
   }
