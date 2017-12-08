@@ -36,7 +36,6 @@ var errors = {
   WALLET_LOCKED: 'Wallet is locked',
   WALLET_NOT_COMPLETE: 'Wallet is not complete',
   WALLET_NOT_FOUND: 'Wallet not found',
-  UNLOCK_CODE_INVALID: "Unlock code is not valid.",
   UNLOCKED_ALREADY: "Address already unlocked.",
   INVALID_PARAMETERS: "Invalid paramaters sent to server."
 };

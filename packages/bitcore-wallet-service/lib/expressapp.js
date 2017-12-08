@@ -221,12 +221,10 @@ ExpressApp.prototype.start = function(opts, cb) {
 
     // When a wallet is successfully created in Merit, it receives a shareCode
     // that other users can use to unlock their wallets.
-    server.createWallet(req.body, function(err, walletId, shareCode, codeHash) {
+    server.createWallet(req.body, function(err, walletId) {
       if (err) return returnError(err, res, req);
       res.json({
-        walletId: walletId,
-        shareCode: shareCode,
-        codeHash: codeHash,
+        walletId
       });
     });
   });

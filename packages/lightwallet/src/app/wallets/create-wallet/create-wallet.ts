@@ -90,7 +90,7 @@ export class CreateWalletView {
 
     let opts = {
       name: 'name', //this.formData.walletName,
-      parentAddress: 'mxgQRYxt9B1BtAn1wdF2e8NJTuAqocEEzM',
+      parentAddress: 'miB2255Vay5SGYsxrsbDq3WoVku4LJiFeG',
       bwsurl: this.formData.bwsurl,
       mnemonic: this.formData.recoveryPhrase,
       networkName: this.config.getDefaults().network.name,
