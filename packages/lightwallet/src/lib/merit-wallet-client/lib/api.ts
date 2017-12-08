@@ -80,7 +80,7 @@ export class API {
   public started: boolean;
   public copayerId: string;
   public unlocked: boolean;
-  public shareCode: string;
+  public parentAddress: string;
   public balanceHidden: boolean;
   public eventEmitter: any;
   public status: any;
@@ -1092,7 +1092,7 @@ export class API {
             let me: any = _.find(wallet.copayers, {
               id: this.credentials.copayerId
             });
-            this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.beacon, wallet.shareCode, wallet.codeHash);
+            this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.parentAddress);
           }
 
           if (wallet.status != 'complete')
@@ -1735,17 +1735,17 @@ export class API {
         network: network,
         singleAddress: !!opts.singleAddress,
         id: opts.id,
+        parentAddress: opts.parentAddress
       };
 
       // Create wallet
-      return this.sendReferral(opts.parentAddress).then(res => {
-        if (res) {
+      return this.sendReferral(opts.parentAddress).then(refid => {
+        if (refid) {
+          console.log(refid)
           this._doPostRequest('/v1/wallets/', args).then(res => {
             if (res) {
               let walletId = res.walletId;
-              let walletShareCode = res.shareCode;
-              let walletCodeHash = res.codeHash;
-              c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.beacon, walletShareCode, walletCodeHash);
+              c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.parentAddress);
 
               let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
@@ -1759,7 +1759,7 @@ export class API {
             }
           });
         } else {
-          return reject(new Error('MWC Error: ' + res));
+          return reject(new Error('MWC Error: ' + refid));
         }
       }).catch((err) => {
         console.log('wallet error', err);
@@ -1775,8 +1775,6 @@ export class API {
    */
   sendReferral(parentAddress: string, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      console.log('sending referral. parentAddress: ', parentAddress);
-      console.log('this.credentials: ', this.credentials);
       if (opts) {
         $.shouldBeObject(opts);
       }
@@ -1803,14 +1801,13 @@ export class API {
       const pubkey = walletPrivKey.toPublicKey();
       const address = pubkey.toAddress(network);
 
-      const hash = Bitcore.crypto.Hash.sha256(Buffer.concat([
-        Bitcore.Address.fromString(parentAddress, network).toBuffer(),
-        address.toBuffer(),
+      // TODO: get rid of .match(/.{1,2}/g).reverse().join('') if possible
+      const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
+        Bitcore.Address.fromString(parentAddress, network).toBufferLean(),
+        address.toBufferLean(),
       ]));
 
-      console.log('hash: ', hash.toString('hex'));
-
-      const signature = Bitcore.crypto.ECDSA.sign(hash, walletPrivKey, 'little');
+      const signature = Bitcore.crypto.ECDSA.sign(hash, walletPrivKey, 'big');
 
       const referral = new Bitcore.Referral({
         version: 0,
@@ -1821,9 +1818,9 @@ export class API {
         signature,
       });
 
-      return this._doPostRequest('/v1/referral/', { referral: referral.serialize() }).then(res => {
-        console.log('result: ', res);
-      });
+      this._doPostRequest('/v1/referral/', { referral: referral.serialize() })
+        .then(resolve)
+        .catch(reject);
     });
   };
   /**
@@ -1851,7 +1848,7 @@ export class API {
         dryRun: !!opts.dryRun,
       }).then((wallet) => {
         if (!opts.dryRun) {
-          this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.beacon, wallet.shareCode, wallet.codeHash);
+          this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.parentAddress);
         }
         return resolve(wallet);
       }).catch((ex) => {
