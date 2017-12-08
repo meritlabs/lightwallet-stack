@@ -67,17 +67,17 @@ export class NetworkView {
 
       return Promise.map(wallets, (wallet: MeritWalletClient) => {
         return this.walletService.getANV(wallet).then((anv) => {
-          return wallet.totalNetworkValue = this.txFormatService.parseAmount(anv, 'MRT').amountUnitStr;
+          return wallet.totalNetworkValue = this.txFormatService.parseAmount(anv, 'micros').amountUnitStr;
         }).then(() => {
           return this.walletService.getRewards(wallet).then((data) => {
             this.logger.warn("Got Rewards in network view with: ", data);
             // If we cannot properly fetch data, let's return wallets as-is.
             if (data && !_.isNil(data.mining)) {
-              wallet.miningRewards = this.txFormatService.parseAmount(data.mining, 'MRT').amountUnitStr;
+              wallet.miningRewards = this.txFormatService.parseAmount(data.mining, 'micros').amountUnitStr;
             }
             if (data && !_.isNil(data.mining)) {
 
-              wallet.ambassadorRewards = this.txFormatService.parseAmount(data.ambassador, 'MRT').amountUnitStr;
+              wallet.ambassadorRewards = this.txFormatService.parseAmount(data.ambassador, 'micros').amountUnitStr;
             }
             return wallet;
           });
