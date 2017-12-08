@@ -14,6 +14,7 @@ import * as _ from 'lodash';
 import * as Promise from 'bluebird';
 import { Logger } from "merit/core/logger";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
 
 @Injectable()
 export class PushNotificationsService {
@@ -33,7 +34,8 @@ export class PushNotificationsService {
     private app: App,
     private bwcService: BwcService,
     private FCMPlugin: FCM,
-    private platform: Platform
+    private platform: Platform,
+    private pollingNotificationService: PollingNotificationsService
   ) {
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
@@ -122,6 +124,9 @@ export class PushNotificationsService {
     this.profileService.getWallets().then((wallets) => {
       _.forEach(wallets, (walletClient: MeritWalletClient) => {
         this._subscribe(walletClient);
+        // We should be handling real-time updates to the application through either data push or
+        // through long-polling, but not both.  
+        this.pollingNotificationService.disablePolling(walletClient);
       });
      });
     
@@ -136,6 +141,9 @@ export class PushNotificationsService {
     this.profileService.getWallets().then((wallets) => {
       _.forEach(wallets, (walletClient: MeritWalletClient) => {
         this._unsubscribe(walletClient);
+        // We should be handling real-time updates to the application through either data push or
+        // through long-polling, but not both.  
+        this.pollingNotificationService.enablePolling(walletClient);
       });
     })
     this._token = null;

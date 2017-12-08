@@ -41,7 +41,7 @@ import { DeepLinkService } from "merit/core/deep-link.service";
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 
 import { LedgerService } from 'merit/shared/ledger.service';
-import { PushNotificationsService } from 'merit/core/push-notification.service';
+import { NotificationModule } from 'merit/core/notification/notification.module';
 
 /* 
   The core module exists to make commonly used singleton services available 
@@ -66,7 +66,8 @@ export function createTranslateLoader(http: HttpClient) {
               useFactory: createTranslateLoader,
               deps: [HttpClient]
             }
-          })        
+          }),
+          NotificationModule        
     ],
     exports: [],
     declarations: [
@@ -102,7 +103,6 @@ export function createTranslateLoader(http: HttpClient) {
         MnemonicService,
         CreateVaultService,
         VaultsService,
-        PushNotificationsService,
         HttpClient,
         FCM,
         {
