@@ -6,7 +6,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { MeritWalletClient } from './../../../../lib/merit-wallet-client';
 
 @IonicPage({
-  defaultHistory: ['ProfileView']
+  defaultHistory: ['WalletsView']
 })
 @Component({
   selector: 'view-create-vault-master-key',

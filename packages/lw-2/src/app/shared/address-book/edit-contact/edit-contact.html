@@ -1,0 +1,65 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title translate>{{editMode ? originalContact.name.formatted : 'New Contact'}}</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <ion-list *ngIf="newContact">
+
+        <ion-item>
+            <ion-label stacked>Name</ion-label>
+            <ion-input type="text" [(ngModel)]="newContact.name.formatted" placeholder="Contact name"></ion-input>
+        </ion-item>
+
+        <ion-item *ngFor="let email of newContact.emails">
+            <ion-label stacked>
+                Email
+            </ion-label>
+            <ion-input text-left type="email" [(ngModel)]="email.value"></ion-input>
+
+            <button ion-button icon-only clear color="danger" (click)="removeEmail(email)" item-end
+                    *ngIf="newContact.emails.length > 1">
+                <ion-icon name="remove-circle"></ion-icon>
+            </button>
+        </ion-item>
+
+        <ion-item *ngFor="let phoneNumber of newContact.phoneNumbers">
+            <ion-label stacked>
+                Phone Number
+            </ion-label>
+            <ion-input type="tel" [(ngModel)]="phoneNumber.value"></ion-input>
+
+            <button ion-button icon-only clear color="danger" (click)="removePhone(phoneNumber)" item-end
+                    *ngIf="newContact.phoneNumbers.length > 1" >
+                <ion-icon name="remove-circle"></ion-icon>
+            </button>
+        </ion-item>
+
+        <ion-item class="address-item" *ngIf="newContact.meritAddresses.length">
+            <ion-label stacked>Merit Address</ion-label>
+            <ion-input type="text" [(ngModel)]="newContact.meritAddresses[0].address"
+                       placeholder="Type or scan merit address"
+                       (ionChange)="newContact.formatAddress()" debounce="300"></ion-input>
+            <button class="scan-button" item-end>
+                <button (click)="openScanner()" ion-button icon-only item-right clear >
+                    <ion-icon name="qr-scanner"  color="primary"></ion-icon>
+                </button>
+            </button>
+        </ion-item>
+
+    </ion-list>
+
+    <button ion-item *ngIf="editMode && originalContact.meritAddresses[0]" (click)="removeContact()" class="delete-button" margin-bottom>
+        <div class="text" *ngIf="!isLocalContact()">Remove merit data</div>
+        <div class="text" *ngIf="isLocalContact()">Delete contact</div>
+    </button>
+
+    <div class="control-buttons">
+        <button  (click)="save()" ion-button [disabled]="!isContactValid()">Save</button>
+    </div>
+
+</ion-content>

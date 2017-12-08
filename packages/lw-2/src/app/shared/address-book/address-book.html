@@ -5,7 +5,7 @@
 
         <ion-buttons end>
             <button ion-button (click)="toAddContact()" translate>
-                <ion-icon name="plus"></ion-icon>
+                <ion-icon name="add"></ion-icon>
             </button>
         </ion-buttons>
     </ion-navbar>
@@ -14,21 +14,36 @@
 
 <ion-content>
 
+    <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
 
-    <ion-card *ngIf="!hasContacts()" padding>
-        <div translate>
+    <ion-searchbar
+            [(ngModel)]="searchQuery"
+            [showCancelButton]="shouldShowCancel"
+            (ionChange)="filterContacts()"
+            debounce="300">
+    </ion-searchbar>
 
-            <div class="icon">
-                <img src="assets/img/address-book-add.svg">
-            </div>
+    <div *ngIf="loading" text-center>
+        <ion-spinner></ion-spinner>Loading contacts...
+    </div>
 
-            No contacts yet. Get started adding your first one.
+    <ion-list *ngIf="!loading">
+        <ion-item *ngFor="let contact of renderingContacts" (click)="toContact(contact)">
+            <ion-avatar class="icon big-icon-svg" item-start>
+                <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
+                <gravatar class="send-gravatar" [name]="contact.name.formatted" width="30" height="30" [email]="contact.emails[0]?.value || ''" *ngIf="!contact.photos.length"></gravatar>
+            </ion-avatar>
+            {{contact.name.formatted}}
+            <img item-right src="assets/img/16x16.png" *ngIf="contact.meritAddresses.length">
+        </ion-item>
+
+    </ion-list>
+
+    <ion-infinite-scroll (ionInfinite)="renderMoreContacts($event)" *ngIf="filteredContacts && filteredContacts.length > contactsOffset+contactsLimit">
+        <div text-center>
+            <ion-spinner></ion-spinner>Loading contacts...
         </div>
-    </ion-card>
-
-        <div class="control-buttons">
-            <button  (click)="toAddContact()" ion-button >Add contact</button>
-        </div>
+    </ion-infinite-scroll>
 
 
 </ion-content>

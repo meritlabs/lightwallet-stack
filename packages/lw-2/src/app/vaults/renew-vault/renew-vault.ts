@@ -13,8 +13,9 @@ import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service'
 export interface IWhitelistEntry {
     id: string,
     name: string,
-    pubKey: string,
+    address: string,
     type: string,
+    walletClient?: any,
 }
 
 export interface IVaultRenewViewModel {
@@ -36,6 +37,7 @@ export class VaultRenewView {
   public vault: any = null;
   public formData: IVaultRenewViewModel = { vaultName: '', masterKey: '', whitelist: [] };
   public whitelistCandidates: Array<IWhitelistEntry> = [];
+  public canConfirm: boolean;
   private bitcore: any = null;
   private walletClient: MeritWalletClient;
 
@@ -56,6 +58,13 @@ export class VaultRenewView {
     await this.updateWhitelist();
     this.formData.vaultName = this.vault.name;
     this.formData.masterKey = '';
+    this.checkCanConfirm();
+  }
+
+  checkCanConfirm() {
+    this.canConfirm = 
+      this.formData.vaultName.length > 0 && 
+      this.formData.whitelist.length > 0;
   }
 
   confirmRenew() {
@@ -72,12 +81,7 @@ export class VaultRenewView {
   toVault() {
     const newVault = _.cloneDeep(this.vault);
     const whitelist = _.map(this.formData.whitelist, (w: any) => {
-      let key; 
-      if (w.type == 'wallet') {
-        key = this.bitcore.HDPublicKey.fromString(w.pubKey);
-      } else {
-        key = this.bitcore.Address.fromString(w.pubKey);
-      }
+      let key = this.bitcore.Address.fromString(w.address);
       return key.toBuffer();
     });
 
@@ -102,7 +106,7 @@ export class VaultRenewView {
   }
 
   compareWhitelistEntries(e1: IWhitelistEntry, e2: IWhitelistEntry): boolean {
-    return e1.type == e2.type && e1.id == e2.id;
+    return e1.type == e2.type && e1.address == e2.address;
   }
 
   private updateWhitelist(): Promise<any> {
@@ -111,30 +115,43 @@ export class VaultRenewView {
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
-          return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
+          const addr = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
+          return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet', walletClient: w };
         });
       }), 
       // fetch users vaults
       this.getAllWVaults().then((vaults) => {
         return _.map(vaults, (v) => {
           const name = v.name || v._id;
-          const key = new this.bitcore.Address(v.address).toString();
-          return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' }; 
+          const addr = new this.bitcore.Address(v.address).toString();
+          return { 'id': v._id, 'name': name, 'address': addr, 'type': 'vault' }; 
         });
       }),
     ]).then((arr: Array<Array<IWhitelistEntry>>) => {
       const whitelistCandidates = _.flatten(arr);
       const filtered = _.reject(whitelistCandidates, { id: this.vault._id });
       this.whitelistCandidates = filtered;
-      _.each(this.vault.whitelist, (wl) => {
-        const found = _.find(filtered, { pubKey: wl });
-        const results = [];
-        if (found && found.id != this.vault.id) {
-          results.push(found);
-        }
-        this.formData.whitelist = results; // Do not push to model directly, it will break change detection in Angular
+      
+      return Promise.map(this.vault.whitelist, (wl) => {
+        return Promise.map(whitelistCandidates, (candidate) => {
+          if (candidate.type === 'vault') {
+            if (wl == candidate.address) return candidate;
+          } else { 
+            return candidate.walletClient.getMainAddresses({}).then((addresses: Array<any>) => {
+              const found = _.find(addresses, { address: wl });
+              if (found) {
+                candidate.walletClient = null;
+                return candidate;
+              }
+            });
+          }
+          return null;
+        });
+      }).then((unfilteredWhitelist) => {
+        const results = _.compact(_.flatten(unfilteredWhitelist));
+        this.formData.whitelist = results;
+        return Promise.resolve();
       });
-      console.log(this.whitelistCandidates, this.formData.whitelist);
     });
   }
 

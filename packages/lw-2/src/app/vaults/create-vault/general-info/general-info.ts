@@ -12,7 +12,7 @@ import { Logger } from 'merit/core/logger';
 
 
 @IonicPage({
-  defaultHistory: ['ProfileView']
+  defaultHistory: ['WalletsView']
 })
 @Component({
   selector: 'view-create-vault-general',
@@ -39,7 +39,7 @@ export class CreateVaultGeneralInfoView {
   }
 
   checkNextAvailable() {
-    this.isNextAvailable = this.formData.vaultName.length > 0;
+    this.isNextAvailable = this.formData.vaultName.length > 0 && this.formData.whitelist.length > 0; 
   }
 
   ionViewDidLoad() {
@@ -51,7 +51,7 @@ export class CreateVaultGeneralInfoView {
     this.getAllWallets().then((wallets) => {
       const walletDTOs = _.map(wallets, (w: any) => {
         const name = w.name || w._id;
-        return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
+        return { 'id': w.id, 'name': name, 'address': w.credentials.xPubKey, 'type': 'wallet' };
       });
       this.logger.info('walletDTOs', walletDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(walletDTOs);
@@ -63,7 +63,7 @@ export class CreateVaultGeneralInfoView {
         const name = v.name || v._id;
         const key = new this.bitcore.Address(v.address).toString();
         this.logger.info(key);
-        return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' }; 
+        return { 'id': v._id, 'name': name, 'address': key, 'type': 'vault' }; 
       });
       this.logger.info('walletDTOs', vaultDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(vaultDTOs);
