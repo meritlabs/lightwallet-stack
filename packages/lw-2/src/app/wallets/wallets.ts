@@ -108,6 +108,7 @@ export class WalletsView {
   // }
   private updateAllInfo(opts: { force: boolean } = { force: false }): Promise<any> {
     return new Promise((resolve, reject) => {
+
       return this.addressbookService.list('testnet').then((addressBook) => {
         this.addressbook = addressBook;
         return this.updateAllWallets(opts.force);
@@ -116,12 +117,12 @@ export class WalletsView {
           return resolve(null); //ToDo: add proper error handling;
         }
         this.wallets = wallets;
-        
+
         // Now that we have wallets, we will proceed with the following operations in parallel.
         return Promise.join(
-          this.updateNetworkValue(wallets), 
-          this.processEasyReceive(), 
-          this.updateTxps({ limit: 3 }), 
+          this.updateNetworkValue(wallets),
+          this.processEasyReceive(),
+          this.updateTxps({limit: 3}),
           this.updateVaults(_.head(this.wallets)),
           this.fetchNotifications(),
           (res) => {
@@ -132,7 +133,7 @@ export class WalletsView {
       }).catch((err) => {
         this.logger.info("Error updating information for all wallets.");
         this.logger.info(err);
-        return reject();
+        return Promise.reject(err);
       });
     });
   }
@@ -146,14 +147,14 @@ export class WalletsView {
 
   private updateVaults(wallet: MeritWalletClient): Promise<any> {
     return this.vaultsService.getVaults(wallet).then((vaults) => {
-    this.logger.info('getting vaults', vaults);
-    Promise.map(vaults, (vault) => {
-      vault.altAmount = this.rateService.toFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode);
-      vault.altAmountStr = new FiatAmount(vault.altAmount);
-      vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
-    });
-    this.vaults = vaults;
-    return Promise.resolve();
+      this.logger.info('getting vaults', vaults);
+      Promise.map(vaults, (vault) => {
+        vault.altAmount = this.rateService.toFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode);
+        vault.altAmountStr = new FiatAmount(vault.altAmount);
+        vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
+      });
+      this.vaults = vaults;
+      return Promise.resolve();
   });
   }
 
@@ -456,6 +457,7 @@ export class WalletsView {
 
   private updateAllWallets(force: boolean = false): Promise<MeritWalletClient[]> {
     return this.profileService.getWallets().map((wallet: any) => {
+      this.profileService.updateWalletSettings(wallet);
       return this.walletService.getStatus(wallet, { force: force }).then((status) => {
         wallet.status = status;
         return wallet;

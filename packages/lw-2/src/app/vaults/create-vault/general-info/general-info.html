@@ -19,7 +19,11 @@
     <ion-list>
         <ion-item>
             <ion-label translate>Whitelist</ion-label>
-           z
+            <ion-select [(ngModel)]="formData.whitelist" okText="Ok" cancelText="Dismiss" multiple="true" (ngModelChange)="checkNextAvailable()">
+                 <ion-option *ngFor="let address of whitelistCandidates;trackBy:address?.id" [value]="address">
+                     {{address.name}} <span class="wallet-type">({{ address.type }})</span>
+                 </ion-option>
+             </ion-select>
         </ion-item>
     </ion-list>
 

@@ -1,0 +1,81 @@
+
+@import "../transact-module";
+%send-module {
+  @extend %module-transact;
+
+  .address {
+    margin: 10px 0;
+    font-size: 12px;
+  }
+
+  .button-request, .button-address {
+    font-size: 12px;
+    height: 25px;
+    min-height: 25px;
+    margin: 0;
+  }
+
+  .wallet-icon {
+    img {
+      height: 25px !important;
+    }
+  }
+
+  span,
+  ion-label {
+    font-size: 12px;
+  }
+
+  input {
+    border: none;
+    font-size: 12px;
+  }
+
+  ion-item {
+    position: relative;
+  }
+
+  .row {
+    height: 50px;
+    line-height: 50px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    color: rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    white-space: nowrap;
+    background: white;
+
+    button {
+      padding: 0 !important;
+      height: 40px !important;
+      vertical-align: middle;
+      width: 40px !important;
+      text-align: center;
+    }
+
+    .label {
+      font-weight: 600;
+      padding-left: 5px;
+    }
+  }
+
+  .row:nth-last-child(1) {
+    border-bottom: 0;
+  }
+
+  .wallet-icon {
+    height: 25px !important;
+    line-height: 25px !important;
+    margin: 0 4px;
+    padding: 0 !important;
+    width: 40px;
+    vertical-align: middle;
+    img {
+      //height: 25px !important;
+      //line-height: 25px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      vertical-align: middle;
+    }
+  }
+}

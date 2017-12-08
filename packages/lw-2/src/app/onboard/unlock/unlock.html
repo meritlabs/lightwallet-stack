@@ -18,14 +18,14 @@
             </div>
 
 
-        <form class="bottom-buttons" (ngSubmit)="createAndUnlockWallet()">
+            <div class="bottom-buttons">
                 <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
                     [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
                     [(ngModel)]="formData.unlockCode" name="unlockCode">
-                <button type="submit" ion-button icon-only translate>
+                <button (click)="createAndUnlockWallet()" ion-button icon-only translate>
                     <ion-icon name="arrow-forward"></ion-icon>
                 </button>
-            </form>
+            </div>
         
 
     </div>
@@ -52,14 +52,14 @@
         </div>
 
 
-        <form class="bottom-buttons" (ngSubmit)="createAndUnlockWallet()">
-                <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
-                    [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
-                    [(ngModel)]="formData.unlockCode" name="unlockCode">
-                <button type="submit" ion-button icon-only translate>
-                    <ion-icon name="arrow-forward"></ion-icon>
-                </button>
-        </form> 
+        <div class="bottom-buttons">
+            <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
+                [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
+                [(ngModel)]="formData.unlockCode" name="unlockCode">
+            <button (click)="createAndUnlockWallet()" ion-button icon-only translate>
+                <ion-icon name="arrow-forward"></ion-icon>
+            </button>
+        </div>
             
 
     </div>

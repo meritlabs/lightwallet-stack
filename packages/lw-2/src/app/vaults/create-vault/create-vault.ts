@@ -4,7 +4,7 @@ import { ConfigService } from "merit/shared/config.service";
 
 
 @IonicPage({
-  defaultHistory: ['ProfileView']
+  defaultHistory: ['WalletsView']
 })
 @Component({
   selector: 'view-create-vault',

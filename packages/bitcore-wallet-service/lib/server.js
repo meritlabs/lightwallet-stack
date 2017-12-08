@@ -3554,13 +3554,7 @@ WalletService.prototype.createVault = function(opts, cb) {
   let vaultId = '';
 
   const readableWhitelist = _.map(opts.whitelist, (wl) => {
-    let entry;
-    if (wl.data.length == 21) {
-      entry = Bitcore.Address.fromBuffer(new Buffer(wl.data)).toString();
-    } else {
-      entry = Bitcore.HDPublicKey.fromBuffer(new Buffer(wl.data)).toString();
-    }
-    return entry;
+      return Bitcore.Address.fromBuffer(new Buffer(wl.data)).toString();
   });
   const toStore = _.cloneDeep(opts);
   toStore.whitelist = readableWhitelist;
@@ -3939,6 +3933,54 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 WalletService.prototype.renewVault = function(opts, cb) {
   const self = this;
 
+  if(!opts.vault) {
+    return cb(new ClientError('Required argument "vault" missing'));
+  }
+
+  if(!opts.coin) {
+    return cb(new ClientError('Required argument "coin" missing'));
+  }
+
+  opts.vault.status = Bitcore.Vault.Vault.VaultStates.RENEWING;
+  let toStore = _.cloneDeep(opts.vault);
+
+  async.series([
+    function(next) {
+      self.storage.storeVault(self.copayerId, toStore, function(err, result) {
+        if (err) return cb(err);
+
+        vaultId = result.insertedId;
+
+        return next();
+      });
+    },
+    function(next) {
+      //TODO: Loop
+      var txp = Model.TxProposal.fromObj(opts.coin);
+      var bc = self._getBlockchainExplorer(txp.network);
+
+      var rawTx = txp.getRawTx();
+      bc.broadcast(rawTx, function(err, txid) {
+        if (err) return cb(err);
+
+        txp.txid = txid;
+        toStore.id = vaultId;
+        toStore.coins[0] = txp;
+        toStore.initialTxId = txid;
+
+        self.storage.updateVault(self.copayerId, toStore, function(err, result) {
+          if (err) return cb(err);
+  
+          return next();
+        });
+      });
+    }, // Enable me later when transaction is constructed successfully
+    function(next) {
+      self.getVaults(opts, cb);
+
+      return next();
+    }
+  ]);
   return cb(null, {});
 };
 
