@@ -404,9 +404,6 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) 
           return;
         }
 
-        console.log('FOUND');
-        console.log(tx);
-
         self.storage.setVaultConfirmed(tx, function (err, result) {
           if (err) {
             log.error(err);
