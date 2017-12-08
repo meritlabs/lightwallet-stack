@@ -12,6 +12,7 @@ import { PlatformService } from 'merit/core/platform.service';
 
 import { RateService } from 'merit/transact/rate.service'; 
 import { ConfigService } from "merit/shared/config.service";
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @IonicPage()
 @Component({
@@ -57,13 +58,15 @@ export class ReceiveView {
     this.amountCurrency = this.availableUnits[0];
   }
 
-  async ionViewDidLoad() {
-    this.wallets = await this.profileService.getWallets();
+  ionViewDidLoad() {
+    this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
+      this.wallets = wallets;
+      if (this.wallets && this.wallets[0]) {
+        this.wallet = this.wallets[0];
+        this.generateAddress();
+      }
+    });
 
-    if (this.wallets && this.wallets[0]) {
-      this.wallet = this.wallets[0];
-      this.generateAddress();
-    }
 
     // Get a new address if we just received an incoming TX (on an address we already have)
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
