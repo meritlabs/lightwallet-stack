@@ -14,8 +14,24 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { Logger } from 'merit/core/logger';
 import { NgZone } from '@angular/core';
 import * as _ from "lodash";
+import { FiatAmount } from 'merit/shared/fiat-amount.model';
 
 
+interface DisplayWallet {
+  name: string,
+  locked: boolean,
+  color: string,
+  shareCode: string,
+  totalNetworkValueMicro: number,
+  totalNetworkValueMerit: string,
+  totalNetworkValueFiat: string,
+  miningRewardsMicro: number,
+  miningRewardsMerit: string,
+  miningRewardsFiat: string,
+  ambassadorRewardsMicro: number
+  ambassadorRewardsMerit: string
+  ambassadorRewardsFiat: string
+}
 
 // Network View 
 // Part of the Community Tab.
@@ -25,8 +41,7 @@ import * as _ from "lodash";
   templateUrl: 'network.html',
 })
 export class NetworkView {
-
-  public wallets: MeritWalletClient[];
+  public displayWallets: Array<DisplayWallet> = [];
 
   constructor(
     public navCtrl: NavController,
@@ -45,7 +60,16 @@ export class NetworkView {
   // Ensure that the wallets are loaded into the view on first load.
   ionViewDidLoad() {
     this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
-      this.wallets = wallets;
+      let newDisplayWallets: DisplayWallet[] = []
+      _.each(wallets, (wallet: MeritWalletClient) => {
+        // The wallet client will already have the below information.
+        let filteredWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode");
+        this.logger.info("FilteredWallet: ", filteredWallet);
+        newDisplayWallets.push(<DisplayWallet>filteredWallet);
+      })
+      this.displayWallets = newDisplayWallets;
+      this.logger.info("DisplayWallets after ionViewLoad: ", this.displayWallets);
+
     })
   }
 
@@ -62,32 +86,65 @@ export class NetworkView {
     })
   }
 
+  private formatNetworkInfo(wallets: DisplayWallet[]): Promise<Array<DisplayWallet>> {
+    let formatPromises: Array<Promise<any>> = [];
+    let newDWallets: Array<DisplayWallet> = [];
+    return Promise.each(wallets, (dWallet: DisplayWallet) => {
+      if (dWallet.totalNetworkValueMicro) {
+        dWallet.totalNetworkValueMerit = this.txFormatService.parseAmount(dWallet.totalNetworkValueMicro, 'micros').amountUnitStr;
+        formatPromises.push(this.txFormatService.formatToUSD(dWallet.totalNetworkValueMicro).then((usdAmount) => {
+          dWallet.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
+          return Promise.resolve();
+        }));
+      }
+
+      if (dWallet.miningRewardsMicro) {
+        dWallet.miningRewardsMerit = this.txFormatService.parseAmount(dWallet.miningRewardsMicro, 'micros').amountUnitStr;
+        formatPromises.push(this.txFormatService.formatToUSD(dWallet.miningRewardsMicro).then((usdAmount) => {
+          dWallet.miningRewardsFiat = new FiatAmount(usdAmount).amountStr;
+          return Promise.resolve();
+        }));
+      }
+
+      if (dWallet.ambassadorRewardsMicro) {
+        dWallet.ambassadorRewardsMerit = this.txFormatService.parseAmount(dWallet.ambassadorRewardsMicro, 'micros').amountUnitStr;
+        formatPromises.push(this.txFormatService.formatToUSD(dWallet.ambassadorRewardsMicro).then((usdAmount) => {
+          dWallet.ambassadorRewardsFiat = new FiatAmount(usdAmount).amountStr;
+          return Promise.resolve();
+        }));
+      }
+      return Promise.all(formatPromises).then(() => {
+        newDWallets.push(dWallet)
+      });
+    }).then(() => {
+      return Promise.resolve(newDWallets);
+    })
+  }
+
   private updateInfo() {
     return this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
 
       return Promise.map(wallets, (wallet: MeritWalletClient) => {
+        let filteredWallet = <DisplayWallet>_.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode", "totalNetworkValue");
+
         return this.walletService.getANV(wallet).then((anv) => {
-          return wallet.totalNetworkValue = this.txFormatService.parseAmount(anv, 'micros').amountUnitStr;
+          filteredWallet.totalNetworkValueMicro = anv;
         }).then(() => {
           return this.walletService.getRewards(wallet).then((data) => {
-            this.logger.warn("Got Rewards in network view with: ", data);
             // If we cannot properly fetch data, let's return wallets as-is.
             if (data && !_.isNil(data.mining)) {
-              wallet.miningRewards = this.txFormatService.parseAmount(data.mining, 'micros').amountUnitStr;
+              filteredWallet.miningRewardsMicro = data.mining;
             }
             if (data && !_.isNil(data.mining)) {
 
-              wallet.ambassadorRewards = this.txFormatService.parseAmount(data.ambassador, 'micros').amountUnitStr;
+              filteredWallet.ambassadorRewardsMicro = data.ambassador;
             }
-            return wallet;
+            return filteredWallet;
           });
         });
-      }).then((processedWallets: MeritWalletClient[]) => {
-        this.logger.info("What are the processed wallets?: ", processedWallets);
-        // We must explicitly run this in the angular zone because it's a change on
-        // the MWC class.
-        this.zone.run(() => {
-          this.wallets = processedWallets;
+      }).then((processedWallets: DisplayWallet[]) => {
+        return this.formatNetworkInfo(processedWallets).then((readyForDisplay: DisplayWallet[]) => {
+          this.displayWallets = readyForDisplay;
         });
       });
     }).catch((err) => {
