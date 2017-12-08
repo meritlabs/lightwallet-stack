@@ -1,4 +1,15 @@
 @import "../send-module";
 send-amount-view {
   @extend %send-module;
+
+  .avatar {
+    img, gravatar {
+      border-radius: 50%;
+      height: 30px;
+      width: 30px;
+      vertical-align: middle;
+      margin-left: 2px;
+      margin-right: -5px;
+    }
+  }
 }
