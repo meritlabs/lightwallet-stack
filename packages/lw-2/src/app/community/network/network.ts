@@ -13,6 +13,7 @@ import * as Promise from 'bluebird';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { Logger } from 'merit/core/logger';
 import { NgZone } from '@angular/core';
+import * as _ from "lodash";
 
 
 
@@ -61,7 +62,7 @@ export class NetworkView {
           return wallet.totalNetworkValue = this.txFormatService.parseAmount(anv, 'MRT').amountUnitStr;
         }).then(() => {
           return this.walletService.getRewards(wallet).then((data) => {
-            this.logger.warn("Got Rewards in network view with: ", data);git m
+            this.logger.warn("Got Rewards in network view with: ", data);
             // If we cannot properly fetch data, let's return wallets as-is.
             if (data && !_.isNil(data.mining)) {
               wallet.miningRewards = this.txFormatService.parseAmount(data.mining, 'MRT').amountUnitStr;
@@ -81,6 +82,11 @@ export class NetworkView {
           this.wallets = processedWallets;
         });
       });
+    }).catch((err) => {
+      this.toastCtrl.create({
+        message: err,
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
     });
   }
 

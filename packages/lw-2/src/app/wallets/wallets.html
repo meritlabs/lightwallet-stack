@@ -30,11 +30,14 @@
                 <i class="merit-icon-merit"></i>
             </ion-avatar>
             <h2 style="white-space: normal">Total value of your network</h2>
-            <span item-end class="detail">
-                <div class="amount">{{totalNetworkValueMicros}}</div>
-                <div class="detail-fiat">
-                    {{totalNetworkValueFiat}}
-                </div>
+            <span item-end class="detail" >
+                <span *ngIf="totalNetworkValueMicros">
+                    <div class="amount">{{totalNetworkValueMicros}}</div>
+                    <div class="detail-fiat">
+                        {{totalNetworkValueFiat}}
+                    </div>
+                </span>
+                <ion-spinner *ngIf="!totalNetworkValueMicros"></ion-spinner>
             </span>
 
         </ion-item>
@@ -75,12 +78,11 @@
         </ion-list>
     </span>
 
-
     <ion-item-divider translate>
         Wallets
     </ion-item-divider>
-    <ion-list class="wallets">
-        <ion-spinner *ngIf="!wallets">Loading...</ion-spinner>
+    <ion-item *ngIf="!wallets"><ion-spinner item-left></ion-spinner><h2>Loading...</h2></ion-item>
+    <ion-list class="wallets" *ngIf="wallets">
         <ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)" class="wallet">
 
             <ion-avatar item-start class="btn wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">

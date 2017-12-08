@@ -83,7 +83,6 @@
         <link-domain value="c213.app.link" />
         <ios-team-release value="MLJ7SU96NS" />
     </branch-config>
-    <allow-navigation href="http://192.168.1.3:8100" />
     <engine name="android" spec="^6.3.0" />
     <engine name="ios" spec="^4.5.4" />
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.2.1" />

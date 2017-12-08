@@ -9,7 +9,8 @@ import { ProfileService } from "merit/core/profile.service";
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
-
+import { ToastConfig } from "merit/core/toast.config";
+import { MeritToastController } from "merit/core/toast.controller";
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -32,7 +33,8 @@ export class CreateVaultGeneralInfoView {
     private walletService: WalletService,
     private vaultsService: VaultsService,
     private bwc: BwcService,
-    private logger: Logger
+    private logger: Logger,
+    private toastCtrl:MeritToastController
   ){
     this.bitcore = this.bwc.getBitcore();
     this.logger.info('bitcore', this.bitcore);
@@ -55,6 +57,11 @@ export class CreateVaultGeneralInfoView {
       });
       this.logger.info('walletDTOs', walletDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(walletDTOs);
+    }).catch((err) => {
+      this.toastCtrl.create({
+        message: 'Failed to update wallets info',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
     });
 
     // fetch users vaults
@@ -63,10 +70,15 @@ export class CreateVaultGeneralInfoView {
         const name = v.name || v._id;
         const key = new this.bitcore.Address(v.address).toString();
         this.logger.info(key);
-        return { 'id': v._id, 'name': name, 'address': key, 'type': 'vault' }; 
+        return { 'id': v._id, 'name': name, 'address': key, 'type': 'vault' };
       });
       this.logger.info('walletDTOs', vaultDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(vaultDTOs);
+    }).catch((err) => {
+      this.toastCtrl.create({
+        message: 'Failed to update vaults info',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
     });
   }
 
@@ -76,13 +88,14 @@ export class CreateVaultGeneralInfoView {
   }
 
   private getAllWallets(): Promise<Array<any>> {
-    const wallets = this.profileService.getWallets().then((ws) => {
-      return Promise.all(_.map(ws, async (wallet:any) => {
-        wallet.status = await this.walletService.getStatus(wallet);
-        return wallet; 
-      }));
-    })
-    return wallets;
+
+    return this.profileService.getWallets().map((wallet: any) => {
+      return this.walletService.getStatus(wallet).then((status) => {
+        wallet.status = status;
+        return wallet;
+      });
+    });
+
   }
 
   private getAllVaults(): Promise<Array<any>> {
