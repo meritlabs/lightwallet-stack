@@ -1,12 +1,40 @@
-<ion-header>
+<ion-header no-border transparent>
 
-    <ion-navbar>
-        <ion-title>ContactView</ion-title>
+    <ion-navbar color="secondary" transparent>
+        <ion-title></ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="toEditContact()">
+                <ion-icon name="settings"></ion-icon>
+            </button>
+        </ion-buttons>
     </ion-navbar>
 
 </ion-header>
 
+<ion-content fullscreen>
 
-<ion-content>
+    <div class="contact-header">
+        <!--<img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">-->
+        <h4 class="name">{{contact.name.formatted}}</h4>
+    </div>
+
+    <ion-list style="position: relative">
+        <ion-fab top right edge (click)="toSendAmount()">
+            <button ion-fab color="primary"><ion-icon name="send"></ion-icon></button>
+        </ion-fab>
+        <ion-item  *ngIf="contact.meritAddresses.length">
+            <ion-label stacked>Merit Address</ion-label>
+            <ion-label>{{contact.meritAddresses[0].address}}</ion-label>
+        </ion-item>
+        <ion-item  *ngFor="let email of contact.emails">
+            <ion-label stacked>Email</ion-label>
+            <ion-label>{{email.value}}</ion-label>
+        </ion-item>
+        <ion-item *ngFor="let phoneNumber of contact.phoneNumbers">
+            <ion-label stacked>Phone</ion-label>
+            <ion-label>{{phoneNumber.value}}</ion-label>
+        </ion-item>
+    </ion-list>
+
 
 </ion-content>

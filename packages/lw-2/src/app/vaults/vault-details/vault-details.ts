@@ -53,45 +53,59 @@ export class VaultDetailsView {
     console.log('Vault to display:', this.vault);
   }
 
-  async ionViewDidLoad() {
+  ionViewDidLoad() {
     console.log("Vault-Detail View Did Load.");
     console.log(this.vault);
 
-    await Promise.all([
+    Promise.all([
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
-          return { 'id': w.id, 'name': name, 'pubKey': w.credentials.xPubKey, 'type': 'wallet' };
+          const addr = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
+          return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet', walletClient: w };
         });
       }),
       // fetch users vaults
       this.getAllVaults().then((vaults) => {
         return _.map(vaults, (v) => {
           const name = v.name || v._id;
-          const key = new this.bitcore.Address(v.address).toString();
-          return { 'id': v._id, 'name': name, 'pubKey': key, 'type': 'vault' };
+          const addr = new this.bitcore.Address(v.address).toString();
+          return { 'id': v._id, 'name': name, 'address': addr, 'type': 'vault' };
         });
       }),
       // fetch coins
     ]).then((arr: Array<Array<any>>) => {
       const whitelistCandidates = _.flatten(arr);
-      const results = [];
-      _.each(this.vault.whitelist, (wl) => {
-        const found = _.find(whitelistCandidates, { pubKey: wl });
-        if (found) {
-          results.push(found);
-        }
+
+      return Promise.map(this.vault.whitelist, (wl) => {
+        return Promise.map(whitelistCandidates, (candidate) => {
+          if (candidate.type === 'vault') {
+            if (wl == candidate.address) return candidate;
+          } else { 
+            return candidate.walletClient.getMainAddresses({}).then((addresses: Array<any>) => {
+              const found = _.find(addresses, { address: wl });
+              if (found) {
+                candidate.walletClient = null;
+                candidate.address = wl;
+                return candidate;
+              }
+            });
+          }
+          return null;
+        });
+      }).then((unfilteredWhitelist) => {
+        const results = _.compact(_.flatten(unfilteredWhitelist));
+        this.whitelist = results;
+        return Promise.resolve();
       });
-      this.whitelist = results;
+    }).then(() => {
+      return this.getVaultTxHistory().then((txs) => {
+        this.transactions = _.map(txs, this.processTx.bind(this));
+        this.vault.completeHistory = txs;
+        this.formatAmounts();
+        return Promise.resolve();
+      });
     });
-
-    await this.getVaultTxHistory().then((txs) => {
-      console.log(txs);
-      this.transactions = _.map(txs, this.processTx.bind(this));
-      this.vault.completeHistory = txs;
-    });
-
-    await this.formatAmounts();
   }
 
   toResetVault() {
@@ -103,6 +117,17 @@ export class VaultDetailsView {
       'TxDetailsView',
       { wallet: this.walletClient, walletId: this.walletClient.credentials.walletId, vaultId: this.vault._id, vault: this.vault, txId: tx.txid }
     );
+  }
+
+  spendToAddress(address): void {
+    let wallet = null;
+    this.profileService.getHeadWalletClient().then((w) => {
+      wallet = w;
+      return this.vaultsService.getVaultCoins(w, this.vault);
+    }).then((coins) => {
+      this.coins = coins;
+      this.navCtrl.push('VaultSpendAmountView', { recipient: address, wallet: wallet, vault: this.vault, coins: coins });
+    });
   }
 
   private getAllWallets(): Promise<Array<any>> {
@@ -141,7 +166,7 @@ export class VaultDetailsView {
 
   private formatAmounts(): void {
     this.profileService.getHeadWalletClient().then((walletClient: MeritWalletClient) => {
-      this.vault.altAmount = this.rateService.toFiat(this.vault.amount,walletClient.cachedStatus.alternativeIsoCode);
+      this.vault.altAmount = this.rateService.fromMicrosToFiat(this.vault.amount,walletClient.cachedStatus.alternativeIsoCode);
       this.vault.altAmountStr = new FiatAmount(this.vault.altAmount);
       this.vault.amountStr = this.txFormatService.formatAmountStr(this.vault.amount);
     });

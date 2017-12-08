@@ -17,9 +17,9 @@ import { DeepLinkService } from 'merit/core/deep-link.service';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import * as _ from 'lodash';
 import * as Promise from 'bluebird';
-import { PushNotificationsService } from 'merit/core/push-notification.service';
 import { FCM } from '@ionic-native/fcm';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
+import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
 
 
 @Component({

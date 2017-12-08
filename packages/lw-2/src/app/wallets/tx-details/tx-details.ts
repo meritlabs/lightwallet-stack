@@ -96,7 +96,7 @@ export class TxDetailsView {
     const amountStr = this.txFormatService.formatAmountStr(summ);
     tx.amountStr = amountStr;
     this.amountStr = amountStr;
-    tx.altAmount = this.rateService.toFiat(tx.amount, this.wallet.cachedStatus.alternativeIsoCode);
+    tx.altAmount = this.rateService.fromMicrosToFiat(tx.amount, this.wallet.cachedStatus.alternativeIsoCode);
     tx.altAmountStr = new FiatAmount(tx.altAmount);
 
     return tx;
