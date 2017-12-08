@@ -42,6 +42,14 @@ export class NetworkView {
   ) {
   }
 
+  // Ensure that the wallets are loaded into the view on first load.
+  ionViewDidLoad() {
+    this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
+      this.wallets = wallets;
+    })
+  }
+
+  // On each enter, let's update the network data.  
   ionViewDidEnter() {
     this.updateInfo();
   }
