@@ -26,7 +26,7 @@ export class CreateWalletView {
 
   public formData = {
     walletName: '',
-    unlockCode: '',
+    parentAddress: '',
     bwsurl: '',
     recoveryPhrase: '',
     password: '',
@@ -61,8 +61,10 @@ export class CreateWalletView {
   }
 
   isCreationEnabled() {
+    return true;
+
     return (
-      this.formData.unlockCode
+      this.formData.parentAddress
       && this.formData.walletName
     );
   }
@@ -87,8 +89,8 @@ export class CreateWalletView {
     }
 
     let opts = {
-      name: this.formData.walletName,
-      unlockCode: this.formData.unlockCode,
+      name: 'name', //this.formData.walletName,
+      parentAddress: 'mxgQRYxt9B1BtAn1wdF2e8NJTuAqocEEzM',
       bwsurl: this.formData.bwsurl,
       mnemonic: this.formData.recoveryPhrase,
       networkName: this.config.getDefaults().network.name,

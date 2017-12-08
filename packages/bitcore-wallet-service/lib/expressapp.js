@@ -104,7 +104,6 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   function returnError(err, res, req) {
     if (err instanceof WalletService.ClientError) {
-
       // Return a 401 if the unlock code is not valid, or the request is broadly unauthorized.
       var status = (err.code == 'NOT_AUTHORIZED') ? 401 : 400;
       if (!opts.disableLogs)
@@ -163,7 +162,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     opts = opts || {};
 
     var util = require('util');
-  
+
 
     var credentials = getCredentials(req);
     if (!credentials) {
@@ -186,7 +185,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     }
     WalletService.getInstanceWithAuth(auth, function(err, server) {
       if (err) {
-        log.debug("Could not get Wallet Instance with Auth");        
+        log.debug("Could not get Wallet Instance with Auth");
         return returnError(err, res, req);
       }
 
@@ -230,6 +229,10 @@ ExpressApp.prototype.start = function(opts, cb) {
         codeHash: codeHash,
       });
     });
+  });
+
+  router.post('/v1/referrals/', function(req, res) {
+
   });
 
   router.put('/v1/copayers/:id/', function(req, res) {
@@ -327,7 +330,7 @@ ExpressApp.prototype.start = function(opts, cb) {
   router.post('/v1/txproposals/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       server.createTx(req.body, function(err, txp) {
-        if (err) { 
+        if (err) {
           return returnError(err, res, req);
         }
         res.json(txp);
@@ -757,7 +760,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  /** 
+  /**
    * Vaulting routes
    */
   router.get('/v1/vaults/', function(req, res) {
@@ -801,6 +804,25 @@ ExpressApp.prototype.start = function(opts, cb) {
         res.json(txs);
         res.end();
       });
+    });
+  });
+
+  router.post('/v1/referral/', function(req, res) {
+    var server;
+    try {
+      server = getServer(req, res);
+    } catch (ex) {
+      return returnError(ex, res, req);
+    }
+
+    console.log("mws got raw referral: ", req.body.referral);
+
+    server.sendReferral(req.body.referral, function(err, refid) {
+      if (err) {
+        return returnError(err, res, req);
+      }
+
+      res.json(refid).end();
     });
   });
 

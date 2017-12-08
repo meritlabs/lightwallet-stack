@@ -93,7 +93,7 @@ WalletService.initialize = function(opts, cb) {
   blockchainExplorer = opts.blockchainExplorer;
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
   localMeritDaemon = new LocalDaemon(opts.node);
-  log = opts.node.log; 
+  log = opts.node.log;
   if (opts.request)
     request = opts.request;
 
@@ -191,7 +191,7 @@ WalletService.getInstance = function(opts) {
     }
   }
 
-  // ToDo: Limit the number of services in memory at any given time.  Or, perhaps, destroy instances.  
+  // ToDo: Limit the number of services in memory at any given time.  Or, perhaps, destroy instances.
   var server = new WalletService();
   server._setClientVersion(opts.clientVersion);
   return server;
@@ -365,7 +365,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
   async.series([
     function(acb) {
       var unlockParams = {
-        unlockCode: opts.beacon, 
+        unlockCode: opts.beacon,
         address: unlockAddress
       }
       self.unlockAddress(unlockParams, function(err, result){
@@ -548,6 +548,7 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
  * @param {String} opts.network The relevant network to execute this command (livenet/testnet)
  */
 
+// breadcrumbs
 WalletService.prototype.unlockAddress = function (opts, cb) {
   var self = this;
   opts = opts || {};
@@ -559,10 +560,9 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
   if (!opts.address) {
     cb(new ClientError('No unlock address provided.'));
   }
-  
+
   var unlocked = false;
   localMeritDaemon.unlockWallet(opts.unlockCode, opts.address.toString(), function(errMsg, result) {
-
     if (errMsg)  {
       // TODO: Use Error codes instead of string matching.
       // TODO: Even sooner, we should have more descriptive error states coming back
@@ -570,10 +570,10 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
       log.warn("Got an error in unlock: " + errMsg);
       if (_.includes(errMsg.message, 'provided code does not exist in the chain')) {
         return cb(Errors.UNLOCK_CODE_INVALID);
-      } 
+      }
       if (_.includes(errMsg.message, 'unlockwalletwithaddress: Address is already beaconed.')) {
         return cb(Errors.UNLOCKED_ALREADY);
-      } 
+      }
       // An error we don't know about.
       log.warn("Received unknown error while unlocking wallet: ", errMsg.message);
       return cb(errMsg.message);
@@ -585,6 +585,14 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
 
     return cb(null, {unlocked: unlocked, shareCode: shareCode, codeHash: codeHash});
   });
+};
+
+/**
+ * Broadcasts raw referral.
+ * @param {string} rawReferral - Raw referral data.
+ */
+WalletService.prototype.sendReferral = function(rawReferral, cb) {
+  localMeritDaemon.sendReferral(rawReferral, cb);
 };
 
 /**
@@ -1072,10 +1080,10 @@ WalletService.prototype.createAddress = function(opts, cb) {
     }
     self.unlockAddress(unlockParams, function(err, result){
       if (err && err != Errors.UNLOCKED_ALREADY) return cb(err);
-      
+
       self.storage.storeAddressAndWallet(wallet, address, function(err) {
         if (err) return cb(err);
-  
+
         self._notify('NewAddress', {
           address: address.address,
         }, function() {
@@ -1083,7 +1091,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
         });
       });
     });
-    
+
   };
 
   function getFirstAddress(wallet, cb) {
@@ -1266,7 +1274,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
       });
     },
     function(next) {
-      // Let's filter through and classify all outputs.  
+      // Let's filter through and classify all outputs.
       // We specifically want to know if they are change or belong to us.
       var indexedAddresses = _.keyBy(allAddresses, 'address');
       _.each(allUtxos, function(utxo){
@@ -1314,7 +1322,7 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
     totalAmount: _.sumBy(utxos, 'micros'),
     lockedAmount: _.sumBy(_.filter(utxos, 'locked'), 'micros'),
     // We believe it makes sense to show change as confirmed.  This is sensical because a transaction
-    // will either be rejected or accepted in its entirety.  (Eg. It is not that some Vouts will be 
+    // will either be rejected or accepted in its entirety.  (Eg. It is not that some Vouts will be
     // accepted while others will be denied.)
     totalConfirmedAmount: _.sumBy(
       _.filter(utxos, function(utxo) {
@@ -1854,7 +1862,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         if (changeAmount > 0 && changeAmount <= dustThreshold) {
           log.debug('Change below dust threshold (' + Utils.formatAmountInMrt(dustThreshold) + '). Incrementing fee to remove change.');
           // Remove dust change by incrementing fee
-      
+
           if(!changeAmount) {
             changeAmount = 0;
           }
@@ -2220,7 +2228,7 @@ WalletService.prototype.createTx = function(opts, cb) {
                 address: changeAddress.address
               }
               self.unlockAddress(unlockParams, function(err, result){
-                // If the change address is unlocked already, we can continue with 
+                // If the change address is unlocked already, we can continue with
                 // the creation of the TXN.
                 if (err && (err != Errors.UNLOCKED_ALREADY)) return next(err);
               });
@@ -3204,12 +3212,12 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
             return next(null, []);
           }
 
-          // TODO: Re-evaluate this because we are already paginating our gets. 
+          // TODO: Re-evaluate this because we are already paginating our gets.
           // Fetch all proposals in [t - 7 days, t + 1 day]
           var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
           var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
 
-          
+
           async.parallel([
 
             function(done) {
@@ -3239,7 +3247,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
         if (!res.txs) {
           var finalTxs = decorate(wallet, [], addresses, [], []);
-          res.txs = { 
+          res.txs = {
             fromCache: false
           };
         } else {
@@ -3548,7 +3556,7 @@ WalletService.prototype.getVaults = function(opts, cb) {
 
 WalletService.prototype.createVault = function(opts, cb) {
   const self = this;
-  
+
   opts.status = Bitcore.Vault.Vault.VaultStates.PENDING;
 
   let vaultId = '';
@@ -3592,7 +3600,7 @@ WalletService.prototype.createVault = function(opts, cb) {
         },  function(err, txp) {
           self.storage.updateVault(self.copayerId, toStore, function(err, result) {
             if (err) return cb(err);
-  
+
             return next();
           });
         });
@@ -3608,7 +3616,7 @@ WalletService.prototype.createVault = function(opts, cb) {
 
 WalletService.prototype.getVaultTxHistory = function(opts, cb) {
   var self = this;
-  
+
   function decorate(txs, addresses, proposals, notes) {
     var indexedAddresses = _.keyBy(addresses, 'address');
     var indexedProposals = _.keyBy(proposals, 'txid');
@@ -3856,7 +3864,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 
   this.storage.fetchVaultByCopayerId(self.copayerId, opts.id, function (err, vault) {
     console.log(vault.address);
-    
+
     var address = new Bitcore.Address(vault.address).toString();
     console.log(address);
     var addresses = [address];
@@ -3880,12 +3888,12 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
             return next(null, []);
           }
 
-          // TODO: Re-evaluate this because we are already paginating our gets. 
+          // TODO: Re-evaluate this because we are already paginating our gets.
           // Fetch all proposals in [t - 7 days, t + 1 day]
           var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
           var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
 
-          
+
           async.parallel([
 
             function(done) {
@@ -3915,7 +3923,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 
         if (!res.txs) {
           var finalTxs = decorate([], addresses, [], []);
-          res.txs = { 
+          res.txs = {
             fromCache: false
           };
         } else {
@@ -3978,7 +3986,7 @@ WalletService.prototype.renewVault = function(opts, cb) {
 
         self.storage.updateVault(self.copayerId, toStore, function(err, result) {
           if (err) return cb(err);
-  
+
           return next();
         });
       });
