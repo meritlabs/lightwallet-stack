@@ -1,84 +1,59 @@
 <ion-header>
-    <ion-navbar color="secondary">
-        <ion-title>Vault: Confirm</ion-title>
-    </ion-navbar>
+  <ion-navbar color="secondary">
+    <ion-title>Confirm</ion-title>
+  </ion-navbar>
 </ion-header>
-     
-<ion-content class="add-bottom-for-cta">
-    <div class="list">
-        <div class="item head">
-        <div class="send-header-wrapper">
-            <img src="img/icon-tx-sent-outline.svg">
-            <div class="item item-heading send-heading">
-            <span translate>Sending</span>
-            </div>
-        </div>
-        <div class="amount-label" *ngIf="txData">
-            <div class="amount">{{txData.amountValueStr || '...'}}
-            <span class="unit">{{txData.amountUnitStr}}</span>
-            </div>
-            <div class="alternative">{{txData.alternativeAmountStr || '...'}}</div>
-        </div>
-        </div>
-        <div class="info">
-    
-        <div class="item" *ngIf="txData">
-            <span class="label" translate>To</span>
-            <span class="payment-proposal-to" *ngIf="!recipientType">
-                <img src="img/icon-bitcoin-small.svg">
-        
-                <div copy-to-clipboard="txData.toAddress" class="ellipsis">
-                    <span class="m15l size-14" *ngIf="txData.toName">{{displayName()}}</span>
-                </div>
-            </span>
-            <div class="wallet" *ngIf="recipientType == 'wallet'">
-                <i class="icon big-icon-svg">
-                    <img src="img/icon-wallet.svg" [class.wallet-background-color-default]="!toColor" [style.background-color]="toColor" class="bg"/>
-                </i>
-                <div copy-to-clipboard="txData.toAddress" class="ellipsis">
-                    <span class="wallet-name">{{displayName()}}</span>
-                </div>
-            </div>
-            <div class="wallet" *ngIf="recipientType == 'vault'">
-                    <i class="icon big-icon-svg">
-                        <img src="img/icon-lock.svg" [class.wallet-background-color-default]="!toColor" [style.background-color]="toColor" class="bg"/>
-                    </i>
-                    <div copy-to-clipboard="txData.toAddress" class="ellipsis">
-                        <span class="wallet-name">{{displayName()}}</span>
-                    </div>
-                </div>
-        </div>
-        <div class="item item-icon-right" *ngIf="wallet">
-            <span class="label" translate>From</span>
-            <div class="wallet">
-                <i class="icon big-icon-svg">
-                    <img src="img/icon-lock.svg" [class.wallet-background-color-default]="!wallet.color" [style.background-color]="wallet.color"
-                    class="bg" />
-                </i>
-                <div>{{vault.name}}</div>
-            </div>
-            <div class="wallet" *ngIf="!wallet">
-            <i class="icon big-icon-svg">
-                <img src="img/icon-wallet.svg" [style.background-color]="grey" class="bg" />
-            </i>
-            <div>...</div>
-            </div>
-            <i class="icon bp-arrow-right"></i>
-        </div>
-        
-        <div class="text-center" *ngIf="noWalletMessage">
-            <span class="badge badge-energized">{{noWalletMessage}}</span>
-        </div>
-        </div>
-    </div>
-    <button ion-button
-        [disabled]="!wallet"
-        class="click-to-accept__button button button-standard button-primary"
-        [class.enter]="sendStatus"
-        (click)="spend()">
-        <span class="click-to-accept__status-text" ng-class="{enter: sendStatus}">
-        <img src="img/spinner.png"> {{displaySendStatus}}
+<ion-content>
+  <span margin-top>
+
+    <span class="row">
+      <span class="label" text-left translate>Sending</span>
+      <div text-right item-right [style.flex]="1" *ngIf="txData">
+        <span class="amount">{{showMerit ? txData.amountValueStr : txData.alternativeAmountStr}}</span>
+        <button ion-button clear color="primary" (click)="toggleCurrency()">
+            {{showMerit ? "MRT" : "USD"}}
+        </button>
+      </div>
+    </span>
+    <span class="row" *ngIf="txData">
+      <span class="label" text-left translate>To</span>
+      <span item-right text-right [style.flex]="1">
+            {{recipient.name}}
+      </span>
+      <ion-avatar item-right class="btn whitelist-icon" *ngIf="recipient.type == 'wallet'">
+          <img src="assets/img/icon-wallet.svg">
+      </ion-avatar>
+      <ion-avatar item-right class="btn whitelist-icon" *ngIf="recipient.type == 'vault'">
+          <ion-icon name="lock"></ion-icon>
+      </ion-avatar>
+    </span>
+    <span class="row" *ngIf="wallet">
+      <span text-left class="label">From</span>
+      <span item-right text-right [style.flex]="1">
+        {{vault.name}}
+      </span>
+      <ion-avatar item-right class="btn whitelist-icon">
+          <ion-icon name="lock"></ion-icon>
+      </ion-avatar>
+    </span>
+    <span class="row">
+      <span class="label" text-left translate>Fee</span>
+      <div text-right item-right [style.flex]="1" *ngIf="txData">
+        <span class="amount">{{showMerit ? dummyFeeReplaceMeWithActualFeeDontBeADummyMerit : dummyFeeReplaceMeWithActualFeeDontBeADummyUSD}}</span>
+        <button ion-button clear color="primary" (click)="toggleCurrency()">
+            {{showMerit ? "MRT" : "USD"}}
+        </button>
+        <span item-right text-right [style.flex]="1" class="fee-rate" *ngIf="txData.txp.feeRatePerStr"> &middot;
+            <i class="ion-alert-circled warn" *ngIf="txData.txp.feeToHigh"></i> &nbsp;
+            <span class="fee-rate" [class.warn]="txData.txp.feeToHigh" translate> {{txData.txp.feeRatePerStr}} of the sending amount </span>
         </span>
+      </div>
+    </span>
+  </span>
+  <div class="control-buttons">
+    <button ion-button primary margin-top [disabled]="!wallet" [class.enter]="sendStatus" (click)="spend()">
+      <span>Confirm</span>
     </button>
+  </div>
 </ion-content>
       
