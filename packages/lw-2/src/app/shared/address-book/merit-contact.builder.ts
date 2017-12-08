@@ -43,7 +43,10 @@ export class MeritContactBuilder {
     created.phoneNumbers = clone(contact.phoneNumbers) || [];
     created.emails = clone(contact.emails) || [];
     created.photos = clone(contact.photos) || [];
-    created.meritAddresses = clone(contact.meritAddresses) || [];
+
+    if(contact instanceof MeritContact) {
+      created.meritAddresses = clone(contact.meritAddresses) || [];
+    }
 
     return created;
   }
