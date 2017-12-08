@@ -72,7 +72,7 @@ export class PollingNotificationsService {
   }
 
 
-  private enablePolling(walletClient: MeritWalletClient): void {
+  public enablePolling(walletClient: MeritWalletClient): void {
     walletClient._initNotifications().catch((err) => {
       if (err) {
         this.logger.error(walletClient.name + ': Long Polling Notifications error. ', JSON.stringify(err));
@@ -82,7 +82,7 @@ export class PollingNotificationsService {
     });
   }
 
-  private disablePolling(walletClient: MeritWalletClient): void {
+  public disablePolling(walletClient: MeritWalletClient): void {
     walletClient._disposeNotifications();
   }
 
