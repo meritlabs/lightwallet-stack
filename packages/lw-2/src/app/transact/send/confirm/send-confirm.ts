@@ -330,7 +330,7 @@ export class SendConfirmView {
       if (tx.paypro) {
         txp.payProUrl = tx.paypro.url;
       }
-      txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
+      txp.excludeUnconfirmedUtxos = !tx.allowSpendUnconfirmed;
       txp.dryRun = dryRun;
       return this.walletService.createTx(wallet, txp).then((ctxp) => {
         return resolve(ctxp);
