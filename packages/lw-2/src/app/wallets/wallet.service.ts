@@ -1388,20 +1388,20 @@ export class WalletService {
    * @param wallet 
    */
   public getANV(wallet: MeritWalletClient):Promise<any> {
-    this.logger.info("Getting ANV!!");
     this.logger.info(wallet.credentials);
     return new Promise((resolve, reject) => {
       return this.getMainAddresses(wallet).then((addresses) => {
-        this.logger.info("What is the address list?", addresses);
+        if (_.isEmpty(addresses)) {
+          this.logger.info("Addresses are empty!  Defaulting ANV to Zero");
+          return resolve(0);
+        }
         return wallet.getANV(addresses).then((anv) => {
-          this.logger.info("What is the ANV: ", anv);
           return resolve(anv);
         })
       });
     });
   }
 
-  //: {mining: number, ambassador: number}
   /** 
    * Gets the aggregate rewards for a list of addresses.  
    * @param wallet 
@@ -1413,6 +1413,10 @@ export class WalletService {
     
     return new Promise((resolve, reject) => {
       return this.getMainAddresses(wallet).then((addresses) => {  
+        if (_.isEmpty(addresses)) {
+          this.logger.info("Addresses are empty!  Defaulting rewards to Zero");          
+          return resolve( {mining: 0, ambassador: 0} );
+        }
         return wallet.getRewards(addresses).then((rewards: MWSRewardsResponse) => {
           let totalRewards:FilteredRewards  =  _.reduce(rewards, (totalR: any, reward:any) => {
             if (!_.isEmpty(reward.rewards)) {
