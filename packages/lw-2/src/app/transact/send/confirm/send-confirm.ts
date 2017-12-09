@@ -1,6 +1,6 @@
 import { ConfigService } from './../../../shared/config.service';
 import { Component, NgZone } from '@angular/core';
-import { NavController, NavParams, IonicPage, ModalController, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, IonicPage, AlertController, ModalController, LoadingController } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { NotificationService } from 'merit/shared/notification.service';
@@ -18,6 +18,9 @@ import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service
 import { easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 import { MeritContact } from 'merit/shared/address-book/contact/contact.model';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
+import { ToastConfig } from "merit/core/toast.config";
+import { MeritToastController } from "merit/core/toast.controller";
+
 
 /**
  * The confirm view is the final step in the transaction sending process 
@@ -73,7 +76,9 @@ export class SendConfirmView {
     private notificationService: NotificationService,
     private loadingCtrl: LoadingController,
     private easySendService: EasySendService,
-    private zone: NgZone
+    private zone: NgZone,
+    private toastCtrl:MeritToastController,
+    private alertController:AlertController
   ) { 
     this.logger.info("Hello SendConfirm View");
     this.walletConfig = this.configService.get().wallet;
@@ -81,6 +86,10 @@ export class SendConfirmView {
   }
 
   ionViewDidLoad() {
+
+    this.wallet = this.navParams.get('wallet');
+    this.amount = this.navParams.get('amount');
+
     this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
       this.wallets = wallets;
       let toAmount = this.navParams.get('toAmount');
@@ -96,7 +105,7 @@ export class SendConfirmView {
         toName: this.recipient.name || '',
         toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
         allowSpendUnconfirmed: this.walletConfig.spendUnconfirmed
-      }
+      };
   
       if(this.recipient.sendMethod != 'address') {
         this.updateEasySendData().then(() => {
@@ -197,31 +206,72 @@ export class SendConfirmView {
     })
   }
 
-  public approve(): Promise<void> {
+  private send() {
     let loadingSpinner = this.loadingCtrl.create({
       content: "Sending transaction...",
       dismissOnPageChange: true
-    });
-    return Promise.resolve(loadingSpinner.present()).then((res) => {
-      return this.approveTx(this.txData, this.wallet);
+    }).present();
+
+    return this.approveTx(this.txData, this.wallet).then(() => {
+
+      if (this.recipient.sendMethod == 'sms') {
+        return this.easySendService.sendSMS(this.recipient.phoneNumber, this.txData.easySendURL);
+      } else if (this.recipient.sendMethod == 'email') {
+        return this.easySendService.sendEmail(this.recipient.email, this.txData.easySendURL);
+      } else {
+        return Promise.resolve()
+      }
     }).then(() => {
-      loadingSpinner.dismiss();
-      switch (this.recipient.sendMethod) {
-        case 'sms':
-          return this.easySendService.sendSMS(this.recipient.phoneNumber, this.txData.easySendURL);
-        case 'email':
-          return this.easySendService.sendEmail(this.recipient.email, this.txData.easySendURL);
-        default:
-          return Promise.resolve();
-          break;
-      };
-    }).then(() => {
-      this.navCtrl.push('WalletsView');
+      return loadingSpinner.dismiss();
     }).catch((err) => {
-      this.logger.warn("Failed to approve transaction.");
-      this.logger.warn(err);
-      return Promise.reject(err);
+      this.toastCtrl.create({
+        message: err,
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
     });
+
+  }
+
+  public approve(): Promise<void> {
+
+    let showPassPrompt = (highlightInvalid = false) => {
+
+      this.alertController.create({
+        title: 'Enter spending password',
+        cssClass: highlightInvalid ? 'invalid-input-prompt' : '',
+        inputs: [{
+          name: 'password',
+          placeholder: 'Password',
+          type: 'password'
+        }],
+        buttons: [
+          { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop();}  },
+          { text: 'Ok', handler: (data) => {
+            if (!data.password) {
+              showPassPrompt(true);
+            } else {
+              return this.walletService.decrypt(this.wallet,  data.password).then(() => {
+                return this.send();
+              }).catch((err) => { showPassPrompt(true) })
+            }
+          }
+          }
+        ]
+      }).present();
+
+    };
+
+    let showTouchIDPrompt = () => {
+      //todo implement
+      return this.send();
+    };
+
+    if (this.walletService.isEncrypted(this.wallet)) {
+      return showPassPrompt();
+    } else {
+      return showTouchIDPrompt();
+    }
+
   }
 
   private approveTx(tx, wallet): Promise<void> {
@@ -377,16 +427,9 @@ export class SendConfirmView {
     this._chooseFeeLevel(this.txData, this.wallet);
   }
 
-  private selectWallet() {
-    let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
-    modal.present();
-    modal.onDidDismiss((wallet) => {
-      if (wallet) this.wallet = wallet;
-    });
-  }
 
-  private showSendError(err: string = ''): any {
-    this.popupService.ionicConfirm("Could not confirm transaction.", err, "Ok", "Cancel");
+  public sendAllowed() {
+    return true; 
   }
 
 }

@@ -6,56 +6,110 @@
 
 
 <ion-content>
-  <span margin-top>
 
-    <span class="row">
-      <span class="label" text-left translate>Sending</span>
-      <div text-right item-right [style.flex]="1" *ngIf="txData">
-        <span class="amount">{{showMerit ? txData.amountValueStr : txData.alternativeAmountStr}}</span>
-        <button ion-button clear color="primary" (click)="toggleCurrency()">
-            {{showMerit ? "MRT" : "USD"}}
-        </button>
-      </div>
-    </span>
+    <ion-card>
+        <ion-card-header>
+            Confirm sending
+        </ion-card-header>
 
-    <span class="row" *ngIf="txData">
-      <span class="label" text-left translate>To</span>
-      <span item-right text-right [style.flex]="1">
-        {{recipient.label}}
-      </span>
-      <div class="wallet" *ngIf="recipientType == 'wallet'">
-        <i class="icon big-icon-svg">
-          <img src="img/wallet.svg" [class.wallet-background-color-default]="!toColor" [style.background-color]="toColor" class="bg"
-          />
-        </i>
-        <div copy-to-clipboard="txData.toAddress" class="ellipsis">
-          <span class="wallet-name">{{displayName()}}</span>
-        </div>
-      </div>
-    </span>
-    <span class="row" (click)="selectWallet()" *ngIf="wallet">
-      <span text-left class="label">From</span>
-      <span item-right text-right [style.flex]="1">
-        {{wallet.name || wallet._id}}
-        <button ion-button icon-only clear color="primary" class="wallet-button">
-          <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
-            <img src="assets/img/icon-wallet.svg">
-          </i>
-        </button>
-      </span>
-    </span>
-    <span class="row" *ngIf="wallet">
-      <span text-left class="label">Fee: {{showMerit ? txData.txp.feeStr : txData.txp.alternativeFeeStr}}</span>
-      <span item-right text-right [style.flex]="1" class="fee-rate" *ngIf="txData.txp.feeRatePerStr"> &middot;
-        <i class="ion-alert-circled warn" *ngIf="txData.txp.feeToHigh"></i> &nbsp;
-        <span class="fee-rate" [class.warn]="txData.txp.feeToHigh" translate> {{txData.txp.feeRatePerStr}} of the sending amount </span>
-      </span>
-      <i class="icon bp-arrow-right"></i>
-    </span>
-  </span>
-  <div class="control-buttons">
-    <button ion-button primary margin-top [disabled]="!wallet" [class.enter]="sendStatus" (click)="approve()">
-      <span>Confirm</span>
-    </button>
-  </div>
+        <span *ngIf="txData">
+            <ion-item>
+                Amount
+                <div item-end class="detail">
+                    <span class="amount-mrt">
+                        {{ txData.amountValueStr }}
+                    </span>
+                    <span class="amount-fiat">
+                        {{ txData.alternativeAmountStr }}
+                    </span>
+                </div>
+            </ion-item>
+            <ion-item>
+                Recipient
+                <div item-end class="detail">{{recipient.label|slice:0:15}}...</div>
+            </ion-item>
+            <ion-item>
+                From wallet
+                <div item-end>
+                    <i class="icon big-icon-svg">
+                        <img src="img/wallet.svg" [class.wallet-background-color-default]="!toColor" [style.background-color]="toColor" class="bg"/>
+                    </i>
+                </div>
+            </ion-item>
+             <ion-item>
+                 Fee ({{feeRatePerStr}})
+                 <div item-end class="detail">
+                    <span class="amount-mrt">
+                        {{ txData.txp.feeStr }}
+                    </span>
+                    <span class="amount-fiat">
+                        {{ txData.txp.alternativeFeeStr }}
+                    </span>
+                 </div>
+             </ion-item>
+        </span>
+        <span *ngIf="!txData">
+            <ion-item>
+                <ion-spinner item-start></ion-spinner> Preparing payment
+            </ion-item>
+        </span>
+
+    </ion-card>
+
+    <div class="control-buttons">
+        <button ion-button primary margin-top (click)="approve()" [disabled]="!sendAllowed()" >Confirm and send!</button>
+    </div>
+
+  <!--<span margin-top>-->
+
+    <!--<span class="row">-->
+      <!--<span class="label" text-left translate>Sending</span>-->
+      <!--<div text-right item-right [style.flex]="1" *ngIf="txData">-->
+        <!--<span class="amount">{{showMerit ? txData.amountValueStr : txData.alternativeAmountStr}}</span>-->
+        <!--<button ion-button clear color="primary" (click)="toggleCurrency()">-->
+            <!--{{showMerit ? "MRT" : "USD"}}-->
+        <!--</button>-->
+      <!--</div>-->
+    <!--</span>-->
+
+    <!--<span class="row" *ngIf="txData">-->
+      <!--<span class="label" text-left translate>To</span>-->
+      <!--<span item-right text-right [style.flex]="1">-->
+        <!--{{recipient.label}}-->
+      <!--</span>-->
+      <!--<div class="wallet" *ngIf="recipientType == 'wallet'">-->
+        <!--<i class="icon big-icon-svg">-->
+          <!--<img src="img/wallet.svg" [class.wallet-background-color-default]="!toColor" [style.background-color]="toColor" class="bg"-->
+          <!--/>-->
+        <!--</i>-->
+        <!--<div copy-to-clipboard="txData.toAddress" class="ellipsis">-->
+          <!--<span class="wallet-name">{{displayName()}}</span>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</span>-->
+    <!--<span class="row" (click)="selectWallet()" *ngIf="wallet">-->
+      <!--<span text-left class="label">From</span>-->
+      <!--<span item-right text-right [style.flex]="1">-->
+        <!--{{wallet.name || wallet._id}}-->
+        <!--<button ion-button icon-only clear color="primary" class="wallet-button">-->
+          <!--<i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">-->
+            <!--<img src="assets/img/icon-wallet.svg">-->
+          <!--</i>-->
+        <!--</button>-->
+      <!--</span>-->
+    <!--</span>-->
+    <!--<span class="row" *ngIf="wallet">-->
+      <!--<span text-left class="label">Fee: {{showMerit ? txData.txp.feeStr : txData.txp.alternativeFeeStr}}</span>-->
+      <!--<span item-right text-right [style.flex]="1" class="fee-rate" *ngIf="txData.txp.feeRatePerStr"> &middot;-->
+        <!--<i class="ion-alert-circled warn" *ngIf="txData.txp.feeToHigh"></i> &nbsp;-->
+        <!--<span class="fee-rate" [class.warn]="txData.txp.feeToHigh" translate> {{txData.txp.feeRatePerStr}} of the sending amount </span>-->
+      <!--</span>-->
+      <!--<i class="icon bp-arrow-right"></i>-->
+    <!--</span>-->
+  <!--</span>-->
+  <!--<div class="control-buttons">-->
+    <!--<button ion-button primary margin-top [disabled]="!wallet" [class.enter]="sendStatus" (click)="approve()">-->
+      <!--<span>Confirm</span>-->
+    <!--</button>-->
+  <!--</div>-->
 </ion-content>
