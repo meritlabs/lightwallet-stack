@@ -20,6 +20,7 @@
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
+     <preference name="ShowSplashScreenSpinner" value="false"/>
     <platform name="android">
         <allow-intent href="market:*" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
@@ -104,7 +105,7 @@
     </plugin>
     <plugin name="cordova-plugin-android-fingerprint-auth" spec="^1.4.0" />
     <plugin name="cordova-plugin-contacts" spec="^2.3.1">
-        <variable name="CONTACTS_USAGE_DESCRIPTION" value="To make it easy to send money to friends and family." />
+        <variable name="CONTACTS_USAGE_DESCRIPTION" value=" To make it easy to send money to friends and family." />
     </plugin>
     <plugin name="phonegap-plugin-barcodescanner" spec="^6.0.8">
         <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
