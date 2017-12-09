@@ -42,7 +42,7 @@ export interface InitOptions {
 }
 
 export class API {
-  public BASE_URL = 'http://localhost:3232/bws/api';
+  public BASE_URL = 'http://localhost:3232/bws/api';  
   public request: any;
   public baseUrl: string;
   public payProHttp: string;
@@ -1094,7 +1094,7 @@ export class API {
 
           this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
 
-          this.eventEmitter.emit('walletCompleted', wallet);
+          this.eventEmitter.emit('walletCompleted', wallet.id);
 
           return resolve(ret);
         });
@@ -1239,7 +1239,7 @@ export class API {
         if (this.session) {
           return resolve();
         }
-        return doLogin();
+        return resolve(doLogin());
       });
     }
 
@@ -1297,7 +1297,7 @@ export class API {
     url += 'r=' + _.random(10000, 99999);
     return this._doRequestWithLogin('get', url, {}).catch((err) => {
       this.log.warn("Were not able to complete getRequest: ", err);
-    });;
+    });
   };
 
   /**
@@ -1884,11 +1884,11 @@ export class API {
   getNotifications(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
 
-    this.log.warn("Getting notifications from inside of MWC with opts: ", opts);
     let url = '/v1/notifications/';
     if (opts.lastNotificationId) {
       url += '?notificationId=' + opts.lastNotificationId;
     } else if (opts.timeSpan) {
+    
       url += '?timeSpan=' + opts.timeSpan;
     }
 
