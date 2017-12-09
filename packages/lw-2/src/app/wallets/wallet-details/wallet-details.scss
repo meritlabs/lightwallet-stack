@@ -17,7 +17,8 @@ wallet-details-view {
   }
 
   .toolbar {
-    background: transparent;
+    //background: transparent;
+    color: color($colors, light);
   }
   .bar-button {
     color: color($colors, light);
@@ -26,7 +27,7 @@ wallet-details-view {
     color: color($colors, light);
   }
   .balance-header {
-    padding-bottom: 56px;
+    padding-bottom: 2rem;
     margin-top: 0;
     color: color($colors, light);
     height: 20%;
@@ -36,12 +37,12 @@ wallet-details-view {
     background-color: $wallet-default-color;
   }
   .balance-str {
-    padding-top: 10%;
-    font-size: 35px;
+    padding-top: 10rem;
+    font-size: 2rem;
     font-weight: 600;
   }
   .balance-alt-str {
-    font-size: 20px;
+    font-size: 1.25rem;
     font-weight: 500;
   }
   .label {
