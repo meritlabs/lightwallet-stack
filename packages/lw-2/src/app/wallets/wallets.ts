@@ -90,10 +90,11 @@ export class WalletsView {
         this.logger.info("Got updated data in walletsView on resume.")
       });
     });
-  
+
     this.updateAllInfo({ force: true }).then(() => {
-      this.logger.info("Got updated data in walletsView on Ready!!")
+      this.logger.info("Got updated data in walletsView on Ready!!");
     });
+    this.registerListeners();
   }
 
   public doRefresh(refresher) {
@@ -127,7 +128,7 @@ export class WalletsView {
         return Promise.join(
           this.updateNetworkValue(wallets),
           this.processEasyReceive(),
-          this.updateTxps({limit: 3}),
+          this.updateTxps({ limit: 3 }),
           this.updateVaults(_.head(this.wallets)),
           this.fetchNotifications(),
           (res) => {
@@ -147,7 +148,7 @@ export class WalletsView {
     });
   }
 
-  private updateTxps(opts:{ limit:number } = { limit: 3} ): Promise<any> {
+  private updateTxps(opts: { limit: number } = { limit: 3 }): Promise<any> {
     return this.profileService.getTxps({ limit: 3 }).then((txps) => {
       this.txpsData = txps;
       return Promise.resolve();
@@ -160,15 +161,16 @@ export class WalletsView {
       return Promise.map(vaults, (vault) => {
         return this.vaultsService.getVaultCoins(wallet, vault).then((coins) => {
           vault.amount = _.sumBy(coins, 'micros');
-          vault.altAmount = this.rateService.fromMeritToFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode);
-          vault.altAmountStr = new FiatAmount(vault.altAmount);
-          vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
-          return vault;
+          this.txFormatService.toFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode).then((alternativeAmount) => {
+            vault.altAmountStr = new FiatAmount(vault.altAmount).amountStr;
+            vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
+            return Promise.resolve(vault);
+          });
         });
       }).then((vaults) => {
         this.vaults = vaults;
       });
-  });
+    });
   }
 
   private fetchNotifications(): Promise<any> {
@@ -214,7 +216,7 @@ export class WalletsView {
       n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
       this.txFormatService.formatToUSD(n.data.amount).then((usdAmount) => {
         n.fiatAmountStr = new FiatAmount(usdAmount).amountStr;
-       
+
         // Let's make sure we don't have this notification already.
         let duplicate = _.find(this.recentTransactionsData, n);
         this.logger.info("duplicate notifications? : ", duplicate);
@@ -241,14 +243,14 @@ export class WalletsView {
       }
       this.walletService.invalidateCache(this.wallets[foundIndex]);
 
-      Promise.all([
+      Promise.join([
         this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
           // Using angular's NgZone to ensure that the view knows to re-render.
           this.zone.run(() => {
             this.wallets[foundIndex].status = status;
           });
         }),
-        this.updateNetworkValue
+        this.updateNetworkValue(this.wallets)
       ]);
 
 
@@ -413,18 +415,20 @@ export class WalletsView {
 
   private updateNetworkValue(wallets: Array<any>): Promise<any> {
     let totalAmount: number = 0;
-    Promise.each(wallets, (wallet) => {
+    return Promise.each(wallets, (wallet) => {
       return this.walletService.getANV(wallet).then((anv) => {
         totalAmount += anv;
       });
     }).then(() => {
-      this.totalNetworkValue = totalAmount;
-      this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
-      this.txFormatService.formatToUSD(this.totalNetworkValue).then((usdAmount) => {
-        this.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
+      return this.txFormatService.formatToUSD(totalAmount).then((usdAmount) => {
+        this.zone.run(() => {
+          this.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
+          this.totalNetworkValue = totalAmount;
+          this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
+        });
+        return Promise.resolve();
       });
     });
-    return Promise.resolve();
   }
 
   private openWallet(wallet) {
