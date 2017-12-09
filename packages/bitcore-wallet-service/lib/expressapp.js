@@ -15,7 +15,6 @@ var Defaults = Common.Defaults;
 var WalletService = require('./server');
 var Stats = require('./stats');
 
-log.disableColor();
 log.debug = log.verbose;
 log.level = 'verbose';
 
@@ -111,7 +110,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       if (!opts.disableLogs)
         log.info('Client Err: ' + status + ' ' + req.url + ' ' + JSON.stringify(err));
 
-      res.status(status).json({
+      return res.status(status).json({
         code: err.code,
         message: err.message,
       }).end();
@@ -128,7 +127,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       if (!opts.disableLogs)
         log.error(req.url + ' :' + code + ':' + m);
 
-      res.status(code || 500).json({
+      return res.status(code || 500).json({
         error: m,
       }).end();
     }
@@ -163,6 +162,9 @@ ExpressApp.prototype.start = function(opts, cb) {
     }
     opts = opts || {};
 
+    var util = require('util');
+  
+
     var credentials = getCredentials(req);
     if (!credentials) {
       log.debug("NO CREDENTIALS SUPPLIED TO BWS");
@@ -170,6 +172,7 @@ ExpressApp.prototype.start = function(opts, cb) {
         code: 'NOT_AUTHORIZED'
       }), res, req);
     }
+
 
     var auth = {
       copayerId: credentials.copayerId,
@@ -182,12 +185,9 @@ ExpressApp.prototype.start = function(opts, cb) {
       auth.session = credentials.session;
     }
     WalletService.getInstanceWithAuth(auth, function(err, server) {
-      if (err) return returnError(err, res, req);
-
-      if (opts.onlySupportStaff && !server.copayerIsSupportStaff) {
-        return returnError(new WalletService.ClientError({
-          code: 'NOT_AUTHORIZED'
-        }), res, req);
+      if (err) {
+        log.debug("Could not get Wallet Instance with Auth");        
+        return returnError(err, res, req);
       }
 
       // For logging
@@ -327,7 +327,9 @@ ExpressApp.prototype.start = function(opts, cb) {
   router.post('/v1/txproposals/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       server.createTx(req.body, function(err, txp) {
-        if (err) return returnError(err, res, req);
+        if (err) { 
+          return returnError(err, res, req);
+        }
         res.json(txp);
       });
     });
@@ -754,6 +756,54 @@ ExpressApp.prototype.start = function(opts, cb) {
       });
     });
   });
+
+  /** 
+   * Vaulting routes
+   */
+  router.get('/v1/vaults/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      server.getVaults({}, function(err, pendings) {
+        if (err) return returnError(err, res, req);
+        res.json(pendings);
+      });
+    });
+  });
+
+  router.post('/v1/vaults/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      server.createVault(req.body, function(err, txp) {
+        if (err) return returnError(err, res, req);
+        res.json(txp);
+      });
+    });
+  });
+
+  router.post('/v1/vaults/:id', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      server.renewVault(req.body, function(err, txp) {
+        if (err) return returnError(err, res, req);
+        res.json(txp);
+      });
+    });
+  });
+
+  router.get('/v1/vaults/:id/txhistory', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      var opts = {};
+      if (req.query.skip) opts.skip = +req.query.skip;
+      if (req.query.limit) opts.limit = +req.query.limit;
+      if (req.query.includeExtendedInfo == '1') opts.includeExtendedInfo = true;
+      opts.network = req.query.network;
+      opts.id = req.params['id'];
+
+      server.getVaultTxHistory(opts, function(err, txs) {
+        if (err) return returnError(err, res, req);
+        res.json(txs);
+        res.end();
+      });
+    });
+  });
+
 
   this.app.use(opts.basePath || '/bws/api', router);
 

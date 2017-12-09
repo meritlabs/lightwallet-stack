@@ -1,0 +1,13 @@
+@import "../transact-module";
+
+view-select-wallet {
+  @extend %module-transact;
+
+  .selected h2, .selected p{
+    color: color($colors, 'primary');
+  }
+
+  .wallet-icon {
+    width: 40px;
+  }
+}

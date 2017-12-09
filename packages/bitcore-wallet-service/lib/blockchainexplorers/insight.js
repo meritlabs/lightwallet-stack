@@ -8,7 +8,7 @@ var log;
 
 function Insight(opts) {
   $.checkArgument(opts);
-  $.checkArgument(_.contains(['livenet', 'testnet'], opts.network));
+  $.checkArgument(_.includes(['livenet', 'testnet'], opts.network));
   $.checkArgument(opts.url);
 
   this.apiPrefix = opts.apiPrefix || '/insight-api';
@@ -219,7 +219,7 @@ Insight.prototype.getReferralsInBlock = function(blockHash, cb) {
 Insight.prototype.initSocket = function() {
 
   // sockets always use the first server on the pull
-  var socket = io.connect(_.first([].concat(this.hosts)), {
+  var socket = io.connect(_.head([].concat(this.hosts)), {
     'reconnection': true,
   });
   return socket;
@@ -259,14 +259,14 @@ Insight.prototype.validateAddress = function(address, cb) {
   });
 };
 
-Insight.prototype.getANV = function(keys, cb) {
+Insight.prototype.getANV = function(addresses, cb) {
   var self = this;
 
   var args = {
     method: 'GET',
     path: `${this.apiPrefix}/anv`,
     json: {
-      keys: keys
+      addresses: addresses
     }
   };
 

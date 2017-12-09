@@ -1,0 +1,20 @@
+send-view {
+  .abs-v-center {
+    z-index: 999999999 !important;
+  }
+
+  .search-panel {
+    position: relative;
+    padding: 0;
+    input {
+      color: rgba(0, 0, 0, 0.7);
+      height: 25px;
+      line-height: 25px;
+    }
+    .qr-button {
+      padding: 0;
+      height: 25px;
+      width: 25px;
+    }
+  }
+}

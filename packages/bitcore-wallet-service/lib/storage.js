@@ -12,6 +12,9 @@ var mongodb = require('mongodb');
 
 var Model = require('./model');
 
+var Bitcore = require('bitcore-lib');
+var ObjectID = mongodb.ObjectID;
+
 var collections = {
   WALLETS: 'wallets',
   TXS: 'txs',
@@ -28,6 +31,7 @@ var collections = {
   PUSH_NOTIFICATION_SUBS: 'push_notification_subs',
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
   REFERRAL_TX_CONFIRMATION_SUBS: 'referral_confirmation_subs',
+  VAULTS: 'vaults',
 };
 
 var Storage = function(opts) {
@@ -92,7 +96,13 @@ Storage.prototype._createIndexes = function() {
     codeHash: 1,
   })
   this.db.collection(collections.SESSIONS).createIndex({
-    copayerId: 1
+    copayerId: 1,
+  });
+  this.db.collection(collections.VAULTS).createIndex({
+    copayerId: 1,
+  });
+  this.db.collection(collections.VAULTS).createIndex({
+    initialTxId: 1,
   });
 };
 
@@ -387,7 +397,7 @@ Storage.prototype.storeReferral = function(referral, cb) {
  */
 Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs, cb) {
   function makeId(timestamp) {
-    return _.padLeft(timestamp, 14, '0') + _.repeat('0', 4);
+    return _.padStart(timestamp, 14, '0') + _.repeat('0', 4);
   };
 
   var self = this;
@@ -708,7 +718,7 @@ Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {
         return cb();
       }
 
-      var txs = _.pluck(result, 'tx');
+      var txs = _.map(result, 'tx');
       return cb(null, txs);
     });
   })
@@ -823,7 +833,7 @@ Storage.prototype.fetchActiveAddresses = function(walletId, cb) {
     if (err) return cb(err);
     if (_.isEmpty(result)) return cb();
 
-    return cb(null, _.compact(_.pluck(result, 'key')));
+    return cb(null, _.compact(_.map(result, 'key')));
   });
 };
 
@@ -1067,6 +1077,87 @@ Storage.prototype._dump = function(cb, fn) {
       });
     }, cb);
   });
+};
+
+/**
+ * Vaults
+ */
+Storage.prototype.fetchVaults = function(copayerId, cb) {
+  this.db.collection(collections.VAULTS).find({
+    copayerId,
+  }).toArray(function(err, result) {
+    if (err) return cb(err);
+
+    if (!result) return cb();
+
+    return cb(null, result);
+  });
+};
+
+Storage.prototype.storeVault = function(copayerId, walletId, vaultTx, cb) {
+  this.db.collection(collections.VAULTS).insertOne({
+    copayerId,
+    walletId,
+    ...vaultTx,
+  }, {
+    w: 1
+  }, cb);
+};
+
+Storage.prototype.updateVault = function(copayerId, vaultTx, cb) {
+  this.db.collection(collections.VAULTS).update({
+    copayerId,
+    _id: new ObjectID(vaultTx.id),
+  }, vaultTx, {
+    w: 1,
+    upsert: false,
+  }, cb);
+};
+
+Storage.prototype.fetchVaultByInitialTxId = function(txId, cb) {
+  this.db.collection(collections.VAULTS).findOne({
+    initialTxId: txId,
+  }, function(err, result) {
+    if (err) return cb(err);
+    if (!result) return cb();
+
+    return cb(null, result);
+  });
+};
+
+Storage.prototype.fetchVaultById = function(id, cb) {
+  this.db.collection(collections.VAULTS).findOne({
+    _id: new ObjectID(id),
+  }, function(err, result) {
+    console.log('in fetch', err, result);
+    if (err) return cb(err);
+    if (!result) return cb();
+
+    return cb(null, result);
+  });
+};
+
+Storage.prototype.fetchVaultByCopayerId = function(copayerId, id, cb) {
+  this.db.collection(collections.VAULTS).findOne({
+    copayerId,
+    _id: new ObjectID(id),
+  }, function(err, result) {
+    console.log('in fetch', err, result);
+    if (err) return cb(err);
+    if (!result) return cb();
+
+    return cb(null, result);
+  });
+};
+
+Storage.prototype.setVaultConfirmed = function(tx, txId, cb) {
+  tx.status = Bitcore.Vault.Vault.VaultStates.APPROVED;
+  this.db.collection(collections.VAULTS).update({
+    initialTxId: tx.initialTxId,
+  }, tx, {
+    w: 1,
+    upsert: false,
+  }, cb);
 };
 
 Storage.collections = collections;

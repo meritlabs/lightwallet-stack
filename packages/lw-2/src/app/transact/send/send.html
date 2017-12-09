@@ -1,0 +1,42 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>Send Merit</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <div class="search-panel">
+        <ion-item-divider text-left>Recipient</ion-item-divider>
+        <ion-item>
+            <ion-input type="text" class="search-input" placeholder="Search or enter merit address" [(ngModel)]="formData.search" (ionChange)="updateFilteredContacts(formData.search)"
+                (focus)="searchInFocus()" (blur)="searchBlurred()">
+            </ion-input>
+            <button item-end (click)="openScanner()" ion-button icon-only item-right clear class="qr-button" color="primary">
+                <ion-icon name="qr-scanner" color="primary"></ion-icon>
+            </button>
+        </ion-item>
+    </div>
+
+    <ion-item-divider *ngIf="filteredContacts?.length">
+       Send to
+    </ion-item-divider>
+    <ion-list *ngIf="filteredContacts?.length">
+      <ion-item *ngFor="let contact of renderingContacts" (click)="goToAmount(contact)">
+        <ion-avatar class="icon big-icon-svg" item-start>
+            <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
+            <gravatar class="send-gravatar" [name]="contact.name.formatted" width="30" height="30" [email]="maybeEmail(contact)" *ngIf="!contact.photos.length"></gravatar>
+        </ion-avatar>  
+        {{contact.name.formatted}}
+        <img item-right src="assets/img/16x16.png" *ngIf="contact.meritAddresses.length">
+      </ion-item>
+    </ion-list>
+    <ion-infinite-scroll (ionInfinite)="renderMoreContacts($event)" *ngIf="filteredContacts && filteredContacts.length > contactsOffset+contactsLimit">
+        <div text-center>
+            <ion-spinner></ion-spinner>Loading contacts...
+        </div>
+    </ion-infinite-scroll>
+
+</ion-content>

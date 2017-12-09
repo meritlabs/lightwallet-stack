@@ -1,0 +1,36 @@
+<ion-item-divider translate>
+    Vaults
+</ion-item-divider>
+<ion-list>
+    <ion-item (click)="toAddWallet()" class="add-item">
+        <ion-avatar item-start class="btn">
+            <ion-icon name="lock"></ion-icon>
+        </ion-avatar>
+        <h2 translate>
+            Create new vault
+        </h2>
+    </ion-item>
+
+    <ion-item *ngFor="let vault of vaults" (click)="toVault(vault)">
+
+        <ion-avatar item-start class="btn vault-icon">
+            <ion-icon name="lock"></ion-icon>
+        </ion-avatar>
+
+        <h2 translate class="vault-name">
+            {{ vault.name || vault._id }}
+        </h2>
+
+        <div class="detail" item-end>
+            <div class="amount">
+                {{ vault.amountStr }}
+            </div>
+            <div class="detail-fiat">
+                {{ vault.altAmountStr.amountStr }}
+            </div>
+            <div *ngIf="vault.status == 'pending'" class="assertive detail-status" translate>
+                Pending
+            </div>
+        </div>
+    </ion-item>
+</ion-list>

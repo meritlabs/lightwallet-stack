@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": true,
+    "declaration": false,
+    "noEmit": false,    
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "dom",
+      "es7"
+    ],
+    "baseUrl": ".",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "target": "esnext",
+    "paths": {
+      "merit/*": [ "src/app/*" ]
+    }
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/lib"
+  ],
+  "compileOnSave": false,
+  "atom": {
+    "rewriteTsconfig": false
+  }
+}

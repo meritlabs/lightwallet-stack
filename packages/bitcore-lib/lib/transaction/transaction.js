@@ -303,14 +303,40 @@ Transaction.prototype.fromBufferReader = function(reader) {
 
   this.version = reader.readInt32LE();
   sizeTxIns = reader.readVarintNum();
+
+  // checking for SegWit
+  var hasWitness = false;
+  if (sizeTxIns === 0 && reader.buf[reader.pos] !== 0) {
+    hasWitness = reader.readVarintNum();
+    sizeTxIns = reader.readVarintNum();
+  }
+
   for (i = 0; i < sizeTxIns; i++) {
     var input = Input.fromBufferReader(reader);
     this.inputs.push(input);
+  
   }
   sizeTxOuts = reader.readVarintNum();
+
   for (i = 0; i < sizeTxOuts; i++) {
     this.outputs.push(Output.fromBufferReader(reader));
   }
+
+  // If we have a witness, then let's actually set the witnesses on relevant 
+  // inputs
+  if (hasWitness) {
+    for ( var k = 0; k < sizeTxIns; k++ ) {
+      var itemCount = reader.readVarintNum();
+      var witnesses = [];
+     for ( var l = 0; itemCount > l; l++ ) {
+        var size = reader.readVarintNum();
+        var item = reader.read(size);
+        witnesses.push(item);
+      }
+      this.inputs[k].setWitnesses(witnesses);
+    }
+  }
+
   this.nLockTime = reader.readUInt32LE();
   return this;
 };
@@ -393,13 +419,13 @@ Transaction.prototype.fromObject = function fromObject(arg) {
 
 Transaction.prototype._checkConsistency = function(arg) {
   if (!_.isUndefined(this._changeIndex)) {
-    $.checkState(this._changeScript);
-    $.checkState(this.outputs[this._changeIndex]);
+    $.checkState(this._changeScript, 'Change script is expected.');
+    $.checkState(this.outputs[this._changeIndex], 'Change index points to undefined output.');
     $.checkState(this.outputs[this._changeIndex].script.toString() ===
-      this._changeScript.toString());
+      this._changeScript.toString(), 'Change output has an unexpected script.');
   }
   if (arg && arg.hash) {
-    $.checkState(arg.hash === this.hash, 'Hash in object does not match transaction hash');
+    $.checkState(arg.hash === this.hash, 'Hash in object does not match transaction hash.');
   }
 };
 
@@ -541,7 +567,7 @@ Transaction.prototype.from = function(utxo, pubkeys, threshold) {
     });
     return this;
   }
-  var exists = _.any(this.inputs, function(input) {
+  var exists = _.some(this.inputs, function(input) {
     // TODO: Maybe prevTxId should be a string? Or defined as read only property?
     return input.prevTxId.toString('hex') === utxo.txId && input.outputIndex === utxo.outputIndex;
   });
@@ -647,7 +673,7 @@ Transaction.prototype.uncheckedAddInput = function(input) {
  * @return {boolean}
  */
 Transaction.prototype.hasAllUtxoInfo = function() {
-  return _.all(this.inputs.map(function(input) {
+  return _.every(this.inputs.map(function(input) {
     return !!input.output;
   }));
 };
@@ -661,6 +687,7 @@ Transaction.prototype.hasAllUtxoInfo = function() {
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.fee = function(amount) {
+  console.log('fee', amount);
   $.checkArgument(_.isNumber(amount), 'amount must be a number');
   this._fee = amount;
   this._updateChangeOutput();
@@ -676,6 +703,7 @@ Transaction.prototype.fee = function(amount) {
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.feePerKb = function(amount) {
+  console.log('feePerKb', amount);
   $.checkArgument(_.isNumber(amount), 'amount must be a number');
   this._feePerKb = amount;
   this._updateChangeOutput();
@@ -1050,7 +1078,7 @@ Transaction.prototype.removeInput = function(txId, outputIndex) {
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.sign = function(privateKey, sigtype) {
-  $.checkState(this.hasAllUtxoInfo());
+  $.checkState(this.hasAllUtxoInfo(), 'Not all utxo information is available to sign the transaction.');
   var self = this;
   if (_.isArray(privateKey)) {
     _.each(privateKey, function(privateKey) {
@@ -1102,7 +1130,7 @@ Transaction.prototype.isFullySigned = function() {
       );
     }
   });
-  return _.all(_.map(this.inputs, function(input) {
+  return _.every(_.map(this.inputs, function(input) {
     return input.isFullySigned();
   }));
 };

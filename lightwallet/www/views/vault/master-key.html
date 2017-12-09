@@ -1,0 +1,29 @@
+<ion-view id="vault-creation-master-key" class="vault-creation" show-tabs>
+  <ion-nav-bar class="bar-royal">
+    <ion-nav-title>{{'Create Vault' | translate}}</ion-nav-title>
+    <ion-nav-back-button>
+    </ion-nav-back-button>
+  </ion-nav-bar>
+  <ion-content scroll="false">
+    <div class="view-container master-key-view">
+      <div class="content-container">
+        <div class="master-key-info">
+          <div class="title">
+            Master key
+          </div>
+          <div class="key">
+            THE KEY
+          </div>
+          <div class="comment">
+            You have to write down the key and keep it in secret.
+          </div>
+        </div>
+      </div>
+      <div class="button-container">
+        <button type="submit" class="button button-standard button-primary" ng-click="toConfirmKey()">
+          <span translate>Next</span>
+        </button>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

@@ -1,0 +1,26 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>Select Sending Option</ion-title>
+        <ion-buttons end>
+            <button ion-button (click)="cancel()" translate>
+                cancel
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+    <span *ngIf="sendingOptions">
+        <button ion-item *ngFor="let sendingOption of sendingOptions" [class.selected]="selectedSendingOption.label == sendingOption.label" (click)="select(sendingOption)">
+            <h2 translate>
+                {{sendingOption.label}}
+            </h2>
+        </button>
+    </span>
+
+
+</ion-content>

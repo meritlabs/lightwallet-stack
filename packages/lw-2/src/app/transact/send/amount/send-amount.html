@@ -1,0 +1,81 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>Amount</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+
+    <span *ngIf="wallet && hasFunds" margin-top>
+
+        <span class="row">
+            <span class="label" text-left>Recipient</span>
+            <span text-right [style.flex]="1" padding-right >
+                {{ displayName }}
+                <span class="avatar">
+                    <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
+                    <gravatar class="send-gravatar"
+                              [name]="contact.name.formatted" width="30" height="30"
+                              [email]="contact.emails[0] ? contact.emails[0].value : ''" *ngIf="!contact.photos.length"></gravatar>
+                </span>
+            </span>
+        </span>
+
+
+        <div class="row">
+            <span text-left class="label">Send via</span>
+            <span item-right text-right [style.flex]="1" (click)="selectSendingOption()" padding-right>
+                {{recipient.label|slice:0:15}}...
+            </span>
+        </div>
+
+        <div class="label" class="row" (click)="selectWallet()">
+            <span text-left class="label">From</span>
+            <span item-right text-right [style.flex]="1">
+                {{wallet.name || wallet._id}}
+                <button ion-button icon-only clear color="primary" class="wallet-button">
+                    <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
+                        <img src="assets/img/icon-wallet.svg">
+                    </i>
+                </button>
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="label" text-left>Amount</span>
+            <input type="number" text-right pattern="[0-9\.]"
+                   [style.flex]="1"
+                   [(ngModel)]="amount"
+                   (ngModelChange)="processAmount()"
+                   [placeholder]="'Sending amount'">
+            <button ion-button clear color="primary" (click)="toggleCurrency()">
+                {{amountCurrency}}
+            </button>
+        </div>
+        <div class="row">
+            <span class="label" text-left>Available</span>
+            <span text-right [style.flex]="1" padding-right >
+                {{ availableAmount.formatted }}
+            </span>
+        </div>
+
+
+        <div class="control-buttons">
+            <button ion-button primary margin-top (click)="finish()" [disabled]="!sendAllowed()" >Send</button>
+        </div>
+
+    </span>
+
+    <span *ngIf="!loading && !hasFunds">
+        <div text-center padding>Before sending Merit you should buy some!</div>
+        <div class="control-buttons">
+            <button ion-button primary margin-top (click)="toBuyAndSell()">Buy Merit</button>
+        </div>
+    </span>
+
+</ion-content>
+
