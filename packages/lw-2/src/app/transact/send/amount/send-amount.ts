@@ -33,6 +33,7 @@ export class SendAmountView {
   public amountCurrency:string;
   public loading:boolean;
   public hasFunds:boolean;
+  public feeIncluded:boolean = false;
 
   public availableAmount = {value: 0, formatted: ''};
 
@@ -148,6 +149,11 @@ export class SendAmountView {
       this.availableAmount = amount;
     });
   }
+
+  toggleFeeIncluded() {
+
+  }
+
 
   updateAmountMerit() {
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
