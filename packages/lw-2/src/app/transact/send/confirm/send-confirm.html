@@ -8,32 +8,29 @@
 <ion-content>
 
     <ion-card>
-        <ion-card-header>
-            Confirm send
-        </ion-card-header>
 
         <span *ngIf="txData">
             <ion-item>
-                <ion-label>Amount</ion-label>
-                <div item-end>
-                    {{ txData.amountValueStr }}MRT<br><small>{{txData.alternativeAmountStr}}</small>
-                </div>
+                <ion-label stacked>Amount</ion-label>
+                <ion-label>
+                    {{ txData.amountValueStr }}MRT ({{txData.alternativeAmountStr}})
+                </ion-label>
             </ion-item>
             <ion-item>
-                <ion-label>Recipient</ion-label>
-                <div item-end class="detail">{{recipient.label|slice:0:15}}...</div>
+                <ion-label stacked>Recipient</ion-label>
+                <ion-label>{{recipient.label}}</ion-label>
             </ion-item>
             <ion-item>
-                <ion-label>From wallet</ion-label>
-                <div item-end>
+                <ion-label stacked>From wallet</ion-label>
+                <ion-label>
                     {{wallet.name || wallet._id}}
-                </div>
+                </ion-label>
             </ion-item>
              <ion-item>
-                 <ion-label>Fee ({{ txData.txp.feeRatePerStr }})</ion-label>
-                 <div item-end>
-                     {{ txData.txp.feeStr }}<br><small>{{ txData.txp.alternativeFeeStr }}</small>
-                 </div>
+                 <ion-label stacked>Fee ({{ txData.txp.feeRatePerStr }})</ion-label>
+                 <ion-label>
+                     {{ txData.txp.feeStr }} ({{ txData.txp.alternativeFeeStr }})
+                 </ion-label>
              </ion-item>
         </span>
         <span *ngIf="!txData">
