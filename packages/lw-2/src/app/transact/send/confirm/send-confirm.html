@@ -9,42 +9,33 @@
 
     <ion-card>
         <ion-card-header>
-            Confirm sending
+            Confirm send
         </ion-card-header>
 
         <span *ngIf="txData">
             <ion-item>
-                Amount
-                <div item-end class="detail">
-                    <span class="amount-mrt">
-                        {{ txData.amountValueStr }}
-                    </span>
-                    <span class="amount-fiat">
-                        {{ txData.alternativeAmountStr }}
-                    </span>
+                <ion-label>Amount</ion-label>
+                <div item-end>
+                    {{ txData.amountValueStr }}MRT<br><small>({{txData.alternativeAmountStr}})</small>
                 </div>
             </ion-item>
             <ion-item>
-                Recipient
+                <ion-label>Recipient</ion-label>
                 <div item-end class="detail">{{recipient.label|slice:0:15}}...</div>
             </ion-item>
             <ion-item>
-                From wallet
+                <ion-label>From wallet</ion-label>
                 <div item-end>
+                    {{wallet.name || wallet._id}}
                     <i class="icon big-icon-svg">
                         <img src="img/wallet.svg" [class.wallet-background-color-default]="!toColor" [style.background-color]="toColor" class="bg"/>
                     </i>
                 </div>
             </ion-item>
              <ion-item>
-                 Fee ({{feeRatePerStr}})
-                 <div item-end class="detail">
-                    <span class="amount-mrt">
-                        {{ txData.txp.feeStr }}
-                    </span>
-                    <span class="amount-fiat">
-                        {{ txData.txp.alternativeFeeStr }}
-                    </span>
+                 <ion-label>Fee ({{ txData.txp.feeRatePerStr }})</ion-label>
+                 <div item-end>
+                     {{ txData.txp.feeStr }}<br><small>{{ txData.txp.alternativeFeeStr }}</small>
                  </div>
              </ion-item>
         </span>
