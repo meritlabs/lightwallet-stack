@@ -80,31 +80,32 @@ export class SendConfirmView {
     
   }
 
-  async ionViewDidLoad() {
-    this.wallets = await this.profileService.getWallets();
-    let toAmount = this.navParams.get('toAmount');
-    this.walletConfig = this.configService.get().wallet;
-    this.wallet = this.navParams.get('wallet');
-    this.unitToMicro = this.walletConfig.settings.unitToMicro;
-    this.configFeeLevel = this.walletConfig.settings.feeLevel ? this.walletConfig.settings.feeLevel : 'normal';
-    this.recipient = this.navParams.get('recipient');
-
-    this.txData = {
-      toAddress:  this.recipient.meritAddress,
-      txp: {},
-      toName: this.recipient.name || '',
-      toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
-      allowSpendUnconfirmed: this.walletConfig.spendUnconfirmed
-    }
-
-    if(this.recipient.sendMethod != 'address') {
-      this.updateEasySendData();
-    }
-    this.logger.log('ionViewDidLoad txData', this.txData);
-    this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
-      this.logger.error('There was an error in updateTx:', err);
+  ionViewDidLoad() {
+    this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
+      this.wallets = wallets;
+      let toAmount = this.navParams.get('toAmount');
+      this.walletConfig = this.configService.get().wallet;
+      this.wallet = this.navParams.get('wallet');
+      this.unitToMicro = this.walletConfig.settings.unitToMicro;
+      this.configFeeLevel = this.walletConfig.settings.feeLevel ? this.walletConfig.settings.feeLevel : 'normal';
+      this.recipient = this.navParams.get('recipient');
+  
+      this.txData = {
+        toAddress:  this.recipient.meritAddress,
+        txp: {},
+        toName: this.recipient.name || '',
+        toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
+        allowSpendUnconfirmed: this.walletConfig.spendUnconfirmed
+      }
+  
+      if(this.recipient.sendMethod != 'address') {
+        this.updateEasySendData().then(() => {
+          this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
+            this.logger.error('There was an error in updateTx:', err);
+          });
+        });
+      }      
     });
-    
   }
 
   // Show as much as we can about the address. 
