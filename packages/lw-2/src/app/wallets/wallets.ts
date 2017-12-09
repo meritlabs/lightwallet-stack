@@ -90,6 +90,10 @@ export class WalletsView {
         this.logger.info("Got updated data in walletsView on resume.")
       });
     });
+  
+    this.updateAllInfo({ force: true }).then(() => {
+      this.logger.info("Got updated data in walletsView on Ready!!")
+    });
   }
 
   public doRefresh(refresher) {
@@ -100,10 +104,8 @@ export class WalletsView {
     });
   }
 
-  public ionViewDidEnter() {
-    this.logger.warn("Hellop WalletsView :: IonViewDidLoad!");
-    this.registerListeners();
-    this.updateAllInfo();
+  public ionViewDidLoad() {
+    this.logger.warn("Hello WalletsView :: IonViewDidLoad!");
   }
 
   // public async showFeaturesBlock(): Promise<boolean> {
@@ -170,9 +172,9 @@ export class WalletsView {
   }
 
   private fetchNotifications(): Promise<any> {
+    this.logger.info("What is the recentTransactionsEnabled status?");
+    this.logger.info(this.configService.get().recentTransactions.enabled);
     if (this.configService.get().recentTransactions.enabled) {
-      this.logger.info("What is the recentTransactionsEnabled status?");
-      this.logger.info(this.configService.get().recentTransactions.enabled);
       this.recentTransactionsEnabled = true;
       return this.profileService.getNotifications({ limit: 3 }).then((result) => {
         this.logger.info("Show me the notifications: ", result);
