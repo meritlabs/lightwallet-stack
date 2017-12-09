@@ -200,7 +200,7 @@ export class SendAmountView {
 
   finish() {
     // TODO: We should always be sending from view.
-    this.navCtrl.push('SendConfirmView', {recipient: this.recipient, toAmount: this.amountMerit, wallet: this.wallet, toName: 'Donken Heinz'});
+    this.navCtrl.push('SendConfirmView', {recipient: this.recipient, amount: this.amountMerit, wallet: this.wallet});
   }
 
   toBuyAndSell() {
