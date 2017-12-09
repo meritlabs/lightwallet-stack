@@ -7,31 +7,26 @@
 
 <ion-content>
 
-    <ion-card>
+    <ion-card padding-top padding-bottom>
 
         <span *ngIf="txData">
-            <ion-item>
-                <ion-label stacked>Amount</ion-label>
-                <ion-label>
-                    {{ txData.amountValueStr }}MRT ({{txData.alternativeAmountStr}})
-                </ion-label>
-            </ion-item>
-            <ion-item>
-                <ion-label stacked>Recipient</ion-label>
-                <ion-label>{{recipient.label}}</ion-label>
-            </ion-item>
-            <ion-item>
-                <ion-label stacked>From wallet</ion-label>
-                <ion-label>
-                    {{wallet.name || wallet._id}}
-                </ion-label>
-            </ion-item>
-             <ion-item>
-                 <ion-label stacked>Fee ({{ txData.txp.feeRatePerStr }})</ion-label>
-                 <ion-label>
-                     {{ txData.txp.feeStr }} ({{ txData.txp.alternativeFeeStr }})
-                 </ion-label>
-             </ion-item>
+            <div class="title">Amount</div>
+            <div >{{ txData.amountValueStr }}MRT ({{txData.alternativeAmountStr}})</div>
+
+
+            <div class="title">Recipient</div>
+            <div >{{recipient.label}}</div>
+
+            <div class="title">From wallet</div>
+            <div >
+                {{wallet.name || wallet._id}}
+                (total value: {{spendableAmountFormatted}}, after send: {{remainingAmountFormatted}} )
+            </div>
+
+            <div class="title" >Fee ({{ txData.txp.feeRatePerStr }})</div>
+            <div >
+                 {{ txData.txp.feeStr }} ({{ txData.txp.alternativeFeeStr }})
+            </div>
         </span>
         <span *ngIf="!txData">
             <ion-item>

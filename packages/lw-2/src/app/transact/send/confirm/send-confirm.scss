@@ -5,23 +5,19 @@ send-confirm-view {
     margin-right: 0.3em;
   }
 
-  [stacked] {
-    font-weight: bold;
-    font-size: 14px !important;
-    margin-bottom: 0 !important;
-  }
+  ion-card {
+    div {
+      font-size: 13px;
+      padding: 4px 16px;
 
-  ion-label {
-    font-size: 13px !important;
-  }
+      &.title {
+        font-weight: bold;
+        padding-top: 16px;
+      }
+      &.title:first-of-type {
+        padding-top: 0px;
+      }
+    }
 
-  //ion-label {
-  //  font-size: 14px !important;
-  //}
-  //
-  //[item-end] {
-  //  text-align: right;
-  //  font-size: 12px;
-  //  color: #666;
-  //}
+  }
 }
