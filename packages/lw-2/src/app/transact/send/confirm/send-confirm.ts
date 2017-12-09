@@ -59,6 +59,9 @@ export class SendConfirmView {
   private showAddress: boolean = true;
   private showMerit: boolean = true;
 
+  private spendableAmountFormatted;
+  private remainingAmountFormatted;
+
   constructor(
     private configService: ConfigService,
     private navCtrl: NavController, 
@@ -83,6 +86,10 @@ export class SendConfirmView {
   ionViewDidLoad() {
 
     this.wallet = this.navParams.get('wallet');
+
+
+
+
     this.recipient = this.navParams.get('recipient');
     let amount = this.navParams.get('amount');
 
@@ -102,7 +109,10 @@ export class SendConfirmView {
       });
     }
 
-    this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
+    this.updateTx(this.txData, this.wallet, {dryRun: true}).then(() => {
+      this.spendableAmountFormatted = this.txFormatService.formatAmount(this.wallet.status.spendableAmount);
+      this.remainingAmountFormatted = this.txFormatService.formatAmount(this.wallet.status.spendableAmount - this.txData.txp.fee);
+    }).catch((err) => {
         this.logger.error('There was an error in updateTx:', err);
     });
   }
@@ -147,6 +157,8 @@ export class SendConfirmView {
 
     return this.feeService.getFeeRate(wallet.network, this.configFeeLevel).then((feeRate) => {
 
+      console.log('feeRate', feeRate);
+
       if (tx.usingCustomFee) tx.feeRate = feeRate;
       tx.feeLevelName = this.feeService.feeOpts[tx.feeLevel];
 
@@ -166,7 +178,7 @@ export class SendConfirmView {
           
 
           let per = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
-          txpOut.feeRatePerStr = per.toFixed(2) + '%';
+          txpOut.feeRatePerStr = per + '%';
           txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
 
           tx.txp = txpOut;
@@ -200,7 +212,8 @@ export class SendConfirmView {
     let loadingSpinner = this.loadingCtrl.create({
       content: "Sending transaction...",
       dismissOnPageChange: true
-    }).present();
+    });
+    loadingSpinner.present();
 
     return this.approveTx(this.txData, this.wallet).then(() => {
 
@@ -214,6 +227,7 @@ export class SendConfirmView {
     }).then(() => {
       return loadingSpinner.dismiss();
     }).catch((err) => {
+      return loadingSpinner.dismiss();
       this.toastCtrl.create({
         message: err,
         cssClass: ToastConfig.CLASS_ERROR
@@ -279,19 +293,11 @@ export class SendConfirmView {
             let amountUsd: number;
             return this.txFormatService.formatToUSD(ctxp.amount).then((value: string) => {
               amountUsd = parseFloat(value);
-           
     
               if (amountUsd <= SendConfirmView.CONFIRM_LIMIT_USD)
                 return Promise.resolve(false);
-    
-              let amountStr = tx.amountStr;
-              let name = wallet.name;
-              let message = 'Sending ' + amountStr + ' from your ' + name + ' wallet'; // TODO gettextCatalog
-              let okText = 'Confirm'; // TODO gettextCatalog
-              let cancelText = 'Cancel'; // TODO gettextCatalog
-              return this.popupService.ionicConfirm(null, message, okText, cancelText).then((ok: boolean) => {
-                return Promise.resolve(ok);
-              });
+
+             return Promise.resolve('ok');
             });
         };
   
