@@ -38,7 +38,8 @@ export class SendConfirmView {
   // Statics
   private static CONFIRM_LIMIT_USD = 20;
   private static FEE_TOO_HIGH_LIMIT_PER = 15;
-  
+  private configFeeLevel: string;
+
   private recipient: MeritContact;
   private txData: {
     toAddress: any,
@@ -55,10 +56,6 @@ export class SendConfirmView {
     easySendURL?: string
   };
   private wallet: MeritWalletClient;
-  private walletConfig: any;
-  private wallets: Array<MeritWalletClient>;
-  private unitToMicro: number;
-  private configFeeLevel: string;
   private showAddress: boolean = true;
   private showMerit: boolean = true;
 
@@ -81,39 +78,32 @@ export class SendConfirmView {
     private alertController:AlertController
   ) { 
     this.logger.info("Hello SendConfirm View");
-    this.walletConfig = this.configService.get().wallet;
-    
   }
 
   ionViewDidLoad() {
 
     this.wallet = this.navParams.get('wallet');
-    this.amount = this.navParams.get('amount');
+    this.recipient = this.navParams.get('recipient');
+    let amount = this.navParams.get('amount');
 
-    this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
-      this.wallets = wallets;
-      let toAmount = this.navParams.get('toAmount');
-      this.walletConfig = this.configService.get().wallet;
-      this.wallet = this.navParams.get('wallet');
-      this.unitToMicro = this.walletConfig.settings.unitToMicro;
-      this.configFeeLevel = this.walletConfig.settings.feeLevel ? this.walletConfig.settings.feeLevel : 'normal';
-      this.recipient = this.navParams.get('recipient');
-  
-      this.txData = {
-        toAddress:  this.recipient.meritAddress,
-        txp: {},
-        toName: this.recipient.name || '',
-        toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
-        allowSpendUnconfirmed: this.walletConfig.spendUnconfirmed
-      };
-  
-      if(this.recipient.sendMethod != 'address') {
-        this.updateEasySendData().then(() => {
-          this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
-            this.logger.error('There was an error in updateTx:', err);
-          });
-        });
-      }      
+    let walletConfig = this.configService.get().wallet;
+    this.configFeeLevel = walletConfig.settings.feeLevel ? walletConfig.settings.feeLevel : 'normal';
+
+    this.txData = {
+      toAddress:  this.recipient.meritAddress,
+      txp: {},
+      toName: this.recipient.name || '',
+      toAmount: amount,
+      allowSpendUnconfirmed: walletConfig.spendUnconfirmed
+    };
+
+    if (this.recipient.sendMethod != 'address') {
+      this.updateEasySendData().then(() => {
+      });
+    }
+
+    this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
+        this.logger.error('There was an error in updateTx:', err);
     });
   }
 
@@ -429,7 +419,9 @@ export class SendConfirmView {
 
 
   public sendAllowed() {
-    return true; 
+    return (
+      this.txData && !_.isEmpty(this.txData.txp)
+    );
   }
 
 }

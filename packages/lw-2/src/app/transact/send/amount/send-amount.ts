@@ -199,13 +199,14 @@ export class SendAmountView {
   };
 
   finish() {
-    // TODO: We should always be sending from view.
-    this.navCtrl.push('SendConfirmView', {recipient: this.recipient, amount: this.amountMerit, wallet: this.wallet});
+    let amountMicros = this.rateService.mrtToMicro(this.amountMerit);
+    this.navCtrl.push('SendConfirmView', {recipient: this.recipient, amount: amountMicros, wallet: this.wallet});
   }
 
   toBuyAndSell() {
     this.navCtrl.push('BuyAndSellView');
   }
+
 
   private getAvailableAmount():Promise<any> {
     return new Promise((resolve, reject) => {
