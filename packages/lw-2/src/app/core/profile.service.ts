@@ -133,8 +133,11 @@ export class ProfileService {
       this.updateWalletSettings(wallet);
       this.wallets[walletId] = wallet;
 
-      return this.needsBackup(wallet).then((val: any) => {
-        return wallet.needsBackup = val;
+      return wallet.initialize({
+        notificationIncludeOwn: true,
+      
+
+      
       }).then(() => {
         return this.balanceIsHidden(wallet).then((val: any) => {
           return wallet.balanceHidden = val;
@@ -146,7 +149,7 @@ export class ProfileService {
           });
 
           wallet.eventEmitter.on('notification', (n: any) => {
-            this.logger.debug('BWC Notification:', n);
+            this.logger.info('BWC Notification:', n);
 
             if (n.type == "NewBlock" && n.data.network == "testnet") {
               this.throttledBwsEvent(n, wallet);
@@ -155,22 +158,22 @@ export class ProfileService {
 
 
           wallet.eventEmitter.on('walletCompleted', () => {
-            this.logger.debug('Wallet completed');
 
             return this.updateCredentials(JSON.parse(wallet.export())).then(() => {
+              this.logger.info("Updated the credentials and now publishing this: ", walletId);
               this.events.publish('Local:WalletCompleted', walletId);
               return Promise.resolve(); // not sure this is needed
             });
           });
         }).then(() => {
-          return wallet.initialize({
-            notificationIncludeOwn: true,
+          return this.needsBackup(wallet).then((val: any) => {
+            return wallet.needsBackup = val;    
           });
         }).then(() => {
           return wallet.openWallet();
         }).then((openWallet) => {
           if (wallet.status !== true) {
-            this.logger.debug('Wallet + ' + walletId + ' status:' + openWallet.status);
+            this.logger.info('Wallet + ' + walletId + ' status:' + openWallet.status);
           }
           return resolve(true);
         }).catch((err) => {
@@ -211,8 +214,6 @@ export class ProfileService {
       wallet.cachedTxps.isValid = false;
 
     let eventName: string;
-    this.logger.info("TYPE TYPE");
-    this.logger.info(n.type);
     switch (n.type) {
       case 'NewBlock':
         eventName = 'Remote:NewBlock';
@@ -240,7 +241,7 @@ export class ProfileService {
   public updateCredentials(credentials: any): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.profile.updateWallet(credentials);
-      this.persistenceService.storeProfile(this.profile).then(() => {
+      return this.persistenceService.storeProfile(this.profile).then(() => {
         return resolve();
       });
     });
