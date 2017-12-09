@@ -19,5 +19,20 @@ send-confirm-view {
       }
     }
 
+
+    .wallet-icon {
+      height: 20px !important;
+      line-height: 15px !important;
+      width: 25px;
+      display: inline-block;
+      text-align: center;
+      img {
+        height: 20px !important;
+        width: 20px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+    }
+
   }
 }
