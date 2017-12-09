@@ -10,21 +10,32 @@
     <ion-card padding-top padding-bottom>
 
         <span *ngIf="txData">
-            <div class="title">Amount</div>
-            <div >{{ txData.amountValueStr }}MRT ({{txData.alternativeAmountStr}})</div>
-
-            <div class="title" >Fee ({{ txData.txp.feeRatePerStr }})</div>
-            <div >
-                {{ txData.txp.feeStr }} ({{ txData.txp.alternativeFeeStr }})
-            </div>
-
             <div class="title">Recipient</div>
             <div >{{recipient.label}}</div>
 
-            <div class="title">From wallet</div>
-            <div >
-                {{wallet.name || wallet._id}}
-                (total value: {{spendableAmountFormatted}}, after send: {{remainingAmountFormatted}} )
+
+            <div class="title">Amount</div>
+            <div >{{ txData.amountValueStr }}MRT ({{txData.alternativeAmountStr}})</div>
+
+
+            <div class="title" >Fee
+                <span *ngIf="feeIncluded"> included</span>
+                ({{ txData.txp.feeRatePerStr }})</div>
+            <div>
+                {{ txData.txp.feeStr }} ({{ txData.txp.alternativeFeeStr }})
+            </div>
+
+
+
+            <div class="title">From {{wallet.name || wallet._id}}</div>
+            <div>
+                Current balance: {{ walletData.currentBalance.formatted.mrt }} ({{ walletData.currentBalance.formatted.alternative }})
+            </div>
+            <div>
+                Sending: {{ walletData.sending.formatted.mrt }} ({{ walletData.sending.formatted.alternative}})
+            </div>
+            <div>
+                New balance: {{ walletData.remaining.formatted.mrt }} ({{ walletData.remaining.formatted.alternative }})
             </div>
 
 

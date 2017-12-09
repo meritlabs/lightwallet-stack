@@ -59,8 +59,9 @@ export class SendConfirmView {
   private showAddress: boolean = true;
   private showMerit: boolean = true;
 
-  private spendableAmountFormatted;
-  private remainingAmountFormatted;
+  public spendableAmountFormatted;
+  public cremainingAmountFormatted;
+  public sendingAmountFormatted;
 
   constructor(
     private configService: ConfigService,
@@ -86,10 +87,6 @@ export class SendConfirmView {
   ionViewDidLoad() {
 
     this.wallet = this.navParams.get('wallet');
-
-
-
-
     this.recipient = this.navParams.get('recipient');
     let amount = this.navParams.get('amount');
 
@@ -184,7 +181,7 @@ export class SendConfirmView {
               precision++;
             }
           }
-          precision++; //showing two valued digits   
+          precision++; //showing two valued digits
 
           txpOut.feeRatePerStr = percent.toFixed(precision) + '%';
           txpOut.feeToHigh = percent > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
