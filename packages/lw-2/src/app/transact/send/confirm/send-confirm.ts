@@ -175,11 +175,19 @@ export class SendConfirmView {
           txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
           return this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
             txpOut.alternativeFeeStr = v;
-          
 
-          let per = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
-          txpOut.feeRatePerStr = per + '%';
-          txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
+          let percent = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
+
+          let precision = 1;
+          if (percent > 0) {
+            while (percent*Math.pow(10, precision) < 1) {
+              precision++;
+            }
+          }
+          precision++; //showing two valued digits   
+
+          txpOut.feeRatePerStr = percent.toFixed(precision) + '%';
+          txpOut.feeToHigh = percent > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
 
           tx.txp = txpOut;
           this.zone.run(() => {

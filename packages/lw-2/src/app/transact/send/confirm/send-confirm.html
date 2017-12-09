@@ -13,6 +13,10 @@
             <div class="title">Amount</div>
             <div >{{ txData.amountValueStr }}MRT ({{txData.alternativeAmountStr}})</div>
 
+            <div class="title" >Fee ({{ txData.txp.feeRatePerStr }})</div>
+            <div >
+                {{ txData.txp.feeStr }} ({{ txData.txp.alternativeFeeStr }})
+            </div>
 
             <div class="title">Recipient</div>
             <div >{{recipient.label}}</div>
@@ -23,10 +27,7 @@
                 (total value: {{spendableAmountFormatted}}, after send: {{remainingAmountFormatted}} )
             </div>
 
-            <div class="title" >Fee ({{ txData.txp.feeRatePerStr }})</div>
-            <div >
-                 {{ txData.txp.feeStr }} ({{ txData.txp.alternativeFeeStr }})
-            </div>
+
         </span>
         <span *ngIf="!txData">
             <ion-item>
