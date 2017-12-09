@@ -311,7 +311,7 @@ helpers.stubUtxos = function(server, wallet, amounts, opts, cb) {
 
       blockchainExplorer.getUtxos = function(addresses, cb) {
         var selected = _.filter(helpers._utxos, function(utxo) {
-          return _.contains(addresses, utxo.address);
+          return _.includes(addresses, utxo.address);
         });
         return cb(null, selected);
       };
@@ -366,7 +366,7 @@ helpers.stubFeeLevels = function(levels) {
 
 helpers.stubAddressActivity = function(activeAddresses) {
   blockchainExplorer.getAddressActivity = function(address, cb) {
-    return cb(null, _.contains(activeAddresses, address));
+    return cb(null, _.includes(activeAddresses, address));
   };
 };
 

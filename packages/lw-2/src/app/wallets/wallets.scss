@@ -1,0 +1,97 @@
+@import '../transact/transact-module';
+view-wallets {
+  @extend %module-transact;
+
+  ion-list {
+    margin-bottom: 10px !important;
+  }
+
+  [class^="merit-icon"] {
+    width: 30px;
+    height: 30px;
+    margin-top: 5px;
+    background: color($colors, primary);
+  }
+
+  .merit-icon-merit {
+    background: color($colors, primary);
+  }
+
+  ion-navbar img {
+    height: 18px;
+  }
+
+  .add-item .wallet-icon {
+    padding: 0 7px;
+  }
+   img {
+    &.icon-wallet {
+      width: 35px !important;
+      background-color: color($colors, primary);
+    }
+  }
+
+  & .wallet-icon {
+    box-shadow: none;
+  }
+
+  .header-icon {
+    font-size: 1.7rem !important;
+    color: silver;
+    margin: 0 !important;
+    padding: 10px !important;
+  }
+
+  .error {
+    color: color($colors, danger) !important;
+  }
+
+  .label {
+    display: -webkit-inline-box !important;
+  }
+
+  ion-item {
+    h2 {
+      white-space: normal;
+    }
+    .detail {
+      text-align: center;
+      .amount {
+        color: color($colors, primary);
+        font-size: 16px;
+      }
+      .detail-fiat {
+        color: rgba(0,0,0,0.6);
+        font-size: 12px;
+      }
+      .balance-hidden {
+        color: rgba(0,0,0,0.6);
+      }
+    }
+  }
+
+  ion-avatar img {
+    height: 20px;
+    border-radius: 0 !important;
+  }
+
+  ion-avatar.btn {
+    height: 36px;
+    border-radius: 4px;
+    //box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 12px 0px;
+    padding: 0 4px;
+    background: color($colors, primary);
+    line-height: 36px;
+    text-align: center;
+    ion-icon {
+      height: 36px;
+      line-height: 36px;
+      width: 38px;
+      text-align: center;
+      color: white;
+      font-weight: 900;
+      vertical-align: middle;
+    }
+  }
+
+}

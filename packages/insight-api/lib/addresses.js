@@ -1,17 +1,18 @@
 'use strict';
 
-var bitcore = require('bitcore-lib');
-var async = require('async');
-var TxController = require('./transactions');
-var Common = require('./common');
+const bitcore = require('bitcore-lib');
+const async = require('async');
+const TxController = require('./transactions');
+const Common = require('./common');
+const _ = require('lodash');
+
+const COINBASE_MATURITY = bitcore.Block.COINBASE_MATURITY;
 
 function AddressController(node) {
   this.node = node;
   this.txController = new TxController(node);
   this.common = new Common({log: this.node.log});
-}
-
-const COINBASE_MATURITY = 100;
+};
 
 AddressController.prototype.show = function(req, res) {
   var self = this;
@@ -110,6 +111,10 @@ AddressController.prototype.check = function(req, res, next, addresses) {
     }, res);
   }
 
+  addresses = _.reject(addresses, function (addr) {
+    return _.isEmpty(addr);
+  });
+
   for(var i = 0; i < addresses.length; i++) {
     try {
       var a = new bitcore.Address(addresses[i]);
@@ -186,7 +191,8 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
     utxo.ts = utxoArg.timestamp;
   }
   if (utxo.isCoinbase) {
-    utxo.isMature = utxo.confirmations >= COINBASE_MATURITY ? true : false;
+    let maturity = COINBASE_MATURITY[this.node.network.name];
+    utxo.isMature = utxo.confirmations >= maturity ? true : false;
   }
   return utxo;
 };
@@ -208,7 +214,10 @@ AddressController.prototype.multitxs = function(req, res, next) {
 
   options.to = parseInt(req.query.to) || parseInt(req.body.to) || parseInt(options.from) + 10;
 
+  console.log('before getAddressHistory');
+
   self.node.getAddressHistory(req.addrs, options, function(err, result) {
+    console.log('after getAddressHistory', err, result);
     if(err) {
       return self.common.handleErrors(err, res);
     }
@@ -216,6 +225,7 @@ AddressController.prototype.multitxs = function(req, res, next) {
     var transformOptions = self._getTransformOptions(req);
 
     self.transformAddressHistoryForMultiTxs(result.items, transformOptions, function(err, items) {
+      console.log('after transformAddressHistoryForMultiTxs', err, items);
       if (err) {
         return self.common.handleErrors(err, res);
       }
@@ -235,8 +245,8 @@ AddressController.prototype.transformAddressHistoryForMultiTxs = function(txinfo
 
   var items = txinfos.map(function(txinfo) {
     return txinfo.tx;
-  }).filter(function(value, index, self) {
-    return self.indexOf(value) === index;
+  }).filter(function(value, index, itemArr) {
+    return itemArr.indexOf(value) === index;
   });
 
   async.map(

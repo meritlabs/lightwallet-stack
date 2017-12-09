@@ -196,7 +196,7 @@ Merit.prototype.getAPIMethods = function() {
     ['validatereferralcode',  this, this.validateReferralCode, 1],
     ['getInputForEasySend', this, this.getInputForEasySend, 1],
     ['getanv',                this, this.getANV, 1],
-    ['getaddressrewards',     this, this.getRewards, 1],
+    ['getrewards',     this, this.getRewards, 1],
   ];
   return methods;
 };
@@ -1187,19 +1187,6 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
   var cacheKey = addresses.join('');
   var utxos = self.utxosCache.get(cacheKey);
 
-  function transformUnspentOutput(delta) {
-    var script = bitcore.Script.fromAddress(delta.address);
-    return {
-      address: delta.address,
-      txid: delta.txid,
-      outputIndex: delta.index,
-      script: script.toHex(),
-      satoshis: delta.satoshis,
-      isCoinbase: delta.isCoinbase,
-      timestamp: delta.timestamp
-    };
-  }
-
   function updateWithMempool(confirmedUtxos, mempoolDeltas) {
     /* jshint maxstatements: 20 */
     if (!mempoolDeltas || !mempoolDeltas.length) {
@@ -1219,7 +1206,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
         }
         isSpentOutputs = true;
       } else {
-        mempoolUnspentOutputs.push(transformUnspentOutput(delta));
+        mempoolUnspentOutputs.push(delta);
       }
     }
 
@@ -1525,7 +1512,9 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
     ));
   }
 
+  console.log('before getAddressTxids', addresses);
   self.getAddressTxids(addresses, options, function(err, txids) {
+    console.log('after getAddressTxids', err, txids);
     if (err) {
       return callback(err);
     }
@@ -2236,8 +2225,6 @@ Merit.prototype.validateReferralCode = function(referralCode, callback) {
  * @param {Function} callback
  */
 Merit.prototype.unlockWallet = function(code, address, callback) {
-  log.info('unlockWallet Called: ', code);
-  log.info('unlockWallet Called: ', address);
   var self = this;
 
   if ((typeof code === 'string' || code instanceof String) && (typeof address === 'string' || address instanceof String)) {
@@ -2245,7 +2232,6 @@ Merit.prototype.unlockWallet = function(code, address, callback) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
-        log.info('unlockWallet Response: ', response);
         callback(null, response);
       }
     });
@@ -2267,7 +2253,6 @@ Merit.prototype.validateAddress = function(address, callback) {
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
-        log.info('validateAddress Response: ', response);
         callback(null, response);
       }
     });
@@ -2310,10 +2295,10 @@ Merit.prototype.validateAddress = function(address, callback) {
  * @param {Array} keys
  * @param {Function} callback
  */
-Merit.prototype.getANV = function(keysArg, callback) {
+Merit.prototype.getANV = function(addressArg, callback) {
   var self = this;
-  var keys = self._normalizeAddressArg(keysArg);
-  var cacheKey = keys.join('');
+  var addresses = self._normalizeAddressArg(addressArg);
+  var cacheKey = addresses.join('');
   var anv = self.anvCache.get(cacheKey);
 
   if (anv) {
@@ -2322,7 +2307,7 @@ Merit.prototype.getANV = function(keysArg, callback) {
     });
   }
 
-  self.client.getanv(keys, function(err, response) {
+  self.client.getaddressanv({ addresses: addresses }, function(err, response) {
     if (err) {
       return callback(self._wrapRPCError(err));
     }
@@ -2342,6 +2327,7 @@ Merit.prototype.getRewards = function(addressArg, callback) {
   var addresses = self._normalizeAddressArg(addressArg);
   var cacheKey = addresses.join('');
   var rewards = self.rewardsCache.get(cacheKey);
+
 
   if (rewards) {
     return setImmediate(function() {

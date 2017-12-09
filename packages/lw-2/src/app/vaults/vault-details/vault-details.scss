@@ -1,0 +1,91 @@
+vault-details-view {
+    .header {
+        color: color($colors, light);
+        background-color: color($colors, primary);
+    }
+    .toolbar {
+        background: transparent;
+    }
+    .bar-button {
+        color: color($colors, light);
+    }
+    .toolbar-title {
+        color: color($colors, light);
+    }
+    .balance-header {
+        color: color($colors, light);
+        background-color: color($colors, primary);
+        height: 22%;
+        text-align: center;
+    }
+    .balance-str {
+        padding-top: 10%;
+        font-size: 35px;
+        font-weight: 600;
+    }
+    .balance-alt-str {
+        font-size: 20px;
+        font-weight: 500;
+    }
+    .label {
+        display: -webkit-inline-box !important;
+    }
+    .action {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .detail {
+        position: absolute;
+        right: 40px;
+        text-align: end;
+        .amount {
+        color: color($colors, primary);
+        font-size: 16px;
+        }
+        .date {
+        font-size: 12.5px;
+        }
+    }
+    .wallet-type {
+        color: #777;
+    }  
+    
+    .vault-actions {
+        display: flex;
+        flex-direction: row-reverse;
+        padding-right: 5vw;
+    }
+
+    .renew-btn {
+        background-color: #F2A259;
+        color: #777;
+
+        &:hover:not(.disable-hover), &:active:not(.disable-hover) {
+            background-color: #F2C8A1;
+            color: #111;
+        }
+    }
+
+    .spend[item-end] {
+        margin: 0;
+        color: rgba(0, 0, 0, 0.6);
+        font-size: 12px;
+    }
+
+    & ion-avatar.btn.whitelist-icon {
+        background: #068cca;
+        height: 36px;
+        width: 48px;
+        border-radius: 4px;
+        padding: 0 4px;
+        line-height: 36px;
+        text-align: center;
+
+        & ion-icon {
+            color: white;
+            font-size: 1.5em;
+            line-height: 1.5em;
+        }
+    }
+}
