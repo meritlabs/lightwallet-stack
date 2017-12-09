@@ -1763,7 +1763,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
   function select(utxos, cb) {
     if (_.isEmpty(utxos)) {
-      cb(new Error("No Utxos"), null, null);
+      return cb(new Error("No Utxos"), null, null);
     }
     var totalValueInUtxos = _.sumBy(utxos, 'micros');
 
