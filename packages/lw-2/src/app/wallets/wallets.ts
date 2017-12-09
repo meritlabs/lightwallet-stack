@@ -411,19 +411,17 @@ export class WalletsView {
 
   private updateNetworkValue(wallets: Array<any>): Promise<any> {
     let totalAmount: number = 0;
-
     Promise.each(wallets, (wallet) => {
       return this.walletService.getANV(wallet).then((anv) => {
         totalAmount += anv;
       });
+    }).then(() => {
+      this.totalNetworkValue = totalAmount;
+      this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
+      this.txFormatService.formatToUSD(this.totalNetworkValue).then((usdAmount) => {
+        this.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
+      });
     });
-
-    this.totalNetworkValue = totalAmount;
-    this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
-    this.txFormatService.formatToUSD(this.totalNetworkValue).then((usdAmount) => {
-      this.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
-    });
-
     return Promise.resolve();
   }
 
