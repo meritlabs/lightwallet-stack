@@ -15,6 +15,14 @@ send-amount-view {
     }
   }
 
+  ion-spinner {
+    vertical-align: middle;
+  }
+
+  .error {
+    color: color($colors, danger);
+  }
+
 
   .avatar {
     img, gravatar {
