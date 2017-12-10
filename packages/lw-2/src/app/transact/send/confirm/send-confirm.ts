@@ -11,7 +11,6 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { Logger } from 'merit/core/logger';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { WalletService } from "merit/wallets/wallet.service";
 import { TxFormatService } from "merit/transact/tx-format.service";
 
 
@@ -43,7 +42,8 @@ export class SendConfirmView {
     private easySendService: EasySendService,
     private walletService:WalletService,
     private formatService:TxFormatService,
-    private configService:ConfigService
+    private configService:ConfigService,
+    private logger:Logger
   ) {
     this.logger.info("Hello SendConfirm View");
   }
@@ -63,27 +63,29 @@ export class SendConfirmView {
      *        phoneNumber
      *        email
      */
-    let txData    = this.navParams.get('txData');
+    this.txData    = this.navParams.get('txData');
     this.txData.amountUSD = await this.formatService.formatToUSD(this.txData.amount);
 
+
     this.viewData = {
-      recipientName: this.txData.recipient.name || this.txData.recipient.address,
+      recipientName: this.txData.recipient.label,
       amountMrt: this.formatService.formatAmount(this.txData.amount),
-      feePercent: this.txData.feePercent,
-      feeAmountMrt: this.formatService.formatAmount(this.txData.feeAmount),
-      totalAmountMrt: this.formatService.formatAmount(this.txData.totalAmountMrt),
+      feePercent: this.txData.txp.feePercent,
+      feeAmountMrt: this.formatService.formatAmount(this.txData.txp.fee),
+      totalAmountMrt: this.formatService.formatAmount(this.txData.totalAmount),
       walletName: this.txData.wallet.name || this.txData.wallet.id,
-      walletCurrentBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.amount),
-      walletRemainingBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.amount - this.txData.amount)
+      walletCurrentBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.totalBalanceSat),
+      walletRemainingBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.totalBalanceSat - this.txData.totalAmount),
+      feeIncluded: this.txData.feeIncluded
     };
 
     let fiatCode = this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase();
     let convert = amount => this.formatService.toFiat(amount, fiatCode);
-    this.viewData.amountFiat = await convert(this.viewData.amountMrt);
-    this.viewData.feeAmountFiat = await convert(this.viewData.feeAmountMrt);
-    this.viewData.totalAmountFiat = await convert(this.viewData.totalAmountMrt);
-    this.viewData.walletCurrentBalanceFiat = await convert(this.viewData.walletCurrentBalanceMrt);
-    this.viewData.walletRemainingBalancFiat = await convert(this.viewData.walletRemainingBalanceMrt);
+    this.viewData.amountFiat = await convert(this.txData.amount);
+    this.viewData.feeAmountFiat = await convert(this.txData.txp.fee);
+    this.viewData.totalAmountFiat = await convert(this.txData.totalAmount);
+    this.viewData.walletCurrentBalanceFiat = await convert(this.txData.wallet.status.totalBalanceSat);
+    this.viewData.walletRemainingBalanceFiat = await convert(this.txData.wallet.status.totalBalanceSat - this.txData.totalAmount);
 
   }
 
@@ -94,7 +96,7 @@ export class SendConfirmView {
     );
   }
 
-  public approve(): Promise<void> {
+  public approve() {
 
     let showPassPrompt = (highlightInvalid = false) => {
 
@@ -127,7 +129,7 @@ export class SendConfirmView {
 
       this.alertController.create({
         title: 'Confirm sending amount',
-        message: 'Your wallet is not secure by password. We highly recommend you to add spending password in wallet settings. Process current sending?',
+        subTitle: 'Your wallet is not secure by password. We highly recommend you to add spending password in wallet settings. Process current sending?',
         buttons: [
           { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop();}  },
           { text: 'Ok', handler: () => {
@@ -166,9 +168,9 @@ export class SendConfirmView {
 
     return this.approveTx().then(() => {
 
-      if (this.txData.sendMethod == 'sms') {
+      if (this.txData.recipient.sendMethod == 'sms') {
         return this.easySendService.sendSMS(this.txData.recipient.phoneNumber, this.txData.easySendURL);
-      } else if (this.txData.sendMethod == 'email') {
+      } else if (this.txData.recipient.sendMethod == 'email') {
         return this.easySendService.sendEmail(this.txData.recipient.email, this.txData.easySendURL);
       } else {
         return Promise.resolve()
@@ -192,9 +194,9 @@ export class SendConfirmView {
 
         if (!this.txData.wallet.canSign() && !this.txData.wallet.isPrivKeyExternal()) {
           this.logger.info('No signing proposal: No private key');
-          return this.walletService.onlyPublish(this.txData.wallet, ctxp, _.noop);
+          return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp, _.noop);
         } else {
-          return this.walletService.publishAndSign(this.txData.wallet, ctxp, _.noop)
+          return this.walletService.publishAndSign(this.txData.wallet, this.txData.txp, _.noop)
         }
 
       });

@@ -9,33 +9,33 @@
 
     <ion-card padding-top padding-bottom>
 
-        <span *ngIf="txData">
+        <span *ngIf="viewData">
             <div class="title">Recipient</div>
-            <div >{{viewData.recipient}}</div>
+            <div >{{viewData.recipientName}}</div>
 
 
             <div class="title">Amount</div>
-            <div >{{ viewData.amountMrt }} ({{ viewData.amountFiat}})</div>
+            <div >{{ viewData.amountMrt }} MRT ({{ viewData.amountFiat}})</div>
 
 
             <div class="title" >Fee
-                <span *ngIf="feeIncluded"> included</span>
+                <span *ngIf="viewData.feeIncluded"> included</span>
                 ({{ viewData.feePercent }})</div>
             <div>
-                {{ viewData.feeAmountMrt}} ({{ viewData.feeAmountFiat }})
+                {{ viewData.feeAmountMrt}} MRT ({{ viewData.feeAmountFiat }})
             </div>
 
 
             <div class="title">From {{viewData.walletName}}</div>
             <div>
-                Current balance: {{ viewData.waletCurrentBalanceMrt }} ({{ viewData.waletCurrentBalanceFiat }})
+                Current balance: {{ viewData.walletCurrentBalanceMrt }} MRT ({{ viewData.walletCurrentBalanceFiat }})
             </div>
             <div>
-                Sending: {{ viewData.totalAmountMrt}} ({{ viewData.totalAmountFiat }})
+                Sending: {{ viewData.totalAmountMrt}} MRT ({{ viewData.totalAmountFiat }})
 
             </div>
             <div>
-                New balance: {{ viewData.walletRemainingBalanceMrt }} ({{ viewData.walletRemainingBalanceFiat }}) 
+                New balance: {{ viewData.walletRemainingBalanceMrt }} MRT ({{ viewData.walletRemainingBalanceFiat }})
             </div>
 
 

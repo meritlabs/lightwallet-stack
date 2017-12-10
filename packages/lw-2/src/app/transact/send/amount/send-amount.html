@@ -50,18 +50,21 @@
             <input type="number" text-right pattern="[0-9\.]"
                    [style.flex]="1"
                    [(ngModel)]="amount"
-                   (ionChange)="processAmount()"
-                   debounce="1000"
+                   (ngModelChange)="processAmount($event)"
                    [placeholder]="'Enter sending amount'">
             <button ion-button clear color="primary" (click)="toggleCurrency()">
                 {{amountCurrency}}
             </button>
         </div>
         <div class="row">
-            <span class="label" text-left>Fee</span>
+            <span class="label" text-left>Fee <span *ngIf="feePercent">({{feePercent}})</span></span>
             <span text-right [style.flex]="1" padding-right>
-                <ion-spinner *ngIf="amount && !fee" ></ion-spinner>
+
+                <ion-spinner *ngIf="amount && !feeMrt && !feeCalcError" ></ion-spinner>
                 <span *ngIf="!amount">0.0 MRT</span>
+                <span *ngIf="amount && feeMrt">{{feeMrt}}</span>
+                <span *ngIf="feeCalcError" class="error">{{feeCalcError}}</span>
+
             </span>
         </div>
         <div class="row">
@@ -83,7 +86,7 @@
 
 
         <div class="control-buttons">
-            <button ion-button primary margin-top (click)="finish()" [disabled]="!sendAllowed()" >Send</button>
+            <button ion-button primary margin-top (click)="toConfirm()" [disabled]="!sendAllowed()" >Send</button>
         </div>
 
     </span>
