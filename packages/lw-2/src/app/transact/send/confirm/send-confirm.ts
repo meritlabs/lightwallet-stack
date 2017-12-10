@@ -109,13 +109,15 @@ export class SendConfirmView {
           type: 'password'
         }],
         buttons: [
-          { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop();}  },
+          { text: 'Cancel', role: 'cancel',handler: () => {
+            this.navCtrl.pop();
+          }  },
           { text: 'Ok', handler: (data) => {
             if (!data.password) {
               showPassPrompt(true);
             } else {
-              return this.walletService.decrypt(this.txData.wallet,  data.password).then(() => {
-                return this.send();
+              this.walletService.decrypt(this.txData.wallet,  data.password).then(() => {
+                this.send();
               }).catch((err) => { showPassPrompt(true) })
             }
           }
@@ -133,7 +135,7 @@ export class SendConfirmView {
         buttons: [
           { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop();}  },
           { text: 'Ok', handler: () => {
-            return this.send();
+            this.send();
           }}
         ]
       }).present();
