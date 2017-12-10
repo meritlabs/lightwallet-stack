@@ -166,7 +166,6 @@ export class SendAmountView {
     this.updateAmountMerit();
     this.getAvailableAmount().then((amount) => {
       this.availableAmount = amount;
-      this.updateTxData();
     });
   }
 
@@ -188,7 +187,8 @@ export class SendAmountView {
     else this.smallFont = false;
   };
 
-  processAmount() {
+  processAmount(value) {
+    this.amount = value;
     this.updateTxData();
   };
 
@@ -249,8 +249,6 @@ export class SendAmountView {
         feeIncluded: this.feeIncluded
       };
 
-      console.log('recipient', this.recipient);
-
       if (!this.txData.amount) {
         return this.createTxp.cancel();
       };
@@ -276,6 +274,8 @@ export class SendAmountView {
           feeRate: feeRate
         };
 
+        console.log('FEE RATE', feeRate);
+
         let getEasyData = () => {
           return new Promise((resolve, reject) => {
             if (this.recipient.sendMethod != 'address') {
@@ -298,6 +298,8 @@ export class SendAmountView {
           let dryRun = true;
           return this.getTxp(data, this.txData.wallet, dryRun).then((txpOut) => {
 
+            console.log(txpOut.fee, 'FEE TXPOUT');
+
             txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
             return this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
               txpOut.alternativeFeeStr = v;
@@ -316,16 +318,12 @@ export class SendAmountView {
 
               this.feePercent = txpOut.feePercent;
               this.feeMrt = this.rateService.microsToMrt(txpOut.fee);
-              let currency = this.amountCurrency.toUpperCase();
               this.txData.txp = txpOut;
-              return this.txFormatService.toFiat(txpOut.fee, currency).then((feeFiat) => {
-                this.feeFiat = feeFiat;
-
-                if (this.feeIncluded) {
-                  //todo implement including fee in amount
-                } else {
-                }
-              });
+              this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
+              if (this.feeIncluded) {
+                //todo implement including fee in amount
+              } else {
+              }
             }).catch((err) => {
               this.toastCtrl.create({
                 message: err,
