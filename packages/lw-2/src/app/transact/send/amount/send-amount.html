@@ -47,11 +47,10 @@
 
         <div class="row">
             <span class="label" text-left>Amount</span>
-            <input type="number" text-right pattern="[0-9\.]"
+            <ion-input type="number" text-right pattern="[0-9\.]"
                    [style.flex]="1"
-                   [(ngModel)]="amount"
-                   (ngModelChange)="processAmount($event)"
-                   [placeholder]="'Enter sending amount'">
+                   (ionChange)="processAmount($event.value)"
+                   [placeholder]="'Enter sending amount'"></ion-input>
             <button ion-button clear color="primary" (click)="toggleCurrency()">
                 {{amountCurrency}}
             </button>
@@ -61,8 +60,12 @@
             <span text-right [style.flex]="1" padding-right>
 
                 <ion-spinner *ngIf="amount && !feeMrt && !feeCalcError" ></ion-spinner>
-                <span *ngIf="!amount">0.0 MRT</span>
-                <span *ngIf="amount && feeMrt">{{feeMrt}}</span>
+                <span *ngIf="!amount">0.0</span>
+                <span *ngIf="amount && feeMrt">
+                    <span *ngIf="amountCurrency == 'MRT'">{{feeMrt}}</span>
+                    <span *ngIf="amountCurrency != 'MRT'">{{feeFiat}}</span>
+                    {{amountCurrency}}
+                </span>
                 <span *ngIf="feeCalcError" class="error">{{feeCalcError}}</span>
 
             </span>
