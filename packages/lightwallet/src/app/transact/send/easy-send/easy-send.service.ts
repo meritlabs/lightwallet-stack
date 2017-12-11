@@ -14,20 +14,20 @@ export class EasySendService {
     // TODO: get a passphrase from the user
     let opts = {
       network: wallet.network,
-      unlockCode: wallet.shareCode,
+      parentAddress: wallet.pubKey.toAddress(),
       passphrase: ''
     };
 
     return wallet.buildEasySendScript(opts).then((easySend) => {
       let unlockScriptOpts = {
-        unlockCode: wallet.shareCode,
-        address: easySend.script.toAddress().toString(), // not typechecked yet
+        parentAddress: wallet.pubKey.toAddress(),
+        address: easySend.script.toAddress(), // not typechecked yet
         network: opts.network
       };
       return wallet.unlockAddress(unlockScriptOpts).then(() => {
         let unlockRecipientOpts = {
-          unlockCode: wallet.shareCode,
-          address: easySend.receiverPubKey.toAddress().toString(), // not typechecked yet
+          parentAddress: wallet.pubKey.toAddress(),
+          pubkey: easySend.receiverPubKey, // not typechecked yet
           network: opts.network
         };
         return wallet.unlockAddress(unlockRecipientOpts);
