@@ -143,9 +143,25 @@ export class SendConfirmView {
     };
 
     let showTouchIDPrompt = () => {
-      //todo implement
-      return this.send();
+
+      // TODO check if we need this
+      //this.alertController.create({
+      //  title: 'TouId required',
+      //  subTitle: 'Confirm transaction by your fingerprint',
+      //  buttons: [
+      //      { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop(); } }
+      //  ]
+      //}).present();
+
+
+      this.touchIdService.check().then(() => {
+        return this.send();
+      }).cathc(() => {
+        this.navCtrl.pop();
+      });
+
     };
+
 
     if (this.walletService.isEncrypted(this.txData.wallet)) {
       return showPassPrompt();
@@ -175,11 +191,12 @@ export class SendConfirmView {
       } else if (this.txData.recipient.sendMethod == 'email') {
         return this.easySendService.sendEmail(this.txData.recipient.email, this.txData.easySendURL);
       } else {
-        return Promise.resolve()
+        return Promise.resolve();
       }
     }).then(() => {
       loadingSpinner.dismiss();
-      return this.app.getRootNavs[0].setRoot('TransactView');
+      this.navCtrl.remove(2,1);
+      this.navCtrl.pop();
     }).catch((err) => {
       loadingSpinner.dismiss();
       return this.toastCtrl.create({
@@ -192,16 +209,12 @@ export class SendConfirmView {
 
   private approveTx():Promise<void> {
 
-      return this.walletService.createTx(this.txData.wallet, this.txData.txp).then((ctxp) => {
-
-        if (!this.txData.wallet.canSign() && !this.txData.wallet.isPrivKeyExternal()) {
-          this.logger.info('No signing proposal: No private key');
-          return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp, _.noop);
-        } else {
-          return this.walletService.publishAndSign(this.txData.wallet, this.txData.txp, _.noop)
-        }
-
-      });
+      if (!this.txData.wallet.canSign() && !this.txData.wallet.isPrivKeyExternal()) {
+        this.logger.info('No signing proposal: No private key');
+        return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp, _.noop);
+      } else {
+        return this.walletService.publishAndSign(this.txData.wallet, this.txData.txp, _.noop)
+      }
   }
 
 }
