@@ -137,7 +137,7 @@ export class ProfileService {
       wallet.setOnConnectionError(() => {
           if(this.toast) return;
           let toast = this.toastCtrl.createSticky({
-            message: 'There was an error connecting. Check your internet connection.',
+            message: 'There was an error connecting. Please check internet connection and retry.',
             cssClass: ToastConfig.CLASS_ERROR
           })
 
@@ -154,7 +154,7 @@ export class ProfileService {
           let toast = this.toastCtrl.createSticky({
             message: 'There was an error authenticating with the Merit Servers.',
             cssClass: ToastConfig.CLASS_ERROR
-          }).present();
+          });
 
           toast.onDidDismiss(() => {
             this.toast = null;
