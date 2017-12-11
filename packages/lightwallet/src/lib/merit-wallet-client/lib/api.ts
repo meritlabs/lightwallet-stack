@@ -1719,6 +1719,8 @@ export class API {
         return reject(new Error('Existing keys were created for a different network'));
       }
 
+      console.log('createWallet 1');
+
       const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey();
       const pubkey = walletPrivKey.toPublicKey();
       const address = pubkey.toAddress();
@@ -1727,21 +1729,32 @@ export class API {
       c.addWalletPrivateKey(walletPrivKey.toString());
       let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
 
-      let args = {
-        name: encWalletName,
-        m: m,
-        n: n,
-        pubKey: pubkey.toString(),
+      const referralOpts = {
+        parentAddress: opts.parentAddress,
+        address: pubkey.toAddress(),
+        pubkey,
+        addressType: 1,
+        signPrivKey: walletPrivKey,
         network: network,
-        singleAddress: !!opts.singleAddress,
-        id: opts.id,
-        parentAddress: opts.parentAddress
       };
+      console.log('createWallet 2');
 
       // Create wallet
-      return this.sendReferral(opts.parentAddress).then(refid => {
+      return this.sendReferral(referralOpts).then(refid => {
         if (refid) {
-          console.log(refid)
+          console.log(refid);
+
+          let args = {
+            name: encWalletName,
+            m: m,
+            n: n,
+            pubKey: pubkey.toString(),
+            network: network,
+            singleAddress: !!opts.singleAddress,
+            id: opts.id,
+            parentAddress: opts.parentAddress
+          };
+
           this._doPostRequest('/v1/wallets/', args).then(res => {
             if (res) {
               let walletId = res.walletId;
@@ -1761,23 +1774,28 @@ export class API {
         } else {
           return reject(new Error('MWC Error: ' + refid));
         }
-      }).catch((err) => {
-        console.log('wallet error', err);
-        return reject(err);
-      });
+      })
     });
   };
 
   /**
    * Broadcast raw referral to network
-   * @param parentAddress
-   * @param opts
+   * @param {Object} opts
+   * @param {Address} opts.parentAddress  - parent address that referrs new address
+   * @param {PublicKey} opts.address      - (optional) address to beacon
+   * @param {PublicKey} opts.addressType  - address type: 1 - pubkey, 2 - sript, 3 - parameterizedscript
+   * @param {PublicKey} opts.signPrivKey  - private key to sign referral
+   * @param {PublicKey} opts.pubkey       - (optional) pubkey of beaconing address. omitted for script
+   * @param {PublicKey} opts.network      - (optional) netowrk
    */
-  sendReferral(parentAddress: string, opts: any = {}): Promise<any> {
-    return new Promise((resolve, reject) => {
+  sendReferral(opts: any = {}): Promise<any> {
+      console.log('sendReferral 1');
+      return new Promise((resolve, reject) => {
+      console.log('sendReferral 2');
       if (opts) {
         $.shouldBeObject(opts);
       }
+      console.log('sendReferral 3');
 
       let network = opts.network || DEFAULT_NET;
       if (!_.includes(['testnet', 'livenet'], network)) {
@@ -1796,25 +1814,27 @@ export class API {
       } else {
         this.log.info('Using existing keys');
       }
+      console.log('sendReferral 4');
 
-      const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey();
-      const pubkey = walletPrivKey.toPublicKey();
-      const address = pubkey.toAddress(network);
 
       // TODO: get rid of .match(/.{1,2}/g).reverse().join('') if possible
       const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-        Bitcore.Address.fromString(parentAddress, network).toBufferLean(),
-        address.toBufferLean(),
+        Bitcore.Address.fromString(opts.sparentAddress, network).toBufferLean(),
+        opts.address.toBufferLean(),
       ]));
+      console.log('sendReferral 5');
 
-      const signature = Bitcore.crypto.ECDSA.sign(hash, walletPrivKey, 'big');
+      const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrevKey, 'big');
+      console.log('sendReferral 6');
+
+      console.log('signature:', signature);
 
       const referral = new Bitcore.Referral({
         version: 0,
-        parentAddress: Bitcore.Address.fromString(parentAddress, network),
-        address,
-        addressType: 1,
-        pubkey,
+        parentAddress: Bitcore.Address.fromString(opts.parentAddress, network),
+        address: opts.address,
+        addressType: opts.addressType,
+        pubkey: opts.pubkey,
         signature,
       });
 
@@ -2203,12 +2223,13 @@ export class API {
   /**
    * unlock an address
    * @param {Object} opts
-   * @param {String} opts.address     - the address to unlock
-   * @param {String} opts.unlockcode  - the code to use to unlock opts.address
+   * @param {Address} opts.parentAddress  - parent address that referrs new address
+   * @param {PublicKey} opts.pubkey       - (optional) pubkey of beaconing address. omitted for script
    */
   unlockAddress(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
-    return this._doPostRequest('/v1/addresses/unlock/', opts);
+
+    return this.sendReferral(opts.parentAddress);
   };
 
   /**
