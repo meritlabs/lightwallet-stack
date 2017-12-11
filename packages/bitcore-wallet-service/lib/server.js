@@ -3938,20 +3938,21 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 WalletService.prototype.renewVault = function(opts, cb) {
   const self = this;
 
-  if(!opts.vault) {
-    return cb(new ClientError('Required argument "vault" missing'));
-  }
+  const readableWhitelist = _.map(opts.whitelist, (wl) => {
+      return Bitcore.Address.fromBuffer(new Buffer(wl.data)).toString();
+  });
 
-  if(!opts.coin) {
-    return cb(new ClientError('Required argument "coin" missing'));
-  }
+  let toStore = _.cloneDeep(opts);
+  toStore.status = Bitcore.Vault.Vault.VaultStates.RENEWING;
+  toStore.whitelist = readableWhitelist;
+  toStore.walletId = self.walletId;
+  toStore.copayerId = self.copayerId;
 
-  opts.vault.status = Bitcore.Vault.Vault.VaultStates.RENEWING;
-  let toStore = _.cloneDeep(opts.vault);
+  let vaultId = '';
 
   async.series([
     function(next) {
-      self.storage.storeVault(self.copayerId, toStore, function(err, result) {
+      self.storage.updateVault(self.copayerId, toStore, function(err, result) {
         if (err) return cb(err);
 
         vaultId = result.insertedId;
@@ -3961,16 +3962,18 @@ WalletService.prototype.renewVault = function(opts, cb) {
     },
     function(next) {
       //TODO: Loop
-      var txp = Model.TxProposal.fromObj(opts.coin);
-      var bc = self._getBlockchainExplorer(txp.network);
+      var tx = opts.coins[0];
+      var bc = self._getBlockchainExplorer(tx.network);
 
-      var rawTx = txp.getRawTx();
-      bc.broadcast(rawTx, function(err, txid) {
+      bc.broadcast(tx.raw, function(err, txid) {
         if (err) return cb(err);
 
-        txp.txid = txid;
+        let coin = {
+          txid: txid,
+        };
+
         toStore.id = vaultId;
-        toStore.coins[0] = txp;
+        toStore.coins[0] = coin;
         toStore.initialTxId = txid;
 
         self.storage.updateVault(self.copayerId, toStore, function(err, result) {
@@ -3986,7 +3989,6 @@ WalletService.prototype.renewVault = function(opts, cb) {
       return next();
     }
   ]);
-  return cb(null, {});
 };
 
 module.exports = WalletService;
