@@ -1,5 +1,5 @@
 import { Component, HostListener, SecurityContext } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, LoadingController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
 import { Logger } from 'merit/core/logger';
@@ -73,7 +73,8 @@ export class SendAmountView {
     private feeService:FeeService,
     private walletService:WalletService,
     private easySendService:EasySendService,
-    private toastCtrl:MeritToastController
+    private toastCtrl:MeritToastController,
+    private loadingCtrl: LoadingController
   ) {
   }
   
@@ -201,7 +202,19 @@ export class SendAmountView {
   }
 
   toConfirm() {
-    this.navCtrl.push('SendConfirmView', {txData: this.txData});
+    let loadingSpinner = this.loadingCtrl.create({
+      content: "Preparing transaction...",
+      dismissOnPageChange: true
+    });
+    loadingSpinner.present();
+    let dryRun = false;
+    this.createTxp(dryRun).then(() => {
+      loadingSpinner.dismiss();
+      this.navCtrl.push('SendConfirmView', {txData: this.txData});
+    }).catch(() => {
+      loadingSpinner.dismiss();
+    });
+
   }
 
   toBuyAndSell() {
@@ -250,19 +263,27 @@ export class SendAmountView {
       };
 
       if (!this.txData.amount) {
-        return this.createTxp.cancel();
+        return this.createTxpDebounce.cancel();
       };
 
       if (this.txData.amount > this.rateService.mrtToMicro(this.availableAmount.value)) {
         this.feeCalcError = 'Amount is too big';
-        return this.createTxp.cancel();
+        return this.createTxpDebounce.cancel();
       }
 
-      this.createTxp();
+      let dryRun = true;
+      this.createTxpDebounce(dryRun);
 
   }
 
-  private createTxp = _.debounce(() => {
+  private createTxpDebounce = _.debounce((dryRun:boolean) => {
+    this.createTxp(dryRun);
+  }, 1000);
+
+  private createTxp(dryRun:boolean) {
+
+    console.log('@@CREATE TXP');
+
     return this.feeService.getFeeRate(this.wallet.network, SendAmountView.FEE_LEVEL).then((feeRate) => {
 
         let data = {
@@ -270,11 +291,8 @@ export class SendAmountView {
           toName: this.txData.recipient.name || '',
           toAmount: this.txData.amount,
           allowSpendUnconfirmed: SendAmountView.ALLOW_UNCONFIRMED,
-          feeLevelName:  SendAmountView.FEE_LEVEL,
-          feeRate: feeRate
+          feeLevelName:  SendAmountView.FEE_LEVEL
         };
-
-        console.log('FEE RATE', feeRate);
 
         let getEasyData = () => {
           return new Promise((resolve, reject) => {
@@ -295,10 +313,7 @@ export class SendAmountView {
 
         return getEasyData().then((easyData) => {
           data = Object.assign(data, easyData);
-          let dryRun = true;
-          return this.getTxp(data, this.txData.wallet, dryRun).then((txpOut) => {
-
-            console.log(txpOut.fee, 'FEE TXPOUT');
+          return this.getTxp(_.clone(data), this.txData.wallet, dryRun).then((txpOut) => {
 
             txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
             return this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
@@ -318,8 +333,9 @@ export class SendAmountView {
 
               this.feePercent = txpOut.feePercent;
               this.feeMrt = this.rateService.microsToMrt(txpOut.fee);
-              this.txData.txp = txpOut;
               this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
+
+              this.txData.txp = txpOut;
               if (this.feeIncluded) {
                 //todo implement including fee in amount
               } else {
@@ -334,7 +350,7 @@ export class SendAmountView {
         });
 
       });
-    }, 1000);
+  }
 
 
   /**
