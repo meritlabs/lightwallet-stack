@@ -37,6 +37,7 @@ export module ErrorTypes {
   export const INSUFFICIENT_FUNDS = new BwcError('Insufficient funds.');
   export const CONNECTION_ERROR = new BwcError('Connection error.');
   export const NOT_FOUND = new BwcError('Not found.');
+  export const AUTHENTICATION_ERROR = new BwcError('Authentication Error');
   export const ECONNRESET_ERROR = new BwcError('Connection reset.');
   export const WALLET_ALREADY_EXISTS = new BwcError('Wallet already exists.');
   export const COPAYER_IN_WALLET = new BwcError('Copayer in wallet.');
