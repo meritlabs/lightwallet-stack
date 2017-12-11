@@ -1719,8 +1719,6 @@ export class API {
         return reject(new Error('Existing keys were created for a different network'));
       }
 
-      console.log('createWallet 1');
-
       const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey();
       const pubkey = walletPrivKey.toPublicKey();
       const address = pubkey.toAddress();
@@ -1737,44 +1735,37 @@ export class API {
         signPrivKey: walletPrivKey,
         network: network,
       };
-      console.log('createWallet 2');
 
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
-        if (refid) {
-          console.log(refid);
+        let args = {
+          name: encWalletName,
+          m: m,
+          n: n,
+          pubKey: pubkey.toString(),
+          network: network,
+          singleAddress: !!opts.singleAddress,
+          id: opts.id,
+          parentAddress: opts.parentAddress
+        };
 
-          let args = {
-            name: encWalletName,
-            m: m,
-            n: n,
-            pubKey: pubkey.toString(),
-            network: network,
-            singleAddress: !!opts.singleAddress,
-            id: opts.id,
-            parentAddress: opts.parentAddress
-          };
+        return this._doPostRequest('/v1/wallets/', args).then(res => {
+          if (res) {
+            let walletId = res.walletId;
+            c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.parentAddress);
 
-          this._doPostRequest('/v1/wallets/', args).then(res => {
-            if (res) {
-              let walletId = res.walletId;
-              c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.parentAddress);
+            let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
-              let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
-
-              return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then(
-                wallet => {
-                  return resolve(n > 1 ? secret : null);
-                }
-              );
-            } else {
-              return reject('Error: ' + res);
-            }
-          });
-        } else {
-          return reject(new Error('MWC Error: ' + refid));
-        }
-      })
+            return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then(
+              wallet => {
+                return resolve(n > 1 ? secret : null);
+              }
+            );
+          } else {
+            return reject('Error: ' + res);
+          }
+        });
+      }).catch(reject);
     });
   };
 
@@ -1789,13 +1780,10 @@ export class API {
    * @param {PublicKey} opts.network      - (optional) netowrk
    */
   sendReferral(opts: any = {}): Promise<any> {
-      console.log('sendReferral 1');
-      return new Promise((resolve, reject) => {
-      console.log('sendReferral 2');
+    return new Promise((resolve, reject) => {
       if (opts) {
         $.shouldBeObject(opts);
       }
-      console.log('sendReferral 3');
 
       let network = opts.network || DEFAULT_NET;
       if (!_.includes(['testnet', 'livenet'], network)) {
@@ -1814,20 +1802,14 @@ export class API {
       } else {
         this.log.info('Using existing keys');
       }
-      console.log('sendReferral 4');
-
 
       // TODO: get rid of .match(/.{1,2}/g).reverse().join('') if possible
       const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-        Bitcore.Address.fromString(opts.sparentAddress, network).toBufferLean(),
+        Bitcore.Address.fromString(opts.parentAddress, network).toBufferLean(),
         opts.address.toBufferLean(),
       ]));
-      console.log('sendReferral 5');
 
-      const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrevKey, 'big');
-      console.log('sendReferral 6');
-
-      console.log('signature:', signature);
+      const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big');
 
       const referral = new Bitcore.Referral({
         version: 0,
