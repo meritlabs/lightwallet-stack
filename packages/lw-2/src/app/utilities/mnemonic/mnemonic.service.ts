@@ -8,6 +8,7 @@ import * as Promise from 'bluebird';
 
 
 import * as _ from 'lodash';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()
 export class MnemonicService {
@@ -26,7 +27,7 @@ export class MnemonicService {
 
   
 
-  public importMnemonic(words: string, opts: any): Promise<any> {
+  public importMnemonic(words: string, opts: any): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
 
       var walletClient = this.bwcService.getClient(null, opts);
@@ -43,7 +44,7 @@ export class MnemonicService {
       }).then(() => {
         return this.profileService.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
-        }).then((wallet: any) => {
+        }).then((wallet) => {
           return resolve(wallet);
         }).catch((err: any) => {
           return reject(err);
@@ -56,7 +57,7 @@ export class MnemonicService {
 
   // TODO: Create an interface for BWC, and use it to type 
   // it as it is sent around.
-  public seedFromMnemonic(opts: any, walletClient: any): Promise<any> {
+  public seedFromMnemonic(opts: any, walletClient: MeritWalletClient): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
       try {
         opts.mnemonic = this.normalizeMnemonic(opts.mnemonic);
@@ -67,7 +68,7 @@ export class MnemonicService {
           account: opts.account || 0,
           derivationStrategy: opts.derivationStrategy || 'BIP44'
         });
-        resolve(walletClient);
+        return resolve(walletClient);
       } catch (ex) {
         this.logger.info(ex);
         return reject('Could not create: Invalid wallet recovery phrase'); // TODO getTextCatalog
