@@ -101,6 +101,10 @@ interface Config {
   // Custom Aliases 
   // Stored like: aliasFor[WalletId] = "Full Wallet"
   aliasFor?: object;
+
+  network: {
+    name: string;
+  }
 };
 
 const configDefault: Config = {
@@ -191,6 +195,10 @@ const configDefault: Config = {
 
   log: {
     filter: 'debug'
+  },
+
+  network: {
+    name: 'testnet'
   }
 };
 
