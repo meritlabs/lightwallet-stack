@@ -97,7 +97,7 @@ export class VaultRenewView {
     }).then((whitelist) => {
       newVault.whitelist = _.map(whitelist, (a) => {return a.toBuffer()});
       newVault.masterKey = this.formData.masterKey;
-      newVault.vaultName = this.formData.vaultName;
+      newVault.name = this.formData.vaultName;
       this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });      
     });
   }
