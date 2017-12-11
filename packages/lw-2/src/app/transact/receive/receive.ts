@@ -101,7 +101,10 @@ export class ReceiveView {
     let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
     modal.present();
     modal.onDidDismiss((wallet) => {
-      if (wallet) this.wallet = wallet;
+      if (wallet) {
+        this.wallet = wallet;
+        this.generateAddress(false);
+      }
     });
   }
 
