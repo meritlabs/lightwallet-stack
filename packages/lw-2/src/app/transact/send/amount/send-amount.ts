@@ -42,7 +42,7 @@ export class SendAmountView {
   public feeIncluded:boolean = false;
   public feeCalcError:string;
   public feeMrt:number;
-  public feeFiat:string;
+  public feeFiat:number;
   public feePercent:string;
 
   public availableAmount = {value: 0, formatted: ''};
@@ -165,6 +165,7 @@ export class SendAmountView {
   toggleCurrency() {
     this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
     this.updateAmountMerit();
+    this.updateTxData();
     this.getAvailableAmount().then((amount) => {
       this.availableAmount = amount;
     });
@@ -214,6 +215,8 @@ export class SendAmountView {
     }).catch(() => {
       loadingSpinner.dismiss();
     });
+
+
 
   }
 
@@ -332,14 +335,11 @@ export class SendAmountView {
               txpOut.feePercent = percent.toFixed(precision) + '%';
 
               this.feePercent = txpOut.feePercent;
+              this.txData.feeAmount = txpOut.fee;
               this.feeMrt = this.rateService.microsToMrt(txpOut.fee);
               this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
 
               this.txData.txp = txpOut;
-              if (this.feeIncluded) {
-                //todo implement including fee in amount
-              } else {
-              }
             }).catch((err) => {
               this.toastCtrl.create({
                 message: err,
@@ -401,8 +401,16 @@ export class SendAmountView {
         txp.payProUrl = tx.paypro.url;
       }
       txp.excludeUnconfirmedUtxos = !tx.allowSpendUnconfirmed;
-      txp.dryRun = dryRun;
+      if (!dryRun) {
+        txp.dryRun = dryRun;
+        if (this.feeIncluded) {
+          txp.fee = this.txData.feeAmount;
+          txp.inputs = this.txData.txp.inputs;
+          txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
+        }
+      }
       return this.walletService.createTx(wallet, txp).then((ctxp) => {
+        console.log(ctxp, "CTXP");
         return resolve(ctxp);
       });
     });

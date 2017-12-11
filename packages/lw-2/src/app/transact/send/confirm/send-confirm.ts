@@ -156,7 +156,7 @@ export class SendConfirmView {
 
       this.touchIdService.check().then(() => {
         return this.send();
-      }).cathc(() => {
+      }).catch(() => {
         this.navCtrl.pop();
       });
 
