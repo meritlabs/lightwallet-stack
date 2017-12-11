@@ -161,10 +161,10 @@ export class WalletsView {
       return Promise.map(vaults, (vault) => {
         return this.vaultsService.getVaultCoins(wallet, vault).then((coins) => {
           vault.amount = _.sumBy(coins, 'micros');
-          this.txFormatService.toFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode).then((alternativeAmount) => {
+          return this.txFormatService.toFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode).then((alternativeAmount) => {
             vault.altAmountStr = new FiatAmount(vault.altAmount).amountStr;
             vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
-            return Promise.resolve(vault);
+            return vault;
           });
         });
       }).then((vaults) => {
