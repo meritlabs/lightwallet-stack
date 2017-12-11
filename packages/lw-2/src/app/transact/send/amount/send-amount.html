@@ -14,25 +14,22 @@
 
         <span class="row">
             <span class="label" text-left>Recipient</span>
-            <span text-right [style.flex]="1" padding-right >{{ displayName }}</span>
+            <span text-right [style.flex]="1" padding-right >
+                {{ displayName }}
+                <span class="avatar">
+                    <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
+                    <gravatar class="send-gravatar"
+                              [name]="contact.name.formatted" width="30" height="30"
+                              [email]="contact.emails[0] ? contact.emails[0].value : ''" *ngIf="!contact.photos.length"></gravatar>
+                </span>
+            </span>
         </span>
 
-        <div class="row">
-            <span class="label" text-left>Amount</span>
-            <input type="number" text-right pattern="[0-9\.]"
-                   [style.flex]="1"
-                   [(ngModel)]="amount"
-                   (ngModelChange)="processAmount()"
-                   [placeholder]="'Sending amount'">
-            <button ion-button clear color="primary" (click)="toggleCurrency()">
-                {{amountCurrency}}
-            </button>
-        </div>
 
         <div class="row">
             <span text-left class="label">Send via</span>
             <span item-right text-right [style.flex]="1" (click)="selectSendingOption()" padding-right>
-                {{recipient.label}}
+                {{recipient.label|slice:0:15}}...
             </span>
         </div>
 
@@ -48,8 +45,27 @@
             </span>
         </div>
 
+        <div class="row">
+            <span class="label" text-left>Amount</span>
+            <input type="number" text-right pattern="[0-9\.]"
+                   [style.flex]="1"
+                   [(ngModel)]="amount"
+                   (ngModelChange)="processAmount()"
+                   [placeholder]="'Sending amount'">
+            <button ion-button clear color="primary" (click)="toggleCurrency()">
+                {{amountCurrency}}
+            </button>
+        </div>
+        <div class="row">
+            <span class="label" text-left>Available</span>
+            <span text-right [style.flex]="1" padding-right >
+                {{ availableAmount.formatted }}
+            </span>
+        </div>
+
+
         <div class="control-buttons">
-            <button ion-button primary margin-top (click)="finish()" [disabled]="!allowSend" >Send</button>
+            <button ion-button primary margin-top (click)="finish()" [disabled]="!sendAllowed()" >Send</button>
         </div>
 
     </span>
@@ -57,7 +73,7 @@
     <span *ngIf="!loading && !hasFunds">
         <div text-center padding>Before sending Merit you should buy some!</div>
         <div class="control-buttons">
-            <button ion-button primary margin-top >Buy Merit</button>
+            <button ion-button primary margin-top (click)="toBuyAndSell()">Buy Merit</button>
         </div>
     </span>
 

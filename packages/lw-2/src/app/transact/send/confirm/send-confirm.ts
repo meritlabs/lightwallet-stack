@@ -1,5 +1,5 @@
 import { ConfigService } from './../../../shared/config.service';
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, IonicPage, ModalController, LoadingController } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { WalletService } from 'merit/wallets/wallet.service';
@@ -17,6 +17,7 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 import { MeritContact } from 'merit/shared/address-book/contact/contact.model';
+import { FiatAmount } from 'merit/shared/fiat-amount.model';
 
 /**
  * The confirm view is the final step in the transaction sending process 
@@ -55,7 +56,8 @@ export class SendConfirmView {
   private wallets: Array<MeritWalletClient>;
   private unitToMicro: number;
   private configFeeLevel: string;
-  private showAddress: Boolean = true;
+  private showAddress: boolean = true;
+  private showMerit: boolean = true;
 
   constructor(
     private configService: ConfigService,
@@ -70,38 +72,40 @@ export class SendConfirmView {
     private modalCtrl: ModalController,
     private notificationService: NotificationService,
     private loadingCtrl: LoadingController,
-    private easySendService: EasySendService
+    private easySendService: EasySendService,
+    private zone: NgZone
   ) { 
     this.logger.info("Hello SendConfirm View");
     this.walletConfig = this.configService.get().wallet;
     
   }
 
-  async ionViewDidLoad() {
-    this.wallets = await this.profileService.getWallets();
-    let toAmount = this.navParams.get('toAmount');
-    this.walletConfig = this.configService.get().wallet;
-    this.wallet = this.navParams.get('wallet');
-    this.unitToMicro = this.walletConfig.settings.unitToMicro;
-    this.configFeeLevel = this.walletConfig.settings.feeLevel ? this.walletConfig.settings.feeLevel : 'normal';
-    this.recipient = this.navParams.get('recipient');
-
-    this.txData = {
-      toAddress:  this.recipient.meritAddress,
-      txp: {},
-      toName: this.recipient.name || '',
-      toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
-      allowSpendUnconfirmed: this.walletConfig.spendUnconfirmed
-    }
-
-    if(this.recipient.sendMethod != 'address') {
-      await this.updateEasySendData();
-    }
-    this.logger.log('ionViewDidLoad txData', this.txData);
-    await this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
-      this.logger.error('There was an error in updateTx:', err);
+  ionViewDidLoad() {
+    this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
+      this.wallets = wallets;
+      let toAmount = this.navParams.get('toAmount');
+      this.walletConfig = this.configService.get().wallet;
+      this.wallet = this.navParams.get('wallet');
+      this.unitToMicro = this.walletConfig.settings.unitToMicro;
+      this.configFeeLevel = this.walletConfig.settings.feeLevel ? this.walletConfig.settings.feeLevel : 'normal';
+      this.recipient = this.navParams.get('recipient');
+  
+      this.txData = {
+        toAddress:  this.recipient.meritAddress,
+        txp: {},
+        toName: this.recipient.name || '',
+        toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
+        allowSpendUnconfirmed: this.walletConfig.spendUnconfirmed
+      }
+  
+      if(this.recipient.sendMethod != 'address') {
+        this.updateEasySendData().then(() => {
+          this.updateTx(this.txData, this.wallet, {dryRun: true}).catch((err) => {
+            this.logger.error('There was an error in updateTx:', err);
+          });
+        });
+      }      
     });
-    
   }
 
   // Show as much as we can about the address. 
@@ -111,6 +115,10 @@ export class SendConfirmView {
     }
     // TODO: Check AddressBook
     return this.txData.toAddress || "no one";
+  }
+
+  public toggleCurrency(): void {
+    this.showMerit = !this.showMerit;
   }
 
   // TODO: implement
@@ -123,18 +131,17 @@ export class SendConfirmView {
 
     let updateAmount = () => {
       if (!tx.toAmount) return;
-
       // Amount
       tx.amountStr = this.txFormatService.formatAmountStr(tx.toAmount);
       tx.amountValueStr = tx.amountStr.split(' ')[0];
       tx.amountUnitStr = tx.amountStr.split(' ')[1];
-      this.txFormatService.formatAlternativeStr(tx.toAmount).then((v) => {
-        tx.alternativeAmountStr = v;
+      this.txFormatService.formatToUSD(tx.toAmount).then((v) => {
+        tx.alternativeAmountStr = new FiatAmount(v).amountStr;
       });
+      this.txData = _.cloneDeep(tx);
     }
 
     updateAmount();
-    this.refresh();
 
     // End of quick refresh, before wallet is selected.
     if (!wallet) return Promise.resolve();
@@ -159,12 +166,14 @@ export class SendConfirmView {
             txpOut.alternativeFeeStr = v;
           
 
-          let per = (txpOut.fee / (txpOut.toAmount + txpOut.fee) * 100);
+          let per = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
           txpOut.feeRatePerStr = per.toFixed(2) + '%';
           txpOut.feeToHigh = per > SendConfirmView.FEE_TOO_HIGH_LIMIT_PER;
 
           tx.txp = txpOut;
-          this.txData = tx;
+          this.zone.run(() => {
+            this.txData = tx;
+          });
 
           return Promise.resolve();
         }).catch((err) => {this.logger.warn("could it be the txFormat?", err)});
@@ -322,7 +331,7 @@ export class SendConfirmView {
       if (tx.paypro) {
         txp.payProUrl = tx.paypro.url;
       }
-      txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
+      txp.excludeUnconfirmedUtxos = !tx.allowSpendUnconfirmed;
       txp.dryRun = dryRun;
       return this.walletService.createTx(wallet, txp).then((ctxp) => {
         return resolve(ctxp);

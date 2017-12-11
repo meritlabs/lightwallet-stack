@@ -3,7 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { SendAmountView } from 'merit/transact/send/amount/send-amount';
 
 import { ProfileService } from 'merit/core/profile.service';
-
+import { GravatarModule } from 'merit/shared/gravatar.module';
 import { RateService } from 'merit/transact/rate.service';
 
 
@@ -16,6 +16,7 @@ import { RateService } from 'merit/transact/rate.service';
     SendAmountView
   ],
   imports: [
+    GravatarModule,
     IonicPageModule.forChild(SendAmountView)
   ],
   providers: [

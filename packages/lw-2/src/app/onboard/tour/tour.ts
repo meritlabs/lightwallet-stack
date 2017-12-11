@@ -26,7 +26,7 @@ export class TourView {
   }
 
   ionViewDidLoad() {
-    this.rateData.usdPerMerit = this.rateService.fromFiat(1e8, 'USD');
+    this.rateData.usdPerMerit = this.rateService.fromFiatToMerit(1e8, 'USD');
   }
 
   slideNext() {

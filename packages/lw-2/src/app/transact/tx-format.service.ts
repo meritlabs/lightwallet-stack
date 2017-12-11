@@ -49,7 +49,7 @@ export class TxFormatService {
     return new Promise((resolve, reject) => {
       if (isNaN(micros)) return resolve();
       let v1;
-      v1 = this.rate.toFiat(micros, code);
+      v1 = this.rate.fromMicrosToFiat(micros, code);
       if (!v1) return resolve(null);
       return resolve(v1.toFixed(2));
     });
@@ -58,10 +58,10 @@ export class TxFormatService {
   formatToUSD(micros: number): Promise<any> {
     return new Promise((resolve, reject) => {
       let v1;
-      if (isNaN(micros)) resolve();
-      v1 = this.rate.toFiat(micros, 'USD');
-      if (!v1) resolve(null);
-      resolve(v1.toFixed(2));
+      if (isNaN(micros)) return resolve();
+      v1 = this.rate.fromMicrosToFiat(micros, 'USD');
+      if (!v1) return resolve(null);
+      return resolve(v1.toFixed(2));
     });
   };
 
@@ -70,7 +70,7 @@ export class TxFormatService {
       if (isNaN(micros)) return resolve();
       let settings = this.config.get().wallet.settings;
 
-      let v1 = parseFloat((this.rate.toFiat(micros, settings.alternativeIsoCode)).toFixed(2));
+      let v1 = parseFloat((this.rate.fromMicrosToFiat(micros, settings.alternativeIsoCode)).toFixed(2));
       let v1FormatFiat = new FiatAmount(v1);
       if (!v1FormatFiat) return resolve(null);
 
@@ -224,7 +224,7 @@ export class TxFormatService {
     // If fiat currency
     if (currency != 'bits' && currency != 'MRT' && currency != 'micros') {
       amountUnitStr = amount + ' ' + currency;
-      amountMicros = this.rate.fromFiat(amount, currency).toFixed(0);
+      amountMicros = this.rate.fromFiatToMicros(amount, currency).toFixed(0);
     } else if (currency == 'micros') {
       amountMicros = amount;
       amountUnitStr = this.formatAmountStr(amountMicros);

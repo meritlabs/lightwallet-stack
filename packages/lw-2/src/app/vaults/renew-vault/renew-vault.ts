@@ -15,6 +15,7 @@ export interface IWhitelistEntry {
     name: string,
     address: string,
     type: string,
+    walletClient?: any,
 }
 
 export interface IVaultRenewViewModel {
@@ -36,6 +37,7 @@ export class VaultRenewView {
   public vault: any = null;
   public formData: IVaultRenewViewModel = { vaultName: '', masterKey: '', whitelist: [] };
   public whitelistCandidates: Array<IWhitelistEntry> = [];
+  public canConfirm: boolean;
   private bitcore: any = null;
   private walletClient: MeritWalletClient;
 
@@ -56,6 +58,13 @@ export class VaultRenewView {
     await this.updateWhitelist();
     this.formData.vaultName = this.vault.name;
     this.formData.masterKey = '';
+    this.checkCanConfirm();
+  }
+
+  checkCanConfirm() {
+    this.canConfirm = 
+      this.formData.vaultName.length > 0 && 
+      this.formData.whitelist.length > 0;
   }
 
   confirmRenew() {
@@ -71,15 +80,26 @@ export class VaultRenewView {
 
   toVault() {
     const newVault = _.cloneDeep(this.vault);
-    const whitelist = _.map(this.formData.whitelist, (w: any) => {
-      let key = this.bitcore.Address.fromString(w.address);
-      return key.toBuffer();
-    });
+    Promise.map(this.formData.whitelist, (w: any) => {
 
-    newVault.whitelist = whitelist;
-    newVault.masterKey = this.formData.masterKey;
-    newVault.vaultName = this.formData.vaultName;
-    this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });      
+      let address;
+      if(w.type == 'wallet') {
+        address = this.getAllWallets().then((wallets) => {
+          let foundWallet = _.find(wallets, { id: w.walletClientId });
+          return foundWallet.createAddress().then((resp) => {
+              return this.bitcore.Address.fromString(resp.address);
+          });
+        });
+      } else {
+        address = Promise.resolve(this.bitcore.Address.fromString(w.address));
+      }
+      return address;
+    }).then((whitelist) => {
+      newVault.whitelist = _.map(whitelist, (a) => {return a.toBuffer()});
+      newVault.masterKey = this.formData.masterKey;
+      newVault.name = this.formData.vaultName;
+      this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });      
+    });
   }
 
   regenerateMasterKey() {
@@ -97,7 +117,7 @@ export class VaultRenewView {
   }
 
   compareWhitelistEntries(e1: IWhitelistEntry, e2: IWhitelistEntry): boolean {
-    return e1.type == e2.type && e1.address == e2.address;
+    return e1.type == e2.type && e1.id == e2.id;
   }
 
   private updateWhitelist(): Promise<any> {
@@ -106,8 +126,8 @@ export class VaultRenewView {
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
-          const addr = new this.bitcore.HDPublicKey(w.credentials.xPubKey).publicKey.toAddress().toString();
-          return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet' };
+          const addr = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
+          return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet', walletClient: w, walletClientId: w.id };
         });
       }), 
       // fetch users vaults
@@ -122,13 +142,27 @@ export class VaultRenewView {
       const whitelistCandidates = _.flatten(arr);
       const filtered = _.reject(whitelistCandidates, { id: this.vault._id });
       this.whitelistCandidates = filtered;
-      _.each(this.vault.whitelist, (wl) => {
-        const found = _.find(filtered, { address: wl });
-        const results = [];
-        if (found && found.id != this.vault.id) {
-          results.push(found);
-        }
-        this.formData.whitelist = results; // Do not push to model directly, it will break change detection in Angular
+      
+      return Promise.map(this.vault.whitelist, (wl: string) => {
+        return Promise.map(whitelistCandidates, (candidate) => {
+          if (candidate.type === 'vault') {
+            if (wl == candidate.address) return candidate;
+          } else { 
+            return candidate.walletClient.getMainAddresses({}).then((addresses: Array<any>) => {
+              const found = _.find(addresses, { address: wl });
+              candidate.walletClient = null;
+              if (found) {
+                candidate.address = wl;
+                return candidate;
+              }
+            });
+          }
+          return null;
+        });
+      }).then((unfilteredWhitelist) => {
+        const results = _.compact(_.flatten(unfilteredWhitelist));
+        this.formData.whitelist = results;
+        return Promise.resolve();
       });
     });
   }

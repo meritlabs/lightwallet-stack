@@ -1,7 +1,7 @@
 <ion-header>
 
     <ion-navbar color="secondary">
-        <ion-title>NetworkView</ion-title>
+        <ion-title>Your Network</ion-title>
     </ion-navbar>
 
 </ion-header>
@@ -9,30 +9,26 @@
 
 <ion-content>
 
-    <ion-card *ngFor="let wallet of wallets">
+    <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <ion-card *ngFor="let wallet of displayWallets">
         <ion-card-header>
             <i class="wallet-icon" [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
-                <img src="assets/img/icon-wallet.svg" >
+                <img src="assets/img/icon-wallet.svg">
             </i>
             {{wallet.name}}
         </ion-card-header>
 
-        <ion-item >
-            <ion-label>Total Amount</ion-label>
-            <ion-label item-right text-right>
-                <span *ngIf="wallet.amount">{{wallet.amount}}</span>
-                <span *ngIf="!wallet.amount">
-                    <ion-spinner></ion-spinner>
-                </span>
-            </ion-label>
-        </ion-item>
-
         <ion-item>
-            <ion-label>Referral Code</ion-label>
+            <ion-label>Invite Code</ion-label>
             <ion-label item-right text-right>
                 <span *ngIf="wallet.shareCode">
-                    <span (click)="copyToClipboard(wallet.shareCode)"  ngxClipboard [cbContent]="wallet.shareCode">{{wallet.shareCode}}</span>
-                    <button ion-button icon-only clear color="primary" (click)="shareCode(wallet.shareCode)">
+
+                    <span (click)="copyToClipboard(wallet.shareCode)" ngxClipboard [cbContent]="wallet.shareCode">{{wallet.shareCode | slice:0:10 }}</span>
+
+                    <button ion-button icon-only clear color="primary" (click)="shareAddress(wallet.shareCode)">
                         <ion-icon name="share"></ion-icon>
                     </button>
                 </span>
@@ -42,41 +38,78 @@
             </ion-label>
         </ion-item>
 
+
+        <ion-item-divider translate>
+            Network Size
+        </ion-item-divider>
         <ion-item>
-            <ion-label>Address</ion-label>
+            <ion-label>MRT</ion-label>
             <ion-label item-right text-right>
-                <span *ngIf="wallet.address">
-
-                    <span (click)="copyToClipboard(wallet.address)"  ngxClipboard [cbContent]="wallet.address">{{wallet.address | slice:0:8 }}...</span>
-
-                    <button ion-button icon-only clear color="primary" (click)="shareAddress(wallet.address)">
-                        <ion-icon name="share"></ion-icon>
-                    </button>
+                <span *ngIf="wallet.totalNetworkValueMerit">{{wallet.totalNetworkValueMerit}}</span>
+                <span *ngIf="!wallet.totalNetworkValueMerit">
+                    <ion-spinner></ion-spinner>
                 </span>
-                <span *ngIf="!wallet.address">
+            </ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label>USD</ion-label>
+            <ion-label item-right text-right>
+                <span *ngIf="wallet.totalNetworkValueFiat">{{wallet.totalNetworkValueFiat}}</span>
+                <span *ngIf="!wallet.totalNetworkValueFiat">
                     <ion-spinner></ion-spinner>
                 </span>
             </ion-label>
         </ion-item>
 
+        <ion-item-divider translate>
+            Mining Rewards
+        </ion-item-divider>
+
         <ion-item>
-            <ion-label>Mining rewards</ion-label>
+            <ion-label>MRT</ion-label>
             <ion-label item-right text-right>
-                <span *ngIf="wallet.miningRewards">
-                    {{wallet.miningRewards}}
+                <span *ngIf="wallet.miningRewardsMerit">
+                    {{wallet.miningRewardsMerit}}
                 </span>
-                <span *ngIf="!wallet.miningRewards">
-                  <ion-spinner></ion-spinner>
+                <span *ngIf="!wallet.miningRewardsMerit">
+                    <ion-spinner></ion-spinner>
                 </span>
             </ion-label>
         </ion-item>
         <ion-item>
-            <ion-label>Ambassador rewards</ion-label>
+            <ion-label>USD</ion-label>
             <ion-label item-right text-right>
-                <span *ngIf="wallet.ambassadorRewards">
-                    {{wallet.ambassadorRewards}}
+                <span *ngIf="wallet.miningRewardsFiat">
+                    {{wallet.miningRewardsFiat}}
                 </span>
-                <span *ngIf="!wallet.ambassadorRewards">
+                <span *ngIf="!wallet.miningRewardsFiat">
+                    <ion-spinner></ion-spinner>
+                </span>
+            </ion-label>
+        </ion-item>
+
+        <ion-item-divider translate>
+            Ambassador Rewards
+        </ion-item-divider>
+
+        <ion-item>
+            <ion-label>MRT</ion-label>
+            <ion-label item-right text-right>
+                <span *ngIf="wallet.ambassadorRewardsMerit">
+                    {{wallet.ambassadorRewardsMerit}}
+                </span>
+                <span *ngIf="!wallet.ambassadorRewardsMerit">
+                    <ion-spinner></ion-spinner>
+                </span>
+            </ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label>USD</ion-label>
+            <ion-label item-right text-right>
+                <span *ngIf="wallet.ambassadorRewardsFiat">
+                    {{wallet.ambassadorRewardsFiat}}
+                </span>
+                <span *ngIf="!wallet.ambassadorRewardsFiat">
                     <ion-spinner></ion-spinner>
                 </span>
             </ion-label>

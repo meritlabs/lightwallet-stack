@@ -427,10 +427,15 @@ WalletService.prototype.createWallet = function(opts, cb) {
  */
 WalletService.prototype.getANV = function(opts, cb) {
   opts.network = opts.network || 'livenet';
+  var addresses = opts.keys;
+
+  if (_.isEmpty(addresses)) {
+    return cb(null, 0);
+  }
 
   var bc = this._getBlockchainExplorer(opts.network);
 
-  bc.getANV(opts.keys, function(err, result) {
+  bc.getANV(addresses, function(err, result) {
     cb(err, result);
   });
 };
@@ -443,8 +448,8 @@ WalletService.prototype.getANV = function(opts, cb) {
 WalletService.prototype.getRewards = function(opts, cb) {
   var addresses = opts.addresses;
 
-  if (addresses.length == 0) {
-    return cb(null, []);
+  if (_.isEmpty(addresses)) {
+    return cb(null, {});
   }
 
   var networkName = Bitcore.Address(addresses[0]).toObject().network;
@@ -1758,7 +1763,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
   function select(utxos, cb) {
     if (_.isEmpty(utxos)) {
-      cb(new Error("No Utxos"), null, null);
+      return cb(new Error("No Utxos"), null, null);
     }
     var totalValueInUtxos = _.sumBy(utxos, 'micros');
 
@@ -3559,14 +3564,18 @@ WalletService.prototype.createVault = function(opts, cb) {
   });
   const toStore = _.cloneDeep(opts);
   toStore.whitelist = readableWhitelist;
+  toStore.walletId = self.walletId;
+  toStore.copayerId = self.copayerId;
+
   console.log(toStore);
 
   async.series([
     function(next) {
-      self.storage.storeVault(self.copayerId, toStore, function(err, result) {
+      self.storage.storeVault(self.copayerId, self.walletId, toStore, function(err, result) {
         if (err) return cb(err);
 
         vaultId = result.insertedId;
+        toStore.id = vaultId;
 
         return next();
       });
@@ -3581,14 +3590,17 @@ WalletService.prototype.createVault = function(opts, cb) {
         if (err) return cb(err);
 
         txp.txid = txid;
-        toStore.id = vaultId;
         toStore.coins[0] = txp;
         toStore.initialTxId = txid;
 
-        self.storage.updateVault(self.copayerId, toStore, function(err, result) {
-          if (err) return cb(err);
+        self._processBroadcast(txp, {
+          byThirdParty: true
+        },  function(err, txp) {
+          self.storage.updateVault(self.copayerId, toStore, function(err, result) {
+            if (err) return cb(err);
   
-          return next();
+            return next();
+          });
         });
       });
     }, // Enable me later when transaction is constructed successfully
@@ -3601,8 +3613,6 @@ WalletService.prototype.createVault = function(opts, cb) {
 };
 
 WalletService.prototype.getVaultTxHistory = function(opts, cb) {
-  console.log('getVaultTxHistory', opts);
-
   var self = this;
   
   function decorate(txs, addresses, proposals, notes) {
@@ -3934,20 +3944,21 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 WalletService.prototype.renewVault = function(opts, cb) {
   const self = this;
 
-  if(!opts.vault) {
-    return cb(new ClientError('Required argument "vault" missing'));
-  }
+  const readableWhitelist = _.map(opts.whitelist, (wl) => {
+      return Bitcore.Address.fromBuffer(new Buffer(wl.data)).toString();
+  });
 
-  if(!opts.coin) {
-    return cb(new ClientError('Required argument "coin" missing'));
-  }
+  let toStore = _.cloneDeep(opts);
+  toStore.status = Bitcore.Vault.Vault.VaultStates.RENEWING;
+  toStore.whitelist = readableWhitelist;
+  toStore.walletId = self.walletId;
+  toStore.copayerId = self.copayerId;
 
-  opts.vault.status = Bitcore.Vault.Vault.VaultStates.RENEWING;
-  let toStore = _.cloneDeep(opts.vault);
+  let vaultId = '';
 
   async.series([
     function(next) {
-      self.storage.storeVault(self.copayerId, toStore, function(err, result) {
+      self.storage.updateVault(self.copayerId, toStore, function(err, result) {
         if (err) return cb(err);
 
         vaultId = result.insertedId;
@@ -3957,16 +3968,18 @@ WalletService.prototype.renewVault = function(opts, cb) {
     },
     function(next) {
       //TODO: Loop
-      var txp = Model.TxProposal.fromObj(opts.coin);
-      var bc = self._getBlockchainExplorer(txp.network);
+      var tx = opts.coins[0];
+      var bc = self._getBlockchainExplorer(tx.network);
 
-      var rawTx = txp.getRawTx();
-      bc.broadcast(rawTx, function(err, txid) {
+      bc.broadcast(tx.raw, function(err, txid) {
         if (err) return cb(err);
 
-        txp.txid = txid;
+        let coin = {
+          txid: txid,
+        };
+
         toStore.id = vaultId;
-        toStore.coins[0] = txp;
+        toStore.coins[0] = coin;
         toStore.initialTxId = txid;
 
         self.storage.updateVault(self.copayerId, toStore, function(err, result) {
@@ -3982,7 +3995,6 @@ WalletService.prototype.renewVault = function(opts, cb) {
       return next();
     }
   ]);
-  return cb(null, {});
 };
 
 module.exports = WalletService;

@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { SettingsView } from 'merit/settings/settings';
 import { InAppBrowser } from '@ionic-native/in-app-browser';  
-import { EmailService } from 'merit/shared/email.service';
 import { WalletsModule } from 'merit/wallets/wallets.module'; 
+import { NotificationsViewModule } from 'merit/settings/notifications/notifications.module';
 
 
 // Settings 
@@ -12,12 +12,12 @@ import { WalletsModule } from 'merit/wallets/wallets.module';
     SettingsView,
   ],
   providers: [
-    InAppBrowser,
-    EmailService
+    InAppBrowser
   ],
   imports: [
     WalletsModule, 
     IonicPageModule.forChild(SettingsView),
+    NotificationsViewModule
   ],
 })
 export class SettingsComponentModule {}

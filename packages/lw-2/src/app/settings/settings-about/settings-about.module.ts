@@ -16,4 +16,4 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
     IonicPageModule.forChild(SettingsAboutView),
   ],
 })
-export class SettingsAboutComponentModule {}
+export class SettingsAboutViewModule {}

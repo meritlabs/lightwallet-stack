@@ -193,12 +193,12 @@ export class WalletService {
           }).then(() => {
             return this.rateService.whenAvailable().then(() => {
 
-              let totalBalanceAlternative = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
-              let totalBalanceAlternativeStr = this.rateService.toFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
-              let pendingBalanceAlternative = this.rateService.toFiat(cache.pendingAmount, cache.alternativeIsoCode);
-              let lockedBalanceAlternative = this.rateService.toFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
-              let spendableBalanceAlternative = this.rateService.toFiat(cache.spendableAmount, cache.alternativeIsoCode);
-              let alternativeConversionRate = this.rateService.toFiat(100000000, cache.alternativeIsoCode);
+              let totalBalanceAlternative = this.rateService.fromMicrosToFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
+              let totalBalanceAlternativeStr = this.rateService.fromMicrosToFiat(cache.totalBalanceSat, cache.alternativeIsoCode);
+              let pendingBalanceAlternative = this.rateService.fromMicrosToFiat(cache.pendingAmount, cache.alternativeIsoCode);
+              let lockedBalanceAlternative = this.rateService.fromMicrosToFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
+              let spendableBalanceAlternative = this.rateService.fromMicrosToFiat(cache.spendableAmount, cache.alternativeIsoCode);
+              let alternativeConversionRate = this.rateService.fromMicrosToFiat(100000000, cache.alternativeIsoCode);
 
               cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
               cache.totalBalanceAlternativeStr = cache.totalBalanceAlternative.amountStr;
@@ -960,9 +960,13 @@ export class WalletService {
     });
   }
 
-  public getMainAddresses(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
+  public getMainAddresses(wallet: MeritWalletClient, opts: any = {}): Promise<Array<any>> {
     opts.reverse = true;
-    return wallet.getMainAddresses(opts);
+    return wallet.getMainAddresses(opts).then((addresses) => {
+      return _.map(addresses, (address: any) => {
+        return address.address;
+      });
+    });
   }
 
   public getBalance(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
@@ -1379,23 +1383,54 @@ export class WalletService {
     });
   }
 
-  public getANV(wallet):Promise<any> {
+  /**
+   * Gets the ANV for a list of addresses.  
+   * @param wallet 
+   */
+  public getANV(wallet: MeritWalletClient):Promise<any> {
+    this.logger.info(wallet.credentials);
     return new Promise((resolve, reject) => {
-      return this.getAddress(wallet,false).then((address) => {
-        return wallet.getANV(address).then((anv) => {
+      return this.getMainAddresses(wallet).then((addresses) => {
+        if (_.isEmpty(addresses)) {
+          this.logger.info("Addresses are empty!  Defaulting ANV to Zero");
+          return resolve(0);
+        }
+        return wallet.getANV(addresses).then((anv) => {
           return resolve(anv);
         })
       });
     });
   }
 
-  public getRewards(wallet):Promise<any> {
+  /** 
+   * Gets the aggregate rewards for a list of addresses.  
+   * @param wallet 
+   * @returns {Reward} An object with the 'mining' and 'ambassador' properties.
+   */
+  public getRewards(wallet: MeritWalletClient):Promise<any> {
+    interface MWSRewardsResponse extends _.NumericDictionary<number> { address: string, rewards: { mining: number, ambassador: number } };
+    interface FilteredRewards { mining: number, ambassador: number }
+    
     return new Promise((resolve, reject) => {
-      return this.getAddress(wallet,false).then((address) => {
-        return wallet.getRewards(address).then((rewards) => {
-           let addressRewards = _.find(rewards, { address: address });
-           if (!addressRewards) return reject();
-           return resolve(addressRewards);
+      return this.getMainAddresses(wallet).then((addresses) => {  
+        if (_.isEmpty(addresses)) {
+          this.logger.info("Addresses are empty!  Defaulting rewards to Zero");          
+          return resolve( {mining: 0, ambassador: 0} );
+        }
+        return wallet.getRewards(addresses).then((rewards: MWSRewardsResponse) => {
+          let totalRewards:FilteredRewards  =  _.reduce(rewards, (totalR: any, reward:any) => {
+            if (!_.isEmpty(reward.rewards)) {
+              if (reward.rewards.mining) {
+                totalR.mining += reward.rewards.mining;
+              }
+              if (reward.rewards.ambassador) {
+                totalR.ambassador += reward.rewards.ambassador;
+              }
+              return totalR;
+            }
+          }, {mining: 0, ambassador: 0});
+          
+          return resolve(totalRewards); 
         });
       });
     });

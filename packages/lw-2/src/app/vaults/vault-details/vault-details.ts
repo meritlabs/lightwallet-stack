@@ -62,7 +62,7 @@ export class VaultDetailsView {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
           const addr = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
-          return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet', walletClient: w };
+          return { id: w.id, name: name, address: addr, type: 'wallet', walletClientId: w.id , walletClient: w};
         });
       }),
       // fetch users vaults
@@ -70,35 +70,34 @@ export class VaultDetailsView {
         return _.map(vaults, (v) => {
           const name = v.name || v._id;
           const addr = new this.bitcore.Address(v.address).toString();
-          return { 'id': v._id, 'name': name, 'address': addr, 'type': 'vault' };
+          return { id: v._id, name: name, address: addr, type: 'vault' };
         });
       }),
       // fetch coins
     ]).then((arr: Array<Array<any>>) => {
       const whitelistCandidates = _.flatten(arr);
-      let results = [];
 
       return Promise.map(this.vault.whitelist, (wl) => {
         return Promise.map(whitelistCandidates, (candidate) => {
           if (candidate.type === 'vault') {
-            if(wl == candidate.address) results.push(candidate);
+            if (wl == candidate.address) return candidate;
           } else { 
             return candidate.walletClient.getMainAddresses({}).then((addresses: Array<any>) => {
-              let found = _.find(addresses, (e: any) => { return e.address == wl});
-              if(found) 
-              {
+              const found = _.find(addresses, { address: wl });
+              if (found) {
+                candidate.walletClient = null;
                 candidate.address = wl;
-                results.push(candidate);
+                return candidate;
               }
-              return Promise.resolve();
             });
           }
-          return Promise.resolve();
+          return null;
         });
-      }).then(() => { 
+      }).then((unfilteredWhitelist) => {
+        const results = _.compact(_.flatten(unfilteredWhitelist));
         this.whitelist = results;
         return Promise.resolve();
-      })
+      });
     }).then(() => {
       return this.getVaultTxHistory().then((txs) => {
         this.transactions = _.map(txs, this.processTx.bind(this));
@@ -159,10 +158,8 @@ export class VaultDetailsView {
     });
   }
 
-  private getCoins(): Promise<Array<any>> {
-    return this.profileService.getHeadWalletClient().then((walletClient) => {
-      return this.vaultsService.getVaultCoins(walletClient, this.vault);
-    });
+  private getCoins(walletClient: MeritWalletClient): Promise<Array<any>> {
+    return this.vaultsService.getVaultCoins(walletClient, this.vault);
   };
 
   private getVaultTxHistory(): Promise<Array<any>> {
@@ -173,9 +170,12 @@ export class VaultDetailsView {
 
   private formatAmounts(): void {
     this.profileService.getHeadWalletClient().then((walletClient: MeritWalletClient) => {
-      this.vault.altAmount = this.rateService.toFiat(this.vault.amount,walletClient.cachedStatus.alternativeIsoCode);
-      this.vault.altAmountStr = new FiatAmount(this.vault.altAmount);
-      this.vault.amountStr = this.txFormatService.formatAmountStr(this.vault.amount);
+      return this.getCoins(walletClient).then((coins) => {
+        this.vault.amount = _.sumBy(coins, 'micros');
+        this.vault.altAmount = this.rateService.fromMicrosToFiat(this.vault.amount,walletClient.cachedStatus.alternativeIsoCode);
+        this.vault.altAmountStr = new FiatAmount(this.vault.altAmount);
+        this.vault.amountStr = this.txFormatService.formatAmountStr(this.vault.amount);
+      });
     });
   }
 

@@ -1,7 +1,7 @@
 <ion-header>
 
     <ion-navbar color="secondary">
-        <ion-title>Receive</ion-title>
+        <ion-title>Receive Merit</ion-title>
         <ion-buttons end>
             <button ion-button icon-only (click)="share()" *ngIf="shareButtonAvailable()">
                 <ion-icon name="share"></ion-icon>
@@ -63,7 +63,7 @@
 
             <div class="row">
                 <span class="label" text-left >Address</span>
-                <span item-right text-right [style.flex]="1" [style.font-size]="'10px'" (click)="copyToClipboard(address)" ngxClipboard [cbContent]="qrAddress">
+                <span item-right text-right [style.flex]="1" [style.font-size]="'10px'" (click)="copyToClipboard(address)" ngxClipboard [cbContent]="address">
                     {{address}}
                 </span>
                 <button ion-button icon-only clear color="primary" (click)="generateAddress(forceNew = true)"  class="select-button">

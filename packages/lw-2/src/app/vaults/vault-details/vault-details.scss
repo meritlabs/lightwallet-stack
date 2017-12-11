@@ -1,10 +1,22 @@
 vault-details-view {
-    .header {
-        color: color($colors, light);
-        background-color: color($colors, primary);
+    .scroll-content {
+        margin-top: 0 !important;
     }
+
+    ion-header {
+        color: color($colors, light);
+        &:after {
+            display: none;
+        }
+        ion-navbar,
+        .toolbar-background {
+            background-color: $vault-default-color;
+            border: none !important;
+        }
+    }
+
     .toolbar {
-        background: transparent;
+        color: color($colors, light);
     }
     .bar-button {
         color: color($colors, light);
@@ -12,19 +24,24 @@ vault-details-view {
     .toolbar-title {
         color: color($colors, light);
     }
+
     .balance-header {
+        padding-bottom: 2rem;
+        margin-top: 0;
         color: color($colors, light);
-        background-color: color($colors, primary);
-        height: 22%;
+        height: 20%;
         text-align: center;
     }
+    .balance-header.default {
+        background-color: $vault-default-color;
+    }
     .balance-str {
-        padding-top: 10%;
-        font-size: 35px;
+        padding-top: 10rem;
+        font-size: 2rem;
         font-weight: 600;
     }
     .balance-alt-str {
-        font-size: 20px;
+        font-size: 1.25rem;
         font-weight: 500;
     }
     .label {
@@ -40,17 +57,16 @@ vault-details-view {
         right: 40px;
         text-align: end;
         .amount {
-        color: color($colors, primary);
-        font-size: 16px;
+            color: color($colors, primary);
+            font-size: 16px;
         }
         .date {
-        font-size: 12.5px;
+            font-size: 12.5px;
         }
     }
     .wallet-type {
         color: #777;
     }  
-    
     .vault-actions {
         display: flex;
         flex-direction: row;

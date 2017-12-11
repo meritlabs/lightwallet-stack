@@ -12,6 +12,7 @@ import { PlatformService } from 'merit/core/platform.service';
 
 import { RateService } from 'merit/transact/rate.service'; 
 import { ConfigService } from "merit/shared/config.service";
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @IonicPage()
 @Component({
@@ -24,7 +25,7 @@ export class ReceiveView {
   public address: string;
   public qrAddress:string;
   public amount:number;
-  public amountMerit:number;
+  public amountMicros:number;
   public availableUnits:Array<string>;
   public amountCurrency:string;
 
@@ -57,13 +58,15 @@ export class ReceiveView {
     this.amountCurrency = this.availableUnits[0];
   }
 
-  async ionViewDidLoad() {
-    this.wallets = await this.profileService.getWallets();
+  ionViewDidLoad() {
+    this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
+      this.wallets = wallets;
+      if (this.wallets && this.wallets[0]) {
+        this.wallet = this.wallets[0];
+        this.generateAddress();
+      }
+    });
 
-    if (this.wallets && this.wallets[0]) {
-      this.wallet = this.wallets[0];
-      this.generateAddress();
-    }
 
     // Get a new address if we just received an incoming TX (on an address we already have)
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
@@ -87,7 +90,7 @@ export class ReceiveView {
       this.qrAddress = null;
       this.logger.warn('Failed to generate new adrress '+err);
       this.toastCtrl.create({
-        message: 'Failed to generate new adrress: '+err,
+        message: 'Failed to generate new adrress',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     });
@@ -107,6 +110,7 @@ export class ReceiveView {
   }
 
   copyToClipboard(addressString: string) {
+    if (!addressString) return;
 
     const address = addressString.split(':')[1] || addressString;
 
@@ -138,17 +142,15 @@ export class ReceiveView {
   changeAmount() {
 
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
-      this.amountMerit = this.amount;
+      this.amountMicros = this.rateService.mrtToMicro(this.amount);
     } else {
-      this.amountMerit = this.rateService.fromFiat(this.amount, this.amountCurrency);
+      this.amountMicros = this.rateService.fromFiatToMicros(this.amount, this.amountCurrency);
     }
     this.formatAddress();
   }
 
   private formatAddress() {
-    this.qrAddress = `${this.protocolHandler}:${this.address}${this.amountMerit ? '?amount='+this.amountMerit : ''}`;
+    this.qrAddress = `${this.protocolHandler}:${this.address}${this.amountMicros ? '?micros='+this.amountMicros : ''}`;
   }
 
 }
-
-

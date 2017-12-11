@@ -32,6 +32,8 @@ export class VaultSpendConfirmView {
     private static CONFIRM_LIMIT_USD = 20;
     private static FEE_TOO_HIGH_LIMIT_PER = 15;
 
+  private dummyFeeReplaceMeWithActualFeeDontBeADummyMerit: number; 
+  private dummyFeeReplaceMeWithActualFeeDontBeADummyUSD : number; 
   private recipient: any;
   private txData: any = null;
   private wallet: MeritWalletClient;
@@ -41,6 +43,7 @@ export class VaultSpendConfirmView {
   private unitToMicro: number;
   private configFeeLevel: string;
   private showAddress: Boolean = true;
+  private showMerit: boolean = true;
   private coins: Array<any> = [];
   private bitcore: any;
 
@@ -71,6 +74,7 @@ export class VaultSpendConfirmView {
     let toAmount = this.navParams.get('toAmount');
     this.walletConfig = this.configService.get().wallet;
     this.wallet = this.navParams.get('wallet');
+
     this.unitToMicro = this.walletConfig.settings.unitToMicro;
     this.configFeeLevel = this.walletConfig.settings.feeLevel ? this.walletConfig.settings.feeLevel : 'normal';
     this.recipient = this.navParams.get('recipient');
@@ -97,15 +101,25 @@ export class VaultSpendConfirmView {
     return this.txData.toAddress || "no one";
   }
 
+  public toggleCurrency(): void {
+    this.showMerit = !this.showMerit;
+  }
+
   private updateAmount(): any {
     if (!this.txData.toAmount) return;
 
     // Amount
+    this.dummyFeeReplaceMeWithActualFeeDontBeADummyMerit = 
+      this.txFormatService.formatAmountStr(this.wallet.getDefaultFee()).split(' ')[0];
+
     this.txData.amountStr = this.txFormatService.formatAmountStr(this.txData.toAmount);   
     this.txData.amountValueStr = this.txData.amountStr.split(' ')[0];
     this.txData.amountUnitStr = this.txData.amountStr.split(' ')[1];
     this.txFormatService.formatAlternativeStr(this.txData.toAmount).then((v) => {
       this.txData.alternativeAmountStr = v;
+    });
+    this.txFormatService.formatAlternativeStr(this.wallet.getDefaultFee()).then((v) => {
+      this.dummyFeeReplaceMeWithActualFeeDontBeADummyUSD = v;
     });
   }
 

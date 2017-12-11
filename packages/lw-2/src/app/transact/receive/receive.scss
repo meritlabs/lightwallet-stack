@@ -2,15 +2,13 @@
 view-receive {
   @extend %module-transact;
 
-  text-align: center;
-
   .address {
     margin: 10px 0;
     font-size: 12px;
   }
 
-
   .container {
+    text-align: center;
     margin-top: 20%;
   }
 
