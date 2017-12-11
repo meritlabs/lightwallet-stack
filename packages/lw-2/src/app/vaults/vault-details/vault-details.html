@@ -1,22 +1,22 @@
 <ion-header no-border>
-<ion-navbar transparent>
+<ion-navbar [style.background]="vault.color" [class.default]="!vault.color">
     <ion-title>{{ vault.name || vault._id }}</ion-title>
+    <ion-buttons end>
+        <button ion-button icon-only (click)="toResetVault()">
+            <ion-icon name="settings"></ion-icon>
+        </button>
+    </ion-buttons>
 </ion-navbar>
 </ion-header>
 
 <ion-content>
 
     <ion-list>
-        <div class="balance-header">
+        <div class="balance-header" [style.background]="vault.color" [class.default]="!vault.color">
             <div class="balance-str">{{ vault.amountStr }}</div>
             <div class="balance-alt-str"> {{ vault.altAmountStr.amountStr }}</div>
             <div *ngIf="vault.status == 'pending'" class="assertive">
                 <span translate>Pending</span>
-            </div>
-            <div class="vault-actions">
-                <button ion-button type="button" class="renew-btn" translate (click)="toResetVault()">
-                    Reset
-                </button>
             </div>
         </div>
     </ion-list>
