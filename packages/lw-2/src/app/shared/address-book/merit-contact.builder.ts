@@ -44,7 +44,7 @@ export class MeritContactBuilder {
     created.emails = clone(contact.emails) || [];
     created.photos = clone(contact.photos) || [];
 
-    if(contact instanceof MeritContact) {
+    if (contact.meritAddresses) {
       created.meritAddresses = clone(contact.meritAddresses) || [];
     }
 
