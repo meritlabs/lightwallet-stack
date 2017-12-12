@@ -17,30 +17,29 @@ export class EasySendService {
   }
 
   public createEasySendScriptHash(wallet: MeritWalletClient): Promise<EasySend> {
+    const signPrivKey = this.bitcore.PrivateKey(wallet.credentials.walletPrivKey, wallet.network);
+    const pubkey = signPrivKey.toPublicKey();
 
     // TODO: get a passphrase from the user
     let opts = {
       network: wallet.network,
-      parentAddress: wallet.credentials.xPubKey,
+      parentAddress: pubkey.toAddress().toString(),
       passphrase: ''
     };
 
     return wallet.buildEasySendScript(opts).then((easySend) => {
-
-      const signPrivKey = wallet.credentials.xPrivKey;
-      const hdKey = this.bitcore.HDPrivateKey.fromString(signPrivKey);
-
       let unlockScriptOpts = {
-        parentAddress: hdKey.publicKey.toAddress(),
-        pubkey: hdKey.publicKey,
+        parentAddress: signPrivKey.publicKey.toAddress(),
+        pubkey: pubkey.toString(), // sign pubkey used to verify signature
         signPrivKey,
         address: easySend.script.toAddress(), // not typechecked yet
-        addressType: 1, // pubkey address
+        addressType: 2, // script address
         network: opts.network
       };
       return wallet.signAddressAndUnlock(unlockScriptOpts).then(() => {
         let unlockRecipientOpts = {
-          parentAddress: easySend.script.toAddress(),  // short-curcuit
+          parentAddress: easySend.script.toAddress().toString(),  // short-circuit
+          pubkey: pubkey.toString(),// sign pubkey used to verify signature
           signPrivKey,
           address: easySend.receiverPubKey.toAddress(), // not typechecked yet
           addressType: 2, // script address

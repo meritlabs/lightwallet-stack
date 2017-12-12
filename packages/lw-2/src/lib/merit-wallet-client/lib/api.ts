@@ -746,7 +746,7 @@ export class API {
         let pubKey = Bitcore.PublicKey.fromString(addr.publicKeys[0]);
 
         // {key, secret}
-        let network = opts.network || 'livenet';
+        let network = opts.network || DEFAULT_NET;
         let rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
 
         let pubKeys = [
@@ -763,7 +763,6 @@ export class API {
           senderName: 'Someone', // TODO: get user name or drop sender name from data
           senderPubKey: pubKey.toString(),
           secret: rcvPair.secret.toString('hex'),
-          unlockCode: opts.unlockCode,
           blockTimeout: timeout,
         };
 
