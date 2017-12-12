@@ -3,7 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { NetworkView } from 'merit/community/network/network';
 import { MomentModule } from "angular2-moment/moment.module";
 import { Clipboard } from '@ionic-native/clipboard';
-import { ClipboardModule } from 'ngx-clipboard';
+import { ClipModule } from 'ng2-clip'
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { WalletService } from "merit/wallets/wallet.service";
 
@@ -14,7 +14,7 @@ import { WalletService } from "merit/wallets/wallet.service";
   ],
   imports: [
     MomentModule,
-    ClipboardModule,
+    ClipModule,
     IonicPageModule.forChild(NetworkView),
   ],
   providers: [
