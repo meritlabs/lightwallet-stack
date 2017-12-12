@@ -205,6 +205,9 @@ export class WalletsView {
         case 'IncomingCoinbase':
           n.actionStr = 'Mining Reward';
           break;
+        case 'OutgoingTx':
+          n.actionStr = 'Payment Sent';
+          break;
         default:
           n.actionStr = 'Recent Transaction';
           break
@@ -462,7 +465,12 @@ export class WalletsView {
   }
 
   private toAddWallet() {
-    this.navCtrl.push('CreateWalletView');
+    let shareCode: string; 
+    if (!_.isEmpty(this.wallets)) {
+      let shareCode = this.wallets[0].shareCode;  
+      return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList, unlockCode: shareCode });
+    } 
+    return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList });
   }
 
   private toImportWallet() {
@@ -479,6 +487,14 @@ export class WalletsView {
         return Promise.reject(new Error('could not update wallets' + err));
       });
     })
+  }
+
+  // This is a callback used when a new wallet is created.
+  public refreshWalletList = (): Promise<any> => {
+    return this.updateAllWallets().then((wallets:any) => {
+      this.wallets = wallets;
+      return Promise.resolve();
+    });
   }
 
   private openTransactionDetails(transaction) {
