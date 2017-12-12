@@ -15,6 +15,8 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { Profile } from 'merit/core/profile.model';
 import { Events } from 'ionic-angular/util/events';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { MeritToastController } from "merit/core/toast.controller";
+import { ToastConfig } from "merit/core/toast.config";
 
 
 /* 
@@ -31,6 +33,7 @@ export class ProfileService {
   private validationLock: boolean = false;
   private errors: any = this.bwcService.getErrors();
   private queue: Array<any> = [];
+  private toast: any;
 
   constructor(
     private logger: Logger,
@@ -42,6 +45,7 @@ export class ProfileService {
     private appService: AppService,
     private languageService: LanguageService,
     private txFormatService: TxFormatService,
+    private toastCtrl:MeritToastController,
     private events: Events
   ) {
     this.logger.info("Hello ProfileService!");
@@ -129,6 +133,46 @@ export class ProfileService {
       wallet.n = wallet.credentials.n;
       wallet.unlocked = wallet.credentials.unlocked;
       wallet.shareCode = wallet.credentials.shareCode;
+
+      wallet.setOnConnectionError(() => {
+          if(this.toast) return;
+          let toast = this.toastCtrl.createSticky({
+            message: 'There was an error connecting. Please check internet connection and retry.',
+            cssClass: ToastConfig.CLASS_ERROR
+          })
+
+          toast.onDidDismiss(() => {
+            this.toast = null;
+          });
+
+          this.toast = toast;
+          toast.present();
+      });
+
+      wallet.setOnAuthenticationError(() => {
+          if(this.toast) return;
+          let toast = this.toastCtrl.createSticky({
+            message: 'There was an error authenticating with the Merit Servers.',
+            cssClass: ToastConfig.CLASS_ERROR
+          });
+
+          toast.onDidDismiss(() => {
+            this.toast = null;
+          });
+
+          this.toast = toast;
+          toast.present();
+      });
+
+      wallet.setOnConnectionRestored(() => {
+        if(this.toast) {
+          this.toast.dismiss();
+          this.toastCtrl.create({
+            message: 'Connection Restored',
+            cssClass: ToastConfig.CLASS_MESSAGE
+          }).present();
+        }
+      });
 
       this.updateWalletSettings(wallet);
       this.wallets[walletId] = wallet;
@@ -257,7 +301,7 @@ export class ProfileService {
     });
   }
 
-  private addLastKnownBalance(wallet: MeritWalletClient): Promise<any> {
+  private addLastKnownBalance(wallet: MeritWalletClient): Promise<void> {
     return new Promise((resolve, reject) => {
       let now = Math.floor(Date.now() / 1000);
       let showRange = 600; // 10min;
@@ -276,7 +320,7 @@ export class ProfileService {
     });
   }
 
-  public setLastKnownBalance(wid: string, balance: number): Promise<any> {
+  public setLastKnownBalance(wid: string, balance: number): Promise<void> {
     return new Promise((resolve, reject) => {
       this.persistenceService.setBalanceCache(wid, { balance: balance, updatedOn: Math.floor(Date.now() / 1000), });
       return resolve();
@@ -456,7 +500,7 @@ export class ProfileService {
     Wallet-related Methods
   */
 
-  public importWallet(str: string, opts: any): Promise<any> {
+  public importWallet(str: string, opts: any): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
       let walletClient = this.bwcService.getClient(null, opts);
 
@@ -488,7 +532,7 @@ export class ProfileService {
 
       return this.addAndBindWalletClient(walletClient, {
         bwsurl: opts.bwsurl
-      }).then((wallet: any) => {
+      }).then((wallet) => {
         return this.setMetaData(wallet, addressBook).then(() => {
           return resolve(wallet);
         }).catch((err: any) => {
@@ -502,7 +546,7 @@ export class ProfileService {
   }
 
   // Adds and bind a new client to the profile
-  public addAndBindWalletClient(wallet: MeritWalletClient, opts: any): Promise<any> {
+  public addAndBindWalletClient(wallet: MeritWalletClient, opts: any): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
       if (!wallet || !wallet.credentials) {
         return reject('Could not access wallet'); // TODO gettextCatalog
