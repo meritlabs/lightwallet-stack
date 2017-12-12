@@ -16,7 +16,7 @@ export class PinLockView {
   public firstPinEntered: string = '';
   public confirmingPin: boolean = false;
   public action: string = '';
-  public appName: string = 'copay';
+  public appName: string = 'merit';
   public disableButtons: boolean = false;
   public expires: string = '';
 
