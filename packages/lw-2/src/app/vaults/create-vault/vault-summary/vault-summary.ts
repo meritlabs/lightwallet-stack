@@ -27,7 +27,7 @@ export class CreateVaultSummaryView {
   }
 
   create() {
-    this.createVaultService.createVault().then( () => {
+    this.createVaultService.createVault().then(() => {
       this.navCtrl.push('WalletsView');
     });
   }
