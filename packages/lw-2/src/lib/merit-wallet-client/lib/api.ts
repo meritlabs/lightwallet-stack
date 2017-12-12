@@ -1177,9 +1177,6 @@ export class API {
 
       return r.then((res) => {
         if (!res) {
-          if(this.onConnectionError) {
-            this.onConnectionError();
-          }
           return reject(Errors.CONNECTION_ERROR);
         }
 
@@ -1199,16 +1196,10 @@ export class API {
             return reject(Errors.NOT_FOUND);
 
           if (res.status === 401) {
-            if(this.onAuthenticationError) {
-              this.onAuthenticationError();
-            }
             return reject(Errors.AUTHENTICATION_ERROR);
           }
 
           if (!res.status) { 
-            if(this.onConnectionError) {
-              this.onConnectionError();
-            }
             return reject(Errors.CONNECTION_ERROR);
           }
 
@@ -1221,9 +1212,6 @@ export class API {
         }
 
         if (res.body === '{"error":"read ECONNRESET"}') {
-          if(this.onConnectionError) {
-            this.onConnectionError();
-          }
           return reject(Errors.ECONNRESET_ERROR);
         }
 
@@ -1233,9 +1221,18 @@ export class API {
 
         return resolve(res);
       }).catch((err) => {
-        if(this.onConnectionError) {
-          this.onConnectionError();
+        if(err == Errors.ECONNRESET_ERROR ||
+          err == Errors.CONNECTION_ERROR ||
+          err.status == null) {
+          if(this.onConnectionError) {
+            this.onConnectionError();
+          }
+        } else if (err == Errors.AUTHENTICATION_ERROR) {
+          if(this.onAuthenticationError) {
+            this.onAuthenticationError();
+          }
         }
+
         this.log.warn("Cannot complete request to server: ", err);
         return resolve();
       });
