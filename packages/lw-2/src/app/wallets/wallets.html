@@ -135,23 +135,23 @@
         Add New Wallet
     </ion-item-divider>
     <ion-list>
-        <ion-item (click)="toAddWallet()" class="add-item">
+        <button ion-item (click)="toAddWallet()" class="add-item">
             <ion-avatar item-start class="btn">
                 <ion-icon name="add"></ion-icon>
             </ion-avatar>
             <h2 translate>
                 Create new wallet
             </h2>
-        </ion-item>
+        </button>
 
-        <ion-item (click)="toImportWallet()" class="add-item">
+        <button ion-item (click)="toImportWallet()" class="add-item">
             <ion-avatar item-start class="btn">
                 <ion-icon name="ios-share-outline"></ion-icon>
             </ion-avatar>
             <h2 translate>
                 Import wallet
             </h2>
-        </ion-item>
+        </button>
     </ion-list>
 
     <view-vaults [vaults]="vaults"></view-vaults>
