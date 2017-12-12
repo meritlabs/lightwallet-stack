@@ -18,7 +18,7 @@ import { Logger } from 'merit/core/logger';
 })
 export class CreateVaultDepositView {
 
-  public formData = { amountToDeposit: 0.0, amountAvailable: 0.0, selectedWallet: null };
+  public formData = { totalAvailable: 0, amountToDeposit: null, amountAvailable: 0, selectedWallet: null, walletName: '' };
   public isNextAvailable = false;
   private bitcore = null;
 
@@ -45,11 +45,19 @@ export class CreateVaultDepositView {
 
     this.getAllWallets().then((wallets: Array<MeritWalletClient>) => {
       _.each(wallets, (w) => this.logger.info(w));
-      const computed = wallets[0].status.balance.availableConfirmedAmount;
+      const wallet = wallets[0];
+      const computed = wallet.status.balance.availableConfirmedAmount;
+      console.log(wallet.status.balance);
+      const total = wallet.status.balance.availableAmount;
       const mrt = this.bitcore.Unit.fromMicros(computed).toMRT();
-      this.formData.selectedWallet = wallets[0];
+      const totalMrt = this.bitcore.Unit.fromMicros(total).toMRT();
+      this.formData.selectedWallet = wallet;
       this.formData.amountAvailable = mrt;
+      this.formData.totalAvailable = totalMrt;
+      this.formData.walletName = wallet.name || wallet._id;
     });
+
+    this.checkNextAvailable();
   }
 
   toMasterKey() {
