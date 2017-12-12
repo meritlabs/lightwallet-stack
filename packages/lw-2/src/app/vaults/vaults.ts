@@ -3,7 +3,6 @@ import { IonicPage, NavController, NavParams, App, ToastController, AlertControl
 import { VaultsService } from 'merit/vaults/vaults.service';
 
 
-@IonicPage()
 @Component({
   selector: 'view-vaults',
   templateUrl: 'vaults.html',
@@ -16,8 +15,8 @@ export class VaultsView {
     private vaultService: VaultsService,
   ){}
 
-  toAddWallet() {
-    this.navCtrl.push('CreateVaultView');
+  toAddVault() {
+    this.navCtrl.push('CreateVaultGeneralInfoView');
   }
 
   toVault(vault) {
