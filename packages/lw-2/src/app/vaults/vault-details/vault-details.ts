@@ -127,7 +127,7 @@ export class VaultDetailsView {
       return this.vaultsService.getVaultCoins(w, this.vault);
     }).then((coins) => {
       this.coins = coins;
-      this.navCtrl.push('VaultSpendAmountView', { recipient: address, wallet: wallet, vault: this.vault, coins: coins });
+      this.navCtrl.push('VaultSpendAmountView', { recipient: address, wallet: wallet, vault: this.vault, vaultId: this.vault.id, coins: coins });
     });
   }
 
