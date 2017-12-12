@@ -5,6 +5,8 @@ import { SendAmountView } from 'merit/transact/send/amount/send-amount';
 import { ProfileService } from 'merit/core/profile.service';
 import { GravatarModule } from 'merit/shared/gravatar.module';
 import { RateService } from 'merit/transact/rate.service';
+import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 
 /*
@@ -20,7 +22,9 @@ import { RateService } from 'merit/transact/rate.service';
     IonicPageModule.forChild(SendAmountView)
   ],
   providers: [
-    RateService
+    RateService,
+    EasySendService,
+    SocialSharing
   ]
 })
 export class SendAmountModule {}

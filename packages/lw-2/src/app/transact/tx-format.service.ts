@@ -11,7 +11,7 @@ import { Logger } from 'merit/core/logger';
 
 /* 
   Ideally, this service gets loaded when it is needed.
-*/ 
+*/
 @Injectable()
 export class TxFormatService {
 
@@ -27,7 +27,7 @@ export class TxFormatService {
     this.logger.info('Hello TxFormatService Service');
   }
 
-  formatAmount(micros: number, fullPrecision?: boolean): any {
+  formatAmount(micros: number, fullPrecision?: boolean): number {
     let settings = this.config.get().wallet.settings;
 
     if (settings.unitCode == 'sat') return micros;
@@ -40,32 +40,36 @@ export class TxFormatService {
   }
 
   // Todo: Improve
-  formatAmountStr(micros: number): any {
+  formatAmountStr(micros: number): string {
     if (isNaN(micros)) return;
     return this.formatAmount(micros) + ' MRT';
   }
 
-  toFiat(micros: number, code: string): Promise<any> {
+  toFiat(micros: number, code: string): Promise<string> {
     return new Promise((resolve, reject) => {
       if (isNaN(micros)) return resolve();
-      let v1;
-      v1 = this.rate.fromMicrosToFiat(micros, code);
+      let v1 = this.rate.fromMicrosToFiat(micros, code);
       if (!v1) return resolve(null);
       return resolve(v1.toFixed(2));
     });
   }
 
-  formatToUSD(micros: number): Promise<any> {
+  toFiatStr(micros: number, code: string): Promise<string> {
+    return this.toFiat(micros, code).then((fiatAmount) => {
+      return new FiatAmount(parseFloat(fiatAmount)).amountStr;
+    });
+  }
+
+  formatToUSD(micros: number): Promise<string> {
     return new Promise((resolve, reject) => {
-      let v1;
       if (isNaN(micros)) return resolve();
-      v1 = this.rate.fromMicrosToFiat(micros, 'USD');
+      let v1 = this.rate.fromMicrosToFiat(micros, 'USD');
       if (!v1) return resolve(null);
       return resolve(v1.toFixed(2));
     });
   };
 
-  formatAlternativeStr(micros: number): Promise<any> {
+  formatAlternativeStr(micros: number): Promise<string> {
     return new Promise((resolve, reject) => {
       if (isNaN(micros)) return resolve();
       let settings = this.config.get().wallet.settings;
@@ -74,30 +78,30 @@ export class TxFormatService {
       let v1FormatFiat = new FiatAmount(v1);
       if (!v1FormatFiat) return resolve(null);
 
-      let currencySymbolPrefix: string; 
-      let currencySymbolSuffix: string; 
+      let currencySymbolPrefix: string;
+      let currencySymbolSuffix: string;
 
       // TODO: Break into function and cover all currencies.
       switch (settings.alternativeIsoCode) {
-        case "USD": 
+        case "USD":
           currencySymbolPrefix = "$";
           break;
-        case "EUR": 
+        case "EUR":
           currencySymbolPrefix = "€";
           break;
-        default: 
+        default:
           currencySymbolPrefix = "";
           break;
       }
 
       // TODO: Break into function and cover all currencies.
       switch (settings.alternativeIsoCode) {
-        default: 
+        default:
           currencySymbolSuffix = "";
           break;
       }
 
-      return resolve(currencySymbolPrefix + v1FormatFiat.amount + ' ' + currencySymbolSuffix) ;
+      return resolve(currencySymbolPrefix + v1FormatFiat.amount + ' ' + currencySymbolSuffix);
     });
   };
 
@@ -126,18 +130,18 @@ export class TxFormatService {
 
     tx.amountStr = self.formatAmountStr(tx.amount);
     //TODO: This causes an unresolved promise herror.  
-   return self.formatAlternativeStr(tx.amount).then((altStr) => {
-    tx.alternativeAmountStr = altStr;
-    tx.feeStr = self.formatAmountStr(tx.fee || tx.fees);
-    
-    if (tx.amountStr) {
-      tx.amountValueStr = tx.amountStr.split(' ')[0];
-      tx.amountUnitStr = tx.amountStr.split(' ')[1];
-    }
+    return self.formatAlternativeStr(tx.amount).then((altStr) => {
+      tx.alternativeAmountStr = altStr;
+      tx.feeStr = self.formatAmountStr(tx.fee || tx.fees);
 
-    return Promise.resolve(tx);
-   });
-    
+      if (tx.amountStr) {
+        tx.amountValueStr = tx.amountStr.split(' ')[0];
+        tx.amountUnitStr = tx.amountStr.split(' ')[1];
+      }
+
+      return Promise.resolve(tx);
+    });
+
   };
 
   formatPendingTxps(txps): Promise<any> {
@@ -168,9 +172,9 @@ export class TxFormatService {
       if (tx.createdOn > now)
         tx.createdOn = now;
 
-    
+
       // TODO: We should not call any services here.  Data should be passed in.
-      tx.wallet = {copayerId: "yepNope"};
+      tx.wallet = { copayerId: "yepNope" };
 
 
       if (!tx.wallet) {
@@ -183,11 +187,11 @@ export class TxFormatService {
         let action: any = _.find(processedTx.actions, {
           copayerId: processedTx.wallet.copayerId
         });
-  
+
         if (!action && processedTx.status == 'pending') {
           processedTx.pendingForUs = true;
         }
-  
+
         if (action && action.type == 'accept') {
           processedTx.statusForUs = 'accepted';
         } else if (action && action.type == 'reject') {
@@ -195,27 +199,27 @@ export class TxFormatService {
         } else {
           processedTx.statusForUs = 'pending';
         }
-  
+
         if (!processedTx.deleteLockTime)
           processedTx.canBeRemoved = true;
-        
+
         return Promise.resolve(processedTx);
       });
-        
+
     }).then((txps) => {
       this.logger.warn("What are the TXPs after promise all?");
       this.logger.warn(txps);
       return Promise.resolve(txps);
     });
 
-     
+
   };
 
   parseAmount(amount: any, currency: string) {
     let settings = this.config.get()['wallet']['settings']; // TODO
 
     let satToBtc = 1 / 100000000;
-    let  microsToMrt = 1 / 100000000;
+    let microsToMrt = 1 / 100000000;
     let unitToMicro = settings.unitToMicro;
     let amountUnitStr;
     let amountMicros;

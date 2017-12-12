@@ -215,7 +215,7 @@ export class WalletsView {
     if (n.data && n.data.amount) {
       n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
       this.txFormatService.formatToUSD(n.data.amount).then((usdAmount) => {
-        n.fiatAmountStr = new FiatAmount(usdAmount).amountStr;
+        n.fiatAmountStr = new FiatAmount(+usdAmount).amountStr;
 
         // Let's make sure we don't have this notification already.
         let duplicate = _.find(this.recentTransactionsData, n);
@@ -422,7 +422,7 @@ export class WalletsView {
     }).then(() => {
       return this.txFormatService.formatToUSD(totalAmount).then((usdAmount) => {
         this.zone.run(() => {
-          this.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
+          this.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
           this.totalNetworkValue = totalAmount;
           this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
         });
