@@ -4,7 +4,7 @@ export type EasySend = {
   senderName: string;
   senderPubKey: string;
   secret: string;
-  unlockCode: string;
+  parentAddress: string;
   blockTimeout: number;
 }
 
@@ -14,5 +14,5 @@ export let easySendURL = (es: EasySend): string => {
             `&sk=${es.senderPubKey}` +
             `&sn=${es.senderName}` +
             `&bt=${es.blockTimeout}` +
-            `&uc=${es.unlockCode}`;
+            `&pa=${es.parentAddress}`;
 }

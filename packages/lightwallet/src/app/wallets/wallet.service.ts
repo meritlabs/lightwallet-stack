@@ -1312,7 +1312,6 @@ export class WalletService {
           let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
           let myName = opts.myName || 'me'; // TODO GetTextCatalog
 
-          // TODO: Rename Beacon to UnlockCode down the stack
           return walletClient.createWallet(name, myName, opts.m, opts.n, {
             network: opts.networkName,
             singleAddress: opts.singleAddress,

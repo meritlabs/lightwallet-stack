@@ -1,36 +1,52 @@
 import * as Promise from 'bluebird';
 import { Injectable } from '@angular/core';
+import { BwcService } from 'merit/core/bwc.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 
 @Injectable()
 export class EasySendService {
+  private bitcore: any;
+
   constructor(
-    private socialSharing: SocialSharing
-  ) {}
+    private socialSharing: SocialSharing,
+    private bwcService: BwcService
+  ) {
+    this.bitcore = this.bwcService.getBitcore();
+  }
+
   public createEasySendScriptHash(wallet: MeritWalletClient): Promise<EasySend> {
 
     // TODO: get a passphrase from the user
     let opts = {
       network: wallet.network,
-      parentAddress: wallet.pubKey.toAddress(),
+      parentAddress: wallet.credentials.xPubKey,
       passphrase: ''
     };
 
     return wallet.buildEasySendScript(opts).then((easySend) => {
+
+      const signPrivKey = wallet.credentials.xPrivKey;
+      const hdKey = this.bitcore.HDPrivateKey.fromString(signPrivKey);
+
       let unlockScriptOpts = {
-        parentAddress: wallet.pubKey.toAddress(),
+        parentAddress: hdKey.publicKey.toAddress(),
+        pubkey: hdKey.publicKey,
+        signPrivKey,
         address: easySend.script.toAddress(), // not typechecked yet
+        addressType: 1, // pubkey address
         network: opts.network
       };
-      return wallet.unlockAddress(unlockScriptOpts).then(() => {
+      return wallet.signAddressAndUnlock(unlockScriptOpts).then(() => {
         let unlockRecipientOpts = {
-          parentAddress: wallet.pubKey.toAddress(),
-          pubkey: easySend.receiverPubKey, // not typechecked yet
+          parentAddress: easySend.script.toAddress(),  // short-curcuit
+          signPrivKey,
+          address: easySend.receiverPubKey.toAddress(), // not typechecked yet
+          addressType: 2, // script address
           network: opts.network
         };
-        return wallet.unlockAddress(unlockRecipientOpts);
+        return wallet.signAddressAndUnlock(unlockRecipientOpts);
       }).then(() => {
         return Promise.resolve(easySend);
       });

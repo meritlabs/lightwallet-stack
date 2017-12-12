@@ -1729,8 +1729,8 @@ export class API {
 
       const referralOpts = {
         parentAddress: opts.parentAddress,
-        address: pubkey.toAddress(),
-        pubkey,
+        address: pubkey.toAddress().toString(),
+        pubkey: pubkey.toString(),
         addressType: 1,
         signPrivKey: walletPrivKey,
         network: network,
@@ -1772,12 +1772,12 @@ export class API {
   /**
    * Broadcast raw referral to network
    * @param {Object} opts
-   * @param {Address} opts.parentAddress  - parent address that referrs new address
-   * @param {PublicKey} opts.address      - (optional) address to beacon
-   * @param {PublicKey} opts.addressType  - address type: 1 - pubkey, 2 - sript, 3 - parameterizedscript
-   * @param {PublicKey} opts.signPrivKey  - private key to sign referral
-   * @param {PublicKey} opts.pubkey       - (optional) pubkey of beaconing address. omitted for script
-   * @param {PublicKey} opts.network      - (optional) netowrk
+   * @param {string} opts.parentAddress    - parent address that referrs new address
+   * @param {string} opts.address          - (optional) address to beacon
+   * @param {number} opts.addressType      - address type: 1 - pubkey, 2 - sript, 3 - parameterizedscript
+   * @param {PrivateKey} opts.signPrivKey  - private key to sign referral
+   * @param {string} opts.pubkey        - (optional) pubkey of beaconing address. omitted for script
+   * @param {string} opts.network          - (optional) netowrk
    */
   sendReferral(opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -1803,20 +1803,18 @@ export class API {
         this.log.info('Using existing keys');
       }
 
-      // TODO: get rid of .match(/.{1,2}/g).reverse().join('') if possible
       const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-        Bitcore.Address.fromString(opts.parentAddress, network).toBufferLean(),
-        opts.address.toBufferLean(),
+        Bitcore.Address.fromString(opts.parentAddress).toBufferLean(),
+        Bitcore.Address.fromString(opts.address).toBufferLean(),
       ]));
 
       const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big');
 
       const referral = new Bitcore.Referral({
-        version: 0,
-        parentAddress: Bitcore.Address.fromString(opts.parentAddress, network),
-        address: opts.address,
+        parentAddress: Bitcore.Address.fromString(opts.parentAddress),
+        address: Bitcore.Address.fromString(opts.address),
         addressType: opts.addressType,
-        pubkey: opts.pubkey,
+        pubkey: Bitcore.PublicKey.fromString(opts.pubkey),
         signature,
       });
 
@@ -2203,15 +2201,17 @@ export class API {
   };
 
   /**
-   * unlock an address
+   * unlock an address with referral signature
    * @param {Object} opts
-   * @param {Address} opts.parentAddress  - parent address that referrs new address
+   * @param {Address} opts.referral - data for required referral
    * @param {PublicKey} opts.pubkey       - (optional) pubkey of beaconing address. omitted for script
    */
-  unlockAddress(opts: any = {}): Promise<any> {
+  signAddressAndUnlock(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
 
-    return this.sendReferral(opts.parentAddress);
+    return this.sendReferral(opts).then((refid: string) => {
+      return this._doPostRequest('/v1/addresses/unlock/', { address: opts.address, refid });
+    });
   };
 
   /**
@@ -2227,13 +2227,32 @@ export class API {
 
     return new Promise((resolve, reject) => {
       if (!this._checkKeyDerivation()) return reject(new Error('Cannot create new address for this wallet'));
+
+      opts.ignoreMaxGap = true;
       return this._doPostRequest('/v1/addresses/', opts).then((address) => {
+        console.dir(address);
         if (!Verifier.checkAddress(this.credentials, address)) {
           return reject(Errors.SERVER_COMPROMISED);
         }
-        return resolve(address);
-      }).catch((err) => {
-        return reject(err);
+
+        // try to sign address and unlock it
+        const xPriv = new Bitcore.HDPrivateKey(this.credentials.xPrivKey)
+        const signPrivKey = xPriv.deriveChild(address.path);
+
+        // getDerivedXPrivKey gives a key derived from xPrivKey to get corresponging privkey to pubkey by path
+        const derivedPrivKey = this.credentials.getDerivedXPrivKey('').deriveChild(address.path).privateKey;
+
+        const unlockOpts = {
+          parentAddress: Bitcore.PrivateKey.fromString(this.credentials.walletPrivKey).toPublicKey().toAddress().toString(),
+          address: address.address,
+          pubkey: address.publicKeys[0],
+          addressType: 1,
+          signPrivKey: derivedPrivKey,
+          network: address.network,
+        };
+
+        return this.signAddressAndUnlock(unlockOpts)
+          .then(res => resolve(address));
       });
     });
   };
