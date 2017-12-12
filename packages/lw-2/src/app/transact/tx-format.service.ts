@@ -27,7 +27,7 @@ export class TxFormatService {
     this.logger.info('Hello TxFormatService Service');
   }
 
-  formatAmount(micros: number, fullPrecision?: boolean): any {
+  formatAmount(micros: number, fullPrecision?: boolean): number {
     let settings = this.config.get().wallet.settings;
 
     if (settings.unitCode == 'sat') return micros;
@@ -40,32 +40,30 @@ export class TxFormatService {
   }
 
   // Todo: Improve
-  formatAmountStr(micros: number): any {
+  formatAmountStr(micros: number): string {
     if (isNaN(micros)) return;
     return this.formatAmount(micros) + ' MRT';
   }
 
-  toFiat(micros: number, code: string): Promise<any> {
+  toFiat(micros: number, code: string): Promise<string> {
     return new Promise((resolve, reject) => {
       if (isNaN(micros)) return resolve();
-      let v1;
-      v1 = this.rate.fromMicrosToFiat(micros, code);
+      let v1 = this.rate.fromMicrosToFiat(micros, code);
       if (!v1) return resolve(null);
       return resolve(v1.toFixed(2));
     });
   }
 
-  formatToUSD(micros: number): Promise<any> {
+  formatToUSD(micros: number): Promise<string> {
     return new Promise((resolve, reject) => {
-      let v1;
       if (isNaN(micros)) return resolve();
-      v1 = this.rate.fromMicrosToFiat(micros, 'USD');
+      let v1 = this.rate.fromMicrosToFiat(micros, 'USD');
       if (!v1) return resolve(null);
       return resolve(v1.toFixed(2));
     });
   };
 
-  formatAlternativeStr(micros: number): Promise<any> {
+  formatAlternativeStr(micros: number): Promise<string> {
     return new Promise((resolve, reject) => {
       if (isNaN(micros)) return resolve();
       let settings = this.config.get().wallet.settings;

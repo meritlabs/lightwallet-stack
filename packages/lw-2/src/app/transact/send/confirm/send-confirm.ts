@@ -12,6 +12,7 @@ import { Logger } from 'merit/core/logger';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { TxFormatService } from "merit/transact/tx-format.service";
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 /**
@@ -28,7 +29,22 @@ export class SendConfirmView {
   // Statics
   private static CONFIRM_LIMIT_USD = 20;
 
-  private txData;
+  private txData: {
+    amount: number,       // micros
+    amountUSD: string,    // micros
+    totalAmount: number,  // micros
+    feeIncluded: boolean,
+    recipient: {
+      sendMethod: string,
+      label: string,
+      name: string,
+      email?: string,
+      phoneNumber?: string
+    },
+    txp: any,
+    easySendURL: string,
+    wallet: MeritWalletClient
+  };
   private viewData;
 
   constructor(
@@ -49,20 +65,6 @@ export class SendConfirmView {
   }
 
   async ionViewDidLoad() {
-    /**
-     * txData
-     *      txp
-     *      wallet
-     *      amount (micros)
-     *      feeAmount (micros)
-     *      totalAmount (micros)
-     *      recipient
-     *        sendMethod (address|sms|string)
-     *        name
-     *        address
-     *        phoneNumber
-     *        email
-     */
     this.txData    = this.navParams.get('txData');
     this.txData.amountUSD = await this.formatService.formatToUSD(this.txData.amount);
 
@@ -76,11 +78,11 @@ export class SendConfirmView {
       walletName: this.txData.wallet.name || this.txData.wallet.id,
       walletCurrentBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.totalBalanceSat),
       walletRemainingBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.totalBalanceSat - this.txData.totalAmount),
-      feeIncluded: this.txData.feeIncluded
+      feeIncluded: this.txData.feeIncluded,
+      fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
     };
 
-    let fiatCode = this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase();
-    let convert = amount => this.formatService.toFiat(amount, fiatCode);
+    let convert = amount => this.formatService.toFiat(amount, this.viewData.fiatCode);
     this.viewData.amountFiat = await convert(this.txData.amount);
     this.viewData.feeAmountFiat = await convert(this.txData.txp.fee);
     this.viewData.totalAmountFiat = await convert(this.txData.totalAmount);
