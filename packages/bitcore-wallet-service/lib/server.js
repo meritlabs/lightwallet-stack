@@ -515,47 +515,30 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
 /**
  * Unlocks an address with an unlock code.
  * @param {Object} opts
- * @param {String} opts.unlockCode The unlock code used to unlock this wallet.
- * @param {String} opts.address The address to unlock with the above unlock code.
- * @param {String} opts.network The relevant network to execute this command (livenet/testnet)
+ * @param {string} opts.address - address to unlock
+ * @param {string} opts.refid - signed referral id
+ * @returns {Object} wallet
  */
-
-// breadcrumbs
 WalletService.prototype.unlockAddress = function (opts, cb) {
   var self = this;
-  opts = opts || {};
 
-  if (!opts.unlockCode) {
-    cb(new ClientError('No unlockCode provided.'));
+  if (!Utils.isHash(opts.refid)) {
+    return cb(Errors.INVALID_REFERRAL);
   }
 
-  if (!opts.address) {
-    cb(new ClientError('No unlock address provided.'));
-  }
+  console.log('refid', opts.refid);
 
-  var unlocked = false;
-  localMeritDaemon.unlockWallet(opts.unlockCode, opts.address.toString(), function(errMsg, result) {
-    if (errMsg)  {
-      // TODO: Use Error codes instead of string matching.
-      // TODO: Even sooner, we should have more descriptive error states coming back
-      // from the blockchain explorer.
-      log.warn("Got an error in unlock: " + errMsg);
-      if (_.includes(errMsg.message, 'provided code does not exist in the chain')) {
-        return cb(Errors.UNLOCK_CODE_INVALID);
-      }
-      if (_.includes(errMsg.message, 'unlockwalletwithaddress: Address is already beaconed.')) {
-        return cb(Errors.UNLOCKED_ALREADY);
-      }
-      // An error we don't know about.
-      log.warn("Received unknown error while unlocking wallet: ", errMsg.message);
-      return cb(errMsg.message);
-    }
+  self.storage.fetchAddress(opts.address, function(err, address) {
+    if (err) return cb(Errors.INVALID_ADDRESS);
 
-    unlocked = true;
-    var shareCode = result.result.referralcode || "";
-    var codeHash = result.result.codehash || "";
+    address.refid = opts.refid;
+    address.signed = true;
 
-    return cb(null, {unlocked: unlocked, shareCode: shareCode, codeHash: codeHash});
+    self.storage.storeAddress(address, function(err, address) {
+      if (err) return cb(err.message);
+
+      cb(null, address);
+    });
   });
 };
 
@@ -1043,27 +1026,19 @@ WalletService.prototype.createAddress = function(opts, cb) {
 
   opts = opts || {};
 
+  // create new unsigned address.
   function createNewAddress(wallet, cb) {
     var address = wallet.createAddress(false);
 
-    var unlockParams = {
-      unlockCode: wallet.shareCode,
-      address: address.address
-    }
-    self.unlockAddress(unlockParams, function(err, result){
-      if (err && err != Errors.UNLOCKED_ALREADY) return cb(err);
+    self.storage.storeAddressAndWallet(wallet, address, function(err) {
+      if (err) return cb(err);
 
-      self.storage.storeAddressAndWallet(wallet, address, function(err) {
-        if (err) return cb(err);
-
-        self._notify('NewAddress', {
-          address: address.address,
-        }, function() {
-          return cb(null, address);
-        });
+      self._notify('NewAddress', {
+        address: address.address,
+      }, function() {
+        return cb(null, address);
       });
     });
-
   };
 
   function getFirstAddress(wallet, cb) {
@@ -2194,12 +2169,10 @@ WalletService.prototype.createTx = function(opts, cb) {
             getChangeAddress(wallet, function(err, address) {
               if (err) return next(err);
               changeAddress = address;
+              // TODO: get get signed referral id
               // Unlock the address used for receiving change.
-              var unlockParams = {
-                unlockCode: wallet.shareCode,
-                address: changeAddress.address
-              }
-              self.unlockAddress(unlockParams, function(err, result){
+              const refid = '';
+              self.unlockAddress(refid, function(err, result){
                 // If the change address is unlocked already, we can continue with
                 // the creation of the TXN.
                 if (err && (err != Errors.UNLOCKED_ALREADY)) return next(err);
