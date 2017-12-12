@@ -84,10 +84,8 @@ Referral.prototype.toBufferWriter = function(writer) {
   writer.write(parentAddressBuf);
   writer.writeUInt8(this.addressType);
   writer.write(addressBuf);
-  if (this.addressType === 1) {
-    writer.writeVarintNum(pubkeyBuf.length);
-    writer.write(pubkeyBuf);
-  }
+  writer.writeVarintNum(pubkeyBuf.length);
+  writer.write(pubkeyBuf);
   writer.writeVarintNum(signatureBuf.length);
   writer.write(signatureBuf);
 
@@ -106,9 +104,7 @@ Referral.prototype.fromBufferReader = function(reader) {
   this.parentAddress = reader.read(20).toString('hex').match(/.{1,2}/g).reverse().join('');
   this.addressType = reader.readUInt8();
   this.address = reader.read(20).toString('hex').match(/.{1,2}/g).reverse().join('');
-  if (this.addressType == 1) {
-    this.pubkey = reader.read(33).toString('hex').match(/.{1,2}/g).reverse().join('');
-  }
+  this.pubkey = reader.read(33).toString('hex').match(/.{1,2}/g).reverse().join('');
   this.signature = reader.read(71).toString('hex').match(/.{1,2}/g).reverse().join('');
 
   return this;
