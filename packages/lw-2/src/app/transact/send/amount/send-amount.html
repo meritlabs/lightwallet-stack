@@ -15,7 +15,7 @@
         <span class="row">
             <span class="label" text-left>Recipient</span>
             <span text-right [style.flex]="1" padding-right >
-                {{ displayName }}
+                {{ displayName | slice:0:15}}
                 <span class="avatar">
                     <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
                     <gravatar class="send-gravatar"
@@ -36,7 +36,7 @@
         <div class="label" class="row" (click)="selectWallet()">
             <span text-left class="label">From</span>
             <span item-right text-right [style.flex]="1">
-                {{wallet.name || wallet._id}}
+                {{wallet.name || wallet._id}} ({{ availableAmount ? availableAmount.formatted : ''}})
                 <button ion-button icon-only clear color="primary" class="wallet-button">
                     <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
                         <img src="assets/img/icon-wallet.svg">
@@ -49,6 +49,7 @@
             <span class="label" text-left>Amount</span>
             <ion-input type="number" text-right pattern="[0-9\.]"
                    [style.flex]="1"
+                   [ngModel]="amount"
                    (ionChange)="processAmount($event.value)"
                    [placeholder]="'Enter sending amount'"></ion-input>
             <button ion-button clear color="primary" (click)="toggleCurrency()">

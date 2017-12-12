@@ -50,7 +50,8 @@ export class SendView {
   contactsOffset = 0;
   contactsLimit  = 10;
 
-  public hasContacts:boolean; 
+  public hasContacts:boolean;
+  public amountToSend:number;
 
   constructor(
     private navCtrl: NavController,
@@ -170,10 +171,25 @@ export class SendView {
     return contact;
   }
 
+  private parseSearch(input) {
+
+    if (input.indexOf('merit:') == 0) input = input.slice(6);
+    if (input.indexOf('?micros=') != -1) {
+      this.formData.search = input.split('?micros=')[0];
+      this.amountToSend = input.split('?micros=')[1];
+    } else {
+      this.formData.search = input;
+    }
+    return this.updateFilteredContactsDebounce(this.formData.search);
+  }
+
+
   private openScanner(): void {
     let modal = this.modalCtrl.create('ImportScanView');
     modal.onDidDismiss((code) => {
-        this.updateFilteredContacts(code); 
+        if (code) {
+          return this.parseSearch(code);
+        }
     });
     modal.present();
   }
@@ -193,16 +209,19 @@ export class SendView {
     }
   }
 
+  private updateFilteredContactsDebounce = _.debounce(this.updateFilteredContacts, 200);
+
   public updateFilteredContacts(search: string): void {
 
     // TODO: Improve to be more resilient.
     if(search && search.length > 19) {
-      this.sendService.isAddressValid(search).then((isValid) => {
+      return this.sendService.isAddressValid(search).then((isValid) => {
         if (isValid) {
-          this.profileService.getWallets()
+          return this.profileService.getWallets()
             .then((wallets) => {
               this.navCtrl.push('SendAmountView', {
                 wallet: wallets[0],
+                amount: this.amountToSend,
                 sending: true,
                 contact: this.justMeritAddress(search)
               });
@@ -235,6 +254,7 @@ export class SendView {
     return this.profileService.getWallets().then((wallets) => {
       return this.navCtrl.push('SendAmountView', {
         wallet: wallets[0],
+        amount: this.amountToSend,
         sending: true,
         contact: item
       });
