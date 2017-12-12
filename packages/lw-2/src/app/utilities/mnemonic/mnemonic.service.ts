@@ -9,6 +9,7 @@ import * as Promise from 'bluebird';
 
 import * as _ from 'lodash';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { ConfigService } from 'merit/shared/config.service';
 
 @Injectable()
 export class MnemonicService {
@@ -19,7 +20,8 @@ export class MnemonicService {
       private logger: Logger, 
       private profileService: ProfileService,
       private bwcService: BwcService,
-      private bwcErrorService: BwcError
+      private bwcErrorService: BwcError,
+      private configService: ConfigService
   ){
     this.errors = this.bwcService.getErrors();
   }
@@ -61,7 +63,7 @@ export class MnemonicService {
     return new Promise((resolve, reject) => {
       try {
         opts.mnemonic = this.normalizeMnemonic(opts.mnemonic);
-        let network = opts.networkName || 'livenet';
+        let network = opts.networkName || this.configService.getDefaults().network.name;
         walletClient.seedFromMnemonic(opts.mnemonic, {
           network: network,
           passphrase: opts.passphrase,

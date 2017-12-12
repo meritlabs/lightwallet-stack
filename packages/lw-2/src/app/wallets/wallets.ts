@@ -115,7 +115,7 @@ export class WalletsView {
   private updateAllInfo(opts: { force: boolean } = { force: false }): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      return this.addressbookService.list('testnet').then((addressBook) => {
+      return this.addressbookService.list(this.configService.getDefaults().network.name).then((addressBook) => {
         this.addressbook = addressBook;
         return this.updateAllWallets(opts.force);
       }).then((wallets) => {

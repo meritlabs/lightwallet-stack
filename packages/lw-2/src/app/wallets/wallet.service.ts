@@ -1003,7 +1003,7 @@ export class WalletService {
       var opts: any = {};
       opts.m = 1;
       opts.n = 1;
-      opts.networkName = 'testnet';
+      opts.networkName = this.configService.getDefaults().network.name;
       opts.unlockCode = unlockCode;
       return this.createWallet(opts).then((wallet: MeritWalletClient) => {
         return resolve(wallet);
@@ -1320,7 +1320,7 @@ export class WalletService {
 
       opts = opts ? opts : {};
       let walletClient = this.bwcService.getClient(null, opts);
-      let network = opts.networkName || 'livenet';
+      let network = opts.networkName || this.configService.getDefaults().network.name;
 
       if (opts.mnemonic) {
         try {

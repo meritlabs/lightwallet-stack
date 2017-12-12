@@ -77,7 +77,7 @@ export class EasyReceiveService {
     })
   }
 
-  public validateEasyReceiptOnBlockchain(receipt:EasyReceipt, password = '', network = 'testnet'):Promise<any> {
+  public validateEasyReceiptOnBlockchain(receipt:EasyReceipt, password = '', network = this.configService.getDefaults().network.name):Promise<any> {
 
     return new Promise((resolve, reject) => {
       let opts:any = {
