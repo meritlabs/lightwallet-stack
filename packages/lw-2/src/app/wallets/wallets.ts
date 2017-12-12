@@ -462,7 +462,12 @@ export class WalletsView {
   }
 
   private toAddWallet() {
-    this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList });
+    let shareCode: string; 
+    if (!_.isEmpty(this.wallets)) {
+      let shareCode = this.wallets[0].shareCode;  
+      return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList, unlockCode: shareCode });
+    } 
+    return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList });
   }
 
   private toImportWallet() {
