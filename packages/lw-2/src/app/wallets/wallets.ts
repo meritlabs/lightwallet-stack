@@ -98,7 +98,7 @@ export class WalletsView {
   }
 
   public doRefresh(refresher) {
-    this.updateAllInfo().then(() => {
+    this.updateAllInfo({ force: true }).then(() => {
       refresher.complete();
     }).catch(() => {
       refresher.complete();
