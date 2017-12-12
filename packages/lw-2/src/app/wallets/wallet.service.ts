@@ -463,8 +463,6 @@ export class WalletService {
                 return resolve(newTxs);
               }
 
-              this.logger.warn("@@ RESULT from getTxsFromServer");
-              this.logger.warn(result);
               const res = result.res;
               const shouldContinue = !!result.shouldContinue;
 
