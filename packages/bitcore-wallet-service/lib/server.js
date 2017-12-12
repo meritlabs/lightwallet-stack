@@ -374,10 +374,10 @@ WalletService.prototype.createWallet = function(opts, cb) {
         network: opts.network,
         pubKey: pubKey.toString(),
         singleAddress: !!opts.singleAddress,
-        derivationStrategy: derivationStrategy,
-        addressType: addressType,
+        derivationStrategy,
+        addressType,
+        unlocked,
         parentAddress: opts.parentAddress,
-        unlocked: unlocked,
       });
       self.storage.storeWallet(wallet, function(err) {
         log.debug('Wallet created', wallet.id, opts.network);
@@ -522,7 +522,7 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
 WalletService.prototype.unlockAddress = function (opts, cb) {
   var self = this;
 
-  if (!Utils.isHash(opts.refid)) {
+  if (!Utils.isHash(opts.refid) || !opts.parentAddress) {
     return cb(Errors.INVALID_REFERRAL);
   }
 
@@ -533,6 +533,7 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
 
     address.refid = opts.refid;
     address.signed = true;
+    address.parentAddress = opts.parentAddress;
 
     self.storage.storeAddress(address, function(err, address) {
       if (err) return cb(err.message);
@@ -2122,7 +2123,7 @@ WalletService.prototype.createTx = function(opts, cb) {
     if (wallet.singleAddress) {
       self.storage.fetchAddresses(self.walletId, function(err, addresses) {
         if (err) return cb(err);
-        if (_.isEmpty(addresses)) return cb(new ClientError('The wallet has no addresses'));
+        if (_.isEmpty(addresses)) return cb(new ClientError('The wallet has no unlocked addresses'));
         return cb(null, _.head(addresses));
       });
     } else {
