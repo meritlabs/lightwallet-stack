@@ -47,14 +47,13 @@ export class CreateVaultDepositView {
       _.each(wallets, (w) => this.logger.info(w));
       const wallet = wallets[0];
       const computed = wallet.status.balance.availableConfirmedAmount;
-      console.log(wallet.status.balance);
       const total = wallet.status.balance.availableAmount;
       const mrt = this.bitcore.Unit.fromMicros(computed).toMRT();
       const totalMrt = this.bitcore.Unit.fromMicros(total).toMRT();
       this.formData.selectedWallet = wallet;
       this.formData.amountAvailable = mrt;
       this.formData.totalAvailable = totalMrt;
-      this.formData.walletName = wallet.name || wallet._id;
+      this.formData.walletName = wallet.name || wallet.id;
     });
 
     this.checkNextAvailable();
