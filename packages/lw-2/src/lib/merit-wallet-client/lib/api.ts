@@ -1729,7 +1729,7 @@ export class API {
 
       const referralOpts = {
         parentAddress: opts.parentAddress,
-        address: pubkey.toAddress().toString(),
+        address: address.toString(),
         pubkey: pubkey.toString(),
         addressType: 1,
         signPrivKey: walletPrivKey,
@@ -2210,7 +2210,7 @@ export class API {
     $.checkState(this.credentials);
 
     return this.sendReferral(opts).then((refid: string) => {
-      return this._doPostRequest('/v1/addresses/unlock/', { address: opts.address, refid });
+      return this._doPostRequest('/v1/addresses/unlock/', { address: opts.address, parentAddress: opts.parentAddress, refid });
     });
   };
 
@@ -2236,18 +2236,15 @@ export class API {
         }
 
         // try to sign address and unlock it
-        const xPriv = new Bitcore.HDPrivateKey(this.credentials.xPrivKey)
-        const signPrivKey = xPriv.deriveChild(address.path);
-
         // getDerivedXPrivKey gives a key derived from xPrivKey to get corresponging privkey to pubkey by path
-        const derivedPrivKey = this.credentials.getDerivedXPrivKey('').deriveChild(address.path).privateKey;
+        const signPrivKey = this.credentials.getDerivedXPrivKey('').deriveChild(address.path).privateKey;
 
         const unlockOpts = {
           parentAddress: Bitcore.PrivateKey.fromString(this.credentials.walletPrivKey).toPublicKey().toAddress().toString(),
           address: address.address,
           pubkey: address.publicKeys[0],
           addressType: 1,
-          signPrivKey: derivedPrivKey,
+          signPrivKey,
           network: address.network,
         };
 
