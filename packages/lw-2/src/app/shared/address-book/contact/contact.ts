@@ -4,6 +4,7 @@ import { MeritContact } from 'merit/shared/address-book/contact/contact.model';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { ProfileService } from "merit/core/profile.service";
 import { DomSanitizer } from '@angular/platform-browser';
+import { ConfigService } from 'merit/shared/config.service';
 
 @IonicPage()
 @Component({
@@ -20,6 +21,7 @@ export class ContactView {
     private navParams:NavParams,
     private addressBookService: AddressBookService,
     private alertCtrl:AlertController,
+    private configService:ConfigService,
     private profileService:ProfileService,
     private sanitizer:DomSanitizer
   ) {
@@ -53,7 +55,7 @@ export class ContactView {
       buttons: [
         {text: 'Cancel', role: 'cancel', handler: () => {}},
         {text: 'Ok', handler: (data) => {
-            this.addressBookService.remove(this.contact.meritAddress, 'testnet').then(() => {
+            this.addressBookService.remove(this.contact.meritAddress, this.configService.getDefaults().network.name).then(() => {
               this.navCtrl.pop();
             });
           }

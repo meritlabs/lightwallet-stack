@@ -23,7 +23,6 @@ let Utils = Common.Utils;
 
 let Package = require('../../../../package.json');
 
-const DEFAULT_NET = 'testnet';
 const DEFAULT_FEE = 10000;
 
 /**
@@ -884,7 +883,7 @@ export class API {
    */
   createSpendFromVaultTx(opts: any = {}) {
 
-    var network = opts.network || DEFAULT_NET;
+    var network = opts.network || Common.Constants.DEFAULT_NET;
     var fee = opts.fee || DEFAULT_FEE;
 
     var tx = new Bitcore.Transaction();
@@ -899,7 +898,7 @@ export class API {
    */
   buildRenewVaultTx(utxos: any[], newVault: any, masterKey: any, opts: any = {}) {
 
-    var network = opts.network || DEFAULT_NET;
+    var network = opts.network || Common.Constants.DEFAULT_NET;
     var fee = opts.fee || DEFAULT_FEE;
 
     let totalAmount = _.sumBy(utxos, 'micros');
@@ -1649,7 +1648,7 @@ export class API {
 
       $.checkArgument(network || _.includes(['livenet', 'testnet'], network));
 
-      return this._doGetRequest('/v1/feelevels/?network=' + (network || 'livenet')).then((result) => {
+      return this._doGetRequest('/v1/feelevels/?network=' + (network || Common.Constants.DEFAULT_NET)).then((result) => {
         return resolve(result);
       }).catch((err) => {
         return reject(err);
@@ -1697,7 +1696,7 @@ export class API {
 
       if (opts) $.shouldBeObject(opts);
 
-      let network = opts.network || DEFAULT_NET;
+      let network = opts.network || Common.Constants.DEFAULT_NET;
       if (!_.includes(['testnet', 'livenet'], network)) return reject(new Error('Invalid network'));
 
       if (!this.credentials) {

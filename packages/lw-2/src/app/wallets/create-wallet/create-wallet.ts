@@ -86,7 +86,7 @@ export class CreateWalletView {
       unlockCode: this.formData.unlockCode,
       bwsurl: this.formData.bwsurl,
       mnemonic: this.formData.recoveryPhrase,
-      networkName: 'testnet', //todo temp!
+      networkName: this.config.getDefaults().network.name,
       m: 1, //todo temp!
       n: 1 //todo temp!
     };
