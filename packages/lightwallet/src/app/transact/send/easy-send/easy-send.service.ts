@@ -42,7 +42,7 @@ export class EasySendService {
           pubkey: pubkey.toString(),// sign pubkey used to verify signature
           signPrivKey,
           address: easySend.receiverPubKey.toAddress(), // not typechecked yet
-          addressType: 2, // script address
+          addressType: 1, // script address
           network: opts.network
         };
         return wallet.signAddressAndUnlock(unlockRecipientOpts);
