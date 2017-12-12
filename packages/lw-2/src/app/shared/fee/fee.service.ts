@@ -45,7 +45,7 @@ export class FeeService {
     if (feeLevel == 'custom') return Promise.resolve();
     let self = this;
 
-    network = network || 'livenet';
+    network = network || this.configService.getDefaults().network.name;
 
     return this.getFeeLevel(network, feeLevel).then((levelData: {data: {level: string, feePerKb: number}, fromCache: Boolean}) => {
       let feeLevelRate = levelData.data
