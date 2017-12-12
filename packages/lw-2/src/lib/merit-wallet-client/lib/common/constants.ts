@@ -1,5 +1,7 @@
 export module Constants {
 
+  export const DEFAULT_NET = 'testnet';
+
   export const SCRIPT_TYPES = {
     P2SH: 'P2SH',
     P2PKH: 'P2PKH',

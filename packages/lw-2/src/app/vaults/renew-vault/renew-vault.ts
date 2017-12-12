@@ -9,6 +9,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service';
+import { ConfigService } from 'merit/shared/config.service';
 
 export interface IWhitelistEntry {
     id: string,
@@ -45,6 +46,7 @@ export class VaultRenewView {
     private navCtrl:NavController,
     public navParams: NavParams,
     private popupService: PopupService,
+    private configService: ConfigService,
     private bwc: BwcService,  
     private walletService: WalletService,
     private vaultsService: VaultsService,  
@@ -103,7 +105,7 @@ export class VaultRenewView {
   }
 
   regenerateMasterKey() {
-    let network = this.walletClient.credentials.network || 'testnet';
+    let network = this.walletClient.credentials.network || this.configService.getDefaults().network.name;
     let masterKey = this.bitcore.PrivateKey.fromRandom(network);
     let masterKeyMnemonic = this.walletClient.getNewMnemonic(masterKey.toBuffer());
 
