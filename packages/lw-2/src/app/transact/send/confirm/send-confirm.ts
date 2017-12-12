@@ -82,7 +82,7 @@ export class SendConfirmView {
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
     };
 
-    let convert = amount => this.formatService.toFiat(amount, this.viewData.fiatCode);
+    let convert = amount => this.formatService.toFiatStr(amount, this.viewData.fiatCode);
     this.viewData.amountFiat = await convert(this.txData.amount);
     this.viewData.feeAmountFiat = await convert(this.txData.txp.fee);
     this.viewData.totalAmountFiat = await convert(this.txData.totalAmount);
@@ -168,7 +168,7 @@ export class SendConfirmView {
     if (this.walletService.isEncrypted(this.txData.wallet)) {
       return showPassPrompt();
     } else {
-      if (this.txData.amountUSD >= SendConfirmView.CONFIRM_LIMIT_USD) {
+      if (parseInt(this.txData.amountUSD) >= SendConfirmView.CONFIRM_LIMIT_USD) {
         if (this.touchIdService.isAvailable()) {
           return showTouchIDPrompt();
         } else {

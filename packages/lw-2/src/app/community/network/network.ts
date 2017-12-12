@@ -93,7 +93,7 @@ export class NetworkView {
       if (!_.isNil(dWallet.totalNetworkValueMicro)) {
         dWallet.totalNetworkValueMerit = this.txFormatService.parseAmount(dWallet.totalNetworkValueMicro, 'micros').amountUnitStr;
         formatPromises.push(this.txFormatService.formatToUSD(dWallet.totalNetworkValueMicro).then((usdAmount) => {
-          dWallet.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
+          dWallet.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
           return Promise.resolve();
         }));
       }
@@ -101,7 +101,7 @@ export class NetworkView {
       if (!_.isNil(dWallet.miningRewardsMicro)) {
         dWallet.miningRewardsMerit = this.txFormatService.parseAmount(dWallet.miningRewardsMicro, 'micros').amountUnitStr;
         formatPromises.push(this.txFormatService.formatToUSD(dWallet.miningRewardsMicro).then((usdAmount) => {
-          dWallet.miningRewardsFiat = new FiatAmount(usdAmount).amountStr;
+          dWallet.miningRewardsFiat = new FiatAmount(+usdAmount).amountStr;
           return Promise.resolve();
         }));
       }
@@ -109,7 +109,7 @@ export class NetworkView {
       if (!_.isNil(dWallet.ambassadorRewardsMicro)) {
         dWallet.ambassadorRewardsMerit = this.txFormatService.parseAmount(dWallet.ambassadorRewardsMicro, 'micros').amountUnitStr;
         formatPromises.push(this.txFormatService.formatToUSD(dWallet.ambassadorRewardsMicro).then((usdAmount) => {
-          dWallet.ambassadorRewardsFiat = new FiatAmount(usdAmount).amountStr;
+          dWallet.ambassadorRewardsFiat = new FiatAmount(+usdAmount).amountStr;
           return Promise.resolve();
         }));
       }
