@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
+import { File } from '@ionic-native/file';
+import { IonicPage, NavController, NavParams, AlertController, Platform } from 'ionic-angular';
 import { WalletService } from "merit/wallets/wallet.service";
 import { PersistenceService } from "merit/core/persistence.service";
 import { AppService } from 'merit/core/app-settings.service';
@@ -7,7 +8,6 @@ import * as FileSaver from 'file-saver';
 import { BwcService } from "merit/core/bwc.service";
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
-
 
 @IonicPage()
 @Component({
@@ -39,7 +39,9 @@ export class ExportWalletView {
     private persistanceService:PersistenceService,
     private appService: AppService,
     private bwcService:BwcService,
-    private toastCtrl:MeritToastController
+    private toastCtrl:MeritToastController,
+    private file: File,
+    private platform: Platform
   ) {
     this.wallet = this.navParams.get('wallet');
 
@@ -99,20 +101,27 @@ export class ExportWalletView {
 
   async download() {
 
-      let addressbook = await this.persistanceService.getAddressbook(this.wallet.credentials.network);
+    let addressbook = await this.persistanceService.getAddressbook(this.wallet.credentials.network);
 
-      let exportData = this.wallet.export({addressBook: addressbook});
-      let encryptedData = this.sjcl.encrypt(this.formData.password, exportData, {iter: 10000});
-      let walletName = this.wallet.alias ? `${this.wallet.alias}-${this.wallet.credentials.walletName}` : this.wallet.credentials.walletName;
-      let info = await this.appService.getInfo();
-      console.log(info);
-      let fileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
+    let exportData = this.wallet.export({addressBook: addressbook});
+    let encryptedData = this.sjcl.encrypt(this.formData.password, exportData, {iter: 10000});
+    let walletName = this.wallet.alias ? `${this.wallet.alias}-${this.wallet.credentials.walletName}` : this.wallet.credentials.walletName;
+    let info = await this.appService.getInfo();
+    let fileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
 
-      let blob = new Blob([encryptedData], {type: 'text/plain;charset=utf-8'});
-      FileSaver.saveAs(blob, fileName);
+    let blob = new Blob([encryptedData], {type: 'text/plain;charset=utf-8'});
 
-      return this.toastCtrl.create({message: 'Wallet exported',  cssClass: ToastConfig.CLASS_MESSAGE});
+    if(this.platform.is('ios')) {
+      let root = this.file.documentsDirectory;
+      await this.file.writeFile(root, fileName, blob);
+    } else if (this.platform.is('android')) {
+      let root = this.file.externalRootDirectory;
+      await this.file.writeFile(root, fileName, blob);
+    } else {
+      await FileSaver.saveAs(blob, fileName);
+    }
 
+    this.toastCtrl.create({message: `Wallet exported to ${fileName}`,  cssClass: ToastConfig.CLASS_MESSAGE}).present();
   }
 
 }
