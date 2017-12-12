@@ -32,8 +32,8 @@ export class VaultSpendConfirmView {
     private static CONFIRM_LIMIT_USD = 20;
     private static FEE_TOO_HIGH_LIMIT_PER = 15;
 
-  private dummyFeeReplaceMeWithActualFeeDontBeADummyMerit: number; 
-  private dummyFeeReplaceMeWithActualFeeDontBeADummyUSD : number; 
+  private dummyFeeReplaceMeWithActualFeeDontBeADummyMerit: string; 
+  private dummyFeeReplaceMeWithActualFeeDontBeADummyUSD : string; 
   private recipient: any;
   private txData: any = null;
   private wallet: MeritWalletClient;

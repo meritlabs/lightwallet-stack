@@ -15,26 +15,26 @@
 
 
             <div class="title">Amount</div>
-            <div>{{ viewData.amountMrt }} MRT ({{ viewData.amountFiat }} {{ viewData.fiatCode }})</div>
+            <div>{{ viewData.amountMrt }} MRT ({{ viewData.amountFiat }})</div>
 
 
             <div class="title">Fee
                 <span *ngIf="viewData.feeIncluded"> included</span>
                 ({{ viewData.feePercent }})</div>
             <div>
-                {{ viewData.feeAmountMrt}} MRT ({{ viewData.feeAmountFiat }} {{ viewData.fiatCode }})
+                {{ viewData.feeAmountMrt}} MRT ({{ viewData.feeAmountFiat }})
             </div>
 
 
             <div class="title">From {{viewData.walletName}}</div>
             <div>
-                Current balance: {{ viewData.walletCurrentBalanceMrt }} MRT ({{ viewData.walletCurrentBalanceFiat }} {{ viewData.fiatCode }})
+                Current balance: {{ viewData.walletCurrentBalanceMrt }} MRT ({{ viewData.walletCurrentBalanceFiat }})
             </div>
             <div>
-                Sending: {{ viewData.totalAmountMrt}} MRT ({{ viewData.totalAmountFiat }} {{ viewData.fiatCode }})
+                Sending: {{ viewData.totalAmountMrt}} MRT ({{ viewData.totalAmountFiat }})
             </div>
             <div>
-                New balance: {{ viewData.walletRemainingBalanceMrt }} MRT ({{ viewData.walletRemainingBalanceFiat }} {{ viewData.fiatCode }})
+                New balance: {{ viewData.walletRemainingBalanceMrt }} MRT ({{ viewData.walletRemainingBalanceFiat }})
             </div>
 
 
