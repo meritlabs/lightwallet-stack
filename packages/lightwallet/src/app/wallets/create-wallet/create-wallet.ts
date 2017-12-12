@@ -54,9 +54,9 @@ export class CreateWalletView {
   }
 
   ionViewDidEnter() {
-    let unlockCode = this.navParams.get('unlockCode');
-    if (!_.isNil(unlockCode)) {
-      this.formData.unlockCode = unlockCode;
+    let parentAddress = this.navParams.get('parentAddress');
+    if (!_.isNil(parentAddress)) {
+      this.formData.parentAddress = parentAddress;
     }
   }
 
@@ -89,8 +89,8 @@ export class CreateWalletView {
     }
 
     let opts = {
-      name: 'name', //this.formData.walletName,
-      parentAddress: 'miB2255Vay5SGYsxrsbDq3WoVku4LJiFeG',
+      name: this.formData.walletName,
+      parentAddress: this.formData.parentAddress,
       bwsurl: this.formData.bwsurl,
       mnemonic: this.formData.recoveryPhrase,
       networkName: this.config.getDefaults().network.name,
