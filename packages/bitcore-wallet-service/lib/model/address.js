@@ -23,6 +23,8 @@ Address.create = function(opts) {
   x.network = Bitcore.Address(x.address).toObject().network;
   x.type = opts.type || Constants.SCRIPT_TYPES.P2SH;
   x.hasActivity = undefined;
+  x.signed = opts.signed || false;
+  x.refid = opts.refid;
   return x;
 };
 
@@ -39,6 +41,9 @@ Address.fromObj = function(obj) {
   x.publicKeys = obj.publicKeys;
   x.type = obj.type || Constants.SCRIPT_TYPES.P2SH;
   x.hasActivity = obj.hasActivity;
+  x.signed = obj.signed;
+  x.refid = obj.refid;
+
   return x;
 };
 
@@ -49,6 +54,10 @@ Address._deriveAddress = function(scriptType, publicKeyRing, path, m, network) {
     var xpub = new Bitcore.HDPublicKey(item.xPubKey);
     return xpub.deriveChild(path).publicKey;
   });
+
+  console.log('publicKeys', publicKeys[0].toString());
+  console.log('_deriveAddress: path', path);
+
 
   var bitcoreAddress;
   switch (scriptType) {
