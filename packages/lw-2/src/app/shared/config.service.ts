@@ -101,6 +101,10 @@ interface Config {
   // Custom Aliases 
   // Stored like: aliasFor[WalletId] = "Full Wallet"
   aliasFor?: object;
+
+  network: {
+    name: string;
+  }
 };
 
 const configDefault: Config = {
@@ -131,7 +135,7 @@ const configDefault: Config = {
 
   // Bitcore wallet service URL
   bws: {
-    url: 'http://localhost:3232/bws/api'
+    url: 'https://stage.mws.merit.me/bws/api'
   },
 
   download: {
@@ -191,6 +195,10 @@ const configDefault: Config = {
 
   log: {
     filter: 'debug'
+  },
+
+  network: {
+    name: 'testnet'
   }
 };
 
