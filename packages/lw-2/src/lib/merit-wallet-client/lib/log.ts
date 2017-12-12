@@ -7,11 +7,11 @@ let DEFAULT_LOG_LEVEL = 'silent';
  *
  * Usage:
  * <pre>
- *   log = new Logger('copay');
+ *   log = new Logger('merit');
  *   log.setLevel('info');
  *   log.debug('Message!'); // won't show
  *   log.setLevel('debug');
- *   log.debug('Message!', 1); // will show '[debug] copay: Message!, 1'
+ *   log.debug('Message!', 1); // will show '[debug] merit: Message!, 1'
  * </pre>
  *
  * @param {string} name - a name for the logger. This will show up on every log call
