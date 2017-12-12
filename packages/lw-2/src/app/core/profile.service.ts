@@ -301,7 +301,7 @@ export class ProfileService {
     });
   }
 
-  private addLastKnownBalance(wallet: MeritWalletClient): Promise<any> {
+  private addLastKnownBalance(wallet: MeritWalletClient): Promise<void> {
     return new Promise((resolve, reject) => {
       let now = Math.floor(Date.now() / 1000);
       let showRange = 600; // 10min;
@@ -320,7 +320,7 @@ export class ProfileService {
     });
   }
 
-  public setLastKnownBalance(wid: string, balance: number): Promise<any> {
+  public setLastKnownBalance(wid: string, balance: number): Promise<void> {
     return new Promise((resolve, reject) => {
       this.persistenceService.setBalanceCache(wid, { balance: balance, updatedOn: Math.floor(Date.now() / 1000), });
       return resolve();
@@ -500,7 +500,7 @@ export class ProfileService {
     Wallet-related Methods
   */
 
-  public importWallet(str: string, opts: any): Promise<any> {
+  public importWallet(str: string, opts: any): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
       let walletClient = this.bwcService.getClient(null, opts);
 
@@ -532,7 +532,7 @@ export class ProfileService {
 
       return this.addAndBindWalletClient(walletClient, {
         bwsurl: opts.bwsurl
-      }).then((wallet: any) => {
+      }).then((wallet) => {
         return this.setMetaData(wallet, addressBook).then(() => {
           return resolve(wallet);
         }).catch((err: any) => {
@@ -546,7 +546,7 @@ export class ProfileService {
   }
 
   // Adds and bind a new client to the profile
-  public addAndBindWalletClient(wallet: MeritWalletClient, opts: any): Promise<any> {
+  public addAndBindWalletClient(wallet: MeritWalletClient, opts: any): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
       if (!wallet || !wallet.credentials) {
         return reject('Could not access wallet'); // TODO gettextCatalog
