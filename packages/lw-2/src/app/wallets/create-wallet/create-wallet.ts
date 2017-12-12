@@ -4,6 +4,7 @@ import { ConfigService } from "merit/shared/config.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
+import { Logger } from 'merit/core/logger';
 
 
 @IonicPage({
@@ -35,7 +36,8 @@ export class CreateWalletView {
     private walletService:WalletService,
     private loadCtrl:LoadingController,
     private toastCtrl:MeritToastController,
-    private modalCtrl:ModalController
+    private modalCtrl:ModalController, 
+    private logger: Logger
   ) {
     this.formData.bwsurl = config.getDefaults().bws.url;
     this.defaultBwsUrl = config.getDefaults().bws.url;
@@ -82,7 +84,6 @@ export class CreateWalletView {
     });
     loader.present();
 
-    try {
 
       let wallet = await this.walletService.createWallet(opts);
       if (this.formData.hideBalance) await this.walletService.setHiddenBalanceOption(wallet.id, this.formData.hideBalance);
@@ -92,15 +93,21 @@ export class CreateWalletView {
         colorOpts.colorFor[wallet.id] = this.formData.color;
         await this.config.set(colorOpts);
       }
+      // We should callback to the wallets list page to let it know that there is a new wallet
+      // and that it should updat it's list.
+      let callback = this.navParams.get("updateWalletListCB");
+      return loader.dismiss().then(() => {
+      return callback().then(() => {
+        this.navCtrl.pop();
+      });
+    }).catch((err) => {
       loader.dismiss();
-      this.navCtrl.pop();
-    } catch (err) {
-      loader.dismiss();
+      this.logger.error(err);
       this.toastCtrl.create({
         message: JSON.stringify(err),
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
-    }
+    });
 
   }
 
