@@ -54,6 +54,10 @@ export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, 'assets/i18n');
   }
 
+export function loadConfigs(appService) {
+  return () => appService.getInfo();
+}
+
   // Ideally, we can remove the transaction dependency.
 @NgModule({ 
     imports: [
@@ -94,7 +98,7 @@ export function createTranslateLoader(http: HttpClient) {
         AppService,
         ConfigService,
         AndroidFingerprintAuth,
-        TouchID, 
+        TouchID,
         TouchIdService, 
         EasyReceiveService, 
         DeepLinkService,
@@ -107,9 +111,9 @@ export function createTranslateLoader(http: HttpClient) {
         FCM,
         {
             provide: APP_INITIALIZER,
-            useFactory: (app: AppService) => () => app.getInfo(),
-            deps: [AppService, LanguageService],
-            multi: true 
+            useFactory: loadConfigs,
+            deps: [AppService],
+            multi: true
         }
     ]
 })
