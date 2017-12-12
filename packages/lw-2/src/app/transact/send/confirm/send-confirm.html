@@ -1,7 +1,7 @@
 <ion-header>
-  <ion-navbar color="secondary">
-    <ion-title>Confirm</ion-title>
-  </ion-navbar>
+    <ion-navbar color="secondary">
+        <ion-title>Confirm</ion-title>
+    </ion-navbar>
 </ion-header>
 
 
@@ -11,31 +11,30 @@
 
         <span *ngIf="viewData">
             <div class="title">Recipient</div>
-            <div >{{viewData.recipientName}}</div>
+            <div>{{viewData.recipientName}}</div>
 
 
             <div class="title">Amount</div>
-            <div >{{ viewData.amountMrt }} MRT ({{ viewData.amountFiat}})</div>
+            <div>{{ viewData.amountMrt }} MRT ({{ viewData.amountFiat }} {{ viewData.fiatCode }})</div>
 
 
-            <div class="title" >Fee
+            <div class="title">Fee
                 <span *ngIf="viewData.feeIncluded"> included</span>
                 ({{ viewData.feePercent }})</div>
             <div>
-                {{ viewData.feeAmountMrt}} MRT ({{ viewData.feeAmountFiat }})
+                {{ viewData.feeAmountMrt}} MRT ({{ viewData.feeAmountFiat }} {{ viewData.fiatCode }})
             </div>
 
 
             <div class="title">From {{viewData.walletName}}</div>
             <div>
-                Current balance: {{ viewData.walletCurrentBalanceMrt }} MRT ({{ viewData.walletCurrentBalanceFiat }})
+                Current balance: {{ viewData.walletCurrentBalanceMrt }} MRT ({{ viewData.walletCurrentBalanceFiat }} {{ viewData.fiatCode }})
             </div>
             <div>
-                Sending: {{ viewData.totalAmountMrt}} MRT ({{ viewData.totalAmountFiat }})
-
+                Sending: {{ viewData.totalAmountMrt}} MRT ({{ viewData.totalAmountFiat }} {{ viewData.fiatCode }})
             </div>
             <div>
-                New balance: {{ viewData.walletRemainingBalanceMrt }} MRT ({{ viewData.walletRemainingBalanceFiat }})
+                New balance: {{ viewData.walletRemainingBalanceMrt }} MRT ({{ viewData.walletRemainingBalanceFiat }} {{ viewData.fiatCode }})
             </div>
 
 
@@ -49,7 +48,7 @@
     </ion-card>
 
     <div class="control-buttons">
-        <button ion-button primary margin-top (click)="approve()" [disabled]="!sendAllowed()" >Confirm and send!</button>
+        <button ion-button primary margin-top (click)="approve()" [disabled]="!sendAllowed()">Confirm and send!</button>
     </div>
 
 </ion-content>
