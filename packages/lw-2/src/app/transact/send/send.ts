@@ -211,7 +211,7 @@ export class SendView {
 
   private updateFilteredContactsDebounce = _.debounce(this.updateFilteredContacts, 200);
 
-  public updateFilteredContacts(search: string): void {
+  public updateFilteredContacts(search: string): Promise<void> {
 
     // TODO: Improve to be more resilient.
     if(search && search.length > 19) {
@@ -247,6 +247,7 @@ export class SendView {
       let tempContact = this.contactFromSearchTerm(search);
       if(tempContact) this.filteredContacts.unshift(tempContact);
     }
+    Promise.resolve();
 
   }
 
