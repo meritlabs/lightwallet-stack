@@ -132,8 +132,8 @@ export class SendConfirmView {
     let showNoPassPrompt = () => {
 
       this.alertController.create({
-        title: 'Confirm sending amount',
-        subTitle: 'Your wallet is not secure by password. We highly recommend you to add spending password in wallet settings. Process current sending?',
+        title: 'Confirm Send',
+        subTitle: 'Are you sure that you want to proceed with this transaction?',
         buttons: [
           { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop();}  },
           { text: 'Ok', handler: () => {
