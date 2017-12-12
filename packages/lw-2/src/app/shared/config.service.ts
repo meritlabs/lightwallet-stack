@@ -8,9 +8,9 @@ import { PersistenceService } from 'merit/core/persistence.service';
 import * as _ from "lodash";
 
 /*
-  Need to think about how to name this optimally, given.. 
+  Need to think about how to name this optimally, given..
   "AppService"
-*/ 
+*/
 
 interface Config {
   limits: {
@@ -98,7 +98,7 @@ interface Config {
     filter: string;
   };
 
-  // Custom Aliases 
+  // Custom Aliases
   // Stored like: aliasFor[WalletId] = "Full Wallet"
   aliasFor?: object;
 
@@ -135,7 +135,7 @@ const configDefault: Config = {
 
   // Bitcore wallet service URL
   bws: {
-    url: 'https://stage.mws.merit.me/bws/api'
+    url: 'http://localhost:3232/bws/api'
   },
 
   download: {
@@ -217,7 +217,7 @@ export class ConfigService {
         this.logger.debug('ConfigService initialized.');
       }).catch(err => {
         this.logger.warn('ConfigService could not load default config');
-      }) 
+      })
   }
 
   public load() {
@@ -236,14 +236,14 @@ export class ConfigService {
   public set(newOpts: object):Promise<any> {
     return new Promise((resolve, reject) => {
       let config = _.cloneDeep(configDefault);
-      
+
           if (_.isString(newOpts)) {
             newOpts = JSON.parse(newOpts);
           }
           _.merge(config, this.configCache, newOpts);
           this.configCache = config;
           this.events.publish('config:updated', this.configCache);
-      
+
           return this.persistence.storeConfig(this.configCache).then(() => {
             this.logger.info('Config saved');
             resolve(this.configCache);

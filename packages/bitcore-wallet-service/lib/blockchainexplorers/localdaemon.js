@@ -58,15 +58,6 @@ LocalDaemon.prototype.getInputForEasySend = function(easyScript, cb) {
   });
 };
 
-// breadcrumbs
-LocalDaemon.prototype.unlockWallet = function(referralCode, unlockAddress, cb) {
-  var self = this;
-
-  this.node.unlockWallet(referralCode, unlockAddress, function(err, response) {
-    return cb(_parseMeritdErr(err, response), response);
-  });
-};
-
 LocalDaemon.prototype.sendReferral = function(rawReferral, cb) {
   var self = this;
 
