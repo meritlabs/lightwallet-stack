@@ -2240,7 +2240,8 @@ export class API {
         const signPrivKey = this.credentials.getDerivedXPrivKey('').deriveChild(address.path).privateKey;
 
         const unlockOpts = {
-          parentAddress: Bitcore.PrivateKey.fromString(this.credentials.walletPrivKey).toPublicKey().toAddress().toString(),
+          // privKey.toPublicKey().toAddress() and privKey.toAddress() gives two different strings, but daemon treats them as same string ???
+          parentAddress: Bitcore.PrivateKey(this.credentials.walletPrivKey, this.credentials.network).toPublicKey().toAddress().toString(),
           address: address.address,
           pubkey: address.publicKeys[0],
           addressType: 1,
