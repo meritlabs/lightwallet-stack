@@ -515,8 +515,10 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
 /**
  * Unlocks an address with an unlock code.
  * @param {Object} opts
- * @param {string} opts.address - address to unlock
- * @param {string} opts.refid - signed referral id
+ * @param {string} opts.refid           - signed referral id
+ * @param {string} opts.address         - address to unlock
+ * @param {string} opts.parentAddress   - parent address used to unlock this one
+ *
  * @returns {Object} wallet
  */
 WalletService.prototype.unlockAddress = function (opts, cb) {
