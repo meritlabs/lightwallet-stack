@@ -95,6 +95,10 @@ export class SendAmountView {
 
         this.getAvailableAmount().then((amount) => {
           this.availableAmount = amount;
+          if (this.navParams.get('amount')) {
+            this.amount = this.rateService.microsToMrt(this.navParams.get('amount'));
+            this.updateTxData();
+          }
         });
         this.loading = false;
       });
@@ -146,7 +150,10 @@ export class SendAmountView {
     modal.present();
     modal.onDidDismiss((wallet) => {
       if (wallet) this.wallet = wallet;
-      this.updateTxData();
+      this.getAvailableAmount().then((amount) => {
+        this.availableAmount = amount;
+        this.updateTxData();
+      });
     });
   }
 
@@ -285,8 +292,6 @@ export class SendAmountView {
 
   private createTxp(dryRun:boolean) {
 
-    console.log('@@CREATE TXP');
-
     return this.feeService.getFeeRate(this.wallet.network, SendAmountView.FEE_LEVEL).then((feeRate) => {
 
         let data = {
@@ -410,8 +415,10 @@ export class SendAmountView {
         }
       }
       return this.walletService.createTx(wallet, txp).then((ctxp) => {
-        console.log(ctxp, "CTXP");
         return resolve(ctxp);
+      }).catch((err) => {
+        //TODO get errors from server response
+        this.feeCalcError = 'Unknown error';
       });
     });
   }
