@@ -112,6 +112,9 @@ export class ImportView {
 
   importMnemonic() {
 
+
+    let loader = this.loadingCtrl.create({content: 'importingWallet'});
+    loader.present();
     let  pathData = this.derivationPathService.parse(this.formData.derivationPath);
     if (!pathData) {
       return this.toastCtrl.create({message: 'Invalid derivation path',  cssClass: ToastConfig.CLASS_ERROR});
@@ -133,11 +136,20 @@ export class ImportView {
       importCall = this.mnemonicService.importMnemonic(this.formData.words, opts);
     }
 
-    importCall.then((wallet) => {
-      this.processCreatedWallet(wallet);
+    return importCall.then((wallet) => {
+      return this.processCreatedWallet(wallet, loader);
     }).catch((err) => {
+      loader.dismiss();
+
+      let errorMsg = 'Failed to import wallet';
+      if (err && err.message) {
+        errorMsg = err.message
+      } else if (typeof err === 'string') {
+        errorMsg = err;
+      }
+
       this.toastCtrl.create({
-        message: (err && err.message) ? err.message : 'Failed to import wallet',
+        message: errorMsg,
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     });
