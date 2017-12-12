@@ -282,7 +282,6 @@ export class WalletService {
       };
 
       return _getStatus(walletStatusHash(null), 0).then((status) => {
-        this.logger.info(status);
         return resolve(status);
       }).catch((err) => {
         this.logger.warn("Error getting status: ", err);
@@ -1387,7 +1386,6 @@ export class WalletService {
    * @param wallet 
    */
   public getANV(wallet: MeritWalletClient):Promise<any> {
-    this.logger.info(wallet.credentials);
     return new Promise((resolve, reject) => {
       return this.getMainAddresses(wallet).then((addresses) => {
         if (_.isEmpty(addresses)) {
