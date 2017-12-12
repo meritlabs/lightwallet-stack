@@ -23,7 +23,6 @@ let Utils = Common.Utils;
 
 let Package = require('../../../../package.json');
 
-const DEFAULT_NET = 'testnet';
 const DEFAULT_FEE = 10000;
 
 /**
@@ -884,7 +883,7 @@ export class API {
    */
   createSpendFromVaultTx(opts: any = {}) {
 
-    var network = opts.network || DEFAULT_NET;
+    var network = opts.network || Common.Constants.DEFAULT_NET;
     var fee = opts.fee || DEFAULT_FEE;
 
     var tx = new Bitcore.Transaction();
@@ -899,7 +898,7 @@ export class API {
    */
   buildRenewVaultTx(utxos: any[], newVault: any, masterKey: any, opts: any = {}) {
 
-    var network = opts.network || DEFAULT_NET;
+    var network = opts.network || Common.Constants.DEFAULT_NET;
     var fee = opts.fee || DEFAULT_FEE;
 
     let totalAmount = _.sumBy(utxos, 'micros');
@@ -1178,9 +1177,6 @@ export class API {
 
       return r.then((res) => {
         if (!res) {
-          if(this.onConnectionError) {
-            this.onConnectionError();
-          }
           return reject(Errors.CONNECTION_ERROR);
         }
 
@@ -1200,16 +1196,10 @@ export class API {
             return reject(Errors.NOT_FOUND);
 
           if (res.status === 401) {
-            if(this.onAuthenticationError) {
-              this.onAuthenticationError();
-            }
             return reject(Errors.AUTHENTICATION_ERROR);
           }
 
           if (!res.status) { 
-            if(this.onConnectionError) {
-              this.onConnectionError();
-            }
             return reject(Errors.CONNECTION_ERROR);
           }
 
@@ -1222,9 +1212,6 @@ export class API {
         }
 
         if (res.body === '{"error":"read ECONNRESET"}') {
-          if(this.onConnectionError) {
-            this.onConnectionError();
-          }
           return reject(Errors.ECONNRESET_ERROR);
         }
 
@@ -1234,9 +1221,18 @@ export class API {
 
         return resolve(res);
       }).catch((err) => {
-        if(this.onConnectionError) {
-          this.onConnectionError();
+        if(err == Errors.ECONNRESET_ERROR ||
+          err == Errors.CONNECTION_ERROR ||
+          err.status == null) {
+          if(this.onConnectionError) {
+            this.onConnectionError();
+          }
+        } else if (err == Errors.AUTHENTICATION_ERROR) {
+          if(this.onAuthenticationError) {
+            this.onAuthenticationError();
+          }
         }
+
         this.log.warn("Cannot complete request to server: ", err);
         return resolve();
       });
@@ -1649,7 +1645,7 @@ export class API {
 
       $.checkArgument(network || _.includes(['livenet', 'testnet'], network));
 
-      return this._doGetRequest('/v1/feelevels/?network=' + (network || 'livenet')).then((result) => {
+      return this._doGetRequest('/v1/feelevels/?network=' + (network || Common.Constants.DEFAULT_NET)).then((result) => {
         return resolve(result);
       }).catch((err) => {
         return reject(err);
@@ -1697,7 +1693,7 @@ export class API {
 
       if (opts) $.shouldBeObject(opts);
 
-      let network = opts.network || DEFAULT_NET;
+      let network = opts.network || Common.Constants.DEFAULT_NET;
       if (!_.includes(['testnet', 'livenet'], network)) return reject(new Error('Invalid network'));
 
       if (!this.credentials) {

@@ -202,7 +202,7 @@ export class Credentials {
   };
 
   constructor() {
-    let fixedNet = 'testnet';
+    let fixedNet = Constants.DEFAULT_NET;
     this.network = fixedNet;
     this.xPrivKey = (new Bitcore.HDPrivateKey(fixedNet)).toString();
     this.compliantDerivation = true;
