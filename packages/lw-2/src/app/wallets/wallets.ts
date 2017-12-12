@@ -205,6 +205,9 @@ export class WalletsView {
         case 'IncomingCoinbase':
           n.actionStr = 'Mining Reward';
           break;
+        case 'OutgoingTx':
+          n.actionStr = 'Payment Sent';
+          break;
         default:
           n.actionStr = 'Recent Transaction';
           break
