@@ -175,7 +175,7 @@ const configDefault: Config = {
   },
 
   release: {
-    url: 'https://api.github.com/repos/bitpay/copay/releases/latest'
+    url: 'https://api.github.com/repos/meritlabs/lightwallet-stack/releases/latest'
   },
 
   help: {
