@@ -83,7 +83,7 @@
     </ion-item-divider>
     <ion-item *ngIf="!wallets"><ion-spinner item-left></ion-spinner><h2>Loading...</h2></ion-item>
     <ion-list class="wallets" *ngIf="wallets">
-        <ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)" class="wallet">
+        <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)" class="wallet">
 
             <ion-avatar item-start class="btn wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
                 <img src="assets/img/icon-wallet.svg">
@@ -112,7 +112,7 @@
                 <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>
             </span>
 
-        </ion-item>
+        </button>
     </ion-list>
 
     <span class="recent-txns" *ngIf="recentTransactionsEnabled && recentTransactionsData && recentTransactionsData.length > 0">
@@ -122,13 +122,11 @@
         </ion-item-divider>
         <ion-list>
             <button ion-item *ngFor="let recentTx of recentTransactionsData" (click)="openRecentTxDetail(recentTx)">
-                <div>
-                    <span>{{recentTx.actionStr}}</span>
-                    <div class="detail">
-                        <div class="amount">{{recentTx.amountStr}}</div>
-                        <div class="date">{{recentTx.fiatAmountStr}}</div>
-                    </div>
-                </div>
+                <h2>{{recentTx.actionStr}}</h2>
+                    <span class="detail" item-end>
+                        <span class="amount">{{recentTx.amountStr}}</span>
+                        <div class="detail-fiat">{{recentTx.fiatAmountStr}}</div>
+                    </span>
             </button>
         </ion-list>
     </span>
