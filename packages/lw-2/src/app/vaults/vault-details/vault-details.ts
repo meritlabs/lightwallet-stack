@@ -66,13 +66,14 @@ export class VaultDetailsView {
         });
       }),
       // fetch users vaults
-      this.getAllVaults().then((vaults) => {
-        return _.map(vaults, (v) => {
-          const name = v.name || v._id;
-          const addr = new this.bitcore.Address(v.address).toString();
-          return { id: v._id, name: name, address: addr, type: 'vault' };
-        });
-      }),
+      // ToDo: uncomment when vaults support vault addresses in whitelists
+      // this.getAllVaults().then((vaults) => {
+      //   return _.map(vaults, (v) => {
+      //     const name = v.name || v._id;
+      //     const addr = new this.bitcore.Address(v.address).toString();
+      //     return { id: v._id, name: name, address: addr, type: 'vault' };
+      //   });
+      // }),
       // fetch coins
     ]).then((arr: Array<Array<any>>) => {
       const whitelistCandidates = _.flatten(arr);

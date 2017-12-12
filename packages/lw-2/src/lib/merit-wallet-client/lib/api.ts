@@ -42,7 +42,7 @@ export interface InitOptions {
 }
 
 export class API {
-  public BASE_URL = 'http://localhost:3232/bws/api';  
+  public BASE_URL = 'https://stage.mws.merit.me/bws/api';  
   public request: any;
   public baseUrl: string;
   public payProHttp: string;
@@ -93,6 +93,9 @@ export class API {
   public displayAddress: string;
   public miningRewards: string;
   public ambassadorRewards: string;
+  public onConnectionError: any;
+  public onAuthenticationError: any;
+  public onConnectionRestored: any;
 
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -122,6 +125,18 @@ export class API {
     this._disposeNotifications();
     this._logout();
   };
+
+  setOnConnectionError(cb: any) {
+    this.onConnectionError = cb;
+  }
+
+  setOnAuthenticationError(cb: any) {
+    this.onAuthenticationError = cb;
+  }
+
+  setOnConnectionRestored(cb: any) {
+    this.onConnectionRestored = cb;
+  }
 
   _fetchLatestNotifications(interval): Promise<any> {
     this.log.info("_fetchLatestNotifications called.");
@@ -1163,6 +1178,9 @@ export class API {
 
       return r.then((res) => {
         if (!res) {
+          if(this.onConnectionError) {
+            this.onConnectionError();
+          }
           return reject(Errors.CONNECTION_ERROR);
         }
 
@@ -1181,8 +1199,19 @@ export class API {
           if (res.status === 404)
             return reject(Errors.NOT_FOUND);
 
-          if (!res.status)
+          if (res.status === 401) {
+            if(this.onAuthenticationError) {
+              this.onAuthenticationError();
+            }
+            return reject(Errors.AUTHENTICATION_ERROR);
+          }
+
+          if (!res.status) { 
+            if(this.onConnectionError) {
+              this.onConnectionError();
+            }
             return reject(Errors.CONNECTION_ERROR);
+          }
 
           this.log.error('HTTP Error:' + res.status);
 
@@ -1192,17 +1221,27 @@ export class API {
           return reject(this._parseError(res.body));
         }
 
-        if (res.body === '{"error":"read ECONNRESET"}')
+        if (res.body === '{"error":"read ECONNRESET"}') {
+          if(this.onConnectionError) {
+            this.onConnectionError();
+          }
           return reject(Errors.ECONNRESET_ERROR);
+        }
+
+        if(this.onConnectionRestored) {
+          this.onConnectionRestored();
+        }
 
         return resolve(res);
       }).catch((err) => {
+        if(this.onConnectionError) {
+          this.onConnectionError();
+        }
         this.log.warn("Cannot complete request to server: ", err);
         return resolve();
       });
     });
   };
-
 
   private _login(): Promise<any> {
     return this._doPostRequest('/v1/login', {});

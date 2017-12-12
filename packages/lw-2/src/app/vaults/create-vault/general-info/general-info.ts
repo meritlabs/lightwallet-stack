@@ -65,21 +65,22 @@ export class CreateVaultGeneralInfoView {
     });
 
     // fetch users vaults
-    this.getAllVaults().then((vaults) => {
-      const vaultDTOs = _.map(vaults, (v: any) => {
-        const name = v.name || v._id;
-        const key = new this.bitcore.Address(v.address).toString();
-        this.logger.info(key);
-        return { id: v._id, name: name, address: key, type: 'vault' };
-      });
-      this.logger.info('walletDTOs', vaultDTOs);
-      this.whitelistCandidates = this.whitelistCandidates.concat(vaultDTOs);
-    }).catch((err) => {
-      this.toastCtrl.create({
-        message: 'Failed to update vaults info',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
-    });
+    // ToDo: uncomment when vaults support vault addresses in whitelists
+    // this.getAllVaults().then((vaults) => {
+    //   const vaultDTOs = _.map(vaults, (v: any) => {
+    //     const name = v.name || v._id;
+    //     const key = new this.bitcore.Address(v.address).toString();
+    //     this.logger.info(key);
+    //     return { id: v._id, name: name, address: key, type: 'vault' };
+    //   });
+    //   this.logger.info('walletDTOs', vaultDTOs);
+    //   this.whitelistCandidates = this.whitelistCandidates.concat(vaultDTOs);
+    // }).catch((err) => {
+    //   this.toastCtrl.create({
+    //     message: 'Failed to update vaults info',
+    //     cssClass: ToastConfig.CLASS_ERROR
+    //   }).present();
+    // });
   }
 
   toDeposit() {
