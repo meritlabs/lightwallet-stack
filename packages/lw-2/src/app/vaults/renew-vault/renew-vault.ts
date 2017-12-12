@@ -97,7 +97,7 @@ export class VaultRenewView {
     }).then((whitelist) => {
       newVault.whitelist = _.map(whitelist, (a) => {return a.toBuffer()});
       newVault.masterKey = this.formData.masterKey;
-      newVault.vaultName = this.formData.vaultName;
+      newVault.name = this.formData.vaultName;
       this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });      
     });
   }
@@ -131,13 +131,14 @@ export class VaultRenewView {
         });
       }), 
       // fetch users vaults
-      this.getAllWVaults().then((vaults) => {
-        return _.map(vaults, (v) => {
-          const name = v.name || v._id;
-          const addr = new this.bitcore.Address(v.address).toString();
-          return { 'id': v._id, 'name': name, 'address': addr, 'type': 'vault' }; 
-        });
-      }),
+      // ToDo: uncomment when vaults support vault addresses in whitelists
+      // this.getAllWVaults().then((vaults) => {
+      //   return _.map(vaults, (v) => {
+      //     const name = v.name || v._id;
+      //     const addr = new this.bitcore.Address(v.address).toString();
+      //     return { 'id': v._id, 'name': name, 'address': addr, 'type': 'vault' }; 
+      //   });
+      // }),
     ]).then((arr: Array<Array<IWhitelistEntry>>) => {
       const whitelistCandidates = _.flatten(arr);
       const filtered = _.reject(whitelistCandidates, { id: this.vault._id });

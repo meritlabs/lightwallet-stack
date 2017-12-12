@@ -44,7 +44,6 @@ export class MeritLightWallet {
     private FCM: FCM,
     private pushNotificationService: PushNotificationsService
   ) {
-
     process.on('unhandledRejection', this.logger.info.bind(console));
     Promise.config({
       longStackTraces: true

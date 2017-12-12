@@ -392,8 +392,9 @@ export class WalletService {
         skip: skip,
         limit: limit
       }).then((txsFromServer: Array<any>) => {
-        if (!txsFromServer || !txsFromServer.length)
+        if (!txsFromServer || !txsFromServer.length) {
           return resolve();
+        }
 
         if (endingTxid) {
           res = _.takeWhile(txsFromServer, (tx) => {
@@ -416,22 +417,21 @@ export class WalletService {
   private updateLocalTxHistory(wallet: MeritWalletClient, opts: any) {
     return new Promise((resolve, reject) => {
       opts = opts ? opts : {};
-      let FIRST_LIMIT = 5;
-      let LIMIT = 50;
+      const FIRST_LIMIT = 5;
+      const LIMIT = 50;
       let requestLimit = FIRST_LIMIT;
-      let walletId = wallet.credentials.walletId;
+      const walletId = wallet.credentials.walletId;
       let progressFn = opts.progressFn || function () { };
       let foundLimitTx = [];
-
 
       if (opts.feeLevels) {
         opts.lowAmount = this.getLowAmount(wallet, opts.feeLevels);
       };
 
-      let fixTxsUnit = (txs: any): void => {
+      const fixTxsUnit = (txs: any): void => {
         if (!txs || !txs[0] || !txs[0].amountStr) return;
 
-        let cacheCoin: string = txs[0].amountStr.split(' ')[1];
+        const cacheCoin: string = txs[0].amountStr.split(' ')[1];
 
         if (cacheCoin == 'bits') {
 
@@ -447,27 +447,27 @@ export class WalletService {
 
         fixTxsUnit(txsFromLocal);
 
-        var confirmedTxs = this.removeAndMarkSoftConfirmedTx(txsFromLocal);
-        var endingTxid = confirmedTxs[0] ? confirmedTxs[0].txid : null;
-        var endingTs = confirmedTxs[0] ? confirmedTxs[0].time : null;
+        const confirmedTxs = this.removeAndMarkSoftConfirmedTx(txsFromLocal);
+        const endingTxid = confirmedTxs[0] ? confirmedTxs[0].txid : null;
+        const endingTs = confirmedTxs[0] ? confirmedTxs[0].time : null;
 
         // First update
         progressFn(txsFromLocal, 0);
         wallet.completeHistory = txsFromLocal;
 
-        let getNewTxs = (newTxs: Array<any> = [], skip: number): Promise<any> => {
+        const getNewTxs = (newTxs: Array<any> = [], skip: number): Promise<any> => {
           return new Promise((resolve, reject) => {
             return this.getTxsFromServer(wallet, skip, endingTxid, requestLimit).then((result: any) => {
               // If we haven't bubbled up an error in the promise chain, and this is empty, 
               // then we can assume there are no TXs for this wallet. 
               if (!result) {
-                return resolve([]);
+                return resolve(newTxs);
               }
 
               this.logger.warn("@@ RESULT from getTxsFromServer");
               this.logger.warn(result);
-              var res = result.res;
-              var shouldContinue = result.shouldContinue ? result.shouldContinue : false;
+              const res = result.res;
+              const shouldContinue = !!result.shouldContinue;
 
               return this.processNewTxs(wallet, _.compact(res)).then((pTxs) => {
                 newTxs = newTxs.concat(pTxs);
@@ -517,8 +517,7 @@ export class WalletService {
             return x.txid;
           });
 
-
-          let updateNotes = (): Promise<any> => {
+          const updateNotes = (): Promise<any> => {
             return new Promise((resolve, reject) => {
               if (!endingTs) return resolve();
 
@@ -559,7 +558,7 @@ export class WalletService {
             }
             // </HACK>
 
-            var historyToSave = JSON.stringify(newHistory);
+            const historyToSave = JSON.stringify(newHistory);
             _.each(txs, (tx: any) => {
               tx.recent = true;
             });
@@ -1388,20 +1387,20 @@ export class WalletService {
    * @param wallet 
    */
   public getANV(wallet: MeritWalletClient):Promise<any> {
-    this.logger.info("Getting ANV!!");
     this.logger.info(wallet.credentials);
     return new Promise((resolve, reject) => {
       return this.getMainAddresses(wallet).then((addresses) => {
-        this.logger.info("What is the address list?", addresses);
+        if (_.isEmpty(addresses)) {
+          this.logger.info("Addresses are empty!  Defaulting ANV to Zero");
+          return resolve(0);
+        }
         return wallet.getANV(addresses).then((anv) => {
-          this.logger.info("What is the ANV: ", anv);
           return resolve(anv);
         })
       });
     });
   }
 
-  //: {mining: number, ambassador: number}
   /** 
    * Gets the aggregate rewards for a list of addresses.  
    * @param wallet 
@@ -1413,6 +1412,10 @@ export class WalletService {
     
     return new Promise((resolve, reject) => {
       return this.getMainAddresses(wallet).then((addresses) => {  
+        if (_.isEmpty(addresses)) {
+          this.logger.info("Addresses are empty!  Defaulting rewards to Zero");          
+          return resolve( {mining: 0, ambassador: 0} );
+        }
         return wallet.getRewards(addresses).then((rewards: MWSRewardsResponse) => {
           let totalRewards:FilteredRewards  =  _.reduce(rewards, (totalR: any, reward:any) => {
             if (!_.isEmpty(reward.rewards)) {

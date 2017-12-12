@@ -43,7 +43,7 @@ const FIELDS = [
   'version',
 ];
 
-function _checkNetwork(network: string) {
+function _checkNetwork(network: string): void {
   if (!_.includes(['livenet', 'testnet'], network)) throw new Error('Invalid network');
 };
 
@@ -90,7 +90,7 @@ export class Credentials {
     'it': Mnemonic.Words.ITALIAN,
   };
 
-  public static create = function(network) {
+  public static create = function(network): Credentials {
     _checkNetwork(network);
   
     let x = new Credentials();
@@ -102,7 +102,7 @@ export class Credentials {
     return x;
   };
 
-  public static createWithMnemonic = function(network, passphrase, language, account, opts: any = {}) {
+  public static createWithMnemonic = function(network, passphrase, language, account, opts: any = {}): Credentials {
     _checkNetwork(network);
     if (!this.wordsForLang[language]) throw new Error('Unsupported language');
     $.shouldBeNumber(account);
@@ -124,7 +124,7 @@ export class Credentials {
     return x;
   };
 
-  public static fromExtendedPrivateKey = function(xPrivKey, account, derivationStrategy, opts: any = {}) {
+  public static fromExtendedPrivateKey = function(xPrivKey, account, derivationStrategy, opts: any = {}): Credentials {
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
   
@@ -137,7 +137,7 @@ export class Credentials {
     return x;
   };
 
-  public static fromMnemonic = function(network, words, passphrase, account, derivationStrategy, opts: any = {}) {
+  public static fromMnemonic = function(network, words, passphrase, account, derivationStrategy, opts: any = {}): Credentials {
     _checkNetwork(network);
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
@@ -156,7 +156,7 @@ export class Credentials {
     return x;
   };
 
-  public static fromExtendedPublicKey = function(xPubKey, source, entropySourceHex, account, derivationStrategy, opts: any = {}) {
+  public static fromExtendedPublicKey = function(xPubKey, source, entropySourceHex, account, derivationStrategy, opts: any = {}): Credentials {
     $.checkArgument(entropySourceHex);
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
@@ -176,12 +176,12 @@ export class Credentials {
     return x;
   };
 
-  private _getNetworkFromExtendedKey = function(xKey) {
+  private _getNetworkFromExtendedKey = function(xKey): string {
     $.checkArgument(xKey && _.isString(xKey));
     return xKey.charAt(0) == 't' ? 'testnet' : 'livenet';
   };
 
-  public static fromObj = function(obj) {
+  public static fromObj = function(obj): Credentials {
     let x = new Credentials();
   
     _.each(FIELDS, function(k) {
@@ -211,7 +211,7 @@ export class Credentials {
     this.account = 0;
   }
 
-   public Mnemonic = function(network, passphrase, language, account, opts) {
+   public Mnemonic = function(network, passphrase, language, account, opts): Credentials {
     if (!this.wordsForLang[language]) throw new Error('Unsupported language');
     $.shouldBeNumber(account);
 
@@ -234,7 +234,7 @@ export class Credentials {
     return x;
   };
 
-  public edPrivateKey = function(xPrivKey, account, derivationStrategy, opts: any = {}) {
+  public edPrivateKey = function(xPrivKey, account, derivationStrategy, opts: any = {}): Credentials {
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
 
@@ -248,7 +248,7 @@ export class Credentials {
   };
 
   // note that mnemonic / passphrase is NOT stored
-  public ic = function(network, words, passphrase, account, derivationStrategy, opts: any = {}) {
+  public ic = function(network, words, passphrase, account, derivationStrategy, opts: any = {}): Credentials {
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
 
@@ -277,7 +277,7 @@ export class Credentials {
   * entropySource should be a HEX string containing pseudo-random data, that can
   * be deterministically derived from the xPrivKey, and should not be derived from xPubKey
   */
-  public edPublicKey = function(xPubKey, source, entropySourceHex, account, derivationStrategy, opts: any = {}) {
+  public edPublicKey = function(xPubKey, source, entropySourceHex, account, derivationStrategy, opts: any = {}): Credentials {
     $.checkArgument(entropySourceHex);
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
@@ -298,7 +298,7 @@ export class Credentials {
   };
 
   // Get network from extended private key or extended public key
-  public getNetworkFromExtendedKey = function(xKey) {
+  public getNetworkFromExtendedKey = function(xKey): string {
     $.checkArgument(xKey && _.isString(xKey));
     return xKey.charAt(0) == 't' ? 'testnet' : 'livenet';
   };
@@ -316,7 +316,7 @@ export class Credentials {
   };
 
 
-  public _expand = function() {
+  public _expand = function(): void {
     $.checkState(this.xPrivKey || (this.xPubKey && this.entropySource));
 
     let deriveFn = _.noop;
@@ -374,7 +374,7 @@ export class Credentials {
     }];
   };
 
-  public fromObj = function(obj) {
+  public fromObj = function(obj): Credentials {
     let x = new Credentials();
 
     _.each(FIELDS, function(k) {
@@ -399,7 +399,7 @@ export class Credentials {
     return x;
   };
 
-  public getBaseAddressDerivationPath = function() {
+  public getBaseAddressDerivationPath = function(): string {
     let purpose;
     switch (this.derivationStrategy) {
       case Constants.DERIVATION_STRATEGIES.BIP45:
@@ -425,7 +425,7 @@ export class Credentials {
     return deriveFn(path);
   };
 
-  public addWalletPrivateKey = function(walletPrivKey) {
+  public addWalletPrivateKey = function(walletPrivKey): void {
     this.walletPrivKey = walletPrivKey;
     this.sharedEncryptingKey = Utils.privateKeyToAESKey(walletPrivKey);
   };
@@ -472,7 +472,7 @@ export class Credentials {
     return (!!this.xPrivKeyEncrypted) && !this.xPrivKey;
   };
 
-  public encryptPrivateKey = function(password, opts) {
+  public encryptPrivateKey = function(password, opts): void {
     if (this.xPrivKeyEncrypted)
       throw new Error('Private key already encrypted');
 
@@ -491,7 +491,7 @@ export class Credentials {
     delete this.mnemonic;
   };
 
-  public decryptPrivateKey = function(password) {
+  public decryptPrivateKey = function(password): void {
     if (!this.xPrivKeyEncrypted)
       throw new Error('Private key is not encrypted');
 
@@ -529,28 +529,28 @@ export class Credentials {
     return keys;
   };
 
-  public addPublicKeyRing = function(publicKeyRing) {
+  public addPublicKeyRing = function(publicKeyRing): void {
     this.publicKeyRing = _.clone(publicKeyRing);
   };
 
-  public canSign = function() {
+  public canSign = function(): boolean {
     return (!!this.xPrivKey || !!this.xPrivKeyEncrypted);
   };
 
-  public setNoSign = function() {
+  public setNoSign = function(): void {
     delete this.xPrivKey;
     delete this.xPrivKeyEncrypted;
     delete this.mnemonic;
     delete this.mnemonicEncrypted;
   };
 
-  public isComplete = function() {
+  public isComplete = function(): boolean {
     if (!this.m || !this.n) return false;
     if (!this.publicKeyRing || this.publicKeyRing.length != this.n) return false;
     return true;
   };
 
-  public hasExternalSource = function() {
+  public hasExternalSource = function(): boolean {
     return (typeof this.externalSource == "string");
   };
 
@@ -566,7 +566,7 @@ export class Credentials {
     return this.mnemonic;
   };
 
-  public clearMnemonic = function() {
+  public clearMnemonic = function(): void {
     delete this.mnemonic;
     delete this.mnemonicEncrypted;
   };

@@ -90,7 +90,7 @@ export class NetworkView {
     let formatPromises: Array<Promise<any>> = [];
     let newDWallets: Array<DisplayWallet> = [];
     return Promise.each(wallets, (dWallet: DisplayWallet) => {
-      if (dWallet.totalNetworkValueMicro) {
+      if (!_.isNil(dWallet.totalNetworkValueMicro)) {
         dWallet.totalNetworkValueMerit = this.txFormatService.parseAmount(dWallet.totalNetworkValueMicro, 'micros').amountUnitStr;
         formatPromises.push(this.txFormatService.formatToUSD(dWallet.totalNetworkValueMicro).then((usdAmount) => {
           dWallet.totalNetworkValueFiat = new FiatAmount(usdAmount).amountStr;
@@ -98,7 +98,7 @@ export class NetworkView {
         }));
       }
 
-      if (dWallet.miningRewardsMicro) {
+      if (!_.isNil(dWallet.miningRewardsMicro)) {
         dWallet.miningRewardsMerit = this.txFormatService.parseAmount(dWallet.miningRewardsMicro, 'micros').amountUnitStr;
         formatPromises.push(this.txFormatService.formatToUSD(dWallet.miningRewardsMicro).then((usdAmount) => {
           dWallet.miningRewardsFiat = new FiatAmount(usdAmount).amountStr;
@@ -106,7 +106,7 @@ export class NetworkView {
         }));
       }
 
-      if (dWallet.ambassadorRewardsMicro) {
+      if (!_.isNil(dWallet.ambassadorRewardsMicro)) {
         dWallet.ambassadorRewardsMerit = this.txFormatService.parseAmount(dWallet.ambassadorRewardsMicro, 'micros').amountUnitStr;
         formatPromises.push(this.txFormatService.formatToUSD(dWallet.ambassadorRewardsMicro).then((usdAmount) => {
           dWallet.ambassadorRewardsFiat = new FiatAmount(usdAmount).amountStr;
@@ -144,7 +144,9 @@ export class NetworkView {
         });
       }).then((processedWallets: DisplayWallet[]) => {
         return this.formatNetworkInfo(processedWallets).then((readyForDisplay: DisplayWallet[]) => {
-          this.displayWallets = readyForDisplay;
+          this.zone.run(() => {
+            this.displayWallets = readyForDisplay;
+          });
         });
       });
     }).catch((err) => {

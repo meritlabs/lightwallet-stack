@@ -28,7 +28,6 @@ export class ImportView {
   @ViewChild('fileInput') input:ElementRef;
 
   public segment = 'phrase';
-
   public formData = {
     words: '',
     phrasePassword: '',
@@ -62,8 +61,12 @@ export class ImportView {
   ) {
 
     this.formData.bwsUrl = config.getDefaults().bws.url;
-    this.formData.derivationPath = this.derivationPathService.getDefault();
-
+    this.formData.network = config.getDefaults().network.name;
+    this.formData.derivationPath =
+      this.formData.network == 'livenet' ?
+      this.derivationPathService.getDefault() :
+      this.derivationPathService.getDefaultTestnet();
+      
     this.sjcl = this.bwcService.getSJCL();
   }
 
