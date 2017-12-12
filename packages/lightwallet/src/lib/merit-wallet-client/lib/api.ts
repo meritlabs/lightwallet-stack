@@ -41,7 +41,7 @@ export interface InitOptions {
 }
 
 export class API {
-  public BASE_URL = 'https://stage.mws.merit.me/bws/api';
+  public BASE_URL = 'http://localhost:3232/bws/api';
   public request: any;
   public baseUrl: string;
   public payProHttp: string;
@@ -2201,9 +2201,7 @@ export class API {
 
   /**
    * unlock an address with referral signature
-   * @param {Object} opts
-   * @param {Address} opts.referral - data for required referral
-   * @param {PublicKey} opts.pubkey       - (optional) pubkey of beaconing address. omitted for script
+   * @param {Referral} opts
    */
   signAddressAndUnlock(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);

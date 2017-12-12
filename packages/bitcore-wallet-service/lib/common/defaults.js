@@ -19,7 +19,7 @@ Defaults.BACKOFF_OFFSET = 10;
 // Time a copayer need to wait to create a new tx after her previous proposal was rejected. in seconds.
 Defaults.BACKOFF_TIME = 600;
 
-Defaults.MAX_MAIN_ADDRESS_GAP = 20;
+Defaults.MAX_MAIN_ADDRESS_GAP = 200;
 
 // TODO: should allow different gap sizes for external/internal chains
 Defaults.SCAN_ADDRESS_GAP = Defaults.MAX_MAIN_ADDRESS_GAP + 20;

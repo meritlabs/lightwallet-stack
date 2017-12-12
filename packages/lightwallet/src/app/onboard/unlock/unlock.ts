@@ -52,7 +52,7 @@ export class UnlockView {
     });
   }
 
-  createAndUnlockWallet(): Promise<any> {
+  createWallet(): Promise<any> {
     if (!this.formData.parentAddress) {
       this.unlockState = 'fail';
       return;
@@ -65,8 +65,8 @@ export class UnlockView {
       .createDefaultWallet(this.formData.parentAddress)
       .then(wallet => {
         this.logger.info('Created a new default wallet!');
-        this.logger.debug('created wallet', wallet);
         loader.dismiss();
+
         if (this.config.get().pushNotificationsEnabled) {
           this.logger.info('Subscribing to push notifications for default wallet');
           this.pushNotificationService.subscribe(wallet);
