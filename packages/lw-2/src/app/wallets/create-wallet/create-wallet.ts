@@ -4,6 +4,12 @@ import { ConfigService } from "merit/shared/config.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
+import { Logger } from 'merit/core/logger';
+
+import * as _ from "lodash";
+import * as Promise from 'bluebird';
+
+
 
 
 @IonicPage({
@@ -26,19 +32,27 @@ export class CreateWalletView {
     hideBalance: false
   }
 
-  public defaultBwsUrl:string;
+  public defaultBwsUrl: string;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private config:ConfigService,
-    private walletService:WalletService,
-    private loadCtrl:LoadingController,
-    private toastCtrl:MeritToastController,
-    private modalCtrl:ModalController
+    private config: ConfigService,
+    private walletService: WalletService,
+    private loadCtrl: LoadingController,
+    private toastCtrl: MeritToastController,
+    private modalCtrl: ModalController,
+    private logger: Logger
   ) {
     this.formData.bwsurl = config.getDefaults().bws.url;
     this.defaultBwsUrl = config.getDefaults().bws.url;
+  }
+
+  ionViewDidEnter() {
+    let unlockCode = this.navParams.get('unlockCode');
+    if (!_.isNil(unlockCode)) {
+      this.formData.unlockCode = unlockCode;
+    }
   }
 
   isCreationEnabled() {
@@ -49,7 +63,7 @@ export class CreateWalletView {
   }
 
   selectColor() {
-    let modal = this.modalCtrl.create('SelectColorView', {color: this.formData.color});
+    let modal = this.modalCtrl.create('SelectColorView', { color: this.formData.color });
     modal.onDidDismiss((color) => {
       if (color) {
         this.formData.color = color;
@@ -82,25 +96,30 @@ export class CreateWalletView {
     });
     loader.present();
 
-    try {
 
-      let wallet = await this.walletService.createWallet(opts);
-      if (this.formData.hideBalance) await this.walletService.setHiddenBalanceOption(wallet.id, this.formData.hideBalance);
-      if (this.formData.password) await this.walletService.encrypt(wallet, this.formData.password);
-      if (this.formData.color) {
-        let colorOpts = {colorFor: {}};
-        colorOpts.colorFor[wallet.id] = this.formData.color;
-        await this.config.set(colorOpts);
-      }
+    let wallet = await this.walletService.createWallet(opts);
+    if (this.formData.hideBalance) await this.walletService.setHiddenBalanceOption(wallet.id, this.formData.hideBalance);
+    if (this.formData.password) await this.walletService.encrypt(wallet, this.formData.password);
+    if (this.formData.color) {
+      let colorOpts = { colorFor: {} };
+      colorOpts.colorFor[wallet.id] = this.formData.color;
+      await this.config.set(colorOpts);
+    }
+    // We should callback to the wallets list page to let it know that there is a new wallet
+    // and that it should updat it's list.
+    let callback = this.navParams.get("updateWalletListCB");
+    return loader.dismiss().then(() => {
+      return callback().then(() => {
+        this.navCtrl.pop();
+      });
+    }).catch((err) => {
       loader.dismiss();
-      this.navCtrl.pop();
-    } catch (err) {
-      loader.dismiss();
+      this.logger.error(err);
       this.toastCtrl.create({
         message: JSON.stringify(err),
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
-    }
+    });
 
   }
 
