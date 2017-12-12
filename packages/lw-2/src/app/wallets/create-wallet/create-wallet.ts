@@ -27,16 +27,16 @@ export class CreateWalletView {
     hideBalance: false
   }
 
-  public defaultBwsUrl:string;
+  public defaultBwsUrl: string;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private config:ConfigService,
-    private walletService:WalletService,
-    private loadCtrl:LoadingController,
-    private toastCtrl:MeritToastController,
-    private modalCtrl:ModalController, 
+    private config: ConfigService,
+    private walletService: WalletService,
+    private loadCtrl: LoadingController,
+    private toastCtrl: MeritToastController,
+    private modalCtrl: ModalController,
     private logger: Logger
   ) {
     this.formData.bwsurl = config.getDefaults().bws.url;
@@ -51,7 +51,7 @@ export class CreateWalletView {
   }
 
   selectColor() {
-    let modal = this.modalCtrl.create('SelectColorView', {color: this.formData.color});
+    let modal = this.modalCtrl.create('SelectColorView', { color: this.formData.color });
     modal.onDidDismiss((color) => {
       if (color) {
         this.formData.color = color;
@@ -85,18 +85,18 @@ export class CreateWalletView {
     loader.present();
 
 
-      let wallet = await this.walletService.createWallet(opts);
-      if (this.formData.hideBalance) await this.walletService.setHiddenBalanceOption(wallet.id, this.formData.hideBalance);
-      if (this.formData.password) await this.walletService.encrypt(wallet, this.formData.password);
-      if (this.formData.color) {
-        let colorOpts = {colorFor: {}};
-        colorOpts.colorFor[wallet.id] = this.formData.color;
-        await this.config.set(colorOpts);
-      }
-      // We should callback to the wallets list page to let it know that there is a new wallet
-      // and that it should updat it's list.
-      let callback = this.navParams.get("updateWalletListCB");
-      return loader.dismiss().then(() => {
+    let wallet = await this.walletService.createWallet(opts);
+    if (this.formData.hideBalance) await this.walletService.setHiddenBalanceOption(wallet.id, this.formData.hideBalance);
+    if (this.formData.password) await this.walletService.encrypt(wallet, this.formData.password);
+    if (this.formData.color) {
+      let colorOpts = { colorFor: {} };
+      colorOpts.colorFor[wallet.id] = this.formData.color;
+      await this.config.set(colorOpts);
+    }
+    // We should callback to the wallets list page to let it know that there is a new wallet
+    // and that it should updat it's list.
+    let callback = this.navParams.get("updateWalletListCB");
+    return loader.dismiss().then(() => {
       return callback().then(() => {
         this.navCtrl.pop();
       });
