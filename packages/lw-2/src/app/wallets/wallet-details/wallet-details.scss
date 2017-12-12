@@ -7,11 +7,11 @@ wallet-details-view {
   ion-header {
     color: color($colors, light);
     &:after {
-      display: none;
+      display: none !important;
     }
     ion-navbar,
     .toolbar-background {
-      background-color: $wallet-default-color;
+      background: transparent;
       border: none !important;
     }
   }

@@ -31,6 +31,7 @@ vault-details-view {
         color: color($colors, light);
         height: 20%;
         text-align: center;
+        background: color($colors, secondary);
     }
     .balance-header.default {
         background-color: $vault-default-color;
