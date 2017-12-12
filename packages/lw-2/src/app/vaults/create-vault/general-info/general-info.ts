@@ -81,6 +81,8 @@ export class CreateVaultGeneralInfoView {
     //     cssClass: ToastConfig.CLASS_ERROR
     //   }).present();
     // });
+
+    this.checkNextAvailable();
   }
 
   toDeposit() {
@@ -89,7 +91,6 @@ export class CreateVaultGeneralInfoView {
   }
 
   private getAllWallets(): Promise<Array<any>> {
-
     return this.profileService.getWallets().map((wallet: any) => {
       return this.walletService.getStatus(wallet).then((status) => {
         wallet.status = status;

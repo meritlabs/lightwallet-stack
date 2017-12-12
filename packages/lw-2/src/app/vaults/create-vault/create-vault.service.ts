@@ -45,7 +45,7 @@ export class CreateVaultService {
     this.model = {
       vaultName: '',
       whitelist: [],
-      amountToDeposit: "0.0",
+      amountToDeposit: null,
       amountAvailable: 0,
       masterKey: null,
       masterKeyMnemonic: '',

@@ -11,7 +11,17 @@
 
     <ion-list margin-top>
         <ion-item>
-            <ion-label translate>Available merit</ion-label>
+            <ion-label translate>Wallet</ion-label>
+            <ion-input text-right [placeholder]="'0.0'" type="text" [(ngModel)]="formData.walletName" [disabled]="true"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-label translate>Total Merit</ion-label>
+            <ion-input text-right [placeholder]="'0.0'" type="number" [(ngModel)]="formData.totalAvailable" [disabled]="true"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-label translate>Available Merit</ion-label>
             <ion-input text-right [placeholder]="'0.0'" type="number" [(ngModel)]="formData.amountAvailable" [disabled]="true"></ion-input>
         </ion-item>
     </ion-list>
