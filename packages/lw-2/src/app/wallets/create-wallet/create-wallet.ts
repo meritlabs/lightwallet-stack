@@ -6,6 +6,11 @@ import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
 import { Logger } from 'merit/core/logger';
 
+import * as _ from "lodash";
+import * as Promise from 'bluebird';
+
+
+
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -41,6 +46,13 @@ export class CreateWalletView {
   ) {
     this.formData.bwsurl = config.getDefaults().bws.url;
     this.defaultBwsUrl = config.getDefaults().bws.url;
+  }
+
+  ionViewDidEnter() {
+    let unlockCode = this.navParams.get('unlockCode');
+    if (!_.isNil(unlockCode)) {
+      this.formData.unlockCode = unlockCode;
+    }
   }
 
   isCreationEnabled() {
