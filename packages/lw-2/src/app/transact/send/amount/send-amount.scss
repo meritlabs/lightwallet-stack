@@ -2,6 +2,28 @@
 send-amount-view {
   @extend %send-module;
 
+  input::placeholder {
+    color: rgba(0,0,0,0.4);
+  }
+
+  .toggle-wrapper {
+    line-height: 50px;
+    ion-toggle {
+      vertical-align: middle  !important;
+      display: inline-block  !important;
+      margin: 0 !important;
+    }
+  }
+
+  ion-spinner {
+    vertical-align: middle;
+  }
+
+  .error {
+    color: color($colors, danger);
+  }
+
+
   .avatar {
     img, gravatar {
       border-radius: 50%;

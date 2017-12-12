@@ -1,5 +1,5 @@
 import { Component, HostListener, SecurityContext } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, LoadingController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
 import { Logger } from 'merit/core/logger';
@@ -9,6 +9,13 @@ import { RateService } from 'merit/transact/rate.service';
 import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 import { TxFormatService } from "merit/transact/tx-format.service";
 import { DomSanitizer } from '@angular/platform-browser';
+import { FeeService } from 'merit/shared/fee/fee.service'
+import { WalletService } from 'merit/wallets/wallet.service';
+import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
+import { MeritToastController } from "merit/core/toast.controller";
+import { ToastConfig } from "merit/core/toast.config";
+import { easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
+
 
 
 @IonicPage()
@@ -24,7 +31,6 @@ export class SendAmountView {
   public amount: number;
   public amountMerit: number;
   public smallFont: boolean;
-  public allowSend: boolean;
   public globalResult: string;
   public sending: boolean;
   public displayName: string;
@@ -33,10 +39,18 @@ export class SendAmountView {
   public amountCurrency:string;
   public loading:boolean;
   public hasFunds:boolean;
+  public feeIncluded:boolean = false;
+  public feeCalcError:string;
+  public feeMrt:number;
+  public feeFiat:number;
+  public feePercent:string;
 
   public availableAmount = {value: 0, formatted: ''};
 
+  private static FEE_LEVEL = 'normal'; //todo make selectable
+  private static ALLOW_UNCONFIRMED = true; //obtain from settings
 
+  private static FEE_TOO_HIGH_LIMIT_PER = 15;
   private LENGTH_EXPRESSION_LIMIT = 19;
   private SMALL_FONT_SIZE_LIMIT = 10;
   private availableUnits: Array<any> = [];
@@ -44,19 +58,24 @@ export class SendAmountView {
   private reNr: RegExp = /^[1234567890\.]$/;
   private reOp: RegExp = /^[\*\+\-\/]$/;
 
+  private txData;
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams, 
-    private log: Logger,
+    private logger: Logger,
     private profileService:ProfileService,
     private configService:ConfigService,
     private modalCtrl:ModalController,
     private rateService:RateService,
     private txFormatService:TxFormatService,
-    private sanitizer:DomSanitizer
-
+    private sanitizer:DomSanitizer,
+    private feeService:FeeService,
+    private walletService:WalletService,
+    private easySendService:EasySendService,
+    private toastCtrl:MeritToastController,
+    private loadingCtrl: LoadingController
   ) {
-    this.allowSend = false;
   }
   
   ionViewDidLoad() {
@@ -127,6 +146,7 @@ export class SendAmountView {
     modal.present();
     modal.onDidDismiss((wallet) => {
       if (wallet) this.wallet = wallet;
+      this.updateTxData();
     });
   }
 
@@ -138,16 +158,23 @@ export class SendAmountView {
     modal.present();
     modal.onDidDismiss((recipient) => {
       if(recipient) this.recipient = recipient;
+      this.updateTxData();
     });
   }
 
   toggleCurrency() {
     this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
     this.updateAmountMerit();
+    this.updateTxData();
     this.getAvailableAmount().then((amount) => {
       this.availableAmount = amount;
     });
   }
+
+  toggleFeeIncluded() {
+    this.updateTxData();
+  }
+
 
   updateAmountMerit() {
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
@@ -155,13 +182,6 @@ export class SendAmountView {
     } else {
       this.amountMerit = this.rateService.fromFiatToMerit(this.amount, this.amountCurrency);
     }
-
-  }
-
-  @HostListener('document:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
-    if (!event.key) return;
-    if (event.keyCode === 13) this.finish();
-    this.processAmount();
   }
 
   checkFontSize() {
@@ -169,43 +189,41 @@ export class SendAmountView {
     else this.smallFont = false;
   };
 
-  processAmount() {
-    this.updateAmountMerit();
+  processAmount(value) {
+    this.amount = value;
+    this.updateTxData();
   };
 
   sendAllowed() {
     return (
       this.amount > 0
       && this.amount <= this.availableAmount.value
+      && !_.isNil(this.txData.txp)
     )
   }
 
-  processResult(val: number) {
-    // TODO: implement this function correctly - Need: txFormatService, isFiat, $filter
-    this.log.info("processResult TODO");
-    /*if (this.availableUnits[this.unitIndex].isFiat) return $filter('formatFiatAmount')(val);
-    else return txFormatService.formatAmount(val.toFixed(unitDecimals) * unitToMicro, true);*/
-  };
+  toConfirm() {
+    let loadingSpinner = this.loadingCtrl.create({
+      content: "Preparing transaction...",
+      dismissOnPageChange: true
+    });
+    loadingSpinner.present();
+    let dryRun = false;
+    this.createTxp(dryRun).then(() => {
+      loadingSpinner.dismiss();
+      this.navCtrl.push('SendConfirmView', {txData: this.txData});
+    }).catch(() => {
+      loadingSpinner.dismiss();
+    });
 
-  fromFiat(val: number) {
-    // TODO: implement next line correctly - Need: rateService
-    //return parseFloat((rateService.fromFiatToMicros(val, fiatCode, availableUnits[altUnitIndex].id) * satToUnit).toFixed(unitDecimals));
-  };
 
-  toFiat(val) {
-    // TODO: implement next line correctly - Need: rateService
-    /*if (!rateService.getRate(fiatCode)) return;
-    return parseFloat((rateService.fromMicrosToFiat(val * unitToMicro, fiatCode, availableUnits[unitIndex].id)).toFixed(2));*/
-  };
 
-  finish() {
-    // TODO: We should always be sending from view.
-    this.navCtrl.push('SendConfirmView', {recipient: this.recipient, toAmount: this.amountMerit, wallet: this.wallet, toName: 'Donken Heinz'});
   }
 
   toBuyAndSell() {
     this.navCtrl.push('BuyAndSellView');
   }
+
 
   private getAvailableAmount():Promise<any> {
     return new Promise((resolve, reject) => {
@@ -228,6 +246,174 @@ export class SendAmountView {
 
   sanitizePhotoUrl(url:string) {
     return this.sanitizer.sanitize(SecurityContext.URL, url);
+  }
+
+  private updateTxData() {
+
+      this.updateAmountMerit();
+
+      this.feeCalcError = null;
+      this.feeMrt = null;
+      this.feePercent = null;
+      this.txData = {
+        txp: null,
+        wallet: this.wallet,
+        amount: this.rateService.mrtToMicro(this.amountMerit),
+        feeAmount: null,
+        totalAmount: this.rateService.mrtToMicro(this.amountMerit),
+        recipient: this.recipient,
+        feeIncluded: this.feeIncluded
+      };
+
+      if (!this.txData.amount) {
+        return this.createTxpDebounce.cancel();
+      };
+
+      if (this.txData.amount > this.rateService.mrtToMicro(this.availableAmount.value)) {
+        this.feeCalcError = 'Amount is too big';
+        return this.createTxpDebounce.cancel();
+      }
+
+      let dryRun = true;
+      this.createTxpDebounce(dryRun);
+
+  }
+
+  private createTxpDebounce = _.debounce((dryRun:boolean) => {
+    this.createTxp(dryRun);
+  }, 1000);
+
+  private createTxp(dryRun:boolean) {
+
+    console.log('@@CREATE TXP');
+
+    return this.feeService.getFeeRate(this.wallet.network, SendAmountView.FEE_LEVEL).then((feeRate) => {
+
+        let data = {
+          toAddress: this.txData.recipient.meritAddress,
+          toName: this.txData.recipient.name || '',
+          toAmount: this.txData.amount,
+          allowSpendUnconfirmed: SendAmountView.ALLOW_UNCONFIRMED,
+          feeLevelName:  SendAmountView.FEE_LEVEL
+        };
+
+        let getEasyData = () => {
+          return new Promise((resolve, reject) => {
+            if (this.recipient.sendMethod != 'address') {
+              return this.easySendService.createEasySendScriptHash(this.txData.wallet).then((easySend) => {
+                easySend.script.isOutput = true;
+                return resolve({
+                  script: easySend.script,
+                  easySendURL: easySendURL(easySend),
+                  toAddress: easySend.script.toAddress().toString()
+                });
+              });
+            } else {
+              return resolve({});
+            }
+          });
+        };
+
+        return getEasyData().then((easyData) => {
+          data = Object.assign(data, easyData);
+          return this.getTxp(_.clone(data), this.txData.wallet, dryRun).then((txpOut) => {
+
+            txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
+            return this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
+              txpOut.alternativeFeeStr = v;
+
+              let percent = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
+
+              let precision = 1;
+              if (percent > 0) {
+                while (percent*Math.pow(10, precision) < 1) {
+                  precision++;
+                }
+              }
+              precision++; //showing two valued digits
+
+              txpOut.feePercent = percent.toFixed(precision) + '%';
+
+              this.feePercent = txpOut.feePercent;
+              this.txData.feeAmount = txpOut.fee;
+              this.feeMrt = this.rateService.microsToMrt(txpOut.fee);
+              this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
+
+              this.txData.txp = txpOut;
+            }).catch((err) => {
+              this.toastCtrl.create({
+                message: err,
+                cssClass: ToastConfig.CLASS_ERROR
+              }).present();
+            })
+          });
+        });
+
+      });
+  }
+
+
+  /**
+   * Returns a promises of a TXP.
+   * TODO: TxP type should be created.
+   */
+  private getTxp(tx, wallet, dryRun): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // ToDo: use a credential's (or fc's) function for this
+      if (tx.description && !wallet.credentials.sharedEncryptingKey) {
+        return reject('Need a shared encryption key to add message!');
+      }
+
+      if (tx.toAmount > Number.MAX_SAFE_INTEGER) {
+        return reject("The amount is too big.  Because, Javascript.");
+      }
+
+      let txp:any = {};
+
+      if (tx.script) {
+        txp.outputs = [{
+          'script': tx.script.toHex(),
+          'toAddress': tx.toAddress,
+          'amount': tx.toAmount,
+          'message': tx.description
+        }];
+        txp.addressType = 'P2SH';
+      } else {
+        txp.outputs = [{
+          'toAddress': tx.toAddress,
+          'amount': tx.toAmount,
+          'message': tx.description
+        }];
+      }
+
+      if (tx.sendMaxInfo) {
+        txp.inputs = tx.sendMaxInfo.inputs;
+        txp.fee = tx.sendMaxInfo.fee;
+      } else {
+        if (this.txData.usingCustomFee) {
+          txp.feePerKb = tx.feeRate;
+        } else txp.feeLevel = tx.feeLevel;
+      }
+
+      txp.message = tx.description;
+
+      if (tx.paypro) {
+        txp.payProUrl = tx.paypro.url;
+      }
+      txp.excludeUnconfirmedUtxos = !tx.allowSpendUnconfirmed;
+      if (!dryRun) {
+        txp.dryRun = dryRun;
+        if (this.feeIncluded) {
+          txp.fee = this.txData.feeAmount;
+          txp.inputs = this.txData.txp.inputs;
+          txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
+        }
+      }
+      return this.walletService.createTx(wallet, txp).then((ctxp) => {
+        console.log(ctxp, "CTXP");
+        return resolve(ctxp);
+      });
+    });
   }
 
 }

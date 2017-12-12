@@ -47,16 +47,40 @@
 
         <div class="row">
             <span class="label" text-left>Amount</span>
-            <input type="number" text-right pattern="[0-9\.]"
+            <ion-input type="number" text-right pattern="[0-9\.]"
                    [style.flex]="1"
-                   [(ngModel)]="amount"
-                   (ngModelChange)="processAmount()"
-                   [placeholder]="'Sending amount'">
+                   (ionChange)="processAmount($event.value)"
+                   [placeholder]="'Enter sending amount'"></ion-input>
             <button ion-button clear color="primary" (click)="toggleCurrency()">
                 {{amountCurrency}}
             </button>
         </div>
         <div class="row">
+            <span class="label" text-left>Fee <span *ngIf="feePercent">({{feePercent}})</span></span>
+            <span text-right [style.flex]="1" padding-right>
+
+                <ion-spinner *ngIf="amount && !feeMrt && !feeCalcError" ></ion-spinner>
+                <span *ngIf="!amount">0.0</span>
+                <span *ngIf="amount && feeMrt">
+                    <span *ngIf="amountCurrency == 'MRT'">{{feeMrt}}</span>
+                    <span *ngIf="amountCurrency != 'MRT'">{{feeFiat}}</span>
+                    {{amountCurrency}}
+                </span>
+                <span *ngIf="feeCalcError" class="error">{{feeCalcError}}</span>
+
+            </span>
+        </div>
+        <div class="row">
+            <span class="label" text-left>Recipient pays fee.</span>
+            <span [style.flex]="1">
+
+            </span>
+            <div class="toggle-wrapper">
+                <ion-toggle [(ngModel)]="feeIncluded" (ionChange)="toggleFeeIncluded($event)"></ion-toggle>
+            </div>
+        </div>
+        <div class="row">
+
             <span class="label" text-left>Available</span>
             <span text-right [style.flex]="1" padding-right >
                 {{ availableAmount.formatted }}
@@ -65,7 +89,7 @@
 
 
         <div class="control-buttons">
-            <button ion-button primary margin-top (click)="finish()" [disabled]="!sendAllowed()" >Send</button>
+            <button ion-button primary margin-top (click)="toConfirm()" [disabled]="!sendAllowed()" >Send</button>
         </div>
 
     </span>
