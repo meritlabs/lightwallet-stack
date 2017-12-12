@@ -9,6 +9,7 @@ import { MeritContact, AddressBook } from 'merit/shared/address-book/merit-conta
 import { PlatformService } from 'merit/core/platform.service';
 import { MeritContactBuilder } from 'merit/shared/address-book/merit-contact.builder';
 import { Logger } from 'merit/core/logger';
+import { ConfigService } from 'merit/shared/config.service';
 
 
 /**
@@ -19,6 +20,7 @@ export class AddressBookService {
   constructor(
     private persistenceService: PersistenceService,
     private platformService: PlatformService,
+    private configService: ConfigService,
     private contacts:Contacts,
     private logger: Logger,
     private meritContactBuilder:MeritContactBuilder
@@ -76,7 +78,7 @@ export class AddressBookService {
 
     return this.getAllDeviceContacts().then((deviceContacts) => {
 
-      return this.getAddressbook('testnet').then((localContacts) => {
+      return this.getAddressbook(this.configService.getDefaults().network.name).then((localContacts) => {
 
         let contacts = _.map(deviceContacts, contact => this.meritContactBuilder.build(contact));
         _.each(_.map(localContacts, contact => contact), (contact) => {

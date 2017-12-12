@@ -6,7 +6,7 @@ import { ProfileService } from "merit/core/profile.service";
 import { WalletsModule } from "merit/wallets/wallets.module";
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Clipboard } from '@ionic-native/clipboard';
-import { ClipboardModule } from 'ngx-clipboard';
+import { ClipModule } from 'ng2-clip'
 
 
 @NgModule({
@@ -19,7 +19,7 @@ import { ClipboardModule } from 'ngx-clipboard';
   ],
   imports: [
     QRCodeModule,
-    ClipboardModule,
+    ClipModule,
     WalletsModule,
     IonicPageModule.forChild(ReceiveView),
   ],
