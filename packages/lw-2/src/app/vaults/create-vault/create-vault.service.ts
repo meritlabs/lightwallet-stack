@@ -94,21 +94,20 @@ export class CreateVaultService {
     } else {
 
       const wallet = this.model.selectedWallet;
+      const signPrivKey = this.bitcore.PrivateKey(wallet.credentials.walletPrivKey, wallet.network);
+      const pubkey = signPrivKey.toPublicKey();
 
-      const signPrivKey = wallet.credentials.xPrivKey;
-      const hdKey = this.bitcore.HDPrivateKey.fromString(signPrivKey);
-
-      return this.vaultFromModel(hdKey.publicKey, this.model.whitelist).then((vault) => {
+      return this.vaultFromModel(pubkey, this.model.whitelist).then((vault) => {
         let unlock = {
-          parentAddress: hdKey.publicKey.toAddress(),
-          pubkey: hdKey.publicKey,
+          parentAddress: pubkey.toAddress().toString(),
+          pubkey: pubkey.toString(),
           signPrivKey,
           address: vault.address,
           addressType: 1, // pubkey address
           network: wallet.credentials.network
         };
 
-        return wallet.unlockAddress(unlock).then((err, resp1) => {
+        return wallet.signAddressAndUnlock(unlock).then((err, resp1) => {
           return this.getTxp(vault, false);
         }).then((txp) => {
           console.log('txp', txp);
