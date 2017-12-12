@@ -462,7 +462,7 @@ export class WalletsView {
   }
 
   private toAddWallet() {
-    this.navCtrl.push('CreateWalletView');
+    this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList });
   }
 
   private toImportWallet() {
@@ -479,6 +479,14 @@ export class WalletsView {
         return Promise.reject(new Error('could not update wallets' + err));
       });
     })
+  }
+
+  // This is a callback used when a new wallet is created.
+  public refreshWalletList = (): Promise<any> => {
+    return this.updateAllWallets().then((wallets:any) => {
+      this.wallets = wallets;
+      return Promise.resolve();
+    });
   }
 
   private openTransactionDetails(transaction) {
