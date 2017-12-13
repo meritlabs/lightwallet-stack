@@ -86,6 +86,10 @@ export class SendView {
     });
   }
 
+  public ionViewWillEnter() {
+    this.formData.search = '';
+  }
+
   private hasWallets(): boolean {
     return (_.isEmpty(this.wallets) ? false : true);
   }
