@@ -57,6 +57,21 @@ export class VaultDetailsView {
     console.log("Vault-Detail View Did Load.");
     console.log(this.vault);
 
+    this.refreshVault();
+  }
+
+  toResetVault() {
+    this.navCtrl.push('VaultRenewView', { vaultId: this.vault._id, vault: this.vault, refreshCb: this.refreshVault });
+  }
+
+  goToTxDetails(tx: any) {
+    this.navCtrl.push(
+      'TxDetailsView',
+      { wallet: this.walletClient, walletId: this.walletClient.credentials.walletId, vaultId: this.vault._id, vault: this.vault, txId: tx.txid }
+    );
+  }
+
+  refreshVault = () => {
     Promise.all([
       this.getAllWallets().then((wallets) => {
         return _.map(wallets, (w) => {
@@ -100,24 +115,13 @@ export class VaultDetailsView {
         return Promise.resolve();
       });
     }).then(() => {
-      return this.getVaultTxHistory().then((txs) => {
-        this.transactions = _.map(txs, this.processTx.bind(this));
-        this.vault.completeHistory = txs;
-        this.formatAmounts();
-        return Promise.resolve();
-      });
+      return this.getVaultTxHistory();
+    }).then((txs) => {
+      this.transactions = _.map(txs, this.processTx.bind(this));
+      this.vault.completeHistory = txs;
+      this.formatAmounts();
+      return Promise.resolve();
     });
-  }
-
-  toResetVault() {
-    this.navCtrl.push('VaultRenewView', { vaultId: this.vault._id, vault: this.vault });
-  }
-
-  goToTxDetails(tx: any) {
-    this.navCtrl.push(
-      'TxDetailsView',
-      { wallet: this.walletClient, walletId: this.walletClient.credentials.walletId, vaultId: this.vault._id, vault: this.vault, txId: tx.txid }
-    );
   }
 
   spendToAddress(address): void {
