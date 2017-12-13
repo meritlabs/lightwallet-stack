@@ -197,8 +197,7 @@ export class SendConfirmView {
       }
     }).then(() => {
       loadingSpinner.dismiss();
-      this.navCtrl.remove(2,1);
-      this.navCtrl.pop();
+      this.navCtrl.push('WalletsView');
     }).catch((err) => {
       loadingSpinner.dismiss();
       return this.toastCtrl.create({
