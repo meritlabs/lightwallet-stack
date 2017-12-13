@@ -12,6 +12,22 @@
 
     <span *ngIf="wallet && hasFunds" margin-top>
 
+         <div class="row" margin-bottom>
+             <span class="label" text-left>Amount</span>
+             <input type="number"
+                    [style.flex]="1"
+                    text-right
+                    pattern="[0-9\.]"
+                    [(ngModel)]="amount"
+                    (ngModelChange)="processAmount($event.value)"
+                    [placeholder]="'Enter sending amount'">
+
+             <button ion-button clear color="primary" (click)="toggleCurrency()">
+                 {{amountCurrency}}
+             </button>
+         </div>
+
+
         <span class="row">
             <span class="label" text-left>Recipient</span>
             <span text-right [style.flex]="1" padding-right >
@@ -70,18 +86,7 @@
             </div>
         </div>
 
-      <div class="row" margin-top>
-          <span class="label" text-left>Amount</span>
-          <ion-input type="number"
-                     text-right
-                     [style.flex]="1"
-                     [ngModel]="amount"
-                     (ionChange)="processAmount($event.value)"
-                     [placeholder]="'Enter sending amount'"></ion-input>
-          <button ion-button clear color="primary" (click)="toggleCurrency()">
-              {{amountCurrency}}
-          </button>
-      </div>
+
 
 
         <div class="control-buttons">
