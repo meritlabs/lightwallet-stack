@@ -497,6 +497,12 @@ export class WalletsView {
     });
   }
 
+  public refreshVaultList = (): Promise<any> => {
+    return this.profileService.getHeadWalletClient().then((client) => {
+      return this.updateVaults(client);
+    });
+  }
+
   private openTransactionDetails(transaction) {
     this.navCtrl.push('TransactionView', { transaction: transaction });
   }
