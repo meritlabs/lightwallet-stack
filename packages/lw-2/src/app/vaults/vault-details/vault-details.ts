@@ -72,25 +72,35 @@ export class VaultDetailsView {
   }
 
   refreshVault = () => {
-    Promise.all([
-      this.getAllWallets().then((wallets) => {
-        return _.map(wallets, (w) => {
-          const name = w.name || w._id;
-          const addr = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
-          return { id: w.id, name: name, address: addr, type: 'wallet', walletClientId: w.id , walletClient: w};
-        });
-      }),
-      // fetch users vaults
-      // ToDo: uncomment when vaults support vault addresses in whitelists
-      // this.getAllVaults().then((vaults) => {
-      //   return _.map(vaults, (v) => {
-      //     const name = v.name || v._id;
-      //     const addr = new this.bitcore.Address(v.address).toString();
-      //     return { id: v._id, name: name, address: addr, type: 'vault' };
-      //   });
-      // }),
-      // fetch coins
-    ]).then((arr: Array<Array<any>>) => {
+    return this.profileService.getHeadWalletClient().then((walletClient) => {
+      this.walletClient = walletClient;
+      return walletClient.getVault(this.vault._id);
+    }).then((vault: any) => {
+      vault.amountStr = '';
+      vault.altAmount = '';
+      vault.altAmountStr = '';
+      this.vault = vault;
+
+      return Promise.all([
+        this.getAllWallets().then((wallets) => {
+          return _.map(wallets, (w) => {
+            const name = w.name || w._id;
+            const addr = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
+            return { id: w.id, name: name, address: addr, type: 'wallet', walletClientId: w.id , walletClient: w};
+          });
+        }),
+        // fetch users vaults
+        // ToDo: uncomment when vaults support vault addresses in whitelists
+        // this.getAllVaults().then((vaults) => {
+        //   return _.map(vaults, (v) => {
+        //     const name = v.name || v._id;
+        //     const addr = new this.bitcore.Address(v.address).toString();
+        //     return { id: v._id, name: name, address: addr, type: 'vault' };
+        //   });
+        // }),
+        // fetch coins
+      ]);
+    }).then((arr: Array<Array<any>>) => {
       const whitelistCandidates = _.flatten(arr);
 
       return Promise.map(this.vault.whitelist, (wl) => {

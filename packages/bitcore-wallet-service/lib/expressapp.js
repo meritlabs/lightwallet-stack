@@ -778,6 +778,15 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/vaults/:id', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      server.getVault(req.params['id'], function(err, txp) {
+        if (err) return returnError(err, res, req);
+        res.json(txp);
+      });
+    });
+  });
+
   router.post('/v1/vaults/:id', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       server.renewVault(req.body, function(err, txp) {

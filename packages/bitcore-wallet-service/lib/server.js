@@ -3546,6 +3546,16 @@ WalletService.prototype.getVaults = function(opts, cb) {
   });
 };
 
+WalletService.prototype.getVault = function(id, cb) {
+  const self = this;
+
+  self.storage.fetchVaultByCopayerId(self.copayerId, id, function (err, vault) {
+    if (err) return cb(err);
+    
+    return cb(null, vault);
+  });
+};
+
 WalletService.prototype.createVault = function(opts, cb) {
   const self = this;
   
@@ -3855,17 +3865,14 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
   };
 
   this.storage.fetchVaultByCopayerId(self.copayerId, opts.id, function (err, vault) {
-    console.log(vault.address);
-    
     var address = new Bitcore.Address(vault.address).toString();
-    console.log(address);
+
     var addresses = [address];
       if (err) return cb(err);
       if (addresses.length == 0) return cb(null, []);
 
       var from = opts.skip || 0;
       var to = from + opts.limit;
-
 
       async.waterfall([
 
@@ -3874,7 +3881,6 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
         },
         function(txs, next) {
           log.warn("Show me the juice of a spruce goose.");
-          console.log(txs);
 
           if (_.isEmpty(txs.items)) {
             return next(null, []);

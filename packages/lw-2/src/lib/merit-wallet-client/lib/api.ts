@@ -2746,10 +2746,17 @@ export class API {
   /**
   * Vaulting 
   */
-  getVaults() {
+  getVaults(): Promise<Array<any>> {
     $.checkState(this.credentials);
 
     var url = '/v1/vaults/';
+    return this._doGetRequest(url);
+  };
+
+  getVault(id: string): Promise<any> {
+    $.checkState(this.credentials);
+
+    var url = `/v1/vaults/${id}`;
     return this._doGetRequest(url);
   };
 
