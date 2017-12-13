@@ -241,14 +241,13 @@ export class SendView {
 
     this.contactsOffset  = 0;
     this.filteredContacts = this.addressBookService.searchContacts(this.contacts, search);
-    this.renderingContacts = this.filteredContacts.slice(0, this.contactsLimit);
-
     if(this.filteredContacts.length < 1) {
       let tempContact = this.contactFromSearchTerm(search);
       if(tempContact) this.filteredContacts.unshift(tempContact);
     }
-    Promise.resolve();
+    this.renderingContacts = this.filteredContacts.slice(0, this.contactsLimit);
 
+    Promise.resolve();
   }
 
   public goToAmount(item) {
