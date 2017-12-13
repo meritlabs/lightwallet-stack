@@ -27,12 +27,14 @@
 
         <qr-code *ngIf="address" [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
         <div  class="address" (click)="copyToClipboard(address)"  [clip]="qrAddress">{{qrAddress}}</div>
-
     </div>
 
-    <div margin-top padding *ngIf="addressGenerationInProgress">
-        <ion-spinner></ion-spinner>
+    <div class="container">
+        <div class="spinner-wrapper" *ngIf="addressGenerationInProgress">
+            <ion-spinner></ion-spinner>
+        </div>
     </div>
+
 
     <div class="container" *ngIf="wallet && wallet.isComplete() && !qrAddress && !addressGenerationInProgress">
         No address available for this wallet
@@ -88,10 +90,7 @@
                      </button>
                  </span>
              </div>
-
         </span>
-
-
 
     </ion-toolbar>
 </ion-footer>
