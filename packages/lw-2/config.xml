@@ -85,6 +85,15 @@
         <ios-team-release value="MLJ7SU96NS" />
     </branch-config>
     <content src="index.html" />
+    <edit-config file="*-Info.plist" mode="merge" target="NSCameraUsageDescription">
+        <string>To scan QR Codes of friends to easily send them Merit.</string>
+    </edit-config>
+    <edit-config file="*-Info.plist" mode="merge" target="NSFaceIDUsageDescription">
+        <string>To verify identity and confirm transactions.</string>
+    </edit-config>
+    <edit-config file="*-Info.plist" mode="merge" target="NSContactsUsageDescription">
+        <string>To make it easy to send Merit to friends and family.</string>
+    </edit-config>
     <engine name="android" spec="6.4.0" />
     <engine name="ios" spec="^4.5.4" />
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.2.1" />
