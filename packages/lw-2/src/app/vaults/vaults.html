@@ -1,9 +1,9 @@
 <ion-list>
-    <ion-item-divider translate>
+    <ion-item-divider translate *ngIf="vaults && vaults.length">
         Vaults
     </ion-item-divider>
 
-    <ion-list class="vaults" *ngIf="vaults">
+    <ion-list class="vaults" *ngIf="vaults && vaults.length">
         <button ion-item *ngFor="let vault of vaults" (click)="toVault(vault)">
 
             <ion-avatar item-start class="btn vault-icon">

@@ -40,9 +40,6 @@
     </ion-list>
 
     <ion-infinite-scroll (ionInfinite)="renderMoreContacts($event)" *ngIf="filteredContacts && filteredContacts.length > contactsOffset+contactsLimit">
-        <div text-center>
-            <ion-spinner></ion-spinner>Loading contacts...
-        </div>
     </ion-infinite-scroll>
 
 
