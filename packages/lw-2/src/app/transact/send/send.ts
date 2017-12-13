@@ -53,6 +53,8 @@ export class SendView {
   public hasContacts:boolean;
   public amountToSend:number;
 
+  public loading:boolean;
+
   private static ADDRESS_LENGTH = 34;
 
   constructor(
@@ -88,6 +90,7 @@ export class SendView {
 
   public ionViewWillEnter() {
     this.formData.search = '';
+    this.loading = false;
   }
 
   private hasWallets(): boolean {
@@ -180,6 +183,7 @@ export class SendView {
   }
 
   private parseSearch(input) {
+    this.loading = true;
 
     if (input.indexOf('merit:') == 0) input = input.slice(6);
     if (input.indexOf('?micros=') != -1) {
@@ -235,11 +239,13 @@ export class SendView {
               });
             });
         } else {
+          this.loading = false;
           this.alertCtrl.create({
             message: 'This address is invalid or has not been invited to the merit network yet!'
           }).present();
         }
       }).catch((err) => {
+        this.loading = false;
         this.toastCtrl.create({
         message: err,
         cssClass: ToastConfig.CLASS_ERROR
@@ -254,7 +260,7 @@ export class SendView {
       if(tempContact) this.filteredContacts.unshift(tempContact);
     }
     this.renderingContacts = this.filteredContacts.slice(0, this.contactsLimit);
-
+    this.loading = false;
     Promise.resolve();
   }
 
