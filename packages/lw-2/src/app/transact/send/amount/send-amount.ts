@@ -257,32 +257,32 @@ export class SendAmountView {
 
   private updateTxData() {
 
-      this.updateAmountMerit();
+    this.updateAmountMerit();
 
-      this.feeCalcError = null;
-      this.feeMrt = null;
-      this.feePercent = null;
-      this.txData = {
-        txp: null,
-        wallet: this.wallet,
-        amount: this.rateService.mrtToMicro(this.amountMerit),
-        feeAmount: null,
-        totalAmount: this.rateService.mrtToMicro(this.amountMerit),
-        recipient: this.recipient,
-        feeIncluded: this.feeIncluded
-      };
+    this.feeCalcError = null;
+    this.feeMrt = null;
+    this.feePercent = null;
+    this.txData = {
+      txp: null,
+      wallet: this.wallet,
+      amount: this.rateService.mrtToMicro(this.amountMerit),
+      feeAmount: null,
+      totalAmount: this.rateService.mrtToMicro(this.amountMerit),
+      recipient: this.recipient,
+      feeIncluded: this.feeIncluded
+    };
 
-      if (!this.txData.amount) {
-        return this.createTxpDebounce.cancel();
-      };
+    if (!this.txData.amount) {
+      return this.createTxpDebounce.cancel();
+    };
 
-      if (this.txData.amount > this.rateService.mrtToMicro(this.availableAmount.value)) {
-        this.feeCalcError = 'Amount is too big';
-        return this.createTxpDebounce.cancel();
-      }
+    if (this.txData.amount > this.rateService.mrtToMicro(this.availableAmount.value)) {
+      this.feeCalcError = 'Amount is too big';
+      return this.createTxpDebounce.cancel();
+    }
 
-      let dryRun = true;
-      this.createTxpDebounce(dryRun);
+    let dryRun = true;
+    this.createTxpDebounce(dryRun);
 
   }
 
@@ -307,9 +307,9 @@ export class SendAmountView {
             if (this.recipient.sendMethod != 'address') {
               return this.easySendService.createEasySendScriptHash(this.txData.wallet).then((easySend) => {
                 easySend.script.isOutput = true;
+                this.txData.easySendURL = easySendURL(easySend);
                 return resolve({
                   script: easySend.script,
-                  easySendURL: easySendURL(easySend),
                   toAddress: easySend.script.toAddress().toString()
                 });
               });
