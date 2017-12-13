@@ -56,7 +56,7 @@
 
         <ion-item margin-top (click)="openFilePicker()">
             <ion-label translate *ngIf="!formData.backupFile">
-                Choose a backup file from your computer
+                Choose a backup file from your device
             </ion-label>
             <ion-label *ngIf="formData.backupFile">
                 {{formData.backupFile.name}}
