@@ -137,9 +137,9 @@ export class VaultSpendConfirmView {
     const recepient = this.navParams.get('recipient');
 
     return this.spendVaultService.spendVault(this.vault, spendKey,  this.txData.toAmount, recepient.address).then(() => {
-      return this.navCtrl.goToRoot();
-    }).then(() => {
-      return this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });    
+      return this.navCtrl.goToRoot({}).then(() => {
+        return this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });    
+      });
     });
   }
 

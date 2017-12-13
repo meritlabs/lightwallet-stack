@@ -30,7 +30,7 @@ export class CreateVaultSummaryView {
 
   create() {
     this.createVaultService.createVault().then(() => {
-      this.navCtrl.goToRoot();
+      this.navCtrl.goToRoot({});
     }).then(() => {
       const refreshFn = this.navParams.get('refreshVaultList');
       refreshFn();
