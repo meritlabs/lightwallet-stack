@@ -84,7 +84,7 @@ export class VaultRenewConfirmationView {
       const refreshCb = this.navParams.get('refreshCb');
       refreshCb();
     }).catch((err) => {
-      logger.error('Error renewing vault: ', err);
+      this.logger.error('Error renewing vault: ', err);
       this.popupService.ionicAlert('Cannot renew the vault.');
     });
   }
