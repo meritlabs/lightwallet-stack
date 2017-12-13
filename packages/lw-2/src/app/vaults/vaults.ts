@@ -9,6 +9,7 @@ import { VaultsService } from 'merit/vaults/vaults.service';
 })
 export class VaultsView {
   @Input() vaults = [];
+  @Input() refreshVaultList = () => {};
 
   constructor(
     private navCtrl: NavController,
@@ -16,7 +17,7 @@ export class VaultsView {
   ){}
 
   toAddVault() {
-    this.navCtrl.push('CreateVaultGeneralInfoView');
+    this.navCtrl.push('CreateVaultGeneralInfoView', { refreshVaultList: this.refreshVaultList });
   }
 
   toVault(vault) {

@@ -2,7 +2,7 @@ import * as Promise from 'bluebird';
 import * as _ from "lodash";
 
 import { Component } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { ProfileService } from "merit/core/profile.service";
@@ -34,7 +34,8 @@ export class CreateVaultGeneralInfoView {
     private vaultsService: VaultsService,
     private bwc: BwcService,
     private logger: Logger,
-    private toastCtrl:MeritToastController
+    private toastCtrl:MeritToastController,
+    public navParams: NavParams,
   ){
     this.bitcore = this.bwc.getBitcore();
     this.logger.info('bitcore', this.bitcore);
@@ -87,7 +88,7 @@ export class CreateVaultGeneralInfoView {
 
   toDeposit() {
     this.createVaultService.updateData(this.formData);
-    this.navCtrl.push('CreateVaultDepositView');
+    this.navCtrl.push('CreateVaultDepositView', { refreshVaultList: this.navParams.get('refreshVaultList') });
   }
 
   private getAllWallets(): Promise<Array<any>> {
