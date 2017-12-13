@@ -53,6 +53,8 @@ export class SendView {
   public hasContacts:boolean;
   public amountToSend:number;
 
+  private static ADDRESS_LENGTH = 34;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -216,7 +218,7 @@ export class SendView {
   public updateFilteredContacts(search: string): Promise<void> {
 
     // TODO: Improve to be more resilient.
-    if(search && search.length > 19) {
+    if(search && search.length == SendView.ADDRESS_LENGTH) {
       return this.sendService.isAddressValid(search).then((isValid) => {
         if (isValid) {
           return this.profileService.getWallets()
@@ -284,6 +286,11 @@ export class SendView {
 
   sanitizePhotoUrl(url:string) {
     return this.sanitizer.sanitize(SecurityContext.URL, url);
+  }
+
+  private clearSearch() {
+    this.formData.search = '';
+    this.updateFilteredContacts('');
   }
 
 }
