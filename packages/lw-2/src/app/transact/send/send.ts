@@ -173,7 +173,7 @@ export class SendView {
     return contact;
   }
 
-  private parseSearch(input): Promise<void> {
+  private parseSearch(input) {
 
     if (input.indexOf('merit:') == 0) input = input.slice(6);
     if (input.indexOf('?micros=') != -1) {
@@ -182,18 +182,18 @@ export class SendView {
     } else {
       this.formData.search = input;
     }
-    return this.checkAddressAndSend(input);
+    return this.updateFilteredContactsDebounce(this.formData.search);
   }
 
 
-  private openScanner(): Promise<void> {
+  private openScanner(): void {
     let modal = this.modalCtrl.create('ImportScanView');
     modal.onDidDismiss((code) => {
         if (code) {
           return this.parseSearch(code);
         }
     });
-    return Promise.resolve(modal.present());
+    modal.present();
   }
  
   private showMore(): void {
@@ -217,7 +217,28 @@ export class SendView {
 
     // TODO: Improve to be more resilient.
     if(search && search.length > 19) {
-      return this.checkAddressAndSend(search);
+      return this.sendService.isAddressValid(search).then((isValid) => {
+        if (isValid) {
+          return this.profileService.getWallets()
+            .then((wallets) => {
+              this.navCtrl.push('SendAmountView', {
+                wallet: wallets[0],
+                amount: this.amountToSend,
+                sending: true,
+                contact: this.justMeritAddress(search)
+              });
+            });
+        } else {
+          this.alertCtrl.create({
+            message: 'This address is invalid or has not been invited to the merit network yet!'
+          }).present();
+        }
+      }).catch((err) => {
+        this.toastCtrl.create({
+        message: err,
+        cssClass: ToastConfig.CLASS_ERROR
+         }).present();
+      });
     }
 
     this.contactsOffset  = 0;
@@ -228,32 +249,7 @@ export class SendView {
     }
     this.renderingContacts = this.filteredContacts.slice(0, this.contactsLimit);
 
-    return Promise.resolve();
-  }
-
-  private checkAddressAndSend(search: string): Promise<void> {
-    return this.sendService.isAddressValid(search).then((isValid) => {
-      if (isValid) {
-        return this.profileService.getWallets()
-          .then((wallets) => {
-            this.navCtrl.push('SendAmountView', {
-              wallet: wallets[0],
-              amount: this.amountToSend,
-              sending: true,
-              contact: this.justMeritAddress(search)
-            });
-          });
-      } else {
-        this.alertCtrl.create({
-          message: 'This address is invalid or has not been invited to the merit network yet!'
-        }).present();
-      }
-    }).catch((err) => {
-      this.toastCtrl.create({
-        message: err,
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
-    });
+    Promise.resolve();
   }
 
   public goToAmount(item) {
