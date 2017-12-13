@@ -80,7 +80,11 @@ export class AddressBookService {
 
       return this.getAddressbook(this.configService.getDefaults().network.name).then((localContacts) => {
 
-        let contacts = _.map(deviceContacts, contact => this.meritContactBuilder.build(contact));
+        let contacts = _.map(
+          _.filter(deviceContacts, (contact) => {
+            return !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails);
+          }), contact => this.meritContactBuilder.build(contact));
+
         _.each(_.map(localContacts, contact => contact), (contact) => {
           let currentContact = _.find(contacts, {id: contact.id});
           if(currentContact) {
