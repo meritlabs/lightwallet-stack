@@ -162,12 +162,14 @@ export class SendView {
   private justPhoneNumber(phoneNumber: string): MeritContact {
     let contact = new MeritContact();
     contact.name.formatted = `Send an SMS to ${phoneNumber}`;
+    contact.phoneNumbers.push({value: phoneNumber});
     return contact;
   }
 
   private justEmail(email: string): MeritContact {
     let contact = new MeritContact();
     contact.name.formatted = `Send an email to ${email}`;
+    contact.emails.push({value: email});
     return contact;
   }
 
