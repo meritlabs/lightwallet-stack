@@ -129,14 +129,6 @@ export class ReceiveView {
     this.navCtrl.push('CopayersView', {walletId: this.wallet.id, wallet: this.wallet});
   }
 
-  shareButtonAvailable() {
-    return (
-      this.socialSharingAvailable
-      && this.wallet
-      && this.wallet.isComplete()
-    );
-  }
-
   toggleCurrency() {
     this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
     this.changeAmount();
