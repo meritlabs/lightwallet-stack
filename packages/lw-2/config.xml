@@ -121,4 +121,8 @@
         <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
     </plugin>
     <plugin name="branch-cordova-sdk" spec="^2.6.21" />
+    <plugin name="cordova-plugin-fcm" spec="^2.1.2" />
+    <plugin name="phonegap-plugin-push" spec="^2.1.2">
+        <variable name="SENDER_ID" value="1091326413792" />
+    </plugin>
 </widget>
