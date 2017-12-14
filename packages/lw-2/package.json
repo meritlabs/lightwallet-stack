@@ -91,6 +91,7 @@
     "ng2-clip": "^1.0.1",
     "node-version-compare": "^1.0.1",
     "phonegap-plugin-barcodescanner": "^6.0.8",
+    "phonegap-plugin-push": "^2.1.2",
     "plist": "^2.1.0",
     "preconditions": "^2.2.0",
     "rxjs": "5.4.3",
