@@ -1743,7 +1743,7 @@ export class API {
             return resolve(n > 1 ? secret : null);
           });
         } else {
-          return reject('Error: ' + res);
+          return reject(new Error('Error: ' + res));
         }
       });
     });
@@ -2710,7 +2710,7 @@ export class API {
     qs.push('twoStep=' + (opts.twoStep ? '1' : '0'));
 
     return this._doGetRequest('/v1/wallets/' + opts.identifier + '?' + qs.join('&')).then((result) => {
-      if (!result || !result.wallet) return Promise.reject('Could not get status by identifier.');
+      if (!result || !result.wallet) return Promise.reject(new Error('Could not get status by identifier.'));
       if (result.wallet.status == 'pending') {
         let c = this.credentials;
         result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
