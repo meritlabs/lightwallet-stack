@@ -12,6 +12,22 @@
 
     <span *ngIf="wallet && hasFunds" margin-top>
 
+         <div class="row" margin-bottom>
+             <span class="label" text-left>Amount</span>
+             <input type="number"
+                    [style.flex]="1"
+                    text-right
+                    pattern="[0-9\.]"
+                    [(ngModel)]="amount"
+                    (ngModelChange)="processAmount($event.value)"
+                    [placeholder]="'Enter sending amount'">
+
+             <button ion-button clear color="primary" (click)="toggleCurrency()">
+                 {{amountCurrency}}
+             </button>
+         </div>
+
+
         <span class="row">
             <span class="label" text-left>Recipient</span>
             <span text-right [style.flex]="1" padding-right >
@@ -36,7 +52,7 @@
         <div class="label" class="row" (click)="selectWallet()">
             <span text-left class="label">From</span>
             <span item-right text-right [style.flex]="1">
-                {{wallet.name || wallet._id}} ({{ availableAmount ? availableAmount.formatted : ''}})
+                {{wallet.name || wallet._id}} <span *ngIf="availableAmount">({{ availableAmount.formatted}})</span>
                 <button ion-button icon-only clear color="primary" class="wallet-button">
                     <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
                         <img src="assets/img/icon-wallet.svg">
@@ -45,17 +61,6 @@
             </span>
         </div>
 
-        <div class="row">
-            <span class="label" text-left>Amount</span>
-            <ion-input type="number" text-right pattern="[0-9\.]"
-                   [style.flex]="1"
-                   [ngModel]="amount"
-                   (ionChange)="processAmount($event.value)"
-                   [placeholder]="'Enter sending amount'"></ion-input>
-            <button ion-button clear color="primary" (click)="toggleCurrency()">
-                {{amountCurrency}}
-            </button>
-        </div>
         <div class="row">
             <span class="label" text-left>Fee <span *ngIf="feePercent">({{feePercent}})</span></span>
             <span text-right [style.flex]="1" padding-right>
@@ -80,13 +85,8 @@
                 <ion-toggle [(ngModel)]="feeIncluded" (ionChange)="toggleFeeIncluded($event)"></ion-toggle>
             </div>
         </div>
-        <div class="row">
 
-            <span class="label" text-left>Available</span>
-            <span text-right [style.flex]="1" padding-right >
-                {{ availableAmount.formatted }}
-            </span>
-        </div>
+
 
 
         <div class="control-buttons">

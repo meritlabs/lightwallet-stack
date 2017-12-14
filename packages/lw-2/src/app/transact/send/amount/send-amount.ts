@@ -197,7 +197,6 @@ export class SendAmountView {
   };
 
   processAmount(value) {
-    this.amount = value;
     this.updateTxData();
   };
 
