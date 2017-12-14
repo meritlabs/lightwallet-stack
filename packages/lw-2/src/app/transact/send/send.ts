@@ -53,6 +53,10 @@ export class SendView {
   public hasContacts:boolean;
   public amountToSend:number;
 
+  public loading:boolean;
+
+  private static ADDRESS_LENGTH = 34;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -82,6 +86,11 @@ export class SendView {
     }).catch((err) => {
       return this.popupService.ionicAlert('SendView Error:', err.toString());
     });
+  }
+
+  public ionViewWillEnter() {
+    this.formData.search = '';
+    this.loading = false;
   }
 
   private hasWallets(): boolean {
@@ -173,7 +182,8 @@ export class SendView {
     return contact;
   }
 
-  private parseSearch(input): Promise<void> {
+  private parseSearch(input) {
+    this.loading = true;
 
     if (input.indexOf('merit:') == 0) input = input.slice(6);
     if (input.indexOf('?micros=') != -1) {
@@ -182,18 +192,18 @@ export class SendView {
     } else {
       this.formData.search = input;
     }
-    return this.checkAddressAndSend(input);
+    return this.updateFilteredContactsDebounce(this.formData.search);
   }
 
 
-  private openScanner(): Promise<void> {
+  private openScanner(): void {
     let modal = this.modalCtrl.create('ImportScanView');
     modal.onDidDismiss((code) => {
         if (code) {
           return this.parseSearch(code);
         }
     });
-    return Promise.resolve(modal.present());
+    modal.present();
   }
  
   private showMore(): void {
@@ -216,8 +226,31 @@ export class SendView {
   public updateFilteredContacts(search: string): Promise<void> {
 
     // TODO: Improve to be more resilient.
-    if(search && search.length > 19) {
-      return this.checkAddressAndSend(search);
+    if(search && search.length == SendView.ADDRESS_LENGTH) {
+      return this.sendService.isAddressValid(search).then((isValid) => {
+        if (isValid) {
+          return this.profileService.getWallets()
+            .then((wallets) => {
+              this.navCtrl.push('SendAmountView', {
+                wallet: wallets[0],
+                amount: this.amountToSend,
+                sending: true,
+                contact: this.justMeritAddress(search)
+              });
+            });
+        } else {
+          this.loading = false;
+          this.alertCtrl.create({
+            message: 'This address is invalid or has not been invited to the merit network yet!'
+          }).present();
+        }
+      }).catch((err) => {
+        this.loading = false;
+        this.toastCtrl.create({
+        message: err,
+        cssClass: ToastConfig.CLASS_ERROR
+         }).present();
+      });
     }
 
     this.contactsOffset  = 0;
@@ -227,33 +260,8 @@ export class SendView {
       if(tempContact) this.filteredContacts.unshift(tempContact);
     }
     this.renderingContacts = this.filteredContacts.slice(0, this.contactsLimit);
-
-    return Promise.resolve();
-  }
-
-  private checkAddressAndSend(search: string): Promise<void> {
-    return this.sendService.isAddressValid(search).then((isValid) => {
-      if (isValid) {
-        return this.profileService.getWallets()
-          .then((wallets) => {
-            this.navCtrl.push('SendAmountView', {
-              wallet: wallets[0],
-              amount: this.amountToSend,
-              sending: true,
-              contact: this.justMeritAddress(search)
-            });
-          });
-      } else {
-        this.alertCtrl.create({
-          message: 'This address is invalid or has not been invited to the merit network yet!'
-        }).present();
-      }
-    }).catch((err) => {
-      this.toastCtrl.create({
-        message: err,
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
-    });
+    this.loading = false;
+    Promise.resolve();
   }
 
   public goToAmount(item) {
@@ -288,6 +296,11 @@ export class SendView {
 
   sanitizePhotoUrl(url:string) {
     return this.sanitizer.sanitize(SecurityContext.URL, url);
+  }
+
+  private clearSearch() {
+    this.formData.search = '';
+    this.updateFilteredContacts('');
   }
 
 }
