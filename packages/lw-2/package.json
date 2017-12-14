@@ -150,6 +150,7 @@
         "CAMERA_USAGE_DESCRIPTION": " "
       },
       "branch-cordova-sdk": {},
+      "cordova-plugin-fcm": {},
       "phonegap-plugin-push": {
         "SENDER_ID": "1091326413792"
       }
