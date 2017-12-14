@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NavController, App, Platform } from 'ionic-angular';
-import { FCM } from '@ionic-native/fcm';
 
 // Services
 import { ProfileService } from 'merit/core/profile.service';
@@ -15,6 +14,8 @@ import * as Promise from 'bluebird';
 import { Logger } from "merit/core/logger";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
+import { Push, PushObject, PushOptions } from '@ionic-native/push';
+
 
 @Injectable()
 export class PushNotificationsService {
@@ -33,30 +34,49 @@ export class PushNotificationsService {
     public appService: AppService,
     private app: App,
     private bwcService: BwcService,
-    private FCMPlugin: FCM,
     private platform: Platform,
-    private pollingNotificationService: PollingNotificationsService
+    private pollingNotificationService: PollingNotificationsService,
+    private push: Push
   ) {
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
-    
+
     if (this.usePushNotifications) {
 
-      this.platform.ready().then((readySource) => {      
+      this.platform.ready().then((readySource) => {
+        this.init();
+      });
+    } else {
+      this.logger.info("Push notifications are disabled, enabling long polling.");
+      this.pollingNotificationService.enable();
+    }
+  }
 
-      this.init();
-      this.FCMPlugin.onTokenRefresh().subscribe((token: any) => {
-        if (!this._token) return;
-        this.logger.info('Refresh and update token for push notifications...');
-        this._token = token;
+
+  public init(): void {
+    if (!this.usePushNotifications || this._token) return;
+    this.configService.load().then(() => {
+      if (!this.configService.get().pushNotificationsEnabled) return;
+      this.logger.info('Starting push notification registration...');
+      //Keep in mind the function will return null if the token has not been established yet.
+      const options: PushOptions = {
+        android: {
+          senderID: this.appService.info.gcmSenderId
+        }
+      }
+      const pushObj: PushObject = this.push.init(options);
+      pushObj.on('registration').subscribe((data: any) => {
+        this.logger.info('Got token for push notifications: ' + data.registrationId);
+        this._token = data.registrationId;
         this.enable();
       });
 
-      this.FCMPlugin.onNotification().subscribe((data: any) => {
+
+      pushObj.on('notification').subscribe((data: any) => {
         if (!this._token) return;
-        this.navCtrl = this.app.getActiveNav(); 
+        this.navCtrl = this.app.getActiveNav();
         this.logger.info('New Event Push onNotification: ' + JSON.stringify(data));
         if (data.wasTapped) {
           // Notification was received on device tray and tapped by the user.
@@ -83,25 +103,6 @@ export class PushNotificationsService {
         }
       });
     });
-    } else { 
-      this.logger.info("Push notifications are disabled, enabling long polling.");
-      this.pollingNotificationService.enable();
-    }
-  }
-
-
-  public init(): void {
-    if (!this.usePushNotifications || this._token) return;
-    this.configService.load().then(() => {
-      if (!this.configService.get().pushNotificationsEnabled) return;
-      this.logger.info('Starting push notification registration...');
-      //Keep in mind the function will return null if the token has not been established yet.
-      this.FCMPlugin.getToken().then((token: any) => {
-        this.logger.info('Got token for push notifications: ' + token);
-        this._token = token;
-        this.enable();
-      });
-    });
   }
 
   public updateSubscription(walletClient: MeritWalletClient): void {
@@ -125,8 +126,8 @@ export class PushNotificationsService {
         // through long-polling, but not both.  
         this.pollingNotificationService.disablePolling(walletClient);
       });
-     });
-    
+    });
+
   };
 
   public disable(): void {
@@ -158,7 +159,7 @@ export class PushNotificationsService {
       packageName: this.appService.info.packageNameId
     };
     walletClient.pushNotificationsSubscribe(opts).catch((err) => {
-      if (err) { 
+      if (err) {
         this.logger.error(walletClient.name + ': Subscription Push Notifications error. ', JSON.stringify(err));
       } else {
         this.logger.info(walletClient.name + ': Subscription Push Notifications success.');
@@ -168,8 +169,8 @@ export class PushNotificationsService {
 
   private _unsubscribe(walletClient: MeritWalletClient): void {
     walletClient.pushNotificationsUnsubscribe(this._token).catch((err: any) => {
-      if (err) { 
-        this.logger.error(walletClient.name + ': Unsubscription Push Notifications error. ', JSON.stringify(err)); 
+      if (err) {
+        this.logger.error(walletClient.name + ': Unsubscription Push Notifications error. ', JSON.stringify(err));
       } else {
         this.logger.info(walletClient.name + ': Unsubscription Push Notifications Success.');
       }
@@ -178,7 +179,7 @@ export class PushNotificationsService {
 
   private _openWallet(walletIdHashed: any): void {
     this.profileService.getWallets().then((wallets) => {
-      let wallet: MeritWalletClient = _.find(wallets, (w: any) => { 
+      let wallet: MeritWalletClient = _.find(wallets, (w: any) => {
         let walletIdHash = this.bwcService.getSJCL().hash.sha256.hash(parseInt(w.credentials.walletId));
         return _.isEqual(walletIdHashed, this.bwcService.getSJCL().codec.hex.fromBits(walletIdHash));
       });
