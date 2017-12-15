@@ -8,13 +8,15 @@ import { PlatformService } from 'merit/core/platform.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { AppService } from 'merit/core/app-settings.service';
 import { BwcService } from 'merit/core/bwc.service';
+import { FCM } from '@ionic-native/fcm';
+
 
 import * as _ from 'lodash';
 import * as Promise from 'bluebird';
 import { Logger } from "merit/core/logger";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
-import { Push, PushObject, PushOptions } from '@ionic-native/push';
+import { Observable } from 'rxjs/Observable';
 
 
 @Injectable()
@@ -24,8 +26,6 @@ export class PushNotificationsService {
   private isAndroid: boolean;
   private usePushNotifications: boolean;
   private _token = null;
-  private pushObj: PushObject;
-  private pushOptions: PushOptions;
   private retriesRemaining: number = 3; // Try to get a token 3 times, and then give up.
 
   constructor(
@@ -39,23 +39,15 @@ export class PushNotificationsService {
     private bwcService: BwcService,
     private platform: Platform,
     private pollingNotificationService: PollingNotificationsService,
-    private push: Push
+    private FCM: FCM,
   ) {
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
 
-    this.pushOptions = {
-      android: {
-        senderID: this.appService.info.gcmSenderId
-      }
-    }
-    
-    
     if (this.usePushNotifications) {
-      this.pushObj = this.push.init(this.pushOptions);
-
+      
       this.platform.ready().then((readySource) => {
         this.init();
       });
@@ -72,51 +64,61 @@ export class PushNotificationsService {
       if (!this.configService.get().pushNotificationsEnabled) return;
      
       this.logger.info('Starting push notification registration...');
-      this.getPushToken().then(() => {
-        this.enable();
-      }).timeout(1000, "Could not get push token from Apple/Google");
-
-      this.pushObj.on('notification').subscribe((data: any) => {
-        if (!this._token) return;
-        this.navCtrl = this.app.getActiveNav();
-        this.logger.info('New Event Push onNotification: ' + JSON.stringify(data));
-        if (data.wasTapped) {
-          // Notification was received on device tray and tapped by the user.
-          let walletIdHashed = data.walletId;
-          if (!walletIdHashed) return;
-          this.navCtrl.setRoot('TransactView');
-          this.navCtrl.popToRoot();
-          this._openWallet(walletIdHashed);
-        } else {
-          // Notification was received in foreground. Let's propogate the event
-          // (using Ionic Events) to the relevant view.
-          if (data.walletId) {
-            let wallet: MeritWalletClient = this.profileService.getWallet(data.walletId);
-            if (!_.isEmpty(wallet)) {
-              // Let's re-shape the event to match the notificatons stored in BWS
-              let shapedEvent = {
-                data: _.pick(data, ['amount', 'address', 'txid']),
-                type: data.type,
-                walletId: data.walletId
-              }
-              this.profileService.propogateBwsEvent(shapedEvent, wallet);
-            }
-          }
-        }
+      this.getToken().then(() => {
+        this.subscribeToEvents();
       });
     });
   }
 
-  public getPushToken(): Promise<void> {
-   
-    // TOOD: Find better way to chain observables into a promise
-    return new Promise((resolve, reject) => {
-      this.pushObj = this.push.init(this.pushOptions);
-      this.pushObj.on('registration').subscribe((data: any) => {
-        this.logger.info('Got token for push notifications: ' + data.registrationId);
-        this._token = data.registrationId;
-        return resolve();
-      });
+  private getToken(): Promise<void> {
+    return new Promise((resolve, reject) => { 
+      return this.FCM.getToken().then((token: any) => {
+      this.logger.info('Got token for push notifications: ' + token);
+      this._token = token;
+      return resolve();
+    });
+   });
+  }
+
+  // TODO: Chain getting the token as part of a standalone single-wallet subscription.
+  public subscribeToEvents(): void {
+
+    this.FCM.onTokenRefresh().subscribe((token: any) => {
+      if (!this._token) return;
+      this.logger.info('Refresh and update token for push notifications...');
+      this._token = token;
+      this.enable();
+    });
+      //this.pushObj = this.push.init(this.pushOptions);
+ 
+
+    this.FCM.onNotification().subscribe((data: any) => {
+      if (!this._token) return;
+      this.navCtrl = this.app.getActiveNav();
+      this.logger.info('New Event Push onNotification: ' + JSON.stringify(data));
+      if (data.wasTapped) {
+        // Notification was received on device tray and tapped by the user.
+        let walletIdHashed = data.walletId;
+        if (!walletIdHashed) return;
+        this.navCtrl.setRoot('TransactView');
+        this.navCtrl.popToRoot();
+        this._openWallet(walletIdHashed);
+      } else {
+        // Notification was received in foreground. Let's propogate the event
+        // (using Ionic Events) to the relevant view.
+        if (data.walletId) {
+          let wallet: MeritWalletClient = this.profileService.getWallet(data.walletId);
+          if (!_.isEmpty(wallet)) {
+            // Let's re-shape the event to match the notificatons stored in BWS
+            let shapedEvent = {
+              data: _.pick(data, ['amount', 'address', 'txid']),
+              type: data.type,
+              walletId: data.walletId
+            }
+            this.profileService.propogateBwsEvent(shapedEvent, wallet);
+          }
+        }
+      }
     });
   }
 
@@ -177,9 +179,9 @@ export class PushNotificationsService {
     if (!this._token && this.retriesRemaining > 0) {
       this.retriesRemaining--;
       this.logger.warn(`Attempted to subscribe without an available token; attempting to acquire. ${this.retriesRemaining} attempts remaining.`);
-      this.getPushToken().then(() => {
-        return this.subscribe(walletClient);
-      })
+      this.getToken().then(()=>{
+        return this.subscribe(walletClient);      
+      });
     }
     let opts = {
       token: this._token,
@@ -187,7 +189,9 @@ export class PushNotificationsService {
       packageName: this.appService.info.packageNameId
     };
     this.logger.info('Subscribing to push notifications for: ', walletClient.name);
-    walletClient.pushNotificationsSubscribe(opts).catch((err) => {
+    walletClient.pushNotificationsSubscribe(opts).then(() => {
+      this.logger.info("Subscribed to push notifications successfully for: ", walletClient.name);
+    }).catch((err) => {
       if (err) {
         this.logger.error(walletClient.name + ': Subscription Push Notifications error. ', JSON.stringify(err));
       } else {
