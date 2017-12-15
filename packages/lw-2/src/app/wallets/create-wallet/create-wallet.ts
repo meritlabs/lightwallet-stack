@@ -77,10 +77,10 @@ export class CreateWalletView {
     modal.present();
   }
 
-  async createWallet() {
+  createWallet(): Promise<any> {
 
     if (this.formData.password != this.formData.repeatPassword) {
-      return this.toastCtrl.create({
+      this.toastCtrl.create({
         message: "Passwords don't match",
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
@@ -102,7 +102,7 @@ export class CreateWalletView {
     loader.present();
 
 
-    this.walletService.createWallet(opts).then((wallet: MeritWalletClient) => {
+    return this.walletService.createWallet(opts).then((wallet: MeritWalletClient) => {
       // Subscribe to push notifications or to long-polling for this wallet.
       if (this.config.get().pushNotificationsEnabled) {
         this.logger.info("Subscribing to push notifications for default wallet");
@@ -128,7 +128,7 @@ export class CreateWalletView {
       // We should callback to the wallets list page to let it know that there is a new wallet
       // and that it should updat it's list.
       let callback = this.navParams.get("updateWalletListCB");
-      Promise.join(promises).then(() =>{
+      return Promise.join(promises).then(() =>{
         return loader.dismiss().then(() => {
           return callback().then(() => {
             this.navCtrl.pop();
