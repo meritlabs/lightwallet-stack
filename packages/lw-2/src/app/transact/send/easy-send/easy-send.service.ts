@@ -39,15 +39,24 @@ export class EasySendService {
     });
   }
 
-  public sendSMS(phoneNumber: string, url: string): Promise<any> {
-    return Promise.resolve(this.socialSharing.shareViaSMS(url, phoneNumber)).catch((err) => {
+  public sendSMS(phoneNumber: string, amountMrt:string, url: string): Promise<any> {
+    let msg: string = `I just sent you some Merit.  Click here to redeem: ${amountMrt}`
+    if (msg.length > 160) {
+      // TODO: Find a way to properly split the URL across two Messages, if needed.
+      const msg1: string = `I just sent you ${amountMrt}.  Merit is a new Digital Currency.  `
+      const msg2: string = url;
+
+      // HACK: 
+      msg = msg2;
+    }
+    return Promise.resolve(this.socialSharing.shareViaSMS(msg, phoneNumber)).catch((err) => {
       return Promise.reject(new Error('error sending sms: ' + err));
     });
   }
 
-  public sendEmail(emailAddress: string, url: string): Promise<any> {
+  public sendEmail(emailAddress: string, amountMrt:string, url: string): Promise<any> {
     return Promise.resolve(this.socialSharing.canShareViaEmail()).then(() => {
-      return this.socialSharing.shareViaEmail(url, 'Someone sent you some Merit', [emailAddress]);
+      return this.socialSharing.shareViaEmail(url, `I sent you ${amountMrt}`, [emailAddress]);
     }).catch((err) => {
       return Promise.reject(new Error('error sending email: ' + err));
     })
