@@ -43,7 +43,7 @@ export class EasySendService {
     let msg: string = `Here is ${amountMrt} Merit.  Click here to redeem: ${url}`
     if (msg.length > 160) {
       // TODO: Find a way to properly split the URL across two Messages, if needed.
-      const msg1: string = `I just sent you ${amountMrt}.  Merit is a new Digital Currency.  `
+      const msg1: string = `I just sent you ${amountMrt} Merit.  Merit is a new Digital Currency.  `
       const msg2: string = url;
 
       // HACK: 
