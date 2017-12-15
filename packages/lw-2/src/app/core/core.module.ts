@@ -4,7 +4,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { FCM } from '@ionic-native/fcm';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Logger } from "./logger";
 import { BwcService } from 'merit/core/bwc.service';
@@ -42,6 +41,9 @@ import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 
 import { LedgerService } from 'merit/shared/ledger.service';
 import { NotificationModule } from 'merit/core/notification/notification.module';
+import { Push } from '@ionic-native/push';
+import { FCM } from '@ionic-native/fcm';
+
 
 /* 
   The core module exists to make commonly used singleton services available 
@@ -108,6 +110,7 @@ export function loadConfigs(appService) {
         CreateVaultService,
         VaultsService,
         HttpClient,
+        Push,
         FCM,
         {
             provide: APP_INITIALIZER,
