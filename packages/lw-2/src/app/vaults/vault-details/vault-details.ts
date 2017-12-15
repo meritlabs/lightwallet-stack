@@ -63,12 +63,14 @@ export class VaultDetailsView {
   toResetVault() {
     this.navCtrl.push('VaultRenewView', { vaultId: this.vault._id, vault: this.vault, refreshCb: this.refreshVault });
   }
-
+  
   goToTxDetails(tx: any) {
-    this.navCtrl.push(
-      'TxDetailsView',
-      { wallet: this.walletClient, walletId: this.walletClient.credentials.walletId, vaultId: this.vault._id, vault: this.vault, txId: tx.txid }
-    );
+    return this.profileService.getHeadWalletClient().then((walletClient) => {
+      this.navCtrl.push(
+        'TxDetailsView',
+        { wallet: walletClient, walletId: walletClient.credentials.walletId, vaultId: this.vault._id, vault: this.vault, txId: tx.txid }
+      );
+    });
   }
 
   refreshVault = () => {
@@ -156,12 +158,7 @@ export class VaultDetailsView {
   }
 
   private getAllVaults(): Promise<Array<any>> {
-    return this.profileService.getWallets().then((ws) => {
-      if (_.isEmpty(ws)) {
-        Promise.resolve(null); //ToDo: add proper error handling;
-      }
-      return _.head(ws);
-    }).then((walletClient) => {
+    return this.profileService.getHeadWalletClient().then((walletClient) => {
       this.walletClient = walletClient;
       return this.vaultsService.getVaults(walletClient);
     });

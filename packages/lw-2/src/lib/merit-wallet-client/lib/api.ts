@@ -737,7 +737,10 @@ export class API {
     return new Promise((resolve, reject) => {
 
       let result: any = {}
-      return this.createAddress({}).then((addr) => {
+      return this.getMainAddresses().then((addresses) => {
+        if(_.isEmpty(addresses)) return this.createAddress({});
+        return _.sample(addresses);
+      }).then((addr) => {
         if (addr.publicKeys.length < 1) {
           return reject(Error('Error creating an address for easySend'));
         }

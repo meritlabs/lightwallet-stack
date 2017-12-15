@@ -86,8 +86,6 @@ export class ReceiveView {
       this.formatAddress();
     }).catch((err) => {
       this.addressGenerationInProgress = false;
-      this.address = null;
-      this.qrAddress = null;
       this.logger.warn('Failed to generate new adrress '+err);
       this.toastCtrl.create({
         message: 'Failed to generate new adrress',
@@ -127,14 +125,6 @@ export class ReceiveView {
 
   toCopayers() {
     this.navCtrl.push('CopayersView', {walletId: this.wallet.id, wallet: this.wallet});
-  }
-
-  shareButtonAvailable() {
-    return (
-      this.socialSharingAvailable
-      && this.wallet
-      && this.wallet.isComplete()
-    );
   }
 
   toggleCurrency() {

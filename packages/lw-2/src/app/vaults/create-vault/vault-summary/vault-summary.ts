@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
+import { VaultsService } from 'merit/vaults/vaults.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -16,6 +17,7 @@ export class CreateVaultSummaryView {
   constructor(
     private navCtrl:NavController,
     private createVaultService: CreateVaultService,
+    private navParams: NavParams,
   ){}
 
   ionViewDidLoad() {
@@ -28,7 +30,10 @@ export class CreateVaultSummaryView {
 
   create() {
     this.createVaultService.createVault().then(() => {
-      this.navCtrl.push('WalletsView');
+      this.navCtrl.goToRoot({});
+    }).then(() => {
+      const refreshFn = this.navParams.get('refreshVaultList');
+      refreshFn();
     });
   }
 }
