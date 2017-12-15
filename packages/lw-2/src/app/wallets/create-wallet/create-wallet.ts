@@ -8,6 +8,8 @@ import { Logger } from 'merit/core/logger';
 
 import * as _ from "lodash";
 import * as Promise from 'bluebird';
+import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
+import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
 
 
 
@@ -42,7 +44,9 @@ export class CreateWalletView {
     private loadCtrl: LoadingController,
     private toastCtrl: MeritToastController,
     private modalCtrl: ModalController,
-    private logger: Logger
+    private logger: Logger,
+    private pushNotificationService: PushNotificationsService,
+    private pollingNotificationService: PollingNotificationsService
   ) {
     this.formData.bwsurl = config.getDefaults().bws.url;
     this.defaultBwsUrl = config.getDefaults().bws.url;
@@ -98,6 +102,16 @@ export class CreateWalletView {
 
 
     let wallet = await this.walletService.createWallet(opts);
+
+    // Subscribe to push notifications or to long-polling for this wallet.
+    if (this.config.get().pushNotificationsEnabled) {
+      this.logger.info("Subscribing to push notifications for default wallet");
+      this.pushNotificationService.subscribe(wallet);
+    } else {
+      this.logger.info("Subscribing to long polling for default wallet");
+      this.pollingNotificationService.enablePolling(wallet);
+    }
+
     if (this.formData.hideBalance) await this.walletService.setHiddenBalanceOption(wallet.id, this.formData.hideBalance);
     if (this.formData.password) await this.walletService.encrypt(wallet, this.formData.password);
     if (this.formData.color) {
