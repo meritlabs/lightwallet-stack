@@ -10,6 +10,7 @@ import * as _ from "lodash";
 import * as Promise from 'bluebird';
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
 import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 
@@ -101,30 +102,38 @@ export class CreateWalletView {
     loader.present();
 
 
-    let wallet = await this.walletService.createWallet(opts);
+    this.walletService.createWallet(opts).then((wallet: MeritWalletClient) => {
+      // Subscribe to push notifications or to long-polling for this wallet.
+      if (this.config.get().pushNotificationsEnabled) {
+        this.logger.info("Subscribing to push notifications for default wallet");
+        this.pushNotificationService.subscribe(wallet);
+      } else {
+        this.logger.info("Subscribing to long polling for default wallet");
+        this.pollingNotificationService.enablePolling(wallet);
+      }
 
-    // Subscribe to push notifications or to long-polling for this wallet.
-    if (this.config.get().pushNotificationsEnabled) {
-      this.logger.info("Subscribing to push notifications for default wallet");
-      this.pushNotificationService.subscribe(wallet);
-    } else {
-      this.logger.info("Subscribing to long polling for default wallet");
-      this.pollingNotificationService.enablePolling(wallet);
-    }
+      let promises: Promise<any>[] = [];
+      if (this.formData.hideBalance) {
+        promises.push(this.walletService.setHiddenBalanceOption(wallet.id, this.formData.hideBalance));
+      }
 
-    if (this.formData.hideBalance) await this.walletService.setHiddenBalanceOption(wallet.id, this.formData.hideBalance);
-    if (this.formData.password) await this.walletService.encrypt(wallet, this.formData.password);
-    if (this.formData.color) {
-      let colorOpts = { colorFor: {} };
-      colorOpts.colorFor[wallet.id] = this.formData.color;
-      await this.config.set(colorOpts);
-    }
-    // We should callback to the wallets list page to let it know that there is a new wallet
-    // and that it should updat it's list.
-    let callback = this.navParams.get("updateWalletListCB");
-    return loader.dismiss().then(() => {
-      return callback().then(() => {
-        this.navCtrl.pop();
+      if (this.formData.password) {
+        promises.push(this.walletService.encrypt(wallet, this.formData.password));
+      }
+      if (this.formData.color) {
+        let colorOpts = { colorFor: {} };
+        colorOpts.colorFor[wallet.id] = this.formData.color;
+        promises.push(this.config.set(colorOpts));
+      }
+      // We should callback to the wallets list page to let it know that there is a new wallet
+      // and that it should updat it's list.
+      let callback = this.navParams.get("updateWalletListCB");
+      Promise.join(promises).then(() =>{
+        return loader.dismiss().then(() => {
+          return callback().then(() => {
+            this.navCtrl.pop();
+          });
+        });
       });
     }).catch((err) => {
       loader.dismiss();
