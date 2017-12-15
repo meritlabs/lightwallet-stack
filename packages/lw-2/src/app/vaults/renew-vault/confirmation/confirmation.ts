@@ -73,8 +73,9 @@ export class VaultRenewConfirmationView {
     console.log('OrigPubKey', new this.bitcore.PublicKey(this.updatedVault.masterPubKey, network).toString());
 
     return this.renewVaultService.renewVault(this.updatedVault, xMasterKey).then(() => {
-      this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
-      return;
+      return this.navCtrl.goToRoot({}).then(() => {
+        return this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
+      });
     });
   }
 }
