@@ -20,6 +20,17 @@
     "ionic:build": "ionic-app-scripts build",
     "ionic:serve": "ionic-app-scripts serve"
   },
+  "main": "./electron/main.js",
+  "build": {
+    "appId": "me.merit.wallet",
+    "files": [
+      "electron/main.js",
+      "www/**/*"
+    ],
+    "mac": {
+      "category": "finance"
+    }
+  },
   "dependencies": {
     "@angular/common": "4.4.4",
     "@angular/compiler": "4.4.4",
@@ -104,23 +115,25 @@
     "@ionic/app-scripts": "3.0.1",
     "@types/bluebird": "^3.5.18",
     "@types/node": "^8.0.47",
-    "typescript": "2.5.3",
     "bitcore-wallet-service": "^1.18.0",
     "browserify": "^13.1.0",
+    "bs58": "2.0.0",
     "chai": "^1.9.1",
     "coveralls": "^2.11.2",
+    "electron": "^1.7.9",
+    "electron-builder": "^19.49.0",
     "grunt": "~0.4.0",
     "grunt-jsdox": "^0.1.7",
     "istanbul": "*",
+    "jsrsasign": "8.0.4",
     "mocha": "^1.18.2",
+    "protobufjs": "5.0.1",
     "sinon": "^1.10.3",
     "supertest": "^3.0.0",
     "tingodb": "^0.3.4",
+    "typescript": "2.5.3",
     "uglify": "^0.1.1",
-    "uuid": "^2.0.1",
-    "bs58": "2.0.0",
-    "jsrsasign": "8.0.4",
-    "protobufjs": "5.0.1"
+    "uuid": "^2.0.1"
   },
   "config": {
     "ionic_webpack": "webpack.config.js"
@@ -138,17 +151,20 @@
       "cordova-plugin-file": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-touch-id": {
-        "FACEID_USAGE_DESCRIPTION": " "
+	"FACEID_USAGE_DESCRIPTION": " "
       },
       "cordova-plugin-android-fingerprint-auth": {},
       "cordova-plugin-contacts": {
-        "CONTACTS_USAGE_DESCRIPTION": " "
+	"CONTACTS_USAGE_DESCRIPTION": " "
       },
       "phonegap-plugin-barcodescanner": {
-        "CAMERA_USAGE_DESCRIPTION": " "
+	"CAMERA_USAGE_DESCRIPTION": " "
       },
       "branch-cordova-sdk": {},
-      "cordova-plugin-fcm": {}
+      "cordova-plugin-fcm": {},
+      "phonegap-plugin-push": {
+	"SENDER_ID": "1091326413792"
+      }
     },
     "platforms": [
       "android",
