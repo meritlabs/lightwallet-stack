@@ -40,7 +40,7 @@ export class EasySendService {
   }
 
   public sendSMS(phoneNumber: string, amountMrt:string, url: string): Promise<any> {
-    let msg: string = `I just sent you some Merit.  Click here to redeem: ${amountMrt}`
+    let msg: string = `I just sent you ${amountMrt}.  Click here to redeem: ${url}`
     if (msg.length > 160) {
       // TODO: Find a way to properly split the URL across two Messages, if needed.
       const msg1: string = `I just sent you ${amountMrt}.  Merit is a new Digital Currency.  `
