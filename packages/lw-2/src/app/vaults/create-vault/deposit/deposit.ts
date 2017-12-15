@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import { Component } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
 import { WalletService } from "merit/wallets/wallet.service";
 import { ProfileService } from "merit/core/profile.service";
@@ -23,12 +23,13 @@ export class CreateVaultDepositView {
   private bitcore = null;
 
   constructor(
-    private navCtl: NavController,
+    private navCtrl: NavController,
     private createVaultService: CreateVaultService,
     private profileService: ProfileService,
     private walletService: WalletService,
     private bwcService: BwcService,
-    private logger: Logger
+    private logger: Logger,
+    public navParams: NavParams,
   ) {}
 
   checkNextAvailable() {
@@ -61,7 +62,7 @@ export class CreateVaultDepositView {
 
   toMasterKey() {
     this.createVaultService.updateData(this.formData);
-    this.navCtl.push('CreateVaultMasterKeyView');
+    this.navCtrl.push('CreateVaultMasterKeyView', { refreshVaultList: this.navParams.get('refreshVaultList') });
   }
 
   private getAllWallets(): Promise<Array<MeritWalletClient>> {
