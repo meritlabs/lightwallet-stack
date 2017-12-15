@@ -134,46 +134,6 @@ export class ProfileService {
       wallet.unlocked = wallet.credentials.unlocked;
       wallet.shareCode = wallet.credentials.shareCode;
 
-      wallet.setOnConnectionError(() => {
-          if(this.toast) return;
-          let toast = this.toastCtrl.createSticky({
-            message: 'There was an error connecting. Please check internet connection and retry.',
-            cssClass: ToastConfig.CLASS_ERROR
-          })
-
-          toast.onDidDismiss(() => {
-            this.toast = null;
-          });
-
-          this.toast = toast;
-          toast.present();
-      });
-
-      wallet.setOnAuthenticationError(() => {
-          if(this.toast) return;
-          let toast = this.toastCtrl.createSticky({
-            message: 'There was an error authenticating with the Merit Servers.',
-            cssClass: ToastConfig.CLASS_ERROR
-          });
-
-          toast.onDidDismiss(() => {
-            this.toast = null;
-          });
-
-          this.toast = toast;
-          toast.present();
-      });
-
-      wallet.setOnConnectionRestored(() => {
-        if(this.toast) {
-          this.toast.dismiss();
-          this.toastCtrl.create({
-            message: 'Connection Restored',
-            cssClass: ToastConfig.CLASS_MESSAGE
-          }).present();
-        }
-      });
-
       this.updateWalletSettings(wallet);
       this.wallets[walletId] = wallet;
 

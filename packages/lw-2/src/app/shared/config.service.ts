@@ -135,7 +135,8 @@ const configDefault: Config = {
 
   // Bitcore wallet service URL
   bws: {
-    url: 'https://stage.mws.merit.me/bws/api'
+    //url: 'https://stage.mws.merit.me/bws/api'
+    url: 'http://127.0.0.1:3232/bws/api'
   },
 
   download: {

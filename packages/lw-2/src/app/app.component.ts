@@ -21,6 +21,9 @@ import { FCM } from '@ionic-native/fcm';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
 
+import { Events } from 'ionic-angular';
+
+import { MWCErrors } from 'merit/core/bwc.service';
 
 @Component({
   templateUrl: 'app.html'
@@ -42,7 +45,8 @@ export class MeritLightWallet {
     private easyReceiveService: EasyReceiveService,
     private app: App,
     private FCM: FCM,
-    private pushNotificationService: PushNotificationsService
+    private pushNotificationService: PushNotificationsService,
+    private events: Events
   ) {
     process.on('unhandledRejection', this.logger.info.bind(console));
     Promise.config({
@@ -60,6 +64,7 @@ export class MeritLightWallet {
           `);
       });
 
+      this.registerMwcErrorHandler();
       return this.initializeApp();
     });
 
@@ -139,6 +144,12 @@ export class MeritLightWallet {
   private openFingerprintModal() {
     let modal = this.modalCtrl.create(FingerprintLockView, {}, { showBackdrop: false, enableBackdropDismiss: false });
     modal.present();
+  }
+
+  private registerMwcErrorHandler() {
+    this.events.subscribe(MWCErrors.AUTHENTICATION, () => {
+      this.app.getRootNav().setRoot('NoSessionView');
+    });
   }
 
 }
