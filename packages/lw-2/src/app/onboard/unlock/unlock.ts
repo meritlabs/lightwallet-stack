@@ -8,6 +8,9 @@ import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { Logger } from 'merit/core/logger';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
+import { ConfigService } from 'merit/shared/config.service';
+import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
+import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
 
 
 // Unlock view for wallet
@@ -33,7 +36,10 @@ export class UnlockView {
     private navCtrl: NavController,
     private navParams: NavParams,
     private easyReceiveService: EasyReceiveService,
-    private logger: Logger
+    private logger: Logger,
+    private config: ConfigService,
+    private pushNotificationService: PushNotificationsService,
+    private pollingNotificationService: PollingNotificationsService
   ) {
       
   }
@@ -62,10 +68,16 @@ export class UnlockView {
         loader.present();
 
         return this.walletService.createDefaultWallet(this.formData.unlockCode).then((wallet) => {
-          this.logger.debug('created wallet', wallet);
+          this.logger.info('Created a new default wallet: ', wallet);
           loader.dismiss();
-
-          /** todo store wallet */
+          if (this.config.get().pushNotificationsEnabled) {
+            this.logger.info("Subscribing to push notifications for default wallet");
+            this.pushNotificationService.subscribe(wallet);
+          } else {
+            this.logger.info("Subscribing to long polling for default wallet");
+            this.pollingNotificationService.enablePolling(wallet);
+          }
+          
 
           // Now that we are unlocked, we no longer need these other views in the stack, 
           // so we shall destroy them.

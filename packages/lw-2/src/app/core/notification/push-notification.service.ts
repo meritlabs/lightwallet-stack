@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NavController, App, Platform } from 'ionic-angular';
-import { FCM } from '@ionic-native/fcm';
 
 // Services
 import { ProfileService } from 'merit/core/profile.service';
@@ -9,12 +8,16 @@ import { PlatformService } from 'merit/core/platform.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { AppService } from 'merit/core/app-settings.service';
 import { BwcService } from 'merit/core/bwc.service';
+import { FCM } from '@ionic-native/fcm';
+
 
 import * as _ from 'lodash';
 import * as Promise from 'bluebird';
 import { Logger } from "merit/core/logger";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
+import { Observable } from 'rxjs/Observable';
+
 
 @Injectable()
 export class PushNotificationsService {
@@ -23,6 +26,7 @@ export class PushNotificationsService {
   private isAndroid: boolean;
   private usePushNotifications: boolean;
   private _token = null;
+  private retriesRemaining: number = 3; // Try to get a token 3 times, and then give up.
 
   constructor(
     public http: HttpClient,
@@ -33,57 +37,21 @@ export class PushNotificationsService {
     public appService: AppService,
     private app: App,
     private bwcService: BwcService,
-    private FCMPlugin: FCM,
     private platform: Platform,
-    private pollingNotificationService: PollingNotificationsService
+    private pollingNotificationService: PollingNotificationsService,
+    private FCM: FCM,
   ) {
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
-    
+
     if (this.usePushNotifications) {
-
-      this.platform.ready().then((readySource) => {      
-
-      this.init();
-      this.FCMPlugin.onTokenRefresh().subscribe((token: any) => {
-        if (!this._token) return;
-        this.logger.info('Refresh and update token for push notifications...');
-        this._token = token;
-        this.enable();
+      
+      this.platform.ready().then((readySource) => {
+        this.init();
       });
-
-      this.FCMPlugin.onNotification().subscribe((data: any) => {
-        if (!this._token) return;
-        this.navCtrl = this.app.getActiveNav(); 
-        this.logger.info('New Event Push onNotification: ' + JSON.stringify(data));
-        if (data.wasTapped) {
-          // Notification was received on device tray and tapped by the user.
-          let walletIdHashed = data.walletId;
-          if (!walletIdHashed) return;
-          this.navCtrl.setRoot('TransactView');
-          this.navCtrl.popToRoot();
-          this._openWallet(walletIdHashed);
-        } else {
-          // Notification was received in foreground. Let's propogate the event
-          // (using Ionic Events) to the relevant view.
-          if (data.walletId) {
-            let wallet: MeritWalletClient = this.profileService.getWallet(data.walletId);
-            if (!_.isEmpty(wallet)) {
-              // Let's re-shape the event to match the notificatons stored in BWS
-              let shapedEvent = {
-                data: _.pick(data, ['amount', 'address', 'txid']),
-                type: data.type,
-                walletId: data.walletId
-              }
-              this.profileService.propogateBwsEvent(shapedEvent, wallet);
-            }
-          }
-        }
-      });
-    });
-    } else { 
+    } else {
       this.logger.info("Push notifications are disabled, enabling long polling.");
       this.pollingNotificationService.enable();
     }
@@ -94,13 +62,63 @@ export class PushNotificationsService {
     if (!this.usePushNotifications || this._token) return;
     this.configService.load().then(() => {
       if (!this.configService.get().pushNotificationsEnabled) return;
+     
       this.logger.info('Starting push notification registration...');
-      //Keep in mind the function will return null if the token has not been established yet.
-      this.FCMPlugin.getToken().then((token: any) => {
-        this.logger.info('Got token for push notifications: ' + token);
-        this._token = token;
-        this.enable();
+      this.getToken().then(() => {
+        this.subscribeToEvents();
       });
+    });
+  }
+
+  private getToken(): Promise<void> {
+    return new Promise((resolve, reject) => { 
+      return this.FCM.getToken().then((token: any) => {
+      this.logger.info('Got token for push notifications: ' + token);
+      this._token = token;
+      return resolve();
+    });
+   });
+  }
+
+  // TODO: Chain getting the token as part of a standalone single-wallet subscription.
+  public subscribeToEvents(): void {
+
+    this.FCM.onTokenRefresh().subscribe((token: any) => {
+      if (!this._token) return;
+      this.logger.info('Refresh and update token for push notifications...');
+      this._token = token;
+      this.enable();
+    });
+      //this.pushObj = this.push.init(this.pushOptions);
+ 
+
+    this.FCM.onNotification().subscribe((data: any) => {
+      if (!this._token) return;
+      this.navCtrl = this.app.getActiveNav();
+      this.logger.info('New Event Push onNotification: ' + JSON.stringify(data));
+      if (data.wasTapped) {
+        // Notification was received on device tray and tapped by the user.
+        let walletIdHashed = data.walletId;
+        if (!walletIdHashed) return;
+        this.navCtrl.setRoot('TransactView');
+        this.navCtrl.popToRoot();
+        this._openWallet(walletIdHashed);
+      } else {
+        // Notification was received in foreground. Let's propogate the event
+        // (using Ionic Events) to the relevant view.
+        if (data.walletId) {
+          let wallet: MeritWalletClient = this.profileService.getWallet(data.walletId);
+          if (!_.isEmpty(wallet)) {
+            // Let's re-shape the event to match the notificatons stored in BWS
+            let shapedEvent = {
+              data: _.pick(data, ['amount', 'address', 'txid']),
+              type: data.type,
+              walletId: data.walletId
+            }
+            this.profileService.propogateBwsEvent(shapedEvent, wallet);
+          }
+        }
+      }
     });
   }
 
@@ -109,7 +127,7 @@ export class PushNotificationsService {
       this.logger.warn('Push notifications disabled for this device. Nothing to do here.');
       return;
     }
-    this._subscribe(walletClient);
+    this.subscribe(walletClient);
   }
 
   public enable(): void {
@@ -119,14 +137,16 @@ export class PushNotificationsService {
     }
 
     this.profileService.getWallets().then((wallets) => {
+      this.logger.warn("Got Wallets: ", wallets);
       _.forEach(wallets, (walletClient: MeritWalletClient) => {
-        this._subscribe(walletClient);
+        this.logger.warn("Subscribing to push with: ", walletClient);
+        this.subscribe(walletClient);
         // We should be handling real-time updates to the application through either data push or
         // through long-polling, but not both.  
         this.pollingNotificationService.disablePolling(walletClient);
       });
-     });
-    
+    });
+
   };
 
   public disable(): void {
@@ -151,14 +171,28 @@ export class PushNotificationsService {
     this._unsubscribe(walletClient);
   }
 
-  private _subscribe(walletClient: MeritWalletClient): void {
+  public subscribe(walletClient: MeritWalletClient): void {
+    if (!this.configService.get().pushNotificationsEnabled) {
+      this.logger.warn("Attempting to subscribe to push notification when disabled in config.  Skipping...");
+      return;
+    }
+    if (!this._token && this.retriesRemaining > 0) {
+      this.retriesRemaining--;
+      this.logger.warn(`Attempted to subscribe without an available token; attempting to acquire. ${this.retriesRemaining} attempts remaining.`);
+      this.getToken().then(()=>{
+        return this.subscribe(walletClient);      
+      });
+    }
     let opts = {
       token: this._token,
       platform: this.isIOS ? 'ios' : this.isAndroid ? 'android' : null,
       packageName: this.appService.info.packageNameId
     };
-    walletClient.pushNotificationsSubscribe(opts).catch((err) => {
-      if (err) { 
+    this.logger.info('Subscribing to push notifications for: ', walletClient.name);
+    walletClient.pushNotificationsSubscribe(opts).then(() => {
+      this.logger.info("Subscribed to push notifications successfully for: ", walletClient.name);
+    }).catch((err) => {
+      if (err) {
         this.logger.error(walletClient.name + ': Subscription Push Notifications error. ', JSON.stringify(err));
       } else {
         this.logger.info(walletClient.name + ': Subscription Push Notifications success.');
@@ -168,8 +202,8 @@ export class PushNotificationsService {
 
   private _unsubscribe(walletClient: MeritWalletClient): void {
     walletClient.pushNotificationsUnsubscribe(this._token).catch((err: any) => {
-      if (err) { 
-        this.logger.error(walletClient.name + ': Unsubscription Push Notifications error. ', JSON.stringify(err)); 
+      if (err) {
+        this.logger.error(walletClient.name + ': Unsubscription Push Notifications error. ', JSON.stringify(err));
       } else {
         this.logger.info(walletClient.name + ': Unsubscription Push Notifications Success.');
       }
@@ -178,7 +212,7 @@ export class PushNotificationsService {
 
   private _openWallet(walletIdHashed: any): void {
     this.profileService.getWallets().then((wallets) => {
-      let wallet: MeritWalletClient = _.find(wallets, (w: any) => { 
+      let wallet: MeritWalletClient = _.find(wallets, (w: any) => {
         let walletIdHash = this.bwcService.getSJCL().hash.sha256.hash(parseInt(w.credentials.walletId));
         return _.isEqual(walletIdHashed, this.bwcService.getSJCL().codec.hex.fromBits(walletIdHash));
       });
