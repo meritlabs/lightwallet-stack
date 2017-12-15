@@ -42,6 +42,7 @@ import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { LedgerService } from 'merit/shared/ledger.service';
 import { NotificationModule } from 'merit/core/notification/notification.module';
 import { Push } from '@ionic-native/push';
+import { FCM } from '@ionic-native/fcm';
 
 
 /* 
@@ -110,6 +111,7 @@ export function loadConfigs(appService) {
         VaultsService,
         HttpClient,
         Push,
+        FCM,
         {
             provide: APP_INITIALIZER,
             useFactory: loadConfigs,
