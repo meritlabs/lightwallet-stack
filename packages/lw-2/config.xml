@@ -81,10 +81,8 @@
     <branch-config>
         <branch-key value="key_live_edqKoEEX0yip4cpCBjbnXlpkqBmai2VN" />
         <uri-scheme value="merit" />
-        <link-domain value="send.merit.me" />
+        <link-domain value="merit.app.link" />
         <ios-team-release value="MLJ7SU96NS" />
-        <android-prefix value="/f69W" />
-
     </branch-config>
     <content src="index.html" />
     <edit-config file="*-Info.plist" mode="merge" target="NSCameraUsageDescription">
