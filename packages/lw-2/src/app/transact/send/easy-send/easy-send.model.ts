@@ -9,7 +9,7 @@ export type EasySend = {
 }
 
 export let easySendURL = (es: EasySend): string => {
-  return `https://c213.app.link/` +
+  return `https://send.merit.me/` +
             `?se=${es.secret}` +
             `&sk=${es.senderPubKey}` +
             `&sn=${es.senderName}` +
