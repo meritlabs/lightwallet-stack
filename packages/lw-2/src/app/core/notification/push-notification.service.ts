@@ -24,6 +24,9 @@ export class PushNotificationsService {
   private isAndroid: boolean;
   private usePushNotifications: boolean;
   private _token = null;
+  private pushObj: PushObject;
+  private pushOptions: PushOptions;
+  private retriesRemaining: number = 3; // Try to get a token 3 times, and then give up.
 
   constructor(
     public http: HttpClient,
@@ -43,7 +46,15 @@ export class PushNotificationsService {
     this.isAndroid = this.platformService.isAndroid;
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
 
+    this.pushOptions = {
+      android: {
+        senderID: this.appService.info.gcmSenderId
+      }
+    }
+    
+    
     if (this.usePushNotifications) {
+      this.pushObj = this.push.init(this.pushOptions);
 
       this.platform.ready().then((readySource) => {
         this.init();
@@ -59,22 +70,13 @@ export class PushNotificationsService {
     if (!this.usePushNotifications || this._token) return;
     this.configService.load().then(() => {
       if (!this.configService.get().pushNotificationsEnabled) return;
+     
       this.logger.info('Starting push notification registration...');
-      //Keep in mind the function will return null if the token has not been established yet.
-      const options: PushOptions = {
-        android: {
-          senderID: this.appService.info.gcmSenderId
-        }
-      }
-      const pushObj: PushObject = this.push.init(options);
-      pushObj.on('registration').subscribe((data: any) => {
-        this.logger.info('Got token for push notifications: ' + data.registrationId);
-        this._token = data.registrationId;
+      this.getPushToken().then(() => {
         this.enable();
-      });
+      }).timeout(1000, "Could not get push token from Apple/Google");
 
-
-      pushObj.on('notification').subscribe((data: any) => {
+      this.pushObj.on('notification').subscribe((data: any) => {
         if (!this._token) return;
         this.navCtrl = this.app.getActiveNav();
         this.logger.info('New Event Push onNotification: ' + JSON.stringify(data));
@@ -105,12 +107,25 @@ export class PushNotificationsService {
     });
   }
 
+  public getPushToken(): Promise<void> {
+   
+    // TOOD: Find better way to chain observables into a promise
+    return new Promise((resolve, reject) => {
+      this.pushObj = this.push.init(this.pushOptions);
+      this.pushObj.on('registration').subscribe((data: any) => {
+        this.logger.info('Got token for push notifications: ' + data.registrationId);
+        this._token = data.registrationId;
+        return resolve();
+      });
+    });
+  }
+
   public updateSubscription(walletClient: MeritWalletClient): void {
     if (!this._token) {
       this.logger.warn('Push notifications disabled for this device. Nothing to do here.');
       return;
     }
-    this._subscribe(walletClient);
+    this.subscribe(walletClient);
   }
 
   public enable(): void {
@@ -120,8 +135,10 @@ export class PushNotificationsService {
     }
 
     this.profileService.getWallets().then((wallets) => {
+      this.logger.warn("Got Wallets: ", wallets);
       _.forEach(wallets, (walletClient: MeritWalletClient) => {
-        this._subscribe(walletClient);
+        this.logger.warn("Subscribing to push with: ", walletClient);
+        this.subscribe(walletClient);
         // We should be handling real-time updates to the application through either data push or
         // through long-polling, but not both.  
         this.pollingNotificationService.disablePolling(walletClient);
@@ -152,12 +169,24 @@ export class PushNotificationsService {
     this._unsubscribe(walletClient);
   }
 
-  private _subscribe(walletClient: MeritWalletClient): void {
+  public subscribe(walletClient: MeritWalletClient): void {
+    if (!this.configService.get().pushNotificationsEnabled) {
+      this.logger.warn("Attempting to subscribe to push notification when disabled in config.  Skipping...");
+      return;
+    }
+    if (!this._token && this.retriesRemaining > 0) {
+      this.retriesRemaining--;
+      this.logger.warn(`Attempted to subscribe without an available token; attempting to acquire. ${this.retriesRemaining} attempts remaining.`);
+      this.getPushToken().then(() => {
+        return this.subscribe(walletClient);
+      })
+    }
     let opts = {
       token: this._token,
       platform: this.isIOS ? 'ios' : this.isAndroid ? 'android' : null,
       packageName: this.appService.info.packageNameId
     };
+    this.logger.info('Subscribing to push notifications for: ', walletClient.name);
     walletClient.pushNotificationsSubscribe(opts).catch((err) => {
       if (err) {
         this.logger.error(walletClient.name + ': Subscription Push Notifications error. ', JSON.stringify(err));
