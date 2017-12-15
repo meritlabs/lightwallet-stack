@@ -59,6 +59,6 @@ export class CreateVaultMasterKeyView {
   }
 
   toVautlSummary() {
-    this.navCtrl.push('CreateVaultSummaryView');
+    this.navCtrl.push('CreateVaultSummaryView', { refreshVaultList: this.navParams.get('refreshVaultList') });
   }
 }

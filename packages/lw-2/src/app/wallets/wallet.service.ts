@@ -1385,15 +1385,12 @@ export class WalletService {
    */
   public getANV(wallet: MeritWalletClient):Promise<any> {
     return new Promise((resolve, reject) => {
-      return this.getMainAddresses(wallet).then((addresses) => {
-        if (_.isEmpty(addresses)) {
-          this.logger.info("Addresses are empty!  Defaulting ANV to Zero");
-          return resolve(0);
-        }
-        return wallet.getANV(addresses).then((anv) => {
-          return resolve(anv);
-        })
-      });
+      let bitcore = this.bwcService.getBitcore();
+      let pubkey = bitcore.PrivateKey.fromString(wallet.credentials.walletPrivKey).toPublicKey();
+      let address = pubkey.toAddress(wallet.credentials.network);
+      return wallet.getANV(address).then((anv) => {
+        return resolve(anv);
+      })
     });
   }
 
