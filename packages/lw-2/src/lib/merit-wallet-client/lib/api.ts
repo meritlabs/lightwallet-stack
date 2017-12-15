@@ -1743,7 +1743,7 @@ export class API {
             return resolve(n > 1 ? secret : null);
           });
         } else {
-          return reject(new Error('Error: ' + res));
+          return reject(new Error('MWC Error: ' + res));
         }
       });
     });
