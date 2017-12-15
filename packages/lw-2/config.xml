@@ -81,7 +81,7 @@
     <branch-config>
         <branch-key value="key_live_edqKoEEX0yip4cpCBjbnXlpkqBmai2VN" />
         <uri-scheme value="merit" />
-        <link-domain value="c213.app.link" />
+        <link-domain value="send.merit.me" />
         <ios-team-release value="MLJ7SU96NS" />
     </branch-config>
     <content src="index.html" />
