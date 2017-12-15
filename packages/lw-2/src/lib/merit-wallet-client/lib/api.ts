@@ -1137,9 +1137,8 @@ export class API {
    * @param {Object} args
    * @param {Callback} cb
    */
-  _doRequest(method: string, url: string, args: any, useSession: boolean): Promise<{ body: any, header: any }> {
+  _doRequest(method: string, url: string, args: any, useSession: boolean, secondRun? = false): Promise<{ body: any, header: any }> {
     return new Promise((resolve, reject) => {
-
 
       let headers = this._getHeaders(method, url, args);
 
@@ -1230,10 +1229,21 @@ export class API {
           if(this.onConnectionError) {
             this.onConnectionError();
           }
-        } else if (err == Errors.AUTHENTICATION_ERROR) {
-          if(this.onAuthenticationError) {
-            this.onAuthenticationError();
+        } else if (err.status == 401) {
+          if (!secondRun) { //trying to restore session one time
+            return this._doRequest('post', '/v1/login', {}, null, true).then(() => {
+              return this._doRequest(method, url, args, useSession, true);
+            }).catch(() => {
+              if(this.onAuthenticationError) {
+                this.onAuthenticationError();
+              }
+            })
+          } else {
+            if(this.onAuthenticationError) {
+              this.onAuthenticationError();
+            }
           }
+
         }
 
         this.log.warn("Cannot complete request to server: ", err);

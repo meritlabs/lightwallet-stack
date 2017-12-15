@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import {ConfigService} from "merit/shared/config.service";
+import { Events } from 'ionic-angular';
 
 
 // TODO: Import the NPM package directly. 
@@ -14,7 +15,8 @@ export class BwcService {
   public parseSecret: Function; // = BWC.parseSecret;
   
   constructor(
-    private config:ConfigService
+    private config:ConfigService,
+    private events: Events
   ) {
     this.BWC = this.getClient(null);
     this.buildTx = this.BWC.buildTx;
@@ -39,7 +41,8 @@ export class BwcService {
 
   public getClient(walletData, opts: any = {}): MeritWalletClient {
     //note opts use `bwsurl` all lowercase;
-    let bwc = MeritWalletClient.getInstance({
+
+    let bwc = MeritWalletClient.getInstance( {
       baseUrl: opts.bwsurl || this.config.get().bws.url,
       verbose: opts.verbose || false,
       timeout: 100000,
@@ -47,7 +50,28 @@ export class BwcService {
     });
     if (walletData)
       bwc.import(walletData);
+
+    if (!bwc.onAuthenticationError) {
+      bwc.setOnAuthenticationError(() => {
+        this.events.publish(MWCErrors.AUTHENTICATION);
+      });
+    }
+
+    if (!bwc.onConnectionError) {
+      bwc.setOnConnectionError(() => {
+        this.events.publish(MWCErrors.CONNECTION);
+      });
+    }
+
     return bwc;
   }
+
+}
+
+export class MWCErrors {
+
+  public static AUTHENTICATION = 'MWC_AUTH';
+
+  public static CONNECTION = 'CONNECTION';
 
 }
