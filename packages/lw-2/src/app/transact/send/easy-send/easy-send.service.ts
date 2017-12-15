@@ -56,7 +56,7 @@ export class EasySendService {
 
   public sendEmail(emailAddress: string, amountMrt:string, url: string): Promise<any> {
     return Promise.resolve(this.socialSharing.canShareViaEmail()).then(() => {
-      const message:string = `I just sent you ${amountMrt} Merit!  Merit is a new digital currency, and if you don't have a Merit Wallet yet, you can easily make one to claim the money. \n Here is the link: \n \n ${url}`
+      const message:string = `I just sent you ${amountMrt} Merit!  Merit is a new digital currency, and if you don't have a Merit Wallet yet, you can easily make one to claim the money. \n \n Here is the link to claim the Merit: \n \n ${url}`
       return this.socialSharing.shareViaEmail(message, `Here is ${amountMrt} Merit!`, [emailAddress]);
     }).catch((err) => {
       return Promise.reject(new Error('error sending email: ' + err));
