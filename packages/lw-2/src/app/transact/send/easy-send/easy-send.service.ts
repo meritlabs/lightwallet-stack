@@ -39,15 +39,25 @@ export class EasySendService {
     });
   }
 
-  public sendSMS(phoneNumber: string, url: string): Promise<any> {
-    return Promise.resolve(this.socialSharing.shareViaSMS(url, phoneNumber)).catch((err) => {
+  public sendSMS(phoneNumber: string, amountMrt:string, url: string): Promise<any> {
+    let msg: string = `Here is ${amountMrt} Merit.  Click here to redeem: ${url}`
+    if (msg.length > 160) {
+      // TODO: Find a way to properly split the URL across two Messages, if needed.
+      const msg1: string = `I just sent you ${amountMrt} Merit.  Merit is a new Digital Currency.  `
+      const msg2: string = url;
+
+      // HACK: 
+      msg = msg2;
+    }
+    return Promise.resolve(this.socialSharing.shareViaSMS(msg, phoneNumber)).catch((err) => {
       return Promise.reject(new Error('error sending sms: ' + err));
     });
   }
 
-  public sendEmail(emailAddress: string, url: string): Promise<any> {
+  public sendEmail(emailAddress: string, amountMrt:string, url: string): Promise<any> {
     return Promise.resolve(this.socialSharing.canShareViaEmail()).then(() => {
-      return this.socialSharing.shareViaEmail(url, 'Someone sent you some Merit', [emailAddress]);
+      const message:string = `I just sent you ${amountMrt} Merit!  Merit is a new digital currency, and if you don't have a Merit Wallet yet, you can easily make one to claim the money. \n \n Here is the link to claim the Merit: \n \n ${url}`
+      return this.socialSharing.shareViaEmail(message, `Here is ${amountMrt} Merit!`, [emailAddress]);
     }).catch((err) => {
       return Promise.reject(new Error('error sending email: ' + err));
     })

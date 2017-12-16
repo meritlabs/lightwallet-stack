@@ -37,7 +37,6 @@
     "@ionic-native/fcm": "^4.4.2",
     "@ionic-native/file": "4.4.2",
     "@ionic-native/in-app-browser": "^4.4.2",
-    "@ionic-native/push": "^4.5.2",
     "@ionic-native/social-sharing": "^4.4.2",
     "@ionic-native/splash-screen": "4.4.2",
     "@ionic-native/status-bar": "4.4.2",
@@ -91,7 +90,6 @@
     "ng2-clip": "^1.0.1",
     "node-version-compare": "^1.0.1",
     "phonegap-plugin-barcodescanner": "^6.0.8",
-    "phonegap-plugin-push": "^2.1.2",
     "plist": "^2.1.0",
     "preconditions": "^2.2.0",
     "rxjs": "5.4.3",
@@ -150,10 +148,7 @@
         "CAMERA_USAGE_DESCRIPTION": " "
       },
       "branch-cordova-sdk": {},
-      "cordova-plugin-fcm": {},
-      "phonegap-plugin-push": {
-        "SENDER_ID": "1091326413792"
-      }
+      "cordova-plugin-fcm": {}
     },
     "platforms": [
       "android",
