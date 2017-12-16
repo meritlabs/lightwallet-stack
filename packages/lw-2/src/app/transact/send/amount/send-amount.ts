@@ -29,6 +29,7 @@ export class SendAmountView {
   public sendingOptions: any[];
   public recipient: any;
   public amount: number;
+  public lastAmount: number = -1;
   public amountMerit: number;
   public smallFont: boolean;
   public globalResult: string;
@@ -197,7 +198,10 @@ export class SendAmountView {
   };
 
   processAmount(value) {
-    this.updateTxData();
+    if(value != this.lastAmount) {
+      this.lastAmount = value;
+      this.updateTxData();
+    }
   };
 
   sendAllowed() {
