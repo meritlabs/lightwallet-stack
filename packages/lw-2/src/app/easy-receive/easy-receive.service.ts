@@ -58,7 +58,7 @@ export class EasyReceiveService {
     
   }
 
-  public acceptEasyReceipt(receipt:EasyReceipt, wallet:any, input:number, destinationAddress:any):Promise<void>  {
+  public acceptEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input:number, destinationAddress:any):Promise<void>  {
       return this.spendEasyReceipt(receipt, wallet, input, destinationAddress);
   }
 
