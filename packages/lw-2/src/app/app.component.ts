@@ -19,6 +19,7 @@ import * as _ from 'lodash';
 import * as Promise from 'bluebird';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
+import { Events } from 'ionic-angular/util/events';
 
 
 @Component({
@@ -41,6 +42,7 @@ export class MeritLightWallet {
     private easyReceiveService: EasyReceiveService,
     private app: App,
     private pushNotificationService: PushNotificationsService, 
+    private events: Events    
   ) {
     process.on('unhandledRejection', this.logger.info.bind(console));
     Promise.config({
@@ -71,19 +73,26 @@ export class MeritLightWallet {
   /**
    * Check the status of the profile, and load the right next view.
    */
-  private loadProfileAndEasySend(): void {
-    this.profileService.getProfile().then((profile) => {
+  private loadProfileAndEasySend(): Promise<void> {
+    this.logger.info("LoadingProfileAndEasySend");
+    return this.profileService.getProfile().then((profile) => {
+      this.logger.info("Got Profile....");
       // If the user has credentials and a profile, then let's send them to the transact
       // view
       if (!this.rootComponent) {
         this.rootComponent = (profile && profile.credentials && profile.credentials.length) ? 'TransactView' : 'OnboardingView';
       }
-
-      this.deepLinkService.getBranchData(() => { }).then((data) => {
+      
+      return this.deepLinkService.getBranchData().then((data) => {
+        this.logger.info("Branch Data: ", data);
         // If the branch params contain the minimum params needed for an easyReceipt, then
         // let's validate and save them. 
         if (data && !_.isEmpty(data) && data.sk && data.se) {
-          this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt: EasyReceipt) => {
+          this.logger.info("About to Validate and Save.");
+        
+          return this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt: EasyReceipt) => {
+        this.logger.info("Returned from validate with: ", easyReceipt);
+        
             // We have an easyReceipt, let's handle the cases of being a new user or an 
             // existing user.
             if (easyReceipt) {
@@ -94,6 +103,8 @@ export class MeritLightWallet {
               } else {
                 // User is a normal user and needs to be thrown an easyReceive modal.
                 // TODO: THROW MODAL!  
+                this.logger.info("Publishing IncomingEasySend event");
+                this.events.publish('Remote:IncomingEasySend');
               }
             }
           }).catch((err) => {
