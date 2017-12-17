@@ -7,6 +7,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { LedgerService } from 'merit/shared/ledger.service';
 import * as Promise from 'bluebird';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()
 export class EasyReceiveService { 
@@ -57,7 +58,7 @@ export class EasyReceiveService {
     
   }
 
-  public acceptEasyReceipt(receipt:EasyReceipt, wallet:any, input:number, destinationAddress:any):Promise<EasyReceipt>  {
+  public acceptEasyReceipt(receipt:EasyReceipt, wallet:any, input:number, destinationAddress:any):Promise<void>  {
       return this.spendEasyReceipt(receipt, wallet, input, destinationAddress);
   }
 
@@ -114,7 +115,7 @@ export class EasyReceiveService {
     return this.persistanceService.deletePendingEasyReceipt(receipt);
   }
 
-  private spendEasyReceipt(receipt:EasyReceipt, wallet:any, input:number, destinationAddress:any):Promise<EasyReceipt> {
+  private spendEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input:number, destinationAddress:any):Promise<void> {
     
      return new Promise((resolve, reject) => {
        let opts:any = {}; 
@@ -139,7 +140,7 @@ export class EasyReceiveService {
          return wallet.broadcastRawTx({
            rawTx: tx.serialize(),
            network: wallet.network
-         }).then( (tx) => {
+         }).then((tx) => {
            return this.persistanceService.deletePendingEasyReceipt(receipt).then(() => {
                return resolve();
            });
