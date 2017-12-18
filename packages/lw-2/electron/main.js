@@ -1,13 +1,15 @@
 const electron = require('electron');
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
-
+const childProcess = require('child_process');
 const path = require('path');
 const url = require('url');
+
+const app = electron.app;
+const BrowserWindow = electron.BrowserWindow;
 
 const appName = 'Merit Wallet';
 
 let mainWindow;
+let meritd;
 
 function createWindow() {
   // iPhone X logical dimentions
@@ -26,7 +28,7 @@ function createWindow() {
     slashes: true
   });
 
-  mainWindow.setTitle('Merit Wallet');
+  mainWindow.setTitle(appName);
 
   mainWindow.loadURL(startUrl);
 
@@ -36,7 +38,25 @@ function createWindow() {
   })
 }
 
-app.on('ready', createWindow);
+function getAppContents() {
+  if ( process.platform === 'win32' ) {
+    return path.join( app.getAppPath(), '/../' );
+  }  else {
+    return path.join( app.getAppPath(), '/../../' );
+  }
+}
+
+function launchMeritd() {
+  let fs = require('fs');
+  let meritBin = `${getAppContents().split(' ').join('\\ ')}meritd`;
+  meritd = childProcess.spawn(`${meritBin} -testnet`, { detached: true, stdio: 'ignore', shell: true, });
+  meritd.unref();
+}
+
+app.on('ready', function() {
+  createWindow();
+  launchMeritd();
+});
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
