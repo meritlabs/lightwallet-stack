@@ -166,12 +166,12 @@ export class PushNotificationsService {
     this._token = null;
   }
 
-  public unsubscribe(walletClient: MeritWalletClient): void {
+  public unsubscribe(walletClient: MeritWalletClient): Promise<void> {
     if (!this._token) return;
-    this._unsubscribe(walletClient);
+    return this._unsubscribe(walletClient);
   }
 
-  public subscribe(walletClient: MeritWalletClient): void {
+  public subscribe(walletClient: MeritWalletClient): Promise<void> {
     if (!this.configService.get().pushNotificationsEnabled) {
       this.logger.warn("Attempting to subscribe to push notification when disabled in config.  Skipping...");
       return;
@@ -179,7 +179,7 @@ export class PushNotificationsService {
     if (!this._token && this.retriesRemaining > 0) {
       this.retriesRemaining--;
       this.logger.warn(`Attempted to subscribe without an available token; attempting to acquire. ${this.retriesRemaining} attempts remaining.`);
-      this.getToken().then(()=>{
+      return this.getToken().then(()=>{
         return this.subscribe(walletClient);      
       });
     }
@@ -189,7 +189,7 @@ export class PushNotificationsService {
       packageName: this.appService.info.packageNameId
     };
     this.logger.info('Subscribing to push notifications for: ', walletClient.name);
-    walletClient.pushNotificationsSubscribe(opts).then(() => {
+    return walletClient.pushNotificationsSubscribe(opts).then(() => {
       this.logger.info("Subscribed to push notifications successfully for: ", walletClient.name);
     }).catch((err) => {
       if (err) {
@@ -200,8 +200,8 @@ export class PushNotificationsService {
     });
   }
 
-  private _unsubscribe(walletClient: MeritWalletClient): void {
-    walletClient.pushNotificationsUnsubscribe(this._token).catch((err: any) => {
+  private _unsubscribe(walletClient: MeritWalletClient): Promise<void> {
+    return walletClient.pushNotificationsUnsubscribe(this._token).catch((err: any) => {
       if (err) {
         this.logger.error(walletClient.name + ': Unsubscription Push Notifications error. ', JSON.stringify(err));
       } else {
@@ -210,8 +210,8 @@ export class PushNotificationsService {
     });
   }
 
-  private _openWallet(walletIdHashed: any): void {
-    this.profileService.getWallets().then((wallets) => {
+  private _openWallet(walletIdHashed: any): Promise<void> {
+    return this.profileService.getWallets().then((wallets) => {
       let wallet: MeritWalletClient = _.find(wallets, (w: any) => {
         let walletIdHash = this.bwcService.getSJCL().hash.sha256.hash(parseInt(w.credentials.walletId));
         return _.isEqual(walletIdHashed, this.bwcService.getSJCL().codec.hex.fromBits(walletIdHash));

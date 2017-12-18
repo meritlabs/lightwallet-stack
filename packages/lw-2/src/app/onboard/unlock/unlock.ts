@@ -68,7 +68,7 @@ export class UnlockView {
         loader.present();
 
         return this.walletService.createDefaultWallet(this.formData.unlockCode).then((wallet) => {
-          this.logger.info('Created a new default wallet: ', wallet);
+          this.logger.info('Created a new default wallet!');
           loader.dismiss();
           if (this.config.get().pushNotificationsEnabled) {
             this.logger.info("Subscribing to push notifications for default wallet");
