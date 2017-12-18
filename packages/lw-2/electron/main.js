@@ -47,15 +47,31 @@ function getAppContents() {
 }
 
 function launchMeritd() {
-  let fs = require('fs');
-  let meritBin = `${getAppContents().split(' ').join('\\ ')}meritd`;
+  const meritBin = `${getAppContents().split(' ').join('\\ ')}meritd`;
   meritd = childProcess.spawn(`${meritBin} -testnet`, { detached: true, stdio: 'ignore', shell: true, });
   meritd.unref();
+}
+
+function execCliCommand(paramString) {
+  const meritCliBin = `${getAppContents().split(' ').join('\\ ')}merit-cli`;
+  const command = childProcess.spawn(`${meritCliBin} -testnet ${paramString}`, { shell: true, });
+
+  command.stdout.on('data', (data) => {
+    let fs = require('fs');
+    fs.writeFile("/tmp/test", data);
+  });
+  
+  command.stderr.on('data', (data) => {
+    let fs = require('fs');
+    fs.writeFile("/tmp/test", `Error: ${data}`);
+  });
 }
 
 app.on('ready', function() {
   createWindow();
   launchMeritd();
+
+  setTimeout(() => { execCliCommand('getblockchaininfo')  }, 10000);
 });
 
 app.on('window-all-closed', function () {
@@ -68,4 +84,11 @@ app.on('activate', function () {
   if (mainWindow === null) {
     createWindow()
   }
+});
+
+app.on('before-quit', function () {
+  const signal = 'SIGKILL';
+  let fs = require('fs');
+  fs.writeFile("/tmp/test", `\nProceess: ${meritd.pid}`);
+  process.kill(meritd.pid, signal);
 });
