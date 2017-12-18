@@ -278,13 +278,6 @@ export class WalletsView {
 
       this.processIncomingTransactionEvent(n, { updateStatus: true });
     });
-
-    this.events.subscribe('Remote:IncomingEasySend', () => {
-      this.logger.info("RL: Got an IncomingEasySend event with no params.");
-
-      this.processEasyReceive();
-    });
-
   }
   /**
    * checks if pending easyreceive exists and if so, open it
