@@ -179,7 +179,6 @@ export class WalletsView {
     if (this.configService.get().recentTransactions.enabled) {
       this.recentTransactionsEnabled = true;
       return this.profileService.getNotifications({ limit: 3 }).then((result) => {
-        this.logger.info("Show me the notifications: ", result);
         this.logger.info("WalletsView Received ${result.total} notifications upon resuming.");
         _.each(result.notifications, (n: any) => {
           // We don't need to update the status here because it has 
@@ -279,7 +278,6 @@ export class WalletsView {
 
       this.processIncomingTransactionEvent(n, { updateStatus: true });
     });
-
   }
   /**
    * checks if pending easyreceive exists and if so, open it
