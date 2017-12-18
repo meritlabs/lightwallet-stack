@@ -1179,9 +1179,6 @@ export class API {
 
       return r.then((res) => {
 
-        console.log('@@@RES', res);
-
-
         /**
          * Universal MWC Logger.  It will log all output returned from BWS
          * if the private static DEBUG_MODE is set to true above.  
@@ -1256,9 +1253,7 @@ export class API {
         }
 
         if (err.code && Errors[err.code]) err = Errors[err.code];
-        console.log(err);
         return reject(err);
-
       });
     });
   };
@@ -2180,6 +2175,8 @@ export class API {
           return reject(Errors.SERVER_COMPROMISED);
         }
         return resolve(address);
+      }).catch((err) => {
+        return reject(err);
       });
     });
   };
