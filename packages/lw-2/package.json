@@ -18,11 +18,16 @@
     "build": "ionic-app-scripts build",
     "lint": "ionic-app-scripts lint",
     "ionic:build": "ionic-app-scripts build",
-    "ionic:serve": "ionic-app-scripts serve"
+    "ionic:serve": "ionic-app-scripts serve",
+    "electron:run": "./node_modules/.bin/electron .",
+    "electron:package": "./node_modules/.bin/electron-builder",
+    "electron:clean": "rm -rf ./dist",
+    "package:desktop": "npm run electron:clean && npm run build && npm run electron:package"
   },
   "main": "./electron/main.js",
   "build": {
     "appId": "me.merit.wallet",
+    "productName": "Merit Wallet",
     "files": [
       "electron/main.js",
       "www/**/*"
