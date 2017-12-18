@@ -80,7 +80,7 @@ export class ReceiveView {
   generateAddress(forceNew?: boolean) {
     this.addressGenerationInProgress = true;
 
-    this.walletService.getAddress(this.wallet, forceNew).then((address) => {
+    return this.walletService.getAddress(this.wallet, forceNew).then((address) => {
       this.address = address;
       this.addressGenerationInProgress = false;
       this.formatAddress();
