@@ -41,8 +41,7 @@ export class MeritLightWallet {
     private deepLinkService: DeepLinkService,
     private easyReceiveService: EasyReceiveService,
     private app: App,
-    private pushNotificationService: PushNotificationsService, 
-    private navCtrl: NavController
+    private pushNotificationService: PushNotificationsService 
   ) {
     process.on('unhandledRejection', this.logger.info.bind(console));
     Promise.config({
