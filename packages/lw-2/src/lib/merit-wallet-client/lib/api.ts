@@ -1137,7 +1137,7 @@ export class API {
    * @param {Object} args
    * @param {Callback} cb
    */
-  _doRequest(method: string, url: string, args: any, useSession: boolean, secondRun? = false): Promise<{ body: any, header: any }> {
+  _doRequest(method: string, url: string, args: any, useSession: boolean, secondRun = false): Promise<{ body: any, header: any }> {
     return new Promise((resolve, reject) => {
 
       let headers = this._getHeaders(method, url, args);
