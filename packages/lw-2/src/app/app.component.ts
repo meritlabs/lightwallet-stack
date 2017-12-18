@@ -19,7 +19,7 @@ import * as _ from 'lodash';
 import * as Promise from 'bluebird';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
-import { Events } from 'ionic-angular/util/events';
+import { NavController } from 'ionic-angular/navigation/nav-controller';
 
 
 @Component({
@@ -42,7 +42,7 @@ export class MeritLightWallet {
     private easyReceiveService: EasyReceiveService,
     private app: App,
     private pushNotificationService: PushNotificationsService, 
-    private events: Events    
+    private navCtrl: NavController
   ) {
     process.on('unhandledRejection', this.logger.info.bind(console));
     Promise.config({
@@ -103,8 +103,10 @@ export class MeritLightWallet {
               } else {
                 // User is a normal user and needs to be thrown an easyReceive modal.
                 // TODO: THROW MODAL!  
-                this.logger.info("Publishing IncomingEasySend event");
-                this.events.publish('Remote:IncomingEasySend');
+                this.logger.info("Receiving an incoming EasySend.  Pushing to the wallets view.");
+                if (this.app.getRootNavs[0])
+                this.app.getRootNavs[0].setRoot('TransactView');
+                this.app.getRootNavs[0].popToRoot();
               }
             }
           }).catch((err) => {
