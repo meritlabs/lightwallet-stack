@@ -12,7 +12,7 @@ import * as Promise from 'bluebird';
 
 import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 
-
+import { Storage } from '@ionic/storage';
 
 const Keys = {
   ADDRESS_BOOK: network => 'addressbook-' + network,
@@ -44,26 +44,9 @@ const Keys = {
   TX_HISTORY: walletId => 'txsHistory-' + walletId,
 };
 
-export let persistenceServiceFactory = (platform: PlatformService, log: Logger) => {
-  // TODO: select appropriate storage service based on platform
-  let storage;
-  /*
-  if (this.platform.isChromeApp) {
-    storage = new ChromeStorage(log);
-  } else if (this.platform.isCordova) {
-    storage = new FileStorage(log);
-  } else {
-    storage = new LocalStorage(log);
-  }
-   */
-  // Testing in RAM
-  storage = new LocalStorage(log);
-  return new PersistenceService(storage, log);
-};
-
 @Injectable()
 export class PersistenceService {
-  constructor( @Inject(MERITSTORAGE) public storage: Storage, private log: Logger) {
+  constructor(public storage: Storage, private log: Logger) {
   };
 
   storeNewProfile(profile): Promise<void> {

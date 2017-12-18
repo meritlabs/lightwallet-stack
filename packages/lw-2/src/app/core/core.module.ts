@@ -43,6 +43,8 @@ import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { LedgerService } from 'merit/shared/ledger.service';
 import { NotificationModule } from 'merit/core/notification/notification.module';
 
+import { IonicStorageModule } from '@ionic/storage';
+
 /* 
   The core module exists to make commonly used singleton services available 
   for use in other modules.  
@@ -71,6 +73,7 @@ export function loadConfigs(appService) {
               deps: [HttpClient]
             }
           }),
+          IonicStorageModule.forRoot(),
           NotificationModule        
     ],
     exports: [],
@@ -85,12 +88,7 @@ export function loadConfigs(appService) {
         PopupService,
         MeritToastController, 
         DeepLinkService,
-        {
-            provide: PersistenceService,
-            useFactory: persistenceServiceFactory,
-            deps: [PlatformService, Logger],
-            multi: false
-        },
+        PersistenceService,
         PlatformService,
         ProfileService,
         LanguageService,
