@@ -8,7 +8,7 @@ import { FCM } from '@ionic-native/fcm';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Logger } from "./logger";
 import { BwcService } from 'merit/core/bwc.service';
-import { PersistenceService, persistenceServiceFactory } from 'merit/core/persistence.service';
+import { PersistenceService } from 'merit/core/persistence.service';
 import { BwcError } from 'merit/core/bwc-error.model';
 import { PlatformService } from 'merit/core/platform.service';
 
