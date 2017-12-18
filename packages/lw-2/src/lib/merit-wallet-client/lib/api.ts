@@ -6,7 +6,7 @@ import { Verifier } from './verifier';
 import { Common } from './common';
 import { Logger } from "./log";
 import { Credentials } from './credentials';
-import { ErrorTypes as Errors } from './errors';
+import { Errors } from './errors';
 import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 
 const $ = require('preconditions').singleton();
@@ -1178,9 +1178,9 @@ export class API {
       r.timeout(this.timeout);
 
       return r.then((res) => {
-        if (!res) {
-          return reject(Errors.CONNECTION_ERROR);
-        }
+
+        console.log('@@@RES', res);
+
 
         /**
          * Universal MWC Logger.  It will log all output returned from BWS
@@ -1197,7 +1197,8 @@ export class API {
           if (res.status === 404)
             return reject(Errors.NOT_FOUND);
 
-          if (res.status === 401) {
+          if (res.code == Errors.AUTHENTICATION_ERROR.code) {
+            if (this.onAuthenticationError) this.onAuthenticationError();
             return reject(Errors.AUTHENTICATION_ERROR);
           }
 
@@ -1223,31 +1224,41 @@ export class API {
 
         return resolve(res);
       }).catch((err) => {
-        if(err == Errors.ECONNRESET_ERROR ||
-          err == Errors.CONNECTION_ERROR ||
-          err.status == null) {
-          if(this.onConnectionError) {
-            this.onConnectionError();
-          }
-        } else if (err.status == 401) {
+
+        if (!err.status || err.status >= 500) {
+          return reject(Errors.CONNECTION_ERROR);
+        }
+
+        if (!err.response || !err.response.text) {
+          return reject(err);
+        }
+
+        try {
+          err = JSON.parse(err.response.text);
+        } catch (e) {
+          return reject(err);
+        }
+
+        if (err.code == Errors.AUTHENTICATION_ERROR.code) {
           if (!secondRun) { //trying to restore session one time
             return this._doRequest('post', '/v1/login', {}, null, true).then(() => {
               return this._doRequest(method, url, args, useSession, true);
             }).catch(() => {
               if(this.onAuthenticationError) {
-                this.onAuthenticationError();
+                return Promise.resolve(this.onAuthenticationError());
               }
             })
           } else {
             if(this.onAuthenticationError) {
-              this.onAuthenticationError();
+              return Promise.resolve(this.onAuthenticationError());
             }
           }
-
         }
 
-        this.log.warn("Cannot complete request to server: ", err);
-        return resolve();
+        if (err.code && Errors[err.code]) err = Errors[err.code];
+        console.log(err);
+        return reject(err);
+
       });
     });
   };
@@ -1310,16 +1321,12 @@ export class API {
   _doPostRequest(url: string, args: any): Promise<any> {
     return this._doRequest('post', url, args, false).then((res) => {
       return res.body;
-    }).catch((err) => {
-      this.log.warn("Were not able to complete getRequest: ", err);
     });
   };
 
   _doPutRequest(url: string, args: any): Promise<any> {
     return this._doRequest('put', url, args, false).then((res) => {
       return res.body;
-    }).catch((err) => {
-      this.log.warn("Were not able to complete getRequest: ", err);
     });
   };
 
@@ -1743,6 +1750,8 @@ export class API {
 
       // Create wallet
       return this._doPostRequest('/v1/wallets/', args).then((res) => {
+
+
         if (res) {
           let walletId = res.walletId;
           let walletShareCode = res.shareCode;
@@ -1758,6 +1767,9 @@ export class API {
         } else {
           return reject('Error: ' + res);
         }
+      }).catch((err) => {
+        console.log('wallet error', err);
+        return reject(err);
       });
     });
   };
