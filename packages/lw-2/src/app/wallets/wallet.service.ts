@@ -14,7 +14,9 @@ import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import * as Promise from 'bluebird';
-import { MeritWalletClient } from './../../lib/merit-wallet-client';
+import { MeritWalletClient } from 'merit/../lib/merit-wallet-client';
+import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
+
 
 import { Events } from 'ionic-angular';
 
@@ -47,7 +49,7 @@ export class WalletService {
   private SOFT_CONFIRMATION_LIMIT: number = 12;
   private SAFE_CONFIRMATIONS: number = 6;
 
-  private errors: any = this.bwcService.getErrors();
+  //private errors: any = this.bwcService.getErrors();
 
 
   constructor(
@@ -338,13 +340,14 @@ export class WalletService {
         return resolve(addr.address);
       }).catch((err) => {
         let prefix = 'Could not create address'; //TODO Gettextcatalog
-        if (err == this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
+        if (err == Errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
           this.logger.warn(err);
           this.logger.warn("Attempting to create address again.");
-          return Promise.delay(5000).then(() => {
+          return Promise.delay(5000).then(() => { //todo Add attempts limit
             this.createAddress(wallet);
           });
-        } else if (err == this.errors.MAIN_ADDRESS_GAP_REACHED || (err.message && err.message == 'MAIN_ADDRESS_GAP_REACHED')) {
+        } else if (err == Errors.MAIN_ADDRESS_GAP_REACHED) {
+          // todo notfy user that he reached gap
           this.logger.warn(err);
           this.logger.warn("Using main address instead.");
           prefix = null;
@@ -495,7 +498,7 @@ export class WalletService {
               });
             }).catch((err) => {
               this.logger.warn(this.bwcErrorService.msg(err, 'Server Error')); //TODO
-              if (err == this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
+              if (err == Errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
                 this.logger.info('Retrying history download in 5 secs...');
                 return Promise.delay(5000).then(() => {
                   return getNewTxs(newTxs, skip).then((txs) => {
@@ -1272,7 +1275,7 @@ export class WalletService {
         return newWallet.doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
         }).then((err) => {
           //Ignore error is copayer already in wallet
-          if (err && !(err == this.errors.COPAYER_IN_WALLET)) return reject(err);
+          if (err && !(err == Errors.COPAYER_IN_WALLET)) return reject(err);
           if (++i == wallet.credentials.publicKeyRing.length) return resolve();
         });
       });
@@ -1288,7 +1291,10 @@ export class WalletService {
       if (showOpts.mnemonic) showOpts.mnemonic = '[hidden]';
 
       this.logger.debug('Creating Wallet:', showOpts);
-      setTimeout(() => {
+
+      let attempts = 0;
+      const MAX_ATTEMPTS = 3;
+      let seed = () => {
         return this.seedWallet(opts).then((walletClient: MeritWalletClient) => {
 
           let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
@@ -1306,9 +1312,19 @@ export class WalletService {
           });
         }).catch((err: any) => {
           this.logger.warn("Error creating wallet in DCW: ", err);
-          return reject(new Error(this.bwcErrorService.cb(err, 'Error creating wallet')));
+          if (err == Errors.CONNECTION_ERROR) {
+            if (++attempts < MAX_ATTEMPTS) {
+              return seed();
+            } else {
+              return reject(err);
+            }
+          } else {
+            return reject(err);
+          }
         });
-      }, 5000);
+      };
+
+      setTimeout(seed, 5000);
     });
   }
 

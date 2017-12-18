@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 
 import { PersistenceService } from 'merit/core/persistence.service';

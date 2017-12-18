@@ -8,8 +8,6 @@ import { PlatformService } from 'merit/core/platform.service';
 import { LocalStorage } from 'merit/core/storage/local-storage.service';
 import { FileStorage } from 'merit/core/storage/file-storage.service';
 import { RamStorage } from 'merit/core/storage/ram-storage.service';
-import * as Promise from 'bluebird';
-
 import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 
 import { Storage } from '@ionic/storage';
@@ -50,7 +48,7 @@ export class PersistenceService {
   };
 
   storeNewProfile(profile): Promise<void> {
-    return this.storage.create(Keys.PROFILE, profile);
+    return this.storage.set(Keys.PROFILE, profile);
   };
 
   storeProfile(profile): Promise<void> {
