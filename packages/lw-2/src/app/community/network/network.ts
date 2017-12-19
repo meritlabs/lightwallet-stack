@@ -16,6 +16,8 @@ import { NgZone } from '@angular/core';
 import * as _ from "lodash";
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 
+import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
+
 
 interface DisplayWallet {
   name: string,
@@ -43,6 +45,8 @@ interface DisplayWallet {
 export class NetworkView {
   public displayWallets: Array<DisplayWallet> = [];
 
+  public loading:boolean;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -59,31 +63,43 @@ export class NetworkView {
 
   // Ensure that the wallets are loaded into the view on first load.
   ionViewDidLoad() {
+    this.loading = true;
     this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
-      let newDisplayWallets: DisplayWallet[] = []
+      let newDisplayWallets: DisplayWallet[] = [];
       _.each(wallets, (wallet: MeritWalletClient) => {
         // The wallet client will already have the below information.
         let filteredWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode");
         this.logger.info("FilteredWallet: ", filteredWallet);
         newDisplayWallets.push(<DisplayWallet>filteredWallet);
-      })
+      });
       this.displayWallets = newDisplayWallets;
       this.logger.info("DisplayWallets after ionViewLoad: ", this.displayWallets);
+      this.loading = false;
+    }).catch((err) => {
 
-    })
+      this.loading = false;
+      this.toastCtrl.create({
+        message: err.text || 'Unknown error',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    });
   }
 
   // On each enter, let's update the network data.  
   ionViewDidEnter() {
-    this.updateInfo();
+    this.updateInfo().catch((err) => {
+      console.log('failed to receive network data');
+    })
   }
 
   doRefresh(refresher) {
-    this.updateInfo().then(() => {
-      refresher.complete();
-    }).catch((err) => {
-      refresher.complete();
-    })
+    if (!this.loading) {
+      this.updateInfo().then(() => {
+        refresher.complete();
+      }).catch((err) => {
+        refresher.complete();
+      })
+    }
   }
 
   private formatNetworkInfo(wallets: DisplayWallet[]): Promise<Array<DisplayWallet>> {
@@ -122,39 +138,66 @@ export class NetworkView {
   }
 
   private updateInfo() {
-    return this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
+    this.loading = true;
+    const MAX_ATTEMPTS = 5;
+    let attempt = 0;
 
-      return Promise.map(wallets, (wallet: MeritWalletClient) => {
-        let filteredWallet = <DisplayWallet>_.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode", "totalNetworkValue");
+    return new Promise((resolve, reject) => {
 
-        return this.walletService.getANV(wallet).then((anv) => {
-          filteredWallet.totalNetworkValueMicro = anv;
-        }).then(() => {
-          return this.walletService.getRewards(wallet).then((data) => {
-            // If we cannot properly fetch data, let's return wallets as-is.
-            if (data && !_.isNil(data.mining)) {
-              filteredWallet.miningRewardsMicro = data.mining;
-            }
-            if (data && !_.isNil(data.mining)) {
+      let update = () => {
+        return this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
 
-              filteredWallet.ambassadorRewardsMicro = data.ambassador;
-            }
-            return filteredWallet;
+          return Promise.map(wallets, (wallet: MeritWalletClient) => {
+            let filteredWallet = <DisplayWallet>_.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode", "totalNetworkValue");
+
+            return this.walletService.getANV(wallet).then((anv) => {
+              filteredWallet.totalNetworkValueMicro = anv;
+            }).then(() => {
+              return this.walletService.getRewards(wallet).then((data) => {
+                // If we cannot properly fetch data, let's return wallets as-is.
+                if (data && !_.isNil(data.mining)) {
+                  filteredWallet.miningRewardsMicro = data.mining;
+                }
+                if (data && !_.isNil(data.mining)) {
+
+                  filteredWallet.ambassadorRewardsMicro = data.ambassador;
+                }
+                return filteredWallet;
+              });
+            })
+          }).then((processedWallets: DisplayWallet[]) => {
+            return this.formatNetworkInfo(processedWallets).then((readyForDisplay: DisplayWallet[]) => {
+              this.zone.run(() => {
+                this.displayWallets = readyForDisplay;
+                this.loading = false;
+                return resolve();
+              });
+            });
           });
+        }).catch((err) => {
+
+          if (err.code == Errors.CONNECTION_ERROR.code) {
+            if (++attempt < MAX_ATTEMPTS) {
+              return setTimeout(update, 1000);
+            }
+          }
+
+          this.loading = false;
+
+          this.toastCtrl.create({
+            message: err.text || 'Unknown error',
+            cssClass: ToastConfig.CLASS_ERROR
+          }).present();
+
+          return reject();
         });
-      }).then((processedWallets: DisplayWallet[]) => {
-        return this.formatNetworkInfo(processedWallets).then((readyForDisplay: DisplayWallet[]) => {
-          this.zone.run(() => {
-            this.displayWallets = readyForDisplay;
-          });
-        });
-      });
-    }).catch((err) => {
-      this.toastCtrl.create({
-        message: err,
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      };
+
+      update();
+
     });
+
+
   }
 
 
