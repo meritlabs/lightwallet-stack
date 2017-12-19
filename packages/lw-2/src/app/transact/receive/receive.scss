@@ -7,6 +7,10 @@ view-receive {
     font-size: 12px;
   }
 
+  .error {
+    color: color($colors, danger);
+  }
+
   .container {
     text-align: center;
     margin-top: 20%;
