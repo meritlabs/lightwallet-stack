@@ -1413,7 +1413,9 @@ export class WalletService {
       let address = pubkey.toAddress(wallet.credentials.network);
       return wallet.getANV(address).then((anv) => {
         return resolve(anv);
-      })
+      }).catch((err) => {
+        return reject(err);
+      });
     });
   }
 

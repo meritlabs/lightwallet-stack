@@ -1222,7 +1222,7 @@ export class API {
         return resolve(res);
       }).catch((err) => {
 
-        if (!err.status || err.status >= 500) {
+        if (!err.status || err.status > 500) {
           return reject(Errors.CONNECTION_ERROR);
         }
 
