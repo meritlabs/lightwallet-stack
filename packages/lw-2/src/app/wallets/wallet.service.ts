@@ -294,6 +294,7 @@ export class WalletService {
   }
 
   public getAddress(wallet: MeritWalletClient, forceNew: boolean): Promise<any> {
+
     return new Promise((resolve, reject) => {
       return this.persistenceService.getLastAddress(wallet.id).then((addr) => {
         if (!forceNew && addr) return resolve(addr);
@@ -301,22 +302,29 @@ export class WalletService {
         if (!wallet.isComplete())
           return reject(new Error('WALLET_NOT_COMPLETE'));
 
-        return this.createAddress(wallet).then((_addr) => {
-          if (_.isEmpty(_addr)) {
-            return reject(new Error("Cannot retrieve a new address"));
-          } else {
-            return this.persistenceService.storeLastAddress(wallet.id, _addr).then(() => {
-              return resolve(_addr);
-            })
-          }
+        return wallet.createAddress({}).then((address) => {
+          return this.persistenceService.storeLastAddress(wallet.id, address).then(() => {
+            return resolve(address);
+          });
         }).catch((err) => {
-          return reject(err);
+          if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code && !forceNew) {
+            return this.getMainAddress(wallet).then((address) => {
+              return this.persistenceService.storeLastAddress(wallet.id, address).then(() => {
+                return resolve(address);
+              });
+            });
+          } else {
+            return reject(err);
+          }
         });
+
       }).catch((err) => {
         return reject(err);
       });
     });
   }
+
+
 
   // Check address
   private isAddressUsed(wallet: MeritWalletClient, byAddress: Array<any>): Promise<any> {
@@ -335,34 +343,33 @@ export class WalletService {
 
   private createAddress(wallet: MeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.logger.debug('Creating address for wallet:', wallet.id);
-      return wallet.createAddress({}).then((addr) => {
-        return resolve(addr.address);
+      return  wallet.createAddress({}).then((address) => {
+        return resolve(address);
       }).catch((err) => {
-        let prefix = 'Could not create address'; //TODO Gettextcatalog
-        if (err == Errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
-          this.logger.warn(err);
-          this.logger.warn("Attempting to create address again.");
-          return Promise.delay(5000).then(() => { //todo Add attempts limit
-            this.createAddress(wallet);
+        if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code) {
+          return this.getMainAddress(wallet).then((address) => {
+            return resolve(address);
           });
-        } else if (err == Errors.MAIN_ADDRESS_GAP_REACHED) {
-          // todo notfy user that he reached gap
-          this.logger.warn(err);
-          this.logger.warn("Using main address instead.");
-          prefix = null;
-          return wallet.getMainAddresses({
-            reverse: true,
-            limit: 1
-          }).then((addr) => {
-            return resolve(addr[0].address);
-          });
+        } else {
+          return reject(err);
         }
-        // No specific error matched above, run through the errorService callback filter.
-        return reject(new Error(this.bwcErrorService.cb(err, prefix)));
+      });
+
+    });
+  }
+
+
+  private getMainAddress(wallet: MeritWalletClient) {
+    return new Promise((resolve, reject) => {
+      return wallet.getMainAddresses({
+        reverse: true,
+        limit: 1
+      }).then((addr) => {
+        return resolve(addr[0].address);
       });
     });
   }
+
 
   private getSavedTxs(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {

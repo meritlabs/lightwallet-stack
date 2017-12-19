@@ -1,6 +1,5 @@
 import { Component, SecurityContext } from '@angular/core';
 import { IonicPage, NavController, AlertController, NavParams, ModalController } from 'ionic-angular';
-import * as Promise from 'bluebird';
 
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ProfileService } from 'merit/core/profile.service';
