@@ -52,7 +52,7 @@
         <div class="label" class="row" (click)="selectWallet()">
             <span text-left class="label">From</span>
             <span item-right text-right [style.flex]="1">
-                {{wallet.name || wallet._id}} <span *ngIf="availableAmount">({{ availableAmount.formatted}})</span>
+                {{wallet.name || wallet._id}} <span *ngIf="availableAmount && availableAmount.formatted">({{ availableAmount.formatted}})</span>
                 <button ion-button icon-only clear color="primary" class="wallet-button">
                     <i class="wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
                         <img src="assets/img/icon-wallet.svg">
@@ -72,9 +72,12 @@
                     <span *ngIf="amountCurrency != 'MRT'">{{feeFiat}}</span>
                     {{amountCurrency}}
                 </span>
-                <span *ngIf="feeCalcError" class="error">{{feeCalcError}}</span>
 
+                <span *ngIf="feeCalcError" class="error">{{feeCalcError}}</span>
             </span>
+            <button ion-button clear icon-only color="primary" (click)="updateTxData()" *ngIf="refreshFeeAvailable" class="refresh-button">
+                <ion-icon name="refresh"></ion-icon>
+            </button>
         </div>
         <div class="row">
             <span class="label" text-left>Recipient pays fee.</span>

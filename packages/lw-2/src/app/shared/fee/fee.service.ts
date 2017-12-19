@@ -62,35 +62,56 @@ export class FeeService {
     });
   };
 
+  getWalletFeeRate(wallet, feeLevel) {
+
+    return new Promise((resolve, reject) => {
+      return wallet.getFeeLevels(wallet.network).then((levels) => {
+        this.cache.updateTs = Date.now();
+        this.cache.data = _.find(levels, {
+          level: feeLevel
+        });
+        return resolve({data: this.cache.data, fromCache: false})
+      }).catch((err) => {
+        return reject(err);
+      });
+    });
+
+  }
+
   getCurrentFeeRate(network: string) {
     return this.getFeeRate(network, this.getCurrentFeeLevel());
   };
 
   getFeeLevel(network: string, feeLevel: string): Promise<{data: {level: string, feePerKb: number}, fromCache: Boolean}> {
 
-    if (this.cache.updateTs > Date.now() - this.CACHE_TIME_TS * 1000) {
-      return Promise.resolve({data: this.cache.data, fromCache: true});
-    }
+    return new Promise((resolve, reject) => {
 
-    // We should ge the default BWS URL for now.  
-    var opts = {
-      bwsurl: this.configService.getDefaults().bws.url
-    };
-    const walletClient = this.bwcService.getClient(null, opts);
+      console.log('GET FEE LEVEL!!!');
 
-    return Promise.resolve(walletClient.getFeeLevels(network).then((levels) => {
-      this.cache.updateTs = Date.now();
-      this.cache.data = _.find(levels, {
-        level: feeLevel
-      })
-    })).delay(100).then(() => { //Todo: fix this workaround.
-      return this.cache;
-    }).then((cache) => {
-      return cache.data;
-    }).then((data) => {
-      return Promise.resolve({data: data, fromCache: false});
-    }).catch((err) => {
-      return Promise.reject({message: 'Could not get dynamic fee'});
+      if (this.cache.updateTs > Date.now() - this.CACHE_TIME_TS * 1000) {
+        console.log("RESOLVING CACHE!!");
+        return resolve({data: this.cache.data, fromCache: true});
+      } else {
+
+        console.log("ELSEEE");
+
+        let walletClient = this.bwcService.getClient(null);
+
+        console.log("FUUUCK WHAT THE HELL??");
+
+        return walletClient.getFeeLevels(network).then((levels) => {
+          console.log('LEVELS!!', levels);
+          this.cache.updateTs = Date.now();
+          this.cache.data = _.find(levels, {
+            level: feeLevel
+          });
+          return resolve({data: this.cache.data, fromCache: false})
+        }).catch((err) => {
+          console.log("REJECTING!!", err);
+          return reject(err);
+        })
+      }
     });
+
   };
 }
