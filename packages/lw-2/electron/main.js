@@ -11,6 +11,7 @@ const BrowserWindow = electron.BrowserWindow;
 const appName = 'Merit Wallet';
 
 let mainWindow;
+let menu;
 let meritd;
 
 function buildTemplate(app) {
@@ -25,7 +26,8 @@ function buildTemplate(app) {
       {
         label: 'Mining',
         submenu: [
-          {label: 'Miner State: Stopped', enabled: false },
+          {label: 'Miner State: Stopped', enabled: false, visible: true },
+          {label: 'Miner State: Running', enabled: false, visible: false },
           {type: 'separator'},
           {
             label: 'Start Miner',
@@ -96,7 +98,7 @@ function createWindow() {
   });
 
   const menuTemplate = buildTemplate(app);
-  const menu = Menu.buildFromTemplate(menuTemplate);
+  menu = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menu);
 }
 
@@ -130,11 +132,19 @@ function execCliCommand(paramString) {
 function startMiner() {
   // DUMMY
   fs.writeFile("/tmp/test", `Start Miner`);
+  menu.items[2].submenu.items[0].visible = false;
+  menu.items[2].submenu.items[1].visible = true;
+  menu.items[2].submenu.items[3].enabled = false;
+  menu.items[2].submenu.items[4].enabled = true;
 }
 
 function stopMiner() {
   // DUMMY
   fs.writeFile("/tmp/test", `Stop Miner`);
+  menu.items[2].submenu.items[0].visible = true;
+  menu.items[2].submenu.items[1].visible = false;
+  menu.items[2].submenu.items[3].enabled = true;
+  menu.items[2].submenu.items[4].enabled = false;
 }
 
 app.on('ready', function() {
