@@ -9,10 +9,13 @@ const Menu = electron.Menu;
 const BrowserWindow = electron.BrowserWindow;
 
 const appName = 'Merit Wallet';
+const numberOfThreads = 4;
 
 let mainWindow;
 let menu;
 let meritd;
+let minerCheckLoop; 
+let isMining; 
 
 function buildTemplate(app) {
   const template = [
@@ -116,42 +119,64 @@ function launchMeritd() {
   meritd.unref();
 }
 
-function execCliCommand(paramString) {
+function execCliCommand(paramString, onSuccess, onError) {
   const meritCliBin = `${getAppContents().split(' ').join('\\ ')}merit-cli`;
   const command = childProcess.spawn(`${meritCliBin} -testnet ${paramString}`, { shell: true, });
 
-  command.stdout.on('data', (data) => {
-    fs.writeFile("/tmp/test", data);
+  command.stdout.on('data', data => {
+    if (onSuccess) onSuccess(data);
   });
   
   command.stderr.on('data', (data) => {
-    fs.writeFile("/tmp/test", `Error: ${data}`);
+    if (onError) onError(data);
   });
 }
 
+function changeMinerMenuState(isMining) {
+  menu.items[2].submenu.items[0].visible = !isMining;
+  menu.items[2].submenu.items[1].visible = isMining;
+  menu.items[2].submenu.items[3].enabled = !isMining;
+  menu.items[2].submenu.items[4].enabled = isMining;
+}
+
 function startMiner() {
-  // DUMMY
+  execCliCommand(`setmining true ${numberOfThreads}`);
   fs.writeFile("/tmp/test", `Start Miner`);
-  menu.items[2].submenu.items[0].visible = false;
-  menu.items[2].submenu.items[1].visible = true;
-  menu.items[2].submenu.items[3].enabled = false;
-  menu.items[2].submenu.items[4].enabled = true;
+  changeMinerMenuState(true);
 }
 
 function stopMiner() {
-  // DUMMY
+  execCliCommand(`setmining false`);
   fs.writeFile("/tmp/test", `Stop Miner`);
-  menu.items[2].submenu.items[0].visible = true;
-  menu.items[2].submenu.items[1].visible = false;
-  menu.items[2].submenu.items[3].enabled = true;
-  menu.items[2].submenu.items[4].enabled = false;
+  changeMinerMenuState(false);
+}
+
+function checkMinerState() {
+  const onSuccess = (data) => {
+    fs.writeFile("/tmp/test", `\nMining: ${data}\n`);
+    if (data == 'true') {
+      fs.writeFile("/tmp/test", `Miner check: true\n`);
+      if (!isMining) {
+        changeMinerMenuState(true);
+        isMining = true;
+      }
+    } else {
+      fs.writeFile("/tmp/test", `Miner check: false\n`);
+      if (isMining) {
+        changeMinerMenuState(false);
+        isMining = false;
+      }
+    }
+  };
+  
+  execCliCommand('getmining', onSuccess);
 }
 
 app.on('ready', function() {
   createWindow();
   launchMeritd();
 
-  setTimeout(() => { execCliCommand('getblockchaininfo')  }, 10000);
+  minerCheckLoop = setInterval(() => { checkMinerState()  }, 10000);
 });
 
 app.on('window-all-closed', function () {
@@ -167,10 +192,12 @@ app.on('activate', function () {
 });
 
 app.on('before-quit', function () {
+  clearInterval(minerCheckLoop);
+
   if (meritd) {
     const signal = 'SIGKILL';
     
-    fs.writeFile("/tmp/test", `\nProceess: ${meritd.pid}`);
+    fs.writeFile("/tmp/test", `\nProceess: ${meritd.pid}\n`);
     process.kill(meritd.pid, signal);
   }
 });
