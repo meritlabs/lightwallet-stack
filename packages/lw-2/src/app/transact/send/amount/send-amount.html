@@ -65,7 +65,7 @@
             <span class="label" text-left>Fee <span *ngIf="feePercent">({{feePercent}})</span></span>
             <span text-right [style.flex]="1" padding-right>
 
-                <ion-spinner *ngIf="amount && !feeMrt && !feeCalcError" ></ion-spinner>
+                <ion-spinner *ngIf="amount && !feeMrt && !feeCalcError" color="primary"></ion-spinner>
                 <span *ngIf="!amount">0.0</span>
                 <span *ngIf="amount && feeMrt">
                     <span *ngIf="amountCurrency == 'MRT'">{{feeMrt}}</span>

@@ -416,8 +416,7 @@ export class SendAmountView {
       return this.walletService.createTx(wallet, txp).then((ctxp) => {
         return resolve(ctxp);
       }).catch((err) => {
-        //TODO get errors from server response
-        this.feeCalcError = 'Unknown error';
+        this.feeCalcError = err.text || 'Unknown error';
       });
     });
   }
