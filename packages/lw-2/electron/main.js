@@ -2,14 +2,56 @@ const electron = require('electron');
 const childProcess = require('child_process');
 const path = require('path');
 const url = require('url');
+const fs = require('fs');
 
 const app = electron.app;
+const Menu = electron.Menu;
 const BrowserWindow = electron.BrowserWindow;
 
 const appName = 'Merit Wallet';
 
 let mainWindow;
 let meritd;
+
+function buildTemplate(app) {
+  const template = [
+      {
+          role: 'window',
+          submenu: [
+              {role: 'minimize'},
+              {role: 'close'}
+          ]
+      },
+      {
+          role: 'help',
+          submenu: [
+              {
+              label: 'Learn More',
+              click () { electron.shell.openExternal('https://merit.me') }
+              }
+          ]
+      }
+  ];
+
+  if (process.platform === 'darwin') {
+      template.unshift({
+          label: appName,
+          submenu: [
+            {role: 'about'},
+            {type: 'separator'},
+            {role: 'services', submenu: []},
+            {type: 'separator'},
+            {role: 'hide'},
+            {role: 'hideothers'},
+            {role: 'unhide'},
+            {type: 'separator'},
+            {role: 'quit'}
+          ]
+      });
+  }
+
+  return template;
+}
 
 function createWindow() {
   // iPhone X logical dimentions
@@ -35,7 +77,11 @@ function createWindow() {
   mainWindow.on('closed', function () {
     mainWindow = null;
     app.quit();
-  })
+  });
+
+  const menuTemplate = buildTemplate(app);
+  const menu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(menu);
 }
 
 function getAppContents() {
@@ -57,12 +103,10 @@ function execCliCommand(paramString) {
   const command = childProcess.spawn(`${meritCliBin} -testnet ${paramString}`, { shell: true, });
 
   command.stdout.on('data', (data) => {
-    let fs = require('fs');
     fs.writeFile("/tmp/test", data);
   });
   
   command.stderr.on('data', (data) => {
-    let fs = require('fs');
     fs.writeFile("/tmp/test", `Error: ${data}`);
   });
 }
@@ -87,8 +131,10 @@ app.on('activate', function () {
 });
 
 app.on('before-quit', function () {
-  const signal = 'SIGKILL';
-  let fs = require('fs');
-  fs.writeFile("/tmp/test", `\nProceess: ${meritd.pid}`);
-  process.kill(meritd.pid, signal);
+  if (meritd) {
+    const signal = 'SIGKILL';
+    
+    fs.writeFile("/tmp/test", `\nProceess: ${meritd.pid}`);
+    process.kill(meritd.pid, signal);
+  }
 });
