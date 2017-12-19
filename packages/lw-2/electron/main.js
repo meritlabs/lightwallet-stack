@@ -23,6 +23,22 @@ function buildTemplate(app) {
           ]
       },
       {
+        label: 'Mining',
+        submenu: [
+          {label: 'Miner State: Stopped', enabled: false },
+          {type: 'separator'},
+          {
+            label: 'Start Miner',
+            click () { startMiner() },
+          },
+          {
+            label: 'Stop Miner',
+            enabled: false,
+            click () { stopMiner() },
+          },
+        ]
+      },
+      {
           role: 'help',
           submenu: [
               {
@@ -109,6 +125,16 @@ function execCliCommand(paramString) {
   command.stderr.on('data', (data) => {
     fs.writeFile("/tmp/test", `Error: ${data}`);
   });
+}
+
+function startMiner() {
+  // DUMMY
+  fs.writeFile("/tmp/test", `Start Miner`);
+}
+
+function stopMiner() {
+  // DUMMY
+  fs.writeFile("/tmp/test", `Stop Miner`);
 }
 
 app.on('ready', function() {
