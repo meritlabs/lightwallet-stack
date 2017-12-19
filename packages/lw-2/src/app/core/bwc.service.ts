@@ -57,12 +57,6 @@ export class BwcService {
       });
     }
 
-    if (!bwc.onConnectionError) {
-      bwc.setOnConnectionError(() => {
-        this.events.publish(MWCErrors.CONNECTION);
-      });
-    }
-
     return bwc;
   }
 

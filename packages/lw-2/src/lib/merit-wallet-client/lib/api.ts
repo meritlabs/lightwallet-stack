@@ -1337,8 +1337,6 @@ export class API {
     url += 'r=' + _.random(10000, 99999);
     return this._doRequest('get', url, {}, false).then((res) => {
       return res.body;
-    }).catch((err) => {
-      this.log.warn("Were not able to complete getRequest: ", err);
     });
   };
 
@@ -1656,16 +1654,13 @@ export class API {
    */
   getFeeLevels(network: string): Promise<any> {
 
-    return new Promise((resolve, reject) => {
+      console.log('FEE LEVELS');
 
-      $.checkArgument(network || _.includes(['livenet', 'testnet'], network));
+      (!$.checkArgument(network || _.includes(['livenet', 'testnet'], network)));
 
-      return this._doGetRequest('/v1/feelevels/?network=' + (network || Common.Constants.DEFAULT_NET)).then((result) => {
-        return resolve(result);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
+      console.log('TEST TEST');
+
+      return this._doGetRequest('/v1/feelevels/?network=' + (network || Common.Constants.DEFAULT_NET));
   };
 
   /**

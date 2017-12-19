@@ -120,7 +120,7 @@ export class SendView {
     });
   }
 
-  private initContactList(): Promise<void> {
+  private initContactList() {
     return this.addressBookService.getAllMeritContacts().then((contacts) => {
       this.hasContacts = !_.isEmpty(contacts);
 
