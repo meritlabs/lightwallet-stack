@@ -30,7 +30,6 @@ export class WalletDetailsView {
     // things fast and smooth.  We can refresh as needed.
     this.wallet = this.navParams.get('wallet');
     this.logger.info("Inside the wallet-details view.");
-    this.logger.info(this.wallet);
   }
 
   ionViewWillLeave() {

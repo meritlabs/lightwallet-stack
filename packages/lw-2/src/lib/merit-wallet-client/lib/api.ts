@@ -8,6 +8,7 @@ import { Logger } from "./log";
 import { Credentials } from './credentials';
 import { ErrorTypes as Errors } from './errors';
 import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
+import { EasyReceiptTxData } from 'merit/easy-receive/easy-receipt.model';
 
 const $ = require('preconditions').singleton();
 let EventEmitter = require('eventemitter3');
@@ -284,7 +285,8 @@ export class API {
    * @memberof Client.API
    * @param {Object} body
    */
-  private _parseError = function (body: any): Error {
+  private _parseError = (body: any): Error => {
+    this.log.warn('parsing Error');
     if (!body) return;
 
     if (_.isString(body)) {
@@ -831,6 +833,7 @@ export class API {
 
       // Make sure the tx can be serialized
       tx.serialize();
+      this.log.warn(tx);
 
     } catch (ex) {
       this.log.error('Could not build transaction from private key', ex);
@@ -1178,10 +1181,9 @@ export class API {
 
       r.timeout(this.timeout);
 
-      return r.then((res) => {
-        if (!res) {
-          return reject(Errors.CONNECTION_ERROR);
-        }
+      return Promise.resolve(r).then((res) => {
+        if (!res) return reject(Errors.CONNECTION_ERROR);
+        if (res.badRequest) return reject(Errors.BAD_REQUEST);
 
         /**
          * Universal MWC Logger.  It will log all output returned from BWS
@@ -1195,21 +1197,13 @@ export class API {
         }
 
         if (res.status !== 200) {
-          if (res.status === 404)
-            return reject(Errors.NOT_FOUND);
-
-          if (res.status === 401) {
-            return reject(Errors.AUTHENTICATION_ERROR);
-          }
-
-          if (!res.status) { 
-            return reject(Errors.CONNECTION_ERROR);
-          }
+          if (res.status === 404) return reject(Errors.NOT_FOUND);
+          if (res.status === 401) return reject(Errors.AUTHENTICATION_ERROR);
+          if (!res.status) return reject(Errors.CONNECTION_ERROR);
 
           this.log.error('HTTP Error:' + res.status);
 
-          if (!res.body)
-            return reject(new Error(res.status));
+          if (!res.body) return reject(new Error(res.status.toString()));
 
           return reject(this._parseError(res.body));
         }
@@ -1236,8 +1230,8 @@ export class API {
           }
         }
 
-        this.log.warn("Cannot complete request to server: ", err);
-        return resolve();
+        this.log.warn("Cannot complete request to server: " + err);
+        return reject(err);
       });
     });
   };
@@ -1301,7 +1295,7 @@ export class API {
     return this._doRequest('post', url, args, false).then((res) => {
       return res.body;
     }).catch((err) => {
-      this.log.warn("Were not able to complete getRequest: ", err);
+      this.log.warn("Were not able to complete getRequest: " + err);
     });
   };
 
@@ -2085,7 +2079,7 @@ export class API {
     let args = this._getCreateTxProposalArgs(opts);
     return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
       if (!txp) {
-        return Promise.reject("Could not get transaction proposal from server.");
+        return Promise.reject(new Error("Could not get transaction proposal from server."));
       }
       if (txp.code && txp.code == "INSUFFICIENT_FUNDS") {
         return Promise.reject(Errors.INSUFFICIENT_FUNDS);
@@ -2739,7 +2733,7 @@ export class API {
    * @param cb Callback or handler to manage response from BWS
    * @return {undefined}
    */
-  validateEasyScript(scriptId): Promise<any> {
+  validateEasyScript(scriptId): Promise<EasyReceiptTxData> {
     this.log.warn("Validating: " + scriptId);
 
     let url = '/v1/easyreceive/validate/' + scriptId;

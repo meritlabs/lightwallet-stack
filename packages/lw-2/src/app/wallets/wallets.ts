@@ -287,14 +287,10 @@ export class WalletsView {
       if (receipts[0]) {
 
         return this.easyReceiveService.validateEasyReceiptOnBlockchain(receipts[0], '').then((data) => {
-          if (data) {
-            this.showConfirmEasyReceivePrompt(receipts[0], data);
-          } else { //requires password
-            this.showPasswordEasyReceivePrompt(receipts[0]);
-          }
+          if (!data.txn.found) this.showPasswordEasyReceivePrompt(receipts[0], false); // requires password
+          else if (!data.txn.spent) this.showConfirmEasyReceivePrompt(receipts[0], data);
         });
       }
-      return Promise.resolve();
     });
   }
 
@@ -321,11 +317,8 @@ export class WalletsView {
               this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the moment 
             } else {
               this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, data.password).then((data) => {
-                if (!data) { // incorrect
-                  this.showPasswordEasyReceivePrompt(receipt, true);
-                } else {
-                  this.showConfirmEasyReceivePrompt(receipt, data);
-                }
+                if (!data.txn.found) this.showPasswordEasyReceivePrompt(receipt, true); // incorrect password
+                else if (!data.txn.spent) this.showConfirmEasyReceivePrompt(receipt, data);
               });
             }
           }
@@ -360,30 +353,21 @@ export class WalletsView {
 
   private acceptEasyReceipt(receipt: EasyReceipt, data: any): Promise<any> {
 
-    return new Promise((resolve, reject) => {
-
-      this.profileService.getWallets().then((wallets) => {
-        // TODO: Allow a user to choose which wallet to receive into.
-        let wallet = wallets[0];
-        if (!wallet) return reject('no wallet');
-        let forceNewAddress = false;
-        this.walletService.getAddress(wallet, forceNewAddress).then((address) => {
-
-          this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address).then((acceptanceTx) => {
-            this.logger.info('accepted easy send', acceptanceTx);
-            resolve();
-          });
-
-        }).catch((err) => {
-          this.toastCtrl.create({
-            message: "There was an error retrieving your incoming payment.",
-            cssClass: ToastConfig.CLASS_ERROR
-          });
-          reject();
+    return this.profileService.getWallets().then((wallets) => {
+      // TODO: Allow a user to choose which wallet to receive into.
+      let wallet = wallets[0];
+      if (!wallet) return Promise.reject('no wallet');
+      let forceNewAddress = false;
+      return this.walletService.getAddress(wallet, forceNewAddress).then((address) => {
+        return this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address);
+      }).then((acceptanceTx) => {
+        this.logger.info('accepted easy send', acceptanceTx);
+      }).catch((err) => {
+        this.toastCtrl.create({
+          message: "There was an error retrieving your incoming payment.",
+          cssClass: ToastConfig.CLASS_ERROR
         });
-
       });
-
     });
   }
 
