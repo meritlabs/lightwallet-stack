@@ -125,19 +125,18 @@ export class CreateWalletView {
         promises.push(this.config.set(colorOpts));
       }
 
-      }).catch((err) => {
+      return Promise.join(promises).catch((err) => {
         this.logger.error(err);
       }).finally(() => {
         // We should callback to the wallets list page to let it know that there is a new wallet
         // and that it should updat it's list.
         let callback = this.navParams.get("updateWalletListCB");
-        return Promise.join(promises).then(() =>{
           return loader.dismiss().then(() => {
             return callback().then(() => {
               this.navCtrl.pop();
             });
           });
-      })
+      });
     }).catch((err) => {
       loader.dismiss();
       this.logger.error(err);

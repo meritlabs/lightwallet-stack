@@ -64,8 +64,8 @@ export class BwcService {
 
 export class MWCErrors {
 
-  public static AUTHENTICATION = 'MWC_AUTH';
+  public static AUTHENTICATION = 'MWC_AUTH_ERROR';
 
-  public static CONNECTION = 'CONNECTION';
+  public static CONNECTION = 'MWC_CONNECTION_ERROR';
 
 }

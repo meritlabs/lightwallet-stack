@@ -75,8 +75,8 @@ export class SendView {
     this.formData = { search: '' };
   }
 
-  async ionViewDidLoad() {
-    await this.updateHasFunds().then(() => {
+  public ionViewDidLoad() {
+    this.updateHasFunds().then(() => {
       this.contacts = [];
       this.initList();
       return this.initContactList();
@@ -96,7 +96,7 @@ export class SendView {
     return (_.isEmpty(this.wallets) ? false : true);
   }
   
-  private updateHasFunds(): Promise<void> {
+  private updateHasFunds() {
     return this.profileService.hasFunds().then((hasFunds) => {
       this.hasFunds = hasFunds;
       return Promise.resolve();
@@ -222,7 +222,7 @@ export class SendView {
 
   private updateFilteredContactsDebounce = _.debounce(this.updateFilteredContacts, 200);
 
-  public updateFilteredContacts(search: string): Promise<void> {
+  public updateFilteredContacts(search: string) {
 
     // TODO: Improve to be more resilient.
     if(search && search.length == SendView.ADDRESS_LENGTH) {
