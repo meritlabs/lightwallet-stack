@@ -93,13 +93,12 @@ export class NetworkView {
   }
 
   doRefresh(refresher) {
-    if (!this.loading) {
-      this.updateInfo().then(() => {
-        refresher.complete();
-      }).catch((err) => {
-        refresher.complete();
-      })
-    }
+    this.updateInfo().then(() => {
+      refresher.complete();
+    }).catch((err) => {
+      refresher.complete();
+    });
+
   }
 
   private formatNetworkInfo(wallets: DisplayWallet[]): Promise<Array<DisplayWallet>> {
@@ -139,7 +138,7 @@ export class NetworkView {
 
   private updateInfo() {
     this.loading = true;
-    const MAX_ATTEMPTS = 5;
+    const MAX_ATTEMPTS = 10;
     let attempt = 0;
 
     return new Promise((resolve, reject) => {

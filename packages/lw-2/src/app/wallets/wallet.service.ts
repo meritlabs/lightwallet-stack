@@ -287,7 +287,7 @@ export class WalletService {
         return resolve(status);
       }).catch((err) => {
         this.logger.warn("Error getting status: ", err);
-        return reject(new Error("Error getting status: " + err));
+        return reject(err);
       });
     });
 

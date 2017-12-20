@@ -11,7 +11,7 @@
 
 <ion-content>
 
-    <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}">
+    <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}" [enabled]="!loading">
         <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
 
@@ -37,7 +37,7 @@
                         {{totalNetworkValueFiat}}
                     </div>
                 </span>
-                <ion-spinner *ngIf="!totalNetworkValueMicros"></ion-spinner>
+                <ion-spinner *ngIf="!totalNetworkValueMicros && loading"></ion-spinner>
             </span>
 
         </ion-item>
@@ -78,10 +78,9 @@
         </ion-list>
     </span>
 
-    <ion-item-divider translate>
+    <ion-item-divider translate *ngIf="wallets && wallets.length">
         Wallets
     </ion-item-divider>
-    <ion-item *ngIf="!wallets"><ion-spinner item-left></ion-spinner><h2>Loading...</h2></ion-item>
     <ion-list class="wallets" *ngIf="wallets">
         <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)" class="wallet">
 
