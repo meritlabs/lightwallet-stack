@@ -796,7 +796,7 @@ export class API {
    * @param {input} Input described above.
    * @param {destinationAddress} Address to put the funds into.
    */
-  buildEasySendRedeemTransaction(input: any, destinationAddress: any, opts: any = {}): any {
+  buildEasySendRedeemTransaction(input: any, destinationAddress: any, opts: any = {}): Promise<any> {
     //TODO: Create and sign a transaction to redeem easy send. Use input as
     //unspent Txo and use script to create scriptSig
     let inputAddress = input.txn.scriptId;
@@ -804,7 +804,7 @@ export class API {
     let fee = opts.fee || DEFAULT_FEE;
     let microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
     let amount = microAmount - fee;
-    if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
+    if (amount <= 0) return Promise.reject(Errors.INSUFFICIENT_FUNDS);
 
     let tx = new Bitcore.Transaction();
 
@@ -837,9 +837,9 @@ export class API {
 
     } catch (ex) {
       this.log.error('Could not build transaction from private key', ex);
-      return Errors.COULD_NOT_BUILD_TRANSACTION;
+      return Promise.reject(Errors.COULD_NOT_BUILD_TRANSACTION);
     }
-    return tx;
+    return Promise.resolve(tx);
   };
 
   prepareVault(type: number, opts: any = {}) {

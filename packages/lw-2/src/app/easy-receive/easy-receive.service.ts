@@ -49,13 +49,9 @@ export class EasyReceiveService {
   }
 
   public getPendingReceipts():Promise<Array<EasyReceipt>> {
-    return new Promise((resolve, reject) => {
-      return this.persistanceService.getPendingsEasyReceipts().then((receipts) => {
-          if (!receipts) receipts = [];
-          return resolve(receipts); 
-      });
-    });
-    
+    return this.persistanceService.getPendingsEasyReceipts().map((receipt) => {
+      return new EasyReceipt(receipt);
+    })
   }
 
   public acceptEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input, destinationAddress:any):Promise<void>  {
@@ -110,30 +106,31 @@ export class EasyReceiveService {
 
   private spendEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input, destinationAddress:any):Promise<void> {
     let opts:any = {}; 
-    let testTx = wallet.buildEasySendRedeemTransaction(
+    return wallet.buildEasySendRedeemTransaction(
       input,
       destinationAddress,
       opts
-    );
+    ).then((testTx) => {
 
-    let rawTxLength = testTx.serialize().length;
-    return this.feeService.getCurrentFeeRate(wallet.network).then((feePerKB) => {
+      let rawTxLength = testTx.serialize().length;
+      return this.feeService.getCurrentFeeRate(wallet.network).then((feePerKB) => {
 
-      //TODO: Don't use magic numbers
-      opts.fee = Math.round((feePerKB * rawTxLength) / 2000);
+        //TODO: Don't use magic numbers
+        opts.fee = Math.round((feePerKB * rawTxLength) / 2000);
 
-      let tx = wallet.buildEasySendRedeemTransaction(
-        input,
-        destinationAddress,
-        opts
-      );
-
+        return wallet.buildEasySendRedeemTransaction(
+          input,
+          destinationAddress,
+          opts
+        );
+      });
+    }).then((tx) => {
       return wallet.broadcastRawTx({
         rawTx: tx.serialize(),
         network: wallet.network
-      }).then((tx) => {
-        return this.persistanceService.deletePendingEasyReceipt(receipt);
-      })
+      });
+    }).then((tx) => {
+      return this.persistanceService.deletePendingEasyReceipt(receipt);
     });
    }
 
