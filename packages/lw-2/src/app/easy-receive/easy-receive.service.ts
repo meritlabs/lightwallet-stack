@@ -93,8 +93,10 @@ export class EasyReceiveService {
       this.logger.info(txn);
       return ({
         txn: txn.result,
+        privateKey: scriptData.privateKey,
+        publicKey: scriptData.publicKey,
+        script: scriptData.script,
         scriptId: scriptId,
-        ...scriptData,
       });
     }).catch((err) => {
       this.logger.warn("Could not validate easyScript on the blockchain.", err);
