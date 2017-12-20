@@ -189,9 +189,9 @@ export class SendConfirmView {
     return this.approveTx().then(() => {
 
       if (this.txData.recipient.sendMethod == 'sms') {
-        return this.easySendService.sendSMS(this.txData.recipient.phoneNumber, this.txData.easySendURL);
+        return this.easySendService.sendSMS(this.txData.recipient.phoneNumber, this.viewData.amountMrt, this.txData.easySendURL);
       } else if (this.txData.recipient.sendMethod == 'email') {
-        return this.easySendService.sendEmail(this.txData.recipient.email, this.txData.easySendURL);
+        return this.easySendService.sendEmail(this.txData.recipient.email, this.viewData.amountMrt, this.txData.easySendURL);
       } else {
         return Promise.resolve();
       }

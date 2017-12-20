@@ -15,18 +15,18 @@ export class DeepLinkService {
     this.logger.info("Hello Deep Link Service");
   }
 
-  public getBranchData(callback):Promise<any> {
-  
-      if (!this.platform.is('cordova')) { 
-          this.logger.warn('branch deeplinking is available on native devices only');
-          return Promise.resolve();
+  public getBranchData(): Promise<any> {
+
+    return new Promise((resolve, reject) => {
+      if (!this.platform.is('cordova')) {
+        this.logger.warn('branch deeplinking is available on native devices only');
+        return resolve();
       } else {
         const Branch = window['Branch'];
-        return Branch.initSession(callback);
-      }
-
-
+        Branch.initSession((data) => {
+          return resolve(data);
+        });
+      };
+    });
   }
-
-    
 }

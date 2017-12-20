@@ -18,7 +18,23 @@
     "build": "ionic-app-scripts build",
     "lint": "ionic-app-scripts lint",
     "ionic:build": "ionic-app-scripts build",
-    "ionic:serve": "ionic-app-scripts serve"
+    "ionic:serve": "ionic-app-scripts serve",
+    "electron:run": "./node_modules/.bin/electron .",
+    "electron:package": "./node_modules/.bin/electron-builder",
+    "electron:clean": "rm -rf ./dist",
+    "package:desktop": "npm run electron:clean && npm run build && npm run electron:package"
+  },
+  "main": "./electron/main.js",
+  "build": {
+    "appId": "me.merit.wallet",
+    "productName": "Merit Wallet",
+    "files": [
+      "electron/main.js",
+      "www/**/*"
+    ],
+    "mac": {
+      "category": "finance"
+    }
   },
   "dependencies": {
     "@angular/common": "4.4.4",
@@ -60,11 +76,11 @@
     "bitcore-mnemonic": "^1.2.5",
     "bitcore-payment-protocol": "^1.2.2",
     "bluebird": "^3.5.1",
-    "branch-cordova-sdk": "^2.6.18",
+    "branch-cordova-sdk": "^2.6.21",
     "buffer-compare": "=1.1.1",
-    "cordova-android": "6.4.0",
+    "cordova-android": "6.3.0",
     "cordova-clipboard": "^1.1.1",
-    "cordova-ios": "^4.5.4",
+    "cordova-ios": "4.5.4",
     "cordova-plugin-android-fingerprint-auth": "^1.4.0",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-contacts": "^2.3.1",
@@ -73,8 +89,8 @@
     "cordova-plugin-file": "^4.3.3",
     "cordova-plugin-inappbrowser": "^1.7.2",
     "cordova-plugin-ionic-webview": "^1.1.16",
-    "cordova-plugin-splashscreen": "^4.0.3",
-    "cordova-plugin-statusbar": "git+https://github.com/apache/cordova-plugin-statusbar.git",
+    "cordova-plugin-splashscreen": "^4.1.0",
+    "cordova-plugin-statusbar": "^2.3.0",
     "cordova-plugin-touch-id": "^3.3.1",
     "cordova-plugin-whitelist": "^1.3.3",
     "cordova-plugin-x-socialsharing": "^5.2.1",
@@ -104,23 +120,25 @@
     "@ionic/app-scripts": "3.0.1",
     "@types/bluebird": "^3.5.18",
     "@types/node": "^8.0.47",
-    "typescript": "2.5.3",
     "bitcore-wallet-service": "^1.18.0",
     "browserify": "^13.1.0",
+    "bs58": "2.0.0",
     "chai": "^1.9.1",
     "coveralls": "^2.11.2",
+    "electron": "^1.7.9",
+    "electron-builder": "^19.49.0",
     "grunt": "~0.4.0",
     "grunt-jsdox": "^0.1.7",
     "istanbul": "*",
+    "jsrsasign": "8.0.4",
     "mocha": "^1.18.2",
+    "protobufjs": "5.0.1",
     "sinon": "^1.10.3",
     "supertest": "^3.0.0",
     "tingodb": "^0.3.4",
+    "typescript": "2.5.3",
     "uglify": "^0.1.1",
-    "uuid": "^2.0.1",
-    "bs58": "2.0.0",
-    "jsrsasign": "8.0.4",
-    "protobufjs": "5.0.1"
+    "uuid": "^2.0.1"
   },
   "config": {
     "ionic_webpack": "webpack.config.js"
@@ -138,14 +156,14 @@
       "cordova-plugin-file": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-touch-id": {
-        "FACEID_USAGE_DESCRIPTION": " "
+	"FACEID_USAGE_DESCRIPTION": " "
       },
       "cordova-plugin-android-fingerprint-auth": {},
       "cordova-plugin-contacts": {
-        "CONTACTS_USAGE_DESCRIPTION": " "
+	"CONTACTS_USAGE_DESCRIPTION": " "
       },
       "phonegap-plugin-barcodescanner": {
-        "CAMERA_USAGE_DESCRIPTION": " "
+	"CAMERA_USAGE_DESCRIPTION": " "
       },
       "branch-cordova-sdk": {},
       "cordova-plugin-fcm": {}
