@@ -40,6 +40,7 @@ interface AppSettings {
   version: string;
   androidVersion: string;
   commitHash: string;
+  gcmSenderId: string;
   _extraCSS: string;
   _enabledExtensions: object;
 }
