@@ -97,29 +97,38 @@ export class CreateWalletView {
     loader.present();
 
 
-    let wallet = await this.walletService.createWallet(opts);
-    if (this.formData.hideBalance) await this.walletService.setHiddenBalanceOption(wallet.id, this.formData.hideBalance);
-    if (this.formData.password) await this.walletService.encrypt(wallet, this.formData.password);
-    if (this.formData.color) {
-      let colorOpts = { colorFor: {} };
-      colorOpts.colorFor[wallet.id] = this.formData.color;
-      await this.config.set(colorOpts);
+    try {
+      let wallet = await this.walletService.createWallet(opts);
+    } catch (err) {
+      loader.dismiss();
+      this.logger.error(err);
+      this.toastCtrl.create({
+        message: err.text || 'Error occured when creating wallet',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
     }
-    // We should callback to the wallets list page to let it know that there is a new wallet
-    // and that it should updat it's list.
+
+    try {
+      if (this.formData.hideBalance) await this.walletService.setHiddenBalanceOption(wallet.id, this.formData.hideBalance);
+      if (this.formData.password) await this.walletService.encrypt(wallet, this.formData.password);
+      if (this.formData.color) {
+        let colorOpts = { colorFor: {} };
+        colorOpts.colorFor[wallet.id] = this.formData.color;
+        await this.config.set(colorOpts);
+      }
+      // We should callback to the wallets list page to let it know that there is a new wallet
+      // and that it should updat it's list.
+    } catch (err) {
+      this.logger.error(err);
+    }
+
     let callback = this.navParams.get("updateWalletListCB");
     return loader.dismiss().then(() => {
       return callback().then(() => {
         this.navCtrl.pop();
       });
-    }).catch((err) => {
-      loader.dismiss();
-      this.logger.error(err);
-      this.toastCtrl.create({
-        message: JSON.stringify(err),
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
     });
+
 
   }
 
