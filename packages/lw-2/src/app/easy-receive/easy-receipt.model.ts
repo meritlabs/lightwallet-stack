@@ -28,13 +28,16 @@ export class EasyReceipt  {
 
 export type EasyReceiptTxData = {
   result: {
-    found: boolean,
+    found: true,
     txid: string,
     index: number
     amount: number,
     spending: boolean,
-    spent: boolean
+    spent: boolean,
+    confirmations: number,
   },
-  error: any,
-  id: number
+} | {
+  result: {
+    found: false
+  }
 }
