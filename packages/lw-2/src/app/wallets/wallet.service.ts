@@ -566,7 +566,7 @@ export class WalletService {
               wallet.completeHistory = newHistory;
             }
 
-            return this.persistenceService.setTxHistory(historyToSave, walletId).then(() => {
+            return this.persistenceService.setTxHistory(walletId, historyToSave).then(() => {
               this.logger.debug('Tx History saved.');
               return resolve(newHistory);
             }).catch((err) => {

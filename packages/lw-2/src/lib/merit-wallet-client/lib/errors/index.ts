@@ -28,6 +28,7 @@ export const BwcError: BwcErrorConstructor = <any>class BwcError {
 // BwcError.prototype.constructor = BwcError;
 
 export module ErrorTypes {
+  export const BAD_REQUEST = new BwcError('Bad request.');
   export const INVALID_BACKUP = new BwcError('Invalid backup.');
   export const WALLET_DOES_NOT_EXIST = new BwcError('Wallet does not exist.');
   export const MISSING_PRIVATE_KEY = new BwcError('Missing private key.');
