@@ -3,12 +3,6 @@
     <ion-navbar color="secondary">
         <ion-title translate>Session log</ion-title>
 
-        <!--<ion-buttons end>-->
-            <!--<button ion-button icon-only>-->
-                <!--<ion-icon name="more"></ion-icon>-->
-            <!--</button>-->
-        <!--</ion-buttons>-->
-
     </ion-navbar>
 
 </ion-header>
@@ -30,7 +24,7 @@
 <ion-footer>
     <ion-toolbar>
 
-        <ion-item (click)="copy()">
+        <ion-item (click)="copy()" [clip]="logsString">
             <ion-icon name="ios-clipboard-outline" item-left color="primary"></ion-icon>
             <ion-label translate>Copy to clipboard</ion-label>
         </ion-item>

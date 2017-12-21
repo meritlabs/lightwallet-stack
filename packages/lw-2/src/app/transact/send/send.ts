@@ -1,6 +1,5 @@
 import { Component, SecurityContext } from '@angular/core';
 import { IonicPage, NavController, AlertController, NavParams, ModalController } from 'ionic-angular';
-import * as Promise from 'bluebird';
 
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ProfileService } from 'merit/core/profile.service';
@@ -18,6 +17,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ToastConfig } from "merit/core/toast.config";
 import { MeritToastController } from "merit/core/toast.controller";
 
+import * as Promise from 'bluebird';
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
@@ -76,8 +76,8 @@ export class SendView {
     this.formData = { search: '' };
   }
 
-  async ionViewDidLoad() {
-    await this.updateHasFunds().then(() => {
+  public ionViewDidLoad() {
+    this.updateHasFunds().then(() => {
       this.contacts = [];
       this.initList();
       return this.initContactList();
@@ -97,7 +97,7 @@ export class SendView {
     return (_.isEmpty(this.wallets) ? false : true);
   }
   
-  private updateHasFunds(): Promise<void> {
+  private updateHasFunds():Promise<void> {
     return this.profileService.hasFunds().then((hasFunds) => {
       this.hasFunds = hasFunds;
       return Promise.resolve();
@@ -121,7 +121,7 @@ export class SendView {
     });
   }
 
-  private initContactList(): Promise<void> {
+  private initContactList():Promise<void> {
     return this.addressBookService.getAllMeritContacts().then((contacts) => {
       this.hasContacts = !_.isEmpty(contacts);
 
@@ -223,7 +223,7 @@ export class SendView {
 
   private updateFilteredContactsDebounce = _.debounce(this.updateFilteredContacts, 200);
 
-  public updateFilteredContacts(search: string): Promise<void> {
+  public updateFilteredContacts(search: string):Promise<void> {
 
     // TODO: Improve to be more resilient.
     if(search && search.length == SendView.ADDRESS_LENGTH) {

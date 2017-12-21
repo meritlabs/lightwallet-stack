@@ -23,6 +23,9 @@ send-amount-view {
     color: color($colors, danger);
   }
 
+  .refresh-button {
+    margin-left: 0 !important;
+  }
 
   .avatar {
     img, gravatar {

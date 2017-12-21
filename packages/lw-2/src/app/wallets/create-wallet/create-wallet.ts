@@ -101,7 +101,6 @@ export class CreateWalletView {
     });
     loader.present();
 
-
     return this.walletService.createWallet(opts).then((wallet: MeritWalletClient) => {
       // Subscribe to push notifications or to long-polling for this wallet.
       if (this.config.get().pushNotificationsEnabled) {
@@ -125,10 +124,13 @@ export class CreateWalletView {
         colorOpts.colorFor[wallet.id] = this.formData.color;
         promises.push(this.config.set(colorOpts));
       }
-      // We should callback to the wallets list page to let it know that there is a new wallet
-      // and that it should updat it's list.
-      let callback = this.navParams.get("updateWalletListCB");
-      return Promise.join(promises).then(() =>{
+
+      return Promise.join(promises).catch((err) => {
+        this.logger.error(err);
+      }).finally(() => {
+        // We should callback to the wallets list page to let it know that there is a new wallet
+        // and that it should updat it's list.
+        const callback = this.navParams.get("updateWalletListCB");
         return loader.dismiss().then(() => {
           return callback().then(() => {
             this.navCtrl.pop();
@@ -139,7 +141,7 @@ export class CreateWalletView {
       loader.dismiss();
       this.logger.error(err);
       this.toastCtrl.create({
-        message: JSON.stringify(err),
+        message: err.text || 'Error occured when creating wallet',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     });

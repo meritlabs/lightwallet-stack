@@ -1,57 +1,27 @@
-export interface BwcError extends Error {
-  readonly message: string;
-  readonly stack: string;
-  readonly name: string;
+export class Errors {
+  public static INVALID_BACKUP = {code: 'INVALID_BACKUP', text: 'Invalid backup'};
+  public static WALLET_DOES_NOT_EXIST = {code: 'WALLET_DOES_NOT_EXIST', text: 'Wallet does not exist'};
+  public static MISSING_PRIVATE_KEY = {code: 'MISSING_PRIVATE_KEY', text: 'Missing private keys to sign'};
+  public static ENCRYPTED_PRIVATE_KEY = {code: 'ENCRYPTED_PRIVATE_KEY', text: 'Private key is encrypted, cannot sign transaction'};
+  public static SERVER_COMPROMISED = {code: 'SERVER_COMPROMISED', text: 'Server response could not be verified'};
+  public static COULD_NOT_BUILD_TRANSACTION = {code: 'COULD_NOT_BUILD_TRANSACTION', text: 'Could not build the transaction'};
+  public static INSUFFICIENT_FUNDS = {code: 'INSUFFICIENT_FUNDS', text: 'Insufficient funds'};
+  public static CONNECTION_ERROR = {code: 'CONNECTION_ERROR', text: 'Connection error'};
+  public static NOT_FOUND = {code: 'NOT_FOUND', text: 'Not found'};
+  public static AUTHENTICATION_ERROR = {code: 'AUTHENTICATION_ERROR', text: 'Authentication Error'};
+  public static ECONNRESET_ERROR = {code: 'ECONNRESET_ERROR', text: 'Connection reset'};
+  public static WALLET_ALREADY_EXISTS = {code: 'WALLET_ALREADY_EXISTS', text: 'Wallet already exists'};
+  public static COPAYER_IN_WALLET = {code: 'COPAYER_IN_WALLET', text: 'Copayer in wallet'};
+  public static WALLET_FULL = {code: 'WALLET_FULL', text: 'Wallet is full'};
+  public static WALLET_NOT_FOUND = {code: 'WALLET_NOT_FOUND', text: 'Wallet not found'};
+  public static INSUFFICIENT_FUNDS_FOR_FEE = {code: 'INSUFFICIENT_FUNDS_FOR_FEE', text: 'Insufficient funds for fee'};
+  public static LOCKED_FUNDS = {code: 'LOCKED_FUNDS', text: 'Locked funds'};
+  public static DUST_AMOUNT = {code: 'DUST_AMOUNT', text: 'Amount below dust threshold'};
+  public static COPAYER_VOTED = {code: 'COPAYER_VOTED', text: 'Copayer already voted on this transaction proposal'};
+  public static NOT_AUTHORIZED = {code: 'NOT_AUTHORIZED', text: 'Not authorized'};
+  public static UNAVAILABLE_UTXOS = {code: 'UNAVAILABLE_UTXOS', text: 'Unavailable unspent outputs'};
+  public static TX_NOT_FOUND = {code: 'TX_NOT_FOUND', text: 'Transaction proposal not found'};
+  public static UNLOCK_CODE_INVALID = {code: 'UNLOCK_CODE_INVALID', text: 'Invalid unlock code'};
+  public static MAIN_ADDRESS_GAP_REACHED = {code: 'MAIN_ADDRESS_GAP_REACHED', text: 'Maximum number of consecutive addresses without activity reached'};
+  public static SERVER_UNAVAILABLE = {code: 'SERVER_UNAVAILABLE', text: 'Could not reach the server'};
 }
-
-export interface BwcErrorConstructor {
-  new (message: string): BwcError;
-  readonly prototype: BwcError;
-}
-
-export const BwcError: BwcErrorConstructor = <any>class BwcError {
-  readonly prototype = Object.create(Error.prototype);
-  public constructor(message: string) {
-    Object.defineProperty(this, 'name', {
-      get: () => (this.constructor as any).name,
-    });
-    Object.defineProperty(this, 'message', {
-      get: () => message,
-    });
-    if(Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor);
-    }
-  }
-};
-
-// (BwcError as any).prototype = Object.create(Error.prototype);
-// BwcError.prototype.constructor = BwcError;
-
-export module ErrorTypes {
-  export const INVALID_BACKUP = new BwcError('Invalid backup.');
-  export const WALLET_DOES_NOT_EXIST = new BwcError('Wallet does not exist.');
-  export const MISSING_PRIVATE_KEY = new BwcError('Missing private key.');
-  export const ENCRYPTED_PRIVATE_KEY = new BwcError('Private key is encrypted.');
-  export const SERVER_COMPROMISED = new BwcError('Server compromised.');
-  export const COULD_NOT_BUILD_TRANSACTION = new BwcError('Could not build transaction.');
-  export const INSUFFICIENT_FUNDS = new BwcError('Insufficient funds.');
-  export const CONNECTION_ERROR = new BwcError('Connection error.');
-  export const NOT_FOUND = new BwcError('Not found.');
-  export const AUTHENTICATION_ERROR = new BwcError('Authentication Error');
-  export const ECONNRESET_ERROR = new BwcError('Connection reset.');
-  export const WALLET_ALREADY_EXISTS = new BwcError('Wallet already exists.');
-  export const COPAYER_IN_WALLET = new BwcError('Copayer in wallet.');
-  export const WALLET_FULL = new BwcError('Wallet full.');
-  export const WALLET_NOT_FOUND = new BwcError('Wallet not found.');
-  export const INSUFFICIENT_FUNDS_FOR_FEE = new BwcError('Insufficient funds for fee.');
-  export const LOCKED_FUNDS = new BwcError('Locked funds.');
-  export const DUST_AMOUNT = new BwcError('Dust amount.');
-  export const COPAYER_VOTED = new BwcError('Copayer voted.');
-  export const NOT_AUTHORIZED = new BwcError('Not authorized.');
-  export const UNAVAILABLE_UTXOS = new BwcError('Unavaulable UTXOs.');
-  export const TX_NOT_FOUND = new BwcError('Transaction not found.');
-  export const UNLOCK_CODE_INVALID = new BwcError('Unlock code invalid.');
-  export const MAIN_ADDRESS_GAP_REACHED = new BwcError('Main address gap reached.');
-}
-
-
