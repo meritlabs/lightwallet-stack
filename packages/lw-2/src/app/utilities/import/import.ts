@@ -190,7 +190,6 @@ export class ImportView {
   }
 
   private processCreatedWallet(wallet, loader?) {
-     console.log('PROCESSING');
     //this.walletService.updateRemotePreferences(wallet, {}).then(() => {
     this.profileService.setBackupFlag(wallet.credentials.walletId);
     if (loader) loader.dismiss();

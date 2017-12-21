@@ -14,7 +14,9 @@ import { LanguageService } from 'merit/core/language.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import * as Promise from 'bluebird';
-import { MeritWalletClient } from './../../lib/merit-wallet-client';
+import { MeritWalletClient } from 'merit/../lib/merit-wallet-client';
+import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
+
 
 import { Events } from 'ionic-angular';
 
@@ -47,7 +49,7 @@ export class WalletService {
   private SOFT_CONFIRMATION_LIMIT: number = 12;
   private SAFE_CONFIRMATIONS: number = 6;
 
-  private errors: any = this.bwcService.getErrors();
+  //private errors: any = this.bwcService.getErrors();
 
 
   constructor(
@@ -285,13 +287,14 @@ export class WalletService {
         return resolve(status);
       }).catch((err) => {
         this.logger.warn("Error getting status: ", err);
-        return reject(new Error("Error getting status: " + err));
+        return reject(err);
       });
     });
 
   }
 
   public getAddress(wallet: MeritWalletClient, forceNew: boolean): Promise<any> {
+
     return new Promise((resolve, reject) => {
       return this.persistenceService.getLastAddress(wallet.id).then((addr) => {
         if (!forceNew && addr) return resolve(addr);
@@ -299,22 +302,29 @@ export class WalletService {
         if (!wallet.isComplete())
           return reject(new Error('WALLET_NOT_COMPLETE'));
 
-        return this.createAddress(wallet).then((_addr) => {
-          if (_.isEmpty(_addr)) {
-            return reject(new Error("Cannot retrieve a new address"));
-          } else {
-            return this.persistenceService.storeLastAddress(wallet.id, _addr).then(() => {
-              return resolve(_addr);
-            })
-          }
+        return wallet.createAddress({}).then((address) => {
+          return this.persistenceService.storeLastAddress(wallet.id, address).then(() => {
+            return resolve(address);
+          });
         }).catch((err) => {
-          return reject(err);
+          if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code && !forceNew) {
+            return this.getMainAddress(wallet).then((address) => {
+              return this.persistenceService.storeLastAddress(wallet.id, address).then(() => {
+                return resolve(address);
+              });
+            });
+          } else {
+            return reject(err);
+          }
         });
+
       }).catch((err) => {
         return reject(err);
       });
     });
   }
+
+
 
   // Check address
   private isAddressUsed(wallet: MeritWalletClient, byAddress: Array<any>): Promise<any> {
@@ -333,33 +343,31 @@ export class WalletService {
 
   private createAddress(wallet: MeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.logger.debug('Creating address for wallet:', wallet.id);
-      return wallet.createAddress({}).then((addr) => {
-        return resolve(addr.address);
+      return  wallet.createAddress({}).then((address) => {
+        return resolve(address);
       }).catch((err) => {
-        let prefix = 'Could not create address'; //TODO Gettextcatalog
-        if (err == this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
-          this.logger.warn(err);
-          this.logger.warn("Attempting to create address again.");
-          return Promise.delay(5000).then(() => {
-            this.createAddress(wallet);
+        if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code) {
+          return this.getMainAddress(wallet).then((address) => {
+            return resolve(address);
           });
-        } else if (err == this.errors.MAIN_ADDRESS_GAP_REACHED || (err.message && err.message == 'MAIN_ADDRESS_GAP_REACHED')) {
-          this.logger.warn(err);
-          this.logger.warn("Using main address instead.");
-          prefix = null;
-          return wallet.getMainAddresses({
-            reverse: true,
-            limit: 1
-          }).then((addr) => {
-            return resolve(addr[0].address);
-          });
+        } else {
+          return reject(err);
         }
-        // No specific error matched above, run through the errorService callback filter.
-        return reject(new Error(this.bwcErrorService.cb(err, prefix)));
       });
+
     });
   }
+
+
+  private getMainAddress(wallet: MeritWalletClient) {
+      return wallet.getMainAddresses({
+        reverse: true,
+        limit: 1
+      }).then((addr) => {
+        return Promise.resolve(addr[0].address);
+      });
+  }
+
 
   private getSavedTxs(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -495,7 +503,7 @@ export class WalletService {
               });
             }).catch((err) => {
               this.logger.warn(this.bwcErrorService.msg(err, 'Server Error')); //TODO
-              if (err == this.errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
+              if (err == Errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
                 this.logger.info('Retrying history download in 5 secs...');
                 return Promise.delay(5000).then(() => {
                   return getNewTxs(newTxs, skip).then((txs) => {
@@ -1272,7 +1280,7 @@ export class WalletService {
         return newWallet.doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
         }).then((err) => {
           //Ignore error is copayer already in wallet
-          if (err && !(err == this.errors.COPAYER_IN_WALLET)) return reject(err);
+          if (err && !(err == Errors.COPAYER_IN_WALLET)) return reject(err);
           if (++i == wallet.credentials.publicKeyRing.length) return resolve();
         });
       });
@@ -1288,7 +1296,10 @@ export class WalletService {
       if (showOpts.mnemonic) showOpts.mnemonic = '[hidden]';
 
       this.logger.debug('Creating Wallet:', showOpts);
-      setTimeout(() => {
+
+      let attempts = 0;
+      const MAX_ATTEMPTS = 3;
+      let seed = () => {
         return this.seedWallet(opts).then((walletClient: MeritWalletClient) => {
 
           let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
@@ -1306,9 +1317,19 @@ export class WalletService {
           });
         }).catch((err: any) => {
           this.logger.warn("Error creating wallet in DCW: ", err);
-          return reject(new Error(this.bwcErrorService.cb(err, 'Error creating wallet')));
+          if (err == Errors.CONNECTION_ERROR) {
+            if (++attempts < MAX_ATTEMPTS) {
+              return seed();
+            } else {
+              return reject(err);
+            }
+          } else {
+            return reject(err);
+          }
         });
-      }, 5000);
+      };
+
+      setTimeout(seed, 5000);
     });
   }
 
@@ -1390,7 +1411,9 @@ export class WalletService {
       let address = pubkey.toAddress(wallet.credentials.network);
       return wallet.getANV(address).then((anv) => {
         return resolve(anv);
-      })
+      }).catch((err) => {
+        return reject(err);
+      });
     });
   }
 

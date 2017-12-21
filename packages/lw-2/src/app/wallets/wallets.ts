@@ -26,6 +26,7 @@ import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { RateService } from 'merit/transact/rate.service';
 import { Platform } from 'ionic-angular/platform/platform';
 
+import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 
 
 /* 
@@ -59,6 +60,11 @@ export class WalletsView {
   public recentTransactionsData: any[] = [];
   public recentTransactionsEnabled;
   public network: string;
+
+  public loading:boolean;
+
+  static readonly  RETRY_MAX_ATTEMPTS = 5;
+  static readonly RETRY_TIMEOUT = 1000;
 
   constructor(
     public navParams: NavParams,
@@ -98,6 +104,7 @@ export class WalletsView {
   }
 
   public doRefresh(refresher) {
+
     this.updateAllInfo({ force: true }).then(() => {
       refresher.complete();
     }).catch(() => {
@@ -109,42 +116,53 @@ export class WalletsView {
     this.logger.warn("Hello WalletsView :: IonViewDidLoad!");
   }
 
-  // public async showFeaturesBlock(): Promise<boolean> {
-  //   return (this.newReleaseExists || this.feedbackNeeded);
-  // }
   private updateAllInfo(opts: { force: boolean } = { force: false }): Promise<any> {
+
+    this.loading = true;
+
     return new Promise((resolve, reject) => {
 
-      return this.addressbookService.list(this.configService.getDefaults().network.name).then((addressBook) => {
-        this.addressbook = addressBook;
-        return this.updateAllWallets(opts.force);
-      }).then((wallets) => {
-        if (_.isEmpty(wallets)) {
-          return resolve(null); //ToDo: add proper error handling;
-        }
-        this.wallets = wallets;
-
-        // Now that we have wallets, we will proceed with the following operations in parallel.
-        return Promise.join(
-          this.updateNetworkValue(wallets),
-          this.processPendingEasyReceipts(),
-          this.updateTxps({ limit: 3 }),
-          this.updateVaults(_.head(this.wallets)),
-          this.fetchNotifications(),
-          (res) => {
-            this.logger.info("Done updating all info for wallet.")
-            return resolve();
+      const fetch = (attempt = 0) => {
+        return this.addressbookService.list(this.configService.getDefaults().network.name).then((addressBook) => {
+          this.addressbook = addressBook;
+          return this.updateAllWallets(opts.force);
+        }).then((wallets) => {
+          if (_.isEmpty(wallets)) {
+            return resolve(null); //ToDo: add proper error handling;
           }
-        )
-      }).catch((err) => {
-        this.logger.info("Error updating information for all wallets.");
-        this.logger.info(err);
-        this.toastCtrl.create({
-          message: 'Failed to update information',
-          cssClass: ToastConfig.CLASS_ERROR
-        }).present();
-        return resolve();
-      });
+          this.wallets = wallets;
+
+          // Now that we have wallets, we will proceed with the following operations in parallel.
+          return Promise.join(
+            this.updateNetworkValue(wallets),
+            this.processPendingEasyReceipts(),
+            this.updateTxps({ limit: 3 }),
+            this.updateVaults(_.head(this.wallets)),
+            this.fetchNotifications(),
+            (res) => {
+              this.logger.info("Done updating all info for wallet.");
+              return resolve();
+            }
+          )
+        }).catch((err) => {
+          this.logger.info("Error updating information for all wallets.");
+          this.logger.info(err);
+          if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
+            if (++attempt < WalletsView.RETRY_MAX_ATTEMPTS) {
+              return setTimeout(fetch.bind(this, attempt), WalletsView.RETRY_TIMEOUT);
+            }
+          }
+
+          this.toastCtrl.create({
+            message: err.text || 'Failed to update information',
+            cssClass: ToastConfig.CLASS_ERROR
+          }).present();
+
+          return resolve();
+        }).finally(() => this.loading = false);
+      };
+
+      fetch();
     });
   }
 
@@ -495,7 +513,7 @@ export class WalletsView {
         wallet.status = status;
         return wallet;
       }).catch((err) => {
-        return Promise.reject(new Error('could not update wallets' + err));
+        return Promise.reject(err);
       });
     })
   }

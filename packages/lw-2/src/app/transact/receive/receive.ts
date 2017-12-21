@@ -14,6 +14,9 @@ import { RateService } from 'merit/transact/rate.service';
 import { ConfigService } from "merit/shared/config.service";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
+import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
+
+
 @IonicPage()
 @Component({
   selector: 'view-receive',
@@ -34,6 +37,9 @@ export class ReceiveView {
 
   public addressGenerationInProgress:boolean;
   public socialSharingAvailable:boolean;
+
+  public error:string;
+  public mainAddressGapReached:boolean;
 
   constructor(
     private navCtrl: NavController,
@@ -79,18 +85,31 @@ export class ReceiveView {
 
   generateAddress(forceNew?: boolean) {
     this.addressGenerationInProgress = true;
+    this.error = null;
 
-    this.walletService.getAddress(this.wallet, forceNew).then((address) => {
-      this.address = address;
+    return this.walletService.getAddress(this.wallet, forceNew).then((address) => {
+
+      this.address = address.address;
       this.addressGenerationInProgress = false;
+      if (forceNew) this.mainAddressGapReached = false; // that means, we  successfully generated NEW address
       this.formatAddress();
     }).catch((err) => {
-      this.addressGenerationInProgress = false;
-      this.logger.warn('Failed to generate new adrress '+err);
-      this.toastCtrl.create({
-        message: 'Failed to generate new adrress',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+
+      if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code) {
+        this.mainAddressGapReached = true;
+        return this.generateAddress(false);
+      } else {
+
+        this.addressGenerationInProgress = false;
+
+        if (err.text) this.error = err.text;
+
+        this.toastCtrl.create({
+          message: err.text || 'Failed to generate new adrress',
+          cssClass: ToastConfig.CLASS_ERROR
+        }).present();
+      }
+
     });
 
   }

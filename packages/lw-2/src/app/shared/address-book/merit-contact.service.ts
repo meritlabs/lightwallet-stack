@@ -1,11 +1,12 @@
 import * as _ from 'lodash';
-import * as Promise from 'bluebird';
 import { Injectable } from '@angular/core';
 import { Contacts, Contact as DeviceContact, IContactProperties, IContactField } from '@ionic-native/contacts';
 import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
+
+import * as Promise from 'bluebird';
 
 /**
  * Creates MeritContact model and injects native contact in it

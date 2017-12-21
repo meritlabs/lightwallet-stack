@@ -15,7 +15,7 @@ import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
 import { easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
-
+import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 
 
 @IonicPage()
@@ -60,6 +60,8 @@ export class SendAmountView {
   private reOp: RegExp = /^[\*\+\-\/]$/;
 
   private txData;
+
+  public refreshFeeAvailable:boolean;
 
   constructor(
     public navCtrl: NavController, 
@@ -258,7 +260,8 @@ export class SendAmountView {
     return this.sanitizer.sanitize(SecurityContext.URL, url);
   }
 
-  private updateTxData() {
+  public updateTxData() {
+    this.refreshFeeAvailable = false;
 
     this.updateAmountMerit();
 
@@ -295,7 +298,8 @@ export class SendAmountView {
 
   private createTxp(dryRun:boolean) {
 
-    return this.feeService.getFeeRate(this.wallet.network, SendAmountView.FEE_LEVEL).then((feeRate) => {
+
+    return this.feeService.getWalletFeeRate(this.wallet, SendAmountView.FEE_LEVEL).then((feeRate) => {
 
         let data = {
           toAddress: this.txData.recipient.meritAddress,
@@ -357,7 +361,12 @@ export class SendAmountView {
           });
         });
 
-      });
+      }).catch((err) => {
+        if (err.code == Errors.CONNECTION_ERROR.code) {
+          this.refreshFeeAvailable = true;
+        }
+        this.feeCalcError = err.text || 'Unknown error';
+    });
   }
 
 
@@ -418,10 +427,14 @@ export class SendAmountView {
         }
       }
       return this.walletService.createTx(wallet, txp).then((ctxp) => {
+        this.logger.debug("CREATED TXP", ctxp);
         return resolve(ctxp);
       }).catch((err) => {
-        //TODO get errors from server response
-        this.feeCalcError = 'Unknown error';
+        if (err.code == Errors.CONNECTION_ERROR.code) {
+          this.refreshFeeAvailable = true;
+        }
+        this.feeCalcError = err.text || 'Unknown error';
+        return reject(err);
       });
     });
   }

@@ -58,6 +58,7 @@ export class PushNotificationsService {
   }
 
 
+
   public init(): void {
     if (!this.usePushNotifications || this._token) return;
     this.configService.load().then(() => {
@@ -82,6 +83,12 @@ export class PushNotificationsService {
 
   // TODO: Chain getting the token as part of a standalone single-wallet subscription.
   public subscribeToEvents(): void {
+
+    if (!this.usePushNotifications) {
+      this.logger.warn('Push notification service inactive: cordova not available');
+      return;
+    }
+
 
     this.FCM.onTokenRefresh().subscribe((token: any) => {
       if (!this._token) return;
@@ -127,6 +134,10 @@ export class PushNotificationsService {
       this.logger.warn('Push notifications disabled for this device. Nothing to do here.');
       return;
     }
+    if (!this.usePushNotifications) {
+      this.logger.warn('Push notification service inactive: cordova not available');
+      return;
+    }
     this.subscribe(walletClient);
   }
 
@@ -150,6 +161,12 @@ export class PushNotificationsService {
   };
 
   public disable(): void {
+
+    if (!this.usePushNotifications) {
+      this.logger.warn('Push notification service inactive: cordova not available');
+      return;
+    }
+
     if (!this._token) {
       this.logger.warn('No token available for this device. Cannot disable push notifications.');
       return;
@@ -167,11 +184,22 @@ export class PushNotificationsService {
   }
 
   public unsubscribe(walletClient: MeritWalletClient): Promise<void> {
+    if (!this.usePushNotifications) {
+      this.logger.warn('Push notification service inactive: cordova not available');
+      return Promise.resolve();
+    }
+
     if (!this._token) return;
     return this._unsubscribe(walletClient);
   }
 
   public subscribe(walletClient: MeritWalletClient): Promise<void> {
+
+    if (!this.usePushNotifications) {
+      this.logger.warn('Push notification service inactive: cordova not available');
+      return;
+    }
+
     if (!this.configService.get().pushNotificationsEnabled) {
       this.logger.warn("Attempting to subscribe to push notification when disabled in config.  Skipping...");
       return;

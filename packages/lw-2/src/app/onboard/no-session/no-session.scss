@@ -1,0 +1,16 @@
+@import './../onboarding-module';
+view-no-session {
+  @extend %module-onboarding;
+
+  .bottom-buttons {
+    height: 60px !important;
+    padding-top: 0 !important;
+    button {
+      margin: 0;
+    }
+  }
+
+  .illustration.control {
+    background:  url('../assets/img/onboarding/tour-control.png');
+  }
+}
