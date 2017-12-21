@@ -37,7 +37,7 @@
                         {{totalNetworkValueFiat}}
                     </div>
                 </span>
-                <ion-spinner *ngIf="!totalNetworkValueMicros && loading"></ion-spinner>
+                <ion-spinner *ngIf="!totalNetworkValueMicros && loading" color="primary"></ion-spinner>
             </span>
 
         </ion-item>
@@ -78,9 +78,10 @@
         </ion-list>
     </span>
 
-    <ion-item-divider translate *ngIf="wallets && wallets.length">
+    <ion-item-divider translate *ngIf="(wallets && wallets.length) || loading">
         Wallets
     </ion-item-divider>
+    <ion-item *ngIf="!wallets && loading"><ion-spinner item-left></ion-spinner><h2>Loading...</h2></ion-item>
     <ion-list class="wallets" *ngIf="wallets">
         <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)" class="wallet">
 

@@ -57,7 +57,7 @@ export class UnlockView {
 
   }
 
-  createAndUnlockWallet() {
+  createAndUnlockWallet():Promise<any> {
 
     if (!this.formData.unlockCode) {
       this.unlockState = 'fail';

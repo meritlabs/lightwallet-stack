@@ -1743,7 +1743,6 @@ export class API {
       // Create wallet
       return this._doPostRequest('/v1/wallets/', args).then((res) => {
 
-
         if (res) {
           let walletId = res.walletId;
           let walletShareCode = res.shareCode;

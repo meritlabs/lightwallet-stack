@@ -17,6 +17,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ToastConfig } from "merit/core/toast.config";
 import { MeritToastController } from "merit/core/toast.controller";
 
+import * as Promise from 'bluebird';
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
@@ -96,7 +97,7 @@ export class SendView {
     return (_.isEmpty(this.wallets) ? false : true);
   }
   
-  private updateHasFunds() {
+  private updateHasFunds():Promise<void> {
     return this.profileService.hasFunds().then((hasFunds) => {
       this.hasFunds = hasFunds;
       return Promise.resolve();
@@ -120,7 +121,7 @@ export class SendView {
     });
   }
 
-  private initContactList() {
+  private initContactList():Promise<void> {
     return this.addressBookService.getAllMeritContacts().then((contacts) => {
       this.hasContacts = !_.isEmpty(contacts);
 
@@ -222,7 +223,7 @@ export class SendView {
 
   private updateFilteredContactsDebounce = _.debounce(this.updateFilteredContacts, 200);
 
-  public updateFilteredContacts(search: string) {
+  public updateFilteredContacts(search: string):Promise<void> {
 
     // TODO: Improve to be more resilient.
     if(search && search.length == SendView.ADDRESS_LENGTH) {
