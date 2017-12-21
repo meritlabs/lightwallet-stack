@@ -54,6 +54,10 @@
 
         <span *ngIf="wallet">
 
+             <div class="row error" *ngIf="mainAddressGapReached" >
+                 <span [style.flex]="1"  text-right>Maximum number of consecutive addresses without activity reached</span>
+             </div>
+
             <div class="row">
                 <span class="label" text-left>Amount</span>
                 <input type="number"
@@ -72,10 +76,14 @@
             <div class="row">
                 <span class="label" text-left >Address</span>
                 <span item-right text-right [style.flex]="1" [style.font-size]="'10px'" (click)="copyToClipboard(address)" [clip]="address">
-                    {{address}}
+                    <span *ngIf="address">{{address}}</span>
+                    <span *ngIf="!address && error" class="error">{{error}}</span>
                 </span>
-                <button ion-button icon-only clear color="primary" (click)="generateAddress(forceNew = true)"  class="select-button">
+                <button ion-button icon-only clear color="primary" (click)="generateAddress(forceNew = true)"  class="select-button" *ngIf="!addressGenerationInProgress">
                     <ion-icon name="refresh"></ion-icon>
+                </button>
+                <button ion-button icon-only clear color="primary" class="select-button" *ngIf="addressGenerationInProgress">
+                    <ion-spinner color="primary"></ion-spinner>
                 </button>
             </div>
 

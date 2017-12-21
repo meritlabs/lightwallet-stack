@@ -25,7 +25,6 @@ export class VaultsService {
     }
 
     getVaultCoins(walletClient: MeritWalletClient, vault: any): Promise<Array<any>> {
-      console.log('getting vaults');
       const address = this.bitcore.Address.fromObject(vault.address);
       return walletClient.getVaultCoins(address.toString());
     }

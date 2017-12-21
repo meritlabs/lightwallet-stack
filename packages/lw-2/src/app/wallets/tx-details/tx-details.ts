@@ -70,7 +70,7 @@ export class TxDetailsView {
       this.walletService.getTx(this.wallet, this.txId).then((tx) => {
         return this.updateTxDetails(tx);
       }).catch((err) => {
-        console.log(err);
+        this.logger.info(err);
       });
     }
   }

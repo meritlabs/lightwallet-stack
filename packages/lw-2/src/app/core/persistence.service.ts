@@ -2,17 +2,15 @@ import { Injectable } from '@angular/core';
 import { Inject } from '@angular/core';
 import { Logger } from 'merit/core/logger';
 import * as _ from 'lodash';
-
-import { MeritStorage, MERITSTORAGE } from 'merit/core/storage/storage.interface';
 import { PlatformService } from 'merit/core/platform.service';
 import { LocalStorage } from 'merit/core/storage/local-storage.service';
 import { FileStorage } from 'merit/core/storage/file-storage.service';
 import { RamStorage } from 'merit/core/storage/ram-storage.service';
-import * as Promise from 'bluebird';
-
 import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 
+import * as Promise from 'bluebird';
 
+import { Storage } from '@ionic/storage';
 
 const Keys = {
   ADDRESS_BOOK: network => 'addressbook-' + network,
@@ -44,30 +42,38 @@ const Keys = {
   TX_HISTORY: walletId => 'txsHistory-' + walletId,
 };
 
-export let persistenceServiceFactory = (platform: PlatformService, log: Logger) => {
-  // TODO: select appropriate storage service based on platform
-  let storage;
-  /*
-  if (this.platform.isChromeApp) {
-    storage = new ChromeStorage(log);
-  } else if (this.platform.isCordova) {
-    storage = new FileStorage(log);
-  } else {
-    storage = new LocalStorage(log);
+class MeritStorage {
+
+  constructor(private storage:Storage) {
   }
-   */
-  // Testing in RAM
-  storage = new LocalStorage(log);
-  return new PersistenceService(storage, log);
-};
+
+  public get(key) {
+    return Promise.resolve(this.storage.get(key));
+  }
+
+  public set(key, value) {
+    return Promise.resolve(this.storage.set(key,value));
+  }
+  public remove(key) {
+    return Promise.resolve(this.storage.remove(key));
+  }
+
+}
+
+
 
 @Injectable()
 export class PersistenceService {
-  constructor( @Inject(MERITSTORAGE) public storage: Storage, private log: Logger) {
+
+  private storage:MeritStorage;
+
+  constructor( storage: Storage, private log: Logger) {
+    this.storage = new MeritStorage(storage);
   };
 
+
   storeNewProfile(profile): Promise<void> {
-    return this.storage.create(Keys.PROFILE, profile);
+    return this.storage.set(Keys.PROFILE, profile);
   };
 
   storeProfile(profile): Promise<void> {

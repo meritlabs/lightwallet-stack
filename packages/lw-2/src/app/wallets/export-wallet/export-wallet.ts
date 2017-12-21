@@ -9,6 +9,8 @@ import { BwcService } from "merit/core/bwc.service";
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
 
+import { Logger } from "merit/core/logger";
+
 @IonicPage()
 @Component({
   selector: 'view-export-wallet',
@@ -41,7 +43,8 @@ export class ExportWalletView {
     private bwcService:BwcService,
     private toastCtrl:MeritToastController,
     private file: File,
-    private platform: Platform
+    private platform: Platform,
+    private logger: Logger
   ) {
     this.wallet = this.navParams.get('wallet');
 
@@ -52,7 +55,7 @@ export class ExportWalletView {
 
     let setQrInfo = (password) => {
       this.walletsService.getEncodedWalletInfo(this.wallet, password).then((info) => {
-        console.log('qr info', info);
+        this.logger.info('qr info', info);
         this.qrcode = info;
       });
     };
