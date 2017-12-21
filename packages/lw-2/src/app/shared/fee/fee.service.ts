@@ -86,28 +86,20 @@ export class FeeService {
 
     return new Promise((resolve, reject) => {
 
-      console.log('GET FEE LEVEL!!!');
-
       if (this.cache.updateTs > Date.now() - this.CACHE_TIME_TS * 1000) {
-        console.log("RESOLVING CACHE!!");
         return resolve({data: this.cache.data, fromCache: true});
       } else {
 
-        console.log("ELSEEE");
 
         let walletClient = this.bwcService.getClient(null);
 
-        console.log("FUUUCK WHAT THE HELL??");
-
         return walletClient.getFeeLevels(network).then((levels) => {
-          console.log('LEVELS!!', levels);
           this.cache.updateTs = Date.now();
           this.cache.data = _.find(levels, {
             level: feeLevel
           });
           return resolve({data: this.cache.data, fromCache: false})
         }).catch((err) => {
-          console.log("REJECTING!!", err);
           return reject(err);
         })
       }

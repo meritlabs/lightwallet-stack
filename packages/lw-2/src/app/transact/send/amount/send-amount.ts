@@ -427,7 +427,7 @@ export class SendAmountView {
         }
       }
       return this.walletService.createTx(wallet, txp).then((ctxp) => {
-        console.log("CREATED TXP", ctxp);
+        this.logger.debug("CREATED TXP", ctxp);
         return resolve(ctxp);
       }).catch((err) => {
         if (err.code == Errors.CONNECTION_ERROR.code) {

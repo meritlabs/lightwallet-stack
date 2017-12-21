@@ -119,8 +119,6 @@ export class WalletsView {
     const MAX_ATTEMPTS = 10;
     let attempt = 0;
 
-    console.log('update all info');
-
     return new Promise((resolve, reject) => {
 
       let update = () => {
@@ -149,9 +147,6 @@ export class WalletsView {
         }).catch((err) => {
           this.logger.info("Error updating information for all wallets.");
           this.logger.info(err);
-
-          console.log(err, '@ERRR');
-
           if (err.code == Errors.CONNECTION_ERROR.code) {
             if (++attempt < MAX_ATTEMPTS) {
               return setTimeout(update, 1000);
@@ -167,7 +162,6 @@ export class WalletsView {
         });
       };
 
-      console.log('ready to update');
       update();
     });
   }
