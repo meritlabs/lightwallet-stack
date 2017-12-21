@@ -85,8 +85,6 @@ export class EasyReceiveService {
     var scriptId = this.bwcService.getBitcore().Address.payingTo(scriptData.script, network);
 
     return walletClient.validateEasyScript(scriptId).then((txn) => {
-      this.logger.info('easysend from blockchain');
-      this.logger.info(txn);
       return ({
         txn: txn.result,
         privateKey: scriptData.privateKey,
