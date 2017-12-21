@@ -9,7 +9,7 @@
 
 <ion-content>
 
-    <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}">
+    <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}" [enabled]="!loading">
         <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
 
@@ -26,14 +26,14 @@
             <ion-label item-right text-right>
                 <span *ngIf="wallet.shareCode">
 
-                    <span (click)="copyToClipboard(wallet.shareCode)" [clip]="wallet.shareCode">{{wallet.shareCode | slice:0:10 }}</span>
+                    <span (click)="copyToClipboard(wallet.shareCode)" [clip]="wallet.shareCode" >{{wallet.shareCode | slice:0:10 }}</span>
 
-                    <button ion-button icon-only clear color="primary" (click)="shareAddress(wallet.shareCode)">
+                    <button ion-button clear color="primary" (click)="shareAddress(wallet.shareCode)" *ngIf="shareButtonAvailable">
                         <ion-icon name="share"></ion-icon>
                     </button>
                 </span>
-                <span *ngIf="!wallet.shareCode">
-                    <ion-spinner></ion-spinner>
+                <span *ngIf="!wallet.shareCode && loading">
+                    <ion-spinner color="primary"></ion-spinner>
                 </span>
             </ion-label>
         </ion-item>
@@ -46,8 +46,8 @@
             <ion-label>MRT</ion-label>
             <ion-label item-right text-right>
                 <span *ngIf="wallet.totalNetworkValueMerit">{{wallet.totalNetworkValueMerit}}</span>
-                <span *ngIf="!wallet.totalNetworkValueMerit">
-                    <ion-spinner></ion-spinner>
+                <span *ngIf="!wallet.totalNetworkValueMerit && loading">
+                    <ion-spinner color="primary"></ion-spinner>
                 </span>
             </ion-label>
         </ion-item>
@@ -55,8 +55,8 @@
             <ion-label>USD</ion-label>
             <ion-label item-right text-right>
                 <span *ngIf="wallet.totalNetworkValueFiat">{{wallet.totalNetworkValueFiat}}</span>
-                <span *ngIf="!wallet.totalNetworkValueFiat">
-                    <ion-spinner></ion-spinner>
+                <span *ngIf="!wallet.totalNetworkValueFiat && loading">
+                    <ion-spinner color="primary"></ion-spinner>
                 </span>
             </ion-label>
         </ion-item>
@@ -71,8 +71,8 @@
                 <span *ngIf="wallet.miningRewardsMerit">
                     {{wallet.miningRewardsMerit}}
                 </span>
-                <span *ngIf="!wallet.miningRewardsMerit">
-                    <ion-spinner></ion-spinner>
+                <span *ngIf="!wallet.miningRewardsMerit && loading">
+                    <ion-spinner color="primary"></ion-spinner>
                 </span>
             </ion-label>
         </ion-item>
@@ -82,8 +82,8 @@
                 <span *ngIf="wallet.miningRewardsFiat">
                     {{wallet.miningRewardsFiat}}
                 </span>
-                <span *ngIf="!wallet.miningRewardsFiat">
-                    <ion-spinner></ion-spinner>
+                <span *ngIf="!wallet.miningRewardsFiat && loading">
+                    <ion-spinner color="primary"></ion-spinner>
                 </span>
             </ion-label>
         </ion-item>
@@ -98,8 +98,8 @@
                 <span *ngIf="wallet.ambassadorRewardsMerit">
                     {{wallet.ambassadorRewardsMerit}}
                 </span>
-                <span *ngIf="!wallet.ambassadorRewardsMerit">
-                    <ion-spinner></ion-spinner>
+                <span *ngIf="!wallet.ambassadorRewardsMerit && loading">
+                    <ion-spinner color="primary"></ion-spinner>
                 </span>
             </ion-label>
         </ion-item>
@@ -109,8 +109,8 @@
                 <span *ngIf="wallet.ambassadorRewardsFiat">
                     {{wallet.ambassadorRewardsFiat}}
                 </span>
-                <span *ngIf="!wallet.ambassadorRewardsFiat">
-                    <ion-spinner></ion-spinner>
+                <span *ngIf="!wallet.ambassadorRewardsFiat && loading">
+                    <ion-spinner color="primary"></ion-spinner>
                 </span>
             </ion-label>
         </ion-item>

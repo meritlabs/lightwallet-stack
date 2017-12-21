@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import * as Promise from 'bluebird';
 import { Component, SecurityContext } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
@@ -7,6 +6,8 @@ import { Logger } from 'merit/core/logger';
 import { Contact } from '@ionic-native/contacts';
 import { MeritContact } from "merit/shared/address-book/merit-contact.model";
 import { DomSanitizer } from '@angular/platform-browser';
+
+import * as Promise from 'bluebird';
 
 @IonicPage({
   defaultHistory: ['SettingsView']

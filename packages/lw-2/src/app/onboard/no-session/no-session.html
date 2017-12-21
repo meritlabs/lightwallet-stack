@@ -1,0 +1,27 @@
+<ion-header><ion-navbar></ion-navbar></ion-header>
+
+<ion-content fullscreen>
+
+    <div class="container">
+
+        <div class="title" translate>
+            We cannot process your session
+        </div>
+        <div class="text" translate>
+            You should import or restore your wallets
+        </div>
+        <div class="image"  translate>
+            <div class="illustration control"></div>
+        </div>
+        <div class="text" translate>
+           Either you can create new wallet
+        </div>
+
+        <div class="bottom-buttons">
+            <button (click)="toUnlockView()" ion-button block translate>Create new Wallet</button>
+            <button (click)="toImportView()" ion-button block clear translate>Restore from backup</button>
+        </div>
+
+    </div>
+
+</ion-content>

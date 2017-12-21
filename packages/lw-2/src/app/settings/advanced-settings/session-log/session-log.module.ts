@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { SessionLogView } from 'merit/settings/advanced-settings/session-log/session-log';
-import {MomentModule} from "angular2-moment/moment.module";
+import { MomentModule } from "angular2-moment/moment.module";
+import { ClipModule } from 'ng2-clip'
 
 @NgModule({
   declarations: [
@@ -9,6 +10,7 @@ import {MomentModule} from "angular2-moment/moment.module";
   ],
   imports: [
     MomentModule,
+    ClipModule,
     IonicPageModule.forChild(SessionLogView),
   ],
 })

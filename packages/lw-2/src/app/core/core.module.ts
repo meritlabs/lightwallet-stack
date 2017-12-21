@@ -7,7 +7,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Logger } from "./logger";
 import { BwcService } from 'merit/core/bwc.service';
-import { PersistenceService, persistenceServiceFactory } from 'merit/core/persistence.service';
+import { PersistenceService } from 'merit/core/persistence.service';
 import { BwcError } from 'merit/core/bwc-error.model';
 import { PlatformService } from 'merit/core/platform.service';
 
@@ -44,6 +44,8 @@ import { NotificationModule } from 'merit/core/notification/notification.module'
 import { FCM } from '@ionic-native/fcm';
 
 
+import { IonicStorageModule } from '@ionic/storage';
+
 /* 
   The core module exists to make commonly used singleton services available 
   for use in other modules.  
@@ -72,6 +74,7 @@ export function loadConfigs(appService) {
               deps: [HttpClient]
             }
           }),
+          IonicStorageModule.forRoot(),
           NotificationModule        
     ],
     exports: [],
@@ -86,12 +89,7 @@ export function loadConfigs(appService) {
         PopupService,
         MeritToastController, 
         DeepLinkService,
-        {
-            provide: PersistenceService,
-            useFactory: persistenceServiceFactory,
-            deps: [PlatformService, Logger],
-            multi: false
-        },
+        PersistenceService,
         PlatformService,
         ProfileService,
         LanguageService,
