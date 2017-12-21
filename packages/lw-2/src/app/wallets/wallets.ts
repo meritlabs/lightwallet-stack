@@ -295,9 +295,9 @@ export class WalletsView {
       if (!data.txn.found) return this.showPasswordEasyReceivePrompt(receipt, isRetry); // requires different password
 
       if (data.txn.spent) {
-        this.logger.debug('Got a spent easyReceipt. Removing from pending receipts.')
+        this.logger.debug('Got a spent easyReceipt. Removing from pending receipts.');
         return this.easyReceiveService.deletePendingReceipt(receipt)
-          .then(this.processPendingEasyReceipts);
+          .then(this.processPendingEasyReceipts.bind(this));
       }
 
       if (_.isUndefined(data.txn.confirmations)) {
@@ -308,7 +308,7 @@ export class WalletsView {
       if (receipt.blockTimeout < data.txn.confirmations) {
         this.logger.debug('Got an expired easyReceipt. Removing from pending receipts.');
         return this.easyReceiveService.deletePendingReceipt(receipt)
-          .then(this.processPendingEasyReceipts);
+          .then(this.processPendingEasyReceipts.bind(this));
       }
 
       return this.showConfirmEasyReceivePrompt(receipt, data);
