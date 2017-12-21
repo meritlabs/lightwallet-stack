@@ -95,6 +95,15 @@ export class SendAmountView {
         this.wallets = wallets;
         if (this.wallets && this.wallets[0]) {
           this.wallet = this.wallets[0];
+
+          // setting first suitable wallet as active
+          this.wallets.some((wallet) => {
+            let amount = this.navParams.get('amount') || 0;;
+            if (wallet.status && wallet.status.spendableAmount > amount) {
+              this.wallet = wallet;
+              return true;
+            }
+          });
         }
 
         this.getAvailableAmount().then((amount) => {
