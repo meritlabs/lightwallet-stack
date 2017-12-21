@@ -127,7 +127,7 @@ export class WalletsView {
         // Now that we have wallets, we will proceed with the following operations in parallel.
         return Promise.join(
           this.updateNetworkValue(wallets),
-          this.processEasyReceive(),
+          this.processPendingEasyReceipts(),
           this.updateTxps({ limit: 3 }),
           this.updateVaults(_.head(this.wallets)),
           this.fetchNotifications(),
@@ -279,18 +279,50 @@ export class WalletsView {
       this.processIncomingTransactionEvent(n, { updateStatus: true });
     });
   }
+
+  /**
+   * gets easyReceipt data from the blockchain and routes the ui accordingly
+   * 
+   * @private
+   * @param {EasyReceipt} receipt 
+   * @param {boolean} isRetry 
+   * @returns {Promise<void>} 
+   * @memberof WalletsView
+   */
+  private processEasyReceipt(receipt: EasyReceipt, isRetry: boolean): Promise<void> {
+    return this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, '').then((data) => {
+
+      if (!data.txn.found) return this.showPasswordEasyReceivePrompt(receipt, isRetry); // requires different password
+
+      if (data.txn.spent) {
+        this.logger.debug('Got a spent easyReceipt. Removing from pending receipts.')
+        return this.easyReceiveService.deletePendingReceipt(receipt)
+          .then(this.processPendingEasyReceipts);
+      }
+
+      if (_.isUndefined(data.txn.confirmations)) {
+        this.logger.warn('Got easyReceipt with unknown depth. It might be expired!');
+        return this.showConfirmEasyReceivePrompt(receipt, data);
+      }
+
+      if (receipt.blockTimeout < data.txn.confirmations) {
+        this.logger.debug('Got an expired easyReceipt. Removing from pending receipts.');
+        return this.easyReceiveService.deletePendingReceipt(receipt)
+          .then(this.processPendingEasyReceipts);
+      }
+
+      return this.showConfirmEasyReceivePrompt(receipt, data);
+    });
+  }
+
   /**
    * checks if pending easyreceive exists and if so, open it
    */
-  private processEasyReceive(): Promise<any> {
+  private processPendingEasyReceipts(): Promise<any> {
     return this.easyReceiveService.getPendingReceipts().then((receipts) => {
-      if (receipts[0]) {
-
-        return this.easyReceiveService.validateEasyReceiptOnBlockchain(receipts[0], '').then((data) => {
-          if (!data.txn.found) this.showPasswordEasyReceivePrompt(receipts[0], false); // requires password
-          else if (!data.txn.spent) this.showConfirmEasyReceivePrompt(receipts[0], data);
-        });
-      }
+      if (_.isEmpty(receipts)) return Promise.resolve(); // No receipts to process
+      const receipt = receipts[0];
+      return this.processEasyReceipt(receipt, false);
     });
   }
 
@@ -307,7 +339,7 @@ export class WalletsView {
           text: 'Ignore', role: 'cancel', handler: () => {
             this.logger.info('You have declined easy receive');
             this.easyReceiveService.deletePendingReceipt(receipt).then(() => {
-              this.processEasyReceive();
+              this.processPendingEasyReceipts();
             });
           }
         },
@@ -316,10 +348,7 @@ export class WalletsView {
             if (!data || !data.password) {
               this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the moment 
             } else {
-              this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, data.password).then((data) => {
-                if (!data.txn.found) this.showPasswordEasyReceivePrompt(receipt, true); // incorrect password
-                else if (!data.txn.spent) this.showConfirmEasyReceivePrompt(receipt, data);
-              });
+              this.processEasyReceipt(receipt, true);
             }
           }
         }
@@ -335,14 +364,14 @@ export class WalletsView {
         {
           text: 'Reject', role: 'cancel', handler: () => {
             this.rejectEasyReceipt(receipt, data).then(() => {
-              this.processEasyReceive();
+              this.processPendingEasyReceipts();
             });
           }
         },
         {
           text: 'Accept', handler: () => {
             this.acceptEasyReceipt(receipt, data).then(() => {
-              this.processEasyReceive();
+              this.processPendingEasyReceipts();
             });
           }
         }
