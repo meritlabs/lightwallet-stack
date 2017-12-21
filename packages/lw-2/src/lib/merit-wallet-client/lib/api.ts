@@ -1222,8 +1222,10 @@ export class API {
         return resolve(res);
       }).catch((err) => {
 
-        if (!err.status || err.status > 500) {
+        if (!err.status) {
           return reject(Errors.CONNECTION_ERROR);
+        } else if (err.status == 502 || err.status == 504){
+          return reject(Errors.SERVER_UNAVAILABLE);
         }
 
         if (!err.response || !err.response.text) {
