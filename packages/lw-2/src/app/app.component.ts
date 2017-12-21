@@ -103,9 +103,10 @@ export class MeritLightWallet {
                 // User is a normal user and needs to be thrown an easyReceive modal.
                 // TODO: THROW MODAL!  
                 this.logger.info("Receiving an incoming EasySend.  Pushing to the wallets view.");
-                if (this.app.getRootNavs[0])
-                this.app.getRootNavs[0].setRoot('TransactView');
-                this.app.getRootNavs[0].popToRoot();
+                if (this.app.getRootNavs[0]) {
+                  this.app.getRootNavs[0].setRoot('TransactView');
+                  this.app.getRootNavs[0].popToRoot();
+                }
               }
             }
           }).catch((err) => {
