@@ -360,14 +360,12 @@ export class WalletService {
 
 
   private getMainAddress(wallet: MeritWalletClient) {
-    return new Promise((resolve, reject) => {
       return wallet.getMainAddresses({
         reverse: true,
         limit: 1
       }).then((addr) => {
-        return resolve(addr[0].address);
+        return Promise.resolve(addr[0].address);
       });
-    });
   }
 
 

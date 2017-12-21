@@ -57,9 +57,6 @@ export class PushNotificationsService {
     }
   }
 
-  public isAvailable() {
-    return (this.platform.is('cordova'));
-  }
 
 
   public init(): void {
@@ -87,7 +84,7 @@ export class PushNotificationsService {
   // TODO: Chain getting the token as part of a standalone single-wallet subscription.
   public subscribeToEvents(): void {
 
-    if (!this.isAvailable()) {
+    if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return;
     }
@@ -137,7 +134,7 @@ export class PushNotificationsService {
       this.logger.warn('Push notifications disabled for this device. Nothing to do here.');
       return;
     }
-    if (!this.isAvailable()) {
+    if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return;
     }
@@ -165,7 +162,7 @@ export class PushNotificationsService {
 
   public disable(): void {
 
-    if (!this.isAvailable()) {
+    if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return;
     }
@@ -187,7 +184,7 @@ export class PushNotificationsService {
   }
 
   public unsubscribe(walletClient: MeritWalletClient): Promise<void> {
-    if (!this.isAvailable()) {
+    if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return Promise.resolve();
     }
@@ -198,7 +195,7 @@ export class PushNotificationsService {
 
   public subscribe(walletClient: MeritWalletClient): Promise<void> {
 
-    if (!this.isAvailable()) {
+    if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return;
     }

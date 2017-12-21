@@ -63,6 +63,9 @@ export class WalletsView {
 
   public loading:boolean;
 
+  static readonly  RETRY_MAX_ATTEMPTS = 5;
+  static readonly RETRY_TIMEOUT = 1000;
+
   constructor(
     public navParams: NavParams,
     private navCtrl: NavController,
@@ -116,12 +119,10 @@ export class WalletsView {
   private updateAllInfo(opts: { force: boolean } = { force: false }): Promise<any> {
 
     this.loading = true;
-    const MAX_ATTEMPTS = 10;
-    let attempt = 0;
 
     return new Promise((resolve, reject) => {
 
-      let update = () => {
+      const fetch = (attempt = 0) => {
         return this.addressbookService.list(this.configService.getDefaults().network.name).then((addressBook) => {
           this.addressbook = addressBook;
           return this.updateAllWallets(opts.force);
@@ -140,29 +141,28 @@ export class WalletsView {
             this.fetchNotifications(),
             (res) => {
               this.logger.info("Done updating all info for wallet.");
-              this.loading = false;
               return resolve();
             }
           )
         }).catch((err) => {
           this.logger.info("Error updating information for all wallets.");
           this.logger.info(err);
-          if (err.code == Errors.CONNECTION_ERROR.code) {
-            if (++attempt < MAX_ATTEMPTS) {
-              return setTimeout(update, 1000);
+          if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
+            if (++attempt < WalletsView.RETRY_MAX_ATTEMPTS) {
+              return setTimeout(fetch.bind(this, attempt), WalletsView.RETRY_TIMEOUT);
             }
           }
 
-          this.loading = false;
           this.toastCtrl.create({
             message: err.text || 'Failed to update information',
             cssClass: ToastConfig.CLASS_ERROR
           }).present();
+
           return resolve();
-        });
+        }).finally(() => this.loading = false);
       };
 
-      update();
+      fetch();
     });
   }
 

@@ -64,17 +64,13 @@ export class FeeService {
 
   getWalletFeeRate(wallet, feeLevel) {
 
-    return new Promise((resolve, reject) => {
       return wallet.getFeeLevels(wallet.network).then((levels) => {
         this.cache.updateTs = Date.now();
         this.cache.data = _.find(levels, {
           level: feeLevel
         });
-        return resolve({data: this.cache.data, fromCache: false})
-      }).catch((err) => {
-        return reject(err);
+        return Promise.resolve({data: this.cache.data, fromCache: false});
       });
-    });
 
   }
 

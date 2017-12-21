@@ -10,6 +10,7 @@ import { MeritContactBuilder } from 'merit/shared/address-book/merit-contact.bui
 import { Logger } from 'merit/core/logger';
 import { ConfigService } from 'merit/shared/config.service';
 
+import * as Promise from 'bluebird';
 
 /**
  * This service looks up entered addresses against the address book.

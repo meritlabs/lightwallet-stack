@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { Inject } from '@angular/core';
 import { Logger } from 'merit/core/logger';
 import * as _ from 'lodash';
-
-import { MeritStorage, MERITSTORAGE } from 'merit/core/storage/storage.interface';
 import { PlatformService } from 'merit/core/platform.service';
 import { LocalStorage } from 'merit/core/storage/local-storage.service';
 import { FileStorage } from 'merit/core/storage/file-storage.service';
 import { RamStorage } from 'merit/core/storage/ram-storage.service';
 import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
+
+import * as Promise from 'bluebird';
 
 import { Storage } from '@ionic/storage';
 
@@ -42,10 +42,35 @@ const Keys = {
   TX_HISTORY: walletId => 'txsHistory-' + walletId,
 };
 
+class MeritStorage {
+
+  constructor(private storage:Storage) {
+  }
+
+  public get(key) {
+    return Promise.resolve(this.storage.get(key));
+  }
+
+  public set(key, value) {
+    return Promise.resolve(this.storage.set(key,value));
+  }
+  public remove(key) {
+    return Promise.resolve(this.storage.remove(key));
+  }
+
+}
+
+
+
 @Injectable()
 export class PersistenceService {
-  constructor(public storage: Storage, private log: Logger) {
+
+  private storage:MeritStorage;
+
+  constructor( storage: Storage, private log: Logger) {
+    this.storage = new MeritStorage(storage);
   };
+
 
   storeNewProfile(profile): Promise<void> {
     return this.storage.set(Keys.PROFILE, profile);
