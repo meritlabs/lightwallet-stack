@@ -1180,10 +1180,10 @@ export class API {
       }
 
       r.timeout(this.timeout);
+      r.ok(res => res.status < 500); // dont reject on failed status
 
       return Promise.resolve(r).then((res) => {
         if (!res) return reject(Errors.CONNECTION_ERROR);
-        if (res.badRequest) return reject(Errors.BAD_REQUEST);
 
         /**
          * Universal MWC Logger.  It will log all output returned from BWS
