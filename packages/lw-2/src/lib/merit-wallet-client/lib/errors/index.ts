@@ -23,4 +23,5 @@ export class Errors {
   public static TX_NOT_FOUND = {code: 'TX_NOT_FOUND', text: 'Transaction proposal not found'};
   public static UNLOCK_CODE_INVALID = {code: 'UNLOCK_CODE_INVALID', text: 'Invalid unlock code'};
   public static MAIN_ADDRESS_GAP_REACHED = {code: 'MAIN_ADDRESS_GAP_REACHED', text: 'Maximum number of consecutive addresses without activity reached'};
+  public static SERVER_UNAVAILABLE = {code: 'SERVER_UNAVAILABLE', text: 'Could not reach the server'};
 }
