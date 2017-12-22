@@ -197,7 +197,7 @@ export class WalletsView {
     if (this.configService.get().recentTransactions.enabled) {
       this.recentTransactionsEnabled = true;
       return this.profileService.getNotifications({ limit: 3 }).then((result) => {
-        this.logger.info("WalletsView Received ${result.total} notifications upon resuming.");
+        this.logger.info(`WalletsView Received ${result.count} notifications upon resuming.`);
         _.each(result.notifications, (n: any) => {
           // We don't need to update the status here because it has 
           // already been fetched as part of updateAllInfo();
