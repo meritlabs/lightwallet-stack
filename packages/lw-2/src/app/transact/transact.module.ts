@@ -20,7 +20,6 @@ import { RateService } from 'merit/transact/rate.service';
     IonicPageModule.forChild(TransactView),
   ],
   providers: [
-    ProfileService,
     RateService,
     FeeService
   ]

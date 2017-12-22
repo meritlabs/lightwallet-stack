@@ -83,10 +83,7 @@ export class MeritLightWallet {
       this.logger.info("Got Profile....");
       // If the user has credentials and a profile, then let's send them to the transact
       // view
-      if (!this.rootComponent) {
-        this.rootComponent = (profile && profile.credentials && profile.credentials.length) ? 'TransactView' : 'OnboardingView';
-      }
-      
+
       return this.deepLinkService.getBranchData().then((data) => {
         this.logger.info("Branch Data: ", data);
         // If the branch params contain the minimum params needed for an easyReceipt, then
@@ -95,27 +92,25 @@ export class MeritLightWallet {
           this.logger.info("About to Validate and Save.");
         
           return this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt: EasyReceipt) => {
-        this.logger.info("Returned from validate with: ", easyReceipt);
-        
-            // We have an easyReceipt, let's handle the cases of being a new user or an 
+            this.logger.info("Returned from validate with: ", easyReceipt);
+
+            // We have an easyReceipt, let's handle the cases of being a new user or an
             // existing user.
             if (easyReceipt) {
-              if (!(profile && profile.credentials && profile.credentials.length)) {
-                // User received easySend, but has no wallets yet. 
+              if (!(profile && profile.credentials && profile.credentials.length > 0)) {
+                // User received easySend, but has no wallets yet.
                 // Skip to unlock view.
                 this.rootComponent = 'UnlockView'
               } else {
                 // User is a normal user and needs to be thrown an easyReceive modal.
-                // TODO: THROW MODAL!  
-                this.logger.info("Receiving an incoming EasySend.  Pushing to the wallets view.");
-                if (this.app.getRootNavs[0]) {
-                  this.app.getRootNavs[0].setRoot('TransactView');
-                  this.app.getRootNavs[0].popToRoot();
-                }
+                this.rootComponent = 'TransactView';
               }
+            } else {
+                this.rootComponent = (profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView';
             }
           }).catch((err) => {
             this.logger.warn("Error validating and saving easySend params: ", err)
+            this.rootComponent = (profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView';
           });
         }
       }).catch((err) => {

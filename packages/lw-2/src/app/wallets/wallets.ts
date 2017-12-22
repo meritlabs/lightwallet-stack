@@ -89,18 +89,8 @@ export class WalletsView {
     private rateService: RateService,
     private platform: Platform
   ) {
-    this.logger.warn("Hellop WalletsView!");
-    this.platform.resume.subscribe(() => {
-      this.logger.info("WalletView is going to refresh data on resume.");
-      this.updateAllInfo({ force: true }).then(() => {
-        this.logger.info("Got updated data in walletsView on resume.")
-      });
-    });
 
-    this.updateAllInfo({ force: true }).then(() => {
-      this.logger.info("Got updated data in walletsView on Ready!!");
-    });
-    this.registerListeners();
+    this.logger.warn("WalletsView constructor!");
   }
 
   public doRefresh(refresher) {
@@ -113,7 +103,20 @@ export class WalletsView {
   }
 
   public ionViewDidLoad() {
+
     this.logger.warn("Hello WalletsView :: IonViewDidLoad!");
+
+    this.platform.resume.subscribe(() => {
+      this.logger.info("WalletView is going to refresh data on resume.");
+      this.updateAllInfo({ force: true }).then(() => {
+        this.logger.info("Got updated data in walletsView on resume.")
+      });
+    });
+
+    this.updateAllInfo({ force: true }).then(() => {
+      this.logger.info("Got updated data in walletsView on Ready!!");
+    });
+    this.registerListeners();
   }
 
   private updateAllInfo(opts: { force: boolean } = { force: false }): Promise<any> {
@@ -431,12 +434,12 @@ export class WalletsView {
         this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data).then(() => {
           this.logger.info('Easy send returned');
           resolve();
-        }).catch(() => {
+        }).catch((err) => {
           this.toastCtrl.create({
-            message: 'There was an error rejecting the Merit',
+            message: err.text || 'There was an error rejecting the Merit',
             cssClass: ToastConfig.CLASS_ERROR
           }).present();
-          reject();
+          reject(err);
         });
 
       });
