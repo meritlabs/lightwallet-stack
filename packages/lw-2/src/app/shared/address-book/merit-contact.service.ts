@@ -34,7 +34,7 @@ export class MeritContactService {
 
   public add(contact:MeritContact):Promise<any> {
     if (!contact.isValid()) {
-      return Promise.reject('Contact is not valid');
+      return Promise.reject(new Error('Contact is not valid'));
     }
 
     let address = contact.meritAddresses[0].address;
@@ -46,7 +46,7 @@ export class MeritContactService {
   public edit(contact:MeritContact):Promise<any> {
 
     if (!contact.isValid()) {
-      return Promise.reject('Contact is not valid');
+      return Promise.reject(new Error('Contact is not valid'));
     }
 
     let address = contact.meritAddresses[0].address;

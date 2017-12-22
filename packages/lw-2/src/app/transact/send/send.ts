@@ -77,7 +77,7 @@ export class SendView {
   }
 
   public ionViewDidLoad() {
-    this.updateHasFunds().then(() => {
+    return this.updateHasFunds().then(() => {
       this.contacts = [];
       this.initList();
       return this.initContactList();

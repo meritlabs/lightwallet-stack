@@ -52,9 +52,7 @@ export class FeeService {
       this.logger.log('feeLevelRate is', feeLevelRate)
       if (!feeLevelRate || !feeLevelRate.feePerKb) {
         this.logger.error('failed in getFeeLevel', feeLevelRate)
-        return Promise.reject({
-          message: `Could not get dynamic fee for level: ${feeLevel} on network ${network}`
-        });
+        return Promise.reject(new Error(`Could not get dynamic fee for level: ${feeLevel} on network ${network}`));
       }
       let feeRate = feeLevelRate.feePerKb;
       if (!levelData.fromCache) self.logger.debug('Dynamic fee: ' + feeLevel + '/' + network + ' ' + (feeLevelRate.feePerKb / 1000).toFixed() + ' Micros/B');
