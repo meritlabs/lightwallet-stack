@@ -12,6 +12,8 @@ import { Credentials } from 'src/lib/merit-wallet-client/lib/credentials';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
+import { Logger } from "merit/core/logger";
+
 
 @IonicPage({
   segment: 'vault/:vaultId/renew/confirmation',
@@ -35,11 +37,15 @@ export class VaultRenewConfirmationView {
     private bwc: BwcService,  
     private toastCtrl:MeritToastController,
     private renewVaultService: RenewVaultService,
+    private popupService: PopupService,
+    private logger: Logger,
   ){
     this.updatedVault = this.navParams.get('updatedVault');
     this.vault = this.navParams.get('vault');
     this.bitcore = this.bwc.getBitcore();
     this.walletClient = this.navParams.get('walletClient');
+
+    console.log(this.navParams.get('refreshCb'));
   }
 
   ionViewDidLoad() {
@@ -76,6 +82,12 @@ export class VaultRenewConfirmationView {
       return this.navCtrl.goToRoot({}).then(() => {
         return this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
       });
+    }).then(() => {
+      const refreshCb = this.navParams.get('refreshCb');
+      refreshCb();
+    }).catch((err) => {
+      this.logger.error('Error renewing vault: ', err);
+      this.popupService.ionicAlert('Cannot renew the vault.');
     });
   }
 }

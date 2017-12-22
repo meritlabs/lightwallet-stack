@@ -61,6 +61,8 @@ export class VaultRenewView {
     this.formData.vaultName = this.vault.name;
     this.formData.masterKey = '';
     this.checkCanConfirm();
+
+    console.log(this.navParams.get('refreshCb'));
   }
 
   checkCanConfirm() {
@@ -100,7 +102,8 @@ export class VaultRenewView {
       newVault.whitelist = _.map(whitelist, (a) => {return a.toBuffer()});
       newVault.masterKey = this.formData.masterKey;
       newVault.name = this.formData.vaultName;
-      this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });      
+      this.navCtrl.push('VaultRenewConfirmationView', 
+        { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient, refreshCb: this.navParams.get('refreshCb') });      
     });
   }
 
