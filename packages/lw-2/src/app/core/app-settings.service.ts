@@ -79,7 +79,7 @@ export class AppService {
         });
       }).catch((err) => {
         this.logger.error(err);
-        reject();
+        reject(err);
       });
     });
   }

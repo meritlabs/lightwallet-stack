@@ -73,7 +73,7 @@ export class MnemonicService {
         return resolve(walletClient);
       } catch (ex) {
         this.logger.info(ex);
-        return reject('Could not create: Invalid wallet recovery phrase'); // TODO getTextCatalog
+        return reject(new Error('Could not create: Invalid wallet recovery phrase')); // TODO getTextCatalog
       }
     })    
   }

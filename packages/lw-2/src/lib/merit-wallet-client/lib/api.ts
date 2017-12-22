@@ -823,8 +823,8 @@ export class API {
           script: input.script
         }, input.script, p2shScript));
 
-      tx.to(toAddress, amount)
-      tx.fee(fee)
+      tx.to(toAddress, amount);
+      tx.fee(fee);
 
       let sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, input.script);
       let inputScript = Bitcore.Script.buildEasySendIn(sig, input.script);

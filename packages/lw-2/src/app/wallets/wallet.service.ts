@@ -5,7 +5,6 @@ import { ConfigService } from 'merit/shared/config.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { PersistenceService } from 'merit/core/persistence.service';
-import { BwcError } from 'merit/core/bwc-error.model';
 import { RateService } from 'merit/transact/rate.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { PopupService } from 'merit/core/popup.service';
@@ -59,7 +58,6 @@ export class WalletService {
     private configService: ConfigService,
     private profileService: ProfileService,
     private persistenceService: PersistenceService,
-    private bwcErrorService: BwcError,
     private rateService: RateService,
     private popupService: PopupService,
     private touchidService: TouchIdService,
@@ -502,8 +500,7 @@ export class WalletService {
                 });
               });
             }).catch((err) => {
-              this.logger.warn(this.bwcErrorService.msg(err, 'Server Error')); //TODO
-              if (err == Errors.CONNECTION_ERROR || (err.message && err.message.match(/5../))) {
+              if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE) {
                 this.logger.info('Retrying history download in 5 secs...');
                 return Promise.delay(5000).then(() => {
                   return getNewTxs(newTxs, skip).then((txs) => {
@@ -511,6 +508,7 @@ export class WalletService {
                   });
                 });
               };
+              this.logger.warn(err);
               return reject(err);
             });
           });
@@ -834,7 +832,7 @@ export class WalletService {
           wallet.savePreferences(prefs, (err: any) => {
 
             if (err) {
-              this.popupService.ionicAlert(this.bwcErrorService.msg(err, 'Could not save preferences on the server')); //TODO Gettextcatalog
+              this.popupService.ionicAlert('Could not save preferences on the server'); //TODO Gettextcatalog
               return reject(err);
             }
 
@@ -881,7 +879,7 @@ export class WalletService {
   public startScan(wallet: MeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
       this.logger.debug('Scanning wallet ' + wallet.id);
-      if (!wallet.isComplete()) return reject();
+      if (!wallet.isComplete()) return reject(new Error('Wallet is not complete'));
 
       wallet.scanning = true;
       return Promise.resolve(wallet.startScan({
@@ -933,7 +931,7 @@ export class WalletService {
         walletClient.joinWallet(opts.secret, opts.myName || 'me', {
         }, (err: any) => {
           if (err) {
-            return reject(new Error(this.bwcErrorService.cb(err, 'Could not join wallet')));
+            return reject(new Error('Could not join wallet'));
           } else {
             return this.profileService.addAndBindWalletClient(walletClient, {
               bwsurl: opts.bwsurl
@@ -1085,7 +1083,7 @@ export class WalletService {
         this.events.publish('Local:Tx:Publish', publishedTxp);
         return resolve();
       }).catch((err) => {
-        return reject(this.bwcErrorService.msg(err));
+        return reject(err);
       });
     });
   }
@@ -1121,7 +1119,7 @@ export class WalletService {
             //$rootScope.$emit('Local/TxAction', wallet.id);
             return resolve(broadcastedTxp);
           }).catch((err) => {
-            return reject(this.bwcErrorService.msg(err));
+            return reject(err);
           });
         } else {
           this.logger.info("@@SB: ElseBlock");
@@ -1152,7 +1150,7 @@ export class WalletService {
             .then((broadcastedTxp: any) => {
               return resolve(broadcastedTxp);
             }).catch((err) => {
-              return reject(this.bwcErrorService.msg(err));
+              return reject(err);
             });
         });
       } else {
@@ -1169,7 +1167,7 @@ export class WalletService {
         }).then((signedTxp) => {
           return resolve(signedTxp);
         }).catch((err) => {
-          return reject(this.bwcErrorService.msg(err));
+          return reject(err);
         });
       };
     });

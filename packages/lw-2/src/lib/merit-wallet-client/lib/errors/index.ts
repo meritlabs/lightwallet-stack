@@ -1,27 +1,34 @@
+export class MwcError extends Error {
+  constructor(public code, public text) {
+    super(text);
+  }
+}
+
+
 export class Errors {
-  public static INVALID_BACKUP = {code: 'INVALID_BACKUP', text: 'Invalid backup'};
-  public static WALLET_DOES_NOT_EXIST = {code: 'WALLET_DOES_NOT_EXIST', text: 'Wallet does not exist'};
-  public static MISSING_PRIVATE_KEY = {code: 'MISSING_PRIVATE_KEY', text: 'Missing private keys to sign'};
-  public static ENCRYPTED_PRIVATE_KEY = {code: 'ENCRYPTED_PRIVATE_KEY', text: 'Private key is encrypted, cannot sign transaction'};
-  public static SERVER_COMPROMISED = {code: 'SERVER_COMPROMISED', text: 'Server response could not be verified'};
-  public static COULD_NOT_BUILD_TRANSACTION = {code: 'COULD_NOT_BUILD_TRANSACTION', text: 'Could not build the transaction'};
-  public static INSUFFICIENT_FUNDS = {code: 'INSUFFICIENT_FUNDS', text: 'Insufficient funds'};
-  public static CONNECTION_ERROR = {code: 'CONNECTION_ERROR', text: 'Connection error'};
-  public static NOT_FOUND = {code: 'NOT_FOUND', text: 'Not found'};
-  public static AUTHENTICATION_ERROR = {code: 'AUTHENTICATION_ERROR', text: 'Authentication Error'};
-  public static ECONNRESET_ERROR = {code: 'ECONNRESET_ERROR', text: 'Connection reset'};
-  public static WALLET_ALREADY_EXISTS = {code: 'WALLET_ALREADY_EXISTS', text: 'Wallet already exists'};
-  public static COPAYER_IN_WALLET = {code: 'COPAYER_IN_WALLET', text: 'Copayer in wallet'};
-  public static WALLET_FULL = {code: 'WALLET_FULL', text: 'Wallet is full'};
-  public static WALLET_NOT_FOUND = {code: 'WALLET_NOT_FOUND', text: 'Wallet not found'};
-  public static INSUFFICIENT_FUNDS_FOR_FEE = {code: 'INSUFFICIENT_FUNDS_FOR_FEE', text: 'Insufficient funds for fee'};
-  public static LOCKED_FUNDS = {code: 'LOCKED_FUNDS', text: 'Locked funds'};
-  public static DUST_AMOUNT = {code: 'DUST_AMOUNT', text: 'Amount below dust threshold'};
-  public static COPAYER_VOTED = {code: 'COPAYER_VOTED', text: 'Copayer already voted on this transaction proposal'};
-  public static NOT_AUTHORIZED = {code: 'NOT_AUTHORIZED', text: 'Not authorized'};
-  public static UNAVAILABLE_UTXOS = {code: 'UNAVAILABLE_UTXOS', text: 'Unavailable unspent outputs'};
-  public static TX_NOT_FOUND = {code: 'TX_NOT_FOUND', text: 'Transaction proposal not found'};
-  public static UNLOCK_CODE_INVALID = {code: 'UNLOCK_CODE_INVALID', text: 'Invalid unlock code'};
-  public static MAIN_ADDRESS_GAP_REACHED = {code: 'MAIN_ADDRESS_GAP_REACHED', text: 'Maximum number of consecutive addresses without activity reached'};
-  public static SERVER_UNAVAILABLE = {code: 'SERVER_UNAVAILABLE', text: 'Could not reach the server'};
+  public static INVALID_BACKUP = new MwcError('INVALID_BACKUP', 'Invalid backup');
+  public static WALLET_DOES_NOT_EXIST = new MwcError('WALLET_DOES_NOT_EXIST', 'Wallet does not exist');
+  public static MISSING_PRIVATE_KEY = new MwcError('MISSING_PRIVATE_KEY', 'Missing private keys to sign');
+  public static ENCRYPTED_PRIVATE_KEY = new MwcError('ENCRYPTED_PRIVATE_KEY', 'Private key is encrypted, cannot sign transaction');
+  public static SERVER_COMPROMISED = new MwcError('SERVER_COMPROMISED', 'Server response could not be verified');
+  public static COULD_NOT_BUILD_TRANSACTION = new MwcError('COULD_NOT_BUILD_TRANSACTION', 'Could not build the transaction');
+  public static INSUFFICIENT_FUNDS = new MwcError('INSUFFICIENT_FUNDS', 'Insufficient funds');
+  public static CONNECTION_ERROR = new MwcError('CONNECTION_ERROR', 'Connection error');
+  public static NOT_FOUND = new MwcError('NOT_FOUND', 'Not found');
+  public static AUTHENTICATION_ERROR = new MwcError('AUTHENTICATION_ERROR', 'Authentication Error');
+  public static ECONNRESET_ERROR = new MwcError('ECONNRESET_ERROR', 'Connection reset');
+  public static WALLET_ALREADY_EXISTS = new MwcError('WALLET_ALREADY_EXISTS', 'Wallet already exists');
+  public static COPAYER_IN_WALLET = new MwcError('COPAYER_IN_WALLET', 'Copayer in wallet');
+  public static WALLET_FULL = new MwcError('WALLET_FULL', 'Wallet is full');
+  public static WALLET_NOT_FOUND = new MwcError('WALLET_NOT_FOUND', 'Wallet not found');
+  public static INSUFFICIENT_FUNDS_FOR_FEE = new MwcError('INSUFFICIENT_FUNDS_FOR_FEE', 'Insufficient funds for fee');
+  public static LOCKED_FUNDS = new MwcError('LOCKED_FUNDS', 'Locked funds');
+  public static DUST_AMOUNT = new MwcError('DUST_AMOUNT', 'Amount below dust threshold');
+  public static COPAYER_VOTED = new MwcError('COPAYER_VOTED', 'Copayer already voted on this transaction proposal');
+  public static NOT_AUTHORIZED = new MwcError('NOT_AUTHORIZED', 'Not authorized');
+  public static UNAVAILABLE_UTXOS = new MwcError('UNAVAILABLE_UTXOS', 'Unavailable unspent outputs');
+  public static TX_NOT_FOUND = new MwcError('TX_NOT_FOUND', 'Transaction proposal not found');
+  public static UNLOCK_CODE_INVALID = new MwcError('UNLOCK_CODE_INVALID', 'Invalid unlock code');
+  public static MAIN_ADDRESS_GAP_REACHED = new MwcError('MAIN_ADDRESS_GAP_REACHED', 'Maximum number of consecutive addresses without activity reached');
+  public static SERVER_UNAVAILABLE = new MwcError('SERVER_UNAVAILABLE', 'Could not reach the server');
 }
