@@ -49,9 +49,11 @@ export class EasyReceiveService {
   }
 
   public getPendingReceipts():Promise<Array<EasyReceipt>> {
-    return this.persistanceService.getPendingsEasyReceipts().map((receipt) => {
-      return new EasyReceipt(receipt);
-    })
+    return this.persistanceService.getPendingsEasyReceipts()
+      .then(receipts => receipts || [])
+      .map((receipt) => {
+        return new EasyReceipt(receipt);
+      });
   }
 
   public acceptEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input, destinationAddress:any):Promise<void>  {
