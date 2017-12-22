@@ -83,7 +83,7 @@ export class EditWalletView {
           text: 'Delete',
           handler: () => {
             this.profileService.deleteWalletClient(this.wallet).then(() => {
-              this.app.getRootNav().setRoot('WalletsView');
+              this.app.getRootNavs[0].setRoot('WalletsView');
             }).catch((err) => {
               this.toastCtrl.create({
                 message: JSON.stringify(err),
