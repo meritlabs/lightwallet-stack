@@ -159,7 +159,7 @@ export class MeritLightWallet {
 
   private registerMwcErrorHandler() {
     this.events.subscribe(MWCErrors.AUTHENTICATION, () => {
-      this.app.getRootNav().setRoot('NoSessionView');
+      this.app.getRootNavs[0].setRoot('NoSessionView');
     });
   }
 
