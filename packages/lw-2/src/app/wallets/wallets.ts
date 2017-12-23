@@ -317,6 +317,7 @@ export class WalletsView {
       if (data.txn.spent) {
         this.logger.debug('Got a spent easyReceipt. Removing from pending receipts.');
         return this.easyReceiveService.deletePendingReceipt(receipt)
+          .then(this.showSpentEasyReceiptAlert.bind(this))
           .then(this.processPendingEasyReceipts.bind(this));
       }
 
@@ -328,6 +329,7 @@ export class WalletsView {
       if (receipt.blockTimeout < data.txn.confirmations) {
         this.logger.debug('Got an expired easyReceipt. Removing from pending receipts.');
         return this.easyReceiveService.deletePendingReceipt(receipt)
+          .then(this.showExpiredEasyReceiptAlert.bind(this))
           .then(this.processPendingEasyReceipts.bind(this));
       }
 
@@ -399,6 +401,27 @@ export class WalletsView {
     }).present();
   }
 
+  private showSpentEasyReceiptAlert() {
+    this.alertController.create({
+      title: 'Uh oh',
+      message: 'It seems that the Merit from this link has already been redeemed!',
+      buttons: [
+        'Ok'
+      ]
+    }).present();
+  }
+
+  private showExpiredEasyReceiptAlert() {
+    this.alertController.create({
+      title: 'Uh oh',
+      subTitle: 'It seems that this transaction has expired. ',
+      message: 'The Merit from this link has not been lost! ' +
+               'You can ask the sender to make a new transaction.',
+      buttons: [
+        'Ok'
+      ]
+    }).present();
+  }
 
   private acceptEasyReceipt(receipt: EasyReceipt, data: any): Promise<any> {
 
@@ -415,7 +438,7 @@ export class WalletsView {
         this.toastCtrl.create({
           message: "There was an error retrieving your incoming payment.",
           cssClass: ToastConfig.CLASS_ERROR
-        });
+        }).present();
       });
     });
   }
@@ -435,7 +458,6 @@ export class WalletsView {
           message: err.text || 'There was an error rejecting the Merit',
           cssClass: ToastConfig.CLASS_ERROR
         }).present();
-        Promise.reject(err);
       });
     });
   }
