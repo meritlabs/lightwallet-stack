@@ -104,7 +104,7 @@ export class EasyReceiveService {
     return this.persistanceService.deletePendingEasyReceipt(receipt);
   }
 
-  private spendEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input, destinationAddress:any):Promise<void> {
+  private spendEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input, destinationAddress:string):Promise<void> {
     let opts:any = {}; 
     return wallet.buildEasySendRedeemTransaction(
       input,
