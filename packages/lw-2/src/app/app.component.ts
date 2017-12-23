@@ -84,7 +84,7 @@ export class MeritLightWallet {
       // If the user has credentials and a profile, then let's send them to the transact
       // view
 
-      return this.deepLinkService.getBranchData().then((data) => {
+      return this.deepLinkService.initBranch((data) => {
         this.logger.info("Branch Data: ", data);
         // If the branch params contain the minimum params needed for an easyReceipt, then
         // let's validate and save them. 
@@ -105,14 +105,14 @@ export class MeritLightWallet {
                 // User is a normal user and needs to be thrown an easyReceive modal.
                 this.rootComponent = 'TransactView';
               }
-            } else {
-                this.rootComponent = (profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView';
             }
           }).catch((err) => {
             this.logger.warn("Error validating and saving easySend params: ", err)
             this.rootComponent = (profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView';
           });
         }
+      }).then(() => {
+        this.rootComponent = (profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView';
       }).catch((err) => {
         this.logger.error(err);
       })
