@@ -1235,13 +1235,14 @@ export class API {
           return reject(err);
         }
 
+        let errObj; // not an instance of Error
         try {
-          err = JSON.parse(err.response.text);
+          errObj = JSON.parse(err.response.text);
         } catch (e) {
           return reject(err);
         }
 
-        if (err.code == Errors.AUTHENTICATION_ERROR.code) {
+        if (errObj.code == Errors.AUTHENTICATION_ERROR.code) {
           if (!secondRun) { //trying to restore session one time
             return this._doRequest('post', '/v1/login', {}, null, true).then(() => {
               return this._doRequest(method, url, args, useSession, true);
@@ -1257,7 +1258,7 @@ export class API {
           }
         }
 
-        if (err.code && Errors[err.code]) err = Errors[err.code];
+        if (errObj.code && Errors[errObj.code]) return reject(Errors[errObj.code]);
         return reject(err);
       });
     });
