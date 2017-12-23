@@ -2135,6 +2135,7 @@ WalletService.prototype.createTx = function(opts, cb) {
           return cb(null, address);
         });
       } else {
+        console.log('creating new address');
         return cb(null, wallet.createAddress(true));
       }
     }
@@ -2174,12 +2175,12 @@ WalletService.prototype.createTx = function(opts, cb) {
               changeAddress = address;
               // TODO: get get signed referral id
               // Unlock the address used for receiving change.
-              const refid = '';
-              self.unlockAddress(refid, function(err, result){
-                // If the change address is unlocked already, we can continue with
-                // the creation of the TXN.
-                if (err && (err != Errors.UNLOCKED_ALREADY)) return next(err);
-              });
+              // const refid = '';
+              // self.unlockAddress(refid, function(err, result){
+              //   // If the change address is unlocked already, we can continue with
+              //   // the creation of the TXN.
+              //   if (err && (err != Errors.UNLOCKED_ALREADY)) return next(err);
+              // });
               next();
             });
           },

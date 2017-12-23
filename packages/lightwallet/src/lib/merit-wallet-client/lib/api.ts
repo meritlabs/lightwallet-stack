@@ -2206,10 +2206,39 @@ export class API {
   signAddressAndUnlock(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
 
-    return this.sendReferral(opts).then((refid: string) => {
-      return this._doPostRequest('/v1/addresses/unlock/', { address: opts.address, parentAddress: opts.parentAddress, refid });
-    });
+    return this.sendReferral(opts).then((refid: string) =>
+      this._doPostRequest('/v1/addresses/unlock/', { address: opts.address, parentAddress: opts.parentAddress, refid })
+        .then(() => refid)
+    );
   };
+
+  /**
+   * Sign and unlock address with root wallet address if it's not beaconed yet
+   * @param {Address} address Address object to sign and beacon
+   */
+  private _signAddressAndUnlockWithRoot(address: any): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    if (address.signed && address.refid) {
+      return Promise.resolve(address.refid);
+    }
+
+    // try to sign address and unlock it
+    // getDerivedXPrivKey gives a key derived from xPrivKey to get corresponging privkey to pubkey by path
+    const signPrivKey = this.credentials.getDerivedXPrivKey('').deriveChild(address.path).privateKey;
+
+    const unlockOpts = {
+      // privKey.toPublicKey().toAddress() and privKey.toAddress() gives two different strings, but daemon treats them as same string ???
+      parentAddress: Bitcore.PrivateKey(this.credentials.walletPrivKey, this.credentials.network).toPublicKey().toAddress().toString(),
+      address: address.address,
+      pubkey: address.publicKeys[0],
+      addressType: 1,
+      signPrivKey,
+      network: address.network,
+    };
+
+    return this.signAddressAndUnlock(unlockOpts);
+  }
 
   /**
    * Create a new address
@@ -2232,22 +2261,8 @@ export class API {
           return reject(Errors.SERVER_COMPROMISED);
         }
 
-        // try to sign address and unlock it
-        // getDerivedXPrivKey gives a key derived from xPrivKey to get corresponging privkey to pubkey by path
-        const signPrivKey = this.credentials.getDerivedXPrivKey('').deriveChild(address.path).privateKey;
-
-        const unlockOpts = {
-          // privKey.toPublicKey().toAddress() and privKey.toAddress() gives two different strings, but daemon treats them as same string ???
-          parentAddress: Bitcore.PrivateKey(this.credentials.walletPrivKey, this.credentials.network).toPublicKey().toAddress().toString(),
-          address: address.address,
-          pubkey: address.publicKeys[0],
-          addressType: 1,
-          signPrivKey,
-          network: address.network,
-        };
-
-        return this.signAddressAndUnlock(unlockOpts)
-          .then(res => resolve(address));
+        return this._signAddressAndUnlockWithRoot(address)
+          .then(() => resolve(address));
       });
     });
   };
@@ -2547,28 +2562,33 @@ export class API {
   broadcastTxProposal(txp): Promise<any> {
     this.log.warn("Inside broadCastTxProposal");
     $.checkState(this.credentials && this.credentials.isComplete());
-    return this.getPayPro(txp).then((paypro) => {
-      if (paypro) {
-        this.log.warn("WE ARE PAYPRO");
-        let t = Utils.buildTx(txp);
-        this._applyAllSignatures(txp, t);
 
-        return PayPro.send({
-          http: this.payProHttp,
-          url: txp.payProUrl,
-          amountMicros: txp.amount,
-          refundAddr: txp.changeAddress.address,
-          merchant_data: paypro.merchant_data,
-          rawTx: t.serialize({
-            disableSmallFees: true,
-            disableLargeFees: true,
-            disableDustOutputs: true
-          }),
-        });
-      }
-      return Promise.resolve();
-    }).then(() => {
-      return this._doBroadcast(txp);
+
+    return this._signAddressAndUnlockWithRoot(Bitcore.Address.fromString(txp.changeAddress.address))
+      .then(() => {
+        this.getPayPro(txp).then((paypro) => {
+        if (paypro) {
+          this.log.warn("WE ARE PAYPRO");
+          let t = Utils.buildTx(txp);
+          this._applyAllSignatures(txp, t);
+
+          return PayPro.send({
+            http: this.payProHttp,
+            url: txp.payProUrl,
+            amountMicros: txp.amount,
+            refundAddr: txp.changeAddress.address,
+            merchant_data: paypro.merchant_data,
+            rawTx: t.serialize({
+              disableSmallFees: true,
+              disableLargeFees: true,
+              disableDustOutputs: true
+            }),
+          });
+        }
+        return Promise.resolve();
+      }).then(() => {
+        return this._doBroadcast(txp);
+      });
     });
   };
 
