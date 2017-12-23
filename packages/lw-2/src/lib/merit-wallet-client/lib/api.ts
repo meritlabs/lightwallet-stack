@@ -286,7 +286,6 @@ export class API {
    * @param {Object} body
    */
   private _parseError = (body: any): Error => {
-    this.log.warn('parsing Error');
     if (!body) return;
 
     if (_.isString(body)) {
@@ -833,7 +832,6 @@ export class API {
 
       // Make sure the tx can be serialized
       tx.serialize();
-      this.log.warn(tx);
 
     } catch (ex) {
       this.log.error('Could not build transaction from private key ' + ex.toString());
