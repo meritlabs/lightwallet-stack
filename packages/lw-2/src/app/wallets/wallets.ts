@@ -423,29 +423,22 @@ export class WalletsView {
 
   private rejectEasyReceipt(receipt: EasyReceipt, data): Promise<any> {
 
-    return new Promise((resolve, reject) => {
+    return this.profileService.getWallets().then((wallets) => {
 
-      this.profileService.getWallets().then((wallets) => {
+      //todo implement wallet selection UI 
+      let wallet = wallets[0];
+      if (!wallet) return Promise.reject(new Error('Could not retrieve wallet.'));
 
-        //todo implement wallet selection UI 
-        let wallet = wallets[0];
-        if (!wallet) return reject(new Error('Could not retrieve wallet.'));
-
-        this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data).then(() => {
-          this.logger.info('Easy send returned');
-          resolve();
-        }).catch((err) => {
-          this.toastCtrl.create({
-            message: err.text || 'There was an error rejecting the Merit',
-            cssClass: ToastConfig.CLASS_ERROR
-          }).present();
-          reject(err);
-        });
-
+      return this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data).then(() => {
+        this.logger.info('Easy send returned');
+      }).catch((err) => {
+        this.toastCtrl.create({
+          message: err.text || 'There was an error rejecting the Merit',
+          cssClass: ToastConfig.CLASS_ERROR
+        }).present();
+        Promise.reject(err);
       });
     });
-
-
   }
 
   private updateNetworkValue(wallets: Array<any>): Promise<any> {

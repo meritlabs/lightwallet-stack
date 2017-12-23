@@ -62,18 +62,18 @@ export class EasyReceiveService {
 
   
   public rejectEasyReceipt(wallet, receipt:EasyReceipt, input):Promise<any> {
-    return new Promise((resolve, reject) => {
-      try {
-        let senderAddress = this.bwcService.getBitcore().PublicKey
+    return Promise.resolve(
+      this.bwcService.getBitcore().PublicKey
         .fromString(receipt.senderPublicKey, 'hex')
         .toAddress(wallet.network)
-        .toString();
-
-        return this.spendEasyReceipt(receipt, wallet, input, senderAddress);
-      } catch (e) {
-        return reject(e);
-      } 
-    })
+        .toString()
+    ).then((senderAddress) => {
+      return this.spendEasyReceipt(receipt, wallet, input, senderAddress);
+    }).catch((err) => {
+      return this.persistanceService.deletePendingEasyReceipt(receipt).then(() => {
+        return Promise.reject(err);
+      })
+    });
   }
 
   public validateEasyReceiptOnBlockchain(receipt:EasyReceipt, password = '', network = this.configService.getDefaults().network.name) {
