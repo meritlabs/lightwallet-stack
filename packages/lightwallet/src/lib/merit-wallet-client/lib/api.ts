@@ -746,7 +746,7 @@ export class API {
         let pubKey = Bitcore.PublicKey.fromString(addr.publicKeys[0]);
 
         // {key, secret}
-        let network = opts.network || DEFAULT_NET;
+        let network = opts.network || Common.Constants.DEFAULT_NET;;
         let rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
 
         let pubKeys = [
@@ -1784,7 +1784,7 @@ export class API {
         $.shouldBeObject(opts);
       }
 
-      let network = opts.network || DEFAULT_NET;
+      let network = opts.network || Common.Constants.DEFAULT_NET;;
       if (!_.includes(['testnet', 'livenet'], network)) {
         return reject(new Error('Invalid network'));
       }

@@ -27,7 +27,8 @@ export class EasySendService {
       passphrase: ''
     };
 
-    return wallet.buildEasySendScript(opts).then((easySend) => {
+    return wallet.buildEasySendScript(opts).then(easySend => {
+
       let unlockScriptOpts = {
         parentAddress: signPrivKey.publicKey.toAddress(),
         pubkey: pubkey.toString(), // sign pubkey used to verify signature
@@ -37,10 +38,12 @@ export class EasySendService {
         network: opts.network
       };
       return wallet.signAddressAndUnlock(unlockScriptOpts).then(() => {
+        const privKey = this.bitcore.PrivateKey.forEasySend(easySend.secret, opts.passphrase, opts.network);
+
         let unlockRecipientOpts = {
-          parentAddress: easySend.script.toAddress().toString(),  // short-circuit
-          pubkey: pubkey.toString(),// sign pubkey used to verify signature
-          signPrivKey,
+          parentAddress: pubkey.toAddress().toString(),  // short-circuit
+          pubkey: privKey.publicKey.toString(),// sign pubkey used to verify signature
+          signPrivKey: privKey,
           address: easySend.receiverPubKey.toAddress(), // not typechecked yet
           addressType: 1, // script address
           network: opts.network
@@ -61,7 +64,7 @@ export class EasySendService {
       const msg1: string = `I just sent you ${amountMrt} Merit.  Merit is a new Digital Currency.  `
       const msg2: string = url;
 
-      // HACK: 
+      // HACK:
       msg = msg2;
     }
     return Promise.resolve(this.socialSharing.shareViaSMS(msg, phoneNumber)).catch((err) => {
