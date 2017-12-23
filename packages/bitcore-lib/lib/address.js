@@ -66,9 +66,9 @@ function Address(data, network, type) {
     throw new TypeError('Second argument must be "livenet" or "testnet".');
   }
 
-  if (type && 
-      (type !== Address.PayToPublicKeyHash && 
-       type !== Address.PayToScriptHash && 
+  if (type &&
+      (type !== Address.PayToPublicKeyHash &&
+       type !== Address.PayToScriptHash &&
        type !== Address.ParameterizedPayToScriptHash)) {
 
     throw new TypeError('Third argument must be "pubkeyhash", "scripthash", or "paramscripthash" .');
@@ -485,6 +485,15 @@ Address.prototype.toBuffer = function() {
   var buf = Buffer.concat([version, this.hashBuffer]);
   return buf;
 };
+
+/**
+ * Will return a buffer representation of the address without network byte prefix
+ *
+ * @returns {Buffer} Merit address buffer
+ */
+Address.prototype.toBufferLean = function() {
+  return this.hashBuffer;
+}
 
 /**
  * @returns {Object} A plain object with the address information

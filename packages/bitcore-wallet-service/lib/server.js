@@ -93,7 +93,7 @@ WalletService.initialize = function(opts, cb) {
   blockchainExplorer = opts.blockchainExplorer;
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
   localMeritDaemon = new LocalDaemon(opts.node);
-  log = opts.node.log; 
+  log = opts.node.log;
   if (opts.request)
     request = opts.request;
 
@@ -191,7 +191,7 @@ WalletService.getInstance = function(opts) {
     }
   }
 
-  // ToDo: Limit the number of services in memory at any given time.  Or, perhaps, destroy instances.  
+  // ToDo: Limit the number of services in memory at any given time.  Or, perhaps, destroy instances.
   var server = new WalletService();
   server._setClientVersion(opts.clientVersion);
   return server;
@@ -322,15 +322,14 @@ WalletService.prototype.logout = function(opts, cb) {
  * @param {string} opts.supportBIP44AndP2PKH[=true] - Client supports BIP44 & P2PKH for new wallets.
  */
 WalletService.prototype.createWallet = function(opts, cb) {
-  var self = this,
-    pubKey,
-    unlockAddress;
+  var self = this, pubKey;
 
-  if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey', 'beacon'], cb)) return;
+  if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey', 'parentAddress'], cb)) return;
 
-  // We should short-circuit the request if there is no unlock code.
+  // We should short-circuit the request if there is no parent address.
   // This belt-and-suspenders check will save time and latency.
-  if (_.isEmpty(opts.beacon)) return cb(Errors.UNLOCK_CODE_INVALID);
+  if (_.isEmpty(opts.parentAddress))
+    return cb(new ClientError('Parent address is empty'));
 
   if (_.isEmpty(opts.name)) return cb(new ClientError('Invalid wallet name'));
   if (!Wallet.verifyCopayerLimits(opts.m, opts.n))
@@ -351,34 +350,10 @@ WalletService.prototype.createWallet = function(opts, cb) {
     return cb(new ClientError('Invalid public key'));
   };
 
-  try {
-    unlockAddress = new Bitcore.Address(pubKey, opts.network);
-  } catch (ex) {
-    return cb(new ClientError('Unable to get address from public key'));
-  };
-
   var newWallet;
-  var unlocked = false;
-  var shareCode = "";
-  var codeHash = "";
+  var unlocked = true;
 
   async.series([
-    function(acb) {
-      var unlockParams = {
-        unlockCode: opts.beacon, 
-        address: unlockAddress
-      }
-      self.unlockAddress(unlockParams, function(err, result){
-        if (err) {
-          return acb(err);
-        }
-
-        unlocked = true;
-        shareCode = result.shareCode;
-        codeHash = result.codeHash;
-        return acb(null);
-      });
-    },
     function(acb) {
 
       if (!opts.id)
@@ -399,12 +374,10 @@ WalletService.prototype.createWallet = function(opts, cb) {
         network: opts.network,
         pubKey: pubKey.toString(),
         singleAddress: !!opts.singleAddress,
-        derivationStrategy: derivationStrategy,
-        addressType: addressType,
-        beacon: opts.beacon,
-        unlocked: unlocked,
-        shareCode: shareCode,
-        codeHash: codeHash,
+        derivationStrategy,
+        addressType,
+        unlocked,
+        parentAddress: opts.parentAddress,
       });
       self.storage.storeWallet(wallet, function(err) {
         log.debug('Wallet created', wallet.id, opts.network);
@@ -414,8 +387,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
     }
   ], function(err) {
     var newWalletId = newWallet ? newWallet.id : null;
-    var newWalletShareCode = newWallet ? newWallet.shareCode : null;
-    return cb(err, newWalletId, newWalletShareCode, codeHash);
+    return cb(err, newWalletId);
   });
 };
 
@@ -543,48 +515,42 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
 /**
  * Unlocks an address with an unlock code.
  * @param {Object} opts
- * @param {String} opts.unlockCode The unlock code used to unlock this wallet.
- * @param {String} opts.address The address to unlock with the above unlock code.
- * @param {String} opts.network The relevant network to execute this command (livenet/testnet)
+ * @param {string} opts.refid           - signed referral id
+ * @param {string} opts.address         - address to unlock
+ * @param {string} opts.parentAddress   - parent address used to unlock this one
+ *
+ * @returns {Object} wallet
  */
-
 WalletService.prototype.unlockAddress = function (opts, cb) {
   var self = this;
-  opts = opts || {};
 
-  if (!opts.unlockCode) {
-    cb(new ClientError('No unlockCode provided.'));
+  if (!Utils.isHash(opts.refid) || !opts.parentAddress) {
+    return cb(Errors.INVALID_REFERRAL);
   }
 
-  if (!opts.address) {
-    cb(new ClientError('No unlock address provided.'));
-  }
-  
-  var unlocked = false;
-  localMeritDaemon.unlockWallet(opts.unlockCode, opts.address.toString(), function(errMsg, result) {
+  console.log('refid', opts.refid);
 
-    if (errMsg)  {
-      // TODO: Use Error codes instead of string matching.
-      // TODO: Even sooner, we should have more descriptive error states coming back
-      // from the blockchain explorer.
-      log.warn("Got an error in unlock: " + errMsg);
-      if (_.includes(errMsg.message, 'provided code does not exist in the chain')) {
-        return cb(Errors.UNLOCK_CODE_INVALID);
-      } 
-      if (_.includes(errMsg.message, 'unlockwalletwithaddress: Address is already beaconed.')) {
-        return cb(Errors.UNLOCKED_ALREADY);
-      } 
-      // An error we don't know about.
-      log.warn("Received unknown error while unlocking wallet: ", errMsg.message);
-      return cb(errMsg.message);
-    }
+  self.storage.fetchAddress(opts.address, function(err, address) {
+    if (err) return cb(Errors.INVALID_ADDRESS);
 
-    unlocked = true;
-    var shareCode = result.result.referralcode || "";
-    var codeHash = result.result.codehash || "";
+    address.refid = opts.refid;
+    address.signed = true;
+    address.parentAddress = opts.parentAddress;
 
-    return cb(null, {unlocked: unlocked, shareCode: shareCode, codeHash: codeHash});
+    self.storage.storeAddress(address, function(err, address) {
+      if (err) return cb(err.message);
+
+      cb(null, address);
+    });
   });
+};
+
+/**
+ * Broadcasts raw referral.
+ * @param {string} rawReferral - Raw referral data.
+ */
+WalletService.prototype.sendReferral = function(rawReferral, cb) {
+  localMeritDaemon.sendReferral(rawReferral, cb);
 };
 
 /**
@@ -1063,27 +1029,19 @@ WalletService.prototype.createAddress = function(opts, cb) {
 
   opts = opts || {};
 
+  // create new unsigned address.
   function createNewAddress(wallet, cb) {
     var address = wallet.createAddress(false);
 
-    var unlockParams = {
-      unlockCode: wallet.shareCode,
-      address: address.address
-    }
-    self.unlockAddress(unlockParams, function(err, result){
-      if (err && err != Errors.UNLOCKED_ALREADY) return cb(err);
-      
-      self.storage.storeAddressAndWallet(wallet, address, function(err) {
-        if (err) return cb(err);
-  
-        self._notify('NewAddress', {
-          address: address.address,
-        }, function() {
-          return cb(null, address);
-        });
+    self.storage.storeAddressAndWallet(wallet, address, function(err) {
+      if (err) return cb(err);
+
+      self._notify('NewAddress', {
+        address: address.address,
+      }, function() {
+        return cb(null, address);
       });
     });
-    
   };
 
   function getFirstAddress(wallet, cb) {
@@ -1266,7 +1224,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
       });
     },
     function(next) {
-      // Let's filter through and classify all outputs.  
+      // Let's filter through and classify all outputs.
       // We specifically want to know if they are change or belong to us.
       var indexedAddresses = _.keyBy(allAddresses, 'address');
       _.each(allUtxos, function(utxo){
@@ -1314,7 +1272,7 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
     totalAmount: _.sumBy(utxos, 'micros'),
     lockedAmount: _.sumBy(_.filter(utxos, 'locked'), 'micros'),
     // We believe it makes sense to show change as confirmed.  This is sensical because a transaction
-    // will either be rejected or accepted in its entirety.  (Eg. It is not that some Vouts will be 
+    // will either be rejected or accepted in its entirety.  (Eg. It is not that some Vouts will be
     // accepted while others will be denied.)
     totalConfirmedAmount: _.sumBy(
       _.filter(utxos, function(utxo) {
@@ -1854,7 +1812,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         if (changeAmount > 0 && changeAmount <= dustThreshold) {
           log.debug('Change below dust threshold (' + Utils.formatAmountInMrt(dustThreshold) + '). Incrementing fee to remove change.');
           // Remove dust change by incrementing fee
-      
+
           if(!changeAmount) {
             changeAmount = 0;
           }
@@ -2167,7 +2125,7 @@ WalletService.prototype.createTx = function(opts, cb) {
     if (wallet.singleAddress) {
       self.storage.fetchAddresses(self.walletId, function(err, addresses) {
         if (err) return cb(err);
-        if (_.isEmpty(addresses)) return cb(new ClientError('The wallet has no addresses'));
+        if (_.isEmpty(addresses)) return cb(new ClientError('The wallet has no unlocked addresses'));
         return cb(null, _.head(addresses));
       });
     } else {
@@ -2214,13 +2172,11 @@ WalletService.prototype.createTx = function(opts, cb) {
             getChangeAddress(wallet, function(err, address) {
               if (err) return next(err);
               changeAddress = address;
+              // TODO: get get signed referral id
               // Unlock the address used for receiving change.
-              var unlockParams = {
-                unlockCode: wallet.shareCode,
-                address: changeAddress.address
-              }
-              self.unlockAddress(unlockParams, function(err, result){
-                // If the change address is unlocked already, we can continue with 
+              const refid = '';
+              self.unlockAddress(refid, function(err, result){
+                // If the change address is unlocked already, we can continue with
                 // the creation of the TXN.
                 if (err && (err != Errors.UNLOCKED_ALREADY)) return next(err);
               });
@@ -3204,12 +3160,12 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
             return next(null, []);
           }
 
-          // TODO: Re-evaluate this because we are already paginating our gets. 
+          // TODO: Re-evaluate this because we are already paginating our gets.
           // Fetch all proposals in [t - 7 days, t + 1 day]
           var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
           var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
 
-          
+
           async.parallel([
 
             function(done) {
@@ -3239,7 +3195,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
         if (!res.txs) {
           var finalTxs = decorate(wallet, [], addresses, [], []);
-          res.txs = { 
+          res.txs = {
             fromCache: false
           };
         } else {
@@ -3548,7 +3504,7 @@ WalletService.prototype.getVaults = function(opts, cb) {
 
 WalletService.prototype.createVault = function(opts, cb) {
   const self = this;
-  
+
   opts.status = Bitcore.Vault.Vault.VaultStates.PENDING;
 
   let vaultId = '';
@@ -3592,7 +3548,7 @@ WalletService.prototype.createVault = function(opts, cb) {
         },  function(err, txp) {
           self.storage.updateVault(self.copayerId, toStore, function(err, result) {
             if (err) return cb(err);
-  
+
             return next();
           });
         });
@@ -3608,7 +3564,7 @@ WalletService.prototype.createVault = function(opts, cb) {
 
 WalletService.prototype.getVaultTxHistory = function(opts, cb) {
   var self = this;
-  
+
   function decorate(txs, addresses, proposals, notes) {
     var indexedAddresses = _.keyBy(addresses, 'address');
     var indexedProposals = _.keyBy(proposals, 'txid');
@@ -3856,7 +3812,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 
   this.storage.fetchVaultByCopayerId(self.copayerId, opts.id, function (err, vault) {
     console.log(vault.address);
-    
+
     var address = new Bitcore.Address(vault.address).toString();
     console.log(address);
     var addresses = [address];
@@ -3880,12 +3836,12 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
             return next(null, []);
           }
 
-          // TODO: Re-evaluate this because we are already paginating our gets. 
+          // TODO: Re-evaluate this because we are already paginating our gets.
           // Fetch all proposals in [t - 7 days, t + 1 day]
           var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
           var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
 
-          
+
           async.parallel([
 
             function(done) {
@@ -3915,7 +3871,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 
         if (!res.txs) {
           var finalTxs = decorate([], addresses, [], []);
-          res.txs = { 
+          res.txs = {
             fromCache: false
           };
         } else {
@@ -3978,7 +3934,7 @@ WalletService.prototype.renewVault = function(opts, cb) {
 
         self.storage.updateVault(self.copayerId, toStore, function(err, result) {
           if (err) return cb(err);
-  
+
           return next();
         });
       });

@@ -1,36 +1,54 @@
 import * as Promise from 'bluebird';
 import { Injectable } from '@angular/core';
+import { BwcService } from 'merit/core/bwc.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 
 @Injectable()
 export class EasySendService {
+  private bitcore: any;
+
   constructor(
-    private socialSharing: SocialSharing
-  ) {}
+    private socialSharing: SocialSharing,
+    private bwcService: BwcService
+  ) {
+    this.bitcore = this.bwcService.getBitcore();
+  }
+
   public createEasySendScriptHash(wallet: MeritWalletClient): Promise<EasySend> {
+    const signPrivKey = this.bitcore.PrivateKey(wallet.credentials.walletPrivKey, wallet.network);
+    const pubkey = signPrivKey.toPublicKey();
 
     // TODO: get a passphrase from the user
     let opts = {
       network: wallet.network,
-      unlockCode: wallet.shareCode,
+      parentAddress: pubkey.toAddress().toString(),
       passphrase: ''
     };
 
-    return wallet.buildEasySendScript(opts).then((easySend) => {
+    return wallet.buildEasySendScript(opts).then(easySend => {
+
       let unlockScriptOpts = {
-        unlockCode: wallet.shareCode,
-        address: easySend.script.toAddress().toString(), // not typechecked yet
+        parentAddress: signPrivKey.publicKey.toAddress(),
+        pubkey: pubkey.toString(), // sign pubkey used to verify signature
+        signPrivKey,
+        address: easySend.script.toAddress(), // not typechecked yet
+        addressType: 2, // script address
         network: opts.network
       };
-      return wallet.unlockAddress(unlockScriptOpts).then(() => {
+      return wallet.signAddressAndUnlock(unlockScriptOpts).then(() => {
+        const privKey = this.bitcore.PrivateKey.forEasySend(easySend.secret, opts.passphrase, opts.network);
+
         let unlockRecipientOpts = {
-          unlockCode: wallet.shareCode,
-          address: easySend.receiverPubKey.toAddress().toString(), // not typechecked yet
+          parentAddress: pubkey.toAddress().toString(),  // short-circuit
+          pubkey: privKey.publicKey.toString(),// sign pubkey used to verify signature
+          signPrivKey: privKey,
+          address: easySend.receiverPubKey.toAddress(), // not typechecked yet
+          addressType: 1, // script address
           network: opts.network
         };
-        return wallet.unlockAddress(unlockRecipientOpts);
+        return wallet.signAddressAndUnlock(unlockRecipientOpts);
       }).then(() => {
         return Promise.resolve(easySend);
       });
@@ -46,7 +64,7 @@ export class EasySendService {
       const msg1: string = `I just sent you ${amountMrt} Merit.  Merit is a new Digital Currency.  `
       const msg2: string = url;
 
-      // HACK: 
+      // HACK:
       msg = msg2;
     }
     return Promise.resolve(this.socialSharing.shareViaSMS(msg, phoneNumber)).catch((err) => {

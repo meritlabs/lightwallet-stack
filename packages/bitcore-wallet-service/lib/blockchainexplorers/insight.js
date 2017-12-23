@@ -21,13 +21,13 @@ function Insight(opts) {
 
 var _parseErr = function(err, res) {
   // The 'err' can be misleading because it's not really the error returned from insight.
-  // Instead, it is an error in communicating with insight.  
+  // Instead, it is an error in communicating with insight.
   if (err) {
     log.warn('Network error connecting to blockchain explorer: ', err);
     return "Error connecting to the blockchain explorer.";
   }
   log.warn("Insight " + res.request.href + " Returned Status: " + res.statusCode);
-  
+
   return "Error querying the blockchain";
 };
 
@@ -223,25 +223,6 @@ Insight.prototype.initSocket = function() {
     'reconnection': true,
   });
   return socket;
-};
-
-Insight.prototype.validateReferralCode = function(referralCode, cb) {
-  var self = this;
-
-  var args = {
-    method: 'POST',
-    path: `${this.apiPrefix}/referral/validate`,
-    json: {
-      unlockCode: referralCode
-    }
-  };
-
-  this._doRequest(args, function(err, res, body) {
-    if (err || res.statusCode !== 200) {
-      return cb(_parseErr(err, res));
-    }
-    return cb(null, body);
-  });
 };
 
 Insight.prototype.validateAddress = function(address, cb) {

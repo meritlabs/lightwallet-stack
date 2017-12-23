@@ -27,7 +27,7 @@ import { setTimeout } from 'timers';
 /* Refactor CheckList:
   - Bwc Error provider
   - Remove ongoingProcess provider, and handle Loading indicators in controllers
-  - Decouple the tight dependencies on ProfileService; and create logical separation concerns 
+  - Decouple the tight dependencies on ProfileService; and create logical separation concerns
   - Ensure that anything returning a promise has promises through the stack.
 */
 
@@ -179,10 +179,10 @@ export class WalletService {
           cache.availableBalanceStr = this.txFormatService.formatAmountStr(cache.availableBalanceSat);
           cache.spendableBalanceStr = this.txFormatService.formatAmountStr(cache.spendableAmount);
           cache.pendingBalanceStr = this.txFormatService.formatAmountStr(cache.pendingAmount);
-          
+
           cache.alternativeName = config.settings.alternativeName;
           cache.alternativeIsoCode = config.settings.alternativeIsoCode;
-          
+
           // Check address
           return this.isAddressUsed(wallet, balance.byAddress).then((used) => {
             if (used) {
@@ -465,8 +465,8 @@ export class WalletService {
         const getNewTxs = (newTxs: Array<any> = [], skip: number): Promise<any> => {
           return new Promise((resolve, reject) => {
             return this.getTxsFromServer(wallet, skip, endingTxid, requestLimit).then((result: any) => {
-              // If we haven't bubbled up an error in the promise chain, and this is empty, 
-              // then we can assume there are no TXs for this wallet. 
+              // If we haven't bubbled up an error in the promise chain, and this is empty,
+              // then we can assume there are no TXs for this wallet.
               if (!result) {
                 return resolve(newTxs);
               }
@@ -813,7 +813,7 @@ export class WalletService {
       return wallet.removeTxProposal(txp).then(() => {
         this.logger.debug('Transaction removed');
         this.invalidateCache(wallet);
-        // $rootScope.$emit('Local/TxAction', wallet.id);   
+        // $rootScope.$emit('Local/TxAction', wallet.id);
         return resolve();
       });
     });
@@ -903,6 +903,13 @@ export class WalletService {
         this.logger.warn("Error creating wallet: ", err);
         return reject(err);
       });
+    });
+  }
+
+  public createReferral(pubkey: any, parentAddress: any): Promise<any> {
+
+    return new Promise((resolve, reject) => {
+      resolve(true);
     });
   }
 
@@ -1004,13 +1011,13 @@ export class WalletService {
     });
   }
 
-  public createDefaultWallet(unlockCode: string): Promise<any> {
+  public createDefaultWallet(parentAddress: string): Promise<any> {
     return new Promise((resolve, reject) => {
       var opts: any = {};
       opts.m = 1;
       opts.n = 1;
       opts.networkName = this.configService.getDefaults().network.name;
-      opts.unlockCode = unlockCode;
+      opts.parentAddress = parentAddress;
       return this.createWallet(opts).then((wallet: MeritWalletClient) => {
         return resolve(wallet);
       }).catch((err) => {
@@ -1305,12 +1312,11 @@ export class WalletService {
           let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
           let myName = opts.myName || 'me'; // TODO GetTextCatalog
 
-          // TODO: Rename Beacon to UnlockCode down the stack
           return walletClient.createWallet(name, myName, opts.m, opts.n, {
             network: opts.networkName,
             singleAddress: opts.singleAddress,
             walletPrivKey: opts.walletPrivKey,
-            beacon: opts.unlockCode
+            parentAddress: opts.parentAddress
           }).then((secret: any) => {
             // TODO: Subscribe to ReferralTxConfirmation
             return resolve(walletClient);
@@ -1333,7 +1339,7 @@ export class WalletService {
     });
   }
 
-  // TODO: Rename this.  
+  // TODO: Rename this.
   private seedWallet(opts: any): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
 
@@ -1401,8 +1407,8 @@ export class WalletService {
   }
 
   /**
-   * Gets the ANV for a list of addresses.  
-   * @param wallet 
+   * Gets the ANV for a list of addresses.
+   * @param wallet
    */
   public getANV(wallet: MeritWalletClient):Promise<any> {
     return new Promise((resolve, reject) => {
@@ -1417,19 +1423,19 @@ export class WalletService {
     });
   }
 
-  /** 
-   * Gets the aggregate rewards for a list of addresses.  
-   * @param wallet 
+  /**
+   * Gets the aggregate rewards for a list of addresses.
+   * @param wallet
    * @returns {Reward} An object with the 'mining' and 'ambassador' properties.
    */
   public getRewards(wallet: MeritWalletClient):Promise<any> {
     interface MWSRewardsResponse extends _.NumericDictionary<number> { address: string, rewards: { mining: number, ambassador: number } };
     interface FilteredRewards { mining: number, ambassador: number }
-    
+
     return new Promise((resolve, reject) => {
-      return this.getMainAddresses(wallet).then((addresses) => {  
+      return this.getMainAddresses(wallet).then((addresses) => {
         if (_.isEmpty(addresses)) {
-          this.logger.info("Addresses are empty!  Defaulting rewards to Zero");          
+          this.logger.info("Addresses are empty!  Defaulting rewards to Zero");
           return resolve( {mining: 0, ambassador: 0} );
         }
         return wallet.getRewards(addresses).then((rewards: MWSRewardsResponse) => {
@@ -1444,8 +1450,8 @@ export class WalletService {
               return totalR;
             }
           }, {mining: 0, ambassador: 0});
-          
-          return resolve(totalRewards); 
+
+          return resolve(totalRewards);
         });
       });
     });
