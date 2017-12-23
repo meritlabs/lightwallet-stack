@@ -242,7 +242,6 @@ export class WalletsView {
 
         // Let's make sure we don't have this notification already.
         let duplicate = _.find(this.recentTransactionsData, n);
-        this.logger.info("duplicate notifications? : ", duplicate);
         if (_.isEmpty(duplicate)) {
           // We use angular's NgZone here to ensure that the view re-renders with new data.
           // There may be a better way to do this.  
@@ -409,7 +408,7 @@ export class WalletsView {
       if (!wallet) return Promise.reject('no wallet');
       let forceNewAddress = false;
       return this.walletService.getAddress(wallet, forceNewAddress).then((address) => {
-        return this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address);
+        return this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.address);
       }).then((acceptanceTx) => {
         this.logger.info('accepted easy send', acceptanceTx);
       }).catch((err) => {

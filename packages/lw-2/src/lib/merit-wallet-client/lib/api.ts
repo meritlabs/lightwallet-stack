@@ -796,7 +796,7 @@ export class API {
    * @param {input} Input described above.
    * @param {destinationAddress} Address to put the funds into.
    */
-  buildEasySendRedeemTransaction(input: any, destinationAddress: any, opts: any = {}): Promise<any> {
+  buildEasySendRedeemTransaction(input: any, destinationAddress: string, opts: any = {}): Promise<any> {
     //TODO: Create and sign a transaction to redeem easy send. Use input as
     //unspent Txo and use script to create scriptSig
     let inputAddress = input.txn.scriptId;
@@ -836,7 +836,7 @@ export class API {
       this.log.warn(tx);
 
     } catch (ex) {
-      this.log.error('Could not build transaction from private key', ex);
+      this.log.error('Could not build transaction from private key ' + ex.toString());
       return Promise.reject(Errors.COULD_NOT_BUILD_TRANSACTION);
     }
     return Promise.resolve(tx);
