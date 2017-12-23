@@ -27,13 +27,18 @@ export class EasySendService {
       passphrase: ''
     };
 
+
     return wallet.buildEasySendScript(opts).then(easySend => {
+      console.log('EASYSEND SCRIPT BUILT');
+      const easySendAddress = this.bitcore.Hash.ripemd160(
+        easySend.script.toBuffer().concat([pubkey._getID().toBuffer()]),
+      );
 
       let unlockScriptOpts = {
         parentAddress: signPrivKey.publicKey.toAddress(),
         pubkey: pubkey.toString(), // sign pubkey used to verify signature
         signPrivKey,
-        address: easySend.script.toAddress(), // not typechecked yet
+        address: this.bitcore.Address.fromPublicKeyHash(easySendAddress).toString(), // not typechecked yet
         addressType: 2, // script address
         network: opts.network
       };
@@ -44,7 +49,7 @@ export class EasySendService {
           parentAddress: pubkey.toAddress().toString(),  // short-circuit
           pubkey: privKey.publicKey.toString(),// sign pubkey used to verify signature
           signPrivKey: privKey,
-          address: easySend.receiverPubKey.toAddress(), // not typechecked yet
+          address: easySend.receiverPubKey.toAddress().toString(), // not typechecked yet
           addressType: 1, // script address
           network: opts.network
         };

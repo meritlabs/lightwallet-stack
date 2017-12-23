@@ -64,8 +64,8 @@ export class SendAmountView {
   public refreshFeeAvailable:boolean;
 
   constructor(
-    public navCtrl: NavController, 
-    public navParams: NavParams, 
+    public navCtrl: NavController,
+    public navParams: NavParams,
     private logger: Logger,
     private profileService:ProfileService,
     private configService:ConfigService,
@@ -80,7 +80,7 @@ export class SendAmountView {
     private loadingCtrl: LoadingController
   ) {
   }
-  
+
   ionViewDidLoad() {
     this.loading = true;
     return this.profileService.hasFunds().then((hasFunds) => {
@@ -328,6 +328,7 @@ export class SendAmountView {
 
         return getEasyData().then((easyData) => {
           data = Object.assign(data, easyData);
+          console.log('getEasyData');
           return this.getTxp(_.clone(data), this.txData.wallet, dryRun).then((txpOut) => {
 
             txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
