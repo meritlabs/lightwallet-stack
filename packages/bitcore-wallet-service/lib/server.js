@@ -519,7 +519,7 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
  * @param {string} opts.address         - address to unlock
  * @param {string} opts.parentAddress   - parent address used to unlock this one
  *
- * @returns {Object} wallet
+ * @returns {Address} address
  */
 WalletService.prototype.unlockAddress = function (opts, cb) {
   var self = this;
@@ -528,8 +528,6 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
     return cb(Errors.INVALID_REFERRAL);
   }
 
-  console.log('refid', opts.refid);
-
   self.storage.fetchAddress(opts.address, function(err, address) {
     if (err) return cb(Errors.INVALID_ADDRESS);
 
@@ -537,7 +535,7 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
     address.signed = true;
     address.parentAddress = opts.parentAddress;
 
-    self.storage.storeAddress(address, function(err, address) {
+    self.storage.storeAddress(address, function(err) {
       if (err) return cb(err.message);
 
       cb(null, address);
