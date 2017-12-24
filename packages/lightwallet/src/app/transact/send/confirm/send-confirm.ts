@@ -16,7 +16,7 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 /**
- * The confirm view is the final step in the transaction sending process 
+ * The confirm view is the final step in the transaction sending process
  * (for single-signature wallets).
  */
 @IonicPage()
@@ -99,7 +99,6 @@ export class SendConfirmView {
   }
 
   public approve() {
-
     let showPassPrompt = (highlightInvalid = false) => {
 
       this.alertController.create({
@@ -209,7 +208,6 @@ export class SendConfirmView {
   }
 
   private approveTx():Promise<void> {
-
       if (!this.txData.wallet.canSign() && !this.txData.wallet.isPrivKeyExternal()) {
         this.logger.info('No signing proposal: No private key');
         return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp, _.noop);
