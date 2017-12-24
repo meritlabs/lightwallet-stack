@@ -1652,12 +1652,7 @@ export class API {
    * @returns {Callback} cb - Returns error or an object with status information
    */
   getFeeLevels(network: string): Promise<any> {
-
-      console.log('FEE LEVELS');
-
       (!$.checkArgument(network || _.includes(['livenet', 'testnet'], network)));
-
-      console.log('TEST TEST');
 
       return this._doGetRequest('/v1/feelevels/?network=' + (network || Common.Constants.DEFAULT_NET));
   };
@@ -2178,7 +2173,6 @@ export class API {
    * @returns {Callback} cb - Return error or null
    */
   publishTxProposal(opts: any): Promise<any> {
-    console.log('publishTxProposal', this.credentials, opts);
     $.checkState(this.credentials && this.credentials.isComplete(), 'no authorization data');
     $.checkArgument(opts)
     $.checkArgument(opts.txp, 'txp is required');
@@ -2218,7 +2212,6 @@ export class API {
    */
   private _signAddressAndUnlockWithRoot(address: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-
     if (address.signed && address.refid) {
       return Promise.resolve(address.refid);
     }
@@ -2564,7 +2557,7 @@ export class API {
     $.checkState(this.credentials && this.credentials.isComplete());
 
 
-    return this._signAddressAndUnlockWithRoot(Bitcore.Address.fromString(txp.changeAddress.address))
+    return this._signAddressAndUnlockWithRoot(txp.changeAddress)
       .then(() => {
         this.getPayPro(txp).then((paypro) => {
         if (paypro) {
