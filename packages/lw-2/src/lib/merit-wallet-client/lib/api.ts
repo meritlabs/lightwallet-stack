@@ -1774,6 +1774,8 @@ export class API {
    * @param {string} opts.network          - (optional) netowrk
    */
   sendReferral(opts: any = {}): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
     return new Promise((resolve, reject) => {
       if (opts) {
         $.shouldBeObject(opts);
@@ -2194,12 +2196,10 @@ export class API {
   };
 
   /**
-   * unlock an address with referral signature
+   * Send signed referral to beacon address and unlock in MWS
    * @param {Referral} opts
    */
   signAddressAndUnlock(opts: any = {}): Promise<any> {
-    $.checkState(this.credentials);
-
     return this.sendReferral(opts).then((refid: string) =>
       this._doPostRequest('/v1/addresses/unlock/', { address: opts.address, parentAddress: opts.parentAddress, refid })
         .then(() => refid)
