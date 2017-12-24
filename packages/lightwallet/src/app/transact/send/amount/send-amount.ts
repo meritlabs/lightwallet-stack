@@ -14,7 +14,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
-import { easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
+import { EasySend, easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 
 
@@ -60,6 +60,7 @@ export class SendAmountView {
   private reOp: RegExp = /^[\*\+\-\/]$/;
 
   private txData;
+  private referralsToSign: Array<any>;
 
   public refreshFeeAvailable:boolean;
 
@@ -223,7 +224,7 @@ export class SendAmountView {
     let dryRun = false;
     this.createTxp(dryRun).then(() => {
       loadingSpinner.dismiss();
-      this.navCtrl.push('SendConfirmView', {txData: this.txData});
+      this.navCtrl.push('SendConfirmView', {txData: this.txData, referralsToSign: this.referralsToSign});
     }).catch(() => {
       loadingSpinner.dismiss();
     });
@@ -317,7 +318,9 @@ export class SendAmountView {
                 this.txData.easySendURL = easySendURL(easySend);
                 return resolve({
                   script: easySend.script,
-                  toAddress: easySend.script.toAddress().toString()
+                  toAddress: easySend.scriptAddress.toString(),
+                  scriptReferralOpts: easySend.scriptReferralOpts,
+                  recipientReferralOpts: easySend.recipientReferralOpts,
                 });
               });
             } else {
@@ -326,9 +329,9 @@ export class SendAmountView {
           });
         };
 
-        return getEasyData().then((easyData) => {
-          data = Object.assign(data, easyData);
-          console.log('getEasyData');
+        return getEasyData().then((easyData: EasySend) => {
+          data = Object.assign(data, _.pick(easyData, 'script', 'toAddress'));
+          console.log('send easysend txp', data);
           return this.getTxp(_.clone(data), this.txData.wallet, dryRun).then((txpOut) => {
 
             txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
@@ -353,6 +356,7 @@ export class SendAmountView {
               this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
 
               this.txData.txp = txpOut;
+              this.referralsToSign = [easyData.recipientReferralOpts, easyData.scriptReferralOpts];
             }).catch((err) => {
               this.toastCtrl.create({
                 message: err,
