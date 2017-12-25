@@ -27,10 +27,7 @@ export class EasySendService {
     return wallet
       .buildEasySendScript(opts)
       .then(easySend => {
-        const easySendAddressHash = this.bitcore.crypto.Hash.ripemd160(
-          Buffer.concat([easySend.script.toBuffer(), pubkey._getID()])
-        );
-        const easySendAddress = this.bitcore.Address.fromScriptHash(easySendAddressHash, opts.network)
+        const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo());
         const receiverPrivKey = this.bitcore.PrivateKey.forEasySend(easySend.secret, opts.passphrase, opts.network);
 
         const scriptReferralOpts = {
@@ -52,9 +49,12 @@ export class EasySendService {
         };
 
         // easy send address is a mix of script_id pubkey_id
-        easySend.scriptAddress = easySendAddress.toString();
+        easySend.scriptAddress = easySendAddress;
         easySend.scriptReferralOpts = scriptReferralOpts;
         easySend.recipientReferralOpts = recipientReferralOpts;
+
+        console.log('scriptReferralOpts', scriptReferralOpts);
+        console.log('recipientReferralOpts', recipientReferralOpts);
 
         return Promise.resolve(easySend);
       })

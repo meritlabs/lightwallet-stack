@@ -356,7 +356,7 @@ export class SendAmountView {
               this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
 
               this.txData.txp = txpOut;
-              this.referralsToSign = [easyData.recipientReferralOpts, easyData.scriptReferralOpts];
+              this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
             }).catch((err) => {
               this.toastCtrl.create({
                 message: err,

@@ -730,6 +730,7 @@ export class API {
    * @param {string}      opts.passphrase       - optional password to generate receiver's private key
    * @param {number}      opts.timeout          - maximum depth transaction is redeemable by receiver
    * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
+   * @param {string}      opts.parentAddress    - parent address of easy send recipient
    * @param {Callback}    cb
    */
   buildEasySendScript(opts: any = {}): Promise<EasySend> {
@@ -759,11 +760,12 @@ export class API {
 
         result = {
           receiverPubKey: rcvPair.key.publicKey,
-          script: script.toScriptHashOut(),
+          script: script.toMixedScriptHashOut(pubKey),
           senderName: 'Someone', // TODO: get user name or drop sender name from data
           senderPubKey: pubKey.toString(),
           secret: rcvPair.secret.toString('hex'),
           blockTimeout: timeout,
+          parentAddress: opts.parentAddress
         };
 
         return resolve(result);
@@ -1713,7 +1715,7 @@ export class API {
         return reject(new Error('Existing keys were created for a different network'));
       }
 
-      const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey();
+      const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey(void 0, network);
       const pubkey = walletPrivKey.toPublicKey();
       const address = pubkey.toAddress();
 
@@ -1774,7 +1776,7 @@ export class API {
    * @param {string} opts.network          - (optional) netowrk
    */
   sendReferral(opts: any = {}): Promise<any> {
-    $.checkState(this.credentials && this.credentials.isComplete());
+    // $.checkState(this.credentials && this.credentials.isComplete());
 
     return new Promise((resolve, reject) => {
       if (opts) {
@@ -2555,7 +2557,6 @@ export class API {
   broadcastTxProposal(txp): Promise<any> {
     this.log.warn("Inside broadCastTxProposal");
     $.checkState(this.credentials && this.credentials.isComplete());
-
 
     return this._signAddressAndUnlockWithRoot(txp.changeAddress)
       .then(() => {
