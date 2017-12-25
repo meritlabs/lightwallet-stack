@@ -2,22 +2,22 @@
 
 getvariables () {
     if [ -f $HOME/.meritenv ]; then
-        source $HOME/.meritenv    
+        source $HOME/.meritenv
     fi
-    
+
 
     if [ -z ${meritdir+x} ]
-    then 
+    then
         echo -n "Enter the meritd location and press [ENTER]: "
         read meritdir
         echo meritdir=$meritdir >> $HOME/.meritenv
-    fi 
+    fi
     if [ -z ${lwsdir+x} ]
-    then 
+    then
         echo -n "Enter the lws bootstrap location and press [ENTER]: "
         read lwsdir
         echo lwsdir=$lwsdir >> $HOME/.meritenv
-    fi 
+    fi
 
 }
 
@@ -30,7 +30,7 @@ writealiases() {
 }
 
 createaliases() {
-    getvariables    
+    getvariables
     shopt -s expand_aliases
 
     echo "Creating your aliases now...."
@@ -39,15 +39,15 @@ createaliases() {
     read -p "Enter the location to write aliases to: (default: ~/.bash.local): " aliasfile
     if [ -z ${aliasfile} ]
     then
-        aliasfile=$HOME/.bash.local 
-    fi 
+        aliasfile=$HOME/.bash.local
+    fi
     writealiases
-} 
+}
 
 killmerit() {
     echo "Killing all meritd instances..."
-    killall -9 meritd
-} 
+    killall meritd
+}
 
 cleardataaction() {
     echo "Clearing data directories..."
@@ -69,9 +69,9 @@ cleardataprompt() {
 
 
 if [ command -v m1 >/dev/null 2>&1 ] || [ type m1 >/dev/null 2>&1 ]
-then 
+then
     echo "Aliases M1-M3 exist, moving on..."
-else 
+else
 
     while true; do
         read -p "No aliases exist.  Do you want to create them? [Y/N]: " yn
@@ -81,7 +81,7 @@ else
             * ) echo "Please answer yes or no.";;
         esac
     done
-fi 
+fi
 
 if pgrep -x "meritd" > /dev/null
 then
@@ -89,19 +89,21 @@ then
         while true; do
             read -p "Would you like to stop the merit daemons running? [Y/N]: " yn
             case $yn in
-                [Yy]* ) killmerit; cleardataprompt; break;;
+                [Yy]* ) killmerit; break;;
                 [Nn]* ) break;;
                 * ) echo "Please answer yes or no.";;
             esac
         done
-fi 
- 
-echo "Starting MeritD..."    
+fi
+
+cleardataprompt;
+
+echo "Starting MeritD..."
 getvariables
-${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-1/merit.conf -datadir=${lwsdir}/data-and-logs/data-1/ & 
+${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-1/merit.conf -datadir=${lwsdir}/data-and-logs/data-1/ &
 ${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-2/merit.conf -datadir=${lwsdir}/data-and-logs/data-2/ &
 # & ${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-3/merit.conf -datadir=${lwsdir}/data-and-logs/data-3/ && fg
-echo "Meritd started with following PIDs"    
+echo "Meritd started with following PIDs"
 pgrep -x "meritd"
 
 
