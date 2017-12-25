@@ -870,13 +870,14 @@ Script.buildEasySendOut = function(publicKeys, blockTimeout, network) {
  * @param {buffer} signature to be append to the script
  * @returns {Script}
  */
-Script.buildEasySendIn = function(signature, easyScript) {
+Script.buildEasySendIn = function(signature, easyScript, pubkeyId) {
   var s = new Script();
   var sigBuf = BufferUtil.concat([
     signature.toDER(),
     BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)
   ]);
   s.add(sigBuf);
+  s.add(pubkeyId);
   s.add(easyScript.toBuffer());
   return s;
 };
@@ -1077,7 +1078,8 @@ Script.buildScriptHashOut = function(script) {
  */
 Script.buildMixedScriptHashOut = function(script, signerPubKey) {
   $.checkArgument(script instanceof Script || (script instanceof Address && script.isPayToScriptHash()));
-  $.checkArgument(signerPubKey instanceof PublicKey);
+
+  signerPubKey = PublicKey(signerPubKey);
 
   console.log(script.inspect());
 
