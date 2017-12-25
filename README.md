@@ -80,7 +80,7 @@ make stop-mongo
 Run these in the order listed.
 
 ```sh
-lerna bootstrap # Ubuntu USERS NEED TO RUN THIS COMMAND AS ROOT
+lerna bootstrap
 make symlink-bitcore-node
 make start-lightwallet-stack
 ```
