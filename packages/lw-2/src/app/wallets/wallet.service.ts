@@ -1323,19 +1323,15 @@ export class WalletService {
           });
         }).catch((err: any) => {
           this.logger.warn("Error creating wallet in DCW: ", err);
-          if (err == Errors.CONNECTION_ERROR) {
-            if (++attempts < MAX_ATTEMPTS) {
-              return seed();
-            } else {
-              return reject(err);
-            }
-          } else {
-            return reject(err);
+          if (err == Errors.CONNECTION_ERROR && ++attempts < MAX_ATTEMPTS) {
+            return setTimeout(seed, 2000);
           }
+
+          reject(err);
         });
       };
 
-      setTimeout(seed, 5000);
+      seed();
     });
   }
 
