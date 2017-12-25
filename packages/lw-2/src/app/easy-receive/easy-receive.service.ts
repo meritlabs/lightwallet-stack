@@ -58,7 +58,7 @@ export class EasyReceiveService {
 
   }
 
-  public acceptEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input:number, destinationAddress:any):Promise<void>  {
+  public acceptEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: number, destinationAddress: any): Promise<void>  {
       return this.spendEasyReceipt(receipt, wallet, input, destinationAddress);
   }
 
@@ -81,26 +81,27 @@ export class EasyReceiveService {
   public validateEasyReceiptOnBlockchain(receipt:EasyReceipt, password = '', network = this.configService.getDefaults().network.name):Promise<any> {
 
     return new Promise((resolve, reject) => {
-      let opts:any = {
+      const opts:any = {
         bwsurl: this.configService.getDefaults().bws.url
       };
-      let walletClient = this.bwcService.getClient(null, opts);
+      const walletClient = this.bwcService.getClient(null, opts);
       let onBlockChain = false;
 
-      let scriptData = this.generateEasyScipt(receipt, password, network);
-      var scriptId = this.bwcService.getBitcore().Address.payingTo(scriptData.script, network);
+      const scriptData = this.generateEasyScipt(receipt, password, network);
+      const scriptAddress = this.bwcService.getBitcore().Address(scriptData.script.getAddressInfo()).toString();
 
-      return walletClient.validateEasyScript(scriptId).then((txn) => {
+      return walletClient.validateEasyScript(scriptAddress).then((txn) => {
         if (txn.result.found == false) {
           this.logger.warn("Could not validate easyScript on the blockchain.");
           return resolve(false);
         } else {
           return resolve({
+            senderPublicKey: receipt.senderPublicKey,
             txn: txn.result,
             privateKey: scriptData.privateKey,
             publicKey: scriptData.publicKey,
             script: scriptData.script,
-            scriptId: scriptId,
+            scriptId: scriptAddress,
           });
         }
       }).catch((err) => {
@@ -120,8 +121,9 @@ export class EasyReceiveService {
        let opts:any = {};
        let testTx = wallet.buildEasySendRedeemTransaction(
          input,
-         destinationAddress,
+         destinationAddress.address,
          opts
+
        );
 
        let rawTxLength = testTx.serialize().length;
@@ -132,7 +134,7 @@ export class EasyReceiveService {
 
          let tx = wallet.buildEasySendRedeemTransaction(
            input,
-           destinationAddress,
+           destinationAddress.address,
            opts
          );
 
@@ -165,7 +167,7 @@ export class EasyReceiveService {
     return {
       privateKey: receivePrv,
       publicKey: receivePub,
-      script: script
+      script: script.toMixedScriptHashOut(senderPubKey)
     };
   }
 }

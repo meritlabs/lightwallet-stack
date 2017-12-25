@@ -797,7 +797,7 @@ export class API {
   buildEasySendRedeemTransaction(input: any, destinationAddress: any, opts: any = {}): any {
     //TODO: Create and sign a transaction to redeem easy send. Use input as
     //unspent Txo and use script to create scriptSig
-    let inputAddress = input.txn.scriptId;
+    let inputAddress = input.scriptId;
 
     let fee = opts.fee || DEFAULT_FEE;
     let microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
@@ -806,9 +806,10 @@ export class API {
 
     let tx = new Bitcore.Transaction();
 
+    console.log(input.script.inspect());
     try {
-      let toAddress = Bitcore.Address.fromString(destinationAddress);
-      let p2shScript = input.script.toScriptHashOut();
+      let toAddress = destinationAddress;
+      let p2shScript = input.script.toMixedScriptHashOut(input.senderPublicKey);
 
       tx.addInput(
         new Bitcore.Transaction.Input.PayToScriptHashInput({
@@ -825,7 +826,11 @@ export class API {
       tx.fee(fee)
 
       let sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, input.script);
-      let inputScript = Bitcore.Script.buildEasySendIn(sig, input.script);
+      let inputScript = Bitcore.Script.buildEasySendIn(
+        sig,
+        input.script,
+        Bitcore.PublicKey.fromString(input.senderPublicKey)._getID(),
+      );
 
       tx.inputs[0].setScript(inputScript);
 
