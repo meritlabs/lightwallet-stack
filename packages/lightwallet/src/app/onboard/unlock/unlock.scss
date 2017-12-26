@@ -1,31 +1,4 @@
-@import "../onboarding-module";
 view-unlock {
-  @extend %module-onboarding;
-
-  ion-input.input {
-    background: white;
-    height: 40px;
-
-    // give it border radius to match the button beside it
-    &.input-md {
-      border-radius: $button-md-border-radius;
-
-      // also give it some shadow on Android
-      box-shadow: 0 2px 3px rgba(0,0,0,0.35);
-    }
-
-    &.input-ios {
-      border-radius: $button-ios-border-radius;
-    }
-
-    input {
-      color: rgba(0,0,0,0.64);
-    }
-
-    input::-webkit-input-placeholder {
-      color: rgba(0,0,0,0.4);
-    }
-  }
 
   .illustration.control {
     background:  url('../assets/img/onboarding/tour-control.png');
@@ -34,17 +7,55 @@ view-unlock {
   .bottom-buttons {
     display: flex;
     flex-direction: row;
-  }
 
-  input.failed {
-    background: color($colors, 'danger');
-    color: white;
+    button[ion-button].button {
+      width: 40px;
+    }
+
+    ion-input.input {
+      display: block;
+      flex: 1;
+      background: white;
+      height: 40px;
+
+      &.failed {
+        background: color($colors, 'danger');
+
+        input {
+          color: white;
+        }
+
+        input::-webkit-input-placeholder {
+          color: rgba(255, 255, 255, 0.4);
+        }
+      }
+
+      // give it border radius to match the button beside it
+      &.input-md {
+        border-radius: $button-md-border-radius;
+
+        // also give it some shadow on Android
+        box-shadow: 0 2px 3px rgba(0,0,0,0.35);
+      }
+
+      &.input-ios {
+        border-radius: $button-ios-border-radius;
+      }
+
+      input {
+        color: rgba(0,0,0,0.64);
+      }
+
+      input::-webkit-input-placeholder {
+        color: rgba(0,0,0,0.4);
+      }
+    }
   }
 
   #logo {
-      height: 5%;
-      margin-top: 10%;
-      margin-bottom: 10%; 
+    height: 5%;
+    margin-top: 10%;
+    margin-bottom: 10%;
   }
 
 

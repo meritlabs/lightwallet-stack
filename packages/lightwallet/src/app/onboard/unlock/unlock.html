@@ -1,6 +1,6 @@
 <ion-header><ion-navbar></ion-navbar></ion-header>
 
-<ion-content fullscreen>
+<ion-content fullscreen onboard-screen>
 
     <div class="container"  *ngIf="!easyReceipt">
 
@@ -19,7 +19,7 @@
 
 
             <div class="bottom-buttons">
-                <ion-input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
+                <ion-input [placeholder]="easyReceipt?.inviteCode || 'Invite code'"
                     [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
                     [(ngModel)]="formData.unlockCode" name="unlockCode" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
                 <button (click)="createAndUnlockWallet()" ion-button icon-only translate>
