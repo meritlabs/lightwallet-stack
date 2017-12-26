@@ -1083,7 +1083,7 @@ Script.buildMixedScriptHashOut = function(script, signerPubKey) {
 
   console.log(script.inspect());
 
-  const mixedAddress = Hash.ripemd160(
+  const mixedAddress = Hash.sha256ripemd160(
     Buffer.concat([
       Hash.sha256ripemd160(script.toBuffer()),
       Hash.sha256ripemd160(signerPubKey.toBuffer())
