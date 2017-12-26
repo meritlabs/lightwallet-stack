@@ -24,4 +24,5 @@ export class Errors {
   public static REFERRER_INVALID = {code: 'REFERRER_INVALID', text: 'Invalid referrer address'};
   public static MAIN_ADDRESS_GAP_REACHED = {code: 'MAIN_ADDRESS_GAP_REACHED', text: 'Maximum number of consecutive addresses without activity reached'};
   public static SERVER_UNAVAILABLE = {code: 'SERVER_UNAVAILABLE', text: 'Could not reach the server'};
+  public static INVALID_REFERRAL = {code: 'INVALID_REFERRAL', text: 'Referral is not valid'};
 }
