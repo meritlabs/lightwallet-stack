@@ -10,20 +10,20 @@ prepare-prereqs:
 ### lightwallet-app ###
 .PHONY: prepare-lightwallet
 prepare-lightwallet:
-	cd ./lightwallet && npm install
-	cd ./lightwallet && npm run apply
+	cd ./packages/lightwallet && npm install
+	cd ./packages/lightwallet && npm run apply
 
 .PHONY: start-lightwallet
 start-lightwallet:
-	cd ./lightwallet && npm run apply && npm run livestart
+	cd ./packages/lightwallet && npm run apply && npm run livestart
 
 .PHONY: clean-lightwallet
 clean-lightwallet:
-	rm -rf ./lightwallet/node_modules
-	rm -rf ./lightwallet/plugins
-	rm -rf ./lightwallet/platforms/ios
-	rm -rf ./lightwallet/platforms/windows
-	rm -rf ./lightwallet/platforms/android
+	rm -rf ./packages/lightwallet/node_modules
+	rm -rf ./packages/lightwallet/plugins
+	rm -rf ./packages/lightwallet/platforms/ios
+	rm -rf ./packages/lightwallet/platforms/windows
+	rm -rf ./packages/lightwallet/platforms/android
 
 
 ### lightwallet-stack ###
@@ -130,10 +130,6 @@ clean-bitcore-message:
 .PHONY: clean-bitcore-payment-protocol
 clean-bitcore-payment-protocol:
 	rm -rf ./packages/bitcore-payment-protocol/node_modules
-
-.PHONY: clean-lightwallet-2
-clean-lightwallet-2:
-	rm -rf ./packages/lw-2/node_modules
 
 .PHONY: clean-stack
 clean-stack: clean-npm \
