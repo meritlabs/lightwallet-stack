@@ -82,7 +82,7 @@ export class UnlockView {
       })
       .catch(err => {
         loader.dismiss();
-        if (err == Errors.UNLOCK_CODE_INVALID) this.unlockState = 'fail';
+        if (err == Errors.INVALID_REFERRAL) this.unlockState = 'fail';
         this.logger.debug('Could not unlock wallet: ', err);
         this.toastCtrl.create({ message: err.text || 'Unknown error', cssClass: ToastConfig.CLASS_ERROR }).present();
       });

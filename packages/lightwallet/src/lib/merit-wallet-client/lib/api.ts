@@ -1763,7 +1763,7 @@ export class API {
               }
             );
           } else {
-            return reject('Error: ' + res);
+            return reject(Error(res));
           }
         });
       }).catch(reject);
