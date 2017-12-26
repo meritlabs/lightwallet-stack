@@ -211,9 +211,6 @@ export class SendConfirmView {
     return sendReferrals.then(() => {
       return this.approveTx()
         .then(() => {
-          console.log(this.txData.easySendURL);
-
-
           if (this.txData.recipient.sendMethod == 'sms') {
             return this.easySendService.sendSMS(
               this.txData.recipient.phoneNumber,

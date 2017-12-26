@@ -1081,8 +1081,6 @@ Script.buildMixedScriptHashOut = function(script, signerPubKey) {
 
   signerPubKey = PublicKey(signerPubKey);
 
-  console.log(script.inspect());
-
   const mixedAddress = Hash.sha256ripemd160(
     Buffer.concat([
       Hash.sha256ripemd160(script.toBuffer()),
