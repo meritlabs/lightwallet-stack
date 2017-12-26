@@ -18,7 +18,9 @@ import { CoreModule } from 'merit/core/core.module';
     BrowserModule, 
     MomentModule,
     CoreModule, 
-    IonicModule.forRoot(MeritLightWallet)
+    IonicModule.forRoot(MeritLightWallet, {
+      preloadModules: true
+    })
   ],
   bootstrap: [IonicApp], 
   entryComponents: [

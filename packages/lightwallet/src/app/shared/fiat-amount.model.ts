@@ -1,8 +1,5 @@
-import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
 import * as _ from "lodash";
 
-@Injectable()
 export class FiatAmount {
 
   public formats: {
