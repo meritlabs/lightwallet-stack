@@ -1510,9 +1510,7 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
     ));
   }
 
-  console.log('before getAddressTxids', addresses);
   self.getAddressTxids(addresses, options, function(err, txids) {
-    console.log('after getAddressTxids', err, txids);
     if (err) {
       return callback(err);
     }
@@ -2281,8 +2279,6 @@ Merit.prototype.getRewards = function(addressArg, callback) {
  */
 Merit.prototype.sendReferral = function(referral, callback) {
   var self = this;
-
-  console.log('sending raw referral to meritd: ', referral);
 
   this.client.sendRawReferral(referral, function(err, response) {
     if (err) {
