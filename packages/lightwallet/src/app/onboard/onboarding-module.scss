@@ -1,4 +1,4 @@
-%module-onboarding {
+view-no-session, view-tour, view-unlock, view-onboarding {
 
   ion-header {
     &:after {
@@ -74,8 +74,5 @@
       }
     }
   }
-
-
-
 
 }
