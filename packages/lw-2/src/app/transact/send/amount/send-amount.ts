@@ -331,7 +331,6 @@ export class SendAmountView {
 
         return getEasyData().then((easyData: EasySend) => {
           data = Object.assign(data, _.pick(easyData, 'script', 'toAddress'));
-          console.log('send easysend txp', data);
           return this.getTxp(_.clone(data), this.txData.wallet, dryRun).then((txpOut) => {
 
             txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);

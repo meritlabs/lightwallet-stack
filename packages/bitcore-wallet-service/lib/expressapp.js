@@ -809,8 +809,6 @@ ExpressApp.prototype.start = function(opts, cb) {
       return returnError(ex, res, req);
     }
 
-    console.log("mws got raw referral: ", req.body.referral);
-
     server.sendReferral(req.body.referral, function(err, refid) {
       if (err) {
         return returnError(err, res, req);

@@ -2133,7 +2133,6 @@ WalletService.prototype.createTx = function(opts, cb) {
           return cb(null, address);
         });
       } else {
-        console.log('creating new address');
         return cb(null, wallet.createAddress(true));
       }
     }

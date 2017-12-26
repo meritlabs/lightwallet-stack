@@ -57,10 +57,6 @@ Address._deriveAddress = function(scriptType, publicKeyRing, path, m, network) {
     return xpub.deriveChild(path).publicKey;
   });
 
-  console.log('publicKeys', publicKeys[0].toString());
-  console.log('_deriveAddress: path', path);
-
-
   var bitcoreAddress;
   switch (scriptType) {
     case Constants.SCRIPT_TYPES.P2SH:
