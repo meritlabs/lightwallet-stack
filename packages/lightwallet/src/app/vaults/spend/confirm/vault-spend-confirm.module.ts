@@ -15,7 +15,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { SpendVaultService } from 'merit/vaults/spend/vault-spend.service';
 
 /*
-  ToDo: Work to get this lazy-loadable as possible. 
+  ToDo: Work to get this lazy-loadable as possible.
 */
 @NgModule({
   declarations: [

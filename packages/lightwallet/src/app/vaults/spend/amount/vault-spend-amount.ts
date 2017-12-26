@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import * as Promise from 'bluebird'; 
+import * as Promise from 'bluebird';
 
 import { Component, HostListener } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
@@ -26,7 +26,7 @@ export class VaultSpendAmountView {
     public globalResult: string;
     public sending: boolean;
     public displayName: string;
-    
+
     private LENGTH_EXPRESSION_LIMIT = 19;
     private SMALL_FONT_SIZE_LIMIT = 10;
     private availableUnits: Array<any> = [];
@@ -37,8 +37,8 @@ export class VaultSpendAmountView {
     private wallet: any = null;
 
     constructor(
-        public navCtrl: NavController, 
-        public navParams: NavParams, 
+        public navCtrl: NavController,
+        public navParams: NavParams,
         private log: Logger
     ) {
         this.amount = '';
@@ -60,7 +60,7 @@ export class VaultSpendAmountView {
           event.preventDefault();
           this.removeDigit();
         }
-    
+
         if (event.key.match(this.reNr)) {
           this.pushDigit(event.key);
         } else if (event.key.match(this.reOp)) {
@@ -69,30 +69,30 @@ export class VaultSpendAmountView {
           // if (event.ctrlKey || event.metaKey) processClipboard();
         } else if (event.keyCode === 13) this.finish();
       }
-    
+
 
     pushDigit(digit: string) {
         if (this.amount && this.amount.length >= this.LENGTH_EXPRESSION_LIMIT) return;
         if (this.amount.indexOf('.') > -1 && digit == '.') return;
         // TODO: next line - Need: isFiat
         //if (this.availableUnits[this.unitIndex].isFiat && this.amount.indexOf('.') > -1 && this.amount[this.amount.indexOf('.') + 2]) return;
-    
+
         this.amount = (this.amount + digit).replace('..', '.');
         this.checkFontSize();
         this.processAmount();
       };
-    
+
       removeDigit() {
         this.amount = (this.amount).toString().slice(0, -1);
         this.processAmount();
         this.checkFontSize();
       };
-    
+
       pushOperator(operator: string) {
         if (!this.amount || this.amount.length == 0) return;
         this.amount = this._pushOperator(this.amount, operator);
       };
-    
+
       private _pushOperator(val: string, operator: string) {
         if (!this.isOperator(_.last(val))) {
           return val + operator;
@@ -100,32 +100,32 @@ export class VaultSpendAmountView {
           return val.slice(0, -1) + operator;
         }
       };
-    
+
       isOperator(val: string) {
         const regex = /[\/\-\+\x\*]/;
         return regex.test(val);
       };
-    
+
       isExpression(val: string) {
         const regex = /^\.?\d+(\.?\d+)?([\/\-\+\*x]\d?\.?\d+)+$/;
         return regex.test(val);
       };
-    
+
       checkFontSize() {
         if (this.amount && this.amount.length >= this.SMALL_FONT_SIZE_LIMIT) this.smallFont = true;
         else this.smallFont = false;
       };
-    
+
       processAmount() {
         var formatedValue = this.format(this.amount);
         var result = this.evaluate(formatedValue);
         this.allowSend = _.isNumber(result) && +result > 0;
         if (_.isNumber(result)) {
           this.globalResult = this.isExpression(this.amount) ? '= ' + this.processResult(result) : '';
-    
+
           // TODO this.globalResult is always undefinded - Need: processResult()
           /* if (this.availableUnits[this.unitIndex].isFiat) {
-    
+
             var a = this.fromFiat(result);
             if (a) {
               this.alternativeAmount = txFormatService.formatAmount(a * unitToMicro, true);
@@ -139,17 +139,17 @@ export class VaultSpendAmountView {
           this.globalResult = result.toString();
         }
       };
-    
+
       format(val: string) {
         if (!val) return;
-    
+
         var result = val.toString();
-    
+
         if (this.isOperator(_.last(val))) result = result.slice(0, -1);
-    
+
         return result.replace('x', '*');
       };
-    
+
       evaluate(val: string) {
         var result;
         try {
@@ -170,7 +170,7 @@ export class VaultSpendAmountView {
 
       finish() {
         console.log(this.navParams.get('coins'));
-        this.navCtrl.push('VaultSpendConfirmView', 
+        this.navCtrl.push('VaultSpendConfirmView',
           { recipient: this.recipient, toAmount: parseFloat(this.globalResult), wallet: this.navParams.get('wallet'), vault: this.vault, coins: this.navParams.get('coins') });
       }
 }

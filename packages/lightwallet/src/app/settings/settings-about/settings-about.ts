@@ -4,14 +4,14 @@ import { AppService } from "merit/core/app-settings.service";
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 @IonicPage()
-@Component({ 
+@Component({
   selector: 'view-settings-about',
   templateUrl: 'settings-about.html',
 })
 export class SettingsAboutView {
 
   public version:string;
-  public commitHash:string; 
+  public commitHash:string;
   public repoUrl:string;
 
   constructor(
@@ -30,7 +30,7 @@ export class SettingsAboutView {
 
     this.version = this.appSettingsService.info.version;
     this.commitHash = this.appSettingsService.info.commitHash;
-    this.repoUrl = this.appSettingsService.info.gitHubRepoUrl; 
+    this.repoUrl = this.appSettingsService.info.gitHubRepoUrl;
 
   }
 
@@ -43,7 +43,7 @@ export class SettingsAboutView {
   }
 
   toGithub() {
-    
+
     let confirm = this.alertCtrl.create({
       title: 'External link',
       message: 'You can see the latest developments and contribute to this open source app by visiting our project on GitHub',
