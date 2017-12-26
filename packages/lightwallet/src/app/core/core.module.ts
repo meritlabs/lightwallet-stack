@@ -46,9 +46,9 @@ import { FCM } from '@ionic-native/fcm';
 
 import { IonicStorageModule } from '@ionic/storage';
 
-/* 
-  The core module exists to make commonly used singleton services available 
-  for use in other modules.  
+/*
+  The core module exists to make commonly used singleton services available
+  for use in other modules.
   The goal, over time, is to make this module leaner and tighter as we continue
   to evolve the application.
 */
@@ -62,7 +62,7 @@ export function loadConfigs(appService) {
 }
 
   // Ideally, we can remove the transaction dependency.
-@NgModule({ 
+@NgModule({
     imports: [
         CommonModule,
         TransactModule,
@@ -75,7 +75,7 @@ export function loadConfigs(appService) {
             }
           }),
           IonicStorageModule.forRoot(),
-          NotificationModule        
+          NotificationModule
     ],
     exports: [],
     declarations: [
@@ -87,7 +87,7 @@ export function loadConfigs(appService) {
         BwcService,
         BwcError,
         PopupService,
-        MeritToastController, 
+        MeritToastController,
         DeepLinkService,
         PersistenceService,
         PlatformService,
@@ -98,8 +98,8 @@ export function loadConfigs(appService) {
         ConfigService,
         AndroidFingerprintAuth,
         TouchID,
-        TouchIdService, 
-        EasyReceiveService, 
+        TouchIdService,
+        EasyReceiveService,
         DeepLinkService,
         LedgerService,
         WalletService,

@@ -12,7 +12,7 @@ import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service
 import { SocialSharing } from '@ionic-native/social-sharing';
 
 /*
-  The final step of sending a transaction.  
+  The final step of sending a transaction.
 */
 @NgModule({
   declarations: [
@@ -21,7 +21,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
   imports: [
     IonicPageModule.forChild(SendConfirmView),
     GravatarModule,
-    WalletsModule    
+    WalletsModule
   ],
   providers: [
     WalletService,

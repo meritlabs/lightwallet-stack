@@ -13,7 +13,7 @@ function createWindow() {
   // iPhone X logical dimentions
   // not resizable and frameless
   mainWindow = new BrowserWindow({
-    width: 768, 
+    width: 768,
     height: 1024,
     title: appName,
     resizable: false,

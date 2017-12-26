@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, AlertController, ModalController } from 'ionic-angular';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { ConfigService } from "merit/shared/config.service"; 
+import { ConfigService } from "merit/shared/config.service";
 import { Logger } from 'merit/core/logger';
 
 @IonicPage()
@@ -16,7 +16,7 @@ export class SettingsView {
   public currentUnitName;
   public currentAlternativeName;
   public availableUnits = [];
-  public availableAlternateCurrencies = []; 
+  public availableAlternateCurrencies = [];
 
   public emailNotificationsEnabled;
 
@@ -35,7 +35,7 @@ export class SettingsView {
     let config = this.configService.get();
     this.currentUnitName = config.wallet.settings.unitName;
     this.currentAlternativeName = config.wallet.settings.alternativeName;
-    this.emailNotificationsEnabled = config.emailNotifications.enabled; 
+    this.emailNotificationsEnabled = config.emailNotifications.enabled;
 
   }
 
@@ -52,7 +52,7 @@ export class SettingsView {
   }
 
   toLanguageSelect() {
-    
+
     let modal = this.modalCtrl.create('SelectLanguageModal', {currentLanguage: this.currentLanguageName, availableLanguages: [ /* */ ]});
     modal.present();
     modal.onDidDismiss((language) => {
@@ -98,14 +98,14 @@ export class SettingsView {
   help() {
 
     let url = this.configService.get().help.url;
-    
+
     let confirm = this.alertCtrl.create({
       title: 'External link',
       message: 'Help and support information is available at the website',
       buttons: [
         {text: 'Cancel', role: 'cancel', handler: () => {}},
         {text: 'Open', handler: () => {
-          this.inAppBrowser.create(url); 
+          this.inAppBrowser.create(url);
         } }
       ]
     });

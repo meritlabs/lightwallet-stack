@@ -202,4 +202,3 @@ export module Verifier {
   };
 
 }
-

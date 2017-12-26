@@ -9,7 +9,7 @@ import * as Promise from 'bluebird';
 import * as _ from "lodash";
 import { Logger } from 'merit/core/logger';
 
-/* 
+/*
   Ideally, this service gets loaded when it is needed.
 */
 @Injectable()
@@ -129,7 +129,7 @@ export class TxFormatService {
     }
 
     tx.amountStr = self.formatAmountStr(tx.amount);
-    //TODO: This causes an unresolved promise herror.  
+    //TODO: This causes an unresolved promise herror.
     return self.formatAlternativeStr(tx.amount).then((altStr) => {
       tx.alternativeAmountStr = altStr;
       tx.feeStr = self.formatAmountStr(tx.fee || tx.fees);

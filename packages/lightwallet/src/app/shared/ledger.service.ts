@@ -23,11 +23,11 @@ export class LedgerService {
         var bstr = new ByteString(s, GP.HEX).toBuffer();
         var a = new Uint8Array(bstr.length);
 
-        Array.prototype.forEach.call(bstr, 
-          function (ch, i) { 
+        Array.prototype.forEach.call(bstr,
+          function (ch, i) {
             a[i] = (ch+'').charCodeAt(0);
           });
-  
+
         return a;
     }
 
@@ -35,7 +35,7 @@ export class LedgerService {
         return new ByteString(s, GP.HEX).toBuffer();
     }
 
-}    
+}
 
 
 class Convert {
@@ -54,7 +54,7 @@ class Convert {
         }
         return r;
     }
-  
+
   /**
    * Convert an hexadecimal string to its binary representation
    * @param {String} src hexadecimal string
@@ -82,7 +82,7 @@ class Convert {
     }
     return result;
   }
-  
+
   /**
    * Convert a double digit hexadecimal number to an integer
    * @static
@@ -97,7 +97,7 @@ class Convert {
     }
     return (digits.indexOf(data.substring(offset, offset + 1).toUpperCase()) << 4) + (digits.indexOf(data.substring(offset + 1, offset + 2).toUpperCase()));
   }
-  
+
   /**
    * Convert a number to a two digits hexadecimal string (deprecated)
    * @static
@@ -108,7 +108,7 @@ class Convert {
     var digits = '0123456789abcdef';
     return digits.charAt(number >> 4) + digits.charAt(number & 0x0F);
   }
-  
+
   /**
    * Convert a number to a two digits hexadecimal string (similar to toHexDigit)
    * @static
@@ -118,7 +118,7 @@ class Convert {
   public static toHexByte = function(number) {
     return this.toHexDigit(number);
   }
-  
+
   /**
    * Convert a BCD number to a two digits hexadecimal string
    * @static
@@ -129,8 +129,8 @@ class Convert {
     var number = ((numberBCD / 10) * 16) + (numberBCD % 10);
     return this.toHexDigit(number);
   }
-  
-  
+
+
   /**
    * Convert a number to an hexadecimal short number
    * @static
@@ -140,7 +140,7 @@ class Convert {
   public static toHexShort = function(number) {
     return this.toHexDigit((number >> 8) & 0xff) + this.toHexDigit(number & 0xff);
   }
-  
+
   /**
    * Convert a number to an hexadecimal int number
    * @static
@@ -167,16 +167,16 @@ GP.HEX = 5;
 class ByteString {
 
     private hasBuffer:boolean;
-    private value:any; 
-    private length:any; 
+    private value:any;
+    private length:any;
 
     constructor(value, private encoding) {
         this.hasBuffer = (typeof Buffer != 'undefined');
         this.hasBuffer = false;
 
         if (this.hasBuffer && (value instanceof Buffer)) {
-            this.value  = value; 
-            this.encoding = GP.HEX; 
+            this.value  = value;
+            this.encoding = GP.HEX;
          } else {
             switch (encoding) {
                 case GP.HEX:
@@ -186,7 +186,7 @@ class ByteString {
                     this.value = new Buffer(value, 'hex');
                   }
                  break;
-          
+
                 case GP.ASCII:
                   if (!this.hasBuffer) {
                     this.value = value;
@@ -194,7 +194,7 @@ class ByteString {
                     this.value = new Buffer(value, 'ascii');
                   }
                   break;
-          
+
                 default:
                   throw "Invalid arguments";
                 }
@@ -207,9 +207,3 @@ class ByteString {
          return this.value;
     }
 }
-
-    
-
-    
-
-
