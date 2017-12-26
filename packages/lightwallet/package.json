@@ -156,14 +156,14 @@
       "cordova-plugin-file": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-touch-id": {
-	"FACEID_USAGE_DESCRIPTION": " "
+        "FACEID_USAGE_DESCRIPTION": " "
       },
       "cordova-plugin-android-fingerprint-auth": {},
       "cordova-plugin-contacts": {
-	"CONTACTS_USAGE_DESCRIPTION": " "
+        "CONTACTS_USAGE_DESCRIPTION": " "
       },
       "phonegap-plugin-barcodescanner": {
-	"CAMERA_USAGE_DESCRIPTION": " "
+        "CAMERA_USAGE_DESCRIPTION": " "
       },
       "branch-cordova-sdk": {},
       "cordova-plugin-fcm": {}
