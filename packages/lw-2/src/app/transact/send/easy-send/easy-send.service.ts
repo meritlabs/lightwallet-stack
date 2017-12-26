@@ -30,6 +30,9 @@ export class EasySendService {
         const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo());
         const receiverPrivKey = this.bitcore.PrivateKey.forEasySend(easySend.secret, opts.passphrase, opts.network);
 
+        console.log('easySendAddress', easySendAddress.toString());
+        console.log('easySendScript', easySend.script.inspect());
+
         const scriptReferralOpts = {
           parentAddress: signPrivKey.publicKey.toAddress().toString(),
           pubkey: pubkey.toString(), // sign pubkey used to verify signature

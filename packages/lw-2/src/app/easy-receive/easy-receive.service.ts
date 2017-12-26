@@ -88,7 +88,7 @@ export class EasyReceiveService {
       let onBlockChain = false;
 
       const scriptData = this.generateEasyScipt(receipt, password, network);
-      const scriptAddress = this.bwcService.getBitcore().Address(scriptData.script.getAddressInfo()).toString();
+      const scriptAddress = this.bwcService.getBitcore().Address(scriptData.scriptPubKey.getAddressInfo()).toString();
 
       return walletClient.validateEasyScript(scriptAddress).then((txn) => {
         if (txn.result.found == false) {
@@ -123,7 +123,6 @@ export class EasyReceiveService {
          input,
          destinationAddress.address,
          opts
-
        );
 
        let rawTxLength = testTx.serialize().length;
@@ -167,7 +166,8 @@ export class EasyReceiveService {
     return {
       privateKey: receivePrv,
       publicKey: receivePub,
-      script: script.toMixedScriptHashOut(senderPubKey)
+      script: script,
+      scriptPubKey: script.toMixedScriptHashOut(senderPubKey),
     };
   }
 }

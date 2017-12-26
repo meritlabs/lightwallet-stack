@@ -39,6 +39,7 @@ var errors = {
   UNLOCKED_ALREADY: "Address already unlocked.",
   INVALID_PARAMETERS: "Invalid paramaters sent to server.",
   INVALID_REFERRAL: "Invalid referral id",
+  MISSING_REFERRER: "Referrer address not found",
 };
 
 var errorObjects = _.fromPairs(_.map(errors, function(msg, code) {
