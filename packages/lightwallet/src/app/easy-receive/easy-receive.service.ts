@@ -59,7 +59,7 @@ export class EasyReceiveService {
   }
 
   public acceptEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: number, destinationAddress: any): Promise<void>  {
-      return this.spendEasyReceipt(receipt, wallet, input, destinationAddress);
+      return this.spendEasyReceipt(receipt, wallet, input, destinationAddress.address);
   }
 
 
@@ -121,7 +121,7 @@ export class EasyReceiveService {
        let opts:any = {};
        let testTx = wallet.buildEasySendRedeemTransaction(
          input,
-         destinationAddress.address,
+         destinationAddress,
          opts
        );
 
@@ -133,7 +133,7 @@ export class EasyReceiveService {
 
          let tx = wallet.buildEasySendRedeemTransaction(
            input,
-           destinationAddress.address,
+           destinationAddress,
            opts
          );
 
