@@ -35,9 +35,22 @@ brew install make
 alias make='/usr/local/Cellar/make/4.2.1_1/bin/gmake'
 ```
 
+### Ubuntu Users
+```
+# install ZeroMQ
+sudo apt install -y libzmq3-dev
+
+# install make
+sudo apt install -y make
+
+# install g++
+sudo apt install -y build-essential g++
+```
+
 ### Install Lerna
 
 You need Lerna to manage cross dependencies while still allowing us to publish packages.
+* Ubuntu USERS NEED TO RUN THIS COMMAND AS ROOT
 ```bash
 npm install -g lerna
 ```
@@ -45,7 +58,7 @@ npm install -g lerna
 
 ### Install MongoDB
 
-Bitcore Wallet Service uses MongoDB 
+Bitcore Wallet Service uses MongoDB
 
 ```bash
 $ brew install mongodb
@@ -64,7 +77,7 @@ make stop-mongo
 
 ### Setup LightWallet-Stack
 
-Run these in the order listed. 
+Run these in the order listed.
 
 ```sh
 lerna bootstrap

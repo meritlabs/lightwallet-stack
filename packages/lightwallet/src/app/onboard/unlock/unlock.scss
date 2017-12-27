@@ -49,6 +49,10 @@ view-unlock {
       input::-webkit-input-placeholder {
         color: rgba(0,0,0,0.4);
       }
+
+      .input-cover {
+        display: none;
+      }
     }
   }
 

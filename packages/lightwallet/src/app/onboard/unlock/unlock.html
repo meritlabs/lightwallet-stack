@@ -21,7 +21,7 @@
             <div class="bottom-buttons">
                 <ion-input [placeholder]="easyReceipt?.inviteCode || 'Invite code'"
                     [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
-                    [(ngModel)]="formData.unlockCode" name="unlockCode" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
+                    [(ngModel)]="formData.unlockCode" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
                 <button (click)="createAndUnlockWallet()" ion-button icon-only translate>
                     <ion-icon name="arrow-forward"></ion-icon>
                 </button>
@@ -53,9 +53,9 @@
 
 
         <div class="bottom-buttons">
-            <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
-                [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
-                [(ngModel)]="formData.unlockCode" name="unlockCode">
+            <ion-input [placeholder]="easyReceipt?.inviteCode || 'Invite code'"
+                       [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
+                       [(ngModel)]="formData.unlockCode" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
             <button (click)="createAndUnlockWallet()" ion-button icon-only translate>
                 <ion-icon name="arrow-forward"></ion-icon>
             </button>
