@@ -1,5 +1,5 @@
 <ion-header>
-        
+
     <ion-navbar color="secondary" >
         <ion-title translate>Create Vault</ion-title>
     </ion-navbar>
@@ -34,7 +34,7 @@
         <ion-item>
             <ion-label translate>Whitelist</ion-label>
         </ion-item>
-            
+
         <ion-item *ngFor="let address of formData.whitelist">
             <ion-label class="whitelist-item">
                 {{ address.name }}

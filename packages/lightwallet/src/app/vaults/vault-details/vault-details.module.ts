@@ -7,7 +7,7 @@ import { SharedModule } from 'merit/shared/shared.module';
 import { MomentModule } from 'angular2-moment';
 
 /*
-  ToDo: Work to get this lazy-loadable as possible. 
+  ToDo: Work to get this lazy-loadable as possible.
 */
 @NgModule({
   declarations: [

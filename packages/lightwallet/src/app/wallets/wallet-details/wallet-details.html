@@ -9,7 +9,7 @@
     </ion-navbar>
 
   </ion-header>
-  
+
   <ion-content >
     <ion-list>
         <div class="balance-header" (click)="getWalletHistory(true)" [style.background]="wallet.color" [class.default]="!wallet.color">
@@ -17,7 +17,7 @@
             <div class="balance-alt-str"> {{ wallet.status.totalBalanceAlternativeStr }}</div>
         </div>
     </ion-list>
-  
+
     <ion-list>
       <button ion-item *ngFor="let tx of wallet.completeHistory" (click)="goToTxDetails(tx)">
         <ion-icon item-start>

@@ -256,12 +256,6 @@ blockchainExplorerMock.reset = function() {
   blockchainExplorerMock.feeLevels = [];
 };
 
-blockchainExplorerMock.unlockWallet = function(a, b, cb) {
-  return cb(null, { result: { referralcode: 'code' } });
-}
-
-
-
 describe('client API', function() {
   var clients, app, sandbox;
   var i = 0;

@@ -176,5 +176,8 @@ Utils.parseVersion = function(version) {
   return v;
 };
 
+Utils.isHash = function (value) {
+  return typeof value === 'string' && value.length === 64 && /^[0-9a-fA-F]+$/.test(value);
+};
 
 module.exports = Utils;

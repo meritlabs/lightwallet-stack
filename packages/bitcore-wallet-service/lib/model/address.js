@@ -23,6 +23,9 @@ Address.create = function(opts) {
   x.network = Bitcore.Address(x.address).toObject().network;
   x.type = opts.type || Constants.SCRIPT_TYPES.P2SH;
   x.hasActivity = undefined;
+  x.parentAddress = opts.parentAddress;
+  x.signed = opts.signed || false;
+  x.refid = opts.refid;
   return x;
 };
 
@@ -39,6 +42,10 @@ Address.fromObj = function(obj) {
   x.publicKeys = obj.publicKeys;
   x.type = obj.type || Constants.SCRIPT_TYPES.P2SH;
   x.hasActivity = obj.hasActivity;
+  x.parentAddress = obj.parentAddress;
+  x.signed = obj.signed;
+  x.refid = obj.refid;
+
   return x;
 };
 
@@ -77,7 +84,7 @@ Address.derive = function(walletId, scriptType, publicKeyRing, path, m, network,
   return Address.create(_.extend(raw, {
     walletId: walletId,
     type: scriptType,
-    isChange: isChange,
+    isChange: isChange
   }));
 };
 

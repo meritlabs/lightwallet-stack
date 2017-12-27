@@ -86,27 +86,27 @@ export class MeritLightWallet {
       if (!this.rootComponent) {
         this.rootComponent = (profile && profile.credentials && profile.credentials.length) ? 'TransactView' : 'OnboardingView';
       }
-      
+
       return this.deepLinkService.getBranchData().then((data) => {
         this.logger.info("Branch Data: ", data);
         // If the branch params contain the minimum params needed for an easyReceipt, then
-        // let's validate and save them. 
+        // let's validate and save them.
         if (data && !_.isEmpty(data) && data.sk && data.se) {
           this.logger.info("About to Validate and Save.");
-        
+
           return this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt: EasyReceipt) => {
-        this.logger.info("Returned from validate with: ", easyReceipt);
-        
-            // We have an easyReceipt, let's handle the cases of being a new user or an 
+            this.logger.info("Returned from validate with: ", easyReceipt);
+
+            // We have an easyReceipt, let's handle the cases of being a new user or an
             // existing user.
             if (easyReceipt) {
               if (!(profile && profile.credentials && profile.credentials.length)) {
-                // User received easySend, but has no wallets yet. 
+                // User received easySend, but has no wallets yet.
                 // Skip to unlock view.
                 this.rootComponent = 'UnlockView'
               } else {
                 // User is a normal user and needs to be thrown an easyReceive modal.
-                // TODO: THROW MODAL!  
+                // TODO: THROW MODAL!
                 this.logger.info("Receiving an incoming EasySend.  Pushing to the wallets view.");
                 if (this.app.getRootNavs[0])
                 this.app.getRootNavs[0].setRoot('TransactView');
@@ -163,4 +163,3 @@ export class MeritLightWallet {
   }
 
 }
-

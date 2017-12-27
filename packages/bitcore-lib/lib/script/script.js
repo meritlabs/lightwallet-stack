@@ -48,7 +48,7 @@ Script.prototype.set = function(obj) {
   this.chunks = obj.chunks;
   this._isInput = obj.isInput;
   this._isOutput = obj.isOutput;
-  
+
   this._network = obj._network || obj.network || Networks.defaultNetwork;
 
   return this;
@@ -839,7 +839,7 @@ Script.buildP2SHMultisigIn = function(pubkeys, threshold, signatures, opts) {
  * requiring m of those public keys to spend
  * @param {PublicKey[]} publicKeys - list of all public keys controlling the output.
  *                                This is the key encoded as straight bytes.
- * @param {number} blockTimeout - amount of blocks the transaction can be buried under 
+ * @param {number} blockTimeout - amount of blocks the transaction can be buried under
  *                                until it isn't redeemable anymore.
  */
 Script.buildEasySendOut = function(publicKeys, blockTimeout, network) {
@@ -870,13 +870,14 @@ Script.buildEasySendOut = function(publicKeys, blockTimeout, network) {
  * @param {buffer} signature to be append to the script
  * @returns {Script}
  */
-Script.buildEasySendIn = function(signature, easyScript) {
+Script.buildEasySendIn = function(signature, easyScript, pubkeyId) {
   var s = new Script();
   var sigBuf = BufferUtil.concat([
     signature.toDER(),
     BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)
   ]);
   s.add(sigBuf);
+  s.add(pubkeyId);
   s.add(easyScript.toBuffer());
   return s;
 };
@@ -886,8 +887,8 @@ Script.buildSimpleVaultScript = function(tag) {
 
   var s = new Script();
 
-  s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] <tag>| 
-   .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] | 
+  s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] <tag>|
+   .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] |
    .add(Opcode. OP_NTOALTSTACK               )// <sig> <mode> <spend key> <renew key> | [addresses]
    .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> <spend key> | [addresses] <renew key>
    .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> | [addresses] <renew key> <spend key>
@@ -911,9 +912,9 @@ Script.buildSimpleVaultScript = function(tag) {
    .add(             Opcode.smallInt(5)      )// <spend key> <renew key> [addresses] <num addresss> 4 |
    .add(Opcode.      OP_ADD                  )// <spend key> <renew key> [addresses] <total args> |
    .add(Opcode.      OP_TOALTSTACK           )// <spend key> <renew key> [addresses] | <total args>
-   .add(             tag                     )// <spend key> <renew key> [addresses] <tag> | 
+   .add(             tag                     )// <spend key> <renew key> [addresses] <tag> |
    .add(             Opcode.smallInt(0)      )// <spend key> <renew key> [addresses] <tag> <vault type> |
-   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> | 
+   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> |
    .add(             Opcode.smallInt(1)      )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> |
    .add(             "s"                     )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> |
    .add(             Opcode.smallInt(1)      )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> <num addresses>|
@@ -924,7 +925,7 @@ Script.buildSimpleVaultScript = function(tag) {
    .add(Opcode. OP_ELSE                      )
    .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <renew key>
    .add(Opcode.      OP_DROP                 )// <sig> | [addresses] <renew key>
-   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <renew key> | [addresses]  
+   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <renew key> | [addresses]
    .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses]
    .add(             Opcode.smallInt(0)      )// <total args> | [addresses]
    .add(             Opcode.smallInt(0)      )// <total args> <out index> | [addresses]
@@ -1070,6 +1071,33 @@ Script.buildScriptHashOut = function(script) {
 };
 
 /**
+ * @param {Script|Address} script - the redeemScript for the new p2sh output. It can also be a p2sh address
+ * @param {PublicKey} public key used to sign script and generate mixed address
+ *
+ * @returns {Script} new pay to script hash script for given script
+ */
+Script.buildMixedScriptHashOut = function(script, signerPubKey) {
+  $.checkArgument(script instanceof Script || (script instanceof Address && script.isPayToScriptHash()));
+
+  signerPubKey = PublicKey(signerPubKey);
+
+  const mixedAddress = Hash.sha256ripemd160(
+    Buffer.concat([
+      Hash.sha256ripemd160(script.toBuffer()),
+      Hash.sha256ripemd160(signerPubKey.toBuffer())
+    ])
+  );
+
+  var s = new Script();
+  s.add(Opcode.OP_HASH160)
+    .add(mixedAddress)
+    .add(Opcode.OP_EQUAL);
+
+  s._network = script._network || script.network;
+  return s;
+};
+
+/**
  * Builds a scriptSig (a script for an input) that signs a public key output script.
  *
  * @param {Signature|Buffer} signature - a Signature object, or the signature in DER canonical encoding
@@ -1124,6 +1152,14 @@ Script.empty = function() {
  */
 Script.prototype.toScriptHashOut = function() {
   return Script.buildScriptHashOut(this);
+};
+
+/**
+ * @param {PublicKey} public key used to sign script and generate mixed address
+ * @returns {Script} a new pay to script hash script that pays to this script
+ */
+Script.prototype.toMixedScriptHashOut = function(signerPubKey) {
+  return Script.buildMixedScriptHashOut(this, signerPubKey);
 };
 
 /**

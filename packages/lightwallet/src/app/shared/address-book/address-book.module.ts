@@ -15,9 +15,9 @@ import { MeritContactService } from "merit/shared/address-book/merit-contact.ser
 
 // This module manaages the sending of money.
 // This is the first of three steps.
-@NgModule({ 
+@NgModule({
   declarations: [
-    AddressBookView 
+    AddressBookView
   ],
   imports: [
     IonicPageModule.forChild(AddressBookView),
