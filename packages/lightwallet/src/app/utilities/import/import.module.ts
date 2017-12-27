@@ -18,4 +18,4 @@ import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
     MnemonicService
   ]
 })
-export class ImportComponentModule {}
+export class ImportViewModule {}

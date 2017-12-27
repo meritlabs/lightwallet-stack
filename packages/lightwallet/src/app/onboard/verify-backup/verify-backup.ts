@@ -26,19 +26,27 @@ export class VerifyBackupView {
 
   ionViewDidLoad() {
     this.mnemonic = this.navParams.get('mnemonic');
-    this.wordList = _.shuffle(_.map(this.mnemonic.split(' '), (word) => ({
-      word: word,
-      selected: false
-    })));
+    if (this.mnemonic) {
+      this.wordList = _.shuffle(_.map(this.mnemonic.split(' '), (word) => ({
+        word: word,
+        selected: false
+      })));
+    } else {
+      this.navCtrl.pop();
+    }
   }
 
   public selectedAll(): boolean {
     return _.every(this.wordList, 'selected');
   }
 
-  public selectOne(wordObj: {word: string, selected: boolean}): void {
-    wordObj.selected = true;
-    this.enteredPhrase.push(wordObj.word);
+  public toggleWord(wordObj: {word: string, selected: boolean}): void {
+    wordObj.selected = !wordObj.selected;
+    if (wordObj.selected) {
+      this.enteredPhrase.push(wordObj.word);
+    } else {
+      this.enteredPhrase = this.enteredPhrase.filter(w => w != wordObj.word);
+    }
   }
 
   public resetWords(): void {

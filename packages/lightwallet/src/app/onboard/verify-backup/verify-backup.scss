@@ -6,6 +6,9 @@ view-verify-backup {
       background: #8CC4FC;
       color: #374D63;
     }
+    button.selected {
+      opacity: .4;
+    }
   }
   .reset-button {
     button {

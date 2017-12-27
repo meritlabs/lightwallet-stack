@@ -15,7 +15,7 @@
             </ion-row>
             <ion-row *ngFor="let chunk of wordList | chunks: 3">
                 <ion-col *ngFor="let wordObj of chunk" class="word-buttons">
-                    <button ion-button small round (click)="selectOne(wordObj)" [disabled]="wordObj.selected">{{wordObj.word}}</button>
+                    <button ion-button small round (click)="toggleWord(wordObj)" [class.selected]="wordObj.selected">{{wordObj.word}}</button>
                 </ion-col>
             </ion-row>
             <ion-row>
