@@ -15,12 +15,12 @@ import { CoreModule } from 'merit/core/core.module';
     MeritLightWallet,
   ],
   imports: [
-    BrowserModule, 
+    BrowserModule,
     MomentModule,
-    CoreModule, 
+    CoreModule,
     IonicModule.forRoot(MeritLightWallet)
   ],
-  bootstrap: [IonicApp], 
+  bootstrap: [IonicApp],
   entryComponents: [
     MeritLightWallet
   ],
@@ -28,4 +28,4 @@ import { CoreModule } from 'merit/core/core.module';
      {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
-export class AppModule {} 
+export class AppModule {}

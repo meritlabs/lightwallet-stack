@@ -3,7 +3,7 @@ import { PollingNotificationsService } from './polling-notification.service';
 import { PushNotificationsService } from "./push-notification.service";
 import { EmailNotificationsService } from "./email-notification.service";
 
-// Settings 
+// Settings
 @NgModule({
   declarations: [
   ],

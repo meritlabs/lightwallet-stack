@@ -10,7 +10,7 @@ import { Logger } from 'merit/core/logger';
 @Injectable()
 export class TouchIdService {
 
-  private _isAvailable: boolean = false; 
+  private _isAvailable: boolean = false;
 
   constructor(
     private touchId: TouchID,

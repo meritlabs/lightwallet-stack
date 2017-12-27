@@ -1,5 +1,5 @@
 <ion-header>
-    
+
       <ion-navbar>
         <ion-buttons start>
           <button *ngIf="action === 'pinSetUp' || action === 'removeLock'" (click)="goBack()" ion-button icon-only>
@@ -9,9 +9,9 @@
         <ion-title *ngIf="!confirmingPin">Please enter your PIN</ion-title>
         <ion-title *ngIf="confirmingPin">Confirm your PIN</ion-title>
       </ion-navbar>
-    
+
     </ion-header>
-    
+
     <ion-content padding>
       <div *ngIf="disableButtons">
         <div *ngIf="!expires" translate>Incorrect PIN, try again.</div>
@@ -48,4 +48,3 @@
         </div>
       </div>
     </ion-content>
-    

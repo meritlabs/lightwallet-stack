@@ -1,5 +1,5 @@
 export class TransactionProposal {
-  
+
   // Core Params..
   public createdOn: number;
   public id: string;

@@ -6,13 +6,13 @@ import * as _ from "lodash";
 export class FiatAmount {
 
   public formats: {
-      CURRENCY_SYM: string, 
-      DECIMAL_SEP: string, 
-      GROUP_SEP: string 
+      CURRENCY_SYM: string,
+      DECIMAL_SEP: string,
+      GROUP_SEP: string
   };
   public amount: number;
   public amountStr: string;
-  
+
   constructor(amount: number) {
     this.formats = {
       CURRENCY_SYM: "$",
@@ -23,8 +23,8 @@ export class FiatAmount {
     this.amountStr = this.formatAmountStr(amount);
   }
 
-  // Inserts commas and decimals to formal an amount. 
-  // Example: 123456789.12 -> 123,456,789.12 
+  // Inserts commas and decimals to formal an amount.
+  // Example: 123456789.12 -> 123,456,789.12
   formatFiatAmount(amount: number) {
     var value: any;
     var sep: any;
@@ -56,7 +56,7 @@ export class FiatAmount {
     }
     return 0;
   }
-  
+
   formatAmountStr(amount: number): string {
     var formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -65,8 +65,8 @@ export class FiatAmount {
       // the default value for minimumFractionDigits depends on the currency
       // and is usually already 2
     });
-    
-    return formatter.format(this.formatFiatAmount(amount)); 
+
+    return formatter.format(this.formatFiatAmount(amount));
   }
-  
+
 }
