@@ -21,10 +21,6 @@ import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
 })
 export class ImportView {
 
-  //public phraseView = 'ImportPhraseView';
-  //public fileView   = 'ImportFileView';
-  //public formGroup:FormGroup;
-
   @ViewChild('fileInput') input:ElementRef;
 
   public segment = 'phrase';
@@ -227,7 +223,5 @@ export class ImportView {
       !this.loadFileInProgress && this.formData.backupFileBlob && this.formData.filePassword
     );
   }
-
-
 
 }

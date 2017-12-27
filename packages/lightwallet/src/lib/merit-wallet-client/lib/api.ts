@@ -42,7 +42,7 @@ export interface InitOptions {
 }
 
 export class API {
-  public BASE_URL = 'http://localhost:3232/bws/api';
+  public BASE_URL = 'https://stage.mws.merit.me/bws/api';
   public request: any;
   public baseUrl: string;
   public payProHttp: string;
