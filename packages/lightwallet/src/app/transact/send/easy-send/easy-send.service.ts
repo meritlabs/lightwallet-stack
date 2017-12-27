@@ -12,7 +12,8 @@ export class EasySendService {
 
   constructor(
     private persistenceService: PersistenceService,
-    private socialSharing: SocialSharing
+    private socialSharing: SocialSharing,
+    private bwcService: BwcService
   ) {
     this.bitcore = this.bwcService.getBitcore();
   }
@@ -71,7 +72,7 @@ export class EasySendService {
       const msg1: string = `I just sent you ${amountMrt} Merit.  Merit is a new Digital Currency.  `
       const msg2: string = url;
 
-      // HACK: 
+      // HACK:
       msg = msg2;
     }
     return Promise.resolve(this.socialSharing.shareViaSMS(msg, phoneNumber)).catch((err) => {
