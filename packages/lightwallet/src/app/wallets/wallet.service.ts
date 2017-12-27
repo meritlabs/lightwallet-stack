@@ -22,11 +22,13 @@ import { Events } from 'ionic-angular';
 import * as _ from 'lodash';
 import {Observable} from "rxjs/Observable";
 import 'rxjs/add/operator/retryWhen';
+import 'rxjs/add/operator/zip';
 import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/scan';
-import 'rxjs/add/operator/take';
-import 'rxjs/add/operator/delay';
-import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/observable/fromPromise';
+import 'rxjs/add/observable/timer';
+import 'rxjs/add/observable/range';
+import 'rxjs/add/observable/throw';
 
 
 /* Refactor CheckList:
@@ -1296,27 +1298,25 @@ export class WalletService {
         return walletClient;
     };
 
-    return Observable.fromPromise(seed())
+    return Observable.create(obs => {
+        seed().then(obs.next.bind(obs)).catch(obs.error.bind(obs))
+    })
         .retryWhen(errors =>
             errors
                 .do(err => this.logger.warn('Error creating wallet in DCW: ', err))
-                .filter(err => {
-                    if (err == Errors.CONNECTION_ERROR) {
-                      return true;
-                    } else {
-                      throw err;
+                .zip(Observable.range(1,3))
+                .mergeMap(([err, i]) => {
+                    if (err == Errors.CONNECTION_ERROR && i < 3) {
+                        return Observable.timer(2000);
                     }
+                    return Observable.throw(err)
                 })
-                .delay(2000) // delay 2 seconds
-                .take(3) // try 3 times
         )
         .toPromise();
   }
 
   // TODO: Rename this.
-  private seedWallet(opts: any): Promise<MeritWalletClient> {
-    return new Promise((resolve, reject) => {
-
+  private async seedWallet(opts: any): Promise<MeritWalletClient> {
       opts = opts ? opts : {};
       let walletClient = this.bwcService.getClient(null, opts);
       let network = opts.networkName || this.configService.getDefaults().network.name;
@@ -1324,12 +1324,10 @@ export class WalletService {
       if (opts.mnemonic) {
         try {
           // TODO: Type the walletClient
-          return this.mnemonicService.seedFromMnemonic(opts, walletClient).then((walletClient: any) => {
-            return resolve(walletClient)
-          });
+          return this.mnemonicService.seedFromMnemonic(opts, walletClient);
         } catch (ex) {
           this.logger.info(ex);
-          return reject(new Error('Could not create: Invalid wallet recovery phrase')); // TODO getTextCatalog
+          throw new Error('Could not create: Invalid wallet recovery phrase'); // TODO getTextCatalog
         }
       } else if (opts.extendedPrivateKey) {
         try {
@@ -1340,7 +1338,7 @@ export class WalletService {
           });
         } catch (ex) {
           this.logger.warn(ex);
-          return reject(new Error('Could not create using the specified extended private key')); // TODO GetTextCatalog
+          throw new Error('Could not create using the specified extended private key'); // TODO GetTextCatalog
         }
       } else if (opts.extendedPublicKey) {
         try {
@@ -1351,7 +1349,7 @@ export class WalletService {
           walletClient.credentials.hwInfo = opts.hwInfo;
         } catch (ex) {
           this.logger.warn("Creating wallet from Extended Public Key Arg:", ex, opts);
-          return reject(new Error('Could not create using the specified extended public key')); // TODO GetTextCatalog
+          throw new Error('Could not create using the specified extended public key'); // TODO GetTextCatalog
         }
       } else {
         let lang = this.languageService.getCurrent();
@@ -1372,12 +1370,11 @@ export class WalletService {
               account: 0
             });
           } else {
-            return reject(e);
+            throw new Error(e);
           }
         }
       }
-      return resolve(walletClient);
-    });
+      return walletClient;
   }
 
   /**
