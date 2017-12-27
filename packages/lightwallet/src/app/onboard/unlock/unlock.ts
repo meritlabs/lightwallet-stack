@@ -24,16 +24,18 @@ import { PollingNotificationsService } from 'merit/core/notification/polling-not
 })
 export class UnlockView {
 
-  public unlockState:'success'|'fail';
-  public formData = {unlockCode: ''};
+  unlockState: 'success' | 'fail';
+  formData = {
+      unlockCode: ''
+  };
 
-  public easyReceipt:EasyReceipt;
+  easyReceipt: EasyReceipt;
 
   constructor(
     private app:App,
     private walletService: WalletService,
     private toastCtrl: MeritToastController,
-    private loaderCtrl: LoadingController, 
+    private loaderCtrl: LoadingController,
     private navCtrl: NavController,
     private navParams: NavParams,
     private easyReceiveService: EasyReceiveService,
@@ -41,14 +43,12 @@ export class UnlockView {
     private config: ConfigService,
     private pushNotificationService: PushNotificationsService,
     private pollingNotificationService: PollingNotificationsService
-  ) {
-      
-  }
+  ) {}
 
   ionViewDidLoad() {
-    // An unlock code from a friend sharing the link. 
+    // An unlock code from a friend sharing the link.
     this.formData.unlockCode = this.navParams.get('unlockCode') || '';
-    
+
     this.easyReceiveService.getPendingReceipts().then((receipts) => {
       this.easyReceipt = receipts.pop();
       // The unlock code from a pending easyReceipt takes priority.
