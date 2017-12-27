@@ -2,7 +2,7 @@ import { Component, ApplicationRef, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, AlertController, Events } from 'ionic-angular';
 
 import * as _ from "lodash";
-import * as Promise from 'bluebird';
+
 import { ProfileService } from "merit/core/profile.service";
 import { FeedbackService } from "merit/feedback/feedback.service"
 import { Feedback } from "merit/feedback/feedback.model"
@@ -116,51 +116,52 @@ export class WalletsView {
     this.logger.warn("Hello WalletsView :: IonViewDidLoad!");
   }
 
-  private updateAllInfo(opts: { force: boolean } = { force: false }): Promise<any> {
+  async updateAllInfo(opts: { force: boolean } = { force: false }) {
 
     this.loading = true;
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
 
-      const fetch = (attempt = 0) => {
-        return this.addressbookService.list(this.configService.getDefaults().network.name).then((addressBook) => {
-          this.addressbook = addressBook;
-          return this.updateAllWallets(opts.force);
-        }).then((wallets) => {
-          if (_.isEmpty(wallets)) {
-            return resolve(null); //ToDo: add proper error handling;
-          }
-          this.wallets = wallets;
+        const fetch = async (attempt = 0) => {
 
-          // Now that we have wallets, we will proceed with the following operations in parallel.
-          return Promise.join(
-            this.updateNetworkValue(wallets),
-            this.processEasyReceive(),
-            this.updateTxps({ limit: 3 }),
-            this.updateVaults(_.head(this.wallets)),
-            this.fetchNotifications(),
-            (res) => {
+          try {
+              this.addressbook = await this.addressbookService.list(this.configService.getDefaults().network.name);
+              const wallets = await this.updateAllWallets(opts.force);
+
+              if (_.isEmpty(wallets)) {
+                  return resolve(null); //ToDo: add proper error handling;
+              }
+              this.wallets = wallets;
+
+              // Now that we have wallets, we will proceed with the following operations in parallel.
+              await Promise.all([
+                  this.updateNetworkValue(wallets),
+                  this.processEasyReceive(),
+                  this.updateTxps({ limit: 3 }),
+                  this.updateVaults(_.head(this.wallets)),
+                  this.fetchNotifications()
+              ]);
+
               this.logger.info("Done updating all info for wallet.");
+              resolve();
+          } catch (err) {
+              this.logger.info("Error updating information for all wallets.");
+              this.logger.info(err);
+              if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
+                  if (++attempt < WalletsView.RETRY_MAX_ATTEMPTS) {
+                      return setTimeout(fetch.bind(this, attempt), WalletsView.RETRY_TIMEOUT);
+                  }
+              }
+
+              this.toastCtrl.create({
+                  message: err.text || 'Failed to update information',
+                  cssClass: ToastConfig.CLASS_ERROR
+              }).present();
+
               return resolve();
-            }
-          )
-        }).catch((err) => {
-          this.logger.info("Error updating information for all wallets.");
-          this.logger.info(err);
-          if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
-            if (++attempt < WalletsView.RETRY_MAX_ATTEMPTS) {
-              return setTimeout(fetch.bind(this, attempt), WalletsView.RETRY_TIMEOUT);
-            }
           }
 
-          this.toastCtrl.create({
-            message: err.text || 'Failed to update information',
-            cssClass: ToastConfig.CLASS_ERROR
-          }).present();
-
-          return resolve();
-        }).finally(() => this.loading = false);
-      };
+        };
 
       fetch();
     });
@@ -173,22 +174,17 @@ export class WalletsView {
     });
   }
 
-  private updateVaults(wallet: MeritWalletClient): Promise<any> {
-    return this.vaultsService.getVaults(wallet).then((vaults) => {
-      this.logger.info('getting vaults', vaults);
-      return Promise.map(vaults, (vault) => {
-        return this.vaultsService.getVaultCoins(wallet, vault).then((coins) => {
-          vault.amount = _.sumBy(coins, 'micros');
-          return this.txFormatService.toFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode).then((alternativeAmount) => {
-            vault.altAmountStr = new FiatAmount(vault.altAmount).amountStr;
-            vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
-            return vault;
-          });
-        });
-      }).then((vaults) => {
-        this.vaults = vaults;
-      });
-    });
+  private async updateVaults(wallet: MeritWalletClient): Promise<any> {
+    const vaults = await this.vaultsService.getVaults(wallet);
+    this.logger.info('getting vaults', vaults);
+    this.vaults = await Promise.all(vaults.map(async vault => {
+        let coins = await this.vaultsService.getVaultCoins(wallet, vault);
+        vault.amount = _.sumBy(coins, 'micros');
+        await this.txFormatService.toFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode);
+        vault.altAmountStr = new FiatAmount(vault.altAmount).amountStr;
+        vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
+        return vault;
+    }));
   }
 
   private fetchNotifications(): Promise<any> {
@@ -209,7 +205,7 @@ export class WalletsView {
     return Promise.resolve();
   }
 
-  private processIncomingTransactionEvent(n: any, opts: { updateStatus: boolean } = { updateStatus: false }): void {
+  private async processIncomingTransactionEvent(n: any, opts: { updateStatus: boolean } = { updateStatus: false }) {
     if (_.isEmpty(n)) {
       return;
     }
@@ -263,16 +259,15 @@ export class WalletsView {
       }
       this.walletService.invalidateCache(this.wallets[foundIndex]);
 
-      Promise.join([
-        this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
-          // Using angular's NgZone to ensure that the view knows to re-render.
-          this.zone.run(() => {
-            this.wallets[foundIndex].status = status;
-          });
-        }),
-        this.updateNetworkValue(this.wallets)
-      ]);
-
+        await Promise.all([
+            this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
+                // Using angular's NgZone to ensure that the view knows to re-render.
+                this.zone.run(() => {
+                    this.wallets[foundIndex].status = status;
+                });
+            }),
+            this.updateNetworkValue(this.wallets)
+        ]);
 
     }
   }
@@ -432,22 +427,18 @@ export class WalletsView {
 
   }
 
-  private updateNetworkValue(wallets: Array<any>): Promise<any> {
+  private async updateNetworkValue(wallets: Array<any>) {
     let totalAmount: number = 0;
-    return Promise.each(wallets, (wallet) => {
-      return this.walletService.getANV(wallet).then((anv) => {
-        totalAmount += anv;
-      });
-    }).then(() => {
-      return this.txFormatService.formatToUSD(totalAmount).then((usdAmount) => {
+
+    await Promise.all(wallets.map(async (wallet) => {
+        totalAmount += await this.walletService.getANV(wallet);
+        const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
         this.zone.run(() => {
-          this.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
-          this.totalNetworkValue = totalAmount;
-          this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
+            this.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
+            this.totalNetworkValue = totalAmount;
+            this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
         });
-        return Promise.resolve();
-      });
-    });
+    }));
   }
 
   private openWallet(wallet) {
@@ -493,16 +484,13 @@ export class WalletsView {
     this.navCtrl.push('ImportView');
   }
 
-  private updateAllWallets(force: boolean = false): Promise<MeritWalletClient[]> {
-    return this.profileService.getWallets().map((wallet: any) => {
-      this.profileService.updateWalletSettings(wallet);
-      return this.walletService.getStatus(wallet, { force: force }).then((status) => {
-        wallet.status = status;
+  private async updateAllWallets(force: boolean = false): Promise<MeritWalletClient[]> {
+    const wallets = await this.profileService.getWallets();
+    return Promise.all(wallets.map(async (wallet) => {
+        this.profileService.updateWalletSettings(wallet);
+        wallet.status = await this.walletService.getStatus(wallet, { force: force });
         return wallet;
-      }).catch((err) => {
-        return Promise.reject(err);
-      });
-    })
+    }));
   }
 
   // This is a callback used when a new wallet is created.
@@ -528,7 +516,7 @@ export class WalletsView {
   }
 
   private txpCreatedWithinPastDay(txp) {
-    var createdOn = new Date(txp.createdOn * 1000);
+    const createdOn = new Date(txp.createdOn * 1000);
     return ((new Date()).getTime() - createdOn.getTime()) < (1000 * 60 * 60 * 24);
   }
 

@@ -1,6 +1,6 @@
 import { MeritStorage, KeyAlreadyExistsError } from 'merit/core/storage/storage.interface';
 import { Logger } from 'merit/core/logger';
-import * as Promise from 'bluebird';
+
 
 
 export class RamStorage implements MeritStorage {

@@ -7,7 +7,7 @@ import { ToastConfig } from "merit/core/toast.config";
 import { Logger } from 'merit/core/logger';
 
 import * as _ from "lodash";
-import * as Promise from 'bluebird';
+
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
 import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';

@@ -7,7 +7,7 @@ import { Contact } from '@ionic-native/contacts';
 import { MeritContact } from "merit/shared/address-book/merit-contact.model";
 import { DomSanitizer } from '@angular/platform-browser';
 
-import * as Promise from 'bluebird';
+
 
 @IonicPage({
   defaultHistory: ['SettingsView']

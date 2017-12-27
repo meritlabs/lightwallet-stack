@@ -1,5 +1,5 @@
 import * as  _  from 'lodash';
-import * as Promise from 'bluebird';
+
 
 import { NavController, NavParams, IonicPage, AlertController, ModalController, App, LoadingController } from 'ionic-angular';
 import { Component, NgZone } from '@angular/core';

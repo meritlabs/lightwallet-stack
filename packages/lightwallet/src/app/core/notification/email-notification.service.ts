@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import * as _ from "lodash";
-import * as Promise from 'bluebird';
+
 
 import { ConfigService } from 'merit/shared/config.service';
 import { ProfileService } from 'merit/core/profile.service';

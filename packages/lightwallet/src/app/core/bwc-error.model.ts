@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Logger } from 'merit/core/logger';
-import * as Promise from 'bluebird';
+
 
 
 @Injectable()

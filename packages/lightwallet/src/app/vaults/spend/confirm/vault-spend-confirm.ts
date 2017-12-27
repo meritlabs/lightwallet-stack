@@ -14,7 +14,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { SpendVaultService } from 'merit/vaults/spend/vault-spend.service';
 
 import * as  _  from 'lodash';
-import * as Promise from 'bluebird';
+
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 

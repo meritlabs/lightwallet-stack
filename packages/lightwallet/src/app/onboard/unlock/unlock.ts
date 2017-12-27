@@ -3,7 +3,6 @@ import { IonicPage, App, LoadingController, NavController } from 'ionic-angular'
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ToastConfig } from "merit/core/toast.config";
 import { MeritToastController } from "merit/core/toast.controller";
-import * as Promise from 'bluebird';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { Logger } from 'merit/core/logger';
@@ -57,38 +56,38 @@ export class UnlockView {
 
   }
 
-  createAndUnlockWallet():Promise<any> {
+  async createAndUnlockWallet() {
 
     if (!this.formData.unlockCode) {
       this.unlockState = 'fail';
       return;
     }
 
-    let loader = this.loaderCtrl.create({content: 'Creating wallet...'});
+    const loader = this.loaderCtrl.create({content: 'Creating wallet...'});
     loader.present();
 
-    return this.walletService.createDefaultWallet(this.formData.unlockCode).then((wallet) => {
+    try {
+      const wallet = await this.walletService.createDefaultWallet(this.formData.unlockCode);
       this.logger.info('Created a new default wallet!');
-      loader.dismiss();
       if (this.config.get().pushNotificationsEnabled) {
-        this.logger.info("Subscribing to push notifications for default wallet");
-        this.pushNotificationService.subscribe(wallet);
+          this.logger.info("Subscribing to push notifications for default wallet");
+          this.pushNotificationService.subscribe(wallet);
       } else {
-        this.logger.info("Subscribing to long polling for default wallet");
-        this.pollingNotificationService.enablePolling(wallet);
+          this.logger.info("Subscribing to long polling for default wallet");
+          this.pollingNotificationService.enablePolling(wallet);
       }
 
       // Now that we are unlocked, we no longer need these other views in the stack,
       // so we shall destroy them.
       this.navCtrl.setRoot('TransactView');
       this.navCtrl.popToRoot();
-    }).catch((err) => {
-      loader.dismiss();
+    } catch (err) {
       if (err == Errors.UNLOCK_CODE_INVALID) this.unlockState = 'fail';
       this.logger.debug("Could not unlock wallet: ", err);
       this.toastCtrl.create({ message: err.text || 'Unknown error', cssClass: ToastConfig.CLASS_ERROR }).present();
-    });
-
+    } finally {
+      loader.dismiss();
+    }
   }
 
 }

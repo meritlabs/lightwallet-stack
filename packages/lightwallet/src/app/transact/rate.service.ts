@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/timeout';
+import 'rxjs/add/observable/fromPromise';
 import { Logger } from 'merit/core/logger';
 
-import * as Promise from 'bluebird';
+
 // const request = require('superagent');
 import * as request from 'superagent';
 
 import * as _ from 'lodash';
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class RateService {  
@@ -32,31 +35,27 @@ export class RateService {
     this.updateRates();
   }
 
-  updateRates(): Promise<any> {
-    return new Promise ((resolve, reject) => {
-      let self = this;
-      return this.getBTC().timeout(1000).then((dataBTC) => {
-        if (_.isEmpty(dataBTC)) {
+  async updateRates(): Promise<any> {
+    try {
+      const dataBTC = await Observable.fromPromise(this.getBTC())
+          .timeout(1000)
+          .toPromise();
+
+      if (_.isEmpty(dataBTC)) {
           this.logger.warn("Could not update rates from rate Service");
-          return resolve();
-          //reject(new Error("Could not get conversion rate."))
-        } else {
-          _.each(dataBTC, (currency) => {
-            self._rates[currency.code] = currency.rate;
-            self._alternatives.push({
-              name: currency.name,
-              isoCode: currency.code,
-              rate: currency.rate
+      } else {
+        _.each(dataBTC, (currency) => {
+            this._rates[currency.code] = currency.rate;
+            this._alternatives.push({
+                name: currency.name,
+                isoCode: currency.code,
+                rate: currency.rate
             });
-          });
-          return resolve();
-        }
-      })
-      .catch((errorBTC) => {
+        });
+      }
+    } catch (errorBTC) {
         this.logger.warn("Error applying rates to wallet: ", errorBTC);
-        return resolve();
-      });
-    });
+    }
   }
 
   getBTC(): Promise<any> {

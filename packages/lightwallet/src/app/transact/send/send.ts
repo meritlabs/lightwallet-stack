@@ -17,7 +17,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ToastConfig } from "merit/core/toast.config";
 import { MeritToastController } from "merit/core/toast.controller";
 
-import * as Promise from 'bluebird';
+
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts

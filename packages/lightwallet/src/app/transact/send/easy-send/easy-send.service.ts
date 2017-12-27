@@ -1,4 +1,4 @@
-import * as Promise from 'bluebird';
+
 import { Injectable } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';

@@ -3,7 +3,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { Logger } from 'merit/core/logger';
 
-import * as Promise from 'bluebird';
+
 import * as _ from 'lodash';
 
 @Injectable()
