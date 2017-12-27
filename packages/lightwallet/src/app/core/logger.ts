@@ -26,7 +26,7 @@ export class Logger {
       }
       return message;
     })
-  } 
+  }
 
   public getLogs(level = Logger.LEVEL_INFO) {
     return this.logs.filter((l) => {return (l.level <= level)});

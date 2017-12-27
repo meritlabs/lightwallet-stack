@@ -1,5 +1,6 @@
 import * as Promise from 'bluebird';
 import { Injectable } from '@angular/core';
+import { BwcService } from 'merit/core/bwc.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
@@ -7,38 +8,60 @@ import { PersistenceService } from 'merit/core/persistence.service';
 
 @Injectable()
 export class EasySendService {
+  private bitcore: any;
+
   constructor(
     private persistenceService: PersistenceService,
     private socialSharing: SocialSharing
-  ) {}
+  ) {
+    this.bitcore = this.bwcService.getBitcore();
+  }
+
   public createEasySendScriptHash(wallet: MeritWalletClient): Promise<EasySend> {
+    const signPrivKey = this.bitcore.PrivateKey(wallet.credentials.walletPrivKey, wallet.network);
+    const pubkey = signPrivKey.toPublicKey();
 
     // TODO: get a passphrase from the user
     let opts = {
       network: wallet.network,
-      unlockCode: wallet.shareCode,
-      passphrase: ''
+      parentAddress: pubkey.toAddress().toString(),
+      passphrase: '',
     };
 
-    return wallet.buildEasySendScript(opts).then((easySend) => {
-      let unlockScriptOpts = {
-        unlockCode: wallet.shareCode,
-        address: easySend.script.toAddress().toString(), // not typechecked yet
-        network: opts.network
-      };
-      return wallet.unlockAddress(unlockScriptOpts).then(() => {
-        let unlockRecipientOpts = {
-          unlockCode: wallet.shareCode,
-          address: easySend.receiverPubKey.toAddress().toString(), // not typechecked yet
-          network: opts.network
+    return wallet
+      .buildEasySendScript(opts)
+      .then(easySend => {
+        const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo());
+        const receiverPrivKey = this.bitcore.PrivateKey.forEasySend(easySend.secret, opts.passphrase, opts.network);
+
+        const scriptReferralOpts = {
+          parentAddress: signPrivKey.publicKey.toAddress().toString(),
+          pubkey: pubkey.toString(), // sign pubkey used to verify signature
+          signPrivKey,
+          address: easySendAddress.toString(),
+          addressType: 2, // script address
+          network: opts.network,
         };
-        return wallet.unlockAddress(unlockRecipientOpts);
-      }).then(() => {
+
+        const recipientReferralOpts = {
+          parentAddress: pubkey.toAddress().toString(),
+          pubkey: receiverPrivKey.publicKey.toString(),
+          signPrivKey: receiverPrivKey,
+          address: easySend.receiverPubKey.toAddress().toString(),
+          addressType: 1, // pubkeyhash address
+          network: opts.network,
+        };
+
+        // easy send address is a mix of script_id pubkey_id
+        easySend.scriptAddress = easySendAddress;
+        easySend.scriptReferralOpts = scriptReferralOpts;
+        easySend.recipientReferralOpts = recipientReferralOpts;
+
         return Promise.resolve(easySend);
+      })
+      .catch(err => {
+        return Promise.reject(new Error('error building easysend script' + err));
       });
-    }).catch((err) => {
-      return Promise.reject(new Error('error building easysend script' + err));
-    });
   }
 
   public sendSMS(phoneNumber: string, amountMrt:string, url: string): Promise<any> {

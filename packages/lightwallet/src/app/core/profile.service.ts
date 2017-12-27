@@ -19,9 +19,9 @@ import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
 
 
-/* 
+/*
   Historically, this acted as the API-Client
-  Now, the goal is to roll up convenience-statistics 
+  Now, the goal is to roll up convenience-statistics
   and keep a list of wallets.
 */
 @Injectable()
@@ -111,7 +111,7 @@ export class ProfileService {
     });
   }
 
-  // Adds a WalletService client (BWC) into the wallet.  
+  // Adds a WalletService client (BWC) into the wallet.
   private bindWalletClient(wallet: MeritWalletClient, opts?: any): Promise<boolean> {
     this.logger.info("Binding the wallet client!");
     return new Promise((resolve, reject) => {
@@ -132,16 +132,16 @@ export class ProfileService {
       wallet.m = wallet.credentials.m;
       wallet.n = wallet.credentials.n;
       wallet.unlocked = wallet.credentials.unlocked;
-      wallet.shareCode = wallet.credentials.shareCode;
+      wallet.parentAddress = wallet.credentials.parentAddress;
 
       this.updateWalletSettings(wallet);
       this.wallets[walletId] = wallet;
 
       return wallet.initialize({
         notificationIncludeOwn: true,
-      
 
-      
+
+
       }).then(() => {
         return this.balanceIsHidden(wallet).then((val: any) => {
           return wallet.balanceHidden = val;
@@ -162,7 +162,6 @@ export class ProfileService {
 
 
           wallet.eventEmitter.on('walletCompleted', () => {
-
             return this.updateCredentials(JSON.parse(wallet.export())).then(() => {
               this.logger.info("Updated the credentials and now publishing this: ", walletId);
               this.events.publish('Local:WalletCompleted', walletId);
@@ -171,7 +170,7 @@ export class ProfileService {
           });
         }).then(() => {
           return this.needsBackup(wallet).then((val: any) => {
-            return wallet.needsBackup = val;    
+            return wallet.needsBackup = val;
           });
         }).then(() => {
           return wallet.openWallet();
@@ -198,9 +197,9 @@ export class ProfileService {
 
   /**
    * This method is called when we receive a 'notification' event
-   * from the EventEmitter on the MeritWalletClient. 
-   * 
-   * Here we filter event types and propogate them to the rest of the application via 
+   * from the EventEmitter on the MeritWalletClient.
+   *
+   * Here we filter event types and propogate them to the rest of the application via
    * Ionic Events.
    */
   public propogateBwsEvent(n: any, wallet: MeritWalletClient): void {
@@ -322,10 +321,9 @@ export class ProfileService {
 
         this.storeProfileIfDirty();
       });
-
   }
 
-  /* 
+  /*
     Profile-related Methods
   */
   public loadAndBindProfile(): Promise<Profile> {
@@ -362,7 +360,7 @@ export class ProfileService {
 
   // TODO: move to Starter module, with minimal dependencies
   public getProfile(): Promise<Profile> {
-    // If there are no credentials, we assume that the profile has not been bound.  
+    // If there are no credentials, we assume that the profile has not been bound.
     if (this.profile && this.profile.credentials.length > 0) {
       return Promise.resolve(this.profile);
     } else {
@@ -456,7 +454,7 @@ export class ProfileService {
   }
 
 
-  /* 
+  /*
     Wallet-related Methods
   */
 
@@ -890,10 +888,9 @@ export class ProfileService {
           return finale;
         }
 
-        // Get notifications for all wallets.  
+        // Get notifications for all wallets.
         return Promise.each(w, (wallet: MeritWalletClient) => {
           return updateNotifications(wallet).then(() => {
-
             let n = _.filter(wallet.cachedActivity.n, (x: any) => {
               return typeFilter[x.type];
             });
@@ -915,7 +912,7 @@ export class ProfileService {
             notifications.push(n);
           });
         }).then(() => {
-          // Return the roll-up of notificaitons across wallets.           
+          // Return the roll-up of notificaitons across wallets.
           notifications = _.sortBy(notifications, 'createdOn');
           notifications = _.compact(_.flatten(notifications)).slice(0, MAX);
           let total = notifications.length;
@@ -952,8 +949,8 @@ export class ProfileService {
   };
 
   /*
-   This is useful because it helps us know whether or not to show 
-   the user occasional helpful guidance about how to get started with Merit. 
+   This is useful because it helps us know whether or not to show
+   the user occasional helpful guidance about how to get started with Merit.
    (Beyond the onboarding flow.)
   */
   public hasOwnedMerit(): boolean {

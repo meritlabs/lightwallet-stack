@@ -85,12 +85,13 @@ export class MeritLightWallet {
       // view
 
       return this.deepLinkService.initBranch((data) => {
+
         this.logger.info("Branch Data: ", data);
         // If the branch params contain the minimum params needed for an easyReceipt, then
-        // let's validate and save them. 
+        // let's validate and save them.
         if (data && !_.isEmpty(data) && data.sk && data.se) {
           this.logger.info("About to Validate and Save.");
-        
+
           return this.easyReceiveService.validateAndSaveParams(data).then((easyReceipt: EasyReceipt) => {
             this.logger.info("Returned from validate with: ", easyReceipt);
 
@@ -159,4 +160,3 @@ export class MeritLightWallet {
   }
 
 }
-

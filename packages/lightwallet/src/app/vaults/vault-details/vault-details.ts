@@ -82,7 +82,7 @@ export class VaultDetailsView {
         return Promise.map(whitelistCandidates, (candidate) => {
           if (candidate.type === 'vault') {
             if (wl == candidate.address) return candidate;
-          } else { 
+          } else {
             return candidate.walletClient.getMainAddresses({}).then((addresses: Array<any>) => {
               const found = _.find(addresses, { address: wl });
               if (found) {

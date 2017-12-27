@@ -10,7 +10,7 @@ import * as Promise from 'bluebird';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()
-export class EasyReceiveService { 
+export class EasyReceiveService {
 
   constructor(
     private logger:Logger,
@@ -20,18 +20,18 @@ export class EasyReceiveService {
     private configService:ConfigService,
     private ledger:LedgerService
   ) {}
-  
+
   public validateAndSaveParams(params:any):Promise<EasyReceipt> {
     return new Promise((resolve, reject) => {
 
       this.logger.debug(`Parsing easy params ${params}`);
-  
+
       let receipt = new EasyReceipt({});
-      receipt.unlockCode = params.uc;
-      receipt.secret = params.se; 
+      receipt.parentAddress = params.pa;
+      receipt.secret = params.se;
       receipt.senderName = params.sn;
       receipt.senderPublicKey = params.sk;
-      receipt.blockTimeout = params.bt; 
+      receipt.blockTimeout = params.bt;
       receipt.deepLinkURL = params['~referring_link'];
 
       if (receipt.isValid()) {
@@ -39,8 +39,8 @@ export class EasyReceiveService {
             return resolve(receipt);
         });
       } else {
-        this.logger.warn('EasyReceipt parameters are invalid: ', receipt); 
-        // We resolve if the easyReceipt is invalid because it does not 
+        this.logger.warn('EasyReceipt parameters are invalid: ', receipt);
+        // We resolve if the easyReceipt is invalid because it does not
         // affect the control flow.
         return resolve(null);
       }
@@ -56,11 +56,11 @@ export class EasyReceiveService {
       });
   }
 
-  public acceptEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input, destinationAddress:any):Promise<void>  {
-      return this.spendEasyReceipt(receipt, wallet, input, destinationAddress);
+  public acceptEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input:number, destinationAddress:any):Promise<void>  {
+      return this.spendEasyReceipt(receipt, wallet, input, destinationAddress.addresss);
   }
 
-  
+
   public rejectEasyReceipt(wallet, receipt:EasyReceipt, input):Promise<any> {
     return Promise.resolve(
       this.bwcService.getBitcore().PublicKey
@@ -77,22 +77,23 @@ export class EasyReceiveService {
   }
 
   public validateEasyReceiptOnBlockchain(receipt:EasyReceipt, password = '', network = this.configService.getDefaults().network.name) {
-    let opts = {
+    const opts = {
       bwsurl: this.configService.getDefaults().bws.url
     };
-    let walletClient = this.bwcService.getClient(null, opts);
+    const walletClient = this.bwcService.getClient(null, opts);
     let onBlockChain = false;
 
-    let scriptData = this.generateEasyScipt(receipt, password, network);
-    var scriptId = this.bwcService.getBitcore().Address.payingTo(scriptData.script, network);
+    const scriptData = this.generateEasyScipt(receipt, password, network);
+    const scriptAddress = this.bwcService.getBitcore().Address(scriptData.scriptPubKey.getAddressInfo()).toString();
 
-    return walletClient.validateEasyScript(scriptId).then((txn) => {
+    return walletClient.validateEasyScript(scriptAddress).then((txn) => {
       return ({
+        senderPublicKey: receipt.senderPublicKey,
         txn: txn.result,
         privateKey: scriptData.privateKey,
         publicKey: scriptData.publicKey,
         script: scriptData.script,
-        scriptId: scriptId,
+        scriptId: scriptAddress
       });
     }).catch((err) => {
       this.logger.warn("Could not validate easyScript on the blockchain.", err);
@@ -151,7 +152,8 @@ export class EasyReceiveService {
     return {
       privateKey: receivePrv,
       publicKey: receivePub,
-      script: script
+      script: script,
+      scriptPubKey: script.toMixedScriptHashOut(senderPubKey),
     };
   }
 }

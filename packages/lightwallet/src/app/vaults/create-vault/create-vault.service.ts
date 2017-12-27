@@ -50,14 +50,14 @@ export class CreateVaultService {
       masterKey: null,
       masterKeyMnemonic: '',
       selectedWallet: null}
-      
+
   }
 
   private vaultFromModel(spendPubKey: any, whitelistedAddresses: Array<any>): Promise<any> {
     //currently only supports type 0 which is a whitelisted vault.
     const amount = this.bitcore.Unit.fromMRT(parseFloat(this.model.amountToDeposit)).toMicros();
     return Promise.map(whitelistedAddresses, (w: any) => {
-      let address; 
+      let address;
       if (w.type == 'wallet') {
         address = this.getAllWallets().then((wallets) => {
           let foundWallet = _.find(wallets, { id: w.walletClientId });
@@ -93,18 +93,21 @@ export class CreateVaultService {
 
     } else {
 
-      let wallet = this.model.selectedWallet;
+      const wallet = this.model.selectedWallet;
+      const signPrivKey = this.bitcore.PrivateKey(wallet.credentials.walletPrivKey, wallet.network);
+      const pubkey = signPrivKey.toPublicKey();
 
-      let spendPubKey = this.bitcore.HDPrivateKey.fromString(wallet.credentials.xPrivKey).privateKey;
-
-      return this.vaultFromModel(spendPubKey.publicKey, this.model.whitelist).then((vault) => {
+      return this.vaultFromModel(pubkey, this.model.whitelist).then((vault) => {
         let unlock = {
-          unlockCode: wallet.shareCode,
-          address: vault.address.toString(),
+          parentAddress: pubkey.toAddress().toString(),
+          pubkey: pubkey.toString(),
+          signPrivKey,
+          address: vault.address,
+          addressType: 1, // pubkey address
           network: wallet.credentials.network
         };
 
-        return wallet.unlockAddress(unlock).then((err, resp1) => {
+        return wallet.signAddressAndUnlock(unlock).then((err, resp1) => {
           return this.getTxp(vault, false);
         }).then((txp) => {
           console.log('txp', txp);

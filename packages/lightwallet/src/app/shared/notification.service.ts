@@ -12,7 +12,7 @@ import * as _ from 'lodash';
 
 type Subject = TransactionProposal | Referral
 /**
- * This service allows you to subscribe and unsubscribe 
+ * This service allows you to subscribe and unsubscribe
  * from notifications on an object.
  */
 
@@ -20,7 +20,7 @@ type Subject = TransactionProposal | Referral
 export class NotificationService {
 
   private errors: any = this.bwcService.getErrors();
-  
+
   constructor(
     private logger: Logger,
     private bwcService: BwcService,
@@ -36,7 +36,7 @@ export class NotificationService {
     if (!subject || !subject.id) {
       return Promise.reject(new Error('Missing subject'));
     }
-    
+
     //TODO: Rewrite BWC with promises.
     let subCall = Promise.promisify(client[methodPrefix + 'ConfirmationSubscribe'](subject.id, {}, function(){}));
     return subCall().then((res) => {
@@ -45,13 +45,13 @@ export class NotificationService {
   }
 
   /**
-   * Returns the method prefix used further down the stack. 
-   * Today, we only have confirmation events, but it stands to 
-   * reason that we'll add more in the future.  
+   * Returns the method prefix used further down the stack.
+   * Today, we only have confirmation events, but it stands to
+   * reason that we'll add more in the future.
    * @param subject - TransactionProposal or Referral
    */
   private getMethodPrefix(subject: Subject): string {
-    // Switch statements don't work on types yet in TypeScript.  
+    // Switch statements don't work on types yet in TypeScript.
     // Using ifs for now.
     if (<TransactionProposal>subject) {
       return 'tx';
@@ -59,7 +59,7 @@ export class NotificationService {
     if (<Referral>subject) {
       return 'ref';
     }
-    // Should never get here because of union type.  
+    // Should never get here because of union type.
     let n: never;
     return n;
   }
@@ -74,6 +74,5 @@ export class NotificationService {
 
   // }
 
-  
-}
 
+}

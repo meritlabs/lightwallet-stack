@@ -25,7 +25,7 @@ export class WalletDetailsView {
     public walletService: WalletService,
     private logger: Logger
   ) {
-    // We can assume that the wallet data has already been fetched and 
+    // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
     // things fast and smooth.  We can refresh as needed.
     this.wallet = this.navParams.get('wallet');
@@ -90,7 +90,7 @@ export class WalletDetailsView {
   }
 
   // Belt and suspenders check to be sure that the total number of TXs on the page
-  // add up to the total balance in status.  
+  // add up to the total balance in status.
   private txHistoryInSyncWithStatus(): boolean {
     return true;
   }

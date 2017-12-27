@@ -128,14 +128,14 @@ export class Logger implements LoggerWithLevels {
       return;
     }
     if (level >= this.levels[this.level]) {
-      // TODO: Fix the below so that debug output actually gets the benefit of stacktrace. 
+      // TODO: Fix the below so that debug output actually gets the benefit of stacktrace.
       if (Error.stackTraceLimit && this.level == 'debug') {
         let old = Error.stackTraceLimit;
         Error.stackTraceLimit = 2;
         let stack = new Error().stack;
         let lines = stack.split('\n');
         let caller = lines[2];
-        
+
         if (caller) {
           caller = ':' + caller.substr(6);
         }

@@ -34,7 +34,7 @@
         <ion-avatar class="icon big-icon-svg" item-start>
             <img [src]="sanitizePhotoUrl(contact.photos[0].value)" *ngIf="contact.photos.length">
             <gravatar class="send-gravatar" [name]="contact.name.formatted" width="30" height="30" [email]="maybeEmail(contact)" *ngIf="!contact.photos.length"></gravatar>
-        </ion-avatar>  
+        </ion-avatar>
         {{contact.name.formatted}}
         <img item-right src="assets/img/16x16.png" *ngIf="contact.meritAddresses.length">
       </ion-item>

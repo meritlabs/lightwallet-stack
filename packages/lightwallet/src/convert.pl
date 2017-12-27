@@ -4,7 +4,7 @@
 #
 # Execute this from the directory where your "tsconfig.json" and "app" resides as following:
 #
-# find . -name "*.ts" | xargs -n 1 perl convert.pl 
+# find . -name "*.ts" | xargs -n 1 perl convert.pl
 #
 # Add this to tslint.json 'compilerOptions'
 #

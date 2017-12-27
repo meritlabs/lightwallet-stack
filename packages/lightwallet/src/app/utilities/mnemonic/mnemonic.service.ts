@@ -17,7 +17,7 @@ export class MnemonicService {
   private errors: any;
 
   constructor(
-      private logger: Logger, 
+      private logger: Logger,
       private profileService: ProfileService,
       private bwcService: BwcService,
       private bwcErrorService: BwcError,
@@ -27,7 +27,7 @@ export class MnemonicService {
   }
 
 
-  
+
 
   public importMnemonic(words: string, opts: any): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
@@ -57,7 +57,7 @@ export class MnemonicService {
     });
   }
 
-  // TODO: Create an interface for BWC, and use it to type 
+  // TODO: Create an interface for BWC, and use it to type
   // it as it is sent around.
   public seedFromMnemonic(opts: any, walletClient: MeritWalletClient): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
@@ -75,7 +75,7 @@ export class MnemonicService {
         this.logger.info(ex);
         return reject(new Error('Could not create: Invalid wallet recovery phrase')); // TODO getTextCatalog
       }
-    })    
+    })
   }
 
   private normalizeMnemonic(words: string): string {

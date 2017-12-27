@@ -98,7 +98,7 @@ export class AddressBookService {
         })
 
         return contacts.sort((a,b) => {
-          if (!(_.isEmpty(a.meritAddresses) || _.isEmpty(b.meritAddresses)) || 
+          if (!(_.isEmpty(a.meritAddresses) || _.isEmpty(b.meritAddresses)) ||
                (_.isEmpty(a.meritAddresses) && (_.isEmpty(b.meritAddresses)))) {
             return a.name.formatted > b.name.formatted ? 1 : -1;
           }

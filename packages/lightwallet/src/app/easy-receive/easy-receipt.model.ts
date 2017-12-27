@@ -1,6 +1,6 @@
 export class EasyReceipt  {
 
-  unlockCode:string;
+  parentAddress:string;
   senderName:string;
   secret:string;
   senderPublicKey:string;
@@ -12,20 +12,19 @@ export class EasyReceipt  {
     for (const f in fields) {
       this[f] = fields[f];
     }
-  } 
-  
+  }
+
   // TODO: Actually validate that the sizes/shapes of the parameters are correct.
   isValid() {
     return (
-      this.unlockCode
-      && this.senderPublicKey 
-      && this.secret 
+      this.parentAddress
+      && this.senderPublicKey
+      && this.secret
       && this.blockTimeout
     );
   }
 
 }
-
 export type EasyReceiptTxData = {
   result: {
     found: true,
@@ -41,3 +40,4 @@ export type EasyReceiptTxData = {
     found: false
   }
 }
+

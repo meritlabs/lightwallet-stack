@@ -10,7 +10,7 @@ import { File } from '@ionic-native/file';
     ExportWalletView,
   ],
   imports: [
-    QRCodeModule, 
+    QRCodeModule,
     IonicPageModule.forChild(ExportWalletView),
   ],
   providers: [

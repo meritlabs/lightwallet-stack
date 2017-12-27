@@ -29,6 +29,7 @@ export class Errors {
   public static UNAVAILABLE_UTXOS = new MwcError('UNAVAILABLE_UTXOS', 'Unavailable unspent outputs');
   public static TX_NOT_FOUND = new MwcError('TX_NOT_FOUND', 'Transaction proposal not found');
   public static UNLOCK_CODE_INVALID = new MwcError('UNLOCK_CODE_INVALID', 'Invalid unlock code');
+  public static REFERRER_INVALID = new MwcError('REFERRER_INVALID', 'Invalid referrer address');
   public static MAIN_ADDRESS_GAP_REACHED = new MwcError('MAIN_ADDRESS_GAP_REACHED', 'Maximum number of consecutive addresses without activity reached');
   public static SERVER_UNAVAILABLE = new MwcError('SERVER_UNAVAILABLE', 'Could not reach the server');
 }

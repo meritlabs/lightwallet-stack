@@ -36,7 +36,7 @@ import { VaultsView } from "merit/vaults/vaults";
   ],
   imports: [
     MomentModule,
-    AddressBookModule, 
+    AddressBookModule,
     IonicPageModule.forChild(WalletsView)
   ],
 })
