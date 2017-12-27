@@ -111,8 +111,6 @@ export class ImportView {
 
 
   importMnemonic() {
-
-
     let loader = this.loadingCtrl.create({content: 'importingWallet'});
     loader.present();
     let  pathData = this.derivationPathService.parse(this.formData.derivationPath);
@@ -193,9 +191,11 @@ export class ImportView {
     //this.walletService.updateRemotePreferences(wallet, {}).then(() => {
     this.profileService.setBackupFlag(wallet.credentials.walletId);
     if (loader) loader.dismiss();
-    this.app.getRootNavs[0].setRoot('TransactView');
+    this.app.getRootNavs()[0].setRoot('TransactView');
     //});
   }
+
+  // soccer neither brand seven cry boat guess protect secret guard safe danger
 
   setDerivationPath() {
     this.formData.derivationPath = this.formData.testnetEnabled ? this.derivationPathService.getDefaultTestnet() : this.derivationPathService.getDefault();

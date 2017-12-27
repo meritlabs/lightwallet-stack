@@ -8,7 +8,7 @@ import * as FileSaver from 'file-saver';
 import { BwcService } from "merit/core/bwc.service";
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
-
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { Logger } from "merit/core/logger";
 
 @IonicPage()
@@ -20,17 +20,18 @@ export class ExportWalletView {
 
   private sjcl;
 
-  public wallet:any;
+  public wallet: MeritWalletClient;
 
-  public segment = 'file';
+  public segment = 'mnemonic';
 
-  public accessGranted:boolean;
+  public accessGranted: boolean;
 
   public formData = {
     password: '',
     repeatPassword:''
   };
 
+  public mnemonic: string;
   public qrcode:string;
 
   constructor(
@@ -47,7 +48,7 @@ export class ExportWalletView {
     private logger: Logger
   ) {
     this.wallet = this.navParams.get('wallet');
-
+    this.mnemonic = this.wallet.getMnemonic();
     this.sjcl = this.bwcService.getSJCL();
   }
 
@@ -108,8 +109,9 @@ export class ExportWalletView {
 
     let exportData = this.wallet.export({addressBook: addressbook});
     let encryptedData = this.sjcl.encrypt(this.formData.password, exportData, {iter: 10000});
-    let walletName = this.wallet.alias ? `${this.wallet.alias}-${this.wallet.credentials.walletName}` : this.wallet.credentials.walletName;
+    let walletName = this.wallet.credentials.walletName;
     let info = await this.appService.getInfo();
+    console.log(info);
     let fileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
 
     let blob = new Blob([encryptedData], {type: 'text/plain;charset=utf-8'});

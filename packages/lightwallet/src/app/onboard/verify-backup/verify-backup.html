@@ -1,0 +1,40 @@
+<ion-header>
+    <ion-navbar>
+    </ion-navbar>
+</ion-header>
+
+
+<ion-content fullscreen>
+    <div class="container">
+        <div class="title">Verify Recovery Phrase</div>
+        <ion-grid>
+            <ion-row>
+                <ion-card class="mnemonic-card">
+                    <div class="mnemonic">{{ enteredPhrase.join(' ') }}</div>
+                </ion-card>
+            </ion-row>
+            <ion-row *ngFor="let chunk of wordList | chunks: 3">
+                <ion-col *ngFor="let wordObj of chunk" class="word-buttons">
+                    <button ion-button small round (click)="selectOne(wordObj)" [disabled]="wordObj.selected">{{wordObj.word}}</button>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <div class="text">
+                    Select the words in the order that they appeared in your recovery phrase to validate that you have copied it.
+                </div>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <div class="bottom-buttons reset-button">
+                        <button ion-button block margin-top (click)="resetWords()">Reset</button>
+                    </div>
+                </ion-col>
+                <ion-col>
+                    <div class="bottom-buttons">
+                        <button ion-button block margin-top (click)="validatePhrase()" [disabled]="!selectedAll()">Validate</button>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+</ion-content>
