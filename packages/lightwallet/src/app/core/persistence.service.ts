@@ -8,7 +8,7 @@ import { FileStorage } from 'merit/core/storage/file-storage.service';
 import { RamStorage } from 'merit/core/storage/ram-storage.service';
 import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 
-import * as Promise from 'bluebird';
+
 
 import { Storage } from '@ionic/storage';
 

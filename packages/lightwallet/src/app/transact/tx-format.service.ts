@@ -4,7 +4,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { RateService } from 'merit/transact/rate.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
-import * as Promise from 'bluebird';
+
 
 import * as _ from "lodash";
 import { Logger } from 'merit/core/logger';
@@ -144,7 +144,7 @@ export class TxFormatService {
 
   };
 
-  formatPendingTxps(txps): Promise<any> {
+  async formatPendingTxps(txps): Promise<any> {
     this.pendingTxProposalsCountForUs = 0;
     let now = Math.floor(Date.now() / 1000);
 
@@ -166,53 +166,48 @@ export class TxFormatService {
     txps.push(txp);
     */
 
-    return Promise.each(txps, (tx: any) => {
-
-      // no future transactions...
-      if (tx.createdOn > now)
-        tx.createdOn = now;
-
-
-      // TODO: We should not call any services here.  Data should be passed in.
-      tx.wallet = { copayerId: "yepNope" };
+    const pTxps = await Promise.all(txps.map(async (tx: any) => {
+        // no future transactions...
+        if (tx.createdOn > now)
+            tx.createdOn = now;
 
 
-      if (!tx.wallet) {
-        this.logger.info("no wallet at txp?");
-        return;
-      }
+        // TODO: We should not call any services here.  Data should be passed in.
+        tx.wallet = { copayerId: "yepNope" };
 
-      return this.processTx(tx).then((pTx) => {
-        let processedTx = pTx;
-        let action: any = _.find(processedTx.actions, {
-          copayerId: processedTx.wallet.copayerId
+
+        if (!tx.wallet) {
+            this.logger.info("no wallet at txp?");
+            return;
+        }
+
+        const pTx = await this.processTx(tx);
+
+        let action: any = _.find(pTx.actions, {
+            copayerId: pTx.wallet.copayerId
         });
 
-        if (!action && processedTx.status == 'pending') {
-          processedTx.pendingForUs = true;
+        if (!action && pTx.status == 'pending') {
+            pTx.pendingForUs = true;
         }
 
         if (action && action.type == 'accept') {
-          processedTx.statusForUs = 'accepted';
+            pTx.statusForUs = 'accepted';
         } else if (action && action.type == 'reject') {
-          processedTx.statusForUs = 'rejected';
+            pTx.statusForUs = 'rejected';
         } else {
-          processedTx.statusForUs = 'pending';
+            pTx.statusForUs = 'pending';
         }
 
-        if (!processedTx.deleteLockTime)
-          processedTx.canBeRemoved = true;
+        if (!pTx.deleteLockTime)
+            pTx.canBeRemoved = true;
 
-        return Promise.resolve(processedTx);
-      });
+        return pTx;
+    }));
 
-    }).then((txps) => {
-      this.logger.warn("What are the TXPs after promise all?");
-      this.logger.warn(txps);
-      return Promise.resolve(txps);
-    });
-
-
+    this.logger.warn("What are the TXPs after promise all?");
+    this.logger.warn(pTxps);
+    return pTxps;
   };
 
   parseAmount(amount: any, currency: string) {

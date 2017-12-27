@@ -12,7 +12,7 @@ import { FCM } from '@ionic-native/fcm';
 
 
 import * as _ from 'lodash';
-import * as Promise from 'bluebird';
+
 import { Logger } from "merit/core/logger";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';

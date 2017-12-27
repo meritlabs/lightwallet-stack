@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as Promise from 'bluebird';
+
 
 //import { Promise } from 'bluebird';
 import { Injectable } from '@angular/core';
@@ -18,6 +18,10 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
 
+import 'rxjs/add/operator/timeout';
+import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/observable/fromPromise';
+import {Observable} from "rxjs/Observable";
 
 /* 
   Historically, this acted as the API-Client
@@ -304,24 +308,30 @@ export class ProfileService {
     let walletId = wallet.credentials.walletId;
 
     this.logger.debug('ValidatingWallet: ' + walletId + ' skip Device:' + skipDeviceValidation);
-    wallet.validateKeyDerivation({
-      skipDeviceValidation: skipDeviceValidation,
-    })
-      .timeout(1000, "Validating wallet timed out")
-      .then((isOK: boolean) => {
-        this.validationLock = false;
 
-        this.logger.debug('ValidatingWallet End:  ' + walletId + ' isOK:' + isOK);
-        if (isOK) {
-          this.profile.setChecked(this.platformService.ua, walletId);
-        } else {
-          this.logger.warn('Key Derivation failed for wallet:' + walletId);
-          this.persistenceService.clearLastAddress(walletId).then(() => {
-          });
-        };
+    return Observable.fromPromise(wallet.validateKeyDerivation({
+        skipDeviceValidation: skipDeviceValidation,
+    }))
+        .timeout(1000)
+        .toPromise()
+        .then((isOK: boolean) => {
+            this.validationLock = false;
 
-        this.storeProfileIfDirty();
-      });
+            this.logger.debug('ValidatingWallet End:  ' + walletId + ' isOK:' + isOK);
+
+            if (isOK) {
+                this.profile.setChecked(this.platformService.ua, walletId);
+            } else {
+                this.logger.warn('Key Derivation failed for wallet:' + walletId);
+                this.persistenceService.clearLastAddress(walletId).then(() => {
+                });
+            }
+
+            this.storeProfileIfDirty();
+        })
+        .catch(() => {
+            throw new Error('Validating wallet timed out');
+        });
 
   }
 
@@ -386,7 +396,7 @@ export class ProfileService {
 
   public bindProfile(profile: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      let config = this.configService.get();
+      // let config = this.configService.get();
 
       let bindWallets = (): Promise<any> => {
         return new Promise((resolve, reject) => {
@@ -399,17 +409,14 @@ export class ProfileService {
             return resolve();
           }
 
-          return resolve(Promise.each(profile.credentials, (credentials) => {
-            return this.bindWallet(credentials).then((client: any) => {
-              i++;
-              totalBound += 1;
-              if (i == l) {
+
+          return Promise.all(profile.credentials.map(async credentials => {
+            await this.bindWallet(credentials);
+            i++;
+            totalBound += 1;
+            if (i == l) {
                 this.logger.info('Bound ' + totalBound + ' out of ' + l + ' wallets');
-                return Promise.resolve();
-              }
-            }).catch((err) => {
-              return reject(err);
-            });
+            }
           }));
         });
       };
@@ -440,7 +447,7 @@ export class ProfileService {
       });
     } else {
       return;
-    };
+    }
   }
 
   public isDisclaimerAccepted(): Promise<boolean> {
@@ -508,7 +515,7 @@ export class ProfileService {
         return reject('Could not access wallet'); // TODO gettextCatalog
       }
 
-      let walletId: string = wallet.credentials.walletId
+      let walletId: string = wallet.credentials.walletId;
 
       if (!this.profile.addWallet(JSON.parse(wallet.export()))) {
         return this.appService.getInfo().then((appInfo) => {
@@ -793,56 +800,39 @@ export class ProfileService {
     });
   }
 
-  public getNotifications(opts: any): Promise<any> {
-    return new Promise((resolve, reject) => {
+  public async getNotifications(opts: any): Promise<any> {
       opts = opts ? opts : {};
 
-      let TIME_STAMP = 60 * 60 * 6;
-      let MAX = 30;
+      const TIME_STAMP = 60 * 60 * 6;
+      const MAX = 30;
 
-      let typeFilter = {
+      const typeFilter = {
         'OutgoingTx': 1,
         'IncomingTx': 1,
         'IncomingCoinbase': 1
       };
 
-      return this.getWallets().then((wallets) => {
-        let w = wallets;
-        if (_.isEmpty(w)) return resolve();
-
-        let notifications = [];
-
-
-        let isActivityCached = (wallet: MeritWalletClient): boolean => {
+      const isActivityCached = (wallet: MeritWalletClient): boolean => {
           return wallet.cachedActivity && wallet.cachedActivity.isValid;
-        }
+      };
 
+      const updateNotifications = async (wallet: MeritWalletClient) => {
+          if (isActivityCached(wallet) && !opts.force) {
+              return;
+          }
 
-        let updateNotifications = (wallet: MeritWalletClient): Promise<any> => {
-          return new Promise((resolve, reject) => {
-
-            if (isActivityCached(wallet) && !opts.force) {
-              return resolve();
-            }
-
-            return wallet.getNotifications({
+          const n = await wallet.getNotifications({
               timeSpan: TIME_STAMP,
               includeOwn: true,
-            }).then((n: any) => {
-
-              wallet.cachedActivity = {
-                n: n.slice(-MAX),
-                isValid: true,
-              };
-
-              return resolve();
-            }).catch((err) => {
-              return reject(err);
-            });
           });
-        }
 
-        let process = (notifications: any): Array<any> => {
+          wallet.cachedActivity = {
+              n: n.slice(-MAX),
+              isValid: true,
+          };
+      };
+
+      const process = (notifications: any) => {
           if (!notifications) return [];
 
           let shown = _.sortBy(notifications, 'createdOn').reverse();
@@ -850,11 +840,11 @@ export class ProfileService {
           shown = shown.splice(0, opts.limit || MAX);
 
           _.each(shown, (x: any) => {
-            x.txpId = x.data ? x.data.txProposalId : null;
-            x.txid = x.data ? x.data.txid : null;
-            x.types = [x.type];
+              x.txpId = x.data ? x.data.txProposalId : null;
+              x.txid = x.data ? x.data.txid : null;
+              x.types = [x.type];
 
-            if (x.data && x.data.amount) x.amountStr = this.txFormatService.formatAmountStr(x.data.amount);
+              if (x.data && x.data.amount) x.amountStr = this.txFormatService.formatAmountStr(x.data.amount);
           });
 
           // let finale = shown; GROUPING DISABLED!
@@ -867,64 +857,70 @@ export class ProfileService {
 
           // REMOVE (if we want 1-to-1 notification) ????
           _.each(shown, (x: any) => {
-            if (prev && prev.walletId === x.walletId && prev.txpId && prev.txpId === x.txpId && prev.creatorId && prev.creatorId === x.creatorId) {
-              prev.types.push(x.type);
-              prev.data = _.assign(prev.data, x.data);
-              prev.txid = prev.txid || x.txid;
-              prev.amountStr = prev.amountStr || x.amountStr;
-              prev.creatorName = prev.creatorName || x.creatorName;
-            } else {
-              finale.push(x);
-              prev = x;
-            }
+              if (prev && prev.walletId === x.walletId && prev.txpId && prev.txpId === x.txpId && prev.creatorId && prev.creatorId === x.creatorId) {
+                  prev.types.push(x.type);
+                  prev.data = _.assign(prev.data, x.data);
+                  prev.txid = prev.txid || x.txid;
+                  prev.amountStr = prev.amountStr || x.amountStr;
+                  prev.creatorName = prev.creatorName || x.creatorName;
+              } else {
+                  finale.push(x);
+                  prev = x;
+              }
           });
 
           let u = this.bwcService.getUtils();
           _.each(finale, (x: any) => {
-            if (x.data && x.data.message && x.wallet && x.wallet.credentials.sharedEncryptingKey) {
-              // TODO TODO TODO => BWC
-              x.message = u.decryptMessage(x.data.message, x.wallet.credentials.sharedEncryptingKey);
-            }
+              if (x.data && x.data.message && x.wallet && x.wallet.credentials.sharedEncryptingKey) {
+                  // TODO TODO TODO => BWC
+                  x.message = u.decryptMessage(x.data.message, x.wallet.credentials.sharedEncryptingKey);
+              }
           });
 
           return finale;
-        }
+      };
 
-        // Get notifications for all wallets.  
-        return Promise.each(w, (wallet: MeritWalletClient) => {
-          return updateNotifications(wallet).then(() => {
+      try {
 
-            let n = _.filter(wallet.cachedActivity.n, (x: any) => {
-              return typeFilter[x.type];
-            });
+          const wallets = await this.getWallets();
 
-            let idToName = {};
-            if (wallet.cachedStatus) {
-              _.each(wallet.cachedStatus.wallet.copayers, (c: any) => {
-                idToName[c.id] = c.name;
+          if (_.isEmpty(wallets)) return;
+
+          let notifications = [];
+
+          // Get notifications for all wallets.
+          await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
+              await updateNotifications(wallet);
+              let n = _.filter(wallet.cachedActivity.n, (x: any) => {
+                  return typeFilter[x.type];
               });
-            }
 
-            _.each(n, (x: any) => {
-              x.wallet = wallet;
-              if (x.creatorId && wallet.cachedStatus) {
-                x.creatorName = idToName[x.creatorId];
-              };
-            });
+              let idToName = {};
+              if (wallet.cachedStatus) {
+                  _.each(wallet.cachedStatus.wallet.copayers, (c: any) => {
+                      idToName[c.id] = c.name;
+                  });
+              }
 
-            notifications.push(n);
-          });
-        }).then(() => {
-          // Return the roll-up of notificaitons across wallets.           
+              _.each(n, (x: any) => {
+                  x.wallet = wallet;
+                  if (x.creatorId && wallet.cachedStatus) {
+                      x.creatorName = idToName[x.creatorId];
+                  }
+              });
+
+              notifications.push(n);
+          }));
+
+          // Return the roll-up of notificaitons across wallets.
           notifications = _.sortBy(notifications, 'createdOn');
           notifications = _.compact(_.flatten(notifications)).slice(0, MAX);
           let total = notifications.length;
-          return resolve({ notifications: process(notifications), count: total });
-        });
-      }).catch((err: any) => {
-        this.logger.warn('Error updating notifications:' + err);
-      });
-    });
+          return { notifications: process(notifications), count: total };
+
+      } catch (err) {
+          this.logger.warn('Error updating notifications:' + err);
+      }
   }
 
   public getTxps(opts: any): Promise<any> {

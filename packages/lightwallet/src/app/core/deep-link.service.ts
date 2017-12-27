@@ -1,4 +1,4 @@
-import * as Promise from 'bluebird';
+
 import { Injectable } from '@angular/core';
 import { Logger } from 'merit/core/logger';
 import { PersistenceService } from 'merit/core/persistence.service';

@@ -15,7 +15,7 @@ import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 import { PlatformService } from 'merit/core/platform.service';
 
-import * as Promise from 'bluebird';
+
 import * as _ from "lodash";
 
 

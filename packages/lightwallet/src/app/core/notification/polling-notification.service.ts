@@ -10,7 +10,7 @@ import { AppService } from 'merit/core/app-settings.service';
 import { BwcService } from 'merit/core/bwc.service';
 
 import * as _ from 'lodash';
-import * as Promise from 'bluebird';
+
 import { Logger } from "merit/core/logger";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 

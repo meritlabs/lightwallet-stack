@@ -6,7 +6,7 @@ import { AddressBookService } from 'merit/shared/address-book/address-book.servi
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 
-import * as Promise from 'bluebird';
+
 
 /**
  * Creates MeritContact model and injects native contact in it

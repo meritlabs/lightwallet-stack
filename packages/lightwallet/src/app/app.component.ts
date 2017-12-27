@@ -16,7 +16,7 @@ import { DeepLinkService } from 'merit/core/deep-link.service';
 
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import * as _ from 'lodash';
-import * as Promise from 'bluebird';
+
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
 import { NavController } from 'ionic-angular/navigation/nav-controller';
@@ -47,14 +47,10 @@ export class MeritLightWallet {
     private events: Events,
     private pushNotificationService: PushNotificationsService
   ) {
-    process.on('unhandledRejection', this.logger.info.bind(console));
-    Promise.config({
-      longStackTraces: true
-    });
-    process.on('unhandledRejection', this.logger.info.bind(console));
-    Promise.onPossiblyUnhandledRejection((error) => {
-      throw error;
-    });
+    if (typeof process !== 'undefined') {
+        process.on('unhandledRejection', this.logger.info.bind(console));
+        process.on('unhandledRejection', this.logger.info.bind(console));
+    }
 
     this.platform.ready().then((readySource) => {
       this.appService.getInfo().then((appInfo) => {

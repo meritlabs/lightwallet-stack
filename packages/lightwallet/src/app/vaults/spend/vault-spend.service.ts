@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as Promise from 'bluebird';
+
 import { BwcService } from 'merit/core/bwc.service';
 import { WalletService } from "merit/wallets/wallet.service";
 import { Logger } from 'merit/core/logger';

@@ -1,4 +1,4 @@
-import * as Promise from 'bluebird';
+
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';

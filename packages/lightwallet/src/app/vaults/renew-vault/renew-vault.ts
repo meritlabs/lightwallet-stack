@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { PopupService } from "merit/core/popup.service";
-import * as Promise from 'bluebird';
+
 import { WalletService } from 'merit/wallets/wallet.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { BwcService } from 'merit/core/bwc.service';

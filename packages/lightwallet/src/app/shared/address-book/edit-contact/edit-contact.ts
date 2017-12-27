@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as Promise from 'bluebird';
+
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, AlertController } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';

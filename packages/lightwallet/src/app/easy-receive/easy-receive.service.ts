@@ -6,7 +6,7 @@ import { FeeService } from 'merit/shared/fee/fee.service'
 import { BwcService } from 'merit/core/bwc.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { LedgerService } from 'merit/shared/ledger.service';
-import * as Promise from 'bluebird';
+
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()

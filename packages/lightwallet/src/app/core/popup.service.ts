@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
-import * as Promise from 'bluebird';
+
 import { Logger } from 'merit/core/logger';
 
 
