@@ -20,7 +20,6 @@ import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
-import { setTimeout } from 'timers';
 
 
 /* Refactor CheckList:
@@ -990,12 +989,12 @@ export class WalletService {
     });
   }
 
-  createDefaultWallet(unlockCode: string) {
+  createDefaultWallet(parentAddress: string) {
       const opts: any = {
           m: 1,
           n: 1,
           networkName: this.configService.getDefaults().network.name,
-          unlockCode
+          parentAddress
       };
       return this.createWallet(opts);
   }
@@ -1268,44 +1267,43 @@ export class WalletService {
   };
 
   // Creates a wallet on BWC/BWS
-  private doCreateWallet(opts: any): Promise<any> {
-    return new Promise((resolve, reject) => {
+  private async doCreateWallet(opts: any): Promise<any> {
+    const showOpts = _.clone(opts);
+    if (showOpts.extendedPrivateKey) showOpts.extendedPrivateKey = '[hidden]';
+    if (showOpts.mnemonic) showOpts.mnemonic = '[hidden]';
 
-      let showOpts = _.clone(opts);
-      if (showOpts.extendedPrivateKey) showOpts.extendedPrivateKey = '[hidden]';
-      if (showOpts.mnemonic) showOpts.mnemonic = '[hidden]';
+    this.logger.debug('Creating Wallet:', showOpts);
 
-      this.logger.debug('Creating Wallet:', showOpts);
+    let attempts = 0;
+    const MAX_ATTEMPTS = 3;
 
-      let attempts = 0;
-      const MAX_ATTEMPTS = 3;
-      let seed = () => {
-        return this.seedWallet(opts).then((walletClient: MeritWalletClient) => {
+    const seed = async () => {
+      return new Promise<any>(async (resolve, reject) => {
+          try {
+              const walletClient: MeritWalletClient = await this.seedWallet(opts);
+              let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
+              let myName = opts.myName || 'me'; // TODO GetTextCatalog
+              await walletClient.createWallet(name, myName, opts.m, opts.n, {
+                  network: opts.networkName,
+                  singleAddress: opts.singleAddress,
+                  walletPrivKey: opts.walletPrivKey,
+                  parentAddress: opts.parentAddress
+              });
 
-          let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
-          let myName = opts.myName || 'me'; // TODO GetTextCatalog
-
-          return walletClient.createWallet(name, myName, opts.m, opts.n, {
-            network: opts.networkName,
-            singleAddress: opts.singleAddress,
-            walletPrivKey: opts.walletPrivKey,
-            parentAddress: opts.parentAddress
-          }).then((secret: any) => {
-            // TODO: Subscribe to ReferralTxConfirmation
-            return resolve(walletClient);
-          });
-        }).catch((err: any) => {
-          this.logger.warn("Error creating wallet in DCW: ", err);
-          if (err == Errors.CONNECTION_ERROR && ++attempts < MAX_ATTEMPTS) {
-            return setTimeout(seed, 2000);
+              // TODO: Subscribe to ReferralTxConfirmation
+              resolve(walletClient);
+          } catch (err) {
+              this.logger.warn("Error creating wallet in DCW: ", err);
+              if (err == Errors.CONNECTION_ERROR && ++attempts < MAX_ATTEMPTS) {
+                  return setTimeout(seed, 2000);
+              } else {
+                  throw err;
+              }
           }
+      });
+    };
 
-          reject(err);
-        });
-      };
-
-      seed();
-    });
+    await seed();
   }
 
   // TODO: Rename this.
