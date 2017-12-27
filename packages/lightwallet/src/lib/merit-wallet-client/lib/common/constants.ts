@@ -7,7 +7,7 @@ export module Constants {
     P2PKH: 'P2PKH',
     PP2SH: 'PP2SH',
   };
-  
+
   export const DERIVATION_STRATEGIES = {
     BIP44: 'BIP44',
     BIP45: 'BIP45',

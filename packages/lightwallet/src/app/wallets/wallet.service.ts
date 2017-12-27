@@ -26,7 +26,7 @@ import { setTimeout } from 'timers';
 /* Refactor CheckList:
   - Bwc Error provider
   - Remove ongoingProcess provider, and handle Loading indicators in controllers
-  - Decouple the tight dependencies on ProfileService; and create logical separation concerns 
+  - Decouple the tight dependencies on ProfileService; and create logical separation concerns
   - Ensure that anything returning a promise has promises through the stack.
 */
 
@@ -173,10 +173,10 @@ export class WalletService {
           cache.availableBalanceStr = this.txFormatService.formatAmountStr(cache.availableBalanceSat);
           cache.spendableBalanceStr = this.txFormatService.formatAmountStr(cache.spendableAmount);
           cache.pendingBalanceStr = this.txFormatService.formatAmountStr(cache.pendingAmount);
-          
+
           cache.alternativeName = config.settings.alternativeName;
           cache.alternativeIsoCode = config.settings.alternativeIsoCode;
-          
+
           // Check address
           return this.isAddressUsed(wallet, balance.byAddress).then((used) => {
             if (used) {
@@ -463,8 +463,8 @@ export class WalletService {
         const getNewTxs = (newTxs: Array<any> = [], skip: number): Promise<any> => {
           return new Promise((resolve, reject) => {
             return this.getTxsFromServer(wallet, skip, endingTxid, requestLimit).then((result: any) => {
-              // If we haven't bubbled up an error in the promise chain, and this is empty, 
-              // then we can assume there are no TXs for this wallet. 
+              // If we haven't bubbled up an error in the promise chain, and this is empty,
+              // then we can assume there are no TXs for this wallet.
               if (!result) {
                 return resolve(newTxs);
               }
@@ -807,7 +807,7 @@ export class WalletService {
       return wallet.removeTxProposal(txp).then(() => {
         this.logger.debug('Transaction removed');
         this.invalidateCache(wallet);
-        // $rootScope.$emit('Local/TxAction', wallet.id);   
+        // $rootScope.$emit('Local/TxAction', wallet.id);
         return resolve();
       });
     });
@@ -887,9 +887,12 @@ export class WalletService {
   // create and store a wallet
   // TODO add typings for `opts`
   async createWallet(opts: any) {
-    const walletClient: any = await this.doCreateWallet(opts);
-      // TODO `opts` doesn't have `bwsurl` property, why are we querying it?
-    return this.profileService.addAndBindWalletClient(walletClient, { bwsurl: opts.bwsurl });
+    // TODO `opts` doesn't have `bwsurl` property, why are we querying it?
+    return this.profileService.addAndBindWalletClient(await this.doCreateWallet(opts), { bwsurl: opts.bwsurl });
+  }
+
+  async createReferral(pubkey: any, parentAddress: any): Promise<any> {
+    return true;
   }
 
   // joins and stores a wallet
@@ -988,15 +991,14 @@ export class WalletService {
   }
 
   createDefaultWallet(unlockCode: string) {
-    const opts: any = {
-      m: 1,
-      n: 1,
-      networkName: this.configService.getDefaults().network.name,
-      unlockCode
-    };
-    return this.createWallet(opts);
-  };
-
+      const opts: any = {
+          m: 1,
+          n: 1,
+          networkName: this.configService.getDefaults().network.name,
+          unlockCode
+      };
+      return this.createWallet(opts);
+  }
 
   public isReady(wallet: MeritWalletClient): string {
     if (!wallet.isComplete())
@@ -1283,35 +1285,30 @@ export class WalletService {
           let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
           let myName = opts.myName || 'me'; // TODO GetTextCatalog
 
-          // TODO: Rename Beacon to UnlockCode down the stack
           return walletClient.createWallet(name, myName, opts.m, opts.n, {
             network: opts.networkName,
             singleAddress: opts.singleAddress,
             walletPrivKey: opts.walletPrivKey,
-            beacon: opts.unlockCode
+            parentAddress: opts.parentAddress
           }).then((secret: any) => {
             // TODO: Subscribe to ReferralTxConfirmation
             return resolve(walletClient);
           });
         }).catch((err: any) => {
           this.logger.warn("Error creating wallet in DCW: ", err);
-          if (err == Errors.CONNECTION_ERROR) {
-            if (++attempts < MAX_ATTEMPTS) {
-              return seed();
-            } else {
-              return reject(err);
-            }
-          } else {
-            return reject(err);
+          if (err == Errors.CONNECTION_ERROR && ++attempts < MAX_ATTEMPTS) {
+            return setTimeout(seed, 2000);
           }
+
+          reject(err);
         });
       };
 
-      setTimeout(seed, 5000);
+      seed();
     });
   }
 
-  // TODO: Rename this.  
+  // TODO: Rename this.
   private seedWallet(opts: any): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
 
@@ -1379,8 +1376,8 @@ export class WalletService {
   }
 
   /**
-   * Gets the ANV for a list of addresses.  
-   * @param wallet 
+   * Gets the ANV for a list of addresses.
+   * @param wallet
    */
   public getANV(wallet: MeritWalletClient):Promise<any> {
     return new Promise((resolve, reject) => {
@@ -1395,19 +1392,19 @@ export class WalletService {
     });
   }
 
-  /** 
-   * Gets the aggregate rewards for a list of addresses.  
-   * @param wallet 
+  /**
+   * Gets the aggregate rewards for a list of addresses.
+   * @param wallet
    * @returns {Reward} An object with the 'mining' and 'ambassador' properties.
    */
   public getRewards(wallet: MeritWalletClient):Promise<any> {
     interface MWSRewardsResponse extends _.NumericDictionary<number> { address: string, rewards: { mining: number, ambassador: number } };
     interface FilteredRewards { mining: number, ambassador: number }
-    
+
     return new Promise((resolve, reject) => {
-      return this.getMainAddresses(wallet).then((addresses) => {  
+      return this.getMainAddresses(wallet).then((addresses) => {
         if (_.isEmpty(addresses)) {
-          this.logger.info("Addresses are empty!  Defaulting rewards to Zero");          
+          this.logger.info("Addresses are empty!  Defaulting rewards to Zero");
           return resolve( {mining: 0, ambassador: 0} );
         }
         return wallet.getRewards(addresses).then((rewards: MWSRewardsResponse) => {
@@ -1422,8 +1419,8 @@ export class WalletService {
               return totalR;
             }
           }, {mining: 0, ambassador: 0});
-          
-          return resolve(totalRewards); 
+
+          return resolve(totalRewards);
         });
       });
     });

@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
-
-
 import { BwcService } from 'merit/core/bwc.service';
-
 import { Logger } from 'merit/core/logger';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
@@ -10,13 +7,13 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 @Injectable()
 export class VaultsService {
     private bitcore: any;
-  
+
     constructor(
         private bwcService: BwcService,
         private logger: Logger
     ) {
         this.logger.info('hello VaultsService');
-        this.bitcore = this.bwcService.getBitcore();        
+        this.bitcore = this.bwcService.getBitcore();
     }
 
     getVaults(walletClient: MeritWalletClient): Promise<Array<any>> {
@@ -34,4 +31,3 @@ export class VaultsService {
   }
 
 }
-  

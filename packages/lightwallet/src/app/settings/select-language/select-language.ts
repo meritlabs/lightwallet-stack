@@ -38,7 +38,7 @@ export class SelectLanguageModal {
       buttons: [
         {text: 'Cancel', role: 'cancel', handler: () => {}},
         {text: 'Open GitHub', handler: () => {
-          //todo open it 
+          //todo open it
         } }
       ]
     });

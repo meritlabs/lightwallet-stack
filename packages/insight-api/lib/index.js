@@ -12,7 +12,6 @@ const StatusController = require('./status');
 const MessagesController = require('./messages');
 const UtilsController = require('./utils');
 const CurrencyController = require('./currency');
-const ReferralController = require('./referrals');
 const WalletController = require('./wallet');
 const RateLimiter = require('./ratelimiter');
 const morgan = require('morgan');
@@ -237,13 +236,6 @@ InsightAPI.prototype.setupRoutes = function(app) {
     currencyRefresh: this.currencyRefresh
   });
   app.get('/currency', currency.index.bind(currency));
-
-  // Referrals
-  var referral = new ReferralController(this.node);
-
-  app.get('/referral', referral.generateReferralCode.bind(referral));
-
-  app.post('/referral/validate', referral.validateReferralCode.bind(referral));
 
   // Wallet
   var wallet = new WalletController(this.node);

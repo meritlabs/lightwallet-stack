@@ -8,17 +8,17 @@ import { EmailNotificationsService } from 'merit/core/notification/email-notific
 
 // This module manaages the sending of money.
 // This is the first of three steps.
-@NgModule({ 
+@NgModule({
   declarations: [
-    NotificationsView 
+    NotificationsView
   ],
   imports: [
     IonicPageModule.forChild(NotificationsView),
-    SharedModule    
+    SharedModule
     ],
   providers: [
     PushNotificationsService,
-    EmailNotificationsService 
+    EmailNotificationsService
   ],
   exports: [
   ]

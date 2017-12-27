@@ -11,7 +11,7 @@ export module PayPro {
   logger.setLevel('debug');
   const TIMEOUT = 5000;
   let $ = require('preconditions').singleton();
-  
+
   let Bitcore = require('bitcore-lib');
   let BitcorePayPro = require('bitcore-payment-protocol');
 
@@ -42,7 +42,7 @@ export module PayPro {
         return resolve(res);
       });
     });
-   
+
   }
 
   export let get = (opts): Promise<any> => {

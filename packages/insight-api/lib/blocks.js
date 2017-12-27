@@ -119,8 +119,8 @@ BlockController.prototype.transformBlock = function(block, info) {
   const transactionIds = blockObj.transactions.map(function(tx) {
     return tx.hash;
   });
-  const referralCodes = blockObj.referrals.map(function (ref) {
-    return ref.codeHash;
+  const beaconedAddresses = blockObj.referrals.map(function (ref) {
+    return ref.address;
   });
   const result = {
     hash: block.hash,
@@ -129,7 +129,7 @@ BlockController.prototype.transformBlock = function(block, info) {
     version: blockObj.header.version,
     merkleroot: blockObj.header.merkleRoot,
     tx: transactionIds,
-    referrals: referralCodes,
+    referrals: beaconedAddresses,
     time: blockObj.header.time,
     nonce: blockObj.header.nonce,
     bits: blockObj.header.bits.toString(16),

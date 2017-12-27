@@ -5,7 +5,7 @@ import { SharedModule } from 'merit/shared/shared.module';
 import { VaultSpendAmountView } from './vault-spend-amount';
 
 /*
-  ToDo: Work to get this lazy-loadable as possible. 
+  ToDo: Work to get this lazy-loadable as possible.
 */
 @NgModule({
   declarations: [

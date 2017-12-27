@@ -10,7 +10,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { Clipboard } from '@ionic-native/clipboard';
 import { PlatformService } from 'merit/core/platform.service';
 
-import { RateService } from 'merit/transact/rate.service'; 
+import { RateService } from 'merit/transact/rate.service';
 import { ConfigService } from "merit/shared/config.service";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 

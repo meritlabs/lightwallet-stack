@@ -5,7 +5,7 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 @Pipe({ name: 'toUnit' })
 export class ToUnitPipe implements PipeTransform {
   private unitCode: string;
-  
+
   constructor(
     private configProvider: ConfigService,
     private txFormatProvider: TxFormatService

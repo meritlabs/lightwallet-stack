@@ -28,7 +28,7 @@ export class CreateVaultGeneralInfoView {
 
   constructor(
     private navCtrl:NavController,
-    private createVaultService: CreateVaultService, 
+    private createVaultService: CreateVaultService,
     private profileService: ProfileService,
     private walletService: WalletService,
     private vaultsService: VaultsService,
@@ -42,7 +42,7 @@ export class CreateVaultGeneralInfoView {
   }
 
   checkNextAvailable() {
-    this.isNextAvailable = this.formData.vaultName.length > 0 && this.formData.whitelist.length > 0; 
+    this.isNextAvailable = this.formData.vaultName.length > 0 && this.formData.whitelist.length > 0;
   }
 
   ionViewDidLoad() {

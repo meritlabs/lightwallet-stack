@@ -1,5 +1,5 @@
 <ion-header>
-        
+
     <ion-navbar color="secondary" >
         <ion-title translate>Reset Vault</ion-title>
     </ion-navbar>
@@ -12,7 +12,7 @@
     <ion-list margin-top>
         <ion-item>
             <ion-label translate>Vault name</ion-label>
-            <ion-input 
+            <ion-input
                 text-right
                 [placeholder]="'My Vault'"
                 [(ngModel)]="formData.vaultName"
@@ -41,12 +41,12 @@
     <ion-list>
         <ion-item>
             <ion-label translate>Whitelist</ion-label>
-            <ion-select 
-                [compareWith]="compareWhitelistEntries" 
-                [(ngModel)]="formData.whitelist" 
+            <ion-select
+                [compareWith]="compareWhitelistEntries"
+                [(ngModel)]="formData.whitelist"
                 (ngModelChange)="checkCanConfirm()"
-                okText="Ok" 
-                cancelText="Dismiss" 
+                okText="Ok"
+                cancelText="Dismiss"
                 multiple="true" >
                 <ion-option *ngFor="let address of whitelistCandidates" [value]="address">
                     {{address.name}} <span class="wallet-type">({{ address.type }})</span>

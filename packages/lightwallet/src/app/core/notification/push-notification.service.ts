@@ -47,7 +47,7 @@ export class PushNotificationsService {
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
 
     if (this.usePushNotifications) {
-      
+
       this.platform.ready().then((readySource) => {
         this.init();
       });
@@ -63,7 +63,7 @@ export class PushNotificationsService {
     if (!this.usePushNotifications || this._token) return;
     this.configService.load().then(() => {
       if (!this.configService.get().pushNotificationsEnabled) return;
-     
+
       this.logger.info('Starting push notification registration...');
       this.getToken().then(() => {
         this.subscribeToEvents();
@@ -72,7 +72,7 @@ export class PushNotificationsService {
   }
 
   private getToken(): Promise<void> {
-    return new Promise((resolve, reject) => { 
+    return new Promise((resolve, reject) => {
       return this.FCM.getToken().then((token: any) => {
       this.logger.info('Got token for push notifications: ' + token);
       this._token = token;
@@ -97,7 +97,7 @@ export class PushNotificationsService {
       this.enable();
     });
       //this.pushObj = this.push.init(this.pushOptions);
- 
+
 
     this.FCM.onNotification().subscribe((data: any) => {
       if (!this._token) return;
@@ -153,7 +153,7 @@ export class PushNotificationsService {
         this.logger.warn("Subscribing to push with: ", walletClient);
         this.subscribe(walletClient);
         // We should be handling real-time updates to the application through either data push or
-        // through long-polling, but not both.  
+        // through long-polling, but not both.
         this.pollingNotificationService.disablePolling(walletClient);
       });
     });
@@ -176,7 +176,7 @@ export class PushNotificationsService {
       _.forEach(wallets, (walletClient: MeritWalletClient) => {
         this._unsubscribe(walletClient);
         // We should be handling real-time updates to the application through either data push or
-        // through long-polling, but not both.  
+        // through long-polling, but not both.
         this.pollingNotificationService.enablePolling(walletClient);
       });
     })
@@ -208,7 +208,7 @@ export class PushNotificationsService {
       this.retriesRemaining--;
       this.logger.warn(`Attempted to subscribe without an available token; attempting to acquire. ${this.retriesRemaining} attempts remaining.`);
       return this.getToken().then(()=>{
-        return this.subscribe(walletClient);      
+        return this.subscribe(walletClient);
       });
     }
     let opts = {

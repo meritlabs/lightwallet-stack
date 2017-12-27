@@ -10,7 +10,7 @@ export class ToFiatPipe implements PipeTransform {
   constructor(
     private configProvider: ConfigService,
     private txFormatProvider: TxFormatService
-  ) { 
+  ) {
     this.unitCode = this.configProvider.get().wallet.settings.unitCode;
   }
   transform(value: string, satoshis: number): Promise<string> {

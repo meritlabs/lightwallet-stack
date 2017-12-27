@@ -17,7 +17,7 @@ import { ToastConfig } from "merit/core/toast.config";
   segment: 'vault/:vaultId/renew/confirmation',
   defaultHistory: ['VaultRenewView']
 })
-@Component({ 
+@Component({
   selector: 'view-renew-confirmation',
   templateUrl: 'confirmation.html',
 })
@@ -32,7 +32,7 @@ export class VaultRenewConfirmationView {
   constructor(
     private navCtrl:NavController,
     public navParams: NavParams,
-    private bwc: BwcService,  
+    private bwc: BwcService,
     private toastCtrl:MeritToastController,
     private renewVaultService: RenewVaultService,
   ){

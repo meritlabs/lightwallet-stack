@@ -16,7 +16,7 @@ export class PlatformService {
   supportsLedger:boolean;
 
   constructor(
-    private platform: Platform, 
+    private platform: Platform,
     private log: Logger
   ) {
     let chrome: any;
@@ -41,7 +41,7 @@ export class PlatformService {
     this.supportsLedger = window.chrome && window.chrome.runtime && window.chrome.runtime.id && !this.isNW;
   }
 
-  getBrowserName(): string { 
+  getBrowserName(): string {
     let chrome: any;
     let userAgent = window.navigator.userAgent;
     let browsers = { chrome: /chrome/i, safari: /safari/i, firefox: /firefox/i, ie: /internet explorer/i };
