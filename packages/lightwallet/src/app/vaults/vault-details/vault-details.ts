@@ -78,8 +78,8 @@ export class VaultDetailsView {
     ]).then((arr: Array<Array<any>>) => {
       const whitelistCandidates = _.flatten(arr);
 
-      return Promise.map(this.vault.whitelist, (wl) => {
-        return Promise.map(whitelistCandidates, (candidate) => {
+      return Promise.all(this.vault.whitelist.map((wl) => {
+        return Promise.all(whitelistCandidates.map((candidate) => {
           if (candidate.type === 'vault') {
             if (wl == candidate.address) return candidate;
           } else {
@@ -93,8 +93,8 @@ export class VaultDetailsView {
             });
           }
           return null;
-        });
-      }).then((unfilteredWhitelist) => {
+        }));
+      })).then((unfilteredWhitelist) => {
         const results = _.compact(_.flatten(unfilteredWhitelist));
         this.whitelist = results;
         return Promise.resolve();

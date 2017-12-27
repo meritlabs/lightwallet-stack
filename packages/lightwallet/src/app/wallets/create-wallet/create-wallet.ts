@@ -103,7 +103,7 @@ export class CreateWalletView {
     });
     loader.present();
 
-    return this.walletService.createWallet(opts).then((wallet: MeritWalletClient) => {
+    return this.walletService.createWallet(opts).then(async (wallet: MeritWalletClient) => {
       // Subscribe to push notifications or to long-polling for this wallet.
       if (this.config.get().pushNotificationsEnabled) {
         this.logger.info("Subscribing to push notifications for default wallet");
@@ -127,18 +127,20 @@ export class CreateWalletView {
         promises.push(this.config.set(colorOpts));
       }
 
-      return Promise.join(promises).catch((err) => {
-        this.logger.error(err);
-      }).finally(() => {
+      try {
+        await Promise.all(promises);
+      } catch (e) {
+        this.logger.error(e);
+      } finally {
         // We should callback to the wallets list page to let it know that there is a new wallet
         // and that it should updat it's list.
         const callback = this.navParams.get("updateWalletListCB");
         return loader.dismiss().then(() => {
-          return callback().then(() => {
-            this.navCtrl.pop();
-          });
+            return callback().then(() => {
+                this.navCtrl.pop();
+            });
         });
-      });
+      }
     }).catch((err) => {
       loader.dismiss();
       this.logger.error(err);
