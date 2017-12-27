@@ -89,7 +89,15 @@
     }
   }
 
+  .mnemonic-card {
+    display: block;
+    background: #6188af;
 
-
-
+    .mnemonic {
+      font-size: 24px;
+      height: 12rem;
+      margin: 3rem;
+      color: #fff;
+    }
+  }
 }

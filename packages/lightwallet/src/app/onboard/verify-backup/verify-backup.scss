@@ -1,0 +1,18 @@
+@import "../onboarding-module";
+view-verify-backup {
+  @extend %module-onboarding;
+  .word-buttons {
+    button {
+      background: #8CC4FC;
+      color: #374D63;
+    }
+    button.selected {
+      opacity: .4;
+    }
+  }
+  .reset-button {
+    button {
+      background: #ED7789;
+    }
+  }
+}
