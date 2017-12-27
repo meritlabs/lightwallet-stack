@@ -29,7 +29,7 @@ export class TxDetailsView {
   private bitcore: any;
   public amountStr: string;
   private txId: string;
-  
+
   constructor(
     private navParams: NavParams,
     private txFormatService: TxFormatService,
@@ -44,7 +44,7 @@ export class TxDetailsView {
     this.vault = this.navParams.get('vault');
     this.txId = this.navParams.get('txId');
     this.bitcore = this.bws.getBitcore();
-    
+
     this.tx = {};
     this.confirmations = null;
   }

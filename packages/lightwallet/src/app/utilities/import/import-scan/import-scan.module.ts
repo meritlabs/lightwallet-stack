@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { ImportScanView } from 'merit/utilities/import/import-scan/import-scan';
 
-import { BarcodeScanner } from '@ionic-native/barcode-scanner'; 
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 
 
 @NgModule({
@@ -10,7 +10,7 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner';
     ImportScanView,
   ],
   providers: [
-    BarcodeScanner 
+    BarcodeScanner
   ],
   imports: [
     IonicPageModule.forChild(ImportScanView),

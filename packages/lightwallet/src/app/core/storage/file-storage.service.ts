@@ -13,8 +13,8 @@ export class FileStorage implements MeritStorage {
   dir: DirectoryEntry;
 
   constructor(
-    private file: File, 
-    private platform: Platform, 
+    private file: File,
+    private platform: Platform,
     private log: Logger
   ) {
   }

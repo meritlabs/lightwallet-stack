@@ -244,4 +244,3 @@ export module Utils {
     return t;
   };
 }
-
