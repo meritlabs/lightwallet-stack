@@ -191,12 +191,10 @@ Merit.prototype.getAPIMethods = function() {
     ['validateAddress', this, this.validateAddress, 1],
 
     // Merit Specific RPC
-    ['generatereferralcode',  this, this.generateReferralCode, 0],
-    ['unlockWallet',          this, this.unlockWallet,         2],
-    ['validatereferralcode',  this, this.validateReferralCode, 1],
     ['getInputForEasySend', this, this.getInputForEasySend, 1],
     ['getanv',                this, this.getANV, 1],
     ['getrewards',     this, this.getRewards, 1],
+    ['sendReferral', this, this.sendReferral, 1],
   ];
   return methods;
 };
@@ -1512,9 +1510,7 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
     ));
   }
 
-  console.log('before getAddressTxids', addresses);
   self.getAddressTxids(addresses, options, function(err, txids) {
-    console.log('after getAddressTxids', err, txids);
     if (err) {
       return callback(err);
     }
@@ -2174,75 +2170,6 @@ Merit.prototype.generateBlock = function(num, callback) {
   });
 };
 
-/*
- * Generate new ReferralCode to be shared
- * @param {Function} callback
- */
-Merit.prototype.generateReferralCode = function(callback) {
-  log.info('generateReferralCode Called: ');
-  var self = this;
-
-  self.client.generatereferralcode(function(err, response) {
-    if (err) {
-      return callback(self._wrapRPCError(err));
-    } else {
-      log.info('generatereferralCode Response: ', response);
-      callback(null, response);
-    }
-  });
-};
-
-/*
- * Validate the referral/invite code someone gave you
- * @param {String} referralCode
- * @param {Function} callback
- */
-Merit.prototype.validateReferralCode = function(referralCode, callback) {
-  log.info('validateReferralCode Called: ', referralCode);
-  var self = this;
-
-  if (typeof referralCode === 'string' || referralCode instanceof String) {
-    self.client.validatereferralcode(referralCode, function(err, response) {
-      if (err) {
-        return callback(self._wrapRPCError(err));
-      } else {
-        log.info('validateReferralCode Response: ', response);
-        callback(null, response);
-      }
-    });
-  } else {
-    var err = new errors.RPCError('Invite code could not be verified');
-    err.code = -8;
-
-    return callback(self._wrapRPCError(err));
-  }
-};
-
-/**
- * Updates the wallet with referral code and beacons first key with associated referral
- * Returns an object containing various wallet state info.
- * @param {String} code, The code needed to unlock the wallet
- * @param {Function} callback
- */
-Merit.prototype.unlockWallet = function(code, address, callback) {
-  var self = this;
-
-  if ((typeof code === 'string' || code instanceof String) && (typeof address === 'string' || address instanceof String)) {
-    self.client.unlockWalletWithAddress(address, code, function(err, response) {
-      if (err) {
-        return callback(self._wrapRPCError(err));
-      } else {
-        callback(null, response);
-      }
-    });
-  } else {
-    var err = new errors.RPCError('Unlock code was incorrect');
-    err.code = -8;
-
-    return callback(self._wrapRPCError(err));
-  }
-};
-
 Merit.prototype.validateAddress = function(address, callback) {
   log.info('validateAddress called: ', address);
 
@@ -2343,6 +2270,23 @@ Merit.prototype.getRewards = function(addressArg, callback) {
     self.rewardsCache.set(cacheKey, response.result);
     callback(null, response.result);
   });
+}
+
+/**
+ * Send raw referral to nodes
+ * @param {String|Referral} referral - The hex string of the referral
+ * @param {Function} callback
+ */
+Merit.prototype.sendReferral = function(referral, callback) {
+  var self = this;
+
+  this.client.sendRawReferral(referral, function(err, response) {
+    if (err) {
+      return callback(self._wrapRPCError(err));
+    }
+    callback(null, response.result);
+  });
+
 }
 
 /**

@@ -13,7 +13,7 @@ import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
   imports: [
     IonicPageModule.forChild(TxDetailsView),
     SharedModule,
-    MomentModule        
+    MomentModule
   ],
   providers: [
     WalletService,

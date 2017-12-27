@@ -4,7 +4,7 @@ import {ConfigService} from "merit/shared/config.service";
 import { Events } from 'ionic-angular';
 
 
-// TODO: Import the NPM package directly. 
+// TODO: Import the NPM package directly.
 // Depends on creating typings and publishing the pkg.
 import { MeritWalletClient } from './../../lib/merit-wallet-client';
 
@@ -13,7 +13,7 @@ export class BwcService {
   private MWC: MeritWalletClient;
   public buildTx: Function; // = BWC.buildTx;
   public parseSecret: Function; // = BWC.parseSecret;
-  
+
   constructor(
     private config:ConfigService,
     private events: Events
@@ -22,7 +22,7 @@ export class BwcService {
     this.buildTx = this.MWC.buildTx;
     this.parseSecret = this.MWC.parseSecret;
   }
-  
+
   public getBitcore() {
     return this.MWC.Bitcore;
   }

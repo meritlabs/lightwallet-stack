@@ -13,11 +13,11 @@ import { AddressBookModule } from "merit/shared/address-book/address-book.module
 // This is the first of three steps.
 @NgModule({
   declarations: [
-    SendView 
+    SendView
   ],
   imports: [
     IonicPageModule.forChild(SendView),
-    GravatarModule, 
+    GravatarModule,
     WalletsModule,
     AddressBookModule
   ],

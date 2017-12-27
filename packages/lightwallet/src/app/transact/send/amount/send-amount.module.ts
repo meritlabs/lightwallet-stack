@@ -10,7 +10,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 
 
 /*
-  Transact is the most thoughtful name we can think of to define all of 
+  Transact is the most thoughtful name we can think of to define all of
   'primary' actions associated with merit (receiving, sending, primarily).
 */
 @NgModule({

@@ -38,8 +38,8 @@ const FIELDS = [
   'hwInfo',
   'entropySourcePath',
   'unlocked',
-  'beacon',
-  'shareCode',
+  'parentAddress',
+  'refid',
   'version',
 ];
 
@@ -67,16 +67,16 @@ export class Credentials {
   public walletPrivKey: string;
   public copayerId: string;
   public requestPrivKey: string;
-  public requestPubKey: string; 
-  public personalEncryptingKey: string; 
-  public walletId: string; 
-  public walletName: string; 
+  public requestPubKey: string;
+  public personalEncryptingKey: string;
+  public walletId: string;
+  public walletName: string;
   public m: any;
   public n: any;
   public beacon: string;
   public publicKeyRing: any;
   public unlocked: boolean;
-  public shareCode: string;
+  public parentAddress: string;
   public hwInfo: string;
 
 
@@ -92,9 +92,9 @@ export class Credentials {
 
   public static create = function(network): Credentials {
     _checkNetwork(network);
-  
+
     let x = new Credentials();
-  
+
     x.network = network;
     x.xPrivKey = (new Bitcore.HDPrivateKey(network)).toString();
     x.compliantDerivation = true;
@@ -106,13 +106,13 @@ export class Credentials {
     _checkNetwork(network);
     if (!this.wordsForLang[language]) throw new Error('Unsupported language');
     $.shouldBeNumber(account);
-  
+
     let m = new Mnemonic(this.wordsForLang[language]);
     while (!Mnemonic.isValid(m.toString())) {
       m = new Mnemonic(this.wordsForLang[language])
     };
     let x = new Credentials();
-  
+
     x.network = network;
     x.account = account;
     x.xPrivKey = m.toHDPrivateKey(passphrase, network).toString();
@@ -120,14 +120,14 @@ export class Credentials {
     x._expand();
     x.mnemonic = m.phrase;
     x.mnemonicHasPassphrase = !!passphrase;
-  
+
     return x;
   };
 
   public static fromExtendedPrivateKey = function(xPrivKey, account, derivationStrategy, opts: any = {}): Credentials {
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
-  
+
     let x = new Credentials();
     x.xPrivKey = xPrivKey;
     x.account = account;
@@ -141,7 +141,7 @@ export class Credentials {
     _checkNetwork(network);
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
-  
+
     let m = new Mnemonic(words);
     let x = new Credentials();
     x.xPrivKey = m.toHDPrivateKey(passphrase, network).toString();
@@ -151,7 +151,7 @@ export class Credentials {
     x.derivationStrategy = derivationStrategy;
     x.compliantDerivation = !opts.nonCompliantDerivation;
     x.entropySourcePath = opts.entropySourcePath;
-  
+
     x._expand();
     return x;
   };
@@ -160,11 +160,11 @@ export class Credentials {
     $.checkArgument(entropySourceHex);
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
-  
+
     let entropyBuffer = new Buffer(entropySourceHex, 'hex');
     //require at least 112 bits of entropy
     $.checkArgument(entropyBuffer.length >= 14, 'At least 112 bits of entropy are needed')
-  
+
     let x = new Credentials();
     x.xPubKey = xPubKey;
     x.entropySource = Bitcore.crypto.Hash.sha256sha256(entropyBuffer).toString('hex');
@@ -183,15 +183,15 @@ export class Credentials {
 
   public static fromObj = function(obj): Credentials {
     let x = new Credentials();
-  
+
     _.each(FIELDS, function(k) {
       x[k] = obj[k];
     });
-  
+
     x.derivationStrategy = x.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP45;
     x.addressType = x.addressType || Constants.SCRIPT_TYPES.P2SH;
     x.account = x.account || 0;
-  
+
     $.checkState(x.xPrivKey || x.xPubKey || x.xPrivKeyEncrypted, "invalid input");
     return x;
   };
@@ -430,18 +430,15 @@ export class Credentials {
     this.sharedEncryptingKey = Utils.privateKeyToAESKey(walletPrivKey);
   };
 
-  public addWalletInfo = function(walletId, walletName, m, n, copayerName, beacon, shareCode, codeHash): void  {
+  // TODO: figure out if we need to store refid in credentials
+  public addWalletInfo = function(walletId, walletName, m, n, copayerName, parentAddress): void  {
     this.walletId = walletId;
     this.walletName = walletName;
     this.m = m;
     this.n = n;
 
-    if (shareCode) {
-      this.beacon = beacon;
-      this.shareCode = shareCode;
-      this.unlocked = true;
-      this.codeHash = codeHash;
-    }
+    this.parentAddress = parentAddress;
+    this.unlocked = true;
 
     if (copayerName)
       this.copayerName = copayerName;

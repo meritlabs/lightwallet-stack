@@ -31,7 +31,7 @@
       <h2 translate>To</h2>
       <p *ngIf="tx.action != 'sent' && wallet && !vault">{{ wallet.name || '...' }}</p>
       <p *ngIf="tx.action != 'sent' && vault">{{ vault.name || '...' }}</p>
-      
+
       <p *ngIf="tx.action == 'sent'">{{ tx.addressTo || '...' }}</p>
     </ion-item>
 

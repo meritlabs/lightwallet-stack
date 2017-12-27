@@ -65,7 +65,7 @@ export class AppService {
       return Promise.resolve(this.info);
     } else {
       return this.load();
-    } 
+    }
   }
 
   private load(): Promise<any> {

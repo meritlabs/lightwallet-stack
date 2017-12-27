@@ -1,7 +1,8 @@
 export class Referral {
-  public previousReferral: string; //Hash
-  public codeHash: string; //Hash of the unlockCode used.
-  public cKeyId: string; 
+  public parentAddress: string; // Referrer Address
+  public address: string;
+  public addressType: number;
+  public pubkey: string;
   public id: string;
 
   constructor(

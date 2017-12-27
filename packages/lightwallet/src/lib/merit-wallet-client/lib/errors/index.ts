@@ -21,7 +21,8 @@ export class Errors {
   public static NOT_AUTHORIZED = {code: 'NOT_AUTHORIZED', text: 'Not authorized'};
   public static UNAVAILABLE_UTXOS = {code: 'UNAVAILABLE_UTXOS', text: 'Unavailable unspent outputs'};
   public static TX_NOT_FOUND = {code: 'TX_NOT_FOUND', text: 'Transaction proposal not found'};
-  public static UNLOCK_CODE_INVALID = {code: 'UNLOCK_CODE_INVALID', text: 'Invalid unlock code'};
+  public static REFERRER_INVALID = {code: 'REFERRER_INVALID', text: 'Invalid referrer address'};
   public static MAIN_ADDRESS_GAP_REACHED = {code: 'MAIN_ADDRESS_GAP_REACHED', text: 'Maximum number of consecutive addresses without activity reached'};
   public static SERVER_UNAVAILABLE = {code: 'SERVER_UNAVAILABLE', text: 'Could not reach the server'};
+  public static INVALID_REFERRAL = {code: 'INVALID_REFERRAL', text: 'Referral is not valid'};
 }

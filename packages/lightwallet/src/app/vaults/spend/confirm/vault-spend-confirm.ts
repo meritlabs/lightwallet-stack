@@ -32,8 +32,8 @@ export class VaultSpendConfirmView {
     private static CONFIRM_LIMIT_USD = 20;
     private static FEE_TOO_HIGH_LIMIT_PER = 15;
 
-  private dummyFeeReplaceMeWithActualFeeDontBeADummyMerit: string; 
-  private dummyFeeReplaceMeWithActualFeeDontBeADummyUSD : string; 
+  private dummyFeeReplaceMeWithActualFeeDontBeADummyMerit: string;
+  private dummyFeeReplaceMeWithActualFeeDontBeADummyUSD : string;
   private recipient: any;
   private txData: any = null;
   private wallet: MeritWalletClient;
@@ -49,7 +49,7 @@ export class VaultSpendConfirmView {
 
   constructor(
     private configService: ConfigService,
-    private navCtrl: NavController, 
+    private navCtrl: NavController,
     private navParams: NavParams,
     private profileService: ProfileService,
     private logger: Logger,
@@ -63,7 +63,7 @@ export class VaultSpendConfirmView {
     private easySendService: EasySendService,
     private bwc: BwcService,
     private spendVaultService: SpendVaultService,
-  ) { 
+  ) {
     this.logger.info("Hello SendConfirm View");
     this.walletConfig = this.configService.get().wallet;
     this.bitcore = this.bwc.getBitcore();
@@ -90,7 +90,7 @@ export class VaultSpendConfirmView {
     }
 
     await this.updateAmount();
-    
+
     this.logger.log('ionViewDidLoad txData', this.txData);
   }
 
@@ -109,10 +109,10 @@ export class VaultSpendConfirmView {
     if (!this.txData.toAmount) return;
 
     // Amount
-    this.dummyFeeReplaceMeWithActualFeeDontBeADummyMerit = 
+    this.dummyFeeReplaceMeWithActualFeeDontBeADummyMerit =
       this.txFormatService.formatAmountStr(this.wallet.getDefaultFee()).split(' ')[0];
 
-    this.txData.amountStr = this.txFormatService.formatAmountStr(this.txData.toAmount);   
+    this.txData.amountStr = this.txFormatService.formatAmountStr(this.txData.toAmount);
     this.txData.amountValueStr = this.txData.amountStr.split(' ')[0];
     this.txData.amountUnitStr = this.txData.amountStr.split(' ')[1];
     this.txFormatService.formatAlternativeStr(this.txData.toAmount).then((v) => {
@@ -138,12 +138,12 @@ export class VaultSpendConfirmView {
 
     return this.spendVaultService.spendVault(this.vault, spendKey,  this.txData.toAmount, recepient.address).then(() => {
       return this.navCtrl.goToRoot({}).then(() => {
-        return this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });    
+        return this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
       });
     });
   }
 
-  
+
   public toggleAddress() {
     this.showAddress = !this.showAddress;
   };

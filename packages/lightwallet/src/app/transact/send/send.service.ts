@@ -9,9 +9,9 @@ import * as Promise from 'bluebird';
 
 import * as _ from "lodash";
 
-/* 
+/*
   Service to help manage sending merit to others.
-*/ 
+*/
 @Injectable()
 export class SendService {
   private bitcore: any;
@@ -19,8 +19,8 @@ export class SendService {
   constructor(
     private bwcService: BwcService,
     private rate: RateService,
-    private config: ConfigService,    
-    private logger: Logger    
+    private config: ConfigService,
+    private logger: Logger
   ) {
     this.logger.info('Hello SendService');
     this.bitcore = this.bwcService.getBitcore();
@@ -39,11 +39,11 @@ export class SendService {
       return Promise.resolve(false);
     }
   }
-  
+
   private isAddressUnlocked(addr: string, network: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const walletClient = this.bwcService.getClient(null, {});
-      
+
       walletClient.validateAddress(addr, network).then((result) => {
         if (!result) {
           reject(new Error("Could not validateAddress"));
@@ -56,6 +56,3 @@ export class SendService {
 
   }
 }
-
-
-
