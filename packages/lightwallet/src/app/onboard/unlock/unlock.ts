@@ -8,6 +8,7 @@ import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { Logger } from 'merit/core/logger';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 import { ConfigService } from 'merit/shared/config.service';
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
@@ -33,7 +34,7 @@ export class UnlockView {
     private app:App,
     private walletService: WalletService,
     private toastCtrl: MeritToastController,
-    private loaderCtrl: LoadingController, 
+    private loaderCtrl: LoadingController,
     private navCtrl: NavController,
     private navParams: NavParams,
     private easyReceiveService: EasyReceiveService,
@@ -42,13 +43,13 @@ export class UnlockView {
     private pushNotificationService: PushNotificationsService,
     private pollingNotificationService: PollingNotificationsService
   ) {
-      
+
   }
 
   ionViewDidLoad() {
-    // An unlock code from a friend sharing the link. 
+    // An unlock code from a friend sharing the link.
     this.formData.parentAddress = this.navParams.get('unlockCode') || '';
-    
+
     this.easyReceiveService.getPendingReceipts().then((receipts) => {
       this.easyReceipt = receipts.pop();
       // The unlock code from a pending easyReceipt takes priority.
@@ -69,7 +70,7 @@ export class UnlockView {
 
     return this.walletService
       .createDefaultWallet(this.formData.parentAddress)
-      .then(wallet => {
+      .then((wallet: MeritWalletClient) => {
         this.logger.info('Created a new default wallet!');
         loader.dismiss();
 
@@ -81,10 +82,9 @@ export class UnlockView {
           this.pollingNotificationService.enablePolling(wallet);
         }
 
-        // Now that we are unlocked, we no longer need these other views in the stack,
-        // so we shall destroy them.
-        this.navCtrl.setRoot('TransactView');
-        this.navCtrl.popToRoot();
+        this.navCtrl.push('BackupView', {
+          mnemonic: wallet.getMnemonic(),
+        })
       })
       .catch(err => {
         loader.dismiss();
