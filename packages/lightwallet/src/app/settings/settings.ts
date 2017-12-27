@@ -48,7 +48,7 @@ export class SettingsView {
   }
 
   logout() {
-    this.app.getRootNavs[0].setRoot('OnboardingView');
+    this.app.getRootNavs()[0].setRoot('OnboardingView');
   }
 
   toLanguageSelect() {
