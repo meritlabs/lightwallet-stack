@@ -4,7 +4,8 @@ import 'rxjs/add/operator/toPromise';
 import { Logger } from 'merit/core/logger';
 
 import * as Promise from 'bluebird';
-const request = require('superagent');
+// const request = require('superagent');
+import * as request from 'superagent';
 
 import * as _ from 'lodash';
 
@@ -60,7 +61,7 @@ export class RateService {
 
   getBTC(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let r = request['get'](this.rateServiceUrl);
+      let r = request.get(this.rateServiceUrl);
       return r.then((res) => {
         if (!res) {
           return reject("Error connecting to rate service.");
@@ -69,7 +70,7 @@ export class RateService {
       }).catch((errorBTC) => {
         this.logger.warn("Error connecting to rate service: ", errorBTC);
         return resolve();
-      });;
+      });
     });
   }
 
@@ -109,8 +110,6 @@ export class RateService {
   }
 
   listAlternatives(sort: boolean) {
-    var self = this;
-  
     var alternatives = _.map(this.getAlternatives(), (item) => {
       return {
         name: item.name,
