@@ -20,6 +20,13 @@ import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
+import {Observable} from "rxjs/Observable";
+import 'rxjs/add/operator/retryWhen';
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/scan';
+import 'rxjs/add/operator/take';
+import 'rxjs/add/operator/delay';
+import 'rxjs/add/operator/filter';
 
 
 /* Refactor CheckList:
@@ -1274,36 +1281,36 @@ export class WalletService {
 
     this.logger.debug('Creating Wallet:', showOpts);
 
-    let attempts = 0;
-    const MAX_ATTEMPTS = 3;
-
     const seed = async () => {
-      return new Promise<any>(async (resolve, reject) => {
-          try {
-              const walletClient: MeritWalletClient = await this.seedWallet(opts);
-              let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
-              let myName = opts.myName || 'me'; // TODO GetTextCatalog
-              await walletClient.createWallet(name, myName, opts.m, opts.n, {
-                  network: opts.networkName,
-                  singleAddress: opts.singleAddress,
-                  walletPrivKey: opts.walletPrivKey,
-                  parentAddress: opts.parentAddress
-              });
+        const walletClient: MeritWalletClient = await this.seedWallet(opts);
+        let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
+        let myName = opts.myName || 'me'; // TODO GetTextCatalog
+        await walletClient.createWallet(name, myName, opts.m, opts.n, {
+            network: opts.networkName,
+            singleAddress: opts.singleAddress,
+            walletPrivKey: opts.walletPrivKey,
+            parentAddress: opts.parentAddress
+        });
 
-              // TODO: Subscribe to ReferralTxConfirmation
-              resolve(walletClient);
-          } catch (err) {
-              this.logger.warn("Error creating wallet in DCW: ", err);
-              if (err == Errors.CONNECTION_ERROR && ++attempts < MAX_ATTEMPTS) {
-                  return setTimeout(seed, 2000);
-              } else {
-                  throw err;
-              }
-          }
-      });
+        // TODO: Subscribe to ReferralTxConfirmation
+        return walletClient;
     };
 
-    await seed();
+    return Observable.fromPromise(seed())
+        .retryWhen(errors =>
+            errors
+                .do(err => this.logger.warn('Error creating wallet in DCW: ', err))
+                .filter(err => {
+                    if (err == Errors.CONNECTION_ERROR) {
+                      return true;
+                    } else {
+                      throw err;
+                    }
+                })
+                .delay(2000) // delay 2 seconds
+                .take(3) // try 3 times
+        )
+        .toPromise();
   }
 
   // TODO: Rename this.
