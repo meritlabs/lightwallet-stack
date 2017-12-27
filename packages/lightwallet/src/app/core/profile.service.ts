@@ -484,7 +484,7 @@ export class ProfileService {
         return reject('Could not access wallet'); // TODO gettextCatalog
       }
 
-      let walletId: string = wallet.credentials.walletId
+      let walletId: string = wallet.credentials.walletId;
 
       if (!this.profile.addWallet(JSON.parse(wallet.export()))) {
         return this.appService.getInfo().then((appInfo) => {

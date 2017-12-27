@@ -91,14 +91,12 @@ export class CreateVaultGeneralInfoView {
     this.navCtrl.push('CreateVaultDepositView', { refreshVaultList: this.navParams.get('refreshVaultList') });
   }
 
-  private getAllWallets(): Promise<Array<any>> {
-    return this.profileService.getWallets().map((wallet: any) => {
-      return this.walletService.getStatus(wallet).then((status) => {
-        wallet.status = status;
+  private async getAllWallets(): Promise<Array<any>> {
+    const wallets = await this.profileService.getWallets();
+    return wallets.map(async (wallet: any) => {
+        wallet.status = await this.walletService.getStatus(wallet);
         return wallet;
-      });
     });
-
   }
 
   private getAllVaults(): Promise<Array<any>> {

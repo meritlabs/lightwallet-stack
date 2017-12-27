@@ -53,10 +53,10 @@ export class CreateVaultService {
 
   }
 
-  private vaultFromModel(spendPubKey: any, whitelistedAddresses: Array<any>): Promise<any> {
+  private async vaultFromModel(spendPubKey: any, whitelistedAddresses: Array<any>): Promise<any> {
     //currently only supports type 0 which is a whitelisted vault.
     const amount = this.bitcore.Unit.fromMRT(parseFloat(this.model.amountToDeposit)).toMicros();
-    return Promise.map(whitelistedAddresses, (w: any) => {
+    const addrs = await Promise.all(whitelistedAddresses.map(async (w: any) => {
       let address;
       if (w.type == 'wallet') {
         address = this.getAllWallets().then((wallets) => {
@@ -69,13 +69,13 @@ export class CreateVaultService {
         address = Promise.resolve(this.bitcore.Address.fromString(w.address));
       }
       return address;
-    }).then((addrs) => {
-      return this.walletClient.prepareVault(0, {
+    }));
+
+    return this.walletClient.prepareVault(0, {
         amount: amount,
         whitelist: _.map(addrs, (addr) => addr.toBuffer()),
         masterPubKey: this.model.masterKey.publicKey,
         spendPubKey: spendPubKey,
-      });
     });
   }
 
@@ -173,13 +173,11 @@ export class CreateVaultService {
     return Promise.resolve(null);
   }
 
-  private getAllWallets(): Promise<Array<any>> {
-    return this.profileService.getWallets().map((wallet: any) => {
-      return this.walletService.getStatus(wallet).then((status) => {
-        wallet.status = status;
-        return wallet;
-      });
+  private async getAllWallets(): Promise<Array<any>> {
+    const wallets = await this.profileService.getWallets();
+    return wallets.map(async (wallet: any) => {
+      wallet.status = await this.walletService.getStatus(wallet);
+      return wallet;
     });
-
   }
 }

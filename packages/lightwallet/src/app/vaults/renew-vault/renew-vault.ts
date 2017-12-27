@@ -80,28 +80,28 @@ export class VaultRenewView {
         });
   }
 
-  toVault() {
+  async toVault() {
     const newVault = _.cloneDeep(this.vault);
-    Promise.map(this.formData.whitelist, (w: any) => {
 
-      let address;
-      if(w.type == 'wallet') {
-        address = this.getAllWallets().then((wallets) => {
-          let foundWallet = _.find(wallets, { id: w.walletClientId });
-          return foundWallet.createAddress().then((resp) => {
-              return this.bitcore.Address.fromString(resp.address);
-          });
-        });
-      } else {
-        address = Promise.resolve(this.bitcore.Address.fromString(w.address));
-      }
-      return address;
-    }).then((whitelist) => {
-      newVault.whitelist = _.map(whitelist, (a) => {return a.toBuffer()});
-      newVault.masterKey = this.formData.masterKey;
-      newVault.name = this.formData.vaultName;
-      this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });
-    });
+    const whitelist = await Promise.all(this.formData.whitelist.map(async (w:any) => {
+        let address;
+        if(w.type == 'wallet') {
+            address = this.getAllWallets().then((wallets) => {
+                let foundWallet = _.find(wallets, { id: w.walletClientId });
+                return foundWallet.createAddress().then((resp) => {
+                    return this.bitcore.Address.fromString(resp.address);
+                });
+            });
+        } else {
+            address = Promise.resolve(this.bitcore.Address.fromString(w.address));
+        }
+        return address;
+    }));
+
+    newVault.whitelist = _.map(whitelist, (a) => {return a.toBuffer()});
+    newVault.masterKey = this.formData.masterKey;
+    newVault.name = this.formData.vaultName;
+    this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });
   }
 
   regenerateMasterKey() {
@@ -143,11 +143,10 @@ export class VaultRenewView {
       // }),
     ]).then((arr: Array<Array<IWhitelistEntry>>) => {
       const whitelistCandidates = _.flatten(arr);
-      const filtered = _.reject(whitelistCandidates, { id: this.vault._id });
-      this.whitelistCandidates = filtered;
+      this.whitelistCandidates = _.reject(whitelistCandidates, { id: this.vault._id });
 
-      return Promise.map(this.vault.whitelist, (wl: string) => {
-        return Promise.map(whitelistCandidates, (candidate) => {
+      return Promise.all(this.vault.whitelist.map((wl: string) => {
+        return Promise.all(whitelistCandidates.map((candidate) => {
           if (candidate.type === 'vault') {
             if (wl == candidate.address) return candidate;
           } else {
@@ -161,10 +160,9 @@ export class VaultRenewView {
             });
           }
           return null;
-        });
-      }).then((unfilteredWhitelist) => {
-        const results = _.compact(_.flatten(unfilteredWhitelist));
-        this.formData.whitelist = results;
+        }));
+      })).then((unfilteredWhitelist) => {
+        this.formData.whitelist = <any>_.compact(_.flatten(unfilteredWhitelist));
         return Promise.resolve();
       });
     });
