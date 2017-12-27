@@ -64,25 +64,27 @@ export class NetworkView {
   }
 
   // Ensure that the wallets are loaded into the view on first load.
-  ionViewDidLoad() {
+  async ionViewDidLoad() {
     this.loading = true;
-    this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
-      let newDisplayWallets: DisplayWallet[] = [];
-      _.each(wallets, (wallet: MeritWalletClient) => {
-        // The wallet client will already have the below information.
-        let filteredWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode");
-        this.logger.info("FilteredWallet: ", filteredWallet);
-        newDisplayWallets.push(<DisplayWallet>filteredWallet);
-      });
-      this.displayWallets = newDisplayWallets;
-      this.logger.info("DisplayWallets after ionViewLoad: ", this.displayWallets);;
-    }).catch((err) => {
-      this.toastCtrl.create({
-        message: err.text || 'Unknown error',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
-    }).finally(() => this.loading = false);
-
+    try {
+        const wallets: MeritWalletClient[] = await this.profileService.getWallets();
+        let newDisplayWallets: DisplayWallet[] = [];
+        _.each(wallets, (wallet: MeritWalletClient) => {
+            // The wallet client will already have the below information.
+            let filteredWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode");
+            this.logger.info("FilteredWallet: ", filteredWallet);
+            newDisplayWallets.push(<DisplayWallet>filteredWallet);
+        });
+        this.displayWallets = newDisplayWallets;
+        this.logger.info("DisplayWallets after ionViewLoad: ", this.displayWallets);
+    } catch (err) {
+        this.toastCtrl.create({
+            message: err.text || 'Unknown error',
+            cssClass: ToastConfig.CLASS_ERROR
+        }).present();
+    } finally {
+      this.loading = false;
+    }
   }
 
   // On each enter, let's update the network data.
@@ -91,23 +93,28 @@ export class NetworkView {
   }
 
   doRefresh(refresher) {
-    this.updateView().finally(() => refresher.complete());
+    try {
+      this.updateView()
+    } catch (err) {} finally {
+      refresher.complete()
+    }
   }
 
-  updateView() {
+  async updateView() {
     this.loading = true;
 
-    return this.loadInfo()
-      .then((wallets:DisplayWallet[]) => this.formatWallets(wallets))
-      .catch(err => {
+    try {
+      await this.formatWallets(await this.loadInfo());
+    } catch (err) {
         this.toastCtrl
-          .create({
-            message: err.text || 'Unknown error',
-            cssClass: ToastConfig.CLASS_ERROR,
-          })
-          .present();
-      })
-      .finally(() => (this.loading = false));
+            .create({
+                message: err.text || 'Unknown error',
+                cssClass: ToastConfig.CLASS_ERROR,
+            })
+            .present();
+    } finally {
+      this.loading = false;
+    }
   }
 
   private formatWallets(processedWallets: DisplayWallet[]) {
@@ -119,7 +126,7 @@ export class NetworkView {
   }
 
   private loadInfo() {
-    return new Promise((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
       const fetch = (attempt = 0) => {
         return this.loadWallets()
           .then(resolve)
@@ -137,61 +144,56 @@ export class NetworkView {
     });
   }
 
-  private loadWallets() {
-    return this.profileService.getWallets().then((wallets:MeritWalletClient[]) => {
+  private async loadWallets() {
+    const wallets: MeritWalletClient[] = await this.profileService.getWallets();
+    return Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
+        let filteredWallet: DisplayWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode", "totalNetworkValue");
+        filteredWallet.totalNetworkValueMicro = await this.walletService.getANV(wallet);
 
-      return Promise.map(wallets, (wallet:MeritWalletClient) => {
-        let filteredWallet = <DisplayWallet>_.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode", "totalNetworkValue");
+        const data = await this.walletService.getRewards(wallet);
+        if (data && !_.isNil(data.mining)) {
+            filteredWallet.miningRewardsMicro = data.mining;
+            filteredWallet.ambassadorRewardsMicro = data.ambassador;
+        }
 
-        return this.walletService.getANV(wallet).then((anv) => {
-          filteredWallet.totalNetworkValueMicro = anv;
-        }).then(() => {
-          return this.walletService.getRewards(wallet).then((data) => {
-            // If we cannot properly fetch data, let's return wallets as-is.
-            if (data && !_.isNil(data.mining)) {
-              filteredWallet.miningRewardsMicro = data.mining;
-              filteredWallet.ambassadorRewardsMicro = data.ambassador;
-            }
-            return filteredWallet;
-          });
-        })
-      });
-    });
+        return filteredWallet;
+    }));
   }
 
-  private formatNetworkInfo(wallets: DisplayWallet[]): Promise<Array<DisplayWallet>> {
+  private async formatNetworkInfo(wallets: DisplayWallet[]): Promise<Array<DisplayWallet>> {
     let formatPromises: Array<Promise<any>> = [];
     let newDWallets: Array<DisplayWallet> = [];
-    return Promise.each(wallets, (dWallet: DisplayWallet) => {
-      if (!_.isNil(dWallet.totalNetworkValueMicro)) {
-        dWallet.totalNetworkValueMerit = this.txFormatService.parseAmount(dWallet.totalNetworkValueMicro, 'micros').amountUnitStr;
-        formatPromises.push(this.txFormatService.formatToUSD(dWallet.totalNetworkValueMicro).then((usdAmount) => {
-          dWallet.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
-          return Promise.resolve();
-        }));
-      }
 
-      if (!_.isNil(dWallet.miningRewardsMicro)) {
-        dWallet.miningRewardsMerit = this.txFormatService.parseAmount(dWallet.miningRewardsMicro, 'micros').amountUnitStr;
-        formatPromises.push(this.txFormatService.formatToUSD(dWallet.miningRewardsMicro).then((usdAmount) => {
-          dWallet.miningRewardsFiat = new FiatAmount(+usdAmount).amountStr;
-          return Promise.resolve();
-        }));
-      }
+    await Promise.all(wallets.map(async (dWallet: DisplayWallet) => {
+        if (!_.isNil(dWallet.totalNetworkValueMicro)) {
+            dWallet.totalNetworkValueMerit = this.txFormatService.parseAmount(dWallet.totalNetworkValueMicro, 'micros').amountUnitStr;
+            formatPromises.push(this.txFormatService.formatToUSD(dWallet.totalNetworkValueMicro).then((usdAmount) => {
+                dWallet.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
+                return Promise.resolve();
+            }));
+        }
 
-      if (!_.isNil(dWallet.ambassadorRewardsMicro)) {
-        dWallet.ambassadorRewardsMerit = this.txFormatService.parseAmount(dWallet.ambassadorRewardsMicro, 'micros').amountUnitStr;
-        formatPromises.push(this.txFormatService.formatToUSD(dWallet.ambassadorRewardsMicro).then((usdAmount) => {
-          dWallet.ambassadorRewardsFiat = new FiatAmount(+usdAmount).amountStr;
-          return Promise.resolve();
-        }));
-      }
-      return Promise.all(formatPromises).then(() => {
-        newDWallets.push(dWallet)
-      });
-    }).then(() => {
-      return Promise.resolve(newDWallets);
-    })
+        if (!_.isNil(dWallet.miningRewardsMicro)) {
+            dWallet.miningRewardsMerit = this.txFormatService.parseAmount(dWallet.miningRewardsMicro, 'micros').amountUnitStr;
+            formatPromises.push(this.txFormatService.formatToUSD(dWallet.miningRewardsMicro).then((usdAmount) => {
+                dWallet.miningRewardsFiat = new FiatAmount(+usdAmount).amountStr;
+                return Promise.resolve();
+            }));
+        }
+
+        if (!_.isNil(dWallet.ambassadorRewardsMicro)) {
+            dWallet.ambassadorRewardsMerit = this.txFormatService.parseAmount(dWallet.ambassadorRewardsMicro, 'micros').amountUnitStr;
+            formatPromises.push(this.txFormatService.formatToUSD(dWallet.ambassadorRewardsMicro).then((usdAmount) => {
+                dWallet.ambassadorRewardsFiat = new FiatAmount(+usdAmount).amountStr;
+                return Promise.resolve();
+            }));
+        }
+        return Promise.all(formatPromises).then(() => {
+            newDWallets.push(dWallet)
+        });
+    }));
+
+    return newDWallets;
   }
 
   copyToClipboard(code) {
