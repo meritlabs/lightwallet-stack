@@ -111,7 +111,6 @@ export class ExportWalletView {
     let encryptedData = this.sjcl.encrypt(this.formData.password, exportData, {iter: 10000});
     let walletName = this.wallet.credentials.walletName;
     let info = await this.appService.getInfo();
-    console.log(info);
     let fileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
 
     let blob = new Blob([encryptedData], {type: 'text/plain;charset=utf-8'});

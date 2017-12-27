@@ -43,7 +43,7 @@ export class BackupView {
       message: 'If you lose your wallet without a backup, it is lost for good!',
       buttons: [
         { text: 'Cancel', role: 'cancel', handler: _.noop },
-        { text: 'Ok', handler: this.toTransactView }
+        { text: 'Ok', handler: this.toTransactView.bind(this) }
       ]
     }).present();
   }
