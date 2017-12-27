@@ -66,7 +66,7 @@ export class ImportView {
       this.formData.network == 'livenet' ?
       this.derivationPathService.getDefault() :
       this.derivationPathService.getDefaultTestnet();
-      
+
     this.sjcl = this.bwcService.getSJCL();
   }
 

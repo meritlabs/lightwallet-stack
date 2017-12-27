@@ -14,6 +14,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { ConfigService } from "merit/shared/config.service";
 
+import { BwcService } from 'merit/core/bwc.service';
 import { EasyReceiveService } from "merit/easy-receive/easy-receive.service";
 import { Logger } from "merit/core/logger";
 import { WalletService } from "merit/wallets/wallet.service";
@@ -29,12 +30,12 @@ import { Platform } from 'ionic-angular/platform/platform';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 
 
-/* 
-  Using bluebird promises! 
-  This gives us the ability to map over items and 
+/*
+  Using bluebird promises!
+  This gives us the ability to map over items and
   engage in async requests.
 
-  TODO: 
+  TODO:
   -- Ensure that we get navParams and then fallback to the wallet service.
 */
 @IonicPage()
@@ -71,6 +72,7 @@ export class WalletsView {
     private navCtrl: NavController,
     private app: App,
     private logger: Logger,
+    private bwcService: BwcService,
     private easyReceiveService: EasyReceiveService,
     private toastCtrl: MeritToastController,
     private appUpdateService: AppUpdateService,
@@ -195,7 +197,7 @@ export class WalletsView {
       return this.profileService.getNotifications({ limit: 3 }).then((result) => {
         this.logger.info("WalletsView Received ${result.total} notifications upon resuming.");
         _.each(result.notifications, (n: any) => {
-          // We don't need to update the status here because it has 
+          // We don't need to update the status here because it has
           // already been fetched as part of updateAllInfo();
           this.processIncomingTransactionEvent(n, { updateStatus: false });
         });
@@ -238,8 +240,8 @@ export class WalletsView {
         this.logger.info("duplicate notifications? : ", duplicate);
         if (_.isEmpty(duplicate)) {
           // We use angular's NgZone here to ensure that the view re-renders with new data.
-          // There may be a better way to do this.  
-          // TODO: Investigate why events.subscribe() does not appear to run inside 
+          // There may be a better way to do this.
+          // TODO: Investigate why events.subscribe() does not appear to run inside
           // the angular zone.
           this.zone.run(() => {
             this.recentTransactionsData.push(n);
@@ -249,10 +251,10 @@ export class WalletsView {
     }
 
     // Update the status of the wallet in question.
-    // TODO: Consider revisiting the mutation approach here. 
+    // TODO: Consider revisiting the mutation approach here.
     if (n.walletId && opts.updateStatus) {
       // Check if we have a wallet with the notification ID in the view.
-      // If not, let's skip. 
+      // If not, let's skip.
       let foundIndex = _.findIndex(this.wallets, { 'id': n.walletId });
       if (!this.wallets[foundIndex]) {
         return;
@@ -331,7 +333,7 @@ export class WalletsView {
         {
           text: 'Validate', handler: (data) => {
             if (!data || !data.password) {
-              this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the moment 
+              this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the moment
             } else {
               this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, data.password).then((data) => {
                 if (!data) { // incorrect
@@ -406,7 +408,7 @@ export class WalletsView {
 
       this.profileService.getWallets().then((wallets) => {
 
-        //todo implement wallet selection UI 
+        //todo implement wallet selection UI
         let wallet = wallets[0];
         if (!wallet) return reject(new Error('Could not retrieve wallet.'));
 
@@ -472,11 +474,15 @@ export class WalletsView {
   }
 
   private toAddWallet() {
-    let shareCode: string; 
+
     if (!_.isEmpty(this.wallets)) {
-      let shareCode = this.wallets[0].shareCode;  
-      return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList, unlockCode: shareCode });
-    } 
+      const parentAddress = this.bwcService.getBitcore().PrivateKey(
+        this.wallets[0].credentials.walletPrivKey,
+        this.wallets[0].network
+      ).toAddress().toString();
+
+      return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList, parentAddress });
+    }
     return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList });
   }
 

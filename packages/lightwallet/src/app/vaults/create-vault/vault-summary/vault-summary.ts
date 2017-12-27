@@ -11,7 +11,7 @@ import { VaultsService } from 'merit/vaults/vaults.service';
   templateUrl: 'vault-summary.html',
 })
 export class CreateVaultSummaryView {
-  
+
   public formData = { vaultName: '', whitelist: [], amountToDeposit: 0.0, masterKey: '' };
 
   constructor(

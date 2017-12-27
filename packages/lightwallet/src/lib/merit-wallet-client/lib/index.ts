@@ -17,8 +17,8 @@ import * as Bitcore from 'bitcore-lib'; //Yuckity Yuck
 //const Bitcore = require('bitcore-lib');
 
 export class MeritClient extends Client {
-  // I'm not sure that there is any benefit to doing this in the constructor 
-  // vs right in the class.  
+  // I'm not sure that there is any benefit to doing this in the constructor
+  // vs right in the class.
 
   public Verifier: any = Verifier;
   public Utils: any = Utils;

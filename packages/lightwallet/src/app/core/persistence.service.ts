@@ -108,7 +108,7 @@ export class PersistenceService {
   }
 
   deletePendingEasyReceipt(receipt:EasyReceipt) {
-    
+
     return new Promise((resolve, reject) => {
         return this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
           if (!receipts) receipts = [];

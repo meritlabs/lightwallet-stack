@@ -33,12 +33,12 @@ export class RenewVaultService {
           }
           return this.vaultsService.getVaultCoins(walletClient, vault);
         }).then((coins) => {
-      
+
             let address = this.bitcore.Address.fromObject(vault.address);
             let network = this.walletClient.credentials.network;
 
             let tx = this.walletClient.buildRenewVaultTx(coins, vault, masterKey, {network: network});
-    
+
             console.log("RENEW TX");
             console.log('tx: ', tx);
             console.log('Serialized: ', tx.serialize());

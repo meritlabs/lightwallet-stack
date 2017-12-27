@@ -22,7 +22,7 @@ import { MeritToastController } from "merit/core/toast.controller";
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
  * without needing to know if they are on the Merit network.
- * We differentiate between the notions of 'original contacts,' which are explicitly created by the user as well as deviceContacts that are already in the addressBook of the device they are using. 
+ * We differentiate between the notions of 'original contacts,' which are explicitly created by the user as well as deviceContacts that are already in the addressBook of the device they are using.
  */
 @IonicPage()
 @Component({
@@ -39,12 +39,12 @@ export class SendView {
   private showMoreContacts: boolean = false;
   public filteredContacts: Array<MeritContact> = [];
   public renderingContacts: Array<MeritContact> = [];
-  private formData: { 
+  private formData: {
     search: string
   };
   private searchFocus: boolean;
   private hasFunds: boolean;
-  private hasOwnedMerit: boolean; 
+  private hasOwnedMerit: boolean;
   private network: string;
 
   contactsOffset = 0;
@@ -96,7 +96,7 @@ export class SendView {
   private hasWallets(): boolean {
     return (_.isEmpty(this.wallets) ? false : true);
   }
-  
+
   private updateHasFunds():Promise<void> {
     return this.profileService.hasFunds().then((hasFunds) => {
       this.hasFunds = hasFunds;
@@ -110,7 +110,7 @@ export class SendView {
       _.each(this.wallets, (w) => {
         walletList.push({
           color: w.color,
-          name: w.name, 
+          name: w.name,
           recipientType: 'wallet',
           getAddress: () => {
             Promise.resolve(this.walletService.getAddress(w, false));
@@ -129,12 +129,12 @@ export class SendView {
       this.showMoreContacts = contacts.length > SendView.CONTACTS_SHOW_LIMIT;
     });
   }
-  
+
   private initList():void {
     this.filteredContacts = [];
-    
-    // TODO: Resize this in the best-practices ionic3 wya.  
-    //this.content.resize();  
+
+    // TODO: Resize this in the best-practices ionic3 wya.
+    //this.content.resize();
     //TODO: Lifecycle tick if needed
   }
 
@@ -205,7 +205,7 @@ export class SendView {
     });
     modal.present();
   }
- 
+
   private showMore(): void {
     this.currentContactsPage++;
     this.updateWalletList();

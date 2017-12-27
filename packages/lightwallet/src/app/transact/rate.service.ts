@@ -13,19 +13,19 @@ import * as _ from 'lodash';
 import {Observable} from "rxjs/Observable";
 
 @Injectable()
-export class RateService {  
+export class RateService {
 
   private _rates: Object;
-  private _alternatives: Array<any>;  
+  private _alternatives: Array<any>;
   private _ratesBCH: Object;
   private SAT_TO_BTC: any;
   private BTC_TO_SAT: any;
   private _isAvailable: boolean = false;
 
   private rateServiceUrl = 'https://bitpay.com/api/rates';
-  
+
   constructor(
-    private logger: Logger    
+    private logger: Logger
   ) {
     this.logger.info('Hello RateService Service');
     this._rates = {};
@@ -80,7 +80,7 @@ export class RateService {
   getAlternatives() {
     return this._alternatives;
   }
-  
+
   fromMicrosToFiat(micros, code) {
     return micros * this.SAT_TO_BTC * this.getRate(code);
   }
@@ -126,7 +126,7 @@ export class RateService {
   }
 
   //TODO IMPROVE WHEN AVAILABLE
-  public whenAvailable(): Promise<any> { 
+  public whenAvailable(): Promise<any> {
     return new Promise((resolve, reject)=> {
       if (this._isAvailable) {
         return resolve();

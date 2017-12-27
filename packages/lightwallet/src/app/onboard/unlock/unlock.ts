@@ -12,26 +12,21 @@ import { ConfigService } from 'merit/shared/config.service';
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
 import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
 
-
 // Unlock view for wallet
 @IonicPage({
-  defaultHistory: ['OnboardingView']
+  defaultHistory: ['OnboardingView'],
 })
 @Component({
   selector: 'view-unlock',
   templateUrl: 'unlock.html',
 })
 export class UnlockView {
-
-  unlockState: 'success' | 'fail';
-  formData = {
-      unlockCode: ''
-  };
-
-  easyReceipt: EasyReceipt;
+  public unlockState: 'success' | 'fail';
+  public formData = { parentAddress: '' };
+  public easyReceipt: EasyReceipt;
 
   constructor(
-    private app:App,
+    private app: App,
     private walletService: WalletService,
     private toastCtrl: MeritToastController,
     private loaderCtrl: LoadingController,
@@ -46,34 +41,33 @@ export class UnlockView {
 
   ionViewDidLoad() {
     // An unlock code from a friend sharing the link.
-    this.formData.unlockCode = this.navParams.get('unlockCode') || '';
+    this.formData.parentAddress = this.navParams.get('parentAddress') || '';
 
-    this.easyReceiveService.getPendingReceipts().then((receipts) => {
+    this.easyReceiveService.getPendingReceipts().then(receipts => {
       this.easyReceipt = receipts.pop();
       // The unlock code from a pending easyReceipt takes priority.
-      if (this.easyReceipt) this.formData.unlockCode = this.easyReceipt.unlockCode;
+      if (this.easyReceipt) this.formData.parentAddress = this.easyReceipt.parentAddress;
     });
-
   }
 
-  async createAndUnlockWallet() {
-
-    if (!this.formData.unlockCode) {
+  async createWallet(): Promise<any> {
+    if (!this.formData.parentAddress) {
       this.unlockState = 'fail';
       return;
     }
 
-    const loader = this.loaderCtrl.create({content: 'Creating wallet...'});
+    let loader = this.loaderCtrl.create({ content: 'Creating wallet...' });
     loader.present();
 
     try {
-      const wallet = await this.walletService.createDefaultWallet(this.formData.unlockCode);
+      const wallet = this.walletService.createDefaultWallet(this.formData.parentAddress);
       this.logger.info('Created a new default wallet!');
+
       if (this.config.get().pushNotificationsEnabled) {
-          this.logger.info("Subscribing to push notifications for default wallet");
+          this.logger.info('Subscribing to push notifications for default wallet');
           this.pushNotificationService.subscribe(wallet);
       } else {
-          this.logger.info("Subscribing to long polling for default wallet");
+          this.logger.info('Subscribing to long polling for default wallet');
           this.pollingNotificationService.enablePolling(wallet);
       }
 
@@ -82,12 +76,11 @@ export class UnlockView {
       this.navCtrl.setRoot('TransactView');
       this.navCtrl.popToRoot();
     } catch (err) {
-      if (err == Errors.UNLOCK_CODE_INVALID) this.unlockState = 'fail';
-      this.logger.debug("Could not unlock wallet: ", err);
+      if (err == Errors.INVALID_REFERRAL) this.unlockState = 'fail';
+      this.logger.debug('Could not unlock wallet: ', err);
       this.toastCtrl.create({ message: err.text || 'Unknown error', cssClass: ToastConfig.CLASS_ERROR }).present();
     } finally {
       loader.dismiss();
     }
   }
-
 }

@@ -38,7 +38,7 @@ export class CreateVaultDepositView {
 
   ionViewDidLoad() {
     this.bitcore = this.bwcService.getBitcore();
-    
+
     let data = this.createVaultService.getData();
     this.formData.amountToDeposit = data.amountToDeposit;
     this.formData.amountAvailable = data.amountAvailable;
@@ -67,9 +67,9 @@ export class CreateVaultDepositView {
 
   private getAllWallets(): Promise<Array<MeritWalletClient>> {
     return this.profileService.getWallets().then((ws) => {
-      return Promise.all(_.map(ws, async (wallet: MeritWalletClient) => { 
+      return Promise.all(_.map(ws, async (wallet: MeritWalletClient) => {
         wallet.status = await this.walletService.getStatus(wallet);
-        return wallet; 
+        return wallet;
       }));
     });
   }
