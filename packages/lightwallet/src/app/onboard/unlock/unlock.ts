@@ -60,7 +60,7 @@ export class UnlockView {
     loader.present();
 
     try {
-      const wallet = this.walletService.createDefaultWallet(this.formData.parentAddress);
+      const wallet = await this.walletService.createDefaultWallet(this.formData.parentAddress);
       this.logger.info('Created a new default wallet!');
 
       if (this.config.get().pushNotificationsEnabled) {
