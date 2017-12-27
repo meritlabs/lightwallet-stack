@@ -1,4 +1,4 @@
-// The below config override allows Ionic Serve to follow the the alias of 'merit/' --> ./src/app 
+// The below config override allows Ionic Serve to follow the the alias of 'merit/' --> ./src/app
 // This enables us to do all imports relative to the appRoot.
 var path = require('path');
 var tsconfig = require('./tsconfig.json');

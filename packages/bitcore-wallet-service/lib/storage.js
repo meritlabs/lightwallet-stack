@@ -481,6 +481,7 @@ Storage.prototype.fetchAddresses = function(walletId, cb) {
 
   this.db.collection(collections.ADDRESSES).find({
     walletId: walletId,
+    signed: true,
   }).sort({
     createdOn: 1
   }).toArray(function(err, result) {

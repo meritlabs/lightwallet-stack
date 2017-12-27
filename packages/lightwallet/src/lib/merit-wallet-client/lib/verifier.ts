@@ -27,8 +27,8 @@ export module Verifier {
     $.checkState(credentials.isComplete());
 
     var local = Utils.deriveAddress(address.type || credentials.addressType, credentials.publicKeyRing, address.path, credentials.m, credentials.network);
-    return (local.address == address.address &&
-      _.difference(local.publicKeys, address.publicKeys).length === 0);
+
+    return (local.address == address.address && _.difference(local.publicKeys, address.publicKeys).length === 0);
   };
 
   /**
@@ -202,4 +202,3 @@ export module Verifier {
   };
 
 }
-

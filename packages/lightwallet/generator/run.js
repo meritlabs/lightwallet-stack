@@ -44,7 +44,3 @@ mkdirp(dirPath, function(err) {
 
     console.log('success');
 });
-
-
-
-

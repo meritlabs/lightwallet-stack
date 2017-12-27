@@ -21,50 +21,50 @@
             <div class="bottom-buttons">
                 <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
                     [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
-                    [(ngModel)]="formData.unlockCode" name="unlockCode">
-                <button (click)="createAndUnlockWallet()" ion-button icon-only translate>
+                    [(ngModel)]="formData.parentAddress" name="parentAddress">
+                <button (click)="createWallet()" ion-button icon-only translate>
                     <ion-icon name="arrow-forward"></ion-icon>
                 </button>
             </div>
-        
+
 
     </div>
 
     <div *ngIf="easyReceipt" class="container">
-        
+
         <img src='assets/img/logo-negative.svg' id="logo" />
-    
+
         <div class="title" translate>
             You've got Merit!!
         </div>
 
         <div class="text" translate>
-            {{easyReceipt.senderName ? easyReceipt.senderName : 'Someone'}} 
-            sent you 
-            <strong>{{easyReceipt.amount ? easyReceipt.amount : ''}}</strong> 
+            {{easyReceipt.senderName ? easyReceipt.senderName : 'Someone'}}
+            sent you
+            <strong>{{easyReceipt.amount ? easyReceipt.amount : ''}}</strong>
             Merit.
         </div>
 
         <div [style.flex]="1"></div>
 
         <div class="text">
-            Now you need to enter unlock code to setup your account and accept Merit. 
+            Now you need to enter unlock code to setup your account and accept Merit.
         </div>
 
 
         <div class="bottom-buttons">
             <input [placeholder]="easyReceipt?.inviteCode || 'Invite Code'"
                 [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
-                [(ngModel)]="formData.unlockCode" name="unlockCode">
-            <button (click)="createAndUnlockWallet()" ion-button icon-only translate>
+                [(ngModel)]="formData.parentAddress" name="parentAddress">
+            <button (click)="createWallet()" ion-button icon-only translate>
                 <ion-icon name="arrow-forward"></ion-icon>
             </button>
         </div>
-            
+
 
     </div>
 
-      
+
 
 
 </ion-content>

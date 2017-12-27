@@ -60,10 +60,6 @@ helpers.beforeEach = function(cb) {
     if (err) return cb(err);
     blockchainExplorer = sinon.stub();
 
-    blockchainExplorer.unlockWallet = function(a, b, cb) {
-      return cb(null, { result: { referralcode: 'code' } });
-    }
-
     var opts = {
       storage: storage,
       blockchainExplorer: blockchainExplorer,

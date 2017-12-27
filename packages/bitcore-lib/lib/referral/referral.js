@@ -16,14 +16,17 @@ function Referral(serialized) {
     return new Referral(serialized);
   }
 
-  this.previousReferral = '';
-  this.codeHash = '';
-  this.cKeyId = '';
+  this.version = 0;
+  this.parentAddress = '';
+  this.address = '';
+  this.addressType = 0;
+  this.pubkey = '';
+  this.signature = '';
 
   if (serialized) {
     if (serialized instanceof Referral) {
       return Referral.shallowCopy(serialized);
-    } else if (JSUtil.ishexa(serialized)) {
+    } else if (JSUtil.isHexa(serialized)) {
       this.fromString(serialized);
     } else if (BufferUtil.isBuffer(serialized)) {
       this.fromBuffer(serialized);
@@ -72,11 +75,19 @@ Referral.prototype.toBuffer = function() {
 };
 
 Referral.prototype.toBufferWriter = function(writer) {
-  //writer.writeInt32LE(this.version);
-  writer.writeString(this.previousReferral);
-  writer.writeString(this.cKeyId);
-  writer.writeString(this.codeHash);
-  //writer.writeUInt32LE(this.nLockTime);
+  const parentAddressBuf = this.parentAddress.toBufferLean();
+  const addressBuf = this.address.toBufferLean();
+  const pubkeyBuf = this.pubkey.toBuffer();
+  const signatureBuf = this.signature.toBuffer();
+
+  writer.writeInt32LE(this.version);
+  writer.write(parentAddressBuf);
+  writer.writeUInt8(this.addressType);
+  writer.write(addressBuf);
+  writer.writeVarintNum(pubkeyBuf.length);
+  writer.write(pubkeyBuf);
+  writer.writeVarintNum(signatureBuf.length);
+  writer.write(signatureBuf);
 
   return writer;
 };
@@ -89,11 +100,12 @@ Referral.prototype.fromBuffer = function(buffer) {
 Referral.prototype.fromBufferReader = function(reader) {
   $.checkArgument(!reader.finished(), 'No referral data received');
 
-  //this.version = reader.readInt32LE();
-  this.previousReferral = reader.read(32).toString('hex').match(/.{1,2}/g).reverse().join('');
-  this.cKeyId = reader.read(20).toString('hex'); 
-  this.codeHash = reader.read(32).toString('hex').match(/.{1,2}/g).reverse().join('');
-  //this.nLockTime = reader.readUInt32LE();
+  this.version = reader.readInt32LE();
+  this.parentAddress = reader.read(20).toString('hex').match(/.{1,2}/g).reverse().join('');
+  this.addressType = reader.readUInt8();
+  this.address = reader.read(20).toString('hex').match(/.{1,2}/g).reverse().join('');
+  this.pubkey = reader.read(33).toString('hex').match(/.{1,2}/g).reverse().join('');
+  this.signature = reader.read(71).toString('hex').match(/.{1,2}/g).reverse().join('');
 
   return this;
 };
@@ -101,10 +113,11 @@ Referral.prototype.fromBufferReader = function(reader) {
 Referral.prototype.toObject = Referral.prototype.toJSON = function toObject() {
   const obj = {
     version: this.version,
-    previousReferral: this.previousReferral,
-    cKeyId: this.cKeyId,
-    codeHash: this.codeHash,
-    nLockTime: this.nLockTime,
+    parentAddress: this.parentAddress,
+    address: this.address,
+    addressType: this.addressType,
+    pubkey: this.pubkey,
+    signature: this.signature,
   };
 
   return obj;
@@ -122,10 +135,11 @@ Referral.prototype.fromObject = function fromObject(arg) {
   }
 
   this.version = referral.version;
-  this.previousReferral = referral.previousReferral;
-  this.cKeyId = referral.cKeyId;
-  this.codeHash = referral.codeHash;
-  this.nLockTime = referral.nLockTime;
+  this.parentAddress = referral.parentAddress;
+  this.address = referral.address;
+  this.addressType = referral.addressType;
+  this.pubkey = referral.pubkey;
+  this.signature = referral.signature;
 
   return this;
 };
@@ -140,26 +154,8 @@ Referral.prototype._newReferral = function() {
   this.nLockTime = DEFAULT_NLOCKTIME;
 };
 
-Referral.prototype.serialize = function(unsafe) {
-  if (true === unsafe || unsafe && unsafe.disableAll) {
-    return this.uncheckedSerialize();
-  } else {
-    return this.checkedSerialize(unsafe);
-  }
-};
-
-Referral.prototype.uncheckedSerialize = Referral.prototype.toString = function() {
+Referral.prototype.serialize = Referral.prototype.toString = function() {
   return this.toBuffer().toString('hex');
-};
-
-Referral.prototype.checkedSerialize = function(opts) {
-  const serializationError = this.getSerializationError(opts);
-  if (serializationError) {
-    serializationError.message += ' - For more information please see: ' +
-      'https://bitcore.io/api/lib/referrals#serialization-checks';
-    throw serializationError;
-  }
-  return this.uncheckedSerialize();
 };
 
 module.exports = Referral;

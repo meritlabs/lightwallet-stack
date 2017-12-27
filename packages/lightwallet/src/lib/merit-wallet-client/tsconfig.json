@@ -3,7 +3,7 @@
       "allowSyntheticDefaultImports": true,
       "allowUnreachableCode": true,
       "declaration": true,
-      "noEmit": false,    
+      "noEmit": false,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
       "lib": [

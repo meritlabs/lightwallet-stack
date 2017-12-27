@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, ViewController } from 'ionic-angular';
 import { Logger } from "merit/core/logger";
-import { BarcodeScanner } from '@ionic-native/barcode-scanner'; 
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 
 
 declare var cordova:any;
@@ -19,7 +19,7 @@ export class ImportScanView {
 
   public scannerPermitted:boolean;
 
-  public err; 
+  public err;
 
   constructor(
     private viewCtrl:ViewController,
@@ -37,8 +37,8 @@ export class ImportScanView {
 
     this.barcodeScanner.scan({formats: 'QR_CODE'}).then((barcodeData) => {
       this.viewCtrl.dismiss(barcodeData.text);
-    }).catch((err) => { 
-        this.err = err;  
+    }).catch((err) => {
+        this.err = err;
     });
   }
 

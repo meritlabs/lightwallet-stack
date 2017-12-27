@@ -7,8 +7,8 @@ import * as Promise from 'bluebird';
 export class BwcError {
 
   constructor(
-    private log: Logger, 
-  ) { 
+    private log: Logger,
+  ) {
     this.log.info('Hello BwcError model');
   }
 
@@ -154,7 +154,7 @@ export class BwcError {
             case 'ERROR':
               body = "Error";
               break;
-  
+
             default:
               this.log.warn('Unknown error type:', name);
               body = "Unknown error type.";
@@ -163,6 +163,6 @@ export class BwcError {
       } else {
           body = "Unknown error type.";
       }
-    return body;  
-  } 
+    return body;
+  }
 }

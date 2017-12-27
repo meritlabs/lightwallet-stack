@@ -20,7 +20,7 @@ export interface IWhitelistEntry {
 }
 
 export interface IVaultRenewViewModel {
-    vaultName: string, 
+    vaultName: string,
     masterKey: string,
     whitelist: Array<IWhitelistEntry>,
 }
@@ -47,9 +47,9 @@ export class VaultRenewView {
     public navParams: NavParams,
     private popupService: PopupService,
     private configService: ConfigService,
-    private bwc: BwcService,  
+    private bwc: BwcService,
     private walletService: WalletService,
-    private vaultsService: VaultsService,  
+    private vaultsService: VaultsService,
     private profileService: ProfileService,
   ){
     this.vault = this.navParams.get('vault');
@@ -64,16 +64,16 @@ export class VaultRenewView {
   }
 
   checkCanConfirm() {
-    this.canConfirm = 
-      this.formData.vaultName.length > 0 && 
+    this.canConfirm =
+      this.formData.vaultName.length > 0 &&
       this.formData.whitelist.length > 0;
   }
 
   confirmRenew() {
     this.popupService.ionicConfirm(
-        'Reset vault?', 
-        'All pending transactions will be canceled and timeout will be reset. Do you want to reset the vault?', 
-        'Yes', 
+        'Reset vault?',
+        'All pending transactions will be canceled and timeout will be reset. Do you want to reset the vault?',
+        'Yes',
         'No').then((result: boolean) => {
           if (result) this.toVault();
           return;
@@ -100,7 +100,7 @@ export class VaultRenewView {
       newVault.whitelist = _.map(whitelist, (a) => {return a.toBuffer()});
       newVault.masterKey = this.formData.masterKey;
       newVault.name = this.formData.vaultName;
-      this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });      
+      this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });
     });
   }
 
@@ -131,26 +131,26 @@ export class VaultRenewView {
           const addr = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
           return { 'id': w.id, 'name': name, 'address': addr, 'type': 'wallet', walletClient: w, walletClientId: w.id };
         });
-      }), 
+      }),
       // fetch users vaults
       // ToDo: uncomment when vaults support vault addresses in whitelists
       // this.getAllWVaults().then((vaults) => {
       //   return _.map(vaults, (v) => {
       //     const name = v.name || v._id;
       //     const addr = new this.bitcore.Address(v.address).toString();
-      //     return { 'id': v._id, 'name': name, 'address': addr, 'type': 'vault' }; 
+      //     return { 'id': v._id, 'name': name, 'address': addr, 'type': 'vault' };
       //   });
       // }),
     ]).then((arr: Array<Array<IWhitelistEntry>>) => {
       const whitelistCandidates = _.flatten(arr);
       const filtered = _.reject(whitelistCandidates, { id: this.vault._id });
       this.whitelistCandidates = filtered;
-      
+
       return Promise.map(this.vault.whitelist, (wl: string) => {
         return Promise.map(whitelistCandidates, (candidate) => {
           if (candidate.type === 'vault') {
             if (wl == candidate.address) return candidate;
-          } else { 
+          } else {
             return candidate.walletClient.getMainAddresses({}).then((addresses: Array<any>) => {
               const found = _.find(addresses, { address: wl });
               candidate.walletClient = null;
@@ -175,7 +175,7 @@ export class VaultRenewView {
       this.walletClient = _.head(ws);
       return Promise.all(_.map(ws, async (wallet:any) => {
         wallet.status = await this.walletService.getStatus(wallet);
-        return wallet; 
+        return wallet;
       }));
     })
     return wallets;

@@ -1,10 +1,10 @@
 # bitcore-wallet-client
 
 [![NPM Package](https://img.shields.io/npm/v/bitcore-wallet-client.svg?style=flat-square)](https://www.npmjs.org/package/bitcore-wallet-client)
-[![Build Status](https://img.shields.io/travis/bitpay/bitcore-wallet-client.svg?branch=master&style=flat-square)](https://travis-ci.org/bitpay/bitcore-wallet-client) 
+[![Build Status](https://img.shields.io/travis/bitpay/bitcore-wallet-client.svg?branch=master&style=flat-square)](https://travis-ci.org/bitpay/bitcore-wallet-client)
 [![Coverage Status](https://coveralls.io/repos/bitpay/bitcore-wallet-client/badge.svg)](https://coveralls.io/r/bitpay/bitcore-wallet-client)
 
-The *official* client library for [bitcore-wallet-service] (https://github.com/bitpay/bitcore-wallet-service). 
+The *official* client library for [bitcore-wallet-service] (https://github.com/bitpay/bitcore-wallet-service).
 
 ## Description
 
@@ -41,7 +41,7 @@ var client = new Client({
 
 client.createWallet("My Wallet", "Irene", 2, 2, {network: 'testnet'}, function(err, secret) {
   if (err) {
-    console.log('error: ',err); 
+    console.log('error: ',err);
     return
   };
   // Handle err
@@ -114,7 +114,7 @@ Create a new wallet with the first script:
 
 ```
 $ node irene.js
-info Generating new keys 
+info Generating new keys
  Wallet Created. Share this secret with your copayers: JbTDjtUkvWS4c3mgAtJf4zKyRGzdQzZacfx2S7gRqPLcbeAWaSDEnazFJF6mKbzBvY1ZRwZCbvT
 ```
 
@@ -133,5 +133,3 @@ Return: [...]
 ```
 
 Note that the scripts created two files named `irene.dat` and `tomas.dat`. With these files you can get status, generate addresses, create proposals, sign transactions, etc.
-
-
