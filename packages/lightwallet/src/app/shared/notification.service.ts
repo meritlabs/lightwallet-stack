@@ -39,8 +39,6 @@ export class NotificationService {
 
     //TODO: Rewrite BWC with promises.
 
-    // TODO what is client?
-    throw new Error('Ibby refactored this method and made it unfunctional. Unable to identify the functionality of this method since it is not used anywhere.');
     // let subCall = Promise.promisify(client[methodPrefix + 'ConfirmationSubscribe'](subject.id, {}, function(){}));
     // return subCall().then((res) => {
     //   Promise.resolve(this.persistenceService.setTxConfirmNotification(subject.id, subject));
