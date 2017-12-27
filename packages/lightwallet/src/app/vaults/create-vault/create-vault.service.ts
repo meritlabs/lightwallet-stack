@@ -150,7 +150,7 @@ export class CreateVaultService {
     this.logger.warn(this.model.selectedWallet);
     return this.findFeeLevel(vault.amount).then((feeLevel) => {
       if (vault.amount > Number.MAX_SAFE_INTEGER) {
-        return Promise.reject("The amount is too big.  Because, Javascript.");
+        return Promise.reject(new Error("The amount is too big")); // Because Javascript
       }
 
       let txp = {

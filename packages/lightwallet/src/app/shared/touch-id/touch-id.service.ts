@@ -47,7 +47,7 @@ export class TouchIdService {
       this.touchId.verifyFingerprint('Scan your fingerprint please')
         .then(
         res => resolve(),
-        err => reject()
+        err => reject(err)
         );
     });
   }
@@ -66,7 +66,7 @@ export class TouchIdService {
         }).catch(error => {
           if (error === this.androidFingerprintAuth.ERRORS.FINGERPRINT_CANCELLED) {
             this.log.warn('Fingerprint authentication cancelled');
-            reject();
+            reject(error);
           } else {
             this.log.error(error);
             resolve();
@@ -81,14 +81,14 @@ export class TouchIdService {
 
   check(): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!this.isAvailable()) reject();
+      if (!this.isAvailable()) reject(new Error('TouchId not available'));
       if (this.platform.isIOS) {
         this.verifyIOSFingerprint()
           .then(() => {
             resolve();
           })
           .catch(() => {
-            reject();
+            reject(new Error('Fingerprint not verified'));
           });
       };
       if (this.platform.isAndroid) {
@@ -97,7 +97,7 @@ export class TouchIdService {
             resolve();
           })
           .catch(() => {
-            reject();
+            reject(new Error('Fingerprint not verified'));
           });
       };
     });
@@ -116,7 +116,7 @@ export class TouchIdService {
         this.check().then(() => {
           return resolve();
         }).catch(() => {
-          return reject();
+          return reject(new Error('Fingerprint not verified'));
         });
       };
     });

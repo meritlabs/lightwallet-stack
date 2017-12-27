@@ -208,7 +208,7 @@ export class NetworkView {
   }
 
   shareCode(code) {
-    this.socialSharing.share('My invite code to use Merit: ' + code);
+    this.socialSharing.share('My invite address to use Merit: ' + code);
   }
 
   shareAddress(address) {

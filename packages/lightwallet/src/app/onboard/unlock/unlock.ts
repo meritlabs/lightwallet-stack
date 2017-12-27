@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, App, LoadingController, NavController } from 'ionic-angular';
 import { WalletService } from 'merit/wallets/wallet.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
+import { ToastConfig } from "merit/core/toast.config";
+import { MeritToastController } from "merit/core/toast.controller";
 import * as Promise from 'bluebird';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
@@ -13,25 +13,27 @@ import { ConfigService } from 'merit/shared/config.service';
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
 import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
 
+
 // Unlock view for wallet
 @IonicPage({
-  defaultHistory: ['OnboardingView'],
+  defaultHistory: ['OnboardingView']
 })
 @Component({
   selector: 'view-unlock',
   templateUrl: 'unlock.html',
 })
 export class UnlockView {
-  public unlockState: 'success' | 'fail';
-  public formData = { parentAddress: '' };
 
-  public easyReceipt: EasyReceipt;
+  public unlockState:'success'|'fail';
+  public formData = {parentAddress: ''};
+
+  public easyReceipt:EasyReceipt;
 
   constructor(
-    private app: App,
+    private app:App,
     private walletService: WalletService,
     private toastCtrl: MeritToastController,
-    private loaderCtrl: LoadingController,
+    private loaderCtrl: LoadingController, 
     private navCtrl: NavController,
     private navParams: NavParams,
     private easyReceiveService: EasyReceiveService,
@@ -39,20 +41,24 @@ export class UnlockView {
     private config: ConfigService,
     private pushNotificationService: PushNotificationsService,
     private pollingNotificationService: PollingNotificationsService
-  ) {}
+  ) {
+      
+  }
 
   ionViewDidLoad() {
-    // An unlock code from a friend sharing the link.
-    this.formData.parentAddress = this.navParams.get('parentAddress') || '';
-
-    this.easyReceiveService.getPendingReceipts().then(receipts => {
+    // An unlock code from a friend sharing the link. 
+    this.formData.parentAddress = this.navParams.get('unlockCode') || '';
+    
+    this.easyReceiveService.getPendingReceipts().then((receipts) => {
       this.easyReceipt = receipts.pop();
       // The unlock code from a pending easyReceipt takes priority.
       if (this.easyReceipt) this.formData.parentAddress = this.easyReceipt.parentAddress;
     });
+
   }
 
-  createWallet(): Promise<any> {
+  createWallet():Promise<any> {
+
     if (!this.formData.parentAddress) {
       this.unlockState = 'fail';
       return;
@@ -86,5 +92,7 @@ export class UnlockView {
         this.logger.debug('Could not unlock wallet: ', err);
         this.toastCtrl.create({ message: err.text || 'Unknown error', cssClass: ToastConfig.CLASS_ERROR }).present();
       });
+
   }
+
 }

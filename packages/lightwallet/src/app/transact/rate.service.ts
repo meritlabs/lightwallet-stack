@@ -63,7 +63,7 @@ export class RateService {
       let r = request['get'](this.rateServiceUrl);
       return r.then((res) => {
         if (!res) {
-          return reject("Error connecting to rate service.");
+          return reject(new Error("Error connecting to rate service."));
         }
         return resolve(res.body);
       }).catch((errorBTC) => {
