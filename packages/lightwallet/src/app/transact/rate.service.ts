@@ -76,30 +76,30 @@ export class RateService {
 
   getRate(code) {
       return this._rates[code];
-  };
+  }
   
   getAlternatives() {
     return this._alternatives;
-  };
+  }
   
   fromMicrosToFiat(micros, code) {
     return micros * this.SAT_TO_BTC * this.getRate(code);
-  };
+  }
 
   fromFiatToMicros(amount, code) {
     let micros = amount / this.getRate(code) * this.BTC_TO_SAT;
     return Math.ceil(micros);
-  };
+  }
 
   fromMeritToFiat(merit, code) {
     let micros = this.mrtToMicro(merit);
     return this.fromMicrosToFiat(micros, code);
-  };
+  }
 
   fromFiatToMerit(amount, code) {
     let micros = this.fromFiatToMicros(amount, code);
     return this.microsToMrt(micros);
-  };
+  }
 
   mrtToMicro(mrt) {
     return mrt * this.BTC_TO_SAT;
@@ -110,19 +110,21 @@ export class RateService {
   }
 
   listAlternatives(sort: boolean) {
-    var alternatives = _.map(this.getAlternatives(), (item) => {
+    let alternatives = _.map(this.getAlternatives(), (item) => {
       return {
         name: item.name,
         isoCode: item.isoCode
       }
     });
+
     if (sort) {
       alternatives.sort( (a, b) => {
         return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
       });
     }
+
     return _.uniqBy(alternatives, 'isoCode');
-  };
+  }
 
   //TODO IMPROVE WHEN AVAILABLE
   public whenAvailable(): Promise<any> { 
