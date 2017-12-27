@@ -2567,30 +2567,30 @@ export class API {
 
     return this._signAddressAndUnlockWithRoot(txp.changeAddress)
       .then(() => {
-        this.getPayPro(txp).then((paypro) => {
-        if (paypro) {
-          this.log.warn("WE ARE PAYPRO");
-          let t = Utils.buildTx(txp);
-          this._applyAllSignatures(txp, t);
+        return this.getPayPro(txp).then((paypro) => {
+          if (paypro) {
+            this.log.warn("WE ARE PAYPRO");
+            let t = Utils.buildTx(txp);
+            this._applyAllSignatures(txp, t);
 
-          return PayPro.send({
-            http: this.payProHttp,
-            url: txp.payProUrl,
-            amountMicros: txp.amount,
-            refundAddr: txp.changeAddress.address,
-            merchant_data: paypro.merchant_data,
-            rawTx: t.serialize({
-              disableSmallFees: true,
-              disableLargeFees: true,
-              disableDustOutputs: true
-            }),
-          });
-        }
-        return Promise.resolve();
-      }).then(() => {
-        return this._doBroadcast(txp);
+            return PayPro.send({
+              http: this.payProHttp,
+              url: txp.payProUrl,
+              amountMicros: txp.amount,
+              refundAddr: txp.changeAddress.address,
+              merchant_data: paypro.merchant_data,
+              rawTx: t.serialize({
+                disableSmallFees: true,
+                disableLargeFees: true,
+                disableDustOutputs: true
+              }),
+            });
+          }
+          return Promise.resolve();
+        }).then(() => {
+          return this._doBroadcast(txp);
+        });
       });
-    });
   };
 
   /**
