@@ -1,11 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Inject } from '@angular/core';
 import { Logger } from 'merit/core/logger';
 import * as _ from 'lodash';
-import { PlatformService } from 'merit/core/platform.service';
-import { LocalStorage } from 'merit/core/storage/local-storage.service';
-import { FileStorage } from 'merit/core/storage/file-storage.service';
-import { RamStorage } from 'merit/core/storage/ram-storage.service';
 import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 
 
@@ -47,15 +42,16 @@ class MeritStorage {
   constructor(private storage:Storage) {
   }
 
-  public get(key) {
-    return Promise.resolve(this.storage.get(key));
+  async get(key) {
+    return this.storage.get(key);
   }
 
-  public set(key, value) {
-    return Promise.resolve(this.storage.set(key,value));
+  async set(key, value) {
+    return this.storage.set(key,value);
   }
-  public remove(key) {
-    return Promise.resolve(this.storage.remove(key));
+
+  async remove(key) {
+    return this.storage.remove(key)
   }
 
 }
