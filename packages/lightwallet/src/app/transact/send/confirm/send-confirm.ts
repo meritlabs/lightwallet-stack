@@ -45,7 +45,6 @@ export class SendConfirmView {
     wallet: MeritWalletClient;
   };
   private referralsToSign: Array<any>;
-
   private viewData;
 
   constructor(
@@ -226,7 +225,6 @@ export class SendConfirmView {
           } else {
             return Promise.resolve();
           }
-
         })
         .then(() => {
           loadingSpinner.dismiss();

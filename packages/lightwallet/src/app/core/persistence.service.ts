@@ -25,6 +25,7 @@ const Keys = {
   COINBASE_TOKEN: network => 'coinbaseToken-' + network,
   COINBASE_TXS: network => 'coinbaseTxs-' + network,
   CONFIG: 'config',
+  PENDING_EASY_SENDS: walletId => 'pendingEasySends-' + walletId,
   EASY_RECEIPTS: 'easyReceipts',
   FEEDBACK: 'feedback',
   FOCUSED_WALLET_ID: 'focusedWalletId',
@@ -88,40 +89,28 @@ export class PersistenceService {
     return this.storage.remove(Keys.PROFILE);
   };
 
-  addPendingEasyReceipt(receipt:EasyReceipt) {
-    return new Promise((resolve, reject) => {
-      return this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
-        if (!receipts) receipts = [];
-        receipts = receipts.filter((r) => {
-          return !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
-        }) // prevent storing of the same receipt twice
-        receipts.push(receipt)
-        return this.storage.set(Keys.EASY_RECEIPTS, receipts).then(() => {
-          return resolve();
-        })
-      });
+  addPendingEasyReceipt(receipt:EasyReceipt): Promise<void> {
+    return this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
+      if (!receipts) receipts = [];
+      receipts = receipts.filter((r) => {
+        return !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
+      }) // prevent storing of the same receipt twice
+      receipts.push(receipt)
+      return this.storage.set(Keys.EASY_RECEIPTS, receipts);
     });
   }
 
-  getPendingsEasyReceipts() {
+  getPendingsEasyReceipts(): Promise<any> {
     return this.storage.get(Keys.EASY_RECEIPTS);
   }
 
-  deletePendingEasyReceipt(receipt:EasyReceipt) {
-
-    return new Promise((resolve, reject) => {
-        return this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
-          if (!receipts) receipts = [];
-
-
-          return this.storage.set(Keys.EASY_RECEIPTS, receipts.filter((r) => {
-            return !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
-          })).then(() => {
-            return resolve();
-          })
-        });
+  deletePendingEasyReceipt(receipt:EasyReceipt): Promise<void> {
+    return this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
+      if (!receipts) receipts = [];
+      return this.storage.set(Keys.EASY_RECEIPTS, receipts.filter((r) => {
+        return !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
+      }));
     });
-
   }
 
   setFeedbackInfo(feedbackValues: any): Promise<void> {
@@ -345,6 +334,21 @@ export class PersistenceService {
 
   removeTxHistory(walletId: string): Promise<void> {
     return this.storage.remove(Keys.TX_HISTORY(walletId));
+  }
+
+  setPendingEasySends(walletId: string, easysends: any): Promise<void> {
+    return this.storage.set(Keys.PENDING_EASY_SENDS(walletId), easysends).catch(err => {
+      this.log.error('Error saving pending EasySends. Size:' + easysends.length);
+      this.log.error(err);
+    });
+  }
+
+  getPendingEasySends(walletId: string): Promise<any> {
+    return this.storage.get(Keys.PENDING_EASY_SENDS(walletId));
+  }
+
+  removePendingEasySends(walletId: string): Promise<void> {
+    return this.storage.remove(Keys.PENDING_EASY_SENDS(walletId));
   }
 
   setBalanceCache(cardId: string, data: any): Promise<void> {

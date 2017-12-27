@@ -193,7 +193,7 @@ export class ImportView {
     //this.walletService.updateRemotePreferences(wallet, {}).then(() => {
     this.profileService.setBackupFlag(wallet.credentials.walletId);
     if (loader) loader.dismiss();
-    this.app.getRootNav().setRoot('TransactView');
+    this.app.getRootNavs[0].setRoot('TransactView');
     //});
   }
 

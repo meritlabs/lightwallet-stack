@@ -421,7 +421,7 @@ export class ProfileService {
             //return reject(new Error('NONAGREEDDISCLAIMER: Non agreed disclaimer'));
           }
         }).catch(() => {
-          return reject("Could not query disclaimer!");
+          return reject(new Error("Could not query disclaimer!"));
         });
       }).catch((err: any) => {
         return reject(err);
@@ -477,7 +477,7 @@ export class ProfileService {
 
         walletClient.import(str);
       } catch (err) {
-        return reject('Could not import. Check input file and spending password'); // TODO getTextCatalog
+        return reject(new Error('Could not import. Check input file and spending password')); // TODO getTextCatalog
       }
 
       let strParsed: any = JSON.parse(str);
@@ -503,14 +503,14 @@ export class ProfileService {
   public addAndBindWalletClient(wallet: MeritWalletClient, opts: any): Promise<MeritWalletClient> {
     return new Promise((resolve, reject) => {
       if (!wallet || !wallet.credentials) {
-        return reject('Could not access wallet'); // TODO gettextCatalog
+        return reject(new Error('Could not access wallet')); // TODO gettextCatalog
       }
 
       let walletId: string = wallet.credentials.walletId
 
       if (!this.profile.addWallet(JSON.parse(wallet.export()))) {
         return this.appService.getInfo().then((appInfo) => {
-          return reject("Wallet already in " + appInfo.nameCase); // TODO gettextCatalog
+          return reject(new Error("Wallet already in " + appInfo.nameCase)); // TODO gettextCatalog
         });
       }
 
@@ -636,7 +636,7 @@ export class ProfileService {
     return new Promise((resolve, reject) => {
 
       if (!credentials.walletId || !credentials.m) {
-        return reject('bindWallet should receive credentials JSON');
+        return reject(new Error('bindWallet should receive credentials JSON'));
       }
 
       // Create the client
@@ -685,7 +685,7 @@ export class ProfileService {
           });
         }).catch((err: any) => {
           this.logger.warn(err);
-          return reject();
+          return reject(err);
         });
     });
   };
