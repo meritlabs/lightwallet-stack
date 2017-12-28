@@ -45,13 +45,11 @@ export class TxFormatService {
     return this.formatAmount(micros) + ' MRT';
   }
 
-  toFiat(micros: number, code: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (isNaN(micros)) return resolve();
-      let v1 = this.rate.fromMicrosToFiat(micros, code);
-      if (!v1) return resolve(null);
-      return resolve(v1.toFixed(2));
-    });
+  async toFiat(micros: number, code: string): Promise<string> {
+    if (isNaN(micros)) return;
+    let v1 = this.rate.fromMicrosToFiat(micros, code);
+    if (!v1) return null;
+    return v1.toFixed(2);
   }
 
   toFiatStr(micros: number, code: string): Promise<string> {

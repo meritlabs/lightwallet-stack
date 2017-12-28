@@ -21,41 +21,30 @@ export class EasyReceiveService {
     private ledger:LedgerService
   ) {}
 
-  public validateAndSaveParams(params:any):Promise<EasyReceipt> {
-    return new Promise((resolve, reject) => {
+  async validateAndSaveParams(params:any):Promise<EasyReceipt> {
+    this.logger.debug(`Parsing easy params ${params}`);
 
-      this.logger.debug(`Parsing easy params ${params}`);
+    let receipt = new EasyReceipt({});
+    receipt.parentAddress = params.pa;
+    receipt.secret = params.se;
+    receipt.senderName = params.sn;
+    receipt.senderPublicKey = params.sk;
+    receipt.blockTimeout = params.bt;
+    receipt.deepLinkURL = params['~referring_link'];
 
-      let receipt = new EasyReceipt({});
-      receipt.parentAddress = params.pa;
-      receipt.secret = params.se;
-      receipt.senderName = params.sn;
-      receipt.senderPublicKey = params.sk;
-      receipt.blockTimeout = params.bt;
-      receipt.deepLinkURL = params['~referring_link'];
-
-      if (receipt.isValid()) {
-        return this.persistanceService.addPendingEasyReceipt(receipt).then(() => {
-            return resolve(receipt);
-        });
-      } else {
-        this.logger.warn('EasyReceipt parameters are invalid: ', receipt);
-        // We resolve if the easyReceipt is invalid because it does not
-        // affect the control flow.
-        return resolve(null);
-      }
-
-    });
+    if (receipt.isValid()) {
+      await this.persistanceService.addPendingEasyReceipt(receipt);
+      return receipt;
+    } else {
+      this.logger.warn('EasyReceipt parameters are invalid: ', receipt);
+      // We resolve if the easyReceipt is invalid because it does not
+      // affect the control flow.
+      return null;
+    }
   }
 
-  public getPendingReceipts():Promise<Array<EasyReceipt>> {
-    return new Promise((resolve, reject) => {
-      return this.persistanceService.getPendingsEasyReceipts().then((receipts) => {
-          if (!receipts) receipts = [];
-          return resolve(receipts);
-      });
-    });
-
+  async getPendingReceipts():Promise<Array<EasyReceipt>> {
+    return (await this.persistanceService.getPendingsEasyReceipts()) || [];
   }
 
   public acceptEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: number, destinationAddress: any): Promise<void>  {
@@ -63,105 +52,96 @@ export class EasyReceiveService {
   }
 
 
-  public rejectEasyReceipt(wallet, receipt:EasyReceipt, input):Promise<any> {
-    return new Promise((resolve, reject) => {
-      try {
-        let senderAddress = this.bwcService.getBitcore().PublicKey
+  rejectEasyReceipt(wallet, receipt:EasyReceipt, input):Promise<any> {
+    try {
+      let senderAddress = this.bwcService.getBitcore().PublicKey
         .fromString(receipt.senderPublicKey, 'hex')
         .toAddress(wallet.network)
         .toString();
 
-        return this.spendEasyReceipt(receipt, wallet, input, senderAddress);
-      } catch (e) {
-        return reject(e);
-      }
-    })
+      return this.spendEasyReceipt(receipt, wallet, input, senderAddress);
+    } catch (e) {
+      throw e;
+    }
   }
 
-  public validateEasyReceiptOnBlockchain(receipt:EasyReceipt, password = '', network = this.configService.getDefaults().network.name):Promise<any> {
+  async validateEasyReceiptOnBlockchain(receipt:EasyReceipt, password = '', network = this.configService.getDefaults().network.name): Promise<any> {
+    const opts:any = {
+      bwsurl: this.configService.getDefaults().bws.url
+    };
+    const walletClient = this.bwcService.getClient(null, opts);
 
-    return new Promise((resolve, reject) => {
-      const opts:any = {
-        bwsurl: this.configService.getDefaults().bws.url
-      };
-      const walletClient = this.bwcService.getClient(null, opts);
-      let onBlockChain = false;
-
+    try {
       const scriptData = this.generateEasyScipt(receipt, password, network);
       const scriptAddress = this.bwcService.getBitcore().Address(scriptData.scriptPubKey.getAddressInfo()).toString();
 
-      return walletClient.validateEasyScript(scriptAddress).then((txn) => {
-        if (txn.result.found == false) {
-          this.logger.warn("Could not validate easyScript on the blockchain.");
-          return resolve(false);
-        } else {
-          return resolve({
-            senderPublicKey: receipt.senderPublicKey,
-            txn: txn.result,
-            privateKey: scriptData.privateKey,
-            publicKey: scriptData.publicKey,
-            script: scriptData.script,
-            scriptId: scriptAddress,
-          });
-        }
-      }).catch((err) => {
-        this.logger.warn("Could not validate easyScript on the blockchain.", err);
-        return resolve(false);
-      });
+      const txn = await walletClient.validateEasyScript(scriptAddress);
 
-    });
+      if (txn.result.found == false) {
+        this.logger.warn("Could not validate easyScript on the blockchain.");
+        return false
+      } else {
+        return {
+          senderPublicKey: receipt.senderPublicKey,
+          txn: txn.result,
+          privateKey: scriptData.privateKey,
+          publicKey: scriptData.publicKey,
+          script: scriptData.script,
+          scriptId: scriptAddress,
+        };
+      }
+    } catch (err) {
+      this.logger.warn("Could not validate easyScript on the blockchain.", err);
+      return false;
+    }
   }
 
   public deletePendingReceipt(receipt:EasyReceipt) {
     return this.persistanceService.deletePendingEasyReceipt(receipt);
   }
 
-  private spendEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input:number, destinationAddress:any):Promise<void> {
-     return new Promise((resolve, reject) => {
-       let opts:any = {};
-       let testTx = wallet.buildEasySendRedeemTransaction(
-         input,
-         destinationAddress,
-         opts
-       );
+  private async spendEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input:number, destinationAddress:any): Promise<void> {
+    let opts:any = {};
+    let testTx = wallet.buildEasySendRedeemTransaction(
+      input,
+      destinationAddress,
+      opts
+    );
 
-       let rawTxLength = testTx.serialize().length;
-       return this.feeService.getCurrentFeeRate(wallet.network).then((feePerKB) => {
+    let rawTxLength = testTx.serialize().length;
 
-         //TODO: Don't use magic numbers
-         opts.fee = Math.round((feePerKB * rawTxLength) / 2000);
+    const feePerKB = await this.feeService.getCurrentFeeRate(wallet.network);
 
-         let tx = wallet.buildEasySendRedeemTransaction(
-           input,
-           destinationAddress,
-           opts
-         );
+    //TODO: Don't use magic numbers
+    opts.fee = Math.round((feePerKB * rawTxLength) / 2000);
 
-         return wallet.broadcastRawTx({
-           rawTx: tx.serialize(),
-           network: wallet.network
-         }).then((tx) => {
-           return this.persistanceService.deletePendingEasyReceipt(receipt).then(() => {
-               return resolve();
-           });
-         })
-       });
-     });
+    let tx = wallet.buildEasySendRedeemTransaction(
+      input,
+      destinationAddress,
+      opts
+    );
+
+    await wallet.broadcastRawTx({
+      rawTx: tx.serialize(),
+      network: wallet.network
+    });
+
+    await this.persistanceService.deletePendingEasyReceipt(receipt);
    }
 
   private generateEasyScipt(receipt:EasyReceipt, password, network) {
 
-    let secret = this.ledger.hexToString(receipt.secret);
-    var receivePrv = this.bwcService.getBitcore().PrivateKey.forEasySend(secret, password);
-    var receivePub = this.bwcService.getBitcore().PublicKey.fromPrivateKey(receivePrv).toBuffer();
-    var senderPubKey = this.ledger.hexToArray(receipt.senderPublicKey);
+    const secret = this.ledger.hexToString(receipt.secret);
+    const receivePrv = this.bwcService.getBitcore().PrivateKey.forEasySend(secret, password);
+    const receivePub = this.bwcService.getBitcore().PublicKey.fromPrivateKey(receivePrv).toBuffer();
+    const senderPubKey = this.ledger.hexToArray(receipt.senderPublicKey);
 
-    var publicKeys = [
+    const publicKeys = [
       receivePub,
       senderPubKey
     ];
 
-    var script = this.bwcService.getBitcore().Script.buildEasySendOut(publicKeys, receipt.blockTimeout, network);
+    const script = this.bwcService.getBitcore().Script.buildEasySendOut(publicKeys, receipt.blockTimeout, network);
 
     return {
       privateKey: receivePrv,

@@ -109,41 +109,28 @@ export class AddressBookService {
     });
   }
 
-  public add(entry: MeritContact, address:string, network: string): Promise<AddressBook> {
-    return new Promise((resolve, reject) => {
-      return this.getAddressbook(network).then((addressBook) => {
-        if (addressBook[address]) return reject(new Error('contact already exists'));
-        addressBook[address] = entry;
-        return this.persistenceService.setAddressbook(network, addressBook).then(() => {
-          return resolve(addressBook);
-        });
-      });
-    });
+  async add(entry: MeritContact, address:string, network: string): Promise<AddressBook> {
+    const addressBook = await this.getAddressbook(network);
+    addressBook[address] = entry;
+    await this.persistenceService.setAddressbook(network, addressBook);
+    return addressBook;
   };
 
-  public remove(addr: string, network: string): Promise<AddressBook> {
-    return new Promise((resolve, reject) => {
-      this.getAddressbook(network).then((addressBook) => {
-        delete addressBook[addr];
-        return this.persistenceService.setAddressbook(network, addressBook).then(() => {
-          return resolve(addressBook);
-        });
-      });
-    });
+  async remove(addr: string, network: string): Promise<AddressBook> {
+    const addressBook = await this.getAddressbook(network);
+    delete addressBook[addr];
+    await this.persistenceService.setAddressbook(network, addressBook);
+    return addressBook;
   };
 
-  public removeAll(network: string): Promise<void> {
+  removeAll(network: string): Promise<void> {
     return this.persistenceService.removeAddressbook(network).catch((err) => {
-      return Promise.reject(new Error('could not removeAll contacts: ' + err))
+      return Promise.reject(new Error('Could not removeAll contacts: ' + err))
     });
   };
 
-  public getAddressbook(network: string): Promise<AddressBook> {
-    return new Promise((resolve, reject) => {
-      return this.persistenceService.getAddressbook(network).then((ab) => {
-        if(_.isEmpty(ab)) ab = {};
-        resolve(ab);
-      });
-    });
+  async getAddressbook(network: string): Promise<AddressBook> {
+    const addressBook = await this.persistenceService.getAddressbook(network);
+    return _.isEmpty(addressBook) ? {} : addressBook;
   }
 }

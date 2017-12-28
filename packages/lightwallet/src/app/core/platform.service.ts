@@ -41,6 +41,10 @@ export class PlatformService {
     this.supportsLedger = window.chrome && window.chrome.runtime && window.chrome.runtime.id && !this.isNW;
   }
 
+  ready() {
+    return this.platform.ready();
+  }
+
   getBrowserName(): string {
     let chrome: any;
     let userAgent = window.navigator.userAgent;

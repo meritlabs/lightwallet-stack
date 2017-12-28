@@ -84,40 +84,27 @@ export class PersistenceService {
     return this.storage.remove(Keys.PROFILE);
   };
 
-  addPendingEasyReceipt(receipt:EasyReceipt) {
-    return new Promise((resolve, reject) => {
-      return this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
-        if (!receipts) receipts = [];
-        receipts = receipts.filter((r) => {
-          return !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
-        }) // prevent storing of the same receipt twice
-        receipts.push(receipt)
-        return this.storage.set(Keys.EASY_RECEIPTS, receipts).then(() => {
-          return resolve();
-        })
-      });
-    });
+  async addPendingEasyReceipt(receipt: EasyReceipt) {
+    let receipts = await this.storage.get(Keys.EASY_RECEIPTS);
+    // prevent storing of the same receipt twice
+    receipts = receipts.filter((r) =>
+      !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
+    );
+    receipts.push(receipt);
+    await this.storage.set(Keys.EASY_RECEIPTS, receipts);
   }
 
   getPendingsEasyReceipts() {
     return this.storage.get(Keys.EASY_RECEIPTS);
   }
 
-  deletePendingEasyReceipt(receipt:EasyReceipt) {
-
-    return new Promise((resolve, reject) => {
-        return this.storage.get(Keys.EASY_RECEIPTS).then((receipts) => {
-          if (!receipts) receipts = [];
-
-
-          return this.storage.set(Keys.EASY_RECEIPTS, receipts.filter((r) => {
-            return !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
-          })).then(() => {
-            return resolve();
-          })
-        });
-    });
-
+  async deletePendingEasyReceipt(receipt:EasyReceipt) {
+    let  receipts = await this.storage.get(Keys.EASY_RECEIPTS);
+    receipts = receipts || [];
+    receipts = receipts.filter((r) =>
+      !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
+    );
+    await this.storage.set(Keys.EASY_RECEIPTS, receipts);
   }
 
   setFeedbackInfo(feedbackValues: any): Promise<void> {

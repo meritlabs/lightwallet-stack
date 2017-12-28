@@ -32,19 +32,12 @@ export class ContactView {
     this.getWallets();
   }
 
-  private getWallets() {
-
+  private async getWallets() {
     if (this.wallets) {
-      return Promise.resolve(this.wallets);
+      return this.wallets;
     } else {
-      return new Promise((resolve, reject) => {
-        return this.profileService.getWallets().then((wallets) => {
-          this.wallets = wallets;
-          return resolve(wallets);
-        });
-      });
+      return this.wallets  = await this.profileService.getWallets();
     }
-
   }
 
   remove() {

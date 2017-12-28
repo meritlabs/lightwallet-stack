@@ -71,14 +71,9 @@ export class PushNotificationsService {
     });
   }
 
-  private getToken(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      return this.FCM.getToken().then((token: any) => {
-      this.logger.info('Got token for push notifications: ' + token);
-      this._token = token;
-      return resolve();
-    });
-   });
+  private async getToken(): Promise<void> {
+    this._token = this.FCM.getToken();
+    this.logger.info('Got token for push notifications: ' + this.token);
   }
 
   // TODO: Chain getting the token as part of a standalone single-wallet subscription.

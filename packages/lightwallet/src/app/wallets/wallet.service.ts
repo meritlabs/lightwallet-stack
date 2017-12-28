@@ -21,14 +21,6 @@ import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
 import {Observable} from "rxjs/Observable";
-import 'rxjs/add/operator/retryWhen';
-import 'rxjs/add/operator/zip';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/observable/fromPromise';
-import 'rxjs/add/observable/timer';
-import 'rxjs/add/observable/range';
-import 'rxjs/add/observable/throw';
 
 
 /* Refactor CheckList:
@@ -93,9 +85,12 @@ export class WalletService {
 
   // TODO: Make async
   async getStatus(wallet: MeritWalletClient, opts?: any) {
+    opts = opts || {};
+    const walletId = wallet.id;
+
+
     return new Promise((resolve, reject) => {
-      opts = opts || {};
-      const walletId = wallet.id;
+
 
       let processPendingTxps = async (status: any): Promise<any> => {
         status = status || {};
@@ -1303,9 +1298,9 @@ export class WalletService {
     })
         .retryWhen(errors =>
             errors
-                .do(err => this.logger.warn('Error creating wallet in DCW: ', err))
                 .zip(Observable.range(1,3))
                 .mergeMap(([err, i]) => {
+                    this.logger.warn('Error creating wallet in DCW: ', err);
                     if (err == Errors.CONNECTION_ERROR && i < 3) {
                         return Observable.timer(2000);
                     }
