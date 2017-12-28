@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Logger } from 'merit/core/logger';
 import * as _ from 'lodash';
-import { File, DirectoryEntry, FileEntry } from '@ionic-native/file';
+import { File, DirectoryEntry } from '@ionic-native/file';
 import { Platform } from 'ionic-angular';
 import { MeritStorage, KeyAlreadyExistsError } from 'merit/core/storage/storage.interface';
 
@@ -35,7 +35,7 @@ export class FileStorage implements MeritStorage {
     function onFailure(err: Error): Promise<void> {
       this.log.error('Could not init file system: ' + err.message);
       return Promise.reject(err);
-    };
+    }
 
     return Promise.resolve(this.platform.ready()).then((res) => {
       window.requestFileSystem(1, 0, onSuccess, onFailure);
@@ -48,7 +48,7 @@ export class FileStorage implements MeritStorage {
       return Promise.reject(new Error('Could not write on device storage'));
     }
 
-    var url = this.file.dataDirectory;
+    let url = this.file.dataDirectory;
     return Promise.resolve(this.file.resolveDirectoryUrl(url)).catch(err => {
         let msg = 'Could not resolve filesystem ' + url;
         this.log.warn(msg, err);

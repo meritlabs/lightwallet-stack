@@ -10,14 +10,11 @@ import { AppService } from 'merit/core/app-settings.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { FCM } from '@ionic-native/fcm';
 
-
 import * as _ from 'lodash';
 
 import { Logger } from "merit/core/logger";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
-import { Observable } from 'rxjs/Observable';
-
 
 @Injectable()
 export class PushNotificationsService {
@@ -72,18 +69,16 @@ export class PushNotificationsService {
   }
 
   private async getToken(): Promise<void> {
-    this._token = this.FCM.getToken();
-    this.logger.info('Got token for push notifications: ' + this.token);
+    this._token = await this.FCM.getToken();
+    this.logger.info('Got token for push notifications: ' + this._token);
   }
 
   // TODO: Chain getting the token as part of a standalone single-wallet subscription.
   public subscribeToEvents(): void {
-
     if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return;
     }
-
 
     this.FCM.onTokenRefresh().subscribe((token: any) => {
       if (!this._token) return;
@@ -92,7 +87,6 @@ export class PushNotificationsService {
       this.enable();
     });
       //this.pushObj = this.push.init(this.pushOptions);
-
 
     this.FCM.onNotification().subscribe((data: any) => {
       if (!this._token) return;
@@ -156,7 +150,6 @@ export class PushNotificationsService {
   };
 
   public disable(): void {
-
     if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return;
@@ -174,7 +167,8 @@ export class PushNotificationsService {
         // through long-polling, but not both.
         this.pollingNotificationService.enablePolling(walletClient);
       });
-    })
+    });
+
     this._token = null;
   }
 
