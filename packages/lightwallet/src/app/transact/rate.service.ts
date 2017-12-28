@@ -58,19 +58,21 @@ export class RateService {
     }
   }
 
-  getBTC(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let r = request.get(this.rateServiceUrl);
-      return r.then((res) => {
-        if (!res) {
-          return reject("Error connecting to rate service.");
-        }
-        return resolve(res.body);
-      }).catch((errorBTC) => {
-        this.logger.warn("Error connecting to rate service: ", errorBTC);
-        return resolve();
-      });
-    });
+  async getBTC(): Promise<any> {
+    let res;
+
+    try {
+      res = await request.get(this.rateServiceUrl);
+    } catch (errorBTC) {
+      this.logger.warn("Error connecting to rate service: ", errorBTC);
+      return;
+    }
+
+    if (res && res.body) {
+      return res.body;
+    } else {
+      throw 'Error connecting to rate service.';
+    }
   }
 
   getRate(code) {
@@ -126,20 +128,16 @@ export class RateService {
   }
 
   //TODO IMPROVE WHEN AVAILABLE
-  public whenAvailable(): Promise<any> {
-    return new Promise((resolve, reject)=> {
-      if (this._isAvailable) {
-        return resolve();
-      } else {
-       return this.updateRates().then(()=>{
-          resolve();
-        }).catch((err) => {
-          this.logger.warn("Could not update rates: " + err);
-          //reject(err);
-        });
+  async whenAvailable(): Promise<any> {
+    if (this._isAvailable) {
+      return;
+    } else {
+      try {
+        await this.updateRates();
+      } catch (e) {
+        this.logger.warn("Could not update rates: " + e);
       }
-    });
-
+    }
   }
 
 }

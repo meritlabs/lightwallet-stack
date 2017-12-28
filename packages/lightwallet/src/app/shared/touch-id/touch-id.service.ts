@@ -25,7 +25,8 @@ export class TouchIdService {
     if (this.platform.isIOS) this.checkIOS();
   }
 
-  checkIOS() {
+  async checkIOS() {
+    await this.platform.ready();
     this.touchId.isAvailable()
       .then(
       res => this._isAvailable = true,
@@ -33,74 +34,58 @@ export class TouchIdService {
       );
   }
 
-  checkAndroid() {
-    this.androidFingerprintAuth.isAvailable()
-      .then(
-      res => {
-        if (res.isAvailable) this._isAvailable = true
-        else this.log.info("Fingerprint is not available")
-      });
+  async checkAndroid() {
+    await this.platform.ready();
+    const { isAvailable } = await this.androidFingerprintAuth.isAvailable();
+
+    if (isAvailable) {
+      this._isAvailable = isAvailable;
+    } else {
+      this.log.info("Fingerprint is not available")
+    }
   }
 
-  verifyIOSFingerprint(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.touchId.verifyFingerprint('Scan your fingerprint please')
-        .then(
-        res => resolve(),
-        err => reject()
-        );
-    });
+  async verifyIOSFingerprint(): Promise<any> {
+    await this.platform.ready();
+    return this.touchId.verifyFingerprint('Scan your fingerprint please');
   }
 
-  verifyAndroidFingerprint(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.androidFingerprintAuth.encrypt({ clientId: 'Copay' })
-        .then(result => {
-          if (result.withFingerprint) {
-            this.log.info('Successfully authenticated with fingerprint.');
-            resolve();
-          } else if (result.withBackup) {
-            this.log.info('Successfully authenticated with backup password!');
-            resolve();
-          } else this.log.info('Didn\'t authenticate!');
-        }).catch(error => {
-          if (error === this.androidFingerprintAuth.ERRORS.FINGERPRINT_CANCELLED) {
-            this.log.warn('Fingerprint authentication cancelled');
-            reject();
-          } else {
-            this.log.error(error);
-            resolve();
-          };
-        });
-    });
+  async verifyAndroidFingerprint(): Promise<any> {
+    await this.platform.ready();
+
+    try {
+      const result = await this.androidFingerprintAuth.encrypt({ clientId: 'Copay' });
+
+      if (result.withFingerprint) {
+        this.log.info('Successfully authenticated with fingerprint.');
+      } else if (result.withBackup) {
+        this.log.info('Successfully authenticated with backup password!');
+      } else {
+        this.log.info('Didn\'t authenticate!');
+      }
+    } catch (error) {
+      if (error === this.androidFingerprintAuth.ERRORS.FINGERPRINT_CANCELLED) {
+        this.log.warn('Fingerprint authentication cancelled');
+        throw '';
+      } else {
+        this.log.error(error);
+        return;
+      }
+    }
   }
 
   isAvailable() {
     return this._isAvailable;
   }
 
-  check(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (!this.isAvailable()) reject();
-      if (this.platform.isIOS) {
-        this.verifyIOSFingerprint()
-          .then(() => {
-            resolve();
-          })
-          .catch(() => {
-            reject();
-          });
-      };
-      if (this.platform.isAndroid) {
-        this.verifyAndroidFingerprint()
-          .then(() => {
-            resolve();
-          })
-          .catch(() => {
-            reject();
-          });
-      };
-    });
+  async check(): Promise<any> {
+    if (!this.isAvailable()) throw void 0;
+    if (this.platform.isIOS) {
+      return this.verifyIOSFingerprint()
+    }
+    if (this.platform.isAndroid) {
+      return this.verifyAndroidFingerprint()
+    }
   }
 
   isNeeded(wallet: any) {
@@ -109,16 +94,10 @@ export class TouchIdService {
     return config.touchIdFor[wallet.credentials.walletId];
   }
 
-  checkWallet(wallet: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (!this.isAvailable()) return resolve(); //TODO: Decide how to propogate this.
-      if (this.isNeeded(wallet)) {
-        this.check().then(() => {
-          return resolve();
-        }).catch(() => {
-          return reject();
-        });
-      };
-    });
+  async checkWallet(wallet: any): Promise<any> {
+    if (!this.isAvailable()) return; //TODO: Decide how to propogate this.
+    if (this.isNeeded(wallet)) {
+      return this.check();
+    }
   }
 }

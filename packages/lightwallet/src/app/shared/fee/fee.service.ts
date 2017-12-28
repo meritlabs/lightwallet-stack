@@ -76,30 +76,19 @@ export class FeeService {
 
   getCurrentFeeRate(network: string) {
     return this.getFeeRate(network, this.getCurrentFeeLevel());
-  };
+  }
 
-  getFeeLevel(network: string, feeLevel: string): Promise<{data: {level: string, feePerKb: number}, fromCache: Boolean}> {
-
-    return new Promise((resolve, reject) => {
-
-      if (this.cache.updateTs > Date.now() - this.CACHE_TIME_TS * 1000) {
-        return resolve({data: this.cache.data, fromCache: true});
-      } else {
-
-
-        let walletClient = this.bwcService.getClient(null);
-
-        return walletClient.getFeeLevels(network).then((levels) => {
-          this.cache.updateTs = Date.now();
-          this.cache.data = _.find(levels, {
-            level: feeLevel
-          });
-          return resolve({data: this.cache.data, fromCache: false})
-        }).catch((err) => {
-          return reject(err);
-        })
-      }
-    });
-
-  };
+  async getFeeLevel(network: string, feeLevel: string): Promise<{data: {level: string, feePerKb: number}, fromCache: Boolean}> {
+    if (this.cache.updateTs > Date.now() - this.CACHE_TIME_TS * 1000) {
+      return { data: this.cache.data, fromCache: true };
+    } else {
+      let walletClient = this.bwcService.getClient(null);
+      const levels = await walletClient.getFeeLevels(network);
+      this.cache.updateTs = Date.now();
+      this.cache.data = _.find(levels, {
+        level: feeLevel
+      });
+      return { data: this.cache.data, fromCache: false };
+    }
+  }
 }

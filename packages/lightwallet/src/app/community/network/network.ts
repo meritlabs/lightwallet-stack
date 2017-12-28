@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage } from 'ionic-angular';
 import { ProfileService } from "merit/core/profile.service";
 
 import { ToastConfig } from "merit/core/toast.config";
@@ -17,7 +17,7 @@ import { PlatformService } from 'merit/core/platform.service';
 
 
 import * as _ from "lodash";
-
+import { Observable } from 'rxjs/Observable';
 
 interface DisplayWallet {
   name: string,
@@ -126,78 +126,72 @@ export class NetworkView {
   }
 
   private loadInfo() {
-    return new Promise<any>((resolve, reject) => {
-      const fetch = (attempt = 0) => {
-        return this.loadWallets()
-          .then(resolve)
-          .catch(err => {
+    const source = this.loadWallets;
+    return Observable.fromPromise(source())
+      .retryWhen(err =>
+        err
+          .zip(Observable.range(1, NetworkView.RETRY_MAX_ATTEMPTS))
+          .mergeMap(([err, attempt]) => {
             if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
-              if (++attempt < NetworkView.RETRY_MAX_ATTEMPTS) {
-                return setTimeout(fetch.bind(this, attempt), NetworkView.RETRY_TIMEOUT);
+              if (attempt < NetworkView.RETRY_MAX_ATTEMPTS) {
+                return Observable.timer(NetworkView.RETRY_TIMEOUT);
               }
             }
-            reject(err);
-          });
-      };
-
-      fetch();
-    });
+            return Observable.throw(err);
+          })
+      )
+      .toPromise();
   }
 
   private async loadWallets() {
     const wallets: MeritWalletClient[] = await this.profileService.getWallets();
-    return Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
-        let filteredWallet: DisplayWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode", "totalNetworkValue");
-        filteredWallet.totalNetworkValueMicro = await this.walletService.getANV(wallet);
+    const filteredWallets: DisplayWallet[] = [];
 
-        const data = await this.walletService.getRewards(wallet);
-        if (data && !_.isNil(data.mining)) {
-            filteredWallet.miningRewardsMicro = data.mining;
-            filteredWallet.ambassadorRewardsMicro = data.ambassador;
-        }
+    let filteredWallet: DisplayWallet;
 
-        return filteredWallet;
-    }));
+    for (let wallet of wallets) {
+      filteredWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode", "totalNetworkValue");
+      filteredWallet.totalNetworkValueMicro = await this.walletService.getANV(wallet);
+
+      const data = await this.walletService.getRewards(wallet);
+      if (data && !_.isNil(data.mining)) {
+        filteredWallet.miningRewardsMicro = data.mining;
+        filteredWallet.ambassadorRewardsMicro = data.ambassador;
+      }
+      filteredWallets.push(filteredWallet);
+    }
+
+    return filteredWallets;
   }
 
-  private async formatNetworkInfo(wallets: DisplayWallet[]): Promise<Array<DisplayWallet>> {
-    let formatPromises: Array<Promise<any>> = [];
-    let newDWallets: Array<DisplayWallet> = [];
+  private async formatNetworkInfo(wallets: DisplayWallet[]): Promise<DisplayWallet[]> {
+    const newDWallets: Array<DisplayWallet> = [];
 
-    await Promise.all(wallets.map(async (dWallet: DisplayWallet) => {
-        if (!_.isNil(dWallet.totalNetworkValueMicro)) {
-            dWallet.totalNetworkValueMerit = this.txFormatService.parseAmount(dWallet.totalNetworkValueMicro, 'micros').amountUnitStr;
-            formatPromises.push(this.txFormatService.formatToUSD(dWallet.totalNetworkValueMicro).then((usdAmount) => {
-                dWallet.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
-                return Promise.resolve();
-            }));
-        }
+    for (let dWallet of wallets) {
+      if (!_.isNil(dWallet.totalNetworkValueMicro)) {
+        dWallet.totalNetworkValueMerit = this.txFormatService.parseAmount(dWallet.totalNetworkValueMicro, 'micros').amountUnitStr;
+        dWallet.totalNetworkValueFiat = new FiatAmount(+await this.txFormatService.formatToUSD(dWallet.totalNetworkValueMicro)).amountStr;
+      }
 
-        if (!_.isNil(dWallet.miningRewardsMicro)) {
-            dWallet.miningRewardsMerit = this.txFormatService.parseAmount(dWallet.miningRewardsMicro, 'micros').amountUnitStr;
-            formatPromises.push(this.txFormatService.formatToUSD(dWallet.miningRewardsMicro).then((usdAmount) => {
-                dWallet.miningRewardsFiat = new FiatAmount(+usdAmount).amountStr;
-                return Promise.resolve();
-            }));
-        }
+      if (!_.isNil(dWallet.miningRewardsMicro)) {
+        dWallet.miningRewardsMerit = this.txFormatService.parseAmount(dWallet.miningRewardsMicro, 'micros').amountUnitStr;
+        dWallet.miningRewardsFiat = new FiatAmount(+await this.txFormatService.formatToUSD(dWallet.miningRewardsMicro)).amountStr;
+      }
 
-        if (!_.isNil(dWallet.ambassadorRewardsMicro)) {
-            dWallet.ambassadorRewardsMerit = this.txFormatService.parseAmount(dWallet.ambassadorRewardsMicro, 'micros').amountUnitStr;
-            formatPromises.push(this.txFormatService.formatToUSD(dWallet.ambassadorRewardsMicro).then((usdAmount) => {
-                dWallet.ambassadorRewardsFiat = new FiatAmount(+usdAmount).amountStr;
-                return Promise.resolve();
-            }));
-        }
-        return Promise.all(formatPromises).then(() => {
-            newDWallets.push(dWallet)
-        });
-    }));
+      if (!_.isNil(dWallet.ambassadorRewardsMicro)) {
+        dWallet.ambassadorRewardsMerit = this.txFormatService.parseAmount(dWallet.ambassadorRewardsMicro, 'micros').amountUnitStr;
+        dWallet.ambassadorRewardsFiat = new FiatAmount(+await this.txFormatService.formatToUSD(dWallet.ambassadorRewardsMicro)).amountStr;
+      }
+
+      newDWallets.push(dWallet);
+    }
 
     return newDWallets;
   }
 
-  copyToClipboard(code) {
-    this.clipboard.copy(code);
+  async copyToClipboard(code) {
+    await this.platformService.ready();
+    await this.clipboard.copy(code);
 
     this.toastCtrl.create({
       message: 'Copied to clipboard',

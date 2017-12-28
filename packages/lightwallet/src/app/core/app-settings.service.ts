@@ -8,9 +8,6 @@ import { ConfigService } from 'merit/shared/config.service';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { Observable } from 'rxjs/Observable';
 
-
-
-
 // TODO: Improve implementation
 interface AppSettings {
   packageName: string;
@@ -60,28 +57,24 @@ export class AppService {
     this.logger.info('AppService initialized.');
   }
 
-  public getInfo():Promise<any> {
+  async getInfo() {
     if (this.info) {
-      return Promise.resolve(this.info);
+      return this.info;
     } else {
       return this.load();
     }
   }
 
-  private load(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.config.load().then(() => {
-        this.language.load();
-        // TODO: Load TouchID here?
-        this.loadInfo().subscribe((info) => {
-          this.info = info;
-          resolve(info);
-        });
-      }).catch((err) => {
-        this.logger.error(err);
-        reject();
-      });
-    });
+  private async load() {
+    try {
+      await this.config.load();
+      await this.language.load();
+      // TODO: Load TouchID here?
+      this.info = await this.loadInfo().toPromise();
+    } catch (e) {
+      this.logger.error(e);
+      throw new Error(e);
+    }
   }
 
 

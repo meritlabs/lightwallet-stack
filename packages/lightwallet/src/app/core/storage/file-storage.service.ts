@@ -56,7 +56,7 @@ export class FileStorage implements MeritStorage {
       });
   };
 
-  get(k: string): Promise<any> {
+  async get(k: string): Promise<any> {
     let parseResult = (v: any): any => {
       if (!v) return null;
       if (!_.isString(v)) return v;
@@ -68,27 +68,25 @@ export class FileStorage implements MeritStorage {
       return parsed || v;
     };
 
-    return this.init()
-      .then(() => {
-        return this.file.getFile(this.dir, k, { create: false });
-      })
-      .then(fileEntry => {
-        if (!fileEntry) return;
-        return new Promise((resolve) => {
-          fileEntry.file(file => {
-            var reader = new FileReader();
-            reader.onloadend = () => {
-              resolve(parseResult(reader.result));
-            }
-            reader.readAsText(file);
-          });
+    try {
+      await this.init();
+      const fileEntry = await this.file.getFile(this.dir, k, { create: false });
+
+      if (!fileEntry) return;
+      return new Promise<any>((resolve) => {
+        fileEntry.file(file => {
+          let reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(parseResult(reader.result));
+          };
+          reader.readAsText(file);
         });
-      })
-      .catch(err => {
-        // Not found
-        if (err.code == 1) return;
-        else throw err;
       });
+    } catch (err) {
+      // Not found
+      if (err.code == 1) return;
+      else throw err;
+    }
   }
 
   set(k: string, v: any): Promise<void> {

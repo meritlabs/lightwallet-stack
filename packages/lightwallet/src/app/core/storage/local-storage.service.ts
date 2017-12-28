@@ -14,18 +14,17 @@ export class LocalStorage implements MeritStorage {
     if (!this.ls) throw new Error('localstorage not available');
   }
 
-  get(k: string): Promise<any> {
-    return new Promise(resolve => {
-      let v = this.ls.getItem(k);
-      if (!v) return resolve(null);
-      if (!_.isString(v)) return resolve(v);
-      let parsed: any;
-      try {
-        parsed = JSON.parse(v);
-      } catch (e) {
-      }
-      resolve(parsed || v);
-    });
+  async get(k: string): Promise<any> {
+    let v = this.ls.getItem(k);
+    if (!v) return null;
+    if (!_.isString(v)) return v;
+    let parsed: any;
+    try {
+      parsed = JSON.parse(v);
+    } catch (e) {
+    }
+
+    return parsed || v;
   }
 
   set(k: string, v: any): Promise<void> {
