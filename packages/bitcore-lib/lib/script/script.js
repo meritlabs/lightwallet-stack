@@ -882,10 +882,11 @@ Script.buildEasySendIn = function(signature, easyScript, pubkeyId) {
   return s;
 };
 
-Script.buildSimpleVaultScript = function(tag) {
+Script.buildSimpleVaultScript = function(tag, network) {
   $.checkArgument(tag, 'Tag must be present');
 
   var s = new Script();
+  s._network = network;
 
   s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] <tag>|
    .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] |
@@ -1001,6 +1002,46 @@ Script.buildParameterizedP2SH = function(script, params) {
 };
 
 /**
+ * @param {Script|Address} script - the redeemScript for the new p2sh output. It can also be a p2sh address
+ * @param {any} params - params of the script
+ * @param {PublicKey} public key used to sign script and generate mixed address
+ *
+ * @returns {Script} new pay to script hash script for given script
+ */
+Script.buildMixedParameterizedP2SH = function(script, params, signerPubKey) {
+  $.checkArgument(script instanceof Script);
+
+  signerPubKey = PublicKey(signerPubKey);
+
+  const mixedAddress = Hash.sha256ripemd160(
+    Buffer.concat([
+      Hash.sha256ripemd160(script.toBuffer()),
+      Hash.sha256ripemd160(signerPubKey.toBuffer())
+    ])
+  );
+
+  var s = new Script();
+
+  s._network = script._network || script.network;
+
+  s.add(Opcode.OP_HASH160)
+    .add(mixedAddress)
+    .add(Opcode.OP_EQUALVERIFY);
+
+  let size = 0;
+  for(let i = 0; i < params.length; i++) {
+    s.add(params[i]);
+    size++;
+  }
+
+  s.add(Opcode.OP_DEPTH)
+   .add(Opcode.smallInt(size))
+   .add(Opcode.OP_GREATERTHANOREQUAL);
+
+  return s;
+};
+
+/**
  * @returns {Script} a new pay to public key hash output for the given
  * address or public key
  * @param {(Address|PublicKey)} to - destination address or public key
@@ -1077,7 +1118,7 @@ Script.buildScriptHashOut = function(script) {
  * @returns {Script} new pay to script hash script for given script
  */
 Script.buildMixedScriptHashOut = function(script, signerPubKey) {
-  $.checkArgument(script instanceof Script || (script instanceof Address && script.isPayToScriptHash()));
+  $.checkArgument(script instanceof Script);
 
   signerPubKey = PublicKey(signerPubKey);
 

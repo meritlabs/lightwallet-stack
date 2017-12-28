@@ -853,6 +853,8 @@ export class API {
         return Bitcore.Address.fromBuffer(e).hashBuffer;
       });
 
+      const network = opts.masterPubKey.network.name;
+
       let params = [
         opts.spendPubKey.toBuffer(),
         opts.masterPubKey.toBuffer(),
@@ -863,10 +865,9 @@ export class API {
       params.push(tag);
       params.push(Bitcore.Opcode.smallInt(type));
 
-      let redeemScript = Bitcore.Script.buildSimpleVaultScript(tag);
-      let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
+      let redeemScript = Bitcore.Script.buildSimpleVaultScript(tag, network);
+      let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, opts.spendPubKey);
 
-      const network = opts.masterPubKey.network.name;
 
       let vault = {
         type: type,
@@ -877,7 +878,7 @@ export class API {
         masterPubKey: opts.masterPubKey,
         redeemScript: redeemScript,
         scriptPubKey: scriptPubKey,
-        address: scriptPubKey.toAddress(network),
+        address: Bitcore.Address(scriptPubKey.getAddressInfo()),
         coins: []
       };
 
@@ -2219,7 +2220,7 @@ export class API {
    * Sign and unlock address with root wallet address if it's not beaconed yet
    * @param {Address} address Address object to sign and beacon
    */
-  private _signAddressAndUnlockWithRoot(address: any): Promise<any> {
+  signAddressAndUnlockWithRoot(address: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     if (address.signed && address.refid) {
       return Promise.resolve(address.refid);
@@ -2263,7 +2264,7 @@ export class API {
           return reject(Errors.SERVER_COMPROMISED);
         }
 
-        return this._signAddressAndUnlockWithRoot(address)
+        return this.signAddressAndUnlockWithRoot(address)
           .then(() => resolve(address));
       });
     });
@@ -2565,7 +2566,7 @@ export class API {
     this.log.warn("Inside broadCastTxProposal");
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    return this._signAddressAndUnlockWithRoot(txp.changeAddress)
+    return this.signAddressAndUnlockWithRoot(txp.changeAddress)
       .then(() => {
         return this.getPayPro(txp).then((paypro) => {
           if (paypro) {
