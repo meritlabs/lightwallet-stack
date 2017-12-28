@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { instanceAvailability } from '@ionic-native/core';
-
 
 @Injectable()
 export class Logger {

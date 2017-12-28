@@ -53,7 +53,7 @@ export class MeritLightWallet {
     }
 
     this.platform.ready().then((readySource) => {
-      this.appService.getInfo().then((appInfo) => {
+      this.appService.getInfo().then((appInfo: any) => {
         this.logger.info(`
             platform ready (${readySource}): -v ${appInfo.version} # ${appInfo.commitHash}
           `);

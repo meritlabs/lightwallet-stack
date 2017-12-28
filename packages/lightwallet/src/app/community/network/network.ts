@@ -204,11 +204,11 @@ export class NetworkView {
   }
 
   shareCode(code) {
-    this.socialSharing.share('My invite code to use Merit: ' + code);
+    return this.socialSharing.share('My invite code to use Merit: ' + code);
   }
 
   shareAddress(address) {
-    this.socialSharing.share('merit' + address);
+    return this.socialSharing.share('merit' + address);
   }
 
 
