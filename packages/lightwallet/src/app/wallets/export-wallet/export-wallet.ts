@@ -36,12 +36,12 @@ export class ExportWalletView {
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private walletsService:WalletService,
-    private alertController:AlertController,
-    private persistanceService:PersistenceService,
+    private walletsService: WalletService,
+    private alertController: AlertController,
+    private persistenceService: PersistenceService,
     private appService: AppService,
-    private bwcService:BwcService,
-    private toastCtrl:MeritToastController,
+    private bwcService: BwcService,
+    private toastCtrl: MeritToastController,
     private file: File,
     private platform: Platform,
     private logger: Logger
@@ -104,21 +104,21 @@ export class ExportWalletView {
 
   async download() {
 
-    let addressbook = await this.persistanceService.getAddressbook(this.wallet.credentials.network);
+    const addressbook = await this.persistenceService.getAddressbook(this.wallet.credentials.network);
 
-    let exportData = this.wallet.export({addressBook: addressbook});
-    let encryptedData = this.sjcl.encrypt(this.formData.password, exportData, {iter: 10000});
-    let walletName = this.wallet.alias ? `${this.wallet.alias}-${this.wallet.credentials.walletName}` : this.wallet.credentials.walletName;
-    let info = await this.appService.getInfo();
-    let fileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
+    const exportData = this.wallet.export({addressBook: addressbook});
+    const encryptedData = this.sjcl.encrypt(this.formData.password, exportData, {iter: 10000});
+    const walletName = this.wallet.alias ? `${this.wallet.alias}-${this.wallet.credentials.walletName}` : this.wallet.credentials.walletName;
+    const info: any = await this.appService.getInfo();
+    const fileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
 
-    let blob = new Blob([encryptedData], {type: 'text/plain;charset=utf-8'});
+    const blob = new Blob([encryptedData], {type: 'text/plain;charset=utf-8'});
 
     if(this.platform.is('ios')) {
-      let root = this.file.documentsDirectory;
+      const root = this.file.documentsDirectory;
       await this.file.writeFile(root, fileName, blob);
     } else if (this.platform.is('android')) {
-      let root = this.file.externalRootDirectory;
+      const root = this.file.externalRootDirectory;
       await this.file.writeFile(root, fileName, blob);
     } else {
       await FileSaver.saveAs(blob, fileName);
