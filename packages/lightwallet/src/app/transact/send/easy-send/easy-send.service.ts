@@ -58,7 +58,9 @@ export class EasySendService {
         easySend.scriptReferralOpts = scriptReferralOpts;
         easySend.recipientReferralOpts = recipientReferralOpts;
 
-        return Promise.resolve(easySend);
+        return this.storeEasySend(wallet.id, easySend).then(() => {
+          return easySend;
+        });
       })
       .catch(err => {
         return Promise.reject(new Error('error building easysend script' + err));
@@ -93,7 +95,11 @@ export class EasySendService {
     })
   }
 
-  public updatePendingEasySends(wallet: MeritWalletClient): Promise<void> {
+  public cancelPendingEasySend(wallet: MeritWalletClient, easySend: EasySend, address) {
+
+  }
+
+  public updatePendingEasySends(wallet: MeritWalletClient): Promise<EasySend[]> {
     return this.persistenceService.getPendingEasySends(wallet.id)
       .filter((easySend: EasySend) => {
         return wallet.validateEasyScript(easySend.script.toAddress().toString()).then((txn) => {
@@ -101,7 +107,10 @@ export class EasySendService {
         })
       })
       .then((pendingEasySends: EasySend[]) => {
-        return this.persistenceService.setPendingEasySends(wallet.id, pendingEasySends);
+        return this.persistenceService.setPendingEasySends(wallet.id, pendingEasySends)
+          .then(() => {
+            return pendingEasySends;
+          })
       });
   }
 
