@@ -22,6 +22,7 @@ import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 import { TxFormatService } from "merit/transact/tx-format.service";
 import { AddressBookService } from "merit/shared/address-book/address-book.service";
 import { VaultsService } from 'merit/vaults/vaults.service';
+import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { RateService } from 'merit/transact/rate.service';
@@ -29,6 +30,8 @@ import { Platform } from 'ionic-angular/platform/platform';
 
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 
+const RETRY_MAX_ATTEMPTS = 5;
+const RETRY_TIMEOUT = 1000;
 
 /*
   Using bluebird promises!
@@ -63,9 +66,6 @@ export class WalletsView {
   public network: string;
 
   public loading:boolean;
-
-  static readonly  RETRY_MAX_ATTEMPTS = 5;
-  static readonly RETRY_TIMEOUT = 1000;
 
   constructor(
     public navParams: NavParams,
@@ -124,51 +124,51 @@ export class WalletsView {
 
     this.loading = true;
 
-    return new Promise((resolve) => {
+    const fetch = async () => {
+      this.addressbook = await this.addressbookService.list(this.configService.getDefaults().network.name);
+      const wallets = await this.updateAllWallets(opts.force);
 
-        const fetch = async (attempt = 0) => {
+      if (_.isEmpty(wallets)) {
+        return null; //ToDo: add proper error handling;
+      }
+      this.wallets = wallets;
 
-          try {
-              this.addressbook = await this.addressbookService.list(this.configService.getDefaults().network.name);
-              const wallets = await this.updateAllWallets(opts.force);
+      // Now that we have wallets, we will proceed with the following operations in parallel.
+      await Promise.all([
+        this.updateNetworkValue(wallets),
+        this.processPendingEasyReceipts(),
+        this.updateTxps({ limit: 3 }),
+        this.updateVaults(_.head(this.wallets)),
+        this.fetchNotifications()
+      ]);
 
-              if (_.isEmpty(wallets)) {
-                  return resolve(null); //ToDo: add proper error handling;
+      this.logger.info("Done updating all info for wallet.");
+    };
+
+    await Observable.defer(() => fetch())
+      .retryWhen(errors =>
+        errors.zip(Observable.range(1, RETRY_MAX_ATTEMPTS))
+          .mergeMap(([err, attempt]) => {
+            this.logger.info("Error updating information for all wallets.");
+            this.logger.info(err);
+
+            if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
+              if (attempt < RETRY_MAX_ATTEMPTS) {
+                return Observable.timer(RETRY_TIMEOUT);
               }
-              this.wallets = wallets;
+            }
 
-              // Now that we have wallets, we will proceed with the following operations in parallel.
-              await Promise.all([
-                  this.updateNetworkValue(wallets),
-                  this.processPendingEasyReceipts(),
-                  this.updateTxps({ limit: 3 }),
-                  this.updateVaults(_.head(this.wallets)),
-                  this.fetchNotifications()
-              ]);
+            this.toastCtrl.create({
+              message: err.text || 'Failed to update information',
+              cssClass: ToastConfig.CLASS_ERROR
+            }).present();
 
-              this.logger.info("Done updating all info for wallet.");
-              resolve();
-          } catch (err) {
-              this.logger.info("Error updating information for all wallets.");
-              this.logger.info(err);
-              if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
-                  if (++attempt < WalletsView.RETRY_MAX_ATTEMPTS) {
-                      return setTimeout(fetch.bind(this, attempt), WalletsView.RETRY_TIMEOUT);
-                  }
-              }
+            return Observable.of();
+          })
+      )
+      .toPromise();
 
-              this.toastCtrl.create({
-                  message: err.text || 'Failed to update information',
-                  cssClass: ToastConfig.CLASS_ERROR
-              }).present();
-
-              return resolve();
-          }
-
-        };
-
-      fetch();
-    });
+    this.loading = false;
   }
 
   private updateTxps(opts: { limit: number } = { limit: 3 }): Promise<any> {
