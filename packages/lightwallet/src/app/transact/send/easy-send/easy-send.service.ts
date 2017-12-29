@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { BwcService } from 'merit/core/bwc.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -93,16 +92,14 @@ export class EasySendService {
     })
   }
 
-  public updatePendingEasySends(wallet: MeritWalletClient): Promise<void> {
-    return this.persistenceService.getPendingEasySends(wallet.id)
-      .filter((easySend: EasySend) => {
-        return wallet.validateEasyScript(easySend.script.toAddress().toString()).then((txn) => {
-          return txn.result.found && !txn.result.spent;
-        })
-      })
-      .then((pendingEasySends: EasySend[]) => {
-        return this.persistenceService.setPendingEasySends(wallet.id, pendingEasySends);
-      });
+  async updatePendingEasySends(wallet: MeritWalletClient): Promise<void> {
+    let easySends: EasySend[] = await this.persistenceService.getPendingEasySends(wallet.id);
+    easySends = await Promise.all(easySends.map(async (easySend: EasySend) => {
+      const txn = await wallet.validateEasyScript(easySend.script.toAddress().toString());
+      return txn.result.found && !txn.result.spent ? easySend : null;
+    }));
+    easySends = easySends.filter((easySend: EasySend) => easySend !== null);
+    return this.persistenceService.setPendingEasySends(wallet.id, easySends);
   }
 
   private storeEasySend(walletId: string, easySend: EasySend): Promise<void> {
