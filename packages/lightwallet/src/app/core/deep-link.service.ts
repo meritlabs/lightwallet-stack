@@ -18,9 +18,8 @@ export class DeepLinkService {
     if (!this.platform.is('cordova')) {
       this.logger.warn('branch deeplinking is available on native devices only');
       return;
-    } else {
-      const Branch = window['Branch'];
-      Branch.initSession(handler);
     }
+
+    window['Branch'].initSession(handler);
   }
 }

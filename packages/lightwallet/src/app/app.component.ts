@@ -29,7 +29,7 @@ import { MWCErrors } from 'merit/core/bwc.service';
 })
 export class MeritLightWallet {
 
-  public rootComponent;
+  rootComponent: string;
 
   constructor(
     private platform: Platform,
@@ -120,13 +120,10 @@ export class MeritLightWallet {
      Upon loading the app (first time or later), we must
      load and bind the persisted profile (if it exists).
   */
-  private initializeApp() {
-    this.loadProfileAndEasySend();
-
-    if (this.platform.is('cordova')) {
-      this.statusBar.styleLightContent();
-      this.splashScreen.hide();
-    }
+  private async initializeApp() {
+    this.statusBar.styleLightContent();
+    await this.loadProfileAndEasySend();
+    this.splashScreen.hide();
   }
 
   private openLockModal() {
