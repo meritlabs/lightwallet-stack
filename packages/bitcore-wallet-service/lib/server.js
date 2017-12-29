@@ -1277,7 +1277,7 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
         // accepted while others will be denied.)
         totalConfirmedAmount: _.sumBy(
             _.filter(utxos, function(utxo) {
-                return ((!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) || (utxo.isMine && utxo.isChange && utxo.micros >= 0));
+                return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) || (utxo.isMine && utxo.isChange && utxo.micros >= 0));
             }),
             'micros'),
         lockedConfirmedAmount: _.sumBy(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
