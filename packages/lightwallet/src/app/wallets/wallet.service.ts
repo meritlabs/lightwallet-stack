@@ -890,7 +890,6 @@ export class WalletService {
   // create and store a wallet
   // TODO add typings for `opts`
   async createWallet(opts: any) {
-    // TODO `opts` doesn't have `bwsurl` property, why are we querying it?
     return this.profileService.addAndBindWalletClient(await this.doCreateWallet(opts), { bwsurl: opts.bwsurl });
   }
 
@@ -1282,20 +1281,19 @@ export class WalletService {
         const walletClient: MeritWalletClient = await this.seedWallet(opts);
         let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
         let myName = opts.myName || 'me'; // TODO GetTextCatalog
-        await walletClient.createWallet(name, myName, opts.m, opts.n, {
+
+      await walletClient.createWallet(name, myName, opts.m, opts.n, {
             network: opts.networkName,
             singleAddress: opts.singleAddress,
             walletPrivKey: opts.walletPrivKey,
             parentAddress: opts.parentAddress
         });
 
-        // TODO: Subscribe to ReferralTxConfirmation
+      // TODO: Subscribe to ReferralTxConfirmation
         return walletClient;
     };
 
-    return Observable.create(obs => {
-        seed().then(obs.next.bind(obs)).catch(obs.error.bind(obs))
-    })
+    return Observable.defer(() => seed())
         .retryWhen(errors =>
             errors
                 .zip(Observable.range(1,3))

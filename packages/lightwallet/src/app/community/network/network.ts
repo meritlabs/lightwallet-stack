@@ -88,25 +88,27 @@ export class NetworkView {
   }
 
   // On each enter, let's update the network data.
-  ionViewDidEnter() {
-    this.updateView();
+  async ionViewDidEnter() {
+    await this.updateView();
   }
 
-  doRefresh(refresher) {
+  async doRefresh(refresher) {
     try {
-      this.updateView()
+      await this.updateView()
     } catch (err) {} finally {
       refresher.complete()
     }
   }
 
   async updateView() {
+    if (this.loading === true) return;
+
     this.loading = true;
 
     try {
       await this.formatWallets(await this.loadInfo());
     } catch (err) {
-        this.toastCtrl
+      this.toastCtrl
             .create({
                 message: err.text || 'Unknown error',
                 cssClass: ToastConfig.CLASS_ERROR,
@@ -126,8 +128,7 @@ export class NetworkView {
   }
 
   private loadInfo() {
-    const source = this.loadWallets;
-    return Observable.fromPromise(source())
+    return Observable.defer(() => this.loadWallets())
       .retryWhen(err =>
         err
           .zip(Observable.range(1, NetworkView.RETRY_MAX_ATTEMPTS))
