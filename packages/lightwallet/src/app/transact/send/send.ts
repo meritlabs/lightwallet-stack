@@ -77,7 +77,7 @@ export class SendView {
   }
 
   public ionViewDidLoad() {
-    this.updateHasFunds().then(() => {
+    return this.updateHasFunds().then(() => {
       this.contacts = [];
       this.initList();
       return this.initContactList();
@@ -247,9 +247,9 @@ export class SendView {
       }).catch((err) => {
         this.loading = false;
         this.toastCtrl.create({
-        message: err,
-        cssClass: ToastConfig.CLASS_ERROR
-         }).present();
+          message: err,
+          cssClass: ToastConfig.CLASS_ERROR
+        }).present();
       });
     }
 
@@ -261,7 +261,7 @@ export class SendView {
     }
     this.renderingContacts = this.filteredContacts.slice(0, this.contactsLimit);
     this.loading = false;
-    Promise.resolve();
+    return Promise.resolve();
   }
 
   public goToAmount(item) {

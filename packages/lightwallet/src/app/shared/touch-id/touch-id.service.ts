@@ -58,15 +58,20 @@ export class TouchIdService {
 
       if (result.withFingerprint) {
         this.log.info('Successfully authenticated with fingerprint.');
-      } else if (result.withBackup) {
-        this.log.info('Successfully authenticated with backup password!');
-      } else {
-        this.log.info('Didn\'t authenticate!');
+        return;
       }
+
+      if (result.withBackup) {
+        this.log.info('Successfully authenticated with backup password!');
+        return;
+      }
+
+      this.log.info('Didn\'t authenticate!');
+
     } catch (error) {
       if (error === this.androidFingerprintAuth.ERRORS.FINGERPRINT_CANCELLED) {
         this.log.warn('Fingerprint authentication cancelled');
-        throw '';
+        throw error;
       } else {
         this.log.error(error);
         return;
@@ -80,11 +85,16 @@ export class TouchIdService {
 
   async check(): Promise<any> {
     if (!this.isAvailable()) throw void 0;
-    if (this.platform.isIOS) {
-      return this.verifyIOSFingerprint()
-    }
-    if (this.platform.isAndroid) {
-      return this.verifyAndroidFingerprint()
+
+    try {
+      if (this.platform.isIOS) {
+        await this.verifyIOSFingerprint()
+      }
+      if (this.platform.isAndroid) {
+        await this.verifyAndroidFingerprint()
+      }
+    } catch (err) {
+      throw new Error('Fingerprint not verified');
     }
   }
 
@@ -97,7 +107,11 @@ export class TouchIdService {
   async checkWallet(wallet: any): Promise<any> {
     if (!this.isAvailable()) return; //TODO: Decide how to propogate this.
     if (this.isNeeded(wallet)) {
-      return this.check();
+      try {
+        await this.check();
+      } catch (e) {
+        throw new Error('Fingerprint not verified');
+      }
     }
   }
 }

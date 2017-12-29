@@ -32,7 +32,7 @@ export class Logger {
 
   public error(...messages) {
     if (this.isNode) {
-      messages = this.inspectObjectForNode(messages);
+      messages = this.inspectObjectForNode(...messages);
     }
     this.logs.push({level: Logger.LEVEL_ERROR, timestamp: Date.now(), arguments: messages});
     console.error.apply(console, messages);
@@ -40,7 +40,7 @@ export class Logger {
 
   public warn(...messages) {
     if (this.isNode) {
-      messages = this.inspectObjectForNode(messages);
+      messages = this.inspectObjectForNode(...messages);
     }
     this.logs.unshift({ level: Logger.LEVEL_WARN,  timestamp: Date.now(), arguments: messages });
     console.warn.apply(console, messages);
@@ -48,7 +48,7 @@ export class Logger {
 
   public info(...messages) {
     if (this.isNode) {
-      messages = this.inspectObjectForNode(messages);
+      messages = this.inspectObjectForNode(...messages);
     }
     this.logs.unshift({level: Logger.LEVEL_INFO,  timestamp: Date.now(), arguments: messages});
     console.info.apply(console, messages);
@@ -56,7 +56,7 @@ export class Logger {
 
   public debug(...messages) {
     if (this.isNode) {
-      messages = this.inspectObjectForNode(messages);
+      messages = this.inspectObjectForNode(...messages);
     }
     this.logs.unshift({level: Logger.LEVEL_DEBUG, timestamp: Date.now(), arguments: messages});
     console.debug.apply(console, messages);
@@ -65,7 +65,7 @@ export class Logger {
    /**  alias -> info   */
   public log(...messages) {
     if (this.isNode) {
-      messages = this.inspectObjectForNode(messages);
+      messages = this.inspectObjectForNode(...messages);
     }
     this.info(messages);
   }

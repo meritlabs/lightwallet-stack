@@ -1,6 +1,5 @@
 import * as  _  from 'lodash';
 
-
 import { NavController, NavParams, IonicPage, AlertController, ModalController, App, LoadingController } from 'ionic-angular';
 import { Component, NgZone } from '@angular/core';
 import { MeritToastController } from "merit/core/toast.controller";
@@ -21,183 +20,182 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
  */
 @IonicPage()
 @Component({
-    selector: 'send-confirm-view',
-    templateUrl: 'send-confirm.html',
+  selector: 'send-confirm-view',
+  templateUrl: 'send-confirm.html',
 })
 export class SendConfirmView {
-    // Statics
-    private static CONFIRM_LIMIT_USD = 20;
+  // Statics
+  private static CONFIRM_LIMIT_USD = 20;
 
-    private txData: {
-        amount: number; // micros
-        amountUSD: string; // micros
-        totalAmount: number; // micros
-        feeIncluded: boolean;
-        recipient: {
-            sendMethod: string;
-            label: string;
-            name: string;
-            email?: string;
-            phoneNumber?: string;
-        };
-        txp: any;
-        easySendURL: string;
-        wallet: MeritWalletClient;
+  private txData: {
+    amount: number; // micros
+    amountUSD: string; // micros
+    totalAmount: number; // micros
+    feeIncluded: boolean;
+    recipient: {
+      sendMethod: string;
+      label: string;
+      name: string;
+      email?: string;
+      phoneNumber?: string;
     };
-    private referralsToSign: Array<any>;
+    txp: any;
+    easySendURL: string;
+    wallet: MeritWalletClient;
+  };
+  private referralsToSign: Array<any>;
+  private viewData;
 
-    private viewData;
+  constructor(
+    private navParams: NavParams,
+    private navCtrl: NavController,
+    private toastCtrl: MeritToastController,
+    private alertController: AlertController,
+    private loadingCtrl: LoadingController,
+    private app: App,
+    private touchIdService: TouchIdService,
+    private easySendService: EasySendService,
+    private walletService: WalletService,
+    private formatService: TxFormatService,
+    private configService: ConfigService,
+    private logger: Logger
+  ) {
+    this.logger.info('Hello SendConfirm View');
+  }
 
-    constructor(
-        private navParams: NavParams,
-        private navCtrl: NavController,
-        private toastCtrl: MeritToastController,
-        private alertController: AlertController,
-        private loadingCtrl: LoadingController,
-        private app: App,
-        private touchIdService: TouchIdService,
-        private easySendService: EasySendService,
-        private walletService: WalletService,
-        private formatService: TxFormatService,
-        private configService: ConfigService,
-        private logger: Logger
-    ) {
-        this.logger.info('Hello SendConfirm View');
-    }
+  async ionViewDidLoad() {
+    this.txData = this.navParams.get('txData');
+    this.txData.amountUSD = await this.formatService.formatToUSD(this.txData.amount);
+    this.referralsToSign = this.navParams.get('referralsToSign');
 
-    async ionViewDidLoad() {
-        this.txData = this.navParams.get('txData');
-        this.txData.amountUSD = await this.formatService.formatToUSD(this.txData.amount);
-        this.referralsToSign = this.navParams.get('referralsToSign');
+    this.viewData = {
+      recipientName: this.txData.recipient.label,
+      amountMrt: this.formatService.formatAmount(this.txData.amount),
+      feePercent: this.txData.txp.feePercent,
+      feeAmountMrt: this.formatService.formatAmount(this.txData.txp.fee),
+      totalAmountMrt: this.formatService.formatAmount(this.txData.totalAmount),
+      walletName: this.txData.wallet.name || this.txData.wallet.id,
+      walletCurrentBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.totalBalanceSat),
+      walletRemainingBalanceMrt: this.formatService.formatAmount(
+        this.txData.wallet.status.totalBalanceSat - this.txData.totalAmount
+      ),
+      feeIncluded: this.txData.feeIncluded,
+      fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
+    };
 
-        this.viewData = {
-            recipientName: this.txData.recipient.label,
-            amountMrt: this.formatService.formatAmount(this.txData.amount),
-            feePercent: this.txData.txp.feePercent,
-            feeAmountMrt: this.formatService.formatAmount(this.txData.txp.fee),
-            totalAmountMrt: this.formatService.formatAmount(this.txData.totalAmount),
-            walletName: this.txData.wallet.name || this.txData.wallet.id,
-            walletCurrentBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.totalBalanceSat),
-            walletRemainingBalanceMrt: this.formatService.formatAmount(
-                this.txData.wallet.status.totalBalanceSat - this.txData.totalAmount
-            ),
-            feeIncluded: this.txData.feeIncluded,
-            fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
-        };
+    let convert = amount => this.formatService.toFiatStr(amount, this.viewData.fiatCode);
+    this.viewData.amountFiat = await convert(this.txData.amount);
+    this.viewData.feeAmountFiat = await convert(this.txData.txp.fee);
+    this.viewData.totalAmountFiat = await convert(this.txData.totalAmount);
+    this.viewData.walletCurrentBalanceFiat = await convert(this.txData.wallet.status.totalBalanceSat);
+    this.viewData.walletRemainingBalanceFiat = await convert(
+      this.txData.wallet.status.totalBalanceSat - this.txData.totalAmount
+    );
+  }
 
-        let convert = amount => this.formatService.toFiatStr(amount, this.viewData.fiatCode);
-        this.viewData.amountFiat = await convert(this.txData.amount);
-        this.viewData.feeAmountFiat = await convert(this.txData.txp.fee);
-        this.viewData.totalAmountFiat = await convert(this.txData.totalAmount);
-        this.viewData.walletCurrentBalanceFiat = await convert(this.txData.wallet.status.totalBalanceSat);
-        this.viewData.walletRemainingBalanceFiat = await convert(
-            this.txData.wallet.status.totalBalanceSat - this.txData.totalAmount
-        );
-    }
+  public sendAllowed() {
+    return this.txData && !_.isEmpty(this.txData.txp);
+  }
 
-    public sendAllowed() {
-        return this.txData && !_.isEmpty(this.txData.txp);
-    }
-
-    public approve() {
-        let showPassPrompt = (highlightInvalid = false) => {
-            this.alertController
-                .create({
-                    title: 'Enter spending password',
-                    cssClass: highlightInvalid ? 'invalid-input-prompt' : '',
-                    inputs: [
-                        {
-                            name: 'password',
-                            placeholder: 'Password',
-                            type: 'password',
-                        },
-                    ],
-                    buttons: [
-                        {
-                            text: 'Cancel',
-                            role: 'cancel',
-                            handler: () => {
-                                this.navCtrl.pop();
-                            },
-                        },
-                        {
-                            text: 'Ok',
-                            handler: data => {
-                                if (!data.password) {
-                                    showPassPrompt(true);
-                                } else {
-                                    this.walletService
-                                        .decrypt(this.txData.wallet, data.password)
-                                        .then(() => {
-                                            this.send();
-                                        })
-                                        .catch(err => {
-                                            showPassPrompt(true);
-                                        });
-                                }
-                            },
-                        },
-                    ],
-                })
-                .present();
-        };
-
-        let showNoPassPrompt = () => {
-            this.alertController
-                .create({
-                    title: 'Confirm Send',
-                    subTitle: 'Are you sure that you want to proceed with this transaction?',
-                    buttons: [
-                        {
-                            text: 'Cancel',
-                            role: 'cancel',
-                            handler: () => {
-                                this.navCtrl.pop();
-                            },
-                        },
-                        {
-                            text: 'Ok',
-                            handler: () => {
-                                this.send();
-                            },
-                        },
-                    ],
-                })
-                .present();
-        };
-
-        let showTouchIDPrompt = () => {
-            // TODO check if we need this
-            //this.alertController.create({
-            //  title: 'TouId required',
-            //  subTitle: 'Confirm transaction by your fingerprint',
-            //  buttons: [
-            //      { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop(); } }
-            //  ]
-            //}).present();
-
-            this.touchIdService
-                .check()
-                .then(() => {
-                    return this.send();
-                })
-                .catch(() => {
-                    this.navCtrl.pop();
-                });
-        };
-
-        if (this.walletService.isEncrypted(this.txData.wallet)) {
-            return showPassPrompt();
-        } else {
-            if (parseInt(this.txData.amountUSD) >= SendConfirmView.CONFIRM_LIMIT_USD) {
-                if (this.touchIdService.isAvailable()) {
-                    return showTouchIDPrompt();
+  public approve() {
+    let showPassPrompt = (highlightInvalid = false) => {
+      this.alertController
+        .create({
+          title: 'Enter spending password',
+          cssClass: highlightInvalid ? 'invalid-input-prompt' : '',
+          inputs: [
+            {
+              name: 'password',
+              placeholder: 'Password',
+              type: 'password',
+            },
+          ],
+          buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+                this.navCtrl.pop();
+              },
+            },
+            {
+              text: 'Ok',
+              handler: data => {
+                if (!data.password) {
+                  showPassPrompt(true);
                 } else {
-                    return showNoPassPrompt();
+                  this.walletService
+                    .decrypt(this.txData.wallet, data.password)
+                    .then(() => {
+                      this.send();
+                    })
+                    .catch(err => {
+                      showPassPrompt(true);
+                    });
                 }
-            }
+              },
+            },
+          ],
+        })
+        .present();
+    };
+
+    let showNoPassPrompt = () => {
+      this.alertController
+        .create({
+          title: 'Confirm Send',
+          subTitle: 'Are you sure that you want to proceed with this transaction?',
+          buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+                this.navCtrl.pop();
+              },
+            },
+            {
+              text: 'Ok',
+              handler: () => {
+                this.send();
+              },
+            },
+          ],
+        })
+        .present();
+    };
+
+    let showTouchIDPrompt = () => {
+      // TODO check if we need this
+      //this.alertController.create({
+      //  title: 'TouId required',
+      //  subTitle: 'Confirm transaction by your fingerprint',
+      //  buttons: [
+      //      { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop(); } }
+      //  ]
+      //}).present();
+
+      this.touchIdService
+        .check()
+        .then(() => {
+          return this.send();
+        })
+        .catch(() => {
+          this.navCtrl.pop();
+        });
+    };
+
+    if (this.walletService.isEncrypted(this.txData.wallet)) {
+      return showPassPrompt();
+    } else {
+      if (parseInt(this.txData.amountUSD) >= SendConfirmView.CONFIRM_LIMIT_USD) {
+        if (this.touchIdService.isAvailable()) {
+          return showTouchIDPrompt();
+        } else {
+          return showNoPassPrompt();
         }
+      }
     }
+  }
 
     private async send() {
         let loadingSpinner = this.loadingCtrl.create({

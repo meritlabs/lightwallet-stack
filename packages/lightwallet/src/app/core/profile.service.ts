@@ -355,7 +355,6 @@ export class ProfileService {
         }
       }));
 
-
       try {
         await this.isDisclaimerAccepted();
       } catch (err) {
@@ -372,7 +371,7 @@ export class ProfileService {
       });
     } else {
       return;
-    };
+    }
   }
 
   // TODO this method can be sync
@@ -419,7 +418,6 @@ export class ProfileService {
     if (!wallet || !wallet.credentials) {
       throw 'Could not access wallet'; // TODO gettextCatalog
     }
-
     let walletId: string = wallet.credentials.walletId;
 
     if (!this.profile.addWallet(JSON.parse(wallet.export()))) {

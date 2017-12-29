@@ -8,6 +8,7 @@ import { Logger } from "./log";
 import { Credentials } from './credentials';
 import { Errors } from './errors';
 import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
+import { EasyReceiptTxData } from 'merit/easy-receive/easy-receipt.model';
 
 const $ = require('preconditions').singleton();
 let EventEmitter = require('eventemitter3');
@@ -41,7 +42,7 @@ export interface InitOptions {
 }
 
 export class API {
-  public BASE_URL = 'http://localhost:3232/bws/api';
+  public BASE_URL = 'https://stage.mws.merit.me/bws/api';
   public request: any;
   public baseUrl: string;
   public payProHttp: string;
@@ -283,7 +284,7 @@ export class API {
    * @memberof Client.API
    * @param {Object} body
    */
-  private _parseError = function (body: any): Error {
+  private _parseError = (body: any): Error => {
     if (!body) return;
 
     if (_.isString(body)) {
@@ -793,7 +794,7 @@ export class API {
    * @param {input} Input described above.
    * @param {destinationAddress} Address to put the funds into.
    */
-  buildEasySendRedeemTransaction(input: any, destinationAddress: any, opts: any = {}): any {
+  buildEasySendRedeemTransaction(input: any, destinationAddress: string, opts: any = {}): Promise<any> {
     //TODO: Create and sign a transaction to redeem easy send. Use input as
     //unspent Txo and use script to create scriptSig
     let inputAddress = input.scriptId;
@@ -801,7 +802,7 @@ export class API {
     let fee = opts.fee || DEFAULT_FEE;
     let microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
     let amount = microAmount - fee;
-    if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
+    if (amount <= 0) return Promise.reject(Errors.INSUFFICIENT_FUNDS);
 
     let tx = new Bitcore.Transaction();
 
@@ -821,8 +822,8 @@ export class API {
           script: input.script
         }, input.script, p2shScript));
 
-      tx.to(toAddress, amount)
-      tx.fee(fee)
+      tx.to(toAddress, amount);
+      tx.fee(fee);
 
       let sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, input.script);
       let inputScript = Bitcore.Script.buildEasySendIn(
@@ -837,10 +838,10 @@ export class API {
       tx.serialize();
 
     } catch (ex) {
-      this.log.error('Could not build transaction from private key', ex);
-      return Errors.COULD_NOT_BUILD_TRANSACTION;
+      this.log.error('Could not build transaction from private key ' + ex.toString());
+      return Promise.reject(Errors.COULD_NOT_BUILD_TRANSACTION);
     }
-    return tx;
+    return Promise.resolve(tx);
   };
 
   prepareVault(type: number, opts: any = {}) {
@@ -1179,8 +1180,9 @@ export class API {
       }
 
       r.timeout(this.timeout);
+      r.ok(res => res.status < 500); // dont reject on failed status
 
-      return r.then((res) => {
+      return Promise.resolve(r).then((res) => {
 
         /**
          * Universal MWC Logger.  It will log all output returned from BWS
@@ -1208,8 +1210,7 @@ export class API {
 
           this.log.error('HTTP Error:' + res.status);
 
-          if (!res.body)
-            return reject(new Error(res.status));
+          if (!res.body) return reject(new Error(res.status.toString()));
 
           return reject(this._parseError(res.body));
         }
@@ -1235,13 +1236,14 @@ export class API {
           return reject(err);
         }
 
+        let errObj; // not an instance of Error
         try {
-          err = JSON.parse(err.response.text);
+          errObj = JSON.parse(err.response.text);
         } catch (e) {
           return reject(err);
         }
 
-        if (err.code == Errors.AUTHENTICATION_ERROR.code) {
+        if (errObj.code == Errors.AUTHENTICATION_ERROR.code) {
           if (!secondRun) { //trying to restore session one time
             return this._doRequest('post', '/v1/login', {}, null, true).then(() => {
               return this._doRequest(method, url, args, useSession, true);
@@ -1257,7 +1259,7 @@ export class API {
           }
         }
 
-        if (err.code && Errors[err.code]) err = Errors[err.code];
+        if (errObj.code && Errors[errObj.code]) return reject(Errors[errObj.code]);
         return reject(err);
       });
     });
@@ -2158,7 +2160,7 @@ export class API {
     let args = this._getCreateTxProposalArgs(opts);
     return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
       if (!txp) {
-        return Promise.reject("Could not get transaction proposal from server.");
+        return Promise.reject(new Error("Could not get transaction proposal from server."));
       }
       if (txp.code && txp.code == "INSUFFICIENT_FUNDS") {
         return Promise.reject(Errors.INSUFFICIENT_FUNDS);
@@ -2564,30 +2566,30 @@ export class API {
 
     return this._signAddressAndUnlockWithRoot(txp.changeAddress)
       .then(() => {
-        this.getPayPro(txp).then((paypro) => {
-        if (paypro) {
-          this.log.warn("WE ARE PAYPRO");
-          let t = Utils.buildTx(txp);
-          this._applyAllSignatures(txp, t);
+        return this.getPayPro(txp).then((paypro) => {
+          if (paypro) {
+            this.log.warn("WE ARE PAYPRO");
+            let t = Utils.buildTx(txp);
+            this._applyAllSignatures(txp, t);
 
-          return PayPro.send({
-            http: this.payProHttp,
-            url: txp.payProUrl,
-            amountMicros: txp.amount,
-            refundAddr: txp.changeAddress.address,
-            merchant_data: paypro.merchant_data,
-            rawTx: t.serialize({
-              disableSmallFees: true,
-              disableLargeFees: true,
-              disableDustOutputs: true
-            }),
-          });
-        }
-        return Promise.resolve();
-      }).then(() => {
-        return this._doBroadcast(txp);
+            return PayPro.send({
+              http: this.payProHttp,
+              url: txp.payProUrl,
+              amountMicros: txp.amount,
+              refundAddr: txp.changeAddress.address,
+              merchant_data: paypro.merchant_data,
+              rawTx: t.serialize({
+                disableSmallFees: true,
+                disableLargeFees: true,
+                disableDustOutputs: true
+              }),
+            });
+          }
+          return Promise.resolve();
+        }).then(() => {
+          return this._doBroadcast(txp);
+        });
       });
-    });
   };
 
   /**
@@ -2847,7 +2849,7 @@ export class API {
    * @param cb Callback or handler to manage response from BWS
    * @return {undefined}
    */
-  validateEasyScript(scriptId): Promise<any> {
+  validateEasyScript(scriptId): Promise<EasyReceiptTxData> {
     this.log.warn("Validating: " + scriptId);
 
     let url = '/v1/easyreceive/validate/' + scriptId;

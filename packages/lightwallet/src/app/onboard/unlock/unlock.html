@@ -19,7 +19,7 @@
 
 
             <div class="bottom-buttons">
-                <ion-input [placeholder]="easyReceipt?.inviteCode || 'Invite code'"
+                <ion-input [placeholder]="'Invite Address'"
                     [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
                     [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
                 <button (click)="createWallet()" ion-button icon-only translate>
@@ -53,7 +53,7 @@
 
 
         <div class="bottom-buttons">
-            <ion-input [placeholder]="easyReceipt?.inviteCode || 'Invite code'"
+            <ion-input [placeholder]="'Invite Address'"
                        [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
                        [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
             <button (click)="createWallet()" ion-button icon-only translate>

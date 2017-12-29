@@ -20,6 +20,7 @@ const Keys = {
   COINBASE_TOKEN: network => 'coinbaseToken-' + network,
   COINBASE_TXS: network => 'coinbaseTxs-' + network,
   CONFIG: 'config',
+  PENDING_EASY_SENDS: walletId => 'pendingEasySends-' + walletId,
   EASY_RECEIPTS: 'easyReceipts',
   FEEDBACK: 'feedback',
   FOCUSED_WALLET_ID: 'focusedWalletId',
@@ -94,7 +95,7 @@ export class PersistenceService {
     await this.storage.set(Keys.EASY_RECEIPTS, receipts);
   }
 
-  getPendingsEasyReceipts() {
+  getPendingsEasyReceipts(): Promise<any> {
     return this.storage.get(Keys.EASY_RECEIPTS);
   }
 
@@ -328,6 +329,21 @@ export class PersistenceService {
 
   removeTxHistory(walletId: string): Promise<void> {
     return this.storage.remove(Keys.TX_HISTORY(walletId));
+  }
+
+  setPendingEasySends(walletId: string, easysends: any): Promise<void> {
+    return this.storage.set(Keys.PENDING_EASY_SENDS(walletId), easysends).catch(err => {
+      this.log.error('Error saving pending EasySends. Size:' + easysends.length);
+      this.log.error(err);
+    });
+  }
+
+  getPendingEasySends(walletId: string): Promise<any> {
+    return this.storage.get(Keys.PENDING_EASY_SENDS(walletId));
+  }
+
+  removePendingEasySends(walletId: string): Promise<void> {
+    return this.storage.remove(Keys.PENDING_EASY_SENDS(walletId));
   }
 
   setBalanceCache(cardId: string, data: any): Promise<void> {
