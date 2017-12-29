@@ -91,7 +91,6 @@ export class WalletsView {
     private rateService: RateService,
     private platform: Platform
   ) {
-
     this.logger.warn("WalletsView constructor!");
   }
 
