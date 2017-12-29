@@ -68,7 +68,7 @@ export class API {
   public cachedActivity: any;
   public cachedTxps: any;
   public pendingTxps: any;
-  public totalBalanceSat: number;
+  public totalBalanceMicros: number;
   public scanning: boolean;
   public hasUnsafeConfirmed: boolean;
   public network: string;

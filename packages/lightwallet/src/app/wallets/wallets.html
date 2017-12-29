@@ -83,20 +83,22 @@
     </ion-item-divider>
     <ion-item *ngIf="!wallets && loading"><ion-spinner item-left></ion-spinner><h2>Loading...</h2></ion-item>
     <ion-list class="wallets" *ngIf="wallets">
-        <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)" class="wallet">
+
+    <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)" class="wallet">
 
             <ion-avatar item-start class="btn wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
                 <img src="assets/img/icon-wallet.svg">
             </ion-avatar>
 
             <h2 translate>{{wallet.name || wallet._id}}</h2>
+            <p *ngIf="walletHasPendingAmount(wallet)">Partially confirmed</p>
 
             <span *ngIf="!wallet.isComplete()" class="assertive" translate item-end>Incomplete</span>
             <span class="detail" *ngIf="wallet.isComplete()" item-end>
                 <span class="amount" *ngIf="!wallet.balanceHidden && wallet.status">
                     {{wallet.status.totalBalanceStr ? wallet.status.totalBalanceStr : ( wallet.cachedBalance ? wallet.cachedBalance + (wallet.cachedBalanceUpdatedOn
                     ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '') : '' ) }}
-                    <ion-icon name="timer-outline" *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount"></ion-icon>
+                    <ion-icon name="ios-timer-outline" *ngIf="walletHasPendingAmount(wallet)"></ion-icon>
                 </span>
                 <span *ngIf="wallet.balanceHidden" class="balance-hidden">
                     [Balance Hidden]
