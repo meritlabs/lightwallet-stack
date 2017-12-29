@@ -58,11 +58,10 @@ export class RateService {
     }
   }
 
-  async getBTC(): Promise<any> {
+  async getBTC() {
     let res;
-
     try {
-      res = await request.get(this.rateServiceUrl);
+      res = await request['get'](this.rateServiceUrl);
     } catch (errorBTC) {
       this.logger.warn("Error connecting to rate service: ", errorBTC);
       return;
@@ -71,7 +70,7 @@ export class RateService {
     if (res && res.body) {
       return res.body;
     } else {
-      throw 'Error connecting to rate service.';
+      throw new Error("Error connecting to rate service.");
     }
   }
 

@@ -21,10 +21,6 @@ import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
 })
 export class ImportView {
 
-  //public phraseView = 'ImportPhraseView';
-  //public fileView   = 'ImportFileView';
-  //public formGroup:FormGroup;
-
   @ViewChild('fileInput') input:ElementRef;
 
   public segment = 'phrase';
@@ -111,8 +107,6 @@ export class ImportView {
 
 
   importMnemonic() {
-
-
     let loader = this.loadingCtrl.create({content: 'importingWallet'});
     loader.present();
     let  pathData = this.derivationPathService.parse(this.formData.derivationPath);
@@ -193,9 +187,11 @@ export class ImportView {
     //this.walletService.updateRemotePreferences(wallet, {}).then(() => {
     this.profileService.setBackupFlag(wallet.credentials.walletId);
     if (loader) loader.dismiss();
-    this.app.getRootNav().setRoot('TransactView');
+    this.app.getRootNavs()[0].setRoot('TransactView');
     //});
   }
+
+  // soccer neither brand seven cry boat guess protect secret guard safe danger
 
   setDerivationPath() {
     this.formData.derivationPath = this.formData.testnetEnabled ? this.derivationPathService.getDefaultTestnet() : this.derivationPathService.getDefault();
@@ -227,7 +223,5 @@ export class ImportView {
       !this.loadFileInProgress && this.formData.backupFileBlob && this.formData.filePassword
     );
   }
-
-
 
 }
