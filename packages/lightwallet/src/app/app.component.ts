@@ -19,7 +19,6 @@ import * as _ from 'lodash';
 
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
-import { NavController } from 'ionic-angular/navigation/nav-controller';
 
 import { Events } from 'ionic-angular';
 
@@ -51,37 +50,36 @@ export class MeritLightWallet {
         process.on('unhandledRejection', this.logger.info.bind(console));
         process.on('unhandledRejection', this.logger.info.bind(console));
     }
+  }
 
-    this.platform.ready().then((readySource) => {
-      this.appService.getInfo().then((appInfo: any) => {
-        this.logger.info(`
-            platform ready (${readySource}): -v ${appInfo.version} # ${appInfo.commitHash}
-          `);
-      });
-
-      this.registerMwcErrorHandler();
-      return this.initializeApp();
-    });
-
-
+  async ngOnInit() {
     this.platform.resume.subscribe(() => {
       this.logger.info("Returning Native App from Background!");
       this.loadProfileAndEasySend();
     });
+
+    const readySource = await this.platform.ready();
+    const appInfo: any = await this.appService.getInfo();
+    this.logger.info(`
+            platform ready (${ readySource }): -v ${ appInfo.version } # ${ appInfo.commitHash }
+    `);
+
+    this.registerMwcErrorHandler();
+    return this.initializeApp();
   }
 
   /**
    * Check the status of the profile, and load the right next view.
    */
-  private loadProfileAndEasySend(): Promise<void> {
+  private async loadProfileAndEasySend(): Promise<void> {
     this.logger.info("LoadingProfileAndEasySend");
-    return this.profileService.getProfile().then((profile) => {
+
+    try {
+      const profile = await this.profileService.getProfile();
       this.logger.info("Got Profile....");
       // If the user has credentials and a profile, then let's send them to the transact
       // view
-
-      return this.deepLinkService.initBranch((data) => {
-
+      await this.deepLinkService.initBranch((data) => {
         this.logger.info("Branch Data: ", data);
         // If the branch params contain the minimum params needed for an easyReceipt, then
         // let's validate and save them.
@@ -108,12 +106,13 @@ export class MeritLightWallet {
             this.rootComponent = (profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView';
           });
         }
-      }).then(() => {
-        this.rootComponent = (profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView';
-      }).catch((err) => {
-        this.logger.error(err);
-      })
-    });
+      });
+
+      this.rootComponent = (profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView';
+
+    } catch (err) {
+      this.logger.error(err);
+    }
 
   }
 
@@ -129,7 +128,6 @@ export class MeritLightWallet {
       this.splashScreen.hide();
     }
   }
-
 
   private openLockModal() {
     let config: any = this.configService.get();
