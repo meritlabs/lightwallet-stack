@@ -94,7 +94,7 @@ export class WalletsView {
     this.logger.warn("WalletsView constructor!");
   }
 
-  public doRefresh(refresher) {
+  doRefresh(refresher) {
 
     this.updateAllInfo({ force: true }).then(() => {
       refresher.complete();
@@ -103,7 +103,7 @@ export class WalletsView {
     });
   }
 
-  public ionViewDidLoad() {
+  ionViewDidLoad() {
 
     this.logger.warn("Hello WalletsView :: IonViewDidLoad!");
 
@@ -472,7 +472,7 @@ export class WalletsView {
     }));
   }
 
-  private openWallet(wallet) {
+  openWallet(wallet) {
     if (!wallet.isComplete) {
       this.navCtrl.push('CopayersView')
     } else {
@@ -488,7 +488,7 @@ export class WalletsView {
     this.feedbackData.mark = null;
   }
 
-  private sendFeedback() {
+  sendFeedback() {
     this.feedbackNeeded = false;
     this.feedbackService.sendFeedback(this.feedbackData).catch(() => {
       this.toastCtrl.create({
@@ -498,11 +498,11 @@ export class WalletsView {
     })
   }
 
-  private toLatestRelease() {
+  toLatestRelease() {
     this.inAppBrowser.create(this.configService.get().release.url);
   }
 
-  private toAddWallet() {
+  toAddWallet() {
 
     if (!_.isEmpty(this.wallets)) {
       const parentAddress = this.bwcService.getBitcore().PrivateKey(
@@ -515,7 +515,7 @@ export class WalletsView {
     return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList });
   }
 
-  private toImportWallet() {
+  toImportWallet() {
     this.navCtrl.push('ImportView');
   }
 
@@ -529,28 +529,28 @@ export class WalletsView {
   }
 
   // This is a callback used when a new wallet is created.
-  public refreshWalletList = (): Promise<any> => {
+  refreshWalletList = (): Promise<any> => {
     return this.updateAllWallets().then((wallets:any) => {
       this.wallets = wallets;
       return Promise.resolve();
     });
   }
 
-  public refreshVaultList = (): Promise<any> => {
+  refreshVaultList = (): Promise<any> => {
     return this.profileService.getHeadWalletClient().then((client) => {
       return this.updateVaults(client);
     });
   }
 
-  private openTransactionDetails(transaction) {
+  openTransactionDetails(transaction) {
     this.navCtrl.push('TransactionView', { transaction: transaction });
   }
 
-  private toTxpDetails() {
+  toTxpDetails() {
     this.navCtrl.push('TxpView');
   }
 
-  private txpCreatedWithinPastDay(txp) {
+  txpCreatedWithinPastDay(txp) {
     const createdOn = new Date(txp.createdOn * 1000);
     return ((new Date()).getTime() - createdOn.getTime()) < (1000 * 60 * 60 * 24);
   }
@@ -568,7 +568,7 @@ export class WalletsView {
     return false;
   }
 
-  private openRecentTxDetail(tx: any): any {
+  openRecentTxDetail(tx: any): any {
     this.navCtrl.push('TxDetailsView', { walletId: tx.walletId, txId: tx.data.txid })
   }
 
