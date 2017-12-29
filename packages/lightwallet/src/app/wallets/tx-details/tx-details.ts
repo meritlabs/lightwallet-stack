@@ -112,4 +112,9 @@ export class TxDetailsView {
     else if (this.tx.confirmations > CONFIRMATION_THRESHOLD)  this.confirmations = `${CONFIRMATION_THRESHOLD}+`;
   }
 
+  public isNotConfirmed(tx:any):boolean {
+    return (tx.isCoinbase && !tx.isMature) || tx.confirmations < 1;
+  }
+
+
 }

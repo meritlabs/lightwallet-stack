@@ -62,7 +62,7 @@
       </ion-note>
     </button>
 
-    <ion-item>
+    <ion-item *ngIf="isNotConfirmed(tx)">
       <ion-label>{{'Confirmations' | translate}}</ion-label>
       <ion-note item-end>
         {{confirmations || 'Unconfirmed' | translate}}
