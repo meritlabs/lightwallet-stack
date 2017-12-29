@@ -2,17 +2,18 @@
   "name": "bitcore-mnemonic",
   "main": "./bitcore-mnemonic.min.js",
   "version": "1.1.6",
-  "homepage": "https://github.com/bitpay/bitcore-mnemonic",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "authors": [
+    "MeritLabs Inc.",
     "BitPay"
   ],
-  "description": "BIP39 - Mnemonics implemented for Bitcore.",
+  "description": "BIP39 - Mnemonics implemented for Merit Lightwallet Stack.",
   "moduleType": [
     "globals"
   ],
   "keywords": [
     "bitcoin",
-    "bitcore",
+    "merit",
     "btc",
     "satoshi",
     "mnemonic"

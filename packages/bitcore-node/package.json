@@ -1,7 +1,10 @@
 {
   "name": "bitcore-node",
   "description": "Full node with extended capabilities using Bitcore and Merit Core",
-  "author": "MeritLabs Inc.",
+  "authors": [
+    "MeritLabs Inc.",
+    "BitPay"
+  ],
   "version": "3.1.3",
   "main": "./index.js",
   "repository": "https://github.com/meritlabs/lightwallet-stack",
@@ -10,6 +13,10 @@
     "url": "https://github.com/meritlabs/lightwallet-stack/issues"
   },
   "contributors": [
+    {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    },
     {
       "name": "Christopher Jeffrey"
     },

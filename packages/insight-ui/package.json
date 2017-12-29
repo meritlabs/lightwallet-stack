@@ -5,6 +5,10 @@
   "repository": "https://github.com/meritlabs/lightwallet-stack",
   "contributors": [
     {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    },
+    {
       "name": "Matias Alejo Garcia",
       "email": "ematiu@gmail.com"
     },
@@ -35,7 +39,6 @@
     "blockchain",
     "blockexplorer",
     "merit",
-    "bitcore",
     "front-end"
   ],
   "bitcoreNode": "bitcore-node",

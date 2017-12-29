@@ -1,7 +1,7 @@
 {
   "name": "bitcore-payment-protocol",
   "version": "1.2.2",
-  "description": "Payment Protocol (BIP70 and related) support for bitcore",
+  "description": "Payment Protocol (BIP70 and related) support for Merti Lightwallet Stack",
   "author": "MeritLabs inc.",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,10 @@
     "rootcerts": "node ./update-rootcerts.js"
   },
   "contributors": [
+    {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    },
     {
       "name": "Christopher Jeffrey",
       "email": "chjeffrey@gmail.com"
@@ -34,8 +38,7 @@
     }
   ],
   "keywords": [
-    "merit",
-    "bitcore"
+    "merit"
   ],
   "repository": {
     "type": "git",
