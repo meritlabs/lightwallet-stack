@@ -102,4 +102,8 @@ export class WalletDetailsView {
   goToEditWallet() {
     this.navCtrl.push('EditWalletView', { wallet: this.wallet });
   }
+
+  isNotConfirmedTx(tx) {
+    return (tx.isCoinbase && !tx.isMature) || tx.confirmations < 1;
+  }
 }
