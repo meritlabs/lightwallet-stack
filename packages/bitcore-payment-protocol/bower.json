@@ -2,11 +2,12 @@
   "name": "bitcore-payment-protocol",
   "main": "./bitcore-payment-protocol.min.js",
   "version": "1.1.2",
-  "homepage": "https://github.com/bitpay/bitcore-payment-protocol",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "authors": [
-    "BitPay, Inc."
+    "MeritLabs Inc.",
+    "BitPay"
   ],
-  "description": "BIP70 Payment Protocol support for bitcore",
+  "description": "BIP70 Payment Protocol support for Merit Lightwallet Stack",
   "moduleType": [
     "globals"
   ],

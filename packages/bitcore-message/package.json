@@ -1,8 +1,11 @@
 {
   "name": "bitcore-message",
   "version": "1.0.4",
-  "description": "Merit Messages for Bitcore",
-  "author": "MeritLabs Inc.",
+  "description": "Merit Messages for Merit Lightwallet Stack",
+  "authors": [
+    "MeritLabs Inc.",
+    "BitPay"
+  ],
   "main": "index.js",
   "scripts": {
     "lint": "gulp lint",
@@ -10,6 +13,15 @@
     "coverage": "gulp coverage",
     "build": "gulp"
   },
+  "contributors": [
+    {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    },
+    {
+      "name": "Bitpay Team"
+    }
+  ],
   "keywords": [
     "merit",
     "bitcore",

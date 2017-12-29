@@ -5,6 +5,10 @@
   "repository": "https://github.com/meritlabs/lightwallet-stack",
   "contributors": [
     {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    },
+    {
       "name": "Gustavo Cortez",
       "email": "cmgustavo83@gmail.com"
     },
@@ -48,8 +52,7 @@
     "blockchain",
     "merit api",
     "blockchain api",
-    "json",
-    "bitcore"
+    "json"
   ],
   "engines": {
     "node": ">=0.12.0"

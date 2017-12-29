@@ -12,6 +12,12 @@
     "multisignature",
     "bitcore"
   ],
+  "contributors": [
+    {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    }
+  ],
   "scripts": {
     "clean": "ionic-app-scripts clean",
     "build": "ionic-app-scripts build",

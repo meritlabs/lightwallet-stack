@@ -2,17 +2,17 @@
   "name": "bitcore-message",
   "main": "./bitcore-message.min.js",
   "version": "1.0.3",
-  "homepage": "https://github.com/bitpay/bitcore-message",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "authors": [
+    "MeritLabs Inc.",
     "BitPay"
   ],
-  "description": "Bitcoin Message Verification and Signing for Bitcore",
+  "description": "Merit Message Verification and Signing for Merit Lightwallet Stack",
   "moduleType": [
     "globals"
   ],
   "keywords": [
-    "bitcoin",
-    "bitcore",
+    "merit",
     "btc",
     "satoshi",
     "message",
