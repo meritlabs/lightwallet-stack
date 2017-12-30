@@ -36,11 +36,6 @@ export class SettingsView {
     this.currentUnitName = config.wallet.settings.unitName;
     this.currentAlternativeName = config.wallet.settings.alternativeName;
     this.emailNotificationsEnabled = config.emailNotifications.enabled;
-
-  }
-
-  ionViewDidLoad() {
-    //do something here
   }
 
   toAddressbook() {

@@ -529,17 +529,12 @@ export class WalletsView {
   }
 
   // This is a callback used when a new wallet is created.
-  refreshWalletList = (): Promise<any> => {
-    return this.updateAllWallets().then((wallets:any) => {
-      this.wallets = wallets;
-      return Promise.resolve();
-    });
+  async refreshWalletList() {
+    this.wallets = await this.updateAllWallets();
   }
 
-  refreshVaultList = (): Promise<any> => {
-    return this.profileService.getHeadWalletClient().then((client) => {
-      return this.updateVaults(client);
-    });
+  async refreshVaultList() {
+    return this.updateVaults(await this.profileService.getHeadWalletClient());
   }
 
   openTransactionDetails(transaction) {

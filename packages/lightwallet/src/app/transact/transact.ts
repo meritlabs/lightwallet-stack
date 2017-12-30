@@ -15,11 +15,11 @@ import { ProfileService } from 'merit/core/profile.service';
 })
 export class TransactView {
 
-  public walletsView  = 'WalletsView';
-  public receiveView  = 'ReceiveView';
-  public networkView  = 'NetworkView';
-  public sendView     = 'SendView';
-  public settingsView = 'SettingsView';
+  walletsView  = 'WalletsView';
+  receiveView  = 'ReceiveView';
+  networkView  = 'NetworkView';
+  sendView     = 'SendView';
+  settingsView = 'SettingsView';
 
   @ViewChild('tabs') tabRef: Tabs;
 
@@ -32,8 +32,8 @@ export class TransactView {
     this.logger.info("Hello TRANSACT VIEW!");
   }
 
-  public ionViewCanEnter() {
-    let profile = this.profileService.profile;
+  ionViewCanEnter() {
+    const profile = this.profileService.profile;
     return (profile &&  profile.credentials && profile.credentials.length > 0);
   }
 
