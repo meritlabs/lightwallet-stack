@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 
+const LOGGING_ENABLED = true;
+
 @Injectable()
 export class Logger {
 
   static LEVEL_ERROR = 0;
-  static LEVEL_WARN  = 1;
-  static LEVEL_INFO  = 2;
+  static LEVEL_WARN = 1;
+  static LEVEL_INFO = 2;
   static LEVEL_DEBUG = 3;
 
   private logs = [];
 
-  private isNode():boolean {
+  private isNode(): boolean {
     return Object.prototype.toString.call(typeof process !== 'undefined' ? process : 0) === '[object process]';
   }
 
@@ -26,50 +28,55 @@ export class Logger {
     })
   }
 
-  public getLogs(level = Logger.LEVEL_INFO) {
-    return this.logs.filter((l) => {return (l.level <= level)});
+  getLogs(level = Logger.LEVEL_INFO) {
+    return this.logs.filter((l) => {
+      return (l.level <= level)
+    });
   }
 
-  public error(...messages) {
+  error(...messages) {
     if (this.isNode) {
       messages = this.inspectObjectForNode(...messages);
     }
-    this.logs.push({level: Logger.LEVEL_ERROR, timestamp: Date.now(), arguments: messages});
+    this.logs.push({ level: Logger.LEVEL_ERROR, timestamp: Date.now(), arguments: messages });
+    if (!LOGGING_ENABLED) return;
     console.error.apply(console, messages);
   }
 
-  public warn(...messages) {
+  warn(...messages) {
     if (this.isNode) {
       messages = this.inspectObjectForNode(...messages);
     }
-    this.logs.unshift({ level: Logger.LEVEL_WARN,  timestamp: Date.now(), arguments: messages });
+    this.logs.unshift({ level: Logger.LEVEL_WARN, timestamp: Date.now(), arguments: messages });
+    if (!LOGGING_ENABLED) return;
     console.warn.apply(console, messages);
   }
 
-  public info(...messages) {
+  info(...messages) {
     if (this.isNode) {
       messages = this.inspectObjectForNode(...messages);
     }
-    this.logs.unshift({level: Logger.LEVEL_INFO,  timestamp: Date.now(), arguments: messages});
+    this.logs.unshift({ level: Logger.LEVEL_INFO, timestamp: Date.now(), arguments: messages });
+    if (!LOGGING_ENABLED) return;
     console.info.apply(console, messages);
   }
 
-  public debug(...messages) {
+  debug(...messages) {
     if (this.isNode) {
       messages = this.inspectObjectForNode(...messages);
     }
-    this.logs.unshift({level: Logger.LEVEL_DEBUG, timestamp: Date.now(), arguments: messages});
+    this.logs.unshift({ level: Logger.LEVEL_DEBUG, timestamp: Date.now(), arguments: messages });
+    if (!LOGGING_ENABLED) return;
     console.debug.apply(console, messages);
   }
 
-   /**  alias -> info   */
-  public log(...messages) {
+  /**  alias -> info   */
+  log(...messages) {
     if (this.isNode) {
       messages = this.inspectObjectForNode(...messages);
     }
+    if (!LOGGING_ENABLED) return;
     this.info(messages);
   }
-
-
 
 }
