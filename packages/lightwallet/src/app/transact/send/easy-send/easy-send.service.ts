@@ -13,7 +13,7 @@ export class EasySendService {
   constructor(
     private persistenceService: PersistenceService,
     private socialSharing: SocialSharing,
-    private bwcService: BwcService
+    private bwcService: BwcService,
   ) {
     this.bitcore = this.bwcService.getBitcore();
   }
@@ -32,14 +32,14 @@ export class EasySendService {
     return wallet
       .buildEasySendScript(opts)
       .then(easySend => {
-        const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo());
+        const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo()).toString();
         const receiverPrivKey = this.bitcore.PrivateKey.forEasySend(easySend.secret, opts.passphrase, opts.network);
 
         const scriptReferralOpts = {
           parentAddress: signPrivKey.publicKey.toAddress().toString(),
           pubkey: pubkey.toString(), // sign pubkey used to verify signature
           signPrivKey,
-          address: easySendAddress.toString(),
+          address: easySendAddress,
           addressType: 2, // script address
           network: opts.network,
         };
@@ -58,9 +58,7 @@ export class EasySendService {
         easySend.scriptReferralOpts = scriptReferralOpts;
         easySend.recipientReferralOpts = recipientReferralOpts;
 
-        return this.storeEasySend(wallet.id, easySend).then(() => {
-          return easySend;
-        });
+        return easySend;
       })
       .catch(err => {
         return Promise.reject(new Error('error building easysend script' + err));
@@ -101,11 +99,16 @@ export class EasySendService {
 
   public updatePendingEasySends(wallet: MeritWalletClient): Promise<EasySend[]> {
     return this.persistenceService.getPendingEasySends(wallet.id)
-      .filter((easySend: EasySend) => {
-        return wallet.validateEasyScript(easySend.script.toAddress().toString()).then((txn) => {
-          return txn.result.found && !txn.result.spent;
+      .then((easySends: EasySend[]) => easySends || [])
+      .reduce((easySendList: EasySend[], easySend: EasySend) => {
+        return wallet.validateEasyScript(easySend.scriptAddress.toString()).then((txn) => {
+          if(txn.result.found && !txn.result.spent) {
+            easySend.txid = txn.result.txid;
+            easySendList.push(easySend);
+          }
+          return easySendList;
         })
-      })
+      }, [])
       .then((pendingEasySends: EasySend[]) => {
         return this.persistenceService.setPendingEasySends(wallet.id, pendingEasySends)
           .then(() => {
@@ -114,7 +117,7 @@ export class EasySendService {
       });
   }
 
-  private storeEasySend(walletId: string, easySend: EasySend): Promise<void> {
+  public storeEasySend(walletId: string, easySend: EasySend): Promise<void> {
     return this.persistenceService.getPendingEasySends(walletId)
       .then((history: EasySend[]) => {
         history = history || [];

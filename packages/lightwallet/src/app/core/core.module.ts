@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
+import { SocialSharing } from '@ionic-native/social-sharing';
 import { Logger } from "./logger";
 import { BwcService } from 'merit/core/bwc.service';
 import { PersistenceService } from 'merit/core/persistence.service';
@@ -101,6 +102,7 @@ export function loadConfigs(appService) {
         TouchIdService,
         EasyReceiveService,
         DeepLinkService,
+        SocialSharing,
         LedgerService,
         WalletService,
         MnemonicService,
