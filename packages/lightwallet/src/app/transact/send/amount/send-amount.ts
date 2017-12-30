@@ -14,7 +14,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
-import { EasySend, easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
+import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 
 
@@ -315,13 +315,7 @@ export class SendAmountView {
             if (this.recipient.sendMethod != 'address') {
               return this.easySendService.createEasySendScriptHash(this.txData.wallet).then((easySend) => {
                 easySend.script.isOutput = true;
-                this.txData.easySendURL = easySendURL(easySend);
-                return resolve({
-                  script: easySend.script,
-                  toAddress: easySend.scriptAddress.toString(),
-                  scriptReferralOpts: easySend.scriptReferralOpts,
-                  recipientReferralOpts: easySend.recipientReferralOpts,
-                });
+                return resolve(easySend);
               });
             } else {
               return resolve({});
@@ -330,7 +324,8 @@ export class SendAmountView {
         };
 
         return getEasyData().then((easyData: EasySend) => {
-          data = Object.assign(data, _.pick(easyData, 'script', 'toAddress'));
+          data = Object.assign(data, _.pick(easyData, 'script'));
+          data.toAddress = data.toAddress || easyData.scriptAddress;
           return this.getTxp(_.clone(data), this.txData.wallet, dryRun).then((txpOut) => {
 
             txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
@@ -355,6 +350,7 @@ export class SendAmountView {
               this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
 
               this.txData.txp = txpOut;
+              this.txData.easySend = easyData;
               this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
             }).catch((err) => {
               this.toastCtrl.create({

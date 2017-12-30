@@ -13,6 +13,7 @@ import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { TxFormatService } from "merit/transact/tx-format.service";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { EasySend, easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 
 
 /**
@@ -41,7 +42,7 @@ export class SendConfirmView {
       phoneNumber?: string;
     };
     txp: any;
-    easySendURL: string;
+    easySend?: EasySend;
     wallet: MeritWalletClient;
   };
   private referralsToSign: Array<any>;
@@ -210,20 +211,23 @@ export class SendConfirmView {
     return sendReferrals.then(() => {
       return this.approveTx()
         .then(() => {
-          if (this.txData.recipient.sendMethod == 'sms') {
-            return this.easySendService.sendSMS(
-              this.txData.recipient.phoneNumber,
-              this.viewData.amountMrt,
-              this.txData.easySendURL
-            );
-          } else if (this.txData.recipient.sendMethod == 'email') {
-            return this.easySendService.sendEmail(
-              this.txData.recipient.email,
-              this.viewData.amountMrt,
-              this.txData.easySendURL
-            );
-          } else {
-            return Promise.resolve();
+          if(this.txData.easySend) {
+            return this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend)
+              .then(() => {
+                if (this.txData.recipient.sendMethod == 'sms') {
+                  return this.easySendService.sendSMS(
+                    this.txData.recipient.phoneNumber,
+                    this.viewData.amountMrt,
+                    easySendURL(this.txData.easySend)
+                  );
+                } else if (this.txData.recipient.sendMethod == 'email') {
+                  return this.easySendService.sendEmail(
+                    this.txData.recipient.email,
+                    this.viewData.amountMrt,
+                    easySendURL(this.txData.easySend)
+                  );
+                }
+              });
           }
         })
         .then(() => {

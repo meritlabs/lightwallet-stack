@@ -9,6 +9,7 @@ export type EasySend = {
   blockTimeout: number;
   scriptReferralOpts: any;
   recipientReferralOpts: any;
+  txid?: string;
 }
 
 export let easySendURL = (es: EasySend): string => {
