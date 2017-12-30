@@ -3,9 +3,8 @@ import { Logger } from 'merit/core/logger';
 import * as _ from 'lodash';
 import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 
-
-
 import { Storage } from '@ionic/storage';
+import { Credentials } from '../../lib/merit-wallet-client/lib/credentials';
 
 const Keys = {
   ADDRESS_BOOK: network => 'addressbook-' + network,
@@ -40,18 +39,23 @@ const Keys = {
 
 class MeritStorage {
 
-  constructor(private storage:Storage) {
+  constructor(private storage: Storage) {
   }
 
-  async get(key) {
+  async get(key: any) {
     return this.storage.get(key);
   }
 
-  async set(key, value) {
-    return this.storage.set(key,value);
+  async set(key: string, value: any) {
+    if (typeof value === 'object') {
+      try {
+        value = JSON.parse(JSON.stringify(Object.assign({}, value)));
+      } catch (e) {}
+    }
+    return this.storage.set(key, value);
   }
 
-  async remove(key) {
+  async remove(key: any) {
     return this.storage.remove(key)
   }
 
@@ -66,24 +70,24 @@ export class PersistenceService {
 
   constructor( storage: Storage, private log: Logger) {
     this.storage = new MeritStorage(storage);
-  };
+  }
 
 
   storeNewProfile(profile): Promise<void> {
     return this.storage.set(Keys.PROFILE, profile);
-  };
+  }
 
   storeProfile(profile): Promise<void> {
     return this.storage.set(Keys.PROFILE, profile);
-  };
+  }
 
   getProfile(): Promise<any> {
     return this.storage.get(Keys.PROFILE);
-  };
+  }
 
   deleteProfile(): Promise<void> {
     return this.storage.remove(Keys.PROFILE);
-  };
+  }
 
   async addPendingEasyReceipt(receipt: EasyReceipt) {
     let receipts = await this.storage.get(Keys.EASY_RECEIPTS);
@@ -110,51 +114,51 @@ export class PersistenceService {
 
   setFeedbackInfo(feedbackValues: any): Promise<void> {
     return this.storage.set(Keys.FEEDBACK, feedbackValues);
-  };
+  }
 
   getFeedbackInfo(): Promise<void> {
     return this.storage.get(Keys.FEEDBACK);
-  };
+  }
 
   storeFocusedWalletId(walletId: string): Promise<void> {
     return this.storage.set(Keys.FOCUSED_WALLET_ID, walletId || '');
-  };
+  }
 
   getFocusedWalletId(): Promise<string> {
     return this.storage.get(Keys.FOCUSED_WALLET_ID);
-  };
+  }
 
   getLastAddress(walletId: string): Promise<any> {
     return this.storage.get(Keys.LAST_ADDRESS(walletId));
-  };
+  }
 
   storeLastAddress(walletId: string, address: any): Promise<void> {
     return this.storage.set(Keys.LAST_ADDRESS(walletId), address);
-  };
+  }
 
   clearLastAddress(walletId: string): Promise<void> {
     return this.storage.remove(Keys.LAST_ADDRESS(walletId));
-  };
+  }
 
   setBackupFlag(walletId: string): Promise<void> {
     return this.storage.set(Keys.BACKUP(walletId), Date.now());
-  };
+  }
 
   getBackupFlag(walletId: string): Promise<any> {
     return this.storage.get(Keys.BACKUP(walletId));
-  };
+  }
 
   clearBackupFlag(walletId: string): Promise<void> {
     return this.storage.remove(Keys.BACKUP(walletId));
-  };
+  }
 
   setCleanAndScanAddresses(walletId: string): Promise<void> {
     return this.storage.set(Keys.CLEAN_AND_SCAN_ADDRESSES, walletId);
-  };
+  }
 
   getCleanAndScanAddresses(): Promise<any> {
     return this.storage.get(Keys.CLEAN_AND_SCAN_ADDRESSES);
-  };
+  }
 
   removeCleanAndScanAddresses(): Promise<void> {
     return this.storage.remove(Keys.CLEAN_AND_SCAN_ADDRESSES);

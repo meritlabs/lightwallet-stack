@@ -77,7 +77,7 @@ export class UnlockView {
       }
 
       this.navCtrl.push('BackupView', {
-        mnemonic: wallet.getMnemonic(),
+        mnemonic: wallet!.getMnemonic(),
       });
     } catch (err) {
       if (err == Errors.INVALID_REFERRAL) this.unlockState = 'fail';
