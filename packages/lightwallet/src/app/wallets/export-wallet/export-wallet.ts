@@ -48,7 +48,9 @@ export class ExportWalletView {
     private logger: Logger
   ) {
     this.wallet = this.navParams.get('wallet');
-    this.mnemonic = this.wallet.getMnemonic();
+    if (this.wallet) {
+      this.mnemonic = this.wallet.getMnemonic();
+    }
     this.sjcl = this.bwcService.getSJCL();
   }
 

@@ -436,23 +436,17 @@ export class ProfileService {
         return;
       }
 
-      let saveBwsUrl = (): Promise<any> => {
-        return new Promise((resolve, reject) => {
-          let defaults: any = this.configService.getDefaults();
-          let bwsFor: any = {};
-          bwsFor[walletId] = opts.bwsurl || defaults.bws.url;
+      let defaults: any = this.configService.getDefaults();
+      let bwsFor: any = {};
+      bwsFor[walletId] = opts.bwsurl || defaults.bws.url;
 
-          // Dont save the default
-          if (bwsFor[walletId] == defaults.bws.url) {
-            return resolve();
-          }
+      // Dont save the default
+      if (bwsFor[walletId] == defaults.bws.url) {
+        return;
+      }
 
-          this.configService.set({ bwsFor: bwsFor });
-          return resolve();
-        });
-      };
+      this.configService.set({ bwsFor: bwsFor });
 
-      await saveBwsUrl();
       await this.persistenceService.storeProfile(this.profile);
       return wallet;
     } catch (err) {
