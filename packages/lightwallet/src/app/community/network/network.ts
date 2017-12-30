@@ -82,66 +82,9 @@ export class NetworkView {
             message: err.text || 'Unknown error',
             cssClass: ToastConfig.CLASS_ERROR
         }).present();
-    } finally {
-      this.loading = false;
     }
-  }
 
-  // On each enter, let's update the network data.
-  async ionViewDidEnter() {
-    await this.updateView();
-  }
-
-  async doRefresh(refresher) {
-    try {
-      await this.updateView()
-    } catch (err) {} finally {
-      refresher.complete()
-    }
-  }
-
-  async updateView() {
-    if (this.loading === true) return;
-
-    this.loading = true;
-
-    try {
-      await this.formatWallets(await this.loadInfo());
-    } catch (err) {
-      this.toastCtrl
-            .create({
-                message: err.text || 'Unknown error',
-                cssClass: ToastConfig.CLASS_ERROR,
-            })
-            .present();
-    } finally {
-      this.loading = false;
-    }
-  }
-
-  private formatWallets(processedWallets: DisplayWallet[]) {
-    return this.formatNetworkInfo(processedWallets).then((readyForDisplay: DisplayWallet[]) => {
-      this.zone.run(() => {
-        this.displayWallets = readyForDisplay;
-      });
-    });
-  }
-
-  private loadInfo() {
-    return Observable.defer(() => this.loadWallets())
-      .retryWhen(err =>
-        err
-          .zip(Observable.range(1, NetworkView.RETRY_MAX_ATTEMPTS))
-          .mergeMap(([err, attempt]) => {
-            if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
-              if (attempt < NetworkView.RETRY_MAX_ATTEMPTS) {
-                return Observable.timer(NetworkView.RETRY_TIMEOUT);
-              }
-            }
-            return Observable.throw(err);
-          })
-      )
-      .toPromise();
+    this.loading = false;
   }
 
   private async loadWallets() {
@@ -163,6 +106,63 @@ export class NetworkView {
     }
 
     return filteredWallets;
+  }
+
+  // On each enter, let's update the network data.
+  async ionViewDidEnter() {
+    await this.updateView();
+  }
+
+  async doRefresh(refresher) {
+    try {
+      await this.updateView()
+    } catch (err) {}
+
+    refresher.complete();
+  }
+
+  async updateView() {
+    if (this.loading === true) return;
+
+    this.loading = true;
+
+    try {
+      await this.formatWallets(await this.loadInfo());
+    } catch (err) {
+      this.toastCtrl
+            .create({
+                message: err.text || 'Unknown error',
+                cssClass: ToastConfig.CLASS_ERROR,
+            })
+            .present();
+    }
+
+    this.loading = false;
+  }
+
+  private async formatWallets(processedWallets: DisplayWallet[]) {
+    const readyForDisplay: DisplayWallet[] = await this.formatNetworkInfo(processedWallets);
+    this.zone.run(() => {
+      // TODO verify if this zone.run() is needed
+      this.displayWallets = readyForDisplay;
+    });
+  }
+
+  private loadInfo() {
+    return Observable.defer(() => this.loadWallets())
+      .retryWhen(err =>
+        err
+          .zip(Observable.range(1, NetworkView.RETRY_MAX_ATTEMPTS))
+          .mergeMap(([err, attempt]) => {
+            if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
+              if (attempt < NetworkView.RETRY_MAX_ATTEMPTS) {
+                return Observable.timer(NetworkView.RETRY_TIMEOUT);
+              }
+            }
+            return Observable.throw(err);
+          })
+      )
+      .toPromise();
   }
 
   private async formatNetworkInfo(wallets: DisplayWallet[]): Promise<DisplayWallet[]> {
