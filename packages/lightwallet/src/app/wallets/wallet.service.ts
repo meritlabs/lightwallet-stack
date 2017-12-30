@@ -888,7 +888,9 @@ export class WalletService {
   // create and store a wallet
   // TODO add typings for `opts`
   async createWallet(opts: any) {
-    return this.profileService.addAndBindWalletClient(await this.doCreateWallet(opts), { bwsurl: opts.bwsurl });
+    const wallet = await this.doCreateWallet(opts);
+    await this.profileService.addAndBindWalletClient(wallet, { bwsurl: opts.bwsurl });
+    return wallet;
   }
 
   async createReferral(pubkey: any, parentAddress: any): Promise<any> {
@@ -929,7 +931,7 @@ export class WalletService {
             }).then((wallet: MeritWalletClient) => {
               return resolve(wallet);
             });
-          };
+          }
         });
       }).catch((err: any) => {
         return reject(err);
@@ -997,7 +999,7 @@ export class WalletService {
           networkName: this.configService.getDefaults().network.name,
           parentAddress
       };
-      return this.createWallet(opts);
+    return this.createWallet(opts);
   }
 
   public isReady(wallet: MeritWalletClient): string {
