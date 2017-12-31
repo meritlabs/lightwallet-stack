@@ -125,8 +125,8 @@ export class ReceiveView {
     });
   }
 
-  share() {
-    this.socialSharing.share(this.qrAddress);
+  async share() {
+    await this.socialSharing.share(this.qrAddress);
   }
 
   copyToClipboard(addressString: string) {
