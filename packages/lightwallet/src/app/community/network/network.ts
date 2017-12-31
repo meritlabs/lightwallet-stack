@@ -72,7 +72,7 @@ export class NetworkView {
       let newDisplayWallets: DisplayWallet[] = [];
       _.each(wallets, (wallet: MeritWalletClient) => {
         // The wallet client will already have the below information.
-        let filteredWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode");
+        let filteredWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "referrerAddress");
         this.logger.info("FilteredWallet: ", filteredWallet);
         newDisplayWallets.push(<DisplayWallet>filteredWallet);
       });
