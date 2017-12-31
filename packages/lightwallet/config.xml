@@ -84,7 +84,7 @@
         <link-domain value="merit.app.link" />
         <ios-team-release value="MLJ7SU96NS" />
     </branch-config>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.1.98:8100" />
     <edit-config file="*-Info.plist" mode="merge" target="NSCameraUsageDescription">
         <string>To scan QR Codes of friends to easily send them Merit.</string>
     </edit-config>
@@ -98,8 +98,6 @@
         <string>false</string>
     </edit-config>
     <allow-navigation href="*" />
-    <allow-navigation href="http://192.168.1.110:8100" />
-    <allow-navigation href="http://192.168.1.207:8100" />
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.2.1" />
     <plugin name="cordova-clipboard" spec="^1.1.1" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
@@ -123,6 +121,6 @@
     <plugin name="branch-cordova-sdk" spec="^2.6.21" />
     <plugin name="cordova-plugin-fcm" spec="^2.1.2" />
     <allow-navigation href="http://192.168.1.98:8100" />
-    <engine name="android" spec="6.3.0" />
     <engine name="ios" spec="4.5.4" />
+    <engine name="android" spec="^6.4.0" />
 </widget>
