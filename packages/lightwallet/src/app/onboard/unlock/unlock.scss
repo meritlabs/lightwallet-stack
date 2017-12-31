@@ -40,6 +40,9 @@ view-unlock {
 
       &.input-ios {
         border-radius: $button-ios-border-radius;
+        input.text-input-ios {
+          padding: 0 5px;
+        }
       }
 
       input {
