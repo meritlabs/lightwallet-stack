@@ -10,7 +10,6 @@ import { WalletService } from "merit/wallets/wallet.service";
 import { TxFormatService } from "merit/transact/tx-format.service";
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { Logger } from 'merit/core/logger';
-import { NgZone } from '@angular/core';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 import { PlatformService } from 'merit/core/platform.service';
@@ -58,7 +57,6 @@ export class NetworkView {
     private walletService: WalletService,
     private txFormatService: TxFormatService,
     private logger: Logger,
-    private zone: NgZone,
     private platformService: PlatformService
   ) {
   }
@@ -141,12 +139,7 @@ export class NetworkView {
   }
 
   private async formatWallets(processedWallets: DisplayWallet[]) {
-    const readyForDisplay: DisplayWallet[] = await this.formatNetworkInfo(processedWallets);
-    console.log('>>> Is NgZone.run() needed? ', !NgZone.isInAngularZone());
-    this.zone.run(() => {
-      // TODO verify if this zone.run() is needed
-      this.displayWallets = readyForDisplay;
-    });
+    this.displayWallets = await this.formatNetworkInfo(processedWallets);
   }
 
   private loadInfo() {
