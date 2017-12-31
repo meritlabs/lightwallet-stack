@@ -1,6 +1,4 @@
-@import '../transact/transact-module';
 view-wallets {
-  @extend %module-transact;
 
   ion-list {
     margin-bottom: 10px !important;

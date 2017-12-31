@@ -1,6 +1,4 @@
-@import "../send-module";
 send-amount-view {
-  @extend %send-module;
 
   input::placeholder {
     color: rgba(0,0,0,0.4);

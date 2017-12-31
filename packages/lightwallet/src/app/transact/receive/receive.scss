@@ -1,6 +1,4 @@
-@import "../../transact/transact-module";
 view-receive {
-  @extend %module-transact;
 
   .address {
     margin: 10px 0;

@@ -26,7 +26,7 @@
             <ion-label item-right text-right>
                 <span *ngIf="wallet.referrerAddress">
 
-                    <span (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress" >{{wallet.referrerAddress | slice:0:10 }}...</span>
+                    <span (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress">{{ wallet.referrerAddress | slice:0:10 }}...</span>
 
                     <button ion-button clear color="primary" (click)="shareAddress(wallet.shareCode)" *ngIf="shareButtonAvailable">
                         <ion-icon name="share"></ion-icon>
