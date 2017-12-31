@@ -26,7 +26,8 @@
                 <span *ngIf="!wallet.isComplete()" class="assertive" translate>Incomplete</span>
                 <span *ngIf="wallet.isComplete()">
                 <span *ngIf="wallet.status && !wallet.balanceHidden">
-                {{wallet.status.totalBalanceStr ? wallet.status.totalBalanceStr : ( wallet.cachedBalance ? wallet.cachedBalance   + (wallet.cachedBalanceUpdatedOn ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn  * 1000 | amTimeAgo) : '') : ''  ) }}
+                    {{wallet.status.totalBalanceStr}}
+                    <small *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount">({{wallet.status.spendableBalanceStr}} available)</small>
                 </span>
                 <span *ngIf="wallet.balanceHidden" translate>
                 [Balance Hidden]

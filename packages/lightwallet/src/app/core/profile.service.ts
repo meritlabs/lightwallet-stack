@@ -965,10 +965,10 @@ export class ProfileService {
     return new Promise((resolve, reject) => {
       return this.getWallets().then((allWallets) => {
         let walletsWithMerit = _.filter(allWallets, (wallet: any) => {
-          return (wallet.status && wallet.status.totalBalanceSat > 0);
+          return (wallet.status && wallet.status.totalBalanceMicros > 0);
         });
         let totalMicros = _.reduce(walletsWithMerit, (totalBalance, filteredWallet) => {
-          return totalBalance + filteredWallet.status.totalBalanceSat;
+          return totalBalance + filteredWallet.status.totalBalanceMicros;
         }, 0);
         return (totalMicros > 0) ? resolve(true) : resolve(false);
       });

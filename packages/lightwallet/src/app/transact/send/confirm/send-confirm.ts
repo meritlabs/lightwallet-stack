@@ -76,9 +76,9 @@ export class SendConfirmView {
       feeAmountMrt: this.formatService.formatAmount(this.txData.txp.fee),
       totalAmountMrt: this.formatService.formatAmount(this.txData.totalAmount),
       walletName: this.txData.wallet.name || this.txData.wallet.id,
-      walletCurrentBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.totalBalanceSat),
+      walletCurrentBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.totalBalanceMicros),
       walletRemainingBalanceMrt: this.formatService.formatAmount(
-        this.txData.wallet.status.totalBalanceSat - this.txData.totalAmount
+        this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount
       ),
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
@@ -88,9 +88,9 @@ export class SendConfirmView {
     this.viewData.amountFiat = await convert(this.txData.amount);
     this.viewData.feeAmountFiat = await convert(this.txData.txp.fee);
     this.viewData.totalAmountFiat = await convert(this.txData.totalAmount);
-    this.viewData.walletCurrentBalanceFiat = await convert(this.txData.wallet.status.totalBalanceSat);
+    this.viewData.walletCurrentBalanceFiat = await convert(this.txData.wallet.status.totalBalanceMicros);
     this.viewData.walletRemainingBalanceFiat = await convert(
-      this.txData.wallet.status.totalBalanceSat - this.txData.totalAmount
+      this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount
     );
   }
 

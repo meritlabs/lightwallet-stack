@@ -1266,23 +1266,26 @@ WalletService.prototype.getUtxos = function(opts, cb) {
 
 WalletService.prototype._totalizeUtxos = function(utxos) {
 
-  var balance = {
-    totalAmount: _.sumBy(utxos, 'micros'),
-    lockedAmount: _.sumBy(_.filter(utxos, 'locked'), 'micros'),
-    // We believe it makes sense to show change as confirmed.  This is sensical because a transaction
-    // will either be rejected or accepted in its entirety.  (Eg. It is not that some Vouts will be
-    // accepted while others will be denied.)
-    totalConfirmedAmount: _.sumBy(
-      _.filter(utxos, function(utxo) {
-        return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) || (utxo.isMine && utxo.isChange && utxo.micros >= 0));
-      }),
-    'micros'),
-    lockedConfirmedAmount: _.sumBy(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
-  };
-  balance.availableAmount = balance.totalAmount - balance.lockedAmount;
-  balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
+    var isPendingCoinbaseUtxo = function(utxo) { return utxo.isCoinbase && !utxo.isMature};
 
-  return balance;
+    var balance = {
+        totalAmount: _.sumBy(utxos, 'micros'),
+        lockedAmount: _.sumBy(_.filter(utxos, 'locked'), 'micros'),
+        totalPendingCoinbaseAmount: _.sumBy(_.filter(utxos, isPendingCoinbaseUtxo), 'micros'),
+        // We believe it makes sense to show change as confirmed.  This is sensical because a transaction
+        // will either be rejected or accepted in its entirety.  (Eg. It is not that some Vouts will be
+        // accepted while others will be denied.)
+        totalConfirmedAmount: _.sumBy(
+            _.filter(utxos, function(utxo) {
+                return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) || (utxo.isMine && utxo.isChange && utxo.micros >= 0));
+            }),
+            'micros'),
+        lockedConfirmedAmount: _.sumBy(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
+    };
+    balance.availableAmount = balance.totalAmount - balance.lockedAmount;
+    balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
+
+    return balance;
 };
 
 
