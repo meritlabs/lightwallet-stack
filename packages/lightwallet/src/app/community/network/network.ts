@@ -194,7 +194,10 @@ export class NetworkView {
 
   async copyToClipboard(code) {
     await this.platformService.ready();
-    await this.clipboard.copy(code);
+
+    if (this.platformService.isCordova) {
+      await this.clipboard.copy(code);
+    }
 
     this.toastCtrl.create({
       message: 'Copied to clipboard',
