@@ -428,7 +428,7 @@ export class ProfileService {
     try {
       const alreadyBound: boolean = await this.bindWalletClient(wallet);
 
-      if (alreadyBound) {
+      if (!alreadyBound) {
         this.logger.info("WalletClient already bound; skipping profile storage...");
         return;
       }
@@ -438,11 +438,9 @@ export class ProfileService {
       bwsFor[walletId] = opts.bwsurl || defaults.bws.url;
 
       // Dont save the default
-      if (bwsFor[walletId] == defaults.bws.url) {
-        return;
+      if (bwsFor[walletId] != defaults.bws.url) {
+        this.configService.set({ bwsFor: bwsFor });
       }
-
-      this.configService.set({ bwsFor: bwsFor });
 
       await this.persistenceService.storeProfile(this.profile);
       return wallet;
