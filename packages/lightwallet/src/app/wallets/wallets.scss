@@ -44,13 +44,13 @@ view-wallets {
     color: color($colors, danger) !important;
   }
 
-  .label {
-    display: -webkit-inline-box !important;
-  }
-
   .item {
     h2 {
       white-space: normal;
+    }
+    p {
+      color: #999;
+      font-size: 11px;
     }
     .detail {
       text-align: center;
@@ -91,5 +91,4 @@ view-wallets {
       vertical-align: middle;
     }
   }
-
 }
