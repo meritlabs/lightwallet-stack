@@ -99,8 +99,7 @@ export class NetworkView {
         filteredWallet.network
       ).toAddress().toString();
 
-      const anv = await this.walletService.getANV(wallet);
-      filteredWallet.totalNetworkValueMicro = anv;
+      filteredWallet.totalNetworkValueMicro = await this.walletService.getANV(wallet);
 
       const data = await this.walletService.getRewards(wallet);
 
