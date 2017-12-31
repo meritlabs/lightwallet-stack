@@ -142,6 +142,7 @@ export class NetworkView {
 
   private async formatWallets(processedWallets: DisplayWallet[]) {
     const readyForDisplay: DisplayWallet[] = await this.formatNetworkInfo(processedWallets);
+    console.log('>>> Is NgZone.run() needed? ', !NgZone.isInAngularZone());
     this.zone.run(() => {
       // TODO verify if this zone.run() is needed
       this.displayWallets = readyForDisplay;

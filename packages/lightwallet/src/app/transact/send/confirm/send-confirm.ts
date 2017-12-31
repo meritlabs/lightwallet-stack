@@ -1,7 +1,7 @@
 import * as  _  from 'lodash';
 
-import { NavController, NavParams, IonicPage, AlertController, ModalController, App, LoadingController } from 'ionic-angular';
-import { Component, NgZone } from '@angular/core';
+import { NavController, NavParams, IonicPage, AlertController, App, LoadingController } from 'ionic-angular';
+import { Component } from '@angular/core';
 import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
 import { ConfigService } from "merit/shared/config.service";
