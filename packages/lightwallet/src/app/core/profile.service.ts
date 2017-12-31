@@ -302,6 +302,7 @@ export class ProfileService {
   */
   async loadAndBindProfile(): Promise<Profile> {
     const profile: Profile = await this.persistenceService.getProfile();
+    console.log('Prof is ', profile);
     if (_.isEmpty(profile)) return;
     this.profile = new Profile().fromObj(profile);
     // Deprecated: storageService.tryToMigrate
