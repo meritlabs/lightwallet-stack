@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Logger } from 'merit/core/logger';
 import { PersistenceService } from 'merit/core/persistence.service';
 import { ConfigService } from 'merit/shared/config.service';
@@ -304,21 +304,17 @@ export class ProfileService {
     const profile: Profile = await this.persistenceService.getProfile();
     if (_.isEmpty(profile)) return;
     this.profile = new Profile().fromObj(profile);
-
     // Deprecated: storageService.tryToMigrate
     this.logger.debug('Profile read');
     await this.bindProfile(this.profile);
     return this.profile;
   }
 
-
-
-
   // TODO: move to Starter module, with minimal dependencies
-  public getProfile(): Promise<Profile> {
+  async getProfile() {
     // If there are no credentials, we assume that the profile has not been bound.
     if (this.profile && this.profile.credentials.length > 0) {
-      return Promise.resolve(this.profile);
+      return this.profile;
     } else {
       return this.loadAndBindProfile();
     }

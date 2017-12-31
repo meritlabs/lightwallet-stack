@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
+import { IonicStorageModule } from '@ionic/storage';
 import { IonicApp, IonicErrorHandler, IonicModule, NavController } from 'ionic-angular';
 
 import { MeritLightWallet } from 'merit/app.component';
@@ -20,7 +21,8 @@ import { CoreModule } from 'merit/core/core.module';
     CoreModule,
     IonicModule.forRoot(MeritLightWallet, {
       preloadModules: true
-    })
+    }),
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [

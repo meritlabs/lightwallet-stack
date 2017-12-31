@@ -67,13 +67,14 @@ export class MeritLightWallet {
     `);
 
     this.registerMwcErrorHandler();
+
     return this.initializeApp();
   }
 
   /**
    * Check the status of the profile, and load the right next view.
    */
-  private async loadProfileAndEasySend(): Promise<void> {
+  private async loadProfileAndEasySend() {
     this.logger.info("LoadingProfileAndEasySend");
 
     let profile;
@@ -151,7 +152,7 @@ export class MeritLightWallet {
 
   private registerMwcErrorHandler() {
     this.events.subscribe(MWCErrors.AUTHENTICATION, () => {
-      this.app.getRootNavs()[0].setRoot('NoSessionView');
+      this.nav.setRoot('NoSessionView');
     });
   }
 

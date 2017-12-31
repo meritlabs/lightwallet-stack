@@ -264,7 +264,9 @@ export class WalletsView {
 
         await Promise.all([
             this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
-                // Using angular's NgZone to ensure that the view knows to re-render.
+              // TODO: verify if NgZone.run() is needed here
+              console.log('>>> Is NgZone.run() needed? ', !NgZone.isInAngularZone());
+              // Using angular's NgZone to ensure that the view knows to re-render.
                 this.zone.run(() => {
                     this.wallets[foundIndex].status = status;
                 });

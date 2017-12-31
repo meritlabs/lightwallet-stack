@@ -1,4 +1,4 @@
-import { Component,  ViewChild} from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
 import {RateService} from "merit/transact/rate.service";
 
@@ -21,9 +21,7 @@ export class TourView {
     public navCtrl: NavController,
     public navParams: NavParams,
     private rateService:RateService
-  ) {
-
-  }
+  ) {}
 
   ionViewDidLoad() {
     this.rateData.usdPerMerit = this.rateService.fromFiatToMerit(1e8, 'USD');
