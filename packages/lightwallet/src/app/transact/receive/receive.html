@@ -48,7 +48,7 @@
     <ion-toolbar>
 
         <ion-item *ngIf="!wallet">
-            <ion-label translate>You don't have any wallet</ion-label>
+            <ion-label translate>You don't have any wallets</ion-label>
         </ion-item>
 
 
@@ -60,15 +60,15 @@
 
             <div class="row">
                 <span class="label" text-left>Amount</span>
-                <input type="number"
-                       [style.flex]="1"
-                       text-right
-                       pattern="[0-9\.]"
-                       [(ngModel)]="amount"
-                       (ngModelChange)="changeAmount()"
-                       [placeholder]="'Request specific amount (optional)'">
+                <ion-input type="number"
+                           text-right
+                           pattern="[0-9\.]"
+                           min="0"
+                           [(ngModel)]="amount"
+                           (ionChange)="changeAmount()"
+                           placeholder="Request specific amount (optional)"></ion-input>
                 <button ion-button clear color="primary" (click)="toggleCurrency()">
-                    {{amountCurrency}}
+                    {{ amountCurrency }}
                 </button>
             </div>
 
