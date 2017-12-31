@@ -779,11 +779,11 @@ export class ProfileService {
     const allWallets = await this.getWallets();
 
     const walletsWithMerit = _.filter(allWallets, (wallet: any) =>
-      (wallet.status && wallet.status.totalBalanceSat > 0)
+      (wallet.status && wallet.status.totalBalanceMicros > 0)
     );
 
     const totalMicros = _.reduce(walletsWithMerit, (totalBalance, filteredWallet) =>
-      totalBalance + filteredWallet.status.totalBalanceSat
+      totalBalance + filteredWallet.status.totalBalanceMicros
     , 0);
 
     return totalMicros > 0;

@@ -45,19 +45,16 @@ wallet-details-view {
     font-size: 1.25rem;
     font-weight: 500;
   }
-  .label {
-    display: -webkit-inline-box !important;
-  }
   .action {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  p {
+    color: #999 !important;
+    font-size: 11px !important;
+  }
   .detail {
-    position: absolute;
-    right: 40px;
-    text-align: end;
-    bottom: 6px;
     .amount {
       color: color($colors, primary);
       font-size: 16px;
