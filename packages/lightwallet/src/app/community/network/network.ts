@@ -21,19 +21,21 @@ import { BwcService } from 'merit/core/bwc.service';
 
 
 interface DisplayWallet {
-  name: string,
-  locked: boolean,
-  color: string,
-  shareCode: string,
-  totalNetworkValueMicro: number,
-  totalNetworkValueMerit: string,
-  totalNetworkValueFiat: string,
-  miningRewardsMicro: number,
-  miningRewardsMerit: string,
-  miningRewardsFiat: string,
-  ambassadorRewardsMicro: number
-  ambassadorRewardsMerit: string
-  ambassadorRewardsFiat: string
+  name: string;
+  locked: boolean;
+  color: string;
+  referrerAddress: string;
+  totalNetworkValueMicro: number;
+  totalNetworkValueMerit: string;
+  totalNetworkValueFiat: string;
+  miningRewardsMicro: number;
+  miningRewardsMerit: string;
+  miningRewardsFiat: string;
+  ambassadorRewardsMicro: number;
+  ambassadorRewardsMerit: string;
+  ambassadorRewardsFiat: string;
+  network: string;
+  credentials: any;
 }
 
 // Network View
@@ -72,7 +74,7 @@ export class NetworkView {
       let newDisplayWallets: DisplayWallet[] = [];
       _.each(wallets, (wallet: MeritWalletClient) => {
         // The wallet client will already have the below information.
-        let filteredWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode");
+        let filteredWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "referrerAddress");
         this.logger.info("FilteredWallet: ", filteredWallet);
         newDisplayWallets.push(<DisplayWallet>filteredWallet);
       });

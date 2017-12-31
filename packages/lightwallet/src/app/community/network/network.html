@@ -28,11 +28,11 @@
 
                     <span (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress" >{{wallet.referrerAddress | slice:0:10 }}...</span>
 
-                    <button ion-button clear color="primary" (click)="shareAddress(wallet.shareCode)" *ngIf="shareButtonAvailable">
+                    <button ion-button clear color="primary" (click)="shareAddress(wallet.referrerAddress)" *ngIf="shareButtonAvailable">
                         <ion-icon name="share"></ion-icon>
                     </button>
                 </span>
-                <span *ngIf="!wallet.shareCode && loading">
+                <span *ngIf="!wallet.referrerAddress && loading">
                     <ion-spinner color="primary"></ion-spinner>
                 </span>
             </ion-label>
