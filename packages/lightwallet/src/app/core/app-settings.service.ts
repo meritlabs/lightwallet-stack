@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Logger } from 'merit/core/logger';
-import 'rxjs/add/operator/map';
-
 import { LanguageService } from 'merit/core/language.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
-import { Observable } from 'rxjs/Observable';
 
 // TODO: Improve implementation
 interface AppSettings {
@@ -70,7 +67,7 @@ export class AppService {
       await this.config.load();
       await this.language.load();
       // TODO: Load TouchID here?
-      this.info = await this.loadInfo().toPromise();
+      this.info = await this.loadInfo();
     } catch (e) {
       this.logger.error(e);
       throw new Error(e);
@@ -78,7 +75,7 @@ export class AppService {
   }
 
 
-  private loadInfo(): Observable<AppSettings> {
-    return <any>this.http.get(this.jsonPath);
+  private loadInfo(): Promise<AppSettings> {
+    return this.http.get<AppSettings>(this.jsonPath).toPromise();
   }
 }

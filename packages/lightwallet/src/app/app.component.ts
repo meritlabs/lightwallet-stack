@@ -117,6 +117,7 @@ export class MeritLightWallet {
       this.logger.error(err);
     }
 
+    console.log('Profile is ', profile);
     return this.nav.setRoot((profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView');
   }
 
