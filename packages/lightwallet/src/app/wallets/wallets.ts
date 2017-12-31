@@ -569,8 +569,7 @@ export class WalletsView {
     this.navCtrl.push('TxDetailsView', { walletId: tx.walletId, txId: tx.data.txid })
   }
 
-  public walletHasPendingAmount(wallet:any):boolean {
-
+  walletHasPendingAmount(wallet: any):boolean {
     return (
       (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)
       || wallet.status.pendingAmount > 0

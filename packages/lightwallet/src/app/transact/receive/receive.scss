@@ -54,17 +54,20 @@ view-receive {
     font-size: 12px;
   }
 
-  input {
-    border: none;
-    font-size: 12px;
-  }
-
   ion-item {
     position: relative;
   }
 
   ion-footer {
     padding: 0;
+
+    ion-input.input {
+      input {
+        border: none;
+        margin: 0;
+        font-size: 12px;
+      }
+    }
   }
 
   .row {
