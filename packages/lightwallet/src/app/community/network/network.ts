@@ -17,6 +17,7 @@ import { PlatformService } from 'merit/core/platform.service';
 
 import * as Promise from 'bluebird';
 import * as _ from "lodash";
+import { BwcService } from 'merit/core/bwc.service';
 
 
 interface DisplayWallet {
@@ -59,7 +60,8 @@ export class NetworkView {
     private txFormatService: TxFormatService,
     private logger: Logger,
     private zone: NgZone,
-    private platformService: PlatformService
+    private platformService: PlatformService,
+    private bwcService: BwcService
   ) {
   }
 
@@ -77,6 +79,7 @@ export class NetworkView {
       this.displayWallets = newDisplayWallets;
       this.logger.info("DisplayWallets after ionViewLoad: ", this.displayWallets);;
     }).catch((err) => {
+      this.logger.warn(err);
       this.toastCtrl.create({
         message: err.text || 'Unknown error',
         cssClass: ToastConfig.CLASS_ERROR
@@ -100,6 +103,7 @@ export class NetworkView {
     return this.loadInfo()
       .then((wallets:DisplayWallet[]) => this.formatWallets(wallets))
       .catch(err => {
+        this.logger.warn(err);
         this.toastCtrl
           .create({
             message: err.text || 'Unknown error',
@@ -141,7 +145,12 @@ export class NetworkView {
     return this.profileService.getWallets().then((wallets:MeritWalletClient[]) => {
 
       return Promise.map(wallets, (wallet:MeritWalletClient) => {
-        let filteredWallet = <DisplayWallet>_.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode", "totalNetworkValue");
+        let filteredWallet = <DisplayWallet>_.pick(wallet, "id", "wallet", "name", "locked", "color", "totalNetworkValue", "credentials", "network");
+
+        filteredWallet.referrerAddress =  this.bwcService.getBitcore().PrivateKey(
+            filteredWallet.credentials.walletPrivKey,
+            filteredWallet.network
+        ).toAddress().toString();
 
         return this.walletService.getANV(wallet).then((anv) => {
           filteredWallet.totalNetworkValueMicro = anv;
