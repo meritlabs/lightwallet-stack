@@ -39,12 +39,12 @@ export class SendView {
   private showMoreContacts: boolean = false;
   public filteredContacts: Array<MeritContact> = [];
   public renderingContacts: Array<MeritContact> = [];
-  private formData: {
-    search: string
-  };
+
+  formData = { search: '' };
+
   private searchFocus: boolean;
   private hasFunds: boolean;
-  private hasOwnedMerit: boolean;
+  private hasOwnedMerit: boolean = this.profileService.hasOwnedMerit();;
   private network: string;
 
   contactsOffset = 0;
@@ -72,20 +72,18 @@ export class SendView {
     private alertCtrl:AlertController
   ) {
     this.logger.info("Hello SendView!!");
-    this.hasOwnedMerit = this.profileService.hasOwnedMerit();
-    this.formData = { search: '' };
   }
 
-  public ionViewDidLoad() {
-    return this.updateHasFunds().then(() => {
+  async ionViewDidLoad() {
+    try {
+      await this.updateHasFunds();
       this.contacts = [];
       this.initList();
-      return this.initContactList();
-    }).then(() => {
-      return this.updateFilteredContacts('');
-    }).catch((err) => {
+      await this.initContactList();
+      await this.updateFilteredContacts('');
+    } catch (err) {
       return this.popupService.ionicAlert('SendView Error:', err.toString());
-    });
+    }
   }
 
   public ionViewWillEnter() {
@@ -97,37 +95,25 @@ export class SendView {
     return (_.isEmpty(this.wallets) ? false : true);
   }
 
-  private updateHasFunds():Promise<void> {
-    return this.profileService.hasFunds().then((hasFunds) => {
-      this.hasFunds = hasFunds;
-      return Promise.resolve();
-    });
+  async updateHasFunds():Promise<void> {
+    this.hasFunds = await this.profileService.hasFunds();
   }
 
-  private updateWalletList(): Promise<any> {
-    let walletList:Array<any> = [];
-    return new Promise((resolve, reject) => {
-      _.each(this.wallets, (w) => {
-        walletList.push({
-          color: w.color,
-          name: w.name,
-          recipientType: 'wallet',
-          getAddress: () => {
-            Promise.resolve(this.walletService.getAddress(w, false));
-          }
-        });
-      });
-      return resolve(walletList);
-    });
+  // TODO this can be sync
+  private async updateWalletList(): Promise<any> {
+    return this.wallets.map((wallet: any) => ({
+      color: wallet.color,
+      name: wallet.name,
+      recipientType: 'wallet',
+      getAddress: async () => this.walletService.getAddress(wallet, false)
+    }));
   }
 
-  private initContactList():Promise<void> {
-    return this.addressBookService.getAllMeritContacts().then((contacts) => {
-      this.hasContacts = !_.isEmpty(contacts);
-
-      this.contacts = this.contacts.concat(contacts);
-      this.showMoreContacts = contacts.length > SendView.CONTACTS_SHOW_LIMIT;
-    });
+  private async initContactList():Promise<void> {
+    const contacts = await this.addressBookService.getAllMeritContacts();
+    this.hasContacts = !_.isEmpty(contacts);
+    this.contacts = this.contacts.concat(contacts);
+    this.showMoreContacts = contacts.length > SendView.CONTACTS_SHOW_LIMIT;
   }
 
   private initList():void {
@@ -153,8 +139,8 @@ export class SendView {
   }
 
   private contactFromSearchTerm(term: string): MeritContact | null {
-    if(this.couldBeEmail(term)) return this.justEmail(term);
-    if(this.couldBePhoneNumber(term)) return this.justPhoneNumber(term);
+    if (this.couldBeEmail(term)) return this.justEmail(term);
+    if (this.couldBePhoneNumber(term)) return this.justPhoneNumber(term);
     return null;
   }
 
@@ -221,6 +207,7 @@ export class SendView {
     }
   }
 
+  // TODO use RxJS instead
   private updateFilteredContactsDebounce = _.debounce(this.updateFilteredContacts, 200);
 
   public updateFilteredContacts(search: string):Promise<void> {
