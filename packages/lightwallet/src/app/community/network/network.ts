@@ -14,7 +14,7 @@ import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 import { PlatformService } from 'merit/core/platform.service';
 
-
+import { BwcService } from 'merit/core/bwc.service';
 import * as _ from "lodash";
 import { Observable } from 'rxjs/Observable';
 
@@ -22,7 +22,7 @@ interface DisplayWallet {
   name: string,
   locked: boolean,
   color: string,
-  shareCode: string,
+  referrerAddress: string,
   totalNetworkValueMicro: number,
   totalNetworkValueMerit: string,
   totalNetworkValueFiat: string,
@@ -32,6 +32,8 @@ interface DisplayWallet {
   ambassadorRewardsMicro: number
   ambassadorRewardsMerit: string
   ambassadorRewardsFiat: string
+  network: string;
+  credentials: any;
 }
 
 // Network View
@@ -57,7 +59,8 @@ export class NetworkView {
     private walletService: WalletService,
     private txFormatService: TxFormatService,
     private logger: Logger,
-    private platformService: PlatformService
+    private platformService: PlatformService,
+    private bwcService: BwcService
   ) {
   }
 
@@ -76,35 +79,40 @@ export class NetworkView {
         this.displayWallets = newDisplayWallets;
         this.logger.info("DisplayWallets after ionViewLoad: ", this.displayWallets);
     } catch (err) {
+      this.logger.warn(err);
         this.toastCtrl.create({
             message: err.text || 'Unknown error',
             cssClass: ToastConfig.CLASS_ERROR
         }).present();
     }
-
     this.loading = false;
   }
 
   private async loadWallets() {
     const wallets: MeritWalletClient[] = await this.profileService.getWallets();
-    const filteredWallets: DisplayWallet[] = [];
 
-    let filteredWallet: DisplayWallet;
+    return Promise.all(wallets.map(async (wallet:MeritWalletClient) => {
+      const filteredWallet: DisplayWallet = <DisplayWallet>_.pick(wallet, "id", "wallet", "name", "locked", "color", "totalNetworkValue", "credentials", "network");
 
-    for (let wallet of wallets) {
-      filteredWallet = _.pick(wallet, "id", "wallet", "name", "locked", "color", "shareCode", "totalNetworkValue");
-      filteredWallet.totalNetworkValueMicro = await this.walletService.getANV(wallet);
+      filteredWallet.referrerAddress =  this.bwcService.getBitcore().PrivateKey(
+        filteredWallet.credentials.walletPrivKey,
+        filteredWallet.network
+      ).toAddress().toString();
+
+      const anv = await this.walletService.getANV(wallet);
+      filteredWallet.totalNetworkValueMicro = anv;
 
       const data = await this.walletService.getRewards(wallet);
+
+      // If we cannot properly fetch data, let's return wallets as-is.
       if (data && !_.isNil(data.mining)) {
         filteredWallet.miningRewardsMicro = data.mining;
         filteredWallet.ambassadorRewardsMicro = data.ambassador;
       }
-      filteredWallets.push(filteredWallet);
-    }
-
-    return filteredWallets;
+      return filteredWallet;
+    }));
   }
+
 
   // On each enter, let's update the network data.
   async ionViewDidEnter() {
@@ -127,6 +135,7 @@ export class NetworkView {
     try {
       await this.formatWallets(await this.loadInfo());
     } catch (err) {
+      this.logger.warn(err);
       this.toastCtrl
             .create({
                 message: err.text || 'Unknown error',
