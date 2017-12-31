@@ -24,7 +24,7 @@ interface DisplayWallet {
   name: string,
   locked: boolean,
   color: string,
-  shareCode: string,
+  referrerAddress: string,
   totalNetworkValueMicro: number,
   totalNetworkValueMerit: string,
   totalNetworkValueFiat: string,
@@ -34,6 +34,8 @@ interface DisplayWallet {
   ambassadorRewardsMicro: number
   ambassadorRewardsMerit: string
   ambassadorRewardsFiat: string
+  network: string;
+  credentials: any;
 }
 
 // Network View
