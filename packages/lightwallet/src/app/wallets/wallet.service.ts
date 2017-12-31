@@ -1304,7 +1304,12 @@ export class WalletService {
                     if (err == Errors.CONNECTION_ERROR && i < 3) {
                         return Observable.timer(2000);
                     }
-                    return Observable.throw(err)
+
+                  if (err && err.message === 'Checksum mismatch') {
+                      err = Errors.REFERRER_INVALID;
+                  }
+
+                  return Observable.throw(err)
                 })
         )
         .toPromise();
