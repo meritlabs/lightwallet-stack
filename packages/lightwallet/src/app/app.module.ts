@@ -21,8 +21,7 @@ import { CoreModule } from 'merit/core/core.module';
     CoreModule,
     IonicModule.forRoot(MeritLightWallet, {
       preloadModules: true
-    }),
-    IonicStorageModule.forRoot()
+    })
   ],
   bootstrap: [IonicApp],
   entryComponents: [
