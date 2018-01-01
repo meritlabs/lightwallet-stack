@@ -52,20 +52,20 @@ export class WalletsView {
   private totalNetworkValueMicros;
   private totalNetworkValueFiat;
 
-  public wallets: MeritWalletClient[];
-  public vaults;
-  public newReleaseExists: boolean;
-  public feedbackNeeded: boolean;
-  public showFeaturesBlock: boolean = false;
-  public feedbackData = new Feedback();
+  wallets: MeritWalletClient[];
+  vaults;
+  newReleaseExists: boolean;
+  feedbackNeeded: boolean;
+  showFeaturesBlock: boolean = false;
+  feedbackData = new Feedback();
 
-  public addressbook;
-  public txpsData: any[] = [];
-  public recentTransactionsData: any[] = [];
-  public recentTransactionsEnabled;
-  public network: string;
+  addressbook;
+  txpsData: any[] = [];
+  recentTransactionsData: any[] = [];
+  recentTransactionsEnabled;
+  network: string;
 
-  public loading:boolean;
+  loading:boolean;
 
   constructor(
     public navParams: NavParams,
@@ -94,19 +94,16 @@ export class WalletsView {
     this.logger.warn("WalletsView constructor!");
   }
 
-  doRefresh(refresher) {
+  async doRefresh(refresher) {
+    try {
+      await this.updateAllInfo({ force: true })
+    } catch (e) {}
 
-    this.updateAllInfo({ force: true }).then(() => {
-      refresher.complete();
-    }).catch(() => {
-      refresher.complete();
-    });
+    refresher.complete();
   }
 
-  ionViewDidLoad() {
-
+  async ionViewDidLoad() {
     this.logger.warn("Hello WalletsView :: IonViewDidLoad!");
-
     this.platform.resume.subscribe(() => {
       this.logger.info("WalletView is going to refresh data on resume.");
       this.updateAllInfo({ force: true }).then(() => {
@@ -114,9 +111,8 @@ export class WalletsView {
       });
     });
 
-    this.updateAllInfo({ force: true }).then(() => {
-      this.logger.info("Got updated data in walletsView on Ready!!");
-    });
+    await this.updateAllInfo({ force: true });
+    this.logger.info("Got updated data in walletsView on Ready!!");
     this.registerListeners();
   }
 
@@ -171,11 +167,8 @@ export class WalletsView {
     this.loading = false;
   }
 
-  private updateTxps(opts: { limit: number } = { limit: 3 }): Promise<any> {
-    return this.profileService.getTxps({ limit: 3 }).then((txps) => {
-      this.txpsData = txps;
-      return Promise.resolve();
-    });
+  private async updateTxps({ limit } = { limit: 3 }): Promise<any> {
+    this.txpsData = await this.profileService.getTxps({ limit });
   }
 
   private async updateVaults(wallet: MeritWalletClient): Promise<any> {
@@ -191,22 +184,22 @@ export class WalletsView {
     }));
   }
 
-  private fetchNotifications(): Promise<any> {
+  private async fetchNotifications(): Promise<any> {
     this.logger.info("What is the recentTransactionsEnabled status?");
     this.logger.info(this.configService.get().recentTransactions.enabled);
     if (this.configService.get().recentTransactions.enabled) {
       this.recentTransactionsEnabled = true;
-      return this.profileService.getNotifications({ limit: 3 }).then((result) => {
-        this.logger.info(`WalletsView Received ${result.count} notifications upon resuming.`);
-        _.each(result.notifications, (n: any) => {
-          // We don't need to update the status here because it has
-          // already been fetched as part of updateAllInfo();
-          this.processIncomingTransactionEvent(n, { updateStatus: false });
-        });
-        return Promise.resolve();
+
+      const result = await this.profileService.getNotifications({ limit: 3 });
+
+      this.logger.info(`WalletsView Received ${result.count} notifications upon resuming.`);
+
+      result.notifications.forEach((n: any) => {
+        // We don't need to update the status here because it has
+        // already been fetched as part of updateAllInfo();
+        this.processIncomingTransactionEvent(n, { updateStatus: false });
       });
     }
-    return Promise.resolve();
   }
 
   private async processIncomingTransactionEvent(n: any, opts: { updateStatus: boolean } = { updateStatus: false }) {
@@ -234,21 +227,21 @@ export class WalletsView {
     // TODO: Localize
     if (n.data && n.data.amount) {
       n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
-      this.txFormatService.formatToUSD(n.data.amount).then((usdAmount) => {
-        n.fiatAmountStr = new FiatAmount(+usdAmount).amountStr;
+      const usdAmount = await this.txFormatService.formatToUSD(n.data.amount);
 
-        // Let's make sure we don't have this notification already.
-        let duplicate = _.find(this.recentTransactionsData, n);
-        if (_.isEmpty(duplicate)) {
-          // We use angular's NgZone here to ensure that the view re-renders with new data.
-          // There may be a better way to do this.
-          // TODO: Investigate why events.subscribe() does not appear to run inside
-          // the angular zone.
-          this.zone.run(() => {
-            this.recentTransactionsData.push(n);
-          });
-        }
-      });
+      n.fiatAmountStr = new FiatAmount(+usdAmount).amountStr;
+
+      // Let's make sure we don't have this notification already.
+      let duplicate = _.find(this.recentTransactionsData, n);
+      if (_.isEmpty(duplicate)) {
+        // We use angular's NgZone here to ensure that the view re-renders with new data.
+        // There may be a better way to do this.
+        // TODO: Investigate why events.subscribe() does not appear to run inside
+        // the angular zone.
+        this.zone.run(() => {
+          this.recentTransactionsData.push(n);
+        });
+      }
     }
 
     // Update the status of the wallet in question.
@@ -256,19 +249,21 @@ export class WalletsView {
     if (n.walletId && opts.updateStatus) {
       // Check if we have a wallet with the notification ID in the view.
       // If not, let's skip.
-      let foundIndex = _.findIndex(this.wallets, { 'id': n.walletId });
-      if (!this.wallets[foundIndex]) {
+      const index = this.wallets.findIndex((w: any) => w.id === n.walletId);
+
+      if (index === -1) {
         return;
       }
-      this.walletService.invalidateCache(this.wallets[foundIndex]);
+
+      this.walletService.invalidateCache(this.wallets[index]);
 
         await Promise.all([
-            this.walletService.getStatus(this.wallets[foundIndex]).then((status) => {
+            this.walletService.getStatus(this.wallets[index]).then((status) => {
               // TODO: verify if NgZone.run() is needed here
               console.log('>>> Is NgZone.run() needed? ', !NgZone.isInAngularZone());
               // Using angular's NgZone to ensure that the view knows to re-render.
                 this.zone.run(() => {
-                    this.wallets[foundIndex].status = status;
+                    this.wallets[index].status = status;
                 });
             }),
             this.updateNetworkValue(this.wallets)
@@ -283,8 +278,6 @@ export class WalletsView {
    * as needed.
    */
   private registerListeners(): void {
-
-
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
       this.logger.info("RL: Got an IncomingTx event with: ", walletId, type, n);
 
@@ -307,49 +300,44 @@ export class WalletsView {
    * @returns {Promise<void>} 
    * @memberof WalletsView
    */
-  private processEasyReceipt(receipt: EasyReceipt, isRetry: boolean): Promise<void> {
-    return this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, '').then((data) => {
+  private async processEasyReceipt(receipt: EasyReceipt, isRetry: boolean): Promise<void> {
+    const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, '');
 
-      if (!data.txn.found) return this.showPasswordEasyReceivePrompt(receipt, isRetry); // requires different password
+    if (!data.txn.found) return this.showPasswordEasyReceivePrompt(receipt, isRetry); // requires different password
 
-      if (data.txn.spent) {
-        this.logger.debug('Got a spent easyReceipt. Removing from pending receipts.');
-        return this.easyReceiveService.deletePendingReceipt(receipt)
-          .then(this.showSpentEasyReceiptAlert.bind(this))
-          .then(this.processPendingEasyReceipts.bind(this));
-      }
+    if (data.txn.spent) {
+      this.logger.debug('Got a spent easyReceipt. Removing from pending receipts.');
+      await this.easyReceiveService.deletePendingReceipt(receipt);
+      await this.showSpentEasyReceiptAlert();
+      return this.processPendingEasyReceipts();
+    }
 
-      if (_.isUndefined(data.txn.confirmations)) {
-        this.logger.warn('Got easyReceipt with unknown depth. It might be expired!');
-        return this.showConfirmEasyReceivePrompt(receipt, data);
-      }
-
-      if (receipt.blockTimeout < data.txn.confirmations) {
-        this.logger.debug('Got an expired easyReceipt. Removing from pending receipts.');
-        return this.easyReceiveService.deletePendingReceipt(receipt)
-          .then(this.showExpiredEasyReceiptAlert.bind(this))
-          .then(this.processPendingEasyReceipts.bind(this));
-      }
-
+    if (_.isUndefined(data.txn.confirmations)) {
+      this.logger.warn('Got easyReceipt with unknown depth. It might be expired!');
       return this.showConfirmEasyReceivePrompt(receipt, data);
-    });
+    }
+
+    if (receipt.blockTimeout < data.txn.confirmations) {
+      this.logger.debug('Got an expired easyReceipt. Removing from pending receipts.');
+      await this.easyReceiveService.deletePendingReceipt(receipt);
+      await this.showExpiredEasyReceiptAlert();
+      return this.processPendingEasyReceipts();
+    }
+
+    return this.showConfirmEasyReceivePrompt(receipt, data);
   }
 
   /**
    * checks if pending easyreceive exists and if so, open it
    */
-  private processPendingEasyReceipts(): Promise<any> {
-    return this.easyReceiveService.getPendingReceipts().then((receipts) => {
-      if (_.isEmpty(receipts)) return Promise.resolve(); // No receipts to process
-      const receipt = receipts[0];
-      return this.processEasyReceipt(receipt, false);
-    });
+  private async processPendingEasyReceipts(): Promise<any> {
+    const receipts = await this.easyReceiveService.getPendingReceipts();
+    if (_.isEmpty(receipts)) return; // No receipts to process
+    return this.processEasyReceipt(receipts[0], false);
   }
 
   private showPasswordEasyReceivePrompt(receipt: EasyReceipt, highlightInvalidInput = false) {
-
     this.logger.info('show alert', highlightInvalidInput);
-
     this.alertController.create({
       title: `You've got merit from ${receipt.senderName}!`,
       cssClass: highlightInvalidInput ? 'invalid-input-prompt' : '',
@@ -358,9 +346,9 @@ export class WalletsView {
         {
           text: 'Ignore', role: 'cancel', handler: () => {
             this.logger.info('You have declined easy receive');
-            this.easyReceiveService.deletePendingReceipt(receipt).then(() => {
-              this.processPendingEasyReceipts();
-            });
+            this.easyReceiveService.deletePendingReceipt(receipt).then(() =>
+              this.processPendingEasyReceipts()
+            );
           }
         },
         {
@@ -377,22 +365,21 @@ export class WalletsView {
   }
 
   private showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
-
     this.alertController.create({
       title: `You've got ${data.txn.amount} Merit!`,
       buttons: [
         {
           text: 'Reject', role: 'cancel', handler: () => {
-            this.rejectEasyReceipt(receipt, data).then(() => {
-              this.processPendingEasyReceipts();
-            });
+            this.rejectEasyReceipt(receipt, data).then(() =>
+              this.processPendingEasyReceipts()
+            );
           }
         },
         {
           text: 'Accept', handler: () => {
-            this.acceptEasyReceipt(receipt, data).then(() => {
-              this.processPendingEasyReceipts();
-            });
+            this.acceptEasyReceipt(receipt, data).then(() =>
+              this.processPendingEasyReceipts()
+            );
           }
         }
       ]
@@ -421,24 +408,24 @@ export class WalletsView {
     }).present();
   }
 
-  private acceptEasyReceipt(receipt: EasyReceipt, data: any): Promise<any> {
-
-    return this.profileService.getWallets().then((wallets) => {
+  private async acceptEasyReceipt(receipt: EasyReceipt, data: any): Promise<any> {
+    try {
+      const wallets = await this.profileService.getWallets();
       // TODO: Allow a user to choose which wallet to receive into.
       let wallet = wallets[0];
       if (!wallet) return Promise.reject('no wallet');
       let forceNewAddress = false;
-      return this.walletService.getAddress(wallet, forceNewAddress).then((address) => {
-        return this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.address);
-      }).then((acceptanceTx) => {
-        this.logger.info('accepted easy send', acceptanceTx);
-      }).catch((err) => {
-        this.toastCtrl.create({
-          message: "There was an error retrieving your incoming payment.",
-          cssClass: ToastConfig.CLASS_ERROR
-        }).present();
-      });
-    });
+
+      const address = await this.walletService.getAddress(wallet, forceNewAddress);
+      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.address);
+
+      this.logger.info('accepted easy send', acceptanceTx);
+    } catch (err) {
+      this.toastCtrl.create({
+        message: "There was an error retrieving your incoming payment.",
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    }
   }
 
   private rejectEasyReceipt(receipt: EasyReceipt, data): Promise<any> {

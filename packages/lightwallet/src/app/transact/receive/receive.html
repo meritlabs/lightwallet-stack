@@ -79,7 +79,7 @@
                     <span *ngIf="address">{{address}}</span>
                     <span *ngIf="!address && error" class="error">{{error}}</span>
                 </span>
-                <button ion-button icon-only clear color="primary" (click)="generateAddress(forceNew = true)"  class="select-button" *ngIf="!addressGenerationInProgress">
+                <button ion-button icon-only clear color="primary" (click)="generateAddress(true)"  class="select-button" *ngIf="!addressGenerationInProgress">
                     <ion-icon name="refresh"></ion-icon>
                 </button>
                 <button ion-button icon-only clear color="primary" class="select-button" *ngIf="addressGenerationInProgress">

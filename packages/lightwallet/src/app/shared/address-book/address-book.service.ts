@@ -37,12 +37,11 @@ export class AddressBookService {
     });
   };
 
-  public list(network: string): Promise<AddressBook> {
-    return this.getAddressbook(network).then((addressBook) => {
-      return Promise.resolve(addressBook);
-    }).catch((err) => {
-      return Promise.reject(new Error('error listing addressBook: ' + err));
-    });
+  list(network: string): Promise<AddressBook> {
+    return this.getAddressbook(network)
+      .catch((err) => {
+        return Promise.reject(new Error('Error listing addressBook: ' + err));
+      });
   };
 
   public searchDeviceContacts(term: string): Promise<Contact[]> {
