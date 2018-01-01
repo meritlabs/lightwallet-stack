@@ -35,7 +35,7 @@
         <div class="list">
           <label class="item item-input">
             <ion-input type="number" placeholder="Enter custom fee" [min]="minFeeAllowed" [max]="maxFeeAllowed" [(ngModel)]="customMicrosPerByte.value"
-              (ionChange)="checkFees($event)" [required]="customFeePerKB">
+              (ionChange)="checkFees($event)" [required]="customFeePerKB"></ion-input>
             <span class="unit">micros/byte</span>
           </label>
         </div>

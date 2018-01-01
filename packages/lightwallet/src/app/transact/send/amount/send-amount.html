@@ -20,7 +20,7 @@
                     pattern="[0-9\.]"
                     [(ngModel)]="amount"
                     (ionChange)="processAmount($event)"
-                    [placeholder]="'Enter sending amount'">
+                    [placeholder]="'Enter sending amount'"></ion-input>
 
              <button ion-button clear color="primary" (click)="toggleCurrency()">
                  {{amountCurrency}}
