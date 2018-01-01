@@ -499,9 +499,9 @@ export class WalletsView {
         this.wallets[0].network
       ).toAddress().toString();
 
-      return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList, parentAddress });
+      return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList.bind(this), parentAddress });
     }
-    return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList });
+    return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList.bind(this) });
   }
 
   toImportWallet() {
