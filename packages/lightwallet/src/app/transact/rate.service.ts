@@ -74,29 +74,28 @@ export class RateService {
     }
   }
 
-  getRate(code) {
-      return this._rates[code];
+  getRate(code: string) {
+    return this._rates[code];
   }
   
   getAlternatives() {
     return this._alternatives;
   }
 
-  fromMicrosToFiat(micros, code) {
+  fromMicrosToFiat(micros: number, code: string) {
     return micros * this.SAT_TO_BTC * this.getRate(code);
   }
 
-  fromFiatToMicros(amount, code) {
-    let micros = amount / this.getRate(code) * this.BTC_TO_SAT;
-    return Math.ceil(micros);
+  fromFiatToMicros(amount: number, code: string) {
+    return Math.ceil(amount / this.getRate(code) * this.BTC_TO_SAT);
   }
 
-  fromMeritToFiat(merit, code) {
+  fromMeritToFiat(merit: number, code: string) {
     let micros = this.mrtToMicro(merit);
     return this.fromMicrosToFiat(micros, code);
   }
 
-  fromFiatToMerit(amount, code) {
+  fromFiatToMerit(amount: number, code: string) {
     let micros = this.fromFiatToMicros(amount, code);
     return this.microsToMrt(micros);
   }
