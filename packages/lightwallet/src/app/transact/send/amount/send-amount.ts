@@ -200,7 +200,8 @@ export class SendAmountView {
     else this.smallFont = false;
   };
 
-  processAmount(value) {
+  processAmount({ value }) {
+    value = value || 0;
     if(value != this.lastAmount) {
       this.lastAmount = value;
       this.updateTxData();
