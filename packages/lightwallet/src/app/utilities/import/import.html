@@ -16,8 +16,8 @@
 
 <ion-content>
 
-    <span *ngIf="segment == 'phrase'">
-        <ion-item margin-top>
+    <div [hidden]="segment != 'phrase'">
+        <ion-item>
             <ion-label translate>
                 Enter the recovery phrase (usually 12 words)
             </ion-label>
@@ -50,11 +50,11 @@
 
         <button class="action-button" margin-top block (click)="importMnemonic()" ion-button translate [disabled]="!mnemonicImportAllowed()">Import</button>
 
-    </span>
+    </div>
 
-    <span *ngIf="segment == 'file'">
+    <div [hidden]="segment != 'file'">
 
-        <ion-item margin-top (click)="openFilePicker()">
+        <ion-item (click)="openFilePicker()">
             <ion-label translate *ngIf="!formData.backupFile">
                 Choose a backup file from your device
             </ion-label>
@@ -78,6 +78,6 @@
 
         <button class="action-button" margin-top block (click)="importBlob()" ion-button translate [disabled]="!fileImportAllowed()">Import</button>
 
-    </span>
+    </div>
 
 </ion-content>
