@@ -24,22 +24,21 @@ import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 })
 export class ReceiveView {
 
-  public protocolHandler: string;
-  public address: string;
-  public qrAddress:string;
-  public amount:number;
-  public amountMicros:number;
-  public availableUnits:Array<string>;
-  public amountCurrency:string;
+  protocolHandler: string;
+  address: string;
+  qrAddress: string;
+  amount: number;
+  amountMicros: number;
+  availableUnits: Array<string>;
+  amountCurrency: string;
 
-  public wallets;
-  public wallet;
+  wallets;
+  wallet;
 
-  public addressGenerationInProgress:boolean;
-  public socialSharingAvailable:boolean;
+  addressGenerationInProgress: boolean;
 
-  public error:string;
-  public mainAddressGapReached:boolean;
+  error: string;
+  mainAddressGapReached: boolean;
 
   constructor(
     private navCtrl: NavController,
@@ -112,7 +111,7 @@ export class ReceiveView {
   }
 
   selectWallet() {
-    const modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
+    const modal = this.modalCtrl.create('SelectWalletModal', { selectedWallet: this.wallet, availableWallets: this.wallets });
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.wallet = wallet;
@@ -131,7 +130,8 @@ export class ReceiveView {
 
     const address = addressString.split(':')[1] || addressString;
 
-    this.clipboard.copy(address);
+    if (Clipboard.installed())
+      this.clipboard.copy(address);
 
     this.toastCtrl.create({
       message: 'Address copied to clipboard',
@@ -149,7 +149,6 @@ export class ReceiveView {
   }
 
   changeAmount() {
-
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
       this.amountMicros = this.rateService.mrtToMicro(this.amount);
     } else {
@@ -159,7 +158,7 @@ export class ReceiveView {
   }
 
   private formatAddress() {
-    this.qrAddress = `${this.protocolHandler}:${this.address}${this.amountMicros ? '?micros='+this.amountMicros : ''}`;
+    this.qrAddress = `${ this.protocolHandler }:${ this.address }${ this.amountMicros ? '?micros='+this.amountMicros : '' }`;
   }
 
 }
