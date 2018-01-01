@@ -137,15 +137,14 @@ export class EditContactView {
 
   removeContact() {
 
-      let confirmMessage = this.isLocalContact()
+      const confirmMessage = this.isLocalContact()
         ? 'Are you sure you want to remove Merit contact?'
         : 'Are you sure you want to delete contact? This action will remove merit data only and will not affect anything in your device contact list';
 
-      let removeHandler = () => {
-        return this.meritContactService.remove(this.originalContact).then(() => {
-          this.navCtrl.remove(2,1);
-          this.navCtrl.pop();
-        });
+      const removeHandler = async () => {
+        await this.meritContactService.remove(this.originalContact);
+        await this.navCtrl.remove(2,1);
+        return this.navCtrl.pop();
       };
 
       this.alertCtrl.create({
