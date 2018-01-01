@@ -3,9 +3,6 @@ import { IonicPage, ViewController } from 'ionic-angular';
 import { Logger } from "merit/core/logger";
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 
-
-declare var cordova:any;
-
 @IonicPage({
   defaultHistory: ['ImportView']
 })
@@ -15,31 +12,29 @@ declare var cordova:any;
 })
 export class ImportScanView {
 
-  public scannerAvailable:boolean;
-
-  public scannerPermitted:boolean;
-
-  public err;
+  err;
 
   constructor(
     private viewCtrl:ViewController,
     private barcodeScanner: BarcodeScanner,
     private logger:Logger
-  ) {
-
-  }
+  ) {}
 
   close() {
     this.viewCtrl.dismiss();
   }
 
-  ionViewDidLoad() {
-
-    this.barcodeScanner.scan({formats: 'QR_CODE'}).then((barcodeData) => {
-      this.viewCtrl.dismiss(barcodeData.text);
-    }).catch((err) => {
+  async ionViewDidLoad() {
+    if (BarcodeScanner.installed()) {
+      try {
+        const { text } =  await this.barcodeScanner.scan({formats: 'QR_CODE'});
+        this.viewCtrl.dismiss(text);
+      } catch (err) {
         this.err = err;
-    });
+      }
+    } else {
+      this.err = 'This feature is available on mobile devices only.';
+    }
   }
 
 }
