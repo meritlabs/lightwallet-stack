@@ -83,46 +83,43 @@ export class ReceiveView {
     })
   }
 
-  generateAddress(forceNew?: boolean) {
+  async generateAddress(forceNew?: boolean) {
     this.addressGenerationInProgress = true;
     this.error = null;
 
-    return this.walletService.getAddress(this.wallet, forceNew).then((address) => {
-
+    try {
+      const address = await this.walletService.getAddress(this.wallet, forceNew);
       this.address = address.address;
       this.addressGenerationInProgress = false;
-      if (forceNew) this.mainAddressGapReached = false; // that means, we  successfully generated NEW address
+      this.mainAddressGapReached = !forceNew; // that means, we  successfully generated NEW address
       this.formatAddress();
-    }).catch((err) => {
-
+    } catch (err) {
       if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code) {
         this.mainAddressGapReached = true;
         return this.generateAddress(false);
       } else {
-
         this.addressGenerationInProgress = false;
 
-        if (err.text) this.error = err.text;
+        if (err.text)
+          this.error = err.text;
 
-        this.toastCtrl.create({
+        return this.toastCtrl.create({
           message: err.text || 'Failed to generate new adrress',
           cssClass: ToastConfig.CLASS_ERROR
         }).present();
       }
-
-    });
-
+    }
   }
 
   selectWallet() {
-    let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
-    modal.present();
+    const modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.wallet = wallet;
         this.generateAddress(false);
       }
     });
+    return modal.present();
   }
 
   async share() {
