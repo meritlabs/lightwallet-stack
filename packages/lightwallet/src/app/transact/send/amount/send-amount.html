@@ -14,12 +14,12 @@
 
          <div class="row" margin-bottom>
              <span class="label" text-left>Amount</span>
-             <input type="number"
-                    [style.flex]="1"
+             <ion-input type="number"
+                    style="flex: 1"
                     text-right
                     pattern="[0-9\.]"
                     [(ngModel)]="amount"
-                    (ngModelChange)="processAmount($event ? $event.value : 0)"
+                    (ionChange)="processAmount($event)"
                     [placeholder]="'Enter sending amount'">
 
              <button ion-button clear color="primary" (click)="toggleCurrency()">
