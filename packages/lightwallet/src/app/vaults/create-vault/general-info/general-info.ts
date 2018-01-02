@@ -45,25 +45,28 @@ export class CreateVaultGeneralInfoView {
     this.isNextAvailable = this.formData.vaultName.length > 0 && this.formData.whitelist.length > 0;
   }
 
-  ionViewDidLoad() {
+  async ionViewDidLoad() {
     let data = this.createVaultService.getData();
     this.formData.vaultName = data.vaultName;
     this.formData.whitelist = data.whitelist;
 
     // fetch users wallets
-    this.getAllWallets().then((wallets) => {
+    try {
+      const wallets = await this.getAllWallets();
+      console.log('Got wallets', wallets);
       const walletDTOs = _.map(wallets, (w: any) => {
         const name = w.name || w._id;
         return { id: w.id, name: name, address: w.credentials.xPubKey, type: 'wallet', walletClientId: w.id };
       });
       this.logger.info('walletDTOs', walletDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(walletDTOs);
-    }).catch((err) => {
+    } catch (err) {
+      console.log(err);
       this.toastCtrl.create({
         message: 'Failed to update wallets info',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
-    });
+    }
 
     // fetch users vaults
     // ToDo: uncomment when vaults support vault addresses in whitelists
@@ -93,10 +96,10 @@ export class CreateVaultGeneralInfoView {
 
   private async getAllWallets(): Promise<Array<any>> {
     const wallets = await this.profileService.getWallets();
-    return wallets.map(async (wallet: any) => {
-        wallet.status = await this.walletService.getStatus(wallet);
-        return wallet;
-    });
+    return Promise.all(wallets.map(async (wallet: any) => {
+      wallet.status = await this.walletService.getStatus(wallet);
+      return wallet;
+    }));
   }
 
   private getAllVaults(): Promise<Array<any>> {
