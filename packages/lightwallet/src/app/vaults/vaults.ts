@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, ToastController, AlertController, Events } from 'ionic-angular';
 import { VaultsService } from 'merit/vaults/vaults.service';
 
@@ -8,13 +8,14 @@ import { VaultsService } from 'merit/vaults/vaults.service';
   templateUrl: 'vaults.html',
 })
 export class VaultsView {
+
   @Input() vaults = [];
+
   @Input() refreshVaultList = () => {};
 
-  constructor(
-    private navCtrl: NavController,
-    private vaultService: VaultsService,
-  ){}
+  @Output() onChange: EventEmitter<any> = new EventEmitter<any>();
+
+  constructor(private navCtrl: NavController){}
 
   toAddVault() {
     this.navCtrl.push('CreateVaultGeneralInfoView', { refreshVaultList: this.refreshVaultList });

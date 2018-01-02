@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 
 const LOGGING_ENABLED = true;
+const TRACE_ENABLED = false;
 
 @Injectable()
 export class Logger {
@@ -29,9 +30,7 @@ export class Logger {
   }
 
   getLogs(level = Logger.LEVEL_INFO) {
-    return this.logs.filter((l) => {
-      return (l.level <= level)
-    });
+    return this.logs.filter(l => l.level <= level);
   }
 
   error(...messages) {
@@ -41,7 +40,8 @@ export class Logger {
     }
     this.logs.push({ level: Logger.LEVEL_ERROR, timestamp: Date.now(), arguments: messages });
     console.error.apply(console, messages);
-    console.trace();
+    if (TRACE_ENABLED)
+      console.trace();
   }
 
   warn(...messages) {
@@ -51,6 +51,8 @@ export class Logger {
     }
     this.logs.unshift({ level: Logger.LEVEL_WARN, timestamp: Date.now(), arguments: messages });
     console.warn.apply(console, messages);
+    if (TRACE_ENABLED)
+      console.trace();
   }
 
   info(...messages) {
@@ -60,6 +62,8 @@ export class Logger {
     }
     this.logs.unshift({ level: Logger.LEVEL_INFO, timestamp: Date.now(), arguments: messages });
     console.info.apply(console, messages);
+    if (TRACE_ENABLED)
+      console.trace();
   }
 
   debug(...messages) {
@@ -69,6 +73,8 @@ export class Logger {
     }
     this.logs.unshift({ level: Logger.LEVEL_DEBUG, timestamp: Date.now(), arguments: messages });
     console.debug.apply(console, messages);
+    if (TRACE_ENABLED)
+      console.trace();
   }
 
   /**  alias -> info   */
