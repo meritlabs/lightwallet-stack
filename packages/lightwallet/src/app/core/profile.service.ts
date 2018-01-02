@@ -348,7 +348,6 @@ export class ProfileService {
         totalBound += 1;
         if (i == l) {
             this.logger.info('Bound ' + totalBound + ' out of ' + l + ' wallets');
-            return Promise.resolve();
         }
       }));
 

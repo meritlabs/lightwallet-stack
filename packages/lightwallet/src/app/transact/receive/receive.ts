@@ -121,8 +121,9 @@ export class ReceiveView {
     return modal.present();
   }
 
-  async share() {
-    await this.socialSharing.share(this.qrAddress);
+  share() {
+    if (SocialSharing.installed())
+      return this.socialSharing.share(this.qrAddress);
   }
 
   copyToClipboard(addressString: string) {
