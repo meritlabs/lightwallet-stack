@@ -11,6 +11,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { ToastConfig } from "merit/core/toast.config";
 import { MeritToastController } from "merit/core/toast.controller";
+import { MeritWalletClient } from '../../../../lib/merit-wallet-client';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -21,10 +22,14 @@ import { MeritToastController } from "merit/core/toast.controller";
 })
 export class CreateVaultGeneralInfoView {
 
-  public formData = { vaultName: '', whitelist: [] };
-  public isNextAvailable = false;
-  public whitelistCandidates = [];
-  public bitcore = null;
+  formData = { vaultName: '', whitelist: [] };
+  whitelistCandidates = [];
+  bitcore = null;
+  whitelistedWallets: any = {};
+
+  get isNextAvailable(): boolean {
+    return this.formData.vaultName.length > 0 && this.formData.whitelist.length > 0;
+  }
 
   constructor(
     private navCtrl:NavController,
@@ -41,10 +46,6 @@ export class CreateVaultGeneralInfoView {
     this.logger.info('bitcore', this.bitcore);
   }
 
-  checkNextAvailable() {
-    this.isNextAvailable = this.formData.vaultName.length > 0 && this.formData.whitelist.length > 0;
-  }
-
   async ionViewDidLoad() {
     let data = this.createVaultService.getData();
     this.formData.vaultName = data.vaultName;
@@ -53,7 +54,6 @@ export class CreateVaultGeneralInfoView {
     // fetch users wallets
     try {
       const wallets = await this.getAllWallets();
-      console.log('Got wallets', wallets);
       const walletDTOs = _.map(wallets, (w: any) => {
         const name = w.name || w._id;
         return { id: w.id, name: name, address: w.credentials.xPubKey, type: 'wallet', walletClientId: w.id };
@@ -61,7 +61,6 @@ export class CreateVaultGeneralInfoView {
       this.logger.info('walletDTOs', walletDTOs);
       this.whitelistCandidates = this.whitelistCandidates.concat(walletDTOs);
     } catch (err) {
-      console.log(err);
       this.toastCtrl.create({
         message: 'Failed to update wallets info',
         cssClass: ToastConfig.CLASS_ERROR
@@ -89,7 +88,14 @@ export class CreateVaultGeneralInfoView {
     this.checkNextAvailable();
   }
 
+  private setWhitelistedWallets() {
+    this.formData.whitelist = this.whitelistCandidates
+      .filter((w: MeritWalletClient) => this.whitelistCandidates[w.id])
+      .map((w: MeritWalletClient) => w.id);
+  }
+
   toDeposit() {
+    this.setWhitelistedWallets();
     this.createVaultService.updateData(this.formData);
     this.navCtrl.push('CreateVaultDepositView', { refreshVaultList: this.navParams.get('refreshVaultList') });
   }
