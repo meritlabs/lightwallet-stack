@@ -39,6 +39,7 @@ import { WalletService } from "merit/wallets/wallet.service";
 
 import { DeepLinkService } from "merit/core/deep-link.service";
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
+import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 
 import { LedgerService } from 'merit/shared/ledger.service';
 import { NotificationModule } from 'merit/core/notification/notification.module';
@@ -101,6 +102,7 @@ export function loadConfigs(appService) {
         TouchID,
         TouchIdService,
         EasyReceiveService,
+        EasySendService,
         DeepLinkService,
         SocialSharing,
         LedgerService,
