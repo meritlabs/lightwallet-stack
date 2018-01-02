@@ -12,7 +12,6 @@ import {AppUpdateService} from "merit/core/app-update.service";
 import {FeedbackService} from "../feedback/feedback.service";
 
 import { EasyReceiveService } from "merit/easy-receive/easy-receive.service";
-import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AddressBookModule } from "merit/shared/address-book/address-book.module";
@@ -30,7 +29,6 @@ import { VaultsView } from "merit/vaults/vaults";
     AppUpdateService,
     FeedbackService,
     EasyReceiveService,
-    EasySendService,
     InAppBrowser,
     MnemonicService,
     LanguageService,

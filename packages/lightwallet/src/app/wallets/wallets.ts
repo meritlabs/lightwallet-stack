@@ -28,8 +28,6 @@ import { RateService } from 'merit/transact/rate.service';
 import { Platform } from 'ionic-angular/platform/platform';
 
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
-import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 import { checkAndUpdatePureExpressionDynamic } from '@angular/core/src/view/pure_expression';
 
 
@@ -54,7 +52,6 @@ export class WalletsView {
 
   public wallets: MeritWalletClient[];
   public vaults;
-  public easySends: EasySend[];
   public newReleaseExists: boolean;
   public feedbackNeeded: boolean;
   public showFeaturesBlock: boolean = false;
@@ -78,7 +75,6 @@ export class WalletsView {
     private logger: Logger,
     private bwcService: BwcService,
     private easyReceiveService: EasyReceiveService,
-    private easySendService: EasySendService,
     private toastCtrl: MeritToastController,
     private appUpdateService: AppUpdateService,
     private profileService: ProfileService,
@@ -146,7 +142,6 @@ export class WalletsView {
           return Promise.all([
             this.updateNetworkValue(wallets),
             this.processPendingEasyReceipts(),
-            this.updatePendingEasySends(_.head(wallets)),
             this.updateTxps({ limit: 3 }),
             this.updateVaults(_.head(wallets)),
             this.fetchNotifications(),
@@ -198,13 +193,6 @@ export class WalletsView {
       }).then((vaults) => {
         this.vaults = vaults;
       });
-    });
-  }
-
-  private updatePendingEasySends(wallet: MeritWalletClient): Promise<void> {
-    return this.easySendService.updatePendingEasySends(wallet).then((easySends) => {
-      this.logger.info('pending EasySends:', easySends)
-      this.easySends = easySends;
     });
   }
 
@@ -474,12 +462,6 @@ export class WalletsView {
         }).present();
       });
     });
-  }
-
-  private cancelEasySend(wallet: MeritWalletClient, easySend: EasySend): Promise<any> {
-    return this.walletService.getAddress(wallet, false).then((address) => {
-
-    })
   }
 
   private updateNetworkValue(wallets: Array<any>): Promise<any> {
