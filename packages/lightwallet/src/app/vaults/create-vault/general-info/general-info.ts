@@ -84,8 +84,6 @@ export class CreateVaultGeneralInfoView {
     //     cssClass: ToastConfig.CLASS_ERROR
     //   }).present();
     // });
-
-    this.checkNextAvailable();
   }
 
   private setWhitelistedWallets() {
