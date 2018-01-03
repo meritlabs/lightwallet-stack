@@ -6,7 +6,6 @@ import { ProfileService } from 'merit/core/profile.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { WalletsModule } from "merit/wallets/wallets.module";
 import { NotificationService } from 'merit/shared/notification.service';
-import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 import { FeeService } from 'merit/shared/fee/fee.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -28,8 +27,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
     NotificationService,
     EasySendService,
     SocialSharing,
-    FeeService,
-    FeeLevelModal
+    FeeService
   ]
 })
 export class SendConfirmModule {}
