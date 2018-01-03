@@ -22,7 +22,7 @@ export class FeeService {
       priority: 'Priority',
       normal: 'Normal',
       economy: 'Economy',
-      superEconomy: 'Super Econoy',
+      superEconomy: 'Super Economy',
       custom: 'Custom'
     };
     this.CACHE_TIME_TS = 60;

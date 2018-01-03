@@ -16,6 +16,7 @@ import { MeritToastController } from "merit/core/toast.controller";
 import { ToastConfig } from "merit/core/toast.config";
 import { EasySend, easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
+import { BwcService } from 'merit/core/bwc.service';
 
 
 @IonicPage()
@@ -55,9 +56,8 @@ export class SendAmountView {
   private LENGTH_EXPRESSION_LIMIT = 19;
   private SMALL_FONT_SIZE_LIMIT = 10;
   private availableUnits: Array<any> = [];
-  private unitIndex: number = 0;
-  private reNr: RegExp = /^[1234567890\.]$/;
-  private reOp: RegExp = /^[\*\+\-\/]$/;
+
+  private feeLevel = 'normal';
 
   private txData;
   private referralsToSign: Array<any>;
@@ -78,7 +78,8 @@ export class SendAmountView {
     private walletService:WalletService,
     private easySendService:EasySendService,
     private toastCtrl:MeritToastController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private mwcSerivce: BwcService
   ) {
   }
 
@@ -450,6 +451,16 @@ export class SendAmountView {
         return reject(err);
       });
     });
+  }
+
+  selectFeeLevel() {
+    const modal = this.modalCtrl.create('SelectFeeView', {fees: []}) ;
+    modal.onDidDismiss((fee) => {
+      if (fee) {
+        this.feeLevel = fee.name;
+      }
+    });
+    modal.present();
   }
 
 }

@@ -74,6 +74,10 @@
                 </span>
 
                 <span *ngIf="feeCalcError" class="error">{{feeCalcError}}</span>
+                <button ion-button clear color="primary" (click)="selectFeeLevel()">
+                    NORMAL
+                </button>
+
             </span>
             <button ion-button clear icon-only color="primary" (click)="updateTxData()" *ngIf="refreshFeeAvailable" class="refresh-button">
                 <ion-icon name="refresh"></ion-icon>
@@ -92,7 +96,7 @@
 
 
 
-        <div class="control-buttons">
+        <div class="control-buttons" margin-bottom>
             <button ion-button primary margin-top (click)="toConfirm()" [disabled]="!sendAllowed()" >Send</button>
         </div>
 
