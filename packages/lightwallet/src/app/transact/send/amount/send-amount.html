@@ -74,8 +74,8 @@
                 </span>
 
                 <span *ngIf="feeCalcError" class="error">{{feeCalcError}}</span>
-                <button ion-button clear color="primary" (click)="selectFeeLevel()">
-                    NORMAL
+                <button ion-button clear color="primary" (click)="selectFeeLevel()" text-uppercase>
+                    {{feeLevelName}}
                 </button>
 
             </span>

@@ -46,15 +46,14 @@ export class SendAmountView {
   public feeFiat:number;
   public feePercent:string;
   private feeLevels:Array<any>;
+  private feeLevelName = 'normal';
+
 
   public availableAmount = {value: 0, formatted: ''};
-
-  private static FEE_LEVEL = 'normal';
   private static ALLOW_UNCONFIRMED = true; //obtain from settings
 
   private availableUnits: Array<any> = [];
 
-  private feeLevel = 'normal';
 
   private txData;
   private referralsToSign: Array<any>;
@@ -311,7 +310,7 @@ export class SendAmountView {
           toName: this.txData.recipient.name || '',
           toAmount: this.txData.amount,
           allowSpendUnconfirmed: SendAmountView.ALLOW_UNCONFIRMED,
-          feeLevelName:  SendAmountView.FEE_LEVEL
+          feeLevelName:  this.feeLevelName
         };
 
         let getEasyData = () => {
@@ -417,7 +416,7 @@ export class SendAmountView {
       } else {
         if (this.txData.usingCustomFee) {
           txp.feePerKb = tx.feeRate;
-        } else txp.feeLevel = tx.feeLevel;
+        } else txp.feeLevel = tx.feeLevelName;
       }
 
       txp.message = tx.description;
@@ -434,7 +433,13 @@ export class SendAmountView {
           txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
         }
       }
-      return this.walletService.createTx(wallet, txp).then((ctxp) => {
+      return this.walletService.createTx(wallet, txp).then((ctxp:any) => {
+
+        ctxp.availableFeeLevels = [];
+        this.feeLevels.forEach((level) => {
+          ctxp.push({name: level.name, nbBlocks: level.nbBlocks, amount: level.feePerKb*ctxp.estimatedSize});
+        });
+
         this.logger.debug("CREATED TXP", ctxp);
         return resolve(ctxp);
       }).catch((err) => {
@@ -448,10 +453,11 @@ export class SendAmountView {
   }
 
   public selectFeeLevel() {
-    const modal = this.modalCtrl.create('SelectFeeView', {fees: []}) ;
+    const modal = this.modalCtrl.create('SelectFeeView', {feeLevels: this.txData.txp.availableFeeLevels});
     modal.onDidDismiss((fee) => {
       if (fee) {
-        this.feeLevel = fee.name;
+        this.feeLevelName = fee.name;
+        this.updateTxData();
       }
     });
     modal.present();
