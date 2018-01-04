@@ -84,6 +84,7 @@ export class SendAmountView {
   }
 
   ionViewDidLoad() {
+
     this.loading = true;
     return this.profileService.hasFunds().then((hasFunds) => {
       this.hasFunds = hasFunds;
@@ -123,6 +124,7 @@ export class SendAmountView {
       ];
       this.amountCurrency = this.availableUnits[0];
     });
+
   }
 
   populateSendingOptions() {
@@ -432,8 +434,8 @@ export class SendAmountView {
         txp.payProUrl = tx.paypro.url;
       }
       txp.excludeUnconfirmedUtxos = !tx.allowSpendUnconfirmed;
+      txp.dryRun = dryRun;
       if (!dryRun) {
-        txp.dryRun = dryRun;
         if (this.feeIncluded) {
           txp.fee = this.txData.feeAmount;
           txp.inputs = this.txData.txp.inputs;
