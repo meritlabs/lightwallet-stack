@@ -97,7 +97,6 @@ export class SendAmountView {
 
     return this.profileService.hasFunds().then((hasFunds) => {
       this.hasFunds = hasFunds;
-      console.log(this.hasFunds, 'HAS FUNDS');
       return this.feeService.getFeeLevels('testnet'); //TODO set correct network
     }).then((feeLevels) => {
       this.feeLevels = feeLevels;
@@ -209,8 +208,6 @@ export class SendAmountView {
 
   public processAmount(value) {
 
-    console.log(value, '@@vALUE');
-
     if(value != this.lastAmount) {
       this.lastAmount = value;
       this.updateTxData();
@@ -264,7 +261,7 @@ export class SendAmountView {
     });
   }
 
-  sanitizePhotoUrl(url:string) {
+  public sanitizePhotoUrl(url:string) {
     return this.sanitizer.sanitize(SecurityContext.URL, url);
   }
 
@@ -450,7 +447,7 @@ export class SendAmountView {
     });
   }
 
-  selectFeeLevel() {
+  public selectFeeLevel() {
     const modal = this.modalCtrl.create('SelectFeeView', {fees: []}) ;
     modal.onDidDismiss((fee) => {
       if (fee) {
