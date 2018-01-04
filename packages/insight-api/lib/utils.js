@@ -18,6 +18,7 @@ UtilsController.prototype.estimateFee = function(req, res) {
     var num = parseInt(n);
     // Insight and Merit JSON-RPC return merit for this value (instead of micros).
     self.node.services.meritd.estimateFee(num, function(err, fee) {
+
       if (err) {
         return next(err);
       }
@@ -27,7 +28,7 @@ UtilsController.prototype.estimateFee = function(req, res) {
     if (err) {
       return self.common.handleErrors(err, res);
     }
-    res.jsonp(_.zipObject(result));
+    res.jsonp(_.fromPairs(result));
   });
 
 };
