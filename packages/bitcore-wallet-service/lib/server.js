@@ -2221,6 +2221,11 @@ WalletService.prototype.createTx = function(opts, cb) {
             self._selectTxInputs(txp, opts.utxosToExclude, next);
           },
           function(next) {
+            // setting tx size after inputs are defined, so we can APPROXIMATELY calculate fee on the client side
+            txp.estimatedSize = txp.getEstimatedSize();
+            return next();
+          },
+          function(next) {
             if (!changeAddress || opts.dryRun) return next();
             self.storage.storeAddressAndWallet(wallet, txp.changeAddress, next);
           },

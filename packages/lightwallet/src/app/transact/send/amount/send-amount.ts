@@ -97,9 +97,6 @@ export class SendAmountView {
 
     return this.profileService.hasFunds().then((hasFunds) => {
       this.hasFunds = hasFunds;
-      return this.feeService.getFeeLevels('testnet'); //TODO set correct network
-    }).then((feeLevels) => {
-      this.feeLevels = feeLevels;
       return this.profileService.getWallets()
     }).then((wallets) => {
         this.wallets = wallets;
@@ -122,6 +119,9 @@ export class SendAmountView {
         this.amount = this.rateService.microsToMrt(this.navParams.get('amount'));
         this.updateTxData();
       }
+      return this.feeService.getFeeLevels(this.wallet.network);
+    }).then((feeLevels) => {
+      this.feeLevels = feeLevels;
       this.loading = false;
     });
   }
