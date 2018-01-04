@@ -1608,7 +1608,7 @@ WalletService.prototype.getFeeLevels = function(opts, cb) {
       } else {
         result = {
           feePerKb: level.defaultValue,
-          nbBlocks: null,
+          nbBlocks: level.nbBlocks,
         };
       }
     }
