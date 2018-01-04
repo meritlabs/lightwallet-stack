@@ -11,8 +11,7 @@
     <div class="search-panel">
         <ion-item-divider text-left>Recipient</ion-item-divider>
         <ion-item>
-            <ion-input type="text" class="search-input" placeholder="Search or enter merit address" [(ngModel)]="formData.search" (ionChange)="parseSearch($event.value)"
-                (focus)="searchInFocus()" (blur)="searchBlurred()">
+            <ion-input type="text" class="search-input" placeholder="Search or enter merit address" [(ngModel)]="formData.search" (ionChange)="parseSearch($event.value)">
             </ion-input>
             <button item-end (click)="openScanner()" ion-button icon-only item-right clear class="search-input-button" color="primary" *ngIf="!loading && !formData.search">
                 <ion-icon name="qr-scanner" color="primary"></ion-icon>
