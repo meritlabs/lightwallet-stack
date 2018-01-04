@@ -32,7 +32,6 @@ export class SendAmountView {
   public amount: number;
   public lastAmount: number = -1;
   public amountMerit: number;
-  public smallFont: boolean;
   public globalResult: string;
   public sending: boolean;
   public displayName: string;
@@ -46,15 +45,13 @@ export class SendAmountView {
   public feeMrt:number;
   public feeFiat:number;
   public feePercent:string;
+  private feeLevels:Array<any>;
 
   public availableAmount = {value: 0, formatted: ''};
 
-  private static FEE_LEVEL = 'normal'; //todo make selectable
+  private static FEE_LEVEL = 'normal';
   private static ALLOW_UNCONFIRMED = true; //obtain from settings
 
-  private static FEE_TOO_HIGH_LIMIT_PER = 15;
-  private LENGTH_EXPRESSION_LIMIT = 19;
-  private SMALL_FONT_SIZE_LIMIT = 10;
   private availableUnits: Array<any> = [];
 
   private feeLevel = 'normal';
@@ -86,14 +83,26 @@ export class SendAmountView {
   ionViewDidLoad() {
 
     this.loading = true;
+
+    this.contact = this.navParams.get('contact');
+    this.sending = this.navParams.get('sending');
+    this.displayName = !_.isEmpty(this.contact.name) ? this.contact.name.formatted : this.contact.meritAddresses[0].address;
+    this.populateSendingOptions();
+
+    this.availableUnits = [
+      this.configService.get().wallet.settings.unitCode.toUpperCase(),
+      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
+    ];
+    this.amountCurrency = this.availableUnits[0];
+
     return this.profileService.hasFunds().then((hasFunds) => {
       this.hasFunds = hasFunds;
-      this.contact = this.navParams.get('contact');
-      this.sending = this.navParams.get('sending');
-      this.displayName = !_.isEmpty(this.contact.name) ? this.contact.name.formatted : this.contact.meritAddresses[0].address;
-      this.populateSendingOptions();
-
-      this.profileService.getWallets().then((wallets) => {
+      console.log(this.hasFunds, 'HAS FUNDS');
+      return this.feeService.getFeeLevels('testnet'); //TODO set correct network
+    }).then((feeLevels) => {
+      this.feeLevels = feeLevels;
+      return this.profileService.getWallets()
+    }).then((wallets) => {
         this.wallets = wallets;
         if (this.wallets && this.wallets[0]) {
           this.wallet = this.wallets[0];
@@ -107,27 +116,18 @@ export class SendAmountView {
             }
           });
         }
-
-        this.getAvailableAmount().then((amount) => {
-          this.availableAmount = amount;
-          if (this.navParams.get('amount')) {
-            this.amount = this.rateService.microsToMrt(this.navParams.get('amount'));
-            this.updateTxData();
-          }
-        });
-        this.loading = false;
-      });
-
-      this.availableUnits = [
-        this.configService.get().wallet.settings.unitCode.toUpperCase(),
-        this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
-      ];
-      this.amountCurrency = this.availableUnits[0];
+      return this.getAvailableAmount();
+    }).then((amount) => {
+      this.availableAmount = amount;
+      if (this.navParams.get('amount')) {
+        this.amount = this.rateService.microsToMrt(this.navParams.get('amount'));
+        this.updateTxData();
+      }
+      this.loading = false;
     });
-
   }
 
-  populateSendingOptions() {
+  private populateSendingOptions() {
     let empty = {
       sendMethod: '',
       meritAddress: '',
@@ -161,7 +161,7 @@ export class SendAmountView {
     this.recipient = _.head(this.sendingOptions);
   };
 
-  selectWallet() {
+  public selectWallet() {
     let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
     modal.present();
     modal.onDidDismiss((wallet) => {
@@ -173,7 +173,7 @@ export class SendAmountView {
     });
   }
 
-  selectSendingOption() {
+  public selectSendingOption() {
     let modal = this.modalCtrl.create('SelectSendingOptionModal', {
       selectedSendingOption: this.recipient,
       sendingOptions: this.sendingOptions
@@ -185,7 +185,7 @@ export class SendAmountView {
     });
   }
 
-  toggleCurrency() {
+  public toggleCurrency() {
     this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
     this.updateAmountMerit();
     this.updateTxData();
@@ -194,12 +194,12 @@ export class SendAmountView {
     });
   }
 
-  toggleFeeIncluded() {
+  public toggleFeeIncluded() {
     this.updateTxData();
   }
 
 
-  updateAmountMerit() {
+  private updateAmountMerit() {
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
       this.amountMerit = this.amount;
     } else {
@@ -207,19 +207,17 @@ export class SendAmountView {
     }
   }
 
-  checkFontSize() {
-    if (this.amount && this.amount.toString().length >= this.SMALL_FONT_SIZE_LIMIT) this.smallFont = true;
-    else this.smallFont = false;
-  };
+  public processAmount(value) {
 
-  processAmount(value) {
+    console.log(value, '@@vALUE');
+
     if(value != this.lastAmount) {
       this.lastAmount = value;
       this.updateTxData();
     }
   };
 
-  sendAllowed() {
+  public sendAllowed() {
     return (
       this.amount > 0
       && this.amount <= this.availableAmount.value
@@ -227,7 +225,7 @@ export class SendAmountView {
     )
   }
 
-  toConfirm() {
+  public toConfirm() {
     let loadingSpinner = this.loadingCtrl.create({
       content: "Preparing transaction...",
       dismissOnPageChange: true
@@ -240,12 +238,9 @@ export class SendAmountView {
     }).catch(() => {
       loadingSpinner.dismiss();
     });
-
-
-
   }
 
-  toBuyAndSell() {
+  public toBuyAndSell() {
     this.navCtrl.push('BuyAndSellView');
   }
 

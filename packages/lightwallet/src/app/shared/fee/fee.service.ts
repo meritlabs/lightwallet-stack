@@ -100,4 +100,10 @@ export class FeeService {
     });
 
   };
+
+  public getFeeLevels(network) {
+    const walletClient = this.bwcService.getClient(null);
+    return walletClient.getFeeLevels(network);
+  }
+
 }
