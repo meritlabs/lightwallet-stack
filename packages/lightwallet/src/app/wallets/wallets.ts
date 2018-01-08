@@ -451,13 +451,11 @@ export class WalletsView {
     let totalAmount: number = 0;
 
     await Promise.all(wallets.map(async (wallet) => {
-        totalAmount += await this.walletService.getANV(wallet);
-        const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
-        this.zone.run(() => {
-            this.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
-            this.totalNetworkValue = totalAmount;
-            this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
-        });
+      totalAmount += await this.walletService.getANV(wallet);
+      const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
+      this.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
+      this.totalNetworkValue = totalAmount;
+      this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
     }));
   }
 
