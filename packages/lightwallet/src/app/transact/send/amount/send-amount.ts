@@ -82,37 +82,35 @@ export class SendAmountView {
   ) {
   }
 
-  ionViewDidLoad() {
+  async ionViewDidLoad() {
     this.loading = true;
-    return this.profileService.hasFunds().then((hasFunds) => {
-      this.hasFunds = hasFunds;
-      this.contact = this.navParams.get('contact');
-      this.sending = this.navParams.get('sending');
-      this.displayName = !_.isEmpty(this.contact.name) ? this.contact.name.formatted : this.contact.meritAddresses[0].address;
-      this.populateSendingOptions();
+    this.hasFunds = await this.profileService.hasFunds();
 
-      this.profileService.getWallets().then((wallets) => {
-        this.wallets = wallets;
-        if (this.wallets && this.wallets[0]) {
-          this.wallet = this.wallets[0];
-        }
+    this.contact = this.navParams.get('contact');
+    this.sending = this.navParams.get('sending');
+    this.displayName = !_.isEmpty(this.contact.name) ? this.contact.name.formatted : this.contact.meritAddresses[0].address;
+    this.populateSendingOptions();
 
-        this.getAvailableAmount().then((amount) => {
-          this.availableAmount = amount;
-          if (this.navParams.get('amount')) {
-            this.amount = this.rateService.microsToMrt(this.navParams.get('amount'));
-            this.updateTxData();
-          }
-        });
-        this.loading = false;
-      });
+    this.availableUnits = [
+      this.configService.get().wallet.settings.unitCode.toUpperCase(),
+      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
+    ];
+    this.amountCurrency = this.availableUnits[0];
 
-      this.availableUnits = [
-        this.configService.get().wallet.settings.unitCode.toUpperCase(),
-        this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
-      ];
-      this.amountCurrency = this.availableUnits[0];
-    });
+    this.wallets = await this.profileService.getWallets();
+
+    if (this.wallets && this.wallets[0]) {
+      this.wallet = this.wallets[0];
+    }
+
+    this.availableAmount = await this.getAvailableAmount();
+
+    if (this.navParams.get('amount')) {
+      this.amount = this.rateService.microsToMrt(this.navParams.get('amount'));
+      this.updateTxData();
+    }
+
+    this.loading = false;
   }
 
   populateSendingOptions() {
