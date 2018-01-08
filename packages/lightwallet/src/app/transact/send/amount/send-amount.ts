@@ -171,13 +171,11 @@ export class SendAmountView {
     });
   }
 
-  toggleCurrency() {
+  async toggleCurrency() {
     this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
     this.updateAmountMerit();
     this.updateTxData();
-    this.getAvailableAmount().then((amount) => {
-      this.availableAmount = amount;
-    });
+    this.availableAmount = await this.getAvailableAmount();
   }
 
   toggleFeeIncluded() {
@@ -280,7 +278,7 @@ export class SendAmountView {
 
     if (!this.txData.amount) {
       return this.createTxpDebounce.cancel();
-    };
+    }
 
     if (this.txData.amount > this.rateService.mrtToMicro(this.availableAmount.value)) {
       this.feeCalcError = 'Amount is too big';
@@ -296,80 +294,77 @@ export class SendAmountView {
     this.createTxp(dryRun);
   }, 1000);
 
-  private createTxp(dryRun:boolean) {
+  private async createTxp(dryRun:boolean) {
+    try {
+      await this.feeService.getWalletFeeRate(this.wallet, SendAmountView.FEE_LEVEL);
 
+      let data = {
+        toAddress: this.txData.recipient.meritAddress,
+        toName: this.txData.recipient.name || '',
+        toAmount: this.txData.amount,
+        allowSpendUnconfirmed: SendAmountView.ALLOW_UNCONFIRMED,
+        feeLevelName:  SendAmountView.FEE_LEVEL
+      };
 
-    return this.feeService.getWalletFeeRate(this.wallet, SendAmountView.FEE_LEVEL).then((feeRate) => {
-
-        let data = {
-          toAddress: this.txData.recipient.meritAddress,
-          toName: this.txData.recipient.name || '',
-          toAmount: this.txData.amount,
-          allowSpendUnconfirmed: SendAmountView.ALLOW_UNCONFIRMED,
-          feeLevelName:  SendAmountView.FEE_LEVEL
-        };
-
-        let getEasyData = () => {
-          return new Promise((resolve, reject) => {
-            if (this.recipient.sendMethod != 'address') {
-              return this.easySendService.createEasySendScriptHash(this.txData.wallet).then((easySend) => {
-                easySend.script.isOutput = true;
-                this.txData.easySendURL = easySendURL(easySend);
-                return resolve({
-                  script: easySend.script,
-                  toAddress: easySend.scriptAddress.toString(),
-                  scriptReferralOpts: easySend.scriptReferralOpts,
-                  recipientReferralOpts: easySend.recipientReferralOpts,
-                });
-              });
-            } else {
-              return resolve({});
-            }
-          });
-        };
-
-        return getEasyData().then((easyData: EasySend) => {
-          data = Object.assign(data, _.pick(easyData, 'script', 'toAddress'));
-          return this.getTxp(_.clone(data), this.txData.wallet, dryRun).then((txpOut) => {
-
-            txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
-            return this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
-              txpOut.alternativeFeeStr = v;
-
-              let percent = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
-
-              let precision = 1;
-              if (percent > 0) {
-                while (percent*Math.pow(10, precision) < 1) {
-                  precision++;
-                }
-              }
-              precision++; //showing two valued digits
-
-              txpOut.feePercent = percent.toFixed(precision) + '%';
-
-              this.feePercent = txpOut.feePercent;
-              this.txData.feeAmount = txpOut.fee;
-              this.feeMrt = this.rateService.microsToMrt(txpOut.fee);
-              this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
-
-              this.txData.txp = txpOut;
-              this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
-            }).catch((err) => {
-              this.toastCtrl.create({
-                message: err,
-                cssClass: ToastConfig.CLASS_ERROR
-              }).present();
-            })
-          });
-        });
-
-      }).catch((err) => {
-        if (err.code == Errors.CONNECTION_ERROR.code) {
-          this.refreshFeeAvailable = true;
+      let getEasyData = async () => {
+        if (this.recipient.sendMethod != 'address') {
+          const easySend = await this.easySendService.createEasySendScriptHash(this.txData.wallet);
+          easySend.script.isOutput = true;
+          this.txData.easySendURL = easySendURL(easySend);
+          return {
+            script: easySend.script,
+            toAddress: easySend.scriptAddress.toString(),
+            scriptReferralOpts: easySend.scriptReferralOpts,
+            recipientReferralOpts: easySend.recipientReferralOpts,
+          };
         }
-        this.feeCalcError = err.text || 'Unknown error';
-    });
+
+        return {};
+      };
+
+      const easyData: Partial<EasySend> = await getEasyData();
+
+      data = Object.assign(data, _.pick(easyData, 'script', 'toAddress'));
+
+      const txpOut = await this.getTxp(_.clone(data), this.txData.wallet, dryRun);
+
+
+      txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
+
+      try {
+        txpOut.alternativeFeeStr = await this.txFormatService.formatAlternativeStr(txpOut.fee);
+
+        let percent = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
+
+        let precision = 1;
+        if (percent > 0) {
+          while (percent*Math.pow(10, precision) < 1) {
+            precision++;
+          }
+        }
+        precision++; //showing two valued digits
+
+        txpOut.feePercent = percent.toFixed(precision) + '%';
+
+        this.feePercent = txpOut.feePercent;
+        this.txData.feeAmount = txpOut.fee;
+        this.feeMrt = this.rateService.microsToMrt(txpOut.fee);
+        this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
+
+        this.txData.txp = txpOut;
+        this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
+      } catch (err) {
+        this.toastCtrl.create({
+          message: err,
+          cssClass: ToastConfig.CLASS_ERROR
+        }).present();
+      }
+    } catch (err) {
+      if (err.code == Errors.CONNECTION_ERROR.code) {
+        this.refreshFeeAvailable = true;
+      }
+      this.feeCalcError = err.text || 'Unknown error';
+    }
   }
 
 
