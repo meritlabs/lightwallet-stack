@@ -103,7 +103,7 @@ export class ReceiveView {
           this.error = err.text;
 
         return this.toastCtrl.create({
-          message: err.text || 'Failed to generate new adrress',
+          message: err.text || 'Failed to generate new address',
           cssClass: ToastConfig.CLASS_ERROR
         }).present();
       }
