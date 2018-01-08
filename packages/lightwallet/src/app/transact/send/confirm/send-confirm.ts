@@ -226,7 +226,9 @@ export class SendConfirmView {
                     this.viewData.amountMrt,
                     easySendURL(this.txData.easySend)
                   );
-                }
+                } else return Promise.reject(new Error(
+                  `Unsupported sending method: ${this.txData.recipient.sendMethod}`
+                ));
               });
           }
         })
