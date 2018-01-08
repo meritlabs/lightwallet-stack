@@ -1465,10 +1465,7 @@ export class WalletService {
   }
   private classifyPendingTxs(txs, easySends: EasySend[]) {
     return _.map(txs, (tx: any) => {
-      tx.isPendingEasySend = false;
-      if(this.txIsPendingEasySend(tx, easySends)) {
-        tx.isPendingEasySend = true;
-      }
+      tx.isPendingEasySend = this.txIsPendingEasySend(tx, easySends);
       return tx;
     });
   }
