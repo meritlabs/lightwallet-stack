@@ -48,9 +48,9 @@ const RETRY_TIMEOUT = 1000;
 })
 export class WalletsView {
 
-  private totalNetworkValue;
-  private totalNetworkValueMicros;
-  private totalNetworkValueFiat;
+  totalNetworkValue;
+  totalNetworkValueMicros;
+  totalNetworkValueFiat;
 
   wallets: MeritWalletClient[];
   vaults;
