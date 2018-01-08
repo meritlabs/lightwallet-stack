@@ -1380,16 +1380,9 @@ export class WalletService {
    * @param wallet
    */
   public getANV(wallet: MeritWalletClient):Promise<any> {
-    return new Promise((resolve, reject) => {
-      let bitcore = this.bwcService.getBitcore();
-      let pubkey = bitcore.PrivateKey.fromString(wallet.credentials.walletPrivKey).toPublicKey();
-      let address = pubkey.toAddress(wallet.credentials.network);
-      return wallet.getANV(address).then((anv) => {
-        return resolve(anv);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
+    let pubkey = this.bwcService.getBitcore().PrivateKey.fromString(wallet.credentials.walletPrivKey).toPublicKey();
+    let address = pubkey.toAddress(wallet.credentials.network);
+    return wallet.getANV(address)
   }
 
   /**
