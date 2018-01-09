@@ -1,35 +1,54 @@
 view-onboarding {
-  .container {
-    img {
-      // TODO adjust this when replacing logo img
-      max-height: 126px;
-      max-width: 75%;
 
-      // keep aspect ratio
-      height: auto;
-    }
-  }
+  // add additional css selector so we don't have to use !important
+  ion-content.content {
+    .container {
+      justify-content: flex-end;
 
-  .bottom-buttons {
-    height: 60px;
-    padding-top: 0;
-
-    button {
-      margin: 0;
-    }
-
-    .restore-button {
-      margin-top: 5px;
-      height: 22px;
-      > span {
-        height: 22px;
-        line-height: 22px;
-        color: rgba(255,255,255,0.5);
+      span {
+        flex: 1;
       }
-      button[ion-button].button {
-        height: 22px;
-        color: white;
+
+      img {
+        // TODO adjust this when replacing logo img
+        max-height: 126px;
+        max-width: 75%;
+
+        margin-top: 75px;
+
+        // keep aspect ratio
+        height: auto;
       }
+
+      .text {
+        padding-bottom: 30px;
+      }
+
+      .bottom-buttons {
+        padding-top: 0;
+        height: 81px;
+
+        button[ion-button].button {
+          height: 59px;
+          margin: 0;
+        }
+
+        .restore-button {
+          padding-top: 15px;
+          height: 22px;
+
+          > span {
+            height: 22px;
+            line-height: 22px;
+            color: rgba(255,255,255,0.5);
+          }
+          button[ion-button].button {
+            height: 22px;
+            color: white;
+          }
+        }
+      }
+
     }
   }
 }
