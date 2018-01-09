@@ -1,13 +1,12 @@
-
-import * as _ from 'lodash';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
-import { WalletService } from "merit/wallets/wallet.service";
-import { ProfileService } from "merit/core/profile.service";
-import { BwcService } from "merit/core/bwc.service";
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import * as _ from 'lodash';
+import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
+import { ProfileService } from 'merit/core/profile.service';
+import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
+import { WalletService } from 'merit/wallets/wallet.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -18,19 +17,24 @@ import { Logger } from 'merit/core/logger';
 })
 export class CreateVaultDepositView {
 
-  public formData = { totalAvailable: 0, amountToDeposit: null, amountAvailable: 0, selectedWallet: null, walletName: '' };
+  public formData = {
+    totalAvailable: 0,
+    amountToDeposit: null,
+    amountAvailable: 0,
+    selectedWallet: null,
+    walletName: ''
+  };
   public isNextAvailable = false;
   private bitcore = null;
 
-  constructor(
-    private navCtrl: NavController,
-    private createVaultService: CreateVaultService,
-    private profileService: ProfileService,
-    private walletService: WalletService,
-    private bwcService: BwcService,
-    private logger: Logger,
-    public navParams: NavParams,
-  ) {}
+  constructor(private navCtrl: NavController,
+              private createVaultService: CreateVaultService,
+              private profileService: ProfileService,
+              private walletService: WalletService,
+              private bwcService: BwcService,
+              private logger: Logger,
+              public navParams: NavParams,) {
+  }
 
   checkNextAvailable() {
     this.isNextAvailable = this.formData.amountToDeposit > 0 && this.formData.amountAvailable >= this.formData.amountToDeposit;

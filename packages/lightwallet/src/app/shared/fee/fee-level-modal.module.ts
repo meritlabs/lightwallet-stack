@@ -1,7 +1,6 @@
-import { FeeService } from './fee.service';
+import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { FeeLevelModal } from './fee-level-modal';
-import { NgModule } from '@angular/core';
 
 @NgModule({
   declarations: [
@@ -9,9 +8,7 @@ import { NgModule } from '@angular/core';
   ],
   imports: [
     IonicPageModule.forChild(FeeLevelModal),
-  ],
-  providers: [
-    FeeService
   ]
 })
-export class FeeLevelModalModule {}
+export class FeeLevelModalModule {
+}

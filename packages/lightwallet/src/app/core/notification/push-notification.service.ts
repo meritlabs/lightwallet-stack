@@ -1,20 +1,19 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { NavController, App, Platform } from 'ionic-angular';
-
-// Services
-import { ProfileService } from 'merit/core/profile.service';
-import { PlatformService } from 'merit/core/platform.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { AppService } from 'merit/core/app-settings.service';
-import { BwcService } from 'merit/core/bwc.service';
+import { Injectable } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
+import { App, NavController, Platform } from 'ionic-angular';
 
 import * as _ from 'lodash';
+import { AppService } from 'merit/core/app-settings.service';
+import { BwcService } from 'merit/core/bwc.service';
 
-import { Logger } from "merit/core/logger";
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { Logger } from 'merit/core/logger';
 import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
+import { PlatformService } from 'merit/core/platform.service';
+// Services
+import { ProfileService } from 'merit/core/profile.service';
+import { ConfigService } from 'merit/shared/config.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()
 export class PushNotificationsService {
@@ -25,19 +24,17 @@ export class PushNotificationsService {
   private _token = null;
   private retriesRemaining: number = 3; // Try to get a token 3 times, and then give up.
 
-  constructor(
-    public http: HttpClient,
-    public profileService: ProfileService,
-    public platformService: PlatformService,
-    public configService: ConfigService,
-    public logger: Logger,
-    public appService: AppService,
-    private app: App,
-    private bwcService: BwcService,
-    private platform: Platform,
-    private pollingNotificationService: PollingNotificationsService,
-    private FCM: FCM,
-  ) {
+  constructor(public http: HttpClient,
+              public profileService: ProfileService,
+              public platformService: PlatformService,
+              public configService: ConfigService,
+              public logger: Logger,
+              public appService: AppService,
+              private app: App,
+              private bwcService: BwcService,
+              private platform: Platform,
+              private pollingNotificationService: PollingNotificationsService,
+              private FCM: FCM,) {
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;
@@ -49,11 +46,10 @@ export class PushNotificationsService {
         this.init();
       });
     } else {
-      this.logger.info("Push notifications are disabled, enabling long polling.");
+      this.logger.info('Push notifications are disabled, enabling long polling.');
       this.pollingNotificationService.enable();
     }
   }
-
 
 
   public init(): void {
@@ -66,11 +62,6 @@ export class PushNotificationsService {
         this.subscribeToEvents();
       });
     });
-  }
-
-  private async getToken(): Promise<void> {
-    this._token = await this.FCM.getToken();
-    this.logger.info('Got token for push notifications: ' + this._token);
   }
 
   // TODO: Chain getting the token as part of a standalone single-wallet subscription.
@@ -86,7 +77,7 @@ export class PushNotificationsService {
       this._token = token;
       this.enable();
     });
-      //this.pushObj = this.push.init(this.pushOptions);
+    //this.pushObj = this.push.init(this.pushOptions);
 
     this.FCM.onNotification().subscribe((data: any) => {
       if (!this._token) return;
@@ -137,9 +128,9 @@ export class PushNotificationsService {
     }
 
     this.profileService.getWallets().then((wallets) => {
-      this.logger.warn("Got Wallets: ", wallets);
+      this.logger.warn('Got Wallets: ', wallets);
       _.forEach(wallets, (walletClient: MeritWalletClient) => {
-        this.logger.warn("Subscribing to push with: ", walletClient);
+        this.logger.warn('Subscribing to push with: ', walletClient);
         this.subscribe(walletClient);
         // We should be handling real-time updates to the application through either data push or
         // through long-polling, but not both.
@@ -190,13 +181,13 @@ export class PushNotificationsService {
     }
 
     if (!this.configService.get().pushNotificationsEnabled) {
-      this.logger.warn("Attempting to subscribe to push notification when disabled in config.  Skipping...");
+      this.logger.warn('Attempting to subscribe to push notification when disabled in config.  Skipping...');
       return;
     }
     if (!this._token && this.retriesRemaining > 0) {
       this.retriesRemaining--;
       this.logger.warn(`Attempted to subscribe without an available token; attempting to acquire. ${this.retriesRemaining} attempts remaining.`);
-      return this.getToken().then(()=>{
+      return this.getToken().then(() => {
         return this.subscribe(walletClient);
       });
     }
@@ -207,7 +198,7 @@ export class PushNotificationsService {
     };
     this.logger.info('Subscribing to push notifications for: ', walletClient.name);
     return walletClient.pushNotificationsSubscribe(opts).then(() => {
-      this.logger.info("Subscribed to push notifications successfully for: ", walletClient.name);
+      this.logger.info('Subscribed to push notifications successfully for: ', walletClient.name);
     }).catch((err) => {
       if (err) {
         this.logger.error(walletClient.name + ': Subscription Push Notifications error. ', JSON.stringify(err));
@@ -215,6 +206,11 @@ export class PushNotificationsService {
         this.logger.info(walletClient.name + ': Subscription Push Notifications success.');
       }
     });
+  }
+
+  private async getToken(): Promise<void> {
+    this._token = await this.FCM.getToken();
+    this.logger.info('Got token for push notifications: ' + this._token);
   }
 
   private _unsubscribe(walletClient: MeritWalletClient): Promise<void> {

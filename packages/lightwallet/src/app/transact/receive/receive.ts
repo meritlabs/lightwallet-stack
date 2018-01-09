@@ -1,20 +1,19 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, LoadingController, Events } from 'ionic-angular';
-
-import { ProfileService } from "merit/core/profile.service";
-import { WalletService } from "merit/wallets/wallet.service";
-import { ToastConfig } from "merit/core/toast.config";
-import { MeritToastController } from "merit/core/toast.controller";
-import { Logger } from "merit/core/logger";
-import { SocialSharing } from '@ionic-native/social-sharing';
 import { Clipboard } from '@ionic-native/clipboard';
-import { PlatformService } from 'merit/core/platform.service';
-
-import { RateService } from 'merit/transact/rate.service';
-import { ConfigService } from "merit/shared/config.service";
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { Events, IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
 
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
+import { Logger } from 'merit/core/logger';
+
+import { ProfileService } from 'merit/core/profile.service';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { ConfigService } from 'merit/shared/config.service';
+
+import { RateService } from 'merit/transact/rate.service';
+import { WalletService } from 'merit/wallets/wallet.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 @IonicPage()
@@ -40,22 +39,20 @@ export class ReceiveView {
   error: string;
   mainAddressGapReached: boolean;
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private modalCtrl:ModalController,
-    private profileService:ProfileService,
-    private walletService:WalletService,
-    private loadCtrl:LoadingController,
-    private toastCtrl:MeritToastController,
-    private logger:Logger,
-    private socialSharing: SocialSharing,
-    private clipboard:Clipboard,
-    private rateService:RateService,
-    private configService:ConfigService,
-    private events: Events
-  ) {
-    this.protocolHandler = "merit";
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private modalCtrl: ModalController,
+              private profileService: ProfileService,
+              private walletService: WalletService,
+              private loadCtrl: LoadingController,
+              private toastCtrl: MeritToastController,
+              private logger: Logger,
+              private socialSharing: SocialSharing,
+              private clipboard: Clipboard,
+              private rateService: RateService,
+              private configService: ConfigService,
+              private events: Events) {
+    this.protocolHandler = 'merit';
     this.availableUnits = [
       this.configService.get().wallet.settings.unitCode.toUpperCase(),
       this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
@@ -75,7 +72,7 @@ export class ReceiveView {
 
     // Get a new address if we just received an incoming TX (on an address we already have)
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
-      this.logger.info("Got an incomingTx on receive screen: ", n);
+      this.logger.info('Got an incomingTx on receive screen: ', n);
       if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
         this.generateAddress(true);
       }
@@ -111,7 +108,10 @@ export class ReceiveView {
   }
 
   selectWallet() {
-    const modal = this.modalCtrl.create('SelectWalletModal', { selectedWallet: this.wallet, availableWallets: this.wallets });
+    const modal = this.modalCtrl.create('SelectWalletModal', {
+      selectedWallet: this.wallet,
+      availableWallets: this.wallets
+    });
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.wallet = wallet;
@@ -141,7 +141,7 @@ export class ReceiveView {
   }
 
   toCopayers() {
-    this.navCtrl.push('CopayersView', {walletId: this.wallet.id, wallet: this.wallet});
+    this.navCtrl.push('CopayersView', { walletId: this.wallet.id, wallet: this.wallet });
   }
 
   toggleCurrency() {
@@ -159,7 +159,7 @@ export class ReceiveView {
   }
 
   private formatAddress() {
-    this.qrAddress = `${ this.protocolHandler }:${ this.address }${ this.amountMicros ? '?micros='+this.amountMicros : '' }`;
+    this.qrAddress = `${ this.protocolHandler }:${ this.address }${ this.amountMicros ? '?micros=' + this.amountMicros : '' }`;
   }
 
 }

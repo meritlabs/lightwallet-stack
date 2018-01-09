@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ViewController } from 'ionic-angular';
-import { ConfigService } from 'merit/shared/config.service';
 import { Logger } from 'merit/core/logger';
+import { ConfigService } from 'merit/shared/config.service';
 
 @Component({
   selector: 'page-pin-lock',
@@ -9,8 +9,6 @@ import { Logger } from 'merit/core/logger';
 })
 export class PinLockView {
 
-  private ATTEMPT_LIMIT: number = 3;
-  private ATTEMPT_LOCK_OUT_TIME: number = 5 * 60;
   public currentAttempts: number = 0;
   public currentPin: string = '';
   public firstPinEntered: string = '';
@@ -19,14 +17,14 @@ export class PinLockView {
   public appName: string = 'merit';
   public disableButtons: boolean = false;
   public expires: string = '';
+  private ATTEMPT_LIMIT: number = 3;
+  private ATTEMPT_LOCK_OUT_TIME: number = 5 * 60;
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private config: ConfigService,
-    private logger: Logger,
-    private viewCtrl: ViewController
-  ) {
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private config: ConfigService,
+              private logger: Logger,
+              private viewCtrl: ViewController) {
 
     switch (this.navParams.get('action')) {
       case 'checkPin':
@@ -100,7 +98,7 @@ export class PinLockView {
       let totalSecs = bannedUntil - now;
       let m = Math.floor(totalSecs / 60);
       let s = totalSecs % 60;
-      this.expires = ('0' + m).slice(-2) + ":" + ('0' + s).slice(-2);
+      this.expires = ('0' + m).slice(-2) + ':' + ('0' + s).slice(-2);
     }
   }
 

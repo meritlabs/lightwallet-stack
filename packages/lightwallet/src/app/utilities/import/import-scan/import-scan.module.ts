@@ -10,4 +10,5 @@ import { ImportScanView } from 'merit/utilities/import/import-scan/import-scan';
     IonicPageModule.forChild(ImportScanView),
   ],
 })
-export class ImportScanComponentModule {}
+export class ImportScanComponentModule {
+}

@@ -10,4 +10,5 @@ import { SelectCurrencyModal } from 'merit/settings/select-currency/select-curre
     IonicPageModule.forChild(SelectCurrencyModal),
   ],
 })
-export class SelectCurrencyComponentModule {}
+export class SelectCurrencyComponentModule {
+}

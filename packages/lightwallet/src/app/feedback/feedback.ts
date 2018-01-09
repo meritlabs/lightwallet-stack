@@ -9,12 +9,10 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class FeedbackView {
 
-  public text:string;
+  public text: string;
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams
-  ) {
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams) {
 
   }
 

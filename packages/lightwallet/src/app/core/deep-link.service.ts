@@ -1,17 +1,15 @@
 import { Injectable } from '@angular/core';
+import { Platform } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { PersistenceService } from 'merit/core/persistence.service';
-import { Platform } from 'ionic-angular';
 
 
 @Injectable()
 export class DeepLinkService {
-  constructor(
-    private persistenceService: PersistenceService,
-    private logger: Logger,
-    private platform: Platform
-  ) {
-    this.logger.info("Hello Deep Link Service");
+  constructor(private persistenceService: PersistenceService,
+              private logger: Logger,
+              private platform: Platform) {
+    this.logger.info('Hello Deep Link Service');
   }
 
   async initBranch(handler: (data: any) => Promise<void>) {

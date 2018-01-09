@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
+import { MomentModule } from 'angular2-moment';
 import { IonicPageModule } from 'ionic-angular';
 import { SelectWalletModal } from 'merit/transact/select-wallet/select-wallet';
-import { MomentModule } from 'angular2-moment';
 
 @NgModule({
   declarations: [
@@ -12,4 +12,5 @@ import { MomentModule } from 'angular2-moment';
     IonicPageModule.forChild(SelectWalletModal),
   ],
 })
-export class SelectWalletComponentModule {}
+export class SelectWalletComponentModule {
+}

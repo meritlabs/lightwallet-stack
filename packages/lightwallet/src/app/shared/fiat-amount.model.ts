@@ -1,20 +1,20 @@
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 export class FiatAmount {
 
   public formats: {
-      CURRENCY_SYM: string,
-      DECIMAL_SEP: string,
-      GROUP_SEP: string
+    CURRENCY_SYM: string,
+    DECIMAL_SEP: string,
+    GROUP_SEP: string
   };
   public amount: number;
   public amountStr: string;
 
   constructor(amount: number) {
     this.formats = {
-      CURRENCY_SYM: "$",
-      DECIMAL_SEP: ".",
-      GROUP_SEP: ","
+      CURRENCY_SYM: '$',
+      DECIMAL_SEP: '.',
+      GROUP_SEP: ','
     }
     this.amount = this.formatFiatAmount(amount);
     this.amountStr = this.formatAmountStr(amount);

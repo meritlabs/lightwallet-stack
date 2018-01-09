@@ -1,26 +1,25 @@
 import { Injectable } from '@angular/core';
-import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
+import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { PersistenceService } from 'merit/core/persistence.service';
-import { FeeService } from 'merit/shared/fee/fee.service'
-import { BwcService } from 'merit/core/bwc.service';
+import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { ConfigService } from 'merit/shared/config.service';
+import { FeeService } from 'merit/shared/fee/fee.service'
 import { LedgerService } from 'merit/shared/ledger.service';
 
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()
 export class EasyReceiveService {
-  constructor(
-    private logger: Logger,
-    private persistanceService: PersistenceService,
-    private feeService: FeeService,
-    private bwcService: BwcService,
-    private configService: ConfigService,
-    private ledger: LedgerService
-  ) {}
+  constructor(private logger: Logger,
+              private persistanceService: PersistenceService,
+              private feeService: FeeService,
+              private bwcService: BwcService,
+              private configService: ConfigService,
+              private ledger: LedgerService) {
+  }
 
-  async validateAndSaveParams(params:any):Promise<EasyReceipt> {
+  async validateAndSaveParams(params: any): Promise<EasyReceipt> {
     this.logger.debug(`Parsing easy params ${params}`);
 
     let receipt = new EasyReceipt({});
@@ -42,17 +41,15 @@ export class EasyReceiveService {
     }
   }
 
-  async getPendingReceipts():Promise<Array<EasyReceipt>> {
+  async getPendingReceipts(): Promise<Array<EasyReceipt>> {
     const receipts = (await this.persistanceService.getPendingsEasyReceipts()) || [];
     return receipts.map(receipt => new EasyReceipt(receipt));
   }
 
-  public acceptEasyReceipt(
-    receipt: EasyReceipt,
-    wallet: MeritWalletClient,
-    input: number,
-    destinationAddress: any
-  ): Promise<void> {
+  public acceptEasyReceipt(receipt: EasyReceipt,
+                           wallet: MeritWalletClient,
+                           input: number,
+                           destinationAddress: any): Promise<void> {
     return this.spendEasyReceipt(receipt, wallet, input, destinationAddress);
   }
 
@@ -72,8 +69,8 @@ export class EasyReceiveService {
     }
   }
 
-  async validateEasyReceiptOnBlockchain(receipt:EasyReceipt, password = '', network = this.configService.getDefaults().network.name): Promise<any> {
-    const opts:any = {
+  async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = '', network = this.configService.getDefaults().network.name): Promise<any> {
+    const opts: any = {
       bwsurl: this.configService.getDefaults().bws.url
     };
     const walletClient = this.bwcService.getClient(null, opts);
@@ -85,7 +82,7 @@ export class EasyReceiveService {
       const txn = await walletClient.validateEasyScript(scriptAddress);
 
       if (txn.result.found == false) {
-        this.logger.warn("Could not validate easyScript on the blockchain.");
+        this.logger.warn('Could not validate easyScript on the blockchain.');
         return false
       } else {
         return {
@@ -98,7 +95,7 @@ export class EasyReceiveService {
         };
       }
     } catch (err) {
-      this.logger.warn("Could not validate easyScript on the blockchain.", err);
+      this.logger.warn('Could not validate easyScript on the blockchain.', err);
       throw err;
     }
   }
@@ -107,8 +104,8 @@ export class EasyReceiveService {
     return this.persistanceService.deletePendingEasyReceipt(receipt);
   }
 
-  private async spendEasyReceipt(receipt:EasyReceipt, wallet:MeritWalletClient, input:number, destinationAddress:any): Promise<void> {
-    let opts:any = {};
+  private async spendEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: number, destinationAddress: any): Promise<void> {
+    let opts: any = {};
 
     let testTx = await wallet.buildEasySendRedeemTransaction(input, destinationAddress, opts);
 
@@ -120,9 +117,9 @@ export class EasyReceiveService {
     const tx = await wallet.buildEasySendRedeemTransaction(input, destinationAddress, opts);
     await wallet.broadcastRawTx({ rawTx: tx.serialize(), network: wallet.network });
     return this.persistanceService.deletePendingEasyReceipt(receipt);
-   }
+  }
 
-  private generateEasyScipt(receipt:EasyReceipt, password, network) {
+  private generateEasyScipt(receipt: EasyReceipt, password, network) {
     const secret = this.ledger.hexToString(receipt.secret);
     const receivePrv = this.bwcService.getBitcore().PrivateKey.forEasySend(secret, password);
     const receivePub = this.bwcService.getBitcore().PublicKey.fromPrivateKey(receivePrv).toBuffer();

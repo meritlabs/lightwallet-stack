@@ -6,10 +6,8 @@ import { Logger } from 'merit/core/logger';
 
 @Injectable()
 export class PopupService {
-  constructor(
-    public alertCtrl: AlertController,
-    private log: Logger
-  ) {
+  constructor(public alertCtrl: AlertController,
+              private log: Logger) {
   }
 
   public ionicAlert(title: string, subTitle?: string, okText?: string): Promise<any> {

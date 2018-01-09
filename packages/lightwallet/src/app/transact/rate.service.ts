@@ -1,16 +1,14 @@
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/timeout';
-import 'rxjs/add/observable/fromPromise';
-import { Logger } from 'merit/core/logger';
-
-
-// const request = require('superagent');
-import * as request from 'superagent';
 
 import * as _ from 'lodash';
-import {Observable} from "rxjs/Observable";
+import { Logger } from 'merit/core/logger';
+import 'rxjs/add/observable/fromPromise';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/timeout';
+import 'rxjs/add/operator/toPromise';
+import { Observable } from 'rxjs/Observable';
+// const request = require('superagent');
+import * as request from 'superagent';
 
 @Injectable()
 export class RateService {
@@ -24,9 +22,7 @@ export class RateService {
 
   private rateServiceUrl = 'https://bitpay.com/api/rates';
 
-  constructor(
-    private logger: Logger
-  ) {
+  constructor(private logger: Logger) {
     this.logger.info('Hello RateService Service');
     this._rates = {};
     this._alternatives = [];
@@ -38,23 +34,23 @@ export class RateService {
   async updateRates(): Promise<any> {
     try {
       const dataBTC = await Observable.fromPromise(this.getBTC())
-          .timeout(1000)
-          .toPromise();
+        .timeout(1000)
+        .toPromise();
 
       if (_.isEmpty(dataBTC)) {
-          this.logger.warn("Could not update rates from rate Service");
+        this.logger.warn('Could not update rates from rate Service');
       } else {
         _.each(dataBTC, (currency) => {
-            this._rates[currency.code] = currency.rate;
-            this._alternatives.push({
-                name: currency.name,
-                isoCode: currency.code,
-                rate: currency.rate
-            });
+          this._rates[currency.code] = currency.rate;
+          this._alternatives.push({
+            name: currency.name,
+            isoCode: currency.code,
+            rate: currency.rate
+          });
         });
       }
     } catch (errorBTC) {
-        this.logger.warn("Error applying rates to wallet: ", errorBTC);
+      this.logger.warn('Error applying rates to wallet: ', errorBTC);
     }
   }
 
@@ -63,21 +59,21 @@ export class RateService {
     try {
       res = await request['get'](this.rateServiceUrl);
     } catch (errorBTC) {
-      this.logger.warn("Error connecting to rate service: ", errorBTC);
+      this.logger.warn('Error connecting to rate service: ', errorBTC);
       return;
     }
 
     if (res && res.body) {
       return res.body;
     } else {
-      throw new Error("Error connecting to rate service.");
+      throw new Error('Error connecting to rate service.');
     }
   }
 
   getRate(code: string) {
     return this._rates[code];
   }
-  
+
   getAlternatives() {
     return this._alternatives;
   }
@@ -117,7 +113,7 @@ export class RateService {
     });
 
     if (sort) {
-      alternatives.sort( (a, b) => {
+      alternatives.sort((a, b) => {
         return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
       });
     }
@@ -133,7 +129,7 @@ export class RateService {
       try {
         await this.updateRates();
       } catch (e) {
-        this.logger.warn("Could not update rates: " + e);
+        this.logger.warn('Could not update rates: ' + e);
       }
     }
   }

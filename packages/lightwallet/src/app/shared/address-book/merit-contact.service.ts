@@ -1,11 +1,8 @@
-import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
-import { Contacts, Contact as DeviceContact, IContactProperties, IContactField } from '@ionic-native/contacts';
-import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
-import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
-
+import { AddressBookService } from 'merit/shared/address-book/address-book.service';
+import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 
 
 /**
@@ -16,23 +13,13 @@ import { Logger } from 'merit/core/logger';
 export class MeritContactService {
   private bitcore;
 
-  constructor(
-    private addressBookService:AddressBookService,
-    private bwcService: BwcService,
-    private logger: Logger
-  ) {
+  constructor(private addressBookService: AddressBookService,
+              private bwcService: BwcService,
+              private logger: Logger) {
     this.bitcore = bwcService.getBitcore();
   }
 
-  private updateModel(contact: MeritContact) {
-
-    contact.nativeModel.name = contact.name;
-    contact.nativeModel.emails = contact.emails;
-    contact.nativeModel.phoneNumbers = contact.phoneNumbers;
-    contact.nativeModel.urls = contact.urls;
-  }
-
-  public add(contact:MeritContact):Promise<any> {
+  public add(contact: MeritContact): Promise<any> {
     if (!contact.isValid()) {
       return Promise.reject(new Error('Contact is not valid'));
     }
@@ -43,7 +30,7 @@ export class MeritContactService {
 
   }
 
-  public edit(contact:MeritContact):Promise<any> {
+  public edit(contact: MeritContact): Promise<any> {
 
     if (!contact.isValid()) {
       return Promise.reject(new Error('Contact is not valid'));
@@ -57,10 +44,18 @@ export class MeritContactService {
     });
   }
 
-  public remove(contact:MeritContact):Promise<any> {
+  public remove(contact: MeritContact): Promise<any> {
     let address = contact.meritAddresses[0].address;
     let network = contact.meritAddresses[0].network;
     return this.addressBookService.remove(address, network);
+  }
+
+  private updateModel(contact: MeritContact) {
+
+    contact.nativeModel.name = contact.name;
+    contact.nativeModel.emails = contact.emails;
+    contact.nativeModel.phoneNumbers = contact.phoneNumbers;
+    contact.nativeModel.urls = contact.urls;
   }
 
 }

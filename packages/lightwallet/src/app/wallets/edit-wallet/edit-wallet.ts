@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, AlertController, App } from 'ionic-angular';
-import { ProfileService } from "merit/core/profile.service";
-import { ToastConfig } from "merit/core/toast.config";
-import { MeritToastController } from "merit/core/toast.controller";
-import { ConfigService } from "merit/shared/config.service";
-import { WalletService } from "merit/wallets/wallet.service";
+import { AlertController, App, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
+import { ProfileService } from 'merit/core/profile.service';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { ConfigService } from 'merit/shared/config.service';
+import { WalletService } from 'merit/wallets/wallet.service';
 
 
 @IonicPage()
@@ -15,22 +15,20 @@ import { Logger } from 'merit/core/logger';
 })
 export class EditWalletView {
 
-  public wallet:any;
+  public wallet: any;
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private modalCtrl:ModalController,
-    private alertCtrl:AlertController,
-    private profileService:ProfileService,
-    private app:App,
-    private toastCtrl:MeritToastController,
-    private configService:ConfigService,
-    private walletService:WalletService,
-    private logger: Logger
-  ) {
-      this.wallet = this.navParams.get('wallet');
-      this.logger.info(this.wallet);
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private modalCtrl: ModalController,
+              private alertCtrl: AlertController,
+              private profileService: ProfileService,
+              private app: App,
+              private toastCtrl: MeritToastController,
+              private configService: ConfigService,
+              private walletService: WalletService,
+              private logger: Logger) {
+    this.wallet = this.navParams.get('wallet');
+    this.logger.info(this.wallet);
   }
 
   changeBalanceHidden(isHidden) {
@@ -40,18 +38,18 @@ export class EditWalletView {
 
   changeName(name) {
     if (name) {
-      let aliasOpts = {aliasFor: {}};
+      let aliasOpts = { aliasFor: {} };
       aliasOpts.aliasFor[this.wallet.id] = name;
       this.configService.set(aliasOpts);
     }
   }
 
   changeColor() {
-    let modal = this.modalCtrl.create('SelectColorView', {color: this.wallet.color});
+    let modal = this.modalCtrl.create('SelectColorView', { color: this.wallet.color });
     modal.onDidDismiss((color) => {
       if (color) {
         this.wallet.color = color;
-        let colorOpts = {colorFor: {}};
+        let colorOpts = { colorFor: {} };
         colorOpts.colorFor[this.wallet.id] = color;
         this.configService.set(colorOpts);
       }
@@ -60,12 +58,12 @@ export class EditWalletView {
   }
 
   goToSetPassword() {
-    this.navCtrl.push('SetWalletPasswordView', {wallet: this.wallet});
+    this.navCtrl.push('SetWalletPasswordView', { wallet: this.wallet });
     //this.walletService.encrypt(wallet, this.formData.password);
   }
 
   goToExportWallet() {
-    this.navCtrl.push('ExportWalletView', {wallet: this.wallet});
+    this.navCtrl.push('ExportWalletView', { wallet: this.wallet });
   }
 
   deleteWallet() {
@@ -77,7 +75,8 @@ export class EditWalletView {
         {
           text: 'Cancel',
           role: 'cancel',
-          handler: () => {}
+          handler: () => {
+          }
         },
         {
           text: 'Delete',

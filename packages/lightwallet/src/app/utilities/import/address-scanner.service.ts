@@ -5,14 +5,15 @@ import { ModalController } from 'ionic-angular';
 @Injectable()
 export class AddressScannerService {
   constructor(private modalCtrl: ModalController,
-              private barcodeScanner: BarcodeScanner) {}
+              private barcodeScanner: BarcodeScanner) {
+  }
 
   async scanAddress() {
     let error;
 
     if (BarcodeScanner.installed()) {
       try {
-        const { text: code } =  await this.barcodeScanner.scan({formats: 'QR_CODE'});
+        const { text: code } = await this.barcodeScanner.scan({ formats: 'QR_CODE' });
         if (code) {
           return code;
         }

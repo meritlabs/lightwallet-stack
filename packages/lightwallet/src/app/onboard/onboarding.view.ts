@@ -9,4 +9,5 @@ import { IonicPage } from 'ionic-angular';
   selector: 'view-onboarding',
   templateUrl: 'onboarding.html',
 })
-export class OnboardingView {}
+export class OnboardingView {
+}
