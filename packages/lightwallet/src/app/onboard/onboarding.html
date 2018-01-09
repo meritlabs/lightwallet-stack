@@ -6,13 +6,18 @@
         <!--<img src='assets/img/logo-negative.svg' id="logo" />-->
         <img src='assets/img/onboard-logo.png' id="logo" />
 
+
+        <h1 class="main-header">Welcome to Merit</h1>
         <div class="text" translate>
             Take control of your money,<br />get started with Merit.
         </div>
 
         <div class="bottom-buttons">
             <button navPush="TourView" ion-button block translate>Get started</button>
-            <button navPush="ImportView" ion-button block clear translate>Restore from backup</button>
+            <div class="restore-button">
+                <span>Already a member?</span>
+                <button navPush="ImportView" ion-button clear translate>Restore</button>
+            </div>
         </div>
 
     </div>
