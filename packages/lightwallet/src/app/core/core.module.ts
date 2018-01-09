@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
+import { SocialSharing } from '@ionic-native/social-sharing';
 import { Logger } from "./logger";
 import { BwcService } from 'merit/core/bwc.service';
 import { PersistenceService } from 'merit/core/persistence.service';
@@ -38,6 +39,7 @@ import { WalletService } from "merit/wallets/wallet.service";
 
 import { DeepLinkService } from "merit/core/deep-link.service";
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
+import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 
 import { LedgerService } from 'merit/shared/ledger.service';
 import { NotificationModule } from 'merit/core/notification/notification.module';
@@ -100,7 +102,9 @@ export function loadConfigs(appService) {
         TouchID,
         TouchIdService,
         EasyReceiveService,
+        EasySendService,
         DeepLinkService,
+        SocialSharing,
         LedgerService,
         WalletService,
         MnemonicService,

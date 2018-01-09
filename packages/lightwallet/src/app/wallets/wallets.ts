@@ -28,6 +28,7 @@ import { RateService } from 'merit/transact/rate.service';
 import { Platform } from 'ionic-angular/platform/platform';
 
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
+import { checkAndUpdatePureExpressionDynamic } from '@angular/core/src/view/pure_expression';
 
 
 /*
@@ -138,17 +139,16 @@ export class WalletsView {
           this.wallets = wallets;
 
           // Now that we have wallets, we will proceed with the following operations in parallel.
-          return Promise.join(
+          return Promise.all([
             this.updateNetworkValue(wallets),
             this.processPendingEasyReceipts(),
             this.updateTxps({ limit: 3 }),
-            this.updateVaults(_.head(this.wallets)),
+            this.updateVaults(_.head(wallets)),
             this.fetchNotifications(),
-            (res) => {
-              this.logger.info("Done updating all info for wallet.");
-              return resolve();
-            }
-          )
+          ]).then(() => {
+            this.logger.info("Done updating all info for wallet.");
+            return resolve();
+          })
         }).catch((err) => {
           this.logger.info("Error updating information for all wallets.");
           this.logger.info(err);

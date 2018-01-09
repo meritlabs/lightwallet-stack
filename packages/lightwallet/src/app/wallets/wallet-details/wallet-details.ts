@@ -59,6 +59,7 @@ export class WalletDetailsView {
     if (!_.isEmpty(wh)) {
       return _.map(wh, (h: any) => {
         if (!_.isNil(h) && !_.isNil(h.action)) {
+          const pendingString = h.isPendingEasySend ? '(pending) ' : '';
           switch (h.action) {
             case 'sent':
               if (h.confirmations == 0) {
@@ -81,6 +82,7 @@ export class WalletDetailsView {
               h.actionStr = 'Recent Transaction';
               break
           }
+          h.actionStr = pendingString + h.actionStr;
         }
         return h;
       });
