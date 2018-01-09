@@ -44,7 +44,7 @@ export class SendView {
 
   private searchFocus: boolean;
   private hasFunds: boolean;
-  private hasOwnedMerit: boolean = this.profileService.hasOwnedMerit();;
+  private hasOwnedMerit: boolean = this.profileService.hasOwnedMerit();
   private network: string;
 
   contactsOffset = 0;
@@ -186,7 +186,7 @@ export class SendView {
     let modal = this.modalCtrl.create('ImportScanView');
     modal.onDidDismiss((code) => {
         if (code) {
-          return this.parseSearch(code);
+          this.parseSearch(code);
         }
     });
     modal.present();
@@ -208,7 +208,7 @@ export class SendView {
   }
 
   // TODO use RxJS instead
-  private updateFilteredContactsDebounce = _.debounce(this.updateFilteredContacts, 200);
+  private updateFilteredContactsDebounce = _.debounce(this.updateFilteredContacts.bind(this), 200);
 
   public updateFilteredContacts(search: string):Promise<void> {
 
