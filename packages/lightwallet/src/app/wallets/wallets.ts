@@ -101,6 +101,10 @@ export class WalletsView {
     refresher.complete();
   }
 
+  ionViewDidEnter() {
+    console.log('DID ENTER FIRED');
+  }
+
   async ionViewDidLoad() {
     this.logger.warn('Hello WalletsView :: IonViewDidLoad!');
     // this.platform.resume.subscribe(() => {

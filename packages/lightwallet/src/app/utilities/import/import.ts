@@ -103,7 +103,7 @@ export class ImportView {
 
 
   importMnemonic() {
-    let loader = this.loadingCtrl.create({ content: 'importingWallet' });
+    let loader = this.loadingCtrl.create({ content: 'Importing wallet' });
     loader.present();
     let pathData = this.derivationPathService.parse(this.formData.derivationPath);
     if (!pathData) {

@@ -109,7 +109,7 @@ export function getIonicNativePlugins() {
     TouchID,
     FCM,
     AndroidFingerprintAuth,
-    InAppBrowser, // TODO replace with Safari/Chrome plugins
+    InAppBrowser,
     Contacts,
     SocialSharing,
     Clipboard,
