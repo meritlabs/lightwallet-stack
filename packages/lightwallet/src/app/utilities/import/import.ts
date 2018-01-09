@@ -6,6 +6,7 @@ import { BwcService } from "merit/core/bwc.service";
 import { ToastConfig } from "merit/core/toast.config";
 import { Logger } from "merit/core/logger";
 import { ProfileService } from "merit/core/profile.service";
+import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 import { WalletService } from "merit/wallets/wallet.service";
 import { MeritToastController } from "merit/core/toast.controller";
 import { DerivationPathService } from "merit/utilities/mnemonic/derivation-path.service";
@@ -43,17 +44,18 @@ export class ImportView {
 
   constructor(
     private  navCtrl: NavController,
-    private bwcService:BwcService,
-    private config:ConfigService,
-    private toastCtrl:MeritToastController,
-    private logger:Logger,
-    private loadingCtrl:LoadingController,
-    private profileService:ProfileService,
-    private walletService:WalletService,
-    private derivationPathService:DerivationPathService,
-    private modalCtrl:ModalController,
-    private app:App,
-    private mnemonicService:MnemonicService
+    private bwcService: BwcService,
+    private config: ConfigService,
+    private toastCtrl: MeritToastController,
+    private logger: Logger,
+    private loadingCtrl: LoadingController,
+    private profileService: ProfileService,
+    private walletService: WalletService,
+    private derivationPathService: DerivationPathService,
+    private modalCtrl: ModalController,
+    private app: App,
+    private mnemonicService: MnemonicService,
+    private addressScanner: AddressScannerService
   ) {
 
     this.formData.bwsUrl = config.getDefaults().bws.url;
@@ -69,21 +71,17 @@ export class ImportView {
   ionViewDidLoad() {
   }
 
-  openScanner() {
-    let modal = this.modalCtrl.create('ImportScanView');
-    modal.onDidDismiss((data) => {
-      if (data) {
-        let parts = data.split('|');
-        this.formData.words = parts[1];
-        this.formData.network = parts[2];
-        this.formData.derivationPath = parts[3];
-        this.formData.hasPassphrase = parts[4];
-      }
-    });
-    modal.present();
+  async openScanner() {
+    let address = await this.addressScanner.scanAddress();
+
+    if (address) {
+      const parts = address.split('|');
+      this.formData.words = parts[1];
+      this.formData.network = parts[2];
+      this.formData.derivationPath = parts[3];
+      this.formData.hasPassphrase = Boolean(parts[4]);
+    }
   }
-
-
 
   openFilePicker() {
     this.input.nativeElement.click();

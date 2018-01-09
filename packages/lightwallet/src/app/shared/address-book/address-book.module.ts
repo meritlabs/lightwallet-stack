@@ -22,7 +22,7 @@ import { MeritContactService } from "merit/shared/address-book/merit-contact.ser
   imports: [
     IonicPageModule.forChild(AddressBookView),
     GravatarModule
-    ],
+  ],
   providers: [
     WalletService,
     SendService,

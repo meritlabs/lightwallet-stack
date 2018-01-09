@@ -27,7 +27,7 @@ export class AddressBookView {
   searchQuery:string = '';
 
   contactsOffset = 0;
-  contactsLimit  = 10;
+  contactsLimit = 10;
 
   constructor(
     public navCtrl: NavController,
