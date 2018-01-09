@@ -67,6 +67,12 @@ export class WalletsView {
 
   loading: boolean;
 
+  private get isActivePage(): boolean {
+    return this.navCtrl.last().instance instanceof WalletsView;
+  }
+
+  private isRefreshingAllInfo: boolean = false;
+
   constructor(public navParams: NavParams,
               private navCtrl: NavController,
               private app: App,
@@ -94,25 +100,26 @@ export class WalletsView {
 
   async doRefresh(refresher) {
     try {
-      await this.updateAllInfo({ force: true })
-    } catch (e) {
-    }
-
+      await this.refreshAllInfo();
+    } catch (e) {}
     refresher.complete();
   }
 
-  ionViewDidEnter() {
-    console.log('DID ENTER FIRED');
+  async refreshAllInfo() {
+    if (this.isRefreshingAllInfo) return;
+    this.isRefreshingAllInfo = true;
+    await this.updateAllInfo({ force: true });
+    this.isRefreshingAllInfo = false;
   }
 
   async ionViewDidLoad() {
     this.logger.warn('Hello WalletsView :: IonViewDidLoad!');
-    // this.platform.resume.subscribe(() => {
-    //   this.logger.info('WalletView is going to refresh data on resume.');
-    //   this.updateAllInfo({ force: true }).then(() => {
-    //     this.logger.info('Got updated data in walletsView on resume.')
-    //   });
-    // });
+    this.platform.resume.subscribe(() => {
+      this.logger.info('WalletView is going to refresh data on resume.');
+      if (this.isActivePage) {
+        this.refreshAllInfo();
+      }
+    });
 
     await this.updateAllInfo({ force: true });
     this.logger.info('Got updated data in walletsView on Ready!!');
