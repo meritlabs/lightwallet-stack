@@ -15,26 +15,24 @@ import { ProfileService } from 'merit/core/profile.service';
 })
 export class TransactView {
 
-  walletsView  = 'WalletsView';
-  receiveView  = 'ReceiveView';
-  networkView  = 'NetworkView';
-  sendView     = 'SendView';
+  walletsView = 'WalletsView';
+  receiveView = 'ReceiveView';
+  networkView = 'NetworkView';
+  sendView = 'SendView';
   settingsView = 'SettingsView';
 
   @ViewChild('tabs') tabRef: Tabs;
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private logger: Logger,
-    private profileService: ProfileService
-  ) {
-    this.logger.info("Hello TRANSACT VIEW!");
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private logger: Logger,
+              private profileService: ProfileService) {
+    this.logger.info('Hello TRANSACT VIEW!');
   }
 
   ionViewCanEnter() {
     const profile = this.profileService.profile;
-    return (profile &&  profile.credentials && profile.credentials.length > 0);
+    return (profile && profile.credentials && profile.credentials.length > 0);
   }
 
 

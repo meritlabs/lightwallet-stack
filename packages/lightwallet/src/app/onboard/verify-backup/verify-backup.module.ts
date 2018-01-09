@@ -1,4 +1,3 @@
-
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { VerifyBackupView } from 'merit/onboard/verify-backup/verify-backup';
@@ -13,4 +12,5 @@ import { ChunksPipe } from 'merit/shared/chunks.pipe';
     IonicPageModule.forChild(VerifyBackupView),
   ],
 })
-export class BackupModule {}
+export class BackupModule {
+}

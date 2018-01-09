@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, ToastController, AlertController, Events } from 'ionic-angular';
-import { VaultsService } from 'merit/vaults/vaults.service';
+import { NavController } from 'ionic-angular';
 
 // TODO use OnPush strategy with appropriate inputs/outputs
 @Component({
@@ -11,11 +10,13 @@ export class VaultsView {
 
   @Input() vaults = [];
 
-  @Input() refreshVaultList = () => {};
+  @Input() refreshVaultList = () => {
+  };
 
   @Output() onChange: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private navCtrl: NavController){}
+  constructor(private navCtrl: NavController) {
+  }
 
   toAddVault() {
     this.navCtrl.push('CreateVaultGeneralInfoView', { refreshVaultList: this.refreshVaultList });

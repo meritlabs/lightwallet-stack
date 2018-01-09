@@ -1,11 +1,6 @@
 import { NgModule } from '@angular/core';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { IonicPageModule } from 'ionic-angular';
-import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 import { ImportView } from 'merit/utilities/import/import';
-import { DerivationPathService } from "merit/utilities/mnemonic/derivation-path.service";
-import { WalletService } from "merit/wallets/wallet.service";
-import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
 
 @NgModule({
   declarations: [
@@ -13,13 +8,7 @@ import { MnemonicService } from "merit/utilities/mnemonic/mnemonic.service";
   ],
   imports: [
     IonicPageModule.forChild(ImportView),
-  ],
-  providers: [
-    DerivationPathService,
-    WalletService,
-    MnemonicService,
-    BarcodeScanner,
-    AddressScannerService
   ]
 })
-export class ImportViewModule {}
+export class ImportViewModule {
+}

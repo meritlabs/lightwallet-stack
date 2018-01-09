@@ -10,10 +10,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 export class BuyAndSellView {
 
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams
-  ) {
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams) {
 
   }
 

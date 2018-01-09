@@ -1,16 +1,15 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController, ModalController } from 'ionic-angular';
-import { ConfigService } from "merit/shared/config.service";
-import { WalletService } from "merit/wallets/wallet.service";
-import { MeritToastController } from "merit/core/toast.controller";
-import { ToastConfig } from "merit/core/toast.config";
-import { Logger } from 'merit/core/logger';
+import { IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
 
-import * as _ from "lodash";
+import * as _ from 'lodash';
+import { Logger } from 'merit/core/logger';
+import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
 
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
-import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { ConfigService } from 'merit/shared/config.service';
+import { WalletService } from 'merit/wallets/wallet.service';
 
 
 @IonicPage({
@@ -35,18 +34,16 @@ export class CreateWalletView {
 
   defaultBwsUrl: string;
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private config: ConfigService,
-    private walletService: WalletService,
-    private loadCtrl: LoadingController,
-    private toastCtrl: MeritToastController,
-    private modalCtrl: ModalController,
-    private logger: Logger,
-    private pushNotificationService: PushNotificationsService,
-    private pollingNotificationService: PollingNotificationsService
-  ) {
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private config: ConfigService,
+              private walletService: WalletService,
+              private loadCtrl: LoadingController,
+              private toastCtrl: MeritToastController,
+              private modalCtrl: ModalController,
+              private logger: Logger,
+              private pushNotificationService: PushNotificationsService,
+              private pollingNotificationService: PollingNotificationsService) {
     this.formData.bwsurl = config.getDefaults().bws.url;
     this.defaultBwsUrl = config.getDefaults().bws.url;
   }
@@ -104,10 +101,10 @@ export class CreateWalletView {
       const wallet = await this.walletService.createWallet(opts);
       // Subscribe to push notifications or to long-polling for this wallet.
       if (this.config.get().pushNotificationsEnabled) {
-        this.logger.info("Subscribing to push notifications for default wallet");
+        this.logger.info('Subscribing to push notifications for default wallet');
         this.pushNotificationService.subscribe(wallet);
       } else {
-        this.logger.info("Subscribing to long polling for default wallet");
+        this.logger.info('Subscribing to long polling for default wallet');
         this.pollingNotificationService.enablePolling(wallet);
       }
 
@@ -137,7 +134,7 @@ export class CreateWalletView {
 
       // We should callback to the wallets list page to let it know that there is a new wallet
       // and that it should updat it's list.
-      const callback = this.navParams.get("updateWalletListCB");
+      const callback = this.navParams.get('updateWalletListCB');
       await loader.dismiss();
       await callback();
       return this.navCtrl.pop();

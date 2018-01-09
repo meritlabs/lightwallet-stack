@@ -37,7 +37,7 @@ export class Profile {
     x.vaults = obj.vaults || [];
 
     if (x.credentials[0] && typeof x.credentials[0] != 'object')
-      throw ("credentials should be an object");
+      throw ('credentials should be an object');
 
     return x;
   };
@@ -56,7 +56,8 @@ export class Profile {
     for (let i in this.credentials) {
       let c = this.credentials[i];
       if (c.walletId == walletId) return true;
-    };
+    }
+    ;
     return false;
   };
 
@@ -122,7 +123,8 @@ export class Profile {
     for (let i in this.vaults) {
       let c = this.vaults[i];
       if (c.id == id) return true;
-    };
+    }
+    ;
     return false;
   };
 

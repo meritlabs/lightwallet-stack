@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Logger } from 'merit/core/logger';
+import { Injectable } from '@angular/core';
 import { LanguageService } from 'merit/core/language.service';
+import { Logger } from 'merit/core/logger';
 import { ConfigService } from 'merit/shared/config.service';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 
@@ -44,13 +44,11 @@ export class AppService {
   public info: AppSettings;
   private jsonPath: string = 'assets/appConfig.json';
 
-  constructor(
-    public http: HttpClient,
-    private logger: Logger,
-    private language: LanguageService,
-    private config: ConfigService,
-    private touchid: TouchIdService
-  ) {
+  constructor(public http: HttpClient,
+              private logger: Logger,
+              private language: LanguageService,
+              private config: ConfigService,
+              private touchid: TouchIdService) {
     this.logger.info('AppService initialized.');
   }
 

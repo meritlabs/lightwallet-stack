@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Logger } from 'merit/core/logger';
 import { Events } from 'ionic-angular';
+
+import * as _ from 'lodash';
+import { Logger } from 'merit/core/logger';
 
 
 import { PersistenceService } from 'merit/core/persistence.service';
-
-import * as _ from "lodash";
 
 /*
   Need to think about how to name this optimally, given..
@@ -20,20 +20,20 @@ interface Config {
 
   wallet: {
     requiredCopayers: number;
-      totalCopayers: number;
-      reconnectDelay: number;
-      spendUnconfirmed: boolean;
-      idleDurationMin: number;
-      settings: {
-        unitName: string;
-        unitToMicro: number;
-        unitDecimals: number;
-        unitCode: string;
-        alternativeName: string;
-        alternativeIsoCode: string;
-        defaultLanguage: string;
-        feeLevel?: string;
-      };
+    totalCopayers: number;
+    reconnectDelay: number;
+    spendUnconfirmed: boolean;
+    idleDurationMin: number;
+    settings: {
+      unitName: string;
+      unitToMicro: number;
+      unitDecimals: number;
+      unitCode: string;
+      alternativeName: string;
+      alternativeIsoCode: string;
+      defaultLanguage: string;
+      feeLevel?: string;
+    };
   };
 
   bws: {
@@ -207,17 +207,15 @@ export class ConfigService {
   private configCache: Config;
 
 
-  constructor(
-    private logger: Logger,
-    private events: Events,
-    private persistence: PersistenceService
-  ) {
+  constructor(private logger: Logger,
+              private events: Events,
+              private persistence: PersistenceService) {
     this.load()
       .then(() => {
         this.logger.debug('ConfigService initialized.');
       }).catch(err => {
-        this.logger.warn('ConfigService could not load default config');
-      })
+      this.logger.warn('ConfigService could not load default config');
+    })
   }
 
   async load() {
@@ -231,7 +229,7 @@ export class ConfigService {
     }
   }
 
-  async set(newOpts: object):Promise<any> {
+  async set(newOpts: object): Promise<any> {
     let config = _.cloneDeep(configDefault);
 
     if (_.isString(newOpts)) {

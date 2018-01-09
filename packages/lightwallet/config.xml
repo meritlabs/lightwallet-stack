@@ -120,7 +120,7 @@
     </plugin>
     <plugin name="branch-cordova-sdk" spec="^2.6.21" />
     <plugin name="cordova-plugin-fcm" spec="^2.1.2" />
+    <allow-navigation href="http://192.168.1.98:8100" />
     <engine name="ios" spec="4.5.4" />
     <engine name="android" spec="^6.4.0" />
-    <allow-navigation href="http://192.168.1.98:8100" />
 </widget>

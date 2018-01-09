@@ -7,10 +7,10 @@ import { SelectLanguageModal } from 'merit/settings/select-language/select-langu
   declarations: [
     SelectLanguageModal,
   ],
-  providers: [
-  ],
+  providers: [],
   imports: [
     IonicPageModule.forChild(SelectLanguageModal),
   ],
 })
-export class SelectLanguageComponentModule {}
+export class SelectLanguageComponentModule {
+}

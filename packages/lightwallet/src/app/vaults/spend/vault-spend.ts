@@ -9,4 +9,5 @@ import { IonicPage } from 'ionic-angular';
   selector: 'vault-spend-view',
   templateUrl: 'vault-spend.html',
 })
-export class VaultSpendView {}
+export class VaultSpendView {
+}

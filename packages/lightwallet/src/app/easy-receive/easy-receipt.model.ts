@@ -1,14 +1,14 @@
-export class EasyReceipt  {
+export class EasyReceipt {
 
-  parentAddress:string;
-  senderName:string;
-  secret:string;
-  senderPublicKey:string;
-  blockTimeout:number;
-  deepLinkURL:string;
-  checkPassword:boolean;
+  parentAddress: string;
+  senderName: string;
+  secret: string;
+  senderPublicKey: string;
+  blockTimeout: number;
+  deepLinkURL: string;
+  checkPassword: boolean;
 
-  constructor(fields:any) {
+  constructor(fields: any) {
     for (const f in fields) {
       this[f] = fields[f];
     }
@@ -25,6 +25,7 @@ export class EasyReceipt  {
   }
 
 }
+
 export type EasyReceiptTxData = {
   result: {
     found: true,
