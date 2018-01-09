@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { ErrorHandler, NgModule } from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
@@ -121,6 +121,10 @@ export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
 }
 
+export function loadConfigs(appService) {
+  return () => appService.getInfo();
+}
+
 @NgModule({
   declarations: [
     MeritLightWallet,
@@ -149,7 +153,13 @@ export function createTranslateLoader(http: HttpClient) {
   providers: [
     ...getProviders(),
     ...getIonicNativePlugins(),
-    { provide: ErrorHandler, useClass: IonicErrorHandler }
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: loadConfigs,
+      deps: [AppService],
+      multi: true
+    }
   ]
 })
 export class AppModule {

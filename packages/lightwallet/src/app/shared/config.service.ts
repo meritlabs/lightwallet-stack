@@ -206,7 +206,6 @@ const configDefault: Config = {
 export class ConfigService {
   private configCache: Config;
 
-
   constructor(private logger: Logger,
               private events: Events,
               private persistence: PersistenceService) {
