@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 
-const LOGGING_ENABLED = true;
+const LOGGING_ENABLED = false;
 const TRACE_ENABLED = false;
 
 @Injectable()

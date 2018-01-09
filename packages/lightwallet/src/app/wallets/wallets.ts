@@ -103,12 +103,12 @@ export class WalletsView {
 
   async ionViewDidLoad() {
     this.logger.warn('Hello WalletsView :: IonViewDidLoad!');
-    this.platform.resume.subscribe(() => {
-      this.logger.info('WalletView is going to refresh data on resume.');
-      this.updateAllInfo({ force: true }).then(() => {
-        this.logger.info('Got updated data in walletsView on resume.')
-      });
-    });
+    // this.platform.resume.subscribe(() => {
+    //   this.logger.info('WalletView is going to refresh data on resume.');
+    //   this.updateAllInfo({ force: true }).then(() => {
+    //     this.logger.info('Got updated data in walletsView on resume.')
+    //   });
+    // });
 
     await this.updateAllInfo({ force: true });
     this.logger.info('Got updated data in walletsView on Ready!!');

@@ -43,17 +43,13 @@ export class MeritLightWallet {
               private easyReceiveService: EasyReceiveService,
               private app: App,
               private events: Events,
-              private pushNotificationService: PushNotificationsService) {
-    if (typeof process !== 'undefined') {
-      process.on('unhandledRejection', this.logger.info.bind(console));
-    }
-  }
+              pushNotificationService: PushNotificationsService) {}
 
   async ngOnInit() {
-    this.platform.resume.subscribe(() => {
-      this.logger.info('Returning Native App from Background!');
-      this.loadProfileAndEasySend();
-    });
+    // this.platform.resume.subscribe(() => {
+    //   this.logger.info('Returning Native App from Background!');
+    //   this.loadProfileAndEasySend();
+    // });
 
     const readySource = await this.platform.ready();
     const appInfo: any = await this.appService.getInfo();
