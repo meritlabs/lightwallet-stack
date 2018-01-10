@@ -84,7 +84,7 @@
         <link-domain value="merit.app.link" />
         <ios-team-release value="MLJ7SU96NS" />
     </branch-config>
-    <content original-src="index.html" src="http://192.168.1.98:8100" />
+    <content src="index.html" />
     <edit-config file="*-Info.plist" mode="merge" target="NSCameraUsageDescription">
         <string>To scan QR Codes of friends to easily send them Merit.</string>
     </edit-config>

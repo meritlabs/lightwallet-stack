@@ -46,12 +46,14 @@ export class MeritLightWallet {
               pushNotificationService: PushNotificationsService) {}
 
   async ngOnInit() {
-    // this.platform.resume.subscribe(() => {
-    //   this.logger.info('Returning Native App from Background!');
-    //   this.loadProfileAndEasySend();
-    // });
+    this.platform.resume.subscribe(() => {
+      this.logger.info('Returning Native App from Background!');
+      this.loadProfileAndEasySend();
+    });
 
     const readySource = await this.platform.ready();
+    await this.splashScreen.show();
+
     const appInfo: any = await this.appService.getInfo();
     this.logger.info(`
             platform ready (${ readySource }): -v ${ appInfo.version } # ${ appInfo.commitHash }
@@ -68,10 +70,10 @@ export class MeritLightWallet {
   private async loadProfileAndEasySend() {
     this.logger.info('LoadingProfileAndEasySend');
 
-    let profile;
+    if (!this.platform.is('cordova')) return;
 
     try {
-      profile = await this.profileService.getProfile();
+      let profile = await this.profileService.getProfile();
       this.logger.info('Got Profile....');
       // If the user has credentials and a profile, then let's send them to the transact
       // view
@@ -107,8 +109,6 @@ export class MeritLightWallet {
     } catch (err) {
       this.logger.error(err);
     }
-
-    return this.nav.setRoot((profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView');
   }
 
   /*
@@ -118,8 +118,12 @@ export class MeritLightWallet {
   private async initializeApp() {
     this.statusBar.styleLightContent();
 
-    // wait until we have a root view before hiding splash screen
     await this.loadProfileAndEasySend();
+
+    let profile = await this.profileService.getProfile();
+    await this.nav.setRoot((profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView');
+
+    // wait until we have a root view before hiding splash screen
     this.splashScreen.hide();
   }
 
