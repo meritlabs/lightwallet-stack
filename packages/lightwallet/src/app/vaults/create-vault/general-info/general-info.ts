@@ -22,7 +22,7 @@ export class CreateVaultGeneralInfoView {
 
   formData = { vaultName: '', whitelist: [] };
   whitelistCandidates = [];
-  bitcore = null;
+  bitcore = this.bwc.getBitcore();
   whitelistedWallets: any = {};
 
   constructor(private navCtrl: NavController,
@@ -33,10 +33,7 @@ export class CreateVaultGeneralInfoView {
               private bwc: BwcService,
               private logger: Logger,
               private toastCtrl: MeritToastController,
-              public navParams: NavParams,) {
-    this.bitcore = this.bwc.getBitcore();
-    this.logger.info('bitcore', this.bitcore);
-  }
+              public navParams: NavParams,) {}
 
   get isNextAvailable(): boolean {
     return this.formData.vaultName.length > 0 && this.formData.whitelist.length > 0;
@@ -83,12 +80,11 @@ export class CreateVaultGeneralInfoView {
   }
 
   toDeposit() {
-    this.setWhitelistedWallets();
     this.createVaultService.updateData(this.formData);
     this.navCtrl.push('CreateVaultDepositView', { refreshVaultList: this.navParams.get('refreshVaultList') });
   }
 
-  private setWhitelistedWallets() {
+  setWhitelistedWallets() {
     this.formData.whitelist = this.whitelistCandidates
       .filter((w: MeritWalletClient) => this.whitelistCandidates[w.id])
       .map((w: MeritWalletClient) => w.id);
