@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { AlertController, App, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { AlertController, App, IonicPage, LoadingController, NavController, NavParams, Tabs } from 'ionic-angular';
 import * as  _ from 'lodash';
 import { Logger } from 'merit/core/logger';
 import { ToastConfig } from 'merit/core/toast.config';
@@ -57,7 +57,8 @@ export class SendConfirmView {
               private walletService: WalletService,
               private formatService: TxFormatService,
               private configService: ConfigService,
-              private logger: Logger) {
+              private logger: Logger,
+              private tabs: Tabs) {
     this.logger.info('Hello SendConfirm View');
   }
 
@@ -208,19 +209,20 @@ export class SendConfirmView {
       await sendReferrals;
       await this.approveTx();
       if (this.txData.recipient.sendMethod == 'sms') {
-        return this.easySendService.sendSMS(
+        await this.easySendService.sendSMS(
           this.txData.recipient.phoneNumber,
           this.viewData.amountMrt,
           this.txData.easySendURL
         );
       } else if (this.txData.recipient.sendMethod == 'email') {
-        return this.easySendService.sendEmail(
+        await this.easySendService.sendEmail(
           this.txData.recipient.email,
           this.viewData.amountMrt,
           this.txData.easySendURL
         );
       }
-      this.navCtrl.push('WalletsView');
+      this.navCtrl.popAll();
+      this.tabs.select(0);
     }
     catch (err) {
       return this.toastCtrl
