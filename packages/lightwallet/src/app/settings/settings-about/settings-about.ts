@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
-import { AppService } from "merit/core/app-settings.service";
 import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
+import { AppService } from 'merit/core/app-settings.service';
 
 @IonicPage()
 @Component({
@@ -10,17 +10,15 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 })
 export class SettingsAboutView {
 
-  public version:string;
-  public commitHash:string;
-  public repoUrl:string;
+  public version: string;
+  public commitHash: string;
+  public repoUrl: string;
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private  alertCtrl:AlertController,
-    private inAppBrowser:InAppBrowser,
-    private appSettingsService:AppService
-  ) {
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private  alertCtrl: AlertController,
+              private inAppBrowser: InAppBrowser,
+              private appSettingsService: AppService) {
 
   }
 
@@ -48,10 +46,15 @@ export class SettingsAboutView {
       title: 'External link',
       message: 'You can see the latest developments and contribute to this open source app by visiting our project on GitHub',
       buttons: [
-        {text: 'Cancel', role: 'cancel', handler: () => {}},
-        {text: 'Open GitHub', handler: () => {
-          this.inAppBrowser.create(this.repoUrl);
-        } }
+        {
+          text: 'Cancel', role: 'cancel', handler: () => {
+          }
+        },
+        {
+          text: 'Open GitHub', handler: () => {
+            this.inAppBrowser.create(this.repoUrl);
+          }
+        }
       ]
     });
 

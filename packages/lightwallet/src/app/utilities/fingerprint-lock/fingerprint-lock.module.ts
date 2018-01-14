@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { FingerprintLockView } from "./fingerprint-lock";
-import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
-
+import { FingerprintLockView } from './fingerprint-lock';
 
 @NgModule({
   declarations: [
@@ -10,9 +8,7 @@ import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
   ],
   imports: [
     IonicPageModule.forChild(FingerprintLockView),
-  ],
-  providers: [
-    TouchIdService
   ]
 })
-export class FingerprintLockComponentModule {}
+export class FingerprintLockComponentModule {
+}

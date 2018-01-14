@@ -1,19 +1,17 @@
 import { Injectable } from '@angular/core';
-import { BwcService } from 'merit/core/bwc.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
+import { BwcService } from 'merit/core/bwc.service';
 import { PersistenceService } from 'merit/core/persistence.service';
+import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()
 export class EasySendService {
   private bitcore: any;
 
-  constructor(
-    private persistenceService: PersistenceService,
-    private socialSharing: SocialSharing,
-    private bwcService: BwcService
-  ) {
+  constructor(private persistenceService: PersistenceService,
+              private socialSharing: SocialSharing,
+              private bwcService: BwcService) {
     this.bitcore = this.bwcService.getBitcore();
   }
 
@@ -64,7 +62,7 @@ export class EasySendService {
       });
   }
 
-  public sendSMS(phoneNumber: string, amountMrt:string, url: string): Promise<any> {
+  public sendSMS(phoneNumber: string, amountMrt: string, url: string): Promise<any> {
     let msg: string = `Here is ${amountMrt} Merit.  Click here to redeem: ${url}`
     if (msg.length > 160) {
       // TODO: Find a way to properly split the URL across two Messages, if needed.
@@ -79,9 +77,9 @@ export class EasySendService {
     });
   }
 
-  public sendEmail(emailAddress: string, amountMrt:string, url: string): Promise<any> {
+  public sendEmail(emailAddress: string, amountMrt: string, url: string): Promise<any> {
     return Promise.resolve(this.socialSharing.canShareViaEmail()).then(() => {
-      const message:string =
+      const message: string =
         `I just sent you ${amountMrt} Merit! ` +
         `Merit is a new digital currency, and if you don't have a Merit Wallet yet, ` +
         `you can easily make one to claim the money. \n \n` +

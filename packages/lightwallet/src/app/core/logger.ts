@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 
-const LOGGING_ENABLED = true;
+const LOGGING_ENABLED = false;
 const TRACE_ENABLED = false;
 
 @Injectable()
@@ -13,21 +13,6 @@ export class Logger {
   static LEVEL_DEBUG = 3;
 
   private logs = [];
-
-  private isNode(): boolean {
-    return Object.prototype.toString.call(typeof process !== 'undefined' ? process : 0) === '[object process]';
-  }
-
-  private inspectObjectForNode(...messages): any[] {
-    // We nede to inspect objects to provide proper output in node console logs.
-    const util = require('util');
-    return _.map(messages, (message) => {
-      if (message instanceof Object) {
-        return util.inspect(message, false, 3);
-      }
-      return message;
-    })
-  }
 
   getLogs(level = Logger.LEVEL_INFO) {
     return this.logs.filter(l => l.level <= level);
@@ -84,6 +69,21 @@ export class Logger {
       messages = this.inspectObjectForNode(...messages);
     }
     this.info(messages);
+  }
+
+  private isNode(): boolean {
+    return Object.prototype.toString.call(typeof process !== 'undefined' ? process : 0) === '[object process]';
+  }
+
+  private inspectObjectForNode(...messages): any[] {
+    // We nede to inspect objects to provide proper output in node console logs.
+    const util = require('util');
+    return _.map(messages, (message) => {
+      if (message instanceof Object) {
+        return util.inspect(message, false, 3);
+      }
+      return message;
+    })
   }
 
 }

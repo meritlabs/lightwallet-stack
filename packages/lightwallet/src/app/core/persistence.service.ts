@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Logger } from 'merit/core/logger';
-import * as _ from 'lodash';
-import { EasyReceipt } from "merit/easy-receive/easy-receipt.model";
 import { Storage } from '@ionic/storage';
+import * as _ from 'lodash';
+import { Logger } from 'merit/core/logger';
+import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 
 const Keys = {
   ADDRESS_BOOK: network => 'addressbook-' + network,
@@ -37,25 +37,9 @@ const Keys = {
 
 @Injectable()
 export class PersistenceService {
-  
+
   constructor(private storage: Storage,
-              private log: Logger) {}
-
-  private get(key: any) {
-    return this.storage.get(key);
-  }
-
-  private set(key: string, value: any) {
-    if (typeof value === 'object') {
-      try {
-        value = JSON.parse(JSON.stringify(Object.assign({}, value)));
-      } catch (e) {}
-    }
-    return this.storage.set(key, value);
-  }
-
-  private remove(key: any) {
-    return this.storage.remove(key)
+              private log: Logger) {
   }
 
   storeNewProfile(profile): Promise<void> {
@@ -88,8 +72,8 @@ export class PersistenceService {
     return this.get(Keys.EASY_RECEIPTS);
   }
 
-  async deletePendingEasyReceipt(receipt:EasyReceipt) {
-    let  receipts = await this.get(Keys.EASY_RECEIPTS);
+  async deletePendingEasyReceipt(receipt: EasyReceipt) {
+    let receipts = await this.get(Keys.EASY_RECEIPTS);
     receipts = receipts || [];
     receipts = receipts.filter((r) =>
       !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
@@ -363,8 +347,12 @@ export class PersistenceService {
 
   removeAllWalletData(walletId: string): Promise<void> {
     return this.clearLastAddress(walletId)
-      .then(() => { return this.removeTxHistory(walletId); })
-      .then(() => { return this.clearBackupFlag(walletId); });
+      .then(() => {
+        return this.removeTxHistory(walletId);
+      })
+      .then(() => {
+        return this.clearBackupFlag(walletId);
+      });
   };
 
   setAmazonGiftCards(network: string, gcs: any): Promise<void> {
@@ -391,23 +379,6 @@ export class PersistenceService {
     return this.remove(Keys.TX_CONFIRM_NOTIF(txid));
   };
 
-
-  // cb(err, accounts)
-  // accounts: {
-  //   email_1: {
-  //     token: account token
-  //     cards: {
-  //       <card-data>
-  //     }
-  //   }
-  //   ...
-  //   email_n: {
-  //    token: account token
-  //    cards: {
-  //       <card-data>
-  //     }
-  //   }
-  // }
   //
   getBitpayAccounts(network: string): Promise<any> {
     return this.get(Keys.BITPAY_ACCOUNTS_V2(network));
@@ -442,11 +413,24 @@ export class PersistenceService {
       });
   };
 
-  // cards: [
-  //   eid: card id
-  //   id: card id
-  //   lastFourDigits: card number
-  //   token: card token
+
+  // cb(err, accounts)
+  // accounts: {
+  //   email_1: {
+  //     token: account token
+  //     cards: {
+  //       <card-data>
+  //     }
+  //   }
+  //   ...
+  //   email_n: {
+  //    token: account token
+  //    cards: {
+  //       <card-data>
+  //     }
+  //   }
+  // }
+
   // ]
   setBitpayDebitCards(network: string, email: string, cards: any): Promise<void> {
     return this.getBitpayAccounts(network)
@@ -458,12 +442,6 @@ export class PersistenceService {
       });
   };
 
-  // cards: [
-  //   eid: card id
-  //   id: card id
-  //   lastFourDigits: card number
-  //   token: card token
-  //   email: account email
   // ]
   getBitpayDebitCards(network: string): Promise<any[]> {
     return this.getBitpayAccounts(network)
@@ -496,4 +474,35 @@ export class PersistenceService {
         return this.set(Keys.BITPAY_ACCOUNTS_V2(network), allAccounts);
       });
   };
+
+  // cards: [
+  //   eid: card id
+  //   id: card id
+  //   lastFourDigits: card number
+  //   token: card token
+
+  private get(key: any) {
+    return this.storage.get(key);
+  }
+
+  // cards: [
+  //   eid: card id
+  //   id: card id
+  //   lastFourDigits: card number
+  //   token: card token
+  //   email: account email
+
+  private set(key: string, value: any) {
+    if (typeof value === 'object') {
+      try {
+        value = JSON.parse(JSON.stringify(Object.assign({}, value)));
+      } catch (e) {
+      }
+    }
+    return this.storage.set(key, value);
+  }
+
+  private remove(key: any) {
+    return this.storage.remove(key)
+  }
 }

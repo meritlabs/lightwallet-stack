@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ConfigService } from "merit/shared/config.service";
+import { IonicPage } from 'ionic-angular';
 
 
 @IonicPage({

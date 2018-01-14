@@ -1,16 +1,14 @@
-
-import * as _ from "lodash";
-
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
-import { WalletService } from "merit/wallets/wallet.service";
-import { ProfileService } from "merit/core/profile.service";
-import { VaultsService } from 'merit/vaults/vaults.service';
+import * as _ from 'lodash';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
-import { ToastConfig } from "merit/core/toast.config";
-import { MeritToastController } from "merit/core/toast.controller";
+import { ProfileService } from 'merit/core/profile.service';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
+import { VaultsService } from 'merit/vaults/vaults.service';
+import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from '../../../../lib/merit-wallet-client';
 
 @IonicPage({
@@ -24,26 +22,21 @@ export class CreateVaultGeneralInfoView {
 
   formData = { vaultName: '', whitelist: [] };
   whitelistCandidates = [];
-  bitcore = null;
+  bitcore = this.bwc.getBitcore();
   whitelistedWallets: any = {};
+
+  constructor(private navCtrl: NavController,
+              private createVaultService: CreateVaultService,
+              private profileService: ProfileService,
+              private walletService: WalletService,
+              private vaultsService: VaultsService,
+              private bwc: BwcService,
+              private logger: Logger,
+              private toastCtrl: MeritToastController,
+              public navParams: NavParams,) {}
 
   get isNextAvailable(): boolean {
     return this.formData.vaultName.length > 0 && this.formData.whitelist.length > 0;
-  }
-
-  constructor(
-    private navCtrl:NavController,
-    private createVaultService: CreateVaultService,
-    private profileService: ProfileService,
-    private walletService: WalletService,
-    private vaultsService: VaultsService,
-    private bwc: BwcService,
-    private logger: Logger,
-    private toastCtrl:MeritToastController,
-    public navParams: NavParams,
-  ){
-    this.bitcore = this.bwc.getBitcore();
-    this.logger.info('bitcore', this.bitcore);
   }
 
   async ionViewDidLoad() {
@@ -86,16 +79,15 @@ export class CreateVaultGeneralInfoView {
     // });
   }
 
-  private setWhitelistedWallets() {
+  toDeposit() {
+    this.createVaultService.updateData(this.formData);
+    this.navCtrl.push('CreateVaultDepositView', { refreshVaultList: this.navParams.get('refreshVaultList') });
+  }
+
+  setWhitelistedWallets() {
     this.formData.whitelist = this.whitelistCandidates
       .filter((w: MeritWalletClient) => this.whitelistCandidates[w.id])
       .map((w: MeritWalletClient) => w.id);
-  }
-
-  toDeposit() {
-    this.setWhitelistedWallets();
-    this.createVaultService.updateData(this.formData);
-    this.navCtrl.push('CreateVaultDepositView', { refreshVaultList: this.navParams.get('refreshVaultList') });
   }
 
   private async getAllWallets(): Promise<Array<any>> {
@@ -108,7 +100,7 @@ export class CreateVaultGeneralInfoView {
 
   private getAllVaults(): Promise<Array<any>> {
     return this.profileService.getHeadWalletClient().then((walletClient) => {
-      if(!walletClient) {
+      if (!walletClient) {
         return null;
       }
       return this.vaultsService.getVaults(walletClient);

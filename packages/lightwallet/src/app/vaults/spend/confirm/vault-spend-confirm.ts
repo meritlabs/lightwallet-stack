@@ -1,22 +1,20 @@
-import { ConfigService } from './../../../shared/config.service';
 import { Component } from '@angular/core';
-import { NavController, NavParams, IonicPage, ModalController, LoadingController } from 'ionic-angular';
+import { IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
+
+import * as  _ from 'lodash';
+import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { NotificationService } from 'merit/shared/notification.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
 import { PopupService } from 'merit/core/popup.service';
 import { ProfileService } from 'merit/core/profile.service';
-import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
 import { FeeService } from 'merit/shared/fee/fee.service';
-import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
-import { BwcService } from 'merit/core/bwc.service';
+import { NotificationService } from 'merit/shared/notification.service';
+import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
+import { TxFormatService } from 'merit/transact/tx-format.service';
 import { SpendVaultService } from 'merit/vaults/spend/vault-spend.service';
-
-import * as  _  from 'lodash';
+import { WalletService } from 'merit/wallets/wallet.service';
 
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
+import { ConfigService } from './../../../shared/config.service';
 
 @IonicPage({
   segment: 'vault/:vaultId/spend/confirm',
@@ -28,12 +26,12 @@ import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service
 })
 export class VaultSpendConfirmView {
 
-    // Statics
-    private static CONFIRM_LIMIT_USD = 20;
-    private static FEE_TOO_HIGH_LIMIT_PER = 15;
+  // Statics
+  private static CONFIRM_LIMIT_USD = 20;
+  private static FEE_TOO_HIGH_LIMIT_PER = 15;
 
   private dummyFeeReplaceMeWithActualFeeDontBeADummyMerit: string;
-  private dummyFeeReplaceMeWithActualFeeDontBeADummyUSD : string;
+  private dummyFeeReplaceMeWithActualFeeDontBeADummyUSD: string;
   private recipient: any;
   private txData: any = null;
   private wallet: MeritWalletClient;
@@ -47,24 +45,22 @@ export class VaultSpendConfirmView {
   private coins: Array<any> = [];
   private bitcore: any;
 
-  constructor(
-    private configService: ConfigService,
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private profileService: ProfileService,
-    private logger: Logger,
-    private feeService: FeeService,
-    private walletService: WalletService,
-    private txFormatService: TxFormatService,
-    private popupService: PopupService,
-    private modalCtrl: ModalController,
-    private notificationService: NotificationService,
-    private loadingCtrl: LoadingController,
-    private easySendService: EasySendService,
-    private bwc: BwcService,
-    private spendVaultService: SpendVaultService,
-  ) {
-    this.logger.info("Hello SendConfirm View");
+  constructor(private configService: ConfigService,
+              private navCtrl: NavController,
+              private navParams: NavParams,
+              private profileService: ProfileService,
+              private logger: Logger,
+              private feeService: FeeService,
+              private walletService: WalletService,
+              private txFormatService: TxFormatService,
+              private popupService: PopupService,
+              private modalCtrl: ModalController,
+              private notificationService: NotificationService,
+              private loadingCtrl: LoadingController,
+              private easySendService: EasySendService,
+              private bwc: BwcService,
+              private spendVaultService: SpendVaultService,) {
+    this.logger.info('Hello SendConfirm View');
     this.walletConfig = this.configService.get().wallet;
     this.bitcore = this.bwc.getBitcore();
   }
@@ -83,7 +79,7 @@ export class VaultSpendConfirmView {
     console.log('vault', this.vault);
 
     this.txData = {
-      toAddress:  this.recipient.address,
+      toAddress: this.recipient.address,
       txp: {},
       toName: this.recipient.name || '',
       toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
@@ -98,12 +94,16 @@ export class VaultSpendConfirmView {
     if (this.txData.toName) {
       return this.txData.toName;
     }
-    return this.txData.toAddress || "no one";
+    return this.txData.toAddress || 'no one';
   }
 
   public toggleCurrency(): void {
     this.showMerit = !this.showMerit;
   }
+
+  public toggleAddress() {
+    this.showAddress = !this.showAddress;
+  };
 
   private updateAmount(): any {
     if (!this.txData.toAmount) return;
@@ -136,16 +136,11 @@ export class VaultSpendConfirmView {
 
     const recepient = this.navParams.get('recipient');
 
-    return this.spendVaultService.spendVault(this.vault, spendKey,  this.txData.toAmount, recepient.address).then(() => {
+    return this.spendVaultService.spendVault(this.vault, spendKey, this.txData.toAmount, recepient.address).then(() => {
       return this.navCtrl.goToRoot({}).then(() => {
         return this.navCtrl.push('VaultDetailsView', { vaultId: this.vault._id, vault: this.vault });
       });
     });
   }
-
-
-  public toggleAddress() {
-    this.showAddress = !this.showAddress;
-  };
 
 }

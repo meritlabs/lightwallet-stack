@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Logger } from 'merit/core/logger';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ConfigService } from 'merit/shared/config.service';
+import * as _ from 'lodash';
+import { Logger } from 'merit/core/logger';
 
-import * as _ from "lodash";
+import { ConfigService } from 'merit/shared/config.service';
 
 // Language Service!
 // Uses POs
@@ -47,11 +47,9 @@ export class LanguageService {
   ];
   private current: string;
 
-  constructor(
-    private logger: Logger,
-    private translate: TranslateService,
-    private config: ConfigService
-  ) {
+  constructor(private logger: Logger,
+              private translate: TranslateService,
+              private config: ConfigService) {
     this.logger.info('LanguageService initialized.');
     this.translate.onLangChange.subscribe((event) => {
       this.logger.info('Settings language changed to: ' + event.lang);
@@ -74,7 +72,7 @@ export class LanguageService {
   set(lang: string) {
     this.current = lang;
     this.translate.use(lang);
-    this.config.set({wallet: { settings: { defaultLanguage: lang } } });
+    this.config.set({ wallet: { settings: { defaultLanguage: lang } } });
   }
 
   getName(lang: string) {
