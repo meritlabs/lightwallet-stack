@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import {AlertController} from "ionic-angular/index";
-
+import { AlertController } from 'ionic-angular/index';
 
 
 @IonicPage()
@@ -14,12 +13,10 @@ export class SelectLanguageModal {
   currentLanguage;
   availableLanguages;
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private  alertCtrl:AlertController,
-    private viewCtrl:ViewController
-  ) {
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private  alertCtrl: AlertController,
+              private viewCtrl: ViewController) {
     this.currentLanguage = this.navParams.get('currentLanguage');
     this.availableLanguages = this.navParams.get('availableLanguages')
   }
@@ -36,10 +33,15 @@ export class SelectLanguageModal {
       title: 'External link',
       message: 'You can see the latest developments and contribute to this open source app by visiting our project on GitHub',
       buttons: [
-        {text: 'Cancel', role: 'cancel', handler: () => {}},
-        {text: 'Open GitHub', handler: () => {
-          //todo open it
-        } }
+        {
+          text: 'Cancel', role: 'cancel', handler: () => {
+          }
+        },
+        {
+          text: 'Open GitHub', handler: () => {
+            //todo open it
+          }
+        }
       ]
     });
 

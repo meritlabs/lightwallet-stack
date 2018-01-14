@@ -10,4 +10,5 @@ import { FeedbackView } from 'merit/feedback/feedback';
     IonicPageModule.forChild(FeedbackView),
   ],
 })
-export class FeedbackComponentModule {}
+export class FeedbackComponentModule {
+}

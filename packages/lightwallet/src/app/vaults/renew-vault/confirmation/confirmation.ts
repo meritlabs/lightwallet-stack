@@ -1,17 +1,10 @@
-import * as _ from 'lodash';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { PopupService } from "merit/core/popup.service";
-
-import { WalletService } from 'merit/wallets/wallet.service';
-import { VaultsService } from 'merit/vaults/vaults.service';
 import { BwcService } from 'merit/core/bwc.service';
-import { ProfileService } from 'merit/core/profile.service';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
 import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service';
-import { Credentials } from 'src/lib/merit-wallet-client/lib/credentials';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-import { MeritToastController } from "merit/core/toast.controller";
-import { ToastConfig } from "merit/core/toast.config";
 
 @IonicPage({
   segment: 'vault/:vaultId/renew/confirmation',
@@ -29,13 +22,11 @@ export class VaultRenewConfirmationView {
   private formData = { masterKeyMnemonic: '' };
   private walletClient: MeritWalletClient = null;
 
-  constructor(
-    private navCtrl:NavController,
-    public navParams: NavParams,
-    private bwc: BwcService,
-    private toastCtrl:MeritToastController,
-    private renewVaultService: RenewVaultService,
-  ){
+  constructor(private navCtrl: NavController,
+              public navParams: NavParams,
+              private bwc: BwcService,
+              private toastCtrl: MeritToastController,
+              private renewVaultService: RenewVaultService,) {
     this.updatedVault = this.navParams.get('updatedVault');
     this.vault = this.navParams.get('vault');
     this.bitcore = this.bwc.getBitcore();
@@ -46,7 +37,7 @@ export class VaultRenewConfirmationView {
     console.log('confirmation view', this.updatedVault, this.vault);
   }
 
-  private sanatizeMnemonic(rawmnemonic: string): string{
+  private sanatizeMnemonic(rawmnemonic: string): string {
     let trimmed = rawmnemonic.trim();
     return trimmed.toLowerCase();
   }
@@ -60,7 +51,7 @@ export class VaultRenewConfirmationView {
     try {
       const sanatizedMasterKeyMnemonic = this.sanatizeMnemonic(this.formData.masterKeyMnemonic);
       masterKeyMnemonic = this.walletClient.getNewMnemonic(sanatizedMasterKeyMnemonic);
-    } catch(ex) {
+    } catch (ex) {
       return this.toastCtrl.create({
         message: 'The master key must only contain words seperated by spaces.',
         cssClass: ToastConfig.CLASS_ERROR

@@ -1,24 +1,23 @@
 import { Injectable } from '@angular/core';
-import { PlatformService } from 'merit/core/platform.service';
-import { ConfigService } from 'merit/shared/config.service';
+import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
 
 
 import { TouchID } from '@ionic-native/touch-id';
-import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
 import { Logger } from 'merit/core/logger';
+import { PlatformService } from 'merit/core/platform.service';
+import { ConfigService } from 'merit/shared/config.service';
 
 @Injectable()
 export class TouchIdService {
 
   private _isAvailable: boolean = false;
 
-  constructor(
-    private touchId: TouchID,
-    private androidFingerprintAuth: AndroidFingerprintAuth,
-    private platform: PlatformService,
-    private config: ConfigService,
-    private log: Logger
-  ) { }
+  constructor(private touchId: TouchID,
+              private androidFingerprintAuth: AndroidFingerprintAuth,
+              private platform: PlatformService,
+              private config: ConfigService,
+              private log: Logger) {
+  }
 
   init() {
     if (this.platform.isAndroid) this.checkAndroid();
@@ -29,8 +28,8 @@ export class TouchIdService {
     await this.platform.ready();
     this.touchId.isAvailable()
       .then(
-      res => this._isAvailable = true,
-      err => this.log.info("Fingerprint is not available")
+        res => this._isAvailable = true,
+        err => this.log.info('Fingerprint is not available')
       );
   }
 
@@ -41,7 +40,7 @@ export class TouchIdService {
     if (isAvailable) {
       this._isAvailable = isAvailable;
     } else {
-      this.log.info("Fingerprint is not available")
+      this.log.info('Fingerprint is not available')
     }
   }
 

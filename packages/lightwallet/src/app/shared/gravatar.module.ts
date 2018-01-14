@@ -7,10 +7,9 @@ import { GravatarComponent } from 'merit/shared/gravatar.component';
   declarations: [
     GravatarComponent
   ],
-  imports: [
-  ],
   exports: [
     GravatarComponent
   ]
 })
-export class GravatarModule {}
+export class GravatarModule {
+}

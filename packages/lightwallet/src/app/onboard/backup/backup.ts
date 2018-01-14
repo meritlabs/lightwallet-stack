@@ -1,7 +1,7 @@
-import * as _ from 'lodash';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { AlertController } from 'ionic-angular/components/alert/alert-controller';
+import * as _ from 'lodash';
 
 
 @IonicPage({
@@ -14,11 +14,10 @@ import { AlertController } from 'ionic-angular/components/alert/alert-controller
 export class BackupView {
   public mnemonic: string;
 
-  constructor(
-    public alertController: AlertController,
-    public navCtrl: NavController,
-    public navParams: NavParams,
-  ) {}
+  constructor(public alertController: AlertController,
+              public navCtrl: NavController,
+              public navParams: NavParams,) {
+  }
 
   ionViewDidLoad(): void {
     this.mnemonic = this.navParams.get('mnemonic');

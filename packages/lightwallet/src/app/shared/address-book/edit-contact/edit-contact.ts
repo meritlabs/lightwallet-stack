@@ -1,15 +1,14 @@
-import * as _ from 'lodash';
-
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, AlertController } from 'ionic-angular';
+import { Contacts } from '@ionic-native/contacts';
+import { AlertController, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { PopupService } from 'merit/core/popup.service';
-import { MeritToastController } from "merit/core/toast.controller";
-import { ToastConfig } from "merit/core/toast.config";
-import { MeritContact } from "merit/shared/address-book/merit-contact.model";
-import { Contacts } from '@ionic-native/contacts';
-import { MeritContactBuilder } from "merit/shared/address-book/merit-contact.builder";
-import { MeritContactService } from  "merit/shared/address-book/merit-contact.service";
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { MeritContactBuilder } from 'merit/shared/address-book/merit-contact.builder';
+import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
+import { MeritContactService } from 'merit/shared/address-book/merit-contact.service';
+import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 
 
 @IonicPage()
@@ -19,24 +18,23 @@ import { MeritContactService } from  "merit/shared/address-book/merit-contact.se
 })
 export class EditContactView {
 
-  public originalContact:MeritContact;
-  public editMode:boolean;
-  public newContact:MeritContact;
+  public originalContact: MeritContact;
+  public editMode: boolean;
+  public newContact: MeritContact;
   public email: any;
   public phoneNumber: any;
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private logger: Logger,
-    private popupService: PopupService,
-    private modalCtrl:ModalController,
-    private toastCtrl:MeritToastController,
-    private meritContactBuilder:MeritContactBuilder,
-    private meritContactService:MeritContactService,
-    private contacts:Contacts,
-    private alertCtrl:AlertController
-  ) {
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private logger: Logger,
+              private popupService: PopupService,
+              private modalCtrl: ModalController,
+              private toastCtrl: MeritToastController,
+              private meritContactBuilder: MeritContactBuilder,
+              private meritContactService: MeritContactService,
+              private contacts: Contacts,
+              private alertCtrl: AlertController,
+              private addressScanner: AddressScannerService) {
 
     this.originalContact = this.navParams.get('contact');
 
@@ -51,30 +49,13 @@ export class EditContactView {
 
   }
 
-  ionViewDidLoad() {
-  }
+  async openScanner() {
+    let address = await this.addressScanner.scanAddress();
 
-  private setDefaultValues() {
-    if (!this.newContact.emails.length) {
-      this.newContact.emails.push({type: 'other', value: ''});
+    if (typeof address === 'string') {
+      if (address.indexOf('merit:') == 0) address = address.slice(6);
+      this.newContact.meritAddresses[0].address = address;
     }
-    if (!this.newContact.phoneNumbers.length) {
-      this.newContact.phoneNumbers.push({type: 'other', value: ''});
-    }
-    if (!this.newContact.meritAddresses.length) {
-      this.newContact.meritAddresses.push({network: '', address: ''});
-    }
-  }
-
-  openScanner() {
-    let modal = this.modalCtrl.create('ImportScanView');
-    modal.onDidDismiss((address) => {
-      if (address) {
-        if (address.indexOf('merit:') == 0) address = address.slice(6);
-        this.newContact.meritAddresses[0].address = address;
-      }
-    });
-    modal.present();
   }
 
   save() {
@@ -96,7 +77,7 @@ export class EditContactView {
         this.originalContact.emails = this.newContact.emails;
         this.originalContact.phoneNumbers = this.newContact.phoneNumbers;
         this.originalContact.urls = this.newContact.urls;
-        this.originalContact.meritAddresses= this.newContact.meritAddresses;
+        this.originalContact.meritAddresses = this.newContact.meritAddresses;
       }
       this.navCtrl.pop();
     }).catch((err) => {
@@ -119,11 +100,11 @@ export class EditContactView {
 
   addEmail() {
     console.log('adding email');
-    this.newContact.emails.push({type: 'email', value: ''});
+    this.newContact.emails.push({ type: 'email', value: '' });
   }
 
   addPhone() {
-    this.newContact.phoneNumbers.push({type: 'email', value: ''});
+    this.newContact.phoneNumbers.push({ type: 'email', value: '' });
   }
 
   removePhone(phone) {
@@ -137,33 +118,46 @@ export class EditContactView {
 
   removeContact() {
 
-      const confirmMessage = this.isLocalContact()
-        ? 'Are you sure you want to remove Merit contact?'
-        : 'Are you sure you want to delete contact? This action will remove merit data only and will not affect anything in your device contact list';
+    const confirmMessage = this.isLocalContact()
+      ? 'Are you sure you want to remove Merit contact?'
+      : 'Are you sure you want to delete contact? This action will remove merit data only and will not affect anything in your device contact list';
 
-      const removeHandler = async () => {
-        await this.meritContactService.remove(this.originalContact);
-        await this.navCtrl.remove(2,1);
-        return this.navCtrl.pop();
-      };
+    const removeHandler = async () => {
+      await this.meritContactService.remove(this.originalContact);
+      await this.navCtrl.remove(2, 1);
+      return this.navCtrl.pop();
+    };
 
-      this.alertCtrl.create({
-        title: 'Remove data?',
-        message: confirmMessage,
-        buttons: [
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            handler: () => {}
-          },
-          {
-            text: 'Remove',
-            handler: () => {
-              removeHandler();
-            }
+    this.alertCtrl.create({
+      title: 'Remove data?',
+      message: confirmMessage,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
           }
-        ]
-      }).present();
+        },
+        {
+          text: 'Remove',
+          handler: () => {
+            removeHandler();
+          }
+        }
+      ]
+    }).present();
+  }
+
+  private setDefaultValues() {
+    if (!this.newContact.emails.length) {
+      this.newContact.emails.push({ type: 'other', value: '' });
+    }
+    if (!this.newContact.phoneNumbers.length) {
+      this.newContact.phoneNumbers.push({ type: 'other', value: '' });
+    }
+    if (!this.newContact.meritAddresses.length) {
+      this.newContact.meritAddresses.push({ network: '', address: '' });
+    }
   }
 
 }

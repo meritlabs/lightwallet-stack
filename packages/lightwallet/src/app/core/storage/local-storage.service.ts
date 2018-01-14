@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Logger } from 'merit/core/logger';
 import * as _ from 'lodash';
+import { Logger } from 'merit/core/logger';
 
-import { MeritStorage, KeyAlreadyExistsError } from 'merit/core/storage/storage.interface';
-
+import { KeyAlreadyExistsError, MeritStorage } from 'merit/core/storage/storage.interface';
 
 
 @Injectable()
 export class LocalStorage implements MeritStorage {
   ls: Storage;
+
   constructor(private log: Logger) {
-    this.ls = (typeof window.localStorage !== "undefined") ? window.localStorage : null;
+    this.ls = (typeof window.localStorage !== 'undefined') ? window.localStorage : null;
     if (!this.ls) throw new Error('localstorage not available');
   }
 

@@ -1,16 +1,16 @@
-import * as  _  from 'lodash';
-
-import { NavController, NavParams, IonicPage, AlertController, App, LoadingController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { MeritToastController } from "merit/core/toast.controller";
-import { ToastConfig } from "merit/core/toast.config";
-import { ConfigService } from "merit/shared/config.service";
 
-import { WalletService } from 'merit/wallets/wallet.service';
+import { AlertController, App, IonicPage, LoadingController, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
+import * as  _ from 'lodash';
 import { Logger } from 'merit/core/logger';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { ConfigService } from 'merit/shared/config.service';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { TxFormatService } from "merit/transact/tx-format.service";
+import { TxFormatService } from 'merit/transact/tx-format.service';
+
+import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
@@ -46,20 +46,20 @@ export class SendConfirmView {
   private referralsToSign: Array<any>;
   private viewData;
 
-  constructor(
-    private navParams: NavParams,
-    private navCtrl: NavController,
-    private toastCtrl: MeritToastController,
-    private alertController: AlertController,
-    private loadingCtrl: LoadingController,
-    private app: App,
-    private touchIdService: TouchIdService,
-    private easySendService: EasySendService,
-    private walletService: WalletService,
-    private formatService: TxFormatService,
-    private configService: ConfigService,
-    private logger: Logger
-  ) {
+  constructor(private navParams: NavParams,
+              private navCtrl: NavController,
+              private toastCtrl: MeritToastController,
+              private alertController: AlertController,
+              private loadingCtrl: LoadingController,
+              private app: App,
+              private touchIdService: TouchIdService,
+              private easySendService: EasySendService,
+              private walletService: WalletService,
+              private formatService: TxFormatService,
+              private configService: ConfigService,
+              private logger: Logger,
+              private tabs: Tabs,
+              private tab: Tab) {
     this.logger.info('Hello SendConfirm View');
   }
 
@@ -197,54 +197,55 @@ export class SendConfirmView {
     }
   }
 
-    private async send() {
-        let loadingSpinner = this.loadingCtrl.create({
-            content: 'Sending transaction...',
-            dismissOnPageChange: true,
-        });
-        loadingSpinner.present();
+  private async send() {
+    let loadingSpinner = this.loadingCtrl.create({
+      content: 'Sending transaction...',
+      dismissOnPageChange: true,
+    });
+    loadingSpinner.present();
 
-        const sendReferrals = Promise.all(this.referralsToSign.map(this.txData.wallet.sendReferral.bind(this.txData.wallet)));
+    const sendReferrals = Promise.all(this.referralsToSign.map(this.txData.wallet.sendReferral.bind(this.txData.wallet)));
 
-        try {
-            await sendReferrals;
-            await this.approveTx();
-            if (this.txData.recipient.sendMethod == 'sms') {
-                return this.easySendService.sendSMS(
-                    this.txData.recipient.phoneNumber,
-                    this.viewData.amountMrt,
-                    this.txData.easySendURL
-                );
-            } else if (this.txData.recipient.sendMethod == 'email') {
-                return this.easySendService.sendEmail(
-                    this.txData.recipient.email,
-                    this.viewData.amountMrt,
-                    this.txData.easySendURL
-                );
-            }
-            this.navCtrl.push('WalletsView');
-        }
-        catch (err) {
-            return this.toastCtrl
-                .create({
-                    message: err,
-                    cssClass: ToastConfig.CLASS_ERROR,
-                })
-                .present();
-        }
-        finally {
-            loadingSpinner.dismiss();
-            this.referralsToSign = [];
-        }
-
+    try {
+      await sendReferrals;
+      await this.approveTx();
+      if (this.txData.recipient.sendMethod == 'sms') {
+        await this.easySendService.sendSMS(
+          this.txData.recipient.phoneNumber,
+          this.viewData.amountMrt,
+          this.txData.easySendURL
+        );
+      } else if (this.txData.recipient.sendMethod == 'email') {
+        await this.easySendService.sendEmail(
+          this.txData.recipient.email,
+          this.viewData.amountMrt,
+          this.txData.easySendURL
+        );
+      }
+      this.tab.popToRoot();
+      this.tabs.select(0);
+    }
+    catch (err) {
+      return this.toastCtrl
+        .create({
+          message: err,
+          cssClass: ToastConfig.CLASS_ERROR,
+        })
+        .present();
+    }
+    finally {
+      loadingSpinner.dismiss();
+      this.referralsToSign = [];
     }
 
-    private approveTx(): Promise<void> {
-        if (!this.txData.wallet.canSign() && !this.txData.wallet.isPrivKeyExternal()) {
-            this.logger.info('No signing proposal: No private key');
-            return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp, _.noop);
-        } else {
-            return this.walletService.publishAndSign(this.txData.wallet, this.txData.txp, _.noop);
-        }
+  }
+
+  private approveTx(): Promise<void> {
+    if (!this.txData.wallet.canSign() && !this.txData.wallet.isPrivKeyExternal()) {
+      this.logger.info('No signing proposal: No private key');
+      return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp, _.noop);
+    } else {
+      return this.walletService.publishAndSign(this.txData.wallet, this.txData.txp, _.noop);
     }
+  }
 }

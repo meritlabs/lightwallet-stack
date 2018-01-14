@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Logger } from 'merit/core/logger';
-import * as _ from 'lodash';
-import { File, DirectoryEntry } from '@ionic-native/file';
+import { DirectoryEntry, File } from '@ionic-native/file';
 import { Platform } from 'ionic-angular';
-import { MeritStorage, KeyAlreadyExistsError } from 'merit/core/storage/storage.interface';
-
+import * as _ from 'lodash';
+import { Logger } from 'merit/core/logger';
+import { KeyAlreadyExistsError, MeritStorage } from 'merit/core/storage/storage.interface';
 
 
 @Injectable()
@@ -12,11 +11,9 @@ export class FileStorage implements MeritStorage {
   fs: FileSystem;
   dir: DirectoryEntry;
 
-  constructor(
-    private file: File,
-    private platform: Platform,
-    private log: Logger
-  ) {
+  constructor(private file: File,
+              private platform: Platform,
+              private log: Logger) {
   }
 
   init(): Promise<void> {
@@ -28,7 +25,7 @@ export class FileStorage implements MeritStorage {
       return this.getDir().then(dir => {
         if (!dir.nativeURL) return;
         this.dir = dir;
-        this.log.debug("Got main dir:", dir.nativeURL);
+        this.log.debug('Got main dir:', dir.nativeURL);
       });
     };
 
@@ -50,10 +47,10 @@ export class FileStorage implements MeritStorage {
 
     let url = this.file.dataDirectory;
     return Promise.resolve(this.file.resolveDirectoryUrl(url)).catch(err => {
-        let msg = 'Could not resolve filesystem ' + url;
-        this.log.warn(msg, err);
-        throw err || new Error(msg);
-      });
+      let msg = 'Could not resolve filesystem ' + url;
+      this.log.warn(msg, err);
+      throw err || new Error(msg);
+    });
   };
 
   async get(k: string): Promise<any> {
