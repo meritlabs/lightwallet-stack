@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { AlertController, App, IonicPage, LoadingController, NavController, NavParams, Tabs } from 'ionic-angular';
+import { AlertController, App, IonicPage, LoadingController, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
 import * as  _ from 'lodash';
 import { Logger } from 'merit/core/logger';
 import { ToastConfig } from 'merit/core/toast.config';
@@ -58,7 +58,8 @@ export class SendConfirmView {
               private formatService: TxFormatService,
               private configService: ConfigService,
               private logger: Logger,
-              private tabs: Tabs) {
+              private tabs: Tabs,
+              private tab: Tab) {
     this.logger.info('Hello SendConfirm View');
   }
 
@@ -221,7 +222,7 @@ export class SendConfirmView {
           this.txData.easySendURL
         );
       }
-      this.navCtrl.popAll();
+      this.tab.popToRoot();
       this.tabs.select(0);
     }
     catch (err) {

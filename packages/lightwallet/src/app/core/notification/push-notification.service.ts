@@ -79,7 +79,7 @@ export class PushNotificationsService {
     });
     //this.pushObj = this.push.init(this.pushOptions);
 
-    this.FCM.onNotification().subscribe((data: any) => {
+    this.FCM.onNotification().subscribe(async (data: any) => {
       if (!this._token) return;
       this.navCtrl = this.app.getActiveNav();
       this.logger.info('New Event Push onNotification: ' + JSON.stringify(data));
@@ -87,9 +87,9 @@ export class PushNotificationsService {
         // Notification was received on device tray and tapped by the user.
         let walletIdHashed = data.walletId;
         if (!walletIdHashed) return;
-        this.navCtrl.setRoot('TransactView');
-        this.navCtrl.popToRoot();
-        this._openWallet(walletIdHashed);
+        await this.navCtrl.setRoot('TransactView');
+        await this.navCtrl.popToRoot();
+        return this._openWallet(walletIdHashed);
       } else {
         // Notification was received in foreground. Let's propogate the event
         // (using Ionic Events) to the relevant view.
