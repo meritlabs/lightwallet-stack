@@ -13,7 +13,6 @@ import { RateService } from 'merit/transact/rate.service';
 export class TourView {
 
   @ViewChild(Slides) slides: Slides;
-  public currentIndex: number;
 
   public rateData = { usdPerMerit: null };
 
@@ -27,8 +26,11 @@ export class TourView {
   }
 
   slideNext() {
-    this.slides.slideNext();
-    this.currentIndex = this.slides.getActiveIndex();
+    if (this.slides.getActiveIndex() === 2) {
+      this.toUnlockView();
+    } else {
+      this.slides.slideNext();
+    }
   }
 
   toUnlockView() {

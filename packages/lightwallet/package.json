@@ -19,6 +19,7 @@
     "lint": "ionic-app-scripts lint",
     "ionic:build": "ionic-app-scripts build",
     "ionic:serve": "ionic-app-scripts serve",
+    "ionic": "ionic-app-scripts",
     "electron:run": "./node_modules/.bin/electron .",
     "electron:package": "./node_modules/.bin/electron-builder",
     "electron:clean": "rm -rf ./dist",

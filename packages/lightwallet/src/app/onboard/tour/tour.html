@@ -1,6 +1,6 @@
 <ion-header>
     <span>Already a member?</span>
-    <button ion-button clear (click)="toUnlockView()">
+    <button ion-button clear navPush="ImportView">
         Restore
     </button>
 </ion-header>
@@ -13,6 +13,7 @@
         <ion-slide>
             <div class="slide-illustration">
                 <img src="assets/img/onboarding/city.svg" alt="">
+              <img src="assets/img/onboarding/phone.svg" alt="" class="phone">
             </div>
             <div class="slide-content">
                 <h1 class="title">
@@ -29,8 +30,9 @@
 
         <ion-slide>
 
-            <div class="slide-illustration">
-                <img src="assets/img/onboarding/graphs.svg" alt="">
+          <!-- TODO: This is a temporary solution because SVG isn't good -->
+            <div class="slide-illustration graph">
+              &nbsp;
             </div>
             <div class="slide-content">
                 <h1 class="title">
@@ -50,7 +52,7 @@
 
         <ion-slide>
             <div class="slide-illustration">
-                <img src="assets/img/onboarding/vault.svg" alt="">
+                <img src="assets/img/onboarding/vault.svg" alt="" class="vault">
             </div>
 
             <div class="slide-content">
@@ -77,7 +79,7 @@
 <ion-footer>
     <div class="next-button">
         <button ion-button icon-end clear (click)="slideNext()" translate>
-            Next
+            {{ slides.getActiveIndex() == 2? 'Done' : 'Next' }}
             <ion-icon name="ios-arrow-forward"></ion-icon>
         </button>
     </div>
