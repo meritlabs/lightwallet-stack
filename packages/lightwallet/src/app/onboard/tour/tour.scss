@@ -78,12 +78,24 @@ view-tour {
       .slide-illustration {
         background: map_get($colors, primary);
         position: relative;
+        overflow: hidden;
 
         > img {
           position: absolute;
           width: 100%;
           height: auto;
           bottom: 0;
+
+          &.phone {
+            // TODO verify this on larger screens
+            bottom: -40%;
+          }
+        }
+
+        &.graph {
+          background: url('../assets/img/onboarding/graph.png') top/cover no-repeat;
+          content: '';
+          display: block;
         }
       }
 
