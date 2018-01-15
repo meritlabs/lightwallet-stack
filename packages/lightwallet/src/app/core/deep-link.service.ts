@@ -3,6 +3,7 @@ import { Platform } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { PersistenceService } from 'merit/core/persistence.service';
 
+declare const Branch: any;
 
 @Injectable()
 export class DeepLinkService {
@@ -18,6 +19,10 @@ export class DeepLinkService {
       return;
     }
 
-    window['Branch'].initSession(handler);
+    if (typeof Branch !== 'undefined') {
+      this.logger.info('Initing branch');
+      Branch.setDebug(true);
+      Branch.initSession(handler);
+    }
   }
 }

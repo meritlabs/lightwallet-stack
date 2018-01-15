@@ -70,19 +70,16 @@ export class CreateVaultService {
         return wallet.signAddressAndUnlock(unlock).then((err, resp1) => {
           return this.getTxp(vault, false);
         }).then((txp) => {
-          console.log('txp', txp);
           return this.walletService.prepare(wallet).then((password: string) => {
             return { password: password, txp: txp };
           });
         }).then((args: any) => {
           return this.walletService.publishTx(wallet, args.txp).then((pubTxp) => {
-            console.log('pubTxp', pubTxp);
             return { password: args.password, txp: pubTxp };
           });
         }).then((args: any) => {
           return this.walletService.signTx(wallet, args.txp, args.password);
         }).then((signedTxp: any) => {
-          console.log('signedTxp', signedTxp);
           vault.coins.push(signedTxp);
           return vault;
         }).then((vault) => {

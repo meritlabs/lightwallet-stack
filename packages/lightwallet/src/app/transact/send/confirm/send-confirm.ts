@@ -12,6 +12,7 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { EasySend, easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 
 
 /**
@@ -40,7 +41,7 @@ export class SendConfirmView {
       phoneNumber?: string;
     };
     txp: any;
-    easySendURL: string;
+    easySend?: EasySend;
     wallet: MeritWalletClient;
   };
   private referralsToSign: Array<any>;
@@ -209,19 +210,26 @@ export class SendConfirmView {
     try {
       await sendReferrals;
       await this.approveTx();
-      if (this.txData.recipient.sendMethod == 'sms') {
-        await this.easySendService.sendSMS(
-          this.txData.recipient.phoneNumber,
-          this.viewData.amountMrt,
-          this.txData.easySendURL
-        );
-      } else if (this.txData.recipient.sendMethod == 'email') {
-        await this.easySendService.sendEmail(
-          this.txData.recipient.email,
-          this.viewData.amountMrt,
-          this.txData.easySendURL
-        );
+
+      if (this.txData.easySend) {
+        await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
+        if (this.txData.recipient.sendMethod == 'sms') {
+          return this.easySendService.sendSMS(
+            this.txData.recipient.phoneNumber,
+            this.viewData.amountMrt,
+            easySendURL(this.txData.easySend)
+          );
+        } else if (this.txData.recipient.sendMethod == 'email') {
+          return this.easySendService.sendEmail(
+            this.txData.recipient.email,
+            this.viewData.amountMrt,
+            easySendURL(this.txData.easySend)
+          );
+        } else return Promise.reject(new Error(
+          `Unsupported sending method: ${this.txData.recipient.sendMethod}`
+        ));
       }
+
       this.tab.popToRoot();
       this.tabs.select(0);
     }

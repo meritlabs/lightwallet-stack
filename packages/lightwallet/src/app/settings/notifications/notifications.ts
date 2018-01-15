@@ -39,7 +39,6 @@ export class NotificationsView {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad NotificationsPage');
     this.updateConfig();
   }
 
