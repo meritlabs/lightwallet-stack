@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>clock</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4-numbers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons" transform="translate(-911.000000, -215.000000)">
+            <g id="clock" transform="translate(900.000000, 204.000000)">
+                <g id="Group-5" transform="translate(12.000000, 12.000000)">
+                    <path d="M8,16 C3.581722,16 0,12.418278 0,8 C0,3.581722 3.581722,0 8,0 C12.418278,0 16,3.581722 16,8 C16,12.418278 12.418278,16 8,16 Z" id="awaiting" stroke="#5F6C82" stroke-width="2"></path>
+                    <path d="M8.81696509,7.95688477 L8.54366338,3.62355104 C8.53083309,3.27551863 8.24497024,3 7.89670142,3 C7.55006963,3 7.26712489,3.27728624 7.26012345,3.62384731 C7.08874053,6.47302072 7.00203996,8.04804688 7.00002173,8.34892578 C6.99699439,8.80024414 7.31061027,9.26757892 7.73791235,9.62211914 L11.1765354,11.9804688 C11.4852874,12.21313 11.9544845,12.3333281 12.2203831,11.9804688 C12.4862817,11.6276094 12.3002288,11.1806105 11.9914768,10.9479492 L8.81696509,7.95688477 Z" id="Path" fill="#5F6C82"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

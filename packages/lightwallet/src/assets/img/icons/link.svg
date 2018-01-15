@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>link</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4-numbers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Icons" transform="translate(-911.000000, -389.000000)" stroke-width="2">
+            <g id="link" transform="translate(900.000000, 378.000000)">
+                <g transform="translate(12.000000, 12.000000)" id="url">
+                    <g>
+                        <path d="M8.10250522,3.97928247 C8.22778119,3.53820499 8.46787706,3.12200657 8.8227439,2.77579502 L10.8445184,0.803332124 L10.8445184,0.803332124 C11.9438397,-0.269176498 13.7275083,-0.267892073 14.8301803,0.807885485 L15.1725889,1.14194268 C16.2744879,2.21696606 16.2755601,3.95887729 15.1772561,5.03039333 L13.1554816,7.00285623 C12.7733534,7.37566423 12.3085367,7.61872758 11.8183764,7.73201688" id="Combined-Shape" stroke="#5F6C82"></path>
+                        <path d="M7.86744816,11.7303481 C7.73564966,12.1347474 7.50557272,12.5149625 7.1772561,12.8352714 L5.15548164,14.8077343 C4.0561603,15.8802429 2.27249172,15.8789585 1.16981972,14.8031809 L0.827411092,14.4691237 C-0.274487866,13.3941003 -0.275560054,11.6521891 0.822743896,10.5806731 L2.84451836,8.60821017 C3.1991523,8.26222584 3.62500392,8.02798748 4.07623697,7.90551859" id="Combined-Shape-Copy" stroke="#5F6C82"></path>
+                        <path d="M5.2,10.5365854 L10.8,5.07317073" id="Line" stroke="#00B0DD"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
