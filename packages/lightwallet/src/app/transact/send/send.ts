@@ -90,8 +90,6 @@ export class SendView {
       this.initList();
       await this.initContactList();
       await this.updateFilteredContacts('');
-
-      console.log('nav is ', this.navCtrl);
     } catch (err) {
       await this.popupService.ionicAlert('SendView Error:', err.toString());
     }
@@ -137,7 +135,6 @@ export class SendView {
         const isValid: boolean = await this.sendService.isAddressValid(search);
         if (isValid) {
           const wallets = await this.profileService.getWallets();
-          console.log('nav is ', this.navCtrl);
           this.navCtrl.push('SendAmountView', {
             wallet: wallets[0],
             amount: this.amountToSend,
