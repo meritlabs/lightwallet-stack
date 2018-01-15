@@ -29,14 +29,14 @@ export class EasySendService {
     return wallet
       .buildEasySendScript(opts)
       .then(easySend => {
-        const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo());
+        const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo()).toString();
         const receiverPrivKey = this.bitcore.PrivateKey.forEasySend(easySend.secret, opts.passphrase, opts.network);
 
         const scriptReferralOpts = {
           parentAddress: signPrivKey.publicKey.toAddress().toString(),
           pubkey: pubkey.toString(), // sign pubkey used to verify signature
           signPrivKey,
-          address: easySendAddress.toString(),
+          address: easySendAddress,
           addressType: 2, // script address
           network: opts.network,
         };
@@ -55,7 +55,7 @@ export class EasySendService {
         easySend.scriptReferralOpts = scriptReferralOpts;
         easySend.recipientReferralOpts = recipientReferralOpts;
 
-        return Promise.resolve(easySend);
+        return easySend;
       })
       .catch(err => {
         return Promise.reject(new Error('error building easysend script' + err));
@@ -66,7 +66,7 @@ export class EasySendService {
     let msg: string = `Here is ${amountMrt} Merit.  Click here to redeem: ${url}`
     if (msg.length > 160) {
       // TODO: Find a way to properly split the URL across two Messages, if needed.
-      const msg1: string = `I just sent you ${amountMrt} Merit.  Merit is a new Digital Currency.  `
+      const msg1: string = `I just sent you ${amountMrt} Merit.  Merit is a new Digital Currency.  `;
       const msg2: string = url;
 
       // HACK:
@@ -90,17 +90,24 @@ export class EasySendService {
     })
   }
 
-  async updatePendingEasySends(wallet: MeritWalletClient): Promise<void> {
+  public cancelPendingEasySend(wallet: MeritWalletClient, easySend: EasySend, address) {
+
+  }
+
+  async updatePendingEasySends(wallet: MeritWalletClient) {
     let easySends: EasySend[] = await this.persistenceService.getPendingEasySends(wallet.id);
+    easySends = easySends || [];
+
     easySends = await Promise.all(easySends.map(async (easySend: EasySend) => {
-      const txn = await wallet.validateEasyScript(easySend.script.toAddress().toString());
+      const txn = await wallet.validateEasyScript(easySend.scriptAddress.toString());
       return txn.result.found && !txn.result.spent ? easySend : null;
     }));
     easySends = easySends.filter((easySend: EasySend) => easySend !== null);
-    return this.persistenceService.setPendingEasySends(wallet.id, easySends);
+    await this.persistenceService.setPendingEasySends(wallet.id, easySends);
+    return easySends;
   }
 
-  private storeEasySend(walletId: string, easySend: EasySend): Promise<void> {
+  public storeEasySend(walletId: string, easySend: EasySend): Promise<void> {
     return this.persistenceService.getPendingEasySends(walletId)
       .then((history: EasySend[]) => {
         history = history || [];

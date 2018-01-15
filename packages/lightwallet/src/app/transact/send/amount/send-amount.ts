@@ -12,7 +12,7 @@ import { ConfigService } from 'merit/shared/config.service';
 import { FeeService } from 'merit/shared/fee/fee.service'
 import { RateService } from 'merit/transact/rate.service';
 import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
-import { EasySend, easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
+import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { WalletService } from 'merit/wallets/wallet.service';
@@ -302,13 +302,7 @@ export class SendAmountView {
         if (this.recipient.sendMethod != 'address') {
           const easySend = await this.easySendService.createEasySendScriptHash(this.txData.wallet);
           easySend.script.isOutput = true;
-          this.txData.easySendURL = easySendURL(easySend);
-          return {
-            script: easySend.script,
-            toAddress: easySend.scriptAddress.toString(),
-            scriptReferralOpts: easySend.scriptReferralOpts,
-            recipientReferralOpts: easySend.recipientReferralOpts,
-          };
+          return easySend;
         }
 
         return {};
@@ -316,10 +310,10 @@ export class SendAmountView {
 
       const easyData: Partial<EasySend> = await getEasyData();
 
-      data = Object.assign(data, _.pick(easyData, 'script', 'toAddress'));
+      data = Object.assign(data, _.pick(easyData, 'script'));
+          data.toAddress = data.toAddress || easyData.scriptAddress;
 
       const txpOut = await this.getTxp(_.clone(data), this.txData.wallet, dryRun);
-
 
       txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
 
@@ -343,19 +337,19 @@ export class SendAmountView {
         this.feeMrt = this.rateService.microsToMrt(txpOut.fee);
         this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
 
-        this.txData.txp = txpOut;
-        this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
-      } catch (err) {
-        this.toastCtrl.create({
-          message: err,
-          cssClass: ToastConfig.CLASS_ERROR
-        }).present();
-      }
-    } catch (err) {
-      if (err.code == Errors.CONNECTION_ERROR.code) {
-        this.refreshFeeAvailable = true;
-      }
-      this.feeCalcError = err.text || 'Unknown error';
+              this.txData.txp = txpOut;
+              this.txData.easySend = easyData;this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
+            }catch(err)  {
+              this.toastCtrl.create({
+                message: err,
+                cssClass: ToastConfig.CLASS_ERROR
+              }).present();
+            }
+          }catch(err)  {
+        if (err.code == Errors.CONNECTION_ERROR.code) {
+          this.refreshFeeAvailable = true;
+        }
+        this.feeCalcError = err.text || 'Unknown error';
     }
   }
 
