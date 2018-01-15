@@ -124,6 +124,12 @@ ion-item textarea {
 }
 
 
+.big-header {
+  background: linear-gradient(180deg, map_get($colors, primary), lighten(map_get($colors, primary), 5));
+  color: white;
+  text-align: center;
+}
+
 .merit-icon-merit { mask-image: url(../assets/img/icons/merit.svg); }
 .merit-icon-merit-2 { mask-image: url(../assets/img/merit.svg); }
 .merit-icon-qr-code { mask-image: url(../assets/img/icons/qr-code.svg); }

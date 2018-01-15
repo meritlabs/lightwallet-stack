@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="18px" viewBox="0 0 16 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>share</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4-numbers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons" transform="translate(-912.000000, -675.000000)">
+            <g id="share" transform="translate(900.000000, 664.000000)">
+                <g id="Group-3" transform="translate(13.000000, 12.000000)">
+                    <g id="export">
+                        <path d="M14,11.2 L14,14.7964848 C14,15.4611679 13.5301917,16 12.9477246,16 L1.05227542,16 C0.471119753,16 0,15.4617639 0,14.7964848 L0,11.2" id="Rectangle" stroke="#00B0DD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <rect id="Rectangle-2" fill="#00A3CC" x="6" y="0.4" width="2" height="11.2" rx="1"></rect>
+                        <polyline id="Rectangle-3" stroke="#00A3CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="2.6 4.4 7 0 11.4 4.4"></polyline>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

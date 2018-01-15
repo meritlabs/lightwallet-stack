@@ -1,5 +1,26 @@
 view-transact {
 
+  ion-tabs.tabs {
+    .tabbar {
+      background: rgb(12, 13, 41);
+      a.tab-button, ion-icon.icon {
+        color: rgb(151,151,163);
+      }
+
+      a.tab-button[aria-selected="true"] {
+        ion-icon.icon {
+          color: white;
+        }
+
+        > * {
+          transform: none;
+        }
+        color: white;
+        background: rgba(255,255,255,0.1);
+      }
+    }
+  }
+
   ion-icon {
 
     &[class*="qr-code"] {

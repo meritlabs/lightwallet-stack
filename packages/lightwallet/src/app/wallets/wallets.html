@@ -1,36 +1,22 @@
-<ion-header>
-
-    <ion-navbar color="secondary" hideBackButton="true">
-        <ion-title>
-            <img src="assets/img/icons/logo-negative.svg">
-        </ion-title>
-    </ion-navbar>
-
-</ion-header>
-
-
 <ion-content>
+  <div class="big-header">
+    <p>Total Value of Your Network</p>
+    <h2 class="amount">{{ totalNetworkValueMicros }}</h2>
+    <h3 class="detail-fiat">{{ totalNetworkValueFiat }}</h3>
+  </div>
 
-    <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}" [enabled]="!loading">
-        <ion-refresher-content></ion-refresher-content>
-    </ion-refresher>
-
-    <ion-item-divider translate *ngIf="showFeatureBlock">
-        Features
-    </ion-item-divider>
+  <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}" [enabled]="!loading">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
 
-    <ion-item-divider translate>
-        Network
-    </ion-item-divider>
-
-    <ion-list class="network">
-        <ion-item>
-            <ion-avatar item-start>
-                <i class="merit-icon-merit"></i>
-            </ion-avatar>
-            <h2 style="white-space: normal">Total value of your network</h2>
-            <span item-end class="detail" >
+  <ion-list class="network">
+    <ion-item>
+      <ion-avatar item-start>
+        <i class="merit-icon-merit"></i>
+      </ion-avatar>
+      <h2 style="white-space: normal">Total value of your network</h2>
+      <span item-end class="detail" >
                 <span *ngIf="totalNetworkValueMicros">
                     <div class="amount">{{totalNetworkValueMicros}}</div>
                     <div class="detail-fiat">
@@ -40,10 +26,10 @@
                 <ion-spinner *ngIf="!totalNetworkValueMicros && loading" color="primary"></ion-spinner>
             </span>
 
-        </ion-item>
-    </ion-list>
+    </ion-item>
+  </ion-list>
 
-    <span *ngIf="txpsData?.txpsN && addressbook">
+  <span *ngIf="txpsData?.txpsN && addressbook">
         <ion-item-divider translate>
             Payment Proposals
             <ion-badge item-right>{{txpsData?.txpsN}}</ion-badge>
@@ -78,23 +64,23 @@
         </ion-list>
     </span>
 
-    <ion-item-divider translate *ngIf="(wallets && wallets.length) || loading">
-        Wallets
-    </ion-item-divider>
-    <ion-item *ngIf="!wallets && loading"><ion-spinner item-left></ion-spinner><h2>Loading...</h2></ion-item>
-    <ion-list class="wallets" *ngIf="wallets">
+  <ion-item-divider translate *ngIf="(wallets && wallets.length) || loading">
+    Wallets
+  </ion-item-divider>
+  <ion-item *ngIf="!wallets && loading"><ion-spinner item-left></ion-spinner><h2>Loading...</h2></ion-item>
+  <ion-list class="wallets" *ngIf="wallets">
 
     <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)" class="wallet">
 
-            <ion-avatar item-start class="btn wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
-                <img src="assets/img/icon-wallet.svg">
-            </ion-avatar>
+      <ion-avatar item-start class="btn wallet-icon" item-start [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
+        <img src="assets/img/icon-wallet.svg">
+      </ion-avatar>
 
-            <h2 translate>{{wallet.name || wallet._id}}</h2>
-            <p *ngIf="walletHasPendingAmount(wallet)">Partially confirmed</p>
+      <h2 translate>{{wallet.name || wallet._id}}</h2>
+      <p *ngIf="walletHasPendingAmount(wallet)">Partially confirmed</p>
 
-            <span *ngIf="!wallet.isComplete()" class="assertive" translate item-end>Incomplete</span>
-            <span class="detail" *ngIf="wallet.isComplete()" item-end>
+      <span *ngIf="!wallet.isComplete()" class="assertive" translate item-end>Incomplete</span>
+      <span class="detail" *ngIf="wallet.isComplete()" item-end>
                 <span class="amount" *ngIf="!wallet.balanceHidden && wallet.status">
                     {{wallet.status.totalBalanceStr ? wallet.status.totalBalanceStr : ( wallet.cachedBalance ? wallet.cachedBalance + (wallet.cachedBalanceUpdatedOn
                     ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '') : '' ) }}
@@ -114,10 +100,10 @@
                 <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>
             </span>
 
-        </button>
-    </ion-list>
+    </button>
+  </ion-list>
 
-    <span class="recent-txns" *ngIf="recentTransactionsEnabled && recentTransactionsData && recentTransactionsData.length > 0">
+  <span class="recent-txns" *ngIf="recentTransactionsEnabled && recentTransactionsData && recentTransactionsData.length > 0">
         <ion-item-divider translate>
             <span>Recent Transactions</span>
             <span class="badge badge-assertive m5t m10r" *ngIf="recentTransactionsData && recentTransactionsData.length>3"> {{recentTransactionsData.length}}</span>
@@ -133,29 +119,29 @@
         </ion-list>
     </span>
 
-    <ion-item-divider translate>
-        Add New Wallet
-    </ion-item-divider>
-    <ion-list>
-        <button ion-item (click)="toAddWallet()" class="add-item">
-            <ion-avatar item-start class="btn">
-                <ion-icon name="add"></ion-icon>
-            </ion-avatar>
-            <h2 translate>
-                Create new wallet
-            </h2>
-        </button>
+  <ion-item-divider translate>
+    Add New Wallet
+  </ion-item-divider>
+  <ion-list>
+    <button ion-item (click)="toAddWallet()" class="add-item">
+      <ion-avatar item-start class="btn">
+        <ion-icon name="add"></ion-icon>
+      </ion-avatar>
+      <h2 translate>
+        Create new wallet
+      </h2>
+    </button>
 
-        <button ion-item (click)="toImportWallet()" class="add-item">
-            <ion-avatar item-start class="btn">
-                <ion-icon name="ios-share-outline"></ion-icon>
-            </ion-avatar>
-            <h2 translate>
-                Import wallet
-            </h2>
-        </button>
-    </ion-list>
+    <button ion-item (click)="toImportWallet()" class="add-item">
+      <ion-avatar item-start class="btn">
+        <ion-icon name="ios-share-outline"></ion-icon>
+      </ion-avatar>
+      <h2 translate>
+        Import wallet
+      </h2>
+    </button>
+  </ion-list>
 
-    <view-vaults [vaults]="vaults" [refreshVaultList]="refreshVaultList"></view-vaults>
+  <view-vaults [vaults]="vaults" [refreshVaultList]="refreshVaultList"></view-vaults>
 
 </ion-content>
