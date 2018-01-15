@@ -60,6 +60,7 @@ export class PersistenceService {
 
   async addPendingEasyReceipt(receipt: EasyReceipt) {
     let receipts = await this.get(Keys.EASY_RECEIPTS);
+    receipts = receipts || [];
     // prevent storing of the same receipt twice
     receipts = receipts.filter((r) =>
       !(r.secret == receipt.secret && r.senderPublicKey == receipt.senderPublicKey)
@@ -493,13 +494,7 @@ export class PersistenceService {
   //   email: account email
 
   private set(key: string, value: any) {
-    if (typeof value === 'object') {
-      try {
-        value = JSON.parse(JSON.stringify(Object.assign({}, value)));
-      } catch (e) {
-      }
-    }
-    return this.storage.set(key, value);
+    return this.storage.set(key, _.clone(value));
   }
 
   private remove(key: any) {

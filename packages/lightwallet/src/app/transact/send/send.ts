@@ -26,6 +26,10 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 
+const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
+const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
+
+
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
  * without needing to know if they are on the Merit network.
@@ -86,8 +90,6 @@ export class SendView {
       this.initList();
       await this.initContactList();
       await this.updateFilteredContacts('');
-
-      console.log('nav is ', this.navCtrl);
     } catch (err) {
       await this.popupService.ionicAlert('SendView Error:', err.toString());
     }
@@ -133,7 +135,6 @@ export class SendView {
         const isValid: boolean = await this.sendService.isAddressValid(search);
         if (isValid) {
           const wallets = await this.profileService.getWallets();
-          console.log('nav is ', this.navCtrl);
           this.navCtrl.push('SendAmountView', {
             wallet: wallets[0],
             amount: this.amountToSend,
@@ -231,13 +232,11 @@ export class SendView {
   }
 
   private couldBeEmail(search: string): boolean {
-    var weakEmailPattern = /^\S+@\S+/
-    return weakEmailPattern.test(search);
+    return WEAK_EMAIL_PATTERN.test(search);
   }
 
   private couldBePhoneNumber(search: string): boolean {
-    var weakPhoneNumberPattern = /^[\(\+]?\d+([\(\)\.-]\d*)*$/
-    return weakPhoneNumberPattern.test(search);
+    return WEAK_PHONE_NUMBER_PATTERN.test(search);
   }
 
   private contactFromSearchTerm(term: string): MeritContact | null {

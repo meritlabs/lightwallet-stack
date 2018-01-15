@@ -1,8 +1,7 @@
 import { ApplicationRef, Component, NgZone } from '@angular/core';
 
 import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { AlertController, App, Events, IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Platform } from 'ionic-angular/platform/platform';
+import { Platform, AlertController, App, Events, IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import * as _ from 'lodash';
 
