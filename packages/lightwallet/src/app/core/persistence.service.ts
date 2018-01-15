@@ -60,7 +60,6 @@ export class PersistenceService {
 
   async addPendingEasyReceipt(receipt: EasyReceipt) {
     let receipts = await this.get(Keys.EASY_RECEIPTS);
-    console.log('Receipts are ', receipts);
     receipts = receipts || [];
     // prevent storing of the same receipt twice
     receipts = receipts.filter((r) =>
