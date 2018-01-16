@@ -62,7 +62,7 @@
 
   <ion-list class="wallets" *ngIf="wallets">
     <button ion-item *ngFor="let wallet of wallets" (click)="openWallet(wallet)" class="wallet">
-      <ion-avatar item-start class="btn wallet-icon" [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.box-shadow]="'0 0 0 2px ' + wallet.color">
+      <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.box-shadow]="'0 0 0 2px ' + wallet.color">
         <img src="assets/img/icons/wallet.svg">
       </ion-avatar>
 
@@ -94,7 +94,7 @@
     </button>
 
     <button ion-item class="import-wallet-button" (click)="toImportWallet()">
-      <ion-avatar item-start class="btn wallet-icon">
+      <ion-avatar item-start img-icon>
         <img src="assets/img/icons/export.svg">
       </ion-avatar>
       <ion-label>
@@ -104,17 +104,19 @@
   </ion-list>
 
   <ion-item-divider *ngIf="recentTransactionsEnabled && recentTransactionsData && recentTransactionsData.length > 0">
-    <span>Recent Transactions</span>
-    <ion-badge *ngIf="recentTransactionsData && recentTransactionsData.length>3">{{recentTransactionsData.length}}</ion-badge>
+    Recent Transactions
+    <ion-badge *ngIf="recentTransactionsData && recentTransactionsData.length > 3">{{ recentTransactionsData.length }}</ion-badge>
   </ion-item-divider>
   <ion-list>
     <button ion-item *ngFor="let recentTx of recentTransactionsData" (click)="openRecentTxDetail(recentTx)">
       <ion-label>
-        <h2>{{recentTx.actionStr}}</h2>
+        <p>{{ recentTx.actionStr }}</p>
+        <p class="merit-amount">
+          {{ recentTx.amountStr }}&nbsp;<span>MRT</span>
+        </p>
       </ion-label>
-      <ion-note class="detail" item-end>
-        <span class="amount">{{ recentTx.amountStr }}</span>
-        <span class="detail-fiat">{{ recentTx.fiatAmountStr }}</span>
+      <ion-note class="balance" item-end>
+        <span class="fiat-amount">{{ recentTx.fiatAmountStr }}</span>
       </ion-note>
     </button>
   </ion-list>
