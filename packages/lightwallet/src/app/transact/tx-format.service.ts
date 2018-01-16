@@ -40,7 +40,7 @@ export class TxFormatService {
   // Todo: Improve
   formatAmountStr(micros: number): string {
     if (isNaN(micros)) return;
-    return this.formatAmount(micros) + ' MRT';
+    return String(this.formatAmount(micros));
   }
 
   async toFiat(micros: number, code: string): Promise<string> {
