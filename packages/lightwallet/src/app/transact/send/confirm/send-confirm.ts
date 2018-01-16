@@ -213,21 +213,24 @@ export class SendConfirmView {
 
       if (this.txData.easySend) {
         await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
-        if (this.txData.recipient.sendMethod == 'sms') {
-          return this.easySendService.sendSMS(
-            this.txData.recipient.phoneNumber,
-            this.viewData.amountMrt,
-            easySendURL(this.txData.easySend)
-          );
-        } else if (this.txData.recipient.sendMethod == 'email') {
-          return this.easySendService.sendEmail(
-            this.txData.recipient.email,
-            this.viewData.amountMrt,
-            easySendURL(this.txData.easySend)
-          );
-        } else return Promise.reject(new Error(
-          `Unsupported sending method: ${this.txData.recipient.sendMethod}`
-        ));
+
+        switch (this.txData.recipient.sendMethod) {
+          case 'sms':
+            return this.easySendService.sendSMS(
+              this.txData.recipient.phoneNumber,
+              this.viewData.amountMrt,
+              easySendURL(this.txData.easySend)
+            );
+
+          case 'email':
+            return this.easySendService.sendEmail(
+              this.txData.recipient.email,
+              this.viewData.amountMrt,
+              easySendURL(this.txData.easySend)
+            );
+        }
+
+        throw new Error(`Unsupported sending method: ${this.txData.recipient.sendMethod}`);
       }
 
       this.tab.popToRoot();
