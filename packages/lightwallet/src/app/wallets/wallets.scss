@@ -42,23 +42,6 @@ view-wallets {
     }
   }
 
-  button[ion-item].item, ion-item.item {
-    &:not([no-lines]):not(.add-vault-block) {
-      .item-inner {
-        border-bottom: none;
-      }
-
-      &:after {
-        content: '';
-        width: calc(100% - 16px - 19px);
-        background: transparentize(#d1d6dc, .5);
-        height: 1px;
-        position: absolute;
-        bottom: 1px;
-        left: 19px;
-      }
-    }
-  }
 
   ion-item.item.add-vault-block {
     background: #e9edf2;
@@ -93,11 +76,8 @@ view-wallets {
   ion-list.list {
     margin-bottom: 26px;
 
-
-
     button[ion-item].item {
-      padding-top: 10px;
-      padding-bottom: 12px;
+
 
       &:not(.import-wallet-button) {
         ion-label h2 {
@@ -122,7 +102,6 @@ view-wallets {
 
       &:not(.import-wallet-button) {
         ion-avatar {
-          background: #f0f3f8;
           box-shadow: 0 0 0 2px rgba(16, 152, 0, 0.51);
           border: 2px solid white;
         }
