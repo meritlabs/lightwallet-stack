@@ -28,6 +28,8 @@ view-transact {
 
   ion-icon.tab-button-icon.icon {
 
+    max-height: 20px;
+
     &:not([class*='people']) {
       mask-size: contain;
       mask-position: 50% 50%;
