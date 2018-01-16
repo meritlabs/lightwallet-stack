@@ -144,7 +144,7 @@ clean-stack: clean-npm \
 	clean-bitcore-node \
 	clean-bitcore-message \
 	clean-bitcore-payment-protocol \
-	clean-lightwallet-2
+	clean-lightwallet
 
 .PHONY: test-bitcoin-rpc
 test-bitcoin-rpc:
