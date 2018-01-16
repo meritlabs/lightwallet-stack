@@ -205,10 +205,11 @@ export class SendConfirmView {
     });
     loadingSpinner.present();
 
-    const sendReferrals = Promise.all(this.referralsToSign.map(this.txData.wallet.sendReferral.bind(this.txData.wallet)));
-
     try {
-      await sendReferrals;
+      if (this.referralsToSign) {
+        await Promise.all(this.referralsToSign.map(this.txData.wallet.sendReferral.bind(this.txData.wallet)));
+      }
+
       await this.approveTx();
 
       if (this.txData.easySend) {

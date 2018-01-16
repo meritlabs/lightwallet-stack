@@ -309,7 +309,7 @@ export class SendAmountView {
       const easyData: Partial<EasySend> = await getEasyData();
 
       data = Object.assign(data, _.pick(easyData, 'script'));
-          data.toAddress = data.toAddress || easyData.scriptAddress;
+      data.toAddress = data.toAddress || easyData.scriptAddress;
 
       const txpOut = await this.getTxp(_.clone(data), this.txData.wallet, dryRun);
 
@@ -334,20 +334,23 @@ export class SendAmountView {
         this.txData.feeAmount = txpOut.fee;
         this.feeMrt = this.rateService.microsToMrt(txpOut.fee);
         this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
+        this.txData.txp = txpOut;
 
-              this.txData.txp = txpOut;
-              this.txData.easySend = easyData;this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
-            }catch(err)  {
-              this.toastCtrl.create({
-                message: err,
-                cssClass: ToastConfig.CLASS_ERROR
-              }).present();
-            }
-          }catch(err)  {
-        if (err.code == Errors.CONNECTION_ERROR.code) {
-          this.refreshFeeAvailable = true;
+        if (easyData) {
+          this.txData.easySend = easyData;
+          this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
         }
-        this.feeCalcError = err.text || 'Unknown error';
+      } catch (err) {
+        this.toastCtrl.create({
+          message: err,
+          cssClass: ToastConfig.CLASS_ERROR
+        }).present();
+      }
+    } catch (err) {
+      if (err.code == Errors.CONNECTION_ERROR.code) {
+        this.refreshFeeAvailable = true;
+      }
+      this.feeCalcError = err.text || 'Unknown error';
     }
   }
 
