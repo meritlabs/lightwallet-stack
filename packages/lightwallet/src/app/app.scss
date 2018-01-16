@@ -27,14 +27,10 @@ ion-content.content[fullscreen] {
 
 // Core App Layout
 .scroll-content {
-  background: rgb(242, 242, 242);
+  background: rgb(255, 255, 255);
 }
 ion-content.has-refresher > .scroll-content {
-  background: rgb(242, 242, 242);
-}
-
-ion-header .toolbar-title {
-  font-weight: normal !important;
+  background: rgb(255, 255, 255);
 }
 
 ion-item-divider {
@@ -186,12 +182,31 @@ ion-item.item, button[ion-item].item {
       font-weight: 500;
     }
   }
-}
 
+  padding-top: 10px;
+  padding-bottom: 12px;
+
+  &:not([no-lines]):not(.add-vault-block) {
+    .item-inner {
+      border-bottom: none;
+    }
+
+    &:after {
+      content: '';
+      width: calc(100% - 16px - 19px);
+      background: transparentize(#d1d6dc, .5);
+      height: 1px;
+      position: absolute;
+      bottom: 1px;
+      left: 19px;
+    }
+  }
+}
 
 // merit icons
 
 ion-avatar[img-icon] {
+  background: #f0f3f8;
   border-radius: 500rem;
   height: 40px;
   width: 40px;
