@@ -212,6 +212,7 @@ export class SendConfirmView {
       await this.approveTx();
 
       if (this.txData.easySend) {
+        console.log('TX DATA IS ', this.txData);
         await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
         if (this.txData.recipient.sendMethod == 'sms') {
           return this.easySendService.sendSMS(

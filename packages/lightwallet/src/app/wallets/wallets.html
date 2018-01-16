@@ -105,7 +105,7 @@
 
   <ion-item-divider *ngIf="recentTransactionsEnabled && recentTransactionsData && recentTransactionsData.length > 0">
     <span>Recent Transactions</span>
-    <span class="badge badge-assertive m5t m10r" *ngIf="recentTransactionsData && recentTransactionsData.length>3"> {{recentTransactionsData.length}}</span>
+    <ion-badge *ngIf="recentTransactionsData && recentTransactionsData.length>3">{{recentTransactionsData.length}}</ion-badge>
   </ion-item-divider>
   <ion-list>
     <button ion-item *ngFor="let recentTx of recentTransactionsData" (click)="openRecentTxDetail(recentTx)">
