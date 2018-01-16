@@ -20,7 +20,6 @@ $app-direction: ltr;
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
 
-
 // Override - Homogenized ionic component styles
 @import 'overrides';
 
@@ -29,13 +28,12 @@ $app-direction: ltr;
 // --------------------------------------------------
 // iOS only Sass variables can go here
 $font-family-ios-base: 'Open Sans';
-$font-family-md-base: 'Open Sans';
 
 
 // App Material Design Variables
 // --------------------------------------------------
 // Material Design only Sass variables can go here
-$item-md-detail-push-show: true;
+//$item-md-detail-push-show: true;
 
 
 
@@ -75,7 +73,7 @@ $item-wp-detail-push-show: true;
 
 $text-input-md-show-focus-highlight: false;
 
-$label-text-color: #777;
+$label-text-color: #2d3c50;
 $input-text-color: #444;
 
 

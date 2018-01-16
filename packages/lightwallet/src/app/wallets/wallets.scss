@@ -1,11 +1,121 @@
 view-wallets {
 
   .big-header {
+    min-height: 152px;
 
+    ion-spinner.spinner {
+      margin-top: 25px;
+    }
   }
 
-  ion-list {
-    margin-bottom: 10px !important;
+  ion-item-divider.item.item-divider {
+    background: white;
+    border: 0;
+    margin-top: 8px;
+    padding-left: 18.5px;
+
+    ion-label.label {
+      font-size: 15px;
+    }
+
+    button[ion-button][item-end].button {
+      background: #5e6b82;
+      border-radius: 500rem;
+      width: 24px;
+      height: 24px;
+      box-shadow: none;
+      margin-right: 16px;
+
+      ion-icon.icon {
+        font-size: 18px;
+        line-height: 24px;
+      }
+    }
+  }
+
+  ion-list.list {
+    margin-bottom: 10px;
+    margin-top: -10px;
+
+    button[ion-item].item {
+
+    }
+  }
+
+  button[ion-item].item, ion-item.item {
+    &:not([no-lines]) {
+      .item-inner {
+        border-bottom: none;
+      }
+
+      &:after {
+        content: '';
+        width: calc(100% - 16px - 19px);
+        background: transparentize(#d1d6dc, .5);
+        height: 1px;
+        position: absolute;
+        bottom: 1px;
+        left: 19px;
+      }
+    }
+  }
+
+  ion-list.list.wallets {
+    button[ion-item].item {
+      padding-top: 23px;
+      padding-bottom: 25px;
+
+      &.import-wallet-button {
+        padding-top: 10px;
+        padding-bottom: 11px;
+      }
+
+      &:not(.import-wallet-button) {
+        ion-label h2 {
+          font-weight: 500;
+        }
+      }
+
+      .merit-amount {
+        color: #00aad6;
+        font-size: 13px;
+        font-weight: 500;
+
+        span {
+          font-size: 11px;
+        }
+      }
+
+      ion-note.note.balance > .fiat-amount {
+        color: #73819b;
+        font-size: 13px;
+      }
+
+      ion-avatar {
+        border-radius: 500rem;
+        height: 40px;
+        width: 40px;
+        display: flex;
+        align-items: center;
+        justify-items: center;
+
+        > img {
+          border-radius: 0;
+          display: inline;
+          height: 17px;
+          width: 16px;
+          flex: 1;
+        }
+      }
+
+      &:not(.import-wallet-button) {
+        ion-avatar {
+          background: #f0f3f8;
+          box-shadow: 0 0 0 2px rgba(16, 152, 0, 0.51);
+          border: 2px solid white;
+        }
+      }
+    }
   }
 
   [class^="merit-icon"] {
@@ -19,80 +129,15 @@ view-wallets {
     background: color($colors, primary);
   }
 
-  ion-navbar img {
-    height: 18px;
-  }
+  //ion-navbar img {
+  //  height: 18px;
+  //}
 
   .add-item .wallet-icon {
     padding: 0 7px;
   }
-   img {
-    &.icon-wallet {
-      width: 35px !important;
-      background-color: color($colors, primary);
-    }
-  }
-
-  & .wallet-icon {
-    box-shadow: none;
-  }
-
-  .header-icon {
-    font-size: 1.7rem !important;
-    color: silver;
-    margin: 0 !important;
-    padding: 10px !important;
-  }
 
   .error {
     color: color($colors, danger) !important;
-  }
-
-  .item {
-    h2 {
-      white-space: normal;
-    }
-    p {
-      color: #999;
-      font-size: 11px;
-    }
-    .detail {
-      text-align: center;
-      .amount {
-        color: color($colors, primary);
-        font-size: 16px;
-      }
-      .detail-fiat {
-        color: rgba(0,0,0,0.6);
-        font-size: 12px;
-      }
-      .balance-hidden {
-        color: rgba(0,0,0,0.6);
-      }
-    }
-  }
-
-  ion-avatar img {
-    height: 20px;
-    border-radius: 0 !important;
-  }
-
-  ion-avatar.btn {
-    height: 36px;
-    border-radius: 4px;
-    //box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 12px 0px;
-    padding: 0 4px;
-    background: color($colors, primary);
-    line-height: 36px;
-    text-align: center;
-    ion-icon {
-      height: 36px;
-      line-height: 36px;
-      width: 38px;
-      text-align: center;
-      color: white;
-      font-weight: 900;
-      vertical-align: middle;
-    }
   }
 }

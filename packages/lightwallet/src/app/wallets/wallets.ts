@@ -1,16 +1,11 @@
 import { ApplicationRef, Component, NgZone } from '@angular/core';
-
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { Platform, AlertController, App, Events, IonicPage, NavController, NavParams } from 'ionic-angular';
-
 import * as _ from 'lodash';
-
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 import { AppUpdateService } from 'merit/core/app-update.service';
-
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
-
 import { ProfileService } from 'merit/core/profile.service';
 import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
@@ -19,7 +14,6 @@ import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { Feedback } from 'merit/feedback/feedback.model'
 import { FeedbackService } from 'merit/feedback/feedback.service'
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
-
 import { ConfigService } from 'merit/shared/config.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { RateService } from 'merit/transact/rate.service';
@@ -29,14 +23,11 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
+
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
 
 /*
-  Using bluebird promises!
-  This gives us the ability to map over items and
-  engage in async requests.
-
   TODO:
   -- Ensure that we get navParams and then fallback to the wallet service.
 */
@@ -53,9 +44,7 @@ export class WalletsView {
 
   wallets: MeritWalletClient[];
   vaults;
-  newReleaseExists: boolean;
   feedbackNeeded: boolean;
-  showFeaturesBlock: boolean = false;
   feedbackData = new Feedback();
 
   addressbook;
@@ -98,10 +87,12 @@ export class WalletsView {
   }
 
   async doRefresh(refresher) {
+    if (this.loading === false) this.loading = true;
     try {
       await this.refreshAllInfo();
     } catch (e) {}
     refresher.complete();
+    if (this.loading === true) this.loading = false;
   }
 
   async refreshAllInfo() {

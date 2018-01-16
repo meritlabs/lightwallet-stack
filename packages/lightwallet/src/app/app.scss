@@ -109,14 +109,6 @@ ion-item textarea {
   color: white !important;
 }
 
-[class^="merit-icon"] {
-  mask-size: contain;
-  mask-position: 50% 50%;
-  mask-repeat: no-repeat;
-  background: currentColor;
-  display: inline-block;
-}
-
 .toast-error {
   .toast-message {
     background: color($colors, 'danger');
@@ -125,9 +117,80 @@ ion-item textarea {
 
 
 .big-header {
-  background: linear-gradient(180deg, map_get($colors, primary), lighten(map_get($colors, primary), 5));
+  background: #00a6d1;
   color: white;
-  text-align: center;
+  padding: 28px 26px;
+  position: relative;
+
+  p, h2, h3 {
+    margin: 0;
+    padding: 0;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 28px;
+  }
+
+  h2 {
+    font-size: 40px;
+    small {
+      font-size: 24px;
+      font-weight: 400;
+    }
+  }
+
+  h3 {
+    font-size: 17px;
+    color: rgba(255,255,255,.6);
+  }
+
+  button[ion-button].button.action-button {
+    position: absolute;
+    top: 16px;
+    right: 0;
+    ion-icon.icon {
+      color: white;
+
+      &[merit-icon] {
+        &[name="settings"] {
+          mask-image: url('../assets/img/icons/settings.svg');
+        }
+      }
+    }
+  }
+
+  ion-spinner.spinner {
+    svg > * {
+      stroke: white;
+    }
+  }
+}
+
+ion-content.has-refresher > .scroll-content {
+  background: $background-color;
+}
+
+ion-item.item, button[ion-item].item {
+  ion-label.label {
+    h2 {
+      font-size: 17px;
+      letter-spacing: -.2px;
+      font-weight: 400;
+      color: #2d3c50;
+    }
+  }
+}
+
+
+// merit icons
+
+[class^="merit-icon"], [merit-icon] {
+  mask-size: contain;
+  mask-position: 50% 50%;
+  mask-repeat: no-repeat;
+  background: currentColor;
+  display: inline-block;
 }
 
 .merit-icon-merit { mask-image: url(../assets/img/icons/merit.svg); }
