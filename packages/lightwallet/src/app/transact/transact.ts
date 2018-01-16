@@ -15,11 +15,10 @@ import { ProfileService } from 'merit/core/profile.service';
 })
 export class TransactView {
 
-  walletsView = 'WalletsView';
-  receiveView = 'ReceiveView';
-  networkView = 'NetworkView';
-  sendView = 'SendView';
-  settingsView = 'SettingsView';
+  receiveView = '';
+  networkView = '';
+  sendView = '';
+  settingsView = '';
 
   @ViewChild('tabs') tabRef: Tabs;
 
