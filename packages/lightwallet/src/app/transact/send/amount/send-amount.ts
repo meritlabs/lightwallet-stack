@@ -304,8 +304,6 @@ export class SendAmountView {
           easySend.script.isOutput = true;
           return easySend;
         }
-
-        return {};
       };
 
       const easyData: Partial<EasySend> = await getEasyData();
