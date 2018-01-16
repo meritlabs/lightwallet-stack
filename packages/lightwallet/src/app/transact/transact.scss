@@ -1,6 +1,12 @@
 view-transact {
 
   ion-tabs.tabs {
+    &.tabs-ios {
+      a.tab-button[aria-selected="true"] {
+        background: rgba(255,255,255,0.1);
+      }
+    }
+
     .tabbar {
       background: rgb(12, 13, 41);
       a.tab-button, ion-icon.icon {
@@ -16,21 +22,39 @@ view-transact {
           transform: none;
         }
         color: white;
-        background: rgba(255,255,255,0.1);
       }
     }
   }
 
-  ion-icon {
+  ion-icon.tab-button-icon.icon {
 
-    &[class*="qr-code"] {
+    &:not([class*='people']) {
       mask-size: contain;
       mask-position: 50% 50%;
       mask-repeat: no-repeat;
       background: currentColor;
       width: 1em;
       height: 1em;
-      mask-image: url(../assets/img/qr-code.svg);
+    }
+
+    &[class*='home'] {
+      mask-image: url(../assets/img/icons/main.svg);
+    }
+
+    //&[class*='people'] {
+      //mask-image: url(../assets/img/icons/network.svg);
+    //}
+
+    &[class*='send'] {
+      mask-image: url(../assets/img/icons/send.svg);
+    }
+
+    &[class*='settings'] {
+      mask-image: url(../assets/img/icons/settings.svg);
+    }
+
+    &[class*="qr-code"] {
+      mask-image: url(../assets/img/icons/receive.svg);
     }
 
   }
