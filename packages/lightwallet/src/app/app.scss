@@ -179,11 +179,34 @@ ion-item.item, button[ion-item].item {
       font-weight: 400;
       color: #2d3c50;
     }
+
+    p {
+      font-size: 13px;
+      color: #73819b;
+      font-weight: 500;
+    }
   }
 }
 
 
 // merit icons
+
+ion-avatar[img-icon] {
+  border-radius: 500rem;
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-items: center;
+
+  > img {
+    border-radius: 0;
+    display: inline;
+    height: 17px;
+    width: 16px;
+    flex: 1;
+  }
+}
 
 [class^="merit-icon"], [merit-icon] {
   mask-size: contain;
