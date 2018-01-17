@@ -63,9 +63,12 @@ view-network {
 
   ion-list.list {
     $border-color: transparentize(#d1d6dc, 0.5);
-    margin-bottom: 16px;
     border-bottom: 1px solid $border-color;
     border-top: 1px solid $border-color;
+
+    &:not(:last-child) {
+      margin-bottom: 16px;
+    }
   }
 
   ion-item-divider.item-divider {
