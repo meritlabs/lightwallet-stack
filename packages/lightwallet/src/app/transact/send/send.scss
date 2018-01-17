@@ -1,20 +1,19 @@
-send-view {
-  .abs-v-center {
-    z-index: 999999999 !important;
-  }
-
-  .search-panel {
+.md view-send {
+  .searchbar-wrapper {
     position: relative;
-    padding: 0;
-    input {
-      color: rgba(0, 0, 0, 0.7);
-      height: 25px;
-      line-height: 25px;
-    }
-    .search-input-button {
+    .searchbar-qr-icon {
+      background: transparent;
+      position: absolute;
+      right: 21px;
+      top: 0px;
       padding: 0;
-      height: 25px;
-      width: 25px;
+      background-position: center;
+      background-repeat: no-repeat;
+      width: 22px;
+      height: 100%;
+      background-size: 22px;
     }
   }
 }
+
+

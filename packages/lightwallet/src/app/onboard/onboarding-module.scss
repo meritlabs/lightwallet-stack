@@ -1,12 +1,17 @@
-%module-onboarding {
+view-no-session,
+//view-tour,
+view-unlock,
+view-onboarding,
+view-backup,
+view-verify-backup {
 
-  ion-header {
+  ion-header.header {
     &:after {
       display: none;
     }
-    ion-navbar, .toolbar-background {
+    ion-navbar.navbar, .toolbar-background {
       background: transparent;
-      border: none !important;
+      border: none;
     }
     ion-navbar button {
       color: color($colors, 'primary') !important;
@@ -14,78 +19,82 @@
   }
 
   .scroll-content {
-    background: color($colors, 'secondary');
-    background-image: linear-gradient(to bottom, color($colors, 'secondary'), lighten(color($colors, 'secondary'), 5%));
-
+    background: linear-gradient(to bottom, rgb(9, 8, 38), rgb(35, 46, 60));
     text-align: center;
-    overflow-y: hidden;
+    //overflow-y: hidden;
     height: 100%;
-    padding: 0 !important;
+  }
 
-    .container {
-      height: 100%;
-      margin-top: 0 !important;
-      display: flex;
-      flex-direction: column;
-      padding-top: 44px;
-      padding-bottom: 33px;
-      box-sizing: border-box;
+  .container {
+    height: 100%;
+    margin-top: 0 !important;
+    display: flex;
+    flex-direction: column;
+    padding-top: 44px;
+    padding-bottom: 33px;
+    box-sizing: border-box;
 
 
-      // horizontally center align child items (rows)
-      // and center align the content inside of them
-      align-items: center;
-      align-content: center;
+    // horizontally center align child items (rows)
+    // and center align the content inside of them
+    align-items: center;
+    align-content: center;
 
-      // vertically center align content
-      justify-items: center;
+    // vertically center align content
+    justify-items: center;
 
-      // fill the whole flexbox, and add spaces between
-      // the items as necessary
-      justify-content: space-between;
-    }
+    // fill the whole flexbox, and add spaces between
+    // the items as necessary
+    justify-content: space-between;
+  }
 
-    .text {
-      padding: 1.5rem 3rem;
-      color: rgba(255, 255, 255, 0.5);
-      font-weight: normal;
-      font-size: 16px;
-      line-height: 24px;
-    }
-    .title {
-      padding: 0  3rem;
-      color: rgb(194, 201, 209);
-      font-weight: normal;
-      font-size: 24px;
-      line-height: 31px;
-    }
-    .image {
-      flex: 1;
-      padding: 20px;
+  h1.main-header {
+    color: white;
+    font-size: 36px;
+    line-height: 38px;
+    font-weight: 300;
+  }
+
+  .text {
+    padding: 1.5rem 3rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+  }
+  .title {
+    padding: 0  3rem;
+    color: rgb(194, 201, 209);
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 31px;
+  }
+  .image {
+    flex: 1;
+    padding: 20px;
+    width: 100%;
+    .illustration {
       width: 100%;
-      .illustration {
-        width: 100%;
-        height: 100%;
-        margin: 0 auto;
-        background-position: center !important;
-        background-repeat: no-repeat !important;
-        background-size: contain !important;
-        z-index: -1;
-      }
-    }
-    .bottom-buttons {
-      height: 50px;
-      width: 85%;
-      max-width: 400px;
+      height: 100%;
       margin: 0 auto;
-      padding-top: 10px;
-      button {
-        padding: 0 10px;
-        height: 40px;
-        vertical-align: top;
-        margin: 0;
-        margin-left: 2px;
-      }
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      background-size: contain !important;
+      z-index: -1;
+    }
+  }
+  .bottom-buttons {
+    height: 50px;
+    width: 85%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding-top: 10px;
+    button {
+      padding: 0 10px;
+      height: 40px;
+      vertical-align: top;
+      margin: 0;
+      margin-left: 2px;
     }
   }
 

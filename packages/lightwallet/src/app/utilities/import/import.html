@@ -1,46 +1,47 @@
 <ion-header>
-    <ion-navbar color="secondary">
-        <ion-title translate>Import Wallet</ion-title>
+    <ion-navbar>
+        <ion-title>Import Wallet</ion-title>
     </ion-navbar>
-    <ion-toolbar color="secondary">
-        <ion-segment [(ngModel)]="segment" >
-        <ion-segment-button value="phrase">
-            Phrase
-        </ion-segment-button>
-        <ion-segment-button value="file">
-            File
-        </ion-segment-button>
+    <ion-toolbar>
+        <ion-segment [(ngModel)]="segment">
+          <ion-segment-button value="phrase">
+              Phrase
+          </ion-segment-button>
+          <ion-segment-button value="file">
+              File
+          </ion-segment-button>
         </ion-segment>
     </ion-toolbar>
 </ion-header>
 
 <ion-content>
 
-    <span *ngIf="segment == 'phrase'">
-        <ion-item margin-top>
-            <ion-label translate>
-                Enter the recovery phrase (usually 12 words)
+    <div [hidden]="segment != 'phrase'">
+        <ion-item>
+          <ion-avatar img-icon item-start>
+            <img src="assets/img/icons/wallet.svg" alt="">
+          </ion-avatar>
+            <ion-label stacked>
+                Recovery phrase (12 words)
             </ion-label>
-            <button (click)="openScanner()" ion-button icon-only item-right clear>
-                <ion-icon name="qr-scanner"  color="primary"></ion-icon>
+            <button (click)="openScanner()" ion-button icon-only item-end clear>
+                <ion-icon name="qr-code" merit-icon  color="primary"></ion-icon>
             </button>
+          <ion-textarea [(ngModel)]="formData.words" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type it here"></ion-textarea>
         </ion-item>
 
         <ion-item>
-            <textarea fz-elastic [(ngModel)]="formData.words" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"
-                      [placeholder]="'Type it here'"
-            ></textarea>
-        </ion-item>
-
-        <ion-item-divider translate>Options</ion-item-divider>
-        <ion-item>
-            <ion-label translate>Password</ion-label>
-            <ion-input text-right [(ngModel)]="formData.phrasePassword"  autocomplete="off" [placeholder]="'Recovery phrase password (optional)'"></ion-input>
+          <ion-avatar img-icon item-start>
+            <img src="assets/img/icons/lock.svg" alt="">
+          </ion-avatar>
+          <ion-label stacked>Recovery Phrase Password (optional)</ion-label>
+          <ion-input [(ngModel)]="formData.phrasePassword" [type]="showPassword? 'text' : 'password'" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"></ion-input>
+          <button ion-button item-end (click)="showPassword = !showPassword" clear>{{ showPassword ? 'Hide' : 'Show' }}</button>
         </ion-item>
 
         <ion-item>
             <ion-label translate>Derivation Path</ion-label>
-            <ion-input text-right [(ngModel)]="formData.derivationPath" [placeholder]="'BIP32 path for address derivation'"></ion-input>
+            <ion-input text-right [(ngModel)]="formData.derivationPath" placeholder="BIP32 path for address derivation"></ion-input>
         </ion-item>
 
         <ion-item margin-bottom>
@@ -50,11 +51,11 @@
 
         <button class="action-button" margin-top block (click)="importMnemonic()" ion-button translate [disabled]="!mnemonicImportAllowed()">Import</button>
 
-    </span>
+    </div>
 
-    <span *ngIf="segment == 'file'">
+    <div [hidden]="segment != 'file'">
 
-        <ion-item margin-top (click)="openFilePicker()">
+        <ion-item (click)="openFilePicker()">
             <ion-label translate *ngIf="!formData.backupFile">
                 Choose a backup file from your device
             </ion-label>
@@ -68,7 +69,7 @@
         </ion-item>
         <ion-item>
             <ion-label translate>Password</ion-label>
-            <ion-input text-right [(ngModel)]="formData.filePassword" type="password" autocomplete="off" [placeholder]="'File password'"></ion-input>
+            <ion-input text-right [(ngModel)]="formData.filePassword" type="password" autocomplete="off" placeholder="File password"></ion-input>
         </ion-item>
 
         <ion-item margin-bottom margin-top>
@@ -78,6 +79,6 @@
 
         <button class="action-button" margin-top block (click)="importBlob()" ion-button translate [disabled]="!fileImportAllowed()">Import</button>
 
-    </span>
+    </div>
 
 </ion-content>

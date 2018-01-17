@@ -16,12 +16,10 @@ export class SelectCurrencyModal {
 
   foundCurrencies = [];
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private viewCtrl:ViewController
-  ) {
-    this.currentCurrency   = this.navParams.get('currentCurrency');
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private viewCtrl: ViewController) {
+    this.currentCurrency = this.navParams.get('currentCurrency');
     this.availableCurrencies = this.navParams.get('availableCurrencies');
 
     this.findCurrencies();
@@ -35,8 +33,8 @@ export class SelectCurrencyModal {
 
     if (!this.searchQuery) {
       this.foundCurrencies = this.availableCurrencies;
-    }  else {
-      this.foundCurrencies = this.availableCurrencies.filter((c:string) => {
+    } else {
+      this.foundCurrencies = this.availableCurrencies.filter((c: string) => {
         return (c.toLowerCase().indexOf(this.searchQuery.toLowerCase()) != -1)
       });
     }

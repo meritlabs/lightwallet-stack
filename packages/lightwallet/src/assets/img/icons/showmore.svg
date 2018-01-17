@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8px" height="13px" viewBox="0 0 8 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>showmore</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4-numbers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Icons" transform="translate(-856.000000, -850.000000)" stroke-width="2" stroke="#5F6C82">
+            <g id="showmore" transform="translate(839.000000, 837.000000)">
+                <polyline id="Back-Chevron" transform="translate(21.000000, 19.500000) scale(-1, 1) translate(-21.000000, -19.500000) " points="24 14 18 19.5 24 25"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

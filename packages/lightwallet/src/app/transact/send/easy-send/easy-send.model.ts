@@ -9,13 +9,14 @@ export type EasySend = {
   blockTimeout: number;
   scriptReferralOpts: any;
   recipientReferralOpts: any;
+  txid?: string;
 }
 
 export let easySendURL = (es: EasySend): string => {
   return `https://merit.app.link/` +
-            `?se=${es.secret}` +
-            `&sk=${es.senderPubKey}` +
-            `&sn=${es.senderName}` +
-            `&bt=${es.blockTimeout}` +
-            `&pa=${es.parentAddress}`;
-}
+    `?se=${es.secret}` +
+    `&sk=${es.senderPubKey}` +
+    `&sn=${es.senderName}` +
+    `&bt=${es.blockTimeout}` +
+    `&pa=${es.parentAddress}`;
+};

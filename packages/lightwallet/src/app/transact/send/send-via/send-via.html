@@ -1,0 +1,75 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>
+            <h2>Send to</h2>
+            <p>{{getDisplayedName()}}</p>
+        </ion-title>
+        <ion-buttons end *ngIf="contact.name.formatted">
+            <button ion-button (click)="editContact()" translate>
+                Edit Contact
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <div class="easy-send-section">
+        <h2>EasySend <button ion-button icon-only (click)="showEasyTooltip()"><ion-icon name="ios-information-circle-outline"></ion-icon></button></h2>
+
+        <ion-list>
+            <ion-item *ngFor="let phoneNumber of contact.phoneNumbers; let i = index"
+                      (click)="select('easy', 'sms', phoneNumber.value)" [class.selected]="highlightedMethod.value == phoneNumber.value">
+                <ion-avatar item-start *ngIf="i == 0">
+                    <ion-icon name="phone-portrait"></ion-icon>
+                </ion-avatar>wall
+                <h2>Home phone</h2>
+                <p>{{phoneNumber.value}}</p>
+            </ion-item>
+        </ion-list>
+
+        <ion-list>
+            <ion-item *ngFor="let email of contact.emails; let i = index"
+                      (click)="select('easy', 'email', email.value)" [class.selected]="highlightedMethod.value == phoneNumber.value">
+                <ion-avatar item-start *ngIf="i == 0">
+                    <ion-icon name="mail"></ion-icon>
+                </ion-avatar>
+                <h2>Email</h2>
+                <p>{{email.value}}</p>
+            </ion-item>
+        </ion-list>
+
+        <ion-list>
+            <ion-item *ngFor="let meritAddress of contact.meritAddress; let i = index"
+                      (click)="select('easy', 'address', meritAddress.address)"
+                      [class.selected]="highlightedMethod.value == phoneNumber.value && highlightedMethod.type == 'easy'">
+                <ion-avatar item-start *ngIf="i == 0">
+                    <i class="merit-icon-merit"></i>
+                </ion-avatar>
+                <h2>Merit Address</h2>
+                <p>{{meritAddress.address}}</p>
+            </ion-item>
+        </ion-list>
+
+
+    </div>
+    <div class="classic-send-section">
+        <h2>ClassicSend <button ion-button icon-only (click)="showClassicTooltip()"><ion-icon name="ios-information-circle-outline"></ion-icon></button></h2>
+
+        <ion-list>
+            <ion-item *ngFor="let meritAddress of contact.meritAddress; let i = index"
+                      (click)="select('classic', 'address', meritAddress.address)"
+                      [class.selected]="highlightedMethod.value == phoneNumber.value && highlightedMethod.type == 'classic'">
+                <ion-avatar item-start *ngIf="i == 0">
+                    <i class="merit-icon-merit"></i>
+                </ion-avatar>
+                <h2>Merit Address</h2>
+                <p>{{meritAddress.address}}</p>
+            </ion-item>
+        </ion-list>
+
+    </div>
+
+</ion-content>

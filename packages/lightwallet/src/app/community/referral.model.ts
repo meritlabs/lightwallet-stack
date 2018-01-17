@@ -5,7 +5,6 @@ export class Referral {
   public pubkey: string;
   public id: string;
 
-  constructor(
-  ){
+  constructor() {
   }
 }

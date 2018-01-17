@@ -10,4 +10,5 @@ import { OnboardingView } from './onboarding.view';
     IonicPageModule.forChild(OnboardingView),
   ],
 })
-export class OnboardingViewModule {}
+export class OnboardingViewModule {
+}

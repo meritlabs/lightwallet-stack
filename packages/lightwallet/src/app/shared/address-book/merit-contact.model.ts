@@ -1,22 +1,27 @@
-import * as _ from 'lodash';
+import { Contact, IContactField, IContactName, IContactProperties } from '@ionic-native/contacts';
+
 let Bitcore = require('bitcore-lib');
 
-import { Contact, IContactProperties, IContactName, IContactField } from '@ionic-native/contacts';
-export interface AddressBook { [key:string]:MeritContact; }
+export interface AddressBook {
+  [key: string]: MeritContact;
+}
 
-export interface IMeritAddress {network:string, address:string}
+export interface IMeritAddress {
+  network: string,
+  address: string
+}
 
 export class MeritContact implements IContactProperties {
 
   public id: string;
-  public name: IContactName = {formatted: ''};
+  public name: IContactName = { formatted: '' };
   public phoneNumbers: IContactField[] = [];
   public emails: IContactField[] = [];
   public photos: IContactField[] = [];
   public urls: Array<any> = [];
-  public meritAddresses:Array<IMeritAddress> = [];
+  public meritAddresses: Array<IMeritAddress> = [];
 
-  public nativeModel:Contact;
+  public nativeModel: Contact;
 
   isValid() {
     if (!this.name) return false;
@@ -38,7 +43,8 @@ export class MeritContact implements IContactProperties {
       try {
         val.network = Bitcore.Address.fromString(val.address).network.name;
         console.log('set network!', val.network);
-      } catch (e) { }
+      } catch (e) {
+      }
     });
 
   }

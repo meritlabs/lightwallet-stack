@@ -15,20 +15,22 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+ion-content.content[fullscreen] {
+  .scroll-content {
+    height: 100%;
+    padding-top: 0 !important;
+  }
+}
 
 // Buttons
 @import "core/buttons";
 
 // Core App Layout
 .scroll-content {
-  background: rgb(242, 242, 242);
+  background: rgb(255, 255, 255);
 }
 ion-content.has-refresher > .scroll-content {
-  background: rgb(242, 242, 242);
-}
-
-ion-header .toolbar-title {
-  font-weight: normal !important;
+  background: rgb(255, 255, 255);
 }
 
 ion-item-divider {
@@ -103,20 +105,131 @@ ion-item textarea {
   color: white !important;
 }
 
-[class^="merit-icon"] {
-  mask-size: contain;
-  mask-position: 50% 50%;
-  mask-repeat: no-repeat;
-  background: currentColor;
-  display: inline-block;
-}
-
 .toast-error {
   .toast-message {
     background: color($colors, 'danger');
   }
 }
 
+
+.big-header {
+  background: #00a6d1;
+  color: white;
+  padding: 28px 26px;
+  position: relative;
+
+  p, h2, h3 {
+    margin: 0;
+    padding: 0;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 28px;
+  }
+
+  h2 {
+    font-size: 40px;
+    small {
+      font-size: 24px;
+      font-weight: 400;
+    }
+  }
+
+  h3 {
+    font-size: 17px;
+    color: rgba(255,255,255,.6);
+  }
+
+  button[ion-button].button.action-button {
+    position: absolute;
+    top: 16px;
+    right: 0;
+    ion-icon.icon {
+      color: white;
+
+      &[merit-icon] {
+        &[name="settings"] {
+          mask-image: url('../assets/img/icons/settings.svg');
+        }
+      }
+    }
+  }
+
+  ion-spinner.spinner {
+    svg > * {
+      stroke: white;
+    }
+  }
+}
+
+ion-content.has-refresher > .scroll-content {
+  background: $background-color;
+}
+
+ion-item.item, button[ion-item].item {
+  ion-label.label {
+    h2 {
+      font-size: 17px;
+      letter-spacing: -.2px;
+      font-weight: 400;
+      color: #2d3c50;
+    }
+
+    p {
+      font-size: 13px;
+      color: #73819b;
+      font-weight: 500;
+    }
+  }
+
+  padding-top: 10px;
+  padding-bottom: 12px;
+
+  &:not([no-lines]):not(.add-vault-block) {
+    .item-inner {
+      border-bottom: none;
+    }
+
+    &:after {
+      content: '';
+      width: calc(100% - 16px - 19px);
+      background: transparentize(#d1d6dc, .5);
+      height: 1px;
+      position: absolute;
+      bottom: 1px;
+      left: 19px;
+    }
+  }
+}
+
+// merit icons
+
+ion-avatar[img-icon] {
+  background: #f0f3f8;
+  border-radius: 500rem;
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-items: center;
+
+  > img {
+    border-radius: 0;
+    display: inline;
+    height: 17px;
+    width: 16px;
+    flex: 1;
+  }
+}
+
+[class^="merit-icon"], [merit-icon] {
+  mask-size: contain;
+  mask-position: 50% 50%;
+  mask-repeat: no-repeat;
+  background: currentColor;
+  display: inline-block;
+}
 
 .merit-icon-merit { mask-image: url(../assets/img/icons/merit.svg); }
 .merit-icon-merit-2 { mask-image: url(../assets/img/merit.svg); }

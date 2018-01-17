@@ -1,17 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BwcService } from 'merit/core/bwc.service';
-import { RateService } from 'merit/transact/rate.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { Logger } from 'merit/core/logger';
-
-import * as Promise from 'bluebird';
-
-import * as _ from "lodash";
+import { PersistenceService } from 'merit/core/persistence.service';
+import { ConfigService } from 'merit/shared/config.service';
+import { RateService } from 'merit/transact/rate.service';
 
 /*
-  Service to help manage sending merit to others.
-*/
+ Service to help manage sending merit to others.
+ */
 @Injectable()
 export class SendService {
   private bitcore: any;
@@ -20,6 +16,7 @@ export class SendService {
     private bwcService: BwcService,
     private rate: RateService,
     private config: ConfigService,
+    private persistenceService: PersistenceService,
     private logger: Logger
   ) {
     this.logger.info('Hello SendService');
@@ -32,12 +29,16 @@ export class SendService {
       let address = this.bitcore.Address.fromString(addr);
       let network = address.network;
       if (this.bitcore.Address.isValid(address, network))
-        // If it is, then let's be sure it's beaconed.
+      // If it is, then let's be sure it's beaconed.
         return this.isAddressUnlocked(addr, network);
       return Promise.resolve(false);
     } catch (_e) {
       return Promise.resolve(false);
     }
+  }
+
+  public getAddressNetwork(addr):string {
+    return this.bitcore.Address.fromString(addr).network;
   }
 
   private isAddressUnlocked(addr: string, network: string): Promise<boolean> {
@@ -46,13 +47,22 @@ export class SendService {
 
       walletClient.validateAddress(addr, network).then((result) => {
         if (!result) {
-          reject(new Error("Could not validateAddress"));
+          reject(new Error('Could not validateAddress'));
         } else {
           const isAddressBeaconed = result.isValid && result.isBeaconed;
           resolve(isAddressBeaconed);
         }
       });
     });
-
   }
+
+  public async registerSend(contact, method) {
+    return this.persistenceService.registerSend(contact, method);
+  }
+
+  public async getSendHistory() {
+    let history = await this.persistenceService.getSendHistory();
+    return history || [];
+  }
+
 }

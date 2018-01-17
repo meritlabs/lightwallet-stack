@@ -13,12 +13,10 @@ export class PlatformService {
   ua: string;
   isMobile: boolean;
   isDevel: boolean;
-  supportsLedger:boolean;
+  supportsLedger: boolean;
 
-  constructor(
-    private platform: Platform,
-    private log: Logger
-  ) {
+  constructor(private platform: Platform,
+              private log: Logger) {
     let chrome: any;
     var ua = navigator ? navigator.userAgent : null;
 
@@ -41,6 +39,10 @@ export class PlatformService {
     this.supportsLedger = window.chrome && window.chrome.runtime && window.chrome.runtime.id && !this.isNW;
   }
 
+  ready() {
+    return this.platform.ready();
+  }
+
   getBrowserName(): string {
     let chrome: any;
     let userAgent = window.navigator.userAgent;
@@ -50,16 +52,17 @@ export class PlatformService {
       if (browsers[key].test(userAgent)) {
         return key;
       }
-    };
+    }
+    ;
 
     return 'unknown';
   }
 
   isNodeWebkit(): boolean {
-    let isNode = (typeof process !== "undefined" && typeof require !== "undefined");
+    let isNode = (typeof process !== 'undefined' && typeof require !== 'undefined');
     if (isNode) {
       try {
-        return (typeof require('nw.gui') !== "undefined");
+        return (typeof require('nw.gui') !== 'undefined');
       } catch (e) {
         return false;
       }

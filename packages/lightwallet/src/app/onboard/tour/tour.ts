@@ -1,6 +1,6 @@
-import { Component,  ViewChild} from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
-import {RateService} from "merit/transact/rate.service";
+import { RateService } from 'merit/transact/rate.service';
 
 
 @IonicPage({
@@ -13,16 +13,12 @@ import {RateService} from "merit/transact/rate.service";
 export class TourView {
 
   @ViewChild(Slides) slides: Slides;
-  public currentIndex: number;
 
-  public rateData = {usdPerMerit:null};
+  public rateData = { usdPerMerit: null };
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private rateService:RateService
-  ) {
-
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private rateService: RateService) {
   }
 
   ionViewDidLoad() {
@@ -30,8 +26,11 @@ export class TourView {
   }
 
   slideNext() {
-    this.slides.slideNext();
-    this.currentIndex = this.slides.getActiveIndex();
+    if (this.slides.getActiveIndex() === 2) {
+      this.toUnlockView();
+    } else {
+      this.slides.slideNext();
+    }
   }
 
   toUnlockView() {

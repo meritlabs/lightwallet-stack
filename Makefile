@@ -197,3 +197,8 @@ test-all: test-bitcoin-rpc \
 	test-bitcore-wallet-service \
 	test-bitcore-wallet-client \
 	test-insight-api
+
+.PHONY: fmt
+fmt:
+	node_modules/.bin/prettier typescript --write "packages/lw-2/src/**/*.ts"
+	node_modules/.bin/prettier es5 --write "packages/{bitcore-*,insight-*,merit-rpc}/**/*.js"

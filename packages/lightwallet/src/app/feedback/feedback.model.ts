@@ -1,6 +1,6 @@
 export class Feedback {
 
-  public mark:number;
-  public text:string;
+  public mark: number;
+  public text: string;
 
 }

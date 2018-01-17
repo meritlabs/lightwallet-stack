@@ -10,4 +10,5 @@ import { SelectColorView } from './select-color';
     IonicPageModule.forChild(SelectColorView),
   ],
 })
-export class $$moduleName$$Module {}
+export class SelectColorModule {
+}

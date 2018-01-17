@@ -1,0 +1,38 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>Send from</ion-title>
+        <ion-buttons end>
+            <button ion-button (click)="cancel()" translate>
+                cancel
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <button ion-item *ngFor="let wallet of wallets" [class.selected]="selectedWallet.id == wallet.id" (click)="select(wallet)">
+
+        <i class="wallet-icon" item-start
+           [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
+            <img src="assets/img/icon-wallet.svg">
+        </i>
+
+        <h2 translate>
+            {{wallet.name || wallet._id}}
+        </h2>
+
+        <div>
+            <div *ngIf="wallet.status">
+                {{wallet.status.totalBalanceStr}}
+                <small *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount">({{wallet.status.spendableBalanceStr}} available)</small>
+            </div>
+            <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>
+        </div>
+
+    </button>
+
+
+</ion-content>

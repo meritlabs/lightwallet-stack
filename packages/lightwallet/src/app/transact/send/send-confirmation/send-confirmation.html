@@ -1,0 +1,93 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title>Confirm send</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <ion-list>
+        <ion-item>
+            <ion-avatar item-start>
+                <img [src]="sanitizePhotoUrl(contact.photos[0]?.value)" *ngIf="contact.photos.length">
+                <span color="primary">{{getContactInitials(contact)}}</span>
+            </ion-avatar>
+            <div>Recipient</div>
+            <div>{{viewData.recipientName}}</div>
+            <div>{{viewData.methodName}}</div>
+            <div>{{viewData.destination}}</div>
+
+        </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <ion-item>
+            <ion-label stacked>From</ion-label>
+            <ion-label>{{viewData.walletName}}</ion-label>
+        </ion-item>
+        <ion-item>
+            {{ viewData.walletCurrentBalanceMrt }} MRT
+            <ion-icon name="arrow-dropright"></ion-icon>
+            {{ viewData.walletRemainingBalanceMrt }} MRT
+        </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <div>Send</div>
+        <ion-item>
+            <ion-label>{{ viewData.feeAmountMrt}} MRT</ion-label>
+            <div item-end>{{ viewData.feeAmountFiat }}</div>
+        </ion-item>
+        <ion-item>
+            <ion-label>{{ viewData.feeAmountMrt}} MRT</ion-label>
+            <div item-end>{{ viewData.feeAmountFiat }}</div>
+        </ion-item>
+        <ion-item>
+            <ion-label> {{ viewData.totalAmountMrt}} MRT</ion-label>
+            <div item-end>{{ viewData.totalAmountFiat }}</div>
+        </ion-item>
+    </ion-list>
+
+
+
+    <ion-list>
+        <ion-item *ngIf="txData.password">
+            <ion-avatar item-start>
+               <ion-icon name="unlock"></ion-icon>
+            </ion-avatar>
+            <ion-label stacked>Password</ion-label>
+
+            <ion-input [(ngModel)]="txData.password" *ngIf="!showPassword"></ion-input>
+            <ion-label [(ngModel)]="txData.password" *ngIf="showPassword"></ion-label>
+
+            <button ion-button clear color="primary" *ngIf="showPassword">Show</button>
+            <button ion-button clear color="primary" *ngIf="!showPassword">Hide</button>
+        </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <ion-item *ngIf="txData.timeout">
+            <ion-avatar item-start>
+               <ion-icon name="timer"></ion-icon>
+            </ion-avatar>
+            <ion-label stacked>Expiration Time</ion-label>
+            <h2>{{txData.timeout.nbBlocks}}</h2>
+            <p>Until {{txData.timeout.expirationDate}}</p>
+
+            <div item-end>{{txData.timeout.hours}}</div>
+        </ion-item>
+    </ion-list>
+
+    <button ion-button color="primary" (click)="send()">
+        <ion-icon name="arrow-right"></ion-icon>
+        Send
+    </button>
+
+    <ion-item>
+        <!--TODO add styling and return to zero when touchend-->
+        <ion-range [(ngModel)]="unlockValue" (ionChange)="send()"></ion-range>
+    </ion-item>
+
+</ion-content>
