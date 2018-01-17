@@ -23,7 +23,6 @@ import { EasySend, easySendURL } from 'merit/transact/send/easy-send/easy-send.m
   templateUrl: 'send-amount.html',
 })
 export class SendAmountView {
-
   public recipient:MeritContact;
   public sendMethod:SendMethod;
 
@@ -33,7 +32,7 @@ export class SendAmountView {
   public txData:any;
   public feeCalcError:string;
 
-  public amount:{micros: number, mrt:number, mrtStr:string, fiat:number, fiatStr:string};
+  public amount = {micros: 0, mrt:0, mrtStr:'0.00', fiat:0, fiatStr:'0.00'};
   public formData = {amount: '0.00', password: '', confirmPassword: '', nbBlocks: 1008, validTill: ''};
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
@@ -48,13 +47,15 @@ export class SendAmountView {
   public knownFeeLevels:{name:string, nbBlocks:number};
   public selectedFeeLevel:string = 'normal';
 
-  public commonAmounts = {};
+  public suggestedAmounts = {};
   public lastAmount:string;
 
   public feeIncluded:boolean;
   private referralsToSign: Array<any>;
 
   private allowUnconfirmed:boolean;
+
+  private loading:boolean;
 
   constructor(
     private navCtrl: NavController,
@@ -71,29 +72,28 @@ export class SendAmountView {
     private walletService: WalletService,
     private loadingCtrl: LoadingController
   ) {
-
+    this.recipient = this.navParams.get('contact');
+    this.sendMethod = this.navParams.get('suggestedMethod');
+    this.loading = true;
   }
 
   async ionViewDidLoad() {
-    this.recipient = this.navParams.get('contact');
-    this.amount = this.navParams.get('amount');
-    this.sendMethod = this.navParams.get('method');
-
     this.availableUnits = [
       {type: this.CURRENCY_TYPE_FIAT, name: this.configService.get().wallet.settings.unitCode.toUpperCase()},
       {type: this.CURRENCY_TYPE_MRT, name: this.configService.get().wallet.settings.unitCode.toUpperCase()},
     ];
     this.selectedCurrency = this.availableUnits[0];
-    this.updateAmount();
+    this.amount.micros = this.navParams.get('suggestedMethod') || 0;
+    await this.updateAmount();
 
     // todo add smart common amounts receive
-    this.commonAmounts[this.CURRENCY_TYPE_MRT] =  ['5', '10', '100', this.AMOUNT_MAX];
-    this.commonAmounts[this.CURRENCY_TYPE_FIAT] = ['5', '10', '100', this.AMOUNT_MAX];
+    this.suggestedAmounts[this.CURRENCY_TYPE_MRT] =  ['5', '10', '100', this.AMOUNT_MAX];
+    this.suggestedAmounts[this.CURRENCY_TYPE_FIAT] = ['5', '10', '100', this.AMOUNT_MAX];
 
     this.wallets = await this.profileService.getWallets();
     this.chooseAppropriateWallet();
     this.knownFeeLevels = await this.feeService.getFeeLevels(this.selectedWallet.network);
-
+    this.loading = false;
   }
 
   private chooseAppropriateWallet() {
@@ -170,15 +170,15 @@ export class SendAmountView {
       this.formData.amount = amount;
     }
 
-    this.updateAmount();
+    await this.updateAmount();
 
   }
 
-  processAmount(value) {
+  async processAmount(value) {
     if (value != this.lastAmount) {
       this.lastAmount = value;
-      this.updateAmount();
-      this.updateTxData();
+      await this.updateAmount();
+      await this.updateTxData();
     }
   }
 

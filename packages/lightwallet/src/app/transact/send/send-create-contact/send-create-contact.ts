@@ -17,7 +17,8 @@ export class SendCreateContactView {
 
   public contact:MeritContact;
   public amount:number;
-
+  public addAddressMode:boolean;
+  public newAddress:string;
 
   constructor(
     private navCtrl: NavController,
@@ -26,31 +27,42 @@ export class SendCreateContactView {
     private sendService: SendService,
     private toastController: MeritToastController
   ) {
-  }
-
-  ionViewDidLoad() {
     this.contact = this.navParams.get('contact');
     this.amount = this.navParams.get('amount');
   }
 
+  ionViewDidLoad() {
+
+  }
+
   save() {
     return this.addressBook.add(this.contact, this.contact.meritAddresses[0].address, this.contact.meritAddresses[0].network).then(() => {
-      this.navCtrl.remove(2,1);
-      this.navCtrl.push('SendVia', {contact: this.contact, amount: this.amount} );
+      this.navCtrl.remove(2,1); //todo not working!
+      this.navCtrl.push('SendViaView', {contact: this.contact, amount: this.amount} );
     });
   }
 
-  addAddress(address) {
-    if (!this.sendService.isAddressValid(address)) {
+  async addAddress(address) {
+
+    if (this.contact.meritAddresses.filter(m => m.address == address).length) {
+      return this.toastController.create({
+        message: 'Address is already bound to this contact',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    }
+
+    let isAddressValid =  await this.sendService.isAddressValid(address);
+    if (!isAddressValid) {
       return this.toastController.create({
         message: 'Address is invalid or not invited to blockchain yet',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     }
 
-    let network = this.sendService.getAddressNetwork(address);
+    let network = this.sendService.getAddressNetwork(address).name;
     let meritAddress = {address, network};
     this.contact.meritAddresses.push(meritAddress);
+    this.newAddress = '';
   }
 
   removeAddress(meritAddress) {

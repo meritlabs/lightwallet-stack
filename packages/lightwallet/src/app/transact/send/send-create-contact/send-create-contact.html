@@ -1,9 +1,9 @@
 <ion-header>
 
-    <ion-navbar color="secondary">
+    <ion-navbar color="light">
         <ion-title>New Contact</ion-title>
         <ion-buttons end>
-            <button ion-button (click)="save()" [disabled]="!saveAvailable()">
+            <button ion-button (click)="save()" [disabled]="!isSaveAvailable()" color="primary">
                 Done
             </button>
         </ion-buttons>
@@ -17,28 +17,22 @@
     <ion-list>
         <ion-item>
             <ion-label stacked>Name</ion-label>
-            <ion-input type="text" [(ngModel)]="contact.name.formatted"></ion-input>
+            <ion-input type="text" [(ngModel)]="contact.name.formatted" placeholder="Enter contact name"></ion-input>
         </ion-item>
     </ion-list>
 
     <ion-list *ngIf="contact.meritAddresses.length">
         <ion-item *ngFor="let mAddress of contact.meritAddresses">
             <ion-label stacked>Merit Address</ion-label>
-            {{mAddress.address}}
-            <button ion-button icon-only item-end (click)="removeAddress(mAddress)"><ion-icon name="remove-circle" color="danger"></ion-icon></button>
+            <ion-label>{{mAddress.address}}</ion-label>
+            <button ion-button icon-only clear item-end (click)="removeAddress(mAddress)"><ion-icon name="remove-circle" color="danger"></ion-icon></button>
         </ion-item>
     </ion-list>
 
     <ion-item>
-        <div *ngIf="!addAddressMode">
-            Add Merit Address
-            <button ion-button icon-only item-end><ion-icon name="add-circle" color="primary"></ion-icon></button>
-        </div>
-        <div *ngIf="addAddressMode">
-            <ion-input type="text" placeholder="Enter Merit Address" [(ngModel)]="newAddress"></ion-input>
-            <button ion-button icon-only item-end (click)="addAddress(newAddress)"><ion-icon name="checkmark-cicle" color="primary"></ion-icon></button>
-        </div>
-
+        <ion-label stacked>New Address</ion-label>
+        <ion-input type="text" placeholder="Enter Merit Address" [(ngModel)]="newAddress"></ion-input>
+        <button ion-button icon-only clear item-end (click)="addAddress(newAddress)" *ngIf="newAddress"><ion-icon name="checkmark-circle" color="primary"></ion-icon></button>
     </ion-item>
 
 </ion-content>

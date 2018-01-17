@@ -17,7 +17,7 @@ export class SendEditContactView {
   public contact:MeritContact;
   public newAddress:string = '';
 
-  public actions:Array<{type:string, mAddress:IMeritAddress}>; //logging all actions to properly modify addressbook
+  public actions:Array<{type:string, mAddress:IMeritAddress}> = []; //logging all actions to properly modify addressbook
 
   private readonly TYPE_REMOVE = 'remove';
   private readonly TYPE_ADD = 'add';
@@ -30,10 +30,10 @@ export class SendEditContactView {
     private sendService: SendService,
     private alertCtrl: AlertController
   ) {
+    this.contact = this.navParams.get('contact');
   }
 
   ionViewDidLoad() {
-    this.contact = this.navParams.get('contact');
   }
 
   removeAddress(meritAddress) {
@@ -54,7 +54,7 @@ export class SendEditContactView {
       }).present();
     }
 
-    let network = this.sendService.getAddressNetwork(address);
+    let network = this.sendService.getAddressNetwork(address).name;
     let meritAddress = {address, network};
     this.actions.push({type: this.TYPE_ADD, mAddress: meritAddress});
     this.contact.meritAddresses.push(meritAddress);
@@ -75,6 +75,7 @@ export class SendEditContactView {
     });
     return Promise.all(removalPromises).then(() => {
       if (_.isEmpty(this.contact.meritAddresses)) {
+        this.navCtrl.remove(2,1);
         return this.navCtrl.pop();
       } else {
         return this.addressBook.add(this.contact, this.contact.meritAddresses[0].address, this.contact.meritAddresses[0].network).then(() => {
@@ -86,7 +87,7 @@ export class SendEditContactView {
 
   // we are able to delete merit contacts and edit name property, instead of contacts in device address book
   isMeritContact() {
-    return (!this.contact.phoneNumbers.length && this.contact.emails.length);
+    return (!this.contact.phoneNumbers.length && !this.contact.emails.length);
   }
 
   isSaveAvailable() {
@@ -94,8 +95,29 @@ export class SendEditContactView {
   }
 
   deleteContact() {
-    this.contact.meritAddresses = [];
-    return this.save(); 
+
+    let remove = () => {
+      this.contact.meritAddresses.forEach((m) => {
+        this.removeAddress(m);
+      });
+      return this.save();
+    };
+
+    this.alertCtrl.create({
+      title: `Are you sure want to delete this contact?`,
+      buttons: [
+        {
+          text: 'Cancel', role: 'cancel', handler: () => {}
+        },
+        {
+          text: 'Delete', handler: () => {
+          remove();
+        }
+        }
+      ]
+    }).present();
+
+
   }
 
 }

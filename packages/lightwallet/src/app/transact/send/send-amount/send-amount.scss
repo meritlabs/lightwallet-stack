@@ -1,3 +1,31 @@
 view-send-amount {
 
+  ion-avatar {
+    text-align: center;
+    color: color($colors, primary);
+    display: inline-block;
+    line-height: 40px;
+    letter-spacing: -1px;
+    border-radius: 50%;
+  }
+
+  ion-item, .item-divider {
+    border: none;
+  }
+
+  ion-header {
+    ion-navbar {
+      height: 70px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+    p {
+      margin: 0;
+      font-size: 13px;
+      font-weight: normal;
+    }
+  }
+
 }

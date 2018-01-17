@@ -14,7 +14,6 @@ import * as _ from 'lodash';
   templateUrl: 'send.html',
 })
 export class SendView {
-  private readonly ADDRESS_LENGTH = 34;
 
   public searchQuery: string = '';
   public loadingContacts: boolean = false;
@@ -48,7 +47,7 @@ export class SendView {
     this.updateRecentContacts();
   }
 
-  async ionViewDidEnter() {
+  async ionViewWillEnter() {
     this.contacts = await this.addressBookService.getAllMeritContacts();
     this.updateRecentContacts();
     this.parseSearch();
@@ -76,7 +75,7 @@ export class SendView {
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
       if (await this.isAddress(this.searchQuery)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact()};
-        result.toNewEntity.contact.meritAddresses.push({address: this.searchQuery, network: this.sendService.getAddressNetwork(this.searchQuery)});
+        result.toNewEntity.contact.meritAddresses.push({address: this.searchQuery, network: this.sendService.getAddressNetwork(this.searchQuery).name});
         this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_ADDRESS, value: this.searchQuery};
       } else if (this.couldBeEmail(this.searchQuery)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
@@ -115,9 +114,7 @@ export class SendView {
   }
 
   private async isAddress(input) {
-    if (!input || input.length !== this.ADDRESS_LENGTH) return false;
-
-    //todo check if send service is properly working now
+    input = input.split('?')[0];
     return await this.sendService.isAddressValid(input);
   }
 
@@ -136,7 +133,7 @@ export class SendView {
 
   bindAddressToContact() {
     let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
-    let modal = this.modalCtrl.create('SendSelectBindContactView', {address: meritAddress , contacts: this.contacts, amount: this.amount});
+    let modal = this.modalCtrl.create('SendSelectBindContactView', {contacts: this.contacts});
     modal.onDidDismiss((contact) => {
       if (contact) {
         this.addressBookService.bindAddressToContact(contact, meritAddress.address, meritAddress.network).then(() => {

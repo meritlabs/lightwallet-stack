@@ -24,13 +24,12 @@ export class SendViaView {
     private alertCtrl: AlertController,
     private sendService: SendService
   ) {
-
-  }
-
-  async ionViewDidLoad() {
     this.contact = this.navParams.get('contact');
     this.amount = this.navParams.get('amount');
     this.suggestedMethod = this.navParams.get('suggestedMethod');
+  }
+
+  async ionViewDidLoad() {
 
     let searchIn = (method) => {
       if (method.destination == SendMethod.DESTINATION_SMS) {
@@ -48,10 +47,6 @@ export class SendViaView {
           this.highlightedMethod = this.suggestedMethod;
           return true;
       }
-      //if (.some( (entity) => { return (entity.value == this.suggestedMethod.value); } )) {
-      //  this.highlightedMethod = this.suggestedMethod;
-      //  return true;
-      //}
     }
 
     if (!this.highlightedMethod) {
@@ -77,11 +72,11 @@ export class SendViaView {
   }
 
   editContact() {
-    this.navCtrl.push('SendEditContact', {contact: this.contact, amount: this.amount});
+    this.navCtrl.push('SendEditContactView', {contact: this.contact, amount: this.amount});
   }
 
   select(type, destination, value) {
-    this.navCtrl.push('SendAmount', {contact: this.contact, amount: this.amount, method: new SendMethod({type, destination, value})});
+    this.navCtrl.push('SendAmountView', {contact: this.contact, amount: this.amount, suggestedMethod: new SendMethod({type, destination, value})});
   }
 
   showClassicTooltip() {
