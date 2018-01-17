@@ -203,6 +203,35 @@ ion-item.item, button[ion-item].item {
   }
 }
 
+ion-textarea.input textarea.text-input {
+  &::placeholder {
+    font-size: 17px;
+    letter-spacing: -0.47px;
+    color: #9da6b7;
+    font-weight: 500;
+  }
+}
+
+ion-input.input > input {
+  font-size: 18px;
+  letter-spacing: -0.5px;
+  color: #2d3c50;
+}
+
+button[ion-button][add-button].button {
+  background: #5e6b82;
+  border-radius: 500rem;
+  width: 24px;
+  height: 24px;
+  box-shadow: none;
+  margin-right: 16px;
+
+  ion-icon.icon {
+    font-size: 18px;
+    line-height: 24px;
+  }
+}
+
 // merit icons
 
 ion-avatar[img-icon] {
