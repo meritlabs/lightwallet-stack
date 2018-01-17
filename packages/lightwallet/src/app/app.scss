@@ -1,6 +1,5 @@
 // http://ionicframework.com/docs/theming/
 
-
 // App Global Sass
 // --------------------------------------------------
 // Put style rules here that you want to apply globally. These
@@ -29,31 +28,33 @@ ion-content.content[fullscreen] {
 .scroll-content {
   background: rgb(255, 255, 255);
 }
+
 ion-content.has-refresher > .scroll-content {
   background: rgb(255, 255, 255);
 }
 
-ion-item-divider {
-  min-height: 55px;
-  background: transparent !important;
-  ion-label {
-    font-weight: bold;
-    font-size: 16px;
-    color: #666;
-  }
-}
+//ion-item-divider {
+//  min-height: 55px;
+//  background: transparent !important;
+//  ion-label {
+//    font-weight: bold;
+//    font-size: 16px;
+//    color: #666;
+//  }
+//}
 
-ion-label{
+ion-label {
   color: $label-text-color !important;
   font-size: 14px;
 }
+
 textarea, ion-input input {
-    font-size: 14px;
-    color: $input-text-color;
-    &::-webkit-input-placeholder {
-      color: rgba(0,0,0,0.4);
-      font-size: 12px;
-    }
+  font-size: 14px;
+  color: $input-text-color;
+  &::-webkit-input-placeholder {
+    color: rgba(0, 0, 0, 0.4);
+    font-size: 12px;
+  }
 }
 
 ion-card {
@@ -95,7 +96,7 @@ ion-item textarea {
   text-transform: none;
 
   &::-webkit-input-placeholder {
-    color: rgba(0,0,0,0.4);
+    color: rgba(0, 0, 0, 0.4);
     font-size: 14px;
   }
 }
@@ -111,12 +112,12 @@ ion-item textarea {
   }
 }
 
-
 .big-header {
   background: #00a6d1;
   color: white;
   padding: 28px 26px;
   position: relative;
+  min-height: 152px;
 
   p, h2, h3 {
     margin: 0;
@@ -138,22 +139,14 @@ ion-item textarea {
 
   h3 {
     font-size: 17px;
-    color: rgba(255,255,255,.6);
+    color: rgba(255, 255, 255, .6);
   }
 
   button[ion-button].button.action-button {
     position: absolute;
     top: 16px;
     right: 0;
-    ion-icon.icon {
-      color: white;
-
-      &[merit-icon] {
-        &[name="settings"] {
-          mask-image: url('../assets/img/icons/settings.svg');
-        }
-      }
-    }
+    color: white;
   }
 
   ion-spinner.spinner {
@@ -172,7 +165,7 @@ ion-item.item, button[ion-item].item {
     h2 {
       font-size: 17px;
       letter-spacing: -.2px;
-      font-weight: 400;
+      font-weight: 500;
       color: #2d3c50;
     }
 
@@ -185,8 +178,33 @@ ion-item.item, button[ion-item].item {
 
   padding-top: 10px;
   padding-bottom: 12px;
+}
 
-  &:not([no-lines]):not(.add-vault-block) {
+ion-item.item,
+button[ion-item].item,
+ion-item-divider.item-divider {
+  .merit-amount {
+    color: #00aad6;
+    font-size: 13px;
+    font-weight: 500;
+
+    span {
+      font-size: 11px;
+    }
+  }
+
+  ion-note.note.balance > .fiat-amount {
+    color: #73819b;
+    font-size: 13px;
+  }
+}
+
+
+
+ion-list:not([no-lines]),
+div {
+
+  > ion-item.item, > button[ion-item].item {
     .item-inner {
       border-bottom: none;
     }
@@ -200,6 +218,19 @@ ion-item.item, button[ion-item].item {
       bottom: 1px;
       left: 19px;
     }
+  }
+
+}
+
+ion-item-divider.item.item-divider {
+  background: white;
+  border: 0;
+  padding-top: 8px;
+  padding-left: 18.5px;
+
+  ion-label.label {
+    font-size: 16px;
+    font-weight: 600;
   }
 }
 
@@ -232,6 +263,39 @@ button[ion-button][add-button].button {
   }
 }
 
+ion-header.header {
+  ion-title[smaller-title] .toolbar-title {
+    font-size: 16px;
+    line-height: 28px;
+  }
+}
+
+.toggle-md .toggle-icon {
+  background: #e9edf2;
+  border: 1px solid #b7bcc8;
+  .toggle-inner {
+    background: white;
+    border: 1px solid #b7bcc8;
+    box-shadow: none;
+    margin-left: -2px;
+  }
+}
+
+.toggle-md.toggle-checked .toggle-icon {
+  background: map_get($colors, primary);
+  border: 1px solid transparent;
+  .toggle-inner {
+    margin-left: 0;
+  }
+}
+
+button[ion-button].button.action-button {
+  width: calc(100% - 16px - 14px);
+  margin-left: 16px;
+  border-radius: 4px;
+  height: 44px;
+}
+
 // merit icons
 
 ion-avatar[img-icon] {
@@ -258,19 +322,53 @@ ion-avatar[img-icon] {
   mask-repeat: no-repeat;
   background: currentColor;
   display: inline-block;
+
+  &[name="settings"] {
+    mask-image: url('../assets/img/icons/settings.svg');
+  }
+
+  &[name="share"] {
+    mask-image: url('../assets/img/icons/share.svg');
+  }
 }
 
-.merit-icon-merit { mask-image: url(../assets/img/icons/merit.svg); }
-.merit-icon-merit-2 { mask-image: url(../assets/img/merit.svg); }
-.merit-icon-qr-code { mask-image: url(../assets/img/icons/qr-code.svg); }
-.merit-icon-wallet { mask-image: url(../assets/img/icon-wallet.svg); }
-.merit-icon-wallet-add { mask-image: url(../assets/img/icons/wallet-add.svg); }
-.merit-icon-wallet-import { mask-image: url(../assets/img/icons/wallet-import.svg); }
-.merit-icon-wallet-lock { mask-image: url(../assets/img/icons/wallet-lock.svg); }
-.merit-icon-vault { mask-image: url(../assets/img/icon-lock-white.svg); }
-.merit-icon-sent { mask-image: url(../assets/img/icon-icon-tx-sent-outline.svg); }
+.merit-icon-merit {
+  mask-image: url(../assets/img/icons/merit.svg);
+}
+
+.merit-icon-merit-2 {
+  mask-image: url(../assets/img/merit.svg);
+}
+
+.merit-icon-qr-code {
+  mask-image: url(../assets/img/icons/qr-code.svg);
+}
+
+.merit-icon-wallet {
+  mask-image: url(../assets/img/icon-wallet.svg);
+}
+
+.merit-icon-wallet-add {
+  mask-image: url(../assets/img/icons/wallet-add.svg);
+}
+
+.merit-icon-wallet-import {
+  mask-image: url(../assets/img/icons/wallet-import.svg);
+}
+
+.merit-icon-wallet-lock {
+  mask-image: url(../assets/img/icons/wallet-lock.svg);
+}
+
+.merit-icon-vault {
+  mask-image: url(../assets/img/icon-lock-white.svg);
+}
+
+.merit-icon-sent {
+  mask-image: url(../assets/img/icon-icon-tx-sent-outline.svg);
+}
 
 // Variables
-$v-dark-gray:                                        #445 !default;
-$v-tab-send-icon:                                    url('../img/tab-icons/ico-send.svg') !default;
-$v-tab-send-selected-icon:                           url('../img/tab-icons/ico-send-selected.svg') !default;
+$v-dark-gray: #445 !default;
+$v-tab-send-icon: url('../img/tab-icons/ico-send.svg') !default;
+$v-tab-send-selected-icon: url('../img/tab-icons/ico-send-selected.svg') !default;

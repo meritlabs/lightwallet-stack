@@ -1,24 +1,10 @@
 view-wallets {
 
   .big-header {
-    min-height: 152px;
 
     ion-spinner.spinner {
       margin-top: 25px;
     }
-  }
-
-  ion-item-divider.item.item-divider {
-    background: white;
-    border: 0;
-    margin-top: 8px;
-    padding-left: 18.5px;
-
-    ion-label.label {
-      font-size: 15px;
-    }
-
-
   }
 
   ion-list.list {
@@ -37,6 +23,10 @@ view-wallets {
     margin: 10px 16px;
     width: calc(100% - 16px - 16px);
     padding-left: 20px;
+
+    &:after {
+      display: none;
+    }
 
     ion-thumbnail[item-start] {
       min-height: 0;
@@ -71,24 +61,6 @@ view-wallets {
         ion-label h2 {
           font-weight: 500;
         }
-      }
-
-      .merit-amount {
-        color: #00aad6;
-        font-size: 13px;
-        font-weight: 500;
-
-        span {
-          font-size: 11px;
-        }
-      }
-
-      ion-note.note.balance > .fiat-amount {
-        color: #73819b;
-        font-size: 13px;
-      }
-
-      &:not(.import-wallet-button) {
         ion-avatar {
           box-shadow: 0 0 0 2px rgba(16, 152, 0, 0.51);
           border: 2px solid white;
