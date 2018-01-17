@@ -6,40 +6,37 @@
         </ion-searchbar>
 
         <button icon-only (click)="openScanner()" *ngIf="!searchQuery" class="searchbar-qr-icon">
-            <img alt="" src="assets/img/icons/qr.svg" >
+            <img alt="scan code" src="assets/img/icons/qr-md.svg" >
         </button>
     </div>
 
 
-    <div *ngIf="loadingContacts">
+    <div *ngIf="loadingContacts" >
         <ion-spinner></ion-spinner>
     </div>
 
-    <div *ngIf="!loadingContacts">
+    <div *ngIf="!loadingContacts" class="content">
 
+        <div class="no-results" *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length">
+            <div class="no-results-label">No results</div>
 
-        <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}" [enabled]="!loading">
-            <ion-refresher-content></ion-refresher-content>
-        </ion-refresher>
+            <div *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length && searchResult.toNewEntity">
 
-        <ion-item *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length">No results</ion-item>
+                <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()" class="send-button"  color="light">
+                    Create New Contact
+                </button>
+                <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="bindAddressToContact()" class="send-button" color="light">
+                    Bind to existing contact
+                </button>
+                <button ion-button padding (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
+                    <div *ngIf="searchResult.toNewEntity.destination == 'address'">Send To This Address</div>
+                    <div *ngIf="searchResult.toNewEntity.destination == 'sms'">Send SMS To This Number</div>
+                    <div *ngIf="searchResult.toNewEntity.destination == 'email'">Send Email To This Address</div>
+                </button>
+                <div class="address">{{searchQuery}}</div>
+            </div>
 
-        <ion-item *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length && searchResult.toNewEntity">
-
-            <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createNewContact()">
-                Create New Contact
-            </button>
-            <ion-item *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="bindAddressToContact()">
-                Bind {{search.query}} to existing contact
-            </ion-item>
-            <button ion-button padding (click)="sendToEntity(searchResult.toNewEntity)">
-                <div *ngIf="searchResult.toNewEntity.destination == 'address'">Send To This Address</div>
-                <div *ngIf="searchResult.toNewEntity.destination == 'sms'">Send SMS To This Number</div>
-                <div *ngIf="searchResult.toNewEntity.destination == 'email'">Send Email To This Address</div>
-            </button>
-            <div class="address">{{searchQuery}}</div>
-        </ion-item>
-
+        </div>
 
         <div *ngIf="!showRecent">
             <ion-list *ngIf="searchResult.withMerit.length" class="list-with-merit"  [virtualScroll]="searchResult.withMerit">
