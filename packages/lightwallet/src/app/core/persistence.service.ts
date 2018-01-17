@@ -415,24 +415,6 @@ export class PersistenceService {
   };
 
 
-  // cb(err, accounts)
-  // accounts: {
-  //   email_1: {
-  //     token: account token
-  //     cards: {
-  //       <card-data>
-  //     }
-  //   }
-  //   ...
-  //   email_n: {
-  //    token: account token
-  //    cards: {
-  //       <card-data>
-  //     }
-  //   }
-  // }
-
-  // ]
   setBitpayDebitCards(network: string, email: string, cards: any): Promise<void> {
     return this.getBitpayAccounts(network)
       .then(allAccounts => {
@@ -443,7 +425,6 @@ export class PersistenceService {
       });
   };
 
-  // ]
   getBitpayDebitCards(network: string): Promise<any[]> {
     return this.getBitpayAccounts(network)
       .then(allAccounts => {
@@ -451,7 +432,7 @@ export class PersistenceService {
         _.each(allAccounts, (account, email) => {
           if (account.cards) {
             // Add account's email to each card
-            var cards = _.clone(account.cards);
+            let cards = _.clone(account.cards);
             _.each(cards, function (x) {
               x.email = email;
             });
@@ -476,22 +457,9 @@ export class PersistenceService {
       });
   };
 
-  // cards: [
-  //   eid: card id
-  //   id: card id
-  //   lastFourDigits: card number
-  //   token: card token
-
   private get(key: any) {
     return this.storage.get(key);
   }
-
-  // cards: [
-  //   eid: card id
-  //   id: card id
-  //   lastFourDigits: card number
-  //   token: card token
-  //   email: account email
 
   private set(key: string, value: any) {
     return this.storage.set(key, _.clone(value));
