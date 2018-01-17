@@ -1,20 +1,16 @@
-import * as Promise from 'bluebird';
-import { Injectable } from '@angular/core';
-
 import { HttpClient } from '@angular/common/http';
-import { Feedback } from "./feedback.model";
-import { Logger } from "merit/core/logger";
-import { ConfigService } from "merit/shared/config.service";
+import { Injectable } from '@angular/core';
+import { Logger } from 'merit/core/logger';
+import { ConfigService } from 'merit/shared/config.service';
+import { Feedback } from './feedback.model';
 
 
 @Injectable()
 export class FeedbackService {
 
-  constructor(
-    private http: HttpClient,
-    private logger: Logger,
-    private configService: ConfigService
-  ) {
+  constructor(private http: HttpClient,
+              private logger: Logger,
+              private configService: ConfigService) {
   }
 
   //todo it's working as a mock now!

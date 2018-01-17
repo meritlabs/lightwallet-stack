@@ -1,4 +1,9 @@
-%module-onboarding {
+view-no-session,
+view-tour,
+view-unlock,
+view-onboarding,
+view-backup,
+view-verify-backup {
 
   ion-header {
     &:after {
@@ -18,9 +23,9 @@
     background-image: linear-gradient(to bottom, color($colors, 'secondary'), lighten(color($colors, 'secondary'), 5%));
 
     text-align: center;
-    overflow-y: hidden;
+    //overflow-y: hidden;
     height: 100%;
-    padding: 0 !important;
+    //padding: 0 !important;
 
     .container {
       height: 100%;

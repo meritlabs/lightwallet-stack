@@ -1,8 +1,6 @@
-@import "../send-module";
 send-amount-view {
-  @extend %send-module;
 
-  input::placeholder {
+  ion-input.input input::placeholder {
     color: rgba(0,0,0,0.4);
   }
 

@@ -13,12 +13,10 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 })
 export class CopayersView {
 
-  wallet:MeritWalletClient;
+  wallet: MeritWalletClient;
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams
-  ) {
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams) {
 
     this.wallet = this.navParams.get('wallet');
   }

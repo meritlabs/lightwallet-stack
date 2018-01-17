@@ -1,21 +1,21 @@
-import { Component, HostListener, SecurityContext } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, LoadingController } from 'ionic-angular';
-import * as _ from 'lodash';
-import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
-import { Logger } from 'merit/core/logger';
-import { ProfileService } from "merit/core/profile.service";
-import { ConfigService } from "merit/shared/config.service";
-import { RateService } from 'merit/transact/rate.service';
-import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
-import { TxFormatService } from "merit/transact/tx-format.service";
+import { Component, SecurityContext } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { FeeService } from 'merit/shared/fee/fee.service'
-import { WalletService } from 'merit/wallets/wallet.service';
-import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { MeritToastController } from "merit/core/toast.controller";
-import { ToastConfig } from "merit/core/toast.config";
-import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
+import { IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
+import * as _ from 'lodash';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
+import { Logger } from 'merit/core/logger';
+import { ProfileService } from 'merit/core/profile.service';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
+import { ConfigService } from 'merit/shared/config.service';
+import { FeeService } from 'merit/shared/fee/fee.service'
+import { RateService } from 'merit/transact/rate.service';
+import { SendConfirmView } from 'merit/transact/send/confirm/send-confirm';
+import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
+import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
+import { TxFormatService } from 'merit/transact/tx-format.service';
+import { WalletService } from 'merit/wallets/wallet.service';
 
 
 @IonicPage()
@@ -25,6 +25,9 @@ import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 })
 export class SendAmountView {
 
+  private static FEE_LEVEL = 'normal'; //todo make selectable
+  private static ALLOW_UNCONFIRMED = true; //obtain from settings
+  private static FEE_TOO_HIGH_LIMIT_PER = 15;
   public contact: MeritContact;
   public sendingOptions: any[];
   public recipient: any;
@@ -35,84 +38,75 @@ export class SendAmountView {
   public globalResult: string;
   public sending: boolean;
   public displayName: string;
-  public wallets:any;
-  public wallet:any;
-  public amountCurrency:string;
-  public loading:boolean;
-  public hasFunds:boolean;
-  public feeIncluded:boolean = false;
-  public feeCalcError:string;
-  public feeMrt:number;
-  public feeFiat:number;
-  public feePercent:string;
-
-  public availableAmount = {value: 0, formatted: ''};
-
-  private static FEE_LEVEL = 'normal'; //todo make selectable
-  private static ALLOW_UNCONFIRMED = true; //obtain from settings
-
-  private static FEE_TOO_HIGH_LIMIT_PER = 15;
+  public wallets: any;
+  public wallet: any;
+  public amountCurrency: string;
+  public loading: boolean;
+  public hasFunds: boolean;
+  public feeIncluded: boolean = false;
+  public feeCalcError: string;
+  public feeMrt: number;
+  public feeFiat: number;
+  public feePercent: string;
+  public availableAmount = { value: 0, formatted: '' };
+  public refreshFeeAvailable: boolean;
   private LENGTH_EXPRESSION_LIMIT = 19;
   private SMALL_FONT_SIZE_LIMIT = 10;
   private availableUnits: Array<any> = [];
   private unitIndex: number = 0;
   private reNr: RegExp = /^[1234567890\.]$/;
   private reOp: RegExp = /^[\*\+\-\/]$/;
-
   private txData;
   private referralsToSign: Array<any>;
+  private createTxpDebounce = _.debounce((dryRun: boolean) => {
+    this.createTxp(dryRun);
+  }, 1000);
 
-  public refreshFeeAvailable:boolean;
-
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private logger: Logger,
-    private profileService:ProfileService,
-    private configService:ConfigService,
-    private modalCtrl:ModalController,
-    private rateService:RateService,
-    private txFormatService:TxFormatService,
-    private sanitizer:DomSanitizer,
-    private feeService:FeeService,
-    private walletService:WalletService,
-    private easySendService:EasySendService,
-    private toastCtrl:MeritToastController,
-    private loadingCtrl: LoadingController
-  ) {
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private logger: Logger,
+              private profileService: ProfileService,
+              private configService: ConfigService,
+              private modalCtrl: ModalController,
+              private rateService: RateService,
+              private txFormatService: TxFormatService,
+              private sanitizer: DomSanitizer,
+              private feeService: FeeService,
+              private walletService: WalletService,
+              private easySendService: EasySendService,
+              private toastCtrl: MeritToastController,
+              private loadingCtrl: LoadingController) {
   }
 
-  ionViewDidLoad() {
+  async ionViewDidLoad() {
     this.loading = true;
-    return this.profileService.hasFunds().then((hasFunds) => {
-      this.hasFunds = hasFunds;
-      this.contact = this.navParams.get('contact');
-      this.sending = this.navParams.get('sending');
-      this.displayName = !_.isEmpty(this.contact.name) ? this.contact.name.formatted : this.contact.meritAddresses[0].address;
-      this.populateSendingOptions();
+    this.hasFunds = await this.profileService.hasFunds();
 
-      this.profileService.getWallets().then((wallets) => {
-        this.wallets = wallets;
-        if (this.wallets && this.wallets[0]) {
-          this.wallet = this.wallets[0];
-        }
+    this.contact = this.navParams.get('contact');
+    this.sending = this.navParams.get('sending');
+    this.displayName = !_.isEmpty(this.contact.name) ? this.contact.name.formatted : this.contact.meritAddresses[0].address;
+    this.populateSendingOptions();
 
-        this.getAvailableAmount().then((amount) => {
-          this.availableAmount = amount;
-          if (this.navParams.get('amount')) {
-            this.amount = this.rateService.microsToMrt(this.navParams.get('amount'));
-            this.updateTxData();
-          }
-        });
-        this.loading = false;
-      });
+    this.availableUnits = [
+      this.configService.get().wallet.settings.unitCode.toUpperCase(),
+      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
+    ];
+    this.amountCurrency = this.availableUnits[0];
 
-      this.availableUnits = [
-        this.configService.get().wallet.settings.unitCode.toUpperCase(),
-        this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
-      ];
-      this.amountCurrency = this.availableUnits[0];
-    });
+    this.wallets = await this.profileService.getWallets();
+
+    if (this.wallets && this.wallets[0]) {
+      this.wallet = this.wallets[0];
+    }
+
+    this.availableAmount = await this.getAvailableAmount();
+
+    if (this.navParams.get('amount')) {
+      this.amount = this.rateService.microsToMrt(this.navParams.get('amount'));
+      this.updateTxData();
+    }
+
+    this.loading = false;
   }
 
   populateSendingOptions() {
@@ -150,7 +144,10 @@ export class SendAmountView {
   };
 
   selectWallet() {
-    let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
+    let modal = this.modalCtrl.create('SelectWalletModal', {
+      selectedWallet: this.wallet,
+      availableWallets: this.wallets
+    });
     modal.present();
     modal.onDidDismiss((wallet) => {
       if (wallet) this.wallet = wallet;
@@ -168,24 +165,21 @@ export class SendAmountView {
     });
     modal.present();
     modal.onDidDismiss((recipient) => {
-      if(recipient) this.recipient = recipient;
+      if (recipient) this.recipient = recipient;
       this.updateTxData();
     });
   }
 
-  toggleCurrency() {
+  async toggleCurrency() {
     this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
     this.updateAmountMerit();
     this.updateTxData();
-    this.getAvailableAmount().then((amount) => {
-      this.availableAmount = amount;
-    });
+    this.availableAmount = await this.getAvailableAmount();
   }
 
   toggleFeeIncluded() {
     this.updateTxData();
   }
-
 
   updateAmountMerit() {
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
@@ -200,8 +194,9 @@ export class SendAmountView {
     else this.smallFont = false;
   };
 
-  processAmount(value) {
-    if(value != this.lastAmount) {
+  processAmount({ value }) {
+    value = value || 0;
+    if (value != this.lastAmount) {
       this.lastAmount = value;
       this.updateTxData();
     }
@@ -217,18 +212,17 @@ export class SendAmountView {
 
   toConfirm() {
     let loadingSpinner = this.loadingCtrl.create({
-      content: "Preparing transaction...",
+      content: 'Preparing transaction...',
       dismissOnPageChange: true
     });
     loadingSpinner.present();
     let dryRun = false;
     this.createTxp(dryRun).then(() => {
       loadingSpinner.dismiss();
-      this.navCtrl.push('SendConfirmView', {txData: this.txData, referralsToSign: this.referralsToSign});
+      this.navCtrl.push('SendConfirmView', { txData: this.txData, referralsToSign: this.referralsToSign });
     }).catch(() => {
       loadingSpinner.dismiss();
     });
-
 
 
   }
@@ -237,27 +231,7 @@ export class SendAmountView {
     this.navCtrl.push('BuyAndSellView');
   }
 
-
-  private getAvailableAmount():Promise<any> {
-    return new Promise((resolve, reject) => {
-
-      let currency = this.amountCurrency.toUpperCase();
-
-      if (!this.wallet || !this.wallet.status) return resolve({value: 0, formatted: '0.0 '+currency});
-
-      let amount = this.wallet.status.spendableAmount;
-
-      if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
-        let formatted = this.txFormatService.formatAmount(amount);
-        return resolve({value: this.rateService.microsToMrt(amount), formatted: formatted+' '+currency});
-      } else {
-        let fiatAmount = this.rateService.fromMicrosToFiat(amount, currency);
-        return resolve({value: fiatAmount, formatted: fiatAmount.toFixed(2)+' '+currency});
-      }
-    });
-  }
-
-  sanitizePhotoUrl(url:string) {
+  sanitizePhotoUrl(url: string) {
     return this.sanitizer.sanitize(SecurityContext.URL, url);
   }
 
@@ -281,7 +255,7 @@ export class SendAmountView {
 
     if (!this.txData.amount) {
       return this.createTxpDebounce.cancel();
-    };
+    }
 
     if (this.txData.amount > this.rateService.mrtToMicro(this.availableAmount.value)) {
       this.feeCalcError = 'Amount is too big';
@@ -293,80 +267,91 @@ export class SendAmountView {
 
   }
 
-  private createTxpDebounce = _.debounce((dryRun:boolean) => {
-    this.createTxp(dryRun);
-  }, 1000);
+  private getAvailableAmount(): Promise<any> {
+    return new Promise((resolve, reject) => {
 
-  private createTxp(dryRun:boolean) {
+      let currency = this.amountCurrency.toUpperCase();
 
+      if (!this.wallet || !this.wallet.status) return resolve({ value: 0, formatted: '0.0 ' + currency });
 
-    return this.feeService.getWalletFeeRate(this.wallet, SendAmountView.FEE_LEVEL).then((feeRate) => {
+      let amount = this.wallet.status.spendableAmount;
 
-        let data = {
-          toAddress: this.txData.recipient.meritAddress,
-          toName: this.txData.recipient.name || '',
-          toAmount: this.txData.amount,
-          allowSpendUnconfirmed: SendAmountView.ALLOW_UNCONFIRMED,
-          feeLevelName:  SendAmountView.FEE_LEVEL
-        };
-
-        let getEasyData = () => {
-          return new Promise((resolve, reject) => {
-            if (this.recipient.sendMethod != 'address') {
-              return this.easySendService.createEasySendScriptHash(this.txData.wallet).then((easySend) => {
-                easySend.script.isOutput = true;
-                return resolve(easySend);
-              });
-            } else {
-              return resolve({});
-            }
-          });
-        };
-
-        return getEasyData().then((easyData: EasySend) => {
-          data = Object.assign(data, _.pick(easyData, 'script'));
-          data.toAddress = data.toAddress || easyData.scriptAddress;
-          return this.getTxp(_.clone(data), this.txData.wallet, dryRun).then((txpOut) => {
-
-            txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
-            return this.txFormatService.formatAlternativeStr(txpOut.fee).then((v) => {
-              txpOut.alternativeFeeStr = v;
-
-              let percent = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
-
-              let precision = 1;
-              if (percent > 0) {
-                while (percent*Math.pow(10, precision) < 1) {
-                  precision++;
-                }
-              }
-              precision++; //showing two valued digits
-
-              txpOut.feePercent = percent.toFixed(precision) + '%';
-
-              this.feePercent = txpOut.feePercent;
-              this.txData.feeAmount = txpOut.fee;
-              this.feeMrt = this.rateService.microsToMrt(txpOut.fee);
-              this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
-
-              this.txData.txp = txpOut;
-              this.txData.easySend = easyData;
-              this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
-            }).catch((err) => {
-              this.toastCtrl.create({
-                message: err,
-                cssClass: ToastConfig.CLASS_ERROR
-              }).present();
-            })
-          });
-        });
-
-      }).catch((err) => {
-        if (err.code == Errors.CONNECTION_ERROR.code) {
-          this.refreshFeeAvailable = true;
-        }
-        this.feeCalcError = err.text || 'Unknown error';
+      if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
+        let formatted = this.txFormatService.formatAmount(amount);
+        return resolve({ value: this.rateService.microsToMrt(amount), formatted: formatted + ' ' + currency });
+      } else {
+        let fiatAmount = this.rateService.fromMicrosToFiat(amount, currency);
+        return resolve({ value: fiatAmount, formatted: fiatAmount.toFixed(2) + ' ' + currency });
+      }
     });
+  }
+
+  private async createTxp(dryRun: boolean) {
+    try {
+      await this.feeService.getWalletFeeRate(this.wallet, SendAmountView.FEE_LEVEL);
+
+      let data = {
+        toAddress: this.txData.recipient.meritAddress,
+        toName: this.txData.recipient.name || '',
+        toAmount: this.txData.amount,
+        allowSpendUnconfirmed: SendAmountView.ALLOW_UNCONFIRMED,
+        feeLevelName: SendAmountView.FEE_LEVEL
+      };
+
+      let getEasyData = async () => {
+        if (this.recipient.sendMethod != 'address') {
+          const easySend = await this.easySendService.createEasySendScriptHash(this.txData.wallet);
+          easySend.script.isOutput = true;
+          return easySend;
+        }
+      };
+
+      const easyData: Partial<EasySend> = await getEasyData();
+
+      data = Object.assign(data, _.pick(easyData, 'script'));
+      data.toAddress = data.toAddress || easyData.scriptAddress;
+
+      const txpOut = await this.getTxp(_.clone(data), this.txData.wallet, dryRun);
+
+      txpOut.feeStr = this.txFormatService.formatAmountStr(txpOut.fee);
+
+      try {
+        txpOut.alternativeFeeStr = await this.txFormatService.formatAlternativeStr(txpOut.fee);
+
+        let percent = (txpOut.fee / (txpOut.amount + txpOut.fee) * 100);
+
+        let precision = 1;
+        if (percent > 0) {
+          while (percent * Math.pow(10, precision) < 1) {
+            precision++;
+          }
+        }
+        precision++; //showing two valued digits
+
+        txpOut.feePercent = percent.toFixed(precision) + '%';
+
+        this.feePercent = txpOut.feePercent;
+        this.txData.feeAmount = txpOut.fee;
+        this.feeMrt = this.rateService.microsToMrt(txpOut.fee);
+        this.feeFiat = this.rateService.fromMicrosToFiat(txpOut.fee, this.availableUnits[1]);
+        this.txData.txp = txpOut;
+
+        if (easyData) {
+          this.txData.easySend = easyData;
+          this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
+        }
+      } catch (err) {
+        this.toastCtrl.create({
+          message: err,
+          cssClass: ToastConfig.CLASS_ERROR
+        }).present();
+      }
+    } catch (err) {
+      if (err.code == Errors.CONNECTION_ERROR.code) {
+        this.refreshFeeAvailable = true;
+      }
+      this.feeCalcError = err.text || 'Unknown error';
+    }
   }
 
 
@@ -382,10 +367,10 @@ export class SendAmountView {
       }
 
       if (tx.toAmount > Number.MAX_SAFE_INTEGER) {
-        return reject(new Error("The amount is too big")); //.  Because, Javascript.
+        return reject(new Error('The amount is too big')); //.  Because, Javascript.
       }
 
-      let txp:any = {};
+      let txp: any = {};
 
       if (tx.script) {
         txp.outputs = [{
@@ -427,7 +412,7 @@ export class SendAmountView {
         }
       }
       return this.walletService.createTx(wallet, txp).then((ctxp) => {
-        this.logger.debug("CREATED TXP", ctxp);
+        this.logger.debug('CREATED TXP', ctxp);
         return resolve(ctxp);
       }).catch((err) => {
         if (err.code == Errors.CONNECTION_ERROR.code) {

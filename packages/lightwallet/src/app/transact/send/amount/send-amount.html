@@ -10,17 +10,17 @@
 <ion-content>
 
 
-    <span *ngIf="wallet && hasFunds" margin-top>
+    <div *ngIf="wallet && hasFunds">
 
          <div class="row" margin-bottom>
              <span class="label" text-left>Amount</span>
-             <input type="number"
-                    [style.flex]="1"
+             <ion-input type="number"
+                    style="flex: 1"
                     text-right
                     pattern="[0-9\.]"
                     [(ngModel)]="amount"
-                    (ngModelChange)="processAmount($event ? $event.value : 0)"
-                    [placeholder]="'Enter sending amount'">
+                    (ionChange)="processAmount($event)"
+                    placeholder="Enter sending amount"></ion-input>
 
              <button ion-button clear color="primary" (click)="toggleCurrency()">
                  {{amountCurrency}}
@@ -49,7 +49,7 @@
             </span>
         </div>
 
-        <div class="label" class="row" (click)="selectWallet()">
+        <div class="row" (click)="selectWallet()">
             <span text-left class="label">From</span>
             <span item-right text-right [style.flex]="1">
                 {{wallet.name || wallet._id}} <span *ngIf="availableAmount && availableAmount.formatted">({{ availableAmount.formatted}})</span>
@@ -96,7 +96,7 @@
             <button ion-button primary margin-top (click)="toConfirm()" [disabled]="!sendAllowed()" >Send</button>
         </div>
 
-    </span>
+    </div>
 
     <span *ngIf="!loading && !hasFunds">
         <div text-center padding>Before sending Merit you should buy some!</div>

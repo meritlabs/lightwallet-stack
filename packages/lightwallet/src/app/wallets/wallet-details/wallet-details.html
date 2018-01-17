@@ -15,7 +15,7 @@
         <div class="balance-header" (click)="getWalletHistory(true)" [style.background]="wallet.color" [class.default]="!wallet.color">
             <div class="balance-str">
                 {{ wallet.status.totalBalanceStr }}
-                <div *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount"><small>({{ wallet.status.spendableBalanceStr }} available)</small></div>
+                <div *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount"><small>({{ wallet.status.spendableBalanceStr || 0 }} available)</small></div>
             </div>
             <div class="balance-alt-str"> {{ wallet.status.totalBalanceAlternativeStr }}</div>
         </div>

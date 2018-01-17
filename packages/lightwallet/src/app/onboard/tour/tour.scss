@@ -1,7 +1,4 @@
-@import "../onboarding-module";
 view-tour {
-  @extend %module-onboarding;
-
   .slide-zoom {
     height: 100%;
     display: flex;

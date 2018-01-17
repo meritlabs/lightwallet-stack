@@ -1,17 +1,16 @@
-import * as  _  from 'lodash';
-import * as Promise from 'bluebird';
+import { Component } from '@angular/core';
 
-import { NavController, NavParams, IonicPage, AlertController, ModalController, App, LoadingController } from 'ionic-angular';
-import { Component, NgZone } from '@angular/core';
-import { MeritToastController } from "merit/core/toast.controller";
-import { ToastConfig } from "merit/core/toast.config";
-import { ConfigService } from "merit/shared/config.service";
-
-import { WalletService } from 'merit/wallets/wallet.service';
+import { AlertController, App, IonicPage, LoadingController, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
+import * as  _ from 'lodash';
 import { Logger } from 'merit/core/logger';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { ConfigService } from 'merit/shared/config.service';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { TxFormatService } from "merit/transact/tx-format.service";
+import { TxFormatService } from 'merit/transact/tx-format.service';
+
+import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { EasySend, easySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 
@@ -48,20 +47,20 @@ export class SendConfirmView {
   private referralsToSign: Array<any>;
   private viewData;
 
-  constructor(
-    private navParams: NavParams,
-    private navCtrl: NavController,
-    private toastCtrl: MeritToastController,
-    private alertController: AlertController,
-    private loadingCtrl: LoadingController,
-    private app: App,
-    private touchIdService: TouchIdService,
-    private easySendService: EasySendService,
-    private walletService: WalletService,
-    private formatService: TxFormatService,
-    private configService: ConfigService,
-    private logger: Logger
-  ) {
+  constructor(private navParams: NavParams,
+              private navCtrl: NavController,
+              private toastCtrl: MeritToastController,
+              private alertController: AlertController,
+              private loadingCtrl: LoadingController,
+              private app: App,
+              private touchIdService: TouchIdService,
+              private easySendService: EasySendService,
+              private walletService: WalletService,
+              private formatService: TxFormatService,
+              private configService: ConfigService,
+              private logger: Logger,
+              private tabs: Tabs,
+              private tab: Tab) {
     this.logger.info('Hello SendConfirm View');
   }
 
@@ -199,56 +198,58 @@ export class SendConfirmView {
     }
   }
 
-  private send() {
+  private async send() {
     let loadingSpinner = this.loadingCtrl.create({
       content: 'Sending transaction...',
       dismissOnPageChange: true,
     });
     loadingSpinner.present();
 
-    const sendReferrals = Promise.map(this.referralsToSign, this.txData.wallet.sendReferral.bind(this.txData.wallet));
+    try {
+      if (this.referralsToSign) {
+        await Promise.all(this.referralsToSign.map(this.txData.wallet.sendReferral.bind(this.txData.wallet)));
+      }
 
-    return sendReferrals.then(() => {
-      return this.approveTx()
-        .then(() => {
-          if(this.txData.easySend) {
-            return this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend)
-              .then(() => {
-                if (this.txData.recipient.sendMethod == 'sms') {
-                  return this.easySendService.sendSMS(
-                    this.txData.recipient.phoneNumber,
-                    this.viewData.amountMrt,
-                    easySendURL(this.txData.easySend)
-                  );
-                } else if (this.txData.recipient.sendMethod == 'email') {
-                  return this.easySendService.sendEmail(
-                    this.txData.recipient.email,
-                    this.viewData.amountMrt,
-                    easySendURL(this.txData.easySend)
-                  );
-                } else return Promise.reject(new Error(
-                  `Unsupported sending method: ${this.txData.recipient.sendMethod}`
-                ));
-              });
-          }
+      await this.approveTx();
+
+      if (this.txData.easySend) {
+        await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
+
+        switch (this.txData.recipient.sendMethod) {
+          case 'sms':
+            return this.easySendService.sendSMS(
+              this.txData.recipient.phoneNumber,
+              this.viewData.amountMrt,
+              easySendURL(this.txData.easySend)
+            );
+
+          case 'email':
+            return this.easySendService.sendEmail(
+              this.txData.recipient.email,
+              this.viewData.amountMrt,
+              easySendURL(this.txData.easySend)
+            );
+        }
+
+        throw new Error(`Unsupported sending method: ${this.txData.recipient.sendMethod}`);
+      }
+
+      this.tab.popToRoot();
+      this.tabs.select(0);
+    }
+    catch (err) {
+      return this.toastCtrl
+        .create({
+          message: err,
+          cssClass: ToastConfig.CLASS_ERROR,
         })
-        .then(() => {
-          loadingSpinner.dismiss();
-          this.navCtrl.push('WalletsView');
-        })
-        .catch(err => {
-          loadingSpinner.dismiss();
-          return this.toastCtrl
-            .create({
-              message: err,
-              cssClass: ToastConfig.CLASS_ERROR,
-            })
-            .present();
-        })
-        .finally(() => {
-          this.referralsToSign = [];
-        });
-    });
+        .present();
+    }
+    finally {
+      loadingSpinner.dismiss();
+      this.referralsToSign = [];
+    }
+
   }
 
   private approveTx(): Promise<void> {

@@ -1,20 +1,18 @@
 import { Injectable } from '@angular/core';
 
-import * as _ from "lodash";
-import * as Promise from 'bluebird';
+import * as _ from 'lodash';
+import { ProfileService } from 'merit/core/profile.service';
+
 
 import { ConfigService } from 'merit/shared/config.service';
-import { ProfileService } from 'merit/core/profile.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 
 @Injectable()
 export class EmailNotificationsService {
 
-  constructor(
-    private configService: ConfigService,
-    private profileService: ProfileService,
-    private walletService: WalletService
-  ) {
+  constructor(private configService: ConfigService,
+              private profileService: ProfileService,
+              private walletService: WalletService) {
     console.log('Hello EmailNotificationsService Service');
   }
 
@@ -49,7 +47,7 @@ export class EmailNotificationsService {
 
     // Backward compatibility
     let emails = _.values(config.emailFor);
-    for(var i = 0; i < emails.length; i++) {
+    for (var i = 0; i < emails.length; i++) {
       if (emails[i] !== null && typeof emails[i] !== 'undefined') {
         return emails[i];
       }

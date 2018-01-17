@@ -1,28 +1,27 @@
-import * as _ from 'lodash';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { PopupService } from "merit/core/popup.service";
-import * as Promise from 'bluebird';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { VaultsService } from 'merit/vaults/vaults.service';
+import * as _ from 'lodash';
 import { BwcService } from 'merit/core/bwc.service';
+import { PopupService } from 'merit/core/popup.service';
 import { ProfileService } from 'merit/core/profile.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service';
 import { ConfigService } from 'merit/shared/config.service';
+import { VaultsService } from 'merit/vaults/vaults.service';
+
+import { WalletService } from 'merit/wallets/wallet.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 export interface IWhitelistEntry {
-    id: string,
-    name: string,
-    address: string,
-    type: string,
-    walletClient?: any,
+  id: string,
+  name: string,
+  address: string,
+  type: string,
+  walletClient?: any,
 }
 
 export interface IVaultRenewViewModel {
-    vaultName: string,
-    masterKey: string,
-    whitelist: Array<IWhitelistEntry>,
+  vaultName: string,
+  masterKey: string,
+  whitelist: Array<IWhitelistEntry>,
 }
 
 @IonicPage({
@@ -42,16 +41,14 @@ export class VaultRenewView {
   private bitcore: any = null;
   private walletClient: MeritWalletClient;
 
-  constructor(
-    private navCtrl:NavController,
-    public navParams: NavParams,
-    private popupService: PopupService,
-    private configService: ConfigService,
-    private bwc: BwcService,
-    private walletService: WalletService,
-    private vaultsService: VaultsService,
-    private profileService: ProfileService,
-  ){
+  constructor(private navCtrl: NavController,
+              public navParams: NavParams,
+              private popupService: PopupService,
+              private configService: ConfigService,
+              private bwc: BwcService,
+              private walletService: WalletService,
+              private vaultsService: VaultsService,
+              private profileService: ProfileService,) {
     this.vault = this.navParams.get('vault');
     this.bitcore = this.bwc.getBitcore();
   }
@@ -71,36 +68,43 @@ export class VaultRenewView {
 
   confirmRenew() {
     this.popupService.ionicConfirm(
-        'Reset vault?',
-        'All pending transactions will be canceled and timeout will be reset. Do you want to reset the vault?',
-        'Yes',
-        'No').then((result: boolean) => {
-          if (result) this.toVault();
-          return;
-        });
+      'Reset vault?',
+      'All pending transactions will be canceled and timeout will be reset. Do you want to reset the vault?',
+      'Yes',
+      'No').then((result: boolean) => {
+      if (result) this.toVault();
+      return;
+    });
   }
 
-  toVault() {
+  async toVault() {
     const newVault = _.cloneDeep(this.vault);
-    Promise.map(this.formData.whitelist, (w: any) => {
 
+    const whitelist = await Promise.all(this.formData.whitelist.map(async (w: any) => {
       let address;
-      if(w.type == 'wallet') {
+      if (w.type == 'wallet') {
         address = this.getAllWallets().then((wallets) => {
           let foundWallet = _.find(wallets, { id: w.walletClientId });
           return foundWallet.createAddress().then((resp) => {
-              return this.bitcore.Address.fromString(resp.address);
+            return this.bitcore.Address.fromString(resp.address);
           });
         });
       } else {
         address = Promise.resolve(this.bitcore.Address.fromString(w.address));
       }
       return address;
-    }).then((whitelist) => {
-      newVault.whitelist = _.map(whitelist, (a) => {return a.toBuffer()});
-      newVault.masterKey = this.formData.masterKey;
-      newVault.name = this.formData.vaultName;
-      this.navCtrl.push('VaultRenewConfirmationView', { vaultId: this.vault._id, vault: this.vault, updatedVault: newVault, walletClient: this.walletClient });
+    }));
+
+    newVault.whitelist = _.map(whitelist, (a) => {
+      return a.toBuffer()
+    });
+    newVault.masterKey = this.formData.masterKey;
+    newVault.name = this.formData.vaultName;
+    this.navCtrl.push('VaultRenewConfirmationView', {
+      vaultId: this.vault._id,
+      vault: this.vault,
+      updatedVault: newVault,
+      walletClient: this.walletClient
     });
   }
 
@@ -112,9 +116,9 @@ export class VaultRenewView {
     this.formData.masterKey = masterKey;
 
     this.popupService.ionicAlert(
-        'Master key',
-        masterKeyMnemonic,
-        'I copied the Master Key.'
+      'Master key',
+      masterKeyMnemonic,
+      'I copied the Master Key.'
     );
   }
 
@@ -143,11 +147,10 @@ export class VaultRenewView {
       // }),
     ]).then((arr: Array<Array<IWhitelistEntry>>) => {
       const whitelistCandidates = _.flatten(arr);
-      const filtered = _.reject(whitelistCandidates, { id: this.vault._id });
-      this.whitelistCandidates = filtered;
+      this.whitelistCandidates = _.reject(whitelistCandidates, { id: this.vault._id });
 
-      return Promise.map(this.vault.whitelist, (wl: string) => {
-        return Promise.map(whitelistCandidates, (candidate) => {
+      return Promise.all(this.vault.whitelist.map((wl: string) => {
+        return Promise.all(whitelistCandidates.map((candidate) => {
           if (candidate.type === 'vault') {
             if (wl == candidate.address) return candidate;
           } else {
@@ -161,10 +164,9 @@ export class VaultRenewView {
             });
           }
           return null;
-        });
-      }).then((unfilteredWhitelist) => {
-        const results = _.compact(_.flatten(unfilteredWhitelist));
-        this.formData.whitelist = results;
+        }));
+      })).then((unfilteredWhitelist) => {
+        this.formData.whitelist = <any>_.compact(_.flatten(unfilteredWhitelist));
         return Promise.resolve();
       });
     });
@@ -173,7 +175,7 @@ export class VaultRenewView {
   private getAllWallets(): Promise<Array<any>> {
     const wallets = this.profileService.getWallets().then((ws) => {
       this.walletClient = _.head(ws);
-      return Promise.all(_.map(ws, async (wallet:any) => {
+      return Promise.all(_.map(ws, async (wallet: any) => {
         wallet.status = await this.walletService.getStatus(wallet);
         return wallet;
       }));

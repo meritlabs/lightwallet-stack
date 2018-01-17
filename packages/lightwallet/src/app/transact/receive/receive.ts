@@ -1,20 +1,19 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, LoadingController, Events } from 'ionic-angular';
-
-import { ProfileService } from "merit/core/profile.service";
-import { WalletService } from "merit/wallets/wallet.service";
-import { ToastConfig } from "merit/core/toast.config";
-import { MeritToastController } from "merit/core/toast.controller";
-import { Logger } from "merit/core/logger";
-import { SocialSharing } from '@ionic-native/social-sharing';
 import { Clipboard } from '@ionic-native/clipboard';
-import { PlatformService } from 'merit/core/platform.service';
-
-import { RateService } from 'merit/transact/rate.service';
-import { ConfigService } from "merit/shared/config.service";
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { Events, IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
 
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
+import { Logger } from 'merit/core/logger';
+
+import { ProfileService } from 'merit/core/profile.service';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { ConfigService } from 'merit/shared/config.service';
+
+import { RateService } from 'merit/transact/rate.service';
+import { WalletService } from 'merit/wallets/wallet.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 @IonicPage()
@@ -24,39 +23,36 @@ import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 })
 export class ReceiveView {
 
-  public protocolHandler: string;
-  public address: string;
-  public qrAddress:string;
-  public amount:number;
-  public amountMicros:number;
-  public availableUnits:Array<string>;
-  public amountCurrency:string;
+  protocolHandler: string;
+  address: string;
+  qrAddress: string;
+  amount: number;
+  amountMicros: number;
+  availableUnits: Array<string>;
+  amountCurrency: string;
 
-  public wallets;
-  public wallet;
+  wallets;
+  wallet;
 
-  public addressGenerationInProgress:boolean;
-  public socialSharingAvailable:boolean;
+  addressGenerationInProgress: boolean;
 
-  public error:string;
-  public mainAddressGapReached:boolean;
+  error: string;
+  mainAddressGapReached: boolean;
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private modalCtrl:ModalController,
-    private profileService:ProfileService,
-    private walletService:WalletService,
-    private loadCtrl:LoadingController,
-    private toastCtrl:MeritToastController,
-    private logger:Logger,
-    private socialSharing: SocialSharing,
-    private clipboard:Clipboard,
-    private rateService:RateService,
-    private configService:ConfigService,
-    private events: Events
-  ) {
-    this.protocolHandler = "merit";
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private modalCtrl: ModalController,
+              private profileService: ProfileService,
+              private walletService: WalletService,
+              private loadCtrl: LoadingController,
+              private toastCtrl: MeritToastController,
+              private logger: Logger,
+              private socialSharing: SocialSharing,
+              private clipboard: Clipboard,
+              private rateService: RateService,
+              private configService: ConfigService,
+              private events: Events) {
+    this.protocolHandler = 'merit';
     this.availableUnits = [
       this.configService.get().wallet.settings.unitCode.toUpperCase(),
       this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
@@ -76,57 +72,58 @@ export class ReceiveView {
 
     // Get a new address if we just received an incoming TX (on an address we already have)
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
-      this.logger.info("Got an incomingTx on receive screen: ", n);
+      this.logger.info('Got an incomingTx on receive screen: ', n);
       if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
         this.generateAddress(true);
       }
     })
   }
 
-  generateAddress(forceNew?: boolean) {
+  async generateAddress(forceNew?: boolean) {
     this.addressGenerationInProgress = true;
     this.error = null;
 
-    return this.walletService.getAddress(this.wallet, forceNew).then((address) => {
-
+    try {
+      const address = await this.walletService.getAddress(this.wallet, forceNew);
       this.address = address.address;
       this.addressGenerationInProgress = false;
       if (forceNew) this.mainAddressGapReached = false; // that means, we  successfully generated NEW address
       this.formatAddress();
-    }).catch((err) => {
-
+    } catch (err) {
       if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code) {
         this.mainAddressGapReached = true;
         return this.generateAddress(false);
       } else {
-
         this.addressGenerationInProgress = false;
 
-        if (err.text) this.error = err.text;
+        if (err.text)
+          this.error = err.text;
 
-        this.toastCtrl.create({
-          message: err.text || 'Failed to generate new adrress',
+        return this.toastCtrl.create({
+          message: err.text || 'Failed to generate new address',
           cssClass: ToastConfig.CLASS_ERROR
         }).present();
       }
-
-    });
-
+    }
   }
 
   selectWallet() {
-    let modal = this.modalCtrl.create('SelectWalletModal', {selectedWallet: this.wallet, availableWallets: this.wallets});
-    modal.present();
+    const modal = this.modalCtrl.create('SelectWalletModal', {
+      selectedWallet: this.wallet,
+      availableWallets: this.wallets
+    });
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.wallet = wallet;
         this.generateAddress(false);
       }
     });
+    return modal.present();
   }
 
   share() {
-    this.socialSharing.share(this.qrAddress);
+    if (SocialSharing.installed())
+      return this.socialSharing.share(this.qrAddress);
   }
 
   copyToClipboard(addressString: string) {
@@ -134,7 +131,8 @@ export class ReceiveView {
 
     const address = addressString.split(':')[1] || addressString;
 
-    this.clipboard.copy(address);
+    if (Clipboard.installed())
+      this.clipboard.copy(address);
 
     this.toastCtrl.create({
       message: 'Address copied to clipboard',
@@ -143,7 +141,7 @@ export class ReceiveView {
   }
 
   toCopayers() {
-    this.navCtrl.push('CopayersView', {walletId: this.wallet.id, wallet: this.wallet});
+    this.navCtrl.push('CopayersView', { walletId: this.wallet.id, wallet: this.wallet });
   }
 
   toggleCurrency() {
@@ -152,7 +150,6 @@ export class ReceiveView {
   }
 
   changeAmount() {
-
     if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
       this.amountMicros = this.rateService.mrtToMicro(this.amount);
     } else {
@@ -162,7 +159,7 @@ export class ReceiveView {
   }
 
   private formatAddress() {
-    this.qrAddress = `${this.protocolHandler}:${this.address}${this.amountMicros ? '?micros='+this.amountMicros : ''}`;
+    this.qrAddress = `${ this.protocolHandler }:${ this.address }${ this.amountMicros ? '?micros=' + this.amountMicros : '' }`;
   }
 
 }

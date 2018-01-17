@@ -1,6 +1,4 @@
-@import "../../transact/transact-module";
 view-network {
-  @extend %module-transact;
 
   .wallet-icon {
     margin-top: -2px;
