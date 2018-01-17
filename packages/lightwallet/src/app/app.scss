@@ -163,6 +163,15 @@ ion-item textarea {
   }
 }
 
+ion-header.header {
+  ion-toolbar.toolbar.toolbar-md {
+    padding: 0;
+  }
+  &:after {
+    display: none;
+  }
+}
+
 ion-content.has-refresher > .scroll-content {
   background: $background-color;
 }

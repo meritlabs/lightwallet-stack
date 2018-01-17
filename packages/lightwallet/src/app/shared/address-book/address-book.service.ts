@@ -137,6 +137,7 @@ export class AddressBookService {
 
   async remove(addr: string, network: string): Promise<AddressBook> {
     const addressBook = await this.getAddressbook(network);
+    console.log(addressBook, addr, network);
     delete addressBook[addr];
     await this.persistenceService.setAddressbook(network, addressBook);
     return addressBook;

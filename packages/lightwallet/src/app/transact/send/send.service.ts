@@ -12,6 +12,8 @@ import { RateService } from 'merit/transact/rate.service';
 export class SendService {
   private bitcore: any;
 
+  private readonly ADDRESS_LENGTH = 34;
+
   constructor(
     private bwcService: BwcService,
     private rate: RateService,
@@ -24,6 +26,8 @@ export class SendService {
   }
 
   public isAddressValid(addr: string): Promise<boolean> {
+    if (!addr || addr.length != this.ADDRESS_LENGTH) return Promise.resolve(false);
+    console.log('passed');
     // First, let's check to be sure it's the right format.
     try {
       let address = this.bitcore.Address.fromString(addr);

@@ -1,32 +1,27 @@
-<ion-header>
-
-    <ion-navbar color="secondary">
-        <ion-title>Bind to contact</ion-title>
-    </ion-navbar>
-
-</ion-header>
 
 
 <ion-content>
 
-    <ion-searchbar [ngModel]="searchQuery" [debounce]="200" (ionChange)="parseSearch()" (ionCancel)="clearSearch()"></ion-searchbar>
+    <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()" (ionCancel)="clearSearch()"></ion-searchbar>
 
     <ion-item *ngIf="!foundContacts.length">
         No contacts found
     </ion-item>
 
-    <ion-list [virtualScroll]="foundContacts">
+    <div *ngIf="foundContacts.length">
+        <ion-list>
 
-        <ion-item *virtualScroll="let contact" (click)="select(contact)">
-            <ion-avatar item-start>
-                <img [src]="sanitizePhotoUrl(contact.photos[0]?.value)" *ngIf="contact.photos.length">
-                <span color="primary">{{getContactInitials(contact)}}</span>
-            </ion-avatar>
-            {{contact.name}}
-            <img src="merit.svg" color="primary" item-end *ngIf="contact.meritAddresses[0].length">
-        </ion-item>
+            <ion-item *ngFor="let contact of foundContacts" (click)="select(contact)">
+                <ion-avatar item-start img-icon>
+                    <img [src]="sanitizePhotoUrl(contact.photos[0]?.value)" *ngIf="contact.photos.length">
+                    <span color="primary">{{getContactInitials(contact)}}</span>
+                </ion-avatar>
+                {{contact.name.formatted}}
+                <img src="merit.svg" color="primary" item-end *ngIf="contact.meritAddresses[0].length">
+            </ion-item>
 
-    </ion-list>
+        </ion-list>
+    </div>
 
 
 </ion-content>

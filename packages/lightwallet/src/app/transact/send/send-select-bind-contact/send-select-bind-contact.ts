@@ -20,11 +20,12 @@ export class SendSelectBindContactView {
     private navParams: NavParams,
     private viewCtrl: ViewController
   ) {
-
+   this.contacts = this.navParams.get('contacts');
+   console.log(this.contacts);
   }
 
   ionViewDidLoad() {
-    this.contacts = this.navParams.get('contacts');
+    this.parseSearch();
   }
 
   cancel() {
@@ -35,16 +36,26 @@ export class SendSelectBindContactView {
     this.viewCtrl.dismiss(contact);
   }
 
+  getContactInitials(contact) {
+    if (!contact.name || !contact.name.formatted) return '';
+    let nameParts = contact.name.formatted.toUpperCase().replace(/\s\s+/g, ' ').split(' ');
+    let name = nameParts[0].charAt(0);
+    if (nameParts[1]) name += ' '+nameParts[1].charAt(0);
+    return name;
+  }
+
   clearSearch() {
     this.searchQuery = '';
     this.parseSearch();
   }
 
-
-
   parseSearch() {
+    if (!this.searchQuery) {
+      return this.foundContacts = this.contacts;
+    }
+
     this.foundContacts = this.contacts.filter((contact) => {
-      return (contact.name.formatted && contact.name.formatted.match(this.searchQuery))
+      return (!!contact.name && !!contact.name.formatted && contact.name.formatted.match(this.searchQuery))
     })
   }
 
