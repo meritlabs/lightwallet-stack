@@ -47,8 +47,6 @@ export class Logger {
     }
     this.logs.unshift({ level: Logger.LEVEL_INFO, timestamp: Date.now(), arguments: messages });
     console.info.apply(console, messages);
-    if (TRACE_ENABLED)
-      console.trace();
   }
 
   debug(...messages) {
@@ -58,8 +56,6 @@ export class Logger {
     }
     this.logs.unshift({ level: Logger.LEVEL_DEBUG, timestamp: Date.now(), arguments: messages });
     console.debug.apply(console, messages);
-    if (TRACE_ENABLED)
-      console.trace();
   }
 
   /**  alias -> info   */
