@@ -9,10 +9,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class NoSessionView {
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams
-  ) {
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams) {
 
   }
 

@@ -1,6 +1,4 @@
-@import "onboarding-module";
 view-onboarding {
-  @extend %module-onboarding;
 
   .container {
     img {
@@ -10,7 +8,6 @@ view-onboarding {
       // keep aspect ratio
       height: auto;
     }
-
   }
 
   .bottom-buttons {

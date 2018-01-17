@@ -44,10 +44,8 @@
             <ion-input type="text" [(ngModel)]="newContact.meritAddresses[0].address"
                        placeholder="Type or scan merit address"
                        (ionChange)="newContact.formatAddress()" debounce="300"></ion-input>
-            <button class="scan-button" item-end>
-                <button (click)="openScanner()" ion-button icon-only item-right clear >
-                    <ion-icon name="qr-scanner"  color="primary"></ion-icon>
-                </button>
+            <button (click)="openScanner()" ion-button icon-only item-end clear>
+                <ion-icon name="qr-scanner"  color="primary"></ion-icon>
             </button>
         </ion-item>
 
@@ -59,7 +57,7 @@
     </button>
 
     <div class="control-buttons">
-        <button  (click)="save()" ion-button [disabled]="!isContactValid()">Save</button>
+        <button (click)="save()" ion-button [disabled]="!isContactValid()">Save</button>
     </div>
 
 </ion-content>

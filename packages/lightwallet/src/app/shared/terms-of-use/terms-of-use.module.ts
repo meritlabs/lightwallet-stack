@@ -10,4 +10,5 @@ import { TermsOfUseView } from 'merit/shared/terms-of-use/terms-of-use';
     IonicPageModule.forChild(TermsOfUseView),
   ],
 })
-export class TermsOfUseComponentModule {}
+export class TermsOfUseComponentModule {
+}

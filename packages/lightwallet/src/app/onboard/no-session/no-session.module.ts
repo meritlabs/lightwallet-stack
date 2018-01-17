@@ -10,4 +10,5 @@ import { NoSessionView } from './no-session';
     IonicPageModule.forChild(NoSessionView),
   ],
 })
-export class NoSessionModule {}
+export class NoSessionModule {
+}

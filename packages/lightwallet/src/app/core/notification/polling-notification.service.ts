@@ -1,17 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { NavController, App, Platform } from 'ionic-angular';
-
-// Services
-import { ProfileService } from 'merit/core/profile.service';
-import { PlatformService } from 'merit/core/platform.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { AppService } from 'merit/core/app-settings.service';
-import { BwcService } from 'merit/core/bwc.service';
+import { App, NavController, Platform } from 'ionic-angular';
 
 import * as _ from 'lodash';
-import * as Promise from 'bluebird';
-import { Logger } from "merit/core/logger";
+import { AppService } from 'merit/core/app-settings.service';
+
+import { Logger } from 'merit/core/logger';
+import { PlatformService } from 'merit/core/platform.service';
+// Services
+import { ProfileService } from 'merit/core/profile.service';
+import { ConfigService } from 'merit/shared/config.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()
@@ -21,15 +18,13 @@ export class PollingNotificationsService {
   private isAndroid: boolean;
   private usePollingNotifications: boolean;
 
-  constructor(
-    public profileService: ProfileService,
-    public platformService: PlatformService,
-    public configService: ConfigService,
-    public logger: Logger,
-    public appService: AppService,
-    private app: App,
-    private platform: Platform
-  ) {
+  constructor(public profileService: ProfileService,
+              public platformService: PlatformService,
+              public configService: ConfigService,
+              public logger: Logger,
+              public appService: AppService,
+              private app: App,
+              private platform: Platform) {
     this.logger.info('Hello PollingNotification Service');
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;

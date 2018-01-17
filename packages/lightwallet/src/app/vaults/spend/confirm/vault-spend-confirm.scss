@@ -1,8 +1,5 @@
-@import "../../vaults";
-@import "../../../transact/send/send-module";
 
 vault-spend-confirm-view {
-  @extend %send-module;
 
   .fee-rate, .recipient-label {
     margin-right: 0.3em;

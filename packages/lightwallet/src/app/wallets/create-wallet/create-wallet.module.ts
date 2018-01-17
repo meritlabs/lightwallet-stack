@@ -6,10 +6,9 @@ import { CreateWalletView } from 'merit/wallets/create-wallet/create-wallet';
   declarations: [
     CreateWalletView,
   ],
-  providers: [
-  ],
   imports: [
     IonicPageModule.forChild(CreateWalletView),
   ],
 })
-export class CreateWalletComponentModule {}
+export class CreateWalletComponentModule {
+}

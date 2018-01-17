@@ -6,12 +6,11 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 export class ToUnitPipe implements PipeTransform {
   private unitCode: string;
 
-  constructor(
-    private configProvider: ConfigService,
-    private txFormatProvider: TxFormatService
-  ) {
+  constructor(private configProvider: ConfigService,
+              private txFormatProvider: TxFormatService) {
     this.unitCode = this.configProvider.get().wallet.settings.unitCode;
   }
+
   transform(value: string, satoshis: number): any {
     return this.txFormatProvider.formatAmountStr(satoshis);
   }

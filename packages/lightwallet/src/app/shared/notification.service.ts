@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-import * as Promise from 'bluebird';
-import { Logger } from 'merit/core/logger';
-import { BwcService } from 'merit/core/bwc.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { PersistenceService } from 'merit/core/persistence.service';
-import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
 import { Referral } from 'merit/community/referral.model';
+import { BwcService } from 'merit/core/bwc.service';
 
-import * as _ from 'lodash';
+import { Logger } from 'merit/core/logger';
+import { PersistenceService } from 'merit/core/persistence.service';
+import { ProfileService } from 'merit/core/profile.service';
+import { ConfigService } from 'merit/shared/config.service';
+import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
 
 type Subject = TransactionProposal | Referral
+
 /**
  * This service allows you to subscribe and unsubscribe
  * from notifications on an object.
@@ -21,13 +20,11 @@ export class NotificationService {
 
   private errors: any = this.bwcService.getErrors();
 
-  constructor(
-    private logger: Logger,
-    private bwcService: BwcService,
-    private configService: ConfigService,
-    private profileService: ProfileService,
-    private persistenceService: PersistenceService
-  ) {
+  constructor(private logger: Logger,
+              private bwcService: BwcService,
+              private configService: ConfigService,
+              private profileService: ProfileService,
+              private persistenceService: PersistenceService) {
     this.logger.info('Hello Notification Service');
   }
 
@@ -38,10 +35,11 @@ export class NotificationService {
     }
 
     //TODO: Rewrite BWC with promises.
-    let subCall = Promise.promisify(client[methodPrefix + 'ConfirmationSubscribe'](subject.id, {}, function(){}));
-    return subCall().then((res) => {
-      Promise.resolve(this.persistenceService.setTxConfirmNotification(subject.id, subject));
-    });
+
+    // let subCall = Promise.promisify(client[methodPrefix + 'ConfirmationSubscribe'](subject.id, {}, function(){}));
+    // return subCall().then((res) => {
+    //   Promise.resolve(this.persistenceService.setTxConfirmNotification(subject.id, subject));
+    // });
   }
 
   /**
