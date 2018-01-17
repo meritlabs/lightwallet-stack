@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular/index';
 
@@ -15,8 +16,9 @@ export class SelectLanguageModal {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              private  alertCtrl: AlertController,
-              private viewCtrl: ViewController) {
+              private alertCtrl: AlertController,
+              private viewCtrl: ViewController,
+              private iap: InAppBrowser) {
     this.currentLanguage = this.navParams.get('currentLanguage');
     this.availableLanguages = this.navParams.get('availableLanguages')
   }
@@ -27,9 +29,9 @@ export class SelectLanguageModal {
 
   toCommunity() {
     //@TODO move to configs
-    let url = 'https://github.com/meritlabs/lightwallet-stack';
+    const url = 'https://github.com/meritlabs/lightwallet-stack';
 
-    let confirm = this.alertCtrl.create({
+    const confirm = this.alertCtrl.create({
       title: 'External link',
       message: 'You can see the latest developments and contribute to this open source app by visiting our project on GitHub',
       buttons: [
@@ -39,7 +41,8 @@ export class SelectLanguageModal {
         },
         {
           text: 'Open GitHub', handler: () => {
-            //todo open it
+            // TODO use an IAP service w/ chrome/safari
+            this.iap.create(url);
           }
         }
       ]
