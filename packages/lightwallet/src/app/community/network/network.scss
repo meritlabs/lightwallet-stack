@@ -1,49 +1,83 @@
 view-network {
 
-  .wallet-icon {
-    margin-top: -2px;
-    margin-right: 4px;
-    display: inline-block;
-    vertical-align: middle;
-    width: 40px !important;
-    height: 30px !important;
-    box-shadow: none !important;
-  }
+  ion-header.header {
+    background: linear-gradient(#282d50, #383c63);
 
-  ion-card-header {
-    height: 50px !important;
-    line-height: 50px !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-  }
-
-  ion-item {
-    white-space: nowrap;
-    min-height: 35px !important;
-    height: 35px !important;
-    .item-inner {
-      min-height: 35px !important;
-      height: 35px  !important;
-      line-height: 35px !important;
-      padding: 0;
+    .toolbar-background {
+      background: transparent;
     }
-    ion-label {
-      button {
-        height: 20px;
-        width: 20px;
-        vertical-align: middle;
-        padding: 0 5px;
-        ion-icon {
-          margin-top: -10px;
-          font-size: 20px !important;
-          vertical-align: middle;
+
+    ion-toolbar.toolbar {
+      ion-row {
+        text-align: center;
+        padding: 0;
+        margin: 0;
+
+        ion-col {
+          padding: 0;
+          margin: 0;
+
+          > small {
+            color: #acadbc;
+            font-size: 13px;
+            line-height: 15px;
+            word-spacing: 100px;
+            display: block;
+          }
+
+          ion-avatar[img-icon] {
+            float: none;
+            margin: 12px auto 14px;
+            background: rgba(0,0,0,.17);
+          }
+
+          span.merit-amount {
+            color: white;
+            font-weight: 600;
+            font-size: 17px;
+            letter-spacing: -.47px;
+            padding-bottom: 24px;
+            display: block;
+
+            small {
+              display: block;
+              font-size: 13px;
+            }
+          }
         }
       }
     }
   }
 
-  ion-spinner {
-    vertical-align: middle;
+  ion-content.content > .scroll-content {
+    background: #f6f8fa;
+  }
+
+  button[ion-button][item-end][icon-only] {
+    width: 40px;
+    ion-icon {
+      width: 14px;
+      height: 16px;
+    }
+  }
+
+  ion-list.list {
+    $border-color: transparentize(#d1d6dc, 0.5);
+    margin-bottom: 16px;
+    border-bottom: 1px solid $border-color;
+    border-top: 1px solid $border-color;
+  }
+
+  ion-item-divider.item-divider {
+    span.merit-amount {
+      display: block;
+      color: map_get($colors, primary);
+      font-size: 13px;
+
+      small {
+        font-size: 11px;
+      }
+    }
   }
 
 }

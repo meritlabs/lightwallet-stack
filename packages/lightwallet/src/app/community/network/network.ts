@@ -4,12 +4,10 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicPage } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
-
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { PlatformService } from 'merit/core/platform.service';
 import { ProfileService } from 'merit/core/profile.service';
-
 import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';

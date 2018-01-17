@@ -1,18 +1,26 @@
 view-edit-wallet {
+  ion-input.input input.text-input {
+    font-weight: 500;
+  }
 
-  .wallet-icon {
-    img {
-      height: 26px;
-      width: 36px;
-      display: inline-block;
-      border-radius: 4px;
-      box-shadow: none;
-      padding: 4px 8px;
-      vertical-align: middle;
-    }
-    &.default img {
-      background: $wallet-default-color;
+  ion-note.note.wallet-color-indicator {
+    width: 10px;
+    height: 10px;
+    > span {
+      width: 10px;
+      height: 10px;
+      display: block;
+      border-radius: 500rem;
     }
   }
 
+  button[ion-item].item.delete-wallet {
+    ion-label.label h2 {
+      color: #e8523b;
+      font-size: 15px;
+      font-weight: 500;
+      text-align: center;
+      text-transform: uppercase;
+    }
+  }
 }
