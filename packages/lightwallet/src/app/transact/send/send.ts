@@ -131,16 +131,16 @@ export class SendView {
   }
 
   createContact() {
-    this.navCtrl.push('SendCreateContact', {contact: this.searchResult.toNewEntity.contact, amount: this.amount});
+    this.navCtrl.push('SendCreateContactView', {contact: this.searchResult.toNewEntity.contact, amount: this.amount});
   }
 
   bindAddressToContact() {
     let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
-    let modal = this.modalCtrl.create('SendSelectBindContact', {address: meritAddress , contacts: this.contacts, amount: this.amount});
+    let modal = this.modalCtrl.create('SendSelectBindContactView', {address: meritAddress , contacts: this.contacts, amount: this.amount});
     modal.onDidDismiss((contact) => {
       if (contact) {
         this.addressBookService.bindAddressToContact(contact, meritAddress.address, meritAddress.network).then(() => {
-          this.navCtrl.push('SendVia', {contact: contact, amount: this.amount, suggestedMethod: this.suggestedMethod});
+          this.navCtrl.push('SendViaView', {contact: contact, amount: this.amount, suggestedMethod: this.suggestedMethod});
         });
       }
     });
@@ -148,14 +148,14 @@ export class SendView {
   }
 
   sendToContact(contact) {
-    this.navCtrl.push('SendVia', {contact: contact, amount: this.amount, suggestedMethod: this.suggestedMethod});
+    this.navCtrl.push('SendViaView', {contact: contact, amount: this.amount, suggestedMethod: this.suggestedMethod});
   }
 
   sendToEntity(entity) {
     if (!_.isEmpty(entity.meritAddresses)) {
-      this.navCtrl.push('SendVia', {contact: entity, amount: this.amount, suggestedMethod: this.suggestedMethod});
+      this.navCtrl.push('SendViaView', {contact: entity, amount: this.amount, suggestedMethod: this.suggestedMethod});
     } else {
-      this.navCtrl.push('SendAmount', {contact: entity, amount: this.amount});
+      this.navCtrl.push('SendAmountView', {contact: entity, amount: this.amount, suggestedMethod: this.suggestedMethod});
     }
   }
 
