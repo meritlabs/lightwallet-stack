@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
-import { VaultsService } from 'merit/vaults/vaults.service';
+import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -14,11 +13,10 @@ export class CreateVaultSummaryView {
 
   public formData = { vaultName: '', whitelist: [], amountToDeposit: 0.0, masterKey: '' };
 
-  constructor(
-    private navCtrl:NavController,
-    private createVaultService: CreateVaultService,
-    private navParams: NavParams,
-  ){}
+  constructor(private navCtrl: NavController,
+              private createVaultService: CreateVaultService,
+              private navParams: NavParams,) {
+  }
 
   ionViewDidLoad() {
     let data = this.createVaultService.getData();

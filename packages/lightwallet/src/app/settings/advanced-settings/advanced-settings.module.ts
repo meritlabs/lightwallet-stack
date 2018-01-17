@@ -10,4 +10,5 @@ import { AdvancedSettingsView } from 'merit/settings/advanced-settings/advanced-
     IonicPageModule.forChild(AdvancedSettingsView),
   ],
 })
-export class AdvancedSettingsComponentModule {}
+export class AdvancedSettingsComponentModule {
+}

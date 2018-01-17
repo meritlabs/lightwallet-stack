@@ -1,32 +1,23 @@
 import { Injectable } from '@angular/core';
-import { Logger } from 'merit/core/logger';
-import { BwcService } from 'merit/core/bwc.service';
 import { BwcError } from 'merit/core/bwc-error.model';
+import { BwcService } from 'merit/core/bwc.service';
+import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
-import * as Promise from 'bluebird';
-
-
-
-import * as _ from 'lodash';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { ConfigService } from 'merit/shared/config.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()
 export class MnemonicService {
 
   private errors: any;
 
-  constructor(
-      private logger: Logger,
-      private profileService: ProfileService,
-      private bwcService: BwcService,
-      private bwcErrorService: BwcError,
-      private configService: ConfigService
-  ){
+  constructor(private logger: Logger,
+              private profileService: ProfileService,
+              private bwcService: BwcService,
+              private bwcErrorService: BwcError,
+              private configService: ConfigService) {
     this.errors = this.bwcService.getErrors();
   }
-
-
 
 
   public importMnemonic(words: string, opts: any): Promise<MeritWalletClient> {

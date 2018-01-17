@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as Promise from 'bluebird';
+
 import * as util from 'util';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
@@ -154,10 +154,9 @@ export class API {
         this.lastNotificationId = (_.last(notifications) as any).id;
       }
 
-      return Promise.each(notifications, (notification) => {
-        this.eventEmitter.emit('notification', notification);
-        return Promise.resolve();
-      });
+      return Promise.all(notifications.map(async (notification) => {
+          this.eventEmitter.emit('notification', notification);
+      }));
     });
 
   }
@@ -1902,12 +1901,12 @@ export class API {
         return this.openWallet();
       }).then(() => {
         let i = 1;
-        return Promise.each(this.credentials.publicKeyRing, function (item: any, next) {
-          let name = item.copayerName || ('copayer ' + i++);
-          return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
-            supportBIP44AndP2PKH: supportBIP44AndP2PKH
-          });
-        });
+        return Promise.all(this.credentials.publicKeyRing.map((item: any) => {
+              let name = item.copayerName || ('copayer ' + i++);
+              return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
+                  supportBIP44AndP2PKH: supportBIP44AndP2PKH
+              });
+          }));
       });
     });
   };
@@ -2160,6 +2159,9 @@ export class API {
 
     let args = this._getCreateTxProposalArgs(opts);
     return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
+
+      console.log('@@@TXP', txp);
+
       if (!txp) {
         return Promise.reject(new Error("Could not get transaction proposal from server."));
       }
@@ -2374,18 +2376,18 @@ export class API {
 
     return this._doGetRequest('/v1/txproposals/').then((txps) => {
       return this._processTxps(txps).then(() => {
-        return Promise.each(txps, (txp) => {
-          if (!opts.doNotVerify) {
-            // TODO: Find a way to run this check in parallel.
-            return this.getPayPro(txp).then((paypro) => {
-              if (!Verifier.checkTxProposal(this.credentials, txp, {
-                paypro: paypro,
-              })) {
-                Promise.reject(Errors.SERVER_COMPROMISED);
-              }
-            });
-          }
-        }).then(() => {
+        return Promise.all(txps.map(async (txp) => {
+            if (!opts.doNotVerify) {
+                // TODO: Find a way to run this check in parallel.
+                return this.getPayPro(txp).then((paypro) => {
+                    if (!Verifier.checkTxProposal(this.credentials, txp, {
+                            paypro: paypro,
+                        })) {
+                        Promise.reject(Errors.SERVER_COMPROMISED);
+                    }
+                });
+            }
+        })).then(() => {
           let result: any;
           if (opts.forAirGapped) {
             result = {

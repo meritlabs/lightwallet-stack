@@ -1,7 +1,4 @@
-@import '../transact/transact-module';
-
 view-vaults {
-  @extend %module-transact;
 
   [class^="merit-icon"] {
     width: 30px;

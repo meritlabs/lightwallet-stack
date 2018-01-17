@@ -1,9 +1,30 @@
 view-import {
 
-  .action-button {
-    width: 85%;
-    max-width: 300px;
-    margin: 0 auto;
+  ion-header.header {
+    .toolbar-background {
+      background: #e9edf2;
+    }
+
+    ion-toolbar.toolbar.toolbar-md {
+      padding: 0;
+      .toolbar-content {
+        align-self: flex-end;
+        ion-segment.segment {
+          ion-segment-button.segment-button {
+            letter-spacing: -0.31px;
+            color: #9da6b7;
+
+            &.segment-activated {
+              color: #2d3c50;
+            }
+          }
+        }
+      }
+    }
+
+    &:after {
+      display: none;
+    }
   }
 
   input[type="file"] {

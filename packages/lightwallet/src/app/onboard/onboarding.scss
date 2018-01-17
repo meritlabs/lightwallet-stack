@@ -1,23 +1,54 @@
-@import "onboarding-module";
 view-onboarding {
-  @extend %module-onboarding;
 
-  .container {
-    img {
-      max-height: 330px;
-      max-width: 75%;
+  // add additional css selector so we don't have to use !important
+  ion-content.content {
+    .container {
+      justify-content: flex-end;
 
-      // keep aspect ratio
-      height: auto;
-    }
+      span {
+        flex: 1;
+      }
 
-  }
+      img {
+        // TODO adjust this when replacing logo img
+        max-height: 126px;
+        max-width: 75%;
 
-  .bottom-buttons {
-    height: 60px !important;
-    padding-top: 0 !important;
-    button {
-      margin: 0;
+        margin-top: 75px;
+
+        // keep aspect ratio
+        height: auto;
+      }
+
+      .text {
+        padding-bottom: 30px;
+      }
+
+      .bottom-buttons {
+        padding-top: 0;
+        height: 81px;
+
+        button[ion-button].button {
+          height: 59px;
+          margin: 0;
+        }
+
+        .restore-button {
+          padding-top: 15px;
+          height: 22px;
+
+          > span {
+            height: 22px;
+            line-height: 22px;
+            color: rgba(255,255,255,0.5);
+          }
+          button[ion-button].button {
+            height: 22px;
+            color: white;
+          }
+        }
+      }
+
     }
   }
 }

@@ -1554,13 +1554,12 @@ WalletService.prototype._sampleFeeLevels = function(network, points, cb) {
     }
 
     var failed = [];
-    var levels = _.zipObject(_.map(points, function(p) {
-      var feePerKb = _.isObject(result) ? +result[p] : -1;
-      if (feePerKb < 0)
-        failed.push(p);
+    var levels = {};
+    _.each(result, function(row, nbBlocks) {
+        if (!_.isEmpty(row.errors) || _.isNil(row.feerate) ) return failed.push(nbBlocks);
+        levels[nbBlocks] =  Utils.strip(row.feerate* 1e8) || -1;
+    });
 
-      return [p, Utils.strip(feePerKb * 1e8)];
-    }));
 
     if (failed.length) {
       var failErr = 'Could not compute fee estimation in ' + network + ': ' + failed.join(', ') + ' blocks.';

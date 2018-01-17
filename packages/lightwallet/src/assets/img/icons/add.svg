@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>add</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4-numbers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons" transform="translate(-786.000000, -787.000000)">
+            <g id="add" transform="translate(778.000000, 779.000000)">
+                <g id="add-new" transform="translate(8.000000, 8.000000)">
+                    <g>
+                        <circle id="Oval-5" fill="#5F6C82" cx="12" cy="12" r="12"></circle>
+                        <path d="M17,12 C17,12.5522847 16.626904,13 16.1666667,13 L7.83333333,13 C7.37309604,13 7,12.5522847 7,12 C7,11.4477153 7.37309604,11 7.83333333,11 L16.1666667,11 C16.626904,11 17,11.4477153 17,12 Z" id="Rectangle-12-Copy" fill="#FFFFFF"></path>
+                        <path d="M12,17 C11.4477153,17 11,16.626904 11,16.1666667 L11,7.83333333 C11,7.37309604 11.4477153,7 12,7 C12.5522847,7 13,7.37309604 13,7.83333333 L13,16.1666667 C13,16.626904 12.5522847,17 12,17 Z" id="Rectangle-12-Copy-2" fill="#FFFFFF"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

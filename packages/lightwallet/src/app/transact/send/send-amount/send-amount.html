@@ -1,0 +1,108 @@
+<ion-header>
+
+    <ion-navbar color="secondary">
+        <ion-title *ngIf="contact.name?.formatted">
+            <h2>Send to: {{contact.name.formatted}}</h2>
+            <p>via {{sendingMethod.value}}</p>
+        </ion-title>
+        <ion-title *ngIf="!contact.name?.formatted">
+            <h2>{{sendingMethod.type == 'easy' ? 'Easy Send to:' : 'Classic Send to:'}}</h2>
+            <p>{{sendingMethod.value}}</p>
+        </ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <div class="amount-area">
+
+        <div class="currency-bar">
+            <div *ngFor="let currency of availableUnits" (click)="selectCurrency(currency)">
+                {{currency.name}}
+                <div class="selected-mark" *ngIf="currency.type == selectedCurrency.type"></div>
+            </div>
+        </div>
+
+        <div class="main-amount">
+            <ion-input
+                    pattern="[0-9\.]"
+                    [(ngModel)]="formData.amount"
+                    (ngModelChange)="processAmount($event)"
+                    [placeholder]="'Enter sending amount'"
+            >
+
+            </ion-input> {{selectedCurrency.name}}
+        </div>
+        <ion-item class="sub-amount">
+            <ion-label>{{selectedCurrency.type == 'mrt' ? amount.fiatStr : amount.mrtStr}}</ion-label>
+        </ion-item>
+
+        <div class="suggested-amounts">
+            <button ion-button outline (click)="selectAmount(amount)" *ngFor="let amount of suggestedAmounts[selectedCurrency.type]">
+                {{amount}}
+            </button>
+        </div>
+
+    </div>
+
+    <ion-list>
+        <ion-item (click)="selectWallet()">
+            <ion-avatar item-start>
+                <img src="assets/img/icon-wallet.svg">
+            </ion-avatar>
+            <ion-label stacked>From</ion-label>
+            <h2>{{selectedWallet.name}}</h2>
+            <p>{{format}} <small>({{selectedWallet.status.spendableBalanceStr}})</small></p>
+            <ion-icon name="arrow-down" item-end></ion-icon>
+        </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <ion-item (click)="selectFee()" *ngIf="txData?.txp.availableFee">
+            <ion-label stacked>Fee</ion-label>
+            <ion-label>{{txData.txp.fee.description}} - {{txData.txp.fee.percent}}</ion-label>
+            <ion-label>~{{txData.txp.fee.minutes}} mins</ion-label>
+
+            <div item-end>
+                {{txData.txp.availableFee.micros}} <ion-icon name="arrow-down"></ion-icon>
+            </div>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Recipient pays fee
+                <button ion-button icon-only (click)="showFeeIncludedTooltip()">
+                    <ion-icon name="information-circle"></ion-icon>
+                </button>
+            </ion-label>
+            <ion-toggle [(ngModel)]="feeIncluded" (ionChange)="toggleFeeIncluded($event)"></ion-toggle>
+        </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="sendingMethod.type == 'easy'">
+        <ion-item>
+            <ion-label stacked>Add Password (Optional)</ion-label>
+            <ion-input type="password" [(ngModel)]="formData.password"></ion-input>
+        </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="formData.password">
+        <ion-item>
+            <ion-label stacked>Confirm Password</ion-label>
+            <ion-input type="password" [(ngModel)]="formData.confirmPassword"></ion-input>
+        </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="sendingMethod.type == 'easy'" (click)="selectExpirationDate()">
+        <ion-item>
+            <ion-label stacked>Valid till</ion-label>
+            <ion-label>~{{formData.validTill}} ({{formData.nbBlocks}})</ion-label>
+            <ion-icon name="arrow-right" item-end></ion-icon>
+        </ion-item>
+    </ion-list>
+
+    <button ion-button full color="primary" (click)="toConfirm()" [disabled]="isSendAllowed()">
+        NEXT <ion-icon name="arrow-right"></ion-icon>
+    </button>
+
+</ion-content>

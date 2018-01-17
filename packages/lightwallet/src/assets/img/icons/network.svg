@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="17px" viewBox="0 0 20 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>network</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
+        <g id="Icons" transform="translate(-119.000000, -288.000000)">
+            <g id="network" transform="translate(109.000000, 277.000000)">
+                <g transform="translate(20.000000, 19.500000) rotate(-180.000000) translate(-20.000000, -19.500000) translate(11.000000, 12.000000)">
+                    <path d="M5.71679688,2.79718572 L12.338623,2.79718572" id="Path-2" stroke="#00B0DD" stroke-width="1.63636364"></path>
+                    <path d="M7.3927002,9.99328613 L4.2076416,5.11437988" id="Path-4" stroke="#00B0DD" stroke-width="1.63636364"></path>
+                    <path d="M13.8885498,5.17626953 L10.5842285,10.0335693" id="Path-3" stroke="#00B0DD" stroke-width="1.63636364"></path>
+                    <ellipse id="Oval-2" stroke="#5F6C82" stroke-width="1.7" stroke-linejoin="round" cx="9" cy="12.2727273" rx="2.76923077" ry="2.72727273"></ellipse>
+                    <ellipse id="Oval-2-Copy" stroke="#5F6C82" stroke-width="1.7" stroke-linejoin="round" cx="2.76923077" cy="2.72727273" rx="2.76923077" ry="2.72727273"></ellipse>
+                    <ellipse id="Oval-2-Copy-2" stroke="#5F6C82" stroke-width="1.7" stroke-linejoin="round" cx="15.2307692" cy="2.72727273" rx="2.76923077" ry="2.72727273"></ellipse>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

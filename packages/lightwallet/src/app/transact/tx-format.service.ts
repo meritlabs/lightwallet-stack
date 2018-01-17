@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
+
+
+import * as _ from 'lodash';
 import { BwcService } from 'merit/core/bwc.service';
-import { RateService } from 'merit/transact/rate.service';
+import { Logger } from 'merit/core/logger';
 import { ConfigService } from 'merit/shared/config.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
-import * as Promise from 'bluebird';
-
-import * as _ from "lodash";
-import { Logger } from 'merit/core/logger';
+import { RateService } from 'merit/transact/rate.service';
+import 'rxjs/add/operator/map';
 
 /*
   Ideally, this service gets loaded when it is needed.
@@ -18,12 +18,10 @@ export class TxFormatService {
   // TODO: implement configService
   public pendingTxProposalsCountForUs: number
 
-  constructor(
-    private bwc: BwcService,
-    private rate: RateService,
-    private config: ConfigService,
-    private logger: Logger
-  ) {
+  constructor(private bwc: BwcService,
+              private rate: RateService,
+              private config: ConfigService,
+              private logger: Logger) {
     this.logger.info('Hello TxFormatService Service');
   }
 
@@ -42,16 +40,14 @@ export class TxFormatService {
   // Todo: Improve
   formatAmountStr(micros: number): string {
     if (isNaN(micros)) return;
-    return this.formatAmount(micros) + ' MRT';
+    return String(this.formatAmount(micros));
   }
 
-  toFiat(micros: number, code: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (isNaN(micros)) return resolve();
-      let v1 = this.rate.fromMicrosToFiat(micros, code);
-      if (!v1) return resolve(null);
-      return resolve(v1.toFixed(2));
-    });
+  async toFiat(micros: number, code: string): Promise<string> {
+    if (isNaN(micros)) return;
+    let v1 = this.rate.fromMicrosToFiat(micros, code);
+    if (!v1) return null;
+    return v1.toFixed(2);
   }
 
   toFiatStr(micros: number, code: string): Promise<string> {
@@ -83,21 +79,21 @@ export class TxFormatService {
 
       // TODO: Break into function and cover all currencies.
       switch (settings.alternativeIsoCode) {
-        case "USD":
-          currencySymbolPrefix = "$";
+        case 'USD':
+          currencySymbolPrefix = '$';
           break;
-        case "EUR":
-          currencySymbolPrefix = "€";
+        case 'EUR':
+          currencySymbolPrefix = '€';
           break;
         default:
-          currencySymbolPrefix = "";
+          currencySymbolPrefix = '';
           break;
       }
 
       // TODO: Break into function and cover all currencies.
       switch (settings.alternativeIsoCode) {
         default:
-          currencySymbolSuffix = "";
+          currencySymbolSuffix = '';
           break;
       }
 
@@ -144,7 +140,7 @@ export class TxFormatService {
 
   };
 
-  formatPendingTxps(txps): Promise<any> {
+  async formatPendingTxps(txps): Promise<any> {
     this.pendingTxProposalsCountForUs = 0;
     let now = Math.floor(Date.now() / 1000);
 
@@ -166,53 +162,48 @@ export class TxFormatService {
     txps.push(txp);
     */
 
-    return Promise.each(txps, (tx: any) => {
-
+    const pTxps = await Promise.all(txps.map(async (tx: any) => {
       // no future transactions...
       if (tx.createdOn > now)
         tx.createdOn = now;
 
 
       // TODO: We should not call any services here.  Data should be passed in.
-      tx.wallet = { copayerId: "yepNope" };
+      tx.wallet = { copayerId: 'yepNope' };
 
 
       if (!tx.wallet) {
-        this.logger.info("no wallet at txp?");
+        this.logger.info('no wallet at txp?');
         return;
       }
 
-      return this.processTx(tx).then((pTx) => {
-        let processedTx = pTx;
-        let action: any = _.find(processedTx.actions, {
-          copayerId: processedTx.wallet.copayerId
-        });
+      const pTx = await this.processTx(tx);
 
-        if (!action && processedTx.status == 'pending') {
-          processedTx.pendingForUs = true;
-        }
-
-        if (action && action.type == 'accept') {
-          processedTx.statusForUs = 'accepted';
-        } else if (action && action.type == 'reject') {
-          processedTx.statusForUs = 'rejected';
-        } else {
-          processedTx.statusForUs = 'pending';
-        }
-
-        if (!processedTx.deleteLockTime)
-          processedTx.canBeRemoved = true;
-
-        return Promise.resolve(processedTx);
+      let action: any = _.find(pTx.actions, {
+        copayerId: pTx.wallet.copayerId
       });
 
-    }).then((txps) => {
-      this.logger.warn("What are the TXPs after promise all?");
-      this.logger.warn(txps);
-      return Promise.resolve(txps);
-    });
+      if (!action && pTx.status == 'pending') {
+        pTx.pendingForUs = true;
+      }
 
+      if (action && action.type == 'accept') {
+        pTx.statusForUs = 'accepted';
+      } else if (action && action.type == 'reject') {
+        pTx.statusForUs = 'rejected';
+      } else {
+        pTx.statusForUs = 'pending';
+      }
 
+      if (!pTx.deleteLockTime)
+        pTx.canBeRemoved = true;
+
+      return pTx;
+    }));
+
+    this.logger.warn('What are the TXPs after promise all?');
+    this.logger.warn(pTxps);
+    return pTxps;
   };
 
   parseAmount(amount: any, currency: string) {

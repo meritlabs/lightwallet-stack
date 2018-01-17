@@ -1,9 +1,0 @@
-@import "../transact-module";
-
-view-select-sending-option {
-  @extend %module-transact;
-
-  .selected h2 {
-    color: color($colors, 'primary');
-  }
-}

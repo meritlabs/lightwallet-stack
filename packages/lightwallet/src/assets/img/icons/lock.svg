@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="15px" height="18px" viewBox="0 0 15 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>lock</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4-numbers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons" transform="translate(-852.000000, -157.000000)">
+            <g id="lock" transform="translate(839.000000, 146.000000)">
+                <g id="password" transform="translate(14.000000, 12.000000)">
+                    <path d="M2.07407407,7.2 L2.07407407,4.00004536 L2.07407407,4.00004536 C2.07407407,1.79088131 3.93075954,0 6.22222222,0 L6.22222222,0 C8.51318118,0 10.3703704,1.78902626 10.3703704,4.00004536 L10.3703704,7.2" id="Rectangle" stroke="#00B0DD" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <rect id="Rectangle-40" stroke="#5F6C82" stroke-width="1.7" x="0" y="7.2" width="12.4444444" height="8.8" rx="1.35"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

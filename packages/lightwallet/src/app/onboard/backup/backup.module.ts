@@ -10,4 +10,5 @@ import { BackupView } from 'merit/onboard/backup/backup';
     IonicPageModule.forChild(BackupView),
   ],
 })
-export class BackupModule {}
+export class BackupModule {
+}
