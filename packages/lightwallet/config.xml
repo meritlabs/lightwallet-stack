@@ -3,7 +3,7 @@
     <name>Merit</name>
     <description>Merit Wallet</description>
     <author email="support@merit.me" href="">
-    MeritLabs Inc. 
+    MeritLabs Inc.
     </author>
     <access origin="*" />
     <allow-intent href="http://*/*" />
@@ -84,7 +84,6 @@
         <link-domain value="merit.app.link" />
         <ios-team-release value="MLJ7SU96NS" />
     </branch-config>
-    <content original-src="index.html" src="http://192.168.1.98:8100" />
     <edit-config file="*-Info.plist" mode="merge" target="NSCameraUsageDescription">
         <string>To scan QR Codes of friends to easily send them Merit.</string>
     </edit-config>
@@ -98,7 +97,6 @@
         <string>false</string>
     </edit-config>
     <allow-navigation href="*" />
-    <allow-navigation href="http://192.168.1.98:8100" />
     <engine name="ios" spec="4.5.4" />
     <engine name="android" spec="^6.4.0" />
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.2.1" />
