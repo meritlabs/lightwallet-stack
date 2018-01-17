@@ -32,14 +32,6 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
 
-/*
-  Using bluebird promises!
-  This gives us the ability to map over items and
-  engage in async requests.
-
-  TODO:
-  -- Ensure that we get navParams and then fallback to the wallet service.
-*/
 @IonicPage()
 @Component({
   selector: 'view-wallets',
