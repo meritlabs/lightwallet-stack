@@ -25,6 +25,7 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
+
 /*
   TODO:
   -- Ensure that we get navParams and then fallback to the wallet service.
