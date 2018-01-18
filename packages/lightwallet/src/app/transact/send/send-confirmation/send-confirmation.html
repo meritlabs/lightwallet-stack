@@ -29,21 +29,22 @@
                     <img src="assets/img/icons/wallet.svg">
                 </ion-avatar>
                 <ion-label stacked>From</ion-label>
-                <ion-label>{{viewData.walletName}}</ion-label>
-            </ion-item>
-            <ion-item>
-                {{ viewData.walletCurrentBalanceMrt }} MRT
-                <ion-icon name="arrow-dropright"></ion-icon>
-                {{ viewData.walletRemainingBalanceMrt }} MRT
+                <ion-label>
+                    {{viewData.walletName}}
+
+                    {{ viewData.walletCurrentBalanceMrt }} MRT
+                    <ion-icon name="arrow-dropright-circle"></ion-icon>
+                    {{ viewData.walletRemainingBalanceMrt }} MRT
+                </ion-label>
             </ion-item>
         </ion-list>
 
         <ion-list>
-            <div>Send</div>
             <ion-item>
                 <ion-avatar item-start img-icon>
                     <img src="assets/img/icons/merit.svg" >
                 </ion-avatar>
+                <h2>Send</h2>
                 <ion-label>{{ viewData.amountMrt}} MRT</ion-label>
                 <div item-end>{{ viewData.feeAmountFiat }}</div>
             </ion-item>
@@ -68,7 +69,9 @@
                 </ion-avatar>
                 <ion-label stacked>Password</ion-label>
 
-                <ion-input [(ngModel)]="viewData.password" type="password" *ngIf="!showPassword" disabled></ion-input>
+                <ion-input [(ngModel)]="viewData.password" type="password" *ngIf="!showPassword" disabled
+                           autocomplete="off" autocorrect="off" autocapitalize="off"
+                ></ion-input>
                 <ion-label *ngIf="showPassword">{{viewData.password}}</ion-label>
 
                 <button ion-button clear color="primary" *ngIf="!showPassword" item-end (click)="showPassword = true">Show</button>

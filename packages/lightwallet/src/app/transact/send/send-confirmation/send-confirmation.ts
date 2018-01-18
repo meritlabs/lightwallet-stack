@@ -30,6 +30,7 @@ export class SendConfirmationView {
     amountUSD: string; // micros
     totalAmount: number; // micros
     feeIncluded: boolean;
+    password:string;
     recipient: {
       label: string;
       name: string;
@@ -202,6 +203,7 @@ export class SendConfirmationView {
     }
   }
 
+
   private async send() {
 
     if (this.unlockValue < 100) return;
@@ -213,9 +215,11 @@ export class SendConfirmationView {
     loadingSpinner.present();
 
     try {
-      await this.txData.wallet.sendReferral(this.referralsToSign);
+      if (this.referralsToSign) {
+        await Promise.all(this.referralsToSign.map(this.txData.wallet.sendReferral.bind(this.txData.wallet)));
+      }
       await this.approveTx();
-      if (this.txData.easySend) {
+      if (this.txData.sendMethod.type == SendMethod.TYPE_EASY) {
         await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
         if (this.txData.sendMethod.destination == SendMethod.DESTINATION_SMS) {
           return this.easySendService.sendSMS(
@@ -233,6 +237,7 @@ export class SendConfirmationView {
       }
       this.navCtrl.push('WalletsView');
     } catch (err) {
+      console.log(err);
       this.logger.warn(err);
       return this.toastCtrl.create({
           message: err,
