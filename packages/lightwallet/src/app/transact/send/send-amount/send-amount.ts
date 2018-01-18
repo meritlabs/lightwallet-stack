@@ -41,6 +41,8 @@ export class SendAmountView {
   public readonly CURRENCY_TYPE_FIAT = 'fiat';
   public readonly AMOUNT_MAX = 'All';
 
+  public readonly MINUTE_PER_BLOCK = 1;
+
   public availableAmountMicros:number = 0;
 
   public wallets:Array<any>;
@@ -165,7 +167,11 @@ export class SendAmountView {
     let micros = 0;
     if (amount == this.AMOUNT_MAX) {
       micros = this.selectedWallet.status.spendableAmount;
-      amount = this.rateService.microsToMrt(micros);
+      if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
+        amount = this.rateService.microsToMrt(micros);
+      } else {
+        amount = this.rateService.fromMicrosToFiat(micros, this.availableUnits[1].name);
+      }
     } else {
       if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
         micros = this.rateService.mrtToMicro(parseFloat(amount));
@@ -177,12 +183,12 @@ export class SendAmountView {
     if (micros > this.selectedWallet.status.spendableAmount) {
       micros = this.selectedWallet.status.spendableAmount;
       if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
-        this.formData.amount =this.rateService.microsToMrt(micros)+'';
+        this.formData.amount  = this.rateService.microsToMrt(micros);
       } else {
-        this.formData.amount =  await this.txFormatService.formatAlternativeStr(this.rateService.microsToMrt(micros));
+        this.formData.amount  = this.rateService.fromMicrosToFiat(micros, this.availableUnits[1].name);
       }
     } else {
-      this.formData.amount = amount;
+      this.formData.amount  = Math.round(amount*100000)/100000;
     }
 
     await this.updateAmount();
@@ -306,6 +312,7 @@ export class SendAmountView {
 
       if (this.amount.micros == this.selectedWallet.status.spendableAmount) {
         data.sendMax = true;
+        data.toAmount = null;
         this.feeIncluded = true;
       }
 
@@ -327,7 +334,7 @@ export class SendAmountView {
         // todo add blocks per minute const
 
         // todo check if micros
-        let percent = this.feeIncluded ? (micros / (txpOut.amount) * 100) : (micros / (txpOut.amount +  micros) * 100);
+        let percent = this.feeIncluded ? (micros / (this.amount.micros) * 100) : (micros / (this.amount.micros +  micros) * 100);
         let precision = 1;
         if (percent > 0) {
           while (percent * Math.pow(10, precision) < 1) {
@@ -336,7 +343,7 @@ export class SendAmountView {
         }
         precision++; //showing two valued digits
 
-        let fee = {description: level.level, name: level.level, mins: level.nbBlocks, micros: micros, mrt: mrt, percent: percent.toFixed(precision) + '%'};
+        let fee = {description: level.level, name: level.level, minutes: level.nbBlocks*this.MINUTE_PER_BLOCK, micros: micros, mrt: mrt, percent: percent.toFixed(precision) + '%'};
         this.txData.txp.availableFeeLevels.push(fee);
         if (level.level == this.selectedFeeLevel) {
           this.txData.txp.fee = fee;
