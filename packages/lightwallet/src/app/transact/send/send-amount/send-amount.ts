@@ -50,7 +50,7 @@ export class SendAmountView {
 
   public knownFeeLevels:Array<{level:string, nbBlocks:number, feePerKb:number}>;
   public selectedFeeLevel:string = 'normal';
-  public selectedFee:{level:string, nbBlocks:number, feePerKb:number, micros:number, minutes:number, description: string, name:string, mrt:number,percent: number};
+  public selectedFee:{nbBlocks:number, feePerKb:number, micros:number, minutes:number, description: string, name:string, mrt:number,percent: number};
 
   public suggestedAmounts = {};
   public lastAmount:string;
@@ -171,9 +171,9 @@ export class SendAmountView {
     if (amount == this.AMOUNT_MAX) {
       micros = this.selectedWallet.status.spendableAmount;
       if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
-        amount = this.rateService.microsToMrt(micros);
+        amount = this.rateService.microsToMrt(micros)+'';
       } else {
-        amount = this.rateService.fromMicrosToFiat(micros, this.availableUnits[1].name);
+        amount = this.rateService.fromMicrosToFiat(micros, this.availableUnits[1].name)+'';
       }
     } else {
       if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
@@ -191,7 +191,7 @@ export class SendAmountView {
         this.formData.amount  = this.rateService.fromMicrosToFiat(micros, this.availableUnits[1].name);
       }
     } else {
-      this.formData.amount  = Math.round(amount*100000)/100000;
+      this.formData.amount  = ''+Math.round(amount*100000)/100000;
     }
 
     await this.updateAmount();
@@ -310,7 +310,7 @@ export class SendAmountView {
 
     try {
       let data:any = {
-        toAddress: this.txData.recipient.meritAddress,
+        toAddress: this.sendMethod.value,
         toName: this.txData.recipient.name || '',
         toAmount: this.txData.amount,
         allowSpendUnconfirmed: this.allowUnconfirmed,
@@ -326,6 +326,7 @@ export class SendAmountView {
       let easyData:any = await this.getEasyData();
       data = Object.assign(data, _.pick(easyData, 'script', 'toAddress'));
       data.toAddress = data.toAddress || easyData.scriptAddress;
+
 
       let txpOut = await this.getTxp(_.clone(data), this.selectedWallet, opts.dryRun);
       this.txData.txp = txpOut;
@@ -357,6 +358,7 @@ export class SendAmountView {
           this.txData.txp.fee = fee.micros;
         }
       });
+      this.feeCalcError = null;
     } catch (err) {
       this.txData.txp = null;
       this.logger.warn(err);
@@ -373,7 +375,7 @@ export class SendAmountView {
   }
 
   private getEasyData() {
-    if (this.txData.sendMethod.type != SendMethod.TYPE_EASY) {
+    if (this.sendMethod.type != SendMethod.TYPE_EASY) {
       return Promise.resolve({});
     } else {
       return this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password).then((easySend) => {

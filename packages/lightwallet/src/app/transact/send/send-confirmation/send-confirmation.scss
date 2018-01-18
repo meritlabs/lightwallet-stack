@@ -4,4 +4,16 @@ view-send-confirmation {
     box-shadow: 0 0 1px 1px $wallet-default-color;
   }
 
+  ion-avatar {
+    text-align: center;
+    color: color($colors, primary);
+    display: inline-block;
+    line-height: 40px;
+    letter-spacing: -1px;
+    border-radius: 50%;
+    span {
+      width: 100%;
+    }
+  }
+
 }
