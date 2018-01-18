@@ -59,7 +59,7 @@ var config = {
     defaultUnit: 'mrt',
     subjectPrefix: '',
     pushServerUrl: 'https://fcm.googleapis.com/fcm',
-    authorizationKey: 'AAAA_hgfi-A:APA91bHdg47-X1rJEbnNLle0hjaf8jBXdNv0s87K9-h4RMokXrOuR4Ho6GljMJfAqvoC33OzmyXMadp_lkh1TJePBKB8J4LZbn8c0rzJp1XiVXcbnG8azvsp6Zt1g0fvu4Tw8pf_SvWA',
+    authorizationKey: process.env.FCM_AUTH_KEY,
   },
   // fiatRateServiceOpts: {
   //   defaultProvider: 'BitPay',
