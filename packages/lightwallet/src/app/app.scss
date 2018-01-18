@@ -21,6 +21,21 @@ ion-content.content[fullscreen] {
   }
 }
 
+.md ion-header.header {
+  ion-toolbar.toolbar.toolbar-md {
+    padding: 0;
+  }
+  &:after {
+    display: none;
+  }
+
+
+}
+
+
+
+
+
 // Buttons
 @import "core/buttons";
 
@@ -362,3 +377,7 @@ ion-avatar[img-icon] {
 $v-dark-gray: #445 !default;
 $v-tab-send-icon: url('../img/tab-icons/ico-send.svg') !default;
 $v-tab-send-selected-icon: url('../img/tab-icons/ico-send-selected.svg') !default;
+
+.md ion-item .item-inner {
+  border: none !important;
+}

@@ -35,6 +35,7 @@ view-send-amount {
     height: 180px;
 
     .currency-bar {
+      height: 42px;
       .currency {
         display: inline-block;
         font-size: 12px;
@@ -71,13 +72,18 @@ view-send-amount {
 
     .suggested-amounts {
       height: 55px;
-      line-height: 55px;
+      box-sizing: border-box;
+      padding: 13px 0px;
       margin: 0 16px;
       border-top: 1px solid rgb(209, 214, 220);
+      display: flex;
+      flex-direction: row;
       button {
         margin: 0 4px;
         height: 29px;
-        width: 72px;
+        max-width: 72px;
+        vertical-align: middle;
+        flex: 1;
         border: 1px solid #b7bcc8;
         color: rgb(115, 129, 155);
       }
