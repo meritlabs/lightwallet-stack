@@ -170,6 +170,7 @@ export class SendView {
   }
 
   async openScanner() {
-    this.parseSearch(await this.addressScanner.scanAddress());
+    this.searchQuery = await this.addressScanner.scanAddress();
+    this.parseSearch();
   }
 }
