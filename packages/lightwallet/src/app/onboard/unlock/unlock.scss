@@ -1,22 +1,50 @@
 view-unlock {
 
-  .illustration.control {
-    background:  url('../assets/img/onboarding/tour-control.png');
+  h1.title {
+    font-size: 36px;
+    line-height: 38px;
+    color: white;
+    font-weight: 300;
+  }
+
+  p {
+    font-size: 16px;
+    color: rgba(255,255,255,.5);
   }
 
   .bottom-buttons {
     display: flex;
     flex-direction: row;
+    background: #2d3c50;
+    border-radius: 4px;
+    height: 56px;
+    padding: 8px;
 
     button[ion-button].button {
-      width: 40px;
+      width: 60px;
+      height: 40px;
+      box-shadow: none;
     }
 
     ion-input.input {
       display: block;
       flex: 1;
-      background: white;
       height: 40px;
+      min-height: 40px;
+      box-shadow: none;
+      border: none;
+      background: transparent;
+
+      input.text-input {
+        color: white;
+        font-size: 16px;
+
+        &::placeholder {
+          color: white;
+          font-size: 16px;
+        }
+      }
+
 
       &.failed {
         background: color($colors, 'danger');
@@ -30,29 +58,6 @@ view-unlock {
         }
       }
 
-      // give it border radius to match the button beside it
-      &.input-md {
-        border-radius: $button-md-border-radius;
-
-        // also give it some shadow on Android
-        box-shadow: 0 2px 3px rgba(0,0,0,0.35);
-      }
-
-      &.input-ios {
-        border-radius: $button-ios-border-radius;
-        input.text-input-ios {
-          padding: 0 5px;
-        }
-      }
-
-      input {
-        color: rgba(0,0,0,0.64);
-      }
-
-      input::-webkit-input-placeholder {
-        color: rgba(0,0,0,0.4);
-      }
-
       .input-cover {
         display: none;
       }
@@ -64,6 +69,4 @@ view-unlock {
     margin-top: 10%;
     margin-bottom: 10%;
   }
-
-
 }

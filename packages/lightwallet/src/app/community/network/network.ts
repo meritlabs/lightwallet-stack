@@ -48,6 +48,10 @@ export class NetworkView {
   public displayWallets: Array<DisplayWallet> = [];
   public loading: boolean;
 
+  totalNetworkValue: string;
+  totalMiningRewards: string;
+  totalAmbassadorRewards: string;
+
   constructor(private profileService: ProfileService,
               private clipboard: Clipboard,
               private toastCtrl: MeritToastController,
@@ -168,6 +172,17 @@ export class NetworkView {
 
   private async formatWallets(processedWallets: DisplayWallet[]) {
     this.displayWallets = await this.formatNetworkInfo(processedWallets);
+    let totalNetworkValue = 0, totalMiningRewards = 0, totalAmbassadorRewards = 0;
+
+    this.displayWallets.forEach(w => {
+      totalNetworkValue += w.totalNetworkValueMicro;
+      totalMiningRewards += w.miningRewardsMicro;
+      totalAmbassadorRewards += w.ambassadorRewardsMicro;
+    });
+
+    this.totalNetworkValue = this.txFormatService.parseAmount(totalNetworkValue, 'micros').amountUnitStr;
+    this.totalMiningRewards = this.txFormatService.parseAmount(totalMiningRewards, 'micros').amountUnitStr;
+    this.totalAmbassadorRewards = this.txFormatService.parseAmount(totalAmbassadorRewards, 'micros').amountUnitStr;
   }
 
   private loadInfo() {

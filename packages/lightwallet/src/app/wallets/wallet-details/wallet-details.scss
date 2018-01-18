@@ -1,6 +1,7 @@
-// TODO: Improve details spaces and make relative.
 wallet-details-view {
   ion-header {
+    background: #00a6d1;
+
     ion-navbar,
     .toolbar-background {
       background: transparent;
@@ -68,6 +69,16 @@ wallet-details-view {
             }
           }
         }
+      }
+    }
+  }
+
+  ion-list.list {
+    button[ion-item].item {
+      ion-note.detail[item-end] {
+        text-align: right;
+        font-size: 13px;
+        color: #73819b;
       }
     }
   }
