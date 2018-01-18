@@ -72,10 +72,12 @@ export class SendConfirmationView {
     this.viewData = {
       recipient: this.txData.recipient,
       amountMrt: this.formatService.formatAmount(this.txData.amount),
+      password: this.txData.password,
       feePercent: this.txData.txp.feePercent,
       feeAmountMrt: this.formatService.formatAmount(this.txData.txp.fee),
       totalAmountMrt: this.formatService.formatAmount(this.txData.totalAmount),
       walletName: this.txData.wallet.name || this.txData.wallet.id,
+      walletColor: this.txData.wallet.color,
       walletCurrentBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.totalBalanceMicros),
       walletRemainingBalanceMrt: this.formatService.formatAmount(
         this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount

@@ -50,6 +50,7 @@ export class SendAmountView {
 
   public knownFeeLevels:Array<{level:string, nbBlocks:number, feePerKb:number}>;
   public selectedFeeLevel:string = 'normal';
+  public selectedFee:{level:string, nbBlocks:number, feePerKb:number, micros:number, minutes:number, description: string, name:string, mrt:number,percent: number};
 
   public suggestedAmounts = {};
   public lastAmount:string;
@@ -142,7 +143,8 @@ export class SendAmountView {
     modal.onDidDismiss((data) => {
       if (data) {
         this.selectedFeeLevel = data.name;
-        this.txData.txp.fee = data;
+        this.selectedFee = data;
+        this.txData.txp.fee = data.micros;
       }
     });
   }
@@ -243,6 +245,8 @@ export class SendAmountView {
         message: 'Passwords do not match',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
+    } else {
+      this.txData.password = this.formData.password;
     }
 
     let loadingSpinner = this.loadingCtrl.create({
@@ -273,18 +277,20 @@ export class SendAmountView {
 
     if (!this.amount.micros) {
       this.txData = null;
+      this.feeLoading = false;
       return this.createTxpDebounce.cancel();
     } else if (this.amount.micros > this.selectedWallet.status.spendableAmount) {
       this.feeCalcError = 'Amount is too big';
       this.txData = null;
+      this.feeLoading = false;
       return this.createTxpDebounce.cancel();
     } else {
-
       this.txData = {
         txp: null,
         wallet: this.selectedWallet,
         amount: this.amount.micros,
         feeAmount: null,
+        password: this.formData.password,
         totalAmount: this.amount.micros,
         recipient: this.recipient,
         sendMethod: this.sendMethod,
@@ -347,11 +353,14 @@ export class SendAmountView {
         let fee = {description: level.level, name: level.level, minutes: level.nbBlocks*this.MINUTE_PER_BLOCK, micros: micros, mrt: mrt, percent: percent.toFixed(precision) + '%'};
         this.txData.txp.availableFeeLevels.push(fee);
         if (level.level == this.selectedFeeLevel) {
-          this.txData.txp.fee = fee;
+          this.selectedFee = fee;
+          this.txData.txp.fee = fee.micros;
         }
       });
     } catch (err) {
+      this.txData.txp = null;
       this.logger.warn(err);
+      if (err.text) this.feeCalcError = err.text;
       return  this.toastCtrl.create({
         message: err.text || 'Unknown error',
         cssClass: ToastConfig.CLASS_ERROR

@@ -25,6 +25,9 @@
 
         <ion-list>
             <ion-item>
+                <ion-avatar item-start img-icon [class.default]="!viewData.walletColor" [style.box-shadow]="viewData.walletColor ? '0 0 0 2px ' + viewData.walletColor : ''">
+                    <img src="assets/img/icons/wallet.svg">
+                </ion-avatar>
                 <ion-label stacked>From</ion-label>
                 <ion-label>{{viewData.walletName}}</ion-label>
             </ion-item>
@@ -38,14 +41,19 @@
         <ion-list>
             <div>Send</div>
             <ion-item>
+                <ion-avatar item-start img-icon>
+                    <img src="assets/img/icons/merit.svg" >
+                </ion-avatar>
+                <ion-label>{{ viewData.amountMrt}} MRT</ion-label>
+                <div item-end>{{ viewData.feeAmountFiat }}</div>
+            </ion-item>
+            <ion-item>
+                <ion-avatar item-start></ion-avatar>
                 <ion-label>{{ viewData.feeAmountMrt}} MRT</ion-label>
                 <div item-end>{{ viewData.feeAmountFiat }}</div>
             </ion-item>
             <ion-item>
-                <ion-label>{{ viewData.feeAmountMrt}} MRT</ion-label>
-                <div item-end>{{ viewData.feeAmountFiat }}</div>
-            </ion-item>
-            <ion-item>
+                <ion-avatar item-start></ion-avatar>
                 <ion-label> {{ viewData.totalAmountMrt}} MRT</ion-label>
                 <div item-end>{{ viewData.totalAmountFiat }}</div>
             </ion-item>
@@ -54,32 +62,32 @@
 
 
         <ion-list>
-            <ion-item *ngIf="txData.password">
-                <ion-avatar item-start>
-                   <ion-icon name="unlock"></ion-icon>
+            <ion-item *ngIf="viewData.password">
+                <ion-avatar item-start img-icon>
+                    <img src="assets/img/icons/unlock.svg">
                 </ion-avatar>
                 <ion-label stacked>Password</ion-label>
 
-                <ion-input [(ngModel)]="txData.password" *ngIf="!showPassword"></ion-input>
-                <ion-label [(ngModel)]="txData.password" *ngIf="showPassword"></ion-label>
+                <ion-input [(ngModel)]="viewData.password" type="password" *ngIf="!showPassword" disabled></ion-input>
+                <ion-label *ngIf="showPassword">{{viewData.password}}</ion-label>
 
-                <button ion-button clear color="primary" *ngIf="showPassword">Show</button>
-                <button ion-button clear color="primary" *ngIf="!showPassword">Hide</button>
+                <button ion-button clear color="primary" *ngIf="!showPassword" item-end (click)="showPassword = true">Show</button>
+                <button ion-button clear color="primary" *ngIf="showPassword" item-end  (click)="showPassword = false">Hide</button>
             </ion-item>
         </ion-list>
 
-        <ion-list>
-            <ion-item *ngIf="txData.timeout">
-                <ion-avatar item-start>
-                   <ion-icon name="timer"></ion-icon>
-                </ion-avatar>
-                <ion-label stacked>Expiration Time</ion-label>
-                <h2>{{txData.timeout.nbBlocks}}</h2>
-                <p>Until {{txData.timeout.expirationDate}}</p>
+        <!--<ion-list>-->
+            <!--<ion-item *ngIf="txData.timeout">-->
+                <!--<ion-avatar item-start>-->
+                   <!--<ion-icon name="timer"></ion-icon>-->
+                <!--</ion-avatar>-->
+                <!--<ion-label stacked>Expiration Time</ion-label>-->
+                <!--<h2>{{txData.timeout.nbBlocks}}</h2>-->
+                <!--<p>Until {{txData.timeout.expirationDate}}</p>-->
 
-                <div item-end>{{txData.timeout.hours}}</div>
-            </ion-item>
-        </ion-list>
+                <!--<div item-end>{{txData.timeout.hours}}</div>-->
+            <!--</ion-item>-->
+        <!--</ion-list>-->
 
         <ion-item>
             <!--TODO add styling and return to zero when touchend-->
