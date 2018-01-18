@@ -428,7 +428,4 @@ export class SendAmountView {
   }
 
 
-
-
-
 }
