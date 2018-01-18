@@ -20,146 +20,136 @@ export class BwcError {
   };
 
   private getErrorText(name: string): string {
-    // TODO: Unify internationalization text providers.
-    let body = '';
+    switch (name) {
+      case 'INVALID_BACKUP':
+        return 'Wallet Recovery Phrase is invalid';
 
-    if (name) {
-      switch (name) {
-        case 'INVALID_BACKUP':
-          body = 'Wallet Recovery Phrase is invalid';
-          break;
-        case 'WALLET_DOES_NOT_EXIST':
-          body = 'Wallet not registered at the wallet service. Recreate it fro "Create Wallet" using "Advanced Options" to set your recovery phrase';
-          break;
-        case 'MISSING_PRIVATE_KEY':
-          body = 'Missing private keys to sign';
-          break;
-        case 'ENCRYPTED_PRIVATE_KEY':
-          body = 'Private key is encrypted, cannot sign';
-          break;
-        case 'SERVER_COMPROMISED':
-          body = 'Server response could not be verified';
-          break;
-        case 'COULD_NOT_BUILD_TRANSACTION':
-          body = 'Could not build transaction';
-          break;
-        case 'INSUFFICIENT_FUNDS':
-          body = 'Insufficient funds';
-          break;
-        case 'CONNECTION_ERROR':
-          body = 'Network error';
-          break;
-        case 'NOT_FOUND':
-          body = 'Wallet service not found';
-          break;
-        case 'ECONNRESET_ERROR':
-          body = 'Connection reset by peer';
-          break;
-        case 'BAD_RESPONSE_CODE':
-          body = 'The request could not be understood by the server';
-          break;
-        case 'WALLET_ALREADY_EXISTS':
-          body = 'Wallet already exists';
-          break;
-        case 'COPAYER_IN_WALLET':
-          body = 'Copayer already in this wallet';
-          break;
-        case 'WALLET_FULL':
-          body = 'Wallet is full';
-          break;
-        case 'WALLET_NOT_FOUND':
-          body = 'Wallet not found';
-          break;
-        case 'INSUFFICIENT_FUNDS_FOR_FEE':
-          body = 'Insufficient funds for fee';
-          break;
-        case 'LOCKED_FUNDS':
-          body = 'Funds are locked by pending spend proposals';
-          break;
-        case 'COPAYER_VOTED':
-          body = 'Copayer already voted on this spend proposal';
-          break;
-        case 'NOT_AUTHORIZED':
-          body = 'Not authorized';
-          break;
-        case 'TX_ALREADY_BROADCASTED':
-          body = 'Transaction already broadcasted';
-          break;
-        case 'TX_CANNOT_CREATE':
-          body = 'Locktime in effect. Please wait to create a new spend proposal';
-          break;
-        case 'TX_CANNOT_REMOVE':
-          body = 'Locktime in effect. Please wait to remove this spend proposal';
-          break;
-        case 'TX_NOT_ACCEPTED':
-          body = 'Spend proposal is not accepted';
-          break;
-        case 'TX_NOT_FOUND':
-          body = 'Spend proposal not found';
-          break;
-        case 'TX_NOT_PENDING':
-          body = 'The spend proposal is not pending';
-          break;
-        case 'UPGRADE_NEEDED':
-          body = 'Please upgrade Copay to perform this action';
-          break;
-        case 'BAD_SIGNATURES':
-          body = 'Signatures rejected by server';
-          break;
-        case 'COPAYER_DATA_MISMATCH':
-          body = 'Copayer data mismatch';
-          break;
-        case 'DUST_AMOUNT':
-          body = 'Amount below minimum allowed';
-          break;
-        case 'INCORRECT_ADDRESS_NETWORK':
-          body = 'Incorrect network address';
-          break;
-        case 'COPAYER_REGISTERED':
-          body = 'Key already associated with an existing wallet';
-          break;
-        case 'INVALID_ADDRESS':
-          body = 'Invalid address';
-          break;
-        case 'MAIN_ADDRESS_GAP_REACHED':
-          body = 'Empty addresses limit reached. New addresses cannot be generated.';
-          break;
-        case 'WALLET_LOCKED':
-          body = 'Wallet is locked';
-          break;
-        case 'WALLET_NOT_COMPLETE':
-          body = 'Wallet is not complete';
-          break;
-        case 'WALLET_NEEDS_BACKUP':
-          body = 'Wallet needs backup';
-          break;
-        case 'MISSING_PARAMETER':
-          body = 'Missing parameter';
-          break;
-        case 'NO_PASSWORD_GIVEN':
-          body = 'Spending Password needed';
-          break;
-        case 'PASSWORD_INCORRECT':
-          body = 'Wrong spending password';
-          break;
-        case 'EXCEEDED_DAILY_LIMIT':
-          body = 'Exceeded daily limit of $500 per user';
-          break;
-        case 'UNLOCK_CODE_INVALID':
-          body = 'That Unlock Code is not valid';
-          break;
-        case 'ERROR':
-          body = 'Error';
-          break;
+      case 'WALLET_DOES_NOT_EXIST':
+        return 'Wallet not registered at the wallet service. Recreate it fro "Create Wallet" using "Advanced Options" to set your recovery phrase';
 
-        default:
-          this.log.warn('Unknown error type:', name);
-          body = 'Unknown error type.';
-          break;
-      }
-    } else {
-      body = 'Unknown error type.';
+      case 'MISSING_PRIVATE_KEY':
+        return 'Missing private keys to sign';
+
+      case 'ENCRYPTED_PRIVATE_KEY':
+        return 'Private key is encrypted, cannot sign';
+
+      case 'SERVER_COMPROMISED':
+        return 'Server response could not be verified';
+
+      case 'COULD_NOT_BUILD_TRANSACTION':
+        return 'Could not build transaction';
+
+      case 'INSUFFICIENT_FUNDS':
+        return 'Insufficient funds';
+
+      case 'CONNECTION_ERROR':
+        return 'Network error';
+
+      case 'NOT_FOUND':
+        return 'Wallet service not found';
+
+      case 'ECONNRESET_ERROR':
+        return 'Connection reset by peer';
+
+      case 'BAD_RESPONSE_CODE':
+        return 'The request could not be understood by the server';
+
+      case 'WALLET_ALREADY_EXISTS':
+        return 'Wallet already exists';
+
+      case 'COPAYER_IN_WALLET':
+        return 'Copayer already in this wallet';
+
+      case 'WALLET_FULL':
+        return 'Wallet is full';
+
+      case 'WALLET_NOT_FOUND':
+        return 'Wallet not found';
+
+      case 'INSUFFICIENT_FUNDS_FOR_FEE':
+        return 'Insufficient funds for fee';
+
+      case 'LOCKED_FUNDS':
+        return 'Funds are locked by pending spend proposals';
+
+      case 'COPAYER_VOTED':
+        return 'Copayer already voted on this spend proposal';
+
+      case 'NOT_AUTHORIZED':
+        return 'Not authorized';
+
+      case 'TX_ALREADY_BROADCASTED':
+        return 'Transaction already broadcasted';
+
+      case 'TX_CANNOT_CREATE':
+        return 'Locktime in effect. Please wait to create a new spend proposal';
+
+      case 'TX_CANNOT_REMOVE':
+        return 'Locktime in effect. Please wait to remove this spend proposal';
+
+      case 'TX_NOT_ACCEPTED':
+        return 'Spend proposal is not accepted';
+
+      case 'TX_NOT_FOUND':
+        return 'Spend proposal not found';
+
+      case 'TX_NOT_PENDING':
+        return 'The spend proposal is not pending';
+
+      case 'UPGRADE_NEEDED':
+        return 'Please upgrade Copay to perform this action';
+
+      case 'BAD_SIGNATURES':
+        return 'Signatures rejected by server';
+
+      case 'COPAYER_DATA_MISMATCH':
+        return 'Copayer data mismatch';
+
+      case 'DUST_AMOUNT':
+        return 'Amount below minimum allowed';
+
+      case 'INCORRECT_ADDRESS_NETWORK':
+        return 'Incorrect network address';
+
+      case 'COPAYER_REGISTERED':
+        return 'Key already associated with an existing wallet';
+
+      case 'INVALID_ADDRESS':
+        return 'Invalid address';
+
+      case 'MAIN_ADDRESS_GAP_REACHED':
+        return 'Empty addresses limit reached. New addresses cannot be generated.';
+
+      case 'WALLET_LOCKED':
+        return 'Wallet is locked';
+
+      case 'WALLET_NOT_COMPLETE':
+        return 'Wallet is not complete';
+
+      case 'WALLET_NEEDS_BACKUP':
+        return 'Wallet needs backup';
+
+      case 'MISSING_PARAMETER':
+        return 'Missing parameter';
+
+      case 'NO_PASSWORD_GIVEN':
+        return 'Spending Password needed';
+
+      case 'PASSWORD_INCORRECT':
+        return 'Wrong spending password';
+
+      case 'EXCEEDED_DAILY_LIMIT':
+        return 'Exceeded daily limit of $500 per user';
+
+      case 'UNLOCK_CODE_INVALID':
+        return 'That Unlock Code is not valid';
+
+      case 'ERROR':
+        return 'Error';
+
+      default:
+        this.log.warn('Unknown error type:', name);
+        return 'Unknown error type.';
     }
-    return body;
   }
 }

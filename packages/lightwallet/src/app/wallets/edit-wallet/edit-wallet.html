@@ -1,47 +1,74 @@
-<ion-header>
-
-    <ion-navbar color="secondary">
+<ion-header no-border>
+    <ion-navbar color="light" no-border>
         <ion-title>Edit Wallet</ion-title>
     </ion-navbar>
-
 </ion-header>
-
 
 <ion-content>
 
     <ion-list>
-        <ion-item-divider translate>Setting</ion-item-divider>
         <ion-item>
-            <ion-label translate>Wallet name</ion-label>
-            <ion-input text-right  [(ngModel)]="wallet.name" debounce="300" (ionChange)="changeName($event.value)"></ion-input>
+          <ion-avatar img-icon item-start>
+            <img src="assets/img/icons/wallet.svg" alt="">
+          </ion-avatar>
+            <ion-label translate stacked>
+              Wallet name
+            </ion-label>
+            <ion-input [(ngModel)]="wallet.name" debounce="300" (ionChange)="changeName($event.value)"></ion-input>
         </ion-item>
 
-        <ion-item (click)="changeColor()">
-            <ion-label translate>Color</ion-label>
-            <ion-label item-right text-right>
-                <i class="wallet-icon" [class.default]="!wallet.color">
-                    <img src="assets/img/icon-wallet.svg"  [style.background]="wallet.color" >
-                </i>
+        <button ion-item (click)="changeColor()">
+          <ion-avatar img-icon item-start>
+            <img src="assets/img/icons/color.svg" alt="">
+          </ion-avatar>
+            <ion-label translate>
+              <h2>
+                Change Color
+              </h2>
             </ion-label>
-        </ion-item>
+            <ion-note item-end class="wallet-color-indicator">
+              <span [class.default]="!wallet.color" [style.background]="wallet.color? wallet.color : ''"></span>
+            </ion-note>
+        </button>
         <ion-item>
-            <ion-label>Hide Balance</ion-label>
+          <ion-avatar img-icon item-start>
+            <img src="assets/img/icons/visible.svg" alt="">
+          </ion-avatar>
+            <ion-label>
+              <h2>
+                Hide Balance
+              </h2>
+            </ion-label>
             <ion-toggle [(ngModel)]="wallet.balanceHidden" (ionChange)="changeBalanceHidden($event.value)">
             </ion-toggle>
         </ion-item>
 
-
-
-
-        <ion-item-divider translate>Actions</ion-item-divider>
         <button ion-item (click)="goToSetPassword()">
-            <ion-label>Set Password</ion-label>
+          <ion-avatar img-icon item-start>
+            <img src="assets/img/icons/lock.svg" alt="">
+          </ion-avatar>
+            <ion-label>
+              <h2>
+                Set Password
+              </h2>
+            </ion-label>
         </button>
         <button ion-item (click)="goToExportWallet()">
-            <ion-label>Export wallet</ion-label>
+          <ion-avatar img-icon item-start>
+            <img src="assets/img/icons/export.svg" alt="">
+          </ion-avatar>
+            <ion-label>
+              <h2>
+                Export wallet
+              </h2>
+            </ion-label>
         </button>
-        <button ion-item (click)="deleteWallet()">
-            <ion-label>Delete wallet</ion-label>
+        <button ion-item (click)="deleteWallet()" class="delete-wallet">
+            <ion-label>
+              <h2>
+                Delete wallet
+              </h2>
+            </ion-label>
         </button>
     </ion-list>
 

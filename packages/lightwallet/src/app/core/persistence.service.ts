@@ -33,7 +33,6 @@ const Keys = {
   REMOTE_PREF_STORED: 'remotePrefStored',
   TX_CONFIRM_NOTIF: txid => 'txConfirmNotif-' + txid,
   TX_HISTORY: walletId => 'txsHistory-' + walletId,
-  SEND_HISTORY: 'sendHistory'
 };
 
 @Injectable()
@@ -306,19 +305,6 @@ export class PersistenceService {
     return this.remove(Keys.TX_HISTORY(walletId));
   }
 
-  getSendHistory() {
-    return this.storage.get(Keys.SEND_HISTORY);
-  }
-
-  registerSend(contact, method) {
-    return this.storage.get(Keys.SEND_HISTORY).then((history) => {
-      if (!history) history = [];
-      let timestamp = (new Date()).getTime();
-      history.push({contact, method, timestamp});
-      return this.storage.set(Keys.SEND_HISTORY, history);
-    });
-  }
-
   setPendingEasySends(walletId: string, easysends: any): Promise<void> {
     return this.set(Keys.PENDING_EASY_SENDS(walletId), easysends).catch(err => {
       this.log.error('Error saving pending EasySends. Size:' + easysends.length);
@@ -429,24 +415,6 @@ export class PersistenceService {
   };
 
 
-  // cb(err, accounts)
-  // accounts: {
-  //   email_1: {
-  //     token: account token
-  //     cards: {
-  //       <card-data>
-  //     }
-  //   }
-  //   ...
-  //   email_n: {
-  //    token: account token
-  //    cards: {
-  //       <card-data>
-  //     }
-  //   }
-  // }
-
-  // ]
   setBitpayDebitCards(network: string, email: string, cards: any): Promise<void> {
     return this.getBitpayAccounts(network)
       .then(allAccounts => {
@@ -457,7 +425,6 @@ export class PersistenceService {
       });
   };
 
-  // ]
   getBitpayDebitCards(network: string): Promise<any[]> {
     return this.getBitpayAccounts(network)
       .then(allAccounts => {
@@ -465,7 +432,7 @@ export class PersistenceService {
         _.each(allAccounts, (account, email) => {
           if (account.cards) {
             // Add account's email to each card
-            var cards = _.clone(account.cards);
+            let cards = _.clone(account.cards);
             _.each(cards, function (x) {
               x.email = email;
             });
@@ -490,22 +457,9 @@ export class PersistenceService {
       });
   };
 
-  // cards: [
-  //   eid: card id
-  //   id: card id
-  //   lastFourDigits: card number
-  //   token: card token
-
   private get(key: any) {
     return this.storage.get(key);
   }
-
-  // cards: [
-  //   eid: card id
-  //   id: card id
-  //   lastFourDigits: card number
-  //   token: card token
-  //   email: account email
 
   private set(key: string, value: any) {
     return this.storage.set(key, _.clone(value));

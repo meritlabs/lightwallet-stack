@@ -1,27 +1,24 @@
-<ion-header>
-
-    <ion-navbar color="secondary">
-        <ion-title>Select Wallet Color</ion-title>
+<ion-header no-border>
+    <ion-navbar color="light">
+        <ion-title>Change Color</ion-title>
         <ion-buttons end>
             <button ion-button (click)="cancel()" translate>
-                cancel
+                Cancel
             </button>
         </ion-buttons>
     </ion-navbar>
-
 </ion-header>
 
 <ion-content>
 
-    <ion-list>
-        <button ion-item *ngFor="let color of availableColors" [class.selected]="color.hex == selectedColorHex" (click)="select(color)">
-            <ion-label>{{color.name}}</ion-label>
-            <ion-label item-right text-right>
-                <i class="wallet-icon">
-                    <img src="assets/img/icon-wallet.svg"  [style.background]="color.hex">
-                </i>
-            </ion-label>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-2 *ngFor="let color of availableColors">
+        <button ion-button [class.selected]="color == selectedColor" (click)="select(color)">
+          <span class="color-indicator" [style.background]="color"></span>
         </button>
-    </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
 </ion-content>

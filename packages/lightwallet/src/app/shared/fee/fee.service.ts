@@ -92,5 +92,4 @@ export class FeeService {
       return { data: this.cache.data, fromCache: false };
     }
   }
-  
 }
