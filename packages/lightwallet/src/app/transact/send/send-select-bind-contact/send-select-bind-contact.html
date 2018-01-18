@@ -1,6 +1,9 @@
-
-
 <ion-content>
+
+    <ion-item-divider>
+        Contacts
+        <button ion-button item-end clear (click)="cancel()" class="cancel-button"><ion-icon name="close"></ion-icon></button>
+    </ion-item-divider>
 
     <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()" (ionCancel)="clearSearch()"></ion-searchbar>
 
@@ -17,7 +20,7 @@
                     <span color="primary">{{getContactInitials(contact)}}</span>
                 </ion-avatar>
                 {{contact.name.formatted}}
-                <img src="merit.svg" color="primary" item-end *ngIf="contact.meritAddresses[0].length">
+                <img src="assets/img/icons/merit.svg"  color="primary" item-end>
             </ion-item>
 
         </ion-list>

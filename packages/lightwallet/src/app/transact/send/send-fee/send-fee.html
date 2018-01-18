@@ -1,6 +1,6 @@
 <ion-header>
 
-    <ion-navbar color="secondary">
+    <ion-navbar color="light">
         <ion-title>Fee</ion-title>
         <ion-buttons end>
             <button ion-button (click)="cancel()" translate>
@@ -16,7 +16,7 @@
 
     <ion-list>
         <ion-item *ngFor="let level of feeLevels" [class.selected]="level.name == selectedLevelName" (click)="select(level)">
-            <span style="text-transform: capitalize">{{level.description}}</span> - {{level.amount}}
+            <span style="text-transform: capitalize">{{level.description}}</span> - {{level.mrt}} MRT
             <span item-end>~{{level.minutes}} mins</span>
         </ion-item>
     </ion-list>
