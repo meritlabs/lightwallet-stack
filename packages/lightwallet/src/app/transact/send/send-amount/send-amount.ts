@@ -154,11 +154,12 @@ export class SendAmountView {
     }).present();
   }
 
-  selectCurrency(currency) {
+  async selectCurrency(currency) {
     if (currency.type != this.selectedCurrency.type) {
       this.selectedCurrency = currency;
+      this.selectAmount(this.formData.amount);
       this.updateAmount();
-      this.updateTxData();
+      await this.updateTxData();
     }
   }
 
