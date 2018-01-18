@@ -4,7 +4,7 @@
   </ion-refresher>
 
   <div class="big-header">
-    <button ion-button clear icon-only class="action-button" navPush="SettingsView">
+    <button ion-button clear icon-only class="header-action-button" navPush="SettingsView">
       <ion-icon name="settings" merit-icon></ion-icon>
     </button>
     <p>Total Value of Your Network</p>
@@ -55,7 +55,7 @@
     </button>
   </ion-item-divider>
 
-  <ion-item *ngIf="(!wallets || !wallets.length) && loading">
+  <ion-item no-lines *ngIf="(!wallets || !wallets.length) && loading">
     <ion-spinner item-start></ion-spinner>
     <h2>Loading...</h2>
   </ion-item>
@@ -89,7 +89,7 @@
               {{ wallet.status.totalBalanceAlternativeStr }}
           </div>
 
-          <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>
+          <span class="error" *ngIf="wallet.error">{{ wallet.error }}</span>
       </ion-note>
     </button>
 
@@ -120,29 +120,6 @@
       </ion-note>
     </button>
   </ion-list>
-
-  <!--<ion-item-divider translate>-->
-    <!--Add New Wallet-->
-  <!--</ion-item-divider>-->
-  <!--<ion-list>-->
-    <!--<button ion-item (click)="toAddWallet()" class="add-item">-->
-      <!--<ion-avatar item-start class="btn">-->
-        <!--<ion-icon name="add"></ion-icon>-->
-      <!--</ion-avatar>-->
-      <!--<h2 translate>-->
-        <!--Create new wallet-->
-      <!--</h2>-->
-    <!--</button>-->
-
-    <!--<button ion-item (click)="toImportWallet()" class="add-item">-->
-      <!--<ion-avatar item-start class="btn">-->
-        <!--<ion-icon name="ios-share-outline"></ion-icon>-->
-      <!--</ion-avatar>-->
-      <!--<h2 translate>-->
-        <!--Import wallet-->
-      <!--</h2>-->
-    <!--</button>-->
-  <!--</ion-list>-->
 
   <view-vaults [vaults]="vaults" [refreshVaultList]="refreshVaultList"></view-vaults>
 

@@ -1,4 +1,4 @@
-<ion-header no-border [style.background]="wallet.color">
+<ion-header no-border [style.background]="wallet.color" [class.default]="!wallet.color">
   <ion-navbar>
     <ion-title smaller-title>{{ wallet.name }}</ion-title>
     <ion-buttons end>
@@ -46,15 +46,16 @@
         <img src="assets/img/icon-sent.svg" *ngIf="tx.action == 'sent'" width="40">
         <img src="assets/img/icon-moved.svg" *ngIf="tx.action == 'moved'" width="40">
       </ion-avatar>
-      <h2>{{tx.actionStr}}</h2>
-      <p *ngIf="isNotConfirmedTx(tx)">Awaiting confirmation</p>
-      <div class="detail" item-end>
-        <div class="amount">
-          {{tx.amountStr}}
-          <ion-icon name="ios-timer-outline" *ngIf="isNotConfirmedTx(tx)"></ion-icon>
-        </div>
+      <ion-label>
+        <h2>{{tx.actionStr}}</h2>
+        <p class="merit-amount">{{ tx.amountStr || '0.00' }}&nbsp;<span>MRT</span></p>
+        <p *ngIf="isNotConfirmedTx(tx)">Awaiting confirmation</p>
+      </ion-label>
+
+      <ion-note class="detail" item-end>
+        <ion-icon name="ios-timer-outline" *ngIf="isNotConfirmedTx(tx)"></ion-icon>
         <div class="date">{{tx.time * 1000 | amTimeAgo}}</div>
-      </div>
+      </ion-note>
     </button>
   </ion-list>
 </ion-content>

@@ -3,17 +3,6 @@ view-edit-wallet {
     font-weight: 500;
   }
 
-  ion-note.note.wallet-color-indicator {
-    width: 10px;
-    height: 10px;
-    > span {
-      width: 10px;
-      height: 10px;
-      display: block;
-      border-radius: 500rem;
-    }
-  }
-
   button[ion-item].item.delete-wallet {
     ion-label.label h2 {
       color: #e8523b;

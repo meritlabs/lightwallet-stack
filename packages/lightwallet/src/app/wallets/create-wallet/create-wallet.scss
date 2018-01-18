@@ -1,26 +1,26 @@
 view-create-wallet {
+  .scroll-content {
+    background: #f6f8fa;
+  }
+
+  // TODO match other pages' style
+  ion-item-group {
+    background: white;
+    &:not(:last-child) {
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    &:not(:first-child) {
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+  }
 
   ion-input.incorrect {
     background: color($colors, 'danger');
   }
 
-  .wallet-icon {
-    img {
-      height: 26px;
-      width: 36px;
-      display: inline-block;
-      border-radius: 4px;
-      box-shadow: none;
-      padding: 4px 8px;
-      vertical-align: middle;
-    }
-    &.default img {
-      background: $wallet-default-color;
-    }
-  }
-
   .warning ion-label{
     white-space: normal;
   }
-
 }

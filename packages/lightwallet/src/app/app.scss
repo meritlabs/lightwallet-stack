@@ -142,7 +142,7 @@ ion-item textarea {
     color: rgba(255, 255, 255, .6);
   }
 
-  button[ion-button].button.action-button {
+  button[ion-button].button.header-action-button {
     position: absolute;
     top: 16px;
     right: 0;
@@ -183,13 +183,15 @@ ion-item.item, button[ion-item].item {
 ion-item.item,
 button[ion-item].item,
 ion-item-divider.item-divider {
-  .merit-amount {
-    color: #00aad6;
-    font-size: 13px;
-    font-weight: 500;
+  ion-label {
+    p.merit-amount {
+      color: #00aad6;
+      font-size: 13px;
+      font-weight: 500;
 
-    span {
-      font-size: 11px;
+      span {
+        font-size: 11px;
+      }
     }
   }
 
@@ -294,6 +296,22 @@ button[ion-button].button.action-button {
   margin-left: 16px;
   border-radius: 4px;
   height: 44px;
+  box-shadow: none;
+}
+
+ion-note.note.wallet-color-indicator {
+  width: 10px;
+  height: 10px;
+  > span {
+    width: 10px;
+    height: 10px;
+    display: block;
+    border-radius: 500rem;
+  }
+}
+
+.default {
+  background: map_get($colors, primary);
 }
 
 // merit icons
