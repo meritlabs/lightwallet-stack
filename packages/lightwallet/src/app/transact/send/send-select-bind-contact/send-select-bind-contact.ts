@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController, AlertController } from 'ionic-angular';
 import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 
 
@@ -18,10 +18,10 @@ export class SendSelectBindContactView {
  constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private viewCtrl: ViewController
+    private viewCtrl: ViewController,
+    private alertCtrl: AlertController
   ) {
    this.contacts = this.navParams.get('contacts');
-   console.log(this.contacts);
   }
 
   ionViewDidLoad() {
@@ -33,7 +33,16 @@ export class SendSelectBindContactView {
   }
 
   select(contact) {
-    this.viewCtrl.dismiss(contact);
+    this.alertCtrl.create({
+      title: `Bind this address to contact '${contact.name.formatted}'`,
+      buttons: [
+        {text: 'Cancel', role: 'cancel', handler: () => {}},
+        {text: 'Bind', handler: () => {
+          this.viewCtrl.dismiss(contact);
+          }
+        }
+      ]
+    }).present();
   }
 
   getContactInitials(contact) {

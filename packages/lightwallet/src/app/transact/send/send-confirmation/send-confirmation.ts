@@ -61,15 +61,16 @@ export class SendConfirmationView {
     private logger: Logger
   ) {
 
+    this.txData = this.navParams.get('txData');
+    this.referralsToSign = this.navParams.get('referralsToSign');
+
   }
 
   async ionViewDidLoad() {
-    this.txData = this.navParams.get('txData');
     this.txData.amountUSD = await this.formatService.formatToUSD(this.txData.amount);
-    this.referralsToSign = this.navParams.get('referralsToSign');
 
     this.viewData = {
-      recipientName: this.txData.recipient.label,
+      recipient: this.txData.recipient,
       amountMrt: this.formatService.formatAmount(this.txData.amount),
       feePercent: this.txData.txp.feePercent,
       feeAmountMrt: this.formatService.formatAmount(this.txData.txp.fee),
@@ -230,6 +231,7 @@ export class SendConfirmationView {
       }
       this.navCtrl.push('WalletsView');
     } catch (err) {
+      this.logger.warn(err);
       return this.toastCtrl.create({
           message: err,
           cssClass: ToastConfig.CLASS_ERROR,

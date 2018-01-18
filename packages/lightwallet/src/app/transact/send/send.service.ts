@@ -41,7 +41,7 @@ export class SendService {
     }
   }
 
-  public getAddressNetwork(addr):string {
+  public getAddressNetwork(addr) {
     return this.bitcore.Address.fromString(addr).network;
   }
 

@@ -2,7 +2,7 @@
 
     <ion-navbar color="light">
         <ion-title>
-            <h2>Send to</h2>
+            <h2>Send</h2>
             <p>{{getDisplayedName()}}</p>
         </ion-title>
         <ion-buttons end *ngIf="contact.name.formatted">
@@ -19,6 +19,7 @@
     <div class="easy-send-section">
         <ion-item-divider>
             EasySend <button ion-button clear (click)="showEasyTooltip()" class="tooltip-button"><ion-icon name="ios-information-circle-outline"></ion-icon></button>
+            <p>Powerful tool to make transactions</p>
         </ion-item-divider>
 
         <ion-list *ngIf="contact.phoneNumbers.length">
@@ -64,6 +65,7 @@
         <ion-list>
             <ion-item-divider>
                 ClassicSend <button ion-button clear (click)="showClassicTooltip()" class="tooltip-button"><ion-icon name="ios-information-circle-outline"></ion-icon></button>
+                <p>Usual way to send Merit</p>
             </ion-item-divider>
 
             <ion-item *ngFor="let meritAddress of contact.meritAddresses; let i = index"

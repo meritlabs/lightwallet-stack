@@ -1,6 +1,6 @@
 <ion-header>
 
-    <ion-navbar color="secondary">
+    <ion-navbar color="light">
         <ion-title>Send from</ion-title>
         <ion-buttons end>
             <button ion-button (click)="cancel()" translate>
@@ -13,12 +13,11 @@
 
 <ion-content>
 
-    <button ion-item *ngFor="let wallet of wallets" [class.selected]="selectedWallet.id == wallet.id" (click)="select(wallet)">
+    <button ion-item *ngFor="let wallet of wallets" [class.selected]="wallet.id == wallet.id" (click)="select(wallet)">
 
-        <i class="wallet-icon" item-start
-           [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
-            <img src="assets/img/icon-wallet.svg">
-        </i>
+        <ion-avatar item-start img-icon [class.default]="!wallet.color" [style.box-shadow]="wallet.color ? '0 0 0 2px ' + wallet.color : ''">
+            <img src="assets/img/icons/wallet.svg">
+        </ion-avatar>
 
         <h2 translate>
             {{wallet.name || wallet._id}}

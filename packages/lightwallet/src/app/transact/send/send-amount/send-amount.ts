@@ -14,6 +14,7 @@ import { ToastConfig } from "merit/core/toast.config";
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { EasySend, easySendURL } from 'merit/transact/send/easy-send/easy-send.model'
+import { Logger } from 'merit/core/logger';
 
 
 
@@ -31,6 +32,7 @@ export class SendAmountView {
 
   public txData:any;
   public feeCalcError:string;
+  public feeLoading:boolean;
 
   public amount = {micros: 0, mrt:0, mrtStr:'0.00', fiat:0, fiatStr:'0.00'};
   public formData = {amount: '0.00', password: '', confirmPassword: '', nbBlocks: 1008, validTill: ''};
@@ -44,7 +46,7 @@ export class SendAmountView {
   public wallets:Array<any>;
   public selectedWallet:any;
 
-  public knownFeeLevels:{name:string, nbBlocks:number};
+  public knownFeeLevels:Array<{level:string, nbBlocks:number, feePerKb:number}>;
   public selectedFeeLevel:string = 'normal';
 
   public suggestedAmounts = {};
@@ -70,7 +72,8 @@ export class SendAmountView {
     private alertCtrl: AlertController,
     private easySendService: EasySendService,
     private walletService: WalletService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private logger: Logger
   ) {
     this.recipient = this.navParams.get('contact');
     this.sendMethod = this.navParams.get('suggestedMethod');
@@ -79,8 +82,8 @@ export class SendAmountView {
 
   async ionViewDidLoad() {
     this.availableUnits = [
-      {type: this.CURRENCY_TYPE_FIAT, name: this.configService.get().wallet.settings.unitCode.toUpperCase()},
       {type: this.CURRENCY_TYPE_MRT, name: this.configService.get().wallet.settings.unitCode.toUpperCase()},
+      {type: this.CURRENCY_TYPE_FIAT, name: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()},
     ];
     this.selectedCurrency = this.availableUnits[0];
     this.amount.micros = this.navParams.get('suggestedMethod') || 0;
@@ -91,7 +94,7 @@ export class SendAmountView {
     this.suggestedAmounts[this.CURRENCY_TYPE_FIAT] = ['5', '10', '100', this.AMOUNT_MAX];
 
     this.wallets = await this.profileService.getWallets();
-    this.chooseAppropriateWallet();
+    await this.chooseAppropriateWallet();
     this.knownFeeLevels = await this.feeService.getFeeLevels(this.selectedWallet.network);
     this.loading = false;
   }
@@ -108,14 +111,25 @@ export class SendAmountView {
           return true;
         }
       });
+
+      if (!this.selectedWallet.status) {
+        this.walletService.getStatus(this.selectedWallet, { force: true }).then((status) => {
+          this.selectedWallet.status = status;
+        });
+      }
     }
   }
 
-  selectWallet() {
+  async selectWallet() {
     let modal = this.modalCtrl.create('SendWalletView', {selectedWallet: this.selectedWallet, availableWallets: this.wallets});
     modal.present();
     modal.onDidDismiss((wallet) => {
-      if (wallet) this.selectedWallet = wallet;
+      if (wallet) {
+        this.selectedWallet = wallet;
+        this.walletService.getStatus(this.selectedWallet, { force: true }).then((status) => {
+          this.selectedWallet.status = status;
+        });
+      }
       this.updateTxData();
     });
   }
@@ -126,7 +140,7 @@ export class SendAmountView {
     modal.onDidDismiss((data) => {
       if (data) {
         this.selectedFeeLevel = data.name;
-        this.txData.txp.selectedFee = data;
+        this.txData.txp.fee = data;
       }
     });
   }
@@ -151,6 +165,7 @@ export class SendAmountView {
     let micros = 0;
     if (amount == this.AMOUNT_MAX) {
       micros = this.selectedWallet.status.spendableAmount;
+      amount = this.rateService.microsToMrt(micros);
     } else {
       if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
         micros = this.rateService.mrtToMicro(parseFloat(amount));
@@ -162,7 +177,7 @@ export class SendAmountView {
     if (micros > this.selectedWallet.status.spendableAmount) {
       micros = this.selectedWallet.status.spendableAmount;
       if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
-        this.formData.amount = this.txFormatService.formatAmountStr(this.rateService.microsToMrt(micros));
+        this.formData.amount =this.rateService.microsToMrt(micros)+'';
       } else {
         this.formData.amount =  await this.txFormatService.formatAlternativeStr(this.rateService.microsToMrt(micros));
       }
@@ -171,7 +186,7 @@ export class SendAmountView {
     }
 
     await this.updateAmount();
-
+    await this.updateTxData();
   }
 
   async processAmount(value) {
@@ -192,8 +207,13 @@ export class SendAmountView {
       this.amount.micros = this.rateService.fromFiatToMicros(this.amount.fiat, this.availableUnits[1].name);
       this.amount.mrt =  this.rateService.fromFiatToMerit(this.amount.fiat, this.availableUnits[1].name);
     }
-    this.amount.mrtStr = this.txFormatService.formatAmountStr(this.amount.micros);
+    this.amount.mrtStr = this.txFormatService.formatAmountStr(this.amount.micros)+' MRT';
     this.amount.fiatStr = await this.txFormatService.formatAlternativeStr(this.amount.micros);
+
+    if (this.selectedWallet && this.selectedWallet.status) {
+      if (this.amount.micros == this.selectedWallet.status.spendableAmount) this.feeIncluded = true;
+    }
+
     return this.amount;
   }
 
@@ -225,14 +245,14 @@ export class SendAmountView {
     loadingSpinner.present();
     this.createTxp({dryRun:false}).then(() => {
       loadingSpinner.dismiss();
-      this.navCtrl.push('SendConfirmView', {txData: this.txData, referralsToSign: this.referralsToSign});
+      this.navCtrl.push('SendConfirmationView', {txData: this.txData, referralsToSign: this.referralsToSign});
     }).catch(() => {
       loadingSpinner.dismiss();
     });
   }
 
-  public  updateExpirationDate() {
-    let modal = this.modalCtrl.create('SendValidTill', {nbBlocks: this.formData.nbBlocks});
+  public  selectExpirationDate() {
+    let modal = this.modalCtrl.create('SendValidTillView', {nbBlocks: this.formData.nbBlocks});
     modal.present();
     modal.onDidDismiss((nbBlocks) => {
       if (nbBlocks) this.formData.nbBlocks = nbBlocks;
@@ -241,6 +261,7 @@ export class SendAmountView {
   }
 
   private updateTxData() {
+    this.feeLoading = true;
     this.feeCalcError = null;
 
     if (!this.amount.micros) {
@@ -274,31 +295,63 @@ export class SendAmountView {
 
   private async createTxp(opts:{dryRun:boolean}) {
 
-    let data:any = {
-      toAddress: this.txData.recipient.meritAddress,
-      toName: this.txData.recipient.name || '',
-      toAmount: this.txData.amount,
-      allowSpendUnconfirmed: this.allowUnconfirmed,
-      feeLevel: this.selectedFeeLevel
-    };
+    try {
+      let data:any = {
+        toAddress: this.txData.recipient.meritAddress,
+        toName: this.txData.recipient.name || '',
+        toAmount: this.txData.amount,
+        allowSpendUnconfirmed: this.allowUnconfirmed,
+        feeLevel: this.selectedFeeLevel
+      };
 
-    if (this.amount == this.selectedWallet.status.spendableAmount) {
-      data.sendMax = true;
-      this.feeIncluded = true;
+      if (this.amount.micros == this.selectedWallet.status.spendableAmount) {
+        data.sendMax = true;
+        this.feeIncluded = true;
+      }
+
+      let easyData:any = await this.getEasyData();
+      data = Object.assign(data, _.pick(easyData, 'script', 'toAddress'));
+      data.toAddress = data.toAddress || easyData.scriptAddress;
+
+      let txpOut = await this.getTxp(_.clone(data), this.selectedWallet, opts.dryRun);
+      this.txData.txp = txpOut;
+      this.txData.easySend = easyData;
+      this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
+
+      this.txData.txp.availableFeeLevels = [];
+      this.knownFeeLevels.forEach((level) => {
+        // todo IF EASY ADD  easySend.size*feeLevel.feePerKb !!!!!!
+        let micros = txpOut.estimatedSize*level.feePerKb/1000;
+        let mrt = this.rateService.microsToMrt(micros);
+        //todo add description map
+        // todo add blocks per minute const
+
+        // todo check if micros
+        let percent = this.feeIncluded ? (micros / (txpOut.amount) * 100) : (micros / (txpOut.amount +  micros) * 100);
+        let precision = 1;
+        if (percent > 0) {
+          while (percent * Math.pow(10, precision) < 1) {
+            precision++;
+          }
+        }
+        precision++; //showing two valued digits
+
+        let fee = {description: level.level, name: level.level, mins: level.nbBlocks, micros: micros, mrt: mrt, percent: percent.toFixed(precision) + '%'};
+        this.txData.txp.availableFeeLevels.push(fee);
+        if (level.level == this.selectedFeeLevel) {
+          this.txData.txp.fee = fee;
+        }
+      });
+    } catch (err) {
+      this.logger.warn(err);
+      return  this.toastCtrl.create({
+        message: err.text || 'Unknown error',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    } finally  {
+      this.feeLoading = false;
     }
 
-    let easyData:any = await this.getEasyData();
-    data = Object.assign(data, _.pick(easyData, 'script', 'toAddress'));
-    data.toAddress = data.toAddress || easyData.scriptAddress;
-
-    let txpOut = await this.getTxp(_.clone(data), this.selectedWallet, opts.dryRun);
-    this.txData.txp = txpOut;
-    this.txData.easySend = easyData;
-    this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
-
-    //todo calculate fee (txpOut.size*feeLevel.feePerKb + easySend.size*feeLevel.feePerKb)
-    //FOR EACH AVAILABLE LEVEL!
-    // WITH PERCENTS
 
   }
 
@@ -306,7 +359,7 @@ export class SendAmountView {
     if (this.txData.sendMethod.type != SendMethod.TYPE_EASY) {
       return Promise.resolve({});
     } else {
-      return this.easySendService.createEasySendScriptHash(this.txData.wallet).then((easySend) => {
+      return this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password).then((easySend) => {
         easySend.script.isOutput = true;
         this.txData.easySendURL = easySendURL(easySend);
         return {
@@ -373,6 +426,8 @@ export class SendAmountView {
       }
       return this.walletService.createTx(wallet, txp);
   }
+
+
 
 
 

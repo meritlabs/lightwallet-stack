@@ -48,8 +48,15 @@
     }
   }
 
-  ion-item, .item-divider {
+  ion-item, .item-inner, .item-divider {
     border: none;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .item-divider {
+    height: 40px;
+    min-height: 40px;
   }
 
   ion-avatar {
@@ -57,12 +64,22 @@
     color: color($colors, primary);
     display: inline-block;
     line-height: 40px;
-    letter-spacing: -1px;
+    letter-spacing: -2px;
   }
 
   contact .item-label {
     text-transform: capitalize;
   }
 
+  ion-item:after {
+    display: none;
+  }
+
+  .loader {
+    text-align: center;
+    ion-spinner {
+      height: 100px;
+    }
+  }
 
 }
