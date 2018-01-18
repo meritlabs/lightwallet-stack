@@ -59,14 +59,17 @@
                 <img src="assets/img/icons/percent.svg">
             </ion-avatar>
             <p>Fee</p>
-            <h2 *ngIf="!txData?.txp?.fee">
+
+            <h2 *ngIf="!selectedFee">
                 <span *ngIf="!feeLoading">Not calculated</span>
                 <ion-spinner *ngIf="feeLoading"></ion-spinner>
             </h2>
-            <h2  *ngIf="txData?.txp?.fee">{{txData.txp.fee.description}} - {{txData.txp.fee.percent}}</h2>
-            <p *ngIf="txData?.txp?.fee">~{{txData.txp.fee.minutes}} mins</p>
-            <div item-end *ngIf="txData?.txp?.fee">
-                {{txData.txp.fee.mrt}} MRT <ion-icon name="arrow-down"></ion-icon>
+            <p *ngIf="feeCalcError">{{feeCalcError}}</p>
+
+            <h2  *ngIf="selectedFee">{{selectedFee.description}} - {{selectedFee.percent}}</h2>
+            <p *ngIf="selectedFee">~{{selectedFee.minutes}} mins</p>
+            <div item-end *ngIf="selectedFee">
+                {{selectedFee.mrt}} MRT <ion-icon name="arrow-down"></ion-icon>
             </div>
         </ion-item>
 
@@ -85,7 +88,8 @@
                     <img src="assets/img/icons/unlock.svg">
                 </ion-avatar>
                 <ion-label stacked>Add Password (Optional)</ion-label>
-                <ion-input type="password" [(ngModel)]="formData.password" placeholder="Type it here"></ion-input>
+                <ion-input type="password" [(ngModel)]="formData.password" placeholder="Type it here"
+                           autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
             </ion-item>
         </ion-list>
 
@@ -93,7 +97,8 @@
             <ion-item>
                 <ion-avatar item-start></ion-avatar>
                 <ion-label stacked>Confirm Password</ion-label>
-                <ion-input type="password" [(ngModel)]="formData.confirmPassword" placeholder="Repeat password"></ion-input>
+                <ion-input type="password" [(ngModel)]="formData.confirmPassword" placeholder="Repeat password"
+                           autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
             </ion-item>
         </ion-list>
 
