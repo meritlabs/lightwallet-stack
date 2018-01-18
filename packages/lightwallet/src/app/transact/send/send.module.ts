@@ -1,16 +1,14 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-
-import { SendView } from './send';
+import { SendView } from 'merit/transact/send/send';
 
 @NgModule({
   declarations: [
     SendView,
   ],
   imports: [
-    IonicPageModule.forChild(SendView),
-  ],
+    IonicPageModule.forChild(SendView)
+  ]
 })
-
 export class SendViewModule {
 }

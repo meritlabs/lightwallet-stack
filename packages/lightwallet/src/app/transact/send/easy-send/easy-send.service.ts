@@ -15,14 +15,15 @@ export class EasySendService {
     this.bitcore = this.bwcService.getBitcore();
   }
 
-  public createEasySendScriptHash(wallet: MeritWalletClient, password:string = ''): Promise<EasySend> {
+  public createEasySendScriptHash(wallet: MeritWalletClient): Promise<EasySend> {
     const signPrivKey = this.bitcore.PrivateKey(wallet.credentials.walletPrivKey, wallet.network);
     const pubkey = signPrivKey.toPublicKey();
 
+    // TODO: get a passphrase from the user
     let opts = {
       network: wallet.network,
       parentAddress: pubkey.toAddress().toString(),
-      passphrase: password,
+      passphrase: '',
     };
 
     return wallet

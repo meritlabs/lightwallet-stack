@@ -1,120 +1,119 @@
-<ion-header>
-
-    <ion-navbar color="secondary">
-        <ion-title>Your Network</ion-title>
-    </ion-navbar>
-
+<ion-header no-border>
+  <ion-navbar color="secondary">
+    <ion-title>Your Network</ion-title>
+  </ion-navbar>
+  <ion-toolbar>
+    <ion-row>
+      <ion-col col-4>
+        <small>Network Size</small>
+        <ion-avatar img-icon>
+          <img src="assets/img/icons/network.svg" alt="">
+        </ion-avatar>
+        <span class="merit-amount">
+          {{ totalNetworkValue || '0.00'}}
+          <small>MRT</small>
+        </span>
+      </ion-col>
+      <ion-col col-4>
+        <small>Mining Rewards</small>
+        <ion-avatar img-icon>
+          <img src="assets/img/icons/mining.svg" alt="">
+        </ion-avatar>
+        <span class="merit-amount">
+          {{ totalMiningRewards || '0.00' }}
+          <small>MRT</small>
+        </span>
+      </ion-col>
+      <ion-col col-4>
+        <small>Ambassador Rewards</small>
+        <ion-avatar img-icon>
+          <img src="assets/img/icons/ambassador.svg" alt="">
+        </ion-avatar>
+        <span class="merit-amount">
+          {{ totalAmbassadorRewards || '0.00' }}
+          <small>MRT</small>
+        </span>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
 </ion-header>
-
 
 <ion-content>
 
-    <ion-refresher (ionRefresh)="doRefresh($event)" [enabled]="!loading">
-        <ion-refresher-content></ion-refresher-content>
-    </ion-refresher>
+  <ion-refresher (ionRefresh)="doRefresh($event)" [enabled]="!loading">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-    <ion-card *ngFor="let wallet of displayWallets">
-        <ion-card-header>
-            <i class="wallet-icon" [class.locked]="wallet.locked" [class.default]="!wallet.color" [style.background]="wallet.color">
-                <img src="assets/img/icon-wallet.svg">
-            </i>
-            {{wallet.name}}
-        </ion-card-header>
+  <ion-list *ngFor="let wallet of displayWallets" no-lines>
+    <ion-item-divider>
+      {{ wallet.name }}
+      <span class="merit-amount">
+        {{ wallet.totalNetworkValueMerit || '00.0' }}&nbsp;<small>MRT</small>
+      </span>
+      <ion-note item-right class="balance">
+        <span class="fiat-amount">
+          {{ wallet.totalNetworkValueFiat }}
+        </span>
+      </ion-note>
+    </ion-item-divider>
 
-        <ion-item>
-            <ion-label>Invite Address</ion-label>
-            <ion-label item-right text-right>
-                <span *ngIf="wallet.referrerAddress">
+    <button ion-item (click)="copyToClipboard(wallet.referrerAddress)">
+      <ion-avatar img-icon item-start>
+        <img src="assets/img/icons/invite.svg" alt="">
+      </ion-avatar>
+      <ion-label>
+        <p>Invite Code</p>
+        <h2>{{ wallet.referrerAddress }}</h2>
+      </ion-label>
+      <button ion-button icon-only clear item-end>
+        <ion-icon merit-icon name="share"></ion-icon>
+      </button>
+    </button>
 
-                    <span (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress">{{ wallet.referrerAddress | slice:0:10 }}...</span>
+    <ion-item>
+      <ion-avatar img-icon item-start>
+        <img src="assets/img/icons/network.svg" alt="">
+      </ion-avatar>
+      <ion-label>
+        <p>Network Size</p>
+        <h2>{{ wallet.totalNetworkValueMerit || '0.00' }}&nbsp;<small>MRT</small></h2>
+      </ion-label>
+      <ion-note item-end class="balance">
+        <span class="fiat-amount">
+          {{ wallet.totalNetworkValueFiat }}
+        </span>
+      </ion-note>
+    </ion-item>
 
-                    <button ion-button clear color="primary" (click)="shareAddress(wallet.referrerAddress)" *ngIf="shareButtonAvailable">
-                        <ion-icon name="share"></ion-icon>
-                    </button>
-                </span>
-                <span *ngIf="!wallet.referrerAddress && loading">
-                    <ion-spinner color="primary"></ion-spinner>
-                </span>
-            </ion-label>
-        </ion-item>
+    <ion-item>
+      <ion-avatar img-icon item-start>
+        <img src="assets/img/icons/mining.svg" alt="">
+      </ion-avatar>
+      <ion-label>
+        <p>Mining Rewards</p>
+        <h2>{{ wallet.miningRewardsMerit || '0.00' }}&nbsp;<small>MRT</small></h2>
+      </ion-label>
+      <ion-note item-end class="balance">
+        <span class="fiat-amount">
+          {{ wallet.miningRewardsFiat }}
+        </span>
+      </ion-note>
+    </ion-item>
 
-
-        <ion-item-divider translate>
-            Network Size
-        </ion-item-divider>
-        <ion-item>
-            <ion-label>MRT</ion-label>
-            <ion-label item-right text-right>
-                <span *ngIf="wallet.totalNetworkValueMerit">{{wallet.totalNetworkValueMerit}}</span>
-                <span *ngIf="!wallet.totalNetworkValueMerit && loading">
-                    <ion-spinner color="primary"></ion-spinner>
-                </span>
-            </ion-label>
-        </ion-item>
-        <ion-item>
-            <ion-label>USD</ion-label>
-            <ion-label item-right text-right>
-                <span *ngIf="wallet.totalNetworkValueFiat">{{wallet.totalNetworkValueFiat}}</span>
-                <span *ngIf="!wallet.totalNetworkValueFiat && loading">
-                    <ion-spinner color="primary"></ion-spinner>
-                </span>
-            </ion-label>
-        </ion-item>
-
-        <ion-item-divider translate>
-            Mining Rewards
-        </ion-item-divider>
-
-        <ion-item>
-            <ion-label>MRT</ion-label>
-            <ion-label item-right text-right>
-                <span *ngIf="wallet.miningRewardsMerit">
-                    {{wallet.miningRewardsMerit}}
-                </span>
-                <span *ngIf="!wallet.miningRewardsMerit && loading">
-                    <ion-spinner color="primary"></ion-spinner>
-                </span>
-            </ion-label>
-        </ion-item>
-        <ion-item>
-            <ion-label>USD</ion-label>
-            <ion-label item-right text-right>
-                <span *ngIf="wallet.miningRewardsFiat">
-                    {{wallet.miningRewardsFiat}}
-                </span>
-                <span *ngIf="!wallet.miningRewardsFiat && loading">
-                    <ion-spinner color="primary"></ion-spinner>
-                </span>
-            </ion-label>
-        </ion-item>
-
-        <ion-item-divider translate>
-            Ambassador Rewards
-        </ion-item-divider>
-
-        <ion-item>
-            <ion-label>MRT</ion-label>
-            <ion-label item-right text-right>
-                <span *ngIf="wallet.ambassadorRewardsMerit">
-                    {{wallet.ambassadorRewardsMerit}}
-                </span>
-                <span *ngIf="!wallet.ambassadorRewardsMerit && loading">
-                    <ion-spinner color="primary"></ion-spinner>
-                </span>
-            </ion-label>
-        </ion-item>
-        <ion-item>
-            <ion-label>USD</ion-label>
-            <ion-label item-right text-right>
-                <span *ngIf="wallet.ambassadorRewardsFiat">
-                    {{wallet.ambassadorRewardsFiat}}
-                </span>
-                <span *ngIf="!wallet.ambassadorRewardsFiat && loading">
-                    <ion-spinner color="primary"></ion-spinner>
-                </span>
-            </ion-label>
-        </ion-item>
-    </ion-card>
-
+    <ion-item>
+      <ion-avatar img-icon item-start>
+        <img src="assets/img/icons/ambassador.svg" alt="">
+      </ion-avatar>
+      <ion-label>
+        <p>Ambassador Rewards</p>
+        <h2>{{ wallet.ambassadorRewardsMerit || '0.00' }}&nbsp;<small>MRT</small></h2>
+      </ion-label>
+      <ion-note item-end class="balance">
+        <span class="fiat-amount">
+          {{ wallet.ambassadorRewardsFiat }}
+        </span>
+      </ion-note>
+    </ion-item>
+  </ion-list>
 
 </ion-content>

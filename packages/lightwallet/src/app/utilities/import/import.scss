@@ -31,4 +31,20 @@ view-import {
     visibility: hidden ;
   }
 
+  button[ion-item].item, ion-item.item {
+    ion-label.label h2 {
+      font-weight: 500;
+      font-size: 16px;
+    }
+  }
+
+  button[ion-item][toggle-button].item {
+    button[ion-button][item-end] {
+      ion-icon.icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
 }

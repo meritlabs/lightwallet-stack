@@ -5,16 +5,19 @@ import { AddressBookService } from 'merit/shared/address-book/address-book.servi
 import { DomSanitizer } from '@angular/platform-browser';
 import { SendService } from 'merit/transact/send/send.service';
 import { SendMethod } from 'merit/transact/send/send-method.model';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 
 import * as _ from 'lodash';
+
 
 @IonicPage()
 @Component({
   selector: 'view-send',
   templateUrl: 'send.html',
+  providers: [BarcodeScanner]
 })
 export class SendView {
-
   public searchQuery: string = '';
   public loadingContacts: boolean = false;
   public contacts: Array<MeritContact> = [];
@@ -35,7 +38,8 @@ export class SendView {
     private addressBookService:AddressBookService,
     private sanitizer:DomSanitizer,
     private sendService: SendService,
-    private modalCtrl:ModalController
+    private modalCtrl:ModalController,
+    private addressScanner: AddressScannerService
   ) {
 
   }
@@ -99,6 +103,7 @@ export class SendView {
     this.addressBookService.searchContacts(this.recentContacts, this.searchQuery).forEach((contact) => {
       result.recent.push(contact);
     });
+
 
     this.searchResult = result;
   }
@@ -164,14 +169,7 @@ export class SendView {
     return name;
   }
 
-  openScanner() {
-    let modal = this.modalCtrl.create('ImportScanView');
-    modal.onDidDismiss((code) => {
-      if (code) {
-        this.searchQuery = code;
-        return this.parseSearch();
-      }
-    });
-    modal.present();
+  async openScanner() {
+    this.parseSearch(await this.addressScanner.scanAddress());
   }
 }
