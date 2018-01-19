@@ -1,6 +1,6 @@
-<ion-header>
+<ion-header no-border>
 
-    <ion-navbar color="secondary" >
+    <ion-navbar color="light" >
         <ion-title translate>Create Vault</ion-title>
     </ion-navbar>
 
@@ -11,15 +11,16 @@
 
     <ion-list>
         <ion-item-group>
-            <ion-item-divider color="light">Vault settings</ion-item-divider>
             <ion-item>
-                <ion-label translate>Vault name</ion-label>
-                <ion-input text-right placeholder="My Vault" [(ngModel)]="formData.vaultName"></ion-input>
+                <ion-label translate stacked>
+                    <h2>Vault name</h2>
+                </ion-label>
+                <ion-input placeholder="My Vault" [(ngModel)]="formData.vaultName"></ion-input>
             </ion-item>
         </ion-item-group>
 
         <ion-item-group>
-            <ion-item-divider color="light">Whitelist</ion-item-divider>
+            <ion-item-divider>Whitelist</ion-item-divider>
             <ion-item *ngFor="let address of whitelistCandidates; trackBy: address?.id">
                 <ion-label>{{ address.name }}</ion-label>
                 <ion-note item-end>({{ address.type }})</ion-note>
@@ -28,10 +29,8 @@
         </ion-item-group>
     </ion-list>
 
-    <div class="control-buttons">
-        <button ion-button type="button" translate (click)="toDeposit()" [disabled]="!isNextAvailable" >
-            Next
-        </button>
-    </div>
+    <button ion-button class="action-button" translate (click)="toDeposit()" [disabled]="!isNextAvailable" >
+        Next
+    </button>
 
 </ion-content>
