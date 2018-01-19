@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { App, IonicPage, LoadingController, NavController } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { App, Content, IonicPage, LoadingController, NavController } from 'ionic-angular';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 import { Logger } from 'merit/core/logger';
@@ -25,6 +25,8 @@ export class UnlockView {
   public unlockState: 'success' | 'fail';
   public formData = { parentAddress: '' };
   public easyReceipt: EasyReceipt;
+
+  @ViewChild(Content) content: Content;
 
   constructor(private app: App,
               private walletService: WalletService,
@@ -83,6 +85,10 @@ export class UnlockView {
     }
 
     await loader.dismiss();
+  }
+
+  onInputFocus() {
+    setTimeout(() => this.content.scrollToBottom(), 100);
   }
 
 }

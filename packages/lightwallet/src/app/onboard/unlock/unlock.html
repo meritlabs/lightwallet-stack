@@ -21,7 +21,7 @@
     <div class="bottom-buttons">
       <ion-input placeholder="Invite Code" [class.failed]="unlockState == 'fail'"
                  [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off"
-                 autocapitalize="off"></ion-input>
+                 autocapitalize="off" (ionFocus)="onInputFocus()"></ion-input>
       <button (click)="createWallet()" ion-button icon-only>
         <ion-icon name="arrow-forward"></ion-icon>
       </button>
@@ -51,7 +51,7 @@
     <div class="bottom-buttons">
       <ion-input placeholder="Invite Address" [class.failed]="unlockState == 'fail'"
                  [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off"
-                 autocapitalize="off"></ion-input>
+                 autocapitalize="off" (ionFocus)="onInputFocus()"></ion-input>
       <button (click)="createWallet()" ion-button icon-only translate>
         <ion-icon name="arrow-forward"></ion-icon>
       </button>
