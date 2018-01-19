@@ -59,5 +59,9 @@ view-transact {
       mask-image: url(../assets/img/icons/receive.svg);
     }
 
+    &[class*='history'] {
+      mask-image: url('../assets/img/icons/history.svg');
+    }
+
   }
 }
