@@ -1,6 +1,6 @@
 <ion-header no-border>
   <ion-navbar>
-    <ion-title smaller-title>{{ title | translate }}</ion-title>
+    <ion-title smaller-title translate>{{ title }}</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -21,7 +21,7 @@
         <span translate>Moved</span>
       </div>
     </div>
-    <h2 class="amount">
+    <h2 class="amount" [hidden]="!tx.amountStr">
       {{tx.amountStr | toUnit : tx.amount}}&nbsp;<small>MRT</small>
     </h2>
     <h3 class="detail-fiat">

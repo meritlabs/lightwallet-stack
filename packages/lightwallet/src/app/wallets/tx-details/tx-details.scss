@@ -16,14 +16,14 @@ tx-details-view {
   .big-header {
     .status {
       .action {
+        left: -30px;
         margin-bottom: 20px;
         align-items: center;
         display: inline-block;
-        padding: 15px;
+        padding: 15px 30px 15px 15px;
         position: relative;
-        background: rgba(0,0,0,0.05);
+        background: #2d3c50;
         border-radius: 4px;
-
 
         &:before {
           content: '';
@@ -35,13 +35,14 @@ tx-details-view {
           top: 0;
           left: 0;
           border-radius: inherit;
+          padding-left: 25px;
         }
 
         img {
           height: 20px;
           position: absolute;
           top: 18px;
-          left: 10px;
+          left: 25px;
         }
 
         span {
@@ -49,7 +50,7 @@ tx-details-view {
           font-size: 20px;
           font-weight: 400;
           text-transform: uppercase;
-          margin-left: 60px;
+          margin-left: 95px;
           letter-spacing: -.47px;
         }
       }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavParams } from 'ionic-angular';
+import { IonicPage, LoadingController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
@@ -36,7 +36,8 @@ export class TxDetailsView {
               private profileService: ProfileService,
               private logger: Logger,
               private bws: BwcService,
-              private rateService: RateService,) {
+              private rateService: RateService,
+              private loadingCtrl: LoadingController) {
     this.wallet = this.walletService.getWallet(this.navParams.get('walletId'));
     this.vault = this.navParams.get('vault');
     this.txId = this.navParams.get('txId');
@@ -46,30 +47,33 @@ export class TxDetailsView {
     this.confirmations = null;
   }
 
-  ionViewDidEnter() {
+  async ngOnInit() {
+    const loading = this.loadingCtrl.create({
+      content: 'Loading transaction...'
+    });
+    loading.present();
+
     const vault = this.navParams.get('vault');
 
     if (vault) {
-      const finish = (list: any) => {
-        let tx = _.find(list, {
-          txid: this.txId
-        });
-
-        if (!tx) throw new Error('Could not get transaction');
-        return this.processTx(tx);
-      };
-
-      this.vaultService.getVaultTxHistory(this.wallet, vault).then((txs) => {
-        const tx = finish(txs);
-        return this.updateTxDetails(tx);
+      const txs = await this.vaultService.getVaultTxHistory(this.wallet, vault);
+      const tx = _.find(txs, {
+        txid: this.txId
       });
+
+      if (!tx) throw new Error('Could not get transaction');
+
+      this.updateTxDetails(this.processTx(tx));
     } else {
-      this.walletService.getTx(this.wallet, this.txId).then((tx) => {
-        return this.updateTxDetails(tx);
-      }).catch((err) => {
+      try {
+        const tx = await this.walletService.getTx(this.wallet, this.txId);
+        this.updateTxDetails(tx);
+      } catch (err) {
         this.logger.info(err);
-      });
+      }
     }
+
+    loading.dismiss();
   }
 
   addMemo() {
