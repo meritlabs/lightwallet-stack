@@ -18,6 +18,8 @@ view-unlock {
     background: #2d3c50;
     border-radius: 4px;
     height: 56px;
+    min-height: 56px;
+    max-height: 56px;
     padding: 8px;
 
     button[ion-button].button {
