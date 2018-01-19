@@ -16,24 +16,41 @@ tx-details-view {
   .big-header {
     .status {
       .action {
-        display: flex;
         margin-bottom: 20px;
         align-items: center;
+        display: inline-block;
+        padding: 15px;
+        position: relative;
+        background: rgba(0,0,0,0.05);
+        border-radius: 4px;
 
-        img, span {
+
+        &:before {
+          content: '';
           display: inline-block;
-          flex-shrink: 1;
+          height: 60px;
+          background: rgba(0,0,0,0.1);
+          width: 60px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          border-radius: inherit;
         }
 
         img {
           height: 20px;
+          position: absolute;
+          top: 18px;
+          left: 10px;
         }
 
         span {
           line-height: 30px;
-          font-size: 30px;
-          font-weight: 300;
-          margin-left: 20px;
+          font-size: 20px;
+          font-weight: 400;
+          text-transform: uppercase;
+          margin-left: 60px;
+          letter-spacing: -.47px;
         }
       }
     }
