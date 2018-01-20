@@ -1,7 +1,6 @@
-
-@import "../transact-module";
-%send-module {
-  @extend %module-transact;
+vault-spend-confirm-view,
+send-confirm-view,
+send-amount-view {
 
   .address {
     margin: 10px 0;
@@ -26,10 +25,12 @@
     font-size: 12px;
   }
 
-  input {
-    border: none;
-    font-size: 12px;
-    margin: 0 !important;
+  ion-input.input {
+    input {
+      border: none;
+      font-size: 12px;
+      margin: 0;
+    }
   }
 
   ion-item {

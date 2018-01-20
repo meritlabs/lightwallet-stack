@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
-import { PopupService } from "merit/core/popup.service";
 import { BwcService } from 'merit/core/bwc.service';
-import { MeritWalletClient } from './../../../../lib/merit-wallet-client';
+import { PopupService } from 'merit/core/popup.service';
 import { ConfigService } from 'merit/shared/config.service';
+import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -15,16 +14,15 @@ import { ConfigService } from 'merit/shared/config.service';
 })
 export class CreateVaultMasterKeyView {
 
-  public formData = { masterKey: null, masterKeyMnemonic: null};
+  public formData = { masterKey: null, masterKeyMnemonic: null };
 
-  constructor(
-    private navCtrl:NavController,
-    private navParams: NavParams,
-    private configService: ConfigService,
-    private createVaultService: CreateVaultService,
-    private popupService: PopupService,
-    private bwcService: BwcService,
-  ){}
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private configService: ConfigService,
+              private createVaultService: CreateVaultService,
+              private popupService: PopupService,
+              private bwcService: BwcService,) {
+  }
 
   ionViewDidLoad() {
 

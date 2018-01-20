@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 
-import { ToastConfig } from "merit/core/toast.config";
-import { MeritToastController } from "merit/core/toast.controller";
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
 
 
 @IonicPage()
@@ -13,17 +13,15 @@ import { MeritToastController } from "merit/core/toast.controller";
 })
 export class SessionLogView {
 
-  showSettingsBar:boolean = false;
+  showSettingsBar: boolean = false;
   logLevel = 4;
   filteredLogs = [];
   logsString = '';
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private logger:Logger,
-    private toastCtrl:MeritToastController
-  ) {
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private logger: Logger,
+              private toastCtrl: MeritToastController) {
 
   }
 
@@ -44,12 +42,12 @@ export class SessionLogView {
 
     this.logsString = '';
     this.filteredLogs.forEach((log) => {
-      this.logsString += `${(new Date(log.timestamp)).toString()}: ${this.getLogLevelName(log.level)} ${log.arguments.join("\n")}`;
+      this.logsString += `${(new Date(log.timestamp)).toString()}: ${this.getLogLevelName(log.level)} ${log.arguments.join('\n')}`;
     });
 
   }
 
-  getLogLevelName(level:number) {
+  getLogLevelName(level: number) {
     return ['error', 'warn', 'info', 'debug'][level] || '';
   }
 

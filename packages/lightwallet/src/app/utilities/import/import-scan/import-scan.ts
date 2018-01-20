@@ -1,45 +1,27 @@
 import { Component } from '@angular/core';
-import { IonicPage, ViewController } from 'ionic-angular';
-import { Logger } from "merit/core/logger";
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 
+// TODO rename to ScannerNotAvailableView
 
-declare var cordova:any;
-
-@IonicPage({
-  defaultHistory: ['ImportView']
-})
+@IonicPage()
 @Component({
   selector: 'view-import-scan',
   templateUrl: 'import-scan.html',
 })
 export class ImportScanView {
 
-  public scannerAvailable:boolean;
+  err;
 
-  public scannerPermitted:boolean;
-
-  public err;
-
-  constructor(
-    private viewCtrl:ViewController,
-    private barcodeScanner: BarcodeScanner,
-    private logger:Logger
-  ) {
-
+  constructor(private viewCtrl: ViewController,
+              private navParams: NavParams) {
+    this.err = navParams.get('error');
+    if (!this.err) {
+      this.close();
+    }
   }
 
   close() {
     this.viewCtrl.dismiss();
-  }
-
-  ionViewDidLoad() {
-
-    this.barcodeScanner.scan({formats: 'QR_CODE'}).then((barcodeData) => {
-      this.viewCtrl.dismiss(barcodeData.text);
-    }).catch((err) => {
-        this.err = err;
-    });
   }
 
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController, NavParams, ViewController } from 'ionic-angular';
+import { NavParams, ViewController } from 'ionic-angular';
 import { FeeService } from 'merit/shared/fee/fee.service';
 
 @Component({
@@ -19,25 +19,26 @@ export class FeeLevelModal {
   public minFeeAllowed: number;
   public maxFeeAllowed: number;
   public maxFeeRecommended: number;
-  public selectedFee: {value: any};
+  public selectedFee: { value: any };
+  public feeOptValues = this.feeService.getFeeOptValues;
 
-  constructor(
-    private navParams: NavParams,
-    private feeService: FeeService,
-    private viewCtrl: ViewController
-  ) {
+  constructor(private navParams: NavParams,
+              private feeService: FeeService,
+              private viewCtrl: ViewController) {
     this.network = this.navParams.get('network');
     this.feeLevel = this.navParams.get('feeLevel');
     this.noSave = this.navParams.get('noSave');
     this.customFeePerKB = this.navParams.get('customFeePerKB');
     this.feePerMicrosByte = this.navParams.get('feePerMicrosByte');
   }
+
   public ok(): void {
     this.viewCtrl.dismiss({
       selectedFee: this.selectedFee.value,
       customFeePerKB: this.customFeePerKB
     });
   }
-  public checkFees(): void {}
-  public feeOptValues = this.feeService.getFeeOptValues;
+
+  public checkFees(): void {
+  }
 }

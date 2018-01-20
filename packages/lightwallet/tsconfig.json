@@ -3,18 +3,17 @@
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": true,
     "declaration": false,
-    "noEmit": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
       "dom",
-      "es7"
+      "es2015"
     ],
     "baseUrl": ".",
-    "module": "esnext",
+    "module": "es2015",
     "moduleResolution": "node",
     "sourceMap": true,
-    "target": "esnext",
+    "target": "es5",
     "paths": {
       "merit/*": [ "src/app/*" ]
     }

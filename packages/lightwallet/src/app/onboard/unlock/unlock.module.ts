@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { UnlockView } from 'merit/onboard/unlock/unlock';
-import { WalletService } from 'merit/wallets/wallet.service';
 import { WalletsModule } from 'merit/wallets/wallets.module';
 
 /*
@@ -11,11 +10,11 @@ import { WalletsModule } from 'merit/wallets/wallets.module';
   declarations: [
     UnlockView,
   ],
-  providers: [
-  ],
+  providers: [],
   imports: [
     IonicPageModule.forChild(UnlockView),
     WalletsModule
   ],
 })
-export class UnlockViewModule {}
+export class UnlockViewModule {
+}

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Logger } from 'merit/core/logger';
 import { Events } from 'ionic-angular';
-import * as Promise from 'bluebird';
+
+import * as _ from 'lodash';
+import { Logger } from 'merit/core/logger';
+
 
 import { PersistenceService } from 'merit/core/persistence.service';
-
-import * as _ from "lodash";
 
 /*
   Need to think about how to name this optimally, given..
@@ -20,20 +20,20 @@ interface Config {
 
   wallet: {
     requiredCopayers: number;
-      totalCopayers: number;
-      reconnectDelay: number;
-      spendUnconfirmed: boolean;
-      idleDurationMin: number;
-      settings: {
-        unitName: string;
-        unitToMicro: number;
-        unitDecimals: number;
-        unitCode: string;
-        alternativeName: string;
-        alternativeIsoCode: string;
-        defaultLanguage: string;
-        feeLevel?: string;
-      };
+    totalCopayers: number;
+    reconnectDelay: number;
+    spendUnconfirmed: boolean;
+    idleDurationMin: number;
+    settings: {
+      unitName: string;
+      unitToMicro: number;
+      unitDecimals: number;
+      unitCode: string;
+      alternativeName: string;
+      alternativeIsoCode: string;
+      defaultLanguage: string;
+      feeLevel?: string;
+    };
   };
 
   bws: {
@@ -135,7 +135,7 @@ const configDefault: Config = {
 
   // Bitcore wallet service URL
   bws: {
-    url: 'https://stage.mws.merit.me/bws/api'
+    url: 'http://165.227.42.152:3232/bws/api'
   },
 
   download: {
@@ -206,49 +206,42 @@ const configDefault: Config = {
 export class ConfigService {
   private configCache: Config;
 
-
-  constructor(
-    private logger: Logger,
-    private events: Events,
-    private persistence: PersistenceService
-  ) {
+  constructor(private logger: Logger,
+              private events: Events,
+              private persistence: PersistenceService) {
     this.load()
       .then(() => {
         this.logger.debug('ConfigService initialized.');
       }).catch(err => {
-        this.logger.warn('ConfigService could not load default config');
-      })
+      this.logger.warn('ConfigService could not load default config');
+    })
   }
 
-  public load() {
-    return new Promise((resolve, reject) => {
-      this.persistence.getConfig().then((config: Config) => {
-        if (!_.isEmpty(config)) this.configCache = _.clone(config);
-        else this.configCache = _.clone(configDefault);
-        resolve();
-      }).catch((err) => {
-        this.logger.error(err);
-        reject();
-      });
-    });
+  async load() {
+    try {
+      const config: any = await this.persistence.getConfig();
+      if (!_.isEmpty(config)) this.configCache = _.clone(config);
+      else this.configCache = _.clone(configDefault);
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
 
-  public set(newOpts: object):Promise<any> {
-    return new Promise((resolve, reject) => {
-      let config = _.cloneDeep(configDefault);
+  async set(newOpts: object): Promise<any> {
+    let config = _.cloneDeep(configDefault);
 
-          if (_.isString(newOpts)) {
-            newOpts = JSON.parse(newOpts);
-          }
-          _.merge(config, this.configCache, newOpts);
-          this.configCache = config;
-          this.events.publish('config:updated', this.configCache);
+    if (_.isString(newOpts)) {
+      newOpts = JSON.parse(newOpts);
+    }
+    _.merge(config, this.configCache, newOpts);
+    this.configCache = config;
+    this.events.publish('config:updated', this.configCache);
 
-          return this.persistence.storeConfig(this.configCache).then(() => {
-            this.logger.info('Config saved');
-            resolve(this.configCache);
-          });
-    });
+    await this.persistence.storeConfig(this.configCache);
+
+    this.logger.info('Config saved');
+    return this.configCache;
   }
 
   public get(): Config {

@@ -10,4 +10,5 @@ import { SelectUnitModal } from 'merit/settings/select-unit/select-unit';
     IonicPageModule.forChild(SelectUnitModal),
   ],
 })
-export class SelectUnitComponentModule {}
+export class SelectUnitComponentModule {
+}
