@@ -1,9 +1,10 @@
-const $ = require('preconditions').singleton();
-const _ = require('lodash');
+import * as preconditions from 'preconditions';
+import * as _ from 'lodash';
+import * as Bitcore from 'bitcore-lib';
+import * as Mnemonic from 'bitcore-mnemonic';
+import * as sjcl from 'sjcl';
 
-const Bitcore = require('bitcore-lib');
-const Mnemonic = require('bitcore-mnemonic');
-const sjcl = require('sjcl');
+const $ = preconditions.singleton();
 
 import { Common } from './common';
 const Constants = Common.Constants;
@@ -319,7 +320,7 @@ export class Credentials {
   public _expand = function(): void {
     $.checkState(this.xPrivKey || (this.xPubKey && this.entropySource));
 
-    let deriveFn = _.noop;
+    let deriveFn: any = _.noop;
     let network = this._getNetworkFromExtendedKey(this.xPrivKey || this.xPubKey);
     console.log(this.network, network);
     if (this.network) {
@@ -333,7 +334,7 @@ export class Credentials {
 
       deriveFn = this.compliantDerivation ? _.bind(xPrivKey.deriveChild, xPrivKey) : _.bind(xPrivKey.deriveNonCompliantChild, xPrivKey);
 
-      let derivedXPrivKey = deriveFn(this.getBaseAddressDerivationPath());
+      const derivedXPrivKey: any = deriveFn(this.getBaseAddressDerivationPath());
 
       // this is the xPubKey shared with the server.
       this.xPubKey = derivedXPrivKey.hdPublicKey.toString();
@@ -356,10 +357,10 @@ export class Credentials {
       this.requestPubKey = privKey.toPublicKey().toString();
     } else {
       // request keys derived from xPriv
-      let requestDerivation = deriveFn(Constants.PATHS.REQUEST_KEY);
+      const requestDerivation: any = deriveFn(Constants.PATHS.REQUEST_KEY);
       this.requestPrivKey = requestDerivation.privateKey.toString();
 
-      let pubKey = requestDerivation.publicKey;
+      const pubKey: any = requestDerivation.publicKey;
       this.requestPubKey = pubKey.toString();
 
       this.entropySource = Bitcore.crypto.Hash.sha256(requestDerivation.privateKey.toBuffer()).toString('hex');
