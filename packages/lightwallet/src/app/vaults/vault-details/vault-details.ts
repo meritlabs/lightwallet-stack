@@ -1,18 +1,15 @@
-import * as _ from "lodash";
-import * as Promise from 'bluebird';
-
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { VaultsService } from 'merit/vaults/vaults.service';
+import * as _ from 'lodash';
 import { BwcService } from 'merit/core/bwc.service';
-import { ProfileService } from 'merit/core/profile.service';
 import { Logger } from 'merit/core/logger';
-import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
-import { WalletService } from "merit/wallets/wallet.service";
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-import { TxFormatService } from "merit/transact/tx-format.service";
+import { ProfileService } from 'merit/core/profile.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { RateService } from 'merit/transact/rate.service';
+import { TxFormatService } from 'merit/transact/tx-format.service';
+import { VaultsService } from 'merit/vaults/vaults.service';
+import { WalletService } from 'merit/wallets/wallet.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 
 @IonicPage({
@@ -32,29 +29,27 @@ export class VaultDetailsView {
   private bitcore: any = null;
   private walletClient: MeritWalletClient;
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private logger:Logger,
-    private profileService: ProfileService,
-    private walletService: WalletService,
-    private vaultsService: VaultsService,
-    private bwc: BwcService,
-    private txFormatService:TxFormatService,
-    private rateService: RateService,
-  ) {
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private logger: Logger,
+              private profileService: ProfileService,
+              private walletService: WalletService,
+              private vaultsService: VaultsService,
+              private bwc: BwcService,
+              private txFormatService: TxFormatService,
+              private rateService: RateService,) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
     // things fast and smooth.  We can refresh as needed.
     this.vault = this.navParams.get('vault');
     this.bitcore = this.bwc.getBitcore();
     this.whitelist = this.vault.whitelist;
-    console.log("Inside the vault-details view.");
+    console.log('Inside the vault-details view.');
     console.log('Vault to display:', this.vault);
   }
 
   ionViewDidLoad() {
-    console.log("Vault-Detail View Did Load.");
+    console.log('Vault-Detail View Did Load.');
     console.log(this.vault);
 
     Promise.all([
@@ -62,7 +57,7 @@ export class VaultDetailsView {
         return _.map(wallets, (w) => {
           const name = w.name || w._id;
           const addr = this.bitcore.HDPublicKey.fromString(w.credentials.xPubKey).publicKey.toAddress().toString();
-          return { id: w.id, name: name, address: addr, type: 'wallet', walletClientId: w.id , walletClient: w};
+          return { id: w.id, name: name, address: addr, type: 'wallet', walletClientId: w.id, walletClient: w };
         });
       }),
       // fetch users vaults
@@ -78,8 +73,8 @@ export class VaultDetailsView {
     ]).then((arr: Array<Array<any>>) => {
       const whitelistCandidates = _.flatten(arr);
 
-      return Promise.map(this.vault.whitelist, (wl) => {
-        return Promise.map(whitelistCandidates, (candidate) => {
+      return Promise.all(this.vault.whitelist.map((wl) => {
+        return Promise.all(whitelistCandidates.map((candidate) => {
           if (candidate.type === 'vault') {
             if (wl == candidate.address) return candidate;
           } else {
@@ -93,8 +88,8 @@ export class VaultDetailsView {
             });
           }
           return null;
-        });
-      }).then((unfilteredWhitelist) => {
+        }));
+      })).then((unfilteredWhitelist) => {
         const results = _.compact(_.flatten(unfilteredWhitelist));
         this.whitelist = results;
         return Promise.resolve();
@@ -117,7 +112,13 @@ export class VaultDetailsView {
     return this.profileService.getHeadWalletClient().then((walletClient) => {
       this.navCtrl.push(
         'TxDetailsView',
-        { wallet: walletClient, walletId: walletClient.credentials.walletId, vaultId: this.vault._id, vault: this.vault, txId: tx.txid }
+        {
+          wallet: walletClient,
+          walletId: walletClient.credentials.walletId,
+          vaultId: this.vault._id,
+          vault: this.vault,
+          txId: tx.txid
+        }
       );
     });
   }
@@ -129,13 +130,19 @@ export class VaultDetailsView {
       return this.vaultsService.getVaultCoins(w, this.vault);
     }).then((coins) => {
       this.coins = coins;
-      this.navCtrl.push('VaultSpendAmountView', { recipient: address, wallet: wallet, vault: this.vault, vaultId: this.vault.id, coins: coins });
+      this.navCtrl.push('VaultSpendAmountView', {
+        recipient: address,
+        wallet: wallet,
+        vault: this.vault,
+        vaultId: this.vault.id,
+        coins: coins
+      });
     });
   }
 
   private getAllWallets(): Promise<Array<any>> {
     const wallets = this.profileService.getWallets().then((ws) => {
-      return Promise.all(_.map(ws, async (wallet:any) => {
+      return Promise.all(_.map(ws, async (wallet: any) => {
         wallet.status = await this.walletService.getStatus(wallet);
         return wallet;
       }));
@@ -164,7 +171,7 @@ export class VaultDetailsView {
     this.profileService.getHeadWalletClient().then((walletClient: MeritWalletClient) => {
       return this.getCoins(walletClient).then((coins) => {
         this.vault.amount = _.sumBy(coins, 'micros');
-        this.vault.altAmount = this.rateService.fromMicrosToFiat(this.vault.amount,walletClient.cachedStatus.alternativeIsoCode);
+        this.vault.altAmount = this.rateService.fromMicrosToFiat(this.vault.amount, walletClient.cachedStatus.alternativeIsoCode);
         this.vault.altAmountStr = new FiatAmount(this.vault.altAmount);
         this.vault.amountStr = this.txFormatService.formatAmountStr(this.vault.amount);
       });

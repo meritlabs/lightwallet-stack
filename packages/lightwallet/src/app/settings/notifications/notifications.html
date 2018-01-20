@@ -8,47 +8,50 @@
 
       <ion-content>
 
-        <div *ngIf="usePushNotifications">
+        <ion-list>
+
+          <ion-item-group *ngIf="usePushNotifications">
+            <ion-item>
+              <ion-label>{{ 'Enable push notifications' | translate }}</ion-label>
+              <ion-toggle [(ngModel)]="pushNotifications" (ionChange)="pushNotificationsChange()"></ion-toggle>
+            </ion-item>
+
+            <ion-item *ngIf="isIOSApp" translate text-wrap>
+              Push notifications for {{ appName }} are currently disabled. Enable them in the Settings app.
+            </ion-item>
+
+            <ion-item [hidden]="!pushNotifications">
+              <ion-label>{{ 'Notify me when transactions are confirmed' | translate }}</ion-label>
+              <ion-toggle [(ngModel)]="confirmedTxsNotifications" (ionChange)="confirmedTxsNotificationsChange()"></ion-toggle>
+            </ion-item>
+          </ion-item-group>
+
           <ion-item>
-            <ion-label>{{ 'Enable push notifications' | translate }}</ion-label>
-            <ion-toggle [(ngModel)]="pushNotifications" (ionChange)="pushNotificationsChange()"></ion-toggle>
+            <ion-label>{{ 'Enable email notifications' | translate }}</ion-label>
+            <ion-toggle [(ngModel)]="emailNotifications" (ionChange)="emailNotificationsChange()"></ion-toggle>
           </ion-item>
-        </div>
 
-        <div *ngIf="!usePushNotifications && isIOSApp" translate>
-          Push notifications for {{appName}} are currently disabled. Enable them in the Settings app.
-        </div>
+          <ion-item-group *ngIf="emailNotifications">
 
-        <div *ngIf="usePushNotifications && pushNotifications">
-          <ion-item>
-            <ion-label>{{ 'Notify me when transactions are confirmed' | translate }}</ion-label>
-            <ion-toggle [(ngModel)]="confirmedTxsNotifications" (ionChange)="confirmedTxsNotificationsChange()"></ion-toggle>
-          </ion-item>
-        </div>
+            <ion-item translate *ngIf="emailNotifications" text-wrap>
+              <ion-icon item-start color="success" name="ios-information-circle-outline"></ion-icon>
+              You'll receive email notifications about payments sent and received from your wallets.
+            </ion-item>
 
-
-        <ion-item>
-          <ion-label>{{ 'Enable email notifications' | translate }}</ion-label>
-          <ion-toggle [(ngModel)]="emailNotifications" (ionChange)="emailNotificationsChange()"></ion-toggle>
-        </ion-item>
-
-        <div *ngIf="emailNotifications">
-          <div translate>
-            You'll receive email notifications about payments sent and received from your wallets.
-          </div>
-
-          <form [formGroup]="emailForm">
-            <ion-list>
+            <form [formGroup]="emailForm">
               <ion-item>
                 <ion-label stacked>{{ 'Email Address' | translate }}</ion-label>
                 <ion-input formControlName="email" type="email"></ion-input>
               </ion-item>
-            </ion-list>
+            </form>
+          </ion-item-group>
 
-            <button ion-button block (click)="saveEmail()" [disabled]="emailForm.invalid">
-              {{ 'Save' | translate }}
-            </button>
-          </form>
+        </ion-list>
+
+        <div padding-left padding-right *ngIf="emailNotifications">
+          <button ion-button block (click)="saveEmail()" [disabled]="emailForm.invalid">
+            {{ 'Save' | translate }}
+          </button>
         </div>
 
       </ion-content>

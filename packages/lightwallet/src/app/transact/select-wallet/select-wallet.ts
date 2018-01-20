@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { ProfileService } from "merit/core/profile.service";
+import { ProfileService } from 'merit/core/profile.service';
 
 @IonicPage()
 @Component({
@@ -12,12 +12,10 @@ export class SelectWalletModal {
   public wallets;
   public selectedWallet;
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private viewCtrl: ViewController,
-    private profileService:ProfileService,
-  ) {
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private viewCtrl: ViewController,
+              private profileService: ProfileService,) {
 
   }
 

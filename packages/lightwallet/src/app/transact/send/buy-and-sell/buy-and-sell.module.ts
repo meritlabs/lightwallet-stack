@@ -10,4 +10,5 @@ import { BuyAndSellView } from './buy-and-sell';
     IonicPageModule.forChild(BuyAndSellView),
   ],
 })
-export class BuyAndSellModule {}
+export class BuyAndSellModule {
+}

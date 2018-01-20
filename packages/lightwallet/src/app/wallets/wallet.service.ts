@@ -1,28 +1,27 @@
 import { Injectable } from '@angular/core';
-import { Logger } from 'merit/core/logger';
-
-import { ConfigService } from 'merit/shared/config.service';
-import { BwcService } from 'merit/core/bwc.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
-import { PersistenceService } from 'merit/core/persistence.service';
-import { RateService } from 'merit/transact/rate.service';
-import { FiatAmount } from 'merit/shared/fiat-amount.model';
-import { PopupService } from 'merit/core/popup.service';
-import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
-import { LanguageService } from 'merit/core/language.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
-import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
-import * as Promise from 'bluebird';
-import { MeritWalletClient } from 'merit/../lib/merit-wallet-client';
-import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 
 
 import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
-import { setTimeout } from 'timers';
+import { MeritWalletClient } from 'merit/../lib/merit-wallet-client';
+import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
+import { BwcService } from 'merit/core/bwc.service';
+import { LanguageService } from 'merit/core/language.service';
+import { Logger } from 'merit/core/logger';
+import { PersistenceService } from 'merit/core/persistence.service';
+import { PopupService } from 'merit/core/popup.service';
+import { ProfileService } from 'merit/core/profile.service';
+import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
+import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
+
+import { ConfigService } from 'merit/shared/config.service';
+import { FiatAmount } from 'merit/shared/fiat-amount.model';
+import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
+import { RateService } from 'merit/transact/rate.service';
+import { TxFormatService } from 'merit/transact/tx-format.service';
+import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
+import { Observable } from 'rxjs/Observable';
 
 
 /* Refactor CheckList:
@@ -52,22 +51,19 @@ export class WalletService {
 
   //private errors: any = this.bwcService.getErrors();
 
-
-  constructor(
-    private logger: Logger,
-    private bwcService: BwcService,
-    private easySendService: EasySendService,
-    private txFormatService: TxFormatService,
-    private configService: ConfigService,
-    private profileService: ProfileService,
-    private persistenceService: PersistenceService,
-    private rateService: RateService,
-    private popupService: PopupService,
-    private touchidService: TouchIdService,
-    private languageService: LanguageService,
-    private mnemonicService: MnemonicService,
-    private events: Events
-  ) {
+  constructor(private logger: Logger,
+              private bwcService: BwcService,
+              private txFormatService: TxFormatService,
+              private configService: ConfigService,
+              private profileService: ProfileService,
+              private persistenceService: PersistenceService,
+              private rateService: RateService,
+              private popupService: PopupService,
+              private touchidService: TouchIdService,
+              private languageService: LanguageService,
+              private mnemonicService: MnemonicService,
+              private easySendService: EasySendService,
+              private events: Events) {
     this.logger.info('Hello WalletService Service');
   }
 
@@ -86,57 +82,55 @@ export class WalletService {
   }
 
   // TODO: Make async
-  public getStatus(wallet: MeritWalletClient, opts?: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      opts = opts || {};
-      var walletId = wallet.id;
+  async getStatus(wallet: MeritWalletClient, opts?: any) {
+    opts = opts || {};
+    const walletId = wallet.id;
 
-      let processPendingTxps = (status: any): Promise<any> => {
+
+    return new Promise((resolve, reject) => {
+
+
+      let processPendingTxps = async (status: any): Promise<any> => {
         status = status || {};
-        let txps = status.pendingTxps;
+        let txps = await status.pendingTxps;
         let now = Math.floor(Date.now() / 1000);
 
-        return Promise.each(txps, (tx: any) => {
+        wallet.pendingTxps = await Promise.all(txps.map(async (tx: any) => {
+          const pTx = await this.txFormatService.processTx(tx);
 
-          return this.txFormatService.processTx(tx).then((pTx) => {
-            // no future transactions...
-            if (pTx.createdOn > now)
-              pTx.createdOn = now;
+          // no future transactions...
+          if (pTx.createdOn > now)
+            pTx.createdOn = now;
 
-            pTx.wallet = wallet;
+          pTx.wallet = wallet;
 
-            if (!pTx.wallet) {
-              this.logger.error("no wallet at pTxp?");
-              return;
-            }
+          if (!pTx.wallet) {
+            this.logger.error('no wallet at pTxp?');
+            return;
+          }
 
-            let action: any = _.find(pTx.actions, {
-              copayerId: pTx.wallet.copayerId
-            });
-
-            if (!action && pTx.status == 'pending') {
-              pTx.pendingForUs = true;
-            }
-
-            if (action && action.type == 'accept') {
-              pTx.statusForUs = 'accepted';
-            } else if (action && action.type == 'reject') {
-              pTx.statusForUs = 'rejected';
-            } else {
-              pTx.statusForUs = 'pending';
-            }
-
-            if (!pTx.deleteLockTime)
-              pTx.canBeRemoved = true;
-
-            return Promise.resolve(pTx);
+          let action: any = _.find(pTx.actions, {
+            copayerId: pTx.wallet.copayerId
           });
 
+          if (!action && pTx.status == 'pending') {
+            pTx.pendingForUs = true;
+          }
 
-        }).then((pTxps) => {
-          wallet.pendingTxps = pTxps;
-          return Promise.resolve();
-        });
+          if (action && action.type == 'accept') {
+            pTx.statusForUs = 'accepted';
+          } else if (action && action.type == 'reject') {
+            pTx.statusForUs = 'rejected';
+          } else {
+            pTx.statusForUs = 'pending';
+          }
+
+          if (!pTx.deleteLockTime)
+            pTx.canBeRemoved = true;
+
+          return pTx;
+        }));
+
       };
 
       //TODO: Separate, clarify, and tighten usage of Rate and Tx-Format service below.
@@ -218,7 +212,7 @@ export class WalletService {
             }).catch((err) => {
               // We don't want to blow up the promise chain if the rateService is down.
               // TODO: Fallback to last known conversion rate.
-              this.logger.warn("Could not get rates from rateService.");
+              this.logger.warn('Could not get rates from rateService.');
               return resolve();
             });
           }).catch((err) => {
@@ -246,8 +240,8 @@ export class WalletService {
         return status ? status.balance.totalAmount : wallet.totalBalanceMicros;
       };
 
-      let _getStatus = (initStatusHash: any, tries: number): Promise<any> => {
-        return new Promise((resolve, reject) => {
+      let _getStatus = async (initStatusHash: any, tries: number): Promise<any> => {
+        return new Promise(async (resolve, reject) => {
           if (isStatusCached() && !opts.force) {
             this.logger.debug('Wallet status cache hit:' + wallet.id);
             return cacheStatus(wallet.cachedStatus).then(() => {
@@ -257,31 +251,35 @@ export class WalletService {
             }).catch((err) => {
               this.logger.debug('Error in caching status:' + err);
             });
-          };
+          }
 
           tries = tries || 0;
 
-          return wallet.getStatus({}).then((status) => {
+          try {
+            const status = await wallet.getStatus({});
             let currentStatusHash = walletStatusHash(status);
             this.logger.debug('Status update. hash:' + currentStatusHash + ' Try:' + tries);
             if (opts.untilItChanges && initStatusHash == currentStatusHash && tries < this.WALLET_STATUS_MAX_TRIES && walletId == wallet.credentials.walletId) {
-              return Promise.delay(this.WALLET_STATUS_DELAY_BETWEEN_TRIES * tries).then(() => {
-                this.logger.debug('Retrying update... ' + walletId + ' Try:' + tries)
-                return _getStatus(initStatusHash, ++tries);
+
+              return new Promise<any>((resolve) => {
+                setTimeout(() => {
+                  this.logger.debug('Retrying update... ' + walletId + ' Try:' + tries);
+                  resolve(_getStatus(initStatusHash, ++tries));
+                }, this.WALLET_STATUS_DELAY_BETWEEN_TRIES * tries);
               });
             }
 
-            return processPendingTxps(status).then(() => {
-              return cacheStatus(status).then(() => {
-                wallet.scanning = status.wallet && status.wallet.scanStatus == 'running';
-                return resolve(status);
-              });
-            });
-          }).catch((err) => {
-            this.logger.error("Could not get the status!");
+
+            await processPendingTxps(status);
+            await cacheStatus(status);
+            wallet.scanning = status.wallet && status.wallet.scanStatus == 'running';
+            return resolve(status);
+
+          } catch (err) {
+            this.logger.error('Could not get the status!');
             this.logger.error(err);
             return reject(err);
-          });
+          }
 
         });
       };
@@ -289,7 +287,7 @@ export class WalletService {
       return _getStatus(walletStatusHash(null), 0).then((status) => {
         return resolve(status);
       }).catch((err) => {
-        this.logger.warn("Error getting status: ", err);
+        this.logger.warn('Error getting status: ', err);
         return reject(err);
       });
     });
@@ -327,7 +325,606 @@ export class WalletService {
     });
   }
 
+  // Approx utxo amount, from which the uxto is economically redeemable
+  public getLowAmount(wallet: MeritWalletClient, feeLevels: any, nbOutputs?: number) {
+    let minFee: number = this.getMinFee(wallet, feeLevels, nbOutputs);
+    return (minFee / this.LOW_AMOUNT_RATIO);
+  }
 
+  public getTxNote(wallet: MeritWalletClient, txid: string): Promise<any> {
+    return wallet.getTxNote({
+      txid: txid
+    });
+  }
+
+  public editTxNote(wallet: MeritWalletClient, args: any): Promise<any> {
+    return wallet.editTxNote(args);
+  }
+
+  public getTxp(wallet: MeritWalletClient, txpid: string): Promise<any> {
+    return wallet.getTx(txpid);
+  }
+
+  public getTx(wallet: MeritWalletClient, txid: string) {
+    return new Promise((resolve, reject) => {
+      let finish = (list: any) => {
+        let tx = _.find(list, {
+          txid: txid
+        });
+
+        if (!tx) return reject(new Error('Could not get transaction'));
+        return resolve(tx);
+      };
+
+      if (wallet.completeHistory && wallet.completeHistory.isValid) {
+        finish(wallet.completeHistory);
+      } else {
+        let opts = {
+          limitTx: txid
+        };
+        return this.getTxHistory(wallet, opts).then((txHistory: any) => {
+          finish(txHistory);
+        }).catch((err) => {
+          return reject(err);
+        });
+      }
+      ;
+    });
+  }
+
+  public getTxHistory(wallet: MeritWalletClient, opts: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      opts = opts ? opts : {};
+      let walletId = wallet.credentials.walletId;
+
+      if (!wallet.isComplete()) return resolve();
+
+      let isHistoryCached = () => {
+        return wallet.completeHistory && wallet.completeHistory.isValid;
+      };
+
+      if (isHistoryCached() && !opts.force) return resolve(wallet.completeHistory);
+
+      this.logger.debug('Updating Transaction History');
+      return this.updateLocalTxHistory(wallet, opts).then((txs: any) => {
+        this.logger.debug('updateLocalTxHistory returns: ');
+        this.logger.debug(txs);
+
+        if (opts.limitTx) {
+          return resolve(txs);
+        }
+        ;
+
+        wallet.completeHistory.isValid = true;
+        return resolve(wallet.completeHistory);
+      }).catch((err) => {
+        return reject(err);
+      });
+    });
+  }
+
+  public isEncrypted(wallet: MeritWalletClient) {
+    if (_.isEmpty(wallet)) return;
+    let isEncrypted = wallet.isPrivKeyEncrypted();
+    if (isEncrypted) this.logger.debug('Wallet is encrypted');
+    return isEncrypted;
+  }
+
+  public createTx(wallet: MeritWalletClient, txp: any): Promise<any> {
+    return wallet.createTxProposal(txp);
+  }
+
+  public publishTx(wallet: MeritWalletClient, txp: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (_.isEmpty(txp) || _.isEmpty(wallet))
+        return reject(new Error('MISSING_PARAMETER'));
+      return resolve(wallet.publishTxProposal({
+        txp: txp
+      }));
+    }).catch((err) => {
+      Promise.reject(new Error('error publishing tx: ' + err));
+    });
+  }
+
+  public signTx(wallet: MeritWalletClient, txp: any, password: string): Promise<any> {
+    if (!wallet || !txp) {
+      return Promise.reject(new Error('MISSING_PARAMETER'));
+    }
+
+    return wallet.signTxProposal(txp, password);
+  }
+
+  // These 2 functions were taken from
+
+  public broadcastTx(wallet: MeritWalletClient, txp: any): Promise<any> {
+    if (_.isEmpty(txp) || _.isEmpty(wallet))
+      return Promise.reject(new Error('MISSING_PARAMETER'));
+
+    if (txp.status != 'accepted')
+      return Promise.reject(new Error('TX_NOT_ACCEPTED'));
+
+    return wallet.broadcastTxProposal(txp);
+  }
+
+  public rejectTx(wallet: MeritWalletClient, txp: any): Promise<any> {
+    if (_.isEmpty(txp) || _.isEmpty(wallet))
+      return Promise.reject(new Error('MISSING_PARAMETER'));
+
+    return wallet.rejectTxProposal(txp, null);
+  }
+
+  public removeTx(wallet: MeritWalletClient, txp: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (_.isEmpty(txp) || _.isEmpty(wallet))
+        return reject(new Error('MISSING_PARAMETER'));
+
+      return wallet.removeTxProposal(txp).then(() => {
+        this.logger.debug('Transaction removed');
+        this.invalidateCache(wallet);
+        // $rootScope.$emit('Local/TxAction', wallet.id);
+        return resolve();
+      });
+    });
+  }
+
+  public updateRemotePreferences(clients: any, prefs: any = {}): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      if (!_.isArray(clients))
+        clients = [clients];
+
+      let updateRemotePreferencesFor = (clients: any, prefs: any): Promise<any> => {
+        return new Promise((resolve, reject) => {
+          let wallet = clients.shift();
+          if (!wallet) return resolve();
+          this.logger.debug('Saving remote preferences', wallet.credentials.walletName, prefs);
+
+          wallet.savePreferences(prefs, (err: any) => {
+
+            if (err) {
+              this.popupService.ionicAlert('Could not save preferences on the server'); //TODO Gettextcatalog
+              return reject(err);
+            }
+
+            updateRemotePreferencesFor(clients, prefs);
+          });
+        });
+      };
+
+      // Update this JIC.
+      let config: any = this.configService.get();
+      let walletSettings = config.wallet.settings;
+
+      //prefs.email  (may come from arguments)
+      prefs.email = config.emailNotifications.email;
+      prefs.language = 'English'; // This line was hardcoded - TODO: prefs.language = uxLanguage.getCurrentLanguage();
+      // prefs.unit = walletSettings.unitCode; // TODO: remove, not used
+
+      return updateRemotePreferencesFor(_.clone(clients), prefs).then(() => {
+        this.logger.debug('Remote preferences saved for' + _.map(clients, (x: any) => {
+          return x.credentials.walletId;
+        }).join(','));
+
+        _.each(clients, (c: any) => {
+          c.preferences = _.assign(prefs, c.preferences);
+        });
+        return resolve();
+      }).catch((err: any) => {
+        return reject(err);
+      });
+    });
+  }
+
+  public recreate(wallet: MeritWalletClient): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.logger.debug('Recreating wallet:', wallet.id);
+      wallet.recreateWallet((err: any) => {
+        wallet.notAuthorized = false;
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  }
+
+  public startScan(wallet: MeritWalletClient): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.logger.debug('Scanning wallet ' + wallet.id);
+      if (!wallet.isComplete()) return reject(new Error('Wallet is not complete'));
+
+      wallet.scanning = true;
+      return Promise.resolve(wallet.startScan({
+        includeCopayerBranches: true,
+      }));
+    });
+  }
+
+  // TODO add typings for `opts`
+  async createWallet(opts: any) {
+    const wallet = await this.doCreateWallet(opts);
+    await this.profileService.addAndBindWalletClient(wallet, { bwsurl: opts.bwsurl });
+    return wallet;
+  }
+
+  async createReferral(pubkey: any, parentAddress: any): Promise<any> {
+    return true;
+  }
+
+  // joins and stores a wallet
+  public joinWallet(opts: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let walletClient = this.bwcService.getClient(null, opts);
+      this.logger.debug('Joining Wallet:', opts);
+
+      try {
+        var walletData = this.bwcService.parseSecret(opts.secret);
+
+        // check if exist
+        if (_.find(this.profileService.profile.credentials, {
+            'walletId': walletData.walletId
+          })) {
+          return reject(new Error('Cannot join the same wallet more that once')); // TODO getTextCatalog
+        }
+      } catch (ex) {
+        this.logger.debug(ex);
+        return reject(new Error('Bad wallet invitation')); // TODO getTextCatalog
+      }
+      opts.networkName = walletData.network;
+      this.logger.debug('Joining Wallet:', opts);
+
+      return this.seedWallet(opts).then((walletClient: any) => {
+        walletClient.joinWallet(opts.secret, opts.myName || 'me', {}, (err: any) => {
+          if (err) {
+            return reject(new Error('Could not join wallet'));
+          } else {
+            return this.profileService.addAndBindWalletClient(walletClient, {
+              bwsurl: opts.bwsurl
+            }).then((wallet: MeritWalletClient) => {
+              return resolve(wallet);
+            });
+          }
+        });
+      }).catch((err: any) => {
+        return reject(err);
+      });
+    });
+  }
+
+  public getWallet(walletId: string): any {
+    return this.profileService.wallets[walletId];
+  };
+
+  public expireAddress(wallet: MeritWalletClient): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.logger.debug('Cleaning Address ' + wallet.id);
+      return this.persistenceService.clearLastAddress(wallet.id).then(() => {
+        return resolve();
+      }).catch((err: any) => {
+        return reject(err);
+      });
+    });
+  }
+
+  async getMainAddresses(wallet: MeritWalletClient, opts: any = {}): Promise<Array<any>> {
+    opts.reverse = true;
+    const addresses = await wallet.getMainAddresses(opts);
+    return addresses.map(address => address.address);
+  }
+
+  public getBalance(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
+    return wallet.getBalance(opts);
+  }
+
+  public getLowUtxos(wallet: any, levels: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      wallet.getUtxos({}, (err, resp) => {
+        if (err || !resp || !resp.length) return reject(err);
+
+        let minFee = this.getMinFee(wallet, levels, resp.length);
+
+        let balance = _.sumBy(resp, 'micros');
+
+        // for 2 outputs
+        let lowAmount = this.getLowAmount(wallet, levels);
+        let lowUtxos = _.filter(resp, (x: any) => {
+          return x.micros < lowAmount;
+        });
+
+        let totalLow = _.sumBy(lowUtxos, 'micros');
+        return resolve({
+          allUtxos: resp || [],
+          lowUtxos: lowUtxos || [],
+          warning: minFee / balance > this.TOTAL_LOW_WARNING_RATIO,
+          minFee: minFee,
+        });
+      });
+    });
+  }
+
+  createDefaultWallet(parentAddress: string) {
+    const opts: any = {
+      m: 1,
+      n: 1,
+      networkName: this.configService.getDefaults().network.name,
+      parentAddress
+    };
+    return this.createWallet(opts);
+  }
+
+  public isReady(wallet: MeritWalletClient): string {
+    if (!wallet.isComplete())
+      return 'WALLET_NOT_COMPLETE';
+    if (wallet.needsBackup)
+      return 'WALLET_NEEDS_BACKUP';
+    return null;
+  }
+
+  public encrypt(wallet: MeritWalletClient, password: string): Promise<any> {
+    wallet.encryptPrivateKey(password, {});
+    return this.profileService.updateCredentials(wallet.credentials);
+  };
+
+  // create and store a wallet
+
+  public decrypt(wallet: MeritWalletClient, password: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      try {
+        wallet.decryptPrivateKey(password);
+      } catch (e) {
+        return reject(e);
+      }
+      return resolve();
+    });
+  }
+
+  public handleEncryptedWallet(wallet: MeritWalletClient): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.isEncrypted(wallet)) return resolve();
+      return this.askPassword(wallet.name, 'Enter Spending Password').then((password: string) => { //TODO gettextcatalog
+        if (!password) return reject(new Error('No password'));
+        if (!wallet.checkPassword(password)) return reject(new Error('Wrong password'));
+        return resolve(password);
+      });
+    });
+  }
+
+  public reject(wallet: MeritWalletClient, txp: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      return this.rejectTx(wallet, txp).then((txpr: any) => {
+        this.invalidateCache(wallet);
+        //$rootScope.$emit('Local/TxAction', wallet.id);
+        return resolve(txpr);
+      }).catch((err) => {
+        return reject(err);
+      });
+    });
+  }
+
+  public onlyPublish(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      return this.publishTx(wallet, txp).then((publishedTxp) => {
+        this.invalidateCache(wallet);
+        this.events.publish('Local:Tx:Publish', publishedTxp);
+        return resolve();
+      }).catch((err) => {
+        return reject(err);
+      });
+    });
+  }
+
+  public prepare(wallet: MeritWalletClient): Promise<any> {
+    return new Promise((resolve, reject) => {
+      return this.touchidService.checkWallet(wallet).then(() => {
+        return this.handleEncryptedWallet(wallet).then((password: string) => {
+          return resolve(password);
+        }).catch((err) => {
+          return reject(err);
+        });
+      }).catch((err) => {
+        return reject(err);
+      });
+    });
+  }
+
+  public publishAndSign(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
+    this.logger.info('@@PS: ENTER');
+    return new Promise((resolve, reject) => {
+      // Already published?
+      let walletPassword = '';
+      if (txp.status == 'pending') {
+        this.logger.info('@@PS: PENDING');
+
+        return this.prepare(wallet).then((password: string) => {
+          return this.signAndBroadcast(wallet, txp, password, customStatusHandler)
+            .then((broadcastedTxp: any) => {
+              return resolve(broadcastedTxp);
+            }).catch((err) => {
+              return reject(err);
+            });
+        });
+      } else {
+        this.logger.info('@@PS: NOT PENDING');
+
+        return this.prepare(wallet).then((password: string) => {
+          this.logger.info('@@PS: AFTER PREPARE');
+
+          walletPassword = password;
+          return this.publishTx(wallet, txp);
+        }).then((publishedTxp: any) => {
+          this.logger.info('@@PS: AFTER PublishTx');
+          return this.signAndBroadcast(wallet, publishedTxp, walletPassword, customStatusHandler);
+        }).then((signedTxp) => {
+          return resolve(signedTxp);
+        }).catch((err) => {
+          return reject(err);
+        });
+      }
+      ;
+    });
+  }
+
+  public getEncodedWalletInfo(wallet: MeritWalletClient, password: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let derivationPath = wallet.credentials.getBaseAddressDerivationPath();
+      let encodingType = {
+        mnemonic: 1,
+        xpriv: 2,
+        xpub: 3
+      };
+      let info: any = {};
+
+      // not supported yet
+      if (wallet.credentials.derivationStrategy != 'BIP44' || !wallet.canSign())
+        return reject(new Error('Exporting via QR not supported for this wallet')); //TODO gettextcatalog
+
+      var keys = this.getKeysWithPassword(wallet, password);
+
+      if (keys.mnemonic) {
+        info = {
+          type: encodingType.mnemonic,
+          data: keys.mnemonic,
+        }
+      } else {
+        info = {
+          type: encodingType.xpriv,
+          data: keys.xPrivKey
+        }
+      }
+
+      return resolve(info.type + '|' + info.data + '|' + wallet.credentials.network.toLowerCase() + '|' + derivationPath + '|' + (wallet.credentials.mnemonicHasPassphrase));
+    });
+  }
+
+  public getKeysWithPassword(wallet: MeritWalletClient, password: string): any {
+    try {
+      return wallet.getKeys(password);
+    } catch (e) {
+      this.logger.debug(e);
+    }
+  }
+
+  public setTouchId(wallet: MeritWalletClient, enabled: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var opts = {
+        touchIdFor: {}
+      };
+      opts.touchIdFor[wallet.id] = enabled;
+
+      return this.touchidService.checkWallet(wallet).then(() => {
+        this.configService.set(opts);
+        return resolve();
+      }).catch((err) => {
+        opts.touchIdFor[wallet.id] = !enabled;
+        this.logger.debug('Error with fingerprint:' + err);
+        this.configService.set(opts);
+        return reject(err);
+      });
+    });
+  }
+
+  public getKeys(wallet: MeritWalletClient): Promise<any> {
+    return new Promise((resolve, reject) => {
+      return this.prepare(wallet).then((password: string) => {
+        let keys;
+        try {
+          keys = wallet.getKeys(password);
+        } catch (e) {
+          return reject(e);
+        }
+        return resolve(keys);
+      }).catch((err) => {
+        return reject(err);
+      });
+    });
+  };
+
+  public setHiddenBalanceOption(walletId: string, hideBalance: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.wallets[walletId]) this.wallets[walletId] = {};
+      this.wallets[walletId].balanceHidden = hideBalance;
+      this.persistenceService.setHideBalanceFlag(walletId, this.wallets[walletId].balanceHidden + '').then(() => {
+        return resolve();
+      }).catch((err: any) => {
+        return reject(err);
+      });
+    });
+  }
+
+  public getSendMaxInfo(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
+    return wallet.getSendMaxInfo(opts);
+  };
+
+  public getProtocolHandler(wallet: MeritWalletClient): string {
+    return 'merit';
+  }
+
+  public copyCopayers(wallet: MeritWalletClient, newWallet: MeritWalletClient): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let walletPrivKey = this.bwcService.getBitcore().PrivateKey.fromString(wallet.credentials.walletPrivKey);
+      let copayer = 1;
+      let i = 0;
+
+      _.each(wallet.credentials.publicKeyRing, (item) => {
+        let name = item.copayerName || ('copayer ' + copayer++);
+        return newWallet.doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {}).then((err) => {
+          //Ignore error is copayer already in wallet
+          if (err && !(err == Errors.COPAYER_IN_WALLET)) return reject(err);
+          if (++i == wallet.credentials.publicKeyRing.length) return resolve();
+        });
+      });
+    });
+  };
+
+  /**
+   * Gets the ANV for a list of addresses.
+   * @param wallet
+   */
+  public getANV(wallet: MeritWalletClient): Promise<any> {
+    let pubkey = this.bwcService.getBitcore().PrivateKey.fromString(wallet.credentials.walletPrivKey).toPublicKey();
+    let address = pubkey.toAddress(wallet.credentials.network);
+    return wallet.getANV(address)
+  }
+
+  /**
+   * Gets the aggregate rewards for a list of addresses.
+   * @param wallet
+   * @returns {Reward} An object with the 'mining' and 'ambassador' properties.
+   */
+  public getRewards(wallet: MeritWalletClient): Promise<any> {
+    interface MWSRewardsResponse extends _.NumericDictionary<number> {
+      address: string,
+      rewards: { mining: number, ambassador: number }
+    };
+
+    interface FilteredRewards {
+      mining: number,
+      ambassador: number
+    }
+
+    return new Promise((resolve, reject) => {
+      return this.getMainAddresses(wallet).then((addresses) => {
+        if (_.isEmpty(addresses)) {
+          this.logger.info('Addresses are empty!  Defaulting rewards to Zero');
+          return resolve({ mining: 0, ambassador: 0 });
+        }
+        return wallet.getRewards(addresses).then((rewards: MWSRewardsResponse) => {
+          let totalRewards: FilteredRewards = _.reduce(rewards, (totalR: any, reward: any) => {
+            if (!_.isEmpty(reward.rewards)) {
+              if (reward.rewards.mining) {
+                totalR.mining += reward.rewards.mining;
+              }
+              if (reward.rewards.ambassador) {
+                totalR.ambassador += reward.rewards.ambassador;
+              }
+              return totalR;
+            }
+          }, { mining: 0, ambassador: 0 });
+
+          return resolve(totalRewards);
+        });
+      });
+    });
+  }
 
   // Check address
   private isAddressUsed(wallet: MeritWalletClient, byAddress: Array<any>): Promise<any> {
@@ -343,10 +940,9 @@ export class WalletService {
     });
   }
 
-
   private createAddress(wallet: MeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
-      return  wallet.createAddress({}).then((address) => {
+      return wallet.createAddress({}).then((address) => {
         return resolve(address);
       }).catch((err) => {
         if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code) {
@@ -361,16 +957,14 @@ export class WalletService {
     });
   }
 
-
   private getMainAddress(wallet: MeritWalletClient) {
-      return wallet.getMainAddresses({
-        reverse: true,
-        limit: 1
-      }).then((addr) => {
-        return Promise.resolve(addr[0].address);
-      });
+    return wallet.getMainAddresses({
+      reverse: true,
+      limit: 1
+    }).then((addr) => {
+      return Promise.resolve(addr[0].address);
+    });
   }
-
 
   private getSavedTxs(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -380,13 +974,15 @@ export class WalletService {
 
         if (!txs) {
           return resolve(localTxs);
-        };
+        }
+        ;
 
         try {
           localTxs = JSON.parse(txs);
         } catch (ex) {
           this.logger.warn(ex);
-        };
+        }
+        ;
         return resolve(_.compact(localTxs));
       }).catch((err: Error) => {
         return reject(err);
@@ -475,8 +1071,8 @@ export class WalletService {
                   return resolve(newTxs);
                 }
 
-                const res = result.res;
-                const shouldContinue = !!result.shouldContinue;
+                const { res } = result;
+                const shouldContinue = Boolean(result.shouldContinue);
 
                 return this.processNewTxs(wallet, _.compact(res)).then((pTxs) => {
                   newTxs = newTxs.concat(pTxs);
@@ -499,7 +1095,7 @@ export class WalletService {
                   if (!shouldContinue) {
                     this.logger.debug('Finished Sync: New / soft confirmed Txs: ' + newTxs.length);
                     return resolve(newTxs);
-                  };
+                  }
 
                   requestLimit = LIMIT;
                   return getNewTxs(newTxs, skip).then((txs) => {
@@ -509,14 +1105,14 @@ export class WalletService {
               }).catch((err) => {
                 if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE) {
                   this.logger.info('Retrying history download in 5 secs...');
-                  return Promise.delay(5000).then(() => {
-                    return getNewTxs(newTxs, skip).then((txs) => {
-                      return resolve(txs);
-                    });
-                  });
-                };
-                this.logger.warn(err);
-                return reject(err);
+                  // TODO: use RxJS
+                  setTimeout(() => {
+                    getNewTxs(newTxs, skip).then((txs) => resolve(txs));
+                  }, 5000);
+                } else {
+                  this.logger.warn(err);
+                  return reject(err);
+                }
               });
             });
           };
@@ -567,7 +1163,6 @@ export class WalletService {
                 return resolve(newHistory);
               }
               // </HACK>
-
               const historyToSave = JSON.stringify(newHistory);
               _.each(txs, (tx: any) => {
                 tx.recent = true;
@@ -598,7 +1193,8 @@ export class WalletService {
     });
   }
 
-  private processNewTxs(wallet: MeritWalletClient, txs: any): Promise<Array<any>> {
+
+  private async processNewTxs(wallet: MeritWalletClient, txs: any): Promise<Array<any>> {
     let configGet: any = this.configService.get();
     let config: any = configGet.wallet.settings;
     let now = Math.floor(Date.now() / 1000);
@@ -606,36 +1202,33 @@ export class WalletService {
     let ret = [];
     wallet.hasUnsafeConfirmed = false;
 
-    return Promise.each(txs, (tx: any) => {
-      return this.txFormatService.processTx(tx).then((pTx) => {
-        // no future transactions...
-        if (pTx.time > now)
-          pTx.time = now;
+    await Promise.all(txs.map(async (tx: any) => {
+      const pTx = await this.txFormatService.processTx(tx);
+      // no future transactions...
+      if (pTx.time > now)
+        pTx.time = now;
 
-        if (pTx.confirmations >= this.SAFE_CONFIRMATIONS) {
-          pTx.safeConfirmed = this.SAFE_CONFIRMATIONS + '+';
-        } else {
-          pTx.safeConfirmed = false;
-          wallet.hasUnsafeConfirmed = true;
-        };
+      if (pTx.confirmations >= this.SAFE_CONFIRMATIONS) {
+        pTx.safeConfirmed = this.SAFE_CONFIRMATIONS + '+';
+      } else {
+        pTx.safeConfirmed = false;
+        wallet.hasUnsafeConfirmed = true;
+      }
 
-        if (pTx.note) {
-          delete pTx.note.encryptedEditedByName;
-          delete pTx.note.encryptedBody;
-        };
+      if (pTx.note) {
+        delete pTx.note.encryptedEditedByName;
+        delete pTx.note.encryptedBody;
+      }
 
-        if (!txHistoryUnique[pTx.txid]) {
-          ret.push(pTx);
-          txHistoryUnique[pTx.txid] = true;
-        } else {
-          this.logger.debug('Ignoring duplicate TX in history: ' + pTx.txid)
-        };
-        return Promise.resolve();
-      });
-    }).then(() => {
-      return Promise.resolve(ret);
-    });
+      if (!txHistoryUnique[pTx.txid]) {
+        ret.push(pTx);
+        txHistoryUnique[pTx.txid] = true;
+      } else {
+        this.logger.debug('Ignoring duplicate TX in history: ' + pTx.txid)
+      }
+    }));
 
+    return ret;
   }
 
   private removeAndMarkSoftConfirmedTx(txs: any): Array<any> {
@@ -644,12 +1237,6 @@ export class WalletService {
         return tx;
       tx.recent = true;
     });
-  }
-
-  // Approx utxo amount, from which the uxto is economically redeemable
-  public getLowAmount(wallet: MeritWalletClient, feeLevels: any, nbOutputs?: number) {
-    let minFee: number = this.getMinFee(wallet, feeLevels, nbOutputs);
-    return (minFee / this.LOW_AMOUNT_RATIO);
   }
 
   // Approx utxo amount, from which the uxto is economically redeemable
@@ -663,7 +1250,6 @@ export class WalletService {
     return size * lowLevelRate;
   }
 
-  // These 2 functions were taken from
   // https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/txproposal.js#L243
   private getEstimatedSizeForSingleInput(wallet: MeritWalletClient): number {
     switch (wallet.credentials.addressType) {
@@ -675,7 +1261,8 @@ export class WalletService {
       case 'PP2SH':
         //TODO: Figure out a better estimate
         return 147;
-    };
+    }
+    ;
   }
 
   private getEstimatedTxSize(wallet: MeritWalletClient, nbOutputs?: number): number {
@@ -691,356 +1278,6 @@ export class WalletService {
     return parseInt((size * (1 + safetyMargin)).toFixed(0));
   }
 
-  public getTxNote(wallet: MeritWalletClient, txid: string): Promise<any> {
-    return wallet.getTxNote({
-      txid: txid
-    });
-  }
-
-  public editTxNote(wallet: MeritWalletClient, args: any): Promise<any> {
-    return wallet.editTxNote(args);
-  }
-
-  public getTxp(wallet: MeritWalletClient, txpid: string): Promise<any> {
-    return wallet.getTx(txpid);
-  }
-
-  public getTx(wallet: MeritWalletClient, txid: string) {
-    return new Promise((resolve, reject) => {
-      let finish = (list: any) => {
-        let tx = _.find(list, {
-          txid: txid
-        });
-
-        if (!tx) return reject(new Error('Could not get transaction'));
-        return resolve(tx);
-      };
-
-      if (wallet.completeHistory && wallet.completeHistory.isValid) {
-        finish(wallet.completeHistory);
-      } else {
-        let opts = {
-          limitTx: txid
-        };
-        return this.getTxHistory(wallet, opts).then((txHistory: any) => {
-          finish(txHistory);
-        }).catch((err) => {
-          return reject(err);
-        });
-      };
-    });
-  }
-
-  public getTxHistory(wallet: MeritWalletClient, opts: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      opts = opts ? opts : {};
-      let walletId = wallet.credentials.walletId;
-
-      if (!wallet.isComplete()) return resolve();
-
-      let isHistoryCached = () => {
-        return wallet.completeHistory && wallet.completeHistory.isValid;
-      };
-
-      if (isHistoryCached() && !opts.force) return resolve(wallet.completeHistory);
-
-      this.logger.debug('Updating Transaction History');
-      return this.updateLocalTxHistory(wallet, opts).then((txs: any) => {
-        this.logger.debug('updateLocalTxHistory returns: ');
-        this.logger.debug(txs);
-
-        if (opts.limitTx) {
-          return resolve(txs);
-        };
-
-        wallet.completeHistory.isValid = true;
-        return resolve(wallet.completeHistory);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-  }
-
-  public isEncrypted(wallet: MeritWalletClient) {
-    if (_.isEmpty(wallet)) return;
-    let isEncrypted = wallet.isPrivKeyEncrypted();
-    if (isEncrypted) this.logger.debug('Wallet is encrypted');
-    return isEncrypted;
-  }
-
-  public createTx(wallet: MeritWalletClient, txp: any): Promise<any> {
-    return wallet.createTxProposal(txp).then((ctxp) => {
-      return ctxp;
-    });
-  }
-
-  public publishTx(wallet: MeritWalletClient, txp: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (_.isEmpty(txp) || _.isEmpty(wallet))
-        return reject(new Error('MISSING_PARAMETER'));
-      return resolve(wallet.publishTxProposal({
-        txp: txp
-      }));
-    }).catch((err) => {
-      Promise.reject(new Error('error publishing tx: ' + err));
-    });
-  }
-
-  public signTx(wallet: MeritWalletClient, txp: any, password: string): Promise<any> {
-    if (!wallet || !txp) {
-      return Promise.reject(new Error('MISSING_PARAMETER'));
-    }
-
-    return wallet.signTxProposal(txp, password);
-  }
-
-  public broadcastTx(wallet: MeritWalletClient, txp: any): Promise<any> {
-      if (_.isEmpty(txp) || _.isEmpty(wallet))
-        return Promise.reject(new Error('MISSING_PARAMETER'));
-
-      if (txp.status != 'accepted')
-        return Promise.reject(new Error('TX_NOT_ACCEPTED'));
-
-      return wallet.broadcastTxProposal(txp);
-  }
-
-  public rejectTx(wallet: MeritWalletClient, txp: any): Promise<any> {
-    if (_.isEmpty(txp) || _.isEmpty(wallet))
-      return Promise.reject(new Error('MISSING_PARAMETER'));
-
-    return wallet.rejectTxProposal(txp, null);
-  }
-
-  public removeTx(wallet: MeritWalletClient, txp: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (_.isEmpty(txp) || _.isEmpty(wallet))
-        return reject(new Error('MISSING_PARAMETER'));
-
-      return wallet.removeTxProposal(txp).then(() => {
-        this.logger.debug('Transaction removed');
-        this.invalidateCache(wallet);
-        // $rootScope.$emit('Local/TxAction', wallet.id);
-        return resolve();
-      });
-    });
-  }
-
-  public updateRemotePreferences(clients: any, prefs: any = {}): Promise<any> {
-    return new Promise((resolve, reject) => {
-
-      if (!_.isArray(clients))
-        clients = [clients];
-
-      let updateRemotePreferencesFor = (clients: any, prefs: any): Promise<any> => {
-        return new Promise((resolve, reject) => {
-          let wallet = clients.shift();
-          if (!wallet) return resolve();
-          this.logger.debug('Saving remote preferences', wallet.credentials.walletName, prefs);
-
-          wallet.savePreferences(prefs, (err: any) => {
-
-            if (err) {
-              this.popupService.ionicAlert('Could not save preferences on the server'); //TODO Gettextcatalog
-              return reject(err);
-            }
-
-            updateRemotePreferencesFor(clients, prefs);
-          });
-        });
-      };
-
-      // Update this JIC.
-      let config: any = this.configService.get();
-      let walletSettings = config.wallet.settings;
-
-      //prefs.email  (may come from arguments)
-      prefs.email = config.emailNotifications.email;
-      prefs.language = "English" // This line was hardcoded - TODO: prefs.language = uxLanguage.getCurrentLanguage();
-      // prefs.unit = walletSettings.unitCode; // TODO: remove, not used
-
-      return updateRemotePreferencesFor(_.clone(clients), prefs).then(() => {
-        this.logger.debug('Remote preferences saved for' + _.map(clients, (x: any) => {
-          return x.credentials.walletId;
-        }).join(','));
-
-        _.each(clients, (c: any) => {
-          c.preferences = _.assign(prefs, c.preferences);
-        });
-        return resolve();
-      }).catch((err: any) => {
-        return reject(err);
-      });
-    });
-  }
-
-  public recreate(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.logger.debug('Recreating wallet:', wallet.id);
-      wallet.recreateWallet((err: any) => {
-        wallet.notAuthorized = false;
-        if (err) return reject(err);
-        return resolve();
-      });
-    });
-  }
-
-  public startScan(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.logger.debug('Scanning wallet ' + wallet.id);
-      if (!wallet.isComplete()) return reject(new Error('Wallet is not complete'));
-
-      wallet.scanning = true;
-      return Promise.resolve(wallet.startScan({
-        includeCopayerBranches: true,
-      }));
-    });
-  }
-
-  // create and store a wallet
-  public createWallet(opts: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      return this.doCreateWallet(opts).then((walletClient: any) => {
-        return this.profileService.addAndBindWalletClient(walletClient, {
-          bwsurl: opts.bwsurl
-        }).then((wallet: MeritWalletClient) => {
-          return resolve(wallet);
-        });
-      }).catch((err: any) => {
-        this.logger.warn("Error creating wallet: ", err);
-        return reject(err);
-      });
-    });
-  }
-
-  public createReferral(pubkey: any, parentAddress: any): Promise<any> {
-
-    return new Promise((resolve, reject) => {
-      resolve(true);
-    });
-  }
-
-  // joins and stores a wallet
-  public joinWallet(opts: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-
-      let walletClient = this.bwcService.getClient(null, opts);
-      this.logger.debug('Joining Wallet:', opts);
-
-      try {
-        var walletData = this.bwcService.parseSecret(opts.secret);
-
-        // check if exist
-        if (_.find(this.profileService.profile.credentials, {
-          'walletId': walletData.walletId
-        })) {
-          return reject(new Error('Cannot join the same wallet more that once')); // TODO getTextCatalog
-        }
-      } catch (ex) {
-        this.logger.debug(ex);
-        return reject(new Error('Bad wallet invitation')); // TODO getTextCatalog
-      }
-      opts.networkName = walletData.network;
-      this.logger.debug('Joining Wallet:', opts);
-
-      return this.seedWallet(opts).then((walletClient: any) => {
-        walletClient.joinWallet(opts.secret, opts.myName || 'me', {
-        }, (err: any) => {
-          if (err) {
-            return reject(new Error('Could not join wallet'));
-          } else {
-            return this.profileService.addAndBindWalletClient(walletClient, {
-              bwsurl: opts.bwsurl
-            }).then((wallet: MeritWalletClient) => {
-              return resolve(wallet);
-            });
-          };
-        });
-      }).catch((err: any) => {
-        return reject(err);
-      });
-    });
-  }
-
-  public getWallet(walletId: string): any {
-    return this.profileService.wallets[walletId];
-  };
-
-
-  public expireAddress(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.logger.debug('Cleaning Address ' + wallet.id);
-      return this.persistenceService.clearLastAddress(wallet.id).then(() => {
-        return resolve();
-      }).catch((err: any) => {
-        return reject(err);
-      });
-    });
-  }
-
-  public getMainAddresses(wallet: MeritWalletClient, opts: any = {}): Promise<Array<any>> {
-    opts.reverse = true;
-    return wallet.getMainAddresses(opts).then((addresses) => {
-      return _.map(addresses, (address: any) => {
-        return address.address;
-      });
-    });
-  }
-
-  public getBalance(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
-    return wallet.getBalance(opts);
-  }
-
-  public getLowUtxos(wallet: any, levels: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      wallet.getUtxos({
-      }, (err, resp) => {
-        if (err || !resp || !resp.length) return reject(err);
-
-        let minFee = this.getMinFee(wallet, levels, resp.length);
-
-        let balance = _.sumBy(resp, 'micros');
-
-        // for 2 outputs
-        let lowAmount = this.getLowAmount(wallet, levels);
-        let lowUtxos = _.filter(resp, (x: any) => {
-          return x.micros < lowAmount;
-        });
-
-        let totalLow = _.sumBy(lowUtxos, 'micros');
-        return resolve({
-          allUtxos: resp || [],
-          lowUtxos: lowUtxos || [],
-          warning: minFee / balance > this.TOTAL_LOW_WARNING_RATIO,
-          minFee: minFee,
-        });
-      });
-    });
-  }
-
-  public createDefaultWallet(parentAddress: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      var opts: any = {};
-      opts.m = 1;
-      opts.n = 1;
-      opts.networkName = this.configService.getDefaults().network.name;
-      opts.parentAddress = parentAddress;
-      return this.createWallet(opts).then((wallet: MeritWalletClient) => {
-        return resolve(wallet);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-  };
-
-
-  public isReady(wallet: MeritWalletClient): string {
-    if (!wallet.isComplete())
-      return 'WALLET_NOT_COMPLETE';
-    if (wallet.needsBackup)
-      return 'WALLET_NEEDS_BACKUP';
-    return null;
-  }
-
   // An alert dialog
   private askPassword(name: string, title: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -1052,83 +1289,18 @@ export class WalletService {
     });
   };
 
-  public encrypt(wallet: MeritWalletClient, password:string): Promise<any> {
-    wallet.encryptPrivateKey(password, {});
-    return this.profileService.updateCredentials(wallet.credentials);
-  };
-
-  public decrypt(wallet: MeritWalletClient, password:string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      try {
-        wallet.decryptPrivateKey(password);
-      } catch (e) {
-        return reject(e);
-      }
-      return resolve();
-    });
-  }
-
-  public handleEncryptedWallet(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (!this.isEncrypted(wallet)) return resolve();
-      return this.askPassword(wallet.name, 'Enter Spending Password').then((password: string) => { //TODO gettextcatalog
-        if (!password) return reject(new Error('No password'));
-        if (!wallet.checkPassword(password)) return reject(new Error('Wrong password'));
-        return resolve(password);
-      });
-    });
-  }
-
-  public reject(wallet: MeritWalletClient, txp: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      return this.rejectTx(wallet, txp).then((txpr: any) => {
-        this.invalidateCache(wallet);
-        //$rootScope.$emit('Local/TxAction', wallet.id);
-        return resolve(txpr);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-  }
-
-  public onlyPublish(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      return this.publishTx(wallet, txp).then((publishedTxp) => {
-        this.invalidateCache(wallet);
-        this.events.publish('Local:Tx:Publish', publishedTxp);
-        return resolve();
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-  }
-
-  public prepare(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      return this.touchidService.checkWallet(wallet).then(() => {
-        return this.handleEncryptedWallet(wallet).then((password: string) => {
-          return resolve(password);
-        }).catch((err) => {
-          return reject(err);
-        });
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-  }
-
   private signAndBroadcast(wallet: MeritWalletClient, publishedTxp: any, password: any, customStatusHandler: any): Promise<any> {
-    this.logger.info("@@SB: ENTRY");
+    this.logger.info('@@SB: ENTRY');
 
     return new Promise((resolve, reject) => {
 
       return this.signTx(wallet, publishedTxp, password).then((signedTxp: any) => {
-        this.logger.info("@@SB: After Sign");
+        this.logger.info('@@SB: After Sign');
 
         this.invalidateCache(wallet);
         if (signedTxp.status == 'accepted') {
           return this.broadcastTx(wallet, signedTxp).then((broadcastedTxp: any) => {
-            this.logger.info("@@SB: AfterBroadCast");
+            this.logger.info('@@SB: AfterBroadCast');
 
             this.events.publish('Local:Tx:Broadcast', broadcastedTxp);
             //$rootScope.$emit('Local/TxAction', wallet.id);
@@ -1137,12 +1309,13 @@ export class WalletService {
             return reject(err);
           });
         } else {
-          this.logger.info("@@SB: ElseBlock");
+          this.logger.info('@@SB: ElseBlock');
 
           //$rootScope.$emit('Local/TxAction', wallet.id);
           this.events.publish('Local:Tx:Signed', signedTxp);
           return resolve(signedTxp);
-        };
+        }
+        ;
       }).catch((err) => {
         this.logger.warn('sign error:' + err);
         let msg = err && err.message ? err.message : 'The payment was created but could not be completed. Please try again from home screen'; //TODO gettextcatalog
@@ -1152,311 +1325,110 @@ export class WalletService {
     });
   }
 
-  public publishAndSign(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
-    this.logger.info("@@PS: ENTER");
-    return new Promise((resolve, reject) => {
-      // Already published?
-      let walletPassword = '';
-      if (txp.status == 'pending') {
-        this.logger.info("@@PS: PENDING");
-
-        return this.prepare(wallet).then((password: string) => {
-          return this.signAndBroadcast(wallet, txp, password, customStatusHandler)
-            .then((broadcastedTxp: any) => {
-              return resolve(broadcastedTxp);
-            }).catch((err) => {
-              return reject(err);
-            });
-        });
-      } else {
-        this.logger.info("@@PS: NOT PENDING");
-
-        return this.prepare(wallet).then((password: string) => {
-          this.logger.info("@@PS: AFTER PREPARE");
-
-          walletPassword = password;
-          return this.publishTx(wallet, txp);
-        }).then((publishedTxp: any) => {
-          this.logger.info("@@PS: AFTER PublishTx");
-          return this.signAndBroadcast(wallet, publishedTxp, walletPassword, customStatusHandler);
-        }).then((signedTxp) => {
-          return resolve(signedTxp);
-        }).catch((err) => {
-          return reject(err);
-        });
-      };
-    });
-  }
-
-  public getEncodedWalletInfo(wallet: MeritWalletClient, password: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let derivationPath = wallet.credentials.getBaseAddressDerivationPath();
-      let encodingType = {
-        mnemonic: 1,
-        xpriv: 2,
-        xpub: 3
-      };
-      let info: any = {};
-
-      // not supported yet
-      if (wallet.credentials.derivationStrategy != 'BIP44' || !wallet.canSign())
-        return reject(new Error('Exporting via QR not supported for this wallet')); //TODO gettextcatalog
-
-      var keys = this.getKeysWithPassword(wallet, password);
-
-      if (keys.mnemonic) {
-        info = {
-          type: encodingType.mnemonic,
-          data: keys.mnemonic,
-        }
-      } else {
-        info = {
-          type: encodingType.xpriv,
-          data: keys.xPrivKey
-        }
-      }
-
-      return resolve(info.type + '|' + info.data + '|' + wallet.credentials.network.toLowerCase() + '|' + derivationPath + '|' + (wallet.credentials.mnemonicHasPassphrase));
-    });
-  }
-
-  public getKeysWithPassword(wallet: MeritWalletClient, password: string): any {
-    try {
-      return wallet.getKeys(password);
-    } catch (e) {
-      this.logger.debug(e);
-    }
-  }
-
-  public setTouchId(wallet: MeritWalletClient, enabled: boolean): Promise<any> {
-    return new Promise((resolve, reject) => {
-      var opts = {
-        touchIdFor: {}
-      };
-      opts.touchIdFor[wallet.id] = enabled;
-
-      return this.touchidService.checkWallet(wallet).then(() => {
-        this.configService.set(opts);
-        return resolve();
-      }).catch((err) => {
-        opts.touchIdFor[wallet.id] = !enabled;
-        this.logger.debug('Error with fingerprint:' + err);
-        this.configService.set(opts);
-        return reject(err);
-      });
-    });
-  }
-
-  public getKeys(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      return this.prepare(wallet).then((password: string) => {
-        let keys;
-        try {
-          keys = wallet.getKeys(password);
-        } catch (e) {
-          return reject(e);
-        }
-        return resolve(keys);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-  };
-
-  public setHiddenBalanceOption(walletId: string, hideBalance:boolean): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (!this.wallets[walletId]) this.wallets[walletId] = {};
-      this.wallets[walletId].balanceHidden = hideBalance;
-      this.persistenceService.setHideBalanceFlag(walletId, this.wallets[walletId].balanceHidden+'').then(() => {
-        return resolve();
-      }).catch((err: any) => {
-        return reject(err);
-      });
-    });
-  }
-  public getSendMaxInfo(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
-    return wallet.getSendMaxInfo(opts);
-  };
-
-  public getProtocolHandler(wallet: MeritWalletClient): string {
-    return 'merit';
-  }
-
-  public copyCopayers(wallet: MeritWalletClient, newWallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let walletPrivKey = this.bwcService.getBitcore().PrivateKey.fromString(wallet.credentials.walletPrivKey);
-      let copayer = 1;
-      let i = 0;
-
-      _.each(wallet.credentials.publicKeyRing, (item) => {
-        let name = item.copayerName || ('copayer ' + copayer++);
-        return newWallet.doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
-        }).then((err) => {
-          //Ignore error is copayer already in wallet
-          if (err && !(err == Errors.COPAYER_IN_WALLET)) return reject(err);
-          if (++i == wallet.credentials.publicKeyRing.length) return resolve();
-        });
-      });
-    });
-  };
-
   // Creates a wallet on BWC/BWS
-  private doCreateWallet(opts: any): Promise<any> {
-    return new Promise((resolve, reject) => {
+  private async doCreateWallet(opts: any): Promise<any> {
+    const showOpts = _.clone(opts);
+    if (showOpts.extendedPrivateKey) showOpts.extendedPrivateKey = '[hidden]';
+    if (showOpts.mnemonic) showOpts.mnemonic = '[hidden]';
 
-      let showOpts = _.clone(opts);
-      if (showOpts.extendedPrivateKey) showOpts.extendedPrivateKey = '[hidden]';
-      if (showOpts.mnemonic) showOpts.mnemonic = '[hidden]';
+    this.logger.debug('Creating Wallet:', showOpts);
 
-      this.logger.debug('Creating Wallet:', showOpts);
+    const seed = async () => {
+      const walletClient: MeritWalletClient = await this.seedWallet(opts);
+      let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
+      let myName = opts.myName || 'me'; // TODO GetTextCatalog
 
-      let attempts = 0;
-      const MAX_ATTEMPTS = 3;
-      let seed = () => {
-        return this.seedWallet(opts).then((walletClient: MeritWalletClient) => {
+      await walletClient.createWallet(name, myName, opts.m, opts.n, {
+        network: opts.networkName,
+        singleAddress: opts.singleAddress,
+        walletPrivKey: opts.walletPrivKey,
+        parentAddress: opts.parentAddress
+      });
 
-          let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
-          let myName = opts.myName || 'me'; // TODO GetTextCatalog
+      // TODO: Subscribe to ReferralTxConfirmation
+      return walletClient;
+    };
 
-          return walletClient.createWallet(name, myName, opts.m, opts.n, {
-            network: opts.networkName,
-            singleAddress: opts.singleAddress,
-            walletPrivKey: opts.walletPrivKey,
-            parentAddress: opts.parentAddress
-          }).then((secret: any) => {
-            // TODO: Subscribe to ReferralTxConfirmation
-            return resolve(walletClient);
-          });
-        }).catch((err: any) => {
-          this.logger.warn("Error creating wallet in DCW: ", err);
-          if (err == Errors.CONNECTION_ERROR && ++attempts < MAX_ATTEMPTS) {
-            return setTimeout(seed, 2000);
-          }
+    return Observable.defer(() => seed())
+      .retryWhen(errors =>
+        errors
+          .zip(Observable.range(1, 3))
+          .mergeMap(([err, i]) => {
+            this.logger.warn('Error creating wallet in DCW: ', err);
+            if (err == Errors.CONNECTION_ERROR && i < 3) {
+              return Observable.timer(2000);
+            }
 
-          reject(err);
-        });
-      };
+            if (err && err.message === 'Checksum mismatch') {
+              err = Errors.REFERRER_INVALID;
+            }
 
-      seed();
-    });
+            return Observable.throw(err)
+          })
+      )
+      .toPromise();
   }
 
   // TODO: Rename this.
-  private seedWallet(opts: any): Promise<MeritWalletClient> {
-    return new Promise((resolve, reject) => {
+  private async seedWallet(opts: any): Promise<MeritWalletClient> {
+    opts = opts ? opts : {};
+    let walletClient = this.bwcService.getClient(null, opts);
+    let network = opts.networkName || this.configService.getDefaults().network.name;
 
-      opts = opts ? opts : {};
-      let walletClient = this.bwcService.getClient(null, opts);
-      let network = opts.networkName || this.configService.getDefaults().network.name;
-
-      if (opts.mnemonic) {
-        try {
-          // TODO: Type the walletClient
-          return this.mnemonicService.seedFromMnemonic(opts, walletClient).then((walletClient: any) => {
-            return resolve(walletClient)
-          });
-        } catch (ex) {
-          this.logger.info(ex);
-          return reject(new Error('Could not create: Invalid wallet recovery phrase')); // TODO getTextCatalog
-        }
-      } else if (opts.extendedPrivateKey) {
-        try {
-          walletClient.seedFromExtendedPrivateKey(opts.extendedPrivateKey, {
-            network: network,
-            account: opts.account || 0,
-            derivationStrategy: opts.derivationStrategy || 'BIP44'
-          });
-        } catch (ex) {
-          this.logger.warn(ex);
-          return reject(new Error('Could not create using the specified extended private key')); // TODO GetTextCatalog
-        }
-      } else if (opts.extendedPublicKey) {
-        try {
-          walletClient.seedFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
-            account: opts.account || 0,
-            derivationStrategy: opts.derivationStrategy || 'BIP44'
-          });
-          walletClient.credentials.hwInfo = opts.hwInfo;
-        } catch (ex) {
-          this.logger.warn("Creating wallet from Extended Public Key Arg:", ex, opts);
-          return reject(new Error('Could not create using the specified extended public key')); // TODO GetTextCatalog
-        }
-      } else {
-        let lang = this.languageService.getCurrent();
-        try {
+    if (opts.mnemonic) {
+      try {
+        // TODO: Type the walletClient
+        return this.mnemonicService.seedFromMnemonic(opts, walletClient);
+      } catch (ex) {
+        this.logger.info(ex);
+        throw new Error('Could not create: Invalid wallet recovery phrase'); // TODO getTextCatalog
+      }
+    } else if (opts.extendedPrivateKey) {
+      try {
+        walletClient.seedFromExtendedPrivateKey(opts.extendedPrivateKey, {
+          network: network,
+          account: opts.account || 0,
+          derivationStrategy: opts.derivationStrategy || 'BIP44'
+        });
+      } catch (ex) {
+        this.logger.warn(ex);
+        throw new Error('Could not create using the specified extended private key'); // TODO GetTextCatalog
+      }
+    } else if (opts.extendedPublicKey) {
+      try {
+        walletClient.seedFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
+          account: opts.account || 0,
+          derivationStrategy: opts.derivationStrategy || 'BIP44'
+        });
+        walletClient.credentials.hwInfo = opts.hwInfo;
+      } catch (ex) {
+        this.logger.warn('Creating wallet from Extended Public Key Arg:', ex, opts);
+        throw new Error('Could not create using the specified extended public key'); // TODO GetTextCatalog
+      }
+    } else {
+      let lang = this.languageService.getCurrent();
+      try {
+        walletClient.seedFromRandomWithMnemonic({
+          network: network,
+          passphrase: opts.passphrase,
+          language: lang,
+          account: 0
+        });
+      } catch (e) {
+        this.logger.info('Error creating recovery phrase: ' + e.message);
+        if (e.message.indexOf('language') > 0) {
+          this.logger.info('Using default language for recovery phrase');
           walletClient.seedFromRandomWithMnemonic({
             network: network,
             passphrase: opts.passphrase,
-            language: lang,
             account: 0
           });
-        } catch (e) {
-          this.logger.info('Error creating recovery phrase: ' + e.message);
-          if (e.message.indexOf('language') > 0) {
-            this.logger.info('Using default language for recovery phrase');
-            walletClient.seedFromRandomWithMnemonic({
-              network: network,
-              passphrase: opts.passphrase,
-              account: 0
-            });
-          } else {
-            return reject(e);
-          }
+        } else {
+          throw new Error(e);
         }
       }
-      return resolve(walletClient);
-    });
-  }
-
-  /**
-   * Gets the ANV for a list of addresses.
-   * @param wallet
-   */
-  public getANV(wallet: MeritWalletClient):Promise<any> {
-    return new Promise((resolve, reject) => {
-      let bitcore = this.bwcService.getBitcore();
-      let pubkey = bitcore.PrivateKey.fromString(wallet.credentials.walletPrivKey).toPublicKey();
-      let address = pubkey.toAddress(wallet.credentials.network);
-      return wallet.getANV(address).then((anv) => {
-        return resolve(anv);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-  }
-
-  /**
-   * Gets the aggregate rewards for a list of addresses.
-   * @param wallet
-   * @returns {Reward} An object with the 'mining' and 'ambassador' properties.
-   */
-  public getRewards(wallet: MeritWalletClient):Promise<any> {
-    interface MWSRewardsResponse extends _.NumericDictionary<number> { address: string, rewards: { mining: number, ambassador: number } };
-    interface FilteredRewards { mining: number, ambassador: number }
-
-    return new Promise((resolve, reject) => {
-      return this.getMainAddresses(wallet).then((addresses) => {
-        if (_.isEmpty(addresses)) {
-          this.logger.info("Addresses are empty!  Defaulting rewards to Zero");
-          return resolve( {mining: 0, ambassador: 0} );
-        }
-        return wallet.getRewards(addresses).then((rewards: MWSRewardsResponse) => {
-          let totalRewards:FilteredRewards  =  _.reduce(rewards, (totalR: any, reward:any) => {
-            if (!_.isEmpty(reward.rewards)) {
-              if (reward.rewards.mining) {
-                totalR.mining += reward.rewards.mining;
-              }
-              if (reward.rewards.ambassador) {
-                totalR.ambassador += reward.rewards.ambassador;
-              }
-              return totalR;
-            }
-          }, {mining: 0, ambassador: 0});
-
-          return resolve(totalRewards);
-        });
-      });
-    });
+    }
+    return walletClient;
   }
 
   private getPendingEasySends(wallet: MeritWalletClient): Promise<EasySend[]> {

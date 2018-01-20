@@ -1,23 +1,34 @@
 import { Component, SecurityContext } from '@angular/core';
-import { IonicPage, NavController, AlertController, NavParams, ModalController } from 'ionic-angular';
-
-import { WalletService } from 'merit/wallets/wallet.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { AddressBookService } from 'merit/shared/address-book/address-book.service';
-import { PopupService } from 'merit/core/popup.service';
-import { SendService } from 'merit/transact/send/send.service';
-import { Logger } from 'merit/core/logger';
+import { DomSanitizer } from '@angular/platform-browser';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import {
+  AlertController,
+  IonicPage,
+  LoadingController,
+  ModalController,
+  NavController,
+  NavParams,
+  ViewController
+} from 'ionic-angular';
 
 import * as _ from 'lodash';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
-import { emptyMeritContact, Searchable } from 'merit/shared/address-book/contact/contact.model';
-import { AddressBook, MeritContact } from 'merit/shared/address-book/merit-contact.model';
-import { MeritClient } from 'src/lib/merit-wallet-client/lib';
-import { DomSanitizer } from '@angular/platform-browser';
-import { ToastConfig } from "merit/core/toast.config";
-import { MeritToastController } from "merit/core/toast.controller";
+import { Logger } from 'merit/core/logger';
+import { PopupService } from 'merit/core/popup.service';
+import { ProfileService } from 'merit/core/profile.service';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { AddressBookService } from 'merit/shared/address-book/address-book.service';
+import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
+import { SendService } from 'merit/transact/send/send.service';
+import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 
-import * as Promise from 'bluebird';
+import { WalletService } from 'merit/wallets/wallet.service';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+
+
+const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
+const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
+
 
 /**
  * The Send View allows a user to frictionlessly send Merit to contacts
@@ -28,64 +39,60 @@ import * as Promise from 'bluebird';
 @Component({
   selector: 'send-view',
   templateUrl: 'send.html',
+  providers: [BarcodeScanner]
 })
 export class SendView {
   public static readonly CONTACTS_SHOW_LIMIT = 10;
+  private static ADDRESS_LENGTH = 34;
+  public filteredContacts: Array<MeritContact> = [];
+  public renderingContacts: Array<MeritContact> = [];
+  formData = { search: '' };
+  contactsOffset = 0;
+  contactsLimit = 10;
+  public hasContacts: boolean;
+  public amountToSend: number;
+  public loading: boolean;
+  // TODO use RxJS instead
+  updateFilteredContactsDebounce = _.debounce(this.updateFilteredContacts.bind(this), 200);
   private walletsToTransfer: Array<any>; // Eventually array of wallets
   private showTransferCard: boolean;
   private wallets: Array<MeritWalletClient>;
   private contacts: Array<MeritContact>;
   private currentContactsPage = 0;
   private showMoreContacts: boolean = false;
-  public filteredContacts: Array<MeritContact> = [];
-  public renderingContacts: Array<MeritContact> = [];
-  private formData: {
-    search: string
-  };
   private searchFocus: boolean;
   private hasFunds: boolean;
-  private hasOwnedMerit: boolean;
+  private hasOwnedMerit: boolean = this.profileService.hasOwnedMerit();
   private network: string;
 
-  contactsOffset = 0;
-  contactsLimit  = 10;
-
-  public hasContacts:boolean;
-  public amountToSend:number;
-
-  public loading:boolean;
-
-  private static ADDRESS_LENGTH = 34;
-
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private walletService: WalletService,
-    private popupService: PopupService,
-    private profileService: ProfileService,
-    private logger: Logger,
-    private sendService: SendService,
-    private addressBookService:AddressBookService,
-    private modalCtrl:ModalController,
-    private sanitizer:DomSanitizer,
-    private toastCtrl:MeritToastController,
-    private alertCtrl:AlertController
-  ) {
-    this.logger.info("Hello SendView!!");
-    this.hasOwnedMerit = this.profileService.hasOwnedMerit();
-    this.formData = { search: '' };
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private walletService: WalletService,
+              private popupService: PopupService,
+              private profileService: ProfileService,
+              private logger: Logger,
+              private sendService: SendService,
+              private addressBookService: AddressBookService,
+              private modalCtrl: ModalController,
+              private sanitizer: DomSanitizer,
+              private toastCtrl: MeritToastController,
+              private alertCtrl: AlertController,
+              private loadingCtrl: LoadingController,
+              private viewCtrl: ViewController,
+              private addressScanner: AddressScannerService) {
+    this.logger.info('Hello SendView!!');
   }
 
-  public ionViewDidLoad() {
-    return this.updateHasFunds().then(() => {
+  async ngOnInit() {
+    try {
+      await this.updateHasFunds();
       this.contacts = [];
       this.initList();
-      return this.initContactList();
-    }).then(() => {
-      return this.updateFilteredContacts('');
-    }).catch((err) => {
-      return this.popupService.ionicAlert('SendView Error:', err.toString());
-    });
+      await this.initContactList();
+      await this.updateFilteredContacts('');
+    } catch (err) {
+      await this.popupService.ionicAlert('SendView Error:', err.toString());
+    }
   }
 
   public ionViewWillEnter() {
@@ -93,49 +100,8 @@ export class SendView {
     this.loading = false;
   }
 
-  private hasWallets(): boolean {
-    return (_.isEmpty(this.wallets) ? false : true);
-  }
-
-  private updateHasFunds():Promise<void> {
-    return this.profileService.hasFunds().then((hasFunds) => {
-      this.hasFunds = hasFunds;
-      return Promise.resolve();
-    });
-  }
-
-  private updateWalletList(): Promise<any> {
-    let walletList:Array<any> = [];
-    return new Promise((resolve, reject) => {
-      _.each(this.wallets, (w) => {
-        walletList.push({
-          color: w.color,
-          name: w.name,
-          recipientType: 'wallet',
-          getAddress: () => {
-            Promise.resolve(this.walletService.getAddress(w, false));
-          }
-        });
-      });
-      return resolve(walletList);
-    });
-  }
-
-  private initContactList():Promise<void> {
-    return this.addressBookService.getAllMeritContacts().then((contacts) => {
-      this.hasContacts = !_.isEmpty(contacts);
-
-      this.contacts = this.contacts.concat(contacts);
-      this.showMoreContacts = contacts.length > SendView.CONTACTS_SHOW_LIMIT;
-    });
-  }
-
-  private initList():void {
-    this.filteredContacts = [];
-
-    // TODO: Resize this in the best-practices ionic3 wya.
-    //this.content.resize();
-    //TODO: Lifecycle tick if needed
+  async updateHasFunds(): Promise<void> {
+    this.hasFunds = await this.profileService.hasFunds();
   }
 
   public maybeEmail(contact: MeritContact): string {
@@ -143,18 +109,139 @@ export class SendView {
     return contact.emails[0].value;
   }
 
-  private couldBeEmail(search: string): boolean {
-    var weakEmailPattern = /^\S+@\S+/
-    return weakEmailPattern.test(search);
+  async openScanner() {
+    this.parseSearch(await this.addressScanner.scanAddress());
   }
+
+  showMore(): void {
+    this.currentContactsPage++;
+    this.updateWalletList();
+  }
+
+  searchInFocus(): void {
+    this.searchFocus = true;
+  }
+
+  searchBlurred(): void {
+    if (this.formData.search == null || this.formData.search.length == 0) {
+      this.searchFocus = false;
+    }
+  }
+
+  async updateFilteredContacts(search: string) {
+    // TODO: Improve to be more resilient.
+    if (search && search.length == SendView.ADDRESS_LENGTH) {
+      try {
+        const isValid: boolean = await this.sendService.isAddressValid(search);
+        if (isValid) {
+          const wallets = await this.profileService.getWallets();
+          this.navCtrl.push('SendAmountView', {
+            wallet: wallets[0],
+            amount: this.amountToSend,
+            sending: true,
+            contact: this.justMeritAddress(search)
+          });
+        } else {
+          this.loading = false;
+          await this.alertCtrl.create({
+            message: 'This address is invalid or has not been invited to the merit network yet!'
+          }).present();
+        }
+      } catch (err) {
+        this.loading = false;
+        await this.toastCtrl.create({
+          message: err,
+          cssClass: ToastConfig.CLASS_ERROR
+        }).present();
+      }
+    }
+
+    this.contactsOffset = 0;
+    this.filteredContacts = this.addressBookService.searchContacts(this.contacts, search);
+
+    if (this.filteredContacts.length < 1) {
+      let tempContact = this.contactFromSearchTerm(search);
+      if (tempContact) this.filteredContacts.unshift(tempContact);
+    }
+
+    this.renderingContacts = this.filteredContacts.slice(0, this.contactsLimit);
+    this.loading = false;
+  }
+
+  public goToAmount(item) {
+    return this.profileService.getWallets().then((wallets) => {
+      return this.navCtrl.push('SendAmountView', {
+        wallet: wallets[0],
+        amount: this.amountToSend,
+        sending: true,
+        contact: item
+      });
+    });
+  }
+
+  // TODO: Let's consider a better way to handle these multi-hop transitions.
+  createWallet(): void {
+    this.navCtrl.push('wallets').then(() => {
+      this.navCtrl.push('add-wallet');
+    });
+  }
+
+  buyMert(): void {
+    this.navCtrl.push('wallets').then(() => {
+      this.navCtrl.push('buy-and-sell');
+    });
+  }
+
+  renderMoreContacts(infiniteScroll) {
+    this.contactsOffset += this.contactsLimit;
+    this.renderingContacts = this.renderingContacts.concat(this.filteredContacts.slice(this.contactsOffset, this.contactsOffset + this.contactsLimit));
+    infiniteScroll.complete();
+  }
+
+  sanitizePhotoUrl(url: string) {
+    return this.sanitizer.sanitize(SecurityContext.URL, url);
+  }
+
+  private hasWallets(): boolean {
+    return (_.isEmpty(this.wallets) ? false : true);
+  }
+
+  // TODO this can be sync
+  private async updateWalletList(): Promise<any> {
+    return this.wallets.map((wallet: any) => ({
+      color: wallet.color,
+      name: wallet.name,
+      recipientType: 'wallet',
+      getAddress: async () => this.walletService.getAddress(wallet, false)
+    }));
+  }
+
+  private async initContactList(): Promise<void> {
+    const contacts = await this.addressBookService.getAllMeritContacts();
+    this.hasContacts = !_.isEmpty(contacts);
+    this.contacts = this.contacts.concat(contacts);
+    this.showMoreContacts = contacts.length > SendView.CONTACTS_SHOW_LIMIT;
+  }
+
+  private initList(): void {
+    this.filteredContacts = [];
+
+    // TODO: Resize this in the best-practices ionic3 wya.
+    //this.content.resize();
+    //TODO: Lifecycle tick if needed
+  }
+
+  private couldBeEmail(search: string): boolean {
+    return WEAK_EMAIL_PATTERN.test(search);
+  }
+
   private couldBePhoneNumber(search: string): boolean {
-    var weakPhoneNumberPattern = /^[\(\+]?\d+([\(\)\.-]\d*)*$/
-    return weakPhoneNumberPattern.test(search);
+    return WEAK_PHONE_NUMBER_PATTERN.test(search);
   }
 
   private contactFromSearchTerm(term: string): MeritContact | null {
-    if(this.couldBeEmail(term)) return this.justEmail(term);
-    if(this.couldBePhoneNumber(term)) return this.justPhoneNumber(term);
+    if (this.couldBeEmail(term)) return this.justEmail(term);
+    if (this.couldBePhoneNumber(term)) return this.justPhoneNumber(term);
     return null;
   }
 
@@ -171,18 +258,19 @@ export class SendView {
   private justPhoneNumber(phoneNumber: string): MeritContact {
     let contact = new MeritContact();
     contact.name.formatted = `Send an SMS to ${phoneNumber}`;
-    contact.phoneNumbers.push({value: phoneNumber});
+    contact.phoneNumbers.push({ value: phoneNumber });
     return contact;
   }
 
   private justEmail(email: string): MeritContact {
     let contact = new MeritContact();
     contact.name.formatted = `Send an email to ${email}`;
-    contact.emails.push({value: email});
+    contact.emails.push({ value: email });
     return contact;
   }
 
   private parseSearch(input) {
+    if (!input) return;
     this.loading = true;
 
     if (input.indexOf('merit:') == 0) input = input.slice(6);
@@ -192,110 +280,8 @@ export class SendView {
     } else {
       this.formData.search = input;
     }
+
     return this.updateFilteredContactsDebounce(this.formData.search);
-  }
-
-
-  private openScanner(): void {
-    let modal = this.modalCtrl.create('ImportScanView');
-    modal.onDidDismiss((code) => {
-        if (code) {
-          return this.parseSearch(code);
-        }
-    });
-    modal.present();
-  }
-
-  private showMore(): void {
-    this.currentContactsPage++;
-    this.updateWalletList();
-  }
-
-  private searchInFocus(): void {
-    this.searchFocus = true;
-  }
-
-  private searchBlurred(): void {
-    if (this.formData.search == null || this.formData.search.length == 0) {
-      this.searchFocus = false;
-    }
-  }
-
-  private updateFilteredContactsDebounce = _.debounce(this.updateFilteredContacts, 200);
-
-  public updateFilteredContacts(search: string):Promise<void> {
-
-    // TODO: Improve to be more resilient.
-    if(search && search.length == SendView.ADDRESS_LENGTH) {
-      return this.sendService.isAddressValid(search).then((isValid) => {
-        if (isValid) {
-          return this.profileService.getWallets()
-            .then((wallets) => {
-              this.navCtrl.push('SendAmountView', {
-                wallet: wallets[0],
-                amount: this.amountToSend,
-                sending: true,
-                contact: this.justMeritAddress(search)
-              });
-            });
-        } else {
-          this.loading = false;
-          this.alertCtrl.create({
-            message: 'This address is invalid or has not been invited to the merit network yet!'
-          }).present();
-        }
-      }).catch((err) => {
-        this.loading = false;
-        this.toastCtrl.create({
-          message: err,
-          cssClass: ToastConfig.CLASS_ERROR
-        }).present();
-      });
-    }
-
-    this.contactsOffset  = 0;
-    this.filteredContacts = this.addressBookService.searchContacts(this.contacts, search);
-    if(this.filteredContacts.length < 1) {
-      let tempContact = this.contactFromSearchTerm(search);
-      if(tempContact) this.filteredContacts.unshift(tempContact);
-    }
-    this.renderingContacts = this.filteredContacts.slice(0, this.contactsLimit);
-    this.loading = false;
-    return Promise.resolve();
-  }
-
-  public goToAmount(item) {
-    return this.profileService.getWallets().then((wallets) => {
-      return this.navCtrl.push('SendAmountView', {
-        wallet: wallets[0],
-        amount: this.amountToSend,
-        sending: true,
-        contact: item
-      });
-    });
-  }
-
-  // TODO: Let's consider a better way to handle these multi-hop transitions.
-  private createWallet():void {
-    this.navCtrl.push('wallets').then(() => {
-      this.navCtrl.push('add-wallet');
-    });
-  }
-
-  private buyMert(): void {
-    this.navCtrl.push('wallets').then(() => {
-      this.navCtrl.push('buy-and-sell');
-    });
-  }
-
-  renderMoreContacts(infiniteScroll) {
-    this.contactsOffset += this.contactsLimit;
-    this.renderingContacts = this.renderingContacts.concat(this.filteredContacts.slice(this.contactsOffset, this.contactsOffset+this.contactsLimit));
-    infiniteScroll.complete();
-  }
-
-  sanitizePhotoUrl(url:string) {
-    return this.sanitizer.sanitize(SecurityContext.URL, url);
   }
 
   private clearSearch() {

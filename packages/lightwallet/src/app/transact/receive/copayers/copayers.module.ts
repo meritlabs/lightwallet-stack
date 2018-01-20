@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
+import { QRCodeModule } from 'angular2-qrcode/lib/angular2-qrcode';
 import { IonicPageModule } from 'ionic-angular';
 import { CopayersView } from 'merit/transact/receive/copayers/copayers';
-import {QRCodeModule} from "angular2-qrcode/lib/angular2-qrcode";
 
 @NgModule({
   declarations: [
@@ -12,4 +12,5 @@ import {QRCodeModule} from "angular2-qrcode/lib/angular2-qrcode";
     IonicPageModule.forChild(CopayersView),
   ],
 })
-export class CopayersComponentModule {}
+export class CopayersComponentModule {
+}

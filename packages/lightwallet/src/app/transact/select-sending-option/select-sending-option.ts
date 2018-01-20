@@ -11,11 +11,9 @@ export class SelectSendingOptionModal {
   public sendingOptions;
   public selectedSendingOption;
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private viewCtrl: ViewController,
-  ) {
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private viewCtrl: ViewController,) {
   }
 
   async ionViewDidLoad() {

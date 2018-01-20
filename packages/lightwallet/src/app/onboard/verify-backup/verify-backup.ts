@@ -1,7 +1,7 @@
-import * as _ from 'lodash';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { AlertController } from 'ionic-angular/components/alert/alert-controller';
+import * as _ from 'lodash';
 import { Logger } from 'merit/core/logger';
 
 
@@ -15,14 +15,13 @@ import { Logger } from 'merit/core/logger';
 export class VerifyBackupView {
   public mnemonic: string;
   public enteredPhrase: string[] = []
-  public wordList: {word: string, selected: boolean}[] = [];
+  public wordList: { word: string, selected: boolean }[] = [];
 
-  constructor(
-    public alertController: AlertController,
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private logger: Logger,
-  ) {}
+  constructor(public alertController: AlertController,
+              public navCtrl: NavController,
+              public navParams: NavParams,
+              private logger: Logger,) {
+  }
 
   ionViewDidLoad() {
     this.mnemonic = this.navParams.get('mnemonic');
@@ -40,7 +39,7 @@ export class VerifyBackupView {
     return _.every(this.wordList, 'selected');
   }
 
-  public toggleWord(wordObj: {word: string, selected: boolean}): void {
+  public toggleWord(wordObj: { word: string, selected: boolean }): void {
     wordObj.selected = !wordObj.selected;
     if (wordObj.selected) {
       this.enteredPhrase.push(wordObj.word);
@@ -62,7 +61,7 @@ export class VerifyBackupView {
   }
 
   public validatePhrase(): void {
-    if(this.enteredPhrase.join(' ') == this.mnemonic) {
+    if (this.enteredPhrase.join(' ') == this.mnemonic) {
       this.toTransactView();
     } else {
       this.logger.warn(`${this.enteredPhrase.join(' ')} did not equal`);
@@ -75,7 +74,7 @@ export class VerifyBackupView {
     this.alertController.create({
       title: 'Oops...',
       message: 'The phrase you entered didn\'t match your backup phrase! ' +
-               'If you lose your wallet without a backup, it is lost for good!',
+      'If you lose your wallet without a backup, it is lost for good!',
       buttons: [{
         text: 'Try Again',
         handler: this.resetWords

@@ -15,6 +15,12 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+ion-content.content[fullscreen] {
+  .scroll-content {
+    height: 100%;
+    padding-top: 0 !important;
+  }
+}
 
 // Buttons
 @import "core/buttons";

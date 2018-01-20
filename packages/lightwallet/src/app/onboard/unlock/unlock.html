@@ -2,7 +2,7 @@
 
 <ion-content fullscreen>
 
-    <div class="container"  *ngIf="!easyReceipt">
+    <div class="container" *ngIf="!easyReceipt">
 
             <div class="title" translate>
                 Merit is an invite-only network.
@@ -19,14 +19,12 @@
 
 
             <div class="bottom-buttons">
-                <input [placeholder]="'Invite Address'"
-                    [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
-                    [(ngModel)]="formData.parentAddress" name="parentAddress">
-                <button (click)="createWallet()" ion-button icon-only translate>
+                <ion-input placeholder="Invite Address" [class.failed]="unlockState == 'fail'"
+                    [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
+                <button (click)="createWallet()" ion-button icon-only>
                     <ion-icon name="arrow-forward"></ion-icon>
                 </button>
             </div>
-
 
     </div>
 
@@ -45,26 +43,18 @@
             Merit.
         </div>
 
-        <div [style.flex]="1"></div>
-
         <div class="text">
             Now you need to enter unlock code to setup your account and accept Merit.
         </div>
 
-
         <div class="bottom-buttons">
-            <input [placeholder]="'Invite Address'"
-                [class.succeeded]="unlockState == 'success'" [class.failed]="unlockState == 'fail'"
-                [(ngModel)]="formData.parentAddress" name="parentAddress">
+            <ion-input placeholder="Invite Address" [class.failed]="unlockState == 'fail'"
+                       [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
             <button (click)="createWallet()" ion-button icon-only translate>
                 <ion-icon name="arrow-forward"></ion-icon>
             </button>
         </div>
 
-
     </div>
-
-
-
 
 </ion-content>

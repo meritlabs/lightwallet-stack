@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
+import { MomentModule } from 'angular2-moment';
 import { IonicPageModule } from 'ionic-angular';
 import { SelectSendingOptionModal } from 'merit/transact/select-sending-option/select-sending-option';
-import { MomentModule } from 'angular2-moment';
 
 @NgModule({
   declarations: [
@@ -12,4 +12,5 @@ import { MomentModule } from 'angular2-moment';
     IonicPageModule.forChild(SelectSendingOptionModal),
   ],
 })
-export class SelectSendingOptionComponentModule {}
+export class SelectSendingOptionComponentModule {
+}

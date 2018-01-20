@@ -1,13 +1,11 @@
 view-edit-contact {
 
-  .address-item {
+  ion-item.item.address-item {
     .item-inner {
-      padding-right: 0 !important;
+      padding-right: 0;
     }
     button {
       vertical-align: middle;
-      margin-right: 0 !important;
-      background: transparent !important;
     }
   }
 
