@@ -1,16 +1,11 @@
 'use strict';
 
 import * as _ from 'lodash';
-
-const $ = require('preconditions').singleton();
-let sjcl = require('sjcl');
-let Stringify = require('json-stable-stringify');
-let Bitcore = require('bitcore-lib');
-let Address = Bitcore.Address;
-let PrivateKey = Bitcore.PrivateKey;
-let PublicKey = Bitcore.PublicKey;
-let crypto = Bitcore.crypto;
-let encoding = Bitcore.encoding;
+import * as preconditions from 'preconditions';
+const $ = preconditions.singleton();
+import * as sjcl from 'sjcl';
+import * as Stringify from 'json-stable-stringify';
+import { Transaction, HDPublicKey, HDPrivateKey, Address, PrivateKey, PublicKey, crypto, encoding } from 'bitcore-lib';
 
 import { Constants } from './constants';
 import { Defaults } from './defaults';
@@ -44,7 +39,7 @@ export module Utils {
     $.checkArgument(text);
     let buf = new Buffer(text);
     let ret = crypto.Hash.sha256sha256(buf);
-    ret = new Bitcore.encoding.BufferReader(ret).readReverse();
+    ret = new encoding.BufferReader(ret).readReverse();
     return ret;
   };
 
@@ -77,9 +72,9 @@ export module Utils {
 
   export const  privateKeyToAESKey = function(privKey) {
     $.checkArgument(privKey && _.isString(privKey));
-    $.checkArgument(Bitcore.PrivateKey.isValid(privKey), 'The private key received is invalid');
-    let pk = Bitcore.PrivateKey.fromString(privKey);
-    return Bitcore.crypto.Hash.sha256(pk.toBuffer()).slice(0, 16).toString('base64');
+    $.checkArgument(PrivateKey.isValid(privKey), 'The private key received is invalid');
+    let pk = PrivateKey.fromString(privKey);
+    return crypto.Hash.sha256(pk.toBuffer()).slice(0, 16).toString('base64');
   };
 
   export const  getCopayerHash = function(name, xPubKey, requestPubKey) {
@@ -103,7 +98,7 @@ export module Utils {
     $.checkArgument(_.includes(_.values(Constants.SCRIPT_TYPES), scriptType));
 
     let publicKeys = _.map(publicKeyRing, function(item: any) {
-      let xpub = new Bitcore.HDPublicKey(item.xPubKey);
+      let xpub = new HDPublicKey(item.xPubKey);
       return xpub.deriveChild(path).publicKey;
     });
 
@@ -135,12 +130,12 @@ export module Utils {
   };
 
   export const  signRequestPubKey = function(requestPubKey, xPrivKey) {
-    let priv = new Bitcore.HDPrivateKey(xPrivKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).privateKey;
+    let priv = new HDPrivateKey(xPrivKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).privateKey;
     return this.signMessage(requestPubKey, priv);
   };
 
   export const  verifyRequestPubKey = function(requestPubKey, signature, xPubKey) {
-    let pub = (new Bitcore.HDPublicKey(xPubKey)).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
+    let pub = (new HDPublicKey(xPubKey)).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
     return this.verifyMessage(requestPubKey, signature, pub.toString());
   };
 
@@ -177,7 +172,7 @@ export module Utils {
   };
 
   export const  buildTx = function(txp) {
-    let t = new Bitcore.Transaction();
+    let t = new Transaction();
 
     console.log('before type check', _.includes(_.values(Constants.SCRIPT_TYPES), txp.addressType), _.values(Constants.SCRIPT_TYPES), txp.addressType);
     $.checkState(_.includes(_.values(Constants.SCRIPT_TYPES), txp.addressType));
@@ -203,7 +198,7 @@ export module Utils {
         console.log('address check passed');
         if (o.script) {
           $.checkState(o.amount || o.micros, 'Output should have either amount or micros specified');
-          t.addOutput(new Bitcore.Transaction.Output({
+          t.addOutput(new Transaction.Output({
             script: o.script,
             micros: o.amount || o.micros,
           }));

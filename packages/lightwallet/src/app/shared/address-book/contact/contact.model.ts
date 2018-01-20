@@ -1,7 +1,5 @@
 import * as _ from 'lodash';
-
-let Bitcore = require('bitcore-lib');
-
+import * as Bitcore from 'bitcore-lib';
 
 export interface AddressBook {
   [key: string]: MeritContact;
