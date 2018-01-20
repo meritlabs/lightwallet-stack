@@ -9,20 +9,18 @@ import { Credentials } from './credentials';
 import { Errors } from './errors';
 import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 import { EasyReceiptTxData } from 'merit/easy-receive/easy-receipt.model';
+import * as preconditions from 'preconditions';
+import * as EventEmitter from 'eventemitter3';
+import * as Bitcore from 'bitcore-lib';
+import * as Mnemonic from 'bitcore-mnemonic';
+import * as querystring from 'querystring';
+import * as Bip38 from 'bip38';
+import * as request from 'superagent';
 
-const $ = require('preconditions').singleton();
-let EventEmitter = require('eventemitter3');
-let Bitcore = require('bitcore-lib');
-let Mnemonic = require('bitcore-mnemonic');
-let querystring = require('querystring');
-let Bip38 = require('bip38');
+const $ = preconditions.singleton();
+const { Constants, Utils } = Common;
 
-let request = require('superagent');
-
-let Constants = Common.Constants;
-let Utils = Common.Utils;
-
-let Package = require('../../../../package.json');
+const Package = require('../../../../package.json');
 
 const DEFAULT_FEE = 10000;
 

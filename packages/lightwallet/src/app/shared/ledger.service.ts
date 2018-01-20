@@ -5,24 +5,25 @@ import { PlatformService } from 'merit/core/platform.service';
 @Injectable()
 export class LedgerService {
 
-  public static description = {
+  static description = {
     id: 'ledger',
     name: 'Ledger',
     longName: 'Ledger Hardware Wallet',
     isEmbeddedHardware: false,
     supportsTestnet: false
-  }
+  };
+
   private static LEDGER_CHROME_ID = 'kkdpmhnladdopljabkgpacgpliggeeaf';
 
   constructor(private platformInfo: PlatformService) {
   }
 
   public hexToArray(s) {
-    var bstr = new ByteString(s, GP.HEX).toBuffer();
-    var a = new Uint8Array(bstr.length);
+    let bstr = new ByteString(s, GP.HEX).toBuffer();
+    let a = new Uint8Array(bstr.length);
 
     Array.prototype.forEach.call(bstr,
-      function (ch, i) {
+      (ch, i) => {
         a[i] = (ch + '').charCodeAt(0);
       });
 
@@ -44,14 +45,14 @@ class Convert {
    * @static
    * @returns {String} hexadecimal representation
    */
-  public static stringToHex = function (src) {
-    var r = '';
-    var hexes = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
+   static stringToHex(src) {
+    let r = '';
+    let hexes = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
     for (var i = 0; i < src.length; i++) {
       r += hexes[src.charCodeAt(i) >> 4] + hexes[src.charCodeAt(i) & 0xf];
     }
     return r;
-  }
+  };
 
   /**
    * Convert an hexadecimal string to its binary representation
@@ -60,7 +61,7 @@ class Convert {
    * @return {Array} byte array
    * @throws {InvalidString} if the string isn't properly formatted
    */
-  public static hexToBin = function (src) {
+  static hexToBin(src) {
     var result = '';
     var digits = '0123456789ABCDEF';
     if ((src.length % 2) != 0) {

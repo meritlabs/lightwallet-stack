@@ -1,7 +1,5 @@
 import { MeritClient } from './lib/index';
-
-let BwcError = require('./lib/errors');
-
+import * as BwcError from './lib/errors';
 
 // Singleton to ensure that conserve and handle memory most effectively.
 export class MeritWalletClient extends MeritClient {
