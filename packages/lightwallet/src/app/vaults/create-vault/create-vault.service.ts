@@ -62,7 +62,7 @@ export class CreateVaultService {
           parentAddress: pubkey.toAddress().toString(),
           pubkey: pubkey.toString(),
           signPrivKey,
-          address: vault.address,
+          address: vault.address.toString(),
           addressType: 1, // pubkey address
           network: wallet.credentials.network
         };
