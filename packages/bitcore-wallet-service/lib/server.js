@@ -531,6 +531,7 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
   self.storage.fetchAddress(opts.address, function(err, address) {
     if (err) return cb(Errors.INVALID_ADDRESS);
 
+    address = address || {};
     address.refid = opts.refid;
     address.signed = true;
     address.parentAddress = opts.parentAddress;
