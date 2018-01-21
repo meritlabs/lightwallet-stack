@@ -201,13 +201,11 @@ ion-item-divider.item-divider {
   }
 }
 
-
-
 ion-list:not([no-lines]),
 div {
 
   > ion-item.item, > button[ion-item].item {
-    .item-inner {
+    &.item-block .item-inner, .item-inner {
       border-bottom: none;
     }
 
