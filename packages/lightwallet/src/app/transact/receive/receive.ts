@@ -64,6 +64,16 @@ export class ReceiveView {
   }
 
   async ionViewDidLoad() {
+    // Get a new address if we just received an incoming TX (on an address we already have)
+    this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
+      this.logger.info('Got an incomingTx on receive screen: ', n);
+      if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
+        this.generateAddress(true);
+      }
+    });
+  }
+
+  async ionViewWillEnter() {
     this.loading = true;
     this.wallets = await this.profileService.getWallets();
     if (this.wallets) {
@@ -76,15 +86,6 @@ export class ReceiveView {
       });
     }
     this.loading = false;
-
-    // Get a new address if we just received an incoming TX (on an address we already have)
-    this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
-      this.logger.info('Got an incomingTx on receive screen: ', n);
-      if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
-        this.generateAddress(true);
-      }
-    });
-
   }
 
   async generateAddress(forceNew?: boolean) {
