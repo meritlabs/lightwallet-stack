@@ -1,20 +1,85 @@
-send-view {
-  .abs-v-center {
-    z-index: 999999999 !important;
+.md view-send, .md view-send-select-bind-contact {
+  .searchbar-wrapper {
+    position: relative;
+    ion-searchbar input::-webkit-input-placeholder{
+        color: #999;
+        font-size: 14px;
+    }
+
+    .searchbar-qr-icon {
+      background: transparent;
+      position: absolute;
+      right: 21px;
+      top: 0px;
+      padding: 0;
+      background-position: center;
+      background-repeat: no-repeat;
+      width: 22px;
+      height: 100%;
+      background-size: 22px;
+    }
   }
 
-  .search-panel {
-    position: relative;
-    padding: 0;
-    input {
-      color: rgba(0, 0, 0, 0.7);
-      height: 25px;
-      line-height: 25px;
-    }
-    .search-input-button {
-      padding: 0;
-      height: 25px;
-      width: 25px;
+
+  .content {
+    height: 100%;
+    .no-results {
+      height: 100%;
+      text-align: center;
+      flex-direction: column;
+      font-size: 17px;
+      color: #9da6b7;
+      .send-button {
+        padding: 0;
+        text-align: center;
+        width: 244px;
+        height: 42px;
+        margin: 8px auto;
+        box-shadow: none;
+        font-size: 15px;
+        &.button-md-light {
+          color: #293d52;
+        }
+      }
+
+      .address {
+        font-size: 11px;
+      }
     }
   }
+
+  ion-item, .item-inner, .item-divider {
+    border: none;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .item-divider {
+    height: 40px;
+    min-height: 40px;
+  }
+
+  ion-avatar {
+    text-align: center;
+    color: color($colors, primary);
+    display: inline-block;
+    line-height: 40px;
+    letter-spacing: -2px;
+  }
+
+  contact .item-label {
+    text-transform: capitalize;
+  }
+
+  ion-item:after {
+    display: none;
+  }
+
+  .loader {
+    text-align: center;
+    ion-spinner {
+      height: 100px;
+    }
+  }
+
 }

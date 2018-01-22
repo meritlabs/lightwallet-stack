@@ -53,3 +53,4 @@ export class Logger {
     this.info(messages);
   }
 }
+

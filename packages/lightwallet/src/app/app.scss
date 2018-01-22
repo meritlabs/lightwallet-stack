@@ -21,6 +21,21 @@ ion-content.content[fullscreen] {
   }
 }
 
+.md ion-header.header {
+  ion-toolbar.toolbar.toolbar-md {
+    padding: 0;
+  }
+  &:after {
+    display: none;
+  }
+
+
+}
+
+
+
+
+
 // Buttons
 @import "core/buttons";
 
@@ -32,16 +47,6 @@ ion-content.content[fullscreen] {
 ion-content.has-refresher > .scroll-content {
   background: rgb(255, 255, 255);
 }
-
-//ion-item-divider {
-//  min-height: 55px;
-//  background: transparent !important;
-//  ion-label {
-//    font-weight: bold;
-//    font-size: 16px;
-//    color: #666;
-//  }
-//}
 
 ion-label {
   color: $label-text-color !important;
@@ -139,6 +144,7 @@ ion-item textarea {
 
   h3 {
     font-size: 17px;
+
     color: rgba(255, 255, 255, .6);
   }
 
@@ -155,8 +161,7 @@ ion-item textarea {
     }
   }
 }
-
-ion-content.has-refresher > .scroll-content {
+ll-content {
   background: $background-color;
 }
 
@@ -164,7 +169,6 @@ ion-item.item, button[ion-item].item {
   ion-label.label {
     h2 {
       font-size: 17px;
-      letter-spacing: -.2px;
       font-weight: 500;
       color: #2d3c50;
     }
@@ -364,6 +368,7 @@ ion-avatar[img-icon] {
   background: currentColor;
   display: inline-block;
 
+
   &[name="settings"] {
     mask-image: url('../assets/img/icons/settings.svg');
   }
@@ -413,3 +418,7 @@ ion-avatar[img-icon] {
 $v-dark-gray: #445 !default;
 $v-tab-send-icon: url('../img/tab-icons/ico-send.svg') !default;
 $v-tab-send-selected-icon: url('../img/tab-icons/ico-send-selected.svg') !default;
+
+.md ion-item .item-inner {
+  border: none !important;
+}

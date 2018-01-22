@@ -20,7 +20,7 @@ export class FeeService {
       priority: 'Priority',
       normal: 'Normal',
       economy: 'Economy',
-      superEconomy: 'Super Econoy',
+      superEconomy: 'Super Economy',
       custom: 'Custom'
     };
     this.CACHE_TIME_TS = 60;
@@ -72,6 +72,11 @@ export class FeeService {
 
   getCurrentFeeRate(network: string) {
     return this.getFeeRate(network, this.getCurrentFeeLevel());
+  }
+
+  public getFeeLevels(network) {
+    const walletClient = this.bwcService.getClient(null);
+    return walletClient.getFeeLevels(network);
   }
 
   async getFeeLevel(network: string, feeLevel: string): Promise<{ data: { level: string, feePerKb: number }, fromCache: Boolean }> {

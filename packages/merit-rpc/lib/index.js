@@ -142,6 +142,7 @@ RpcClient.callspec = {
   dumpPrivKey: '',
   encryptWallet: '',
   estimateFee: 'int',
+  estimateSmartFee: 'int',
   estimatePriority: 'int',
   generate: 'int',
   getAccount: '',

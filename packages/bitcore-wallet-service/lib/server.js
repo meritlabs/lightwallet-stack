@@ -1554,13 +1554,12 @@ WalletService.prototype._sampleFeeLevels = function(network, points, cb) {
     }
 
     var failed = [];
-    var levels = _.zipObject(_.map(points, function(p) {
-      var feePerKb = _.isObject(result) ? +result[p] : -1;
-      if (feePerKb < 0)
-        failed.push(p);
+    var levels = {};
+    _.each(result, function(row, nbBlocks) {
+        if (!_.isEmpty(row.errors) || _.isNil(row.feerate) ) return failed.push(nbBlocks);
+        levels[nbBlocks] =  Utils.strip(row.feerate* 1e8) || -1;
+    });
 
-      return [p, Utils.strip(feePerKb * 1e8)];
-    }));
 
     if (failed.length) {
       var failErr = 'Could not compute fee estimation in ' + network + ': ' + failed.join(', ') + ' blocks.';
@@ -1608,7 +1607,7 @@ WalletService.prototype.getFeeLevels = function(opts, cb) {
       } else {
         result = {
           feePerKb: level.defaultValue,
-          nbBlocks: null,
+          nbBlocks: level.nbBlocks,
         };
       }
     }
@@ -2219,6 +2218,11 @@ WalletService.prototype.createTx = function(opts, cb) {
           },
           function(next) {
             self._selectTxInputs(txp, opts.utxosToExclude, next);
+          },
+          function(next) {
+            // setting tx size after inputs are defined, so we can APPROXIMATELY calculate fee on the client side
+            txp.estimatedSize = txp.getEstimatedSize();
+            return next();
           },
           function(next) {
             if (!changeAddress || opts.dryRun) return next();
