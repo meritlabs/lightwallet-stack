@@ -4,6 +4,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MeritWalletClient } from '../../lib/merit-wallet-client';
 import { sortBy } from 'lodash';
+import { formatWalletHistory } from '../../utils/transactions';
 
 @IonicPage()
 @Component({
@@ -23,20 +24,20 @@ export class HistoryView {
 
   async refresh(refresher: any) {
     try {
-      await this.loadData();
+      await this.loadData(true);
     } catch (e) {}
 
     refresher.complete();
   }
 
-  async loadData() {
+  async loadData(force?: boolean) {
     const wallets = await this.profileService.getWallets();
-    const transactions = await Promise.all(wallets.map((wallet: MeritWalletClient) =>
-      this.walletService.getTxHistory(wallet)
-    ));
+    let walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
+      const walletHistory = await this.walletService.getTxHistory(wallet, { force });
+      return formatWalletHistory(walletHistory, wallet);
+    }));
 
-    // TODO sort by transaction date
-    this.transactions = sortBy(Array.prototype.concat.apply([], transactions), '');
+    this.transactions = sortBy(Array.prototype.concat.apply([], walletHistories), 'time').reverse();
 
     console.log('Transactions are ', this.transactions);
   }

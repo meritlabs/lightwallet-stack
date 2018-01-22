@@ -1,39 +1,60 @@
 import * as _ from 'lodash';
 import { MeritWalletClient } from '../lib/merit-wallet-client';
 
-// TODO create WalletHistory class and move this function in there
-export function formatWalletHistory(wh: any[]): any[] {
-  if (!_.isEmpty(wh)) {
-    return _.map(wh, (h: any) => {
-      if (!_.isNil(h) && !_.isNil(h.action)) {
-        const pendingString = h.isPendingEasySend ? '(pending) ' : '';
-        switch (h.action) {
-          case 'sent':
-            if (h.confirmations == 0) {
-              h.actionStr = 'Sending Payment...';
-            } else {
-              h.actionStr = 'Payment Sent';
-            }
-            break;
-          case 'received':
-            if (h.confirmations == 0) {
-              h.actionStr = 'Receiving Payment...';
-            } else {
-              h.actionStr = 'Payment Received';
-            }
-            break;
-          case 'moved':
-            h.actionStr = 'Moved Merit';
-            break;
-          default:
-            h.actionStr = 'Recent Transaction';
-            break
-        }
-        h.actionStr = pendingString + h.actionStr;
+export function formatWalletHistory(walletHistory: any[], wallet?: any): any[] {
+  if (_.isEmpty(walletHistory)) return [];
+
+  console.log(walletHistory, wallet);
+
+  let pendingString;
+
+  return walletHistory.map((history: any) => {
+    if (!_.isNil(history) && !_.isNil(history.action)) {
+      pendingString = history.isPendingEasySend ? '(pending) ' : '';
+      switch (history.action) {
+        case 'sent':
+          if (history.confirmations == 0) {
+            history.actionStr = 'Sending Payment...';
+          } else {
+            history.actionStr = 'Payment Sent';
+          }
+
+          history.addressFrom = wallet.name;
+          break;
+        case 'received':
+          if (history.confirmations == 0) {
+            history.actionStr = 'Receiving Payment...';
+          } else {
+            history.actionStr = 'Payment Received';
+          }
+          history.addressTo = wallet.name;
+          break;
+        case 'moved':
+          history.actionStr = 'Moved Merit';
+          break;
+        default:
+          history.actionStr = 'Recent Transaction';
+          break
       }
-      return h;
-    });
-  } else {
-    return [];
-  }
+      history.actionStr = pendingString + history.actionStr;
+
+      history.type = ['received', 'receiving'].indexOf(history.action) > -1 ? 'credit' : 'debit';
+
+      if (wallet && !history.walletId) {
+        history.walletId = wallet.id;
+      }
+
+      if (history.isCoinbase) {
+        // mining rewards
+        history.name = 'Mining rewards';
+      } else {
+        // user sent Merit to someone else
+        // TODO get contact name if wallet address is in address box
+        history.name = history.outputs[0].address;
+      }
+    }
+
+    console.log(history);
+    return history;
+  });
 }

@@ -354,7 +354,7 @@ export class WalletService {
 
         if (!tx) return reject(new Error('Could not get transaction'));
         return resolve(tx);
-      };
+      }
 
       if (wallet.completeHistory && wallet.completeHistory.isValid) {
         finish(wallet.completeHistory);
@@ -368,7 +368,6 @@ export class WalletService {
           return reject(err);
         });
       }
-      ;
     });
   }
 
@@ -1025,7 +1024,7 @@ export class WalletService {
 
       if (opts.feeLevels) {
         opts.lowAmount = this.getLowAmount(wallet, opts.feeLevels);
-      };
+      }
 
       const fixTxsUnit = (txs: any): void => {
         if (!txs || !txs[0] || !txs[0].amountStr) return;
@@ -1039,7 +1038,7 @@ export class WalletService {
             tx.amountStr = this.txFormatService.formatAmountStr(tx.amount);
             tx.feeStr = this.txFormatService.formatAmountStr(tx.fees);
           });
-        };
+        }
       };
 
       return this.getPendingEasySends(wallet).then((easySends) => {
