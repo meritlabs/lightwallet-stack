@@ -1,0 +1,49 @@
+<ion-header>
+
+    <ion-navbar color="light">
+        <ion-buttons start>
+            <ion-icon name="close" (click)="cancel"></ion-icon>
+        </ion-buttons>
+        <ion-title>Incoming unlock request</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <div class="datetime">
+        {{unlockRequest.timestamp*1000 | amDateFormat:'DD:MM HH:mm'}}
+    </div>
+    <ion-avatar img-icon>
+        <img src="assets/img/icons/incoming_request_l.svg">
+    </ion-avatar>
+
+    <h2>{{unlockRequest.address}}</h2>
+    <p *ngIf="unlockRequest.alias">@{{unlockRequest.alias}}</p>
+
+    <ion-list *ngIf="!unlockRequest.accepted">
+        <button ion-item (click)="accept()">
+            ACCEPT
+        </button>
+
+        <button ion-item (click)="decline()">
+            DECLINE
+        </button>
+
+    </ion-list>
+
+    <ion-list *ngIf="unlockRequest.accepted">
+        <button ion-item (click)="accept()">
+            CREATE NEW
+        </button>
+
+        <button ion-item (click)="decline()">
+            DECLINE
+        </button>
+
+    </ion-list>
+
+
+
+
+</ion-content>
