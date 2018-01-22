@@ -1,0 +1,60 @@
+<ion-header>
+
+    <ion-navbar color="light">
+        <ion-title>Edit Contact</ion-title>
+        <ion-buttons end>
+            <button ion-button (click)="save()" [disabled]="!isSaveAvailable()" color="primary">
+                Done
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <ion-list>
+        <ion-item *ngIf="!isMeritContact()">
+            <ion-label stacked>Name</ion-label>
+            <ion-label>{{contact.name.formatted}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="isMeritContact()">
+            <ion-label stacked>Name</ion-label>
+            <ion-input type="text" [(ngModel)]="contact.name.formatted"></ion-input>
+        </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="contact.phoneNumbers.length">
+        <ion-item *ngFor="let number of contact.phoneNumbers">
+            <ion-label stacked>Phone</ion-label>
+            <ion-label>{{number.value}}</ion-label>
+        </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="contact.emails.length">
+        <ion-item *ngFor="let email of contact.emails">
+            <ion-label stacked>Email</ion-label>
+            <ion-label>{{email.value}}</ion-label>
+        </ion-item>
+    </ion-list>
+
+
+    <ion-list *ngIf="contact.meritAddresses.length">
+        <ion-item *ngFor="let mAddress of contact.meritAddresses">
+            <ion-label stacked>Merit Address</ion-label>
+            <ion-label>{{mAddress.address}}</ion-label>
+            <button ion-button icon-only clear item-end (click)="removeAddress(mAddress)"><ion-icon name="remove-circle" color="danger"></ion-icon></button>
+        </ion-item>
+    </ion-list>
+
+    <ion-item>
+            <ion-label stacked>New Address</ion-label>
+            <ion-input type="text" placeholder="Enter Merit Address" [(ngModel)]="newAddress"></ion-input>
+            <button ion-button icon-only clear item-end (click)="addAddress(newAddress)" *ngIf="newAddress"><ion-icon name="checkmark-circle" color="primary"></ion-icon></button>
+    </ion-item>
+
+    <ion-item *ngIf="isMeritContact()">
+        <button ion-button clear class="delete-button" (click)="deleteContact()">DELETE CONTACT</button>
+    </ion-item>
+
+</ion-content>

@@ -97,8 +97,6 @@
         <string>false</string>
     </edit-config>
     <allow-navigation href="*" />
-    <content original-src="index.html" src="http://192.168.1.98:8100" />
-    <allow-navigation href="http://192.168.1.98:8100" />
     <engine name="ios" spec="4.5.4" />
     <engine name="android" spec="^6.4.0" />
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.2.1" />
