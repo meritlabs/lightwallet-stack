@@ -2,7 +2,9 @@
 
     <ion-navbar color="light">
         <ion-buttons start>
-            <ion-icon name="close" (click)="cancel"></ion-icon>
+            <button ion-button icon-only clear (click)="cancel()">
+                <ion-icon name="close"  color="primary"></ion-icon>
+            </button>
         </ion-buttons>
         <ion-title>Incoming unlock request</ion-title>
     </ion-navbar>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 
 
 
@@ -14,13 +14,34 @@ export class IncomingRequestModal {
 
   constructor(
     private navCtrl: NavController,
-    private navParams: NavParams
+    private navParams: NavParams,
+    private viewCtrl: ViewController
   ) {
     this.unlockRequest = this.navParams.get('unlockRequest');
   }
 
   ionViewDidLoad() {
     //do something here
+  }
+
+  cancel() {
+    this.viewCtrl.dismiss();
+  }
+
+  accept() {
+    //todo do accepting
+  }
+
+  decline() {
+    //todo do declining
+  }
+
+  toCreateContact() {
+
+  }
+
+  toBindContact() {
+
   }
 
 }
