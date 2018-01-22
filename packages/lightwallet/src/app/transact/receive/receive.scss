@@ -1,19 +1,19 @@
 view-receive {
 
-  .backdrop {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: rgb(244, 247,250);
-    opacity: 0.7;
-    z-index: 1000;
-  }
-
   .unlock-screen {
 
     text-align: center;
+
+    .unlock-backdrop {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: rgb(244, 247,250);
+      opacity: 0.7;
+      z-index: 1000;
+    }
 
     .unlock-popup {
       height: 204px;

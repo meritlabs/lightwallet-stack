@@ -11,11 +11,31 @@
 </ion-header>
 <ion-content>
 
-  <div *ngIf="loadingContacts" class="loader">
-    <ion-spinner></ion-spinner>
-  </div>
+    <div *ngIf="loadingContacts" class="loader">
+        <ion-spinner></ion-spinner>
+    </div>
 
-  <div *ngIf="!loadingContacts && searchResult" class="content">
+    <div *ngIf="!loadingContacts && !hasUnlockedWallets" class="unlock-screen">
+        <div class="unlock-backdrop" *ngIf="!hasUnlockedWallets"></div>
+
+        <div class="unlock-popup">
+            <div class="top-label">Before you start...</div>
+            <img src="assets/img/icons/confirm.svg">
+            <h2>Waiting for unlock</h2>
+            <div class="bottom-label">You cannot send Merit until your wallet unlock request is confirmed</div>
+        </div>
+
+        <ion-list>
+            <ion-item *ngFor="let idx of [0,1,2,3,4,5,6,7,8,9,10]" class="contact-stub">
+                <ion-avatar item-start img-icon></ion-avatar>
+                <h2></h2>
+                <p></p>
+            </ion-item>
+        </ion-list>
+    </div>
+
+
+  <div *ngIf="!loadingContacts && searchResult  && hasUnlockedWallets" class="content">
 
     <div class="no-results" *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length">
       <div class="no-results-label">No results</div>
