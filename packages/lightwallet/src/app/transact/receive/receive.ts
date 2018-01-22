@@ -39,6 +39,9 @@ export class ReceiveView {
   error: string;
   mainAddressGapReached: boolean;
 
+  hasUnlockedWallets:boolean;
+  loading:boolean;
+
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private modalCtrl: ModalController,
@@ -60,15 +63,20 @@ export class ReceiveView {
     this.amountCurrency = this.availableUnits[0];
   }
 
-  ionViewDidLoad() {
-    this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
-      this.wallets = wallets;
-      if (this.wallets && this.wallets[0]) {
-        this.wallet = this.wallets[0];
-        this.generateAddress();
-      }
-    });
-
+  async ionViewDidLoad() {
+    this.loading = true;
+    this.wallets = await this.profileService.getWallets();
+    if (this.wallets) {
+      this.hasUnlockedWallets = this.wallets.some(w => {
+        w.unlocked = false;
+        if (w.unlocked) {
+          this.wallet = w;
+          this.generateAddress();
+          return true;
+        }
+      });
+    }
+    this.loading = false;
 
     // Get a new address if we just received an incoming TX (on an address we already have)
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
@@ -76,7 +84,8 @@ export class ReceiveView {
       if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
         this.generateAddress(true);
       }
-    })
+    });
+
   }
 
   async generateAddress(forceNew?: boolean) {
