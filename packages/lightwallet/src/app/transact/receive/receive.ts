@@ -32,6 +32,8 @@ export class ReceiveView {
   availableUnits: Array<string>;
   amountCurrency: string;
 
+  loading: boolean;
+  hasUnlockedWallets: boolean;
   wallets;
   wallet;
 
@@ -61,14 +63,19 @@ export class ReceiveView {
     this.amountCurrency = this.availableUnits[0];
   }
 
-  ionViewDidLoad() {
-    this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
-      this.wallets = wallets;
-      if (this.wallets && this.wallets[0]) {
-        this.wallet = this.wallets[0];
-        this.generateAddress();
-      }
-    });
+  async ionViewDidLoad() {
+    this.loading = true;
+    this.wallets = await this.profileService.getWallets();
+    if (this.wallets) {
+      this.hasUnlockedWallets = this.wallets.some(w => {
+        if (w.unlocked) {
+          this.wallet = w;
+          this.generateAddress();
+          return true;
+        }
+      });
+    }
+    this.loading = false;
 
 
     // Get a new address if we just received an incoming TX (on an address we already have)
