@@ -30,46 +30,29 @@ export class WalletDetailsView {
     this.logger.info('Inside the wallet-details view.');
   }
 
-  ionViewWillLeave() {
+  deposit() {
+
   }
 
-  ionViewWillEnter() {
+  send() {
+
+  }
+
+  ngOnInit() {
     this.getWalletHistory();
-  }
-
-  ionViewDidLoad() {
-    //do something here
-  }
-
-  goToBackup() {
-    this.logger.info('not implemented yet');
   }
 
   goToEditWallet() {
     this.navCtrl.push('EditWalletView', { wallet: this.wallet });
   }
 
-  isNotConfirmedTx(tx) {
-    return (tx.isCoinbase && !tx.isMature) || tx.confirmations < 1;
-  }
-
   // Belt and suspenders check to be sure that the total number of TXs on the page
 
-  private getWalletHistory(force: boolean = false): void {
-    this.walletService.getTxHistory(this.wallet, { force: force }).then((walletHistory) => {
-      this.wallet.completeHistory = formatWalletHistory(walletHistory);
-    }).catch((err) => {
+  private async getWalletHistory(force: boolean = false) {
+    try {
+      this.wallet.completeHistory = formatWalletHistory(await this.walletService.getTxHistory(this.wallet, { force: force }), this.wallet);
+    } catch (err) {
       this.logger.info(err);
-    });
-  }
-
-
-  // add up to the total balance in status.
-  private txHistoryInSyncWithStatus(): boolean {
-    return true;
-  }
-
-  private goToTxDetails(tx: any) {
-    this.navCtrl.push('TxDetailsView', { walletId: this.wallet.credentials.walletId, txId: tx.txid });
+    }
   }
 }

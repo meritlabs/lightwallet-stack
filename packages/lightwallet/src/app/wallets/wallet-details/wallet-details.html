@@ -2,7 +2,7 @@
   <ion-navbar>
     <ion-title smaller-title>{{ wallet.name }}</ion-title>
     <ion-buttons end>
-      <button ion-button icon-only (click)="goToEditWallet()">
+      <button ion-button icon-only navPush="EditWalletView" [navParams]="{ wallet: wallet }">
         <ion-icon name="settings" merit-icon></ion-icon>
       </button>
     </ion-buttons>
@@ -10,8 +10,7 @@
 </ion-header>
 
 <ion-content>
-  <div class="big-header" (click)="getWalletHistory(true)" [style.background]="wallet.color"
-       [class.default]="!wallet.color">
+  <div class="big-header" (click)="getWalletHistory(true)" [style.background]="wallet.color" [class.default]="!wallet.color">
     <h2 class="amount">
       {{ wallet.status.totalBalanceStr || 0 }}&nbsp;<small>MRT</small>
     </h2>
@@ -21,7 +20,7 @@
     <h3 class="detail-fiat">{{ wallet.status.totalBalanceAlternativeStr }}</h3>
     <div class="action-buttons">
       <div class="button-cell">
-        <button ion-button>
+        <button ion-button (click)="deposit()">
           <span class="inner-container">
             <ion-icon name="add-circle"></ion-icon>
             <span>Deposit</span>
@@ -29,7 +28,7 @@
         </button>
       </div>
       <div class="button-cell">
-        <button ion-button>
+        <button ion-button (click)="send()">
           <span class="inner-container">
             <ion-icon name="ios-send"></ion-icon>
           <span>Send</span>
@@ -38,24 +37,5 @@
       </div>
     </div>
   </div>
-
-  <ion-list>
-    <button ion-item *ngFor="let tx of wallet.completeHistory" (click)="goToTxDetails(tx)">
-      <ion-avatar item-start>
-        <img src="assets/img/icon-receive-history.svg" *ngIf="tx.action == 'received'" width="40">
-        <img src="assets/img/icon-sent.svg" *ngIf="tx.action == 'sent'" width="40">
-        <img src="assets/img/icon-moved.svg" *ngIf="tx.action == 'moved'" width="40">
-      </ion-avatar>
-      <ion-label>
-        <h2>{{tx.actionStr}}</h2>
-        <p class="merit-amount">{{ tx.amountStr || '0.00' }}&nbsp;<span>MRT</span></p>
-        <p *ngIf="isNotConfirmedTx(tx)">Awaiting confirmation</p>
-      </ion-label>
-
-      <ion-note class="detail" item-end>
-        <ion-icon name="ios-timer-outline" *ngIf="isNotConfirmedTx(tx)"></ion-icon>
-        <div class="date">{{tx.time * 1000 | amTimeAgo}}</div>
-      </ion-note>
-    </button>
-  </ion-list>
+  <transaction-history [transactions]="wallet.completeHistory"></transaction-history>
 </ion-content>

@@ -29,6 +29,8 @@ export class TxDetailsView {
   private bitcore: any;
   private txId: string;
 
+
+
   constructor(private navParams: NavParams,
               private txFormatService: TxFormatService,
               private walletService: WalletService,
@@ -38,42 +40,47 @@ export class TxDetailsView {
               private bws: BwcService,
               private rateService: RateService,
               private loadingCtrl: LoadingController) {
-    this.wallet = this.walletService.getWallet(this.navParams.get('walletId'));
-    this.vault = this.navParams.get('vault');
-    this.txId = this.navParams.get('txId');
-    this.bitcore = this.bws.getBitcore();
+    this.tx = this.navParams.get('tx');
 
-    this.tx = {};
-    this.confirmations = null;
+    // this.wallet = this.walletService.getWallet(this.navParams.get('walletId'));
+    // this.vault = this.navParams.get('vault');
+    // this.txId = this.navParams.get('txId');
+    //
+    // this.bitcore = this.bws.getBitcore();
+    //
+    // this.tx = {};
+    // this.confirmations = null;
   }
 
   async ngOnInit() {
-    const loading = this.loadingCtrl.create({
-      content: 'Loading transaction...'
-    });
-    loading.present();
+    if (this.tx.safeConfirmed) this.confirmations = this.tx.safeConfirmed;
+    else if (this.tx.confirmations > CONFIRMATION_THRESHOLD) this.confirmations = `${CONFIRMATION_THRESHOLD}+`;
+    // const loading = this.loadingCtrl.create({
+    //   content: 'Loading transaction...'
+    // });
+    // loading.present();
 
-    const vault = this.navParams.get('vault');
+    // const vault = this.navParams.get('vault');
+    //
+    // if (vault) {
+    //   const txs = await this.vaultService.getVaultTxHistory(this.wallet, vault);
+    //   const tx = _.find(txs, {
+    //     txid: this.txId
+    //   });
+    //
+    //   if (!tx) throw new Error('Could not get transaction');
+    //
+    //   this.updateTxDetails(this.processTx(tx));
+    // } else {
+    //   try {
+    //     const tx = await this.walletService.getTx(this.wallet, this.txId);
+    //     this.updateTxDetails(tx);
+    //   } catch (err) {
+    //     this.logger.info(err);
+    //   }
+    // }
 
-    if (vault) {
-      const txs = await this.vaultService.getVaultTxHistory(this.wallet, vault);
-      const tx = _.find(txs, {
-        txid: this.txId
-      });
-
-      if (!tx) throw new Error('Could not get transaction');
-
-      this.updateTxDetails(this.processTx(tx));
-    } else {
-      try {
-        const tx = await this.walletService.getTx(this.wallet, this.txId);
-        this.updateTxDetails(tx);
-      } catch (err) {
-        this.logger.info(err);
-      }
-    }
-
-    loading.dismiss();
+    // loading.dismiss();
   }
 
   addMemo() {
