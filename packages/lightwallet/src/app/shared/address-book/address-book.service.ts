@@ -113,8 +113,31 @@ export class AddressBookService {
     return addressBook;
   };
 
+  public bindAddressToContact(contact:MeritContact, address:string, network:string) {
+
+    return this.getAddressbook(network).then((addressBook) => {
+      let existingContact:MeritContact;
+      if (!_.isEmpty(contact.meritAddresses)) {
+        _.some(contact.meritAddresses, (mAddress) => {
+            existingContact = addressBook[mAddress.address];
+            return existingContact;
+        });
+      }
+      if (existingContact) {
+        existingContact.meritAddresses.push({address: address, network: network});
+      } else {
+        contact.meritAddresses.push({address: address, network: network});
+        addressBook[address] = contact;
+      }
+      return this.persistenceService.setAddressbook(network, addressBook).then(() => {
+        return addressBook;
+      });
+    });
+  }
+
   async remove(addr: string, network: string): Promise<AddressBook> {
     const addressBook = await this.getAddressbook(network);
+    console.log(addressBook, addr, network);
     delete addressBook[addr];
     await this.persistenceService.setAddressbook(network, addressBook);
     return addressBook;

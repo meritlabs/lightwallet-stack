@@ -39,6 +39,7 @@
           <button ion-button item-end (click)="showPassword = !showPassword" clear>{{ showPassword ? 'Hide' : 'Show' }}</button>
         </ion-item>
 
+
       <button ion-item no-lines toggle-button (click)="advancedToggled = !advancedToggled">
         <ion-label>
           <h2>Advanced options</h2>
@@ -80,6 +81,7 @@
     <div [hidden]="segment != 'file'">
 
         <ion-item (click)="openFilePicker()">
+
           <ion-avatar img-icon item-start>
             <img src="assets/img/icons/folder.svg" alt="">
           </ion-avatar>
@@ -89,6 +91,7 @@
             <ion-label *ngIf="formData.backupFile">
                 {{formData.backupFile.name}}
             </ion-label>
+
 
           <button ion-button item-end round icon-only add-button>
             <ion-icon name="add"></ion-icon>

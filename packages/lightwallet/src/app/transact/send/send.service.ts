@@ -1,25 +1,33 @@
 import { Injectable } from '@angular/core';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
+import { PersistenceService } from 'merit/core/persistence.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { RateService } from 'merit/transact/rate.service';
 
 /*
-  Service to help manage sending merit to others.
-*/
+ Service to help manage sending merit to others.
+ */
 @Injectable()
 export class SendService {
   private bitcore: any;
 
-  constructor(private bwcService: BwcService,
-              private rate: RateService,
-              private config: ConfigService,
-              private logger: Logger) {
+  private readonly ADDRESS_LENGTH = 34;
+
+  constructor(
+    private bwcService: BwcService,
+    private rate: RateService,
+    private config: ConfigService,
+    private persistenceService: PersistenceService,
+    private logger: Logger
+  ) {
     this.logger.info('Hello SendService');
     this.bitcore = this.bwcService.getBitcore();
   }
 
   public isAddressValid(addr: string): Promise<boolean> {
+    if (!addr || addr.length != this.ADDRESS_LENGTH) return Promise.resolve(false);
+    console.log('passed');
     // First, let's check to be sure it's the right format.
     try {
       let address = this.bitcore.Address.fromString(addr);
@@ -31,6 +39,10 @@ export class SendService {
     } catch (_e) {
       return Promise.resolve(false);
     }
+  }
+
+  public getAddressNetwork(addr) {
+    return this.bitcore.Address.fromString(addr).network;
   }
 
   private isAddressUnlocked(addr: string, network: string): Promise<boolean> {
@@ -46,6 +58,15 @@ export class SendService {
         }
       });
     });
-
   }
+
+  public async registerSend(contact, method) {
+    return this.persistenceService.registerSend(contact, method);
+  }
+
+  public async getSendHistory() {
+    let history = await this.persistenceService.getSendHistory();
+    return history || [];
+  }
+
 }
