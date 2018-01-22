@@ -6,7 +6,13 @@
 
 <ion-content>
 
-    <div *ngIf="!loading && !hasUnlockedWallets" class="unlock-screen">
+  <div *ngIf="loading">
+      <ion-spinner></ion-spinner>
+  </div>
+
+  <div *ngIf="!loading && !hasUnlockedWallets" class="unlock-screen">
+        <div class="unlock-backdrop"></div>
+
         <div class="unlock-popup">
             <div class="top-label">Before you start...</div>
             <img src="assets/img/icons/confirm.svg">
