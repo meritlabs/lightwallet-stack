@@ -114,7 +114,7 @@ Storage.prototype.connect = function(opts, cb) {
   if (this.db) return cb();
 
   var config = opts.mongoDb || {};
-  mongodb.MongoClient.connect(config.uri, function(err, db) {
+  mongodb.MongoClient.connect(config.uri, config.opts, function(err, db) {
     if (err) {
       log.error('Unable to connect to the mongoDB. Check the credentials.');
       return cb(err);
