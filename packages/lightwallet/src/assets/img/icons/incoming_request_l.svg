@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="23px" height="31px" viewBox="0 0 23 31" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>incoming_request_l</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Info-/-Unconfirmed-Wallet-" transform="translate(-176.000000, -404.000000)">
+            <g id="Group-3" transform="translate(148.000000, 380.000000)">
+                <g id="incoming_request_l" transform="translate(30.000000, 23.000000)">
+                    <g id="send_request" transform="translate(0.000000, 15.000000)" stroke-linecap="round" stroke-width="2.31818182" stroke="#5F6C82">
+                        <g id="unlock-code-copy-2">
+                            <path d="M16.436103,0 L17.575,0 C18.3620058,1.98179391e-15 19,0.64758813 19,1.44642857 L19,2.79628209 L19,13.5535714 C19,14.3524119 18.3620058,15 17.575,15 L1.425,15 C0.637994231,15 1.61364355e-15,14.3524119 4.68760833e-16,13.5535714 L0,1.44642857 C-9.63804095e-17,0.64758813 0.637994231,8.6045941e-16 1.425,7.13714802e-16 L2.6332194,0" id="Rectangle-40"></path>
+                            <path d="M1.48938815,1.36363636 L8.59741658,8.64433457 L8.59741658,8.64433457 C9.12352124,9.18321948 9.98686586,9.19357992 10.5257508,8.66747526 C10.5335566,8.65985454 10.5412707,8.65214042 10.5488915,8.64433457 L17.6569199,1.36363636" id="Path-2"></path>
+                        </g>
+                    </g>
+                    <g id="send_request" transform="translate(2.714286, 0.000000)" stroke="#00B0DD">
+                        <g id="arrow" transform="translate(6.785714, 8.181818) rotate(-270.000000) translate(-6.785714, -8.181818) translate(-1.357143, 1.363636)">
+                            <polyline id="Rectangle-3" stroke-width="2.31818182" stroke-linecap="round" stroke-linejoin="round" transform="translate(12.097291, 6.818182) scale(1, -1) rotate(90.000000) translate(-12.097291, -6.818182) " points="5.8413825 9.83122944 12.0972906 3.8051342 18.3531988 9.83122944"></polyline>
+                            <path d="M2.67132767,6.81818182 C2.67132767,6.93114914 2.57974956,7.02272724 2.46678224,7.02272724 L13.8097244,7.02272724 C13.6699078,7.02272724 13.5697692,6.91970777 13.5697692,6.81818182 C13.5697692,6.71198153 13.6653873,6.6136364 13.8097244,6.6136364 L2.46678224,6.6136364 C2.57974956,6.6136364 2.67132767,6.7052145 2.67132767,6.81818182 Z" id="Rectangle-2" stroke-width="2.72727273"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
