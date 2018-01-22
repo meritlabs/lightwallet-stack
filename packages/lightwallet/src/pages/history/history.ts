@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage } from 'ionic-angular';
+import { IonicPage, ModalController } from 'ionic-angular';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MeritWalletClient } from '../../lib/merit-wallet-client';
@@ -15,8 +15,11 @@ export class HistoryView {
 
   transactions: any[];
 
-  constructor(private walletService: WalletService,
-              private profileService: ProfileService) {}
+  constructor(
+    private walletService: WalletService,
+    private profileService: ProfileService,
+    private modalCtrl: ModalController
+  ) {}
 
   async ngOnInit() {
     await this.loadData();
@@ -31,15 +34,28 @@ export class HistoryView {
   }
 
   async loadData(force?: boolean) {
-    const wallets = await this.profileService.getWallets();
-    let walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
-      const walletHistory = await this.walletService.getTxHistory(wallet, { force });
-      return formatWalletHistory(walletHistory, wallet);
-    }));
+    //const wallets = await this.profileService.getWallets();
+    //let walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
+    //  const walletHistory = await this.walletService.getTxHistory(wallet, { force });
+    //  return formatWalletHistory(walletHistory, wallet);
+    //}));
+    //
+    //this.transactions = sortBy(Array.prototype.concat.apply([], walletHistories), 'time').reverse();
+    //
+    //console.log('Transactions are ', this.transactions);
 
-    this.transactions = sortBy(Array.prototype.concat.apply([], walletHistories), 'time').reverse();
 
-    console.log('Transactions are ', this.transactions);
+  }
+
+  public ionViewWillEnter() {
+    this.showUnlockModal(); //todo temp!!
+  }
+
+  //TODO TEMP!!!!!!!!
+  public showUnlockModal() {
+    let unlockRequest = {timestamp: (new Date()).getTime(), address: 'mTU55fvNoHc4ewK6Rucb3Wnccihr499uGJ', alias: 'mywallet'};
+    let modal = this.modalCtrl.create('IncomingRequestModal', {unlockRequest});
+    modal.present();
   }
 
 }
