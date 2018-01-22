@@ -7,6 +7,7 @@ import { SendService } from 'merit/transact/send/send.service';
 import { SendMethod } from 'merit/transact/send/send-method.model';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
+import { ProfileService } from 'merit/core/profile.service';
 
 import * as _ from 'lodash';
 
@@ -32,10 +33,13 @@ export class SendView {
 
   private suggestedMethod:SendMethod;
 
+  public hasUnlockedWallets:boolean;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
     private addressBookService:AddressBookService,
+    private profileService: ProfileService,
     private sanitizer:DomSanitizer,
     private sendService: SendService,
     private modalCtrl:ModalController,
@@ -46,6 +50,8 @@ export class SendView {
 
   async ionViewDidLoad() {
     this.loadingContacts = true;
+    let wallets = await this.profileService.getWallets();
+    this.hasUnlockedWallets = wallets && wallets.some(w => w.unlocked);
     this.contacts = await this.addressBookService.getAllMeritContacts();
     this.loadingContacts = false;
     this.updateRecentContacts();
