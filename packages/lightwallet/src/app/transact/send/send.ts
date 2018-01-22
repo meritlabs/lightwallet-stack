@@ -50,14 +50,19 @@ export class SendView {
 
   async ionViewDidLoad() {
     this.loadingContacts = true;
-    let wallets = await this.profileService.getWallets();
-    this.hasUnlockedWallets = wallets && wallets.some(w => w.unlocked);
+    await this.updateHasUnlocked();
     this.contacts = await this.addressBookService.getAllMeritContacts();
     this.loadingContacts = false;
     this.updateRecentContacts();
   }
 
+  private async updateHasUnlocked() {
+    let wallets = await this.profileService.getWallets();
+    this.hasUnlockedWallets = wallets && wallets.some(w => w.unlocked);
+  }
+
   async ionViewWillEnter() {
+    await this.updateHasUnlocked();
     this.contacts = await this.addressBookService.getAllMeritContacts();
     this.updateRecentContacts();
     this.parseSearch();
