@@ -312,8 +312,25 @@ ion-note.note.wallet-color-indicator {
   background: map_get($colors, primary);
 }
 
-// merit icons
+ion-toolbar.toolbar.toolbar-md {
+  padding: 0;
+  .toolbar-content {
+    align-self: flex-end;
+    ion-segment.segment {
+      ion-segment-button.segment-button {
+        letter-spacing: -0.31px;
+        color: #9da6b7;
 
+        &.segment-activated {
+          color: #2d3c50;
+        }
+      }
+    }
+  }
+}
+
+
+// merit icons
 ion-avatar[img-icon] {
   background: #f0f3f8;
   border-radius: 500rem;
