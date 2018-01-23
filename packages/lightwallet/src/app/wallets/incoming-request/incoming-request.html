@@ -6,7 +6,10 @@
                 <ion-icon name="close"  color="primary"></ion-icon>
             </button>
         </ion-buttons>
-        <ion-title>Incoming unlock request</ion-title>
+        <ion-title>
+            <span *ngIf="!unlockRequest.accepted">Incoming unlock request</span>
+            <span *ngIf="unlockRequest.accepted">Request accepted</span>
+        </ion-title>
     </ion-navbar>
 
 </ion-header>
@@ -35,12 +38,12 @@
     </ion-list>
 
     <ion-list *ngIf="unlockRequest.accepted">
-        <button ion-item (click)="accept()">
-            CREATE NEW
+        <button ion-item (click)="createContact()">
+            <ion-icon name="add"></ion-icon> CREATE NEW CONTACT
         </button>
 
-        <button ion-item (click)="decline()">
-            DECLINE
+        <button ion-item (click)="bindContact()">
+            BIND TO EXISTING CONTACT
         </button>
 
     </ion-list>
