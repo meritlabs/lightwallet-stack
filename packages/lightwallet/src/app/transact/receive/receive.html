@@ -6,33 +6,87 @@
 
 <ion-content>
 
-  <ion-card *ngIf="wallet && !wallet.isComplete()" margin-top>
-    <ion-card-header>This wallet is incomplete.</ion-card-header>
-    <ion-card-content>
-      All signing devices must be added to this multisig wallet before merit addresses can be created.
-    </ion-card-content>
-    <button (click)="toCopayers()" ion-button>Open Wallet</button>
-  </ion-card>
-
-  <div class="container" *ngIf="wallet && wallet.isComplete() && qrAddress && !addressGenerationInProgress">
-    <qr-code *ngIf="address" [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
-    <div class="address" (click)="copyToClipboard(address)" [clip]="qrAddress">{{ qrAddress }}</div>
-  </div>
-
-  <div class="container">
-    <div class="spinner-wrapper" *ngIf="addressGenerationInProgress">
+  <div *ngIf="loading">
       <ion-spinner></ion-spinner>
+  </div>
+
+  <div *ngIf="!loading && !hasUnlockedWallets" class="unlock-screen">
+        <div class="unlock-backdrop"></div>
+
+        <div class="unlock-popup">
+            <div class="top-label">Before you start...</div>
+            <img src="assets/img/icons/confirm.svg">
+            <h2>Waiting for unlock</h2>
+            <div class="bottom-label">You cannot receive Merit until your wallet unlock request is confirmed</div>
+        </div>
+
+        <div class="qr-stub">
+            <img src="assets/img/icons/qr_l.svg">
+        </div>
+
+        <ion-footer>
+            <ion-toolbar>
+                <ion-item>
+                    <ion-avatar item-start img-icon>
+                        <img src="assets/img/icons/request-amount-gray.svg" alt="">
+                    </ion-avatar>
+                    <ion-label>
+                        <h2></h2>
+                        <p></p>
+                    </ion-label>
+                </ion-item>
+                <ion-item>
+                    <ion-avatar item-start img-icon>
+                        <img src="assets/img/icons/merit-gray.svg" alt="">
+                    </ion-avatar>
+                    <ion-label>
+                        <h2></h2>
+                        <p></p>
+                    </ion-label>
+                </ion-item>
+                <ion-item>
+                    <ion-avatar item-start img-icon>
+                        <img src="assets/img/icons/wallet-gray.svg" alt="">
+                    </ion-avatar>
+                    <ion-label>
+                        <h2></h2>
+                        <p></p>
+                    </ion-label>
+                </ion-item>
+            </ion-toolbar>
+        </ion-footer>
     </div>
-  </div>
 
-  <div class="container" *ngIf="wallet && wallet.isComplete() && !qrAddress && !addressGenerationInProgress">
-    No address available for this wallet
-  </div>
+    <div *ngIf="!loading && hasUnlockedWallets">
 
+      <ion-card *ngIf="wallet && !wallet.isComplete()" margin-top>
+        <ion-card-header>This wallet is incomplete.</ion-card-header>
+        <ion-card-content>
+          All signing devices must be added to this multisig wallet before merit addresses can be created.
+        </ion-card-content>
+        <button (click)="toCopayers()" ion-button>Open Wallet</button>
+      </ion-card>
 
+      <div class="container" *ngIf="wallet && wallet.isComplete() && qrAddress && !addressGenerationInProgress">
+        <qr-code *ngIf="address" [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
+        <div class="address" (click)="copyToClipboard(address)" [clip]="qrAddress">{{ qrAddress }}</div>
+      </div>
+
+      <div class="container">
+        <div class="spinner-wrapper" *ngIf="addressGenerationInProgress">
+          <ion-spinner></ion-spinner>
+        </div>
+      </div>
+
+      <div class="container" *ngIf="wallet && wallet.isComplete() && !qrAddress && !addressGenerationInProgress">
+        No address available for this wallet
+      </div>
+
+    </div>
 </ion-content>
 
-<ion-footer>
+<ion-footer *ngIf="!loading && hasUnlockedWallets">
+
   <ion-toolbar>
 
     <ion-item *ngIf="!wallet">
@@ -80,26 +134,7 @@
           </ion-label>
         </button>
       </ion-list>
-
-
-      <!--<div class="row">-->
-        <!--<span class="label" text-left>Address</span>-->
-        <!--<span item-right text-right [style.flex]="1" [style.font-size]="'10px'"-->
-              <!--(click)="copyToClipboard(address)" [clip]="address">-->
-                    <!--<span *ngIf="address">{{address}}</span>-->
-                    <!--<span *ngIf="!address && error" class="error">{{error}}</span>-->
-                <!--</span>-->
-        <!--<button ion-button icon-only clear color="primary" (click)="generateAddress(true)" class="select-button"-->
-                <!--*ngIf="!addressGenerationInProgress">-->
-          <!--<ion-icon name="refresh"></ion-icon>-->
-        <!--</button>-->
-        <!--<button ion-button icon-only clear color="primary" class="select-button"-->
-                <!--*ngIf="addressGenerationInProgress">-->
-          <!--<ion-spinner color="primary"></ion-spinner>-->
-        <!--</button>-->
-      <!--</div>-->
     </div>
 
   </ion-toolbar>
 </ion-footer>
-

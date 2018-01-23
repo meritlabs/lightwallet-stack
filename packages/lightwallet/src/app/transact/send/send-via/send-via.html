@@ -16,7 +16,7 @@
 
 <ion-content>
 
-  <div class="easy-send-section">
+  <div class="easy-send-section" *ngIf="contact.phoneNumbers.length || contact.emails.length">
     <ion-item-divider>
       EasySend
       <button ion-button clear (click)="showEasyTooltip()" class="tooltip-button">
@@ -32,7 +32,6 @@
         <ion-avatar item-start *ngIf="i == 0">
           <ion-icon name="phone-portrait"></ion-icon>
         </ion-avatar>
-        wall
         <h2>Home phone</h2>
         <p>{{phoneNumber.value}}</p>
       </button>
@@ -66,7 +65,7 @@
 
 
   </div>
-  <div class="classic-send-section">
+  <div class="classic-send-section" *ngIf="contact.meritAddresses.length">
     <ion-list>
       <ion-item-divider>
         ClassicSend

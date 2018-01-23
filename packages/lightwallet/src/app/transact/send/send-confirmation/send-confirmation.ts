@@ -1,4 +1,4 @@
-import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { AlertController, IonicPage, LoadingController, NavController, NavParams, Tabs } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { ToastConfig } from 'merit/core/toast.config';
@@ -58,7 +58,9 @@ export class SendConfirmationView {
               private walletService: WalletService,
               private formatService: TxFormatService,
               private configService: ConfigService,
-              private logger: Logger) {
+              private logger: Logger,
+              private tabs: Tabs
+  ) {
     this.txData = navParams.get('txData');
     this.referralsToSign = navParams.get('referralsToSign');
   }
@@ -236,13 +238,11 @@ export class SendConfirmationView {
             );
 
           default:
-            console.log(this.txData.sendMethod);
             throw new Error(`Unsupported sending method: ${this.txData.sendMethod}`);
         }
       }
-      this.navCtrl.push('WalletsView');
+      this.navCtrl.setRoot('WalletsView');
     } catch (err) {
-      console.log(err);
       this.logger.warn(err);
       return this.toastCtrl.create({
         message: err,
@@ -272,3 +272,4 @@ export class SendConfirmationView {
   }
 
 }
+

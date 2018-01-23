@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 
 import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
@@ -25,10 +25,13 @@ export class SendCreateContactView {
     private navParams: NavParams,
     private addressBook: AddressBookService,
     private sendService: SendService,
-    private toastController: MeritToastController
+    private toastController: MeritToastController,
+    private viewCtrl: ViewController
   ) {
-    this.contact = this.navParams.get('contact');
-    this.amount = this.navParams.get('amount');
+    let address = this.navParams.get('address');
+    this.contact = new MeritContact();
+    this.contact.meritAddresses.push(address);
+
   }
 
   ionViewDidLoad() {
@@ -37,8 +40,7 @@ export class SendCreateContactView {
 
   save() {
     return this.addressBook.add(this.contact, this.contact.meritAddresses[0].address, this.contact.meritAddresses[0].network).then(() => {
-      this.navCtrl.remove(2,1); //todo not working!
-      this.navCtrl.push('SendViaView', {contact: this.contact, amount: this.amount} );
+      this.viewCtrl.dismiss(this.contact);
     });
   }
 

@@ -22,7 +22,6 @@ import { VaultsService } from 'merit/vaults/vaults.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-import { formatWalletHistory } from '../../utils/transactions';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -80,7 +79,8 @@ export class WalletsView {
               private applicationRef: ApplicationRef,
               private zone: NgZone,
               private rateService: RateService,
-              private platform: Platform) {
+              private platform: Platform
+  ) {
     this.logger.warn('WalletsView constructor!');
   }
 
@@ -440,5 +440,7 @@ export class WalletsView {
     });
     return false;
   }
+
+
 
 }

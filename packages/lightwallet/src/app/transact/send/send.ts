@@ -7,6 +7,7 @@ import { SendService } from 'merit/transact/send/send.service';
 import { SendMethod } from 'merit/transact/send/send-method.model';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
+import { ProfileService } from 'merit/core/profile.service';
 
 import * as _ from 'lodash';
 
@@ -32,10 +33,13 @@ export class SendView {
 
   private suggestedMethod:SendMethod;
 
+  public hasUnlockedWallets:boolean;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
     private addressBookService:AddressBookService,
+    private profileService: ProfileService,
     private sanitizer:DomSanitizer,
     private sendService: SendService,
     private modalCtrl:ModalController,
@@ -46,12 +50,19 @@ export class SendView {
 
   async ionViewDidLoad() {
     this.loadingContacts = true;
+    this.updateHasUnlocked();
     this.contacts = await this.addressBookService.getAllMeritContacts();
     this.loadingContacts = false;
     this.updateRecentContacts();
   }
 
+  private async updateHasUnlocked() {
+    let wallets = await this.profileService.getWallets();
+    this.hasUnlockedWallets = wallets && wallets.some(w => w.unlocked);
+  }
+
   async ionViewWillEnter() {
+    this.updateHasUnlocked();
     this.contacts = await this.addressBookService.getAllMeritContacts();
     this.updateRecentContacts();
     this.parseSearch();
@@ -74,25 +85,30 @@ export class SendView {
   }
 
   async parseSearch() {
+
+    if (this.searchQuery.indexOf('merit') == 0) this.searchQuery = this.searchQuery.split('merit:')[1];
+    let input = this.searchQuery.split('?')[0];
+    this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
+
     let result =  { withMerit: [], noMerit: [], recent: [], toNewEntity:null };
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
-      if (await this.isAddress(this.searchQuery)) {
+      if (await this.isAddress(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact()};
-        result.toNewEntity.contact.meritAddresses.push({address: this.searchQuery, network: this.sendService.getAddressNetwork(this.searchQuery).name});
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_ADDRESS, value: this.searchQuery};
-      } else if (this.couldBeEmail(this.searchQuery)) {
+        result.toNewEntity.contact.meritAddresses.push({address: input, network: this.sendService.getAddressNetwork(input).name});
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_ADDRESS, value: input};
+      } else if (this.couldBeEmail(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
-        result.toNewEntity.contact.emails.push({value: this.searchQuery})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: this.searchQuery};
-      } else if (this.couldBeSms(this.searchQuery)) {
+        result.toNewEntity.contact.emails.push({value: input})
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input};
+      } else if (this.couldBeSms(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_SMS, contact: new MeritContact()};
-        result.toNewEntity.contact.phoneNumbers.push({value: this.searchQuery})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: this.searchQuery};
+        result.toNewEntity.contact.phoneNumbers.push({value: input})
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input};
       }
     }
 
-    this.addressBookService.searchContacts(this.contacts, this.searchQuery).forEach((contact) => {
+    this.addressBookService.searchContacts(this.contacts, input).forEach((contact) => {
       if (_.isEmpty(contact.meritAddresses)) {
         result.noMerit.push(contact);
       } else {
@@ -100,7 +116,7 @@ export class SendView {
       }
     });
 
-    this.addressBookService.searchContacts(this.recentContacts, this.searchQuery).forEach((contact) => {
+    this.addressBookService.searchContacts(this.recentContacts, input).forEach((contact) => {
       result.recent.push(contact);
     });
 
@@ -118,8 +134,7 @@ export class SendView {
     return weakPhoneNumberPattern.test(input);
   }
 
-  private async isAddress(input = '') {
-    input = input.split('?')[0];
+  private async isAddress(input) {
     return await this.sendService.isAddressValid(input);
   }
 
@@ -133,17 +148,23 @@ export class SendView {
   }
 
   createContact() {
-    this.navCtrl.push('SendCreateContactView', {contact: this.searchResult.toNewEntity.contact, amount: this.amount});
+    let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
+    let modal = this.modalCtrl.create('SendCreateContactView', {address: meritAddress});
+    modal.onDidDismiss((contact) => {
+      console.log(contact);
+      if (contact) {
+        this.navCtrl.push('SendViaView', {contact: contact, amount: this.amount});
+      }
+    });
+    modal.present();
   }
 
   bindAddressToContact() {
     let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
-    let modal = this.modalCtrl.create('SendSelectBindContactView', {contacts: this.contacts});
+    let modal = this.modalCtrl.create('SendSelectBindContactView', {contacts: this.contacts, address: meritAddress});
     modal.onDidDismiss((contact) => {
       if (contact) {
-        this.addressBookService.bindAddressToContact(contact, meritAddress.address, meritAddress.network).then(() => {
           this.navCtrl.push('SendViaView', {contact: contact, amount: this.amount, suggestedMethod: this.suggestedMethod});
-        });
       }
     });
     modal.present();
@@ -154,11 +175,7 @@ export class SendView {
   }
 
   sendToEntity(entity) {
-    if (!_.isEmpty(entity.meritAddresses)) {
-      this.navCtrl.push('SendViaView', {contact: entity, amount: this.amount, suggestedMethod: this.suggestedMethod});
-    } else {
-      this.navCtrl.push('SendAmountView', {contact: entity, amount: this.amount, suggestedMethod: this.suggestedMethod});
-    }
+    this.navCtrl.push('SendViaView', {contact: entity.contact, amount: this.amount, suggestedMethod: this.suggestedMethod});
   }
 
   getContactInitials(contact) {
