@@ -350,8 +350,8 @@ export class SendAmountView {
       this.txData.txp.availableFeeLevels = [];
       this.knownFeeLevels.forEach((level) => {
         // todo IF EASY ADD  easySend.size*feeLevel.feePerKb !!!!!!
-        let micros = txpOut.estimatedSize * level.feePerKb / 1000;
-        let mrt = this.rateService.microsToMrt(micros);
+        let micros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
+        let mrt = Math.round(this.rateService.microsToMrt(micros)*1000000000)/1000000000;
         //todo add description map
         // todo add blocks per minute const
 
