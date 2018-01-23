@@ -23,6 +23,10 @@ export class HistoryView {
 
   async ngOnInit() {
     await this.loadData();
+
+    //todo temp!!
+    //let unlockRequest = {timestamp: (new Date()).getTime(), address: 'mTU55fvNoHc4ewK6Rucb3Wnccihr499uGJ', alias: 'mywallet'};
+    //this.processUnlockRequest(unlockRequest);s
   }
 
   async refresh(refresher: any) {
@@ -34,26 +38,19 @@ export class HistoryView {
   }
 
   async loadData(force?: boolean) {
-    //const wallets = await this.profileService.getWallets();
-    //let walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
-    //  const walletHistory = await this.walletService.getTxHistory(wallet, { force });
-    //  return formatWalletHistory(walletHistory, wallet);
-    //}));
-    //
-    //this.transactions = sortBy(Array.prototype.concat.apply([], walletHistories), 'time').reverse();
-    //
-    //console.log('Transactions are ', this.transactions);
+    const wallets = await this.profileService.getWallets();
+    let walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
+      const walletHistory = await this.walletService.getTxHistory(wallet, { force });
+      return formatWalletHistory(walletHistory, wallet);
+    }));
 
+    this.transactions = sortBy(Array.prototype.concat.apply([], walletHistories), 'time').reverse();
+
+    console.log('Transactions are ', this.transactions);
 
   }
 
-  public ionViewWillEnter() {
-    this.showUnlockModal(); //todo temp!!
-  }
-
-  //TODO TEMP!!!!!!!!
-  public showUnlockModal() {
-    let unlockRequest = {timestamp: (new Date()).getTime(), address: 'mTU55fvNoHc4ewK6Rucb3Wnccihr499uGJ', alias: 'mywallet'};
+  public processUnlockRequest(unlockRequest) {
     let modal = this.modalCtrl.create('IncomingRequestModal', {unlockRequest});
     modal.present();
   }
