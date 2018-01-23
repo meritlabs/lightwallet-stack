@@ -242,8 +242,7 @@ export class SendConfirmationView {
             throw new Error(`Unsupported sending method: ${this.txData.sendMethod}`);
         }
       }
-      this.tabs.setActiveIndex(0);
-      this.navCtrl.popToRoot();
+      this.navCtrl.setRoot('WalletsView');
     } catch (err) {
       console.log(err);
       this.logger.warn(err);
