@@ -68,7 +68,7 @@ export class ReceiveView {
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
       this.logger.info('Got an incomingTx on receive screen: ', n);
       if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
-        this.generateAddress(true);
+        this.generateAddress();
       }
     });
   }
