@@ -1,4 +1,45 @@
 wallet-details-view {
+  .content-ios {
+    .big-header {
+      text-align: center;
+
+      h2.amount {
+        font-weight: 300;
+        > small {
+          font-size: inherit;
+          font-weight: inherit;
+        }
+      }
+
+      h3.detail-fiat {
+        font-weight: 400;
+        font-size: 17px;
+      }
+
+      .action-buttons {
+        margin: 30px -8px -8px -8px;
+        border-radius: 8px;
+        overflow: hidden;
+
+        button[ion-button].button.button-ios {
+          .button-inner {
+            .inner-container {
+              ion-icon {
+                font-size: 1.6em;
+              }
+
+              span {
+                font-size: 13px;
+                letter-spacing: .2px;
+                font-weight: 300;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   ion-header {
     background: #00a6d1;
 
@@ -17,6 +58,11 @@ wallet-details-view {
     padding-top: 0;
     h2 {
       font-weight: 400;
+    }
+
+    .amount-available {
+      font-size: 17px;
+      color: rgba(255,255,255,0.74);
     }
 
     .action-buttons {

@@ -36,6 +36,19 @@ view-tour {
       text-transform: capitalize;
       font-weight: 600;
     }
+
+    &.header-ios {
+      padding-top: 13px;
+      padding-bottom: 10px;
+      span {
+        color: rgba(255,255,255,0.91);
+        line-height: 19px;
+        font-size: 14px;
+      }
+      button[ion-button].bar-button {
+
+      }
+    }
   }
 
   ion-footer.footer {
@@ -44,12 +57,31 @@ view-tour {
     button[ion-button].button {
       color: white;
     }
+
+    &.footer-ios {
+      border-top: 1px solid rgba(255,255,255,.1);
+      button[ion-button].button {
+        text-transform: lowercase;
+        font-weight: 300;
+        color: rgba(255,255,255,.74);
+        font-size: 14px;
+
+        ion-icon.icon {
+          color: white;
+          margin-left: 4.5px;
+        }
+      }
+    }
   }
 
   .scroll-content {
     background: map_get($colors, secondary);
     height: 100%;
     padding: 0 !important;
+
+    ion-slides.slides-ios .swiper-pagination {
+      bottom: 15px;
+    }
 
     .swiper-pagination {
       button.swiper-pagination-bullet {

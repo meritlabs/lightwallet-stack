@@ -118,7 +118,7 @@ export class SendView {
     return weakPhoneNumberPattern.test(input);
   }
 
-  private async isAddress(input) {
+  private async isAddress(input = '') {
     input = input.split('?')[0];
     return await this.sendService.isAddressValid(input);
   }

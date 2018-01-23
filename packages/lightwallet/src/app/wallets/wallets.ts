@@ -231,7 +231,7 @@ export class WalletsView {
   }
 
   openRecentTxDetail(tx: any): any {
-    this.navCtrl.push('TxDetailsView', { walletId: tx.walletId, txId: tx.data.txid })
+    this.navCtrl.push('TxDetailsView', { tx })
   }
 
   walletHasPendingAmount(wallet: any): boolean {

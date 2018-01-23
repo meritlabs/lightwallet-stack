@@ -8,7 +8,7 @@
 
 <ion-content fullscreen>
 
-    <ion-slides pager="true" #slides>
+    <ion-slides pager="true" #slides (ionSlideWillChange)="onSlideWillChange($event)">
 
         <ion-slide>
             <div class="slide-illustration">
@@ -67,9 +67,6 @@
                 </p>
             </div>
 
-            <!--<div class="bottom-buttons">-->
-                <!--<button ion-button block (click)="toUnlockView()" translate>I Feel Safe</button>-->
-            <!--</div>-->
         </ion-slide>
 
     </ion-slides>

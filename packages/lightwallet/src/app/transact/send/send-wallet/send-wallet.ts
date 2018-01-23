@@ -13,11 +13,9 @@ export class SendWalletView {
   public selectedWallet;
 
   constructor(
-    private navCtrl: NavController,
     private navParams: NavParams,
     private viewCtrl: ViewController
-  ) {
-  }
+  ) {}
 
   async ionViewDidLoad() {
     this.selectedWallet = this.navParams.get('selectedWallet');

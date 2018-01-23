@@ -60,7 +60,7 @@
           <button ion-button item-end clear color="primary" (click)="toggleCurrency()">{{ amountCurrency }}</button>
         </ion-item>
 
-        <button ion-item (click)="copyToClipboard(address)" [clip]="address">
+        <button ion-item detail-none (click)="copyToClipboard(address)" [clip]="address">
           <ion-avatar img-icon item-start>
             <img src="assets/img/icons/merit.svg" alt="">
           </ion-avatar>
@@ -70,7 +70,7 @@
           </ion-label>
         </button>
 
-        <button ion-item (click)="selectWallet()">
+        <button ion-item detail-none (click)="selectWallet()">
           <ion-avatar img-icon item-start>
             <img src="assets/img/icons/wallet.svg" alt="">
           </ion-avatar>

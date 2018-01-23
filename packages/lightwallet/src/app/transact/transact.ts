@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, NavParams, Tabs } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
 
@@ -14,12 +14,6 @@ import { ProfileService } from 'merit/core/profile.service';
   templateUrl: 'transact.html',
 })
 export class TransactView {
-
-  receiveView = '';
-  networkView = '';
-  sendView = '';
-  settingsView = '';
-
   @ViewChild('tabs') tabRef: Tabs;
 
   constructor(public navCtrl: NavController,
@@ -33,6 +27,4 @@ export class TransactView {
     const profile = this.profileService.profile;
     return (profile && profile.credentials && profile.credentials.length > 0);
   }
-
-
 }
