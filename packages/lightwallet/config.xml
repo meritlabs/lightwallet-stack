@@ -98,7 +98,6 @@
     </edit-config>
     <allow-navigation href="*" />
     <engine name="ios" spec="4.5.4" />
-    <engine name="android" spec="^6.4.0" />
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.2.1" />
     <plugin name="cordova-clipboard" spec="^1.1.1" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
@@ -121,4 +120,5 @@
     </plugin>
     <plugin name="branch-cordova-sdk" spec="^2.6.21" />
     <plugin name="cordova-plugin-fcm" spec="^2.1.2" />
+    <engine name="android" spec="~6.4.0" />
 </widget>
