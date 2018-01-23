@@ -95,7 +95,8 @@ export class SendAmountView {
       },
     ];
     this.selectedCurrency = this.availableUnits[0];
-    this.amount.micros = this.navParams.get('suggestedMethod') || 0;
+    let passedAmount = this.navParams.get('amount') || 0;
+    this.formData.amount = this.rateService.microsToMrt(passedAmount);
     await this.updateAmount();
 
     // todo add smart common amounts receive
