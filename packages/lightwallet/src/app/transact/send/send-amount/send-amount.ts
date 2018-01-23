@@ -95,7 +95,8 @@ export class SendAmountView {
       },
     ];
     this.selectedCurrency = this.availableUnits[0];
-    this.amount.micros = this.navParams.get('suggestedMethod') || 0;
+    let passedAmount = this.navParams.get('amount') || 0;
+    this.formData.amount = this.rateService.microsToMrt(passedAmount);
     await this.updateAmount();
 
     // todo add smart common amounts receive
@@ -349,8 +350,8 @@ export class SendAmountView {
       this.txData.txp.availableFeeLevels = [];
       this.knownFeeLevels.forEach((level) => {
         // todo IF EASY ADD  easySend.size*feeLevel.feePerKb !!!!!!
-        let micros = txpOut.estimatedSize * level.feePerKb / 1000;
-        let mrt = this.rateService.microsToMrt(micros);
+        let micros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
+        let mrt = Math.round(this.rateService.microsToMrt(micros)*1000000000)/1000000000;
         //todo add description map
         // todo add blocks per minute const
 
@@ -376,6 +377,7 @@ export class SendAmountView {
         if (level.level == this.selectedFeeLevel) {
           this.selectedFee = fee;
           this.txData.txp.fee = fee.micros;
+          this.txData.feeAmount = fee.micros;
         }
       });
       this.feeCalcError = null;
@@ -455,12 +457,16 @@ export class SendAmountView {
       txp.payProUrl = tx.paypro.url;
     }
     txp.excludeUnconfirmedUtxos = !tx.allowSpendUnconfirmed;
-    txp.dryRun = dryRun;
     if (!dryRun) {
+      txp.dryRun = dryRun;
       if (this.feeIncluded) {
         txp.fee = this.txData.feeAmount;
         txp.inputs = this.txData.txp.inputs;
         txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
+      } else {
+        txp.fee = this.txData.feeAmount;
+        txp.inputs = this.txData.txp.inputs;
+        txp.outputs[0].amount = this.txData.amount;
       }
     }
     return this.walletService.createTx(wallet, txp);

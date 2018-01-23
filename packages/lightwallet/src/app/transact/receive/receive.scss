@@ -1,5 +1,85 @@
 view-receive {
 
+  .unlock-screen {
+
+    text-align: center;
+
+    .unlock-backdrop {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: rgb(244, 247,250);
+      opacity: 0.7;
+      z-index: 1000;
+    }
+
+    .unlock-popup {
+      height: 204px;
+      width: 284px;
+      position: absolute;
+      z-index: 1001;
+      top: calc(50% - 40px);
+      left: 50%;
+      margin-top: -102px;
+      margin-left: -142px;
+      background: white;
+      box-shadow: 0px 1px 2px  rgba(0, 0, 0, 0.5);
+      text-align: center;
+      border-radius: 10px;
+      .top-label {
+        font-size: 13px;
+        color: rgb(115, 129, 155);
+        margin: 25px 0;
+      }
+      img {
+        height: 48px;
+        width: 38px;
+      }
+      h2 {
+        font-size: 17px;
+        color: rgb(41, 61, 82);
+        margin: 0;
+        margin-top: 7px;
+      }
+      .bottom-label {
+        font-size: 13px;
+        color: rgb(115, 129, 155);
+        margin: 25px auto;
+        width: 210px;
+        margin-top: 5px;
+        line-height: 15px;
+      }
+    }
+
+    .qr-stub {
+      padding: 15px;
+      background: white;
+      margin: 17px auto;
+      display: inline-block;
+      img {
+        height: 160px;
+      }
+    }
+
+    ion-footer {
+      p {
+        width: 152px;
+        background: rgba(92, 109, 128, 0.2);
+        height: 12px;
+        margin: 10px 0;
+      }
+      h2 {
+        width: 86px;
+        background: rgba(240, 243, 248, 1);
+        height: 9px;
+        margin: 10px 0;
+      }
+    }
+  }
+
+
   .scroll-content {
     background: #d5dbe3;
     height: auto;
