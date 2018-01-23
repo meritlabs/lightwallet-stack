@@ -42,9 +42,6 @@ export class ReceiveView {
   error: string;
   mainAddressGapReached: boolean;
 
-  hasUnlockedWallets:boolean;
-  loading:boolean;
-
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private modalCtrl: ModalController,
