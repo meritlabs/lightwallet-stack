@@ -81,7 +81,8 @@ export class WalletsView {
               private applicationRef: ApplicationRef,
               private zone: NgZone,
               private rateService: RateService,
-              private platform: Platform) {
+              private platform: Platform
+  ) {
     this.logger.warn('WalletsView constructor!');
   }
 
@@ -562,5 +563,7 @@ export class WalletsView {
     });
     return false;
   }
+
+
 
 }
