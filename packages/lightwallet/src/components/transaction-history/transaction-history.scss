@@ -1,6 +1,16 @@
 transaction-history {
   ion-list.list {
     button[ion-item].item {
+      // *** iOS ***
+      ion-label.label.label-ios {
+        h2 {
+          margin: 0;
+        }
+        p {
+          padding-top: 9px;
+        }
+      }
+
       ion-label.label {
         h2 {
           font-weight: 600;
@@ -8,6 +18,13 @@ transaction-history {
         p {
           color: #73819b;
           font-size: 13px;
+          font-weight: 400;
+        }
+      }
+
+      // *** iOS ***
+      ion-note[item-end].note.note-ios {
+        .merit-amount {
           font-weight: 400;
         }
       }

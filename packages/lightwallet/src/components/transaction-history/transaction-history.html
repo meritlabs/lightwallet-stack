@@ -1,5 +1,5 @@
 <ion-list>
-  <button ion-item *ngFor="let tx of transactions; trackBy: tx?.txid" navPush="TxDetailsView" [navParams]="{ tx: tx }">
+  <button ion-item detail-none *ngFor="let tx of transactions; trackBy: tx?.txid" navPush="TxDetailsView" [navParams]="{ tx: tx }">
     <ion-avatar img-icon item-start>
       <img *ngIf="!tx.isCoinbase" src="assets/img/icons/merit.svg" alt="" />
       <img *ngIf="tx.isCoinbase" src="assets/img/icons/mining.svg" alt="" />
