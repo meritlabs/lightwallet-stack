@@ -206,8 +206,6 @@ export class SendConfirmationView {
 
 
   private async send() {
-    if (this.unlockValue < 100) return;
-
     const loadingSpinner = this.loadingCtrl.create({
       content: 'Sending transaction...',
       dismissOnPageChange: true,
