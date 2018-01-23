@@ -16,7 +16,7 @@
 
 <ion-content>
 
-  <div class="easy-send-section">
+  <div class="easy-send-section" *ngIf="contact.phoneNumbers.length || contact.emails.length">
     <ion-item-divider>
       EasySend
       <button ion-button clear (click)="showEasyTooltip()" class="tooltip-button">
