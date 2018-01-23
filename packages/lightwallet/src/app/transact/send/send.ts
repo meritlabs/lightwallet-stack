@@ -85,25 +85,30 @@ export class SendView {
   }
 
   async parseSearch() {
+
+    if (this.searchQuery.indexOf('merit') == 0) this.searchQuery = this.searchQuery.split('merit:')[1];
+    let input = this.searchQuery.split('?')[0];
+    this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
+
     let result =  { withMerit: [], noMerit: [], recent: [], toNewEntity:null };
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
-      if (await this.isAddress(this.searchQuery)) {
+      if (await this.isAddress(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact()};
-        result.toNewEntity.contact.meritAddresses.push({address: this.searchQuery, network: this.sendService.getAddressNetwork(this.searchQuery).name});
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_ADDRESS, value: this.searchQuery};
-      } else if (this.couldBeEmail(this.searchQuery)) {
+        result.toNewEntity.contact.meritAddresses.push({address: input, network: this.sendService.getAddressNetwork(input).name});
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_ADDRESS, value: input};
+      } else if (this.couldBeEmail(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
-        result.toNewEntity.contact.emails.push({value: this.searchQuery})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: this.searchQuery};
-      } else if (this.couldBeSms(this.searchQuery)) {
+        result.toNewEntity.contact.emails.push({value: input})
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input};
+      } else if (this.couldBeSms(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_SMS, contact: new MeritContact()};
-        result.toNewEntity.contact.phoneNumbers.push({value: this.searchQuery})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: this.searchQuery};
+        result.toNewEntity.contact.phoneNumbers.push({value: input})
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input};
       }
     }
 
-    this.addressBookService.searchContacts(this.contacts, this.searchQuery).forEach((contact) => {
+    this.addressBookService.searchContacts(this.contacts, input).forEach((contact) => {
       if (_.isEmpty(contact.meritAddresses)) {
         result.noMerit.push(contact);
       } else {
@@ -111,7 +116,7 @@ export class SendView {
       }
     });
 
-    this.addressBookService.searchContacts(this.recentContacts, this.searchQuery).forEach((contact) => {
+    this.addressBookService.searchContacts(this.recentContacts, input).forEach((contact) => {
       result.recent.push(contact);
     });
 
@@ -130,7 +135,6 @@ export class SendView {
   }
 
   private async isAddress(input) {
-    input = input.split('?')[0];
     return await this.sendService.isAddressValid(input);
   }
 
