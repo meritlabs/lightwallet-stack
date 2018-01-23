@@ -171,11 +171,7 @@ export class SendView {
   }
 
   sendToEntity(entity) {
-    if (!_.isEmpty(entity.meritAddresses)) {
-      this.navCtrl.push('SendViaView', {contact: entity, amount: this.amount, suggestedMethod: this.suggestedMethod});
-    } else {
-      this.navCtrl.push('SendAmountView', {contact: entity, amount: this.amount, suggestedMethod: this.suggestedMethod});
-    }
+    this.navCtrl.push('SendViaView', {contact: entity.contact, amount: this.amount, suggestedMethod: this.suggestedMethod});
   }
 
   getContactInitials(contact) {
