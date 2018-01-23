@@ -17,7 +17,7 @@
             <ion-input [(ngModel)]="wallet.name" debounce="300" (ionChange)="changeName($event.value)"></ion-input>
         </ion-item>
 
-        <button ion-item (click)="changeColor()">
+        <button ion-item detail-none (click)="changeColor()">
           <ion-avatar img-icon item-start>
             <img src="assets/img/icons/color.svg" alt="">
           </ion-avatar>
@@ -63,7 +63,7 @@
               </h2>
             </ion-label>
         </button>
-        <button ion-item (click)="deleteWallet()" class="delete-wallet">
+        <button ion-item detail-none no-lines (click)="deleteWallet()" class="delete-wallet">
             <ion-label>
               <h2>
                 Delete wallet

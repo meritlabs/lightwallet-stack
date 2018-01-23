@@ -53,8 +53,10 @@
             <button ion-button icon-only clear item-end (click)="addAddress(newAddress)" *ngIf="newAddress"><ion-icon name="checkmark-circle" color="primary"></ion-icon></button>
     </ion-item>
 
-    <ion-item *ngIf="isMeritContact()">
-        <button ion-button clear class="delete-button" (click)="deleteContact()">DELETE CONTACT</button>
-    </ion-item>
+    <button ion-item no-lines detail-none class="delete-button" *ngIf="isMeritContact()" (click)="deleteContact()">
+      <ion-label>
+        <h2>DELETE CONTACT</h2>
+      </ion-label>
+    </button>
 
 </ion-content>

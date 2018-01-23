@@ -53,8 +53,7 @@ export class TxDetailsView {
   }
 
   async ngOnInit() {
-    if (this.tx.safeConfirmed) this.confirmations = this.tx.safeConfirmed;
-    else if (this.tx.confirmations > CONFIRMATION_THRESHOLD) this.confirmations = `${CONFIRMATION_THRESHOLD}+`;
+    this.updateTxDetails(this.tx);
     // const loading = this.loadingCtrl.create({
     //   content: 'Loading transaction...'
     // });

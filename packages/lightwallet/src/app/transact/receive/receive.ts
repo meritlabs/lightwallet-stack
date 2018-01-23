@@ -14,6 +14,7 @@ import { ConfigService } from 'merit/shared/config.service';
 import { RateService } from 'merit/transact/rate.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { MERIT_MODAL_OPTS } from '../../../utils/constants';
 
 
 @IonicPage()
@@ -111,7 +112,7 @@ export class ReceiveView {
     const modal = this.modalCtrl.create('SelectWalletModal', {
       selectedWallet: this.wallet,
       availableWallets: this.wallets
-    });
+    }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.wallet = wallet;

@@ -1,7 +1,34 @@
 view-wallets {
 
-  .big-header {
+  .content-ios {
+    .big-header {
+      text-align: center;
 
+      p {
+        font-weight: 400;
+        font-size: 17px;
+        letter-spacing: -.4px;
+        padding-top: 10px;
+      }
+
+      h2.amount {
+        padding-top: 35px;
+        font-size: 40px;
+        font-weight: 400;
+        small {
+          font-size: inherit;
+          font-weight: inherit;
+        }
+      }
+
+      h3.detail-fiat {
+        font-size: 17px;
+        font-weight: 400;
+      }
+    }
+  }
+
+  .big-header {
     ion-spinner.spinner {
       margin-top: 25px;
     }
@@ -24,7 +51,6 @@ view-wallets {
     width: calc(100% - 16px - 16px);
     padding-left: 20px;
 
-
     &:after {
       display: none;
     }
@@ -39,9 +65,16 @@ view-wallets {
       }
     }
 
+    &.md-item {
+      ion-label.label {
+        h2 {
+          text-transform: uppercase;
+        }
+      }
+    }
+
     ion-label.label {
       h2 {
-        text-transform: uppercase;
         font-weight: 500;
         font-size: 15px;
       }

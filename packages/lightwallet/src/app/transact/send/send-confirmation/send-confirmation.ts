@@ -1,17 +1,17 @@
-import { NavController, NavParams, IonicPage, AlertController, ModalController, LoadingController } from 'ionic-angular';
-import { Component, NgZone } from '@angular/core';
-import { MeritToastController } from "merit/core/toast.controller";
-import { ToastConfig } from "merit/core/toast.config";
-import { ConfigService } from "merit/shared/config.service";
+import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { ToastConfig } from 'merit/core/toast.config';
+import { ConfigService } from 'merit/shared/config.service';
 
 import { WalletService } from 'merit/wallets/wallet.service';
 import { Logger } from 'merit/core/logger';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { TxFormatService } from "merit/transact/tx-format.service";
+import { TxFormatService } from 'merit/transact/tx-format.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-import { EasySend, easySendURL } from 'merit/transact/send/easy-send/easy-send.model'
-import * as  _  from 'lodash';
+import { EasySend, getEasySendURL } from 'merit/transact/send/easy-send/easy-send.model';
+import * as  _ from 'lodash';
 import { SendMethod } from 'merit/transact/send/send-method.model';
 
 
@@ -25,52 +25,48 @@ export class SendConfirmationView {
   // Statics
   private readonly CONFIRM_LIMIT_USD = 20;
 
-  public txData: {
+  txData: {
     amount: number; // micros
     amountUSD: string; // micros
     totalAmount: number; // micros
     feeIncluded: boolean;
-    password:string;
+    password: string;
     recipient: {
       label: string;
       name: string;
       email?: string;
       phoneNumber?: string;
     };
-    sendMethod:SendMethod;
+    sendMethod: SendMethod;
     txp: any;
     easySend?: EasySend;
     wallet: MeritWalletClient;
   };
-  public referralsToSign: Array<any>;
-  public viewData;
 
-  public showPassword:string;
-  public unlockValue:number = 0;
+  referralsToSign: Array<any>;
+  viewData: any;
 
-  constructor(
-    private navParams: NavParams,
-    private navCtrl: NavController,
-    private toastCtrl: MeritToastController,
-    private alertController: AlertController,
-    private loadingCtrl: LoadingController,
-    private touchIdService: TouchIdService,
-    private easySendService: EasySendService,
-    private walletService: WalletService,
-    private formatService: TxFormatService,
-    private configService: ConfigService,
-    private logger: Logger
-  ) {
+  unlockValue: number = 0;
 
-    this.txData = this.navParams.get('txData');
-    this.referralsToSign = this.navParams.get('referralsToSign');
-
+  constructor(navParams: NavParams,
+              private navCtrl: NavController,
+              private toastCtrl: MeritToastController,
+              private alertController: AlertController,
+              private loadingCtrl: LoadingController,
+              private touchIdService: TouchIdService,
+              private easySendService: EasySendService,
+              private walletService: WalletService,
+              private formatService: TxFormatService,
+              private configService: ConfigService,
+              private logger: Logger) {
+    this.txData = navParams.get('txData');
+    this.referralsToSign = navParams.get('referralsToSign');
   }
 
-  async ionViewDidLoad() {
+  async ngOnInit() {
     this.txData.amountUSD = await this.formatService.formatToUSD(this.txData.amount);
 
-    this.viewData = {
+    const viewData: any = {
       recipient: this.txData.recipient,
       amountMrt: this.formatService.formatAmount(this.txData.amount),
       password: this.txData.password,
@@ -85,25 +81,28 @@ export class SendConfirmationView {
       ),
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
-      methodName:  this.txData.sendMethod.type == SendMethod.TYPE_EASY ? 'Easy Send' : 'Classic Send',
+      methodName: this.txData.sendMethod.type == SendMethod.TYPE_EASY ? 'Easy Send' : 'Classic Send',
       destination: this.txData.sendMethod.value
     };
 
-    let convert = amount => this.formatService.toFiatStr(amount, this.viewData.fiatCode);
-    this.viewData.amountFiat = await convert(this.txData.amount);
-    this.viewData.feeAmountFiat = await convert(this.txData.txp.fee);
-    this.viewData.totalAmountFiat = await convert(this.txData.totalAmount);
-    this.viewData.walletCurrentBalanceFiat = await convert(this.txData.wallet.status.totalBalanceMicros);
-    this.viewData.walletRemainingBalanceFiat = await convert(
+    const convert = amount => this.formatService.toFiatStr(amount, viewData.fiatCode);
+
+    viewData.amountFiat = await convert(this.txData.amount);
+    viewData.feeAmountFiat = await convert(this.txData.txp.fee);
+    viewData.totalAmountFiat = await convert(this.txData.totalAmount);
+    viewData.walletCurrentBalanceFiat = await convert(this.txData.wallet.status.totalBalanceMicros);
+    viewData.walletRemainingBalanceFiat = await convert(
       this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount
     );
+
+    this.viewData = viewData;
   }
 
-  public sendAllowed() {
+  sendAllowed() {
     return this.txData && !_.isEmpty(this.txData.txp);
   }
 
-  public approve() {
+  approve() {
     let showPassPrompt = (highlightInvalid = false) => {
       this.alertController
         .create({
@@ -205,10 +204,9 @@ export class SendConfirmationView {
 
 
   private async send() {
-
     if (this.unlockValue < 100) return;
 
-    let loadingSpinner = this.loadingCtrl.create({
+    const loadingSpinner = this.loadingCtrl.create({
       content: 'Sending transaction...',
       dismissOnPageChange: true,
     });
@@ -221,29 +219,36 @@ export class SendConfirmationView {
       await this.approveTx();
       if (this.txData.sendMethod.type == SendMethod.TYPE_EASY) {
         await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
-        if (this.txData.sendMethod.destination == SendMethod.DESTINATION_SMS) {
-          return this.easySendService.sendSMS(
-            this.txData.recipient.phoneNumber,
-            this.viewData.amountMrt,
-            easySendURL(this.txData.easySend)
-          );
-        } else if (this.txData.sendMethod.destination == SendMethod.DESTINATION_EMAIL) {
-          return this.easySendService.sendEmail(
-            this.txData.recipient.email,
-            this.viewData.amountMrt,
-            easySendURL(this.txData.easySend)
-          );
-        } else throw new Error(`Unsupported sending method: ${this.txData.sendMethod}`);
+
+        switch (this.txData.sendMethod.destination) {
+          case SendMethod.DESTINATION_SMS:
+            return this.easySendService.sendSMS(
+              this.txData.recipient.phoneNumber,
+              this.viewData.amountMrt,
+              getEasySendURL(this.txData.easySend)
+            );
+
+          case SendMethod.DESTINATION_EMAIL:
+            return this.easySendService.sendEmail(
+              this.txData.recipient.email,
+              this.viewData.amountMrt,
+              getEasySendURL(this.txData.easySend)
+            );
+
+          default:
+            console.log(this.txData.sendMethod);
+            throw new Error(`Unsupported sending method: ${this.txData.sendMethod}`);
+        }
       }
       this.navCtrl.push('WalletsView');
     } catch (err) {
       console.log(err);
       this.logger.warn(err);
       return this.toastCtrl.create({
-          message: err,
-          cssClass: ToastConfig.CLASS_ERROR,
-        }).present();
-    } finally  {
+        message: err,
+        cssClass: ToastConfig.CLASS_ERROR,
+      }).present();
+    } finally {
       loadingSpinner.dismiss();
       this.referralsToSign = [];
     }
@@ -262,7 +267,7 @@ export class SendConfirmationView {
     if (!contact.name || !contact.name.formatted) return '';
     let nameParts = contact.name.formatted.toUpperCase().replace(/\s\s+/g, ' ').split(' ');
     let name = nameParts[0].charAt(0);
-    if (nameParts[1]) name += ' '+nameParts[1].charAt(0);
+    if (nameParts[1]) name += ' ' + nameParts[1].charAt(0);
     return name;
   }
 

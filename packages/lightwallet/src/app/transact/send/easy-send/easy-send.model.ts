@@ -12,7 +12,7 @@ export type EasySend = {
   txid?: string;
 }
 
-export let easySendURL = (es: EasySend): string => {
+export const getEasySendURL = (es: EasySend): string => {
   return `https://merit.app.link/` +
     `?se=${es.secret}` +
     `&sk=${es.senderPubKey}` +

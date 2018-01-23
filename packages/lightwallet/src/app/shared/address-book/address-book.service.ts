@@ -57,7 +57,7 @@ export class AddressBookService {
     return this.searchDeviceContacts('');
   }
 
-  public searchContacts(contacts: MeritContact[], searchQuery: string): MeritContact[] {
+  public searchContacts(contacts: MeritContact[], searchQuery: string = ''): MeritContact[] {
     searchQuery = searchQuery.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
     let exp = new RegExp(searchQuery, 'ig');
     return _.filter(contacts, (contact) => {

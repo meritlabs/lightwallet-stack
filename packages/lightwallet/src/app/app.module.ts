@@ -136,7 +136,8 @@ export function loadConfigs(appService) {
     HttpClientModule,
     IonicModule.forRoot(MeritLightWallet, {
       preloadModules: true,
-      tabsHideOnSubPages: true
+      tabsHideOnSubPages: true,
+      backButtonText: ''
     }),
     TranslateModule.forRoot({
       loader: {

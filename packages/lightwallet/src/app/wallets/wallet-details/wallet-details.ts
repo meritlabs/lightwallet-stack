@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import * as _ from 'lodash';
 import { Logger } from 'merit/core/logger';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 import { formatWalletHistory } from '../../../utils/transactions';
-
 
 @IonicPage({
   segment: 'wallet/:walletId',
@@ -31,11 +29,9 @@ export class WalletDetailsView {
   }
 
   deposit() {
-
   }
 
   send() {
-
   }
 
   ngOnInit() {

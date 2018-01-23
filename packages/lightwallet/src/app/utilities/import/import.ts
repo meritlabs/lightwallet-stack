@@ -11,7 +11,6 @@ import { DerivationPathService } from 'merit/utilities/mnemonic/derivation-path.
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 
-
 @IonicPage({
   defaultHistory: ['OnboardingView']
 })

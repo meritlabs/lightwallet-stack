@@ -14,7 +14,7 @@
     <h2 class="amount">
       {{ wallet.status.totalBalanceStr || 0 }}&nbsp;<small>MRT</small>
     </h2>
-    <div *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount">
+    <div *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount" class="amount-available">
       <small>({{ wallet.status.spendableBalanceStr || 0 }} available)</small>
     </div>
     <h3 class="detail-fiat">{{ wallet.status.totalBalanceAlternativeStr }}</h3>
@@ -22,7 +22,7 @@
       <div class="button-cell">
         <button ion-button (click)="deposit()">
           <span class="inner-container">
-            <ion-icon name="add-circle"></ion-icon>
+            <ion-icon name="md-add-circle"></ion-icon>
             <span>Deposit</span>
           </span>
         </button>
@@ -37,5 +37,8 @@
       </div>
     </div>
   </div>
+  <ion-item-divider [hidden]="!wallet.completeHistory || !wallet.completeHistory.length">
+    History
+  </ion-item-divider>
   <transaction-history [transactions]="wallet.completeHistory"></transaction-history>
 </ion-content>
