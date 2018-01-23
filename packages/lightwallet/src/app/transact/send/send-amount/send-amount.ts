@@ -376,6 +376,7 @@ export class SendAmountView {
         if (level.level == this.selectedFeeLevel) {
           this.selectedFee = fee;
           this.txData.txp.fee = fee.micros;
+          this.txData.feeAmount = fee.micros;
         }
       });
       this.feeCalcError = null;
@@ -455,12 +456,16 @@ export class SendAmountView {
       txp.payProUrl = tx.paypro.url;
     }
     txp.excludeUnconfirmedUtxos = !tx.allowSpendUnconfirmed;
-    txp.dryRun = dryRun;
     if (!dryRun) {
+      txp.dryRun = dryRun;
       if (this.feeIncluded) {
         txp.fee = this.txData.feeAmount;
         txp.inputs = this.txData.txp.inputs;
         txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
+      } else {
+        txp.fee = this.txData.feeAmount;
+        txp.inputs = this.txData.txp.inputs;
+        txp.outputs[0].amount = this.txData.amount;
       }
     }
     return this.walletService.createTx(wallet, txp);
