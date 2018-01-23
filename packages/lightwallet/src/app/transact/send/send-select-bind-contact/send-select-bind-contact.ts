@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, AlertController } from 'ionic-angular';
 import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
-
+import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 
 @IonicPage()
 @Component({
@@ -13,15 +13,17 @@ export class SendSelectBindContactView {
   public contacts:Array<MeritContact>;
   public foundContacts:Array<MeritContact> = [];
   public searchQuery: string = '';
-
+  public meritAddress:{address:string, network:string};
 
  constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
     private viewCtrl: ViewController,
+    private addressBookService: AddressBookService,
     private alertCtrl: AlertController
   ) {
    this.contacts = this.navParams.get('contacts');
+   this.meritAddress = this.navParams.get('address');
   }
 
   ionViewDidLoad() {
@@ -33,12 +35,15 @@ export class SendSelectBindContactView {
   }
 
   select(contact) {
+
     this.alertCtrl.create({
-      title: `Bind this address to contact '${contact.name.formatted}'`,
+      title: `Bind this address to contact '${contact.name.formatted}'?`,
       buttons: [
         {text: 'Cancel', role: 'cancel', handler: () => {}},
         {text: 'Bind', handler: () => {
-          this.viewCtrl.dismiss(contact);
+          this.addressBookService.bindAddressToContact(contact, this.meritAddress.address, this.meritAddress.network).then(() => {
+            this.viewCtrl.dismiss(contact);
+          });
           }
         }
       ]
@@ -64,7 +69,7 @@ export class SendSelectBindContactView {
     }
 
     this.foundContacts = this.contacts.filter((contact) => {
-      return (!!contact.name && !!contact.name.formatted && contact.name.formatted.match(this.searchQuery))
+      return (!!contact.name && !!contact.name.formatted && contact.name.formatted.toLowerCase().match(this.searchQuery.toLowerCase()))
     })
   }
 

@@ -59,7 +59,6 @@ export class SendView {
   private async updateHasUnlocked() {
     let wallets = await this.profileService.getWallets();
     this.hasUnlockedWallets = wallets && wallets.some(w => w.unlocked);
-    console.log(this.hasUnlockedWallets, 'has un');
   }
 
   async ionViewWillEnter() {
@@ -145,17 +144,23 @@ export class SendView {
   }
 
   createContact() {
-    this.navCtrl.push('SendCreateContactView', {contact: this.searchResult.toNewEntity.contact, amount: this.amount});
+    let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
+    let modal = this.modalCtrl.create('SendCreateContactView', {address: meritAddress});
+    modal.onDidDismiss((contact) => {
+      console.log(contact);
+      if (contact) {
+        this.navCtrl.push('SendViaView', {contact: contact, amount: this.amount});
+      }
+    });
+    modal.present();
   }
 
   bindAddressToContact() {
     let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
-    let modal = this.modalCtrl.create('SendSelectBindContactView', {contacts: this.contacts});
+    let modal = this.modalCtrl.create('SendSelectBindContactView', {contacts: this.contacts, address: meritAddress});
     modal.onDidDismiss((contact) => {
       if (contact) {
-        this.addressBookService.bindAddressToContact(contact, meritAddress.address, meritAddress.network).then(() => {
           this.navCtrl.push('SendViaView', {contact: contact, amount: this.amount, suggestedMethod: this.suggestedMethod});
-        });
       }
     });
     modal.present();
