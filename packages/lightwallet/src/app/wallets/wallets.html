@@ -103,24 +103,6 @@
     </button>
   </ion-list>
 
-  <ion-item-divider *ngIf="recentTransactionsEnabled && recentTransactionsData && recentTransactionsData.length > 0">
-    Recent Transactions
-    <ion-badge *ngIf="recentTransactionsData && recentTransactionsData.length > 3">{{ recentTransactionsData.length }}</ion-badge>
-  </ion-item-divider>
-  <ion-list>
-    <button ion-item detail-none *ngFor="let recentTx of recentTransactionsData" (click)="openRecentTxDetail(recentTx)">
-      <ion-label>
-        <p>{{ recentTx.actionStr }}</p>
-        <h2 class="merit-amount">
-          {{ recentTx.amountStr }}&nbsp;<span>MRT</span>
-        </h2>
-      </ion-label>
-      <ion-note class="balance" item-end>
-        <span class="fiat-amount">{{ recentTx.fiatAmountStr }}</span>
-      </ion-note>
-    </button>
-  </ion-list>
-
   <view-vaults [vaults]="vaults" [refreshVaultList]="refreshVaultList"></view-vaults>
 
 </ion-content>
