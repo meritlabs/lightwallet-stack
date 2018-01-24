@@ -85,12 +85,10 @@ export class WalletsView {
   }
 
   async doRefresh(refresher) {
-    if (this.loading === false) this.loading = true;
     try {
       await this.refreshAllInfo();
     } catch (e) {}
     refresher.complete();
-    if (this.loading === true) this.loading = false;
   }
 
   async refreshAllInfo() {
@@ -124,6 +122,7 @@ export class WalletsView {
       if (_.isEmpty(wallets)) {
         return null; //ToDo: add proper error handling;
       }
+
       this.wallets = wallets;
 
       // Now that we have wallets, we will proceed with the following operations in parallel.
@@ -133,6 +132,8 @@ export class WalletsView {
         this.updateTxps({ limit: 3 }),
         this.updateVaults(_.head(this.wallets))
       ]);
+
+      console.log(wallets);
 
       this.logger.info('Done updating all info for wallet.');
     };
@@ -220,10 +221,13 @@ export class WalletsView {
   }
 
   walletHasPendingAmount(wallet: any): boolean {
-    return (
-      (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)
-      || wallet.status.pendingAmount > 0
-    )
+    try {
+      if (wallet.status && wallet.status.balance) {
+        return Number(wallet.status.balance.totalAmount) !== Number(wallet.status.balance.confirmedAmount);
+      }
+    } catch (e) {}
+
+    return false;
   }
 
   private async updateTxps({ limit } = { limit: 3 }): Promise<any> {

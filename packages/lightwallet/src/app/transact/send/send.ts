@@ -48,16 +48,16 @@ export class SendView {
 
   }
 
-  async ionViewDidLoad() {
+  async ngOnInit() {
     this.loadingContacts = true;
-    this.updateHasUnlocked();
+    await this.updateHasUnlocked();
     this.contacts = await this.addressBookService.getAllMeritContacts();
     this.loadingContacts = false;
     this.updateRecentContacts();
   }
 
   private async updateHasUnlocked() {
-    let wallets = await this.profileService.getWallets();
+    const wallets = await this.profileService.getWallets();
     this.hasUnlockedWallets = wallets && wallets.some(w => w.unlocked);
   }
 

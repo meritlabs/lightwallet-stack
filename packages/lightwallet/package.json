@@ -74,7 +74,7 @@
         "cordova-clipboard": "^1.1.1",
         "cordova-ios": "4.5.4",
         "cordova-plugin-android-fingerprint-auth": "^1.4.0",
-        "cordova-plugin-compat": "^1.0.0",
+        "cordova-plugin-compat": "^1.2.0",
         "cordova-plugin-contacts": "^2.3.1",
         "cordova-plugin-device": "^1.1.7",
         "cordova-plugin-fcm": "^2.1.2",
@@ -162,7 +162,8 @@
                 "CAMERA_USAGE_DESCRIPTION": " "
             },
             "branch-cordova-sdk": {},
-            "cordova-plugin-fcm": {}
+            "cordova-plugin-fcm": {},
+            "cordova-plugin-compat": {}
         },
         "platforms": [
             "android",

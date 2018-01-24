@@ -51,7 +51,7 @@
 
   <ion-item-divider translate *ngIf="(wallets && wallets.length) || loading">
     Wallets
-    <button ion-button item-end round add-button icon-only (click)="toAddWallet()" [disabled]="!hasUnlockedWallets">
+    <button ion-button item-end round add-button icon-only (click)="toAddWallet()" >
       <ion-icon name="add"></ion-icon>
     </button>
   </ion-item-divider>
