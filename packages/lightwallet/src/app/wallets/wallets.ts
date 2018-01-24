@@ -408,11 +408,12 @@ export class WalletsView {
 
     await Promise.all(wallets.map(async (wallet) => {
       totalAmount += await this.walletService.getANV(wallet);
-      const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
-      this.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
-      this.totalNetworkValue = totalAmount;
-      this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
     }));
+
+    const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
+    this.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
+    this.totalNetworkValue = totalAmount;
+    this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
   }
 
   private rateApp(mark) {

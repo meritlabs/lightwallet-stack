@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-const LOGGING_ENABLED = true;
+const LOGGING_ENABLED = false;
 const TRACE_ENABLED = false;
 
 declare const process: any;
