@@ -32,8 +32,6 @@ export class ReceiveView {
   availableUnits: Array<string>;
   amountCurrency: string;
 
-  loading: boolean;
-  hasUnlockedWallets: boolean;
   wallets;
   wallet;
 
