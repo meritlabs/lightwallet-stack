@@ -18,7 +18,13 @@
       You'll need an unlock code from a friend or colleague.
     </p>
 
-    <div class="bottom-buttons">
+      <div class="bottom-buttons">
+          <ion-input type="text" placeholder="Add address alias (optional)"  [(ngModel)]="formData.alias"
+                     autocomplete="off" autocorrect="off" autocapitalize="off"
+          ></ion-input>
+      </div>
+
+      <div class="bottom-buttons">
       <ion-input placeholder="Invite Code" [class.failed]="unlockState == 'fail'"
                  [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off"
                  autocapitalize="off" (ionFocus)="onInputFocus()"></ion-input>

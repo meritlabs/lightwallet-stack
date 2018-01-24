@@ -1689,7 +1689,6 @@ export class API {
    * @param {Number} n
    * @param {object} opts (optional: advanced options)
    * @param {string} opts.network[='livenet']
-   * @param {string} opts.singleAddress[=false] - The wallet will only ever have one address.
    * @param {string} opts.parentAddress - A required parent address to enable this address on the network.
    * @param {String} opts.walletPrivKey - set a walletPrivKey (instead of random)
    * @param {String} opts.id - set a id for wallet (instead of server given)
@@ -1734,17 +1733,19 @@ export class API {
         addressType: 1,
         signPrivKey: walletPrivKey,
         network: network,
+        alias: opts.alias
       };
 
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
+
         let args = {
           name: encWalletName,
           m: m,
           n: n,
           pubKey: pubkey.toString(),
           network: network,
-          singleAddress: !!opts.singleAddress,
+          singleAddress: true, //daedalus wallets are single-addressed
           id: opts.id,
           parentAddress: opts.parentAddress
         };
@@ -1777,7 +1778,8 @@ export class API {
    * @param {number} opts.addressType      - address type: 1 - pubkey, 2 - sript, 3 - parameterizedscript
    * @param {PrivateKey} opts.signPrivKey  - private key to sign referral
    * @param {string} opts.pubkey        - (optional) pubkey of beaconing address. omitted for script
-   * @param {string} opts.network          - (optional) netowrk
+   * @param {string} opts.network          - (optional) network
+   * @param {string} opts.alias          - (optional) Address alias
    */
   sendReferral(opts: any = {}): Promise<any> {
     // $.checkState(this.credentials && this.credentials.isComplete());
@@ -1818,6 +1820,7 @@ export class API {
         addressType: opts.addressType,
         pubkey: Bitcore.PublicKey.fromString(opts.pubkey),
         signature,
+        alias: opts.alias
       });
 
       this._doPostRequest('/v1/referral/', { referral: referral.serialize() })
