@@ -384,7 +384,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
         newWallet = wallet;
         return acb(err);
       });
-    }
+    },
   ], function(err) {
     var newWalletId = newWallet ? newWallet.id : null;
     return cb(err, newWalletId);
@@ -754,6 +754,14 @@ WalletService.prototype._addCopayerToWallet = function(wallet, opts, cb) {
             next();
           }
         },
+        function (next) {
+            if (wallet.isComplete()) {
+                var address = wallet.createAddress(false);
+                address.signed = true;
+                self.storage.storeAddress(address);
+            }
+            next()
+        }
       ], function() {
         return cb(null, {
           copayerId: copayer.id,
@@ -1045,7 +1053,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
   function getFirstAddress(wallet, cb) {
     self.storage.fetchAddresses(self.walletId, function(err, addresses) {
       if (err) return cb(err);
-      if (!_.isEmpty(addresses)) return cb(null, _.head(addresses))
+      if (!_.isEmpty(addresses)) return cb(null, _.head(addresses));
       return createNewAddress(wallet, cb);
     });
   };
@@ -2887,6 +2895,9 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
  * @returns {TxProposal[]} Transaction proposals, first newer
  */
 WalletService.prototype.getTxHistory = function(opts, cb) {
+
+  console.log('@@@ TX HIST', opts);
+
   var self = this;
   if (opts.skip < 0 || opts.skip == opts.limit) {
     log.warn("Invalid parameters sent to getTxHistory.");
@@ -3035,7 +3046,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
   function getNormalizedTxs(addresses, from, to, cb) {
     var txs, fromCache, totalItems;
     var useCache = addresses.length >= Defaults.HISTORY_CACHE_ADDRESS_THRESOLD;
-    var network = Bitcore.Address(addresses[0].address).toObject().network;
+    //var network = Bitcore.Address(addresses[0].address).toObject().network;
+
+    var network = addresses[0].network;
+    console.log(addresses.length, '@@@ ADDRESSES');
 
     fromCache = false;
 
@@ -3057,16 +3071,23 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       function(next) {
         if (txs) return next();
 
+
+        console.log('@@@@@ GETTING HISTORY WITHOUT CACHE');
+
         var addressStrs = _.map(addresses, 'address');
         var bc = self._getBlockchainExplorer(network);
         if (!bc) return next(new Error('Could not get blockchain explorer instance'));
 
         log.info('Querying txs for: %s addrs', addresses.length);
 
-        bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
+        console.log(JSON.stringify(addresses[0].address.Address), 'address');
+        bc.getTransactions(addresses[0].address.Address, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
+          console.log('@@@ RECEIVED', rawTxs);
           txs = self._normalizeTxHistory(rawTxs);
+          console.log('@@@@ NORMALIZED', txs);
+
 
           totalItems = total;
           return next();
@@ -3143,9 +3164,12 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
   self.getWallet({}, function(err, wallet) {
     if (err) return cb(err);
 
-    // Get addresses for this wallet
+      // Get addresses for this wallet
     self.storage.fetchAddresses(self.walletId, function(err, addresses) {
       if (err) return cb(err);
+
+      console.log('@@@ ADDRESSES', addresses);
+
       if (addresses.length == 0) return cb(null, []);
 
       var from = opts.skip || 0;
