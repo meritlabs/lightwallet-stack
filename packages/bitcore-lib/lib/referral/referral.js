@@ -66,9 +66,9 @@ Referral.shallowCopy = function(transaction) {
   return copy;
 };
 
-Referral.prototype.inspect = function() {
-  return `<Referral: ${this.uncheckedSerialize()}>`;
-};
+//Referral.prototype.inspect = function() {
+//  return `<Referral: ${this.uncheckedSerialize()}>`;
+//};
 
 Referral.prototype.toBuffer = function() {
   const writer = new BufferWriter();
@@ -110,7 +110,9 @@ Referral.prototype.fromBufferReader = function(reader) {
   this.pubkey = reader.read(33).toString('hex').match(/.{1,2}/g).reverse().join('');
   this.signature = reader.read(71).toString('hex').match(/.{1,2}/g).reverse().join('');
   var aliasLength = reader.readVarintNum();
-  this.alias = reader.read(aliasLength).toString('hex').match(/.{1,2}/g).reverse().join('');
+  if (aliasLength) {
+      this.alias = reader.read(aliasLength).toString('hex').match(/.{1,2}/g).reverse().join('');
+  }
 
   return this;
 };
