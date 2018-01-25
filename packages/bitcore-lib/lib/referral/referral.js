@@ -107,18 +107,10 @@ Referral.prototype.fromBufferReader = function(reader) {
   this.parentAddress = reader.read(20).toString('hex').match(/.{1,2}/g).reverse().join('');
   this.addressType = reader.readUInt8();
   this.address = reader.read(20).toString('hex').match(/.{1,2}/g).reverse().join('');
-  this.pubkey = reader.read(33).toString('hex').match(/.{1,2}/g).reverse().join('');
-  this.signature = reader.read(71).toString('hex').match(/.{1,2}/g).reverse().join('')
-  var hexToString = function (hex) {
-      var string = '';
-      for (var i = 0; i < hex.length; i += 2) {
-          string += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
-      }
-      return string;
-  };
-
+  this.pubkey = reader.read(33).toString('hhex').match(/.{1,2}/g).reverse().join('');
+  this.signature = reader.read(71).toString('hex').match(/.{1,2}/g).reverse().join('');
   var aliasLength = reader.readVarintNum();
-  this.alias = hexToString(reader.read(aliasLength).toString('hex'));
+  this.alias = reader.read(aliasLength).toString('hex').match(/.{1,2}/g).reverse().join('');
 
   return this;
 };
@@ -148,7 +140,7 @@ Referral.prototype.fromObject = function fromObject(arg) {
     referral = arg;
   }
 
-  this.version = referral.version;
+  this.version = referral.version || CURRENT_VERSION;
   this.parentAddress = referral.parentAddress;
   this.address = referral.address;
   this.addressType = referral.addressType;
