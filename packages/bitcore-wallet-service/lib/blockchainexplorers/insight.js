@@ -98,6 +98,47 @@ Insight.prototype.getTransaction = function(txid, cb) {
   });
 };
 
+Insight.prototype.getReferrals = function(addresses, from, to, cb) {
+
+    var qs = [];
+    var total;
+    if (_.isNumber(from)) qs.push('from=' + from);
+    if (_.isNumber(to)) qs.push('to=' + to);
+
+    // Trim output
+    //qs.push('noAsm=1');
+    //qs.push('noScriptSig=1');
+    //qs.push('noSpent=1');
+
+    var args = {
+        method: 'POST',
+        path: this.apiPrefix + '/addrs/referrals' + (qs.length > 0 ? '?' + qs.join('&') : ''),
+        json: {
+            addrs: [].concat(addresses).join(',')
+        },
+        timeout: 120000,
+    };
+
+    console.log(args, addresses);
+
+    this._doRequest(args, function(err, res, referrals) {
+        if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
+
+        if (_.isObject(referrals)) {
+            if (referrals.totalItems)
+                total = referrals.totalItems;
+
+            if (referrals.items)
+                referrals = referrals.items;
+        }
+
+        // NOTE: Whenever Insight breaks communication with meritd, it returns invalid data but no error code.
+        if (!_.isArray(referrals) || (referrals.length != _.compact(referrals).length)) return cb(new Error('Could not retrieve transactions from blockchain. Request was:' + JSON.stringify(args)));
+
+        return cb(null, referrals, total);
+    });
+};
+
 Insight.prototype.getTransactions = function(addresses, from, to, cb) {
   var qs = [];
   var total;

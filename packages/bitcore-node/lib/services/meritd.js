@@ -13,6 +13,7 @@ var MeritRPC = require('meritd-rpc');
 var $ = bitcore.util.preconditions;
 var _  = bitcore.deps._;
 var Transaction = bitcore.Transaction;
+var Referral = bitcore.Referral;
 
 var index = require('../');
 var errors = index.errors;
@@ -195,6 +196,7 @@ Merit.prototype.getAPIMethods = function() {
     ['getanv',                this, this.getANV, 1],
     ['getrewards',     this, this.getRewards, 1],
     ['sendReferral', this, this.sendReferral, 1],
+    ['getAddressReferrals', this, this.getAddressReferrals, 1]
   ];
   return methods;
 };
@@ -1543,6 +1545,182 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
     );
   });
 };
+
+
+/**
+ * Will expand into a detailed referral from a refid
+ * @param {Object} refid - A merit referral id
+ * @param {Function} callback
+ */
+Merit.prototype._getAddressDetailedReferral = function(refid, options, next) {
+    var self = this;
+
+    //todo temp! Use cache
+    this.client.getrawreferral(refid, function(err, response) {
+        console.log("RESPONSE", response.result);
+        var referral = (new Referral(response.result));
+        console.log("referral \n\n\n", referral);
+    });
+
+    //self.getDetailedReferral(
+    //    refid,
+    //    function(err, referral) {
+    //        if (err) {
+    //            return next(err);
+    //        }
+
+            //var addressDetails = self._getAddressDetailsForReferral(referral, options.addressStrings);
+            //
+            //var details = {
+            //    "refid": "3ba5a7475edd960aaaf40b2a3255f8b249b413d74ae217ed82bd3242e39fde64",
+            //    "version": 1,
+            //    "address": "mUSkoQ9S4KVC94afLPY9YkjAZfkcuNyBK2",
+            //    "alias": "",
+            //    "parentAddress": "mPGcPYDyScDTb4UPHyDfgKrvNNQxz32Ni7",
+            //    "size": 152,
+            //    "vsize": 152
+            //
+            //
+            //    addresses: addressDetails.addresses,
+            //    micros: addressDetails.micros,
+            //    confirmations: self._getConfirmationsDetail(transaction),
+            //    referral: referral
+            //};
+            //next(null, details);
+        //}
+    //);
+};
+
+
+/**
+ * Will get the referral ids for an address or multiple addresses
+ * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
+ * @param {Object} options
+ * @param {Function} callback
+ */
+Merit.prototype.getAddressReferralsIds = function(addressArg, options, callback) {
+    /* jshint maxstatements: 20 */
+    var self = this;
+
+    var rangeQuery = false;
+    try {
+        rangeQuery = self._getHeightRangeQuery(options);
+    } catch(err) {
+        return callback(err);
+    }
+
+    // todo bring back mempool query
+
+    var addresses = self._normalizeAddressArg(addressArg);
+    var cacheKey = addresses.join('');
+    var mempoolRefids = [];
+    //var refids = self.refidsCache.get(cacheKey);
+
+    var refids = []; //todo temp
+
+    function finish() {
+        if (false && refids && !rangeQuery) { //temp
+            var allRefids = mempoolRefids.reverse().concat(refids);
+            return setImmediate(function() {
+                callback(null, allRefids);
+            });
+        } else {
+            var refidOpts = {
+                addresses: addresses
+            };
+            if (rangeQuery) {
+                self._getHeightRangeQuery(options, refidOpts);
+            }
+
+            //console.log("RECEIIIVED REFIDS ", referralsIds, "\n\n ");
+
+            self.client.getaddressrefids(refidOpts, function(err, response) {
+                if (err) {
+                    return callback(self._wrapRPCError(err));
+                }
+                response.result.reverse();
+                //if (!rangeQuery) { temp
+                    //self.refidsCache.set(cacheKey, response.result);
+                //}
+                var allRefids = mempoolRefids.reverse().concat(response.result);
+                return callback(null, allRefids);
+            });
+        }
+    }
+
+    finish();
+};
+
+
+Merit.prototype._paginateReferralIds = function(fullReferralIds, fromArg, toArg) {
+    var refids;
+    var from = parseInt(fromArg);
+    var to = parseInt(toArg);
+    $.checkState(from < to, '"from" (' + from + ') is expected to be less than "to" (' + to + ')');
+    refids = fullReferralIds.slice(from, to);
+    return refids;
+};
+
+/**
+ * Will detailed referrals history for an address or multiple addresses
+ * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
+ * @param {Object} options
+ * @param {Function} callback
+ */
+Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
+    var self = this;
+    var addresses = self._normalizeAddressArg(addressArg);
+    if (addresses.length > this.maxAddressesQuery) {
+        return callback(new TypeError('Maximum number of addresses (' + this.maxAddressesQuery + ') exceeded'));
+    }
+
+    var addressStrings = this._getAddressStrings(addresses);
+
+    var fromArg = parseInt(options.from || 0);
+    var toArg = parseInt(options.to || self.maxTransactionHistory);
+
+    if ((toArg - fromArg) > self.maxTransactionHistory) {
+        return callback(new Error(
+            '"from" (' + options.from + ') and "to" (' + options.to + ') range should be less than or equal to ' +
+            self.maxTransactionHistory
+        ));
+    }
+
+    self.getAddressReferralsIds(addresses, options, function(err, referralsIds) {
+
+        console.log("REFERRALS RECEIVED \n\n\n", referralsIds);
+
+        if (err) {
+            return callback(err);
+        }
+        var totalCount = referralsIds.length;
+        try {
+            referralsIds = self._paginateReferralIds(referralsIds, fromArg, toArg);
+        } catch(e) {
+            return callback(e);
+        }
+
+        async.mapLimit(
+            referralsIds,
+            self.transactionConcurrency, // - what's this?
+            function(refid, next) {
+                self._getAddressDetailedReferral(referralsIds, {
+                    addressStrings: addressStrings
+                }, next);
+            },
+            function(err, referrals) {
+                if (err) {
+                    return callback(err);
+                }
+                callback(null, {
+                    totalCount: totalCount,
+                    items: referrals
+                });
+            }
+        );
+    });
+};
+
 
 /**
  * Will get the summary including txids and balance for an address or multiple addresses

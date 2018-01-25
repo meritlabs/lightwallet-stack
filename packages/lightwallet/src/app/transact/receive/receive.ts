@@ -125,7 +125,7 @@ export class ReceiveView {
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.wallet = wallet;
-        this.generateAddress(false);
+        this.generateAddress();
       }
     });
     return modal.present();

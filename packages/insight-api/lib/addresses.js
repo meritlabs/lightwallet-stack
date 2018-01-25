@@ -93,6 +93,8 @@ AddressController.prototype.checkAddr = function(req, res, next) {
 };
 
 AddressController.prototype.checkAddrs = function(req, res, next) {
+
+
   if(req.body.addrs) {
     req.addrs = req.body.addrs.split(',');
   } else {
@@ -203,6 +205,45 @@ AddressController.prototype._getTransformOptions = function(req) {
     noScriptSig: parseInt(req.query.noScriptSig) ? true : false,
     noSpent: parseInt(req.query.noSpent) ? true : false
   };
+};
+
+AddressController.prototype.referrals = function(req, res, next) {
+    var self = this;
+
+    var options = {
+        from: parseInt(req.query.from) || parseInt(req.body.from) || 0
+    };
+
+    options.to = parseInt(req.query.to) || parseInt(req.body.to) || parseInt(options.from) + 10;
+
+    self.node.getAddressReferrals(req.addrs, options, function(err, result) {
+        if(err) {
+            return self.common.handleErrors(err, res);
+        }
+
+
+        console.log("AAAAAAAAA\n\n\n");
+        console.log(result);
+        console.log("\n\n\nAAAAAAAAA");
+
+
+
+        //var transformOptions = self._getTransformOptions(req);
+        //
+        //self.transformAddressHistoryForMultiTxs(result.items, transformOptions, function(err, items) {
+        //    console.log('after transformAddressHistoryForMultiTxs', err, items);
+        //    if (err) {
+        //        return self.common.handleErrors(err, res);
+        //    }
+        //    res.jsonp({
+        //        totalItems: result.totalCount,
+        //        from: options.from,
+        //        to: Math.min(options.to, result.totalCount),
+        //        items: items
+        //    });
+        //});
+
+    });
 };
 
 AddressController.prototype.multitxs = function(req, res, next) {
