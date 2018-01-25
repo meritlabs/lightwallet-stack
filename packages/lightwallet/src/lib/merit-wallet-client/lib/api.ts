@@ -1720,11 +1720,14 @@ export class API {
 
       const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey(void 0, network);
       const pubkey = walletPrivKey.toPublicKey();
-      const address = pubkey.toAddress();
+
 
       let c = this.credentials;
       c.addWalletPrivateKey(walletPrivKey.toString());
       let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
+
+      const xpub = new Bitcore.HDPublicKey(c.xPubKey);
+      const address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, network).toString();
 
       const referralOpts = {
         parentAddress: opts.parentAddress,
@@ -1747,7 +1750,8 @@ export class API {
           network: network,
           singleAddress: true, //daedalus wallets are single-addressed
           id: opts.id,
-          parentAddress: opts.parentAddress
+          parentAddress: opts.parentAddress,
+          referralId: refid
         };
 
         return this._doPostRequest('/v1/wallets/', args).then(res => {
