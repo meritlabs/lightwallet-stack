@@ -537,7 +537,6 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
 
     self.storage.storeAddress(address, function(err) {
       if (err) return cb(err.message);
-
       cb(null, address);
     });
   });
@@ -758,9 +757,10 @@ WalletService.prototype._addCopayerToWallet = function(wallet, opts, cb) {
             if (wallet.isComplete()) {
                 var address = wallet.createAddress(false);
                 address.signed = true;
-                self.storage.storeAddress(address);
+                self.storage.storeAddressAndWallet(wallet, [address], function() {
+                    next(err);
+                });
             }
-            next()
         }
       ], function() {
         return cb(null, {
