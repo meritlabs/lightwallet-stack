@@ -146,7 +146,7 @@ Referral.prototype.fromObject = function fromObject(arg) {
   this.addressType = referral.addressType;
   this.pubkey = referral.pubkey;
   this.signature = referral.signature;
-  this.alias = referral.alias;
+  this.alias = referral.alias || '';
 
   return this;
 };
