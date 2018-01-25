@@ -2265,13 +2265,16 @@ export class API {
 
       opts.ignoreMaxGap = true;
       return this._doPostRequest('/v1/addresses/', opts).then((address) => {
-        console.dir(address);
         if (!Verifier.checkAddress(this.credentials, address)) {
           return reject(Errors.SERVER_COMPROMISED);
         }
+        if (!address.signed) {
+          return this._signAddressAndUnlockWithRoot(address)
+            .then(() => resolve(address));
+        } else {
+          return resolve(address);
+        }
 
-        return this._signAddressAndUnlockWithRoot(address)
-          .then(() => resolve(address));
       });
     });
   };
