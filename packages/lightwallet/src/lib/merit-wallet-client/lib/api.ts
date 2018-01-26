@@ -2641,13 +2641,112 @@ export class API {
       qs = '?' + args.join('&');
     }
 
-    let url = '/v1/txhistory/' + qs;
-    return this._doGetRequest(url).then((txs) => {
-      return this._processTxps(txs).then(() => {
-        return Promise.resolve(txs);
-      });
-    });
+    //let url = '/v1/txhistory/' + qs;
+    //return this._doGetRequest(url).then((txs) => {
+    //  return this._processTxps(txs).then(() => {
+    //
+    //    return Promise.resolve(txs);
+    //  });
+    //});
+    return Promise.resolve([
+      [
+
+        { //classic transaction
+              "txid": "302efd570df3f5f87de568773ca37d850ed693ac4fcfa3a66326e7624459db45",
+            "action": "received",
+            "amount": 2000000000,
+            "fees": 7480,
+            "time": 1516968822,
+            "confirmations": 0,
+            "outputs": [
+            {
+              "amount": 2000000000,
+              "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc"
+            }
+          ],
+            "lowFees": false
+        },
+        { //new invite mined
+          "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
+          "action": "unlock",
+          "amount": 1,
+          "time": 1516968822,
+          "confirmations": 0,
+          "outputs": [
+            {
+              "amount": 1,
+              "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc"
+            }
+          ]
+        },
+        { // unlocking an address
+          "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
+          "action": "invite",
+          "amount": 1,
+          "time": 1516968822,
+          "confirmations": 0,
+          "inputs": [
+            {
+              "amount": 1,
+              "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" // your address
+            }
+          ],
+          "outputs": [
+              {
+                "amount": 1,
+                "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" //address you're unlocking
+              }
+          ]
+        }
+      ]
+    ])
   };
+
+  /**
+   * Get invite requests
+   *
+   */
+  getInvites() :Promise<any> {
+
+    return Promise.resolve([
+      {
+        "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
+        "action": "unlock",
+        "amount": 1,
+        "time": 1516968822,
+        "confirmations": 0,
+        "outputs": [
+          {
+            "amount": 1,
+            "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc"
+          }
+        ]
+      }
+    ]);
+
+  }
+
+  /**
+   *
+   * @param address
+   */
+  confirmRequest(request:{refid:string, address:string}): Promise<bool> {
+
+    return Promise.resolve(true);
+
+  }
+
+  getUnlockRequests(): Promise<any> {
+    return Promise.resolve([
+      {
+        refid: "5b564c38d42c9fc45f65a63f4a21a40ac5c62b05f81a2c4e591b50ecc44e450d",
+        address: 'mRH9vPfURmWftNZ7ENY3wrQNN1XygPjxsx',
+        alias: '',
+        parentAddress: 'mWr414vxUVb2F9CMMVT2jeWXjhCXkdemoK'
+        }
+      ]);
+  }
+
 
   /**
    * getTx
