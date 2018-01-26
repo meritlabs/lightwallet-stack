@@ -1,5 +1,5 @@
 import {
-  AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, Renderer2,
+  AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, Renderer2,
   ViewChild
 } from '@angular/core';
 import { Platform } from 'ionic-angular';
@@ -7,7 +7,8 @@ import { PanGesture } from './pan-gesture';
 
 @Component({
   selector: 'slide-to-action',
-  templateUrl: 'slide-to-action.html'
+  templateUrl: 'slide-to-action.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SlideToActionComponent implements AfterViewInit, OnDestroy {
 
@@ -38,6 +39,9 @@ export class SlideToActionComponent implements AfterViewInit, OnDestroy {
     this._gesture.onMove = (delta: number) => {
       const newPos = Math.min(Math.max(0, -1 * delta + this._sliderPosition), maxPosition);
       if (newPos !== this._sliderPosition) {
+        // if (newPos === maxPosition) {
+          // TODO use haptic/taptic feedback
+        // }
         this._sliderPosition = newPos;
         this.moveSlider(0);
       }

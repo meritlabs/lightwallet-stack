@@ -85,7 +85,7 @@ export class SendView {
   }
 
   async parseSearch() {
-
+    if (!this.searchQuery || !this.searchQuery.length) return;
     if (this.searchQuery.indexOf('merit') == 0) this.searchQuery = this.searchQuery.split('merit:')[1];
     let input = this.searchQuery.split('?')[0];
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);

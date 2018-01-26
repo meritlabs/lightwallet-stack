@@ -1,8 +1,4 @@
-<ion-content>
-  <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}" [enabled]="!loading">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
+<ion-header>
   <div class="big-header">
     <button ion-button clear icon-only class="header-action-button" navPush="SettingsView">
       <ion-icon name="settings" merit-icon></ion-icon>
@@ -13,6 +9,11 @@
     </h2>
     <h3 *ngIf="!loading" class="detail-fiat">{{ totalNetworkValueFiat || '$0.00' }}</h3>
   </div>
+</ion-header>
+<ion-content>
+  <ion-refresher (ionRefresh)="doRefresh($event)" (onpull)="{}" [enabled]="!loading">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
   <div *ngIf="txpsData?.txpsN && addressbook">
     <ion-item-divider translate>
@@ -100,14 +101,13 @@
             <ion-icon name="ios-timer-outline" *ngIf="walletHasPendingAmount(wallet)"></ion-icon>
           </p>
           <p *ngIf="walletHasPendingAmount(wallet)">Partially confirmed</p>
+          <p *ngIf="wallet.balanceHidden">
+            [Balance Hidden]
+          </p>
         </ion-label>
 
         <ion-note *ngIf="!wallet.isComplete()" class="assertive">Incomplete</ion-note>
         <ion-note class="balance" *ngIf="wallet.isComplete()" item-end>
-          <span *ngIf="wallet.balanceHidden" class="balance-hidden">
-              [Balance Hidden]
-          </span>
-
           <span *ngIf="wallet.n > 1">
               {{ wallet.m }}-of-{{ wallet.n }}
           </span>
