@@ -1822,7 +1822,7 @@ export class API {
         parentAddress: Bitcore.Address.fromString(opts.parentAddress),
         address: Bitcore.Address.fromString(opts.address),
         addressType: opts.addressType,
-        pubkey: Bitcore.PublicKey.fromString(opts.pubkey),
+        pubkey: Bitcore.PublicKey.fromString(opts.pubkey, network),
         signature,
         alias: opts.alias
       });
