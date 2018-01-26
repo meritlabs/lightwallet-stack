@@ -96,7 +96,7 @@ export class SendAmountView {
     ];
     this.selectedCurrency = this.availableUnits[0];
     let passedAmount = this.navParams.get('amount') || 0;
-    this.formData.amount = this.rateService.microsToMrt(passedAmount)+'';
+    this.formData.amount = String(this.rateService.microsToMrt(passedAmount));
     await this.updateAmount();
 
     // todo add smart common amounts receive
@@ -351,7 +351,7 @@ export class SendAmountView {
       this.knownFeeLevels.forEach((level) => {
         // todo IF EASY ADD  easySend.size*feeLevel.feePerKb !!!!!!
         let micros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
-        let mrt = Math.round(this.rateService.microsToMrt(micros)*1000000000)/1000000000;
+        let mrt = Math.round(this.rateService.microsToMrt(micros) * 1000000000) / 1000000000;
         //todo add description map
 
         // todo check if micros

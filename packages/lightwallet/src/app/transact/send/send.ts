@@ -48,16 +48,16 @@ export class SendView {
 
   }
 
-  async ionViewDidLoad() {
+  async ngOnInit() {
     this.loadingContacts = true;
-    this.updateHasUnlocked();
+    await this.updateHasUnlocked();
     this.contacts = await this.addressBookService.getAllMeritContacts();
     this.loadingContacts = false;
     this.updateRecentContacts();
   }
 
   private async updateHasUnlocked() {
-    let wallets = await this.profileService.getWallets();
+    const wallets = await this.profileService.getWallets();
     this.hasUnlockedWallets = wallets && wallets.some(w => w.unlocked);
   }
 
@@ -85,7 +85,7 @@ export class SendView {
   }
 
   async parseSearch() {
-
+    if (!this.searchQuery || !this.searchQuery.length) return;
     if (this.searchQuery.indexOf('merit') == 0) this.searchQuery = this.searchQuery.split('merit:')[1];
     let input = this.searchQuery.split('?')[0];
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);

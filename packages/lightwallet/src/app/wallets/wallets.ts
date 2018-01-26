@@ -26,6 +26,7 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
 
+
 /*
   TODO:
   -- Ensure that we get navParams and then fallback to the wallet service.
@@ -48,8 +49,6 @@ export class WalletsView {
 
   addressbook;
   txpsData: any[] = [];
-  recentTransactionsData: any[] = [];
-  recentTransactionsEnabled;
   network: string;
 
   loading: boolean;
@@ -87,12 +86,10 @@ export class WalletsView {
   }
 
   async doRefresh(refresher) {
-    if (this.loading === false) this.loading = true;
     try {
       await this.refreshAllInfo();
     } catch (e) {}
     refresher.complete();
-    if (this.loading === true) this.loading = false;
   }
 
   async refreshAllInfo() {
@@ -113,7 +110,6 @@ export class WalletsView {
 
     await this.updateAllInfo({ force: true });
     this.logger.info('Got updated data in walletsView on Ready!!');
-    this.registerListeners();
   }
 
   async updateAllInfo(opts: { force: boolean } = { force: false }) {
@@ -127,6 +123,7 @@ export class WalletsView {
       if (_.isEmpty(wallets)) {
         return null; //ToDo: add proper error handling;
       }
+
       this.wallets = wallets;
 
       // Now that we have wallets, we will proceed with the following operations in parallel.
@@ -134,9 +131,10 @@ export class WalletsView {
         this.updateNetworkValue(wallets),
         this.processPendingEasyReceipts(),
         this.updateTxps({ limit: 3 }),
-        this.updateVaults(_.head(this.wallets)),
-        this.fetchNotifications()
+        this.updateVaults(_.head(this.wallets))
       ]);
+
+      console.log(wallets);
 
       this.logger.info('Done updating all info for wallet.');
     };
@@ -218,28 +216,19 @@ export class WalletsView {
     return this.updateVaults(await this.profileService.getHeadWalletClient());
   }
 
-  openTransactionDetails(transaction) {
-    this.navCtrl.push('TransactionView', { transaction: transaction });
-  }
-
-  toTxpDetails() {
-    this.navCtrl.push('TxpView');
-  }
-
   txpCreatedWithinPastDay(txp) {
     const createdOn = new Date(txp.createdOn * 1000);
     return ((new Date()).getTime() - createdOn.getTime()) < (1000 * 60 * 60 * 24);
   }
 
-  openRecentTxDetail(tx: any): any {
-    this.navCtrl.push('TxDetailsView', { tx })
-  }
-
   walletHasPendingAmount(wallet: any): boolean {
-    return (
-      (wallet.status.totalBalanceMicros != wallet.status.spendableAmount)
-      || wallet.status.pendingAmount > 0
-    )
+    try {
+      if (wallet.status && wallet.status.balance) {
+        return Number(wallet.status.balance.totalAmount) !== Number(wallet.status.balance.confirmedAmount);
+      }
+    } catch (e) {}
+
+    return false;
   }
 
   private async updateTxps({ limit } = { limit: 3 }): Promise<any> {
@@ -257,113 +246,6 @@ export class WalletsView {
       vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
       return vault;
     }));
-  }
-
-  private async fetchNotifications(): Promise<any> {
-    this.logger.info('What is the recentTransactionsEnabled status?');
-    this.logger.info(this.configService.get().recentTransactions.enabled);
-    if (this.configService.get().recentTransactions.enabled) {
-      this.recentTransactionsEnabled = true;
-
-      const result = await this.profileService.getNotifications({ limit: 3 });
-
-      this.logger.info(`WalletsView Received ${result.count} notifications upon resuming.`);
-
-      result.notifications.forEach((n: any) => {
-        // We don't need to update the status here because it has
-        // already been fetched as part of updateAllInfo();
-        this.processIncomingTransactionEvent(n, { updateStatus: false });
-      });
-    }
-  }
-
-  private async processIncomingTransactionEvent(n: any, opts: { updateStatus: boolean } = { updateStatus: false }) {
-    if (_.isEmpty(n)) {
-      return;
-    }
-
-    if (n.type) {
-      switch (n.type) {
-        case 'IncomingTx':
-          n.actionStr = 'Payment Received';
-          break;
-        case 'IncomingCoinbase':
-          n.actionStr = 'Mining Reward';
-          break;
-        case 'OutgoingTx':
-          n.actionStr = 'Payment Sent';
-          break;
-        default:
-          n.actionStr = 'Recent Transaction';
-          break
-      }
-    }
-
-    // TODO: Localize
-    if (n.data && n.data.amount) {
-      n.amountStr = this.txFormatService.formatAmountStr(n.data.amount);
-      const usdAmount = await this.txFormatService.formatToUSD(n.data.amount);
-
-      n.fiatAmountStr = new FiatAmount(+usdAmount).amountStr;
-
-      // Let's make sure we don't have this notification already.
-      let duplicate = _.find(this.recentTransactionsData, n);
-      if (_.isEmpty(duplicate)) {
-        // We use angular's NgZone here to ensure that the view re-renders with new data.
-        // There may be a better way to do this.
-        // TODO: Investigate why events.subscribe() does not appear to run inside
-        // the angular zone.
-        this.zone.run(() => {
-          this.recentTransactionsData.push(n);
-        });
-      }
-    }
-
-    // Update the status of the wallet in question.
-    // TODO: Consider revisiting the mutation approach here.
-    if (n.walletId && opts.updateStatus) {
-      // Check if we have a wallet with the notification ID in the view.
-      // If not, let's skip.
-      const index = this.wallets.findIndex((w: any) => w.id === n.walletId);
-
-      if (index === -1) {
-        return;
-      }
-
-      this.walletService.invalidateCache(this.wallets[index]);
-
-      await Promise.all([
-        this.walletService.getStatus(this.wallets[index]).then((status) => {
-          // TODO: verify if NgZone.run() is needed here
-          console.log('>>> Is NgZone.run() needed? ', !NgZone.isInAngularZone());
-          // Using angular's NgZone to ensure that the view knows to re-render.
-          this.zone.run(() => {
-            this.wallets[index].status = status;
-          });
-        }),
-        this.updateNetworkValue(this.wallets)
-      ]);
-
-    }
-  }
-
-  /**
-   * Here, we register listeners that act on relevent Ionic Events
-   * These listeners process event data, and also retrieve additional data
-   * as needed.
-   */
-  private registerListeners(): void {
-    this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
-      this.logger.info('RL: Got an IncomingTx event with: ', walletId, type, n);
-
-      this.processIncomingTransactionEvent(n, { updateStatus: true });
-    });
-
-    this.events.subscribe('Remote:IncomingCoinbase', (walletId, type, n) => {
-      this.logger.info('RL: Got an IncomingCoinbase event with: ', walletId, type, n);
-
-      this.processIncomingTransactionEvent(n, { updateStatus: true });
-    });
   }
 
   /**
@@ -527,11 +409,12 @@ export class WalletsView {
 
     await Promise.all(wallets.map(async (wallet) => {
       totalAmount += await this.walletService.getANV(wallet);
-      const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
-      this.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
-      this.totalNetworkValue = totalAmount;
-      this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
     }));
+
+    const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
+    this.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
+    this.totalNetworkValue = totalAmount;
+    this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
   }
 
   private rateApp(mark) {

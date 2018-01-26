@@ -97,11 +97,10 @@
     <!--<div item-end>{{txData.timeout.hours}}</div>-->
     <!--</ion-item>-->
     <!--</ion-list>-->
-
-    <ion-item>
-      <!--TODO add styling and return to zero when touchend-->
-      <ion-range [(ngModel)]="unlockValue" [min]="0" [max]="100" (ionChange)="send()"></ion-range>
-    </ion-item>
   </div>
 
 </ion-content>
+
+<ion-footer>
+  <slide-to-action text="Slide to Send" (confirm)="send()"></slide-to-action>
+</ion-footer>
