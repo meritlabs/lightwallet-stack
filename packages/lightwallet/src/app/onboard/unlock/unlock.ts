@@ -23,7 +23,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 })
 export class UnlockView {
   public unlockState: 'success' | 'fail';
-  public formData = { parentAddress: '' };
+  public formData = { parentAddress: '' , alias: ''};
   public easyReceipt: EasyReceipt;
 
   @ViewChild(Content) content: Content;
@@ -61,7 +61,7 @@ export class UnlockView {
     await loader.present();
 
     try {
-      const wallet = await this.walletService.createDefaultWallet(this.formData.parentAddress);
+      const wallet = await this.walletService.createDefaultWallet(this.formData.parentAddress, this.formData.alias);
       this.logger.info('Created a new default wallet!');
 
       if (this.config.get().pushNotificationsEnabled) {

@@ -32,8 +32,6 @@ export class ReceiveView {
   availableUnits: Array<string>;
   amountCurrency: string;
 
-  loading: boolean;
-  hasUnlockedWallets: boolean;
   wallets;
   wallet;
 
@@ -71,7 +69,7 @@ export class ReceiveView {
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
       this.logger.info('Got an incomingTx on receive screen: ', n);
       if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
-        this.generateAddress(true);
+        this.generateAddress();
       }
     });
   }
@@ -91,20 +89,20 @@ export class ReceiveView {
     this.loading = false;
   }
 
-  async generateAddress(forceNew?: boolean) {
+  async generateAddress() {
     this.addressGenerationInProgress = true;
     this.error = null;
 
     try {
-      const address = await this.walletService.getAddress(this.wallet, forceNew);
+      const address = await this.walletService.getAddress(this.wallet, false);
       this.address = address.address;
       this.addressGenerationInProgress = false;
-      if (forceNew) this.mainAddressGapReached = false; // that means, we  successfully generated NEW address
+      //if (forceNew) this.mainAddressGapReached = false; // that means, we  successfully generated NEW address
       this.formatAddress();
     } catch (err) {
       if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code) {
         this.mainAddressGapReached = true;
-        return this.generateAddress(false);
+        return this.generateAddress();
       } else {
         this.addressGenerationInProgress = false;
 
@@ -127,7 +125,7 @@ export class ReceiveView {
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.wallet = wallet;
-        this.generateAddress(false);
+        this.generateAddress();
       }
     });
     return modal.present();
