@@ -2679,6 +2679,27 @@ export class API {
             }
           ]
         },
+        { // you were unlocked/new invite recieved.
+          // If it is fiets transaction of this type, it means that you were unlocked.
+          // Outherwise it means that somebody sent you additional invite
+          "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
+          "action": "invite",
+          "amount": 1,
+          "time": 1516968822,
+          "confirmations": 0,
+          "inputs": [
+            {
+              "amount": 1,
+              "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" // your parent address
+            }
+          ],
+          "outputs": [
+            {
+              "amount": 1,
+              "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" //your address
+            }
+          ]
+        },
         { // unlocking an address
           "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
           "action": "invite",
@@ -2706,7 +2727,7 @@ export class API {
    * Get invite requests
    *
    */
-  getInvites() :Promise<any> {
+  getInvitesHistory() :Promise<any> {
 
     return Promise.resolve([
       {
@@ -2743,7 +2764,13 @@ export class API {
         address: 'mRH9vPfURmWftNZ7ENY3wrQNN1XygPjxsx',
         alias: '',
         parentAddress: 'mWr414vxUVb2F9CMMVT2jeWXjhCXkdemoK'
-        }
+      },
+      {
+        refid: "5b564c38d42c9fc45f65a63f4a21a40ac5c62b05f81a2c4e591b50ecc44e450d",
+        address: 'mRH9vPfURmWftNZ7ENY3wrQNN1XygPjxsx',
+        alias: 'mockuser',
+        parentAddress: 'mWr414vxUVb2F9CMMVT2jeWXjhCXkdemoK'
+      },
       ]);
   }
 
