@@ -44,7 +44,9 @@ export class PanGesture {
     this.listeners.forEach(fn => fn());
   }
 
-  private _onStart(ev: TouchEvent) {
+  private _onStart(ev: TouchEvent | MouseEvent) {
+    ev.preventDefault();
+    ev.stopPropagation();
     const coords: PointerCoordinates = pointerCoord(ev),
       vw = this.plt.width();
 
@@ -61,7 +63,7 @@ export class PanGesture {
 
   }
 
-  private _onMove(ev: TouchEvent) {
+  private _onMove(ev: TouchEvent | MouseEvent) {
     const coords: PointerCoordinates = pointerCoord(ev);
 
     if (!this.isDragging) {
@@ -94,7 +96,10 @@ export class PanGesture {
 
   }
 
-  private _onEnd() {
+  private _onEnd(ev: TouchEvent | MouseEvent) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
     if (this.shouldCapture === true) {
       this.onEnd && this.onEnd();
     }
