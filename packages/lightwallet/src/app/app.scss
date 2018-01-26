@@ -118,8 +118,19 @@ ion-item textarea {
 }
 
 // *** iOS ***
-.ios .big-header {
-  padding-top: 20px;
+.ios {
+  ion-header.header-ios .big-header {
+    padding-top: 80px;
+    padding-top: calc(20px + const(safe-area-inset-top));
+    padding-top: calc(20px + env(safe-area-inset-top));
+  }
+
+  .big-header {
+    padding-top: 20px;
+    button[ion-button].button.header-action-button {
+
+    }
+  }
 }
 
 .big-header {
@@ -521,10 +532,20 @@ ion-modal.merit-modal {
 .ios ion-modal.merit-modal {
   .ion-page {
     ion-header.header.header-ios {
+
       ion-navbar.toolbar.toolbar-ios {
+        padding-top: 0;
+        min-height: 46px;
+
         .toolbar-background-ios {
+          padding-top: 0;
           border: none;
           background: rgb(233, 237, 242);
+        }
+
+        ion-title.title-ios {
+          padding-top: 0;
+          min-height: 46px;
         }
 
         ion-title.title-ios .toolbar-title {
