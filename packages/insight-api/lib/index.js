@@ -206,6 +206,7 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.post('/addrs/utxo', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.multiutxo.bind(addresses));
   app.get('/addrs/:addrs/txs', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.multitxs.bind(addresses));
   app.post('/addrs/txs', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.multitxs.bind(addresses));
+  app.post('/addrs/referrals', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.referrals.bind(addresses));
 
   // Address property routes
   app.get('/addr/:addr/balance', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.balance.bind(addresses));
@@ -213,6 +214,8 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.get('/addr/:addr/totalSent', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.totalSent.bind(addresses));
   app.get('/addr/:addr/unconfirmedBalance', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.unconfirmedBalance.bind(addresses));
   app.get('/addr/:addr/validate', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.validateAddresses.bind(addresses));
+
+
 
   // Status route
   var status = new StatusController(this.node);

@@ -16,12 +16,13 @@ function Referral(serialized) {
     return new Referral(serialized);
   }
 
-  this.version = 0;
+  this.version = 1;
   this.parentAddress = '';
   this.address = '';
   this.addressType = 0;
   this.pubkey = '';
   this.signature = '';
+  this.alias = '';
 
   if (serialized) {
     if (serialized instanceof Referral) {
@@ -65,9 +66,9 @@ Referral.shallowCopy = function(transaction) {
   return copy;
 };
 
-Referral.prototype.inspect = function() {
-  return `<Referral: ${this.uncheckedSerialize()}>`;
-};
+//Referral.prototype.inspect = function() {
+//  return `<Referral: ${this.uncheckedSerialize()}>`;
+//};
 
 Referral.prototype.toBuffer = function() {
   const writer = new BufferWriter();
@@ -75,11 +76,11 @@ Referral.prototype.toBuffer = function() {
 };
 
 Referral.prototype.toBufferWriter = function(writer) {
+
   const parentAddressBuf = this.parentAddress.toBufferLean();
   const addressBuf = this.address.toBufferLean();
   const pubkeyBuf = this.pubkey.toBuffer();
   const signatureBuf = this.signature.toBuffer();
-
   writer.writeInt32LE(this.version);
   writer.write(parentAddressBuf);
   writer.writeUInt8(this.addressType);
@@ -88,6 +89,8 @@ Referral.prototype.toBufferWriter = function(writer) {
   writer.write(pubkeyBuf);
   writer.writeVarintNum(signatureBuf.length);
   writer.write(signatureBuf);
+  writer.writeVarintNum(this.alias.length);
+  writer.writeString(this.alias);
 
   return writer;
 };
@@ -106,6 +109,10 @@ Referral.prototype.fromBufferReader = function(reader) {
   this.address = reader.read(20).toString('hex').match(/.{1,2}/g).reverse().join('');
   this.pubkey = reader.read(33).toString('hex').match(/.{1,2}/g).reverse().join('');
   this.signature = reader.read(71).toString('hex').match(/.{1,2}/g).reverse().join('');
+  var aliasLength = reader.readVarintNum();
+  if (aliasLength) {
+      this.alias = reader.read(aliasLength).toString('hex').match(/.{1,2}/g).reverse().join('');
+  }
 
   return this;
 };
@@ -118,6 +125,7 @@ Referral.prototype.toObject = Referral.prototype.toJSON = function toObject() {
     addressType: this.addressType,
     pubkey: this.pubkey,
     signature: this.signature,
+    alias: this.alias
   };
 
   return obj;
@@ -134,19 +142,20 @@ Referral.prototype.fromObject = function fromObject(arg) {
     referral = arg;
   }
 
-  this.version = referral.version;
+  this.version = referral.version || CURRENT_VERSION;
   this.parentAddress = referral.parentAddress;
   this.address = referral.address;
   this.addressType = referral.addressType;
   this.pubkey = referral.pubkey;
   this.signature = referral.signature;
+  this.alias = referral.alias || '';
 
   return this;
 };
 
 
 Referral.prototype.fromString = function(string) {
-  this.fromBuffer(new buffer.Buffer(string, 'hex'));
+  return this.fromBuffer(new buffer.Buffer(string, 'hex'));
 };
 
 Referral.prototype._newReferral = function() {

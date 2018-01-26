@@ -633,12 +633,13 @@ export class WalletService {
     });
   }
 
-  createDefaultWallet(parentAddress: string) {
+  createDefaultWallet(parentAddress: string, alias: string) {
     const opts: any = {
       m: 1,
       n: 1,
       networkName: this.configService.getDefaults().network.name,
-      parentAddress
+      parentAddress,
+      alias
     };
     return this.createWallet(opts);
   }
@@ -1334,7 +1335,8 @@ export class WalletService {
         network: opts.networkName,
         singleAddress: opts.singleAddress,
         walletPrivKey: opts.walletPrivKey,
-        parentAddress: opts.parentAddress
+        parentAddress: opts.parentAddress,
+        alias: opts.alias
       });
 
       // TODO: Subscribe to ReferralTxConfirmation

@@ -257,14 +257,16 @@ PublicKey.fromPoint = function(point, compressed) {
  * Instantiate a PublicKey from a DER hex encoded string
  *
  * @param {string} str - A DER hex string
+ * @param {String=} network - Which network should the address for this public key be for
  * @param {String=} encoding - The type of string encoding
  * @returns {PublicKey} A new valid instance of PublicKey
  */
-PublicKey.fromString = function(str, encoding) {
+PublicKey.fromString = function(str, network, encoding) {
   var buf = new Buffer(str, encoding || 'hex');
   var info = PublicKey._transformDER(buf);
   return new PublicKey(info.point, {
-    compressed: info.compressed
+    compressed: info.compressed,
+    network: network || Network.defaultNetwork
   });
 };
 

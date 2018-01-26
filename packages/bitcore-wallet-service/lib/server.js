@@ -384,7 +384,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
         newWallet = wallet;
         return acb(err);
       });
-    }
+    },
   ], function(err) {
     var newWalletId = newWallet ? newWallet.id : null;
     return cb(err, newWalletId);
@@ -537,7 +537,6 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
 
     self.storage.storeAddress(address, function(err) {
       if (err) return cb(err.message);
-
       cb(null, address);
     });
   });
@@ -754,6 +753,15 @@ WalletService.prototype._addCopayerToWallet = function(wallet, opts, cb) {
             next();
           }
         },
+        function (next) {
+            if (wallet.isComplete()) {
+                var address = wallet.createAddress(false);
+                address.signed = true;
+                self.storage.storeAddressAndWallet(wallet, [address], function() {
+                    next(err);
+                });
+            }
+        }
       ], function() {
         return cb(null, {
           copayerId: copayer.id,
@@ -1045,7 +1053,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
   function getFirstAddress(wallet, cb) {
     self.storage.fetchAddresses(self.walletId, function(err, addresses) {
       if (err) return cb(err);
-      if (!_.isEmpty(addresses)) return cb(null, _.head(addresses))
+      if (!_.isEmpty(addresses)) return cb(null, _.head(addresses));
       return createNewAddress(wallet, cb);
     });
   };
@@ -2876,6 +2884,220 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
   return cb(null, cache.current);
 };
 
+
+WalletService.prototype._normalizeReferallsHistory = function(referrals) {
+
+    var now = Math.floor(Date.now() / 1000);
+
+    return _.map([].concat(txs), function(referral) {
+    //    var inputs = _.map(tx.vin, function(item) {
+    //        return {
+    //            address: item.addr,
+    //            amount: item.valueMicros,
+    //        }
+    //    });
+    //
+    //    var outputs = _.map(tx.vout, function(item) {
+    //        var itemAddr;
+    //        // If classic multisig, ignore
+    //        if (item.scriptPubKey && _.isArray(item.scriptPubKey.addresses) && item.scriptPubKey.addresses.length == 1) {
+    //            itemAddr = item.scriptPubKey.addresses[0];
+    //        }
+    //
+    //        return {
+    //            address: itemAddr,
+    //            amount: parseInt((item.value * 1e8).toFixed(0)),
+    //        }
+    //    });
+    //
+        var timestamp = referral.blocktime; // blocktime
+        //if (!t || _.isNaN(t)) t = tx.firstSeenTs;
+        //if (!t || _.isNaN(t)) t = now;
+    //
+    //    return {
+    //        txid: tx.txid,
+    //        confirmations: tx.confirmations,
+    //        blockheight: tx.blockheight,
+    //        fees: parseInt((tx.fees * 1e8).toFixed(0)),
+    //        size: tx.size,
+    //        time: t,
+    //        inputs: inputs,
+    //        outputs: outputs,
+    //        isCoinbase: tx.isCoinbase,
+    //        isMature: tx.isMature
+    //    };
+
+        return {
+            refid: referral.id,
+            time: timestamp
+        }
+    });
+};
+
+/**
+ * Retrieves all referrals (incoming & outgoing)
+ * Times are in UNIX EPOCH
+ *
+ * @param {Object} opts
+ * @param {Number} opts.skip (defaults to 0)
+ * @param {Number} opts.limit
+ * @param {Number} opts.includeExtendedInfo[=false] - Include all inputs/outputs for every tx.
+ * @returns {TxProposal[]} Transaction proposals, newer first
+ */
+WalletService.prototype.getReferralsHistory = function(opts, cb) {
+
+    var useCache = false; // TEMP !!!
+    var self = this;
+
+    if (opts.skip < 0 || opts.skip == opts.limit) {
+        log.warn("Invalid parameters sent to getReferralHistory.");
+        return cb(Errors.INVALID_PARAMETERS);
+    }
+
+    opts = opts || {};
+    opts.limit = (_.isUndefined(opts.limit) ? Defaults.HISTORY_LIMIT : opts.limit);
+    if (opts.limit > Defaults.HISTORY_LIMIT)
+        return cb(Errors.HISTORY_LIMIT_EXCEEDED);
+
+    function decorate(wallet, txs, addresses, notes) {
+
+    };
+
+    function getNormalizedRefs(addresses, from, to, cb) {
+        var referrals, fromCache, totalItems;
+        var network = addresses[0].network;
+
+        fromCache = false;
+
+        async.series([
+
+            function(next) {
+                if (!useCache) return next();
+
+                //self.storage.getReferralsHistoryCache(self.walletId, from, to, function(err, res) {
+                //    if (err) return next(err);
+                //    if (!res || !res[0]) return next();
+                //
+                //    txs = res;
+                //    fromCache = true;
+                //
+                //    return next()
+                //});
+            },
+            function(next) {
+                if (referrals) return next();
+
+                console.log('@@@@@ GETTING REFERRALS WITHOUT CACHE');
+
+                var addressStrs = _.map(addresses, 'address');
+                var bc = self._getBlockchainExplorer(network);
+                if (!bc) return next(new Error('Could not get blockchain explorer instance'));
+
+                log.info('Querying referrals for: %s addrs', addresses.length);
+
+                bc.getReferrals(addressStrs, from, to, function(err, rawTxs, total) {
+                    if (err) return next(err);
+
+                    console.log('@@@ RECEIVED', rawTxs);
+                    referrals = self._normalizeReferralsHistory(rawTxs);
+                    console.log('@@@@ NORMALIZED', txs);
+
+                    totalItems = total;
+                    return next();
+                });
+            },
+            function(next) {
+                if (!useCache || fromCache) return next();
+
+                //var txsToCache = _.filter(txs, function(i) {
+                //    return i.confirmations >= Defaults.CONFIRMATIONS_TO_START_CACHING;
+                //}).reverse();
+                //
+                //if (!txsToCache.length) return next();
+                //
+                //var fwdIndex = totalItems - to;
+                //if (fwdIndex < 0) fwdIndex = 0;
+                //self.storage.storeTxHistoryCache(self.walletId, totalItems, fwdIndex, txsToCache, next);
+            }
+        ], function(err) {
+            if (err) return cb(err);
+
+            return cb(null, {
+                items: referrals,
+                fromCache: fromCache
+            });
+        });
+    };
+
+    self.getWallet({}, function(err, wallet) {
+        if (err) return cb(err);
+
+        // Get addresses for this wallet
+        self.storage.fetchAddresses(self.walletId, function(err, addresses) {
+            if (err) return cb(err);
+
+            if (addresses.length == 0) return cb(null, []);
+
+            var from = opts.skip || 0;
+            var to = from + opts.limit;
+
+            async.waterfall([
+
+                function(next) {
+                    return getNormalizedRefs(addresses, from, to, next);
+                },
+                function(referrals, next) {
+
+                    if (_.isEmpty(referrals.items)) {
+                        return next(null, []);
+                    }
+
+                    // TODO: Re-evaluate this because we are already paginating our gets.
+                    // Fetch all proposals in [t - 7 days, t + 1 day]
+                    var minRf = _.minBy(referrals.items, 'time').time - 7 * 24 * 3600;
+                    var maxRf = _.maxBy(referrals.items, 'time').time + 1 * 24 * 3600;
+
+                    async.parallel([
+                        function(done) {
+                            self.storage.fetchReferrals(self.walletId, {
+                                minTs: minRf,
+                                maxTs: maxRf
+                            }, done);
+                        },
+                        function(done) {
+                            self.storage.fetchReferralsNotes(self.walletId, {
+                                minRf: minRf
+                            }, done);
+                        },
+                    ], function(err, res) {
+                        return next(err, {
+                            referrals: referrals,
+                            notes: res[1]
+                        });
+                    });
+                },
+            ], function(err, res) {
+                if (err) return cb(err);
+
+                if (!res.referrals) {
+                    var finalReferrals = decorate(wallet, [], addresses, []);
+                    res.referrals = {
+                        fromCache: false
+                    };
+                } else {
+                    var finalReferrals = decorate(wallet, res.referrals.items, addresses, res.notes);
+                }
+
+                return cb(null, finalReferrals, !!res.referrals.fromCache);
+            });
+        });
+    });
+
+
+
+
+}
+
 /**
  * Retrieves all transactions (incoming & outgoing)
  * Times are in UNIX EPOCH
@@ -2887,12 +3109,12 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
  * @returns {TxProposal[]} Transaction proposals, first newer
  */
 WalletService.prototype.getTxHistory = function(opts, cb) {
+
   var self = this;
   if (opts.skip < 0 || opts.skip == opts.limit) {
     log.warn("Invalid parameters sent to getTxHistory.");
     return cb(Errors.INVALID_PARAMETERS);
   }
-
 
   opts = opts || {};
   opts.limit = (_.isUndefined(opts.limit) ? Defaults.HISTORY_LIMIT : opts.limit);
@@ -3057,16 +3279,23 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       function(next) {
         if (txs) return next();
 
+
+        console.log('@@@@@ GETTING HISTORY WITHOUT CACHE');
+
         var addressStrs = _.map(addresses, 'address');
         var bc = self._getBlockchainExplorer(network);
         if (!bc) return next(new Error('Could not get blockchain explorer instance'));
 
         log.info('Querying txs for: %s addrs', addresses.length);
 
+        console.log(JSON.stringify(addresses[0].address.Address), 'address');
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
+          console.log('@@@ RECEIVED', rawTxs);
           txs = self._normalizeTxHistory(rawTxs);
+          console.log('@@@@ NORMALIZED', txs);
+
 
           totalItems = total;
           return next();
@@ -3143,9 +3372,12 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
   self.getWallet({}, function(err, wallet) {
     if (err) return cb(err);
 
-    // Get addresses for this wallet
+      // Get addresses for this wallet
     self.storage.fetchAddresses(self.walletId, function(err, addresses) {
       if (err) return cb(err);
+
+      console.log('@@@ ADDRESSES', addresses);
+
       if (addresses.length == 0) return cb(null, []);
 
       var from = opts.skip || 0;
@@ -3159,7 +3391,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         },
         function(txs, next) {
           log.warn("Show me the juice of a spruce goose.");
-          console.log(txs);
 
           if (_.isEmpty(txs.items)) {
             return next(null, []);

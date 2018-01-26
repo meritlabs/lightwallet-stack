@@ -669,6 +669,8 @@ Storage.prototype.storeActiveAddresses = function(walletId, addresses, cb) {
   }, cb);
 };
 
+
+
 // --------         ---------------------------  Total
 //           > Time >
 //                       ^to     <=  ^from

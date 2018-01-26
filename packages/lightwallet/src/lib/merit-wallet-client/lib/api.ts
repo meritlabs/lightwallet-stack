@@ -1689,7 +1689,6 @@ export class API {
    * @param {Number} n
    * @param {object} opts (optional: advanced options)
    * @param {string} opts.network[='livenet']
-   * @param {string} opts.singleAddress[=false] - The wallet will only ever have one address.
    * @param {string} opts.parentAddress - A required parent address to enable this address on the network.
    * @param {String} opts.walletPrivKey - set a walletPrivKey (instead of random)
    * @param {String} opts.id - set a id for wallet (instead of server given)
@@ -1721,11 +1720,14 @@ export class API {
 
       const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey(void 0, network);
       const pubkey = walletPrivKey.toPublicKey();
-      const address = pubkey.toAddress();
+
 
       let c = this.credentials;
       c.addWalletPrivateKey(walletPrivKey.toString());
       let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
+
+      const xpub = new Bitcore.HDPublicKey(c.xPubKey);
+      const address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, network).toString();
 
       const referralOpts = {
         parentAddress: opts.parentAddress,
@@ -1734,19 +1736,22 @@ export class API {
         addressType: 1,
         signPrivKey: walletPrivKey,
         network: network,
+        alias: opts.alias
       };
 
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
+
         let args = {
           name: encWalletName,
           m: m,
           n: n,
           pubKey: pubkey.toString(),
           network: network,
-          singleAddress: !!opts.singleAddress,
+          singleAddress: true, //daedalus wallets are single-addressed
           id: opts.id,
-          parentAddress: opts.parentAddress
+          parentAddress: opts.parentAddress,
+          referralId: refid
         };
 
         return this._doPostRequest('/v1/wallets/', args).then(res => {
@@ -1777,7 +1782,8 @@ export class API {
    * @param {number} opts.addressType      - address type: 1 - pubkey, 2 - sript, 3 - parameterizedscript
    * @param {PrivateKey} opts.signPrivKey  - private key to sign referral
    * @param {string} opts.pubkey        - (optional) pubkey of beaconing address. omitted for script
-   * @param {string} opts.network          - (optional) netowrk
+   * @param {string} opts.network          - (optional) network
+   * @param {string} opts.alias          - (optional) Address alias
    */
   sendReferral(opts: any = {}): Promise<any> {
     // $.checkState(this.credentials && this.credentials.isComplete());
@@ -1818,6 +1824,7 @@ export class API {
         addressType: opts.addressType,
         pubkey: Bitcore.PublicKey.fromString(opts.pubkey),
         signature,
+        alias: opts.alias
       });
 
       this._doPostRequest('/v1/referral/', { referral: referral.serialize() })
@@ -2258,13 +2265,16 @@ export class API {
 
       opts.ignoreMaxGap = true;
       return this._doPostRequest('/v1/addresses/', opts).then((address) => {
-        console.dir(address);
         if (!Verifier.checkAddress(this.credentials, address)) {
           return reject(Errors.SERVER_COMPROMISED);
         }
+        if (!address.signed) {
+          return this._signAddressAndUnlockWithRoot(address)
+            .then(() => resolve(address));
+        } else {
+          return resolve(address);
+        }
 
-        return this._signAddressAndUnlockWithRoot(address)
-          .then(() => resolve(address));
       });
     });
   };
