@@ -227,22 +227,7 @@ Insight.prototype.getBlockchainHeight = function(cb) {
   });
 };
 
-Insight.prototype.getTxidsInBlock = function(blockHash, cb) {
-  var self = this;
-
-  var args = {
-    method: 'GET',
-    path: this.apiPrefix + '/block/' + blockHash,
-    json: true,
-  };
-
-  this._doRequest(args, function(err, res, body) {
-    if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
-    return cb(null, body.tx);
-  });
-};
-
-Insight.prototype.getReferralsInBlock = function(blockHash, cb) {
+Insight.prototype.getTxidsInBlock = function(blockHash, txType, cb) {
   const self = this;
 
   const args = {
@@ -253,7 +238,7 @@ Insight.prototype.getReferralsInBlock = function(blockHash, cb) {
 
   this._doRequest(args, function(err, res, body) {
     if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
-    return cb(null, body.referrals);
+    return cb(null, body[txType]);
   });
 };
 
