@@ -114,7 +114,10 @@ Referral.prototype.fromBufferReader = function(reader) {
   this.address = Address.fromBuffer(Buffer.concat([new Buffer([0x6e]), reader.read(20)]), Networks.testnet, this.addressType);
   this.pubkey = PublicKey.fromBuffer(reader.readVarLengthBuffer());
   this.signature = reader.readVarLengthBuffer().toString('hex');
-  this.alias = reader.readVarLengthBuffer().toString();
+  // check that we have more data for pre-daedalus support
+  if (!reader.eof) {
+    this.alias = reader.readVarLengthBuffer().toString();
+  }
 
   return this;
 };
