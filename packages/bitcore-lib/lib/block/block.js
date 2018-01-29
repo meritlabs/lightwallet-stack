@@ -30,7 +30,6 @@ function Block(arg) {
 Block.Values = {
   START_OF_BLOCK: 8, // Start of block in raw block data
   NULL_HASH: new Buffer('0000000000000000000000000000000000000000000000000000000000000000', 'hex'),
-  DAEDALUS_START_BLOCK: 3,
 };
 
 // https://github.com/bitcoin/bitcoin/blob/b5fa132329f0377d787a4a21c1686609c2bfaece/src/primitives/block.h#L14
@@ -74,13 +73,15 @@ Block._fromObject = function _fromObject(data) {
     }
   });
   const invites = [];
-  data.invites.forEach(function(invite) {
-    if (invite instanceof Transaction) {
-      invites.push(invite);
-    } else {
-      invites.push(Transaction().fromObject(invite));
-    }
-  });
+  if (data.invites) {
+    data.invites.forEach(function(invite) {
+      if (invite instanceof Transaction) {
+        invites.push(invite);
+      } else {
+        invites.push(Transaction().fromObject(invite));
+      }
+    });
+  }
   const referrals = [];
   data.referrals.forEach(function(ref) {
     if (ref instanceof Referral) {
@@ -121,7 +122,7 @@ Block._fromBufferReader = function _fromBufferReader(br) {
   for (let i = 0; i < transactions; i++) {
     info.transactions.push(Transaction().fromBufferReader(br));
   }
-  if (info.header.version >= 3) {
+  if (info.header.Daedalus()) {
     const invites = br.readVarintNum();
     info.invites = [];
     for (let i = 0; i < invites; i++) {
@@ -178,7 +179,7 @@ Block.fromRawBlock = function fromRawBlock(data) {
 };
 
 Block.prototype.Daedalus = function Daedalus() {
-  return this.header.verion === Block.Values.DAEDALUS_START_BLOCK;
+  return this.header.Daedalus();
 }
 
 /**
@@ -232,6 +233,7 @@ Block.prototype.toBufferWriter = function toBufferWriter(bw) {
   for (var i = 0; i < this.transactions.length; i++) {
     this.transactions[i].toBufferWriter(bw);
   }
+  // TODO: add referral and invites here
   return bw;
 };
 
