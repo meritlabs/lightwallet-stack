@@ -179,10 +179,9 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.get('/blocks', this.cacheShort(), blocks.list.bind(blocks));
 
   app.get('/block/:blockHash', this.cacheShort(), blocks.checkBlockHash.bind(blocks), blocks.show.bind(blocks));
-  app.param('blockHash', blocks.block.bind(blocks));
-
   app.get('/rawblock/:blockHash', this.cacheLong(), blocks.checkBlockHash.bind(blocks), blocks.showRaw.bind(blocks));
-  app.param('blockHash', blocks.rawBlock.bind(blocks));
+
+  app.param('blockHash', blocks.block.bind(blocks));
 
   app.get('/block-index/:height', this.cacheShort(), blocks.blockIndex.bind(blocks));
   app.param('height', blocks.blockIndex.bind(blocks));
@@ -270,6 +269,7 @@ InsightAPI.prototype.getPublishEvents = function() {
 };
 
 InsightAPI.prototype.blockEventHandler = function(hashBuffer) {
+  console.log('InsightAPI.blockEventHandler:', hashBuffer.toString('hex'));
   // Notify inv subscribers
   for (var i = 0; i < this.subscriptions.inv.length; i++) {
     this.subscriptions.inv[i].emit('block', hashBuffer.toString('hex'));
