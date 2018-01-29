@@ -79,8 +79,7 @@ describe('Merit Service', function() {
         address: {},
         rawtransaction: [],
         hashblock: [],
-        hashreferraltx: [],
-        rawreferraltx: []
+        rawreferral: []
       });
     });
   });

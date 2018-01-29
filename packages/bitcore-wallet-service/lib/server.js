@@ -544,10 +544,56 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
 
 /**
  * Broadcasts raw referral.
+ * TODO: update with opts
  * @param {string} rawReferral - Raw referral data.
  */
 WalletService.prototype.sendReferral = function(rawReferral, cb) {
-  localMeritDaemon.sendReferral(rawReferral, cb);
+  var self = this;
+
+  // TODO: check referral exists
+  function checkReferralAlreadyExists(referralAddress, cb) {
+    if (!referralAddress) return cb();
+    self.storage.fetchReferral(self.walletId, referralAddress, cb);
+  };
+
+  // TODO: investigate, if it's better to create wallet first
+  if (this.walletId) {
+    self._runLocked(cb, function(cb) {
+      self.getWallet({}, function(err, wallet) {
+        if (err) return cb(err);
+        if (!wallet.isComplete()) return cb(Errors.WALLET_NOT_COMPLETE);
+
+        checkReferralAlreadyExists(null, function(err, referral) {
+          if (err) {
+            return cb(err);
+          }
+
+          if (referral) {
+            return cb(null, referral);
+          }
+
+          async.series([
+            function(next) {
+              // store address if it's not there yet
+              // self.storage.storeAddressAndWallet(wallet, referral.address, next);
+            },
+            function(next) {
+              // store referral in db
+              // self.storage.storeReferral(wallet.id, referral, next);
+            },
+          ], function(err) {
+            if (err) {
+              return cb(err);
+            }
+
+            return localMeritDaemon.sendReferral(rawReferral, cb);
+          });
+        });
+      });
+    });
+  } else {
+    return localMeritDaemon.sendReferral(rawReferral, cb);
+  }
 };
 
 /**
