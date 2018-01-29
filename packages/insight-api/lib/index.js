@@ -94,7 +94,7 @@ InsightAPI.prototype.getRoutePrefix = function() {
 InsightAPI.prototype.start = function(callback) {
   this.node.services.meritd.on('tx', this.transactionEventHandler.bind(this));
   this.node.services.meritd.on('block', this.blockEventHandler.bind(this));
-  this.node.services.meritd.on('rawreferraltx', this.referralEventHandler.bind(this));
+  this.node.services.meritd.on('referral', this.referralEventHandler.bind(this));
   setImmediate(callback);
 };
 
@@ -264,7 +264,7 @@ InsightAPI.prototype.getPublishEvents = function() {
       scope: this,
       subscribe: this.subscribe.bind(this),
       unsubscribe: this.unsubscribe.bind(this),
-      extraEvents: ['tx', 'block', 'rawreferraltx']
+      extraEvents: ['tx', 'block', 'referral']
     }
   ];
 };
@@ -286,10 +286,10 @@ InsightAPI.prototype.transactionEventHandler = function(txBuffer) {
 };
 
 InsightAPI.prototype.referralEventHandler = function(referralBuffer) {
-  var rtx = new Referral().fromBuffer(referralBuffer);
+  var referral = new Referral().fromBuffer(referralBuffer);
 
   for (var i = 0; i < this.subscriptions.inv.length; i++) {
-    this.subscriptions.inv[i].emit('rawreferraltx', rtx);
+    this.subscriptions.inv[i].emit('referral', referral);
   }
 };
 

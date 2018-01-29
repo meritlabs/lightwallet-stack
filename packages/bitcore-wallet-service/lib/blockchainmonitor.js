@@ -88,21 +88,25 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
   });
   socket.on('tx', _.bind(self._handleIncomingTx, self));
   socket.on('block', _.bind(self._handleNewBlock, self, network));
-  socket.on('rawreferraltx', _.bind(self._handleReferral, self));
+  socket.on('referral', _.bind(self._handleIncomingReferral, self));
 };
 
-BlockchainMonitor.prototype._handleReferral = function(data) {
+BlockchainMonitor.prototype._handleIncomingReferral = function(data) {
   const self = this;
 
+  log.info('_handleIncomingReferral')
   if (!data) return;
 
-  self.storage.fetchReferralByCodeHash(data.codeHash, function(err, rtx) {
+  self.storage.fetchReferralByCodeHash(data.address, function(err, referral) {
     if (err) {
       log.error('Could not fetch referral from the db');
       return;
     }
 
-    if (!rtx) return;
+    if (!referral) {
+      log.info(`_handleIncomingReferral: referral ${data.hash} not found`);
+      return;
+    }
 
     self.storage.storeReferral(data, function(err) {
       if (err) log.error('Could not store referral');
@@ -384,7 +388,7 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) 
   const explorer = self.explorers[network];
   if (!explorer) return;
 
-  explorer.getTxidsInBlock(hash, function(err, txids) {
+  explorer.getTxidsInBlock(hash, 'tx', function(err, txids) {
     if (err) {
       log.error('Could not fetch txids from block ' + hash, err);
       return;

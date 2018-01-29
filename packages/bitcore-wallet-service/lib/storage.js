@@ -18,6 +18,7 @@ var ObjectID = mongodb.ObjectID;
 var collections = {
   WALLETS: 'wallets',
   TXS: 'txs',
+  INVITES: 'invites',
   REFERRALS: 'referrals',
   ADDRESSES: 'addresses',
   NOTIFICATIONS: 'notifications',
@@ -381,7 +382,7 @@ Storage.prototype.fetchReferralByCodeHash = function(codeHash, cb) {
 
 Storage.prototype.storeReferral = function(referral, cb) {
   this.db.collection(collections.REFERRALS).update({
-    codeHash: referral.codeHash,
+    address: referral.address,
   }, referral, {
     w: 1,
     upsert: true,
