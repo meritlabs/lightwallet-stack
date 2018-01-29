@@ -14,6 +14,7 @@ var $ = bitcore.util.preconditions;
 var _  = bitcore.deps._;
 var Transaction = bitcore.Transaction;
 var Referral = bitcore.Referral;
+var Referral = bitcore.Referral;
 
 var index = require('../');
 var errors = index.errors;
@@ -48,8 +49,7 @@ function Merit(options) {
   this.subscriptions.rawtransaction = [];
   this.subscriptions.hashblock = [];
   this.subscriptions.address = {};
-  this.subscriptions.rawreferraltx = [];
-  this.subscriptions.hashreferraltx = [];
+  this.subscriptions.rawreferral = [];
 
   // set initial settings
   this._initDefaults(options);
@@ -137,12 +137,14 @@ Merit.prototype._initCaches = function() {
   // caches valid indefinitely
   this.transactionCache = LRU(100000);
   this.rawTransactionCache = LRU(50000);
+  this.referralCache = LRU(100000);
+  this.rawReferralCache = LRU(50000);
   this.blockCache = LRU(144);
   this.rawBlockCache = LRU(72);
   this.blockHeaderCache = LRU(288);
   this.zmqKnownTransactions = LRU(5000);
   this.zmqKnownBlocks = LRU(50);
-  this.zmqKnownRawReferrals = LRU(5000);
+  this.zmqKnownReferrals = LRU(5000);
   this.zmqKnownHashReferrals = LRU(5000);
   this.lastTip = 0;
   this.lastTipTimeout = false;
@@ -226,16 +228,10 @@ Merit.prototype.getPublishEvents = function() {
       unsubscribe: this.unsubscribeAddress.bind(this)
     },
     {
-      name: 'meritd/rawreferraltx',
+      name: 'meritd/rawreferral',
       scope: this,
-      subscribe: this.subscribe.bind(this, 'rawreferraltx'),
-      unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
-    },
-    {
-      name: 'meritd/hashreferraltx',
-      scope: this,
-      subscribe: this.subscribe.bind(this, 'hashreferraltx'),
-      unsubscribe: this.unsubscribe.bind(this, 'hashreferraltx')
+      subscribe: this.subscribe.bind(this, 'rawreferral'),
+      unsubscribe: this.unsubscribe.bind(this, 'rawreferral')
     },
   ];
 };
@@ -698,36 +694,19 @@ Merit.prototype._zmqTransactionHandler = function(node, message) {
   }
 };
 
-Merit.prototype._zmqRawReferralsHandler = function(node, message) {
+Merit.prototype._zmqReferralHandler = function(node, message) {
   const self = this;
   const hash = bitcore.crypto.Hash.sha256sha256(message);
   const id = hash.toString('binary');
-  if (!self.zmqKnownRawReferrals.get(id)) {
-    self.zmqKnownRawReferrals.set(id, true);
-    self.emit('rawreferraltx', message);
+  if (!self.zmqKnownReferrals.get(id)) {
+    self.zmqKnownReferrals.set(id, true);
+    self.emit('referral', message);
 
-    // Notify rawreferraltx subscribers
-    log.info('rawreferraltx subscribers: ', this.subscriptions.rawreferraltx.length);
-    for (let i = 0; i < this.subscriptions.rawreferraltx.length; i++) {
-      log.warn('rawreferraltx sending message:', message.toString('hex'));
-      this.subscriptions.rawreferraltx[i].emit('meritd/rawreferraltx', message.toString('hex'));
-    }
-  }
-};
-
-Merit.prototype._zmqHashReferralsHandler = function(node, message) {
-  const self = this;
-  const hash = bitcore.crypto.Hash.sha256sha256(message);
-  const id = hash.toString('binary');
-  if (!self.zmqKnownHashReferrals.get(id)) {
-    self.zmqKnownHashReferrals.set(id, true);
-    self.emit('hashreferraltx', message);
-
-    // Notify hashreferraltx subscribers
-    log.info('hashreferraltx subscribers: ', this.subscriptions.hashreferraltx.length);
-    for (let i = 0; i < this.subscriptions.hashreferraltx.length; i++) {
-      log.warn('hashreferraltx sending message:', message.toString('hex'));
-      this.subscriptions.hashreferraltx[i].emit('meritd/hashreferraltx', message.toString('hex'));
+    // Notify rawreferral subscribers
+    log.info('rawreferral subscribers: ', this.subscriptions.rawreferral.length);
+    for (let i = 0; i < this.subscriptions.rawreferral.length; i++) {
+      log.info('rawreferral sending message:', message.toString('hex'));
+      this.subscriptions.rawreferral[i].emit('meritd/rawreferral', message.toString('hex'));
     }
   }
 };
@@ -788,8 +767,7 @@ Merit.prototype._subscribeZmqEvents = function(node) {
   const self = this;
   node.zmqSubSocket.subscribe('hashblock');
   node.zmqSubSocket.subscribe('rawtx');
-  node.zmqSubSocket.subscribe('rawreferraltx');
-  node.zmqSubSocket.subscribe('hashreferraltx');
+  node.zmqSubSocket.subscribe('rawreferral');
 
   node.zmqSubSocket.on('message', function(topic, message) {
     const topicString = topic.toString('utf8');
@@ -801,11 +779,8 @@ Merit.prototype._subscribeZmqEvents = function(node) {
     case 'hashblock':
       self._zmqBlockHandler(node, message);
       break;
-    case 'rawreferraltx':
-      self._zmqRawReferralsHandler(node, message);
-      break;
-    case 'hashreferraltx':
-      self._zmqHashReferralsHandler(node, message);
+    case 'rawreferral':
+      self._zmqReferralHandler(node, message);
       break;
     default:
       log.error('Error in ZMQ message parsing: cannot determine topic.')
@@ -2545,8 +2520,8 @@ Merit.prototype.getRewards = function(addressArg, callback) {
 }
 
 /**
- * Send raw referral to nodes
- * @param {String|Referral} referral - The hex string of the referral
+ * Will add a referral to the mempool and relay to connected peers
+ * @param {String|Referral} referral - The hex string of referral
  * @param {Function} callback
  */
 Merit.prototype.sendReferral = function(referral, callback) {
@@ -2558,8 +2533,61 @@ Merit.prototype.sendReferral = function(referral, callback) {
     }
     callback(null, response.result);
   });
+};
 
-}
+/**
+ * Will get a referral as a Node.js Buffer. Results include the mempool.
+ * @param {String} refid - Referral hash
+ * @param {Function} callback
+ */
+Merit.prototype.getRawReferral = function(refid, callback) {
+  var self = this;
+  var referral = self.rawReferralCache.get(refid);
+  if (referral) {
+    return setImmediate(function() {
+      callback(null, referral);
+    });
+  } else {
+    self._tryAllClients(function(client, done) {
+      client.getRawReferral(refid, function(err, response) {
+        if (err) {
+          return done(self._wrapRPCError(err));
+        }
+        var buffer = new Buffer(response.result, 'hex');
+        self.rawReferralCache.set(refid, buffer);
+        done(null, buffer);
+      });
+    }, callback);
+  }
+};
+
+/**
+ * Will get a referral as a Bitcore Referral. Results include the mempool.
+ * @param {String} refid - Referral hash
+ * @param {Boolean} queryMempool - Include the mempool
+ * @param {Function} callback
+ */
+Merit.prototype.getReferral = function(refid, callback) {
+  var self = this;
+  var referral = self.referralCache.get(refid);
+  if (referral) {
+    return setImmediate(function() {
+      callback(null, referral);
+    });
+  } else {
+    self._tryAllClients(function(client, done) {
+      client.getRawReferral(refid, function(err, response) {
+        if (err) {
+          return done(self._wrapRPCError(err));
+        }
+        var referral = Referral();
+        referral.fromString(response.result);
+        self.referralCache.set(refid, referral);
+        done(null, referral);
+      });
+    }, callback);
+  }
+};
 
 /**
  * Called by Node to stop the service.

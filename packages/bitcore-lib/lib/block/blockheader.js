@@ -9,7 +9,8 @@ var Hash = require('../crypto/hash');
 var JSUtil = require('../util/js');
 var $ = require('../util/preconditions');
 
-var GENESIS_BITS = 0x1d00ffff;
+const GENESIS_BITS = 0x1d00ffff;
+const DAEDALUS_VERSION_BIT = 27;
 
 /**
  * Instantiate a BlockHeader from a Buffer, JSON object, or Object with
@@ -182,6 +183,10 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     cycle: this.cycle
   };
 };
+
+BlockHeader.prototype.Daedalus = function Daedalus() {
+  return !!(this.version & (1 << DAEDALUS_VERSION_BIT));
+}
 
 /**
  * @returns {Buffer} - A Buffer of the BlockHeader

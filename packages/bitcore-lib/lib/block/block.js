@@ -27,6 +27,11 @@ function Block(arg) {
   return this;
 }
 
+Block.Values = {
+  START_OF_BLOCK: 8, // Start of block in raw block data
+  NULL_HASH: new Buffer('0000000000000000000000000000000000000000000000000000000000000000', 'hex'),
+};
+
 // https://github.com/bitcoin/bitcoin/blob/b5fa132329f0377d787a4a21c1686609c2bfaece/src/primitives/block.h#L14
 Block.MAX_BLOCK_SIZE = 1000000;
 
@@ -67,6 +72,16 @@ Block._fromObject = function _fromObject(data) {
       transactions.push(Transaction().fromObject(tx));
     }
   });
+  const invites = [];
+  if (data.invites) {
+    data.invites.forEach(function(invite) {
+      if (invite instanceof Transaction) {
+        invites.push(invite);
+      } else {
+        invites.push(Transaction().fromObject(invite));
+      }
+    });
+  }
   const referrals = [];
   data.referrals.forEach(function(ref) {
     if (ref instanceof Referral) {
@@ -77,8 +92,9 @@ Block._fromObject = function _fromObject(data) {
   });
   var info = {
     header: BlockHeader.fromObject(data.header),
-    transactions: transactions,
-    referrals: referrals,
+    transactions,
+    invites,
+    referrals,
   };
   return info;
 };
@@ -105,6 +121,13 @@ Block._fromBufferReader = function _fromBufferReader(br) {
   info.transactions = [];
   for (let i = 0; i < transactions; i++) {
     info.transactions.push(Transaction().fromBufferReader(br));
+  }
+  if (info.header.Daedalus()) {
+    const invites = br.readVarintNum();
+    info.invites = [];
+    for (let i = 0; i < invites; i++) {
+      info.invites.push(Transaction().fromBufferReader(br));
+    }
   }
   const referrals = br.readVarintNum();
   info.referrals = [];
@@ -155,22 +178,31 @@ Block.fromRawBlock = function fromRawBlock(data) {
   return new Block(info);
 };
 
+Block.prototype.Daedalus = function Daedalus() {
+  return this.header.Daedalus();
+}
+
 /**
  * @returns {Object} - A plain object with the block properties
  */
 Block.prototype.toObject = Block.prototype.toJSON = function toObject() {
   var transactions = [];
+  var invites = [];
   var referrals = [];
   this.transactions.forEach(function(tx) {
     transactions.push(tx.toObject());
   });
+  this.invites.forEach(function(invite) {
+    invites.push(invite.toObject());
+  });
   this.referrals.forEach(function(ref) {
-    referrals.push(ref);
+    referrals.push(ref.toObject());
   });
   return {
     header: this.header.toObject(),
-    transactions: transactions,
-    referrals: referrals,
+    transactions,
+    invites,
+    referrals,
   };
 };
 
@@ -201,6 +233,7 @@ Block.prototype.toBufferWriter = function toBufferWriter(bw) {
   for (var i = 0; i < this.transactions.length; i++) {
     this.transactions[i].toBufferWriter(bw);
   }
+  // TODO: add referral and invites here
   return bw;
 };
 
@@ -296,11 +329,6 @@ Object.defineProperty(Block.prototype, 'hash', idProperty);
  */
 Block.prototype.inspect = function inspect() {
   return '<Block ' + this.id + '>';
-};
-
-Block.Values = {
-  START_OF_BLOCK: 8, // Start of block in raw block data
-  NULL_HASH: new Buffer('0000000000000000000000000000000000000000000000000000000000000000', 'hex')
 };
 
 module.exports = Block;

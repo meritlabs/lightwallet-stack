@@ -14,7 +14,7 @@ import { ProfileService } from 'merit/core/profile.service';
   templateUrl: 'transact.html',
 })
 export class TransactView {
-  @ViewChild('tabs') tabRef: Tabs;
+  @ViewChild('tabs') tabs: Tabs;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,

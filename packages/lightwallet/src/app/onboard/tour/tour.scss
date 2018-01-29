@@ -1,3 +1,9 @@
+.ios view-tour {
+  ion-header {
+    top: 20px;
+  }
+}
+
 view-tour {
   ion-header, ion-footer {
     position: absolute;
@@ -104,13 +110,15 @@ view-tour {
       box-sizing: border-box;
 
       .slide-illustration, .slide-content {
-        height: 50%;
+        //height: 50%;
+        flex: 1;
       }
 
       .slide-illustration {
         background: map_get($colors, primary);
         position: relative;
         overflow: hidden;
+        flex-shrink: 2;
 
         > img {
           position: absolute;

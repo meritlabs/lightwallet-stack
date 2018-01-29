@@ -58,9 +58,10 @@ function Transaction(serialized) {
   }
 }
 
-var CURRENT_VERSION = 1;
-var DEFAULT_NLOCKTIME = 0;
-var MAX_BLOCK_SIZE = 1000000;
+const CURRENT_VERSION = 1;
+const DAEDAUL_VERSION = 3;
+const DEFAULT_NLOCKTIME = 0;
+const MAX_BLOCK_SIZE = 1000000;
 
 // Minimum amount for an output for it not to be considered a dust output
 Transaction.DUST_AMOUNT = 546;
@@ -314,7 +315,7 @@ Transaction.prototype.fromBufferReader = function(reader) {
   for (i = 0; i < sizeTxIns; i++) {
     var input = Input.fromBufferReader(reader);
     this.inputs.push(input);
-  
+
   }
   sizeTxOuts = reader.readVarintNum();
 
@@ -322,7 +323,7 @@ Transaction.prototype.fromBufferReader = function(reader) {
     this.outputs.push(Output.fromBufferReader(reader));
   }
 
-  // If we have a witness, then let's actually set the witnesses on relevant 
+  // If we have a witness, then let's actually set the witnesses on relevant
   // inputs
   if (hasWitness) {
     for ( var k = 0; k < sizeTxIns; k++ ) {
@@ -368,6 +369,10 @@ Transaction.prototype.toObject = Transaction.prototype.toJSON = function toObjec
   }
   return obj;
 };
+
+Transaction.prototype.Daedalus = function Daedalus() {
+  return this.version >= DAEDAUL_VERSION;
+}
 
 Transaction.prototype.fromObject = function fromObject(arg) {
   /* jshint maxstatements: 20 */

@@ -226,7 +226,7 @@ RpcClient.callspec = {
   getaddressanv: 'obj',
   sendRawReferral: 'str',
   getaddressrefids: "obj",
-  getrawreferral: "str"
+  getRawReferral: 'str int',
 };
 
 var slice = function(arr, start, end) {
