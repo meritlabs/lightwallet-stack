@@ -88,21 +88,25 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
   });
   socket.on('tx', _.bind(self._handleIncomingTx, self));
   socket.on('block', _.bind(self._handleNewBlock, self, network));
-  socket.on('rawreferraltx', _.bind(self._handleReferral, self));
+  socket.on('referral', _.bind(self._handleIncomingReferral, self));
 };
 
-BlockchainMonitor.prototype._handleReferral = function(data) {
+BlockchainMonitor.prototype._handleIncomingReferral = function(data) {
   const self = this;
 
+  log.info('_handleIncomingReferral')
   if (!data) return;
 
-  self.storage.fetchReferralByCodeHash(data.codeHash, function(err, rtx) {
+  self.storage.fetchReferralByCodeHash(data.address, function(err, referral) {
     if (err) {
       log.error('Could not fetch referral from the db');
       return;
     }
 
-    if (!rtx) return;
+    if (!referral) {
+      log.info(`_handleIncomingReferral: referral ${data.hash} not found`);
+      return;
+    }
 
     self.storage.storeReferral(data, function(err) {
       if (err) log.error('Could not store referral');
@@ -187,7 +191,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
       filteredOutputs.splice(oIndex, 1, accumulatedOutput);
     } else {
       filteredOutputs.push(out);
-    }   
+    }
   });
 
   if (_.isEmpty(filteredOutputs)) return;
@@ -202,7 +206,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
 
       var walletId = address.walletId;
       var notificationType = data.isCoinbase ? 'IncomingCoinbase' : 'IncomingTx';
-      
+
       log.info(notificationType + ' for wallet ' + walletId + ' [' + out.amount + ' micros -> ' + out.address + ']');
 
       var fromTs = Date.now() - 24 * 3600 * 1000;
@@ -302,7 +306,7 @@ BlockchainMonitor.prototype._handleTxConfirmations = function(network, hash) {
   var explorer = self.explorers[network];
   if (!explorer) return;
 
-  explorer.getTxidsInBlock(hash, function(err, txids) {
+  explorer.getTxidsInBlock(hash, 'tx', function(err, txids) {
     if (err) {
       log.error('Could not fetch txids from block ' + hash, err);
       return;
@@ -332,7 +336,7 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
   const explorer = self.explorers[network];
   if (!explorer) return;
 
-  explorer.getReferralsInBlock(hash, function(err, referrals) {
+  explorer.getTxidsInBlock(hash, 'referrals', function(err, referrals) {
     if (err) {
       log.error('Could not fetch referrals for block');
       return;
@@ -345,7 +349,7 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
         return;
       }
 
-      const indexedSubs = _.keyBy(subs, 'codeHash');
+      const indexedSubs = _.keyBy(subs, 'address');
       const triggered = _.reduce(referrals, function(acc, reftx) {
         if (!indexedSubs[reftx]) return acc;
 
@@ -354,11 +358,11 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
       }, []);
 
       async.each(triggered, function(sub, cb) {
-        log.info('New referral confirmation ' + sub.codeHash);
+        log.info('New referral confirmation ' + sub.address);
         sub.isActive = false;
         self.storage.storeTxConfirmationSub(sub, function(err) {
           if (err) {
-            log.error(`Could not update confirmation with codeHash: ${sub.codeHash}`);
+            log.error(`Could not update confirmation with address: ${sub.address}`);
             return cb(err);
           }
 
@@ -369,7 +373,7 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, has
             data: sub,
           });
           self._storeAndBroadcastNotification(notification, function () {
-            log.info(`Referral confirmation with code ${sub.codeHash} successfully sent`);
+            log.info(`Referral confirmation with code ${sub.address} successfully sent`);
           });
         });
         return cb(null);
@@ -384,7 +388,7 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) 
   const explorer = self.explorers[network];
   if (!explorer) return;
 
-  explorer.getTxidsInBlock(hash, function(err, txids) {
+  explorer.getTxidsInBlock(hash, 'tx', function(err, txids) {
     if (err) {
       log.error('Could not fetch txids from block ' + hash, err);
       return;

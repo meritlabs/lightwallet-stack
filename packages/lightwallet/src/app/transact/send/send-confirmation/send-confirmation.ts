@@ -206,8 +206,6 @@ export class SendConfirmationView {
 
 
   private async send() {
-    if (this.unlockValue < 100) return;
-
     const loadingSpinner = this.loadingCtrl.create({
       content: 'Sending transaction...',
       dismissOnPageChange: true,
@@ -241,7 +239,13 @@ export class SendConfirmationView {
             throw new Error(`Unsupported sending method: ${this.txData.sendMethod}`);
         }
       }
-      this.navCtrl.setRoot('WalletsView');
+      try {
+        this.navCtrl.popToRoot();
+        await this.tabs.select(0);
+        this.tabs.getActiveChildNavs()[0].popToRoot();
+      } catch (e) {
+        console.log(e);
+      }
     } catch (err) {
       this.logger.warn(err);
       return this.toastCtrl.create({

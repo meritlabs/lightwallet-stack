@@ -42,13 +42,14 @@ export class AddressBookService {
       });
   };
 
-  public searchDeviceContacts(term: string): Promise<Contact[]> {
+  async searchDeviceContacts(term: string): Promise<Contact[]> {
+    if (true) return [];
     let options: IContactFindOptions = { filter: term, multiple: true };
     let fields: ContactFieldType[] = ['name', 'phoneNumbers', 'emails'];
 
-    if (!this.platformService.isMobile) return Promise.resolve([]);
+    if (!Contacts.installed()) return [];
 
-    return Promise.resolve(this.contacts.find(fields, options)).catch((err) => {
+    return this.contacts.find(fields, options).catch(() => {
       return Promise.resolve([]);
     })
   };
@@ -92,7 +93,7 @@ export class AddressBookService {
           } else {
             contacts.push(contact);
           }
-        })
+        });
 
         return contacts.sort((a, b) => {
           if (!(_.isEmpty(a.meritAddresses) || _.isEmpty(b.meritAddresses)) ||

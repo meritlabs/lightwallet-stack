@@ -99,6 +99,7 @@ export class EasySendService {
     easySends = easySends || [];
 
     easySends = await Promise.all(easySends.map(async (easySend: EasySend) => {
+      console.log('Easy send is ', easySend);
       const txn = await wallet.validateEasyScript(easySend.scriptAddress.toString());
       return txn.result.found && !txn.result.spent ? easySend : null;
     }));

@@ -10,6 +10,9 @@ const JSUtil = require('../util/js');
 const BufferReader = require('../encoding/bufferreader');
 const BufferWriter = require('../encoding/bufferwriter');
 const Hash = require('../crypto/hash');
+const Networks = require('../networks');
+const Address = require('../address');
+const PublicKey = require('../publickey');
 
 function Referral(serialized) {
   if (!(this instanceof Referral)) {
@@ -17,10 +20,10 @@ function Referral(serialized) {
   }
 
   this.version = 1;
-  this.parentAddress = '';
-  this.address = '';
+  this.parentAddress = null;
+  this.address = null;
   this.addressType = 0;
-  this.pubkey = '';
+  this.pubkey = null;
   this.signature = '';
   this.alias = '';
 
@@ -104,14 +107,16 @@ Referral.prototype.fromBufferReader = function(reader) {
   $.checkArgument(!reader.finished(), 'No referral data received');
 
   this.version = reader.readInt32LE();
-  this.parentAddress = reader.read(20).toString('hex').match(/.{1,2}/g).reverse().join('');
+  // we assume parent address type is a pubkeyhash
+  // TODO: get network value from some global variable
+  this.parentAddress = Address.fromBuffer(Buffer.concat([new Buffer([0x6e]), reader.read(20)]), Networks.testnet, Address.PayToPublicKeyHashType);
   this.addressType = reader.readUInt8();
-  this.address = reader.read(20).toString('hex').match(/.{1,2}/g).reverse().join('');
-  this.pubkey = reader.read(33).toString('hex').match(/.{1,2}/g).reverse().join('');
-  this.signature = reader.read(71).toString('hex').match(/.{1,2}/g).reverse().join('');
-  var alias = reader.readAll();
-  if (alias.toString('hex'))  {
-    this.alias = alias.toString('hex').match(/.{1,2}/g).reverse().join('');
+  this.address = Address.fromBuffer(Buffer.concat([new Buffer([0x6e]), reader.read(20)]), Networks.testnet, this.addressType);
+  this.pubkey = PublicKey.fromBuffer(reader.readVarLengthBuffer());
+  this.signature = reader.readVarLengthBuffer().toString('hex');
+  // check that we have more data for pre-daedalus support
+  if (!reader.eof) {
+    this.alias = reader.readVarLengthBuffer().toString();
   }
 
   return this;
