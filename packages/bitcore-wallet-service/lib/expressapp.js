@@ -229,9 +229,6 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.post('/v1/referrals/', function(req, res) {
-
-  });
 
   router.put('/v1/copayers/:id/', function(req, res) {
     req.body.copayerId = req.params['id'];
@@ -500,7 +497,7 @@ ExpressApp.prototype.start = function(opts, cb) {
   });
 
 
-  router.get('/v1/refhitory/', function(req, res) {
+  router.get('/v1/refhistory/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       var opts = {};
       if (req.query.skip) opts.skip = +req.query.skip;
@@ -523,7 +520,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       if (req.query.includeExtendedInfo == '1') opts.includeExtendedInfo = true;
 
       //server.getTxHistory(opts, function(err, txs) { temp!
-      server.getReferralsHistory(opts, function(err, txs) { 
+      server.getReferralsHistory(opts, function(err, txs) {
         if (err) return returnError(err, res, req);
         res.json(txs);
         res.end();

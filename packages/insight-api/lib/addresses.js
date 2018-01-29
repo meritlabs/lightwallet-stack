@@ -221,12 +221,12 @@ AddressController.prototype.referrals = function(req, res, next) {
             return self.common.handleErrors(err, res);
         }
 
-
-        console.log("AAAAAAAAA\n\n\n");
-        console.log(result);
-        console.log("\n\n\nAAAAAAAAA");
-
-
+        res.jsonp({
+            totalItems: result.totalCount,
+            from: options.from,
+            to: Math.min(options.to, result.totalCount),
+            items: result.items
+        });
 
         //var transformOptions = self._getTransformOptions(req);
         //
