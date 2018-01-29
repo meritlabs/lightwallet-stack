@@ -109,9 +109,9 @@ Referral.prototype.fromBufferReader = function(reader) {
   this.address = reader.read(20).toString('hex').match(/.{1,2}/g).reverse().join('');
   this.pubkey = reader.read(33).toString('hex').match(/.{1,2}/g).reverse().join('');
   this.signature = reader.read(71).toString('hex').match(/.{1,2}/g).reverse().join('');
-  var aliasLength = reader.readVarintNum();
-  if (aliasLength) {
-      this.alias = reader.read(aliasLength).toString('hex').match(/.{1,2}/g).reverse().join('');
+  var alias = reader.readAll();
+  if (alias.toString('hex'))  {
+    this.alias = alias.toString('hex').match(/.{1,2}/g).reverse().join('');
   }
 
   return this;
