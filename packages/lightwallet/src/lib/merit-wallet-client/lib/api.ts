@@ -2751,7 +2751,7 @@ export class API {
    *
    * @param address
    */
-  confirmRequest(request:{refid:string, address:string}): Promise<bool> {
+  confirmRequest(request:{refid:string, address:string}): Promise<boolean> {
 
     return Promise.resolve(true);
 
