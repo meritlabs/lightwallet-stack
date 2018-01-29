@@ -2993,11 +2993,9 @@ WalletService.prototype._normalizeReferallsHistory = function(referrals) {
  */
 WalletService.prototype.getReferralsHistory = function(opts, cb) {
 
-    var useCache = false; // TEMP !!!
     var self = this;
-
     if (opts.skip < 0 || opts.skip == opts.limit) {
-        log.warn("Invalid parameters sent to getReferralHistory.");
+        log.warn("Invalid parameters sent to getReferralsHistory.");
         return cb(Errors.INVALID_PARAMETERS);
     }
 
@@ -3006,65 +3004,49 @@ WalletService.prototype.getReferralsHistory = function(opts, cb) {
     if (opts.limit > Defaults.HISTORY_LIMIT)
         return cb(Errors.HISTORY_LIMIT_EXCEEDED);
 
-    function decorate(wallet, txs, addresses, notes) {
 
-    };
-
-    function getNormalizedRefs(addresses, from, to, cb) {
-        var referrals, fromCache, totalItems;
-        var network = addresses[0].network;
-
-        fromCache = false;
+    //get normalized referrals
+    function getNormalizedReferrals(addresses, from, to, cb) {
+        var referrals = [];
+        var totalItems = 0;
+        var fromCache = false;
+        var useCache = addresses.length >= Defaults.HISTORY_CACHE_ADDRESS_THRESOLD;
+        var network = Bitcore.Address(addresses[0].address).toObject().network;
 
         async.series([
-
+            // get referrals from cache
             function(next) {
                 if (!useCache) return next();
 
-                //self.storage.getReferralsHistoryCache(self.walletId, from, to, function(err, res) {
-                //    if (err) return next(err);
-                //    if (!res || !res[0]) return next();
-                //
-                //    txs = res;
-                //    fromCache = true;
-                //
-                //    return next()
-                //});
-            },
-            function(next) {
-                if (referrals) return next();
+                self.storage.getReferralsHistoryCache(self.walletId, from, to, function(err, res) {
+                    if (err) return next(err);
+                    if (!res || !res[0]) return next();
 
-                console.log('@@@@@ GETTING REFERRALS WITHOUT CACHE');
+                    referrals = res;
+                    fromCache = true;
+
+                    return next();
+                });
+            },
+            //get referrals from blockchain
+            function(next) {
+                if (referrals.length) return next();
 
                 var addressStrs = _.map(addresses, 'address');
                 var bc = self._getBlockchainExplorer(network);
                 if (!bc) return next(new Error('Could not get blockchain explorer instance'));
+                bc.getAddressReferrals(addressStrs, from, to, function(err, rawReferrals, total) {
+                    console.log("SERVER.JS REFERRALS RECEIVED FROM BC", rawReferrals, total);
 
-                log.info('Querying referrals for: %s addrs', addresses.length);
-
-                bc.getReferrals(addressStrs, from, to, function(err, rawTxs, total) {
-                    if (err) return next(err);
-
-                    console.log('@@@ RECEIVED', rawTxs);
-                    referrals = self._normalizeReferralsHistory(rawTxs);
-                    console.log('@@@@ NORMALIZED', txs);
-
-                    totalItems = total;
                     return next();
                 });
+
             },
+            //setting cache if new data received
             function(next) {
                 if (!useCache || fromCache) return next();
 
-                //var txsToCache = _.filter(txs, function(i) {
-                //    return i.confirmations >= Defaults.CONFIRMATIONS_TO_START_CACHING;
-                //}).reverse();
-                //
-                //if (!txsToCache.length) return next();
-                //
-                //var fwdIndex = totalItems - to;
-                //if (fwdIndex < 0) fwdIndex = 0;
-                //self.storage.storeTxHistoryCache(self.walletId, totalItems, fwdIndex, txsToCache, next);
+                return next();
             }
         ], function(err) {
             if (err) return cb(err);
@@ -3074,7 +3056,8 @@ WalletService.prototype.getReferralsHistory = function(opts, cb) {
                 fromCache: fromCache
             });
         });
-    };
+
+    }
 
     self.getWallet({}, function(err, wallet) {
         if (err) return cb(err);
@@ -3088,62 +3071,15 @@ WalletService.prototype.getReferralsHistory = function(opts, cb) {
             var from = opts.skip || 0;
             var to = from + opts.limit;
 
-            async.waterfall([
-
-                function(next) {
-                    return getNormalizedRefs(addresses, from, to, next);
-                },
-                function(referrals, next) {
-
-                    if (_.isEmpty(referrals.items)) {
-                        return next(null, []);
-                    }
-
-                    // TODO: Re-evaluate this because we are already paginating our gets.
-                    // Fetch all proposals in [t - 7 days, t + 1 day]
-                    var minRf = _.minBy(referrals.items, 'time').time - 7 * 24 * 3600;
-                    var maxRf = _.maxBy(referrals.items, 'time').time + 1 * 24 * 3600;
-
-                    async.parallel([
-                        function(done) {
-                            self.storage.fetchReferrals(self.walletId, {
-                                minTs: minRf,
-                                maxTs: maxRf
-                            }, done);
-                        },
-                        function(done) {
-                            self.storage.fetchReferralsNotes(self.walletId, {
-                                minRf: minRf
-                            }, done);
-                        },
-                    ], function(err, res) {
-                        return next(err, {
-                            referrals: referrals,
-                            notes: res[1]
-                        });
-                    });
-                },
-            ], function(err, res) {
-                if (err) return cb(err);
-
-                if (!res.referrals) {
-                    var finalReferrals = decorate(wallet, [], addresses, []);
-                    res.referrals = {
-                        fromCache: false
-                    };
-                } else {
-                    var finalReferrals = decorate(wallet, res.referrals.items, addresses, res.notes);
-                }
-
-                return cb(null, finalReferrals, !!res.referrals.fromCache);
+            getNormalizedReferrals(addresses, from ,to, function(err, result) {
+                return cb(null, result, !!result.fromCache);
             });
         });
+
     });
 
 
-
-
-}
+};
 
 /**
  * Retrieves all transactions (incoming & outgoing)

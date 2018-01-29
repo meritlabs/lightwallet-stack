@@ -670,7 +670,58 @@ Storage.prototype.storeActiveAddresses = function(walletId, addresses, cb) {
   }, cb);
 };
 
+Storage.prototype.getReferralsHistoryCache = function(walletId, from, to, cb) {
+    var self = this;
+    $.checkArgument(from >= 0);
+    $.checkArgument(from <= to);
 
+    self.db.collection(collections.CACHE).findOne({
+        walletId: walletId,
+        type: 'referralsCacheStatus',
+        key: null
+    }, function(err, result) {
+
+        if (err) return cb(err);
+        if (!result) return cb();
+        if (!result.isUpdated) return cb();
+
+        // Reverse indexes
+        var fwdIndex = result.totalItems - to;
+
+        if (fwdIndex < 0) {
+            fwdIndex = 0;
+        }
+
+        var end = result.totalItems - from;
+
+        // nothing to return
+        if (end <= 0) return cb(null, []);
+
+        // Cache is OK.
+        self.db.collection(collections.CACHE).find({
+            walletId: walletId,
+            type: 'referralsCache',
+            key: {
+                $gte: fwdIndex,
+                $lt: end
+            }
+        }).sort({
+            key: -1
+        }).toArray(function(err, result) {
+            if (err) return cb(err);
+
+            if (!result) return cb();
+
+            if (result.length < end - fwdIndex) {
+                // some items are not yet defined.
+                return cb();
+            }
+
+            var referals = _.map(result, 'referral');
+            return cb(null, referals);
+        });
+    });
+};
 
 // --------         ---------------------------  Total
 //           > Time >
