@@ -122,6 +122,7 @@ Referral.prototype.fromBufferReader = function(reader) {
   // check that we have more data for pre-daedalus support
   if (!reader.eof) {
     this.alias = reader.readVarLengthBuffer().toString();
+
   }
 
   return this;

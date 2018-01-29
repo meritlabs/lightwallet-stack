@@ -105,10 +105,6 @@ Insight.prototype.getReferrals = function(addresses, from, to, cb) {
     if (_.isNumber(from)) qs.push('from=' + from);
     if (_.isNumber(to)) qs.push('to=' + to);
 
-    // Trim output
-    //qs.push('noAsm=1');
-    //qs.push('noScriptSig=1');
-    //qs.push('noSpent=1');
 
     var args = {
         method: 'POST',
@@ -118,8 +114,6 @@ Insight.prototype.getReferrals = function(addresses, from, to, cb) {
         },
         timeout: 120000,
     };
-
-    console.log(args, addresses);
 
     this._doRequest(args, function(err, res, referrals) {
         if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
@@ -133,7 +127,7 @@ Insight.prototype.getReferrals = function(addresses, from, to, cb) {
         }
 
         // NOTE: Whenever Insight breaks communication with meritd, it returns invalid data but no error code.
-        if (!_.isArray(referrals) || (referrals.length != _.compact(referrals).length)) return cb(new Error('Could not retrieve transactions from blockchain. Request was:' + JSON.stringify(args)));
+        if (!_.isArray(referrals) || (referrals.length != _.compact(referrals).length)) return cb(new Error('Could not retrieve referrals from blockchain. Request was:' + JSON.stringify(args)));
 
         return cb(null, referrals, total);
     });

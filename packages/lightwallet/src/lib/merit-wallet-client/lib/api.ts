@@ -2648,6 +2648,7 @@ export class API {
        return Promise.resolve(txs);
      });
     });
+
   };
 
   /**
