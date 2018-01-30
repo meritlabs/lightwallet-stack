@@ -6,6 +6,7 @@ var async = require('async');
 var log = require('npmlog');
 log.debug = log.verbose;
 
+var Bitcore = require('bitcore-lib');
 var BlockchainExplorer = require('./blockchainexplorer');
 var Storage = require('./storage');
 var MessageBroker = require('./messagebroker');
@@ -136,11 +137,11 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
     var walletId = txp.walletId;
 
     if (!processIt) {
-      log.info('Detected broadcast ' + data.txid + ' of an accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'micros ]');
+      log.info(`Detected broadcast ${data.txid} of an accepted txp [${txp.id}] for wallet ' + walletId + ' [${txp.amount} ${!txp.isInvite ? 'micros' : 'invites'} ]`);
       return setTimeout(self._handleThirdPartyBroadcasts.bind(self, data, true), 20 * 1000);
     }
 
-    log.info('Processing accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'micros ]');
+    log.info(`Processing accepted txp [${txp.id}] for wallet ${walletId} [ ${txp.amount} ${!txp.isInvite ? 'micros' : 'invites'} ]`);
 
     txp.setBroadcasted();
 
@@ -168,6 +169,7 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
 
 BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
   var self = this;
+
   if (!data || !data.vout) return;
 
   // Let's format the object to be easier to process below.
@@ -207,7 +209,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
       var walletId = address.walletId;
       var notificationType = data.isCoinbase ? 'IncomingCoinbase' : 'IncomingTx';
 
-      log.info(notificationType + ' for wallet ' + walletId + ' [' + out.amount + ' micros -> ' + out.address + ']');
+      log.info(`{notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${out.address} ]`);
 
       var fromTs = Date.now() - 24 * 3600 * 1000;
       self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
@@ -216,7 +218,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
           return n.type == notificationType && n.data && n.data.txid == data.txid;
         });
         if (alreadyNotified) {
-          log.info('The incoming tx ' + data.txid + ' was already notified');
+          log.info(`The incoming tx ${data.txid} was already notified`);
           return next(null);
         }
 
@@ -226,6 +228,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
             txid: data.txid,
             address: out.address,
             amount: out.amount,
+            isInvite: data.isInvite,
           },
           walletId: walletId,
         });
@@ -277,6 +280,9 @@ BlockchainMonitor.prototype._notifyNewBlock = function(network, hash) {
   });
 };
 
+// handle txs that were confirmed (i.e. added to a block)
+// set these subscriptions as inactive
+// and send TxConfirmation notification
 BlockchainMonitor.prototype._handleTxConfirmations = function (network, txids) {
   const processTriggeredSubs = (subs, cb) => {
     async.each(subs, function(sub, cb) {
@@ -322,6 +328,8 @@ BlockchainMonitor.prototype._handleTxConfirmations = function (network, txids) {
   });
 };
 
+// TODO: update this method and methods to set subscriptions
+// to use hash or address of referral instead codeHash
 BlockchainMonitor.prototype._handleReferralConfirmations = function(network, referrals) {
   if (_.isEmpty(referrals)) {
     return;

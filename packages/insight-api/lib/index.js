@@ -269,7 +269,6 @@ InsightAPI.prototype.getPublishEvents = function() {
 };
 
 InsightAPI.prototype.blockEventHandler = function(hashBuffer) {
-  console.log('InsightAPI.blockEventHandler:', hashBuffer.toString('hex'));
   // Notify inv subscribers
   for (var i = 0; i < this.subscriptions.inv.length; i++) {
     this.subscriptions.inv[i].emit('block', hashBuffer.toString('hex'));

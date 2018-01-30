@@ -184,7 +184,7 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
   };
 };
 
-BlockHeader.prototype.Daedalus = function Daedalus() {
+BlockHeader.prototype.isDaedalus = function isDaedalus() {
   return !!(this.version & (1 << DAEDALUS_VERSION_BIT));
 }
 
