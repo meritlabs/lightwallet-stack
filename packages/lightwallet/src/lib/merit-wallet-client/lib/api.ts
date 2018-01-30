@@ -1721,7 +1721,6 @@ export class API {
       const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey(void 0, network);
       const pubkey = walletPrivKey.toPublicKey();
 
-
       let c = this.credentials;
       c.addWalletPrivateKey(walletPrivKey.toString());
       let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
@@ -1738,6 +1737,7 @@ export class API {
         network: network,
         alias: opts.alias
       };
+
 
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
@@ -1819,12 +1819,13 @@ export class API {
       const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big');
 
       const referral = new Bitcore.Referral({
-        parentAddress: Bitcore.Address.fromString(opts.parentAddress),
-        address: Bitcore.Address.fromString(opts.address),
+        parentAddress: opts.parentAddress,
+        address: opts.address,
         addressType: opts.addressType,
-        pubkey: Bitcore.PublicKey.fromString(opts.pubkey, network),
+        pubkey: opts.pubkey,
         signature,
-        alias: opts.alias
+        alias: opts.alias,
+        network: network
       });
 
       this._doPostRequest('/v1/referral/', { referral: referral.serialize() })
@@ -2685,21 +2686,26 @@ export class API {
 
   }
 
-  getUnlockRequests(): Promise<any> {
-    return Promise.resolve([
-      {
-        refid: "5b564c38d42c9fc45f65a63f4a21a40ac5c62b05f81a2c4e591b50ecc44e450d",
-        address: 'mRH9vPfURmWftNZ7ENY3wrQNN1XygPjxsx',
-        alias: '',
-        parentAddress: 'mWr414vxUVb2F9CMMVT2jeWXjhCXkdemoK'
-      },
-      {
-        refid: "5b564c38d42c9fc45f65a63f4a21a40ac5c62b05f81a2c4e591b50ecc44e450d",
-        address: 'mRH9vPfURmWftNZ7ENY3wrQNN1XygPjxsx',
-        alias: 'mockuser',
-        parentAddress: 'mWr414vxUVb2F9CMMVT2jeWXjhCXkdemoK'
-      },
-      ]);
+  getUnlockRequests(opts): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    let args = [];
+    if (opts) {
+      if (opts.skip) args.push('skip=' + opts.skip);
+      if (opts.limit) args.push('limit=' + opts.limit);
+      if (opts.includeExtendedInfo) args.push('includeExtendedInfo=1');
+    }
+    let qs = '';
+    if (args.length > 0) {
+      qs = '?' + args.join('&');
+    }
+
+    let url = '/v1/refhistory/' + qs;
+    return this._doGetRequest(url).then((txs) => {
+      return this._processTxps(txs).then(() => {
+        return Promise.resolve(txs);
+      });
+    });
   }
 
 
