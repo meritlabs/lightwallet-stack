@@ -221,8 +221,10 @@ Insight.prototype.getBlockchainHeight = function(cb) {
   });
 };
 
-Insight.prototype.getTxidsInBlock = function(blockHash, txType, cb) {
+Insight.prototype.getBlock = function(blockHash, cb) {
   const self = this;
+
+  console.log('Insight getBlock');
 
   const args = {
     method: 'GET',
@@ -232,9 +234,9 @@ Insight.prototype.getTxidsInBlock = function(blockHash, txType, cb) {
 
   this._doRequest(args, function(err, res, body) {
     if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
-    return cb(null, body[txType]);
+    return cb(null, body);
   });
-};
+}
 
 Insight.prototype.initSocket = function() {
 

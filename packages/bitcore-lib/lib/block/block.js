@@ -233,7 +233,19 @@ Block.prototype.toBufferWriter = function toBufferWriter(bw) {
   for (var i = 0; i < this.transactions.length; i++) {
     this.transactions[i].toBufferWriter(bw);
   }
-  // TODO: add referral and invites here
+
+  if (this.Daedalus()) {
+    bw.writeVarintNum(this.invites.length);
+    for (var i = 0; i < this.invites.length; i++) {
+      this.invites[i].toBufferWriter(bw);
+    }
+  }
+
+  bw.writeVarintNum(this.referrals.length);
+  for (var i = 0; i < this.referrals.length; i++) {
+    this.referrals[i].toBufferWriter(bw);
+  }
+
   return bw;
 };
 
