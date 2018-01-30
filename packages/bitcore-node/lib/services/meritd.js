@@ -89,8 +89,7 @@ Merit.DEFAULT_CONFIG_SETTINGS = {
   spentindex: 1,
   zmqpubrawtx: 'tcp://127.0.0.1:28332',
   zmqpubhashblock: 'tcp://127.0.0.1:28332',
-  zmqpubrawreferraltx: 'tcp://127.0.0.1:28332',
-  zmqpubhashreferraltx: 'tcp://127.0.0.1:28332',
+  zmqpubrawreferral: 'tcp://127.0.0.1:28332',
   rpcallowip: '127.0.0.1',
   rpcuser: 'merit',
   rpcpassword: 'local321',
@@ -444,22 +443,15 @@ Merit.prototype._checkConfigIndexes = function(spawnConfig, node) {
   );
 
   $.checkState(
-    spawnConfig.zmqpubhashreferraltx,
-    '"zmqpubhashreferraltx" option is required to get event updates from meritd. ' +
-      'Please add "zmqpubhashreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
-  );
-
-  $.checkState(
-    spawnConfig.zmqpubrawreferraltx,
-    '"zmqpubrawreferraltx" option is required to get event updates from meritd. ' +
-      'Please add "zmqpubrawreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
+    spawnConfig.zmqpubrawreferral,
+    '"zmqpubrawreferral" option is required to get event updates from meritd. ' +
+      'Please add "zmqpubrawreferral=tcp://127.0.0.1:<port>" to your configuration and restart'
   );
 
   $.checkState(
     (spawnConfig.zmqpubhashblock === spawnConfig.zmqpubrawtx &&
-     spawnConfig.zmqpubrawtx === spawnConfig.zmqpubrawreferraltx &&
-     spawnConfig.zmqpubrawreferraltx === spawnConfig.zmqpubhashreferraltx),
-    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferraltx" and "zmqpubhashreferraltx" are expected to the same host and port in merit.conf'
+     spawnConfig.zmqpubrawtx === spawnConfig.zmqpubrawreferral),
+    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferral" are expected to the same host and port in merit.conf'
   );
 
   if (spawnConfig.reindex && spawnConfig.reindex === 1) {
@@ -568,6 +560,8 @@ Merit.prototype._getNetworkOption = function() {
 
 Merit.prototype._zmqBlockHandler = function(node, message) {
   var self = this;
+
+  console.log('_zmqBlockHandler: new block header received:', message.toString('hex'));
 
   // Update the current chain tip
   self._rapidProtectedUpdateTip(node, message);
@@ -1969,6 +1963,8 @@ Merit.prototype.getRawBlock = function(blockArg, callback) {
   // TODO apply performance patch to the RPC method for raw data
   var self = this;
 
+  console.log('Merit.getRawBlock called');
+
   function queryBlock(err, blockhash) {
     if (err) {
       return callback(err);
@@ -1986,6 +1982,44 @@ Merit.prototype.getRawBlock = function(blockArg, callback) {
   }
 
   var cachedBlock = self.rawBlockCache.get(blockArg);
+  if (cachedBlock) {
+    return setImmediate(function() {
+      callback(null, cachedBlock);
+    });
+  } else {
+    self._maybeGetBlockHash(blockArg, queryBlock);
+  }
+};
+
+/**
+ * Will retrieve a block as a Bitcore object
+ * @param {String|Number} block - A block hash or block height number
+ * @param {Function} callback
+ */
+Merit.prototype.getBlock = function(blockArg, callback) {
+  // TODO apply performance patch to the RPC method for raw data
+  var self = this;
+
+  console.log('Merit.getBlock called');
+
+  function queryBlock(err, blockhash) {
+    if (err) {
+      return callback(err);
+    }
+
+    self._tryAllClients(function(client, done) {
+      client.getBlock(blockhash, false, function(err, response) {
+        if (err) {
+          return done(self._wrapRPCError(err));
+        }
+        var blockObj = bitcore.Block.fromString(response.result);
+        self.blockCache.set(blockhash, blockObj);
+        done(null, blockObj);
+      });
+    }, callback);
+  }
+
+  var cachedBlock = self.blockCache.get(blockArg);
   if (cachedBlock) {
     return setImmediate(function() {
       callback(null, cachedBlock);
@@ -2037,41 +2071,6 @@ Merit.prototype.getBlockOverview = function(blockArg, callback) {
           };
           self.blockOverviewCache.set(blockhash, blockOverview);
           done(null, blockOverview);
-        });
-      }, callback);
-    }
-  }
-
-  self._maybeGetBlockHash(blockArg, queryBlock);
-};
-
-/**
- * Will retrieve a block as a Bitcore object
- * @param {String|Number} block - A block hash or block height number
- * @param {Function} callback
- */
-Merit.prototype.getBlock = function(blockArg, callback) {
-  // TODO apply performance patch to the RPC method for raw data
-  var self = this;
-
-  function queryBlock(err, blockhash) {
-    if (err) {
-      return callback(err);
-    }
-    var cachedBlock = self.blockCache.get(blockhash);
-    if (cachedBlock) {
-      return setImmediate(function() {
-        callback(null, cachedBlock);
-      });
-    } else {
-      self._tryAllClients(function(client, done) {
-        client.getBlock(blockhash, false, function(err, response) {
-          if (err) {
-            return done(self._wrapRPCError(err));
-          }
-          var blockObj = bitcore.Block.fromString(response.result);
-          self.blockCache.set(blockhash, blockObj);
-          done(null, blockObj);
         });
       }, callback);
     }

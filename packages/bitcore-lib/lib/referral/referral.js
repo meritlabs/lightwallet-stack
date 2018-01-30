@@ -24,7 +24,7 @@ function Referral(serialized) {
   this.address = null;
   this.addressType = 0;
   this.pubkey = null;
-  this.signature = '';
+  this.signature = null;
   this.alias = '';
 
   if (serialized) {
@@ -83,7 +83,7 @@ Referral.prototype.toBufferWriter = function(writer) {
   const parentAddressBuf = this.parentAddress.toBufferLean();
   const addressBuf = this.address.toBufferLean();
   const pubkeyBuf = this.pubkey.toBuffer();
-  const signatureBuf = this.signature.toBuffer();
+  const signatureBuf = this.signature;
   writer.writeInt32LE(this.version);
   writer.write(parentAddressBuf);
   writer.writeUInt8(this.addressType);
@@ -92,8 +92,11 @@ Referral.prototype.toBufferWriter = function(writer) {
   writer.write(pubkeyBuf);
   writer.writeVarintNum(signatureBuf.length);
   writer.write(signatureBuf);
-  writer.writeVarintNum(this.alias.length);
-  writer.writeString(this.alias);
+
+  if (this.version >= 1) {
+    writer.writeVarintNum(this.alias.length);
+    writer.writeString(this.alias);
+  }
 
   return writer;
 };
@@ -106,14 +109,16 @@ Referral.prototype.fromBuffer = function(buffer) {
 Referral.prototype.fromBufferReader = function(reader) {
   $.checkArgument(!reader.finished(), 'No referral data received');
 
+  // TODO: get network value from some global variable
+  const network = Networks.testnet.name;
+
   this.version = reader.readInt32LE();
   // we assume parent address type is a pubkeyhash
-  // TODO: get network value from some global variable
-  this.parentAddress = Address.fromBuffer(Buffer.concat([new Buffer([0x6e]), reader.read(20)]), Networks.testnet, Address.PayToPublicKeyHashType);
+  this.parentAddress = Address.fromBuffer(reader.read(20), network, Address.PayToPublicKeyHashType);
   this.addressType = reader.readUInt8();
-  this.address = Address.fromBuffer(Buffer.concat([new Buffer([0x6e]), reader.read(20)]), Networks.testnet, this.addressType);
+  this.address = Address.fromBuffer(reader.read(20), network, this.addressType);
   this.pubkey = PublicKey.fromBuffer(reader.readVarLengthBuffer());
-  this.signature = reader.readVarLengthBuffer().toString('hex');
+  this.signature = reader.readVarLengthBuffer();
   // check that we have more data for pre-daedalus support
   if (!reader.eof) {
     this.alias = reader.readVarLengthBuffer().toString();
@@ -124,12 +129,13 @@ Referral.prototype.fromBufferReader = function(reader) {
 
 Referral.prototype.toObject = Referral.prototype.toJSON = function toObject() {
   const obj = {
+    hash: this.hash,
     version: this.version,
-    parentAddress: this.parentAddress,
-    address: this.address,
+    parentAddress: this.parentAddress.toString(),
+    address: this.address.toString(),
     addressType: this.addressType,
-    pubkey: this.pubkey,
-    signature: this.signature,
+    pubkey: this.pubkey.toString(),
+    signature: this.signature.toString('hex'),
     alias: this.alias
   };
 
@@ -148,19 +154,21 @@ Referral.prototype.fromObject = function fromObject(arg) {
   }
 
   this.version = referral.version || CURRENT_VERSION;
-  this.parentAddress = referral.parentAddress;
-  this.address = referral.address;
+  this.parentAddress = Address.fromString(referral.parentAddress, Networks.testnet, Address.PayToPublicKeyHashType);
   this.addressType = referral.addressType;
-  this.pubkey = referral.pubkey;
-  this.signature = referral.signature;
+  this.address = Address.fromString(referral.address, Networks.testnet, this.addressType);
+  this.pubkey = PublicKey.fromString(referral.pubkey, Networks.testnet);
+  this.signature = BufferUtil.hexToBuffer(referral.signature);
   this.alias = referral.alias || '';
+
+  console.log('referral from object:', this);
 
   return this;
 };
 
 
 Referral.prototype.fromString = function(string) {
-  return this.fromBuffer(new buffer.Buffer(string, 'hex'));
+  return this.fromBuffer(BufferUtil.hexToBuffer(string));
 };
 
 Referral.prototype._newReferral = function() {

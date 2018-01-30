@@ -130,11 +130,11 @@ describe('Blockchain monitor', function() {
       }, function(err) {
         should.not.exist(err);
 
-        blockchainExplorer.getTxidsInBlock = sinon.stub().callsArgWith(2, null, ['123', '456']);
+        blockchainExplorer.getBlock = sinon.stub().callsArgWith(1, null, ['123', '456']);
         socket.handlers['block']('block1');
 
         setTimeout(function() {
-          blockchainExplorer.getTxidsInBlock = sinon.stub().callsArgWith(2, null, ['123', '456']);
+          blockchainExplorer.getBlock = sinon.stub().callsArgWith(1, null, ['123', '456']);
           socket.handlers['block']('block2');
 
           setTimeout(function() {
