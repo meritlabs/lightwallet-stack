@@ -8,12 +8,17 @@
       <h2>{{ tx.name }}</h2>
       <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </ion-label>
-    <ion-note item-end>
-        <span class="merit-amount" [class.credit]="tx.type == 'credit'">
-          {{ tx.amountStr }}&nbsp;<small>MRT</small>
-        </span>
+    <ion-note *ngIf="!tx.isInvite" item-end>
+      <span class="merit-amount" [class.credit]="tx.type == 'credit'">
+        {{ tx.amountStr }}&nbsp;<small>MRT</small>
+      </span>
       <span class="fiat-amount">
           {{ tx.alternativeAmountStr }}
+      </span>
+    </ion-note>
+    <ion-note *ngIf="tx.isInvite" item-end>
+      <span class="merit-invite" [class.credit]="tx.type == 'credit'">
+        {{ tx.type == 'credit' ? 'received' : 'sent' }}
       </span>
     </ion-note>
   </button>
