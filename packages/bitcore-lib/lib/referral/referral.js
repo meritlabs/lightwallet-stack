@@ -83,7 +83,7 @@ Referral.prototype.toBufferWriter = function(writer) {
   const parentAddressBuf = this.parentAddress.toBufferLean();
   const addressBuf = this.address.toBufferLean();
   const pubkeyBuf = this.pubkey.toBuffer();
-  const signatureBuf = this.signature;
+  const signatureBuf = this.signature.toBuffer();
   writer.writeInt32LE(this.version);
   writer.write(parentAddressBuf);
   writer.writeUInt8(this.addressType);
@@ -92,7 +92,6 @@ Referral.prototype.toBufferWriter = function(writer) {
   writer.write(pubkeyBuf);
   writer.writeVarintNum(signatureBuf.length);
   writer.write(signatureBuf);
-
   if (this.version >= 1) {
     writer.writeVarintNum(this.alias.length);
     writer.writeString(this.alias);
@@ -108,6 +107,8 @@ Referral.prototype.fromBuffer = function(buffer) {
 
 Referral.prototype.fromBufferReader = function(reader) {
   $.checkArgument(!reader.finished(), 'No referral data received');
+
+  console.log('fromBuffer');
 
   // TODO: get network value from some global variable
   const network = Networks.testnet.name;
@@ -143,6 +144,7 @@ Referral.prototype.toObject = Referral.prototype.toJSON = function toObject() {
 };
 
 Referral.prototype.fromObject = function fromObject(arg) {
+
   $.checkArgument(_.isObject(arg) || arg instanceof Referral);
   var self = this;
 
@@ -153,15 +155,17 @@ Referral.prototype.fromObject = function fromObject(arg) {
     referral = arg;
   }
 
-  this.version = referral.version || CURRENT_VERSION;
-  this.parentAddress = Address.fromString(referral.parentAddress, Networks.testnet, Address.PayToPublicKeyHashType);
-  this.addressType = referral.addressType;
-  this.address = Address.fromString(referral.address, Networks.testnet, this.addressType);
-  this.pubkey = PublicKey.fromString(referral.pubkey, Networks.testnet);
-  this.signature = BufferUtil.hexToBuffer(referral.signature);
-  this.alias = referral.alias || '';
+  // TODO: get network value from some global variable
+  var network =  referral.network || Networks.testnet;
 
-  console.log('referral from object:', this);
+  this.version = referral.version || CURRENT_VERSION;
+  this.parentAddress = Address.fromString(referral.parentAddress, network, Address.PayToPublicKeyHashType);
+  this.addressType = referral.addressType;
+  this.address = Address.fromString(referral.address, network, this.addressType);
+  this.pubkey = PublicKey.fromString(referral.pubkey, network);
+  //this.signature = BufferUtil.hexToBuffer(referral.signature);
+  this.signature = referral.signature;
+  this.alias = referral.alias || '';
 
   return this;
 };

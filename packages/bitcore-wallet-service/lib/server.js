@@ -576,10 +576,12 @@ WalletService.prototype.sendReferral = function(rawReferral, cb) {
             function(next) {
               // store address if it's not there yet
               // self.storage.storeAddressAndWallet(wallet, referral.address, next);
+              return next();
             },
             function(next) {
               // store referral in db
-              // self.storage.storeReferral(wallet.id, referral, next);
+               self.storage.storeReferral(wallet.id, referral, next);
+               return next();
             },
           ], function(err) {
             if (err) {
@@ -3261,9 +3263,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       function(next) {
         if (txs) return next();
 
-
-        console.log('@@@@@ GETTING HISTORY WITHOUT CACHE');
-
         var addressStrs = _.map(addresses, 'address');
         var bc = self._getBlockchainExplorer(network);
         if (!bc) return next(new Error('Could not get blockchain explorer instance'));
@@ -3274,10 +3273,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
-          console.log('@@@ RECEIVED', rawTxs);
           txs = self._normalizeTxHistory(rawTxs);
-          console.log('@@@@ NORMALIZED', txs);
-
 
           totalItems = total;
           return next();
@@ -3357,8 +3353,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       // Get addresses for this wallet
     self.storage.fetchAddresses(self.walletId, function(err, addresses) {
       if (err) return cb(err);
-
-      console.log('@@@ ADDRESSES', addresses);
 
       if (addresses.length == 0) return cb(null, []);
 
