@@ -133,9 +133,9 @@ addNetwork({
   name: 'livenet',
   alias: 'mainnet',
   pubkeyhash: 0x32,
-  privatekey: 0x80,
   scripthash: 0x3f,
   paramscripthash: 0x38,
+  privatekey: 0x80,
   xpubkey: 0x0488b21e,
   xprivkey: 0x0488ade4,
   networkMagic: 0xf9beb4d9,
@@ -153,9 +153,9 @@ addNetwork({
   name: 'testnet',
   alias: 'regtest',
   pubkeyhash: 0x6e,
-  privatekey: 0x80,
   scripthash: 0x7d,
   paramscripthash: 0x75,
+  privatekey: 0x80,
   xpubkey: 0x043587cf,
   xprivkey: 0x04358394
 });

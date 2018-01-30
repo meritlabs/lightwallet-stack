@@ -109,12 +109,14 @@ Referral.prototype.fromBuffer = function(buffer) {
 Referral.prototype.fromBufferReader = function(reader) {
   $.checkArgument(!reader.finished(), 'No referral data received');
 
+  // TODO: get network value from some global variable
+  const network = Networks.testnet.name;
+
   this.version = reader.readInt32LE();
   // we assume parent address type is a pubkeyhash
-  // TODO: get network value from some global variable
-  this.parentAddress = Address.fromBuffer(Buffer.concat([new Buffer([0x6e]), reader.read(20)]), Networks.testnet, Address.PayToPublicKeyHashType);
+  this.parentAddress = Address.fromBuffer(reader.read(20), network, Address.PayToPublicKeyHashType);
   this.addressType = reader.readUInt8();
-  this.address = Address.fromBuffer(Buffer.concat([new Buffer([0x6e]), reader.read(20)]), Networks.testnet, this.addressType);
+  this.address = Address.fromBuffer(reader.read(20), network, this.addressType);
   this.pubkey = PublicKey.fromBuffer(reader.readVarLengthBuffer());
   this.signature = reader.readVarLengthBuffer();
   // check that we have more data for pre-daedalus support
