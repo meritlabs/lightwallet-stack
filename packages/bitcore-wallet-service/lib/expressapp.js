@@ -505,7 +505,6 @@ ExpressApp.prototype.start = function(opts, cb) {
       var opts = {};
       if (req.query.skip) opts.skip = +req.query.skip;
       if (req.query.limit) opts.limit = +req.query.limit;
-      //if (req.query.includeExtendedInfo == '1') opts.includeExtendedInfo = true;
 
       server.getReferralsHistory(opts, function(err, refs) {
         if (err) return returnError(err, res, req);
@@ -522,8 +521,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       if (req.query.limit) opts.limit = +req.query.limit;
       if (req.query.includeExtendedInfo == '1') opts.includeExtendedInfo = true;
 
-      //server.getTxHistory(opts, function(err, txs) { temp!
-      server.getReferralsHistory(opts, function(err, txs) { 
+      server.getTxHistory(opts, function(err, txs) {
         if (err) return returnError(err, res, req);
         res.json(txs);
         res.end();

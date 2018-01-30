@@ -1976,6 +1976,8 @@ Merit.prototype.getBlockHashesByTimestamp = function(high, low, options, callbac
 Merit.prototype.getBlockHeader = function(blockArg, callback) {
   var self = this;
 
+  console.log('Merit.prototype.getBlockHeader called');
+
   function queryHeader(err, blockhash) {
     if (err) {
       return callback(err);
@@ -2156,8 +2158,8 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
     tx.inputMicros = 0;
     for(var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
       var input = result.vin[inputIndex];
-      if (!tx.isCoinbase) {
-        tx.inputMicros += input.valueSat; // TODO: rename sat
+      if (!tx.isCoinbase && input.valueSat) {
+        tx.inputMicros += !tx.isInvite ? input.valueSat : input.value; // TODO: rename sat
       }
       var script = null;
       var scriptAsm = null;
@@ -2184,13 +2186,13 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
     tx.outputMicros = 0;
     for(var outputIndex = 0; outputIndex < result.vout.length; outputIndex++) {
       var out = result.vout[outputIndex];
-      tx.outputMicros += out.valueSat; // TODO: rename sat
+      tx.outputMicros += !tx.isInvite ? out.valueSat : out.value; // TODO: rename sat
       var address = null;
       if (out.scriptPubKey && out.scriptPubKey.addresses && out.scriptPubKey.addresses.length === 1) {
         address = out.scriptPubKey.addresses[0];
       }
       tx.outputs.push({
-        micros: out.valueSat, // TODO: rename sat
+        micros: !tx.isInvite ? out.valueSat : out.value, // TODO: rename sat
         script: out.scriptPubKey.hex,
         scriptAsm: out.scriptPubKey.asm,
         spentTxId: out.spentTxId,
@@ -2219,7 +2221,8 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
           blockTimestamp: result.time,
           version: result.version,
           hash: txid,
-          locktime: result.locktime
+          locktime: result.locktime,
+          isInvite: result.version === bitcore.Transaction.INVITE_VERSION,
         };
 
         if (result.vin[0] && result.vin[0].coinbase) {

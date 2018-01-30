@@ -245,7 +245,7 @@ Insight.prototype.getBlock = function(blockHash, cb) {
 }
 
 Insight.prototype.initSocket = function() {
-
+  console.log('Insight hosts:', this.hosts);
   // sockets always use the first server on the pull
   var socket = io.connect(_.head([].concat(this.hosts)), {
     'reconnection': true,

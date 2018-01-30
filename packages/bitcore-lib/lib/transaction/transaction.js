@@ -58,8 +58,6 @@ function Transaction(serialized) {
   }
 }
 
-const CURRENT_VERSION = 1;
-const DAEDAUL_VERSION = 3;
 const DEFAULT_NLOCKTIME = 0;
 const MAX_BLOCK_SIZE = 1000000;
 
@@ -84,6 +82,10 @@ Transaction.FEE_PER_KB = 100000;
 // Safe upper bound for change address script size in bytes
 Transaction.CHANGE_OUTPUT_MAX_SIZE = 20 + 4 + 34 + 4;
 Transaction.MAXIMUM_EXTRA_SIZE = 4 + 9 + 9 + 4;
+
+// supported tx versions
+Transaction.CURRENT_VERSION = 2;
+Transaction.INVITE_VERSION = 3;
 
 /* Constructors and Serialization */
 
@@ -370,8 +372,8 @@ Transaction.prototype.toObject = Transaction.prototype.toJSON = function toObjec
   return obj;
 };
 
-Transaction.prototype.Daedalus = function Daedalus() {
-  return this.version >= DAEDAUL_VERSION;
+Transaction.prototype.isInvite = function isInvite() {
+  return this.version >= Transaction.INVITE_VERSION;
 }
 
 Transaction.prototype.fromObject = function fromObject(arg) {
@@ -509,7 +511,7 @@ Transaction.prototype.fromString = function(string) {
 };
 
 Transaction.prototype._newTransaction = function() {
-  this.version = CURRENT_VERSION;
+  this.version = Transaction.CURRENT_VERSION;
   this.nLockTime = DEFAULT_NLOCKTIME;
 };
 

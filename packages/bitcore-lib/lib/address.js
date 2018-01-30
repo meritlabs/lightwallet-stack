@@ -235,6 +235,9 @@ Address._transformBuffer = function(buffer, network, type) {
   }
 
   if (!bufferVersion.network || (networkObj && networkObj !== bufferVersion.network)) {
+    console.log('addressbufferVersion:', bufferVersion);
+    console.log('networkObj:', networkObj);
+
     throw new TypeError('Address has mismatched network type.');
   }
 

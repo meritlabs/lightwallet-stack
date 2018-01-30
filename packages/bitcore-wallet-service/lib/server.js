@@ -2878,8 +2878,9 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
       time: t,
       inputs: inputs,
       outputs: outputs,
-      isCoinbase: tx.isCoinbase,
-      isMature: tx.isMature
+      isCoinbase: !!tx.isCoinbase,
+      isMature: !!tx.isCoinbase ? tx.isMature : true,
+      isInvite: !!tx.isInvite,
     };
   });
 };
@@ -3186,6 +3187,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           address: item.address,
           amount: item.amount,
           isMine: !!address,
+          // TODO: handle singleAddress and change addresses
           isChange: address ? (address.isChange || wallet.singleAddress) : false,
         }
       });
@@ -3198,7 +3200,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       var inputs, outputs;
 
       if (tx.outputs.length || tx.inputs.length) {
-
         inputs = classify(tx.inputs);
         outputs = classify(tx.outputs);
 
@@ -3241,7 +3242,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         addressTo: addressTo,
         confirmations: tx.confirmations,
         isCoinbase: tx.isCoinbase,
-        isMature: tx.isMature
+        isMature: tx.isMature,
+        isInvite: tx.isInvite,
       };
 
       if (_.isNumber(tx.size) && tx.size > 0) {
@@ -3256,9 +3258,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           return _.pick(output, 'address', 'amount', 'isMine');
         });
       } else {
-        outputs = _.filter(outputs, {
-          isChange: false
-        });
+        // TODO: handle singleAddress and change addresses
+        // outputs = _.filter(outputs, {
+        //   isChange: false
+        // });
         if (action == 'received') {
           outputs = _.filter(outputs, {
             isMine: true
@@ -3266,6 +3269,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         }
         newTx.outputs = _.map(outputs, formatOutput);
       }
+
+      console.log('newTx:', newTx);
 
       var proposal = indexedProposals[tx.txid];
       if (proposal) {
@@ -3334,13 +3339,13 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
         log.info('Querying txs for: %s addrs', addresses.length);
 
-        console.log(JSON.stringify(addresses[0].address.Address), 'address');
+        console.log(JSON.stringify(addresses[0].address), 'address');
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
-          console.log('@@@ RECEIVED', rawTxs);
+          // console.log('@@@ RECEIVED', rawTxs);
           txs = self._normalizeTxHistory(rawTxs);
-          console.log('@@@@ NORMALIZED', txs);
+          // console.log('@@@@ NORMALIZED', txs);
 
 
           totalItems = total;

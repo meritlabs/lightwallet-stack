@@ -141,10 +141,10 @@ AddressController.prototype.validateAddresses = function(req, res) {
         message: 'Invalid address: ' + err.message,
         code: 1
       }, res);
-    } 
+    }
 
     return res.jsonp({ isValid: response.result.isvalid, isBeaconed: response.result.isbeaconed });
-  });  
+  });
 };
 
 AddressController.prototype.utxo = function(req, res) {
@@ -180,8 +180,8 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
     vout: utxoArg.outputIndex,
     scriptPubKey: utxoArg.script,
     amount: utxoArg.satoshis / 1e8,
-    micros: utxoArg.satoshis, 
-    isCoinbase: utxoArg.isCoinbase 
+    micros: utxoArg.satoshis,
+    isCoinbase: utxoArg.isCoinbase
   }; // ToDo: update after changes in meritd
   if (utxoArg.height && utxoArg.height > 0) {
     utxo.height = utxoArg.height;
@@ -255,10 +255,7 @@ AddressController.prototype.multitxs = function(req, res, next) {
 
   options.to = parseInt(req.query.to) || parseInt(req.body.to) || parseInt(options.from) + 10;
 
-  console.log('before getAddressHistory');
-
   self.node.getAddressHistory(req.addrs, options, function(err, result) {
-    console.log('after getAddressHistory', err, result);
     if(err) {
       return self.common.handleErrors(err, res);
     }
@@ -266,7 +263,6 @@ AddressController.prototype.multitxs = function(req, res, next) {
     var transformOptions = self._getTransformOptions(req);
 
     self.transformAddressHistoryForMultiTxs(result.items, transformOptions, function(err, items) {
-      console.log('after transformAddressHistoryForMultiTxs', err, items);
       if (err) {
         return self.common.handleErrors(err, res);
       }

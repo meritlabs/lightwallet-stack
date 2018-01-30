@@ -85,18 +85,27 @@ TxController.prototype.transformTransaction = function(transaction, options, cal
   // TODO consider mempool txs with receivedTime?
   var time = transaction.blockTimestamp ? transaction.blockTimestamp : Math.round(Date.now() / 1000);
   transformed.time = time;
+
   if (transformed.confirmations) {
     transformed.blocktime = transformed.time;
   }
 
-  if(transaction.isCoinbase) {
+  if (transaction.isCoinbase) {
     let maturity = COINBASE_MATURITY[this.node.network.name];
-    transformed.isCoinbase = true; 
+    transformed.isCoinbase = true;
     transformed.isMature = transformed.confirmations >= maturity ? true : false;
   }
 
-  transformed.valueOut = transaction.outputMicros / 1e8;
-  transformed.valueIn = transaction.inputMicros / 1e8;
+  transformed.isInvite = transaction.isInvite;
+
+  transformed.valueOut = transaction.outputMicros;
+  transformed.valueIn = transaction.inputMicros;
+
+  if (!transformed.isInvite) {
+    transformed.valueOut /= 1e8;
+    transformed.valueIn /= 1e8;
+  }
+
   transformed.fees = transaction.feeMicros / 1e8;
 
   callback(null, transformed);
@@ -180,17 +189,17 @@ TxController.prototype.transformInvTransaction = function(transaction) {
     return seq < MAXINT - 1;
   });
 
-  // We want to know if a transaction is coinbase so that we can handle it in a relevant way 
-  // In various wallets.  
+  // We want to know if a transaction is coinbase and invite so that we can handle it
+  // in a relevant way in various wallets.
   var transformed = {
     txid: transaction.hash,
     valueOut: valueOut / 1e8,
     vout: vout,
     isRBF: isRBF,
-    isCoinbase: transaction.isCoinbase()
+    isCoinbase: transaction.isCoinbase(),
+    isInvite: transaction.isInvite(),
   };
 
-  
   return transformed;
 };
 
