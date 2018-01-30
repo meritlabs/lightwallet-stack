@@ -98,7 +98,7 @@ Insight.prototype.getTransaction = function(txid, cb) {
   });
 };
 
-Insight.prototype.getReferrals = function(addresses, from, to, cb) {
+Insight.prototype.getAddressReferrals = function(addresses, from, to, cb) {
 
     var qs = [];
     var total;
@@ -112,7 +112,7 @@ Insight.prototype.getReferrals = function(addresses, from, to, cb) {
         json: {
             addrs: [].concat(addresses).join(',')
         },
-        timeout: 120000,
+        timeout: 120000
     };
 
     this._doRequest(args, function(err, res, referrals) {

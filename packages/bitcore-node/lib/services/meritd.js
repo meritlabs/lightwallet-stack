@@ -14,7 +14,6 @@ var $ = bitcore.util.preconditions;
 var _  = bitcore.deps._;
 var Transaction = bitcore.Transaction;
 var Referral = bitcore.Referral;
-var Referral = bitcore.Referral;
 
 var index = require('../');
 var errors = index.errors;
@@ -49,7 +48,8 @@ function Merit(options) {
   this.subscriptions.rawtransaction = [];
   this.subscriptions.hashblock = [];
   this.subscriptions.address = {};
-  this.subscriptions.rawreferral = [];
+  this.subscriptions.rawreferraltx = [];
+  this.subscriptions.hashreferraltx = [];
 
   // set initial settings
   this._initDefaults(options);
@@ -125,6 +125,7 @@ Merit.prototype._initCaches = function() {
   // caches valid until there is a new block
   this.utxosCache = LRU(50000);
   this.txidsCache = LRU(50000);
+  this.refidsCache = LRU(50000);
   this.balanceCache = LRU(50000);
   this.summaryCache = LRU(50000);
   this.blockOverviewCache = LRU(144);
@@ -136,14 +137,12 @@ Merit.prototype._initCaches = function() {
   // caches valid indefinitely
   this.transactionCache = LRU(100000);
   this.rawTransactionCache = LRU(50000);
-  this.referralCache = LRU(100000);
-  this.rawReferralCache = LRU(50000);
   this.blockCache = LRU(144);
   this.rawBlockCache = LRU(72);
   this.blockHeaderCache = LRU(288);
   this.zmqKnownTransactions = LRU(5000);
   this.zmqKnownBlocks = LRU(50);
-  this.zmqKnownReferrals = LRU(5000);
+  this.zmqKnownRawReferrals = LRU(5000);
   this.zmqKnownHashReferrals = LRU(5000);
   this.lastTip = 0;
   this.lastTipTimeout = false;
@@ -227,10 +226,16 @@ Merit.prototype.getPublishEvents = function() {
       unsubscribe: this.unsubscribeAddress.bind(this)
     },
     {
-      name: 'meritd/rawreferral',
+      name: 'meritd/rawreferraltx',
       scope: this,
-      subscribe: this.subscribe.bind(this, 'rawreferral'),
-      unsubscribe: this.unsubscribe.bind(this, 'rawreferral')
+      subscribe: this.subscribe.bind(this, 'rawreferraltx'),
+      unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
+    },
+    {
+      name: 'meritd/hashreferraltx',
+      scope: this,
+      subscribe: this.subscribe.bind(this, 'hashreferraltx'),
+      unsubscribe: this.unsubscribe.bind(this, 'hashreferraltx')
     },
   ];
 };
@@ -688,19 +693,36 @@ Merit.prototype._zmqTransactionHandler = function(node, message) {
   }
 };
 
-Merit.prototype._zmqReferralHandler = function(node, message) {
+Merit.prototype._zmqRawReferralsHandler = function(node, message) {
   const self = this;
   const hash = bitcore.crypto.Hash.sha256sha256(message);
   const id = hash.toString('binary');
-  if (!self.zmqKnownReferrals.get(id)) {
-    self.zmqKnownReferrals.set(id, true);
-    self.emit('referral', message);
+  if (!self.zmqKnownRawReferrals.get(id)) {
+    self.zmqKnownRawReferrals.set(id, true);
+    self.emit('rawreferraltx', message);
 
-    // Notify rawreferral subscribers
-    log.info('rawreferral subscribers: ', this.subscriptions.rawreferral.length);
-    for (let i = 0; i < this.subscriptions.rawreferral.length; i++) {
-      log.info('rawreferral sending message:', message.toString('hex'));
-      this.subscriptions.rawreferral[i].emit('meritd/rawreferral', message.toString('hex'));
+    // Notify rawreferraltx subscribers
+    log.info('rawreferraltx subscribers: ', this.subscriptions.rawreferraltx.length);
+    for (let i = 0; i < this.subscriptions.rawreferraltx.length; i++) {
+      log.warn('rawreferraltx sending message:', message.toString('hex'));
+      this.subscriptions.rawreferraltx[i].emit('meritd/rawreferraltx', message.toString('hex'));
+    }
+  }
+};
+
+Merit.prototype._zmqHashReferralsHandler = function(node, message) {
+  const self = this;
+  const hash = bitcore.crypto.Hash.sha256sha256(message);
+  const id = hash.toString('binary');
+  if (!self.zmqKnownHashReferrals.get(id)) {
+    self.zmqKnownHashReferrals.set(id, true);
+    self.emit('hashreferraltx', message);
+
+    // Notify hashreferraltx subscribers
+    log.info('hashreferraltx subscribers: ', this.subscriptions.hashreferraltx.length);
+    for (let i = 0; i < this.subscriptions.hashreferraltx.length; i++) {
+      log.warn('hashreferraltx sending message:', message.toString('hex'));
+      this.subscriptions.hashreferraltx[i].emit('meritd/hashreferraltx', message.toString('hex'));
     }
   }
 };
@@ -761,7 +783,8 @@ Merit.prototype._subscribeZmqEvents = function(node) {
   const self = this;
   node.zmqSubSocket.subscribe('hashblock');
   node.zmqSubSocket.subscribe('rawtx');
-  node.zmqSubSocket.subscribe('rawreferral');
+  node.zmqSubSocket.subscribe('rawreferraltx');
+  node.zmqSubSocket.subscribe('hashreferraltx');
 
   node.zmqSubSocket.on('message', function(topic, message) {
     const topicString = topic.toString('utf8');
@@ -773,8 +796,11 @@ Merit.prototype._subscribeZmqEvents = function(node) {
     case 'hashblock':
       self._zmqBlockHandler(node, message);
       break;
-    case 'rawreferral':
-      self._zmqReferralHandler(node, message);
+    case 'rawreferraltx':
+      self._zmqRawReferralsHandler(node, message);
+      break;
+    case 'hashreferraltx':
+      self._zmqHashReferralsHandler(node, message);
       break;
     default:
       log.error('Error in ZMQ message parsing: cannot determine topic.')
@@ -1561,65 +1587,96 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
 //    //);
 //};
 
-//
-///**
-// * Will get the referral ids for an address or multiple addresses
-// * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
-// * @param {Object} options
-// * @param {Function} callback
-// */
-//Merit.prototype.getAddressReferralsIds = function(addressArg, options, callback) {
-//    /* jshint maxstatements: 20 */
-//    var self = this;
-//
-//    var rangeQuery = false;
-//    try {
-//        rangeQuery = self._getHeightRangeQuery(options);
-//    } catch(err) {
-//        return callback(err);
-//    }
-//
-//    // todo bring back mempool query
-//
-//    var addresses = self._normalizeAddressArg(addressArg);
-//    var cacheKey = addresses.join('');
-//    var mempoolRefids = [];
-//    //var refids = self.refidsCache.get(cacheKey);
-//
-//    var refids = []; //todo temp
-//
-//    function finish() {
-//        if (false && refids && !rangeQuery) { //temp
-//            var allRefids = mempoolRefids.reverse().concat(refids);
-//            return setImmediate(function() {
-//                callback(null, allRefids);
-//            });
-//        } else {
-//            var refidOpts = {
-//                addresses: addresses
-//            };
-//            if (rangeQuery) {
-//                self._getHeightRangeQuery(options, refidOpts);
-//            }
-//
-//            //console.log("RECEIIIVED REFIDS ", referralsIds, "\n\n ");
-//
-//            self.client.getaddressrefids(refidOpts, function(err, response) {
-//                if (err) {
-//                    return callback(self._wrapRPCError(err));
-//                }
-//                response.result.reverse();
-//                //if (!rangeQuery) { temp
-//                    //self.refidsCache.set(cacheKey, response.result);
-//                //}
-//                var allRefids = mempoolRefids.reverse().concat(response.result);
-//                return callback(null, allRefids);
-//            });
-//        }
-//    }
-//
-//    finish();
-//};
+
+/**
+ * Will get the referral ids for an address or multiple addresses
+ * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
+ * @param {Object} options
+ * @param {Function} callback
+ */
+Merit.prototype.getAddressReferralsIds = function(addresses, options, callback) {
+    var self = this;
+
+    var queryMempool = _.isUndefined(options.queryMempool) ? true : options.queryMempool;
+    var queryMempoolOnly = _.isUndefined(options.queryMempoolOnly) ? false : options.queryMempoolOnly;
+
+    var rangeQuery = false;
+    try {
+        rangeQuery = self._getHeightRangeQuery(options);
+    } catch(err) {
+        return callback(err);
+    }
+    if (rangeQuery) {
+        queryMempool = false;
+    }
+    if (queryMempoolOnly) {
+        queryMempool = true;
+        rangeQuery = false;
+    }
+
+    var cacheKey = addresses.join('');
+    var mempoolReferralsIds = [];
+    var refIds = queryMempoolOnly ? false : self.refidsCache.get(cacheKey);
+
+    function finish() {
+        if (queryMempoolOnly) {
+            return setImmediate(function() {
+                callback(null, mempoolReferralsIds.reverse());
+            });
+        }
+        if (refIds && !rangeQuery) {
+            var allRefIds = mempoolReferralsIds.reverse().concat(refIds);
+            return setImmediate(function() {
+                callback(null, allRefIds);
+            });
+        } else {
+            var refIdOpts = {
+                addresses: addresses
+            };
+            if (rangeQuery) {
+                self._getHeightRangeQuery(options, refIdOpts);
+            }
+            console.log('refIdOpts', refIdOpts);
+            self.client.getaddressrefids(refIdOpts, function(err, response) {
+                if (err) {
+                    return callback(self._wrapRPCError(err));
+                }
+                response.result.reverse();
+                if (!rangeQuery) {
+                    self.refidsCache.set(cacheKey, response.result);
+                }
+                var allRefIds = mempoolReferralsIds.reverse().concat(response.result);
+                return callback(null, allRefIds);
+            });
+        }
+    }
+
+    if (queryMempool) {
+        self.client.getAddressMempool({addresses: addresses}, function(err, response) {
+            if (err) {
+                return callback(self._wrapRPCError(err));
+            }
+            mempoolReferralsIds = self._getRefIdsFromMempool(response.result);
+            finish();
+        });
+    } else {
+        finish();
+    }
+};
+
+Merit.prototype._getRefIdsFromMempool = function(deltas) {
+    var mempoolRefids = [];
+    var mempoolRefidsKnown = {};
+    for (var i = 0; i < deltas.length; i++) {
+        var refid = deltas[i].refid;
+        if (!mempoolRefidsKnown[refid]) {
+            mempoolRefids.push(refid);
+            mempoolRefidsKnown[refid] = true;
+        }
+    }
+    return mempoolRefids;
+};
+
 //
 //
 //Merit.prototype._paginateReferralIds = function(fullReferralIds, fromArg, toArg) {
@@ -1673,7 +1730,6 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
     if (addresses.length > this.maxAddressesQuery) {
         return callback(new TypeError('Maximum number of addresses (' + this.maxAddressesQuery + ') exceeded'));
     }
-    var addressStrings = this._getAddressStrings(addresses);
 
     var fromArg = parseInt(options.from || 0);
     var toArg = parseInt(options.to || self.maxReferralHistory);
@@ -1690,12 +1746,31 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
 
     var totalCount = 0;
     var referrals = [];
-    self.getAddressRefids(addresses, options, function(err, refids) {
+    self.getAddressReferralsIds(addresses, options, function(err, refids) {
         if (err) {
             return callback(err);
         }
 
         totalCount = refids.length;
+
+        async.mapLimit(
+            refids,
+            self.transactionConcurrency,
+            function(refid, next) {
+                self.getReferral(refid, next);
+            },
+            function(err, referrals) {
+                if (err) {
+                    return callback(err);
+                }
+                return callback(null, {
+                    totalCount: referrals.length,
+                    items: referrals
+                });
+            }
+        );
+
+
         //todo paginate ?
         //try {
         //    txids = self._paginateTxids(txids, fromArg, toArg);
@@ -1703,33 +1778,11 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
         //    return callback(e);
         //}
 
-        async.mapLimit(
-            refids,
-            self.transactionConcurrency,
-            function(refid, next) {
-                self._getAddressDetailedReferral(refid, {
-                    queryMempool: queryMempool,
-                    addressStrings: addressStrings
-                }, next);
-            },
-            function(err, referrals) {
-                if (err) {
-                    return callback(err);
-                }
-                callback(null, {
-                    totalCount: totalCount,
-                    items: referrals
-                });
-            }
-        );
 
 
     });
 
-    return callback(null, {
-        totalCount: totalCount,
-        items: referrals
-    });
+
 
 
 
@@ -2522,8 +2575,8 @@ Merit.prototype.getRewards = function(addressArg, callback) {
 }
 
 /**
- * Will add a referral to the mempool and relay to connected peers
- * @param {String|Referral} referral - The hex string of referral
+ * Send raw referral to nodes
+ * @param {String|Referral} referral - The hex string of the referral
  * @param {Function} callback
  */
 Merit.prototype.sendReferral = function(referral, callback) {
@@ -2535,61 +2588,8 @@ Merit.prototype.sendReferral = function(referral, callback) {
     }
     callback(null, response.result);
   });
-};
 
-/**
- * Will get a referral as a Node.js Buffer. Results include the mempool.
- * @param {String} refid - Referral hash
- * @param {Function} callback
- */
-Merit.prototype.getRawReferral = function(refid, callback) {
-  var self = this;
-  var referral = self.rawReferralCache.get(refid);
-  if (referral) {
-    return setImmediate(function() {
-      callback(null, referral);
-    });
-  } else {
-    self._tryAllClients(function(client, done) {
-      client.getRawReferral(refid, function(err, response) {
-        if (err) {
-          return done(self._wrapRPCError(err));
-        }
-        var buffer = new Buffer(response.result, 'hex');
-        self.rawReferralCache.set(refid, buffer);
-        done(null, buffer);
-      });
-    }, callback);
-  }
-};
-
-/**
- * Will get a referral as a Bitcore Referral. Results include the mempool.
- * @param {String} refid - Referral hash
- * @param {Boolean} queryMempool - Include the mempool
- * @param {Function} callback
- */
-Merit.prototype.getReferral = function(refid, callback) {
-  var self = this;
-  var referral = self.referralCache.get(refid);
-  if (referral) {
-    return setImmediate(function() {
-      callback(null, referral);
-    });
-  } else {
-    self._tryAllClients(function(client, done) {
-      client.getRawReferral(refid, function(err, response) {
-        if (err) {
-          return done(self._wrapRPCError(err));
-        }
-        var referral = Referral();
-        referral.fromString(response.result);
-        self.referralCache.set(refid, referral);
-        done(null, referral);
-      });
-    }, callback);
-  }
-};
+}
 
 /**
  * Called by Node to stop the service.

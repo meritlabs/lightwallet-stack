@@ -221,6 +221,8 @@ AddressController.prototype.referrals = function(req, res, next) {
             return self.common.handleErrors(err, res);
         }
 
+        console.log('addresses.js', result);
+
         res.jsonp({
             totalItems: result.totalCount,
             from: options.from,
