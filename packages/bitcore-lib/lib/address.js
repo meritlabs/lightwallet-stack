@@ -230,14 +230,12 @@ Address._transformBuffer = function(buffer, network, type) {
   var networkObj = Networks.get(network);
   var bufferVersion = Address._classifyFromVersion(buffer, network, type);
 
+
   if (network && !networkObj) {
     throw new TypeError('Unknown network');
   }
 
-  if (!bufferVersion.network || (networkObj && networkObj !== bufferVersion.network)) {
-    console.log('addressbufferVersion:', bufferVersion);
-    console.log('networkObj:', networkObj);
-
+  if (!bufferVersion.network || (networkObj && networkObj.name !== bufferVersion.network.name)) {
     throw new TypeError('Address has mismatched network type.');
   }
 
