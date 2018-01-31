@@ -94,8 +94,7 @@ export class ReceiveView {
     this.error = null;
 
     try {
-      const address = await this.walletService.getAddress(this.wallet, false);
-      this.address = address.address;
+      this.address = this.walletService.getRootAddress(this.wallet);
       this.addressGenerationInProgress = false;
       //if (forceNew) this.mainAddressGapReached = false; // that means, we  successfully generated NEW address
       this.formatAddress();

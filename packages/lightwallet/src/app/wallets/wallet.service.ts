@@ -294,6 +294,10 @@ export class WalletService {
 
   }
 
+  public getRootAddress(wallet: MeritWalletClient) {
+    return wallet.getRootAddress();
+  }
+
   public getAddress(wallet: MeritWalletClient, forceNew: boolean): Promise<any> {
 
     return new Promise((resolve, reject) => {
@@ -505,6 +509,10 @@ export class WalletService {
         return reject(err);
       });
     });
+  }
+
+  public getUnlockRequests(wallet: MeritWalletClient) {
+    return wallet.getUnlockRequests();
   }
 
   public recreate(wallet: MeritWalletClient): Promise<any> {
