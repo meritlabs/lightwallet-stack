@@ -57,19 +57,6 @@
       </ion-note>
     </ion-item-divider>
 
-    <button ion-item detail-none (click)="copyToClipboard(wallet.referrerAddress)">
-      <ion-avatar img-icon item-start>
-        <img src="assets/img/icons/invite.svg" alt="">
-      </ion-avatar>
-      <ion-label>
-        <p>Invite Code</p>
-        <h2>{{ wallet.referrerAddress }}</h2>
-      </ion-label>
-      <button ion-button icon-only clear item-end>
-        <ion-icon merit-icon name="share"></ion-icon>
-      </button>
-    </button>
-
     <ion-item>
       <ion-avatar img-icon item-start>
         <img src="assets/img/icons/network.svg" alt="">
@@ -114,6 +101,27 @@
         </span>
       </ion-note>
     </ion-item>
+
+    <ion-item>
+      <ion-avatar img-icon item-start>
+        <img src="assets/img/icons/invite.svg" alt="">
+      </ion-avatar>
+      <ion-label>
+        <h2>Invites (3)</h2>
+      </ion-label>
+      <button ion-button item-end clear>
+        Invite
+      </button>
+    </ion-item>
+
+    <button ion-item>
+      <ion-avatar item-start></ion-avatar>
+      <ion-label>
+        <p>Pending unlock requests</p>
+        <h2>You have 2 pending requests</h2>
+      </ion-label>
+    </button>
+
   </ion-list>
 
 </ion-content>

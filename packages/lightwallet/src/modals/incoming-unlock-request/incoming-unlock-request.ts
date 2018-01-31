@@ -15,7 +15,7 @@ export class IncomingUnlockRequestModal {
   }
 
   accept() {
-    this.dismiss();
+    this.dismiss()
   }
 
   decline() {

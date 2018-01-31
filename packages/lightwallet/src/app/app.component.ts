@@ -58,7 +58,7 @@ export class MeritLightWallet {
       status: 'accepted'
     };
 
-    this.modalCtrl.create('IncomingUnlockRequestModal', { request: MOCK_UNLOCK_REQUEST }, Object.assign(_.clone(MERIT_MODAL_OPTS), { cssClass: MERIT_MODAL_OPTS.cssClass + ' unlock-request-modal' })).present();
+    // this.modalCtrl.create('IncomingUnlockRequestModal', { request: MOCK_UNLOCK_REQUEST }, Object.assign(_.clone(MERIT_MODAL_OPTS), { cssClass: MERIT_MODAL_OPTS.cssClass + ' unlock-request-modal' })).present();
 
     this.platform.resume.subscribe(() => {
       this.logger.info('Returning Native App from Background!');
