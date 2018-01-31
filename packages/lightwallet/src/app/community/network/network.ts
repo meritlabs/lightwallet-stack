@@ -155,7 +155,7 @@ export class NetworkView {
     return Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
       const filteredWallet: DisplayWallet = <DisplayWallet>_.pick(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'totalNetworkValue', 'credentials', 'network');
 
-      filteredWallet.referrerAddress = this.walletService.getRootAddress(wallet); 
+      filteredWallet.referrerAddress = this.walletService.getRootAddress(wallet).toString();
 
       filteredWallet.totalNetworkValueMicro = await this.walletService.getANV(wallet);
       filteredWallet.inviteRequests = await this.walletService.getUnlockRequests(wallet);

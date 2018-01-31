@@ -83,7 +83,7 @@ Referral.prototype.toBufferWriter = function(writer) {
   const parentAddressBuf = this.parentAddress.toBufferLean();
   const addressBuf = this.address.toBufferLean();
   const pubkeyBuf = this.pubkey.toBuffer();
-  const signatureBuf = this.signature.toBuffer();
+  const signatureBuf = this.signature;
   writer.writeInt32LE(this.version);
   writer.write(parentAddressBuf);
   writer.writeUInt8(this.addressType);
@@ -108,13 +108,12 @@ Referral.prototype.fromBuffer = function(buffer) {
 Referral.prototype.fromBufferReader = function(reader) {
   $.checkArgument(!reader.finished(), 'No referral data received');
 
-  console.log('fromBuffer');
-
   // TODO: get network value from some global variable
   const network = Networks.testnet.name;
 
   this.version = reader.readInt32LE();
   // we assume parent address type is a pubkeyhash
+
   this.parentAddress = Address.fromBuffer(reader.read(20), network, Address.PayToPublicKeyHashType);
   this.addressType = reader.readUInt8();
   this.address = Address.fromBuffer(reader.read(20), network, this.addressType);
@@ -164,7 +163,6 @@ Referral.prototype.fromObject = function fromObject(arg) {
   this.addressType = referral.addressType;
   this.address = Address.fromString(referral.address, network, this.addressType);
   this.pubkey = PublicKey.fromString(referral.pubkey, network);
-  //this.signature = BufferUtil.hexToBuffer(referral.signature);
   this.signature = referral.signature;
   this.alias = referral.alias || '';
 

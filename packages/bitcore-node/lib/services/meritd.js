@@ -136,6 +136,7 @@ Merit.prototype._initCaches = function() {
 
   // caches valid indefinitely
   this.transactionCache = LRU(100000);
+  this.referralCache = LRU(100000);
   this.rawTransactionCache = LRU(50000);
   this.blockCache = LRU(144);
   this.rawBlockCache = LRU(72);
@@ -1595,9 +1596,13 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
  * @param {Function} callback
  */
 Merit.prototype.getAddressReferralsIds = function(addresses, options, callback) {
+
+
     var self = this;
 
-    var queryMempool = _.isUndefined(options.queryMempool) ? true : options.queryMempool;
+    //var queryMempool = _.isUndefined(options.queryMempool) ? true : options.queryMempool;
+    var queryMempool = true;
+
     var queryMempoolOnly = _.isUndefined(options.queryMempoolOnly) ? false : options.queryMempoolOnly;
 
     var rangeQuery = false;
@@ -1639,8 +1644,10 @@ Merit.prototype.getAddressReferralsIds = function(addresses, options, callback) 
             console.log('refIdOpts', refIdOpts);
             self.client.getaddressrefids(refIdOpts, function(err, response) {
                 if (err) {
+                    console.log(err, 'ERROR');
                     return callback(self._wrapRPCError(err));
                 }
+
                 response.result.reverse();
                 if (!rangeQuery) {
                     self.refidsCache.set(cacheKey, response.result);
@@ -1654,8 +1661,10 @@ Merit.prototype.getAddressReferralsIds = function(addresses, options, callback) 
     if (queryMempool) {
         self.client.getAddressMempool({addresses: addresses}, function(err, response) {
             if (err) {
+                console.log(err, 'QUERY MEMPOOL');
                 return callback(self._wrapRPCError(err));
             }
+            console.log(response, 'MEMPOOL RESPONSE');
             mempoolReferralsIds = self._getRefIdsFromMempool(response.result);
             finish();
         });
