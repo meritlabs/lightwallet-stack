@@ -44,6 +44,14 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
+  <button ion-item class="pending-unlock-requests">
+    <ion-avatar item-start></ion-avatar>
+    <ion-label>
+      <p>Pending unlock requests</p>
+      <h2>You have 2 pending requests</h2>
+    </ion-label>
+  </button>
+
   <ion-list *ngFor="let wallet of displayWallets" no-lines>
     <ion-item-divider>
       {{ wallet.name }}
@@ -113,14 +121,6 @@
         Invite
       </button>
     </ion-item>
-
-    <button ion-item>
-      <ion-avatar item-start></ion-avatar>
-      <ion-label>
-        <p>Pending unlock requests</p>
-        <h2>You have 2 pending requests</h2>
-      </ion-label>
-    </button>
 
   </ion-list>
 
