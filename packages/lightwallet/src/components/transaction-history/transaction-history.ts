@@ -14,10 +14,6 @@ export class TransactionHistoryComponent {
     return transaction.action === TransactionAction.UNLOCK;
   }
 
-  isIncomingUnlockRequest(transaction: ITransaction) {
-    return false;
-  }
-
   isCredit(transaction: ITransaction) {
     return transaction.action === TransactionAction.RECEIVED || transaction.action === TransactionAction.RECEIVING;
   }
