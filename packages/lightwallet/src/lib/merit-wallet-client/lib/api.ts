@@ -1833,9 +1833,9 @@ export class API {
         address: opts.address,
         addressType: opts.addressType,
         pubkey: opts.pubkey,
-        signature,
-        alias: opts.alias,
-        network: network
+        signature: signature.toString('hex'),
+        alias: opts.alias
+        network,
       });
 
       console.log("SENDING REFERRAL", referral.toObject());
@@ -2130,7 +2130,8 @@ export class API {
 
     if (opts.addresses) {
       url += '?' + querystring.stringify({
-        addresses: [].concat(opts.addresses).join(',')
+        addresses: [].concat(opts.addresses).join(','),
+        invites: opts.invites,
       });
     }
     return this._doGetRequest(url);
@@ -2377,9 +2378,18 @@ export class API {
     $.checkState(this.credentials && this.credentials.isComplete());
     let url = '/v1/balance/';
     if (opts.twoStep) url += '?twoStep=1';
-    return this._doGetRequest(url).then((balance) => {
-      return balance.availableAmount;
-    });
+
+    return this._doGetRequest(url).then(balance => balance.availableAmount);
+  };
+
+  /**
+   * Update wallet invites balance
+   */
+  getInvitesBalance(opts: any = {}): Promise<number> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+    let url = '/v1/invites/';
+
+    return this._doGetRequest(url).then(balance => balance.availableAmount);
   };
 
   /**

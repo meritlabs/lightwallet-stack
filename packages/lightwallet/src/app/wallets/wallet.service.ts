@@ -615,6 +615,10 @@ export class WalletService {
     return wallet.getBalance(opts);
   }
 
+  public getInvitesBalance(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
+    return wallet.getInvitesBalance(opts);
+  }
+
   public getLowUtxos(wallet: any, levels: any): Promise<any> {
     return new Promise((resolve, reject) => {
       wallet.getUtxos({}, (err, resp) => {
