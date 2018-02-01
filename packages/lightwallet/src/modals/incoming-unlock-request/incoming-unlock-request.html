@@ -15,7 +15,7 @@
     <ion-avatar img-icon>
       <img src="assets/img/icons" alt="">
     </ion-avatar>
-    <span class="wallet-name">{{ request.walletName }}</span>
+    <span class="wallet-name">{{(isWalletAddress(request.walletName)? '' : '@') +  request.walletName }}</span>
     <span class="status {{ request.status }}">{{ request.status }}</span>
   </div>
   <ion-list>
