@@ -55,7 +55,7 @@ export class MeritLightWallet {
     } = {
       date: Date.now(),
       walletName: 'Joe Wallet',
-      status: 'accepted'
+      status: 'pending'
     };
 
     // this.modalCtrl.create('IncomingUnlockRequestModal', { request: MOCK_UNLOCK_REQUEST }, Object.assign(_.clone(MERIT_MODAL_OPTS), { cssClass: MERIT_MODAL_OPTS.cssClass + ' unlock-request-modal' })).present();
