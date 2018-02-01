@@ -54,7 +54,7 @@ export class MeritLightWallet {
       status: 'pending' | 'accepted' | 'declined';
     } = {
       date: Date.now(),
-      walletName: 'Joe Wallet',
+      walletName: 'joe',
       status: 'pending'
     };
 

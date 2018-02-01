@@ -25,4 +25,10 @@ export class IncomingUnlockRequestModal {
   dismiss() {
     return this.viewCtrl.dismiss();
   }
+
+  isWalletAddress(walletName: string) {
+    // TODO check if string is a wallet address or an alias
+    // TODO this should probably be a pipe (walletName)
+    return false;
+  }
 }
