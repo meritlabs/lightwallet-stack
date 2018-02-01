@@ -12,10 +12,11 @@
 <ion-content>
   <div *ngIf="request">
     <span class="date">{{ request.date | amDateFormat: 'DD MMM, hh:mma' }}</span>
+    <span class="to-wallet">{{ request.toWallet }}</span>
     <ion-avatar img-icon>
       <img src="assets/img/icons" alt="">
     </ion-avatar>
-    <span class="wallet-name">{{(isWalletAddress(request.walletName)? '' : '@') +  request.walletName }}</span>
+    <span class="wallet-name">{{ (isWalletAddress(request.walletName)? '' : '@') +  request.walletName }}</span>
     <span class="status {{ request.status }}">{{ request.status }}</span>
   </div>
   <ion-list>
