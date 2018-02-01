@@ -103,7 +103,7 @@ Insight.prototype.getAddressReferrals = function(addresses, cb) {
 
     var args = {
         method: 'POST',
-        path: this.apiPrefix + '/addrs/referrals'),
+        path: this.apiPrefix + '/addrs/referrals',
         json: {
             addrs: [].concat(addresses).join(',')
         },
