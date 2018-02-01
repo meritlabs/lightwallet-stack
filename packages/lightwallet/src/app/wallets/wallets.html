@@ -100,6 +100,9 @@
             ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '') : '' ) }}&nbsp;<span>MRT</span>
             <ion-icon name="ios-timer-outline" *ngIf="walletHasPendingAmount(wallet)"></ion-icon>
           </p>
+          <p class="invites">
+            Invites: {{ wallet.status.invitesBalance.availableAmount }}
+          </p>
           <p *ngIf="walletHasPendingAmount(wallet)">Partially confirmed</p>
           <p *ngIf="wallet.balanceHidden">
             [Balance Hidden]

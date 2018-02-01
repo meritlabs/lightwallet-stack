@@ -567,8 +567,6 @@ Merit.prototype._getNetworkOption = function() {
 Merit.prototype._zmqBlockHandler = function(node, message) {
   var self = this;
 
-  console.log('_zmqBlockHandler: new block header received:', message.toString('hex'));
-
   // Update the current chain tip
   self._rapidProtectedUpdateTip(node, message);
 
@@ -1188,8 +1186,9 @@ Merit.prototype.getAddressBalance = function(addressArg, options, callback) {
 Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callback) {
   var self = this;
   var queryMempool = _.isUndefined(options.queryMempool) ? true : options.queryMempool;
+  var invites = !!options.invites;
   var addresses = self._normalizeAddressArg(addressArg);
-  var cacheKey = addresses.join('');
+  var cacheKey = (options.invites ? 'i:' : '') + addresses.join('');
   var utxos = self.utxosCache.get(cacheKey);
 
   function updateWithMempool(confirmedUtxos, mempoolDeltas) {
@@ -1236,7 +1235,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
         callback(null, updateWithMempool(utxos, mempoolDeltas));
       });
     } else {
-      self.client.getAddressUtxos({addresses: addresses}, function(err, response) {
+      self.client.getAddressUtxos({ addresses, invites }, function(err, response) {
         if (err) {
           return callback(self._wrapRPCError(err));
         }
@@ -1770,8 +1769,6 @@ Merit.prototype.getRawBlock = function(blockArg, callback) {
   // TODO apply performance patch to the RPC method for raw data
   var self = this;
 
-  console.log('Merit.getRawBlock called');
-
   function queryBlock(err, blockhash) {
     if (err) {
       return callback(err);
@@ -1806,8 +1803,6 @@ Merit.prototype.getRawBlock = function(blockArg, callback) {
 Merit.prototype.getBlock = function(blockArg, callback) {
   // TODO apply performance patch to the RPC method for raw data
   var self = this;
-
-  console.log('Merit.getBlock called');
 
   function queryBlock(err, blockhash) {
     if (err) {
@@ -1928,8 +1923,6 @@ Merit.prototype.getBlockHashesByTimestamp = function(high, low, options, callbac
  */
 Merit.prototype.getBlockHeader = function(blockArg, callback) {
   var self = this;
-
-  console.log('Merit.prototype.getBlockHeader called');
 
   function queryHeader(err, blockhash) {
     if (err) {
