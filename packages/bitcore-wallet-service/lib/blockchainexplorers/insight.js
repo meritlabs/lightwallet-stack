@@ -98,17 +98,12 @@ Insight.prototype.getTransaction = function(txid, cb) {
   });
 };
 
-Insight.prototype.getAddressReferrals = function(addresses, from, to, cb) {
-
-    var qs = [];
-    var total;
-    if (_.isNumber(from)) qs.push('from=' + from);
-    if (_.isNumber(to)) qs.push('to=' + to);
+Insight.prototype.getAddressReferrals = function(addresses, cb) {
 
 
     var args = {
         method: 'POST',
-        path: this.apiPrefix + '/addrs/referrals' + (qs.length > 0 ? '?' + qs.join('&') : ''),
+        path: this.apiPrefix + '/addrs/referrals'),
         json: {
             addrs: [].concat(addresses).join(',')
         },
@@ -224,7 +219,7 @@ Insight.prototype.getBlockchainHeight = function(cb) {
 Insight.prototype.getBlock = function(blockHash, cb) {
   const self = this;
 
-  console.log('Insight getBlock');
+  console.log('Insight getBlock!');
 
   const args = {
     method: 'GET',
@@ -234,6 +229,7 @@ Insight.prototype.getBlock = function(blockHash, cb) {
 
   this._doRequest(args, function(err, res, body) {
     if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
+    console.log('insight block received. Referrals: ', body.referrals);
     return cb(null, body);
   });
 }

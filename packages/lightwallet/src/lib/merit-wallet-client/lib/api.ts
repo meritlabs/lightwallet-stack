@@ -1746,7 +1746,6 @@ export class API {
         alias: opts.alias
       };
 
-
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
 
@@ -1823,11 +1822,11 @@ export class API {
       }
 
       const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-        Bitcore.Address.fromString(opts.parentAddress).toBufferLean(),
-        Bitcore.Address.fromString(opts.address).toBufferLean(),
+        Bitcore.Address.fromString(opts.parentAddress, network.name).toBufferLean(),
+        Bitcore.Address.fromString(opts.address, network.name).toBufferLean(),
       ]));
 
-      const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big');
+      const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
 
       const referral = new Bitcore.Referral({
         parentAddress: opts.parentAddress,
@@ -1838,7 +1837,6 @@ export class API {
         alias: opts.alias,
         network: network
       });
-
 
       console.log("SENDING REFERRAL", referral.toObject());
 
@@ -2708,10 +2706,10 @@ export class API {
   getUnlockRequests(): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    let url = '/v1/refhistory/';
-    return this._doGetRequest(url).then((txs) => {
-      return this._processTxps(txs).then(() => {
-        return Promise.resolve(txs);
+    let url = '/v1/unlockrequests/';
+    return this._doGetRequest(url).then((requests) => {
+      return this._processTxps(requests).then(() => {
+        return Promise.resolve(requests);
       });
     });
   }
