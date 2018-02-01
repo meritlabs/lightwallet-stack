@@ -129,8 +129,6 @@ export class NetworkView {
       await this.clipboard.copy(code);
     }
 
-    console.log(code);
-
     this.toastCtrl.create({
       message: 'Copied to clipboard',
       cssClass: ToastConfig.CLASS_MESSAGE

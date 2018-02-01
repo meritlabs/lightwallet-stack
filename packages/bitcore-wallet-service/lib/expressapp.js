@@ -497,18 +497,14 @@ ExpressApp.prototype.start = function(opts, cb) {
   });
 
 
-  router.get('/v1/refhistory/', function(req, res) {
-    getServerWithAuth(req, res, function(server) {
-      var opts = {};
-      if (req.query.skip) opts.skip = +req.query.skip;
-      if (req.query.limit) opts.limit = +req.query.limit;
-
-      server.getReferralsHistory(opts, function(err, refs) {
-        if (err) return returnError(err, res, req);
-        res.json(refs);
-        res.end();
+  router.get('/v1/unlockrequests', function(req, res) {
+      getServerWithAuth(req, res, function(server) {
+          server.getUnlockRequests(opts, function(err, refs) {
+              if (err) return returnError(err, res, req);
+              res.json(refs);
+              res.end();
+          });
       });
-    });
   });
 
   router.get('/v1/txhistory/', function(req, res) {
@@ -519,7 +515,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       if (req.query.includeExtendedInfo == '1') opts.includeExtendedInfo = true;
 
       server.getTxHistory(opts, function(err, txs) {
-        if (err) return returnError(err, res, req);
+            if (err) return returnError(err, res, req);
         res.json(txs);
         res.end();
       });
@@ -821,6 +817,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       return returnError(ex, res, req);
     }
 
+    console.log('referral', req.body.referral);
     server.sendReferral(req.body.referral, function(err, refid) {
       if (err) {
         return returnError(err, res, req);

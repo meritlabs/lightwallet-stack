@@ -221,29 +221,12 @@ AddressController.prototype.referrals = function(req, res, next) {
             return self.common.handleErrors(err, res);
         }
 
-        console.log('addresses.js', result);
-
-        res.jsonp({
+        return res.jsonp({
             totalItems: result.totalCount,
             from: options.from,
             to: Math.min(options.to, result.totalCount),
             items: result.items
         });
-
-        //var transformOptions = self._getTransformOptions(req);
-        //
-        //self.transformAddressHistoryForMultiTxs(result.items, transformOptions, function(err, items) {
-        //    console.log('after transformAddressHistoryForMultiTxs', err, items);
-        //    if (err) {
-        //        return self.common.handleErrors(err, res);
-        //    }
-        //    res.jsonp({
-        //        totalItems: result.totalCount,
-        //        from: options.from,
-        //        to: Math.min(options.to, result.totalCount),
-        //        items: items
-        //    });
-        //});
 
     });
 };
