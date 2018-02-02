@@ -93,7 +93,8 @@ Referral.prototype.toBufferWriter = function(writer) {
     writer.writeVarintNum(signatureBuf.length);
     writer.write(signatureBuf);
 
-    if (this.version >= 1) {
+    if (this.version >= 1 && this.alias) {
+        console.log('writing alias');
         writer.writeVarintNum(this.alias.length);
         writer.writeString(this.alias);
     }
@@ -120,7 +121,7 @@ Referral.prototype.fromBufferReader = function(reader) {
     this.pubkey = PublicKey.fromBuffer(reader.readVarLengthBuffer());
     this.signature = reader.readVarLengthBuffer();
     // check that we have more data for pre-daedalus support
-    if (!reader.eof) {
+    if (!reader.eof()) {
         this.alias = reader.readVarLengthBuffer().toString();
     }
 
