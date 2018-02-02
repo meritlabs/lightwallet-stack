@@ -227,6 +227,7 @@ export class SendConfirmationView {
               this.viewData.amountMrt,
               getEasySendURL(this.txData.easySend)
             );
+            break;
 
           case SendMethod.DESTINATION_EMAIL:
             await this.easySendService.sendEmail(
@@ -234,6 +235,7 @@ export class SendConfirmationView {
               this.viewData.amountMrt,
               getEasySendURL(this.txData.easySend)
             );
+            break;
 
           default:
             throw new Error(`Unsupported sending method: ${this.txData.sendMethod}`);
