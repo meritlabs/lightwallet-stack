@@ -55,7 +55,6 @@ export class SendView {
     this.loadingContacts = true;
     await this.updateHasUnlocked();
     this.contacts = await this.addressBookService.getAllMeritContacts();
-    console.log('Contacts are ', this.contacts);
     this.loadingContacts = false;
     this.updateRecentContacts();
     this.parseSearch();
