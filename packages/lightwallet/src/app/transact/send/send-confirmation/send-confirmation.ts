@@ -243,9 +243,9 @@ export class SendConfirmationView {
       }
 
       try {
-        this.navCtrl.popToRoot();
+        await this.navCtrl.popToRoot();
         await this.tabs.select(0);
-        this.tabs.getActiveChildNavs()[0].popToRoot();
+        await this.tabs.getActiveChildNavs()[0].popToRoot();
       } catch (e) {
         console.log(e);
       }
