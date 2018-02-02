@@ -222,14 +222,14 @@ export class SendConfirmationView {
 
         switch (this.txData.sendMethod.destination) {
           case SendMethod.DESTINATION_SMS:
-            return this.easySendService.sendSMS(
+            await this.easySendService.sendSMS(
               this.txData.recipient.phoneNumber,
               this.viewData.amountMrt,
               getEasySendURL(this.txData.easySend)
             );
 
           case SendMethod.DESTINATION_EMAIL:
-            return this.easySendService.sendEmail(
+            await this.easySendService.sendEmail(
               this.txData.recipient.email,
               this.viewData.amountMrt,
               getEasySendURL(this.txData.easySend)
@@ -239,6 +239,7 @@ export class SendConfirmationView {
             throw new Error(`Unsupported sending method: ${this.txData.sendMethod}`);
         }
       }
+
       try {
         this.navCtrl.popToRoot();
         await this.tabs.select(0);
