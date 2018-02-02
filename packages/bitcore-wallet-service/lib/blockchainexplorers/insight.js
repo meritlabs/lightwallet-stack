@@ -115,7 +115,7 @@ Insight.prototype.getAddressReferrals = function(addresses, cb) {
 
         if (_.isObject(referrals)) {
             if (referrals.totalItems)
-                total = referrals.totalItems;
+                var total = referrals.totalItems;
 
             if (referrals.items)
                 referrals = referrals.items;
@@ -229,7 +229,7 @@ Insight.prototype.getBlock = function(blockHash, cb) {
 
   this._doRequest(args, function(err, res, body) {
     if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
-    console.log('insight block received. Referrals: ', body.referrals);
+    console.log('insight block received. Referrals: ', body.referral);
     return cb(null, body);
   });
 }
