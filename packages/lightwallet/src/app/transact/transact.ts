@@ -1,7 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, ModalController, NavController, NavParams, Tabs } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, NavParams, Platform, Tabs } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
+import { Keyboard } from '@ionic-native/keyboard';
+import { Subscription } from 'rxjs/Subscription';
 
 // Transact is the proposed name of the umbrella for the primary actions
 // That exist through the tabs on the bottom of the screen.
@@ -12,15 +14,42 @@ import { ProfileService } from 'merit/core/profile.service';
 @Component({
   selector: 'view-transact',
   templateUrl: 'transact.html',
+  host: {
+    '[class.keyboard-visible]': 'keyboardVisible'
+  }
 })
 export class TransactView {
   @ViewChild('tabs') tabs: Tabs;
 
+  private subs: Subscription[];
+  keyboardVisible: boolean = false;
+
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private logger: Logger,
-              private profileService: ProfileService) {
-    this.logger.info('Hello TRANSACT VIEW!');
+              private profileService: ProfileService,
+              private plt: Platform,
+              private keyboard: Keyboard) {}
+
+  async ngOnInit() {
+    if (this.plt.is('cordova')) {
+      this.subs = [
+        this.keyboard.onKeyboardShow()
+          .subscribe(() => {
+            this.keyboardVisible = true;
+          }),
+        this.keyboard.onKeyboardHide()
+          .subscribe(() => {
+            this.keyboardVisible = false;
+          })
+      ];
+    }
+  }
+
+  async ngOnDestroy() {
+    if (this.subs && this.subs.length) {
+      this.subs.forEach((sub: Subscription) => sub.unsubscribe());
+    }
   }
 
   ionViewCanEnter() {
