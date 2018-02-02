@@ -70,19 +70,16 @@
             <img [src]="sanitizePhotoUrl(contact.photos[0]?.value)" *ngIf="contact.photos.length">
             <span *ngIf="!contact.photos.length">{{getContactInitials(contact)}}</span>
           </ion-avatar>
-          {{contact.name.formatted}}
+          {{ contact.name.formatted }}
           <img src="assets/img/icons/merit.svg" color="primary" item-end>
         </ion-item>
       </ion-list>
 
-      <ion-list *ngIf="searchResult.noMerit.length" class="list-no-merit" [virtualScroll]="searchResult.noMerit">
+      <ion-list *ngIf="searchResult.noMerit.length" class="list-no-merit">
         <ion-item-divider>Other Friends</ion-item-divider>
-        <ion-item *virtualItem="let contact" (click)="sendToContact(contact)" class="contact">
-          <ion-avatar item-start>
-            <img [src]="sanitizePhotoUrl(contact.photos[0]?.value)" *ngIf="contact.photos.length">
-            <span color="primary">{{getContactInitials(contact)}}</span>
-          </ion-avatar>
-          {{contact.label}}
+        <ion-item *ngFor="let contact of searchResult.noMerit" (click)="sendToContact(contact)" class="contact">
+          <contact-avatar [contact]="contact" item-start></contact-avatar>
+          {{ contact.name.formatted }}
         </ion-item>
       </ion-list>
     </div>

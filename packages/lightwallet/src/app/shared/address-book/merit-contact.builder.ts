@@ -9,7 +9,7 @@ export class MeritContactBuilder {
   }
 
 
-  public build(contact: IContactProperties = {}) {
+  public build(contact: IContactProperties = {}): MeritContact {
     let clone = val => val ? JSON.parse(JSON.stringify(val)) : null;
 
     let created = new MeritContact();
