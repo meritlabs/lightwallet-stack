@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { ProfileService } from 'merit/core/profile.service';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 @IonicPage()
 @Component({
@@ -9,18 +10,16 @@ import { ProfileService } from 'merit/core/profile.service';
 })
 export class SelectWalletModal {
 
-  wallets;
-  selectedWallet;
+  wallets: MeritWalletClient[];
+  selectedWallet: MeritWalletClient;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private viewCtrl: ViewController,
-              private profileService: ProfileService,) {
+              private profileService: ProfileService) {}
 
-  }
-
-  async ionViewDidLoad() {
-    this.wallets = await this.profileService.getWallets();
+  async ngOnInit() {
+    this.wallets = this.navParams.get('availableWallets') || await this.profileService.getWallets();
     this.selectedWallet = this.navParams.get('selectedWallet');
   }
 
