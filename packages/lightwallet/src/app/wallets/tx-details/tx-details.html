@@ -1,74 +1,75 @@
 <ion-header no-border>
-  <ion-navbar color="secondary">
-    <ion-title>{{title | translate}}</ion-title>
+  <ion-navbar color="primary">
+    <ion-title smaller-title translate>{{ title }}</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item>
+  <div class="big-header">
+    <!-- TODO revise this design, doesn't look good -->
+    <div class="status">
       <div *ngIf="tx.action == 'received'" class="action">
-        <img src="assets/img/icon-receive-history.svg" width="40">
+        <img src="assets/img/icons/receive.svg" width="40">
         <span translate>Received</span>
       </div>
       <div *ngIf="tx.action == 'sent'" class="action">
-        <img src="assets/img/icon-sent.svg" width="40">
+        <img src="assets/img/icons/send.svg" width="40">
         <span translate>Sent</span>
       </div>
       <div *ngIf="tx.action == 'moved'" class="action">
-        <img src="assets/img/icon-moved.svg" width="40">
+        <img src="assets/img/icons/switch.svg" width="40">
         <span translate>Moved</span>
       </div>
-
-      <div class="amount-str">{{tx.amountStr | toUnit : tx.amount}}</div>
-      <div class="amount-alt-str">{{tx.alternativeAmountStr || altAmountStr | toFiat : tx.amount | async}}</div>
-    </ion-item>
-
+    </div>
+    <h2 class="amount" [hidden]="!tx.amountStr">
+      {{tx.amountStr | toUnit : tx.amount}}&nbsp;<small>MRT</small>
+    </h2>
+    <h3 class="detail-fiat">
+      {{tx.alternativeAmountStr || altAmountStr | toFiat : tx.amount | async}}
+    </h3>
+  </div>
+  <ion-list>
     <ion-item>
-      <ion-avatar item-start>
-        <img src="assets/img/icon-wallet.svg" class="icon-wallet">
-      </ion-avatar>
-      <h2 translate>To</h2>
-      <p *ngIf="tx.action != 'sent' && wallet && !vault">{{ wallet.name || '...' }}</p>
-      <p *ngIf="tx.action != 'sent' && vault">{{ vault.name || '...' }}</p>
-
-      <p *ngIf="tx.action == 'sent'">{{ tx.addressTo || '...' }}</p>
+      <ion-label>
+        <p translate>To</p>
+        <h2>{{ tx.addressTo || '...' }}</h2>
+      </ion-label>
     </ion-item>
 
     <ion-item *ngIf="tx.action == 'sent'">
-      <ion-avatar item-start>
-        <img src="assets/img/icon-wallet.svg" class="icon-wallet">
-      </ion-avatar>
-      <h2 translate>From</h2>
-      <p>{{wallet.name || '...'}}</p>
+      <ion-label>
+        <p translate>From</p>
+        <h2>{{ tx.addressFrom || '...' }}</h2>
+      </ion-label>
     </ion-item>
 
     <ion-item>
-      <ion-label>{{'Date' | translate}}</ion-label>
-      <ion-note item-end>
-        {{tx.time * 1000 | amDateFormat:'MM/DD/YYYY HH:mm a'}}
-      </ion-note>
+      <ion-label>
+        <p>{{'Date' | translate}}</p>
+        <h2>{{tx.time * 1000 | amDateFormat:'MM/DD/YYYY HH:mm a'}}</h2>
+      </ion-label>
     </ion-item>
 
-    <button ion-item (click)="addMemo()">
-      <ion-label>{{'Memo' | translate}}</ion-label>
-      <span>{{tx.message}}</span>
-    </button>
+    <ion-item text-wrap *ngIf="tx.message">
+      <ion-label>
+        <p>{{'Memo' | translate}}</p>
+        <h2>{{tx.message}}</h2>
+      </ion-label>
+    </ion-item>
 
-    <button ion-item (click)="addMemo()" *ngIf="tx.action != 'received'">
-      <ion-label>{{'Fee' | translate}}</ion-label>
-      <ion-note item-end>
-        {{unitFee | toUnit: tx.fees || '...'}} - {{fiatFee | toFiat: tx.fees || '...' | async}}
-      </ion-note>
-    </button>
+    <ion-item *ngIf="tx.action != 'received'">
+      <ion-label>
+        <p>{{'Fee' | translate}}</p>
+        <h2 class="merit-amount">{{ unitFee }}&nbsp;<span>MRT</span></h2>
+        <p class="fiat-amount">{{ fiatFee }}</p>
+      </ion-label>
+    </ion-item>
 
     <ion-item *ngIf="isNotConfirmed(tx)">
-      <ion-label>{{'Confirmations' | translate}}</ion-label>
-      <ion-note item-end>
-        {{confirmations || 'Unconfirmed' | translate}}
-      </ion-note>
+      <ion-label>
+        <p>{{'Confirmations' | translate}}</p>
+        <h2>{{confirmations || 'Unconfirmed' | translate}}</h2>
+      </ion-label>
     </ion-item>
   </ion-list>
-
-  <!-- <button ion-button block clear (click)="viewOnBlockchain()" translate>View on blockchain</button> -->
 </ion-content>

@@ -9,8 +9,8 @@ import { ProfileService } from 'merit/core/profile.service';
 })
 export class SelectWalletModal {
 
-  public wallets;
-  public selectedWallet;
+  wallets;
+  selectedWallet;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,

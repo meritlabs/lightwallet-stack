@@ -1,0 +1,81 @@
+view-send-confirmation {
+
+  ion-list.list {
+    ion-item.item.recipient {
+      ion-label {
+        p {
+          font-size: 13px;
+          color: rgb(45, 60, 80);
+        }
+
+        p:last-child {
+          font-size: 14px;
+          color: rgb(115, 129, 155);
+        }
+      }
+
+      ion-note[item-end] {
+        font-size: 13px;
+        color: rgb(45, 60, 80);
+      }
+    }
+
+    ion-item.item {
+      h2 span.right, p span.right {
+        float: right;
+        font-size: 13px;
+        color: rgb(115, 129, 155);
+        font-weight: 400;
+      }
+
+      p.fee, p.total {
+        padding: 3px 0;
+        font-weight: 400;
+      }
+
+      p.fee {
+        color: rgb(45, 60, 80);
+      }
+
+      p.total {
+
+      }
+
+      p.before-after {
+        padding: 8px 0;
+        .before, .after {
+          font-size: 18px;
+          letter-spacing: -.5px;
+        }
+
+        .before {
+          color: rgb(115, 129, 155);
+          text-decoration: line-through;
+          display: block;
+        }
+
+        .after {
+          color: rgb(45, 60, 80);
+        }
+
+      }
+    }
+  }
+
+  ion-avatar.default {
+    box-shadow: 0 0 1px 1px $wallet-default-color;
+  }
+
+  ion-avatar {
+    text-align: center;
+    color: color($colors, primary);
+    display: inline-block;
+    line-height: 40px;
+    letter-spacing: -1px;
+    border-radius: 50%;
+    span {
+      width: 100%;
+    }
+  }
+
+}

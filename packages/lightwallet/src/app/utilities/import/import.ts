@@ -5,13 +5,11 @@ import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
 import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
-
 import { ConfigService } from 'merit/shared/config.service';
 import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 import { DerivationPathService } from 'merit/utilities/mnemonic/derivation-path.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { WalletService } from 'merit/wallets/wallet.service';
-
 
 @IonicPage({
   defaultHistory: ['OnboardingView']

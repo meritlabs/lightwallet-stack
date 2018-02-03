@@ -1,67 +1,131 @@
-// TODO: Improve details spaces and make relative.
 wallet-details-view {
-  .scroll-content {
-    margin-top: 0 !important;
+  .content-ios {
+    .big-header {
+      text-align: center;
+
+      h2.amount {
+        font-weight: 300;
+        > small {
+          font-size: inherit;
+          font-weight: inherit;
+        }
+      }
+
+      h3.detail-fiat {
+        font-weight: 400;
+        font-size: 17px;
+      }
+
+      .action-buttons {
+        margin: 30px -8px -8px -8px;
+        border-radius: 8px;
+        overflow: hidden;
+
+        button[ion-button].button.button-ios {
+          .button-inner {
+            .inner-container {
+              ion-icon {
+                font-size: 1.6em;
+              }
+
+              span {
+                font-size: 13px;
+                letter-spacing: .2px;
+                font-weight: 300;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   ion-header {
-    color: color($colors, light);
-    &:after {
-      display: none !important;
-    }
+    background: #00a6d1;
+
     ion-navbar,
     .toolbar-background {
       background: transparent;
       border: none !important;
     }
-  }
 
-  .toolbar {
-    color: color($colors, light);
-  }
-  .bar-button {
-    color: color($colors, light);
-  }
-  .toolbar-title {
-    color: color($colors, light);
-  }
-
-  .balance-header {
-    padding-bottom: 2rem;
-    margin-top: 0;
-    color: color($colors, light);
-    height: 20%;
-    text-align: center;
-  }
-  .balance-header.default {
-    background-color: $wallet-default-color;
-  }
-  .balance-str {
-    padding-top: 10rem;
-    font-size: 2rem;
-    font-weight: 600;
-  }
-  .balance-alt-str {
-    font-size: 1.25rem;
-    font-weight: 500;
-  }
-  .action {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  p {
-    color: #999 !important;
-    font-size: 11px !important;
-  }
-  .detail {
-    .amount {
-      color: color($colors, primary);
-      font-size: 16px;
+    button[ion-button], .toolbar-title {
+      color: white;
     }
-    .date {
-      font-size: 12.5px;
-      color: #666;
+  }
+
+  .big-header {
+    padding-top: 0;
+    h2 {
+      font-weight: 400;
+    }
+
+    .amount-available {
+      font-size: 17px;
+      color: rgba(255,255,255,0.74);
+    }
+
+    .action-buttons {
+      margin: 21px -18px -18px -18px;
+      height: 85px;
+      background: rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: row;
+
+      > .button-cell {
+        height: inherit;
+        flex: 1;
+        position: relative;
+
+        &:first-child:after {
+          content: '';
+          height: 41px;
+          width: 1px;
+          display: block;
+          position: absolute;
+          right: 1px;
+          top: 23px;
+          background: rgba(255,255,255,.2);
+        }
+
+        button[ion-button].button {
+          height: inherit;
+          background: transparent;
+          box-shadow: none;
+          border: none;
+          width: 100%;
+          padding: 0;
+          margin: 0;
+
+          .button-inner {
+            .inner-container {
+              ion-icon {
+                font-size: 1.9em;
+                line-height: .67;
+                padding: 0;
+                pointer-events: none;
+                display: block;
+                margin-bottom: 12px;
+              }
+
+              span {
+                font-size: 11px;
+                letter-spacing: .13px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  ion-list.list {
+    button[ion-item].item {
+      ion-note.detail[item-end] {
+        text-align: right;
+        font-size: 13px;
+        color: #73819b;
+      }
     }
   }
 }

@@ -1,79 +1,83 @@
 <ion-header>
-    <ion-navbar>
-        <ion-buttons end>
-            <button ion-button clear (click)="toUnlockView()">
-                Skip
-            </button>
-        </ion-buttons>
-    </ion-navbar>
+    <span>Already a member?</span>
+    <button ion-button clear navPush="ImportView">
+        Restore
+    </button>
 </ion-header>
 
 
 <ion-content fullscreen>
 
-    <ion-slides pager="true" #slides>
+    <ion-slides pager="true" #slides (ionSlideWillChange)="onSlideWillChange($event)">
 
         <ion-slide>
-
-            <div class="title" translate>
-                Merit is secure,<br/>digital money.
+            <div class="slide-illustration">
+                <img src="assets/img/onboarding/city.svg" alt="">
+              <img src="assets/img/onboarding/phone.svg" alt="" class="phone">
             </div>
-            <div class="text" translate>
-                You can spend merit at millions of websites and stores worldwide.
+            <div class="slide-content">
+                <h1 class="title">
+                    Merit is secure,<br/>digital money.
+                </h1>
+                <p class="text">
+                    You can spend merit at millions of websites and stores worldwide.
+                </p>
+                <p class="text">
+                    Just scan the code to pay.
+                </p>
             </div>
-            <div class="image"  translate>
-                <div class="illustration secure"></div>
-            </div>
-            <div class="text" translate>
-                Just scan the code to pay.
-            </div>
-            <div class="bottom-buttons">
-                <button ion-button block (click)="slideNext()" translate>Got it</button>
-            </div>
-
         </ion-slide>
 
         <ion-slide>
 
-            <div class="title" translate>
-                Merit is a currency.
+          <!-- TODO: This is a temporary solution because SVG isn't good -->
+            <div class="slide-illustration graph">
+              &nbsp;
             </div>
-            <div class="text" translate>
-                You can trade it for other currencies like US Dollars, Euros, or Merit.
+            <div class="slide-content">
+                <h1 class="title">
+                    Merit is a currency.
+                </h1>
+                <p class="text">
+                    You can trade it for other currencies like US Dollars, Euros, or Merit.
+                </p>
+                <p class="text">
+                    1 MRT = $ {{rateData.usdPerMerit|number:'1.0-3'}}
+                </p>
+                <p class="text">
+                    The exchange rate changes with the market.
+                </p>
             </div>
-            <div class="image"  translate>
-                <div class="illustration currency"></div>
-            </div>
-            <div class="text exchange-rate">
-                1 MRT = $ {{rateData.usdPerMerit|number:'1.0-3'}}
-            </div>
-            <div class="text" translate>
-                The exchange rate changes with the market.
-            </div>
-            <div class="bottom-buttons">
-                <button ion-button block (click)="slideNext()" translate>Makes sense</button>
-            </div>
-
         </ion-slide>
 
         <ion-slide>
-            <div class="title" translate>
-                You control your merit.
+            <div class="slide-illustration">
+                <img src="assets/img/onboarding/vault.svg" alt="" class="vault">
             </div>
-            <div class="text" translate>
-                This app stores your merit with cutting-edge security.
+
+            <div class="slide-content">
+                <h1 class="title">
+                    You control your merit.
+                </h1>
+                <p class="text">
+                    This app stores your merit with cutting-edge security.
+                </p>
+                <p class="text">
+                    Not even Merit Labs can access it.
+                </p>
             </div>
-            <div class="image"  translate>
-                <div class="illustration control"></div>
-            </div>
-            <div class="text" translate>
-                Not even Merit Labs can access it.
-            </div>
-            <div class="bottom-buttons">
-                <button ion-button block (click)="toUnlockView()" translate>I Feel Safe</button>
-            </div>
+
         </ion-slide>
 
     </ion-slides>
 
 </ion-content>
+
+<ion-footer>
+    <div class="next-button">
+        <button ion-button icon-end clear (click)="slideNext()" translate>
+            {{ slides.getActiveIndex() == 2? 'Done' : 'Next' }}
+            <ion-icon name="ios-arrow-forward"></ion-icon>
+        </button>
+    </div>
+</ion-footer>

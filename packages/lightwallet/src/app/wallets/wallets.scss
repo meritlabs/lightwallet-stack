@@ -1,7 +1,106 @@
 view-wallets {
 
-  ion-list {
-    margin-bottom: 10px !important;
+  .content-ios {
+    .big-header {
+      text-align: center;
+
+      p {
+        font-weight: 400;
+        font-size: 17px;
+        letter-spacing: -.4px;
+        padding-top: 10px;
+      }
+
+      h2.amount {
+        padding-top: 35px;
+        font-size: 40px;
+        font-weight: 400;
+        small {
+          font-size: inherit;
+          font-weight: inherit;
+        }
+      }
+
+      h3.detail-fiat {
+        font-size: 17px;
+        font-weight: 400;
+      }
+    }
+  }
+
+  .big-header {
+    ion-spinner.spinner {
+      margin-top: 25px;
+    }
+  }
+
+  ion-list.list {
+    margin-bottom: 10px;
+    margin-top: -10px;
+
+    button[ion-item].item {
+
+    }
+  }
+
+
+  ion-item.item.add-vault-block {
+    background: #e9edf2;
+    border-radius: 8px;
+    margin: 10px 16px;
+    width: calc(100% - 16px - 16px);
+    padding-left: 20px;
+
+    &:after {
+      display: none;
+    }
+
+    ion-thumbnail[item-start] {
+      min-height: 0;
+      min-width: 0;
+      margin-right: 21px;
+      img {
+        width: 29px;
+        height: 24px;
+      }
+    }
+
+    &.md-item {
+      ion-label.label {
+        h2 {
+          text-transform: uppercase;
+        }
+      }
+    }
+
+    ion-label.label {
+      h2 {
+        font-weight: 500;
+        font-size: 15px;
+      }
+
+      p {
+        font-weight: 400;
+      }
+    }
+  }
+
+  ion-list.list {
+    margin-bottom: 26px;
+
+    button[ion-item].item {
+
+
+      &:not(.import-wallet-button) {
+        ion-label h2 {
+          font-weight: 500;
+        }
+        ion-avatar {
+          box-shadow: 0 0 0 2px rgba(16, 152, 0, 0.51);
+          border: 2px solid white;
+        }
+      }
+    }
   }
 
   [class^="merit-icon"] {
@@ -15,80 +114,65 @@ view-wallets {
     background: color($colors, primary);
   }
 
-  ion-navbar img {
-    height: 18px;
-  }
-
   .add-item .wallet-icon {
     padding: 0 7px;
-  }
-   img {
-    &.icon-wallet {
-      width: 35px !important;
-      background-color: color($colors, primary);
-    }
-  }
-
-  & .wallet-icon {
-    box-shadow: none;
-  }
-
-  .header-icon {
-    font-size: 1.7rem !important;
-    color: silver;
-    margin: 0 !important;
-    padding: 10px !important;
   }
 
   .error {
     color: color($colors, danger) !important;
   }
 
-  .item {
-    h2 {
-      white-space: normal;
+  .wallet {
+    position: relative;
+    .unlock-backdrop {
+      height: 100%;
+      width: 100%;
+      background: rgb(244, 247, 250);
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+      opacity: 0.7;
     }
-    p {
-      color: #999;
-      font-size: 11px;
-    }
-    .detail {
+    .unlock-popup {
+      height: 70px;
+      width: 240px;
+      position: absolute;
+      z-index: 1001;
+      top: 50%;
+      left: 50%;
+      margin-top: -35px;
+      margin-left: -120px;
+      background: white;
+      box-shadow: 0px 1px 2px  rgba(0, 0, 0, 0.5);
       text-align: center;
-      .amount {
-        color: color($colors, primary);
-        font-size: 16px;
+      border-radius: 2px;
+      .top-label {
+        font-size: 13px;
+        color: rgb(115, 129, 155);
+        margin: 25px 0;
       }
-      .detail-fiat {
-        color: rgba(0,0,0,0.6);
-        font-size: 12px;
+      img {
+        height: 16px;
+        vertical-align: middle;
+        margin-right: 10px;
       }
-      .balance-hidden {
-        color: rgba(0,0,0,0.6);
+      h2 {
+        font-size: 17px;
+        color: rgb(41, 61, 82);
+        margin: 0;
+        margin-top: 7px;
+        display: inline-block;
+      }
+      .bottom-label {
+        font-size: 13px;
+        color: rgb(115, 129, 155);
+        margin: 25px auto;
+        width: 210px;
+        margin-top: 5px;
+        line-height: 15px;
       }
     }
-  }
 
-  ion-avatar img {
-    height: 20px;
-    border-radius: 0 !important;
-  }
-
-  ion-avatar.btn {
-    height: 36px;
-    border-radius: 4px;
-    //box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 12px 0px;
-    padding: 0 4px;
-    background: color($colors, primary);
-    line-height: 36px;
-    text-align: center;
-    ion-icon {
-      height: 36px;
-      line-height: 36px;
-      width: 38px;
-      text-align: center;
-      color: white;
-      font-weight: 900;
-      vertical-align: middle;
-    }
   }
 }

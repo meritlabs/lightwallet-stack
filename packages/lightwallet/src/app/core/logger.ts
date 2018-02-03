@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import * as _ from 'lodash';
 
-const LOGGING_ENABLED = true;
+const LOGGING_ENABLED = false;
 const TRACE_ENABLED = false;
+
+declare const process: any;
 
 @Injectable()
 export class Logger {
@@ -20,9 +21,6 @@ export class Logger {
 
   error(...messages) {
     if (!LOGGING_ENABLED) return;
-    if (this.isNode) {
-      messages = this.inspectObjectForNode(...messages);
-    }
     this.logs.push({ level: Logger.LEVEL_ERROR, timestamp: Date.now(), arguments: messages });
     console.error.apply(console, messages);
     if (TRACE_ENABLED)
@@ -31,9 +29,6 @@ export class Logger {
 
   warn(...messages) {
     if (!LOGGING_ENABLED) return;
-    if (this.isNode) {
-      messages = this.inspectObjectForNode(...messages);
-    }
     this.logs.unshift({ level: Logger.LEVEL_WARN, timestamp: Date.now(), arguments: messages });
     console.warn.apply(console, messages);
     if (TRACE_ENABLED)
@@ -42,18 +37,12 @@ export class Logger {
 
   info(...messages) {
     if (!LOGGING_ENABLED) return;
-    if (this.isNode) {
-      messages = this.inspectObjectForNode(...messages);
-    }
     this.logs.unshift({ level: Logger.LEVEL_INFO, timestamp: Date.now(), arguments: messages });
     console.info.apply(console, messages);
   }
 
   debug(...messages) {
     if (!LOGGING_ENABLED) return;
-    if (this.isNode) {
-      messages = this.inspectObjectForNode(...messages);
-    }
     this.logs.unshift({ level: Logger.LEVEL_DEBUG, timestamp: Date.now(), arguments: messages });
     console.debug.apply(console, messages);
   }
@@ -61,25 +50,7 @@ export class Logger {
   /**  alias -> info   */
   log(...messages) {
     if (!LOGGING_ENABLED) return;
-    if (this.isNode) {
-      messages = this.inspectObjectForNode(...messages);
-    }
     this.info(messages);
   }
-
-  private isNode(): boolean {
-    return Object.prototype.toString.call(typeof process !== 'undefined' ? process : 0) === '[object process]';
-  }
-
-  private inspectObjectForNode(...messages): any[] {
-    // We nede to inspect objects to provide proper output in node console logs.
-    const util = require('util');
-    return _.map(messages, (message) => {
-      if (message instanceof Object) {
-        return util.inspect(message, false, 3);
-      }
-      return message;
-    })
-  }
-
 }
+

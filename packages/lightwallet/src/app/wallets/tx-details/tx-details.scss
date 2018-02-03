@@ -1,17 +1,60 @@
 tx-details-view {
-  .action {
-    display: flex;
-    height: 4rem;
-    align-items: center;
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  img {
-    margin-right: 15px;
-    &.icon-wallet {
-      background-color: color($colors, primary);
+  ion-header {
+    ion-navbar,
+    .toolbar-background {
+      //background: #00a6d1;
+      border: none !important;
+    }
+
+    button[ion-button], .toolbar-title {
+      color: white;
     }
   }
+
+  .big-header {
+    .status {
+      .action {
+        left: -30px;
+        margin-bottom: 20px;
+        align-items: center;
+        display: inline-block;
+        padding: 15px 30px 15px 15px;
+        position: relative;
+        background: #2d3c50;
+        border-radius: 4px;
+
+        &:before {
+          content: '';
+          display: inline-block;
+          height: 60px;
+          background: rgba(0,0,0,0.1);
+          width: 60px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          border-radius: inherit;
+          padding-left: 25px;
+        }
+
+        img {
+          height: 20px;
+          position: absolute;
+          top: 18px;
+          left: 25px;
+        }
+
+        span {
+          line-height: 30px;
+          font-size: 20px;
+          font-weight: 400;
+          text-transform: uppercase;
+          margin-left: 95px;
+          letter-spacing: -.47px;
+        }
+      }
+    }
+  }
+
   .amount-str {
     font-size: 30px;
     margin-bottom: .5rem;

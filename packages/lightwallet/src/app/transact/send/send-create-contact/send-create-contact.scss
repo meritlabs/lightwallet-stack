@@ -1,0 +1,28 @@
+view-send-create-contact {
+  ion-header.header {
+    .toolbar-background {
+      background: #e9edf2;
+    }
+
+    ion-toolbar.toolbar.toolbar-md {
+      padding: 0;
+      .toolbar-content {
+        align-self: flex-end;
+        ion-segment.segment {
+          ion-segment-button.segment-button {
+            letter-spacing: -0.31px;
+            color: #9da6b7;
+
+            &.segment-activated {
+              color: #2d3c50;
+            }
+          }
+        }
+      }
+    }
+
+    &:after {
+      display: none;
+    }
+  }
+}

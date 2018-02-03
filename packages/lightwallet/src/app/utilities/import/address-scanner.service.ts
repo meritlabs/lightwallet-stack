@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { ModalController } from 'ionic-angular';
+import { MERIT_MODAL_OPTS } from '../../../utils/constants';
 
 @Injectable()
 export class AddressScannerService {
@@ -25,7 +26,7 @@ export class AddressScannerService {
     }
 
     if (error) {
-      await this.modalCtrl.create('ImportScanView', { error }).present();
+      await this.modalCtrl.create('ImportScanView', { error }, MERIT_MODAL_OPTS).present();
     }
   }
 }

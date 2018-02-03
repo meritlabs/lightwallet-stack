@@ -33,6 +33,7 @@ const Keys = {
   REMOTE_PREF_STORED: 'remotePrefStored',
   TX_CONFIRM_NOTIF: txid => 'txConfirmNotif-' + txid,
   TX_HISTORY: walletId => 'txsHistory-' + walletId,
+  SEND_HISTORY: 'sendHistory'
 };
 
 @Injectable()
@@ -303,6 +304,19 @@ export class PersistenceService {
 
   removeTxHistory(walletId: string): Promise<void> {
     return this.remove(Keys.TX_HISTORY(walletId));
+  }
+
+  getSendHistory() {
+    return this.storage.get(Keys.SEND_HISTORY);
+  }
+
+  registerSend(contact, method) {
+    return this.storage.get(Keys.SEND_HISTORY).then((history) => {
+      if (!history) history = [];
+      let timestamp = (new Date()).getTime();
+      history.push({contact, method, timestamp});
+      return this.storage.set(Keys.SEND_HISTORY, history);
+    });
   }
 
   setPendingEasySends(walletId: string, easysends: any): Promise<void> {

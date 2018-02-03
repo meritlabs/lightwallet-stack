@@ -15,7 +15,7 @@ export class EasySendService {
     this.bitcore = this.bwcService.getBitcore();
   }
 
-  public createEasySendScriptHash(wallet: MeritWalletClient): Promise<EasySend> {
+  public createEasySendScriptHash(wallet: MeritWalletClient, password:string = ''): Promise<EasySend> {
     const signPrivKey = this.bitcore.PrivateKey(wallet.credentials.walletPrivKey, wallet.network);
     const pubkey = signPrivKey.toPublicKey();
 
@@ -23,7 +23,7 @@ export class EasySendService {
     let opts = {
       network: wallet.network,
       parentAddress: pubkey.toAddress().toString(),
-      passphrase: '',
+      passphrase: password,
     };
 
     return wallet
@@ -99,6 +99,7 @@ export class EasySendService {
     easySends = easySends || [];
 
     easySends = await Promise.all(easySends.map(async (easySend: EasySend) => {
+      console.log('Easy send is ', easySend);
       const txn = await wallet.validateEasyScript(easySend.scriptAddress.toString());
       return txn.result.found && !txn.result.spent ? easySend : null;
     }));

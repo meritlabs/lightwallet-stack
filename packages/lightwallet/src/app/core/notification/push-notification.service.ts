@@ -34,7 +34,7 @@ export class PushNotificationsService {
               private bwcService: BwcService,
               private platform: Platform,
               private pollingNotificationService: PollingNotificationsService,
-              private FCM: FCM,) {
+              private FCM: FCM) {
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;

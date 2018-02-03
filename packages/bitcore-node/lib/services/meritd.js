@@ -181,7 +181,7 @@ Merit.prototype.getAPIMethods = function() {
     ['getTransaction', this, this.getTransaction, 1],
     ['getDetailedTransaction', this, this.getDetailedTransaction, 1],
     ['sendTransaction', this, this.sendTransaction, 1],
-    ['estimateFee', this, this.estimateFee, 1],
+    ['estimateSmartFee', this, this.estimateSmartFee, 1],
     ['getAddressTxids', this, this.getAddressTxids, 2],
     ['getAddressBalance', this, this.getAddressBalance, 2],
     ['getAddressUnspentOutputs', this, this.getAddressUnspentOutputs, 2],
@@ -1862,9 +1862,9 @@ Merit.prototype.getBlockHeader = function(blockArg, callback) {
  * @param {Number} blocks - The number of blocks for the transaction to be confirmed.
  * @param {Function} callback
  */
-Merit.prototype.estimateFee = function(blocks, callback) {
+Merit.prototype.estimateSmartFee = function(blocks, callback) {
   var self = this;
-  this.client.estimateFee(blocks, function(err, response) {
+  this.client.estimateSmartFee(blocks, function(err, response) {
     if (err) {
       return callback(self._wrapRPCError(err));
     }

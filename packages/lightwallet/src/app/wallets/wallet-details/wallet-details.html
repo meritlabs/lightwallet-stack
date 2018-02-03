@@ -1,42 +1,44 @@
-<ion-header no-border>
-    <ion-navbar>
-      <ion-title>{{wallet.name}}</ion-title>
-      <ion-buttons end>
-            <button ion-button icon-only (click)="goToEditWallet()">
-                <ion-icon name="settings"></ion-icon>
-            </button>
-      </ion-buttons>
-    </ion-navbar>
-
-  </ion-header>
-
-  <ion-content >
-    <ion-list>
-        <div class="balance-header" (click)="getWalletHistory(true)" [style.background]="wallet.color" [class.default]="!wallet.color">
-            <div class="balance-str">
-                {{ wallet.status.totalBalanceStr }}
-                <div *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount"><small>({{ wallet.status.spendableBalanceStr || 0 }} available)</small></div>
-            </div>
-            <div class="balance-alt-str"> {{ wallet.status.totalBalanceAlternativeStr }}</div>
-        </div>
-    </ion-list>
-
-    <ion-list>
-      <button ion-item *ngFor="let tx of wallet.completeHistory" (click)="goToTxDetails(tx)">
-        <ion-avatar item-start>
-          <img src="assets/img/icon-receive-history.svg" *ngIf="tx.action == 'received'" width="40">
-          <img src="assets/img/icon-sent.svg" *ngIf="tx.action == 'sent'" width="40">
-          <img src="assets/img/icon-moved.svg" *ngIf="tx.action == 'moved'" width="40">
-        </ion-avatar>
-        <h2>{{tx.actionStr}}</h2>
-        <p *ngIf="isNotConfirmedTx(tx)">Awaiting confirmation</p>
-        <div class="detail" item-end>
-          <div class="amount">
-              {{tx.amountStr}}
-              <ion-icon name="ios-timer-outline" *ngIf="isNotConfirmedTx(tx)"></ion-icon>
-          </div>
-          <div class="date">{{tx.time * 1000 | amTimeAgo}}</div>
-        </div>
+<ion-header no-border [style.background]="wallet.color" [class.default]="!wallet.color">
+  <ion-navbar>
+    <ion-title smaller-title>{{ wallet.name }}</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only navPush="EditWalletView" [navParams]="{ wallet: wallet }">
+        <ion-icon name="settings" merit-icon></ion-icon>
       </button>
-    </ion-list>
-  </ion-content>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div class="big-header" (click)="getWalletHistory(true)" [style.background]="wallet.color" [class.default]="!wallet.color">
+    <h2 class="amount">
+      {{ wallet.status.totalBalanceStr || 0 }}&nbsp;<small>MRT</small>
+    </h2>
+    <div *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount" class="amount-available">
+      <small>({{ wallet.status.spendableBalanceStr || 0 }} available)</small>
+    </div>
+    <h3 class="detail-fiat">{{ wallet.status.totalBalanceAlternativeStr }}</h3>
+    <div class="action-buttons">
+      <div class="button-cell">
+        <button ion-button (click)="deposit()">
+          <span class="inner-container">
+            <ion-icon name="md-add-circle"></ion-icon>
+            <span>Deposit</span>
+          </span>
+        </button>
+      </div>
+      <div class="button-cell">
+        <button ion-button (click)="send()">
+          <span class="inner-container">
+            <ion-icon name="ios-send"></ion-icon>
+          <span>Send</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <ion-item-divider [hidden]="!wallet.completeHistory || !wallet.completeHistory.length">
+    History
+  </ion-item-divider>
+  <transaction-history [transactions]="wallet.completeHistory"></transaction-history>
+</ion-content>

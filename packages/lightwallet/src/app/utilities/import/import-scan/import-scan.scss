@@ -1,18 +1,21 @@
 view-import-scan {
+  .scroll-content {
+    display: flex;
+    height: calc(100%);
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0;
 
-  ion-card {
-    text-align: center;
-    .icon {
-      height: 50px;
-      width: 50px;
-      box-shadow: 3px 3px 3px rgba(0,0,0,0.2);
-      margin: 0 auto;
-      margin-bottom: 15px;
-      padding: 5px;
-      background: rgba(233, 150, 122, 0.1);
-      border-radius: 3px;
+    .container {
+      text-align: center;
+      .icon {
+        img {
+          height: 80px;
+          opacity: .3;
+        }
+      }
+      padding-bottom: 40px;
     }
   }
-
-
 }

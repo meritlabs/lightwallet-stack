@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="22px" viewBox="0 0 16 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>mem</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4-numbers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons" transform="translate(-790.000000, -502.000000)">
+            <g id="mem" transform="translate(778.000000, 493.000000)">
+                <g id="phone" transform="translate(13.000000, 10.000000)">
+                    <rect id="Combined-Shape" stroke="#5F6C82" stroke-width="1.7" x="0" y="0" width="14" height="20" rx="3"></rect>
+                    <ellipse id="Oval" fill="#00B0DD" cx="7" cy="16.5" rx="1.4" ry="1.5"></ellipse>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
