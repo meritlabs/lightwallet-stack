@@ -251,7 +251,7 @@ Transaction.prototype._missingChange = function() {
 };
 
 Transaction.prototype._hasDustOutputs = function(opts) {
-  if (opts.disableDustOutputs) {
+  if (this.isInvite || opts.disableDustOutputs) {
     return;
   }
   var index, output;

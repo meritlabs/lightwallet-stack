@@ -1927,7 +1927,7 @@ API.prototype.publishTxProposal = function(opts, cb) {
   $.checkArgument(opts)
     .checkArgument(opts.txp);
 
-  $.checkState(parseInt(opts.txp.version) >= 3);
+  $.checkState(parseInt(opts.txp.version) >= Bitcore.Transaction.CURRENT_VERSION);
 
   var self = this;
 

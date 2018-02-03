@@ -94,6 +94,7 @@ WalletService.initialize = function(opts, cb) {
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
   localMeritDaemon = new LocalDaemon(opts.node);
   log = opts.node.log;
+
   if (opts.request)
     request = opts.request;
 
@@ -1803,6 +1804,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
     // We should ensure that utxos are not locked and are mature enough.
     return _.filter(utxos, function(utxo) {
+      if (txp.isInvite !== utxo.isInvite) return false;
       if (utxo.locked) return false;
       if (utxo.micros <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
@@ -1948,7 +1950,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
   log.debug('Selecting inputs for a ' + Utils.formatAmountInMrt(txp.getTotalAmount()) + ' txp');
 
-  self._getUtxosForCurrentWallet(null, function(err, utxos) {
+  self._getUtxosForCurrentWallet(null, txp.isInvite, function(err, utxos) {
     if (err) return cb(err);
 
     var totalAmount;
@@ -2096,7 +2098,7 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
     if (!_.isNumber(output.amount) || _.isNaN(output.amount) || output.amount <= 0) {
       return new ClientError('Invalid amount');
     }
-    if (output.amount < dustThreshold) {
+    if (!opts.invite && output.amount < dustThreshold) {
       return Errors.DUST_AMOUNT;
     }
 
@@ -2112,6 +2114,9 @@ WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) 
   async.series([
 
     function(next) {
+      if (opts.invite) {
+        return next();
+      }
       var feeArgs = !!opts.feeLevel + _.isNumber(opts.feePerKb) + _.isNumber(opts.fee);
       if (feeArgs > 1)
         return next(new ClientError('Only one of feeLevel/feePerKb/fee can be specified'));
@@ -2199,6 +2204,7 @@ WalletService.prototype._getFeePerKb = function(wallet, opts, cb) {
  * Creates a new transaction proposal.
  * @param {Object} opts
  * @param {string} opts.txProposalId - Optional. If provided it will be used as this TX proposal ID. Should be unique in the scope of the wallet.
+ * @param {Array} opts.invite - If tx is an invite.
  * @param {Array} opts.outputs - List of outputs.
  * @param {string} opts.outputs[].toAddress - Destination address.
  * @param {number} opts.outputs[].amount - Amount to transfer in micro.
@@ -2247,7 +2253,7 @@ WalletService.prototype.createTx = function(opts, cb) {
   };
 
   self._runLocked(cb, function(cb) {
-    var txp, changeAddress, feePerKb;
+    var txp, changeAddress, feePerKb = 0;
     self.getWallet({}, function(err, wallet) {
       if (err) return cb(err);
       if (!wallet.isComplete()) return cb(Errors.WALLET_NOT_COMPLETE);
@@ -2263,7 +2269,7 @@ WalletService.prototype.createTx = function(opts, cb) {
           },
           function(next) {
             self._canCreateTx(function(err, canCreate) {
-              if (err) return next(err);
+    if (err) return next(err);
               if (!canCreate) return next(Errors.TX_CANNOT_CREATE);
               next();
             });
@@ -2285,7 +2291,8 @@ WalletService.prototype.createTx = function(opts, cb) {
             });
           },
           function(next) {
-            if (_.isNumber(opts.fee) && !_.isEmpty(opts.inputs)) return next();
+            if (opts.invite || (_.isNumber(opts.fee) && !_.isEmpty(opts.inputs))) return next();
+
             self._getFeePerKb(wallet, opts, function(err, fee) {
               feePerKb = fee;
               next();
@@ -2296,6 +2303,7 @@ WalletService.prototype.createTx = function(opts, cb) {
               id: opts.txProposalId,
               walletId: self.walletId,
               creatorId: self.copayerId,
+              isInvite: opts.invite,
               outputs: opts.outputs,
               message: opts.message,
               changeAddress: changeAddress,
@@ -2310,7 +2318,7 @@ WalletService.prototype.createTx = function(opts, cb) {
               addressType: wallet.addressType,
               customData: opts.customData,
               inputs: opts.inputs,
-              fee: opts.inputs && !_.isNumber(opts.feePerKb) ? opts.fee : null,
+              fee: opts.invite ? 0 : (opts.inputs && !_.isNumber(opts.feePerKb) ? opts.fee : null),
               noShuffleOutputs: opts.noShuffleOutputs
             };
 
@@ -2392,10 +2400,9 @@ WalletService.prototype.publishTx = function(opts, cb) {
           txp.proposalSignaturePubKeySig = signingKey.signature;
         }
 
+        const addresses = txp.inputs;
         // Verify UTXOs are still available
-        self._getUtxosForCurrentWallet({
-          addresses: txp.inputs,
-        }, function(err, utxos) {
+        self._getUtxosForCurrentWallet({ addresses: txp.inputs }, txp.isInvite, function(err, utxos) {
           if (err) return cb(err);
 
           var txpInputs = _.map(txp.inputs, utxoKey);

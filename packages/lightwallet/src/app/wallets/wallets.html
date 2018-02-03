@@ -124,6 +124,15 @@
       </button>
     </div>
 
+    <button ion-item class="import-wallet-button" (click)="sendInvite(wallets[0])" *ngIf="wallets && wallets.length" detail-none>
+      <ion-avatar item-start img-icon>
+        <img src="assets/img/icons/send.svg">
+      </ion-avatar>
+      <ion-label>
+        <h2>Send invite to parent</h2>
+      </ion-label>
+    </button>
+
     <button ion-item class="import-wallet-button" (click)="toImportWallet()" detail-none>
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/export.svg">

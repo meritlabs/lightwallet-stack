@@ -173,6 +173,11 @@ export class WalletsView {
     }
   }
 
+  async sendInvite(wallet) {
+    const toAddress = 'mUap4YwwjdEwaCKA23vqoV6koAe2ZBFU54';
+    await this.walletService.sendInvite(wallet, toAddress);
+  }
+
   sendFeedback() {
     this.feedbackNeeded = false;
     this.feedbackService.sendFeedback(this.feedbackData).catch(() => {

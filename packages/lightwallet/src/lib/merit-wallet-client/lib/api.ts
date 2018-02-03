@@ -734,6 +734,39 @@ export class API {
   };
 
   /**
+   * Create and send invite tx to a given address
+   *
+   * @param {string} toAddress - merit address to send invite to
+   * @param {number=} amount - number of invites to send. defaults to 1
+   * @param {string=} message - message to send to a receiver
+   *
+   */
+  sendInvite(toAddress: string, amount: number = 1, message: string = '', walletPassword: string = ''): Promise<any> {
+    const opts = {
+      invite: true,
+      outputs: [{
+        amount,
+        toAddress,
+        message,
+      }],
+    };
+
+    return this.createTxProposal(opts)
+      .then(txp => {
+        console.log('created txp');
+        return this.publishTxProposal({ txp }).then(txp => {
+          return this.signTxProposal(txp, walletPassword).then(txp => {
+            console.log('signed txp');
+            return this.broadcastTxProposal(txp)
+              .then(console.log)
+              .catch(console.log);
+          });
+        });
+      })
+      .catch(error => console.log(error.message));
+  }
+
+  /**
    * Create an easySend script and create a transaction to the script address
    *
    * @param {Object}      opts
@@ -2209,7 +2242,7 @@ export class API {
     $.checkArgument(opts)
     $.checkArgument(opts.txp, 'txp is required');
 
-    $.checkState(parseInt(opts.txp.version) >= 3);
+    $.checkState(parseInt(opts.txp.version) >= Bitcore.Transaction.CURRENT_VERSION);
 
     let t = Utils.buildTx(opts.txp);
     let hash = t.uncheckedSerialize();
@@ -2242,7 +2275,7 @@ export class API {
    */
   private _signAddressAndUnlockWithRoot(address: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-    if (address.signed && address.refid) {
+    if (address.signed) {
       return Promise.resolve(address.refid);
     }
 
