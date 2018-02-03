@@ -22,7 +22,7 @@ TxProposal.create = function(opts) {
 
   var x = new TxProposal();
 
-  x.version = Bitcore.Transaction.CURRENT_VERSION;
+  x.version = opts.isInvite ? Bitcore.Transaction.INVITE_VERSION : Bitcore.Transaction.CURRENT_VERSION;
 
   var now = Date.now();
   x.createdOn = Math.floor(now / 1000);
@@ -30,7 +30,7 @@ TxProposal.create = function(opts) {
   x.walletId = opts.walletId;
   x.creatorId = opts.creatorId;
   x.message = opts.message;
-  x.isInvite = x.version === Bitcore.Transaction.INVITE_VERSION;
+  x.isInvite = !_.isUndefined(opts.isInvite) ? opts.isInvite : x.version === Bitcore.Transaction.INVITE_VERSION;
   x.payProUrl = opts.payProUrl;
   x.changeAddress = opts.changeAddress;
   x.outputs = _.map(opts.outputs, function(output) {
@@ -135,6 +135,8 @@ TxProposal.prototype._buildTx = function() {
 
   var t = new Bitcore.Transaction();
   $.checkState(_.includes(_.values(Constants.SCRIPT_TYPES), self.addressType));
+
+  t.version = this.version;
 
   switch (self.addressType) {
     case Constants.SCRIPT_TYPES.P2SH:
