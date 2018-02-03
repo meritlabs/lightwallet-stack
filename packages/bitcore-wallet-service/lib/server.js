@@ -2808,6 +2808,7 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
       return {
         address: itemAddr,
         amount: parseInt((item.value * 1e8).toFixed(0)),
+        index: item.n
       }
     });
 
@@ -2917,6 +2918,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         return {
           address: item.address,
           amount: item.amount,
+          index: item.index,
           isMine: !!address,
           isChange: address ? (address.isChange || wallet.singleAddress) : false,
         }
@@ -2960,7 +2962,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       function formatOutput(o) {
         return {
           amount: o.amount,
-          address: o.address
+          address: o.address,
+          index: o.index
         }
       };
 
