@@ -32,7 +32,7 @@ export class TransactView {
               private keyboard: Keyboard) {}
 
   async ngOnInit() {
-    if (this.plt.is('cordova')) {
+    if (this.plt.is('cordova') && Keyboard.installed()) {
       this.subs = [
         this.keyboard.onKeyboardShow()
           .subscribe(() => {
