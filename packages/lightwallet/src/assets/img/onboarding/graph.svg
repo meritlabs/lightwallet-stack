@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="360" height="363" viewBox="0 0 360 363">
+    <defs>
+        <linearGradient id="a" x1="99.534%" x2="1.305%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#090826"/>
+            <stop offset="100%" stop-color="#232E3C"/>
+        </linearGradient>
+        <linearGradient id="c" x1="50%" x2="50%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#6AD5FD"/>
+            <stop offset="100%" stop-color="#6AD5FD"/>
+        </linearGradient>
+        <path id="b" d="M33 0h375v371H33z"/>
+        <linearGradient id="d" x1="50%" x2="50%" y1="0%" y2="98.256%">
+            <stop offset="0%" stop-color="#FFF"/>
+            <stop offset="100%" stop-color="#FFF" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="e" x1="50%" x2="50%" y1="2.907%" y2="111.219%">
+            <stop offset="0%" stop-color="#002E4E"/>
+            <stop offset="100%" stop-color="#51ADE2" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="f" x1="50%" x2="50%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#00D6EE"/>
+            <stop offset="100%" stop-color="#FCFCFC"/>
+        </linearGradient>
+        <circle id="h" cx="221.5" cy="140.5" r="14.5"/>
+        <filter id="g" width="106.9%" height="113.8%" x="-3.4%" y="-3.4%" filterUnits="objectBoundingBox">
+            <feOffset dy="2" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feColorMatrix in="shadowOffsetOuter1" values="0 0 0 0 0.160998852 0 0 0 0 0.270967925 0 0 0 0 0.320631378 0 0 0 0.219372736 0"/>
+        </filter>
+        <circle id="j" cx="221.5" cy="140.5" r="9.5"/>
+        <filter id="i" width="110.5%" height="121.1%" x="-5.3%" y="-5.3%" filterUnits="objectBoundingBox">
+            <feOffset dy="2" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feColorMatrix in="shadowOffsetOuter1" values="0 0 0 0 0.160998852 0 0 0 0 0.270967925 0 0 0 0 0.320631378 0 0 0 0.219372736 0"/>
+        </filter>
+    </defs>
+    <g fill="none" fill-rule="evenodd" transform="translate(-48 -8)">
+        <use fill="url(#a)" xlink:href="#b"/>
+        <use fill="url(#c)" xlink:href="#b"/>
+        <use fill="#59BCF4" xlink:href="#b"/>
+        <path fill="url(#d)" stroke="#FFF" d="M33 307.426c30.672 0 96.563-74.64 147.055-74.64 50.492 0 46.636 74.64 100.23 74.64s82.672-37.32 116.082-37.32c4.313 0 8.187 1.123 11.622 3.37-.058 21.076-.054 49.921.011 86.536H33c-.193-19.992-.193-37.521 0-52.586z"/>
+        <path stroke="#FFF" stroke-linecap="square" d="M31.712 140.5h374.6M31.712 76.5h374.6M31.712 206.5h374.6M31.712 269.5h374.6M31.712 332.5h374.6" opacity=".25"/>
+        <path fill="url(#e)" d="M31.875 83.886c11.602 6.149 23.852 12.848 42.905 12.848 35.212 0 35.631-40.411 60.326-40.411 24.696 0 13.597 53.677 48.12 53.677 34.525 0 34.23-108.292 69.851-109.965 35.622-1.672 31.05 56.288 95.243 56.288 29.896 0 47.173-9.735 60.785-19.978-.113 25.317-.481 89.013-1.105 191.089H31.875c-.034-76.331-.034-124.18 0-143.548z" transform="translate(0 100)"/>
+        <path stroke="url(#f)" stroke-width="3" d="M0 73.854c27.591 0 39.568 22.88 74.78 22.88s35.631-40.411 60.326-40.411c24.696 0 13.597 53.677 48.12 53.677 34.525 0 34.23-108.292 69.851-109.965 35.622-1.672 31.05 56.288 95.243 56.288 64.192 0 70.206-44.88 106.68-43.31" transform="translate(0 100)"/>
+        <path stroke="#51EDFF" stroke-linecap="square" d="M221.5 142.49v213.258" opacity=".424"/>
+        <g opacity=".1">
+            <use fill="#000" filter="url(#g)" xlink:href="#h"/>
+            <use fill="#FFF" xlink:href="#h"/>
+        </g>
+        <g>
+            <use fill="#000" filter="url(#i)" xlink:href="#j"/>
+            <use fill="#FFF" xlink:href="#j"/>
+        </g>
+        <circle cx="221.5" cy="140.5" r="3.5" fill="#00ACD8"/>
+    </g>
+</svg>

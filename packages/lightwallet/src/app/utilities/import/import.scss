@@ -1,13 +1,57 @@
 view-import {
 
-  .action-button {
-    width: 85%;
-    max-width: 300px;
-    margin: 0 auto;
+  button[ion-button].button.qr-code-button {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    ion-icon {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  ion-header.header {
+    .toolbar-background {
+      background: #e9edf2;
+    }
+
+    &:after {
+      display: none;
+    }
   }
 
   input[type="file"] {
     visibility: hidden ;
+  }
+
+  button[ion-item].item, ion-item.item {
+    ion-label.label h2 {
+      font-weight: 500;
+      font-size: 16px;
+    }
+  }
+
+  button[ion-item][toggle-button].item {
+    &.item-ios {
+      ion-label.label.label-ios {
+        h2 {
+          font-weight: 600;
+        }
+      }
+      button[ion-button][item-end].button-ios {
+        ion-icon.icon {
+          font-weight: 600;
+          font-size: 28px;
+        }
+      }
+    }
+
+    button[ion-button][item-end] {
+      ion-icon.icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
   }
 
 }

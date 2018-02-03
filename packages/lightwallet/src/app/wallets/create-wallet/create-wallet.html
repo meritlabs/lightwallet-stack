@@ -1,74 +1,89 @@
-<ion-header>
-    <ion-navbar color="secondary">
-        <ion-title translate>Create Personal Wallet</ion-title>
-    </ion-navbar>
+<ion-header no-border>
+  <ion-navbar color="light">
+    <ion-title translate>Create Personal Wallet</ion-title>
+  </ion-navbar>
 </ion-header>
-
 
 <ion-content>
 
+  <ion-list>
+    <ion-item-group>
+      <ion-item>
+        <ion-label stacked>
+          <h2 translate>Wallet name</h2>
+        </ion-label>
+        <ion-input placeholder="Family vacation funds" [(ngModel)]="formData.walletName"></ion-input>
+      </ion-item>
 
-    <ion-list>
-        <ion-item-divider translate>Wallet</ion-item-divider>
-        <ion-item>
-            <ion-label translate>Wallet name</ion-label>
-            <ion-input text-right [placeholder]="'Family vacation funds'" [(ngModel)]="formData.walletName"></ion-input>
-        </ion-item>
+      <ion-item>
+        <ion-label stacked>
+          <h2 translate>
+            Referrer address
+          </h2>
+        </ion-label>
+        <ion-input placeholder="Paste it here" [(ngModel)]="formData.parentAddress"></ion-input>
+      </ion-item>
 
-        <ion-item>
-            <ion-label translate>Referrer address</ion-label>
-            <ion-input text-right [placeholder]="'Paste it here'" [(ngModel)]="formData.parentAddress"></ion-input>
-        </ion-item>
+      <ion-item (click)="selectColor()">
+        <ion-label>
+          <h2 translate>Color</h2>
+        </ion-label>
+        <ion-note item-end class="wallet-color-indicator">
+          <span [class.default]="!formData.color" [style.background]="formData.color? formData.color : ''"></span>
+        </ion-note>
+      </ion-item>
 
-        <ion-item-divider translate>Settings</ion-item-divider>
-        <ion-item (click)="selectColor()">
-            <ion-label translate>Color</ion-label>
-            <ion-label item-right text-right>
-                <i class="wallet-icon" [class.default]="!formData.color">
-                    <img src="assets/img/icon-wallet.svg"  [style.background]="formData.color" >
-                </i>
-            </ion-label>
-        </ion-item>
-        <ion-item>
-            <ion-label>Hide Balance</ion-label>
-            <ion-toggle [(ngModel)]="formData.hideBalance">
-            </ion-toggle>
-        </ion-item>
+      <ion-item>
+        <ion-label>
+          <h2>Hide Balance</h2>
+        </ion-label>
+        <ion-toggle [(ngModel)]="formData.hideBalance">
+        </ion-toggle>
+      </ion-item>
+    </ion-item-group>
 
-        <ion-item-divider translate>Password (optional)</ion-item-divider>
-        <ion-item class="warning">
-            <b>Warning</b> This password cannot be recovered. If the password is lost, there is no way you could recover your funds!
-        </ion-item>
-        <ion-item>
-            <ion-label>Password</ion-label>
-            <ion-input type="password" text-right [(ngModel)]="formData.password"></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-label>Confirm password</ion-label>
-            <ion-input type="password" text-right [(ngModel)]="formData.repeatPassword"></ion-input>
-        </ion-item>
+    <ion-item-group>
+      <ion-item-divider translate>Password (optional)</ion-item-divider>
+      <ion-item class="warning" no-lines>
+        <b>Warning</b> This password cannot be recovered. If the password is lost, there is no way you could recover your
+        funds!
+      </ion-item>
+      <ion-item>
+        <ion-label stacked>
+          <h2>Password</h2>
+        </ion-label>
+        <ion-input type="password" [(ngModel)]="formData.password"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label stacked>
+          <h2>Confirm password</h2>
+        </ion-label>
+        <ion-input type="password" [(ngModel)]="formData.repeatPassword"></ion-input>
+      </ion-item>
 
-        <ion-item-divider>Recovery Phrase</ion-item-divider>
-        <ion-item>
-            <ion-textarea placeholder="Enter the recovery phrase (BIP39)" [(ngModel)]="formData.recoveryPhrase"></ion-textarea>
-        </ion-item>
+      <ion-item>
+        <ion-label stacked>
+          <h2>Recovery Phrase</h2>
+        </ion-label>
+        <ion-textarea placeholder="Enter the recovery phrase (BIP39)"
+                      [(ngModel)]="formData.recoveryPhrase"></ion-textarea>
+      </ion-item>
+    </ion-item-group>
 
+    <ion-item-group>
+      <ion-item-divider translate>Advanced</ion-item-divider>
+      <ion-item>
+        <ion-label stacked>
+          <h2 translate>Wallet Service URL</h2>
+        </ion-label>
+        <ion-input [(ngModel)]="formData.bwsurl" [placeholder]=""></ion-input>
+      </ion-item>
+    </ion-item-group>
 
-        <ion-item-divider translate>Advanced</ion-item-divider>
+  </ion-list>
 
-        <ion-item>
-            <ion-label translate>Wallet Service URL</ion-label>
-            <ion-input text-right [(ngModel)]="formData.bwsurl" [placeholder]=""></ion-input>
-        </ion-item>
-
-    </ion-list>
-
-
-    <div class="control-buttons" margin-bottom>
-        <button ion-button [disabled]="!isCreationEnabled()" translate (click)="createWallet()">
-            Create new wallet
-        </button>
-    </div>
-
+  <button ion-button [disabled]="!isCreationEnabled()" translate (click)="createWallet()" class="action-button">
+    Create new wallet
+  </button>
 
 </ion-content>

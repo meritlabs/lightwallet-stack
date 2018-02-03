@@ -1,5 +1,90 @@
 view-receive {
 
+  .unlock-screen {
+
+    text-align: center;
+
+    .unlock-backdrop {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: rgb(244, 247,250);
+      opacity: 0.7;
+      z-index: 1000;
+    }
+
+    .unlock-popup {
+      height: 204px;
+      width: 284px;
+      position: absolute;
+      z-index: 1001;
+      top: calc(50% - 40px);
+      left: 50%;
+      margin-top: -102px;
+      margin-left: -142px;
+      background: white;
+      box-shadow: 0px 1px 2px  rgba(0, 0, 0, 0.5);
+      text-align: center;
+      border-radius: 10px;
+      .top-label {
+        font-size: 13px;
+        color: rgb(115, 129, 155);
+        margin: 25px 0;
+      }
+      img {
+        height: 48px;
+        width: 38px;
+      }
+      h2 {
+        font-size: 17px;
+        color: rgb(41, 61, 82);
+        margin: 0;
+        margin-top: 7px;
+      }
+      .bottom-label {
+        font-size: 13px;
+        color: rgb(115, 129, 155);
+        margin: 25px auto;
+        width: 210px;
+        margin-top: 5px;
+        line-height: 15px;
+      }
+    }
+
+    .qr-stub {
+      padding: 15px;
+      background: white;
+      margin: 17px auto;
+      display: inline-block;
+      img {
+        height: 160px;
+      }
+    }
+
+    ion-footer {
+      p {
+        width: 152px;
+        background: rgba(92, 109, 128, 0.2);
+        height: 12px;
+        margin: 10px 0;
+      }
+      h2 {
+        width: 86px;
+        background: rgba(240, 243, 248, 1);
+        height: 9px;
+        margin: 10px 0;
+      }
+    }
+  }
+
+
+  .scroll-content {
+    background: #d5dbe3;
+    height: auto;
+  }
+
   .address {
     margin: 10px 0;
     font-size: 12px;
@@ -11,7 +96,9 @@ view-receive {
 
   .container {
     text-align: center;
-    margin-top: 20%;
+    &:first-child {
+      margin-top: 25px;
+    }
 
     .spinner-wrapper {
       display: inline-block;
@@ -32,34 +119,15 @@ view-receive {
     }
   }
 
-  .scroll-content {
-    padding-top: 44px !important; //avg header high TODO get rid of magic numbers!!
-    margin-top: 0 !important;
-  }
-
-  .button-request, .button-address {
-    font-size: 12px;
-    height: 25px;
-    min-height: 25px;
-    margin: 0;
-  }
-
-  .wallet-icon {
-    img{
-      height: 25px !important;
-    }
-  }
-
-  span, ion-label {
-    font-size: 12px;
-  }
-
-  ion-item {
-    position: relative;
-  }
-
   ion-footer {
     padding: 0;
+    &:before {
+      display: none;
+    }
+
+    ion-toolbar.toolbar {
+      padding: 0;
+    }
 
     ion-input.input {
       input {
@@ -68,53 +136,15 @@ view-receive {
         font-size: 12px;
       }
     }
-  }
 
-  .row {
-    height: 50px;
-    line-height: 50px;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-    display: flex;
-    color: rgba(0,0,0,0.6);
-    overflow: hidden;
-    white-space: nowrap;
+    ion-list.list {
+      margin-bottom: 10px;
 
-    button {
-      padding: 0 !important;
-      height: 40px !important;
-      vertical-align: middle;
-      width: 40px !important;
-      text-align: center;
-    }
-
-    .label {
-      font-weight: 600;
-      padding-left: 5px;
+      .item:last-child:after {
+        display: none;
+      }
     }
   }
-
-  .row:nth-last-child(1) {
-    border-bottom: 0;
-  }
-
-
-  .wallet-icon {
-    height: 25px !important;
-    line-height: 25px !important;
-    margin: 0 4px;
-    padding: 0 !important;
-    width: 40px;
-    vertical-align: middle;
-    img {
-      //height: 25px !important;
-      //line-height: 25px !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      vertical-align: middle;
-    }
-
-  }
-
-
 
 }
+

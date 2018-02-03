@@ -1,0 +1,54 @@
+<ion-header>
+
+    <ion-navbar color="light">
+        <ion-buttons start>
+            <button ion-button icon-only clear (click)="cancel()">
+                <ion-icon name="close"  color="primary"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title>
+            <span *ngIf="!unlockRequest.accepted">Incoming unlock request</span>
+            <span *ngIf="unlockRequest.accepted">Request accepted</span>
+        </ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <div class="datetime">
+        {{unlockRequest.timestamp*1000 | amDateFormat:'DD:MM HH:mm'}}
+    </div>
+    <ion-avatar img-icon>
+        <img src="assets/img/icons/incoming_request_l.svg">
+    </ion-avatar>
+
+    <h2>{{unlockRequest.address}}</h2>
+    <p *ngIf="unlockRequest.alias">@{{unlockRequest.alias}}</p>
+
+    <ion-list *ngIf="!unlockRequest.accepted">
+        <button ion-item (click)="accept()">
+            ACCEPT
+        </button>
+
+        <button ion-item (click)="decline()">
+            DECLINE
+        </button>
+
+    </ion-list>
+
+    <ion-list *ngIf="unlockRequest.accepted">
+        <button ion-item (click)="createContact()">
+            <ion-icon name="add"></ion-icon> CREATE NEW CONTACT
+        </button>
+
+        <button ion-item (click)="bindContact()">
+            BIND TO EXISTING CONTACT
+        </button>
+
+    </ion-list>
+
+
+
+
+</ion-content>

@@ -1,17 +1,16 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { GravatarModule } from 'merit/shared/gravatar.module';
 import { SendView } from 'merit/transact/send/send';
+import { SharedModule } from 'merit/shared/shared.module';
+import { ComponentsModule } from '../../../components/components.module';
 
-// This module manaages the sending of money.
-// This is the first of three steps.
 @NgModule({
   declarations: [
-    SendView
+    SendView,
   ],
   imports: [
     IonicPageModule.forChild(SendView),
-    GravatarModule
+    ComponentsModule
   ]
 })
 export class SendViewModule {

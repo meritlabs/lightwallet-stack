@@ -1,0 +1,119 @@
+view-send-amount {
+
+  ion-avatar {
+    text-align: center;
+    color: color($colors, primary);
+    display: inline-block;
+    line-height: 40px;
+    letter-spacing: -1px;
+    border-radius: 50%;
+  }
+
+  ion-item, .item-divider {
+    border: none;
+  }
+
+  ion-header {
+    ion-navbar {
+      height: 70px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+    p {
+      margin: 0;
+      font-size: 13px;
+      font-weight: normal;
+      color: #73819b;
+    }
+  }
+
+  .amount-area {
+    background: #f6f8fa;
+    text-align: center;
+    height: 180px;
+
+    .currency-bar {
+      height: 42px;
+      .currency {
+        display: inline-block;
+        font-size: 12px;
+        margin: 8px;
+        color: rgb(115, 129, 155);
+        &.selected {
+          color: rgb(70, 85, 111);
+        }
+      }
+
+    }
+
+    .main-amount {
+      text-align: center;
+      ion-input {
+        display: inline-block;
+      }
+      input {
+        margin: 0;
+        text-align: center;
+        font-size: 40px;
+        color: rgb(70, 85, 111);
+        letter-spacing: -1.3px;
+        font-weight: normal;
+        display: inline-block;
+      }
+    }
+
+    .alternative-amount {
+      color: rgb(70, 85, 111);
+      font-size: 17px;
+      height: 35px;
+    }
+
+    .suggested-amounts {
+      height: 55px;
+      box-sizing: border-box;
+      padding: 13px 0;
+      margin: 0 16px;
+      border-top: 1px solid rgb(209, 214, 220);
+      display: flex;
+      flex-direction: row;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+
+      button {
+        margin: 0 4px;
+        height: 29px;
+        max-width: 72px;
+        vertical-align: middle;
+        flex: 1;
+        border: 1px solid #b7bcc8;
+        color: rgb(115, 129, 155);
+      }
+    }
+  }
+
+  ion-icon[item-end] {
+    font-size: 14px;
+  }
+
+  ion-avatar.default {
+    box-shadow: 0 0 1px 1px $wallet-default-color;
+  }
+
+  .tooltip-button {
+    vertical-align: middle;
+    padding: 0;
+    margin: 0;
+    height: 20px;
+    ion-icon {
+      font-size: 20px;
+      color: #9ba6b9;
+      font-weight: 600;
+    }
+  }
+
+
+
+}

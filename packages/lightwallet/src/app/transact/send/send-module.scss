@@ -45,13 +45,22 @@ send-amount-view {
     color: rgba(0, 0, 0, 0.6);
     overflow: hidden;
     white-space: nowrap;
+    text-overflow: ellipsis;
     background: white;
+
+    span {
+      overflow: hidden;
+      text-overflow: clip;
+    }
 
     button {
       padding: 0 !important;
       height: 40px !important;
       vertical-align: middle;
-      width: 40px !important;
+      //width: 40px !important;
+      margin-left: 10px;
+      //margin-right: 5px;
+      padding: 0;
       text-align: center;
     }
 

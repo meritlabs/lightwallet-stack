@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="202" height="357" viewBox="0 0 202 357">
+    <defs>
+        <linearGradient id="a" x1="50%" x2="50%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#2D3465"/>
+            <stop offset="100%" stop-color="#1B1F46"/>
+        </linearGradient>
+        <linearGradient id="c" x1="50%" x2="50%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#2F2F2F"/>
+            <stop offset="100%" stop-color="#202020"/>
+        </linearGradient>
+        <path id="b" d="M19.354 0h163.292C193.336 0 202 8.665 202 19.354v318.292c0 10.69-8.665 19.354-19.354 19.354H19.354C8.664 357 0 348.335 0 337.646V19.354C0 8.664 8.665 0 19.354 0z"/>
+        <filter id="d" width="104%" height="102.2%" x="-2%" y="-1.1%" filterUnits="objectBoundingBox">
+            <feGaussianBlur in="SourceAlpha" result="shadowBlurInner1" stdDeviation="3.5"/>
+            <feOffset dy="1" in="shadowBlurInner1" result="shadowOffsetInner1"/>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" k2="-1" k3="1" operator="arithmetic" result="shadowInnerInner1"/>
+            <feColorMatrix in="shadowInnerInner1" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.203408062 0"/>
+        </filter>
+        <rect id="e" width="187.571" height="224.565" x=".695" y=".105" rx="8"/>
+        <rect id="g" width="101.147" height="100.913" x=".435" y=".504" rx="4.838"/>
+        <linearGradient id="h" x1="50%" x2="50%" y1="0%" y2="79.5%">
+            <stop offset="0%" stop-color="#00D6EE" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#00ACD8" stop-opacity=".422"/>
+        </linearGradient>
+        <linearGradient id="i" x1="50%" x2="50%" y1="100%" y2="20.5%">
+            <stop offset="0%" stop-color="#00D6EE" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#00ACD8" stop-opacity=".422"/>
+        </linearGradient>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <use fill="url(#a)" xlink:href="#b"/>
+        <use fill="#161616" xlink:href="#b"/>
+        <use fill="url(#c)" xlink:href="#b"/>
+        <use fill="#000" filter="url(#d)" xlink:href="#b"/>
+        <g transform="translate(7 45)">
+            <mask id="f" fill="#fff">
+                <use xlink:href="#e"/>
+            </mask>
+            <use fill="#E8EDF3" xlink:href="#e"/>
+            <g mask="url(#f)">
+                <g transform="translate(43.65 39.86)">
+                    <use fill="#FFF" xlink:href="#g"/>
+                    <rect width="98.123" height="97.889" x="1.947" y="2.016" stroke="#73819B" stroke-width="3.024" rx="4.838"/>
+                </g>
+                <path fill="#0091CF" fill-rule="nonzero" d="M112.603 114.594v-4.44h7.587v12.053h-7.587V118.4H97.429V105.079h-6.955V91.122h-5.058v3.172h-3.794v-6.978H94.267v10.15h3.162v3.806h3.793v13.322h3.794v-4.44h3.793v4.44h3.794zm7.587-15.86h-3.794v7.613H105.016V94.93h3.793v7.612h3.794V94.93h16.439v-3.807h3.161v22.838h-4.426v3.806h-3.793v-7.612h5.058v-11.42h-5.058v7.613h-3.794v-7.612zm-20.232-39.33v-6.978h3.793V63.21H91.738v-3.172h-4.426v6.978h5.059v3.807h-8.852V52.426H94.9v3.806h-7.588v3.806l7.588-3.806v3.172h5.058zm-4.426 7.612h3.161v6.978h-2.529v10.15h-3.793V67.016h3.16zm8.22 20.3h15.173v3.806H99.958V79.07h3.793v8.247zM62.97 91.122h9.8v2.538l3.794-6.344h-5.058v-5.075h-3.794v5.075h-3.161v-6.344h-9.484v3.807h5.69v6.343h2.213zm13.594 5.71h10.748v3.806H72.77V93.66h-7.587v3.806h7.587zm5.69 18.714v-9.199h3.794v7.613h7.587v11.419h5.058v3.806h-8.852v-3.806h-7.587v-3.807h7.587v-3.806h-7.587v-2.22zm24.026 9.833h25.923v3.806h-29.716v-6.978h3.793v3.172zm1.265-72.953h24.658v24.74h-24.658v-24.74zm3.793 3.806V73.36h17.071V56.232h-17.07zm-56.27-3.806h24.657v24.74H55.067v-24.74zm0 52.018h24.657v24.74H55.067v-24.74zm3.793 3.807v17.128h17.07V108.25h-17.07zm0-52.02V73.36h17.07V56.232h-17.07zm55.639 3.173h10.748v10.784H114.5V59.404zm-52.478 0H72.77v10.784H62.022V59.404zm0 52.018H72.77v10.785H62.022v-10.785zm61.962 6.344h8.219v3.806h-8.22v-3.806zM77.829 80.338H92.37v3.806H77.829v-3.806zm6.322-6.978h8.22v3.806h-8.22V73.36zM55.067 94.294h6.323v6.344h-6.323v-6.344zm70.813-13.322h6.323v6.344h-6.323v-6.344zm-18.335 0h12.645v3.807h-12.645v-3.807z"/>
+            </g>
+        </g>
+        <ellipse cx="99.384" cy="299.99" fill="#0E1121" rx="13.736" ry="13.669"/>
+        <rect width="40.4" height="4" x="80.184" y="21" fill="#4D4F51" rx="2"/>
+        <circle cx="69" cy="23" r="1" fill="#58B5EA"/>
+        <g>
+            <path fill="#6AD5FD" d="M7.695 164.096h187.571v3.973H7.696z"/>
+            <path fill="url(#h)" d="M.045 0h187.571v35.791H.045z" opacity=".5" transform="translate(7.65 128.305)"/>
+            <path fill="url(#i)" d="M187.616 51.146H.045V39.622h187.571z" opacity=".5" transform="translate(7.65 128.305)"/>
+            <g>
+                <path fill="#6AD5FD" d="M7.695 108.065h187.571v3.973H7.696z"/>
+                <path fill="url(#h)" d="M.045.254h187.571v11.524H.045z" opacity=".5" transform="translate(7.65 96.287)"/>
+                <path fill="url(#i)" d="M187.616 58.433H.045V15.609h187.571z" opacity=".5" transform="translate(7.65 96.287)"/>
+            </g>
+        </g>
+    </g>
+</svg>

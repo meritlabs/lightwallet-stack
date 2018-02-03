@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="21px" height="20px" viewBox="0 0 21 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>color</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4-numbers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons" transform="translate(-788.000000, -214.000000)">
+            <g id="color" transform="translate(778.000000, 204.000000)">
+                <g transform="translate(7.000000, 10.000000)">
+                    <g id="Group-6" transform="translate(10.463567, 9.917157) rotate(-315.000000) translate(-10.463567, -9.917157) translate(2.463567, 3.917157)">
+                        <path d="M5.46264917,11.3373508 L15.1726616,1.62733842" id="Line-4" stroke="#00B0DD" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M4.8,0.8 L14.4,0.8 L14.4,0.8 C15.2836556,0.8 16,1.5163444 16,2.4 L16,10.4 L16,10.4 C16,11.2836556 15.2836556,12 14.4,12 L6.4,12 L6.4,12 C5.5163444,12 4.8,11.2836556 4.8,10.4 L4.8,0.8 Z" id="Rectangle-17" stroke="#5F6C82" stroke-width="1.7"></path>
+                        <rect id="Rectangle-21" fill="#5F6C82" x="0" y="-6.82121026e-13" width="9.6" height="1.6"></rect>
+                    </g>
+                    <path d="M21.5,19.2716797 C22.3284271,19.2716797 23,18.6001068 23,17.7716797 C23,17.2193949 22.5,16.0825948 21.5,14.3612793 C20.5,16.0825948 20,17.2193949 20,17.7716797 C20,18.6001068 20.6715729,19.2716797 21.5,19.2716797 Z" id="Oval-9" stroke="#00B0DD" stroke-width="1.36" stroke-linecap="round" stroke-linejoin="round"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

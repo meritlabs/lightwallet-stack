@@ -19,7 +19,6 @@ $app-direction: ltr;
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
 
-
 // Override - Homogenized ionic component styles
 @import 'overrides';
 
@@ -29,12 +28,11 @@ $app-direction: ltr;
 // iOS only Sass variables can go here
 
 
-
 // App Material Design Variables
 // --------------------------------------------------
 // Material Design only Sass variables can go here
-$item-md-detail-push-show: true;
-
+//$item-md-detail-push-show: true;
+$background-md-color: white;
 
 
 // App Windows Variables
@@ -73,10 +71,15 @@ $item-wp-detail-push-show: true;
 
 $text-input-md-show-focus-highlight: false;
 
-$label-text-color: #777;
+$label-text-color: #2d3c50;
 $input-text-color: #444;
 
 
 $wallet-default-color: #068cca;
 $vault-default-color: #068cca;
 $wallet-locked-color: #999;
+
+$searchbar-md-input-search-icon-color: #78839a;
+$searchbar-md-input-placeholder-color: #78839a;
+$searchbar-md-input-clear-icon-color:  #78839a;
+

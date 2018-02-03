@@ -1,9 +1,9 @@
-<ion-header>
-    <ion-navbar color="secondary">
+<ion-header no-border>
+    <ion-navbar color="light">
         <ion-title>Export Wallet</ion-title>
     </ion-navbar>
-    <ion-toolbar color="secondary">
-        <ion-segment [(ngModel)]="segment">
+    <ion-toolbar color="light" mode="md">
+        <ion-segment [(ngModel)]="segment" mode="md">
             <ion-segment-button value="mnemonic">
                 Phrase
             </ion-segment-button>
@@ -18,51 +18,49 @@
 </ion-header>
 
 <ion-content>
-    <span *ngIf="accessGranted">
-        <i class="wallet-icon default" [class.default]="!wallet.color">
-            <img src="assets/img/icon-wallet.svg" [style.background]="wallet.color">
-        </i>
-        <h2>{{wallet.name}}</h2>
+    <div *ngIf="accessGranted">
 
-        <span *ngIf="segment == 'mnemonic'">
+        <div *ngIf="segment == 'mnemonic'">
+          <ion-item-divider>
+            Wallet Recovery Phrase
+          </ion-item-divider>
+          <ion-list>
+              <ion-item>
+                  <div class="key">{{ mnemonic }}</div>
+              </ion-item>
+              <ion-item>
+                  <div class="description">You can use this phrase to recover your wallet.</div>
+              </ion-item>
+          </ion-list>
+        </div>
+
+        <div *ngIf="segment == 'file'">
             <ion-list>
                 <ion-item>
-                    <div class="tab-title">Wallet Recovery Phrase</div>
-                </ion-item>
-                <ion-item>
-                    <div class="key">{{ mnemonic }}</div>
-                </ion-item>
-                <ion-item>
-                    <div class="description">You can use this phrase to recover your wallet.</div>
-                </ion-item>
-            </ion-list>
-        </span>
-
-        <span *ngIf="segment == 'file'">
-            <ion-list>
-                <ion-item>
-                    <ion-label>Set up password</ion-label>
-                    <ion-input type="password" [(ngModel)]="formData.password" text-right></ion-input>
+                    <ion-label stacked>
+                      <p>Set up password</p>
+                    </ion-label>
+                    <ion-input type="password" [(ngModel)]="formData.password"></ion-input>
                 </ion-item>
 
                 <ion-item>
-                    <ion-label>Repeat password</ion-label>
-                    <ion-input type="password" [(ngModel)]="formData.repeatPassword" text-right></ion-input>
+                    <ion-label stacked>
+                      <p>Repeat password</p>
+                    </ion-label>
+                    <ion-input type="password" [(ngModel)]="formData.repeatPassword"></ion-input>
                 </ion-item>
             </ion-list>
 
-            <div class="control-buttons" margin>
-                <button ion-button [disabled]="!saveEnabled()" translate (click)="download()">
-                    Export
-                </button>
-            </div>
-        </span>
+          <button ion-button class="action-button" [disabled]="!saveEnabled()" (click)="download()">
+            Export
+          </button>
+        </div>
 
-        <span *ngIf="segment == 'code'">
+        <div *ngIf="segment == 'code'">
             <qr-code *ngIf="qrcode" [value]="qrcode" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
-            <div class="description">
-                From the destination device, go to Add wallet &gt; Import wallet and scan this QR code.
-            </div>
-        </span>
-    </span>
+            <p text-center>
+              From the destination device, go to Wallets &gt; Import wallet and scan this QR code.
+            </p>
+        </div>
+    </div>
 </ion-content>

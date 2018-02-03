@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
-const $ = require('preconditions').singleton();
-let Bitcore = require('bitcore-lib');
+import * as preconditions from 'preconditions';
+const $ = preconditions.singleton();
+import * as Bitcore from 'bitcore-lib';
 import { Common } from './common';
 let Utils = Common.Utils;
 import { Logger } from "./log";

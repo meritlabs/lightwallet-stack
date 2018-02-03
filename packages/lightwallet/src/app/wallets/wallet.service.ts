@@ -354,7 +354,7 @@ export class WalletService {
 
         if (!tx) return reject(new Error('Could not get transaction'));
         return resolve(tx);
-      };
+      }
 
       if (wallet.completeHistory && wallet.completeHistory.isValid) {
         finish(wallet.completeHistory);
@@ -368,39 +368,31 @@ export class WalletService {
           return reject(err);
         });
       }
-      ;
     });
   }
 
-  public getTxHistory(wallet: MeritWalletClient, opts: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      opts = opts ? opts : {};
-      let walletId = wallet.credentials.walletId;
+  async getTxHistory(wallet: MeritWalletClient, opts?: any): Promise<any> {
+    opts = opts || {};
 
-      if (!wallet.isComplete()) return resolve();
+    if (!wallet.isComplete())
+      return;
 
-      let isHistoryCached = () => {
-        return wallet.completeHistory && wallet.completeHistory.isValid;
-      };
+    const isHistoryCached = wallet.completeHistory && wallet.completeHistory.isValid;
 
-      if (isHistoryCached() && !opts.force) return resolve(wallet.completeHistory);
+    if (isHistoryCached && !opts.force)
+      return wallet.completeHistory;
 
-      this.logger.debug('Updating Transaction History');
-      return this.updateLocalTxHistory(wallet, opts).then((txs: any) => {
-        this.logger.debug('updateLocalTxHistory returns: ');
-        this.logger.debug(txs);
+    this.logger.debug('Updating Transaction History');
 
-        if (opts.limitTx) {
-          return resolve(txs);
-        }
-        ;
+    const txs = await this.updateLocalTxHistory(wallet, opts);
+    this.logger.debug('updateLocalTxHistory returns: ');
+    this.logger.debug(txs);
 
-        wallet.completeHistory.isValid = true;
-        return resolve(wallet.completeHistory);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
+    if (opts.limitTx)
+      return txs;
+
+    wallet.completeHistory.isValid = true;
+    return wallet.completeHistory;
   }
 
   public isEncrypted(wallet: MeritWalletClient) {
@@ -1032,7 +1024,7 @@ export class WalletService {
 
       if (opts.feeLevels) {
         opts.lowAmount = this.getLowAmount(wallet, opts.feeLevels);
-      };
+      }
 
       const fixTxsUnit = (txs: any): void => {
         if (!txs || !txs[0] || !txs[0].amountStr) return;
@@ -1046,7 +1038,7 @@ export class WalletService {
             tx.amountStr = this.txFormatService.formatAmountStr(tx.amount);
             tx.feeStr = this.txFormatService.formatAmountStr(tx.fees);
           });
-        };
+        }
       };
 
       return this.getPendingEasySends(wallet).then((easySends) => {

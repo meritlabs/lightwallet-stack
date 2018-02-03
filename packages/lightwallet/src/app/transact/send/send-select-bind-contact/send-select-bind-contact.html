@@ -1,0 +1,30 @@
+<ion-content>
+
+    <ion-item-divider>
+        Contacts
+        <button ion-button item-end clear (click)="cancel()" class="cancel-button"><ion-icon name="close"></ion-icon></button>
+    </ion-item-divider>
+
+    <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()" (ionCancel)="clearSearch()"></ion-searchbar>
+
+    <ion-item *ngIf="!foundContacts.length">
+        No contacts found
+    </ion-item>
+
+    <div *ngIf="foundContacts.length">
+        <ion-list>
+
+            <ion-item *ngFor="let contact of foundContacts" (click)="select(contact)">
+                <ion-avatar item-start img-icon>
+                    <img [src]="sanitizePhotoUrl(contact.photos[0]?.value)" *ngIf="contact.photos.length">
+                    <span color="primary">{{getContactInitials(contact)}}</span>
+                </ion-avatar>
+                {{ contact.name.formatted }}
+                <img src="assets/img/icons/merit.svg"  color="primary" item-end>
+            </ion-item>
+
+        </ion-list>
+    </div>
+
+
+</ion-content>

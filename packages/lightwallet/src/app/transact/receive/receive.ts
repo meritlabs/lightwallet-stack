@@ -14,6 +14,7 @@ import { ConfigService } from 'merit/shared/config.service';
 import { RateService } from 'merit/transact/rate.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { MERIT_MODAL_OPTS } from '../../../utils/constants';
 
 
 @IonicPage()
@@ -31,6 +32,8 @@ export class ReceiveView {
   availableUnits: Array<string>;
   amountCurrency: string;
 
+  loading: boolean;
+  hasUnlockedWallets: boolean;
   wallets;
   wallet;
 
@@ -60,23 +63,29 @@ export class ReceiveView {
     this.amountCurrency = this.availableUnits[0];
   }
 
-  ionViewDidLoad() {
-    this.profileService.getWallets().then((wallets: MeritWalletClient[]) => {
-      this.wallets = wallets;
-      if (this.wallets && this.wallets[0]) {
-        this.wallet = this.wallets[0];
-        this.generateAddress();
-      }
-    });
-
-
+  async ionViewDidLoad() {
     // Get a new address if we just received an incoming TX (on an address we already have)
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
       this.logger.info('Got an incomingTx on receive screen: ', n);
       if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
         this.generateAddress(true);
       }
-    })
+    });
+  }
+
+  async ionViewWillEnter() {
+    this.loading = true;
+    this.wallets = await this.profileService.getWallets();
+    if (this.wallets) {
+      this.hasUnlockedWallets = this.wallets.some(w => {
+        if (w.unlocked) {
+          this.wallet = w;
+          this.generateAddress();
+          return true;
+        }
+      });
+    }
+    this.loading = false;
   }
 
   async generateAddress(forceNew?: boolean) {
@@ -111,7 +120,7 @@ export class ReceiveView {
     const modal = this.modalCtrl.create('SelectWalletModal', {
       selectedWallet: this.wallet,
       availableWallets: this.wallets
-    });
+    }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.wallet = wallet;

@@ -18,15 +18,15 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 })
 export class ExportWalletView {
 
-  public wallet: MeritWalletClient;
-  public segment = 'mnemonic';
-  public accessGranted: boolean;
-  public formData = {
+  wallet: MeritWalletClient;
+  segment = 'mnemonic';
+  accessGranted: boolean;
+  formData = {
     password: '',
     repeatPassword: ''
   };
-  public mnemonic: string;
-  public qrcode: string;
+  mnemonic: string;
+  qrcode: string;
   private sjcl;
 
   constructor(private navCtrl: NavController,

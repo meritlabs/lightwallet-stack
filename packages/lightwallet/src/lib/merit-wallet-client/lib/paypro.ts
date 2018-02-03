@@ -1,19 +1,15 @@
-let request = require('superagent');
-
+import * as request from 'superagent';
 import * as _ from 'lodash';
 import { Logger } from "./log";
-
-
-
+import * as preconditions from 'preconditions';
+import * as Bitcore from 'bitcore-lib';
+import * as BitcorePayPro from 'bitcore-payment-protocol';
+const $ = preconditions.singleton();
 
 export module PayPro {
   const logger = Logger.getInstance();
   logger.setLevel('debug');
   const TIMEOUT = 5000;
-  let $ = require('preconditions').singleton();
-
-  let Bitcore = require('bitcore-lib');
-  let BitcorePayPro = require('bitcore-payment-protocol');
 
   let _request = (opts:any): Promise<any> => {
     return new Promise((resolve, reject) => {

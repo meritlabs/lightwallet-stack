@@ -4,12 +4,10 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicPage } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
-
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { PlatformService } from 'merit/core/platform.service';
 import { ProfileService } from 'merit/core/profile.service';
-
 import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
@@ -49,6 +47,10 @@ export class NetworkView {
   static readonly RETRY_TIMEOUT = 1000;
   public displayWallets: Array<DisplayWallet> = [];
   public loading: boolean;
+
+  totalNetworkValue: string;
+  totalMiningRewards: string;
+  totalAmbassadorRewards: string;
 
   constructor(private profileService: ProfileService,
               private clipboard: Clipboard,
@@ -122,9 +124,11 @@ export class NetworkView {
   async copyToClipboard(code) {
     await this.platformService.ready();
 
-    if (this.platformService.isCordova) {
+    if (Clipboard.installed()) {
       await this.clipboard.copy(code);
     }
+
+    console.log(code);
 
     this.toastCtrl.create({
       message: 'Copied to clipboard',
@@ -170,6 +174,17 @@ export class NetworkView {
 
   private async formatWallets(processedWallets: DisplayWallet[]) {
     this.displayWallets = await this.formatNetworkInfo(processedWallets);
+    let totalNetworkValue = 0, totalMiningRewards = 0, totalAmbassadorRewards = 0;
+
+    this.displayWallets.forEach(w => {
+      totalNetworkValue += w.totalNetworkValueMicro;
+      totalMiningRewards += w.miningRewardsMicro;
+      totalAmbassadorRewards += w.ambassadorRewardsMicro;
+    });
+
+    this.totalNetworkValue = this.txFormatService.parseAmount(totalNetworkValue, 'micros').amountUnitStr;
+    this.totalMiningRewards = this.txFormatService.parseAmount(totalMiningRewards, 'micros').amountUnitStr;
+    this.totalAmbassadorRewards = this.txFormatService.parseAmount(totalAmbassadorRewards, 'micros').amountUnitStr;
   }
 
   private loadInfo() {
