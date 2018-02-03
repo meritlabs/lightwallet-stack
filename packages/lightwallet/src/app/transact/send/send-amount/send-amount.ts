@@ -130,7 +130,7 @@ export class SendAmountView {
   }
 
   selectWallet() {
-    const modal = this.modalCtrl.create('SendWalletView',
+    const modal = this.modalCtrl.create('SelectWalletModal',
       {
         selectedWallet: this.selectedWallet,
         availableWallets: this.wallets
@@ -212,11 +212,11 @@ export class SendAmountView {
 
   private async updateAmount() {
     if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
-      this.amount.mrt = parseFloat(this.formData.amount);
+      this.amount.mrt = parseFloat(this.formData.amount) || 0;
       this.amount.micros = this.rateService.mrtToMicro(this.amount.mrt);
       this.amount.fiat = this.rateService.fromMicrosToFiat(this.amount.micros, this.availableUnits[1].name);
     } else {
-      this.amount.fiat = parseFloat(this.formData.amount);
+      this.amount.fiat = parseFloat(this.formData.amount) || 0;
       this.amount.micros = this.rateService.fromFiatToMicros(this.amount.fiat, this.availableUnits[1].name);
       this.amount.mrt = this.rateService.fromFiatToMerit(this.amount.fiat, this.availableUnits[1].name);
     }
