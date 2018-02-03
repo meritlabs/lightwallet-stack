@@ -24,14 +24,17 @@ export class ContactsProvider {
   }
 
   async init() {
-    await this.hasPermission();
+    this.permissionGranted = await this.hasPermission();
 
-    if (!this.permissionGranted) {
+    if (!this.permissionGranted && Diagnostic.installed()) {
       this.permissionStatus = await this.diagnostic.getContactsAuthorizationStatus();
     }
   }
 
   async requestPermission() {
+    if (!Diagnostic.installed())
+      return false;
+
     // we have permission, no need to request it again
     if (await this.hasPermission())
       return true;
@@ -81,7 +84,8 @@ export class ContactsProvider {
   }
 
   private async hasPermission() {
-    return this.permissionGranted = await this.diagnostic.isContactsAuthorized();
+    if (!Diagnostic.installed()) return false;
+    return await this.diagnostic.isContactsAuthorized();
   }
 
 }
