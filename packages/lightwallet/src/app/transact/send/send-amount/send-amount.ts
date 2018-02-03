@@ -44,7 +44,6 @@ export class SendAmountView {
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
   public readonly CURRENCY_TYPE_FIAT = 'fiat';
-  public readonly AMOUNT_MAX = 'All';
 
   public readonly MINUTE_PER_BLOCK = 1;
 
@@ -100,8 +99,8 @@ export class SendAmountView {
     await this.updateAmount();
 
     // todo add smart common amounts receive
-    this.suggestedAmounts[this.CURRENCY_TYPE_MRT] = ['5', '10', '100', this.AMOUNT_MAX];
-    this.suggestedAmounts[this.CURRENCY_TYPE_FIAT] = ['5', '10', '100', this.AMOUNT_MAX];
+    this.suggestedAmounts[this.CURRENCY_TYPE_MRT] = ['5', '10', '100'];
+    this.suggestedAmounts[this.CURRENCY_TYPE_FIAT] = ['5', '10', '100'];
 
     this.wallets = await this.profileService.getWallets();
     await this.chooseAppropriateWallet();
@@ -182,19 +181,10 @@ export class SendAmountView {
   async selectAmount(amount) {
 
     let micros = 0;
-    if (amount == this.AMOUNT_MAX) {
-      micros = this.selectedWallet.status.spendableAmount;
-      if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
-        amount = String(this.rateService.microsToMrt(micros));
-      } else {
-        amount = String(this.rateService.fromMicrosToFiat(micros, this.availableUnits[1].name));
-      }
+    if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
+      micros = this.rateService.mrtToMicro(parseFloat(amount));
     } else {
-      if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
-        micros = this.rateService.mrtToMicro(parseFloat(amount));
-      } else {
-        micros = this.rateService.fromFiatToMicros(parseFloat(amount), this.availableUnits[1].name);
-      }
+      micros = this.rateService.fromFiatToMicros(parseFloat(amount), this.availableUnits[1].name);
     }
 
     if (micros > this.selectedWallet.status.spendableAmount) {
