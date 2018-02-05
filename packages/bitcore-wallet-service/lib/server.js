@@ -3063,7 +3063,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       return _.sumBy(_.filter(items, filter), 'amount');
     };
 
-    function classify(items, isInvite, inout) {
+    function classify(items, isInvite) {
       return _.map(items, function(item) {
         var address = indexedAddresses[item.address];
         return {
@@ -3083,8 +3083,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       var amount, action, addressTo;
       var inputs, outputs;
       if (tx.outputs.length || tx.inputs.length) {
-        inputs = classify(tx.inputs, tx.isInvite, 'input');
-        outputs = classify(tx.outputs, tx.isInvite, 'output');
+        inputs = classify(tx.inputs, tx.isInvite);
+        outputs = classify(tx.outputs, tx.isInvite);
 
         amountIn = sum(inputs, true);
         amountOut = sum(outputs, true, false);
