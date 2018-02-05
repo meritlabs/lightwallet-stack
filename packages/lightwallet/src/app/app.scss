@@ -575,12 +575,15 @@ ion-modal.merit-modal {
   margin: initial;
 }
 
+.ios .info-box {
+  border-radius: 8px;
+}
+
 .info-box {
   width: calc(100% - 16px - 16px);
   margin: 16px;
   padding: 16px;
   background: rgba(170, 175, 209, 0.28);
-  border-radius: 8px;
 }
 
 // merit icons
