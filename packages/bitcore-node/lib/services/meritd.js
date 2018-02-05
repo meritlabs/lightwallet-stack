@@ -125,13 +125,15 @@ Merit.prototype._initCaches = function() {
   // caches valid until there is a new block
   this.utxosCache = LRU(50000);
   this.txidsCache = LRU(50000);
-  this.refidsCache = LRU(50000);
+  this.referralsCache = LRU(50000);
+  this.referralCache = LRU(100000);
   this.balanceCache = LRU(50000);
   this.summaryCache = LRU(50000);
   this.blockOverviewCache = LRU(144);
   this.transactionDetailedCache = LRU(100000);
   this.anvCache = LRU(50000);
   this.rewardsCache = LRU(50000);
+
 
 
   // caches valid indefinitely
@@ -227,6 +229,9 @@ Merit.prototype.getPublishEvents = function() {
     },
     {
       name: 'meritd/rawreferraltx',
+
+      
+      
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
@@ -467,6 +472,7 @@ Merit.prototype._resetCaches = function() {
   this.transactionDetailedCache.reset();
   this.utxosCache.reset();
   this.txidsCache.reset();
+  this.referralsCache.reset();
   this.balanceCache.reset();
   this.summaryCache.reset();
   this.blockOverviewCache.reset();
@@ -595,6 +601,9 @@ Merit.prototype._rapidProtectedUpdateTip = function(node, message) {
 };
 
 Merit.prototype._updateTip = function(node, message) {
+
+  console.log("\nUPDATE TIP\n", message);
+
   var self = this;
 
   var hex = message.toString('hex');
@@ -1542,153 +1551,6 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
   });
 };
 
-
-///**
-// * Will expand into a detailed referral from a refid
-// * @param {Object} refid - A merit referral id
-// * @param {Function} callback
-// */
-//Merit.prototype._getAddressDetailedReferral = function(refid, options, next) {
-//    var self = this;
-//
-//    //todo temp! Use cache
-//    this.client.getrawreferral(refid, function(err, response) {
-//        console.log("RESPONSE", response.result);
-//        var referral = (new Referral(response.result));
-//        console.log("referral \n\n\n", referral);
-//    });
-//
-//    //self.getDetailedReferral(
-//    //    refid,
-//    //    function(err, referral) {
-//    //        if (err) {
-//    //            return next(err);
-//    //        }
-//
-//            //var addressDetails = self._getAddressDetailsForReferral(referral, options.addressStrings);
-//            //
-//            //var details = {
-//            //    "refid": "3ba5a7475edd960aaaf40b2a3255f8b249b413d74ae217ed82bd3242e39fde64",
-//            //    "version": 1,
-//            //    "address": "mUSkoQ9S4KVC94afLPY9YkjAZfkcuNyBK2",
-//            //    "alias": "",
-//            //    "parentAddress": "mPGcPYDyScDTb4UPHyDfgKrvNNQxz32Ni7",
-//            //    "size": 152,
-//            //    "vsize": 152
-//            //
-//            //
-//            //    addresses: addressDetails.addresses,
-//            //    micros: addressDetails.micros,
-//            //    confirmations: self._getConfirmationsDetail(transaction),
-//            //    referral: referral
-//            //};
-//            //next(null, details);
-//        //}
-//    //);
-//};
-
-
-/**
- * Will get the referral ids for an address or multiple addresses
- * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
- * @param {Object} options
- * @param {Function} callback
- */
-Merit.prototype.getAddressReferralsIds = function(addresses, options, callback) {
-    var self = this;
-
-    var queryMempool = _.isUndefined(options.queryMempool) ? true : options.queryMempool;
-    var queryMempoolOnly = _.isUndefined(options.queryMempoolOnly) ? false : options.queryMempoolOnly;
-
-    var rangeQuery = false;
-    try {
-        rangeQuery = self._getHeightRangeQuery(options);
-    } catch(err) {
-        return callback(err);
-    }
-    if (rangeQuery) {
-        queryMempool = false;
-    }
-    if (queryMempoolOnly) {
-        queryMempool = true;
-        rangeQuery = false;
-    }
-
-    var cacheKey = addresses.join('');
-    var mempoolReferralsIds = [];
-    var refIds = queryMempoolOnly ? false : self.refidsCache.get(cacheKey);
-
-    function finish() {
-        if (queryMempoolOnly) {
-            return setImmediate(function() {
-                callback(null, mempoolReferralsIds.reverse());
-            });
-        }
-        if (refIds && !rangeQuery) {
-            var allRefIds = mempoolReferralsIds.reverse().concat(refIds);
-            return setImmediate(function() {
-                callback(null, allRefIds);
-            });
-        } else {
-            var refIdOpts = {
-                addresses: addresses
-            };
-            if (rangeQuery) {
-                self._getHeightRangeQuery(options, refIdOpts);
-            }
-            console.log('refIdOpts', refIdOpts);
-            self.client.getaddressrefids(refIdOpts, function(err, response) {
-                if (err) {
-                    return callback(self._wrapRPCError(err));
-                }
-                response.result.reverse();
-                if (!rangeQuery) {
-                    self.refidsCache.set(cacheKey, response.result);
-                }
-                var allRefIds = mempoolReferralsIds.reverse().concat(response.result);
-                return callback(null, allRefIds);
-            });
-        }
-    }
-
-    if (queryMempool) {
-        self.client.getAddressMempool({addresses: addresses}, function(err, response) {
-            if (err) {
-                return callback(self._wrapRPCError(err));
-            }
-            mempoolReferralsIds = self._getRefIdsFromMempool(response.result);
-            finish();
-        });
-    } else {
-        finish();
-    }
-};
-
-Merit.prototype._getRefIdsFromMempool = function(deltas) {
-    var mempoolRefids = [];
-    var mempoolRefidsKnown = {};
-    for (var i = 0; i < deltas.length; i++) {
-        var refid = deltas[i].refid;
-        if (!mempoolRefidsKnown[refid]) {
-            mempoolRefids.push(refid);
-            mempoolRefidsKnown[refid] = true;
-        }
-    }
-    return mempoolRefids;
-};
-
-//
-//
-//Merit.prototype._paginateReferralIds = function(fullReferralIds, fromArg, toArg) {
-//    var refids;
-//    var from = parseInt(fromArg);
-//    var to = parseInt(toArg);
-//    $.checkState(from < to, '"from" (' + from + ') is expected to be less than "to" (' + to + ')');
-//    refids = fullReferralIds.slice(from, to);
-//    return refids;
-//};
-
-
 /**
  * Will get a referral as a Bitcore Referral. Results include the mempool.
  * @param {String} refid - Referral hash
@@ -1705,6 +1567,7 @@ Merit.prototype.getReferral = function(refid, callback) {
     } else {
         self._tryAllClients(function(client, done) {
             client.getRawReferral(refid, function(err, response) {
+
                 if (err) {
                     return done(self._wrapRPCError(err));
                 }
@@ -1731,109 +1594,53 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
         return callback(new TypeError('Maximum number of addresses (' + this.maxAddressesQuery + ') exceeded'));
     }
 
-    var fromArg = parseInt(options.from || 0);
-    var toArg = parseInt(options.to || self.maxReferralHistory);
+    var cacheKey = addresses.join('');
 
-    if ((toArg - fromArg) > self.maxReferralHistory) {
-        return callback(new Error(
-            '"from" (' + options.from + ') and "to" (' + options.to + ') range should be less than or equal to ' +
-            self.maxReferralHistory
-        ));
+    function loadFromMempool(cb) {
+        return self.client.getaddressmempoolreferrals({addresses: addresses}, function (err, response) {
+            if (response.error) {
+                console.log('Error occured while requesting referrals from mempool', response.error);
+                return cb(err, [])
+            }
+            console.log('mempool', response.result);
+            return cb(null, response.result);
+        });
     }
 
-    // todo set true
-    var queryMempool = _.isUndefined(options.queryMempool) ? true : options.queryMempool;
+    function loadFromBc(cb) {
 
-    var totalCount = 0;
-    var referrals = [];
-    self.getAddressReferralsIds(addresses, options, function(err, refids) {
-        if (err) {
-            return callback(err);
-        }
-
-        totalCount = refids.length;
-
-        async.mapLimit(
-            refids,
-            self.transactionConcurrency,
-            function(refid, next) {
-                self.getReferral(refid, next);
-            },
-            function(err, referrals) {
-                if (err) {
-                    return callback(err);
-                }
-                return callback(null, {
-                    totalCount: referrals.length,
-                    items: referrals
-                });
+        return self.client.getaddressreferrals({addresses: addresses}, function (err, response) {
+            if (response.error) {
+                console.log('Error occured while requesting referrals from blockchain', response.error);
+                return cb(response.error, []);
             }
-        );
+            return cb(null, response.result);
+        });
+    }
 
+    function finish(referrals) {
+        return callback(null, {
+            totalCount: referrals.length,
+            items: referrals
+        });
+    }
 
-        //todo paginate ?
-        //try {
-        //    txids = self._paginateTxids(txids, fromArg, toArg);
-        //} catch(e) {
-        //    return callback(e);
-        //}
-
-
-
+    return loadFromMempool(function(err, mempoolReferrals) {
+        var cachedReferrals = self.referralsCache.get(cacheKey);
+        if (cachedReferrals) {
+            var referrals = mempoolReferrals.concat(cachedReferrals);
+            console.log(cachedReferrals.length+' referrals read from  cache + '+mempoolReferrals.length+' from mempool');
+            finish(referrals);
+        } else {
+            loadFromBc(function(err, bcReferrals) {
+                self.referralsCache.set(cacheKey, bcReferrals);
+                referrals = mempoolReferrals.concat(bcReferrals);
+                referrals = _.uniqBy(referrals, 'refid');
+                console.log(bcReferrals.length+' referrals read from  bc + '+mempoolReferrals.length+' from mempool');
+                finish(referrals);
+            })
+        }
     });
-
-
-
-
-
-    //var addresses = self._normalizeAddressArg(addressArg);
-    //if (addresses.length > this.maxAddressesQuery) {
-    //    return callback(new TypeError('Maximum number of addresses (' + this.maxAddressesQuery + ') exceeded'));
-    //}
-    //
-    //var addressStrings = this._getAddressStrings(addresses);
-    //
-    //var fromArg = parseInt(options.from || 0);
-    //var toArg = parseInt(options.to || self.maxTransactionHistory);
-    //
-    //if ((toArg - fromArg) > self.maxTransactionHistory) {
-    //    return callback(new Error(
-    //        '"from" (' + options.from + ') and "to" (' + options.to + ') range should be less than or equal to ' +
-    //        self.maxTransactionHistory
-    //    ));
-    //}
-    //
-    //self.getAddressReferralsIds(addresses, options, function(err, referralsIds) {
-    //
-    //    if (err) {
-    //        return callback(err);
-    //    }
-    //    var totalCount = referralsIds.length;
-    //    try {
-    //        referralsIds = self._paginateReferralIds(referralsIds, fromArg, toArg);
-    //    } catch(e) {
-    //        return callback(e);
-    //    }
-    //
-    //    async.mapLimit(
-    //        referralsIds,
-    //        self.transactionConcurrency, // - what's this?
-    //        function(refid, next) {
-    //            self._getAddressDetailedReferral(referralsIds, {
-    //                addressStrings: addressStrings
-    //            }, next);
-    //        },
-    //        function(err, referrals) {
-    //            if (err) {
-    //                return callback(err);
-    //            }
-    //            callback(null, {
-    //                totalCount: totalCount,
-    //                items: referrals
-    //            });
-    //        }
-    //    );
-    //});
 };
 
 
@@ -2122,6 +1929,8 @@ Merit.prototype.getBlockHashesByTimestamp = function(high, low, options, callbac
 Merit.prototype.getBlockHeader = function(blockArg, callback) {
   var self = this;
 
+  console.log('Merit.prototype.getBlockHeader called');
+
   function queryHeader(err, blockhash) {
     if (err) {
       return callback(err);
@@ -2302,8 +2111,8 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
     tx.inputMicros = 0;
     for(var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
       var input = result.vin[inputIndex];
-      if (!tx.isCoinbase) {
-        tx.inputMicros += input.valueSat; // TODO: rename sat
+      if (!tx.isCoinbase && input.valueSat) {
+        tx.inputMicros += !tx.isInvite ? input.valueSat : input.value; // TODO: rename sat
       }
       var script = null;
       var scriptAsm = null;
@@ -2330,13 +2139,13 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
     tx.outputMicros = 0;
     for(var outputIndex = 0; outputIndex < result.vout.length; outputIndex++) {
       var out = result.vout[outputIndex];
-      tx.outputMicros += out.valueSat; // TODO: rename sat
+      tx.outputMicros += !tx.isInvite ? out.valueSat : out.value; // TODO: rename sat
       var address = null;
       if (out.scriptPubKey && out.scriptPubKey.addresses && out.scriptPubKey.addresses.length === 1) {
         address = out.scriptPubKey.addresses[0];
       }
       tx.outputs.push({
-        micros: out.valueSat, // TODO: rename sat
+        micros: !tx.isInvite ? out.valueSat : out.value, // TODO: rename sat
         script: out.scriptPubKey.hex,
         scriptAsm: out.scriptPubKey.asm,
         spentTxId: out.spentTxId,
@@ -2365,7 +2174,8 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
           blockTimestamp: result.time,
           version: result.version,
           hash: txid,
-          locktime: result.locktime
+          locktime: result.locktime,
+          isInvite: result.version === bitcore.Transaction.INVITE_VERSION,
         };
 
         if (result.vin[0] && result.vin[0].coinbase) {

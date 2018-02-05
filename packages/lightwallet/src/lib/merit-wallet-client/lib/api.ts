@@ -448,6 +448,18 @@ export class API {
   }
 
   /**
+   * Creates Address from hdPrivKey
+   */
+  getRootAddress() {
+
+    const xpub = new Bitcore.HDPublicKey(this.credentials.xPubKey);
+    const address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, this.credentials.network);
+
+    return address;
+
+  }
+
+  /**
    * Seed from extended private key
    *
    * @param {String} xPrivKey
@@ -1720,13 +1732,8 @@ export class API {
 
       const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey(void 0, network);
       const pubkey = walletPrivKey.toPublicKey();
-
-      let c = this.credentials;
-      c.addWalletPrivateKey(walletPrivKey.toString());
-      let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
-
-      const xpub = new Bitcore.HDPublicKey(c.xPubKey);
-      const address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, network).toString();
+      this.credentials.addWalletPrivateKey(walletPrivKey.toString());
+      let address = this.getRootAddress();
 
       const referralOpts = {
         parentAddress: opts.parentAddress,
@@ -1741,6 +1748,9 @@ export class API {
 
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
+
+        let c = this.credentials;
+        let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
 
         let args = {
           name: encWalletName,
@@ -1812,11 +1822,11 @@ export class API {
       }
 
       const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-        Bitcore.Address.fromString(opts.parentAddress).toBufferLean(),
-        Bitcore.Address.fromString(opts.address).toBufferLean(),
+        Bitcore.Address.fromString(opts.parentAddress, network.name).toBufferLean(),
+        Bitcore.Address.fromString(opts.address, network.name).toBufferLean(),
       ]));
 
-      const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big');
+      const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
 
       const referral = new Bitcore.Referral({
         parentAddress: opts.parentAddress,
@@ -1827,6 +1837,8 @@ export class API {
         alias: opts.alias,
         network: network
       });
+
+      console.log("SENDING REFERRAL", referral.toObject());
 
       this._doPostRequest('/v1/referral/', { referral: referral.serialize() })
         .then(resolve)
@@ -2644,85 +2656,11 @@ export class API {
 
     let url = '/v1/txhistory/' + qs;
     return this._doGetRequest(url).then((txs) => {
-      return this._processTxps(txs).then(() => {
-        return Promise.resolve(txs);
-      });
+     return this._processTxps(txs).then(() => {
+
+       return Promise.resolve(txs);
+     });
     });
-
-
-    //return Promise.resolve([
-    //  [
-    //
-    //    { //classic transaction
-    //          "txid": "302efd570df3f5f87de568773ca37d850ed693ac4fcfa3a66326e7624459db45",
-    //        "action": "received",
-    //        "amount": 2000000000,
-    //        "fees": 7480,
-    //        "time": 1516968822,
-    //        "confirmations": 0,
-    //        "outputs": [
-    //        {
-    //          "amount": 2000000000,
-    //          "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc"
-    //        }
-    //      ],
-    //        "lowFees": false
-    //    },
-    //    { //new invite mined
-    //      "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
-    //      "action": "unlock",
-    //      "amount": 1,
-    //      "time": 1516968822,
-    //      "confirmations": 0,
-    //      "outputs": [
-    //        {
-    //          "amount": 1,
-    //          "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc"
-    //        }
-    //      ]
-    //    },
-    //    { // you were unlocked/new invite recieved.
-    //      // If it is fiets transaction of this type, it means that you were unlocked.
-    //      // Outherwise it means that somebody sent you additional invite
-    //      "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
-    //      "action": "invite",
-    //      "amount": 1,
-    //      "time": 1516968822,
-    //      "confirmations": 0,
-    //      "inputs": [
-    //        {
-    //          "amount": 1,
-    //          "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" // your parent address
-    //        }
-    //      ],
-    //      "outputs": [
-    //        {
-    //          "amount": 1,
-    //          "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" //your address
-    //        }
-    //      ]
-    //    },
-    //    { // unlocking an address
-    //      "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
-    //      "action": "invite",
-    //      "amount": 1,
-    //      "time": 1516968822,
-    //      "confirmations": 0,
-    //      "inputs": [
-    //        {
-    //          "amount": 1,
-    //          "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" // your address
-    //        }
-    //      ],
-    //      "outputs": [
-    //          {
-    //            "amount": 1,
-    //            "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" //address you're unlocking
-    //          }
-    //      ]
-    //    }
-    //  ]
-    //])
   };
 
   /**
@@ -2753,30 +2691,21 @@ export class API {
    *
    * @param address
    */
-  confirmRequest(request:{refid:string, address:string}): Promise<boolean> {
-
+  confirmRequest(request:{refid:string, address:string}): Promise<any> {
     return Promise.resolve(true);
-
   }
 
-  getUnlockRequests(opts): Promise<any> {
+  /**
+   * gets all unlock requests (active and hidden) for this wallet
+   *
+   */
+  getUnlockRequests(): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    let args = [];
-    if (opts) {
-      if (opts.skip) args.push('skip=' + opts.skip);
-      if (opts.limit) args.push('limit=' + opts.limit);
-      if (opts.includeExtendedInfo) args.push('includeExtendedInfo=1');
-    }
-    let qs = '';
-    if (args.length > 0) {
-      qs = '?' + args.join('&');
-    }
-
-    let url = '/v1/refhistory/' + qs;
-    return this._doGetRequest(url).then((txs) => {
-      return this._processTxps(txs).then(() => {
-        return Promise.resolve(txs);
+    let url = '/v1/unlockrequests/';
+    return this._doGetRequest(url).then((requests) => {
+      return this._processTxps(requests).then(() => {
+        return Promise.resolve(requests);
       });
     });
   }

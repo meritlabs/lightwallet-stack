@@ -122,7 +122,7 @@ Block._fromBufferReader = function _fromBufferReader(br) {
   for (let i = 0; i < transactions; i++) {
     info.transactions.push(Transaction().fromBufferReader(br));
   }
-  if (info.header.Daedalus()) {
+  if (info.header.isDaedalus()) {
     const invites = br.readVarintNum();
     info.invites = [];
     for (let i = 0; i < invites; i++) {
@@ -178,8 +178,8 @@ Block.fromRawBlock = function fromRawBlock(data) {
   return new Block(info);
 };
 
-Block.prototype.Daedalus = function Daedalus() {
-  return this.header.Daedalus();
+Block.prototype.isDaedalus = function isDaedalus() {
+  return this.header.isDaedalus();
 }
 
 /**
@@ -234,7 +234,7 @@ Block.prototype.toBufferWriter = function toBufferWriter(bw) {
     this.transactions[i].toBufferWriter(bw);
   }
 
-  if (this.Daedalus()) {
+  if (this.isDaedalus()) {
     bw.writeVarintNum(this.invites.length);
     for (var i = 0; i < this.invites.length; i++) {
       this.invites[i].toBufferWriter(bw);
