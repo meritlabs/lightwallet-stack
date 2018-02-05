@@ -20,7 +20,7 @@
                 <div *ngFor="let currency of availableUnits" (click)="selectCurrency(currency)"
                      class="currency" [class.selected]="currency.type == selectedCurrency.type">
                     {{currency.name}}
-                    <div class="selected-mark" *ngIf="currency.type == selectedCurrency.type"></div>
+                    <span class="selected-mark" [hidden]="currency.type != selectedCurrency.type"></span>
                 </div>
             </div>
 
@@ -111,9 +111,12 @@
             <!--<ion-icon name="arrow-right" item-end></ion-icon>-->
         <!--</ion-item>-->
 
-        <button ion-button class="action-button" color="primary" (click)="toConfirm()" [disabled]="!isSendAllowed()">
-            NEXT <ion-icon name="arrow-right"></ion-icon>
-        </button>
     </div>
 
 </ion-content>
+
+<ion-footer>
+  <button ion-button class="action-button" color="primary" (click)="toConfirm()" [disabled]="!isSendAllowed()">
+    NEXT <ion-icon name="arrow-right"></ion-icon>
+  </button>
+</ion-footer>

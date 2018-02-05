@@ -253,7 +253,7 @@ ion-item-divider.item-divider {
 ion-list:not([no-lines]),
 div {
 
-  > ion-item.item, > button[ion-item].item {
+  > ion-item.item:not([no-lines]), > button[ion-item].item:not([no-lines]) {
     &.item-block .item-inner, .item-inner {
       border-bottom: none;
     }
@@ -374,6 +374,13 @@ ion-header.header {
       }
     }
   }
+}
+
+ion-footer.footer > button[ion-button].button.action-button {
+  width: 100%;
+  height: 56px;
+  margin: 0;
+  border-radius: 0;
 }
 
 button[ion-button].button.action-button {
