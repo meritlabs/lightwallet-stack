@@ -171,8 +171,10 @@ export module Utils {
     return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u[precision].minDecimals);
   };
 
-  export const  buildTx = function(txp) {
+  export const buildTx = function(txp) {
     let t = new Transaction();
+
+    t.version = txp.version;
 
     console.log('before type check', _.includes(_.values(Constants.SCRIPT_TYPES), txp.addressType), _.values(Constants.SCRIPT_TYPES), txp.addressType);
     $.checkState(_.includes(_.values(Constants.SCRIPT_TYPES), txp.addressType));

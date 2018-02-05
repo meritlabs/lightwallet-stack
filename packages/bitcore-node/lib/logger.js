@@ -38,7 +38,8 @@ Logger.prototype.error = function() {
  * #debug
  */
 Logger.prototype.debug = function() {
-  this._log.apply(this, ['magenta', 'debug'].concat(Array.prototype.slice.call(arguments)));
+  // dbg is a workaround for node < 9.x
+  this._log.apply(this, ['magenta', 'dbg'].concat(Array.prototype.slice.call(arguments)));
 };
 
 /**

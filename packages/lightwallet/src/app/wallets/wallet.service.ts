@@ -406,6 +406,10 @@ export class WalletService {
     return isEncrypted;
   }
 
+  public sendInvite(wallet: MeritWalletClient, toAddress: string) {
+    return wallet.sendInvite(toAddress);
+  }
+
   public createTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     return wallet.createTxProposal(txp);
   }
@@ -613,6 +617,10 @@ export class WalletService {
 
   public getBalance(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
     return wallet.getBalance(opts);
+  }
+
+  public getInvitesBalance(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
+    return wallet.getInvitesBalance(opts);
   }
 
   public getLowUtxos(wallet: any, levels: any): Promise<any> {

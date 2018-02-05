@@ -375,6 +375,16 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/invites/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      var opts = {};
+      server.getInvitesBalance(opts, function(err, balance) {
+        if (err) return returnError(err, res, req);
+        res.json(balance);
+      });
+    });
+  });
+
   router.get('/v1/feelevels/', function(req, res) {
     var opts = {};
     if (req.query.network) opts.network = req.query.network;
@@ -406,8 +416,11 @@ ExpressApp.prototype.start = function(opts, cb) {
   });
 
   router.get('/v1/utxos/', function(req, res) {
-    var opts = {};
-    var addresses = req.query.addresses;
+    const opts = {
+      invites: req.query.invites,
+    };
+    const addresses = req.query.addresses;
+
     if (addresses && _.isString(addresses)) opts.addresses = req.query.addresses.split(',');
     getServerWithAuth(req, res, function(server) {
       server.getUtxos(opts, function(err, utxos) {

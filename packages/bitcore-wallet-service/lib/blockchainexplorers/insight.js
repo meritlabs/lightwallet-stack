@@ -48,13 +48,14 @@ Insight.prototype.getConnectionInfo = function() {
 /**
  * Retrieve a list of unspent outputs associated with an address or set of addresses
  */
-Insight.prototype.getUtxos = function(addresses, cb) {
+Insight.prototype.getUtxos = function(addresses, invites, cb) {
   var url = this.url + this.apiPrefix + '/addrs/utxo';
   var args = {
     method: 'POST',
     path: this.apiPrefix + '/addrs/utxo',
     json: {
-      addrs: [].concat(addresses).join(',')
+      addrs: [].concat(addresses).join(','),
+      invites,
     },
   };
 

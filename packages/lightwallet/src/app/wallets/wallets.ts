@@ -52,6 +52,7 @@ export class WalletsView {
   network: string;
 
   loading: boolean;
+  public formData = { inviteTo: '' };
 
   private get isActivePage(): boolean {
     return this.navCtrl.last().instance instanceof WalletsView;
@@ -170,6 +171,26 @@ export class WalletsView {
       this.navCtrl.push('CopayersView')
     } else {
       this.navCtrl.push('WalletDetailsView', { walletId: wallet.id, wallet: wallet });
+    }
+  }
+
+  async sendInvite(wallet) {
+
+    const toAddress = this.formData.inviteTo;
+    try {
+      await this.walletService.sendInvite(wallet, toAddress);
+
+      this.formData.inviteTo = '';
+      this.toastCtrl.create({
+        message: 'Invite successfully sent',
+        cssClass: ToastConfig.CLASS_MESSAGE
+      }).present();
+    } catch (e) {
+      console.error(e.message);
+      this.toastCtrl.create({
+        message: 'Failed to send invite',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
     }
   }
 
