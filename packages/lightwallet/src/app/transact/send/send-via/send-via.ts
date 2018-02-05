@@ -64,7 +64,7 @@ export class SendViaView {
   }
 
   getDisplayedName() {
-    if (this.contact.name && this.contact.name.formatted) {
+    if (this.contact && this.contact.name && this.contact.name.formatted) {
       return this.contact.name.formatted;
     } else {
       return this.suggestedMethod.value;
