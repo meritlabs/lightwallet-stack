@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
-import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 import { SendService } from 'merit/transact/send/send.service';
-import * as _ from 'lodash';
 import { SendMethod } from 'merit/transact/send/send-method.model';
+import { MeritContact } from '../../../../models/merit-contact';
 
 
 @IonicPage()

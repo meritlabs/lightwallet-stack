@@ -7,7 +7,6 @@ import {
   NavController,
   NavParams
 } from 'ionic-angular';
-import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 import * as _ from 'lodash';
 import { SendMethod } from 'merit/transact/send/send-method.model';
 import { ConfigService } from 'merit/shared/config.service';
@@ -22,6 +21,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { getEasySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 import { Logger } from 'merit/core/logger';
 import { MERIT_MODAL_OPTS } from '../../../../utils/constants';
+import { MeritContact } from '../../../../models/merit-contact';
 
 @IonicPage()
 @Component({
