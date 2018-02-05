@@ -741,7 +741,7 @@ export class API {
    * @param {string=} message - message to send to a receiver
    *
    */
-  sendInvite(toAddress: string, amount: number = 1, message: string = '', walletPassword: string = ''): Promise<any> {
+  async sendInvite(toAddress: string, amount: number = 1, message: string = '', walletPassword: string = ''): Promise<any> {
     const opts = {
       invite: true,
       outputs: [{
@@ -751,19 +751,12 @@ export class API {
       }],
     };
 
-    return this.createTxProposal(opts)
-      .then(txp => {
-        console.log('created txp');
-        return this.publishTxProposal({ txp }).then(txp => {
-          return this.signTxProposal(txp, walletPassword).then(txp => {
-            console.log('signed txp');
-            return this.broadcastTxProposal(txp)
-              .then(console.log)
-              .catch(console.log);
-          });
-        });
-      })
-      .catch(error => console.log(error.message));
+    let txp = await this.createTxProposal(opts)
+    txp = await this.publishTxProposal({ txp });
+    txp = await this.signTxProposal(txp, walletPassword);
+    txp = await this.broadcastTxProposal(txp);
+
+    return txp;
   }
 
   /**
@@ -2422,7 +2415,7 @@ export class API {
     $.checkState(this.credentials && this.credentials.isComplete());
     let url = '/v1/invites/';
 
-    return this._doGetRequest(url).then(balance => balance.availableAmount);
+    return this._doGetRequest(url);
   };
 
   /**
