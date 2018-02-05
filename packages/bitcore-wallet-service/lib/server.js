@@ -2945,7 +2945,6 @@ WalletService.prototype.getUnlockRequests = function(opts, cb) {
 
             if (addresses.length == 0) return cb(null, []);
             var network = wallet.network;
-
             var addressStrs = _.map(addresses, 'address');
 
             var bc = self._getBlockchainExplorer(network);
