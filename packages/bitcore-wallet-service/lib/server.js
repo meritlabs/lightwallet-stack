@@ -2880,8 +2880,9 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
       time: t,
       inputs: inputs,
       outputs: outputs,
-      isCoinbase: tx.isCoinbase,
-      isMature: tx.isMature
+      isCoinbase: !!tx.isCoinbase,
+      isMature: !!tx.isCoinbase ? tx.isMature : true,
+      isInvite: !!tx.isInvite,
     };
   });
 };
@@ -2933,153 +2934,46 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
 };
 
 
-WalletService.prototype._normalizeReferallsHistory = function(referrals) {
-
-    var now = Math.floor(Date.now() / 1000);
-
-    return _.map([].concat(txs), function(referral) {
-    //    var inputs = _.map(tx.vin, function(item) {
-    //        return {
-    //            address: item.addr,
-    //            amount: item.valueMicros,
-    //        }
-    //    });
-    //
-    //    var outputs = _.map(tx.vout, function(item) {
-    //        var itemAddr;
-    //        // If classic multisig, ignore
-    //        if (item.scriptPubKey && _.isArray(item.scriptPubKey.addresses) && item.scriptPubKey.addresses.length == 1) {
-    //            itemAddr = item.scriptPubKey.addresses[0];
-    //        }
-    //
-    //        return {
-    //            address: itemAddr,
-    //            amount: parseInt((item.value * 1e8).toFixed(0)),
-    //        }
-    //    });
-    //
-        var timestamp = referral.blocktime; // blocktime
-        //if (!t || _.isNaN(t)) t = tx.firstSeenTs;
-        //if (!t || _.isNaN(t)) t = now;
-    //
-    //    return {
-    //        txid: tx.txid,
-    //        confirmations: tx.confirmations,
-    //        blockheight: tx.blockheight,
-    //        fees: parseInt((tx.fees * 1e8).toFixed(0)),
-    //        size: tx.size,
-    //        time: t,
-    //        inputs: inputs,
-    //        outputs: outputs,
-    //        isCoinbase: tx.isCoinbase,
-    //        isMature: tx.isMature
-    //    };
-
-        return {
-            refid: referral.id,
-            time: timestamp
-        }
-    });
-};
-
-/**
- * Retrieves all referrals (incoming & outgoing)
- * Times are in UNIX EPOCH
- *
- * @param {Object} opts
- * @param {Number} opts.skip (defaults to 0)
- * @param {Number} opts.limit
- * @param {Number} opts.includeExtendedInfo[=false] - Include all inputs/outputs for every tx.
- * @returns {TxProposal[]} Transaction proposals, newer first
- */
-WalletService.prototype.getReferralsHistory = function(opts, cb) {
-
+WalletService.prototype.getUnlockRequests = function(opts, cb) {
     var self = this;
-    if (opts.skip < 0 || opts.skip == opts.limit) {
-        log.warn("Invalid parameters sent to getReferralsHistory.");
-        return cb(Errors.INVALID_PARAMETERS);
-    }
-
-    opts = opts || {};
-    opts.limit = (_.isUndefined(opts.limit) ? Defaults.HISTORY_LIMIT : opts.limit);
-    if (opts.limit > Defaults.HISTORY_LIMIT)
-        return cb(Errors.HISTORY_LIMIT_EXCEEDED);
-
-
-    //get normalized referrals
-    function getNormalizedReferrals(addresses, from, to, cb) {
-        var referrals = [];
-        var totalItems = 0;
-        var fromCache = false;
-        var useCache = addresses.length >= Defaults.HISTORY_CACHE_ADDRESS_THRESOLD;
-        var network = Bitcore.Address(addresses[0].address).toObject().network;
-
-        async.series([
-            // get referrals from cache
-            function(next) {
-                if (!useCache) return next();
-
-                self.storage.getReferralsHistoryCache(self.walletId, from, to, function(err, res) {
-                    if (err) return next(err);
-                    if (!res || !res[0]) return next();
-
-                    referrals = res;
-                    fromCache = true;
-
-                    return next();
-                });
-            },
-            //get referrals from blockchain
-            function(next) {
-                if (referrals.length) return next();
-
-                var addressStrs = _.map(addresses, 'address');
-                var bc = self._getBlockchainExplorer(network);
-                if (!bc) return next(new Error('Could not get blockchain explorer instance'));
-                bc.getAddressReferrals(addressStrs, from, to, function(err, rawReferrals, total) {
-                    console.log("SERVER.JS REFERRALS RECEIVED FROM BC", rawReferrals, total);
-
-                    return next();
-                });
-
-            },
-            //setting cache if new data received
-            function(next) {
-                if (!useCache || fromCache) return next();
-
-                return next();
-            }
-        ], function(err) {
-            if (err) return cb(err);
-
-            return cb(null, {
-                items: referrals,
-                fromCache: fromCache
-            });
-        });
-
-    }
 
     self.getWallet({}, function(err, wallet) {
         if (err) return cb(err);
 
-        // Get addresses for this wallet
-        self.storage.fetchAddresses(self.walletId, function(err, addresses) {
+        self.storage.fetchAddresses(wallet.id, function(err, addresses) {
             if (err) return cb(err);
 
             if (addresses.length == 0) return cb(null, []);
+            var network = wallet.network;
+            var addressStrs = _.map(addresses, 'address');
 
-            var from = opts.skip || 0;
-            var to = from + opts.limit;
+            var bc = self._getBlockchainExplorer(network);
+            if (!bc) return next(new Error('Could not get blockchain explorer instance'));
+            bc.getAddressReferrals(addressStrs, function(err, referrals) {
+                if (err) return cb(err);
+                self.storage.fetchInvitedAddresses(function (err, invitedAddresses) {
+                  if (err) return cb(err);
 
-            getNormalizedReferrals(addresses, from ,to, function(err, result) {
-                return cb(null, result, !!result.fromCache);
+                  var unlockRequests = referrals.map(function(referralObj) {
+                     return Bitcore.Referral(referralObj.raw); 
+                    }).filter(function(referral) {
+                      return (addressStrs.indexOf(referral.address.toString()) == -1); //filter our own unlock request
+                    }).map(function(referral) {
+
+                      return {
+                        referralId: referral.hash,
+                        address: referral.address.toString(),
+                        parentAddress: referral.parentAddress.toString(),
+                        alias: referral.alias,
+                        isConfirmed: (invitedAddresses.indexOf(referral.address.toString()) != -1) 
+                      };
+                    });
+  
+                  return cb(null, unlockRequests);
+                });
             });
         });
-
     });
-
-
 };
 
 /**
@@ -3124,6 +3018,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           address: item.address,
           amount: item.amount,
           isMine: !!address,
+          // TODO: handle singleAddress and change addresses
           isChange: address ? (address.isChange || wallet.singleAddress) : false,
         }
       });
@@ -3136,7 +3031,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       var inputs, outputs;
 
       if (tx.outputs.length || tx.inputs.length) {
-
         inputs = classify(tx.inputs);
         outputs = classify(tx.outputs);
 
@@ -3179,7 +3073,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         addressTo: addressTo,
         confirmations: tx.confirmations,
         isCoinbase: tx.isCoinbase,
-        isMature: tx.isMature
+        isMature: tx.isMature,
+        isInvite: tx.isInvite,
       };
 
       if (_.isNumber(tx.size) && tx.size > 0) {
@@ -3194,9 +3089,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           return _.pick(output, 'address', 'amount', 'isMine');
         });
       } else {
-        outputs = _.filter(outputs, {
-          isChange: false
-        });
+        // TODO: handle singleAddress and change addresses
+        // outputs = _.filter(outputs, {
+        //   isChange: false
+        // });
         if (action == 'received') {
           outputs = _.filter(outputs, {
             isMine: true
@@ -3204,6 +3100,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         }
         newTx.outputs = _.map(outputs, formatOutput);
       }
+
+      console.log('newTx:', newTx);
 
       var proposal = indexedProposals[tx.txid];
       if (proposal) {
@@ -3269,7 +3167,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
         log.info('Querying txs for: %s addrs', addresses.length);
 
-        console.log(JSON.stringify(addresses[0].address.Address), 'address');
+        console.log(JSON.stringify(addresses[0].address), 'address');
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
