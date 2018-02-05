@@ -567,8 +567,6 @@ Merit.prototype._getNetworkOption = function() {
 Merit.prototype._zmqBlockHandler = function(node, message) {
   var self = this;
 
-  console.log('_zmqBlockHandler: new block header received:', message.toString('hex'));
-
   // Update the current chain tip
   self._rapidProtectedUpdateTip(node, message);
 
@@ -1188,8 +1186,9 @@ Merit.prototype.getAddressBalance = function(addressArg, options, callback) {
 Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callback) {
   var self = this;
   var queryMempool = _.isUndefined(options.queryMempool) ? true : options.queryMempool;
+  var invites = !!options.invites;
   var addresses = self._normalizeAddressArg(addressArg);
-  var cacheKey = addresses.join('');
+  var cacheKey = (options.invites ? 'i:' : '') + addresses.join('');
   var utxos = self.utxosCache.get(cacheKey);
 
   function updateWithMempool(confirmedUtxos, mempoolDeltas) {
@@ -1236,7 +1235,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
         callback(null, updateWithMempool(utxos, mempoolDeltas));
       });
     } else {
-      self.client.getAddressUtxos({addresses: addresses}, function(err, response) {
+      self.client.getAddressUtxos({ addresses, invites }, function(err, response) {
         if (err) {
           return callback(self._wrapRPCError(err));
         }
@@ -1770,8 +1769,6 @@ Merit.prototype.getRawBlock = function(blockArg, callback) {
   // TODO apply performance patch to the RPC method for raw data
   var self = this;
 
-  console.log('Merit.getRawBlock called');
-
   function queryBlock(err, blockhash) {
     if (err) {
       return callback(err);
@@ -1806,8 +1803,6 @@ Merit.prototype.getRawBlock = function(blockArg, callback) {
 Merit.prototype.getBlock = function(blockArg, callback) {
   // TODO apply performance patch to the RPC method for raw data
   var self = this;
-
-  console.log('Merit.getBlock called');
 
   function queryBlock(err, blockhash) {
     if (err) {
@@ -1928,8 +1923,6 @@ Merit.prototype.getBlockHashesByTimestamp = function(high, low, options, callbac
  */
 Merit.prototype.getBlockHeader = function(blockArg, callback) {
   var self = this;
-
-  console.log('Merit.prototype.getBlockHeader called');
 
   function queryHeader(err, blockhash) {
     if (err) {
@@ -2105,6 +2098,18 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
   var self = this;
   var tx = self.transactionDetailedCache.get(txid);
 
+  function getMicros (input, isInvite) {
+    if (input.valueSat) {
+      return input.valueSat;
+    }
+
+    if (isInvite && input.value) {
+      return input.value;
+    }
+
+    return null;
+  }
+
   // ToDo: valueSat must be valueXXX after renaming in merit-cli
   function addInputsToTx(tx, result) {
     tx.inputs = [];
@@ -2112,7 +2117,10 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
     for(var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
       var input = result.vin[inputIndex];
       if (!tx.isCoinbase && input.valueSat) {
-        tx.inputMicros += !tx.isInvite ? input.valueSat : input.value; // TODO: rename sat
+        tx.inputMicros += input.valueSat; // TODO: rename sat
+      }
+      if (!tx.isCoinbase && tx.isInvite) {
+        tx.inputMicros += input.value; // TODO: rename sat
       }
       var script = null;
       var scriptAsm = null;
@@ -2129,7 +2137,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
         scriptAsm: scriptAsm || null,
         sequence: input.sequence,
         address: input.address || null,
-        micros: _.isUndefined(input.valueSat) ? null : input.valueSat // TODO: rename sat
+        micros: getMicros(input, tx), // TODO: rename sat
       });
     }
   }

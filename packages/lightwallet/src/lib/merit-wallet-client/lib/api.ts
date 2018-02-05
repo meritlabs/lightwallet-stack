@@ -734,6 +734,32 @@ export class API {
   };
 
   /**
+   * Create and send invite tx to a given address
+   *
+   * @param {string} toAddress - merit address to send invite to
+   * @param {number=} amount - number of invites to send. defaults to 1
+   * @param {string=} message - message to send to a receiver
+   *
+   */
+  async sendInvite(toAddress: string, amount: number = 1, message: string = '', walletPassword: string = ''): Promise<any> {
+    const opts = {
+      invite: true,
+      outputs: [{
+        amount,
+        toAddress,
+        message,
+      }],
+    };
+
+    let txp = await this.createTxProposal(opts)
+    txp = await this.publishTxProposal({ txp });
+    txp = await this.signTxProposal(txp, walletPassword);
+    txp = await this.broadcastTxProposal(txp);
+
+    return txp;
+  }
+
+  /**
    * Create an easySend script and create a transaction to the script address
    *
    * @param {Object}      opts
@@ -1833,9 +1859,8 @@ export class API {
         address: opts.address,
         addressType: opts.addressType,
         pubkey: opts.pubkey,
-        signature,
-        alias: opts.alias,
-        network: network
+        signature: signature.toString('hex'),
+        alias: opts.alias
       });
 
       console.log("SENDING REFERRAL", referral.toObject());
@@ -2130,7 +2155,8 @@ export class API {
 
     if (opts.addresses) {
       url += '?' + querystring.stringify({
-        addresses: [].concat(opts.addresses).join(',')
+        addresses: [].concat(opts.addresses).join(','),
+        invites: opts.invites,
       });
     }
     return this._doGetRequest(url);
@@ -2208,7 +2234,7 @@ export class API {
     $.checkArgument(opts)
     $.checkArgument(opts.txp, 'txp is required');
 
-    $.checkState(parseInt(opts.txp.version) >= 3);
+    $.checkState(parseInt(opts.txp.version) >= Bitcore.Transaction.CURRENT_VERSION);
 
     let t = Utils.buildTx(opts.txp);
     let hash = t.uncheckedSerialize();
@@ -2241,7 +2267,7 @@ export class API {
    */
   private _signAddressAndUnlockWithRoot(address: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-    if (address.signed && address.refid) {
+    if (address.signed) {
       return Promise.resolve(address.refid);
     }
 
@@ -2377,9 +2403,18 @@ export class API {
     $.checkState(this.credentials && this.credentials.isComplete());
     let url = '/v1/balance/';
     if (opts.twoStep) url += '?twoStep=1';
-    return this._doGetRequest(url).then((balance) => {
-      return balance.availableAmount;
-    });
+
+    return this._doGetRequest(url).then(balance => balance.availableAmount);
+  };
+
+  /**
+   * Update wallet invites balance
+   */
+  getInvitesBalance(opts: any = {}): Promise<number> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+    let url = '/v1/invites/';
+
+    return this._doGetRequest(url);
   };
 
   /**

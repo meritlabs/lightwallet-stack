@@ -100,6 +100,9 @@
             ? ' &middot; ' + ( wallet.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '') : '' ) }}&nbsp;<span>MRT</span>
             <ion-icon name="ios-timer-outline" *ngIf="walletHasPendingAmount(wallet)"></ion-icon>
           </p>
+          <p class="invites">
+            Invites: {{ wallet.status.invitesBalance.availableAmount }}
+          </p>
           <p *ngIf="walletHasPendingAmount(wallet)">Partially confirmed</p>
           <p *ngIf="wallet.balanceHidden">
             [Balance Hidden]
@@ -118,6 +121,20 @@
           <span class="error" *ngIf="wallet.error">{{ wallet.error }}</span>
         </ion-note>
 
+      </button>
+    </div>
+
+    <ion-item-divider translate *ngIf="(wallets && wallets.length)">
+      Send invite to parent
+    </ion-item-divider>
+
+    <div class="send-invite" *ngIf="(wallets && wallets.length)">
+      <ion-input placeholder="Address" [(ngModel)]="formData.inviteTo" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
+
+      <button ion-item (click)="sendInvite(wallets[0])" detail-none>
+        <ion-avatar item-start img-icon>
+          <img src="assets/img/icons/send.svg">
+        </ion-avatar>
       </button>
     </div>
 

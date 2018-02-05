@@ -161,15 +161,14 @@ AddressController.prototype.utxo = function(req, res) {
 };
 
 AddressController.prototype.multiutxo = function(req, res) {
-  var self = this;
-  this.node.getAddressUnspentOutputs(req.addrs, true, function(err, utxos) {
+  this.node.getAddressUnspentOutputs(req.addrs, { invites: req.body.invites }, (err, utxos) => {
     if(err && err.code === -5) {
       return res.jsonp([]);
     } else if(err) {
-      return self.common.handleErrors(err, res);
+      return this.common.handleErrors(err, res);
     }
 
-    res.jsonp(utxos.map(self.transformUtxo.bind(self)));
+    res.jsonp(utxos.map(this.transformUtxo.bind(this)));
   });
 };
 
@@ -179,9 +178,10 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
     txid: utxoArg.txid,
     vout: utxoArg.outputIndex,
     scriptPubKey: utxoArg.script,
-    amount: utxoArg.satoshis / 1e8,
+    amount: !utxoArg.isInvite ? utxoArg.satoshis / 1e8 : utxoArg.satoshis,
     micros: utxoArg.satoshis,
-    isCoinbase: utxoArg.isCoinbase
+    isCoinbase: utxoArg.isCoinbase,
+    isInvite: utxoArg.isInvite,
   }; // ToDo: update after changes in meritd
   if (utxoArg.height && utxoArg.height > 0) {
     utxo.height = utxoArg.height;
