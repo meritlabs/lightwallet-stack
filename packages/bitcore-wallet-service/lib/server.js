@@ -3007,7 +3007,7 @@ WalletService.prototype.getUnlockRequests = function(opts, cb) {
                   if (err) return cb(err);
 
                   var unlockRequests = referrals.map(function(referralObj) {
-                     return Bitcore.Referral(referralObj.raw); 
+                     return Bitcore.Referral(referralObj.raw);
                     }).filter(function(referral) {
                       return (addressStrs.indexOf(referral.address.toString()) == -1); //filter our own unlock request
                     }).map(function(referral) {
@@ -3017,10 +3017,10 @@ WalletService.prototype.getUnlockRequests = function(opts, cb) {
                         address: referral.address.toString(),
                         parentAddress: referral.parentAddress.toString(),
                         alias: referral.alias,
-                        isConfirmed: (invitedAddresses.indexOf(referral.address.toString()) != -1) 
+                        isConfirmed: (invitedAddresses.indexOf(referral.address.toString()) != -1)
                       };
                     });
-  
+
                   return cb(null, unlockRequests);
                 });
             });
@@ -3154,8 +3154,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         newTx.outputs = _.map(outputs, formatOutput);
       }
 
-      console.log('newTx:', newTx);
-
       var proposal = indexedProposals[tx.txid];
       if (proposal) {
         newTx.createdOn = proposal.createdOn;
@@ -3220,7 +3218,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
         log.info('Querying txs for: %s addrs', addresses.length);
 
-        console.log(JSON.stringify(addresses[0].address), 'address');
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
@@ -3256,7 +3253,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
             }
           });
           log.warn("After blockHeight check");
-          console.log(txs);
           next();
         });
       },
@@ -3354,7 +3350,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         if (err) return cb(err);
 
         log.warn("What happened after parallel?");
-        console.log(res);
 
         if (!res.txs) {
           var finalTxs = decorate(wallet, [], addresses, [], []);
