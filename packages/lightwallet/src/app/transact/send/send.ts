@@ -71,10 +71,10 @@ export class SendView {
   }
 
   async parseSearch() {
-    if (typeof this.searchQuery !== 'string' || !this.searchQuery.length)
+    if (!this.searchQuery || !this.searchQuery.length)
       return this.clearSearch();
 
-    if (this.searchQuery.indexOf('merit:') == 0 && this.searchQuery.length > 6)
+    if (this.searchQuery.length > 6 && this.searchQuery.indexOf('merit:') == 0)
       this.searchQuery = this.searchQuery.split('merit:')[1];
 
     const input = this.searchQuery.split('?')[0];
