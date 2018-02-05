@@ -40,9 +40,19 @@ view-send-amount {
         display: inline-block;
         font-size: 12px;
         margin: 8px;
-        color: rgb(115, 129, 155);
+        color: rgba(115, 129, 155, 0.5);
         &.selected {
           color: rgb(70, 85, 111);
+        }
+
+        .selected-mark {
+          width: 3px;
+          height: 3px;
+          background: map_get($colors, primary);
+          display: block;
+          float: none;
+          margin: auto;
+          border-radius: 500rem;
         }
       }
 
@@ -111,6 +121,7 @@ view-send-amount {
       font-size: 20px;
       color: #9ba6b9;
       font-weight: 600;
+      width: 20px;
     }
   }
 
