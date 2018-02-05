@@ -382,9 +382,10 @@ Storage.prototype.fetchInvitedAddresses = function(walletId, cb) {
     if (!result) return cb(null, []);
 
     var addresses = result.reduce(function(addrs, tx) {
+
       return addrs.concat(
         tx.outputs.filter(function(output) {
-          return (addresses.indexOf(output.address) == -1);
+          return (addrs.indexOf(output.address) == -1);
         }).map(function(output) {
           return output.address;  
         })
