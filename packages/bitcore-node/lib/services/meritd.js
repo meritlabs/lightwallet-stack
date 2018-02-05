@@ -2098,6 +2098,18 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
   var self = this;
   var tx = self.transactionDetailedCache.get(txid);
 
+  function getMicros (input, isInvite) {
+    if (input.valueSat) {
+      return input.valueSat;
+    }
+
+    if (isInvite && input.value) {
+      return input.value;
+    }
+
+    return null;
+  }
+
   // ToDo: valueSat must be valueXXX after renaming in merit-cli
   function addInputsToTx(tx, result) {
     tx.inputs = [];
@@ -2105,7 +2117,10 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
     for(var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
       var input = result.vin[inputIndex];
       if (!tx.isCoinbase && input.valueSat) {
-        tx.inputMicros += !tx.isInvite ? input.valueSat : input.value; // TODO: rename sat
+        tx.inputMicros += input.valueSat; // TODO: rename sat
+      }
+      if (!tx.isCoinbase && tx.isInvite) {
+        tx.inputMicros += input.value; // TODO: rename sat
       }
       var script = null;
       var scriptAsm = null;
@@ -2122,7 +2137,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
         scriptAsm: scriptAsm || null,
         sequence: input.sequence,
         address: input.address || null,
-        micros: _.isUndefined(input.valueSat) ? null : input.valueSat // TODO: rename sat
+        micros: getMicros(input, tx), // TODO: rename sat
       });
     }
   }

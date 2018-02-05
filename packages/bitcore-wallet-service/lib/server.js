@@ -3063,7 +3063,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       return _.sumBy(_.filter(items, filter), 'amount');
     };
 
-    function classify(items) {
+    function classify(items, isInvite, inout) {
       return _.map(items, function(item) {
         var address = indexedAddresses[item.address];
         return {
@@ -3071,7 +3071,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           amount: item.amount,
           isMine: !!address,
           // TODO: handle singleAddress and change addresses
-          isChange: address ? (address.isChange || wallet.singleAddress) : false,
+          // isChange: address ? (address.isChange || wallet.singleAddress) : false,
+          isChange: address ? ((address.isChange || wallet.singleAddress) && !isInvite) : false,
         }
       });
     };
@@ -3081,14 +3082,14 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       var amountIn, amountOut, amountOutChange;
       var amount, action, addressTo;
       var inputs, outputs;
-
       if (tx.outputs.length || tx.inputs.length) {
-        inputs = classify(tx.inputs);
-        outputs = classify(tx.outputs);
+        inputs = classify(tx.inputs, tx.isInvite, 'input');
+        outputs = classify(tx.outputs, tx.isInvite, 'output');
 
         amountIn = sum(inputs, true);
         amountOut = sum(outputs, true, false);
         amountOutChange = sum(outputs, true, true);
+
         if (amountIn == (amountOut + amountOutChange + (amountIn > 0 ? tx.fees : 0))) {
           amount = amountOut;
           action = 'moved';

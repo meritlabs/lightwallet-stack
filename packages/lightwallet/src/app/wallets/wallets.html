@@ -124,14 +124,19 @@
       </button>
     </div>
 
-    <button ion-item class="import-wallet-button" (click)="sendInvite(wallets[0])" *ngIf="wallets && wallets.length" detail-none>
-      <ion-avatar item-start img-icon>
-        <img src="assets/img/icons/send.svg">
-      </ion-avatar>
-      <ion-label>
-        <h2>Send invite to parent</h2>
-      </ion-label>
-    </button>
+    <ion-item-divider translate *ngIf="(wallets && wallets.length)">
+      Send invite to parent
+    </ion-item-divider>
+
+    <div class="send-invite" *ngIf="(wallets && wallets.length)">
+      <ion-input placeholder="Address" [(ngModel)]="formData.inviteTo" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
+
+      <button ion-item (click)="sendInvite(wallets[0])" detail-none>
+        <ion-avatar item-start img-icon>
+          <img src="assets/img/icons/send.svg">
+        </ion-avatar>
+      </button>
+    </div>
 
     <button ion-item class="import-wallet-button" (click)="toImportWallet()" detail-none>
       <ion-avatar item-start img-icon>
