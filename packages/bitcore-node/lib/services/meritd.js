@@ -126,6 +126,7 @@ Merit.prototype._initCaches = function() {
   this.utxosCache = LRU(50000);
   this.txidsCache = LRU(50000);
   this.referralsCache = LRU(50000);
+  this.referralCache = LRU(100000);
   this.balanceCache = LRU(50000);
   this.summaryCache = LRU(50000);
   this.blockOverviewCache = LRU(144);
@@ -137,7 +138,6 @@ Merit.prototype._initCaches = function() {
 
   // caches valid indefinitely
   this.transactionCache = LRU(100000);
-  this.referralCache = LRU(100000);
   this.rawTransactionCache = LRU(50000);
   this.blockCache = LRU(144);
   this.rawBlockCache = LRU(72);
@@ -229,6 +229,9 @@ Merit.prototype.getPublishEvents = function() {
     },
     {
       name: 'meritd/rawreferraltx',
+
+      
+      
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
@@ -1548,7 +1551,6 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
   });
 };
 
-
 /**
  * Will get a referral as a Bitcore Referral. Results include the mempool.
  * @param {String} refid - Referral hash
@@ -1565,6 +1567,7 @@ Merit.prototype.getReferral = function(refid, callback) {
     } else {
         self._tryAllClients(function(client, done) {
             client.getRawReferral(refid, function(err, response) {
+
                 if (err) {
                     return done(self._wrapRPCError(err));
                 }
@@ -1638,7 +1641,6 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
             })
         }
     });
-
 };
 
 

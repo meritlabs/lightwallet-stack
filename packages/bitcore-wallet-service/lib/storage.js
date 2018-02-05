@@ -704,13 +704,12 @@ Storage.prototype.getReferralsHistoryCache = function(walletId, from, to, cb) {
     var self = this;
     $.checkArgument(from >= 0);
     $.checkArgument(from <= to);
-
+  
     self.db.collection(collections.CACHE).findOne({
         walletId: walletId,
         type: 'referralsCacheStatus',
         key: null
     }, function(err, result) {
-
         if (err) return cb(err);
         if (!result) return cb();
         if (!result.isUpdated) return cb();

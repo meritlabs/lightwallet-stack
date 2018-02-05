@@ -100,7 +100,6 @@ Insight.prototype.getTransaction = function(txid, cb) {
 
 Insight.prototype.getAddressReferrals = function(addresses, cb) {
 
-
     var args = {
         method: 'POST',
         path: this.apiPrefix + '/addrs/referrals',

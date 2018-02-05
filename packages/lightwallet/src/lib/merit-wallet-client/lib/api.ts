@@ -1733,7 +1733,6 @@ export class API {
       const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey(void 0, network);
       const pubkey = walletPrivKey.toPublicKey();
       this.credentials.addWalletPrivateKey(walletPrivKey.toString());
-
       let address = this.getRootAddress();
 
       const referralOpts = {
@@ -1745,6 +1744,7 @@ export class API {
         network: network,
         alias: opts.alias
       };
+
 
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
@@ -2661,7 +2661,6 @@ export class API {
        return Promise.resolve(txs);
      });
     });
-
   };
 
   /**
@@ -2693,11 +2692,8 @@ export class API {
    * @param address
    */
   confirmRequest(request:{refid:string, address:string}): Promise<any> {
-
     return Promise.resolve(true);
-
   }
-
 
   /**
    * gets all unlock requests (active and hidden) for this wallet
