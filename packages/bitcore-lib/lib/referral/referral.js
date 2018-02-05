@@ -93,8 +93,7 @@ Referral.prototype.toBufferWriter = function(writer) {
     writer.writeVarintNum(signatureBuf.length);
     writer.write(signatureBuf);
 
-    if (this.version >= 1 && this.alias) {
-        console.log('writing alias');
+    if (this.version >= 1) {
         writer.writeVarintNum(this.alias.length);
         writer.writeString(this.alias);
     }
