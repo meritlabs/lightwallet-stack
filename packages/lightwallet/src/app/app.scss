@@ -49,7 +49,7 @@ ion-content.has-refresher > .scroll-content {
 }
 
 ion-label {
-  color: $label-text-color !important;
+  color: $label-text-color;
   font-size: 14px;
 }
 
@@ -541,7 +541,7 @@ ion-modal.merit-modal {
     ion-header.header.header-ios {
 
       ion-navbar.toolbar.toolbar-ios {
-        padding-top: 0;
+        padding: 0;
         min-height: 46px;
 
         .toolbar-background-ios {
@@ -550,23 +550,45 @@ ion-modal.merit-modal {
           background: rgb(233, 237, 242);
         }
 
+        ion-buttons.bar-buttons {
+          order: 1;
+          margin: 0;
+          padding: 0;
+          button.bar-button span.button-inner {
+            visibility: hidden;
+            width: 0;
+            position: relative;
+            &:after {
+              content: '\f2c0';
+              font-family: 'Ionicons';
+              visibility: visible;
+              font-size: 24px;
+              position: absolute;
+              left: 10px;
+              top: 4px;
+            }
+          }
+        }
+
         ion-title.title-ios {
           padding-top: 0;
           min-height: 46px;
-        }
+          height: 46px;
 
-        ion-title.title-ios .toolbar-title {
-          color: rgb(45, 60, 80);
-          letter-spacing: -.4px;
-          font-size: 17px;
+          .toolbar-title {
+            color: rgb(45, 60, 80);
+            letter-spacing: -.4px;
+            font-size: 17px;
+            font-weight: 600;
+          }
         }
       }
     }
   }
 
   .modal-wrapper {
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
     overflow: hidden;
   }
 }
