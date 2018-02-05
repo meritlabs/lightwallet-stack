@@ -13,12 +13,12 @@ export interface IMeritAddress {
 export class MeritContact implements IContactProperties {
 
   id: string;
-  name: IContactName;
-  phoneNumbers: IContactField[];
-  emails: IContactField[];
-  photos: IContactField[];
-  urls: Array<any>;
-  meritAddresses: Array<IMeritAddress>;
+  name: IContactName = { formatted: '' };
+  phoneNumbers: IContactField[] = [];
+  emails: IContactField[] = [];
+  photos: IContactField[] = [];
+  urls: Array<any> = [];
+  meritAddresses: Array<IMeritAddress> = [];
 
   isValid() {
     if (!this.name) return false;

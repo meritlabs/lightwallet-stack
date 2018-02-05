@@ -20,16 +20,16 @@ const CONFIRMATION_THRESHOLD = 6;
   templateUrl: 'tx-details.html'
 })
 export class TxDetailsView {
-  public title: string;
-  public wallet: any;
-  public tx: any;
-  public confirmations: string;
-  public vault: any;
-  public amountStr: string;
+
+  title: string;
+  wallet: any;
+  tx: any;
+  confirmations: string;
+  vault: any;
+  amountStr: string;
+
   private bitcore: any;
   private txId: string;
-
-
 
   constructor(private navParams: NavParams,
               private txFormatService: TxFormatService,
