@@ -3003,7 +3003,7 @@ WalletService.prototype.getUnlockRequests = function(opts, cb) {
             if (!bc) return next(new Error('Could not get blockchain explorer instance'));
             bc.getAddressReferrals(addressStrs, function(err, referrals) {
                 if (err) return cb(err);
-                self.storage.fetchInvitedAddresses(function (err, invitedAddresses) {
+                self.storage.fetchInvitedAddresses(wallet.id, function (err, invitedAddresses) {
                   if (err) return cb(err);
 
                   var unlockRequests = referrals.map(function(referralObj) {
