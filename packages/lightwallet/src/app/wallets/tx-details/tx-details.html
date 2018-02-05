@@ -68,7 +68,7 @@
     <ion-item *ngIf="isNotConfirmed(tx)">
       <ion-label>
         <p>{{'Confirmations' | translate}}</p>
-        <h2>{{confirmations || 'Unconfirmed' | translate}}</h2>
+        <h2>{{(confirmations || 'Unconfirmed') | translate}}</h2>
       </ion-label>
     </ion-item>
   </ion-list>

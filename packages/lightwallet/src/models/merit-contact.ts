@@ -1,8 +1,7 @@
-import { Contact, IContactField, IContactName, IContactProperties } from '@ionic-native/contacts';
-
 import * as Bitcore from 'bitcore-lib';
+import { IContactField, IContactName, IContactProperties } from '@ionic-native/contacts';
 
-export interface AddressBook {
+export interface IAddressBook {
   [key: string]: MeritContact;
 }
 
@@ -13,15 +12,13 @@ export interface IMeritAddress {
 
 export class MeritContact implements IContactProperties {
 
-  public id: string;
-  public name: IContactName = { formatted: '' };
-  public phoneNumbers: IContactField[] = [];
-  public emails: IContactField[] = [];
-  public photos: IContactField[] = [];
-  public urls: Array<any> = [];
-  public meritAddresses: Array<IMeritAddress> = [];
-
-  public nativeModel: Contact;
+  id: string;
+  name: IContactName;
+  phoneNumbers: IContactField[];
+  emails: IContactField[];
+  photos: IContactField[];
+  urls: Array<any>;
+  meritAddresses: Array<IMeritAddress>;
 
   isValid() {
     if (!this.name) return false;
@@ -46,7 +43,6 @@ export class MeritContact implements IContactProperties {
       } catch (e) {
       }
     });
-
   }
 
 }
