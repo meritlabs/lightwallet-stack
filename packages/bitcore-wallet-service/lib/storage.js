@@ -387,7 +387,7 @@ Storage.prototype.fetchInvitedAddresses = function(walletId, cb) {
         tx.outputs.filter(function(output) {
           return (addrs.indexOf(output.address) == -1);
         }).map(function(output) {
-          return output.address;  
+          return output.toAddress;  
         })
       );
     }, []);
