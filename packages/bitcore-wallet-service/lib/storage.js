@@ -365,6 +365,36 @@ Storage.prototype.fetchBroadcastedTxs = function(walletId, opts, cb) {
   });
 };
 
+Storage.prototype.fetchInvitedAddresses = function(walletId, cb) {
+  
+  var filter = {
+    isInvite: true, 
+    walletId: walletId,
+    status: 'broadcasted'
+  };
+
+  var fields = {
+      outputs: 1
+  };
+
+  this.db.collection(collections.TXS).find(filter, fields).sort({broadcastedOn: -1}).toArray(function(err, result) {
+    if (err) return cb(err);
+    if (!result) return cb(null, []);
+
+    var addresses = result.reduce(function(addrs, tx) {
+      return addrs.concat(
+        tx.outputs.filter(function(output) {
+          return (addresses.indexOf(output.address) == -1);
+        }).map(function(output) {
+          return output.address;  
+        })
+      );
+    }, []);
+    
+    return cb(null, addresses);
+  });
+};
+
 Storage.prototype.fetchReferralByCodeHash = function(codeHash, cb) {
   const self = this;
 

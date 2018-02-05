@@ -2943,34 +2943,35 @@ WalletService.prototype.getUnlockRequests = function(opts, cb) {
         self.storage.fetchAddresses(wallet.id, function(err, addresses) {
             if (err) return cb(err);
 
-            if (addresses.length == 0) return cb(null, []); //todo add error
-            var network = Bitcore.Address(addresses[0].address).toObject().network;
+            if (addresses.length == 0) return cb(null, []);
+            var network = wallet.network;
 
             var addressStrs = _.map(addresses, 'address');
 
             var bc = self._getBlockchainExplorer(network);
             if (!bc) return next(new Error('Could not get blockchain explorer instance'));
-            bc.getAddressReferrals(addressStrs, function(err, result) {
-
+            bc.getAddressReferrals(addressStrs, function(err, referrals) {
                 if (err) return cb(err);
+                self.storage.fetchInvitedAddresses(function (err, invitedAddresses) {
+                  if (err) return cb(err);
 
-                var unlockRequests = [];
-                result.forEach(function(referralObj)  {
-                    var referral = Bitcore.Referral(referralObj.raw);
+                  var unlockRequests = referrals.map(function(referralObj) {
+                     return Bitcore.Referral(referralObj.raw); 
+                    }).filter(function(referral) {
+                      return (addressStrs.indexOf(referral.address.toString()) == -1); //filter our own unlock request
+                    }).map(function(referral) {
 
-                    if (addressStrs.indexOf(referral.address.toString()) != -1) return false; //filter our own unlock request
-                    //todo filter confirmed requests
-
-                    return unlockRequests.push({
-                        referralId: referralObj.refid,
+                      return {
+                        referralId: referral.hash,
                         address: referral.address.toString(),
                         parentAddress: referral.parentAddress.toString(),
                         alias: referral.alias,
-                        timestamp: referralObj.timestamp
+                        isConfirmed: (invitedAddresses.indexOf(referral.address.toString()) != -1) 
+                      };
                     });
+  
+                  return cb(null, unlockRequests);
                 });
-
-                return cb(null, unlockRequests);
             });
         });
     });
