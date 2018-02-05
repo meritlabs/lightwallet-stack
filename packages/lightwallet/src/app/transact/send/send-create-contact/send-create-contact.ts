@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-
-import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
-import { AddressBookService } from 'merit/shared/address-book/address-book.service';
-import { SendMethod } from 'merit/transact/send/send-method.model';
 import { SendService } from 'merit/transact/send/send.service';
 import { ToastConfig } from "merit/core/toast.config";
 import { MeritToastController } from "merit/core/toast.controller";
+import { MeritContact } from '../../../../models/merit-contact';
+import { ContactsProvider } from '../../../../providers/contacts/contacts';
 
 @IonicPage()
 @Component({
@@ -23,7 +21,7 @@ export class SendCreateContactView {
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private addressBook: AddressBookService,
+    private contactsService: ContactsProvider,
     private sendService: SendService,
     private toastController: MeritToastController,
     private viewCtrl: ViewController
@@ -34,14 +32,11 @@ export class SendCreateContactView {
 
   }
 
-  ionViewDidLoad() {
-
-  }
-
   save() {
-    return this.addressBook.add(this.contact, this.contact.meritAddresses[0].address, this.contact.meritAddresses[0].network).then(() => {
-      this.viewCtrl.dismiss(this.contact);
-    });
+    return this.contactsService.add(this.contact, this.contact.meritAddresses[0].address, this.contact.meritAddresses[0].network)
+      .then(() => {
+        this.viewCtrl.dismiss(this.contact);
+      });
   }
 
   async addAddress(address) {

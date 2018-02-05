@@ -1,7 +1,5 @@
 import { Component, SecurityContext } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
-import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SendService } from 'merit/transact/send/send.service';
 import { SendMethod } from 'merit/transact/send/send-method.model';
@@ -9,6 +7,8 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 import { ProfileService } from 'merit/core/profile.service';
 import * as _ from 'lodash';
+import { ContactsProvider } from '../../../providers/contacts/contacts';
+import { MeritContact } from '../../../models/merit-contact';
 
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
@@ -38,7 +38,7 @@ export class SendView {
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
-              private addressBookService: AddressBookService,
+              private contactsService: ContactsProvider,
               private profileService: ProfileService,
               private sanitizer: DomSanitizer,
               private sendService: SendService,
@@ -54,7 +54,7 @@ export class SendView {
   async ionViewWillEnter() {
     this.loadingContacts = true;
     await this.updateHasUnlocked();
-    this.contacts = await this.addressBookService.getAllMeritContacts();
+    this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
     this.updateRecentContacts();
     this.parseSearch();
@@ -109,7 +109,7 @@ export class SendView {
       this.suggestedMethod = { type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input };
     }
 
-    this.addressBookService.searchContacts(this.contacts, input)
+    this.contactsService.searchContacts(this.contacts, input)
       .forEach((contact: MeritContact) => {
         if (_.isEmpty(contact.meritAddresses)) {
           result.noMerit.push(contact);
@@ -118,7 +118,7 @@ export class SendView {
         }
       });
 
-    this.addressBookService.searchContacts(this.recentContacts, input)
+    this.contactsService.searchContacts(this.recentContacts, input)
       .forEach((contact) => {
         result.recent.push(contact);
       });

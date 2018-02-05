@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, ModalController } from 'ionic-angular';
-import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { SendService } from 'merit/transact/send/send.service';
-import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
+import { ContactsProvider } from '../../../providers/contacts/contacts';
+import { MeritContact } from '../../../models/merit-contact';
 
 
 @IonicPage()
@@ -16,18 +16,17 @@ export class IncomingRequestModal {
   public contacts: Array<MeritContact> = [];
 
   constructor(
-    private navCtrl: NavController,
     private navParams: NavParams,
     private viewCtrl: ViewController,
     private modalCtrl: ModalController,
-    private addressBookService: AddressBookService,
+    private contactsService: ContactsProvider,
     private sendService: SendService
   ) {
     this.unlockRequest = this.navParams.get('unlockRequest');
   }
 
   async ionViewDidLoad() {
-    this.contacts = await this.addressBookService.getAllMeritContacts();
+    this.contacts = await this.contactsService.getAllMeritContacts();
   }
 
   cancel() {
