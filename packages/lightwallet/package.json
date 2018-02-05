@@ -23,8 +23,7 @@
         "electron:run": "./node_modules/.bin/electron .",
         "electron:package": "./node_modules/.bin/electron-builder",
         "electron:clean": "rm -rf ./dist",
-        "package:desktop": "npm run electron:clean && npm run build && npm run electron:package",
-      "postinstall": "sed -i 's/ 0.4/ 0.81/' node_modules/ionic-angular/components/modal/modal-transitions.js"
+        "package:desktop": "npm run electron:clean && npm run build && npm run electron:package"
     },
     "main": "./electron/main.js",
     "build": {
