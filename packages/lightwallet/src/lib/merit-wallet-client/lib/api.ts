@@ -1861,7 +1861,6 @@ export class API {
         pubkey: opts.pubkey,
         signature: signature.toString('hex'),
         alias: opts.alias
-        network,
       });
 
       console.log("SENDING REFERRAL", referral.toObject());
