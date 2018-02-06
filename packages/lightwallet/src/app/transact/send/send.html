@@ -41,7 +41,7 @@
     <div class="no-results" *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length">
      
       <div class="no-results-label" *ngIf="!searchResult.error">No results</div>
-      <div class="no-results-label" *ngIf="searchResult.error == 'ERROR_ADDRESS_NOT_BEACONED'">
+      <div class="no-results-label" *ngIf="searchResult.error == 'ERROR_ADDRESS_NOT_CONFIRMED'">
         Address is not confirmed yet
       </div>
 
