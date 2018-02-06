@@ -1,0 +1,9 @@
+contact-avatar {
+  ion-avatar {
+    background: #e9edf2;
+    border-radius: 500rem;
+    span {
+      color: map_get($colors, primary);
+    }
+  }
+}

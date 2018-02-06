@@ -19,7 +19,7 @@
                     <img [src]="sanitizePhotoUrl(contact.photos[0]?.value)" *ngIf="contact.photos.length">
                     <span color="primary">{{getContactInitials(contact)}}</span>
                 </ion-avatar>
-                {{contact.name.formatted}}
+                {{ contact.name.formatted }}
                 <img src="assets/img/icons/merit.svg"  color="primary" item-end>
             </ion-item>
 

@@ -11,7 +11,6 @@
         </ion-avatar>
         <span class="merit-amount">
           {{ totalNetworkValue || '0.00'}}
-          <small>MRT</small>
         </span>
       </ion-col>
       <ion-col col-4>
@@ -56,22 +55,17 @@
     <ion-item-divider>
       {{ wallet.name }}
       <span class="merit-amount">
-        {{ wallet.totalNetworkValueMerit || '00.0' }}&nbsp;<small>MRT</small>
+        {{ wallet.totalNetworkValueMerit || '00.0' }}
       </span>
-      <ion-note item-right class="balance">
-        <span class="fiat-amount">
-          {{ wallet.totalNetworkValueFiat }}
-        </span>
-      </ion-note>
     </ion-item-divider>
 
-    <button ion-item detail-none (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress" >
+    <button ion-item detail-none text-wrap (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress" >
       <ion-avatar img-icon item-start>
         <img src="assets/img/icons/invite.svg" alt="">
       </ion-avatar>
       <ion-label>
         <p>Invite Code</p>
-        <h2 >{{ wallet.referrerAddress }}</h2>
+        <h2>{{ wallet.referrerAddress }}</h2>
       </ion-label>
       <button ion-button icon-only clear item-end>
         <ion-icon merit-icon name="share"></ion-icon>
@@ -84,13 +78,8 @@
       </ion-avatar>
       <ion-label>
         <p>Network Size</p>
-        <h2>{{ wallet.totalNetworkValueMerit || '0.00' }}&nbsp;<small>MRT</small></h2>
+        <h2>{{ wallet.totalNetworkValueMerit || '0.00' }}</h2>
       </ion-label>
-      <ion-note item-end class="balance">
-        <span class="fiat-amount">
-          {{ wallet.totalNetworkValueFiat }}
-        </span>
-      </ion-note>
     </ion-item>
 
     <ion-item>

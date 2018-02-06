@@ -66,7 +66,9 @@ export class MeritLightWallet {
     });
 
     const readySource = await this.platform.ready();
-    await this.splashScreen.show();
+
+    if (SplashScreen.installed())
+      await this.splashScreen.show();
 
     const appInfo: any = await this.appService.getInfo();
     this.logger.info(`
@@ -130,7 +132,14 @@ export class MeritLightWallet {
      load and bind the persisted profile (if it exists).
   */
   private async initializeApp() {
-    this.statusBar.styleLightContent();
+    if (StatusBar.installed()) {
+      // TODO use a status bar service to set color based on page we're on & header color
+      if (this.platform.is('android')) {
+        this.statusBar.backgroundColorByHexString('00B0DD');
+      } else if (this.platform.is('ios')) {
+        this.statusBar.styleLightContent();
+      }
+    }
 
     await this.loadProfileAndEasySend();
 
