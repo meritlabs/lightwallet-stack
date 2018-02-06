@@ -201,4 +201,10 @@ Referral.prototype.serialize = Referral.prototype.toString = function() {
     return this.toBuffer().toString('hex');
 };
 
+Referral.validateAlias = function (alias) {
+    const aliasRegexp = /^[a-z0-9-_]{4,20}$/i;
+
+    return aliasRegexp.test(alias);
+}
+
 module.exports = Referral;
