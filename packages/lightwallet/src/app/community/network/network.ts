@@ -32,6 +32,7 @@ interface DisplayWallet {
   ambassadorRewardsFiat: string;
   network: string;
   credentials: any;
+  inviteRequests:Array<any>;
 }
 
 // Network View
@@ -128,8 +129,6 @@ export class NetworkView {
       await this.clipboard.copy(code);
     }
 
-    console.log(code);
-
     this.toastCtrl.create({
       message: 'Copied to clipboard',
       cssClass: ToastConfig.CLASS_MESSAGE
@@ -154,12 +153,10 @@ export class NetworkView {
     return Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
       const filteredWallet: DisplayWallet = <DisplayWallet>_.pick(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'totalNetworkValue', 'credentials', 'network');
 
-      filteredWallet.referrerAddress = this.bwcService.getBitcore().PrivateKey(
-        filteredWallet.credentials.walletPrivKey,
-        filteredWallet.network
-      ).toAddress().toString();
+      filteredWallet.referrerAddress = this.walletService.getRootAddress(wallet).toString();
 
       filteredWallet.totalNetworkValueMicro = await this.walletService.getANV(wallet);
+      filteredWallet.inviteRequests = await this.walletService.getUnlockRequests(wallet);
 
       const data = await this.walletService.getRewards(wallet);
 

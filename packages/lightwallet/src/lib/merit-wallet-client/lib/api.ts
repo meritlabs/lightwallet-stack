@@ -448,6 +448,18 @@ export class API {
   }
 
   /**
+   * Creates Address from hdPrivKey
+   */
+  getRootAddress() {
+
+    const xpub = new Bitcore.HDPublicKey(this.credentials.xPubKey);
+    const address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, this.credentials.network);
+
+    return address;
+
+  }
+
+  /**
    * Seed from extended private key
    *
    * @param {String} xPrivKey
@@ -720,6 +732,32 @@ export class API {
       });
     });
   };
+
+  /**
+   * Create and send invite tx to a given address
+   *
+   * @param {string} toAddress - merit address to send invite to
+   * @param {number=} amount - number of invites to send. defaults to 1
+   * @param {string=} message - message to send to a receiver
+   *
+   */
+  async sendInvite(toAddress: string, amount: number = 1, message: string = '', walletPassword: string = ''): Promise<any> {
+    const opts = {
+      invite: true,
+      outputs: [{
+        amount,
+        toAddress,
+        message,
+      }],
+    };
+
+    let txp = await this.createTxProposal(opts)
+    txp = await this.publishTxProposal({ txp });
+    txp = await this.signTxProposal(txp, walletPassword);
+    txp = await this.broadcastTxProposal(txp);
+
+    return txp;
+  }
 
   /**
    * Create an easySend script and create a transaction to the script address
@@ -1720,14 +1758,8 @@ export class API {
 
       const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey(void 0, network);
       const pubkey = walletPrivKey.toPublicKey();
-
-
-      let c = this.credentials;
-      c.addWalletPrivateKey(walletPrivKey.toString());
-      let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
-
-      const xpub = new Bitcore.HDPublicKey(c.xPubKey);
-      const address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, network).toString();
+      this.credentials.addWalletPrivateKey(walletPrivKey.toString());
+      let address = this.getRootAddress();
 
       const referralOpts = {
         parentAddress: opts.parentAddress,
@@ -1739,8 +1771,12 @@ export class API {
         alias: opts.alias
       };
 
+
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
+
+        let c = this.credentials;
+        let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
 
         let args = {
           name: encWalletName,
@@ -1812,20 +1848,22 @@ export class API {
       }
 
       const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-        Bitcore.Address.fromString(opts.parentAddress).toBufferLean(),
-        Bitcore.Address.fromString(opts.address).toBufferLean(),
+        Bitcore.Address.fromString(opts.parentAddress, network.name).toBufferLean(),
+        Bitcore.Address.fromString(opts.address, network.name).toBufferLean(),
       ]));
 
-      const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big');
+      const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
 
       const referral = new Bitcore.Referral({
-        parentAddress: Bitcore.Address.fromString(opts.parentAddress),
-        address: Bitcore.Address.fromString(opts.address),
+        parentAddress: opts.parentAddress,
+        address: opts.address,
         addressType: opts.addressType,
-        pubkey: Bitcore.PublicKey.fromString(opts.pubkey, network),
-        signature,
+        pubkey: opts.pubkey,
+        signature: signature.toString('hex'),
         alias: opts.alias
       });
+
+      console.log("SENDING REFERRAL", referral.toObject());
 
       this._doPostRequest('/v1/referral/', { referral: referral.serialize() })
         .then(resolve)
@@ -2117,7 +2155,8 @@ export class API {
 
     if (opts.addresses) {
       url += '?' + querystring.stringify({
-        addresses: [].concat(opts.addresses).join(',')
+        addresses: [].concat(opts.addresses).join(','),
+        invites: opts.invites,
       });
     }
     return this._doGetRequest(url);
@@ -2195,7 +2234,7 @@ export class API {
     $.checkArgument(opts)
     $.checkArgument(opts.txp, 'txp is required');
 
-    $.checkState(parseInt(opts.txp.version) >= 3);
+    $.checkState(parseInt(opts.txp.version) >= Bitcore.Transaction.CURRENT_VERSION);
 
     let t = Utils.buildTx(opts.txp);
     let hash = t.uncheckedSerialize();
@@ -2228,7 +2267,7 @@ export class API {
    */
   private _signAddressAndUnlockWithRoot(address: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-    if (address.signed && address.refid) {
+    if (address.signed) {
       return Promise.resolve(address.refid);
     }
 
@@ -2364,9 +2403,18 @@ export class API {
     $.checkState(this.credentials && this.credentials.isComplete());
     let url = '/v1/balance/';
     if (opts.twoStep) url += '?twoStep=1';
-    return this._doGetRequest(url).then((balance) => {
-      return balance.availableAmount;
-    });
+
+    return this._doGetRequest(url).then(balance => balance.availableAmount);
+  };
+
+  /**
+   * Update wallet invites balance
+   */
+  getInvitesBalance(opts: any = {}): Promise<number> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+    let url = '/v1/invites/';
+
+    return this._doGetRequest(url);
   };
 
   /**
@@ -2641,86 +2689,13 @@ export class API {
       qs = '?' + args.join('&');
     }
 
-    //let url = '/v1/txhistory/' + qs;
-    //return this._doGetRequest(url).then((txs) => {
-    //  return this._processTxps(txs).then(() => {
-    //
-    //    return Promise.resolve(txs);
-    //  });
-    //});
-    return Promise.resolve([
-      [
+    let url = '/v1/txhistory/' + qs;
+    return this._doGetRequest(url).then((txs) => {
+     return this._processTxps(txs).then(() => {
 
-        { //classic transaction
-              "txid": "302efd570df3f5f87de568773ca37d850ed693ac4fcfa3a66326e7624459db45",
-            "action": "received",
-            "amount": 2000000000,
-            "fees": 7480,
-            "time": 1516968822,
-            "confirmations": 0,
-            "outputs": [
-            {
-              "amount": 2000000000,
-              "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc"
-            }
-          ],
-            "lowFees": false
-        },
-        { //new invite mined
-          "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
-          "action": "unlock",
-          "amount": 1,
-          "time": 1516968822,
-          "confirmations": 0,
-          "outputs": [
-            {
-              "amount": 1,
-              "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc"
-            }
-          ]
-        },
-        { // you were unlocked/new invite recieved.
-          // If it is fiets transaction of this type, it means that you were unlocked.
-          // Outherwise it means that somebody sent you additional invite
-          "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
-          "action": "invite",
-          "amount": 1,
-          "time": 1516968822,
-          "confirmations": 0,
-          "inputs": [
-            {
-              "amount": 1,
-              "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" // your parent address
-            }
-          ],
-          "outputs": [
-            {
-              "amount": 1,
-              "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" //your address
-            }
-          ]
-        },
-        { // unlocking an address
-          "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
-          "action": "invite",
-          "amount": 1,
-          "time": 1516968822,
-          "confirmations": 0,
-          "inputs": [
-            {
-              "amount": 1,
-              "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" // your address
-            }
-          ],
-          "outputs": [
-              {
-                "amount": 1,
-                "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc" //address you're unlocking
-              }
-          ]
-        }
-      ]
-    ])
+       return Promise.resolve(txs);
+     });
+    });
   };
 
   /**
@@ -2751,27 +2726,23 @@ export class API {
    *
    * @param address
    */
-  confirmRequest(request:{refid:string, address:string}): Promise<boolean> {
-
+  confirmRequest(request:{refid:string, address:string}): Promise<any> {
     return Promise.resolve(true);
-
   }
 
+  /**
+   * gets all unlock requests (active and hidden) for this wallet
+   *
+   */
   getUnlockRequests(): Promise<any> {
-    return Promise.resolve([
-      {
-        refid: "5b564c38d42c9fc45f65a63f4a21a40ac5c62b05f81a2c4e591b50ecc44e450d",
-        address: 'mRH9vPfURmWftNZ7ENY3wrQNN1XygPjxsx',
-        alias: '',
-        parentAddress: 'mWr414vxUVb2F9CMMVT2jeWXjhCXkdemoK'
-      },
-      {
-        refid: "5b564c38d42c9fc45f65a63f4a21a40ac5c62b05f81a2c4e591b50ecc44e450d",
-        address: 'mRH9vPfURmWftNZ7ENY3wrQNN1XygPjxsx',
-        alias: 'mockuser',
-        parentAddress: 'mWr414vxUVb2F9CMMVT2jeWXjhCXkdemoK'
-      },
-      ]);
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    let url = '/v1/unlockrequests/';
+    return this._doGetRequest(url).then((requests) => {
+      return this._processTxps(requests).then(() => {
+        return Promise.resolve(requests);
+      });
+    });
   }
 
 

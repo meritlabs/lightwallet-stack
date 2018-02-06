@@ -13,7 +13,6 @@ var Common = require('../common');
 var Constants = Common.Constants;
 var Defaults = Common.Defaults;
 
-var TxProposalLegacy = require('./txproposal_legacy');
 var TxProposalAction = require('./txproposalaction');
 
 function TxProposal() {};
@@ -23,7 +22,7 @@ TxProposal.create = function(opts) {
 
   var x = new TxProposal();
 
-  x.version = 3;
+  x.version = opts.isInvite ? Bitcore.Transaction.INVITE_VERSION : Bitcore.Transaction.CURRENT_VERSION;
 
   var now = Date.now();
   x.createdOn = Math.floor(now / 1000);
@@ -31,6 +30,7 @@ TxProposal.create = function(opts) {
   x.walletId = opts.walletId;
   x.creatorId = opts.creatorId;
   x.message = opts.message;
+  x.isInvite = !_.isUndefined(opts.isInvite) ? opts.isInvite : x.version === Bitcore.Transaction.INVITE_VERSION;
   x.payProUrl = opts.payProUrl;
   x.changeAddress = opts.changeAddress;
   x.outputs = _.map(opts.outputs, function(output) {
@@ -68,10 +68,6 @@ TxProposal.create = function(opts) {
 };
 
 TxProposal.fromObj = function(obj) {
-  if (!(obj.version >= 3)) {
-    return TxProposalLegacy.fromObj(obj);
-  }
-
   var x = new TxProposal();
 
   x.version = obj.version;
@@ -83,6 +79,7 @@ TxProposal.fromObj = function(obj) {
   x.outputs = obj.outputs;
   x.amount = obj.amount;
   x.message = obj.message;
+  x.isInvite = obj.isInvite;
   x.payProUrl = obj.payProUrl;
   x.changeAddress = obj.changeAddress;
   x.inputs = obj.inputs;
@@ -138,6 +135,8 @@ TxProposal.prototype._buildTx = function() {
 
   var t = new Bitcore.Transaction();
   $.checkState(_.includes(_.values(Constants.SCRIPT_TYPES), self.addressType));
+
+  t.version = this.version;
 
   switch (self.addressType) {
     case Constants.SCRIPT_TYPES.P2SH:

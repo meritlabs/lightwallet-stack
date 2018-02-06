@@ -35,4 +35,5 @@ export interface ITransaction {
   alias: string;
   parentAddress: string;
   isCoinbase: boolean;
+  isInvite: boolean;
 }

@@ -6,6 +6,7 @@ var async = require('async');
 var log = require('npmlog');
 log.debug = log.verbose;
 
+var Bitcore = require('bitcore-lib');
 var BlockchainExplorer = require('./blockchainexplorer');
 var Storage = require('./storage');
 var MessageBroker = require('./messagebroker');
@@ -88,21 +89,25 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
   });
   socket.on('tx', _.bind(self._handleIncomingTx, self));
   socket.on('block', _.bind(self._handleNewBlock, self, network));
-  socket.on('rawreferraltx', _.bind(self._handleReferral, self));
+  socket.on('referral', _.bind(self._handleIncomingReferral, self));
 };
 
-BlockchainMonitor.prototype._handleReferral = function(data) {
+BlockchainMonitor.prototype._handleIncomingReferral = function(data) {
   const self = this;
 
+  log.info('_handleIncomingReferral')
   if (!data) return;
 
-  self.storage.fetchReferralByCodeHash(data.codeHash, function(err, rtx) {
+  self.storage.fetchReferralByCodeHash(data.address, function(err, referral) {
     if (err) {
       log.error('Could not fetch referral from the db');
       return;
     }
 
-    if (!rtx) return;
+    if (!referral) {
+      log.info(`_handleIncomingReferral: referral ${data.hash} not found`);
+      return;
+    }
 
     self.storage.storeReferral(data, function(err) {
       if (err) log.error('Could not store referral');
@@ -132,11 +137,11 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
     var walletId = txp.walletId;
 
     if (!processIt) {
-      log.info('Detected broadcast ' + data.txid + ' of an accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'micros ]');
+      log.info(`Detected broadcast ${data.txid} of an accepted txp [${txp.id}] for wallet ' + walletId + ' [${txp.amount} ${!txp.isInvite ? 'micros' : 'invites'} ]`);
       return setTimeout(self._handleThirdPartyBroadcasts.bind(self, data, true), 20 * 1000);
     }
 
-    log.info('Processing accepted txp [' + txp.id + '] for wallet ' + walletId + ' [' + txp.amount + 'micros ]');
+    log.info(`Processing accepted txp [${txp.id}] for wallet ${walletId} [ ${txp.amount} ${!txp.isInvite ? 'micros' : 'invites'} ]`);
 
     txp.setBroadcasted();
 
@@ -164,6 +169,7 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
 
 BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
   var self = this;
+
   if (!data || !data.vout) return;
 
   // Let's format the object to be easier to process below.
@@ -187,7 +193,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
       filteredOutputs.splice(oIndex, 1, accumulatedOutput);
     } else {
       filteredOutputs.push(out);
-    }   
+    }
   });
 
   if (_.isEmpty(filteredOutputs)) return;
@@ -202,8 +208,8 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
 
       var walletId = address.walletId;
       var notificationType = data.isCoinbase ? 'IncomingCoinbase' : 'IncomingTx';
-      
-      log.info(notificationType + ' for wallet ' + walletId + ' [' + out.amount + ' micros -> ' + out.address + ']');
+
+      log.info(`{notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${out.address} ]`);
 
       var fromTs = Date.now() - 24 * 3600 * 1000;
       self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
@@ -212,7 +218,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
           return n.type == notificationType && n.data && n.data.txid == data.txid;
         });
         if (alreadyNotified) {
-          log.info('The incoming tx ' + data.txid + ' was already notified');
+          log.info(`The incoming tx ${data.txid} was already notified`);
           return next(null);
         }
 
@@ -222,6 +228,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
             txid: data.txid,
             address: out.address,
             amount: out.amount,
+            isInvite: data.isInvite,
           },
           walletId: walletId,
         });
@@ -273,17 +280,21 @@ BlockchainMonitor.prototype._notifyNewBlock = function(network, hash) {
   });
 };
 
-BlockchainMonitor.prototype._handleTxConfirmations = function(network, hash) {
-  var self = this;
-
-  function processTriggeredSubs(subs, cb) {
+// handle txs that were confirmed (i.e. added to a block)
+// set these subscriptions as inactive
+// and send TxConfirmation notification
+BlockchainMonitor.prototype._handleTxConfirmations = function (network, txids) {
+  const processTriggeredSubs = (subs, cb) => {
     async.each(subs, function(sub, cb) {
       log.info('New tx confirmation ' + sub.txid);
       sub.isActive = false;
-      self.storage.storeTxConfirmationSub(sub, function(err) {
-        if (err) return cb(err);
 
-        var notification = Notification.create({
+      this.storage.storeTxConfirmationSub(sub, err => {
+        if (err) {
+          return cb(err);
+        }
+
+        const notification = Notification.create({
           type: 'TxConfirmation',
           walletId: sub.walletId,
           creatorId: sub.copayerId,
@@ -293,134 +304,69 @@ BlockchainMonitor.prototype._handleTxConfirmations = function(network, hash) {
             // TODO: amount
           },
         });
-        self._storeAndBroadcastNotification(notification, cb);
+
+        this._storeAndBroadcastNotification(notification, cb);
       });
       return cb(null);
     });
   };
 
-  var explorer = self.explorers[network];
-  if (!explorer) return;
-
-  explorer.getTxidsInBlock(hash, function(err, txids) {
-    if (err) {
-      log.error('Could not fetch txids from block ' + hash, err);
-      return;
-    }
-
-    self.storage.fetchActiveTxConfirmationSubs(null, function(err, subs) {
-      if (err) return;
-      if (_.isEmpty(subs)) return;
-      var indexedSubs = _.keyBy(subs, 'txid');
-      var triggered = [];
-      _.each(txids, function(txid) {
-        if (indexedSubs[txid]) triggered.push(indexedSubs[txid]);
-      });
-      processTriggeredSubs(triggered, function(err) {
-        if (err) {
-          log.error('Could not process tx confirmations', err);
-        }
-        return;
-      });
+  this.storage.fetchActiveTxConfirmationSubs(null, function(err, subs) {
+    if (err) return;
+    if (_.isEmpty(subs)) return;
+    const indexedSubs = _.keyBy(subs, 'txid');
+    const triggered = [];
+    _.each(txids, function(txid) {
+      if (indexedSubs[txid]) triggered.push(indexedSubs[txid]);
     });
-  });
-};
-
-BlockchainMonitor.prototype._handleReferralConfirmations = function(network, hash) {
-  const self = this;
-
-  const explorer = self.explorers[network];
-  if (!explorer) return;
-
-  explorer.getReferralsInBlock(hash, function(err, referrals) {
-    if (err) {
-      log.error('Could not fetch referrals for block');
-      return;
-    }
-    if (_.isEmpty(referrals)) return;
-
-    self.storage.fetchActiveReferralConfirmationSubs(function (err, subs) {
+    processTriggeredSubs(triggered, function(err) {
       if (err) {
-        log.error('Could not fetch referral confirmation subscriptions');
-        return;
+        log.error('Could not process tx confirmations', err);
       }
-
-      const indexedSubs = _.keyBy(subs, 'codeHash');
-      const triggered = _.reduce(referrals, function(acc, reftx) {
-        if (!indexedSubs[reftx]) return acc;
-
-        acc.push(indexedSubs[reftx]);
-        return acc;
-      }, []);
-
-      async.each(triggered, function(sub, cb) {
-        log.info('New referral confirmation ' + sub.codeHash);
-        sub.isActive = false;
-        self.storage.storeTxConfirmationSub(sub, function(err) {
-          if (err) {
-            log.error(`Could not update confirmation with codeHash: ${sub.codeHash}`);
-            return cb(err);
-          }
-
-          const notification = Notification.create({
-            type: 'ReferralConfirmation',
-            creatorId: sub.copayerId,
-            walletId: sub.walletId,
-            data: sub,
-          });
-          self._storeAndBroadcastNotification(notification, function () {
-            log.info(`Referral confirmation with code ${sub.codeHash} successfully sent`);
-          });
-        });
-        return cb(null);
-      });
+      return;
     });
   });
 };
 
-BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) {
-  const self = this;
+// TODO: update this method and methods to set subscriptions
+// to use hash or address of referral instead codeHash
+BlockchainMonitor.prototype._handleReferralConfirmations = function(network, referrals) {
+  if (_.isEmpty(referrals)) {
+    return;
+  }
 
-  const explorer = self.explorers[network];
-  if (!explorer) return;
-
-  explorer.getTxidsInBlock(hash, function(err, txids) {
+  this.storage.fetchActiveReferralConfirmationSubs((err, subs) => {
     if (err) {
-      log.error('Could not fetch txids from block ' + hash, err);
+      log.error('Could not fetch referral confirmation subscriptions');
       return;
     }
 
-    log.info('Received tx in block to check vaults: ', txids);
-    async.each(txids, function(txId, cb) {
-      log.info(`Checking if TX with id ${txId} is vault TX`);
+    const indexedSubs = _.keyBy(subs, 'address');
+    const triggered = _.reduce(referrals, function(acc, reftx) {
+      if (!indexedSubs[reftx]) return acc;
 
-      self.storage.fetchVaultByInitialTxId(txId, function(err, tx) {
+      acc.push(indexedSubs[reftx]);
+      return acc;
+    }, []);
+
+    async.each(triggered, (sub, cb) => {
+      log.info('New referral confirmation ' + sub.address);
+      sub.isActive = false;
+      this.storage.storeTxConfirmationSub(sub, (err) => {
         if (err) {
-          log.error(`Error while fetching data for vault with txid: ${txId}`);
-          return;
+          log.error(`Could not update confirmation with address: ${sub.address}`);
+          return cb(err);
         }
 
-        if (!tx) {
-          return;
-        }
+        const notification = Notification.create({
+          type: 'ReferralConfirmation',
+          creatorId: sub.copayerId,
+          walletId: sub.walletId,
+          data: sub,
+        });
 
-        self.storage.setVaultConfirmed(tx, function (err, result) {
-          if (err) {
-            log.error(err);
-            log.error(`Could not update vault with txId: ${txId}`)
-            return;
-          }
-
-          const notification = Notification.create({
-            type: 'VaultConfirmation',
-            creatorId: tx.copayerId,
-            walletId: tx.walletId,
-            data: result,
-          });
-
-          self._storeAndBroadcastNotification(notification, function () {
-            log.info(`Vault confirmation with code ${txId} successfully sent`);
-          });
+        this._storeAndBroadcastNotification(notification, () => {
+          log.info(`Referral confirmation with code ${sub.address} successfully sent`);
         });
       });
       return cb(null);
@@ -428,19 +374,73 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, hash) 
   });
 };
 
+BlockchainMonitor.prototype._handleVaultConfirmations = function(network, txids) {
+  async.each(txids, (txId, cb) => {
+    log.info(`Checking if TX with id ${txId} is vault TX`);
+
+    this.storage.fetchVaultByInitialTxId(txId, (err, tx) => {
+      if (err) {
+        log.error(`Error while fetching data for vault with txid: ${txId}`);
+        return;
+      }
+
+      if (!tx) {
+        return;
+      }
+
+      this.storage.setVaultConfirmed(tx, (err, result) => {
+        if (err) {
+          log.error(err);
+          log.error(`Could not update vault with txId: ${txId}`)
+          return;
+        }
+
+        const notification = Notification.create({
+          type: 'VaultConfirmation',
+          creatorId: tx.copayerId,
+          walletId: tx.walletId,
+          data: result,
+        });
+
+        this._storeAndBroadcastNotification(notification, function () {
+          log.info(`Vault confirmation with code ${txId} successfully sent`);
+        });
+      });
+    });
+
+    return cb(null);
+  });
+};
+
 BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
   this._notifyNewBlock(network, hash);
-  this._handleTxConfirmations(network, hash);
-  this._handleReferralConfirmations(network, hash);
-  this._handleVaultConfirmations(network, hash);
+
+  const explorer = this.explorers[network];
+  if (!explorer) {
+    return;
+  }
+
+  explorer.getBlock(hash, (err, block) => {
+    if (err) {
+      log.error('Could not fetch block',  hash, err);
+      return;
+    }
+
+    this._handleTxConfirmations(network, block.tx);
+    this._handleReferralConfirmations(network, block.referrals);
+    this._handleVaultConfirmations(network, block.tx);
+  });
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {
-  var self = this;
+  console.log('_storeAndBroadcastNotification');
 
-  self.storage.storeNotification(notification.walletId, notification, function() {
-    self.messageBroker.send(notification)
-    if (cb) return cb();
+  this.storage.storeNotification(notification.walletId, notification, () => {
+    this.messageBroker.send(notification)
+
+    if (cb) {
+      return cb();
+    }
   });
 };
 

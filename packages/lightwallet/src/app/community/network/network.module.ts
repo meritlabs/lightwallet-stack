@@ -7,7 +7,6 @@ import { NetworkView } from 'merit/community/network/network';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ClipModule } from 'ng2-clip'
 
-
 @NgModule({
   declarations: [
     NetworkView,
