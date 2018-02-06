@@ -285,7 +285,7 @@ InsightAPI.prototype.transactionEventHandler = function(txBuffer) {
 };
 
 InsightAPI.prototype.referralEventHandler = function(referralBuffer) {
-  var referral = new Referral(referralBuffer, this.node.getNetworkName());
+  var referral = new Referral(this.node.getNetworkName()).fromBuffer(referralBuffer);
 
   for (var i = 0; i < this.subscriptions.inv.length; i++) {
     this.subscriptions.inv[i].emit('referral', referral);

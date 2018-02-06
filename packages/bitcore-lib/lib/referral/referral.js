@@ -27,14 +27,23 @@ function Referral(data, network) {
         return new Referral(data, network);
     }
 
-    $.checkArgument(data, 'First argument is required, please include referral data.');
-
     if (network && !Networks.get(network)) {
       throw new TypeError('Second argument must be "livenet" or "testnet".');
     }
 
-    // memory only
-    this.network = Networks.get(network) || Networks.defaultNetwork;
+    // check if argument passed is a network
+    if (_.isString(data) && !JSUtil.isHexa(data)) {
+      const network = Networks.get(data);
+
+      if (!network) {
+        throw new TypeError('Wrong network value. It should be "livenet" or "testnet".');
+      }
+
+      this.network = network;
+
+      this._newReferral(network);
+      return null;
+    }
 
     this.version = CURRENT_VERSION;
     this.parentAddress = null;
@@ -44,18 +53,22 @@ function Referral(data, network) {
     this.signature = null;
     this.alias = '';
 
-    if (data instanceof Referral) {
-        return Referral.shallowCopy(data);
-    } else if (JSUtil.isHexa(data)) {
+    if (data) {
+      if (data instanceof Referral) {
+        return Referral.shallowCopy(data, network);
+      } else if (JSUtil.isHexa(data)) {
         this.fromString(data);
-    } else if (data instanceof BufferReader) {
+      } else if (data instanceof BufferReader) {
         this.fromBufferReader(data);
-    } else if (BufferUtil.isBuffer(data)) {
+      } else if (BufferUtil.isBuffer(data)) {
         this.fromBuffer(data);
-    } else if (_.isObject(data)) {
+      } else if (_.isObject(data)) {
         this.fromObject(data);
-    } else {
+      } else {
         throw new errors.InvalidArgument('Must provide an object or string to deserialize a referral');
+      }
+    } else {
+      this._newReferral();
     }
 
     return null;
@@ -76,8 +89,12 @@ Referral.prototype._getHash = function() {
     return Hash.sha256sha256(this.toBuffer());
 };
 
-Referral.shallowCopy = function(data) {
-    return new Referral(data.toBuffer(), this.network.name);
+Referral.shallowCopy = function(data, network) {
+    return new Referral(data.toBuffer(), network);
+};
+
+Referral.prototype._newReferral = function() {
+  this.version = CURRENT_VERSION;
 };
 
 //Referral.prototype.inspect = function() {
