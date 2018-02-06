@@ -1,5 +1,15 @@
 view-transact {
 
+  &.keyboard-visible {
+    .tabbar {
+      display: none;
+    }
+
+    ion-tab.show-tab > .ion-page > ion-content.content > .scroll-content {
+      margin-bottom: 0 !important;
+    }
+  }
+
   ion-tabs.tabs {
     &.tabs-ios {
       a.tab-button[aria-selected="true"] {

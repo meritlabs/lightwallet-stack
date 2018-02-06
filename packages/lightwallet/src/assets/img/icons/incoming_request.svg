@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="22px" viewBox="0 0 16 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>incoming_request</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="History-/-Unconfirmed-Wallet" transform="translate(-28.000000, -526.000000)">
+            <g id="incoming_request" transform="translate(29.000000, 525.000000)">
+                <g id="send_request" transform="translate(0.000000, 11.000000)" stroke-linecap="round" stroke-width="1.7" stroke="#5F6C82">
+                    <g id="unlock-code-copy-2">
+                        <path d="M12.1108127,0 L12.95,0 C13.529899,1.45331554e-15 14,0.474897962 14,1.06071429 L14,2.05060686 L14,9.93928571 C14,10.525102 13.529899,11 12.95,11 L1.05,11 C0.470101013,11 1.18900051e-15,10.525102 3.45402719e-16,9.93928571 L0,1.06071429 C-7.10171439e-17,0.474897962 0.470101013,6.31003567e-16 1.05,5.23390854e-16 L1.94026693,0" id="Rectangle-40"></path>
+                        <path d="M1.0974439,1 L6.34003105,6.34437008 L6.34003105,6.34437008 C6.72678297,6.73863065 7.35991869,6.74471761 7.75417926,6.35796569 C7.75875459,6.35347749 7.76328667,6.34894541 7.76777487,6.34437008 L13.010362,1" id="Path-2"></path>
+                    </g>
+                </g>
+                <g id="send_request" transform="translate(2.000000, 0.000000)" stroke="#00B0DD">
+                    <g id="arrow" transform="translate(5.000000, 6.000000) rotate(-270.000000) translate(-5.000000, -6.000000) translate(-1.000000, 1.000000)">
+                        <polyline id="Rectangle-3" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" transform="translate(8.913793, 5.000000) scale(1, -1) rotate(90.000000) translate(-8.913793, -5.000000) " points="4.30417658 7.20956825 8.9137931 2.79043175 13.5234096 7.20956825"></polyline>
+                        <path d="M1.96356201,5 C1.96356201,5.0828427 1.89640473,5.14999998 1.81356204,5.14999998 L10.1755864,5.14999998 C10.0763354,5.14999998 10.003562,5.07548943 10.003562,5 C10.003562,4.92108243 10.073004,4.85000002 10.1755864,4.85000002 L1.81356204,4.85000002 C1.89640473,4.85000002 1.96356201,4.9171573 1.96356201,5 Z" id="Rectangle-2" stroke-width="2"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

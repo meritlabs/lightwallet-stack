@@ -366,9 +366,9 @@ Storage.prototype.fetchBroadcastedTxs = function(walletId, opts, cb) {
 };
 
 Storage.prototype.fetchInvitedAddresses = function(walletId, cb) {
-  
+
   var filter = {
-    isInvite: true, 
+    isInvite: true,
     walletId: walletId,
     status: 'broadcasted'
   };
@@ -387,11 +387,11 @@ Storage.prototype.fetchInvitedAddresses = function(walletId, cb) {
         tx.outputs.filter(function(output) {
           return (addrs.indexOf(output.address) == -1);
         }).map(function(output) {
-          return output.toAddress;  
+          return output.toAddress;
         })
       );
     }, []);
-    
+
     return cb(null, addresses);
   });
 };
@@ -705,7 +705,7 @@ Storage.prototype.getReferralsHistoryCache = function(walletId, from, to, cb) {
     var self = this;
     $.checkArgument(from >= 0);
     $.checkArgument(from <= to);
-  
+
     self.db.collection(collections.CACHE).findOne({
         walletId: walletId,
         type: 'referralsCacheStatus',
