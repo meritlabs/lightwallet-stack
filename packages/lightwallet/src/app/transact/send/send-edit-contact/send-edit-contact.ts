@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
-import { MeritContact, IMeritAddress } from 'merit/shared/address-book/merit-contact.model';
-import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { ToastConfig } from "merit/core/toast.config";
 import { MeritToastController } from "merit/core/toast.controller";
 import { SendService } from 'merit/transact/send/send.service';
 import * as _ from 'lodash';
+import { ContactsProvider } from '../../../../providers/contacts/contacts';
+import { IMeritAddress, MeritContact } from '../../../../models/merit-contact';
 
 @IonicPage()
 @Component({
@@ -25,7 +25,7 @@ export class SendEditContactView {
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private addressBook: AddressBookService,
+    private contactsService: ContactsProvider,
     private toastController: MeritToastController,
     private sendService: SendService,
     private alertCtrl: AlertController
@@ -66,19 +66,19 @@ export class SendEditContactView {
     let addressKey = null;
     this.actions.forEach((action) => {
       if (action.type == this.TYPE_REMOVE) {
-        removalPromises.push(this.addressBook.remove(action.mAddress.address, action.mAddress.network));
+        removalPromises.push(this.contactsService.remove(action.mAddress.address, action.mAddress.network));
       }
     });
     //removing all entities with existing addresses key
     this.contact.meritAddresses.forEach((mAddress) => {
-      removalPromises.push(this.addressBook.remove(mAddress.address, mAddress.network));
+      removalPromises.push(this.contactsService.remove(mAddress.address, mAddress.network));
     });
     return Promise.all(removalPromises).then(() => {
       if (_.isEmpty(this.contact.meritAddresses)) {
         this.navCtrl.remove(2,1);
         return this.navCtrl.pop();
       } else {
-        return this.addressBook.add(this.contact, this.contact.meritAddresses[0].address, this.contact.meritAddresses[0].network).then(() => {
+        return this.contactsService.add(this.contact, this.contact.meritAddresses[0].address, this.contact.meritAddresses[0].network).then(() => {
           return this.navCtrl.pop();
         });
       }
