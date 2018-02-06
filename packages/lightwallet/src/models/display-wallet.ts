@@ -20,16 +20,19 @@ export interface IDisplayWallet {
   credentials: any;
   inviteRequests: Array<any>;
   invites: number;
+  client: MeritWalletClient;
 }
 
 export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService): Promise<IDisplayWallet> {
   const displayWallet: IDisplayWallet = pick<IDisplayWallet, MeritWalletClient>(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'totalNetworkValue', 'credentials', 'network');
 
+  displayWallet.client = wallet;
   displayWallet.referrerAddress = walletService.getRootAddress(wallet).toString();
   displayWallet.totalNetworkValueMicro = await walletService.getANV(wallet);
   displayWallet.inviteRequests = await walletService.getUnlockRequests(wallet);
-  displayWallet.invites = await walletService.getInvitesBalance(wallet);
-
+  const invitesInfo = await walletService.getInvitesBalance(wallet);
+  displayWallet.invites = invitesInfo.availableConfirmedAmount;
+  
   const rewardsData = await walletService.getRewards(wallet);
 
   // If we cannot properly fetch data, let's return wallets as-is.

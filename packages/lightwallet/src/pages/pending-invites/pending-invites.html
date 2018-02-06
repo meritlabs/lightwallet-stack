@@ -1,10 +1,47 @@
 <ion-header no-border>
   <ion-navbar color="light">
-    <ion-title>Pending Invites</ion-title>
+    <ion-title>Unlock requests</ion-title>
   </ion-navbar>
 </ion-header>
 
 
 <ion-content padding>
+  <ion-item>
+        You have {{totalInvites}} invites left
+  </ion-item>
 
+  <ion-item *ngIf="hiddenRequests && hiddenRequests.length && !showHiddenRequests">
+    {{hiddenRequests.length}} hidden requests
+    <button ion-button item-end clear (click)="showHiddenRequests = true">show</button>
+  </ion-item>
+
+  <ion-list>
+    <ion-item-divider *ngIf="activeRequests.length || (hiddenRequests.length && showHiddenRequests)">
+      Active requests
+    </ion-item-divider>
+
+    <div *ngIf="showHiddenRequests && hiddenRequests">
+      <ion-item *ngFor="let request of hiddenRequests" (click)="processRequest(request)">
+        <h2>{{request.alias || request.address }}</h2>
+        <p  *ngIf="request.alias">{{request.address}}</p>
+      </ion-item>
+    </div>
+
+    <ion-item *ngFor="let request of activeRequests" (click)="processRequest(request)">
+        <h2>{{request.alias || request.address }}</h2>
+        <p><!-- todo add timestamp --></p>
+    </ion-item>
+  </ion-list>
+
+
+  <ion-item-divider *ngIf="confirmedRequests && confirmedRequests.length">
+    Confirmed requests
+  </ion-item-divider>
+  <ion-list *ngIf="confirmedRequests">
+      <ion-item *ngFor="let request of confirmedRequests">
+          <h2>{{request.contactName || request.alias || request.address }}</h2>
+          <p><!-- todo add timestamp --></p>
+      </ion-item>
+  </ion-list>
+  
 </ion-content>

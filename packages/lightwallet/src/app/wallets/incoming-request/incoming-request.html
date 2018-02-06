@@ -7,8 +7,8 @@
             </button>
         </ion-buttons>
         <ion-title>
-            <span *ngIf="!unlockRequest.accepted">Incoming unlock request</span>
-            <span *ngIf="unlockRequest.accepted">Request accepted</span>
+            <span *ngIf="!unlockRequest.isConfirmed">Incoming unlock request</span>
+            <span *ngIf="unlockRequest.isConfirmed">Request accepted</span>
         </ion-title>
     </ion-navbar>
 
@@ -26,18 +26,26 @@
     <h2>{{unlockRequest.address}}</h2>
     <p *ngIf="unlockRequest.alias">@{{unlockRequest.alias}}</p>
 
-    <ion-list *ngIf="!unlockRequest.accepted">
+    <ion-list *ngIf="!unlockRequest.isConfirmed">
         <button ion-item (click)="accept()">
             ACCEPT
         </button>
 
-        <button ion-item (click)="decline()">
+        <button ion-item (click)="decline()" class="decline-button">
             DECLINE
         </button>
 
+        <!-- <button ion-item (click)="selectWallet()" detail-none>
+            <ion-avatar item-start img-icon [class.default]="!unlockRequest.walletClient.color" 
+                [style.box-shadow]="unlockRequest.walletClient.color ? '0 0 0 2px ' + unlockRequest.walletClient.color : ''">
+                <img src="assets/img/icons/wallet.svg">
+            </ion-avatar>
+            <h2>{{unlockRequest.walletClient.name}}</h2>
+            <p>Invites: {{unlockRequest.walletClient.invites}}</p>
+        </button> -->
     </ion-list>
 
-    <ion-list *ngIf="unlockRequest.accepted">
+    <ion-list *ngIf="unlockRequest.isConfirmed">
         <button ion-item (click)="createContact()">
             <ion-icon name="add"></ion-icon> CREATE NEW CONTACT
         </button>
