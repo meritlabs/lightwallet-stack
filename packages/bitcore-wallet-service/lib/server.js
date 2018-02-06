@@ -3517,7 +3517,7 @@ WalletService.prototype.getFiatRate = function(opts, cb) {
 };
 
 WalletService.prototype.validateAddress = function(address, network, cb) {
-  network = network || 'livenet';
+  network = network || Bitcore.Constants.DEFAULT_NET;
   if (!_.includes(['livenet', 'testnet'], network)) {
     return cb(new ClientError('Invalid network'));
   }

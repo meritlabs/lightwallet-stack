@@ -28,10 +28,13 @@ export class SendView {
     withMerit: Array<MeritContact>,
     noMerit:Array<MeritContact>,
     recent:Array<MeritContact>,
-    toNewEntity:{destination:string, contact:MeritContact}
-  } = {withMerit: [], noMerit: [], recent: [], toNewEntity: null};
+    toNewEntity:{destination:string, contact:MeritContact},
+    error:string
+  } = {withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null};
 
   private suggestedMethod:SendMethod;
+
+  private readonly ERROR_ADDRESS_NOT_BEACONED;
 
   public hasUnlockedWallets:boolean;
 
@@ -90,13 +93,17 @@ export class SendView {
     let input = this.searchQuery.split('?')[0];
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
 
-    let result =  { withMerit: [], noMerit: [], recent: [], toNewEntity:null };
+    let result =  { withMerit: [], noMerit: [], recent: [], toNewEntity:null, error: null };
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
-      if (await this.isAddress(input)) {
-        result.toNewEntity = {destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact()};
-        result.toNewEntity.contact.meritAddresses.push({address: input, network: this.sendService.getAddressNetwork(input).name});
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_ADDRESS, value: input};
+      if (this.isAddress(input)) {
+        if (await this.isValidAddress(input)) {
+          result.toNewEntity = {destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact()};
+          result.toNewEntity.contact.meritAddresses.push({address: input, network: this.sendService.getAddressNetwork(input).name});
+          this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_ADDRESS, value: input};
+        } else {
+          this.searchResult.error = this.ERROR_ADDRESS_NOT_BEACONED; 
+        }
       } else if (this.couldBeEmail(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
         result.toNewEntity.contact.emails.push({value: input})
@@ -134,8 +141,12 @@ export class SendView {
     return weakPhoneNumberPattern.test(input);
   }
 
-  private async isAddress(input) {
+  private async isValidAddress(input) {
     return await this.sendService.isAddressValid(input);
+  }
+
+  private isAddress(input) {
+    return this.sendService.isAddress(input);
   }
 
   sanitizePhotoUrl(url:string) {

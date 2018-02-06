@@ -25,15 +25,21 @@ export class SendService {
     this.bitcore = this.bwcService.getBitcore();
   }
 
-  public isAddressValid(addr: string): Promise<boolean> {
-    if (!addr || addr.length != this.ADDRESS_LENGTH) return Promise.resolve(false);
-    console.log('passed');
-    // First, let's check to be sure it's the right format.
+  public isAddress(addr:string): boolean {
+    if (!addr || addr.length != this.ADDRESS_LENGTH) return false;
+
     try {
       let address = this.bitcore.Address.fromString(addr);
-      let network = address.network;
-      if (this.bitcore.Address.isValid(address, network))
-      // If it is, then let's be sure it's beaconed.
+      return true; 
+    } catch (_e) {
+      return false;
+    }  
+  }
+
+  public isAddressValid(addr: string): Promise<boolean> {
+    try {
+        if (!this.isAddress(addr)) return Promise.resolve(false);
+        let network = this.getAddressNetwork(addr); 
         return this.isAddressUnlocked(addr, network);
       return Promise.resolve(false);
     } catch (_e) {
