@@ -125,4 +125,6 @@
     <plugin name="phonegap-plugin-barcodescanner" spec="^7.0.0">
         <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
     </plugin>
+    <plugin name="cordova.plugins.diagnostic" spec="^3.9.2" />
+    <plugin name="cordova-plugin-filepath" spec="^1.1.0" />
 </widget>

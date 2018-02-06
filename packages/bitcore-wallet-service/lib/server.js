@@ -94,7 +94,6 @@ WalletService.initialize = function(opts, cb) {
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
   localMeritDaemon = new LocalDaemon(opts.node);
   log = opts.node.log;
-
   if (opts.request)
     request = opts.request;
 
@@ -385,7 +384,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
         newWallet = wallet;
         return acb(err);
       });
-    },
+    }
   ], function(err) {
     var newWalletId = newWallet ? newWallet.id : null;
     return cb(err, newWalletId);
@@ -2916,6 +2915,7 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
       return {
         address: itemAddr,
         amount: parseInt((item.value * 1e8).toFixed(0)),
+        index: item.n
       }
     });
 
@@ -3069,6 +3069,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         return {
           address: item.address,
           amount: item.amount,
+          index: item.index,
           isMine: !!address,
           // TODO: handle singleAddress and change addresses
           // isChange: address ? (address.isChange || wallet.singleAddress) : false,
@@ -3113,7 +3114,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       function formatOutput(o) {
         return {
           amount: o.amount,
-          address: o.address
+          address: o.address,
+          index: o.index
         }
       };
 

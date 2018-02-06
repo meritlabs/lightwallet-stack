@@ -3,10 +3,12 @@ import { TransactionHistoryComponent } from './transaction-history/transaction-h
 import { MomentModule } from 'angular2-moment';
 import { IonicModule } from 'ionic-angular';
 import { SlideToActionComponent } from './slide-to-action/slide-to-action';
+import { ContactAvatarComponent } from './contact-avatar/contact-avatar';
 @NgModule({
 	declarations: [
     TransactionHistoryComponent,
-    SlideToActionComponent
+    SlideToActionComponent,
+    ContactAvatarComponent
   ],
 	imports: [
     MomentModule,
@@ -14,7 +16,8 @@ import { SlideToActionComponent } from './slide-to-action/slide-to-action';
   ],
 	exports: [
     TransactionHistoryComponent,
-    SlideToActionComponent
+    SlideToActionComponent,
+    ContactAvatarComponent
   ]
 })
 export class ComponentsModule {}

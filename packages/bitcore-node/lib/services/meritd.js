@@ -230,8 +230,8 @@ Merit.prototype.getPublishEvents = function() {
     {
       name: 'meritd/rawreferraltx',
 
-      
-      
+
+
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
