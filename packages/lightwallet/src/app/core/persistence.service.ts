@@ -33,7 +33,8 @@ const Keys = {
   REMOTE_PREF_STORED: 'remotePrefStored',
   TX_CONFIRM_NOTIF: txid => 'txConfirmNotif-' + txid,
   TX_HISTORY: walletId => 'txsHistory-' + walletId,
-  SEND_HISTORY: 'sendHistory'
+  SEND_HISTORY: 'sendHistory',
+  HIDDEN_REQUESTS_ADDRESSES: 'hiddenRequestsAddresses'
 };
 
 @Injectable()
@@ -470,6 +471,17 @@ export class PersistenceService {
         return this.set(Keys.BITPAY_ACCOUNTS_V2(network), allAccounts);
       });
   };
+
+  async getHiddenUnlockRequestsAddresses() {
+    let addresses = await this.storage.get(Keys.HIDDEN_REQUESTS_ADDRESSES);
+    return addresses || [];
+  }
+
+  async hideRequestAddress(address:string) {
+    let addresses = await this.getHiddenUnlockRequestsAddresses();
+    if (addresses.indexOf(address) == -1) addresses.unshift(address);
+    return this.storage.set(Keys.HIDDEN_REQUESTS_ADDRESSES, addresses); 
+  }
 
   private get(key: any) {
     return this.storage.get(key);
