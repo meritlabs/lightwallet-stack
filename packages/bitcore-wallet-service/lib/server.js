@@ -3007,7 +3007,7 @@ WalletService.prototype.getUnlockRequests = function(opts, cb) {
                   if (err) return cb(err);
 
                   var unlockRequests = referrals.map(function(referralObj) {
-                     return Bitcore.Referral(referralObj.raw);
+                     return Bitcore.Referral(referralObj.raw, network);
                     }).filter(function(referral) {
                       return (addressStrs.indexOf(referral.address.toString()) == -1); //filter our own unlock request
                     }).map(function(referral) {

@@ -14,12 +14,29 @@ const Networks = require('../networks');
 const Address = require('../address');
 const PublicKey = require('../publickey');
 
-function Referral(serialized) {
+const CURRENT_VERSION = 1;
+const INVITE_VERSION = 1;
+
+/**
+* @param {*} data - The encoded data in various formats
+* @param {string=} network - The network: 'livenet' or 'testnet'
+* @constructor
+*/
+function Referral(data, network) {
     if (!(this instanceof Referral)) {
-        return new Referral(serialized);
+        return new Referral(data, network);
     }
 
-    this.version = 1;
+    $.checkArgument(data, 'First argument is required, please include referral data.');
+
+    if (network && !Networks.get(network)) {
+      throw new TypeError('Second argument must be "livenet" or "testnet".');
+    }
+
+    // memory only
+    this.network = Networks.get(network) || Networks.defaultNetwork;
+
+    this.version = CURRENT_VERSION;
     this.parentAddress = null;
     this.address = null;
     this.addressType = 0;
@@ -27,27 +44,22 @@ function Referral(serialized) {
     this.signature = null;
     this.alias = '';
 
-    if (serialized) {
-        if (serialized instanceof Referral) {
-            return Referral.shallowCopy(serialized);
-        } else if (JSUtil.isHexa(serialized)) {
-            this.fromString(serialized);
-        } else if (BufferUtil.isBuffer(serialized)) {
-            this.fromBuffer(serialized);
-        } else if (_.isObject(serialized)) {
-            this.fromObject(serialized);
-        } else {
-            throw new errors.InvalidArgument('Must provide an object or string to deserialize a referral');
-        }
+    if (data instanceof Referral) {
+        return Referral.shallowCopy(data);
+    } else if (JSUtil.isHexa(data)) {
+        this.fromString(data);
+    } else if (data instanceof BufferReader) {
+        this.fromBufferReader(data);
+    } else if (BufferUtil.isBuffer(data)) {
+        this.fromBuffer(data);
+    } else if (_.isObject(data)) {
+        this.fromObject(data);
     } else {
-        this._newReferral();
+        throw new errors.InvalidArgument('Must provide an object or string to deserialize a referral');
     }
 
     return null;
 };
-
-const CURRENT_VERSION = 1;
-const DEFAULT_NLOCKTIME = 0;
 
 const hashProperty = {
     configurable: false,
@@ -64,9 +76,8 @@ Referral.prototype._getHash = function() {
     return Hash.sha256sha256(this.toBuffer());
 };
 
-Referral.shallowCopy = function(transaction) {
-    const copy = new Referral(transaction.toBuffer());
-    return copy;
+Referral.shallowCopy = function(data) {
+    return new Referral(data.toBuffer(), this.network.name);
 };
 
 //Referral.prototype.inspect = function() {
@@ -108,19 +119,15 @@ Referral.prototype.fromBuffer = function(buffer) {
 
 Referral.prototype.fromBufferReader = function(reader) {
     $.checkArgument(!reader.finished(), 'No referral data received');
-
-    // TODO: get network value from some global variable
-    const network = Networks.testnet.name;
-
     this.version = reader.readInt32LE();
     // we assume parent address type is a pubkeyhash
-    this.parentAddress = Address.fromBuffer(reader.read(20), network, Address.PayToPublicKeyHashType);
+    this.parentAddress = Address.fromBuffer(reader.read(20), this.network.name, Address.PayToPublicKeyHashType);
     this.addressType = reader.readUInt8();
-    this.address = Address.fromBuffer(reader.read(20), network, this.addressType);
+    this.address = Address.fromBuffer(reader.read(20), this.network.name, this.addressType);
     this.pubkey = PublicKey.fromBuffer(reader.readVarLengthBuffer());
     this.signature = reader.readVarLengthBuffer();
     // check that we have more data for pre-daedalus support
-    if (!reader.eof()) {
+    if (this.version >= INVITE_VERSION && !reader.eof()) {
         this.alias = reader.readVarLengthBuffer().toString();
     }
 
@@ -144,7 +151,6 @@ Referral.prototype.toObject = Referral.prototype.toJSON = function toObject() {
 
 Referral.prototype.fromObject = function fromObject(arg) {
     $.checkArgument(_.isObject(arg) || arg instanceof Referral);
-    var self = this;
 
     let referral = {};
     if (arg instanceof Referral) {
@@ -154,10 +160,10 @@ Referral.prototype.fromObject = function fromObject(arg) {
     }
 
     this.version = referral.version || CURRENT_VERSION;
-    this.parentAddress = Address.fromString(referral.parentAddress, Networks.testnet, Address.PayToPublicKeyHashType);
+    this.parentAddress = Address.fromString(referral.parentAddress, this.network.name, Address.PayToPublicKeyHashType);
     this.addressType = referral.addressType;
-    this.address = Address.fromString(referral.address, Networks.testnet, this.addressType);
-    this.pubkey = PublicKey.fromString(referral.pubkey, Networks.testnet);
+    this.address = Address.fromString(referral.address, this.network.name, this.addressType);
+    this.pubkey = PublicKey.fromString(referral.pubkey, this.network.name);
     this.signature = BufferUtil.hexToBuffer(referral.signature);
     this.alias = referral.alias || '';
 
@@ -167,11 +173,6 @@ Referral.prototype.fromObject = function fromObject(arg) {
 
 Referral.prototype.fromString = function(string) {
     return this.fromBuffer(BufferUtil.hexToBuffer(string));
-};
-
-Referral.prototype._newReferral = function() {
-    this.version = CURRENT_VERSION;
-    this.nLockTime = DEFAULT_NLOCKTIME;
 };
 
 Referral.prototype.serialize = Referral.prototype.toString = function() {

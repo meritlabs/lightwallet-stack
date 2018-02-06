@@ -42,16 +42,17 @@ Block.COINBASE_MATURITY = {
 
 /**
  * @param {*} - A Buffer, JSON string or Object
+ * @param {string=} - network name
  * @returns {Object} - An object representing block data
  * @throws {TypeError} - If the argument was not recognized
  * @private
  */
-Block._from = function _from(arg) {
+Block._from = function _from(arg, network) {
   var info = {};
   if (BufferUtil.isBuffer(arg)) {
-    info = Block._fromBufferReader(BufferReader(arg));
+    info = Block._fromBufferReader(BufferReader(arg), network);
   } else if (_.isObject(arg)) {
-    info = Block._fromObject(arg);
+    info = Block._fromObject(arg, network);
   } else {
     throw new TypeError('Unrecognized argument for Block');
   }
@@ -60,10 +61,11 @@ Block._from = function _from(arg) {
 
 /**
  * @param {Object} - A plain JavaScript object
+ * @param {string=} - network name
  * @returns {Object} - An object representing block data
  * @private
  */
-Block._fromObject = function _fromObject(data) {
+Block._fromObject = function _fromObject(data, network) {
   const transactions = [];
   data.transactions.forEach(function(tx) {
     if (tx instanceof Transaction) {
@@ -87,7 +89,7 @@ Block._fromObject = function _fromObject(data) {
     if (ref instanceof Referral) {
       referrals.push(ref);
     } else {
-      referrals.push(Referral().fromObject(ref));
+      referrals.push(new Referral(ref, network));
     }
   });
   var info = {
@@ -101,19 +103,21 @@ Block._fromObject = function _fromObject(data) {
 
 /**
  * @param {Object} - A plain JavaScript object
+ * @param {string=} - network name
  * @returns {Block} - An instance of block
  */
-Block.fromObject = function fromObject(obj) {
-  var info = Block._fromObject(obj);
+Block.fromObject = function fromObject(obj, network) {
+  var info = Block._fromObject(obj, network);
   return new Block(info);
 };
 
 /**
  * @param {BufferReader} - Block data
+ * @param {string=} - network name
  * @returns {Object} - An object representing the block data
  * @private
  */
-Block._fromBufferReader = function _fromBufferReader(br) {
+Block._fromBufferReader = function _fromBufferReader(br, network) {
   var info = {};
   $.checkState(!br.finished(), 'No block data received');
   info.header = BlockHeader.fromBufferReader(br);
@@ -130,51 +134,57 @@ Block._fromBufferReader = function _fromBufferReader(br) {
     }
   }
   const referrals = br.readVarintNum();
+  console.log('referrals number in a block ', referrals);
   info.referrals = [];
   for (let i = 0; i < referrals; i++) {
-    info.referrals.push(Referral().fromBufferReader(br));
+    info.referrals.push(new Referral(br, network));
   }
+
   return info;
 };
 
 /**
  * @param {BufferReader} - A buffer reader of the block
+ * @param {string=} - network name
  * @returns {Block} - An instance of block
  */
-Block.fromBufferReader = function fromBufferReader(br) {
+Block.fromBufferReader = function fromBufferReader(br, network) {
   $.checkArgument(br, 'br is required');
-  var info = Block._fromBufferReader(br);
+  var info = Block._fromBufferReader(br, network);
   return new Block(info);
 };
 
 /**
  * @param {Buffer} - A buffer of the block
+ * @param {string=} - network name
  * @returns {Block} - An instance of block
  */
-Block.fromBuffer = function fromBuffer(buf) {
-  return Block.fromBufferReader(new BufferReader(buf));
+Block.fromBuffer = function fromBuffer(buf, network) {
+  return Block.fromBufferReader(new BufferReader(buf), network);
 };
 
 /**
  * @param {string} - str - A hex encoded string of the block
+ * @param {string=} - network name
  * @returns {Block} - A hex encoded string of the block
  */
-Block.fromString = function fromString(str) {
+Block.fromString = function fromString(str, network) {
   var buf = new Buffer(str, 'hex');
-  return Block.fromBuffer(buf);
+  return Block.fromBuffer(buf, network);
 };
 
 /**
  * @param {Binary} - Raw block binary data or buffer
+ * @param {string=} - network name
  * @returns {Block} - An instance of block
  */
-Block.fromRawBlock = function fromRawBlock(data) {
+Block.fromRawBlock = function fromRawBlock(data, network) {
   if (!BufferUtil.isBuffer(data)) {
     data = new Buffer(data, 'binary');
   }
   var br = BufferReader(data);
   br.pos = Block.Values.START_OF_BLOCK;
-  var info = Block._fromBufferReader(br);
+  var info = Block._fromBufferReader(br, network);
   return new Block(info);
 };
 
