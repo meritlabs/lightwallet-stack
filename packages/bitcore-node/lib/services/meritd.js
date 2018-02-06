@@ -1570,7 +1570,7 @@ Merit.prototype.getReferral = function(refid, callback) {
                 if (err) {
                     return done(self._wrapRPCError(err));
                 }
-                var referral = new Referral(response.result, self.node.getNetworkName());
+                var referral = Referral(response.result, self.node.getNetworkName());
                 self.referralCache.set(refid, referral);
                 done(null, referral);
             });

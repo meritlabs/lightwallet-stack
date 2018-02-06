@@ -89,7 +89,7 @@ Block._fromObject = function _fromObject(data, network) {
     if (ref instanceof Referral) {
       referrals.push(ref);
     } else {
-      referrals.push(new Referral(ref, network));
+      referrals.push(Referral(network).fromObject(ref));
     }
   });
   var info = {
@@ -137,7 +137,7 @@ Block._fromBufferReader = function _fromBufferReader(br, network) {
   console.log('referrals number in a block ', referrals);
   info.referrals = [];
   for (let i = 0; i < referrals; i++) {
-    info.referrals.push(new Referral(br, network));
+    info.referrals.push(Referral(network).fromBufferReader(br));
   }
 
   return info;
