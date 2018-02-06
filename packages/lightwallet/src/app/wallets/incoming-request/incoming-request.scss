@@ -50,5 +50,9 @@ view-incoming-request {
     }
   }
 
+  .decline-button {
+    color: color($colors, danger);
+  }
+
 
 }
