@@ -99,6 +99,22 @@ Insight.prototype.getTransaction = function(txid, cb) {
   });
 };
 
+Insight.prototype.getReferral = function(refid, cb) {
+  var args = {
+    method: 'GET',
+    path: this.apiPrefix + '/referral/' + refid,
+    json: true,
+  };
+
+  this._doRequest(args, function(err, res, tx) {
+    if (res && res.statusCode == 404) return cb();
+    if (err || res.statusCode !== 200)
+      return cb(_parseErr(err, res));
+
+    return cb(null, tx);
+  });
+};
+
 Insight.prototype.getAddressReferrals = function(addresses, cb) {
 
     var args = {

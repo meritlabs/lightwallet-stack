@@ -199,8 +199,10 @@ Merit.prototype.getAPIMethods = function() {
     ['getanv',                this, this.getANV, 1],
     ['getrewards',     this, this.getRewards, 1],
     ['sendReferral', this, this.sendReferral, 1],
+    ['getReferral', this, this.getReferral, 1],
     ['getAddressReferrals', this, this.getAddressReferrals, 1]
   ];
+
   return methods;
 };
 
@@ -1552,8 +1554,7 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
 
 /**
  * Will get a referral as a Bitcore Referral. Results include the mempool.
- * @param {String} refid - Referral hash
- * @param {Boolean} queryMempool - Include the mempool
+ * @param {String} refid - Referral hash, address or alias
  * @param {Function} callback
  */
 Merit.prototype.getReferral = function(refid, callback) {

@@ -3600,6 +3600,15 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
   self.storage.removeTxConfirmationSub(self.copayerId, opts.txid, cb);
 };
 
+WalletService.prototype.getReferral = function (refid, cb) {
+  const bc = this._getBlockchainExplorer();
+
+  bc.getReferral(refid, function(err, referral) {
+    if (err) return cb(err);
+
+    cb(null, referral);
+  });
+}
 /**
  * Validate that an EasyScript is on the blockchain, and that it can be unlocked.
  */

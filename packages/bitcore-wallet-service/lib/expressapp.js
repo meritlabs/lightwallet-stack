@@ -822,6 +822,23 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/referral/:refid', function(req, res) {
+    var server;
+    try {
+      server = getServer(req, res);
+    } catch (ex) {
+      return returnError(ex, res, req);
+    }
+
+    server.getReferral(req.params.refid, function(err, referral) {
+      if (err) {
+        return returnError(err, res, req);
+      }
+
+      res.json(referral).end();
+    });
+  });
+
   router.post('/v1/referral/', function(req, res) {
     var server;
     try {
