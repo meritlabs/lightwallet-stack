@@ -26,7 +26,7 @@ import { createDisplayWallet, IDisplayWallet } from '../../../models/display-wal
 export class NetworkView {
   static readonly RETRY_MAX_ATTEMPTS = 5;
   static readonly RETRY_TIMEOUT = 1000;
-  public displayWallets: Array<IDisplayWallet> = [];
+  public displayWallets: Array<IDisplayWallet> = []; 
   public loading: boolean;
 
   totalNetworkValue: string;
@@ -34,6 +34,8 @@ export class NetworkView {
   totalAmbassadorRewards: string;
 
   pendingInvites: any[];
+  
+  activeUnlockRequests:number; 
 
   constructor(private profileService: ProfileService,
               private clipboard: Clipboard,
@@ -123,6 +125,7 @@ export class NetworkView {
   }
 
   private async loadWallets() {
+
     const wallets: MeritWalletClient[] = await this.profileService.getWallets();
 
     const displayWallets: IDisplayWallet[] = await Promise.all(
@@ -131,8 +134,17 @@ export class NetworkView {
       )
     );
 
-    this.pendingInvites = displayWallets.reduce((requests: any[], wallet: IDisplayWallet) =>
-      requests.push.call(requests, wallet.inviteRequests), []);
+    this.activeUnlockRequests = 0;
+    let hiddenAddresses =  await this.profileService.getHiddenUnlockRequestsAddresses();
+    // todo optimize and refactor
+    this.pendingInvites = displayWallets.reduce((requests: any[], wallet: IDisplayWallet) => {
+      wallet.inviteRequests.forEach(r => {
+        r.walletClient = wallet.client;
+        if (!r.isConfirmed && hiddenAddresses.indexOf(r.address) == -1 )  this.activeUnlockRequests++; 
+      });
+      
+      return requests.concat(wallet.inviteRequests)
+    } , []);
 
     return displayWallets;
   }
