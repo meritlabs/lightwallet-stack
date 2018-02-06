@@ -43,11 +43,13 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <button ion-item class="pending-unlock-requests" *ngIf="pendingInvites && pendingInvites.length" navPush="PendingInvitesView" [navParams]="{ invites: pendingInvites }">
+  <button ion-item class="pending-unlock-requests" 
+          *ngIf="pendingInvites && pendingInvites.length" 
+          navPush="PendingInvitesView" [navParams]="{ invites: pendingInvites, wallets: displayWallets }">
     <ion-avatar item-start></ion-avatar>
     <ion-label>
       <p>Pending unlock requests</p>
-      <h2>You have {{ pendingInvites.length }} pending requests.</h2>
+      <h2>{{ activeUnlockRequests }} new requests.</h2>
     </ion-label>
   </button>
 
