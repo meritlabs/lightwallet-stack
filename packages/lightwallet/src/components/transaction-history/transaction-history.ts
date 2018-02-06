@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ITransaction } from '../../models/transaction';
 
 @Component({
   selector: 'transaction-history',
@@ -7,5 +8,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 })
 export class TransactionHistoryComponent {
   @Input()
-  transactions: any[];
+  transactions: ITransaction[];
 }

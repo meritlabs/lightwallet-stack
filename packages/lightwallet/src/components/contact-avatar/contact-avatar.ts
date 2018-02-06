@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 import { getContactInitials } from '../../utils/contacts';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MeritContact } from '../../models/merit-contact';
 
 @Component({
   selector: 'contact-avatar',
