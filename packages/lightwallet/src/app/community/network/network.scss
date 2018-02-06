@@ -61,6 +61,10 @@ view-network {
     }
   }
 
+  button[ion-item].item.pending-unlock-requests {
+    // TODO make this item more visible
+  }
+
   ion-list.list {
     $border-color: transparentize(#d1d6dc, 0.5);
     border-bottom: 1px solid $border-color;
