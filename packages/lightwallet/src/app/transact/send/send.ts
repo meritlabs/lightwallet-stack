@@ -12,6 +12,7 @@ import * as _ from 'lodash';
 
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
+const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
 
 @IonicPage()
 @Component({
@@ -91,7 +92,7 @@ export class SendView {
           result.toNewEntity.contact.meritAddresses.push({address: input, network: this.sendService.getAddressNetwork(input).name});
           this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_ADDRESS, value: input};
         } else {
-          this.searchResult.error = this.ERROR_ADDRESS_NOT_BEACONED; 
+          this.searchResult.error = ERROR_ADDRESS_NOT_CONFIRMED; 
         }
       } else if (this.couldBeEmail(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
