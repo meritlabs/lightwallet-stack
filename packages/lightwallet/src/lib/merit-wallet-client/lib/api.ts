@@ -1863,8 +1863,6 @@ export class API {
         alias: opts.alias
       });
 
-      console.log("SENDING REFERRAL", referral.toObject());
-
       this._doPostRequest('/v1/referral/', { referral: referral.serialize() })
         .then(resolve)
         .catch(reject);
