@@ -230,8 +230,8 @@ Merit.prototype.getPublishEvents = function() {
     {
       name: 'meritd/rawreferraltx',
 
-      
-      
+
+
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
@@ -1570,8 +1570,7 @@ Merit.prototype.getReferral = function(refid, callback) {
                 if (err) {
                     return done(self._wrapRPCError(err));
                 }
-                var referral = Referral();
-                referral.fromString(response.result);
+                var referral = new Referral(response.result, self.node.getNetworkName());
                 self.referralCache.set(refid, referral);
                 done(null, referral);
             });
@@ -1814,7 +1813,7 @@ Merit.prototype.getBlock = function(blockArg, callback) {
         if (err) {
           return done(self._wrapRPCError(err));
         }
-        var blockObj = bitcore.Block.fromString(response.result);
+        var blockObj = bitcore.Block.fromString(response.result, self.node.getNetworkName());
         self.blockCache.set(blockhash, blockObj);
         done(null, blockObj);
       });
