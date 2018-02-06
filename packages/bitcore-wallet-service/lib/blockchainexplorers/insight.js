@@ -229,7 +229,7 @@ Insight.prototype.getBlock = function(blockHash, cb) {
 
   this._doRequest(args, function(err, res, body) {
     if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
-    console.log('insight block received. Referrals: ', body.referral);
+    console.log('insight block received. Referrals: ', body.referrals);
     return cb(null, body);
   });
 }

@@ -71,7 +71,7 @@ function Address(data, network, type) {
        type !== Address.PayToScriptHash &&
        type !== Address.ParameterizedPayToScriptHash)) {
 
-    throw new TypeError('Third argument must be "pubkeyhash", "scripthash", or "paramscripthash" .');
+    throw new TypeError('Third argument must be "pubkeyhash", "scripthash", or "paramscripthash".');
   }
 
   var info = this._classifyArguments(data, network, type);
@@ -229,7 +229,6 @@ Address._transformBuffer = function(buffer, network, type) {
 
   var networkObj = Networks.get(network);
   var bufferVersion = Address._classifyFromVersion(buffer, network, type);
-
 
   if (network && !networkObj) {
     throw new TypeError('Unknown network');
