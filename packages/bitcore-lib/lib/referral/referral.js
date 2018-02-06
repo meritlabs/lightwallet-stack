@@ -27,10 +27,6 @@ function Referral(data, network) {
         return new Referral(data, network);
     }
 
-    if (network && !Networks.get(network)) {
-      throw new TypeError('Second argument must be "livenet" or "testnet".');
-    }
-
     // check if argument passed is a network
     if (_.isString(data) && !JSUtil.isHexa(data)) {
       const network = Networks.get(data);
@@ -43,6 +39,14 @@ function Referral(data, network) {
 
       this._newReferral(network);
       return null;
+    }
+
+    if (network && !Networks.get(network)) {
+      throw new TypeError('Second argument must be "livenet" or "testnet".');
+    }
+
+    if (Networks.get(network)) {
+      this.network = Networks.get(network);
     }
 
     this.version = CURRENT_VERSION;
@@ -136,6 +140,7 @@ Referral.prototype.fromBuffer = function(buffer) {
 
 Referral.prototype.fromBufferReader = function(reader) {
     $.checkArgument(!reader.finished(), 'No referral data received');
+    console.log('referral network', this.network);
     this.version = reader.readInt32LE();
     // we assume parent address type is a pubkeyhash
     this.parentAddress = Address.fromBuffer(reader.read(20), this.network.name, Address.PayToPublicKeyHashType);
