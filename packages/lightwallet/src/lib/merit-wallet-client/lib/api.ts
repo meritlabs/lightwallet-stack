@@ -1861,7 +1861,7 @@ export class API {
         pubkey: opts.pubkey,
         signature: signature.toString('hex'),
         alias: opts.alias
-      });
+      }, network);
 
       this._doPostRequest('/v1/referral/', { referral: referral.serialize() })
         .then(resolve)
