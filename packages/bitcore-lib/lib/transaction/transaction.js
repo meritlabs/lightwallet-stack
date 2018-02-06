@@ -58,9 +58,8 @@ function Transaction(serialized) {
   }
 }
 
-var CURRENT_VERSION = 1;
-var DEFAULT_NLOCKTIME = 0;
-var MAX_BLOCK_SIZE = 1000000;
+const DEFAULT_NLOCKTIME = 0;
+const MAX_BLOCK_SIZE = 1000000;
 
 // Minimum amount for an output for it not to be considered a dust output
 Transaction.DUST_AMOUNT = 546;
@@ -83,6 +82,10 @@ Transaction.FEE_PER_KB = 100000;
 // Safe upper bound for change address script size in bytes
 Transaction.CHANGE_OUTPUT_MAX_SIZE = 20 + 4 + 34 + 4;
 Transaction.MAXIMUM_EXTRA_SIZE = 4 + 9 + 9 + 4;
+
+// supported tx versions
+Transaction.CURRENT_VERSION = 2;
+Transaction.INVITE_VERSION = 3;
 
 /* Constructors and Serialization */
 
@@ -248,7 +251,7 @@ Transaction.prototype._missingChange = function() {
 };
 
 Transaction.prototype._hasDustOutputs = function(opts) {
-  if (opts.disableDustOutputs) {
+  if (this.isInvite || opts.disableDustOutputs) {
     return;
   }
   var index, output;
@@ -314,7 +317,7 @@ Transaction.prototype.fromBufferReader = function(reader) {
   for (i = 0; i < sizeTxIns; i++) {
     var input = Input.fromBufferReader(reader);
     this.inputs.push(input);
-  
+
   }
   sizeTxOuts = reader.readVarintNum();
 
@@ -322,7 +325,7 @@ Transaction.prototype.fromBufferReader = function(reader) {
     this.outputs.push(Output.fromBufferReader(reader));
   }
 
-  // If we have a witness, then let's actually set the witnesses on relevant 
+  // If we have a witness, then let's actually set the witnesses on relevant
   // inputs
   if (hasWitness) {
     for ( var k = 0; k < sizeTxIns; k++ ) {
@@ -368,6 +371,10 @@ Transaction.prototype.toObject = Transaction.prototype.toJSON = function toObjec
   }
   return obj;
 };
+
+Transaction.prototype.isInvite = function isInvite() {
+  return this.version >= Transaction.INVITE_VERSION;
+}
 
 Transaction.prototype.fromObject = function fromObject(arg) {
   /* jshint maxstatements: 20 */
@@ -504,7 +511,7 @@ Transaction.prototype.fromString = function(string) {
 };
 
 Transaction.prototype._newTransaction = function() {
-  this.version = CURRENT_VERSION;
+  this.version = Transaction.CURRENT_VERSION;
   this.nLockTime = DEFAULT_NLOCKTIME;
 };
 

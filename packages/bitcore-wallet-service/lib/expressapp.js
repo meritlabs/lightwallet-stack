@@ -229,9 +229,6 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.post('/v1/referrals/', function(req, res) {
-
-  });
 
   router.put('/v1/copayers/:id/', function(req, res) {
     req.body.copayerId = req.params['id'];
@@ -378,6 +375,16 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/invites/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      var opts = {};
+      server.getInvitesBalance(opts, function(err, balance) {
+        if (err) return returnError(err, res, req);
+        res.json(balance);
+      });
+    });
+  });
+
   router.get('/v1/feelevels/', function(req, res) {
     var opts = {};
     if (req.query.network) opts.network = req.query.network;
@@ -409,8 +416,11 @@ ExpressApp.prototype.start = function(opts, cb) {
   });
 
   router.get('/v1/utxos/', function(req, res) {
-    var opts = {};
-    var addresses = req.query.addresses;
+    const opts = {
+      invites: req.query.invites,
+    };
+    const addresses = req.query.addresses;
+
     if (addresses && _.isString(addresses)) opts.addresses = req.query.addresses.split(',');
     getServerWithAuth(req, res, function(server) {
       server.getUtxos(opts, function(err, utxos) {
@@ -500,19 +510,14 @@ ExpressApp.prototype.start = function(opts, cb) {
   });
 
 
-  router.get('/v1/refhitory/', function(req, res) {
-    getServerWithAuth(req, res, function(server) {
-      var opts = {};
-      if (req.query.skip) opts.skip = +req.query.skip;
-      if (req.query.limit) opts.limit = +req.query.limit;
-      //if (req.query.includeExtendedInfo == '1') opts.includeExtendedInfo = true;
-
-      server.getReferralsHistory(opts, function(err, refs) {
-        if (err) return returnError(err, res, req);
-        res.json(refs);
-        res.end();
+  router.get('/v1/unlockrequests', function(req, res) {
+      getServerWithAuth(req, res, function(server) {
+          server.getUnlockRequests(opts, function(err, refs) {
+              if (err) return returnError(err, res, req);
+              res.json(refs);
+              res.end();
+          });
       });
-    });
   });
 
   router.get('/v1/txhistory/', function(req, res) {
@@ -522,8 +527,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       if (req.query.limit) opts.limit = +req.query.limit;
       if (req.query.includeExtendedInfo == '1') opts.includeExtendedInfo = true;
 
-      //server.getTxHistory(opts, function(err, txs) { temp!
-      server.getReferralsHistory(opts, function(err, txs) { 
+      server.getTxHistory(opts, function(err, txs) {
         if (err) return returnError(err, res, req);
         res.json(txs);
         res.end();
@@ -826,6 +830,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       return returnError(ex, res, req);
     }
 
+    console.log('referral', req.body.referral);
     server.sendReferral(req.body.referral, function(err, refid) {
       if (err) {
         return returnError(err, res, req);

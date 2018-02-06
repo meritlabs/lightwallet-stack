@@ -141,10 +141,10 @@ AddressController.prototype.validateAddresses = function(req, res) {
         message: 'Invalid address: ' + err.message,
         code: 1
       }, res);
-    } 
+    }
 
     return res.jsonp({ isValid: response.result.isvalid, isBeaconed: response.result.isbeaconed });
-  });  
+  });
 };
 
 AddressController.prototype.utxo = function(req, res) {
@@ -161,15 +161,14 @@ AddressController.prototype.utxo = function(req, res) {
 };
 
 AddressController.prototype.multiutxo = function(req, res) {
-  var self = this;
-  this.node.getAddressUnspentOutputs(req.addrs, true, function(err, utxos) {
+  this.node.getAddressUnspentOutputs(req.addrs, { invites: req.body.invites }, (err, utxos) => {
     if(err && err.code === -5) {
       return res.jsonp([]);
     } else if(err) {
-      return self.common.handleErrors(err, res);
+      return this.common.handleErrors(err, res);
     }
 
-    res.jsonp(utxos.map(self.transformUtxo.bind(self)));
+    res.jsonp(utxos.map(this.transformUtxo.bind(this)));
   });
 };
 
@@ -179,9 +178,10 @@ AddressController.prototype.transformUtxo = function(utxoArg) {
     txid: utxoArg.txid,
     vout: utxoArg.outputIndex,
     scriptPubKey: utxoArg.script,
-    amount: utxoArg.satoshis / 1e8,
-    micros: utxoArg.satoshis, 
-    isCoinbase: utxoArg.isCoinbase 
+    amount: !utxoArg.isInvite ? utxoArg.satoshis / 1e8 : utxoArg.satoshis,
+    micros: utxoArg.satoshis,
+    isCoinbase: utxoArg.isCoinbase,
+    isInvite: utxoArg.isInvite,
   }; // ToDo: update after changes in meritd
   if (utxoArg.height && utxoArg.height > 0) {
     utxo.height = utxoArg.height;
@@ -221,27 +221,12 @@ AddressController.prototype.referrals = function(req, res, next) {
             return self.common.handleErrors(err, res);
         }
 
-
-        console.log("AAAAAAAAA\n\n\n");
-        console.log(result);
-        console.log("\n\n\nAAAAAAAAA");
-
-
-
-        //var transformOptions = self._getTransformOptions(req);
-        //
-        //self.transformAddressHistoryForMultiTxs(result.items, transformOptions, function(err, items) {
-        //    console.log('after transformAddressHistoryForMultiTxs', err, items);
-        //    if (err) {
-        //        return self.common.handleErrors(err, res);
-        //    }
-        //    res.jsonp({
-        //        totalItems: result.totalCount,
-        //        from: options.from,
-        //        to: Math.min(options.to, result.totalCount),
-        //        items: items
-        //    });
-        //});
+        return res.jsonp({
+            totalItems: result.totalCount,
+            from: options.from,
+            to: Math.min(options.to, result.totalCount),
+            items: result.items
+        });
 
     });
 };
@@ -255,10 +240,7 @@ AddressController.prototype.multitxs = function(req, res, next) {
 
   options.to = parseInt(req.query.to) || parseInt(req.body.to) || parseInt(options.from) + 10;
 
-  console.log('before getAddressHistory');
-
   self.node.getAddressHistory(req.addrs, options, function(err, result) {
-    console.log('after getAddressHistory', err, result);
     if(err) {
       return self.common.handleErrors(err, res);
     }
@@ -266,7 +248,6 @@ AddressController.prototype.multitxs = function(req, res, next) {
     var transformOptions = self._getTransformOptions(req);
 
     self.transformAddressHistoryForMultiTxs(result.items, transformOptions, function(err, items) {
-      console.log('after transformAddressHistoryForMultiTxs', err, items);
       if (err) {
         return self.common.handleErrors(err, res);
       }

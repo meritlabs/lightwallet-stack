@@ -48,13 +48,14 @@ Insight.prototype.getConnectionInfo = function() {
 /**
  * Retrieve a list of unspent outputs associated with an address or set of addresses
  */
-Insight.prototype.getUtxos = function(addresses, cb) {
+Insight.prototype.getUtxos = function(addresses, invites, cb) {
   var url = this.url + this.apiPrefix + '/addrs/utxo';
   var args = {
     method: 'POST',
     path: this.apiPrefix + '/addrs/utxo',
     json: {
-      addrs: [].concat(addresses).join(',')
+      addrs: [].concat(addresses).join(','),
+      invites,
     },
   };
 
@@ -98,42 +99,30 @@ Insight.prototype.getTransaction = function(txid, cb) {
   });
 };
 
-Insight.prototype.getReferrals = function(addresses, from, to, cb) {
-
-    var qs = [];
-    var total;
-    if (_.isNumber(from)) qs.push('from=' + from);
-    if (_.isNumber(to)) qs.push('to=' + to);
-
-    // Trim output
-    //qs.push('noAsm=1');
-    //qs.push('noScriptSig=1');
-    //qs.push('noSpent=1');
+Insight.prototype.getAddressReferrals = function(addresses, cb) {
 
     var args = {
         method: 'POST',
-        path: this.apiPrefix + '/addrs/referrals' + (qs.length > 0 ? '?' + qs.join('&') : ''),
+        path: this.apiPrefix + '/addrs/referrals',
         json: {
             addrs: [].concat(addresses).join(',')
         },
-        timeout: 120000,
+        timeout: 120000
     };
-
-    console.log(args, addresses);
 
     this._doRequest(args, function(err, res, referrals) {
         if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
 
         if (_.isObject(referrals)) {
             if (referrals.totalItems)
-                total = referrals.totalItems;
+                var total = referrals.totalItems;
 
             if (referrals.items)
                 referrals = referrals.items;
         }
 
         // NOTE: Whenever Insight breaks communication with meritd, it returns invalid data but no error code.
-        if (!_.isArray(referrals) || (referrals.length != _.compact(referrals).length)) return cb(new Error('Could not retrieve transactions from blockchain. Request was:' + JSON.stringify(args)));
+        if (!_.isArray(referrals) || (referrals.length != _.compact(referrals).length)) return cb(new Error('Could not retrieve referrals from blockchain. Request was:' + JSON.stringify(args)));
 
         return cb(null, referrals, total);
     });
@@ -227,23 +216,10 @@ Insight.prototype.getBlockchainHeight = function(cb) {
   });
 };
 
-Insight.prototype.getTxidsInBlock = function(blockHash, cb) {
-  var self = this;
-
-  var args = {
-    method: 'GET',
-    path: this.apiPrefix + '/block/' + blockHash,
-    json: true,
-  };
-
-  this._doRequest(args, function(err, res, body) {
-    if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
-    return cb(null, body.tx);
-  });
-};
-
-Insight.prototype.getReferralsInBlock = function(blockHash, cb) {
+Insight.prototype.getBlock = function(blockHash, cb) {
   const self = this;
+
+  console.log('Insight getBlock!');
 
   const args = {
     method: 'GET',
@@ -253,12 +229,13 @@ Insight.prototype.getReferralsInBlock = function(blockHash, cb) {
 
   this._doRequest(args, function(err, res, body) {
     if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
-    return cb(null, body.referrals);
+    console.log('insight block received. Referrals: ', body.referral);
+    return cb(null, body);
   });
-};
+}
 
 Insight.prototype.initSocket = function() {
-
+  console.log('Insight hosts:', this.hosts);
   // sockets always use the first server on the pull
   var socket = io.connect(_.head([].concat(this.hosts)), {
     'reconnection': true,

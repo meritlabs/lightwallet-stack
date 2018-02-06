@@ -294,6 +294,10 @@ export class WalletService {
 
   }
 
+  public getRootAddress(wallet: MeritWalletClient) {
+    return wallet.getRootAddress();
+  }
+
   public getAddress(wallet: MeritWalletClient, forceNew: boolean): Promise<any> {
 
     return new Promise((resolve, reject) => {
@@ -402,6 +406,10 @@ export class WalletService {
     return isEncrypted;
   }
 
+  public sendInvite(wallet: MeritWalletClient, toAddress: string) {
+    return wallet.sendInvite(toAddress);
+  }
+
   public createTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     return wallet.createTxProposal(txp);
   }
@@ -507,6 +515,10 @@ export class WalletService {
     });
   }
 
+  public getUnlockRequests(wallet: MeritWalletClient) {
+    return wallet.getUnlockRequests();
+  }
+
   public recreate(wallet: MeritWalletClient): Promise<any> {
     return new Promise((resolve, reject) => {
       this.logger.debug('Recreating wallet:', wallet.id);
@@ -605,6 +617,10 @@ export class WalletService {
 
   public getBalance(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
     return wallet.getBalance(opts);
+  }
+
+  public getInvitesBalance(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
+    return wallet.getInvitesBalance(opts);
   }
 
   public getLowUtxos(wallet: any, levels: any): Promise<any> {

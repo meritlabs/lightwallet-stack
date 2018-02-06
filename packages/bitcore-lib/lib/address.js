@@ -130,7 +130,7 @@ Address.PayToScriptHashType = 2;
 /** @static */
 Address.ParameterizedPayToScriptHashType = 3;
 
-const ADDRESS_TYPES = {
+Address.AddressTypes = {
   [Address.PayToPublicKeyHashType]: Address.PayToPublicKeyHash,
   [Address.PayToScriptHashType]: Address.PayToScriptHash,
   [Address.ParameterizedPayToScriptHashType]: Address.ParameterizedPayToScriptHash,
@@ -183,9 +183,9 @@ Address._transformObject = function(data) {
 Address._classifyFromVersion = function(buffer, network, type) {
   var version = {};
 
-  if (_.includes(Object.keys(ADDRESS_TYPES), type + '') && network) {
-    version.network = network;
-    version.type = ADDRESS_TYPES[type];
+  if (_.includes(Object.keys(Address.AddressTypes), type + '') && network) {
+    version.type = Address.AddressTypes[type];
+    version.network = Networks.get(network);
 
     return version;
   }
@@ -230,19 +230,20 @@ Address._transformBuffer = function(buffer, network, type) {
   var networkObj = Networks.get(network);
   var bufferVersion = Address._classifyFromVersion(buffer, network, type);
 
+
   if (network && !networkObj) {
     throw new TypeError('Unknown network');
   }
 
-  if (!bufferVersion.network || (networkObj && networkObj !== bufferVersion.network)) {
+  if (!bufferVersion.network || (networkObj && networkObj.name !== bufferVersion.network.name)) {
     throw new TypeError('Address has mismatched network type.');
   }
 
-  if (!bufferVersion.type || (type && (type !== bufferVersion.type && ADDRESS_TYPES[type] !== bufferVersion.type))) {
+  if (!bufferVersion.type || (type && (type !== bufferVersion.type && Address.AddressTypes[type] !== bufferVersion.type))) {
     throw new TypeError('Address has mismatched type.');
   }
 
-  info.hashBuffer = buffer.slice(1);
+  info.hashBuffer = buffer.length === 20 ? buffer : buffer.slice(1);
   info.network = bufferVersion.network;
   info.type = bufferVersion.type;
   return info;
