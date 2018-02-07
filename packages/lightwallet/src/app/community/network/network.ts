@@ -88,8 +88,9 @@ export class NetworkView {
     this.loading = true;
 
     try {
-      await this.formatWallets(await this.loadInfo());
       this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
+      await this.formatWallets(await this.loadInfo());
+      this.unlockRequestService.loadRequestsData();
     } catch (err) {
       this.logger.warn(err);
       this.toastCtrl

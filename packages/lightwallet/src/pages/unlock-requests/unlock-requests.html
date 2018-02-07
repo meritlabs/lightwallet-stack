@@ -7,8 +7,13 @@
 
 <ion-content>
   <ion-item>
-        You have {{totalInvites}} invites left
-  </ion-item>
+      <ion-avatar img-icon item-start>
+        <img src="assets/img/icons/invite.svg" alt="">
+      </ion-avatar>
+      <ion-label>
+        <h2>Invites ({{ totalInvites }})</h2>
+      </ion-label>
+    </ion-item>
 
   <ion-item *ngIf="hiddenRequests && hiddenRequests.length && !showHiddenRequests">
     {{hiddenRequests.length}} hidden requests
@@ -26,7 +31,7 @@
             <img src="assets/img/icons/incoming_request.svg">
         </ion-avatar>
         <h2>{{request.address }}</h2>
-        <p  *ngIf="request.alias">{{request.address}}</p>
+        <p *ngIf="request.alias">@{{request.alias}}</p>
       </ion-item>
     </div>
 
@@ -35,7 +40,7 @@
             <img src="assets/img/icons/incoming_request.svg">
         </ion-avatar>
         <h2>{{request.address }}</h2>
-        <p  *ngIf="request.alias">{{request.address}}</p>
+        <p  *ngIf="request.alias">@{{request.alias}}</p>
     </ion-item>
   </ion-list>
 

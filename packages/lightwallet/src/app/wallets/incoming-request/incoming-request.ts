@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController, ModalController, LoadingController } from 'ionic-angular';
 import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { SendService } from 'merit/transact/send/send.service';
 import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
@@ -9,6 +9,7 @@ import { MeritToastController } from 'merit/core/toast.controller';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 import { ToastConfig } from 'merit/core/toast.config';
 import { WalletService } from 'merit/wallets/wallet.service';
+import { UnlockRequestService } from 'merit/core/unlock-request.service';
 
 @IonicPage()
 @Component({
@@ -29,7 +30,10 @@ export class IncomingRequestModal {
     private addressBookService: AddressBookService,
     private sendService: SendService,
     private walletService: WalletService,
-    private toastCtrl: ToastController 
+    private toastCtrl: ToastController,
+    private unlockService: UnlockRequestService,
+    private loadingCtrl: LoadingController
+
   ) {
     this.unlockRequest = this.navParams.get('request');
     this.wallets = this.navParams.get('wallets');
@@ -42,17 +46,12 @@ export class IncomingRequestModal {
     this.contacts = await this.addressBookService.getAllMeritContacts();
   }
 
-  cancel() {
-    if (this.unlockRequest.isConfirmed) {
-      this.viewCtrl.dismiss(this.unlockRequest);
-    } else {
-      this.viewCtrl.dismiss();
-    }
-  }
-
   async accept() {
+
+    let loader = this.loadingCtrl.create({content: 'Confirming request...'});
     try {
-      await this.walletService.sendInvite(this.unlockRequest.walletClient, this.unlockRequest.address);
+      loader.present();
+      await this.unlockService.confirmRequest(this.unlockRequest);
     } catch (e) {
       this.toastCtrl.create({
         message: e.text || 'Unknown Error',
@@ -60,19 +59,21 @@ export class IncomingRequestModal {
         duration: ToastConfig.DURATION,
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
+    } finally {
+      loader.dismiss();
     }
-    this.unlockRequest.isConfirmed = true;
   }
 
-  decline() {
-    this.viewCtrl.dismiss(this.unlockRequest);
+  async decline() {
+    await this.unlockService.hideRequest(this.unlockRequest);
+    this.navCtrl.pop();
   }
 
   createContact() {
     let meritAddress = {address: this.unlockRequest.address, network: this.sendService.getAddressNetwork( this.unlockRequest.address).name};
     let modal = this.modalCtrl.create('SendCreateContactView', {address: meritAddress});
     modal.onDidDismiss((contact) => {
-      this.viewCtrl.dismiss(this.unlockRequest);
+      this.navCtrl.pop();
     });
     modal.present();
   }
@@ -81,17 +82,21 @@ export class IncomingRequestModal {
     let meritAddress = {address: this.unlockRequest.address, network: this.sendService.getAddressNetwork( this.unlockRequest.address).name};
     let modal = this.modalCtrl.create('SendSelectBindContactView', {contacts: this.contacts, address: meritAddress});
     modal.onDidDismiss((contact) => {
-      this.viewCtrl.dismiss(this.unlockRequest);
+      this.navCtrl.pop();
     }); 
 
     modal.present();
+  }
+
+  continue() {
+    this.navCtrl.pop();
   }
 
   selectWallet() {
     const modal = this.modalCtrl.create('SelectInviteWalletModal', {
       selectedWallet: this.unlockRequest.walletClient,
       availableWallets: this.wallets
-    }, MERIT_MODAL_OPTS);
+    }, MERIT_MODAL_OPTS); 
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.unlockRequest.walletClient = wallet;

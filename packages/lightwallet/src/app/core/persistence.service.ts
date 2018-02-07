@@ -484,10 +484,11 @@ export class PersistenceService {
 
   async getActiveRequestsNumber() {
     let requests = await this.storage.get(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER);
-    return requests || [];
+    return requests || 0;
   }
 
   setActiveRequestsNumber(requests:number) {
+   console.log(requests, 'setting requests number');
    return  this.storage.set(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER, requests);
   }
 
