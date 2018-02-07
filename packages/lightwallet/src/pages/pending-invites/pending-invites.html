@@ -22,14 +22,20 @@
 
     <div *ngIf="showHiddenRequests && hiddenRequests">
       <ion-item *ngFor="let request of hiddenRequests" (click)="processRequest(request)">
-        <h2>{{request.alias || request.address }}</h2>
+        <ion-avatar item-start img-icon >
+            <img src="assets/img/icons/incoming_request.svg">
+        </ion-avatar>
+        <h2>{{request.address }}</h2>
         <p  *ngIf="request.alias">{{request.address}}</p>
       </ion-item>
     </div>
 
     <ion-item *ngFor="let request of activeRequests" (click)="processRequest(request)">
-        <h2>{{request.alias || request.address }}</h2>
-        <p><!-- todo add timestamp --></p>
+        <ion-avatar item-start img-icon >
+            <img src="assets/img/icons/incoming_request.svg">
+        </ion-avatar>
+        <h2>{{request.address }}</h2>
+        <p  *ngIf="request.alias">{{request.address}}</p>
     </ion-item>
   </ion-list>
 
@@ -39,8 +45,21 @@
   </ion-item-divider>
   <ion-list *ngIf="confirmedRequests">
       <ion-item *ngFor="let request of confirmedRequests">
-          <h2>{{request.contactName || request.alias || request.address }}</h2>
-          <p><!-- todo add timestamp --></p>
+        <ion-avatar item-start img-icon >
+          <img [src]="sanitizePhotoUrl(request.contact.photos[0]?.value)" *ngIf="request.contact && request.contact.photos.length">
+          <span *ngIf="request.contact && !request.contact.photos.length">{{getContactInitials(request.contact)}}</span>
+          <!-- todo add approved icon --> 
+          <img src="assets/img/icons/confirm.svg" *ngIf="!request.contact">
+        </ion-avatar>
+
+        <h2>
+          <span *ngIf="request.contact">{{request.contact.name.formatted}}</span>
+          <span *ngIf="!request.contact">{{request.address}}</span>
+        </h2>
+        <p >
+          <span *ngIf="request.alias">@{{request.alias}}</span>
+          <span *ngIf="request.contact && !request.alias">{{request.address}}</span>
+        </p>
       </ion-item>
   </ion-list>
   
