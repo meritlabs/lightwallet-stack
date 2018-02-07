@@ -73,8 +73,15 @@ export class SendView {
   }
 
   async parseSearch() {
+
+    let result =  { withMerit: [], noMerit: [], recent: [], toNewEntity:null, error: null };
+
     if (!this.searchQuery || !this.searchQuery.length)
-      return this.clearSearch();
+      this.clearSearch();
+      this.contacts.forEach((contact: MeritContact) => {
+        _.isEmpty(contact.meritAddresses) ?  result.noMerit.push(contact) : result.withMerit.push(contact);
+      });
+      return this.searchResult = result;
 
     if (this.searchQuery.indexOf('merit') == 0)
       this.searchQuery = this.searchQuery.split('merit:')[1];
@@ -82,8 +89,6 @@ export class SendView {
     const input = this.searchQuery.split('?')[0];
 
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
-
-    let result =  { withMerit: [], noMerit: [], recent: [], toNewEntity:null, error: null };
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
       if (this.isAddress(input)) {
@@ -193,5 +198,13 @@ export class SendView {
   async openScanner() {
     this.searchQuery = await this.addressScanner.scanAddress();
     this.parseSearch();
+  }
+
+  getContactInitials(contact) {
+    if (!contact.name || !contact.name.formatted) return '';
+    let nameParts = contact.name.formatted.toUpperCase().replace(/\s\s+/g, ' ').split(' ');
+    let name = nameParts[0].charAt(0);
+    if (nameParts[1]) name += ' ' + nameParts[1].charAt(0);
+    return name;
   }
 }
