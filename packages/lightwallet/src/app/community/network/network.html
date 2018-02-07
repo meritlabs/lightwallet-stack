@@ -44,14 +44,14 @@
   </ion-refresher>
 
   <button ion-item class="pending-unlock-requests" 
-          *ngIf="activeUnlockRequests" 
-          navPush="PendingInvitesView" [navParams]="{wallets: displayWallets }">
+          navPush="UnlockRequestsView" [navParams]="{wallets: displayWallets }">
     <ion-avatar item-start img-icon>
         <img src="assets/img/icons/incoming_request.svg">
     </ion-avatar>
     <ion-label>
       <p>Pending unlock requests</p>
-      <h2>{{ activeUnlockRequests }} new requests.</h2>
+      <h2 *ngIf="activeUnlockRequests">{{ activeUnlockRequests }} new requests.</h2>
+      <h2 *ngIf="!activeUnlockRequests">No new requests.</h2>
     </ion-label>
   </button>
 
