@@ -55,7 +55,7 @@
     </p>
 
     <div class="bottom-buttons">
-      <ion-input placeholder="Invite Address" [class.failed]="unlockState == 'fail'"
+      <ion-input placeholder="Invite Address or Alias" [class.failed]="unlockState == 'fail'"
                  [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off"
                  autocapitalize="off" (ionFocus)="onInputFocus()"></ion-input>
       <button (click)="createWallet()" ion-button icon-only translate>
