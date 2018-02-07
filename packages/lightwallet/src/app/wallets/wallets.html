@@ -64,7 +64,7 @@
 
   <ion-list class="wallets" *ngIf="wallets">
 
-    <div *ngFor="let wallet of wallets">
+    <div *ngFor="let wallet of wallets; trackBy: wallet?.id">
       <div *ngIf="!wallet.unlocked" class="wallet">
         <div class="unlock-backdrop"></div>
 
@@ -101,7 +101,7 @@
             <ion-icon name="ios-timer-outline" *ngIf="walletHasPendingAmount(wallet)"></ion-icon>
           </p>
           <p class="invites">
-            Invites: {{ wallet.status.invitesBalance.availableAmount }}
+            Invites: {{ wallet.status?.invitesBalance?.availableAmount }}
           </p>
           <p *ngIf="walletHasPendingAmount(wallet)">Partially confirmed</p>
           <p *ngIf="wallet.balanceHidden">
