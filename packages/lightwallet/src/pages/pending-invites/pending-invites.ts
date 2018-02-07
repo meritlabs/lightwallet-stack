@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, SecurityContext } from '@angular/core';
 import { IonicPage, NavParams, ModalController, LoadingController } from 'ionic-angular';
 import { ProfileService } from 'merit/core/profile.service';
 import { MERIT_MODAL_OPTS } from 'merit/../utils/constants';
@@ -7,6 +7,10 @@ import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { AddressBookService } from 'merit/shared/address-book/address-book.service';
+import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 interface IUnlockRequest {
   address: string;
@@ -14,6 +18,7 @@ interface IUnlockRequest {
   isConfirmed: boolean; 
   referralId: string;
   walletClient: MeritWalletClient;
+  contact: MeritContact
 }
 
 @IonicPage()
@@ -31,13 +36,17 @@ export class PendingInvitesView {
   private totalInvites: number = 0;
 
   showHiddenRequests: boolean;
+
+  private knownContacts: Array<MeritContact>;
   
   constructor(
     private navParams: NavParams,
     private profileService: ProfileService,
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private addressBook: AddressBookService,
+    private sanitizer: DomSanitizer
   ) {
     this.requests = navParams.get('invites');
     this.wallets = navParams.get('wallets');
@@ -50,12 +59,23 @@ export class PendingInvitesView {
         return nbInvites += wallet.invites;
     }, 0);
 
+    this.knownContacts = await this.addressBook.getAllMeritContacts();
+    
     let hiddenAddresses = await this.profileService.getHiddenUnlockRequestsAddresses();
     this.requests.forEach(r => {
+
+      let foundContacts = this.addressBook.searchContacts(this.knownContacts, r.address).concat(
+        this.addressBook.searchContacts(this.knownContacts, r.alias)
+      );
+      if (foundContacts.length) r.contact = foundContacts[0]; 
+
       if (r.isConfirmed) return this.confirmedRequests.push(r);
       if (hiddenAddresses.indexOf(r.address) != -1) return this.hiddenRequests.push(r);
+      
       return this.activeRequests.push(r);
     });
+
+    
 
   }
 
@@ -99,5 +119,18 @@ export class PendingInvitesView {
       this.hiddenRequests.unshift(request);
       this.activeRequests = this.activeRequests.filter(r => r.address != request.address); 
   }
+
+  sanitizePhotoUrl(url:string) {
+    return this.sanitizer.sanitize(SecurityContext.URL, url);
+  }
+
+  getContactInitials(contact) {
+    if (!contact.name || !contact.name.formatted) return '';
+    let nameParts = contact.name.formatted.toUpperCase().replace(/\s\s+/g, ' ').split(' ');
+    let name = nameParts[0].charAt(0);
+    if (nameParts[1]) name += ' ' + nameParts[1].charAt(0);
+    return name;
+  }
+
 
 }
