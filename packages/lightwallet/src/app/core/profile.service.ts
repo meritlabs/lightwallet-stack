@@ -763,9 +763,4 @@ export class ProfileService {
   public getHiddenUnlockRequestsAddresses() {
     return this.persistenceService.getHiddenUnlockRequestsAddresses(); 
   }
-
-  public hideRequestAddress(address:string) {
-    return this.persistenceService.hideRequestAddress(address);
-  }
-
 }
