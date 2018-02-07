@@ -16,10 +16,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 @IonicPage()
 @Component({
-  selector: 'view-pending-invites',
-  templateUrl: 'pending-invites.html',
+  selector: 'view-unlock-requests',
+  templateUrl: 'unlock-requests.html',
 })
-export class PendingInvitesView {
+export class UnlockRequestsView {
   requests: IUnlockRequest[] = [];
   hiddenRequests: IUnlockRequest[] = []; 
   confirmedRequests: IUnlockRequest[] = [];
