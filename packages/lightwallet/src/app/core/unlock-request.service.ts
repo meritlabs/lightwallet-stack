@@ -7,6 +7,7 @@ import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { request } from 'https';
+import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 
 
 export interface IUnlockRequest {
@@ -31,7 +32,8 @@ export class UnlockRequestService {
     constructor(
         private profileService: ProfileService,
         private persistenseService: PersistenceService,
-        private walletService: WalletService
+        private walletService: WalletService,
+        private addressBook: AddressBookService
     ) {
     }
 
@@ -40,6 +42,7 @@ export class UnlockRequestService {
 
         this.hiddenAddresses = await this.persistenseService.getHiddenUnlockRequestsAddresses();
         this.activeRequestsNumber = await this.persistenseService.getActiveRequestsNumber();
+        let knownContacts = await this.addressBook.getAllMeritContacts();
 
         //updating it from server 
         let requests = {hidden: [], active: [], confirmed: []};
@@ -47,6 +50,10 @@ export class UnlockRequestService {
             for (let request of await this.walletService.getUnlockRequests(wallet)) {
                 request.walletClient = wallet; 
                 if (request.isConfirmed) {
+                    let foundContacts = this.addressBook.searchContacts(knownContacts, request.address);
+                    if (foundContacts.length) {
+                        request.contact = foundContacts[0];
+                    }
                     requests.confirmed.push(request);   
                 } else if (this.hiddenAddresses.indexOf(request.address) != -1) {
                     requests.hidden.push(request);
@@ -65,23 +72,33 @@ export class UnlockRequestService {
 
     }
 
-    public async approveRequest(request: IUnlockRequest) {
+    public async confirmRequest(request: IUnlockRequest) {
         await this.walletService.sendInvite(request.walletClient, request.address);
+        request.isConfirmed = true; 
+
         this.hiddenAddresses = this.hiddenAddresses.filter(a => a != request.address);
         await this.persistenseService.setHiddenUnlockRequestsAddresses(this.hiddenAddresses);
-        this.hiddenRequests= this.hiddenRequests.filter(r => r.address != request.address); 
+
+        this.hiddenRequests = this.hiddenRequests.filter(r => r.address != request.address); 
         this.activeRequests = this.activeRequests.filter(r => r.address != request.address);
         this.confirmedRequests = this.confirmedRequests.filter(r => r.address != request.address);
+
         this.confirmedRequests.unshift(request);
+
         this.activeRequestsNumber =  this.activeRequests.length;
         await this.persistenseService.setActiveRequestsNumber(this.activeRequestsNumber);
     }
 
     public async hideRequest(request: IUnlockRequest) {
         this.hiddenAddresses = this.hiddenAddresses.filter(a => a != request.address);
-        this.hiddenRequests.unshift(request);
+        this.hiddenAddresses.unshift(request.address);
         await this.persistenseService.setHiddenUnlockRequestsAddresses(this.hiddenAddresses);
-        this.activeRequests = this.activeRequests.filter(r => r.address != request.address);  
+
+        this.hiddenRequests = this.hiddenRequests.filter(r => r.address != request.address); 
+        this.activeRequests = this.activeRequests.filter(r => r.address != request.address);
+        this.confirmedRequests = this.confirmedRequests.filter(r => r.address != request.address);
+        this.hiddenRequests.unshift(request); 
+        
         this.activeRequestsNumber =  this.activeRequests.length;
         await this.persistenseService.setActiveRequestsNumber(this.activeRequestsNumber);
     }
