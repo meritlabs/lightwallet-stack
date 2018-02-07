@@ -16,6 +16,8 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { createDisplayWallet, IDisplayWallet } from '../../../models/display-wallet';
+import { UnlockRequestService } from 'merit/core/unlock-request.service';
+
 
 @IonicPage()
 @Component({
@@ -33,8 +35,6 @@ export class NetworkView {
   totalMiningRewards: string;
   totalAmbassadorRewards: string;
 
-  pendingInvites: any[];
-  
   activeUnlockRequests:number; 
 
   constructor(private profileService: ProfileService,
@@ -45,7 +45,9 @@ export class NetworkView {
               private txFormatService: TxFormatService,
               private logger: Logger,
               private platformService: PlatformService,
-              private bwcService: BwcService) {}
+              private bwcService: BwcService,
+              private unlockRequestService: UnlockRequestService
+            ) {}
 
   // Ensure that the wallets are loaded into the view on first load.
   async ngOnInit() {
@@ -67,7 +69,7 @@ export class NetworkView {
   }
 
   // On each enter, let's update the network data.
-  async ionViewDidEnter() {
+  async ionViewWillEnter() {
     await this.updateView();
   }
 
@@ -87,6 +89,7 @@ export class NetworkView {
 
     try {
       await this.formatWallets(await this.loadInfo());
+      this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
     } catch (err) {
       this.logger.warn(err);
       this.toastCtrl
@@ -133,18 +136,6 @@ export class NetworkView {
         createDisplayWallet(wallet, this.walletService)
       )
     );
-
-    this.activeUnlockRequests = 0;
-    let hiddenAddresses =  await this.profileService.getHiddenUnlockRequestsAddresses();
-    // todo optimize and refactor
-    this.pendingInvites = displayWallets.reduce((requests: any[], wallet: IDisplayWallet) => {
-      wallet.inviteRequests.forEach(r => {
-        r.walletClient = wallet.client;
-        if (!r.isConfirmed && hiddenAddresses.indexOf(r.address) == -1 )  this.activeUnlockRequests++; 
-      });
-      
-      return requests.concat(wallet.inviteRequests)
-    } , []);
 
     return displayWallets;
   }
