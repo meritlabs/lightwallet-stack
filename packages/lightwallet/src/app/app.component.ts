@@ -21,6 +21,7 @@ import { ConfigService } from 'merit/shared/config.service';
 import { TransactView } from 'merit/transact/transact';
 import { FingerprintLockView } from 'merit/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
+import { MERIT_MODAL_OPTS } from '../utils/constants';
 
 @Component({
   templateUrl: 'app.html'
@@ -46,13 +47,28 @@ export class MeritLightWallet {
               pushNotificationService: PushNotificationsService) {}
 
   async ngOnInit() {
+    // TODO copy to interface
+    const MOCK_UNLOCK_REQUEST: {
+      date: number;
+      walletName: string;
+      status: 'pending' | 'accepted' | 'declined';
+    } = {
+      date: Date.now(),
+      walletName: 'joe',
+      status: 'pending'
+    };
+
+    // this.modalCtrl.create('IncomingUnlockRequestModal', { request: MOCK_UNLOCK_REQUEST }, Object.assign(_.clone(MERIT_MODAL_OPTS), { cssClass: MERIT_MODAL_OPTS.cssClass + ' unlock-request-modal' })).present();
+
     this.platform.resume.subscribe(() => {
       this.logger.info('Returning Native App from Background!');
       this.loadProfileAndEasySend();
     });
 
     const readySource = await this.platform.ready();
-    await this.splashScreen.show();
+
+    if (SplashScreen.installed())
+      await this.splashScreen.show();
 
     const appInfo: any = await this.appService.getInfo();
     this.logger.info(`
@@ -116,7 +132,14 @@ export class MeritLightWallet {
      load and bind the persisted profile (if it exists).
   */
   private async initializeApp() {
-    this.statusBar.styleLightContent();
+    if (StatusBar.installed()) {
+      // TODO use a status bar service to set color based on page we're on & header color
+      if (this.platform.is('android')) {
+        this.statusBar.backgroundColorByHexString('00B0DD');
+      } else if (this.platform.is('ios')) {
+        this.statusBar.styleLightContent();
+      }
+    }
 
     await this.loadProfileAndEasySend();
 

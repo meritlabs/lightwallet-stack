@@ -57,6 +57,10 @@ import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service'
 import { SpendVaultService } from 'merit/vaults/spend/vault-spend.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { WalletService } from 'merit/wallets/wallet.service';
+import { ContactsProvider } from '../providers/contacts/contacts';
+import { Diagnostic } from '@ionic-native/diagnostic';
+import { Keyboard } from '@ionic-native/keyboard';
+import { UnlockRequestService } from 'merit/core/unlock-request.service';
 
 export function getProviders() {
   return [
@@ -98,6 +102,8 @@ export function getProviders() {
     DerivationPathService,
     RenewVaultService,
     SpendVaultService,
+    ContactsProvider,
+    UnlockRequestService
   ];
 }
 
@@ -113,7 +119,9 @@ export function getIonicNativePlugins() {
     Contacts,
     SocialSharing,
     Clipboard,
-    File
+    File,
+    Diagnostic,
+    Keyboard
   ];
 }
 

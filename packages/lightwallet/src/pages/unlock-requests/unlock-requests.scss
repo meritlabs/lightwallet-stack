@@ -1,0 +1,13 @@
+view-unlock-requests {
+    ion-avatar {
+        text-align: center;
+        color: color($colors, primary);
+        display: inline-block;
+        line-height: 40px;
+        letter-spacing: -2px;
+        span {
+            text-align: center;
+            width: 38px;
+        }
+    }
+}

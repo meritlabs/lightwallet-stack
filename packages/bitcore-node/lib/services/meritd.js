@@ -202,7 +202,6 @@ Merit.prototype.getAPIMethods = function() {
     ['getReferral', this, this.getReferral, 1],
     ['getAddressReferrals', this, this.getAddressReferrals, 1]
   ];
-
   return methods;
 };
 

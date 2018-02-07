@@ -50,5 +50,9 @@ view-incoming-request {
     }
   }
 
+  .decline-button ion-label {
+    color: color($colors, danger);
+  }
+
 
 }

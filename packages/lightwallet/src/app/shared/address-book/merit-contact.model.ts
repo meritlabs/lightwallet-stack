@@ -8,7 +8,8 @@ export interface AddressBook {
 
 export interface IMeritAddress {
   network: string,
-  address: string
+  address: string,
+  alias?: string
 }
 
 export class MeritContact implements IContactProperties {
@@ -20,7 +21,7 @@ export class MeritContact implements IContactProperties {
   public photos: IContactField[] = [];
   public urls: Array<any> = [];
   public meritAddresses: Array<IMeritAddress> = [];
-
+ 
   public nativeModel: Contact;
 
   isValid() {
