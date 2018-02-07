@@ -60,6 +60,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { ContactsProvider } from '../providers/contacts/contacts';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { Keyboard } from '@ionic-native/keyboard';
+import { UnlockRequestService } from 'merit/core/unlock-request.service';
 
 export function getProviders() {
   return [
@@ -101,7 +102,8 @@ export function getProviders() {
     DerivationPathService,
     RenewVaultService,
     SpendVaultService,
-    ContactsProvider
+    ContactsProvider,
+    UnlockRequestService
   ];
 }
 

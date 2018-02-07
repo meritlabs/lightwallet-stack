@@ -3,5 +3,5 @@
     <ion-tab root="ReceiveView" name="receive" tabTitle="Receive"  tabIcon="qr-code"></ion-tab>
     <ion-tab root="HistoryView" name="history" tabTitle="History"  tabIcon="history"></ion-tab>
     <ion-tab root="SendView"    name="send" tabTitle="Send"  tabIcon="send"></ion-tab>
-    <ion-tab root="NetworkView" name="network" tabTitle="Network"  tabIcon="md-people"></ion-tab>
+    <ion-tab root="NetworkView" name="network" tabTitle="Network"  tabIcon="md-people" [tabBadge]="countUnlockRequests()"></ion-tab>
 </ion-tabs>

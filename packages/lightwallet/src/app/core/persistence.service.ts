@@ -34,7 +34,8 @@ const Keys = {
   TX_CONFIRM_NOTIF: txid => 'txConfirmNotif-' + txid,
   TX_HISTORY: walletId => 'txsHistory-' + walletId,
   SEND_HISTORY: 'sendHistory',
-  HIDDEN_REQUESTS_ADDRESSES: 'hiddenRequestsAddresses'
+  HIDDEN_REQUESTS_ADDRESSES: 'hiddenRequestsAddresses',
+  ACTIVE_UNLOCK_REQUESTS_NUMBER: 'activeUnlockRequests',
 };
 
 @Injectable()
@@ -477,11 +478,19 @@ export class PersistenceService {
     return addresses || [];
   }
 
-  async hideRequestAddress(address:string) {
-    let addresses = await this.getHiddenUnlockRequestsAddresses();
-    if (addresses.indexOf(address) == -1) addresses.unshift(address);
+  async setHiddenUnlockRequestsAddresses(addresses:Array<string>) {
     return this.storage.set(Keys.HIDDEN_REQUESTS_ADDRESSES, addresses); 
   }
+
+  async getActiveRequestsNumber() {
+    let requests = await this.storage.get(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER);
+    return requests || [];
+  }
+
+  setActiveRequestsNumber(requests:number) {
+   return  this.storage.set(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER, requests);
+  }
+
 
   private get(key: any) {
     return this.storage.get(key);

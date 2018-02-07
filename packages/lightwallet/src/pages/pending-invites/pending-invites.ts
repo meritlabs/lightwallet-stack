@@ -12,14 +12,7 @@ import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 import { DomSanitizer } from '@angular/platform-browser';
 
 
-interface IUnlockRequest {
-  address: string;
-  alias: string;
-  isConfirmed: boolean; 
-  referralId: string;
-  walletClient: MeritWalletClient;
-  contact: MeritContact
-}
+
 
 @IonicPage()
 @Component({
