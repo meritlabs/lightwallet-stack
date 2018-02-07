@@ -199,8 +199,10 @@ Merit.prototype.getAPIMethods = function() {
     ['getanv',                this, this.getANV, 1],
     ['getrewards',     this, this.getRewards, 1],
     ['sendReferral', this, this.sendReferral, 1],
+    ['getReferral', this, this.getReferral, 1],
     ['getAddressReferrals', this, this.getAddressReferrals, 1]
   ];
+
   return methods;
 };
 
@@ -1552,8 +1554,7 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
 
 /**
  * Will get a referral as a Bitcore Referral. Results include the mempool.
- * @param {String} refid - Referral hash
- * @param {Boolean} queryMempool - Include the mempool
+ * @param {String} refid - Referral hash, address or alias
  * @param {Function} callback
  */
 Merit.prototype.getReferral = function(refid, callback) {
@@ -2136,6 +2137,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
         scriptAsm: scriptAsm || null,
         sequence: input.sequence,
         address: input.address || null,
+        alias: input.alias || null,
         micros: getMicros(input, tx), // TODO: rename sat
       });
     }
@@ -2148,8 +2150,10 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
       var out = result.vout[outputIndex];
       tx.outputMicros += !tx.isInvite ? out.valueSat : out.value; // TODO: rename sat
       var address = null;
+      var alias = null;
       if (out.scriptPubKey && out.scriptPubKey.addresses && out.scriptPubKey.addresses.length === 1) {
         address = out.scriptPubKey.addresses[0];
+        alias = out.scriptPubKey.aliases[0];
       }
       tx.outputs.push({
         micros: !tx.isInvite ? out.valueSat : out.value, // TODO: rename sat
@@ -2158,7 +2162,8 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
         spentTxId: out.spentTxId,
         spentIndex: out.spentIndex,
         spentHeight: out.spentHeight,
-        address: address
+        address,
+        alias
       });
     }
   }
@@ -2287,12 +2292,12 @@ Merit.prototype.generateBlock = function(num, callback) {
 };
 
 Merit.prototype.validateAddress = function(address, callback) {
-  log.info('validateAddress called: ', address);
-
   const self = this;
 
   if (typeof address === 'string' || address instanceof String) {
     self.client.validateaddress(address, function(err, response) {
+      log.info('validateAddress result: ', response);
+
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {

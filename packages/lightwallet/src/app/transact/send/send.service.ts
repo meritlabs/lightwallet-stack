@@ -25,45 +25,45 @@ export class SendService {
     this.bitcore = this.bwcService.getBitcore();
   }
 
-  public isAddress(addr:string): boolean {
-    if (!addr || addr.length != this.ADDRESS_LENGTH) return false;
-
+  public isAddress(addr: string): boolean {
     try {
       let address = this.bitcore.Address.fromString(addr);
-      return true; 
+      return true;
     } catch (_e) {
       return false;
-    }  
+    }
   }
 
-  public isAddressValid(addr: string): Promise<boolean> {
-    try {
-        if (!this.isAddress(addr)) return Promise.resolve(false);
-        let network = this.getAddressNetwork(addr); 
-        return this.isAddressUnlocked(addr, network);
-      return Promise.resolve(false);
-    } catch (_e) {
-      return Promise.resolve(false);
+  public couldBeAlias(alias: string): boolean {
+    return this.bitcore.Referral.validateAlias(alias);
+  }
+
+  public async isAddressValid(addr: string): Promise<boolean> {
+    if (!this.isAddress(addr)) {
+      return false;
     }
+
+    const info = await this.bwcService.getClient(null, {}).validateAddress(addr);
+
+    return info.isValid && info.isBeaconed && info.isConfirmed;
+  }
+
+  public async getValidAddress(input: string): Promise<string> {
+    if (!(this.isAddress(input) || this.couldBeAlias(input))) {
+      return null;
+    }
+
+    const info = await this.bwcService.getClient(null, {}).validateAddress(input);
+
+    if (info && info.isConfirmed) {
+      return info.address;
+    }
+
+    return null;
   }
 
   public getAddressNetwork(addr) {
     return this.bitcore.Address.fromString(addr).network;
-  }
-
-  private isAddressUnlocked(addr: string, network: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      const walletClient = this.bwcService.getClient(null, {});
-
-      walletClient.validateAddress(addr, network).then((result) => {
-        if (!result) {
-          reject(new Error('Could not validateAddress'));
-        } else {
-          const isAddressBeaconed = result.isValid && result.isBeaconed;
-          resolve(isAddressBeaconed);
-        }
-      });
-    });
   }
 
   public async registerSend(contact, method) {

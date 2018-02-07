@@ -1771,7 +1771,6 @@ export class API {
         alias: opts.alias
       };
 
-
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
 
@@ -1821,52 +1820,59 @@ export class API {
    * @param {string} opts.network          - (optional) network
    * @param {string} opts.alias          - (optional) Address alias
    */
-  sendReferral(opts: any = {}): Promise<any> {
-    // $.checkState(this.credentials && this.credentials.isComplete());
+  async sendReferral(opts: any = {}): Promise<any> {
+    if (opts) {
+      $.shouldBeObject(opts);
+    }
 
-    return new Promise((resolve, reject) => {
-      if (opts) {
-        $.shouldBeObject(opts);
+    let network = opts.network || Common.Constants.DEFAULT_NET;;
+    if (!_.includes(['testnet', 'livenet'], network)) {
+      throw Error('Invalid network');
+    }
+
+    if (network != this.credentials.network) {
+      throw Error('Existing keys were created for a different network');
+    }
+
+    if (!this.credentials) {
+      this.log.info('Generating new keys');
+      this.seedFromRandom({
+        network: network
+      });
+    } else {
+      this.log.info('Using existing keys');
+    }
+
+    let parentAddress = opts.parentAddress;
+
+    try {
+      Bitcore.encoding.Base58Check.decode(opts.parentAddress);
+    } catch (e) {
+      if (!Bitcore.Referral.validateAlias(opts.parentAddress)) {
+        throw Error('Invalid invite code or alias');
       }
 
-      let network = opts.network || Common.Constants.DEFAULT_NET;;
-      if (!_.includes(['testnet', 'livenet'], network)) {
-        return reject(new Error('Invalid network'));
-      }
+      const parentReferral = await this._doGetRequest(`/v1/referral/${opts.parentAddress}`);
+      parentAddress = parentReferral.parentAddress;
+    }
 
-      if (network != this.credentials.network) {
-        return reject(new Error('Existing keys were created for a different network'));
-      }
+    const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
+      Bitcore.Address.fromString(parentAddress, network.name).toBufferLean(),
+      Bitcore.Address.fromString(opts.address, network.name).toBufferLean(),
+    ]));
 
-      if (!this.credentials) {
-        this.log.info('Generating new keys');
-        this.seedFromRandom({
-          network: network
-        });
-      } else {
-        this.log.info('Using existing keys');
-      }
+    const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
 
-      const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-        Bitcore.Address.fromString(opts.parentAddress, network.name).toBufferLean(),
-        Bitcore.Address.fromString(opts.address, network.name).toBufferLean(),
-      ]));
+    const referral = new Bitcore.Referral({
+      parentAddress,
+      address: opts.address,
+      addressType: opts.addressType,
+      pubkey: opts.pubkey,
+      signature: signature.toString('hex'),
+      alias: opts.alias
+    }, network);
 
-      const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
-
-      const referral = new Bitcore.Referral({
-        parentAddress: opts.parentAddress,
-        address: opts.address,
-        addressType: opts.addressType,
-        pubkey: opts.pubkey,
-        signature: signature.toString('hex'),
-        alias: opts.alias
-      }, network);
-
-      this._doPostRequest('/v1/referral/', { referral: referral.serialize() })
-        .then(resolve)
-        .catch(reject);
-    });
+    return this._doPostRequest('/v1/referral/', { referral: referral.serialize() });
   };
   /**
    * Join an existing wallet
@@ -2352,8 +2358,8 @@ export class API {
   };
 
   // Ensure that an address is in a valid format, and that it has been beaconed on the blockchain.
-  validateAddress(address: string, network: string): Promise<any> {
-    const url = `/v1/addresses/${address}/validate/${network}`;
+  validateAddress(address: string): Promise<any> {
+    const url = `/v1/addresses/${address}/validate/`;
     return this._doGetRequest(url);
   };
 

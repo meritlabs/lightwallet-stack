@@ -545,9 +545,9 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.get('/v1/addresses/:addr/validate/:network', function(req, res) {
+  router.get('/v1/addresses/:addr/validate/', function(req, res) {
     const server = getServer(req, res);
-    server.validateAddress(req.params['addr'], req.params['network'], function(err, result) {
+    server.validateAddress(req.params['addr'], function(err, result) {
       if (err) {
         return returnError(err, res, req);
       }
@@ -819,6 +819,23 @@ ExpressApp.prototype.start = function(opts, cb) {
         res.json(txs);
         res.end();
       });
+    });
+  });
+
+  router.get('/v1/referral/:refid', function(req, res) {
+    var server;
+    try {
+      server = getServer(req, res);
+    } catch (ex) {
+      return returnError(ex, res, req);
+    }
+
+    server.getReferral(req.params.refid, function(err, referral) {
+      if (err) {
+        return returnError(err, res, req);
+      }
+
+      res.json(referral).end();
     });
   });
 

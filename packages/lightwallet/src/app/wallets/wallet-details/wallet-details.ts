@@ -61,7 +61,8 @@ export class WalletDetailsView {
 
   private async getWalletHistory(force: boolean = false) {
     try {
-      this.wallet.completeHistory = formatWalletHistory(await this.walletService.getTxHistory(this.wallet, { force: force }), this.wallet);
+      const txs = await this.walletService.getTxHistory(this.wallet, { force });
+      this.wallet.completeHistory = formatWalletHistory(txs, this.wallet);
     } catch (err) {
       this.logger.info(err);
     }
