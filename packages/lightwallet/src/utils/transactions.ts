@@ -50,7 +50,8 @@ export function formatWalletHistory(walletHistory: any[], wallet?: any): any[] {
       } else {
         // user sent Merit to someone else
         // TODO get contact name if wallet address is in address box
-        history.name = history.outputs[0].address;
+        const alias = history.inputs[0].alias;
+        history.name = alias ? `@${alias}` : history.inputs[0].address;
       }
     }
 

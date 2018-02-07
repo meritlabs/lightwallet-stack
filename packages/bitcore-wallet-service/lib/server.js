@@ -2902,19 +2902,22 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
     var inputs = _.map(tx.vin, function(item) {
       return {
         address: item.addr,
+        alias: item.alias,
         amount: item.valueMicros,
       }
     });
 
     var outputs = _.map(tx.vout, function(item) {
-      var itemAddr;
+      var itemAddr, itemAlias;
       // If classic multisig, ignore
       if (item.scriptPubKey && _.isArray(item.scriptPubKey.addresses) && item.scriptPubKey.addresses.length == 1) {
         itemAddr = item.scriptPubKey.addresses[0];
+        itemAlias = item.scriptPubKey.aliases[0];
       }
 
       return {
         address: itemAddr,
+        alias: itemAlias,
         amount: parseInt((item.value * 1e8).toFixed(0)),
       }
     });
@@ -3068,6 +3071,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         var address = indexedAddresses[item.address];
         return {
           address: item.address,
+          alias: item.alias,
           amount: item.amount,
           isMine: !!address,
           // TODO: handle singleAddress and change addresses
@@ -3113,7 +3117,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       function formatOutput(o) {
         return {
           amount: o.amount,
-          address: o.address
+          address: o.address,
+          alias: o.alias,
         }
       };
 
@@ -3136,10 +3141,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
       if (opts.includeExtendedInfo) {
         newTx.inputs = _.map(inputs, function(input) {
-          return _.pick(input, 'address', 'amount', 'isMine');
+          return _.pick(input, 'address', 'alias', 'amount', 'isMine');
         });
         newTx.outputs = _.map(outputs, function(output) {
-          return _.pick(output, 'address', 'amount', 'isMine');
+          return _.pick(output, 'address', 'alias', 'amount', 'isMine');
         });
       } else {
         // TODO: handle singleAddress and change addresses
@@ -3222,7 +3227,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           if (err) return next(err);
 
           txs = self._normalizeTxHistory(rawTxs);
-
           totalItems = total;
           return next();
         });

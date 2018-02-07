@@ -130,6 +130,7 @@ TxController.prototype.transformInput = function(options, input, index) {
   }
 
   transformed.addr = input.address;
+  transformed.alias = input.alias;
   transformed.valueMicros = input.micros;
   transformed.value = input.micros / 1e8;
   transformed.doubleSpentTxID = null; // TODO
@@ -161,6 +162,7 @@ TxController.prototype.transformOutput = function(options, output, index) {
 
   if (output.address) {
     transformed.scriptPubKey.addresses = [output.address];
+    transformed.scriptPubKey.aliases = [output.alias];
     var address = bitcore.Address(output.address); //TODO return type from bitcore-node
     transformed.scriptPubKey.type = address.type;
   }

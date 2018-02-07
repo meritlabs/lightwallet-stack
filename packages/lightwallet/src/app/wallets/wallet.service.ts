@@ -1005,7 +1005,8 @@ export class WalletService {
 
       return wallet.getTxHistory({
         skip: skip,
-        limit: limit
+        limit: limit,
+        includeExtendedInfo: true,
       }).then((txsFromServer: Array<any>) => {
         if (!txsFromServer || !txsFromServer.length) {
           return resolve();

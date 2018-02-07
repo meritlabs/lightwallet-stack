@@ -2137,6 +2137,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
         scriptAsm: scriptAsm || null,
         sequence: input.sequence,
         address: input.address || null,
+        alias: input.alias || null,
         micros: getMicros(input, tx), // TODO: rename sat
       });
     }
@@ -2149,8 +2150,10 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
       var out = result.vout[outputIndex];
       tx.outputMicros += !tx.isInvite ? out.valueSat : out.value; // TODO: rename sat
       var address = null;
+      var alias = null;
       if (out.scriptPubKey && out.scriptPubKey.addresses && out.scriptPubKey.addresses.length === 1) {
         address = out.scriptPubKey.addresses[0];
+        alias = out.scriptPubKey.aliases[0];
       }
       tx.outputs.push({
         micros: !tx.isInvite ? out.valueSat : out.value, // TODO: rename sat
@@ -2159,7 +2162,8 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
         spentTxId: out.spentTxId,
         spentIndex: out.spentIndex,
         spentHeight: out.spentHeight,
-        address: address
+        address,
+        alias
       });
     }
   }
