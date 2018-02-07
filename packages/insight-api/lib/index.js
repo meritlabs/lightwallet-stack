@@ -7,6 +7,7 @@ const BaseService = require('./service');
 const inherits = require('util').inherits;
 const BlockController = require('./blocks');
 const TxController = require('./transactions');
+const ReferralsController = require('./referrals');
 const AddressController = require('./addresses');
 const StatusController = require('./status');
 const MessagesController = require('./messages');
@@ -212,9 +213,12 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.get('/addr/:addr/totalReceived', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.totalReceived.bind(addresses));
   app.get('/addr/:addr/totalSent', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.totalSent.bind(addresses));
   app.get('/addr/:addr/unconfirmedBalance', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.unconfirmedBalance.bind(addresses));
-  app.get('/addr/:addr/validate', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.validateAddresses.bind(addresses));
+  app.get('/addr/:addr/validate', this.cacheShort(), addresses.checkAddrOrAlias.bind(addresses), addresses.validateAddress.bind(addresses));
 
-
+  // Referral routes
+  var referrals = new ReferralsController(this.node);
+  app.get('/referral/:refid', this.cacheShort(), referrals.show.bind(referrals));
+  app.param('refid', referrals.referral.bind(referrals));
 
   // Status route
   var status = new StatusController(this.node);

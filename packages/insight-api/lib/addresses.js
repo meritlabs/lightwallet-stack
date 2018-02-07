@@ -89,49 +89,79 @@ AddressController.prototype.getAddressSummary = function(address, options, callb
 
 AddressController.prototype.checkAddr = function(req, res, next) {
   req.addr = req.params.addr;
-  this.check(req, res, next, [req.addr]);
+
+  if (this.check(req, res, next, [req.addr])) {
+    return this.common.handleErrors({
+      message: 'Must include address',
+      code: 1
+    }, res);
+  }
+
+  next();
+};
+
+AddressController.prototype.checkAddrOrAlias = function(req, res, next) {
+  req.addr = req.params.addr;
+  if (!(this.check(req, res, next, [req.addr]) || this.checkAlias(req, res, next, [req.addr]))) {
+    return this.common.handleErrors({
+      message: 'Invalid address: ' + e.message,
+      code: 1
+    }, res);
+  }
+
+  next();
 };
 
 AddressController.prototype.checkAddrs = function(req, res, next) {
-
-
   if(req.body.addrs) {
     req.addrs = req.body.addrs.split(',');
   } else {
     req.addrs = req.params.addrs.split(',');
   }
 
-  this.check(req, res, next, req.addrs);
-};
-
-AddressController.prototype.check = function(req, res, next, addresses) {
-  var self = this;
-  if(!addresses.length || !addresses[0]) {
-    return self.common.handleErrors({
+  if (this.check(req, res, next, req.addrs)) {
+    return this.common.handleErrors({
       message: 'Must include address',
       code: 1
     }, res);
   }
 
-  addresses = _.reject(addresses, function (addr) {
-    return _.isEmpty(addr);
-  });
-
-  for(var i = 0; i < addresses.length; i++) {
-    try {
-      var a = new bitcore.Address(addresses[i]);
-    } catch(e) {
-      return self.common.handleErrors({
-        message: 'Invalid address: ' + e.message,
-        code: 1
-      }, res);
-    }
-  }
-
   next();
 };
 
-AddressController.prototype.validateAddresses = function(req, res) {
+AddressController.prototype.check = function(req, res, next, addresses) {
+  if (!addresses.length || !addresses[0]) {
+    return this.common.handleErrors({
+      message: 'Must include address',
+      code: 1
+    }, res);
+  }
+
+  addresses = _.reject(addresses, _.isEmpty);
+
+  for(var i = 0; i < addresses.length; i++) {
+    try {
+       new bitcore.Address(addresses[i]);
+    } catch(e) {
+      return false;
+    }
+  }
+};
+
+AddressController.prototype.checkAlias = function(req, res, next, aliases) {
+  if(!aliases.length || !aliases[0]) {
+    return this.common.handleErrors({
+      message: 'Must include alias',
+      code: 1
+    }, res);
+  }
+
+  aliases = _.reject(aliases, _.isEmpty);
+
+  return aliases.every(bitcore.Referral.validateAlias);
+};
+
+AddressController.prototype.validateAddress = function(req, res) {
   const self = this;
   const address = req.addr;
 
@@ -143,7 +173,15 @@ AddressController.prototype.validateAddresses = function(req, res) {
       }, res);
     }
 
-    return res.jsonp({ isValid: response.result.isvalid, isBeaconed: response.result.isbeaconed });
+    const info = response.result;
+
+    return res.jsonp({
+      address: info.address,
+      alias: info.alias,
+      isValid: !!info.isvalid,
+      isBeaconed: !!info.isbeaconed,
+      isConfirmed: !!info.isconfirmed,
+     });
   });
 };
 
