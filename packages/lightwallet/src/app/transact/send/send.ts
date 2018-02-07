@@ -106,8 +106,6 @@ export class SendView {
         } else {
           this.searchResult.error = this.ERROR_ADDRESS_NOT_BEACONED;
         }
-      } else if (this.sendService.couldBeAlias(input)) {
-        alert(input + ' could be an alias');
       } else if (this.couldBeEmail(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
         result.toNewEntity.contact.emails.push({value: input})
