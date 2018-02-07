@@ -9,8 +9,8 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
 })
 export class SendWalletView {
 
-  public wallets;
-  public selectedWallet;
+  wallets;
+  selectedWallet;
 
   constructor(
     private navParams: NavParams,

@@ -13,7 +13,6 @@ import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { Feedback } from 'merit/feedback/feedback.model'
 import { FeedbackService } from 'merit/feedback/feedback.service'
-import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { RateService } from 'merit/transact/rate.service';
@@ -22,6 +21,7 @@ import { VaultsService } from 'merit/vaults/vaults.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { ContactsProvider } from '../../providers/contacts/contacts';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -76,7 +76,7 @@ export class WalletsView {
               private walletService: WalletService,
               private txFormatService: TxFormatService,
               private events: Events,
-              private addressbookService: AddressBookService,
+              private contactsService: ContactsProvider,
               private vaultsService: VaultsService,
               private applicationRef: ApplicationRef,
               private zone: NgZone,
@@ -118,7 +118,7 @@ export class WalletsView {
     this.loading = true;
 
     const fetch = async () => {
-      this.addressbook = await this.addressbookService.list(this.configService.getDefaults().network.name);
+      this.addressbook = await this.contactsService.list(this.configService.getDefaults().network.name);
       const wallets = await this.updateAllWallets(opts.force);
 
       if (_.isEmpty(wallets)) {
