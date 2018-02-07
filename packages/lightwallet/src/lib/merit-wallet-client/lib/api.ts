@@ -2358,8 +2358,8 @@ export class API {
   };
 
   // Ensure that an address is in a valid format, and that it has been beaconed on the blockchain.
-  validateAddress(address: string, network: string): Promise<any> {
-    const url = `/v1/addresses/${address}/validate/${network}`;
+  validateAddress(address: string): Promise<any> {
+    const url = `/v1/addresses/${address}/validate/`;
     return this._doGetRequest(url);
   };
 

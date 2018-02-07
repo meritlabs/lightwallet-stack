@@ -96,14 +96,18 @@ export class SendView {
     let result =  { withMerit: [], noMerit: [], recent: [], toNewEntity:null, error: null };
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
-      if (this.isAddress(input)) {
-        if (await this.isValidAddress(input)) {
-          result.toNewEntity = {destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact()};
-          result.toNewEntity.contact.meritAddresses.push({address: input, network: this.sendService.getAddressNetwork(input).name});
-          this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_ADDRESS, value: input};
+      if (this.isAddress(input) || this.sendService.couldBeAlias(input)) {
+        const address = await this.sendService.getValidAddress(input);
+
+        if (address) {
+          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
+          result.toNewEntity.contact.meritAddresses.push({ address, network: this.sendService.getAddressNetwork(address).name });
+          this.suggestedMethod = { type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_ADDRESS, value: address };
         } else {
-          this.searchResult.error = this.ERROR_ADDRESS_NOT_BEACONED; 
+          this.searchResult.error = this.ERROR_ADDRESS_NOT_BEACONED;
         }
+      } else if (this.sendService.couldBeAlias(input)) {
+        alert(input + ' could be an alias');
       } else if (this.couldBeEmail(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
         result.toNewEntity.contact.emails.push({value: input})

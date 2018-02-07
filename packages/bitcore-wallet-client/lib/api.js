@@ -2730,8 +2730,8 @@ API.prototype.getStatusByIdentifier = function(opts, cb) {
   });
 };
 
-API.prototype.validateAddress = function(address, network, cb) {
-  const url = `/v1/addresses/${address}/validate/${network}`;
+API.prototype.validateAddress = function(address, cb) {
+  const url = `/v1/addresses/${address}/validate/`;
   this._doGetRequest(url, function(err, result) {
     if (err || !result) return cb(err);
     return cb(null, result);

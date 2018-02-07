@@ -545,9 +545,9 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.get('/v1/addresses/:addr/validate/:network', function(req, res) {
+  router.get('/v1/addresses/:addr/validate/', function(req, res) {
     const server = getServer(req, res);
-    server.validateAddress(req.params['addr'], req.params['network'], function(err, result) {
+    server.validateAddress(req.params['addr'], function(err, result) {
       if (err) {
         return returnError(err, res, req);
       }
