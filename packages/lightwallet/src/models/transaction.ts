@@ -16,6 +16,7 @@ export enum UnlockRequestStatus {
 export interface ITransactionIO {
   amount: number;
   address: string;
+  index: number;
 }
 
 export interface ITransaction {
