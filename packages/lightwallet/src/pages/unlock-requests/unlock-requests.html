@@ -1,0 +1,71 @@
+<ion-header no-border>
+  <ion-navbar color="light">
+    <ion-title>Unlock requests</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content>
+  <ion-item>
+      <ion-avatar img-icon item-start>
+        <img src="assets/img/icons/invite.svg" alt="">
+      </ion-avatar>
+      <ion-label>
+        <h2>Invites ({{ totalInvites }})</h2>
+      </ion-label>
+    </ion-item>
+
+  <ion-item *ngIf="hiddenRequests && hiddenRequests.length && !showHiddenRequests">
+    {{hiddenRequests.length}} hidden requests
+    <button ion-button item-end clear (click)="showHiddenRequests = true">show</button>
+  </ion-item>
+
+  <ion-list>
+    <ion-item-divider *ngIf="activeRequests.length || (hiddenRequests.length && showHiddenRequests)">
+      Active requests
+    </ion-item-divider>
+
+    <div *ngIf="showHiddenRequests && hiddenRequests">
+      <ion-item *ngFor="let request of hiddenRequests" (click)="processRequest(request)">
+        <ion-avatar item-start img-icon >
+            <img src="assets/img/icons/incoming_request.svg">
+        </ion-avatar>
+        <h2>{{request.address }}</h2>
+        <p *ngIf="request.alias">@{{request.alias}}</p>
+      </ion-item>
+    </div>
+
+    <ion-item *ngFor="let request of activeRequests" (click)="processRequest(request)">
+        <ion-avatar item-start img-icon >
+            <img src="assets/img/icons/incoming_request.svg">
+        </ion-avatar>
+        <h2>{{request.address }}</h2>
+        <p  *ngIf="request.alias">@{{request.alias}}</p>
+    </ion-item>
+  </ion-list>
+
+
+  <ion-item-divider *ngIf="confirmedRequests && confirmedRequests.length">
+    Confirmed requests
+  </ion-item-divider>
+  <ion-list *ngIf="confirmedRequests">
+      <ion-item *ngFor="let request of confirmedRequests">
+        <ion-avatar item-start img-icon >
+          <img [src]="sanitizePhotoUrl(request.contact.photos[0]?.value)" *ngIf="request.contact && request.contact.photos.length">
+          <span *ngIf="request.contact && !request.contact.photos.length">{{getContactInitials(request.contact)}}</span>
+          <!-- todo add approved icon --> 
+          <img src="assets/img/icons/confirm.svg" *ngIf="!request.contact">
+        </ion-avatar>
+
+        <h2>
+          <span *ngIf="request.contact">{{request.contact.name.formatted}}</span>
+          <span *ngIf="!request.contact">{{request.address}}</span>
+        </h2>
+        <p >
+          <span *ngIf="request.alias">@{{request.alias}}</span>
+          <span *ngIf="request.contact && !request.alias">{{request.address}}</span>
+        </p>
+      </ion-item>
+  </ion-list>
+  
+</ion-content>

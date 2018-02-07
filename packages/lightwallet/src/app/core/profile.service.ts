@@ -756,4 +756,11 @@ export class ProfileService {
 
     return walletClient;
   }
+
+  /*
+  * returns addresses strings we decided to hide when declining unlock request
+  */
+  public getHiddenUnlockRequestsAddresses() {
+    return this.persistenceService.getHiddenUnlockRequestsAddresses(); 
+  }
 }

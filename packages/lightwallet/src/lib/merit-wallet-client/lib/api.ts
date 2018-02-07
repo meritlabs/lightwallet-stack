@@ -2742,11 +2742,7 @@ export class API {
     $.checkState(this.credentials && this.credentials.isComplete());
 
     let url = '/v1/unlockrequests/';
-    return this._doGetRequest(url).then((requests) => {
-      return this._processTxps(requests).then(() => {
-        return Promise.resolve(requests);
-      });
-    });
+    return this._doGetRequest(url); 
   }
 
 

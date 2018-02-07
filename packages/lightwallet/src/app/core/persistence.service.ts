@@ -33,7 +33,9 @@ const Keys = {
   REMOTE_PREF_STORED: 'remotePrefStored',
   TX_CONFIRM_NOTIF: txid => 'txConfirmNotif-' + txid,
   TX_HISTORY: walletId => 'txsHistory-' + walletId,
-  SEND_HISTORY: 'sendHistory'
+  SEND_HISTORY: 'sendHistory',
+  HIDDEN_REQUESTS_ADDRESSES: 'hiddenRequestsAddresses',
+  ACTIVE_UNLOCK_REQUESTS_NUMBER: 'activeUnlockRequests',
 };
 
 @Injectable()
@@ -470,6 +472,26 @@ export class PersistenceService {
         return this.set(Keys.BITPAY_ACCOUNTS_V2(network), allAccounts);
       });
   };
+
+  async getHiddenUnlockRequestsAddresses() {
+    let addresses = await this.storage.get(Keys.HIDDEN_REQUESTS_ADDRESSES);
+    return addresses || [];
+  }
+
+  async setHiddenUnlockRequestsAddresses(addresses:Array<string>) {
+    return this.storage.set(Keys.HIDDEN_REQUESTS_ADDRESSES, addresses); 
+  }
+
+  async getActiveRequestsNumber() {
+    let requests = await this.storage.get(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER);
+    return requests || 0;
+  }
+
+  setActiveRequestsNumber(requests:number) {
+   console.log(requests, 'setting requests number');
+   return  this.storage.set(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER, requests);
+  }
+
 
   private get(key: any) {
     return this.storage.get(key);

@@ -72,27 +72,28 @@ export class SendViaView {
   }
 
   editContact() {
-    this.navCtrl.push('SendEditContactView', {contact: this.contact, amount: this.amount});
+    return this.navCtrl.push('SendEditContactView', {contact: this.contact, amount: this.amount});
   }
 
   select(type, destination, value) {
-    this.navCtrl.push('SendAmountView', {contact: this.contact, amount: this.amount, suggestedMethod: new SendMethod({type, destination, value})});
+    return this.navCtrl.push('SendAmountView', {contact: this.contact, amount: this.amount, suggestedMethod: new SendMethod({type, destination, value})});
   }
 
   showClassicTooltip() {
-    let title = 'Classic Send';
-    let text= 'ClassicSend transactions do not have power of EasySend, but fee size is lower.';
-    this.showTooltip(title, text);
+    return this.showTooltip('Classic Send',
+      'ClassicSend transactions do not have power of EasySend, but fee size is lower.');
   }
 
   showEasyTooltip() {
-    let title = 'Easy Send';
-    let text= 'EasySend transactions could be returned, password protected and limited by expiration time. You can send Merit either to existing merit address or share a link via sms/email';
-    this.showTooltip(title, text);
+    return this.showTooltip('Easy Send',
+      'EasySend transactions could be returned, password protected and limited by expiration time. You can send Merit either to existing merit address or share a link via sms/email');
   }
 
   private showTooltip(title, message) {
-    this.alertCtrl.create({title, message}).present();
+    return this.alertCtrl.create({
+      title, message,
+      buttons: ['Got it']
+    }).present();
   }
 
 }

@@ -1,0 +1,32 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Incoming unlock request</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="dismiss()">Close</button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+  <div *ngIf="request">
+    <span class="date">{{ request.date | amDateFormat: 'DD MMM, hh:mma' }}</span>
+    <span class="to-wallet">{{ request.toWallet }}</span>
+    <ion-avatar img-icon>
+      <img src="assets/img/icons" alt="">
+    </ion-avatar>
+    <span class="wallet-name">{{ (isWalletAddress(request.walletName)? '' : '@') +  request.walletName }}</span>
+    <span class="status {{ request.status }}">{{ request.status }}</span>
+  </div>
+  <ion-list>
+    <ion-item-group *ngIf="request.status === 'pending'">
+      <button ion-item (click)="accept()" detail-none>Accept</button>
+      <button ion-item (click)="decline()" detail-none>Decline</button>
+    </ion-item-group>
+    <ion-item-group *ngIf="request.status === 'accepted'">
+      <button ion-item (click)="accept()" detail-none>+ Create new contact</button>
+      <button ion-item (click)="decline()" detail-none>Add to existing contact</button>
+    </ion-item-group>
+  </ion-list>
+</ion-content>
