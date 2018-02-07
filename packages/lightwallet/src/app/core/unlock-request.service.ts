@@ -73,6 +73,8 @@ export class UnlockRequestService {
         this.activeRequests = this.activeRequests.filter(r => r.address != request.address);
         this.confirmedRequests = this.confirmedRequests.filter(r => r.address != request.address);
         this.confirmedRequests.unshift(request);
+        this.activeRequestsNumber =  this.activeRequests.length;
+        await this.persistenseService.setActiveRequestsNumber(this.activeRequestsNumber);
     }
 
     public async hideRequest(request: IUnlockRequest) {
@@ -80,6 +82,8 @@ export class UnlockRequestService {
         this.hiddenRequests.unshift(request);
         await this.persistenseService.setHiddenUnlockRequestsAddresses(this.hiddenAddresses);
         this.activeRequests = this.activeRequests.filter(r => r.address != request.address);  
+        this.activeRequestsNumber =  this.activeRequests.length;
+        await this.persistenseService.setActiveRequestsNumber(this.activeRequestsNumber);
     }
 
 }
