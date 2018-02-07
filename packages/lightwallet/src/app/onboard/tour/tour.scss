@@ -136,6 +136,10 @@ view-tour {
           background: url('../assets/img/onboarding/graph.png') top/cover no-repeat;
           content: '';
           display: block;
+
+          @media screen and (min-width: 850px) {
+            background-position-y: 40%;
+          }
         }
       }
 
