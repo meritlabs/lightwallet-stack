@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, AlertController } from 'ionic-angular';
-import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
-import { AddressBookService } from 'merit/shared/address-book/address-book.service';
+import { MeritContact } from '../../../../models/merit-contact';
+import { ContactsProvider } from '../../../../providers/contacts/contacts';
 
 @IonicPage()
 @Component({
@@ -19,7 +19,7 @@ export class SendSelectBindContactView {
     private navCtrl: NavController,
     private navParams: NavParams,
     private viewCtrl: ViewController,
-    private addressBookService: AddressBookService,
+    private contactsService: ContactsProvider,
     private alertCtrl: AlertController
   ) {
    this.contacts = this.navParams.get('contacts');
@@ -41,9 +41,10 @@ export class SendSelectBindContactView {
       buttons: [
         {text: 'Cancel', role: 'cancel', handler: () => {}},
         {text: 'Bind', handler: () => {
-          this.addressBookService.bindAddressToContact(contact, this.meritAddress.address, this.meritAddress.network).then(() => {
-            this.viewCtrl.dismiss(contact);
-          });
+          this.contactsService.bindAddressToContact(contact, this.meritAddress.address, this.meritAddress.network)
+            .then(() => {
+              this.viewCtrl.dismiss(contact);
+            });
           }
         }
       ]

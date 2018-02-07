@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
-import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
 import { SendService } from 'merit/transact/send/send.service';
-import * as _ from 'lodash';
 import { SendMethod } from 'merit/transact/send/send-method.model';
+import { MeritContact } from '../../../../models/merit-contact';
 
 
 @IonicPage()
@@ -51,10 +50,11 @@ export class SendViaView {
 
     if (!this.highlightedMethod) {
       this.sendService.getSendHistory().then((sendHistory) => {
-        sendHistory.sort((a,b) => b.timestamp - a.timestamp);
-        sendHistory.some((record) => {
-          let entities:Array<any> = this.contact[searchIn(this.suggestedMethod)];
-          if (entities.some((entity) => { return  entity.value == record.method.value } )) {
+        sendHistory
+          .sort((a,b) => b.timestamp - a.timestamp)
+          .some((record) => {
+          const entities:Array<any> = this.contact[searchIn(this.suggestedMethod)];
+          if (entities.some(entity => entity.value == record.method.value)) {
             this.highlightedMethod = record;
             return true;
           }
@@ -64,7 +64,7 @@ export class SendViaView {
   }
 
   getDisplayedName() {
-    if (this.contact.name && this.contact.name.formatted) {
+    if (this.contact && this.contact.name && this.contact.name.formatted) {
       return this.contact.name.formatted;
     } else {
       return this.suggestedMethod.value;

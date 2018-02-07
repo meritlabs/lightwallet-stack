@@ -36,9 +36,6 @@ import { ProfileService } from 'merit/core/profile.service';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { FeedbackService } from 'merit/feedback/feedback.service';
-import { AddressBookService } from 'merit/shared/address-book/address-book.service';
-import { MeritContactBuilder } from 'merit/shared/address-book/merit-contact.builder';
-import { MeritContactService } from 'merit/shared/address-book/merit-contact.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
 import { FeeService } from 'merit/shared/fee/fee.service';
@@ -90,9 +87,6 @@ export function getProviders() {
     AppUpdateService,
     FeedbackService,
     SendService,
-    MeritContactBuilder,
-    AddressBookService,
-    MeritContactService,
     AddressScannerService,
     FeeService,
     RateService,

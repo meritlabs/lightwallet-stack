@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, ModalController, LoadingController } from 'ionic-angular';
-import { AddressBookService } from 'merit/shared/address-book/address-book.service';
 import { SendService } from 'merit/transact/send/send.service';
-import { MeritContact } from 'merit/shared/address-book/merit-contact.model';
+import { ContactsProvider } from '../../../providers/contacts/contacts';
+import { MeritContact } from '../../../models/merit-contact';
 import { IDisplayWallet } from 'merit/../models/display-wallet';
 import { MERIT_MODAL_OPTS } from 'merit/../utils/constants';
 import { MeritToastController } from 'merit/core/toast.controller';
@@ -16,7 +16,7 @@ import { UnlockRequestService } from 'merit/core/unlock-request.service';
   selector: 'view-incoming-request',
   templateUrl: 'incoming-request.html',
 })
-export class IncomingRequestModal { 
+export class IncomingRequestModal {
 
   public unlockRequest:any;
   public contacts: Array<MeritContact> = [];
@@ -27,13 +27,12 @@ export class IncomingRequestModal {
     private navParams: NavParams,
     private viewCtrl: ViewController,
     private modalCtrl: ModalController,
-    private addressBookService: AddressBookService,
+    private contactsService: ContactsProvider,
     private sendService: SendService,
     private walletService: WalletService,
     private toastCtrl: ToastController,
     private unlockService: UnlockRequestService,
     private loadingCtrl: LoadingController
-
   ) {
     this.unlockRequest = this.navParams.get('request');
     this.wallets = this.navParams.get('wallets');
@@ -43,7 +42,7 @@ export class IncomingRequestModal {
   }
 
   async ionViewDidLoad() {
-    this.contacts = await this.addressBookService.getAllMeritContacts();
+    this.contacts = await this.contactsService.getAllMeritContacts();
   }
 
   async accept() {
@@ -83,7 +82,7 @@ export class IncomingRequestModal {
     let modal = this.modalCtrl.create('SendSelectBindContactView', {contacts: this.contacts, address: meritAddress});
     modal.onDidDismiss((contact) => {
       this.navCtrl.pop();
-    }); 
+    });
 
     modal.present();
   }
@@ -96,7 +95,7 @@ export class IncomingRequestModal {
     const modal = this.modalCtrl.create('SelectInviteWalletModal', {
       selectedWallet: this.unlockRequest.walletClient,
       availableWallets: this.wallets
-    }, MERIT_MODAL_OPTS); 
+    }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.unlockRequest.walletClient = wallet;

@@ -5,7 +5,7 @@
       <h2>Send</h2>
       <p>{{getDisplayedName()}}</p>
     </ion-title>
-    <ion-buttons end *ngIf="contact.name.formatted">
+    <ion-buttons end *ngIf="contact?.name?.formatted">
       <button ion-button (click)="editContact()" translate color="primary">
         Edit Contact
       </button>
@@ -16,7 +16,7 @@
 
 <ion-content>
 
-  <div class="easy-send-section" *ngIf="contact.phoneNumbers.length || contact.emails.length">
+  <div class="easy-send-section" *ngIf="contact?.phoneNumbers?.length || contact?.emails?.length">
     <ion-item-divider>
       EasySend
       <button ion-button clear (click)="showEasyTooltip()" class="tooltip-button">
@@ -25,7 +25,7 @@
       <p>Powerful tool to make transactions</p>
     </ion-item-divider>
 
-    <ion-list *ngIf="contact.phoneNumbers.length">
+    <ion-list *ngIf="contact?.phoneNumbers?.length">
       <button ion-item detail-none text-wrap *ngFor="let phoneNumber of contact.phoneNumbers; let i = index"
               (click)="select('easy', 'sms', phoneNumber.value)"
               [class.selected]="highlightedMethod?.value == phoneNumber.value">
@@ -37,18 +37,20 @@
       </button>
     </ion-list>
 
-    <ion-list *ngIf="contact.emails.length">
+    <ion-list *ngIf="contact?.emails?.length">
       <button ion-item detail-none text-wrap *ngFor="let email of contact.emails; let i = index"
               (click)="select('easy', 'email', email.value)" [class.selected]="highlightedMethod?.value == email.value">
         <ion-avatar item-start *ngIf="i == 0">
           <ion-icon name="mail"></ion-icon>
         </ion-avatar>
-        <h2>Email</h2>
-        <p>{{email.value}}</p>
+        <ion-label>
+          <h2>Email</h2>
+          <p>{{email.value}}</p>
+        </ion-label>
       </button>
     </ion-list>
 
-    <ion-list *ngIf="contact.meritAddresses.length">
+    <ion-list *ngIf="contact?.meritAddresses?.length">
       <button ion-item detail-none text-wrap *ngFor="let meritAddress of contact.meritAddresses; let i = index"
               (click)="select('easy', 'address', meritAddress.address)"
               [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'easy'">
@@ -58,14 +60,16 @@
         </ion-avatar>
         <ion-avatar item-start *ngIf="i != 0"></ion-avatar>
 
-        <p>Merit Address</p>
-        <h2>{{meritAddress.address}}</h2>
+        <ion-label>
+          <p>Merit Address</p>
+          <h2>{{meritAddress.address}}</h2>
+        </ion-label>
       </button>
     </ion-list>
 
 
   </div>
-  <div class="classic-send-section" *ngIf="contact.meritAddresses.length">
+  <div class="classic-send-section" *ngIf="contact?.meritAddresses?.length">
     <ion-list>
       <ion-item-divider>
         ClassicSend
@@ -84,8 +88,10 @@
         </ion-avatar>
         <ion-avatar item-start *ngIf="i != 0"></ion-avatar>
 
-        <p>Merit Address</p>
-        <h2>{{meritAddress.address}}</h2>
+        <ion-label>
+          <p>Merit Address</p>
+          <h2>{{meritAddress.address}}</h2>
+        </ion-label>
       </button>
     </ion-list>
 

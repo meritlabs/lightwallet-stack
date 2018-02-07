@@ -1,4 +1,3 @@
-
 <ion-header no-border>
   <ion-toolbar>
     <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
@@ -39,7 +38,7 @@
   <div *ngIf="!loadingContacts && searchResult  && hasUnlockedWallets" class="content">
 
     <div class="no-results" *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length">
-     
+
       <div class="no-results-label" *ngIf="!searchResult.error">No results</div>
       <div class="no-results-label" *ngIf="searchResult.error == 'ERROR_ADDRESS_NOT_CONFIRMED'">
         Address is not confirmed yet
@@ -71,10 +70,7 @@
           <button ion-button clear item-end (click)="showRecent = true">Recent</button>
         </ion-item-divider>
         <ion-item *ngFor="let contact of searchResult.withMerit" (click)="sendToContact(contact)" class="contact">
-          <ion-avatar item-start img-icon>
-            <img [src]="sanitizePhotoUrl(contact.photos[0]?.value)" *ngIf="contact.photos.length">
-            <span *ngIf="!contact.photos.length">{{getContactInitials(contact)}}</span>
-          </ion-avatar>
+          <contact-avatar [contact]="contact" item-start></contact-avatar>
           {{ contact.name.formatted }}
           <img src="assets/img/icons/merit.svg" color="primary" item-end>
         </ion-item>
