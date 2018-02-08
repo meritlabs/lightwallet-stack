@@ -39,12 +39,12 @@
 
 <ion-content>
 
-  <ion-refresher (ionRefresh)="doRefresh($event)" [enabled]="!loading">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
   <ion-list no-lines>
-    <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{wallets: displayWallets }">
+    <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: displayWallets }">
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/incoming_request.svg">
       </ion-avatar>
@@ -63,19 +63,6 @@
         {{ wallet.totalNetworkValueMerit || '00.0' }}
       </span>
     </ion-item-divider>
-
-    <button ion-item detail-none text-wrap (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress" >
-      <ion-avatar img-icon item-start>
-        <img src="assets/img/icons/invite.svg" alt="">
-      </ion-avatar>
-      <ion-label>
-        <p>Invite Code</p>
-        <h2>{{ wallet.referrerAddress }}</h2>
-      </ion-label>
-      <button ion-button icon-only clear item-end>
-        <ion-icon merit-icon name="share"></ion-icon>
-      </button>
-    </button>
 
     <ion-item>
       <ion-avatar img-icon item-start>
@@ -116,6 +103,19 @@
         </span>
       </ion-note>
     </ion-item>
+
+    <button ion-item detail-none text-wrap (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress" >
+      <ion-avatar img-icon item-start>
+        <img src="assets/img/icons/invite.svg" alt="">
+      </ion-avatar>
+      <ion-label>
+        <p>Invite Code</p>
+        <h2>{{ wallet.referrerAddress }}</h2>
+      </ion-label>
+      <button ion-button icon-only clear item-end>
+        <ion-icon merit-icon name="share"></ion-icon>
+      </button>
+    </button>
 
     <ion-item>
       <ion-avatar img-icon item-start>
