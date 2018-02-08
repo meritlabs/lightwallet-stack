@@ -84,7 +84,7 @@ export class SendViaView {
       'ClassicSend transactions do not have power of EasySend, but fee size is lower.');
   }
 
-  showEasyTooltip() {
+  showEasyTooltip() { 
     return this.showTooltip('Easy Send',
       'EasySend transactions could be returned, password protected and limited by expiration time. You can send Merit either to existing merit address or share a link via sms/email');
   }
