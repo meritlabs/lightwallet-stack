@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, LoadingController, ModalController, NavController, NavParams, AlertController } from 'ionic-angular';
 
 import * as _ from 'lodash';
 import { Logger } from 'merit/core/logger';
@@ -10,7 +10,6 @@ import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { ConfigService } from 'merit/shared/config.service';
 import { WalletService } from 'merit/wallets/wallet.service';
-
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -24,12 +23,13 @@ export class CreateWalletView {
   formData = {
     walletName: '',
     parentAddress: '',
+    alias: '', 
     bwsurl: '',
     recoveryPhrase: '',
     password: '',
     repeatPassword: '',
     color: '',
-    hideBalance: false
+    hideBalance: false 
   };
 
   defaultBwsUrl: string;
@@ -43,7 +43,9 @@ export class CreateWalletView {
               private modalCtrl: ModalController,
               private logger: Logger,
               private pushNotificationService: PushNotificationsService,
-              private pollingNotificationService: PollingNotificationsService) {
+              private pollingNotificationService: PollingNotificationsService,
+              private alertCtrl: AlertController
+            ) {
     this.formData.bwsurl = config.getDefaults().bws.url;
     this.defaultBwsUrl = config.getDefaults().bws.url;
   }
@@ -70,6 +72,18 @@ export class CreateWalletView {
       }
     });
     modal.present();
+  }
+
+  showAliasTooltip() {
+    return this.showTooltip('Add an alias',
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ');
+  }
+  
+  private showTooltip(title, message) {
+    return this.alertCtrl.create({
+      title, message,
+      buttons: ['Got it']
+    }).present();
   }
 
   async createWallet() {
@@ -146,8 +160,5 @@ export class CreateWalletView {
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     }
-
   }
-
-
 }

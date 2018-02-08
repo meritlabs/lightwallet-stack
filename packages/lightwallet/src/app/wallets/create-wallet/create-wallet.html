@@ -1,6 +1,6 @@
 <ion-header no-border>
   <ion-navbar color="light">
-    <ion-title translate>Create Personal Wallet</ion-title>
+    <ion-title >Create Personal Wallet</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -10,23 +10,36 @@
     <ion-item-group>
       <ion-item>
         <ion-label stacked>
-          <h2 translate>Wallet name</h2>
+          <h2>Wallet name</h2>
         </ion-label>
         <ion-input placeholder="Family vacation funds" [(ngModel)]="formData.walletName"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label stacked>
-          <h2 translate>
+          <h2 >
             Referrer address
           </h2>
         </ion-label>
         <ion-input placeholder="Paste it here" [(ngModel)]="formData.parentAddress"></ion-input>
       </ion-item>
 
+      <ion-item>
+          <ion-label stacked>
+            <h2>
+              Address alias
+                <button ion-button clear (click)="showAliasTooltip()" class="tooltip-button">
+                    <ion-icon name="ios-information-circle-outline"></ion-icon>
+                </button>
+            </h2>
+            
+          </ion-label>
+          <ion-input placeholder="Enter address alias" [(ngModel)]="formData.walletName"></ion-input>
+      </ion-item>
+
       <ion-item (click)="selectColor()">
         <ion-label>
-          <h2 translate>Color</h2>
+          <h2 >Color</h2>
         </ion-label>
         <ion-note item-end class="wallet-color-indicator">
           <span [class.default]="!formData.color" [style.background]="formData.color? formData.color : ''"></span>
@@ -43,7 +56,7 @@
     </ion-item-group>
 
     <ion-item-group>
-      <ion-item-divider translate>Password (optional)</ion-item-divider>
+      <ion-item-divider >Password (optional)</ion-item-divider>
       <ion-item class="warning" no-lines>
         <b>Warning</b> This password cannot be recovered. If the password is lost, there is no way you could recover your
         funds!
@@ -71,10 +84,10 @@
     </ion-item-group>
 
     <ion-item-group>
-      <ion-item-divider translate>Advanced</ion-item-divider>
+      <ion-item-divider >Advanced</ion-item-divider>
       <ion-item>
         <ion-label stacked>
-          <h2 translate>Wallet Service URL</h2>
+          <h2 >Wallet Service URL</h2>
         </ion-label>
         <ion-input [(ngModel)]="formData.bwsurl" [placeholder]=""></ion-input>
       </ion-item>
@@ -82,7 +95,7 @@
 
   </ion-list>
 
-  <button ion-button [disabled]="!isCreationEnabled()" translate (click)="createWallet()" class="action-button">
+  <button ion-button [disabled]="!isCreationEnabled()"  (click)="createWallet()" class="action-button">
     Create new wallet
   </button>
 
