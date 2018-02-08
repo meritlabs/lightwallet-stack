@@ -13,7 +13,7 @@ import { MeritContact } from '../../../models/merit-contact';
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
-const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
+const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND'; 
 
 @IonicPage()
 @Component({
@@ -78,51 +78,27 @@ export class SendView {
 
     if (!this.searchQuery || !this.searchQuery.length) {
       this.clearSearch();
+      this.debounceSearch.cancel();
       this.contacts.forEach((contact: MeritContact) => {
         _.isEmpty(contact.meritAddresses) ?  result.noMerit.push(contact) : result.withMerit.push(contact);
       });
-      return this.searchResult = result;
+      return this.searchResult = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
     }
 
     if (this.searchQuery.length > 6 && this.searchQuery.indexOf('merit:') == 0)
       this.searchQuery = this.searchQuery.split('merit:')[1];
 
+    this.debounceSearch();
+  }
+
+  private debounceSearch = _.debounce(() => this.search(), 300)
+
+  private async search() {
+
+    let result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
+
     const input = this.searchQuery.split('?')[0];
-
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
-
-    if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
-      if (this.isAddress(input)) {
-        const address = await this.sendService.getValidAddress(input);
-
-        if (address) {
-          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ address, network: this.sendService.getAddressNetwork(address).name });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
-        } else {
-          this.searchResult.error = ERROR_ADDRESS_NOT_CONFIRMED;
-        }
-      } else if (this.couldBeAlias(input)) {
-        let alias = input.slice(1);
-        const address = await this.sendService.getValidAddress(alias);
-
-        if (address) {
-          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ alias, address, network: this.sendService.getAddressNetwork(address).name });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
-        } else {
-          this.searchResult.error = ERROR_ALIAS_NOT_FOUND;
-        }
-      } else if (this.couldBeEmail(input)) {
-        result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
-        result.toNewEntity.contact.emails.push({value: input})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input};
-      } else if (this.couldBeSms(input)) {
-        result.toNewEntity = {destination: SendMethod.DESTINATION_SMS, contact: new MeritContact()};
-        result.toNewEntity.contact.phoneNumbers.push({value: input})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input};
-      }
-    }
 
     this.contactsService.searchContacts(this.contacts, input)
       .forEach((contact: MeritContact) => {
@@ -136,8 +112,42 @@ export class SendView {
     this.contactsService.searchContacts(this.recentContacts, input)
       .forEach((contact) => {
         result.recent.push(contact);
-      });
+    });
 
+    if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
+      if (this.isAddress(input)) {
+        const address = await this.sendService.getValidAddress(input);
+
+        if (address) {
+          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
+          result.toNewEntity.contact.meritAddresses.push({ address, network: this.sendService.getAddressNetwork(address).name });
+          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
+        } else {
+          result.error = ERROR_ADDRESS_NOT_CONFIRMED;
+        }
+      } else if (this.couldBeAlias(input)) {
+        let alias = input.slice(1);
+        const address = await this.sendService.getValidAddress(alias);
+
+        if (address) {
+          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
+          result.toNewEntity.contact.meritAddresses.push({ alias, address, network: this.sendService.getAddressNetwork(address).name });
+          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
+        } else {
+          result.error = ERROR_ALIAS_NOT_FOUND; 
+        }
+      } else if (this.couldBeEmail(input)) {
+        result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
+        result.toNewEntity.contact.emails.push({value: input})
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input};
+      } else if (this.couldBeSms(input)) {
+        result.toNewEntity = {destination: SendMethod.DESTINATION_SMS, contact: new MeritContact()};
+        result.toNewEntity.contact.phoneNumbers.push({value: input})
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input};
+      }
+    }
+
+    console.log(result, 'search result'); 
     this.searchResult = result;
   }
 
