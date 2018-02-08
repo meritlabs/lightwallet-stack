@@ -13,6 +13,7 @@ import { MeritContact } from '../../../models/merit-contact';
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
+const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 
 @IonicPage()
 @Component({
@@ -91,15 +92,26 @@ export class SendView {
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
-      if (this.isAddress(input) || this.sendService.couldBeAlias(input)) {
+      if (this.isAddress(input)) {
         const address = await this.sendService.getValidAddress(input);
 
         if (address) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
           result.toNewEntity.contact.meritAddresses.push({ address, network: this.sendService.getAddressNetwork(address).name });
-          this.suggestedMethod = { type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_ADDRESS, value: address };
+          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
         } else {
           this.searchResult.error = ERROR_ADDRESS_NOT_CONFIRMED;
+        }
+      } else if (this.couldBeAlias(input)) {
+        let alias = input.slice(1);
+        const address = await this.sendService.getValidAddress(alias);
+
+        if (address) {
+          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
+          result.toNewEntity.contact.meritAddresses.push({ alias, address, network: this.sendService.getAddressNetwork(address).name });
+          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
+        } else {
+          this.searchResult.error = ERROR_ALIAS_NOT_FOUND;
         }
       } else if (this.couldBeEmail(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
@@ -135,6 +147,11 @@ export class SendView {
 
   private couldBeSms(input) {
     return WEAK_PHONE_NUMBER_PATTERN.test(input);
+  }
+
+  private couldBeAlias(input) {
+    if (input.charAt(0) != '@') return false;
+    return this.sendService.couldBeAlias(input.slice(1));
   }
 
   private async isValidAddress(input) {
