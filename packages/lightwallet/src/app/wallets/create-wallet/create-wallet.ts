@@ -10,6 +10,7 @@ import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { ConfigService } from 'merit/shared/config.service';
 import { WalletService } from 'merit/wallets/wallet.service';
+import { SendService } from 'merit/transact/send/send.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -24,6 +25,8 @@ export class CreateWalletView {
     walletName: '',
     parentAddress: '',
     alias: '', 
+    aliasValidationError: '',
+    aliasCheckInProgress: false,   
     bwsurl: '',
     recoveryPhrase: '',
     password: '',
@@ -44,7 +47,8 @@ export class CreateWalletView {
               private logger: Logger,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
-              private alertCtrl: AlertController
+              private alertCtrl: AlertController,
+              private sendService: SendService
             ) {
     this.formData.bwsurl = config.getDefaults().bws.url;
     this.defaultBwsUrl = config.getDefaults().bws.url;
@@ -61,6 +65,8 @@ export class CreateWalletView {
     return (
       this.formData.parentAddress
       && this.formData.walletName
+      && !this.formData.aliasCheckInProgress 
+      && !this.formData.aliasValidationError
     );
   }
 
@@ -86,6 +92,48 @@ export class CreateWalletView {
     }).present();
   }
 
+  checkAlias() {
+
+    if (!this.formData.alias) {
+      this.validateAliasDebounce.cancel();
+      this.formData.aliasCheckInProgress = false;
+      return this.formData.aliasValidationError = null;
+    }
+
+    if (this.formData.alias.length < 4) {
+      this.validateAliasDebounce.cancel();
+      this.formData.aliasCheckInProgress = false;
+      return this.formData.aliasValidationError = 'Alias should contain at least 4 symbols';
+    }
+
+    if (!this.sendService.couldBeAlias(this.formData.alias)) {
+      this.validateAliasDebounce.cancel();
+      this.formData.aliasCheckInProgress = false;
+      return this.formData.aliasValidationError = 'Incorrect alias format';
+    }
+
+    this.formData.aliasValidationError = null;
+
+    this.formData.aliasCheckInProgress = true;
+    this.validateAliasDebounce();
+    
+  }
+
+  private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
+
+  private async validateAlias() {
+
+    let addressExists = await this.sendService.getValidAddress(this.formData.alias);
+
+    if (addressExists) {
+      this.formData.aliasValidationError = 'Alias already in use';
+    } else {
+      this.formData.aliasValidationError = null;
+    }
+
+    this.formData.aliasCheckInProgress = false;
+  }
+
   async createWallet() {
 
     if (this.formData.password != this.formData.repeatPassword) {
@@ -101,6 +149,7 @@ export class CreateWalletView {
       bwsurl: this.formData.bwsurl,
       mnemonic: this.formData.recoveryPhrase,
       networkName: this.config.getDefaults().network.name,
+      alias: this.formData.alias,
       m: 1, //todo temp!
       n: 1 //todo temp!
     };
@@ -143,6 +192,7 @@ export class CreateWalletView {
       try {
         await Promise.all(promises);
       } catch (e) {
+        console.log(e);
         this.logger.error(e);
       }
 
@@ -153,6 +203,7 @@ export class CreateWalletView {
       await callback();
       return this.navCtrl.pop();
     } catch (err) {
+      console.log(err);
       this.logger.error(err);
       await loader.dismiss();
       await this.toastCtrl.create({
