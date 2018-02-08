@@ -21,8 +21,6 @@ export class MeritContact implements IContactProperties {
    urls: Array<any> = [];
    meritAddresses: Array<IMeritAddress> = [];
 
-
-
   isValid() {
     if (!this.name) return false;
     if (!this.meritAddresses.length) return false;

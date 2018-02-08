@@ -2152,7 +2152,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
       var alias = null;
       if (out.scriptPubKey && out.scriptPubKey.addresses && out.scriptPubKey.addresses.length === 1) {
         address = out.scriptPubKey.addresses[0];
-        alias = out.scriptPubKey.aliases[0];
+        alias = out.scriptPubKey.aliases && out.scriptPubKey.aliases.length ? out.scriptPubKey.aliases[0] : null;
       }
       tx.outputs.push({
         micros: !tx.isInvite ? out.valueSat : out.value, // TODO: rename sat

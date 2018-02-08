@@ -43,16 +43,18 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <button ion-item class="pending-unlock-requests" 
-          navPush="UnlockRequestsView" [navParams]="{wallets: displayWallets }" margin-bottom>
-    <ion-avatar item-start img-icon>
+  <ion-list no-lines>
+    <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{wallets: displayWallets }">
+      <ion-avatar item-start img-icon>
         <img src="assets/img/icons/incoming_request.svg">
-    </ion-avatar>
-    <ion-label>
-      <h2 *ngIf="activeUnlockRequests">New requests: {{activeUnlockRequests}}</h2>
-      <h2 *ngIf="!activeUnlockRequests">No new requests.</h2>
-    </ion-label>
-  </button>
+      </ion-avatar>
+      <ion-label>
+        <p>Unlock Requests</p>
+        <h2 *ngIf="activeUnlockRequests">{{activeUnlockRequests}} new requests</h2>
+        <h2 *ngIf="!activeUnlockRequests">No new requests</h2>
+      </ion-label>
+    </button>
+  </ion-list>
 
   <ion-list *ngFor="let wallet of displayWallets" no-lines>
     <ion-item-divider>

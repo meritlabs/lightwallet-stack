@@ -73,15 +73,15 @@ export class SendView {
   }
 
   async parseSearch() {
+    let result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
 
-    let result =  { withMerit: [], noMerit: [], recent: [], toNewEntity:null, error: null };
-
-    if (!this.searchQuery || !this.searchQuery.length)
+    if (!this.searchQuery || !this.searchQuery.length) {
       this.clearSearch();
       this.contacts.forEach((contact: MeritContact) => {
         _.isEmpty(contact.meritAddresses) ?  result.noMerit.push(contact) : result.withMerit.push(contact);
       });
       return this.searchResult = result;
+    }
 
     if (this.searchQuery.length > 6 && this.searchQuery.indexOf('merit:') == 0)
       this.searchQuery = this.searchQuery.split('merit:')[1];
@@ -143,10 +143,6 @@ export class SendView {
 
   private isAddress(input) {
     return this.sendService.isAddress(input);
-  }
-
-  sanitizePhotoUrl(url:string) {
-    return this.sanitizer.sanitize(SecurityContext.URL, url);
   }
 
   clearSearch() {

@@ -26,7 +26,6 @@ import { ContactsProvider } from '../../providers/contacts/contacts';
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
 
-
 /*
   TODO:
   -- Ensure that we get navParams and then fallback to the wallet service.
@@ -164,6 +163,15 @@ export class WalletsView {
       .toPromise();
 
     this.loading = false;
+  }
+
+  isAddress(address: string) {
+    try {
+      this.bwcService.getBitcore().Address.fromString(address);
+      return true;
+    } catch (_e) {
+      return false;
+    }
   }
 
   openWallet(wallet) {
