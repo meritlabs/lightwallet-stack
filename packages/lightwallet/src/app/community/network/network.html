@@ -9,7 +9,8 @@
         <ion-avatar img-icon>
           <img src="assets/img/icons/network_dark.svg" alt="">
         </ion-avatar>
-        <span class="merit-amount">
+        <ion-spinner [hidden]="!loading"></ion-spinner>
+        <span class="merit-amount" [hidden]="loading">
           {{ totalNetworkValue || '0.00'}}
         </span>
       </ion-col>
@@ -18,7 +19,8 @@
         <ion-avatar img-icon>
           <img src="assets/img/icons/mining_dark.svg" alt="">
         </ion-avatar>
-        <span class="merit-amount">
+        <ion-spinner [hidden]="!loading"></ion-spinner>
+        <span class="merit-amount" [hidden]="loading">
           {{ totalMiningRewards || '0.00' }}
           <small>MRT</small>
         </span>
@@ -28,7 +30,8 @@
         <ion-avatar img-icon>
           <img src="assets/img/icons/ambassador_dark.svg" alt="">
         </ion-avatar>
-        <span class="merit-amount">
+        <ion-spinner [hidden]="!loading"></ion-spinner>
+        <span class="merit-amount" [hidden]="loading">
           {{ totalAmbassadorRewards || '0.00' }}
           <small>MRT</small>
         </span>
@@ -43,7 +46,9 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-list no-lines>
+  <ion-spinner [hidden]="!loading"></ion-spinner>
+
+  <ion-list no-lines [hidden]="loading">
     <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: displayWallets }">
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/incoming_request.svg">
