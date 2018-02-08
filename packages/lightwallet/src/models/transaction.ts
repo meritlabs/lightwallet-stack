@@ -4,7 +4,8 @@ export enum TransactionAction {
   RECEIVING = 'receiving',
   SENDING = 'sending',
   UNLOCK = 'unlock',
-  INVITE = 'invite'
+  INVITE = 'invite',
+  MOVED = 'moved'
 }
 
 export enum UnlockRequestStatus {
@@ -16,6 +17,9 @@ export enum UnlockRequestStatus {
 export interface ITransactionIO {
   amount: number;
   address: string;
+  index: number;
+  alias: string;
+  isMine: boolean;
 }
 
 export interface ITransaction {
@@ -36,4 +40,13 @@ export interface ITransaction {
   parentAddress: string;
   isCoinbase: boolean;
   isInvite: boolean;
+}
+
+export interface IDisplayTransaction extends ITransaction {
+  actionStr: string;
+  walletId: string;
+  isPendingEasySend: boolean;
+  addressFrom: string;
+  addressTo: string;
+  type: 'credit' | 'debit';
 }

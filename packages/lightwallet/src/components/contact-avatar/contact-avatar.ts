@@ -5,8 +5,9 @@ import { MeritContact } from '../../models/merit-contact';
 
 @Component({
   selector: 'contact-avatar',
-  template: `
-  <ion-avatar>
+  template: `    
+  <ion-avatar [attr.img-icon]="!imageSrc && !contactInitials">
+    <img *ngIf="!imageSrc && !contactInitials" src="assets/img/icons/merit.svg" alt="" />
     <img *ngIf="imageSrc" [src]="imageSrc">
     <span *ngIf="contactInitials" color="primary">{{ contactInitials }}</span>
   </ion-avatar>
@@ -17,6 +18,7 @@ export class ContactAvatarComponent {
 
   @Input()
   set contact(contact: MeritContact) {
+    if (!contact) return;
     if (contact.photos && contact.photos.length) {
       this.imageSrc = this._sanitizer.bypassSecurityTrustUrl(contact.photos[0].value);
     } else {

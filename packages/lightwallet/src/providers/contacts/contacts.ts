@@ -15,11 +15,10 @@ const DESIRED_FIELDS = [
   'photos'
 ];
 
-// TODO merge with AddressBook Service
-
 @Injectable()
 export class ContactsProvider {
 
+  // TODO cache contacts & re-use instead of retrieving them again
   private contacts: MeritContact[];
   private devicePermissionGranted: boolean;
   private devicePermissionStatus: string;

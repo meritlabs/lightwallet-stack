@@ -124,20 +124,6 @@
       </button>
     </div>
 
-    <ion-item-divider translate *ngIf="(wallets && wallets.length)">
-      Send invite
-    </ion-item-divider>
-
-    <div class="send-invite" *ngIf="(wallets && wallets.length)">
-      <ion-input placeholder="Address" [(ngModel)]="formData.inviteTo" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
-
-      <button ion-item (click)="sendInvite(wallets[0])" detail-none>
-        <ion-avatar item-start img-icon>
-          <img src="assets/img/icons/send.svg">
-        </ion-avatar>
-      </button>
-    </div>
-
     <button ion-item class="import-wallet-button" (click)="toImportWallet()" detail-none>
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/export.svg">
@@ -146,6 +132,21 @@
         <h2>Import wallet</h2>
       </ion-label>
     </button>
+  </ion-list>
+
+  <ion-list *ngIf="wallets && wallets.length">
+    <ion-item-divider translate *ngIf="(wallets && wallets.length)">
+      Send invite
+    </ion-item-divider>
+
+    <ion-item *ngIf="wallets && wallets.length" class="invite-address">
+      <ion-input placeholder="Address" [(ngModel)]="formData.inviteTo" autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
+      <button ion-button clear item-end (click)="sendInvite(wallets[0])" [disabled]="!isAddress(formData.inviteTo)">
+        <ion-avatar img-icon>
+          <img src="assets/img/icons/send.svg">
+        </ion-avatar>
+      </button>
+    </ion-item>
   </ion-list>
 
   <view-vaults [vaults]="vaults" [refreshVaultList]="refreshVaultList"></view-vaults>

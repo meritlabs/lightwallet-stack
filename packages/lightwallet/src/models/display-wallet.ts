@@ -3,7 +3,10 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { pick, isNil } from 'lodash';
 
 export interface IDisplayWallet {
+  id: string;
   name: string;
+  alias: string;
+  address: string;
   locked: boolean;
   color: string;
   referrerAddress: string;
@@ -32,7 +35,7 @@ export async function createDisplayWallet(wallet: MeritWalletClient, walletServi
   displayWallet.inviteRequests = await walletService.getUnlockRequests(wallet);
   const invitesInfo = await walletService.getInvitesBalance(wallet);
   displayWallet.invites = invitesInfo.availableConfirmedAmount;
-  
+
   const rewardsData = await walletService.getRewards(wallet);
 
   // If we cannot properly fetch data, let's return wallets as-is.

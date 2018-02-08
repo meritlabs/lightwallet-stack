@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 import { ITransaction, TransactionAction } from '../../models/transaction';
+import { ContactsProvider } from '../../providers/contacts/contacts';
 
 @Component({
   selector: 'transaction-history',
@@ -10,6 +11,13 @@ export class TransactionHistoryComponent {
   @Input()
   transactions: ITransaction[];
 
+  constructor(private contacts: ContactsProvider) {}
+
+  getContact(transaction: ITransaction) {
+    return null;
+    // return this.contacts.get(transaction);
+  }
+
   isUnlockRequest(transaction: ITransaction) {
     return transaction.action === TransactionAction.UNLOCK;
   }
@@ -18,19 +26,31 @@ export class TransactionHistoryComponent {
     return transaction.action === TransactionAction.RECEIVED || transaction.action === TransactionAction.RECEIVING;
   }
 
+  isInvite(transaction: ITransaction) {
+    return transaction.isInvite === true;
+  }
+
   isDebit(transaction: ITransaction) {
     return transaction.action === TransactionAction.SENT || transaction.action === TransactionAction.SENDING;
   }
 
   isMiningReward(transaction: ITransaction) {
-    return Boolean(transaction.isCoinbase);
+    return this.isReward(transaction) && transaction.outputs[0].index === 0;
   }
 
   isEasySend(transaction: ITransaction) {
-    return !this.isMiningReward(transaction) && !this.isUnlockRequest(transaction);
+    return !this.isInvite(transaction) && !this.isReward(transaction);
   }
 
   isAmbassadorReward(transaction: ITransaction) {
-    return false;
+    return this.isReward(transaction) && transaction.outputs[0].index > 0;
+  }
+
+  private isReward(transaction: ITransaction) {
+    try {
+      return Boolean(transaction.isCoinbase) && transaction.outputs[0] && !isNaN(transaction.outputs[0].index);
+    } catch (e) {
+      return false;
+    }
   }
 }
