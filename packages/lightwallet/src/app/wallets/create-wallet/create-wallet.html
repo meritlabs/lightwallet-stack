@@ -24,18 +24,22 @@
         <ion-input placeholder="Paste it here" [(ngModel)]="formData.parentAddress"></ion-input>
       </ion-item>
 
-      <ion-item>
-          <ion-label stacked>
-            <h2>
-              Address alias
-                <button ion-button clear (click)="showAliasTooltip()" class="tooltip-button">
-                    <ion-icon name="ios-information-circle-outline"></ion-icon>
-                </button>
-            </h2>
-            
-          </ion-label>
-          <ion-input placeholder="Enter address alias" [(ngModel)]="formData.walletName"></ion-input>
-      </ion-item>
+      <div class="alias-item"> 
+        <ion-item >
+            <ion-label stacked>
+              <h2>
+                Address alias
+                  <button ion-button clear (click)="showAliasTooltip()" class="tooltip-button">
+                      <ion-icon name="ios-information-circle-outline"></ion-icon>
+                  </button>
+              </h2>
+            </ion-label>
+            <ion-input placeholder="Enter address alias" [(ngModel)]="formData.alias" (ngModelChange)="checkAlias()"></ion-input>
+        </ion-item>
+        <ion-spinner *ngIf="formData.aliasCheckInProgress" color="primary"></ion-spinner>
+        <p *ngIf="formData.aliasValidationError" class="error-message">{{formData.aliasValidationError}}</p>
+      </div>
+
 
       <ion-item (click)="selectColor()">
         <ion-label>
