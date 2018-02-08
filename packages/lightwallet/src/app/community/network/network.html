@@ -109,20 +109,7 @@
       </ion-note>
     </ion-item>
 
-    <button ion-item detail-none text-wrap (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress" >
-      <ion-avatar img-icon item-start>
-        <img src="assets/img/icons/invite.svg" alt="">
-      </ion-avatar>
-      <ion-label>
-        <p>Invite Code</p>
-        <h2>{{ wallet.referrerAddress }}</h2>
-      </ion-label>
-      <button ion-button icon-only clear item-end>
-        <ion-icon merit-icon name="share"></ion-icon>
-      </button>
-    </button>
-
-    <ion-item>
+    <ion-item class="invite-item-1">
       <ion-avatar img-icon item-start>
         <img src="assets/img/icons/invite.svg" alt="">
       </ion-avatar>
@@ -133,6 +120,18 @@
         Invite
       </button>
     </ion-item>
+
+    <button ion-item detail-none class="invite-item-2" text-wrap (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress" >
+      <ion-avatar item-start>
+      </ion-avatar>
+      <ion-label>
+        <p>Invite Code</p>
+        <h2>{{ wallet.referrerAddress }}</h2>
+      </ion-label>
+      <button ion-button icon-only clear item-end>
+        <ion-icon merit-icon name="share"></ion-icon>
+      </button>
+    </button>
 
   </ion-list>
 

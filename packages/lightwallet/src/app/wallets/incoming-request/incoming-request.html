@@ -39,8 +39,8 @@
           </ion-label>
         </button>
 
-        <button ion-item (click)="accept()" detail-none>Accept</button>
-        <button ion-item (click)="decline()" detail-none>Decline</button>
+        <button ion-item (click)="accept()" detail-none>Send Invite</button>
+        <button ion-item (click)="decline()" detail-none>Ignore</button>
       </ion-item-group>
       <ion-item-group *ngIf="unlockRequest.isConfirmed" detail-none>
         <button ion-item (click)="createContact()" detail-none>
