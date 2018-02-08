@@ -43,6 +43,9 @@
       <div class="no-results-label" *ngIf="searchResult.error == 'ERROR_ADDRESS_NOT_CONFIRMED'">
         Address is not confirmed yet
       </div>
+      <div class="no-results-label" *ngIf="searchResult.error == 'ERROR_ALIAS_NOT_FOUND'">
+        Alias not found 
+      </div>
 
       <div *ngIf="searchResult.toNewEntity">
 
