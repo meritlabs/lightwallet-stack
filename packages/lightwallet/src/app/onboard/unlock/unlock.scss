@@ -71,4 +71,27 @@ view-unlock {
     margin-top: 10%;
     margin-bottom: 10%;
   }
+
+  .alias-item {
+    position: relative;
+    margin-bottom: 30px; 
+    display: block;
+    ion-item:after {
+      display: none; 
+    }
+    p {
+      font-size: 12px;
+      text-align: left;
+      color: color($colors, danger);
+      display: block;
+    }
+    ion-spinner {
+      height: 20px;
+      width: 20px;
+      bottom: 20px;
+      right: 20px;
+      position: absolute;
+      z-index: 1000000;
+    }
+  }
 }
