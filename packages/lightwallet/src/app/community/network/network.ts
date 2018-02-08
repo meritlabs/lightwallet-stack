@@ -28,14 +28,14 @@ import { UnlockRequestService } from 'merit/core/unlock-request.service';
 export class NetworkView {
   static readonly RETRY_MAX_ATTEMPTS = 5;
   static readonly RETRY_TIMEOUT = 1000;
-  public displayWallets: Array<IDisplayWallet> = []; 
+  public displayWallets: Array<IDisplayWallet> = [];
   public loading: boolean;
 
   totalNetworkValue: string;
   totalMiningRewards: string;
   totalAmbassadorRewards: string;
 
-  activeUnlockRequests:number; 
+  activeUnlockRequests:number;
 
   constructor(private profileService: ProfileService,
               private clipboard: Clipboard,
@@ -54,9 +54,7 @@ export class NetworkView {
     this.loading = true;
     try {
       const wallets: MeritWalletClient[] = await this.profileService.getWallets();
-      this.displayWallets = wallets.map((wallet: MeritWalletClient) =>
-        _.pick(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'referrerAddress')
-      );
+      this.displayWallets = await Promise.all(wallets.map((wallet: MeritWalletClient) => createDisplayWallet(wallet, this.walletService)));
       this.logger.info('DisplayWallets after ngOnInit: ', this.displayWallets);
     } catch (err) {
       this.logger.warn(err);
@@ -83,10 +81,6 @@ export class NetworkView {
   }
 
   async updateView() {
-    if (this.loading) return;
-
-    this.loading = true;
-
     try {
       this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
       await this.formatWallets(await this.loadInfo());
@@ -100,8 +94,6 @@ export class NetworkView {
         })
         .present();
     }
-
-    this.loading = false;
   }
 
   async copyToClipboard(code) {
