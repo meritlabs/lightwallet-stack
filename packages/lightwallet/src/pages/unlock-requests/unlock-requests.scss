@@ -1,13 +1,56 @@
 view-unlock-requests {
-    ion-avatar {
-        text-align: center;
-        color: color($colors, primary);
-        display: inline-block;
-        line-height: 40px;
-        letter-spacing: -2px;
-        span {
-            text-align: center;
-            width: 38px;
-        }
+  .cta {
+    text-align: center;
+    img {
+      max-width: 80%;
+      height: auto;
+      margin-top: 20px;
     }
+
+    .info-box {
+      text-align: left;
+
+      h2 {
+        margin-top: 0;
+        color: #2d3c50;
+        font-weight: 500;
+      }
+
+      p {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .total-invites {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 50px;
+    min-width: 60px;
+
+    span {
+      text-align: center;
+      font-weight: 600;
+      color: #2d3c50;
+      padding-right: 5px;
+      width: calc(100% - 40px);
+    }
+
+    ion-avatar[img-icon] {
+      transform: scale3d(0.9, 0.9, 1);
+    }
+  }
+
+  ion-avatar {
+    text-align: center;
+    color: color($colors, primary);
+    display: inline-block;
+    line-height: 40px;
+    letter-spacing: -2px;
+    span {
+      text-align: center;
+      width: 38px;
+    }
+  }
 }

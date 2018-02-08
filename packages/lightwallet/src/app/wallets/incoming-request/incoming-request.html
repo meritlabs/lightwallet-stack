@@ -1,66 +1,59 @@
-<ion-header>
-
-    <ion-navbar color="light">
-        <ion-title>
-            <span *ngIf="!unlockRequest.isConfirmed">Incoming unlock request</span>
-            <span *ngIf="unlockRequest.isConfirmed">Request accepted</span>
-        </ion-title>
-    </ion-navbar>
-
+<ion-header no-border>
+  <ion-navbar color="light">
+    <ion-title>
+      <span *ngIf="!unlockRequest.isConfirmed">Invite Request</span>
+      <span *ngIf="unlockRequest.isConfirmed">Sent Invite</span>
+    </ion-title>
+  </ion-navbar>
 </ion-header>
 
 <ion-content>
-
-    <div class="datetime">
-        {{unlockRequest.timestamp*1000 | amDateFormat:'DD:MM HH:mm'}}
-    </div>
-    <ion-avatar img-icon>
+  <div class="container">
+    <div *ngIf="unlockRequest">
+      <span class="date">{{ (unlockRequest.timestamp * 1000) | amDateFormat: 'DD MMM, hh:mma' }}</span>
+      <span class="to-wallet">{{ unlockRequest.isConfirmed? 'Sent from' : 'Requested from' }} <strong>{{ unlockRequest?.wallet?.name }}</strong></span>
+      <ion-avatar img-icon>
         <img src="assets/img/icons/incoming_request_l.svg" *ngIf="!unlockRequest.isConfirmed">
         <img src="assets/img/icons/confirm.svg" *ngIf="unlockRequest.isConfirmed">
-    </ion-avatar>
-
-    <h2>{{unlockRequest.address}}</h2>
-    <p *ngIf="unlockRequest.alias">@{{unlockRequest.alias}}</p>
-
+      </ion-avatar>
+      <span class="wallet-name">{{ unlockRequest.alias? '@' + unlockRequest.alias : unlockRequest.address }}</span>
+      <span class="status {{ unlockRequest.status }}">{{ unlockRequest.status }}</span>
+    </div>
+  </div>
 </ion-content>
 
 
 <ion-footer>
-    <ion-toolbar>
-    
-        <ion-list *ngIf="!unlockRequest.isConfirmed">
-            <button ion-item (click)="accept()">
-                ACCEPT
-            </button>
-    
-            <button ion-item (click)="decline()" class="decline-button">
-                DECLINE
-            </button>
-    
-            <button ion-item (click)="selectWallet()" detail-none>
-                <ion-avatar item-start img-icon>
-                    <img src="assets/img/icons/wallet.svg" item-start>
-                </ion-avatar>
-                <h2>{{unlockRequest.walletClient.name}}</h2>
-                <p>Invites: {{unlockRequest.walletClient.invites}}</p>
-            </button>
-        </ion-list>
- 
-        <ion-list *ngIf="unlockRequest.isConfirmed">
-            <button ion-item (click)="createContact()">
-                <ion-icon name="add"></ion-icon> Create new contact
-            </button>
+  <ion-toolbar *ngIf="unlockRequest">
 
-            <button ion-item (click)="bindContact()">
-                Bind to existing contact
-            </button>
+    <ion-list>
+      <ion-item-group *ngIf="!unlockRequest.isConfirmed" detail-none>
+        <button ion-item (click)="selectWallet()" detail-none text-left class="wallet-selector">
+          <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/wallet.svg">
+          </ion-avatar>
+          <ion-label>
+            <p>Send from</p>
+            <h2>{{ unlockRequest.wallet.name }}</h2>
+            <p>Invites: {{ unlockRequest.wallet.invites }}</p>
+          </ion-label>
+        </button>
 
-            <button ion-item (click)="continue()">
-                Continue
-            </button>
+        <button ion-item (click)="accept()" detail-none>Accept</button>
+        <button ion-item (click)="decline()" detail-none>Decline</button>
+      </ion-item-group>
+      <ion-item-group *ngIf="unlockRequest.isConfirmed" detail-none>
+        <button ion-item (click)="createContact()" detail-none>
+          <ion-icon name="add"></ion-icon>
+          Create new contact
+        </button>
+        <button ion-item (click)="bindContact()" detail-none>Bind to existing contact</button>
+        <button ion-item (click)="continue()">
+          Continue
+        </button>
+      </ion-item-group>
+    </ion-list>
 
-        </ion-list> 
-    
-    </ion-toolbar>
+  </ion-toolbar>
 </ion-footer>
-      
+

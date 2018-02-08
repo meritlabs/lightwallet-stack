@@ -19,7 +19,7 @@ export class SelectInviteWalletModal {
     private viewCtrl: ViewController,
     private profileService: ProfileService
   ) {
-    this.wallets = this.navParams.get('wallets'); 
+    this.wallets = this.navParams.get('availableWallets');
     this.selectedWallet = this.navParams.get('selectedWallet');
   }
 
@@ -27,10 +27,7 @@ export class SelectInviteWalletModal {
     this.viewCtrl.dismiss();
   }
 
-  ionViewDidLoad() {
-  }
-
-  select(wallet) {
+  select(wallet: IDisplayWallet) {
     this.viewCtrl.dismiss(wallet);
   }
 

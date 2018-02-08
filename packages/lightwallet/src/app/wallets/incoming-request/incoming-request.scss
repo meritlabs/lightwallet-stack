@@ -1,58 +1,116 @@
 view-incoming-request {
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+    align-content: center;
+    height: 100%;
 
-  text-align: center;
+    > div {
+    }
+  }
 
-  .datetime {
-    color: rgb(115, 129, 155);
+  ion-footer.footer {
+
+    &:before {
+      display: none;
+      border: 0;
+    }
+
+    ion-toolbar.toolbar {
+      padding: 0;
+
+    }
+
+    ion-list.list {
+      margin: 0;
+
+      button[ion-item].item {
+
+        padding: 0;
+        border-top: 1px solid rgb(232, 234, 237);
+
+        &.wallet-selector {
+          padding: 7px 17px;
+
+          * {
+            text-align: left;
+          }
+        }
+
+        &:not(.wallet-selector) {
+          height: 54px;
+          max-height: 54px;
+
+          ion-label.label {
+            color: rgb(0, 176, 221);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+          }
+        }
+
+        .item-inner {
+          border-bottom: none;
+        }
+      }
+    }
+  }
+
+  * {
+    text-align: center;
+  }
+
+  span {
+    display: block;
+  }
+
+  .date {
     font-size: 13px;
+    color: rgb(115, 129, 155);
     margin-top: 24px;
   }
 
-  ion-avatar {
-    height: 80px !important;
-    width: 80px !important;
-    margin: 24px auto;
-    img {
-      height: 30px !important;
-    }
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 15px;
+  .wallet-name {
+    margin-top: 25px;
     color: rgb(45, 60, 80);
-  }
-  p {
-    font-size: 15px;
-    color: rgba(45, 60, 80, 0.9);
-    margin: 0;
-    margin-top: 4px;
+    font-size: 17px;
+    letter-spacing: -.5px;
+    font-weight: 500;
   }
 
-  ion-list {
-    text-align: center;
-    margin-top: 24px !important;
-    button {
-      text-align: center !important;
-      font-weight: 600 !important;
-      ion-label {
-        color: rgb(0, 176, 221) !important;
+  .status {
+    &.pending {
+      color: rgb(255, 160, 0);
+    }
+
+    &.accepted {
+      color: rgb(0, 150, 136);
+    }
+
+    &.hidden {
+      color: rgb(208, 2, 27);
+    }
+
+    margin-top: 4px;
+    letter-spacing: -.2px;
+    font-size: 17px;
+  }
+
+  .to-wallet {
+    color: rgb(115, 129, 155);
+  }
+
+  .scroll-content {
+    ion-avatar {
+      height: 80px !important;
+      width: 80px !important;
+      margin: 24px auto;
+      img {
+        height: 30px !important;
       }
     }
-    button:first-of-type:before {
-      content: '';
-      width: calc(100% - 16px - 19px);
-      background: rgba(209, 214, 220, 0.5);
-      height: 1px;
-      position: absolute;
-      top: 1px;
-      left: 19px;
-    }
   }
-
-  .decline-button ion-label {
-    color: color($colors, danger);
-  }
-
-
 }

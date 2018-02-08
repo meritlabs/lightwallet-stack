@@ -8,7 +8,9 @@ import { ComponentsModule } from '../../components/components.module';
     UnlockRequestsView,
   ],
   imports: [
-    IonicPageModule.forChild(UnlockRequestsView)
+    IonicPageModule.forChild(UnlockRequestsView),
+    ComponentsModule
   ],
 })
-export class UnlockRequestsModule {}
+export class UnlockRequestsModule {
+}
