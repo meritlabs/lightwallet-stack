@@ -98,6 +98,7 @@ export class ContactsProvider {
       if (_.some(contact.emails, (email) => email.value.match(exp))) return true;
       if (_.some(contact.phoneNumbers, (phoneNumber) => phoneNumber.value.match(exp))) return true;
       if (_.some(contact.meritAddresses, (address) => address.address.match(exp))) return true;
+      if (_.some(contact.meritAddresses, (address) => address.alias && address.alias.match(exp))) return true;
       return false;
     });
   }

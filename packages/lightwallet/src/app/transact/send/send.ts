@@ -97,7 +97,7 @@ export class SendView {
 
     let result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
 
-    const input = this.searchQuery.split('?')[0];
+    const input = this.searchQuery.split('?')[0].replace(/\s+/g, '');
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
 
     this.contactsService.searchContacts(this.contacts, input)
@@ -127,6 +127,7 @@ export class SendView {
         }
       } else if (this.couldBeAlias(input)) {
         let alias = input.slice(1);
+        console.log('im in');
         const address = await this.sendService.getValidAddress(alias);
 
         if (address) {
