@@ -6,65 +6,66 @@ import { IDisplayWallet } from '../models/display-wallet';
 export function formatWalletHistory(walletHistory: any[], wallet: IDisplayWallet, contactsProvider?: ContactsProvider): any[] {
   if (_.isEmpty(walletHistory)) return [];
 
-  console.log(walletHistory, wallet);
-
   let pendingString;
 
-  return walletHistory.map((history: IDisplayTransaction) => {
-    if (!_.isNil(history) && !_.isNil(history.action)) {
-      pendingString = history.isPendingEasySend ? '(pending) ' : '';
-      switch (history.action) {
+  return walletHistory.map((tx: IDisplayTransaction) => {
+    if (!_.isNil(tx) && !_.isNil(tx.action)) {
+      pendingString = tx.isPendingEasySend ? '(pending) ' : '';
+      switch (tx.action) {
         case TransactionAction.SENT:
-          if (history.confirmations == 0) {
-            history.actionStr = 'Sending Payment...';
+          tx.type = 'debit';
+          tx.addressFrom = wallet.alias || wallet.name;
+          tx.name = tx.inputs[0].alias || wallet.name;
+
+          if (tx.isInvite === true) {
+            tx.name = 'Invite Sent';
+          } else if (tx.confirmations == 0) {
+            tx.actionStr = 'Sending Payment...';
           } else {
-            history.actionStr = 'Payment Sent';
+            tx.actionStr = 'Payment Sent';
           }
-          history.type = 'debit';
-          history.addressFrom = wallet.alias || wallet.name;
-          history.name = history.inputs[0].alias || wallet.name;
           break;
 
         case TransactionAction.RECEIVED:
-          if (history.confirmations == 0) {
-            history.actionStr = 'Receiving Payment...';
+          tx.addressTo = wallet.name;
+          tx.type = 'credit';
+          tx.name =  _.get(_.find(<any>tx.outputs, { isMine: false }), 'alias', '') || wallet.name;
+
+          if (tx.isInvite === true) {
+            tx.name = 'Invite Received'
+          } else if (tx.confirmations == 0) {
+            tx.actionStr = 'Receiving Payment...';
           } else {
-            history.actionStr = 'Payment Received';
+            tx.actionStr = 'Payment Received';
           }
-          history.addressTo = wallet.name;
-          history.type = 'credit';
-          history.name =  _.get(_.find(<any>history.outputs, { isMine: false }), 'alias', '') || wallet.name;
           break;
 
         case TransactionAction.MOVED:
-          history.actionStr = 'Moved Merit';
+          tx.actionStr = 'Moved Merit';
+          tx.name = tx.isInvite? 'Moved Invite' : 'Moved Merit';
           break;
 
         default:
-          history.actionStr = 'Recent Transaction';
+          tx.actionStr = 'Recent Transaction';
           break
       }
-      history.actionStr = pendingString + history.actionStr;
+      tx.actionStr = pendingString + tx.actionStr;
 
-      if (wallet && !history.walletId) {
-        history.walletId = wallet.id;
+      if (wallet && !tx.walletId) {
+        tx.walletId = wallet.id;
       }
 
-      if (history.isCoinbase) {
-        // mining rewards
-        history.name = 'Mining rewards';
-      } else {
-        // // user sent Merit to someone else
-        // // TODO get contact name if wallet address is in address box
-        // const inputAlias: string = history.inputs[0].alias;
-        // const outputAlias: string = _.get(_.find(<any>history.outputs, { isMine: false }), 'alias', '');
-        //
-        // const alias = history.action == 'received' ?  inputAlias: outputAlias;
-        // history.name = alias ? `@${alias}` : history.inputs[0].address;
+      if (tx.isCoinbase && !tx.isInvite) {
+        if (tx.outputs[0].index === 0) {
+          tx.name = 'Mining Reward';
+          tx.action = TransactionAction.MINING_REWARD;
+        } else {
+          tx.name = 'Ambassador Reward';
+          tx.action = TransactionAction.AMBASSADOR_REWARD;
+        }
       }
     }
 
-    console.log(history);
-    return history;
+    return tx;
   });
 }

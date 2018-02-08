@@ -1,11 +1,11 @@
 export enum TransactionAction {
   RECEIVED = 'received',
   SENT = 'sent',
-  RECEIVING = 'receiving',
-  SENDING = 'sending',
   UNLOCK = 'unlock',
   INVITE = 'invite',
-  MOVED = 'moved'
+  MOVED = 'moved',
+  MINING_REWARD = 'mining_reward',
+  AMBASSADOR_REWARD = 'ambassador_reward'
 }
 
 export enum UnlockRequestStatus {
