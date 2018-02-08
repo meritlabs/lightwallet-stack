@@ -55,7 +55,7 @@
       </ion-avatar>
       <ion-label>
         <p>Unlock Requests</p>
-        <h2 *ngIf="activeUnlockRequests">{{activeUnlockRequests}} new requests</h2>
+        <h2 *ngIf="activeUnlockRequests">{{activeUnlockRequests}} new request{{activeUnlockRequests === 1? '' : 's'}}</h2>
         <h2 *ngIf="!activeUnlockRequests">No new requests</h2>
       </ion-label>
     </button>

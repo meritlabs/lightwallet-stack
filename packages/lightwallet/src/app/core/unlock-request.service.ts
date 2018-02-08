@@ -5,6 +5,7 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritContact } from '../../models/merit-contact';
 import { ContactsProvider } from '../../providers/contacts/contacts';
+import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
 
 
 export interface IUnlockRequest {
@@ -12,7 +13,7 @@ export interface IUnlockRequest {
     alias: string;
     isConfirmed: boolean;
     referralId: string;
-    walletClient: MeritWalletClient;
+    wallet: IDisplayWallet;
     contact: MeritContact
 }
 
@@ -36,25 +37,33 @@ export class UnlockRequestService {
 
     //todo subscribe to new block event, then update info
     public async loadRequestsData() {
-
         this.hiddenAddresses = await this.persistenseService.getHiddenUnlockRequestsAddresses();
         this.activeRequestsNumber = await this.persistenseService.getActiveRequestsNumber();
         let knownContacts = await this.contactsService.getAllMeritContacts();
 
         //updating it from server
-        let requests = {hidden: [], active: [], confirmed: []};
-        for (let wallet of await this.profileService.getWallets()) {
-            for (let request of await this.walletService.getUnlockRequests(wallet)) {
-                request.walletClient = wallet;
+        let requests = {hidden: [], active: [], confirmed: []},
+          wallet, request, contact;
+        for (wallet of await this.profileService.getWallets()) {
+            for (request of await this.walletService.getUnlockRequests(wallet)) {
+                request.wallet = await createDisplayWallet(wallet, this.walletService);
                 if (request.isConfirmed) {
-                    let foundContacts = this.contactsService.searchContacts(knownContacts, request.address);
-                    if (foundContacts.length) {
-                        request.contact = foundContacts[0];
-                    }
-                    requests.confirmed.push(request);
+                  request.status = 'accepted';
+                  try {
+                    contact = await this.contactsService.get(request.address);
+                  } catch (e) {}
+
+                  if (contact) {
+                    request.contact = contact;
+                    contact = void 0;
+
+                  }
+                  requests.confirmed.push(request);
                 } else if (this.hiddenAddresses.indexOf(request.address) != -1) {
+                  request.status = 'hidden';
                     requests.hidden.push(request);
                 } else {
+                  request.status = 'pending';
                     requests.active.push(request);
                 }
             }
@@ -70,7 +79,7 @@ export class UnlockRequestService {
     }
 
     public async confirmRequest(request: IUnlockRequest) {
-        await this.walletService.sendInvite(request.walletClient, request.address);
+        await this.walletService.sendInvite(request.wallet.client, request.address);
         request.isConfirmed = true;
 
         this.hiddenAddresses = this.hiddenAddresses.filter(a => a != request.address);
