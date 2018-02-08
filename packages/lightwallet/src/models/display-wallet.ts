@@ -34,7 +34,7 @@ export async function createDisplayWallet(wallet: MeritWalletClient, walletServi
   displayWallet.totalNetworkValueMicro = await walletService.getANV(wallet);
   displayWallet.inviteRequests = await walletService.getUnlockRequests(wallet);
   const invitesInfo = await walletService.getInvitesBalance(wallet);
-  displayWallet.invites = invitesInfo.availableConfirmedAmount;
+  displayWallet.invites = Math.max(0, invitesInfo.availableConfirmedAmount - 1);
 
   const rewardsData = await walletService.getRewards(wallet);
 
