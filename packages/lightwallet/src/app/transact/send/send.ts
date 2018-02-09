@@ -100,7 +100,8 @@ export class SendView {
     const input = this.searchQuery.split('?')[0].replace(/\s+/g, '');
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
 
-    this.contactsService.searchContacts(this.contacts, input)
+    let query = input.indexOf('@') == 0 ? input.slice(1) : input; 
+    this.contactsService.searchContacts(this.contacts, query)
       .forEach((contact: MeritContact) => {
         if (_.isEmpty(contact.meritAddresses)) {
           result.noMerit.push(contact);
@@ -109,7 +110,7 @@ export class SendView {
         }
       });
 
-    this.contactsService.searchContacts(this.recentContacts, input)
+    this.contactsService.searchContacts(this.recentContacts, query)
       .forEach((contact) => {
         result.recent.push(contact);
     });
