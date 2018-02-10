@@ -23,7 +23,7 @@ export class TransactionHistoryComponent {
   }
 
   isCredit(transaction: ITransaction) {
-    return transaction.action === TransactionAction.RECEIVED || transaction.action === TransactionAction.RECEIVING;
+    return transaction.action === TransactionAction.RECEIVED;
   }
 
   isInvite(transaction: ITransaction) {
@@ -31,7 +31,7 @@ export class TransactionHistoryComponent {
   }
 
   isDebit(transaction: ITransaction) {
-    return transaction.action === TransactionAction.SENT || transaction.action === TransactionAction.SENDING;
+    return transaction.action === TransactionAction.SENT;
   }
 
   isMiningReward(transaction: ITransaction) {
