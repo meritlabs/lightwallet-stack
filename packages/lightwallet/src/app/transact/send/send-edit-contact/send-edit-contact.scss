@@ -15,4 +15,19 @@ view-send-edit-contact {
       letter-spacing: .3px;
     }
   }
+
+  .alias-label {
+    min-height: 20px;
+    height: 20px;
+    line-height: 20px;
+    color: #73819b;
+    font-size: 13px; 
+    padding: 0;
+    margin: 0;
+    margin-top: -5px;
+    margin-bottom: 15px; 
+  }
+  ion-input input {
+    font-size: 15px !important;
+  }
 }

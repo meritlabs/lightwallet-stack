@@ -11,7 +11,7 @@ import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { WalletService } from 'merit/wallets/wallet.service';
-
+import { SendService } from 'merit/transact/send/send.service';
 
 // Unlock view for wallet
 @IonicPage({
@@ -22,8 +22,13 @@ import { WalletService } from 'merit/wallets/wallet.service';
   templateUrl: 'unlock.html',
 })
 export class UnlockView {
-  public unlockState: 'success' | 'fail';
-  public formData = { parentAddress: '' , alias: ''};
+  public unlockState: 'success' | 'fail' | 'aliasFail';
+  public formData = {
+      parentAddress: '' ,
+      alias: '', 
+      aliasValidationError: '',
+      aliasCheckInProgress: false
+    };
   public easyReceipt: EasyReceipt;
 
   @ViewChild(Content) content: Content;
@@ -38,7 +43,9 @@ export class UnlockView {
               private logger: Logger,
               private config: ConfigService,
               private pushNotificationService: PushNotificationsService,
-              private pollingNotificationService: PollingNotificationsService) {
+              private pollingNotificationService: PollingNotificationsService,
+              private sendService: SendService 
+            ) {
   }
 
   async ionViewDidLoad() {
@@ -51,9 +58,56 @@ export class UnlockView {
     if (this.easyReceipt) this.formData.parentAddress = this.easyReceipt.parentAddress;
   }
 
+  checkAlias() {
+
+    if (!this.formData.alias) {
+      this.validateAliasDebounce.cancel();
+      this.formData.aliasCheckInProgress = false;
+      return this.formData.aliasValidationError = null;
+    }
+
+    if (this.formData.alias.length < 4) {
+      this.validateAliasDebounce.cancel();
+      this.formData.aliasCheckInProgress = false;
+      return this.formData.aliasValidationError = 'Alias should contain at least 4 symbols';
+    }
+
+    if (!this.sendService.couldBeAlias(this.formData.alias)) {
+      this.validateAliasDebounce.cancel();
+      this.formData.aliasCheckInProgress = false;
+      return this.formData.aliasValidationError = 'Incorrect alias format';
+    }
+
+    this.formData.aliasValidationError = null;
+
+    this.formData.aliasCheckInProgress = true;
+    this.validateAliasDebounce();
+    
+  }
+
+  private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
+
+  private async validateAlias() {
+
+    let addressExists = await this.sendService.getValidAddress(this.formData.alias);
+
+    if (addressExists) {
+      this.formData.aliasValidationError = 'Alias already in use';
+    } else {
+      this.formData.aliasValidationError = null;
+    }
+
+    this.formData.aliasCheckInProgress = false;
+  }
+
   async createWallet() {
     if (!this.formData.parentAddress) {
       this.unlockState = 'fail';
+      return;
+    }
+
+    if (this.formData.aliasValidationError) {
+      this.unlockState = 'aliasFail';
       return;
     }
 
@@ -88,7 +142,7 @@ export class UnlockView {
   }
 
   onInputFocus() {
-    setTimeout(() => this.content.scrollToBottom(), 100);
+    setTimeout(() => this.content.scrollToBottom(), 100); 
   }
 
 }
