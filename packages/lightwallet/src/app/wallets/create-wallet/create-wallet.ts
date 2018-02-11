@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, LoadingController, ModalController, NavController, NavParams, AlertController } from 'ionic-angular';
 
 import * as _ from 'lodash';
 import { Logger } from 'merit/core/logger';
@@ -10,7 +10,7 @@ import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { ConfigService } from 'merit/shared/config.service';
 import { WalletService } from 'merit/wallets/wallet.service';
-
+import { SendService } from 'merit/transact/send/send.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -24,12 +24,15 @@ export class CreateWalletView {
   formData = {
     walletName: '',
     parentAddress: '',
+    alias: '', 
+    aliasValidationError: '',
+    aliasCheckInProgress: false,   
     bwsurl: '',
     recoveryPhrase: '',
     password: '',
     repeatPassword: '',
     color: '',
-    hideBalance: false
+    hideBalance: false 
   };
 
   defaultBwsUrl: string;
@@ -43,7 +46,10 @@ export class CreateWalletView {
               private modalCtrl: ModalController,
               private logger: Logger,
               private pushNotificationService: PushNotificationsService,
-              private pollingNotificationService: PollingNotificationsService) {
+              private pollingNotificationService: PollingNotificationsService,
+              private alertCtrl: AlertController,
+              private sendService: SendService
+            ) {
     this.formData.bwsurl = config.getDefaults().bws.url;
     this.defaultBwsUrl = config.getDefaults().bws.url;
   }
@@ -59,6 +65,8 @@ export class CreateWalletView {
     return (
       this.formData.parentAddress
       && this.formData.walletName
+      && !this.formData.aliasCheckInProgress 
+      && !this.formData.aliasValidationError
     );
   }
 
@@ -70,6 +78,60 @@ export class CreateWalletView {
       }
     });
     modal.present();
+  }
+
+  showAliasTooltip() {
+    return this.showTooltip('Add an alias',
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ');
+  }
+  
+  private showTooltip(title, message) {
+    return this.alertCtrl.create({
+      title, message,
+      buttons: ['Got it']
+    }).present();
+  }
+
+  checkAlias() {
+
+    if (!this.formData.alias) {
+      this.validateAliasDebounce.cancel();
+      this.formData.aliasCheckInProgress = false;
+      return this.formData.aliasValidationError = null;
+    }
+
+    if (this.formData.alias.length < 4) {
+      this.validateAliasDebounce.cancel();
+      this.formData.aliasCheckInProgress = false;
+      return this.formData.aliasValidationError = 'Alias should contain at least 4 symbols';
+    }
+
+    if (!this.sendService.couldBeAlias(this.formData.alias)) {
+      this.validateAliasDebounce.cancel();
+      this.formData.aliasCheckInProgress = false;
+      return this.formData.aliasValidationError = 'Incorrect alias format';
+    }
+
+    this.formData.aliasValidationError = null;
+
+    this.formData.aliasCheckInProgress = true;
+    this.validateAliasDebounce();
+    
+  }
+
+  private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
+
+  private async validateAlias() {
+
+    let addressExists = await this.sendService.getValidAddress(this.formData.alias);
+
+    if (addressExists) {
+      this.formData.aliasValidationError = 'Alias already in use';
+    } else {
+      this.formData.aliasValidationError = null;
+    }
+
+    this.formData.aliasCheckInProgress = false;
   }
 
   async createWallet() {
@@ -87,6 +149,7 @@ export class CreateWalletView {
       bwsurl: this.formData.bwsurl,
       mnemonic: this.formData.recoveryPhrase,
       networkName: this.config.getDefaults().network.name,
+      alias: this.formData.alias,
       m: 1, //todo temp!
       n: 1 //todo temp!
     };
@@ -129,6 +192,7 @@ export class CreateWalletView {
       try {
         await Promise.all(promises);
       } catch (e) {
+        console.log(e);
         this.logger.error(e);
       }
 
@@ -139,6 +203,7 @@ export class CreateWalletView {
       await callback();
       return this.navCtrl.pop();
     } catch (err) {
+      console.log(err);
       this.logger.error(err);
       await loader.dismiss();
       await this.toastCtrl.create({
@@ -146,8 +211,5 @@ export class CreateWalletView {
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     }
-
   }
-
-
 }

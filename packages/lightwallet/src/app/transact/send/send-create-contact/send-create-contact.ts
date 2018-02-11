@@ -54,7 +54,7 @@ export class SendCreateContactView {
         message: 'Address is invalid or not invited to blockchain yet',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
-    }
+    } 
 
     let network = this.sendService.getAddressNetwork(address).name;
     let meritAddress = {address, network};

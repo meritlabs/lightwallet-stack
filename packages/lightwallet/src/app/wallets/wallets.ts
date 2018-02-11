@@ -219,14 +219,13 @@ export class WalletsView {
   toAddWallet() {
 
     if (!_.isEmpty(this.wallets)) {
-      const parentAddress = this.bwcService.getBitcore().PrivateKey(
-        this.wallets[0].credentials.walletPrivKey,
-        this.wallets[0].network
-      ).toAddress().toString();
+
+      // todo check for existing invites and suggest the wallet that has any 
+      const referralAdderss = this.walletService.getRootAddress(this.wallets[0]);
 
       return this.navCtrl.push('CreateWalletView', {
         updateWalletListCB: this.refreshWalletList.bind(this),
-        parentAddress
+        parentAddress: referralAdderss
       });
     }
     return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList.bind(this) });

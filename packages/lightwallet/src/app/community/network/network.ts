@@ -36,6 +36,7 @@ export class NetworkView {
   totalAmbassadorRewards: string;
 
   activeUnlockRequests:number;
+  activeInvites:number;
 
   constructor(private profileService: ProfileService,
               private clipboard: Clipboard,
@@ -129,6 +130,12 @@ export class NetworkView {
         createDisplayWallet(wallet, this.walletService)
       )
     );
+
+   this.activeInvites = 0;
+   for (let dWallet of displayWallets) {
+      this.activeInvites += dWallet.invites;
+   }
+
 
     return displayWallets;
   }
