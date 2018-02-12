@@ -207,7 +207,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data) {
       if (!address || address.isChange) return next(null);
 
       var walletId = address.walletId;
-      var notificationType = data.isCoinbase ? 'IncomingCoinbase' : 'IncomingTx';
+      var notificationType = data.isCoinbase ? 'IncomingCoinbase' : data.isInvite? 'IncomingInvite' : 'IncomingTx';
 
       log.info(`{notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${out.address} ]`);
 

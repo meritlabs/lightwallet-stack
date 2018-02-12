@@ -30,6 +30,12 @@ var PUSHNOTIFICATIONS_TYPES = {
   'IncomingTx': {
     filename: 'incoming_tx',
   },
+  'IncomingInvite': {
+    filename: 'incoming_invite'
+  },
+  'IncomingInviteRequest': {
+    filename: 'incoming_invite_request'
+  },
   'IncomingCoinbase': {
     filename: 'incoming_coinbase',
   },
@@ -69,7 +75,7 @@ var PUSHNOTIFICATIONS_TYPES = {
 function PushNotificationsService() {};
 
 PushNotificationsService.prototype.start = function(opts, cb) {
-  console.warn("**** Starting Push Notification Service");  
+  console.warn("**** Starting Push Notification Service");
   var self = this;
   opts = opts || {};
   self.request = opts.request || defaultRequest;
