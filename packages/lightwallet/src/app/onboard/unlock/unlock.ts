@@ -12,6 +12,7 @@ import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { SendService } from 'merit/transact/send/send.service';
+import * as _ from 'lodash';
 
 // Unlock view for wallet
 @IonicPage({
@@ -25,7 +26,7 @@ export class UnlockView {
   public unlockState: 'success' | 'fail' | 'aliasFail';
   public formData = {
       parentAddress: '' ,
-      alias: '', 
+      alias: '',
       aliasValidationError: '',
       aliasCheckInProgress: false
     };
@@ -44,7 +45,7 @@ export class UnlockView {
               private config: ConfigService,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
-              private sendService: SendService 
+              private sendService: SendService
             ) {
   }
 
@@ -82,7 +83,7 @@ export class UnlockView {
 
     this.formData.aliasCheckInProgress = true;
     this.validateAliasDebounce();
-    
+
   }
 
   private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
@@ -142,7 +143,7 @@ export class UnlockView {
   }
 
   onInputFocus() {
-    setTimeout(() => this.content.scrollToBottom(), 100); 
+    setTimeout(() => this.content.scrollToBottom(), 100);
   }
 
 }
