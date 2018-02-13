@@ -90,8 +90,8 @@ WalletService.initialize = function(opts, cb) {
 
   opts = opts || {};
   lock = opts.lock || new Lock(opts.lockOpts);
-  blockchainExplorer = opts.blockchainExplorer;
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
+  blockchainExplorer = opts.blockchainExplorer || blockchainExplorer || new BlockchainExplorer(blockchainExplorerOpts);
   localMeritDaemon = new LocalDaemon(opts.node);
   log = opts.node.log;
 
