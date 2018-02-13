@@ -404,7 +404,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
             }
           });
 
-          self.storeNotification(notification.walletId, notification, () => {
+          self.storage.storeNotification(notification.walletId, notification, () => {
             self.messageBroker.send(notification);
             acb();
           });
