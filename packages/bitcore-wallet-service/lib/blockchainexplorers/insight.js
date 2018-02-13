@@ -15,7 +15,7 @@ function Insight(opts) {
   this.network = opts.network || 'livenet';
   this.hosts = opts.url;
   this.userAgent = opts.userAgent || 'bws';
-  log = opts.log;
+  log = opts.log || require('npmlog');
 };
 
 
