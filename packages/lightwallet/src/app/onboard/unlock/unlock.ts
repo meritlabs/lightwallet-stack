@@ -143,7 +143,7 @@ export class UnlockView {
   }
 
   onInputFocus() {
-    setTimeout(() => this.content.scrollToBottom(), 100);
+    setTimeout(() => this.content.scrollToBottom(), 500);
   }
 
 }
