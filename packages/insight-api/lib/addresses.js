@@ -104,7 +104,7 @@ AddressController.prototype.checkAddrOrAlias = function(req, res, next) {
   req.addr = req.params.addr;
   if (!(this.check(req, res, next, [req.addr]) || this.checkAlias(req, res, next, [req.addr]))) {
     return this.common.handleErrors({
-      message: 'Invalid address: ' + e.message,
+      message: 'Invalid address: ' + req.addr,
       code: 1
     }, res);
   }
