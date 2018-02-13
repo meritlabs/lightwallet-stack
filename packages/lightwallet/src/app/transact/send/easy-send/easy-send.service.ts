@@ -100,6 +100,7 @@ export class EasySendService {
 
     easySends = await Promise.all(easySends.map(async (easySend: EasySend) => {
       console.log('Easy send is ', easySend);
+      if (!easySend.scriptAddress) return null;
       const txn = await wallet.validateEasyScript(easySend.scriptAddress.toString());
       return txn.result.found && !txn.result.spent ? easySend : null;
     }));
