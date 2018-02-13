@@ -102,9 +102,9 @@ AddressController.prototype.checkAddr = function(req, res, next) {
 
 AddressController.prototype.checkAddrOrAlias = function(req, res, next) {
   req.addr = req.params.addr;
-  if (!(this.check(req, res, next, [req.addr]) || this.checkAlias(req, res, next, [req.addr]))) {
+  if (this.check(req, res, next, [req.addr] || !this.checkAlias(req, res, next, [req.addr]))) {
     return this.common.handleErrors({
-      message: 'Invalid address: ' + req.addr,
+      message: 'Invalid address: ' + + req.addr,
       code: 1
     }, res);
   }
@@ -317,7 +317,5 @@ AddressController.prototype.transformAddressHistoryForMultiTxs = function(txinfo
     callback
   );
 };
-
-
 
 module.exports = AddressController;
