@@ -400,7 +400,8 @@ WalletService.prototype.createWallet = function(opts, cb) {
           const notification = Notification.create({
             type: 'IncomingInviteRequest',
             walletId: parentAddress.walletId,
-            creatorId: parentAddress.walletId
+            creatorId: parentAddress.walletId,
+            data: {}
           });
 
           self.storage.storeNotification(notification.walletId, notification, () => {
