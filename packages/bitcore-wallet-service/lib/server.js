@@ -28,6 +28,8 @@ var LocalDaemon = require('./blockchainexplorers/localdaemon');
 
 var request = require('request');
 
+var Notification = require('./model/notification');
+
 var Model = require('./model');
 var Wallet = Model.Wallet;
 
