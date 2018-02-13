@@ -43,6 +43,16 @@ var EMAIL_TYPES = {
     notifyDoer: true,
     notifyOthers: true,
   },
+  'IncomingInvite': {
+    filename: 'incoming_tx',
+    notifyDoer: true,
+    notifyOthers: true
+  },
+  'IncomingInviteRequest': {
+    filename: 'incoming_invite_request',
+    notifyDoer: true,
+    notifyOthers: true
+  },
   'IncomingCoinbase': {
     filename: 'incoming_coinbase',
     notifyDoer: true,
