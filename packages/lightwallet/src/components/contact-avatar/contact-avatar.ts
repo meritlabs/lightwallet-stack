@@ -6,7 +6,7 @@ import { MeritContact } from '../../models/merit-contact';
 @Component({
   selector: 'contact-avatar',
   template: `    
-  <ion-avatar [attr.img-icon]="!imageSrc && !contactInitials">
+  <ion-avatar [attr.img-icon]="!imageSrc && !contactInitials ? true : null">
     <img *ngIf="!imageSrc && !contactInitials" [src]="fallback" alt="" />
     <img *ngIf="imageSrc" [src]="imageSrc">
     <span *ngIf="contactInitials" color="primary">{{ contactInitials }}</span>

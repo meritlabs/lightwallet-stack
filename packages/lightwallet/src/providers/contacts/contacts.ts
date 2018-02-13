@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Contact, Contacts, IContactField } from '@ionic-native/contacts';
+import { Contact, ContactField, Contacts, IContactField } from '@ionic-native/contacts';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { PersistenceService } from 'merit/core/persistence.service';
 import { IAddressBook, MeritContact } from '../../models/merit-contact';
