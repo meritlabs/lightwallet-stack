@@ -386,6 +386,29 @@ WalletService.prototype.createWallet = function(opts, cb) {
         return acb(err);
       });
     },
+    function (acb) {
+      // parent address might be an alias, so let's fetch it from blockchain explorer first then get its wallet ID
+      self.blockchainExplorer.getReferral(opts.parentAddress, function(err, referral) {
+        if (err) return acb(err);
+
+        const { address } = referral;
+        self.storage.fetchAddress(address, (err, parentAddress) => {
+          if (err) return acb(err);
+
+          const notification = Notification.create({
+            type: 'IncomingInviteRequest',
+            data: {
+              walletId: parentAddress.walletId
+            }
+          });
+
+          self.storeNotification(notification.walletId, notification, () => {
+            self.messageBroker.send(notification);
+            acb();
+          });
+        });
+      });
+    }
   ], function(err) {
     var newWalletId = newWallet ? newWallet.id : null;
     return cb(err, newWalletId);

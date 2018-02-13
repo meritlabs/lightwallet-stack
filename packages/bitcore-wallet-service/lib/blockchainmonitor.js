@@ -95,7 +95,7 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
 BlockchainMonitor.prototype._handleIncomingReferral = function(data) {
   const self = this;
 
-  log.info('_handleIncomingReferral')
+  log.info('_handleIncomingReferral');
   if (!data) return;
 
   self.storage.fetchReferralByCodeHash(data.address, function(err, referral) {
