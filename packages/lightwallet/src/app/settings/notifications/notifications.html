@@ -11,7 +11,7 @@
   <ion-list>
 
     <ion-item-group *ngIf="usePushNotifications">
-      <ion-item>
+      <ion-item text-wrap>
         <ion-label>
           <h2 translate>
             Enable push notifications
@@ -24,7 +24,7 @@
         Push notifications for {{ appName }} are currently disabled. Enable them in the Settings app.
       </ion-item>
 
-      <ion-item [hidden]="!pushNotifications">
+      <ion-item [hidden]="!pushNotifications" text-wrap>
         <ion-label>
           <h2 translate>
             Notify me when transactions are confirmed
@@ -35,7 +35,7 @@
       </ion-item>
     </ion-item-group>
 
-    <ion-item>
+    <ion-item text-wrap>
       <ion-label>
         <h2 translate>
           Enable email notifications
