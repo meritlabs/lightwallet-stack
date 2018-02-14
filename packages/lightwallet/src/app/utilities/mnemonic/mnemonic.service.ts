@@ -5,6 +5,7 @@ import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { ENV } from '@app/env';
 
 @Injectable()
 export class MnemonicService {
@@ -54,7 +55,7 @@ export class MnemonicService {
     return new Promise((resolve, reject) => {
       try {
         opts.mnemonic = this.normalizeMnemonic(opts.mnemonic);
-        let network = opts.networkName || this.configService.getDefaults().network.name;
+        let network = opts.networkName || ENV.network;
         walletClient.seedFromMnemonic(opts.mnemonic, {
           network: network,
           passphrase: opts.passphrase,

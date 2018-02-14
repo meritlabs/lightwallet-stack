@@ -13,6 +13,8 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 
+import { ENV } from '@app/env';
+
 const ERROR_ADDRESS_NOT_FOUND = 'ADDRESS_NOT_FOUND';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND'; 
 
@@ -98,7 +100,7 @@ export class SendInviteView {
         if (isBeaconed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
           //todo get network!!
-          result.toNewEntity.contact.meritAddresses.push({ address: input, network: 'testnet'});
+          result.toNewEntity.contact.meritAddresses.push({ address: input, network: ENV.network});
         } else {
           result.error = ERROR_ADDRESS_NOT_FOUND;
         }
@@ -109,7 +111,7 @@ export class SendInviteView {
         if (address) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
           //todo get network!!
-          result.toNewEntity.contact.meritAddresses.push({ alias: alias, address: input, network: 'testnet' });
+          result.toNewEntity.contact.meritAddresses.push({ alias: alias, address: input, network: ENV.network});
         } else {
           result.error = ERROR_ALIAS_NOT_FOUND; 
         }

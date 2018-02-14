@@ -10,6 +10,8 @@ import * as _ from 'lodash';
 import { ContactsProvider } from '../../../providers/contacts/contacts';
 import { MeritContact } from '../../../models/merit-contact';
 
+import { ENV } from '@app/env';
+
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
@@ -124,7 +126,7 @@ export class SendView {
 
         if (address) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ address, network: this.sendService.getAddressNetwork(address).name });
+          result.toNewEntity.contact.meritAddresses.push({ address, network: ENV.network });
           this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
         } else {
           result.error = ERROR_ADDRESS_NOT_CONFIRMED;
@@ -136,7 +138,7 @@ export class SendView {
 
         if (address) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ alias, address, network: this.sendService.getAddressNetwork(address).name });
+          result.toNewEntity.contact.meritAddresses.push({ alias, address, network: ENV.network });
           this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
         } else {
           result.error = ERROR_ALIAS_NOT_FOUND; 

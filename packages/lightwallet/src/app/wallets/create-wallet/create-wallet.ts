@@ -150,7 +150,7 @@ export class CreateWalletView {
       parentAddress: this.formData.parentAddress,
       bwsurl: this.formData.bwsurl,
       mnemonic: this.formData.recoveryPhrase,
-      networkName: this.config.getDefaults().network.name,
+      networkName: ENV.network,
       alias: this.formData.alias,
       m: 1, //todo temp!
       n: 1 //todo temp!
