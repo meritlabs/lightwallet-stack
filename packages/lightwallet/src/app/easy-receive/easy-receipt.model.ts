@@ -35,6 +35,7 @@ export type EasyReceiptTxData = {
     spending: boolean,
     spent: boolean,
     confirmations: number,
+    invite: boolean,
   },
 } | {
   result: {

@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
@@ -42,7 +43,7 @@ export class EasyReceiveService {
   }
 
   async getPendingReceipts(): Promise<Array<EasyReceipt>> {
-    const receipts = (await this.persistanceService.getPendingsEasyReceipts()) || [];
+    const receipts = []; //(await this.persistanceService.getPendingsEasyReceipts()) || [];
     return receipts.map(receipt => new EasyReceipt(receipt));
   }
 
@@ -79,15 +80,15 @@ export class EasyReceiveService {
       const scriptData = this.generateEasyScipt(receipt, password, network);
       const scriptAddress = this.bwcService.getBitcore().Address(scriptData.scriptPubKey.getAddressInfo()).toString();
 
-      const txn = await walletClient.validateEasyScript(scriptAddress);
+      const txs = await walletClient.validateEasyScript(scriptAddress);
 
-      if (txn.result.found == false) {
+      if (txs.result.some(tx => !tx.found)) {
         this.logger.warn('Could not validate easyScript on the blockchain.');
         return false
       } else {
         return {
           senderPublicKey: receipt.senderPublicKey,
-          txn: txn.result,
+          txs: txs.result,
           privateKey: scriptData.privateKey,
           publicKey: scriptData.publicKey,
           script: scriptData.script,
@@ -107,16 +108,30 @@ export class EasyReceiveService {
   private async spendEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: number, destinationAddress: any): Promise<void> {
     let opts: any = {};
 
-    let testTx = await wallet.buildEasySendRedeemTransaction(input, destinationAddress, opts);
+    const invite = _.find(input.txs, tx => tx.invite);
+    await this.sendEasyReceiveTx(input, invite, destinationAddress, wallet);
 
-    const rawTxLength = testTx.serialize().length;
-    const feePerKB = await this.feeService.getCurrentFeeRate(wallet.network);
-    //TODO: Don't use magic numbers
-    opts.fee = Math.round(feePerKB * rawTxLength / 2000);
+    const transact = _.find(input.txs, tx => !tx.invite);
+    await this.sendEasyReceiveTx(input, transact, destinationAddress, wallet);
 
-    const tx = await wallet.buildEasySendRedeemTransaction(input, destinationAddress, opts);
-    await wallet.broadcastRawTx({ rawTx: tx.serialize(), network: wallet.network });
     return this.persistanceService.deletePendingEasyReceipt(receipt);
+  }
+
+  private async sendEasyReceiveTx(input: any, tx: any, destinationAddress: string, wallet: MeritWalletClient) {
+    let opts: any = {};
+    let testTx = await wallet.buildEasySendRedeemTransaction(input, tx, destinationAddress, opts);
+
+    const txOpts = !tx.invite ? {} : { disableSmallFees: true };
+    const rawTxLength = testTx.serialize(txOpts).length;
+
+    if (!tx.invite) {
+      const feePerKB = await this.feeService.getCurrentFeeRate(wallet.network);
+      //TODO: Don't use magic numbers
+      opts.fee = Math.round(feePerKB * rawTxLength / 2000);
+    }
+
+    const finalTx = await wallet.buildEasySendRedeemTransaction(input, tx, destinationAddress, opts);
+    return await wallet.broadcastRawTx({ rawTx: finalTx.serialize(txOpts), network: wallet.network });
   }
 
   private generateEasyScipt(receipt: EasyReceipt, password, network) {
