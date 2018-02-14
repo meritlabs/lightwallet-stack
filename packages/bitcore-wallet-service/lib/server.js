@@ -329,12 +329,6 @@ WalletService.prototype.createWallet = function(opts, cb) {
 
   if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey', 'parentAddress'], cb)) return;
 
-  // We should short-circuit the request if there is no parent address.
-  // This belt-and-suspenders check will save time and latency.
-  if (_.isEmpty(opts.parentAddress))
-    return cb(new ClientError('Parent address is empty'));
-
-  if (_.isEmpty(opts.name)) return cb(new ClientError('Invalid wallet name'));
   if (!Wallet.verifyCopayerLimits(opts.m, opts.n))
     return cb(new ClientError('Invalid combination of required copayers / total copayers'));
 
