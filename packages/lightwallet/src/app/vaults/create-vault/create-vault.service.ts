@@ -43,8 +43,8 @@ export class CreateVaultService {
 
     if (_.isEmpty(this.model.whitelist)) {
 
-      return this.walletService.getAddress(this.walletClient, false).then((addresses) => {
-        const spendPubKey = this.bitcore.PublicKey.fromString(addresses.publicKeys[0]);
+      return this.walletService.getAddress(this.walletClient, false).then(address => {
+        const spendPubKey = this.bitcore.PublicKey.fromString(address.publicKeys[0]);
         return this.vaultFromModel(spendPubKey, []);
       }).then((vault) => {
         this.resetModel();
@@ -58,16 +58,16 @@ export class CreateVaultService {
       const pubkey = signPrivKey.toPublicKey();
 
       return this.vaultFromModel(pubkey, this.model.whitelist).then((vault) => {
-        let unlock = {
+        let scriptReferralOpts = {
           parentAddress: pubkey.toAddress().toString(),
           pubkey: pubkey.toString(),
           signPrivKey,
-          address: vault.address,
-          addressType: 1, // pubkey address
-          network: wallet.credentials.network
+          address: vault.address.toString(),
+          addressType: 3, // paramscript address
+          network: wallet.network
         };
 
-        return wallet.signAddressAndUnlock(unlock).then((err, resp1) => {
+        return wallet.sendReferral(scriptReferralOpts).then((err, resp1) => {
           return this.getTxp(vault, false);
         }).then((txp) => {
           return this.walletService.prepare(wallet).then((password: string) => {
@@ -81,8 +81,10 @@ export class CreateVaultService {
           return this.walletService.signTx(wallet, args.txp, args.password);
         }).then((signedTxp: any) => {
           vault.coins.push(signedTxp);
-          return vault;
-        }).then((vault) => {
+          return signedTxp;
+        }).then((signedTxp) => {
+          return this.walletClient.signAddressAndUnlockWithRoot(signedTxp.changeAddress).then(() => vault);
+        }).then(vault => {
           vault.name = this.model.vaultName;
           return this.walletClient.createVault(vault);
         }).then((resp) => {
