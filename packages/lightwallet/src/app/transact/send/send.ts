@@ -38,6 +38,7 @@ export class SendView {
   private suggestedMethod: SendMethod;
 
   public hasUnlockedWallets: boolean;
+  public hasActiveInvites: boolean;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -52,6 +53,8 @@ export class SendView {
   private async updateHasUnlocked() {
     const wallets = await this.profileService.getWallets();
     this.hasUnlockedWallets = wallets && wallets.some(w => w.confirmed);
+    this.hasActiveInvites = wallets && wallets.some(w => w.status && w.status.confirmedInvites > 1);
+    console.log(this.hasActiveInvites, 'active invites');
   }
 
   async ionViewWillEnter() {
@@ -188,7 +191,7 @@ export class SendView {
     modal.onDidDismiss((contact) => {
       console.log(contact);
       if (contact) {
-        this.navCtrl.push('SendViaView', { contact: contact, amount: this.amount });
+        this.navCtrl.push('SendViaView', { contact: contact, amount: this.amount, isEasyEnabled: this.hasActiveInvites });
       }
     });
     modal.present();
@@ -202,7 +205,8 @@ export class SendView {
         this.navCtrl.push('SendViaView', {
           contact: contact,
           amount: this.amount,
-          suggestedMethod: this.suggestedMethod
+          suggestedMethod: this.suggestedMethod,
+          isEasyEnabled: this.hasActiveInvites
         });
       }
     });
@@ -210,14 +214,15 @@ export class SendView {
   }
 
   sendToContact(contact) {
-    this.navCtrl.push('SendViaView', { contact: contact, amount: this.amount, suggestedMethod: this.suggestedMethod });
+    this.navCtrl.push('SendViaView', { contact: contact, amount: this.amount, suggestedMethod: this.suggestedMethod, isEasyEnabled: this.hasActiveInvites  });
   }
 
   sendToEntity(entity) {
     this.navCtrl.push('SendViaView', {
       contact: entity.contact,
       amount: this.amount,
-      suggestedMethod: this.suggestedMethod
+      suggestedMethod: this.suggestedMethod,
+      isEasyEnabled: this.hasActiveInvites
     });
   }
 
