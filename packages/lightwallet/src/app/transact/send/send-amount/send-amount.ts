@@ -321,6 +321,9 @@ export class SendAmountView {
         feeLevel: this.selectedFeeLevel
       };
 
+      console.log(this.amount);
+      console.log(this.selectedWallet.status.spendableAmount);
+
       if (this.amount.micros == this.selectedWallet.status.spendableAmount) {
         data.sendMax = true;
         data.toAmount = null;
@@ -335,7 +338,7 @@ export class SendAmountView {
       const txpOut = await this.getTxp(_.clone(data), this.selectedWallet, opts.dryRun);
       this.txData.txp = txpOut;
       this.txData.easySend = easyData;
-      this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
+      this.referralsToSign = _.filter([easyData.scriptReferralOpts]);
 
       this.txData.txp.availableFeeLevels = [];
       this.knownFeeLevels.forEach((level) => {
@@ -374,9 +377,9 @@ export class SendAmountView {
     } catch (err) {
       this.txData.txp = null;
       this.logger.warn(err);
-      if (err.text) this.feeCalcError = err.text;
+      if (err.message) this.feeCalcError = err.message;
       return this.toastCtrl.create({
-        message: err.text || 'Unknown error',
+        message: err.message || 'Unknown error',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     } finally {
@@ -397,7 +400,6 @@ export class SendAmountView {
           script: easySend.script,
           toAddress: easySend.scriptAddress.toString(),
           scriptReferralOpts: easySend.scriptReferralOpts,
-          recipientReferralOpts: easySend.recipientReferralOpts,
         };
       });
     }

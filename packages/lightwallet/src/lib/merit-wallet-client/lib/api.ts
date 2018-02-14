@@ -1765,7 +1765,7 @@ export class API {
         parentAddress: opts.parentAddress,
         address: address.toString(),
         pubkey: pubkey.toString(),
-        addressType: 1,
+        addressType: Bitcore.Address.PayToPublicKeyHashType,
         signPrivKey: walletPrivKey,
         network: network,
         alias: opts.alias
@@ -2742,7 +2742,7 @@ export class API {
     $.checkState(this.credentials && this.credentials.isComplete());
 
     let url = '/v1/unlockrequests/';
-    return this._doGetRequest(url); 
+    return this._doGetRequest(url);
   }
 
 
