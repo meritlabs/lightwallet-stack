@@ -2088,7 +2088,6 @@ export class API {
       }
 
       return this._processStatus(result).then(() => {
-        console.log(JSON.parse(JSON.stringify(result)), 'RESULT'); 
         return Promise.resolve(result);
       });
     });
