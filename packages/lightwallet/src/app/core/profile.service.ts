@@ -604,9 +604,7 @@ export class ProfileService {
       wallet.m = wallet.credentials.m;
       wallet.n = wallet.credentials.n;
       wallet.unlocked = wallet.credentials.unlocked;
-      wallet.confirmed = wallet.credentials.confirmed;
       wallet.parentAddress = wallet.credentials.parentAddress;
-
       this.updateWalletSettings(wallet);
       this.wallets[walletId] = wallet;
 
