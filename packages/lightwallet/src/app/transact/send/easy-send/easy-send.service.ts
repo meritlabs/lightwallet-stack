@@ -42,6 +42,12 @@ export class EasySendService {
           network: opts.network,
         };
 
+        console.log('script', easySend.script);
+        console.log('secret', easySend.secret);
+        console.log('parentAddress', easySend.parentAddress);
+        console.log('senderPubKey', easySend.senderPubKey);
+        console.log('scriptAddress', easySendAddress);
+
         // easy send address is a mix of script_id pubkey_id
         easySend.scriptAddress = easySendAddress;
         easySend.scriptReferralOpts = scriptReferralOpts;
@@ -92,8 +98,8 @@ export class EasySendService {
     easySends = await Promise.all(easySends.map(async (easySend: EasySend) => {
       console.log('Easy send is ', easySend);
       if (!easySend.scriptAddress) return null;
-      const txn = await wallet.validateEasyScript(easySend.scriptAddress.toString());
-      return txn.result.found && !txn.result.spent ? easySend : null;
+      const txs = await wallet.validateEasyScript(easySend.scriptAddress.toString());
+      return txs.result.found && !txs.result.spent ? easySend : null;
     }));
     easySends = easySends.filter((easySend: EasySend) => easySend !== null);
     await this.persistenceService.setPendingEasySends(wallet.id, easySends);
