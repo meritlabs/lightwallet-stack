@@ -70,7 +70,7 @@ export class UnlockRequestService {
         await this.persistenseService.setActiveRequestsNumber(this.activeRequestsNumber);
     }
 
-    public async confirmRequest(request: IUnlockRequest) {
+    public async confirmRequest(request) {
         await this.walletService.sendInvite(request.walletClient, request.address);
         request.isConfirmed = true;
 

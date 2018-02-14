@@ -17,7 +17,7 @@ import { IUnlockRequest, UnlockRequestService } from 'merit/core/unlock-request.
 })
 export class IncomingRequestModal {
 
-  public unlockRequest: IUnlockRequest;
+  public unlockRequest: any;
   public contacts: Array<MeritContact> = [];
   public wallets: Array<IDisplayWallet> = [];
 
