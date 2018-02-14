@@ -1,0 +1,62 @@
+<ion-header no-border>
+    <ion-navbar color="light">
+        <ion-title  >Send Invite</ion-title>
+    </ion-navbar>
+
+    <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
+                   (ionCancel)="clearSearch()"></ion-searchbar>
+
+    <button ion-button clear icon-only item-end (click)="openScanner()" *ngIf="!searchQuery" class="scanner-button">
+        <img src="assets/img/icons/qr.svg">
+    </button>
+</ion-header>
+<ion-content>
+    <div *ngIf="loadingContacts" class="loader">
+        <ion-spinner></ion-spinner>
+    </div>
+
+  <div *ngIf="!loadingContacts && searchResult" class="content">
+
+    <div class="no-results" *ngIf="!searchResult.withMerit.length">
+
+      <div class="no-results-label" *ngIf="!searchResult.error">No results</div>
+      <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_FOUND'">
+        Address not found
+      </div>
+      <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
+        Alias not found 
+      </div>
+
+      <div *ngIf="searchResult.toNewEntity">
+
+        <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()"
+                class="send-button" color="light">
+          Create New Contact
+        </button>
+        <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="bindAddressToContact()"
+                class="send-button" color="light">
+          Bind to existing contact
+        </button>
+        <button ion-button padding (click)="sendInvite(searchResult.toNewEntity.contact)" class="send-button">
+          Send To This Address
+        </button>
+        <div class="address">{{searchQuery}}</div>
+      </div>
+
+    </div>
+
+      <ion-list *ngIf="searchResult.withMerit.length" class="list-with-merit">
+        <ion-item-divider>Friends with Merit
+          <button ion-button clear item-end (click)="showRecent = true">Recent</button>
+        </ion-item-divider>
+        <ion-item *ngFor="let contact of searchResult.withMerit" (click)="sendInvite(contact)" class="contact">
+          <contact-avatar [contact]="contact" item-start></contact-avatar>
+          {{ contact.name.formatted }}
+          <img src="assets/img/icons/merit.svg" color="primary" item-end>
+        </ion-item>
+      </ion-list>
+
+
+  </div>
+
+</ion-content>
