@@ -46,17 +46,12 @@ export class UnlockRequestService {
           wallet, request, contact;
         for (wallet of await this.profileService.getWallets()) {
             for (request of await this.walletService.getUnlockRequests(wallet)) {
-                request.wallet = await createDisplayWallet(wallet, this.walletService);
+                request.walletClient = wallet;
                 if (request.isConfirmed) {
                   request.status = 'accepted';
-                  try {
-                    contact = await this.contactsService.get(request.address);
-                  } catch (e) {}
-
-                  if (contact) {
-                    request.contact = contact;
-                    contact = void 0;
-
+                  const foundContacts = this.contactsService.searchContacts(knownContacts, request.address);
+                  if (foundContacts.length) {
+                    request.contact = foundContacts[0];
                   }
                   requests.confirmed.push(request);
                 } else if (this.hiddenAddresses.indexOf(request.address) != -1) {
