@@ -134,10 +134,7 @@ export class WalletsView {
         this.updateVaults(_.head(this.wallets))
       ]);
 
-      console.log(wallets);
-
       this.logger.info('Done updating all info for wallet.');
-      console.log(this.wallets, 'wallets');
     };
 
     await Observable.defer(() => fetch())
