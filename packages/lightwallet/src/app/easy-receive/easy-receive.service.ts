@@ -121,7 +121,7 @@ export class EasyReceiveService {
 
   private generateEasyScipt(receipt: EasyReceipt, password, network) {
     const secret = this.ledger.hexToString(receipt.secret);
-    const receivePrv = this.bwcService.getBitcore().PrivateKey.forEasySend(secret, password);
+    const receivePrv = this.bwcService.getBitcore().PrivateKey.forEasySend(secret, password, network);
     const receivePub = this.bwcService.getBitcore().PublicKey.fromPrivateKey(receivePrv).toBuffer();
     const senderPubKey = this.ledger.hexToArray(receipt.senderPublicKey);
     const publicKeys = [receivePub, senderPubKey];

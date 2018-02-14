@@ -333,7 +333,7 @@ export class SendAmountView {
       const easyData: any = await this.getEasyData();
       data = data || {};
       data = _.merge(data, _.pick(easyData, 'script', 'toAddress'));
-      data.toAddress = data.toAddress || easyData.scriptAddress;
+      data.toAddress = easyData.scriptAddress || data.toAddress;
 
       const txpOut = await this.getTxp(_.clone(data), this.selectedWallet, opts.dryRun);
       this.txData.txp = txpOut;
@@ -398,7 +398,7 @@ export class SendAmountView {
         this.txData.easySendURL = getEasySendURL(easySend);
         return {
           script: easySend.script,
-          toAddress: easySend.scriptAddress.toString(),
+          scriptAddress: easySend.scriptAddress,
           scriptReferralOpts: easySend.scriptReferralOpts,
         };
       });

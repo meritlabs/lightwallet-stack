@@ -220,7 +220,7 @@ export class WalletsView {
 
     if (!_.isEmpty(this.wallets)) {
 
-      // todo check for existing invites and suggest the wallet that has any 
+      // todo check for existing invites and suggest the wallet that has any
       const referralAdderss = this.walletService.getRootAddress(this.wallets[0]);
 
       return this.navCtrl.push('CreateWalletView', {
@@ -401,8 +401,8 @@ export class WalletsView {
       if (!wallet) return Promise.reject('no wallet');
       let forceNewAddress = false;
 
-      const address = await this.walletService.getAddress(wallet, forceNewAddress);
-      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.address);
+      const address = this.walletService.getRootAddress(wallet);
+      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.toString());
 
       this.logger.info('accepted easy send', acceptanceTx);
     } catch (err) {
