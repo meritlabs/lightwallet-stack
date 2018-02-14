@@ -12,6 +12,8 @@ import { ConfigService } from 'merit/shared/config.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { SendService } from 'merit/transact/send/send.service';
 
+import { ENV } from '@app/env';
+
 @IonicPage({
   defaultHistory: ['WalletsView']
 })
@@ -50,8 +52,8 @@ export class CreateWalletView {
               private alertCtrl: AlertController,
               private sendService: SendService
             ) {
-    this.formData.bwsurl = config.getDefaults().bws.url;
-    this.defaultBwsUrl = config.getDefaults().bws.url;
+    this.formData.bwsurl = ENV.mwsUrl;
+    this.defaultBwsUrl = ENV.mwsUrl;
   }
 
   ionViewDidEnter() {

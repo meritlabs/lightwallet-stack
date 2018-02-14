@@ -70,10 +70,7 @@ export class EasyReceiveService {
   }
 
   async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = '', network = this.configService.getDefaults().network.name): Promise<any> {
-    const opts: any = {
-      bwsurl: this.configService.getDefaults().bws.url
-    };
-    const walletClient = this.bwcService.getClient(null, opts);
+    const walletClient = this.bwcService.getClient(null, {});
 
     try {
       const scriptData = this.generateEasyScipt(receipt, password, network);
