@@ -101,7 +101,9 @@
             <ion-icon name="ios-timer-outline" *ngIf="walletHasPendingAmount(wallet)"></ion-icon>
           </p>
           <p class="invites">
-            Invites: {{ wallet.status?.invitesBalance?.availableAmount }}
+            Invites: {{ (wallet.status?.invitesBalance?.availableAmount && wallet.status.invitesBalance.availableAmount > 1) ?
+              wallet.status.invitesBalance.availableAmount -1 : 0
+              }}
           </p>
           <p *ngIf="walletHasPendingAmount(wallet)">Partially confirmed</p>
           <p *ngIf="wallet.balanceHidden">
