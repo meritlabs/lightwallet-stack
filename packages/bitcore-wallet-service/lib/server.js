@@ -389,10 +389,6 @@ WalletService.prototype.createWallet = function(opts, cb) {
       });
     },
     function (acb) {
-      if (!opts.parentAddress) {
-        log.debug('Wallet has no parent address. Skipping notification.');
-        return acb();
-      }
       // parent address might be an alias, so let's fetch it from blockchain explorer first then get its wallet ID
       self.blockchainExplorer.getReferral(opts.parentAddress, function(err, referral) {
         if (err || !referral) {
