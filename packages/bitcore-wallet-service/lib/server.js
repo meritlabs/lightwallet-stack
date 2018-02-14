@@ -389,6 +389,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
       });
     },
     function (acb) {
+      return acb();
       // parent address might be an alias, so let's fetch it from blockchain explorer first then get its wallet ID
       self.blockchainExplorer.getReferral(opts.parentAddress, function(err, referral) {
         if (err) return acb(err);

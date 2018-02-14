@@ -16,13 +16,14 @@ export class EasySendService {
   }
 
   public createEasySendScriptHash(wallet: MeritWalletClient, password:string = ''): Promise<EasySend> {
-    const signPrivKey = this.bitcore.PrivateKey(wallet.credentials.walletPrivKey, wallet.network);
-    const pubkey = signPrivKey.toPublicKey();
+    const rootKey = this.bitcore.HDPrivateKey.fromString(wallet.credentials.xPrivKey);
+    const signPrivKey = rootKey.privateKey;
+    const pubkey = signPrivKey.publicKey;
 
     // TODO: get a passphrase from the user
     let opts = {
       network: wallet.network,
-      parentAddress: pubkey.toAddress().toString(),
+      parentAddress: wallet.getRootAddress().toString(),
       passphrase: password,
     };
 
@@ -33,27 +34,17 @@ export class EasySendService {
         const receiverPrivKey = this.bitcore.PrivateKey.forEasySend(easySend.secret, opts.passphrase, opts.network);
 
         const scriptReferralOpts = {
-          parentAddress: signPrivKey.publicKey.toAddress().toString(),
+          parentAddress: wallet.getRootAddress().toString(),
           pubkey: pubkey.toString(), // sign pubkey used to verify signature
           signPrivKey,
           address: easySendAddress,
-          addressType: 2, // script address
-          network: opts.network,
-        };
-
-        const recipientReferralOpts = {
-          parentAddress: pubkey.toAddress().toString(),
-          pubkey: receiverPrivKey.publicKey.toString(),
-          signPrivKey: receiverPrivKey,
-          address: easySend.receiverPubKey.toAddress().toString(),
-          addressType: 1, // pubkeyhash address
+          addressType: this.bitcore.Address.PayToScriptHashType, // script address
           network: opts.network,
         };
 
         // easy send address is a mix of script_id pubkey_id
         easySend.scriptAddress = easySendAddress;
         easySend.scriptReferralOpts = scriptReferralOpts;
-        easySend.recipientReferralOpts = recipientReferralOpts;
 
         return easySend;
       })
