@@ -27,6 +27,11 @@ function Block(arg) {
   return this;
 }
 
+Block.Values = {
+  START_OF_BLOCK: 8, // Start of block in raw block data
+  NULL_HASH: new Buffer('0000000000000000000000000000000000000000000000000000000000000000', 'hex'),
+};
+
 // https://github.com/bitcoin/bitcoin/blob/b5fa132329f0377d787a4a21c1686609c2bfaece/src/primitives/block.h#L14
 Block.MAX_BLOCK_SIZE = 1000000;
 
@@ -37,16 +42,17 @@ Block.COINBASE_MATURITY = {
 
 /**
  * @param {*} - A Buffer, JSON string or Object
+ * @param {string=} - network name
  * @returns {Object} - An object representing block data
  * @throws {TypeError} - If the argument was not recognized
  * @private
  */
-Block._from = function _from(arg) {
+Block._from = function _from(arg, network) {
   var info = {};
   if (BufferUtil.isBuffer(arg)) {
-    info = Block._fromBufferReader(BufferReader(arg));
+    info = Block._fromBufferReader(BufferReader(arg), network);
   } else if (_.isObject(arg)) {
-    info = Block._fromObject(arg);
+    info = Block._fromObject(arg, network);
   } else {
     throw new TypeError('Unrecognized argument for Block');
   }
@@ -55,10 +61,11 @@ Block._from = function _from(arg) {
 
 /**
  * @param {Object} - A plain JavaScript object
+ * @param {string=} - network name
  * @returns {Object} - An object representing block data
  * @private
  */
-Block._fromObject = function _fromObject(data) {
+Block._fromObject = function _fromObject(data, network) {
   const transactions = [];
   data.transactions.forEach(function(tx) {
     if (tx instanceof Transaction) {
@@ -67,37 +74,50 @@ Block._fromObject = function _fromObject(data) {
       transactions.push(Transaction().fromObject(tx));
     }
   });
+  const invites = [];
+  if (data.invites) {
+    data.invites.forEach(function(invite) {
+      if (invite instanceof Transaction) {
+        invites.push(invite);
+      } else {
+        invites.push(Transaction().fromObject(invite));
+      }
+    });
+  }
   const referrals = [];
   data.referrals.forEach(function(ref) {
     if (ref instanceof Referral) {
       referrals.push(ref);
     } else {
-      referrals.push(Referral().fromObject(ref));
+      referrals.push(Referral(network).fromObject(ref));
     }
   });
   var info = {
     header: BlockHeader.fromObject(data.header),
-    transactions: transactions,
-    referrals: referrals,
+    transactions,
+    invites,
+    referrals,
   };
   return info;
 };
 
 /**
  * @param {Object} - A plain JavaScript object
+ * @param {string=} - network name
  * @returns {Block} - An instance of block
  */
-Block.fromObject = function fromObject(obj) {
-  var info = Block._fromObject(obj);
+Block.fromObject = function fromObject(obj, network) {
+  var info = Block._fromObject(obj, network);
   return new Block(info);
 };
 
 /**
  * @param {BufferReader} - Block data
+ * @param {string=} - network name
  * @returns {Object} - An object representing the block data
  * @private
  */
-Block._fromBufferReader = function _fromBufferReader(br) {
+Block._fromBufferReader = function _fromBufferReader(br, network) {
   var info = {};
   $.checkState(!br.finished(), 'No block data received');
   info.header = BlockHeader.fromBufferReader(br);
@@ -106,71 +126,93 @@ Block._fromBufferReader = function _fromBufferReader(br) {
   for (let i = 0; i < transactions; i++) {
     info.transactions.push(Transaction().fromBufferReader(br));
   }
+  if (info.header.isDaedalus()) {
+    const invites = br.readVarintNum();
+    info.invites = [];
+    for (let i = 0; i < invites; i++) {
+      info.invites.push(Transaction().fromBufferReader(br));
+    }
+  }
   const referrals = br.readVarintNum();
+  console.log('referrals number in a block ', referrals);
   info.referrals = [];
   for (let i = 0; i < referrals; i++) {
-    info.referrals.push(Referral().fromBufferReader(br));
+    info.referrals.push(Referral(network).fromBufferReader(br));
   }
+
   return info;
 };
 
 /**
  * @param {BufferReader} - A buffer reader of the block
+ * @param {string=} - network name
  * @returns {Block} - An instance of block
  */
-Block.fromBufferReader = function fromBufferReader(br) {
+Block.fromBufferReader = function fromBufferReader(br, network) {
   $.checkArgument(br, 'br is required');
-  var info = Block._fromBufferReader(br);
+  var info = Block._fromBufferReader(br, network);
   return new Block(info);
 };
 
 /**
  * @param {Buffer} - A buffer of the block
+ * @param {string=} - network name
  * @returns {Block} - An instance of block
  */
-Block.fromBuffer = function fromBuffer(buf) {
-  return Block.fromBufferReader(new BufferReader(buf));
+Block.fromBuffer = function fromBuffer(buf, network) {
+  return Block.fromBufferReader(new BufferReader(buf), network);
 };
 
 /**
  * @param {string} - str - A hex encoded string of the block
+ * @param {string=} - network name
  * @returns {Block} - A hex encoded string of the block
  */
-Block.fromString = function fromString(str) {
+Block.fromString = function fromString(str, network) {
   var buf = new Buffer(str, 'hex');
-  return Block.fromBuffer(buf);
+  return Block.fromBuffer(buf, network);
 };
 
 /**
  * @param {Binary} - Raw block binary data or buffer
+ * @param {string=} - network name
  * @returns {Block} - An instance of block
  */
-Block.fromRawBlock = function fromRawBlock(data) {
+Block.fromRawBlock = function fromRawBlock(data, network) {
   if (!BufferUtil.isBuffer(data)) {
     data = new Buffer(data, 'binary');
   }
   var br = BufferReader(data);
   br.pos = Block.Values.START_OF_BLOCK;
-  var info = Block._fromBufferReader(br);
+  var info = Block._fromBufferReader(br, network);
   return new Block(info);
 };
+
+Block.prototype.isDaedalus = function isDaedalus() {
+  return this.header.isDaedalus();
+}
 
 /**
  * @returns {Object} - A plain object with the block properties
  */
 Block.prototype.toObject = Block.prototype.toJSON = function toObject() {
   var transactions = [];
+  var invites = [];
   var referrals = [];
   this.transactions.forEach(function(tx) {
     transactions.push(tx.toObject());
   });
+  this.invites.forEach(function(invite) {
+    invites.push(invite.toObject());
+  });
   this.referrals.forEach(function(ref) {
-    referrals.push(ref);
+    referrals.push(ref.toObject());
   });
   return {
     header: this.header.toObject(),
-    transactions: transactions,
-    referrals: referrals,
+    transactions,
+    invites,
+    referrals,
   };
 };
 
@@ -201,6 +243,19 @@ Block.prototype.toBufferWriter = function toBufferWriter(bw) {
   for (var i = 0; i < this.transactions.length; i++) {
     this.transactions[i].toBufferWriter(bw);
   }
+
+  if (this.isDaedalus()) {
+    bw.writeVarintNum(this.invites.length);
+    for (var i = 0; i < this.invites.length; i++) {
+      this.invites[i].toBufferWriter(bw);
+    }
+  }
+
+  bw.writeVarintNum(this.referrals.length);
+  for (var i = 0; i < this.referrals.length; i++) {
+    this.referrals[i].toBufferWriter(bw);
+  }
+
   return bw;
 };
 
@@ -296,11 +351,6 @@ Object.defineProperty(Block.prototype, 'hash', idProperty);
  */
 Block.prototype.inspect = function inspect() {
   return '<Block ' + this.id + '>';
-};
-
-Block.Values = {
-  START_OF_BLOCK: 8, // Start of block in raw block data
-  NULL_HASH: new Buffer('0000000000000000000000000000000000000000000000000000000000000000', 'hex')
 };
 
 module.exports = Block;

@@ -4,6 +4,7 @@ import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Subscription } from 'rxjs/Subscription';
+import { UnlockRequestService } from 'merit/core/unlock-request.service';
 
 // Transact is the proposed name of the umbrella for the primary actions
 // That exist through the tabs on the bottom of the screen.
@@ -24,12 +25,15 @@ export class TransactView {
   private subs: Subscription[];
   keyboardVisible: boolean = false;
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              private logger: Logger,
-              private profileService: ProfileService,
-              private plt: Platform,
-              private keyboard: Keyboard) {}
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private logger: Logger,
+    private profileService: ProfileService,
+    private plt: Platform,
+    private keyboard: Keyboard,
+    private unlockRequestService: UnlockRequestService          
+  ) {}
 
   async ngOnInit() {
     if (this.plt.is('cordova') && Keyboard.installed()) {
@@ -44,6 +48,8 @@ export class TransactView {
           })
       ];
     }
+
+    await this.unlockRequestService.loadRequestsData();
   }
 
   async ngOnDestroy() {
@@ -55,5 +61,9 @@ export class TransactView {
   ionViewCanEnter() {
     const profile = this.profileService.profile;
     return (profile && profile.credentials && profile.credentials.length > 0);
+  }
+
+  countUnlockRequests() {
+    return this.unlockRequestService.activeRequestsNumber;  
   }
 }

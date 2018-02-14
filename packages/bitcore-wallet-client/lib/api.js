@@ -1927,7 +1927,7 @@ API.prototype.publishTxProposal = function(opts, cb) {
   $.checkArgument(opts)
     .checkArgument(opts.txp);
 
-  $.checkState(parseInt(opts.txp.version) >= 3);
+  $.checkState(parseInt(opts.txp.version) >= Bitcore.Transaction.CURRENT_VERSION);
 
   var self = this;
 
@@ -2730,8 +2730,8 @@ API.prototype.getStatusByIdentifier = function(opts, cb) {
   });
 };
 
-API.prototype.validateAddress = function(address, network, cb) {
-  const url = `/v1/addresses/${address}/validate/${network}`;
+API.prototype.validateAddress = function(address, cb) {
+  const url = `/v1/addresses/${address}/validate/`;
   this._doGetRequest(url, function(err, result) {
     if (err || !result) return cb(err);
     return cb(null, result);

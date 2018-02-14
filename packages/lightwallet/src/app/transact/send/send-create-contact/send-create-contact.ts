@@ -48,13 +48,13 @@ export class SendCreateContactView {
       }).present();
     }
 
-    let isAddressValid =  await this.sendService.isAddressValid(address);
+    let isAddressValid = await this.sendService.isAddressValid(address);
     if (!isAddressValid) {
       return this.toastController.create({
         message: 'Address is invalid or not invited to blockchain yet',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
-    }
+    } 
 
     let network = this.sendService.getAddressNetwork(address).name;
     let meritAddress = {address, network};

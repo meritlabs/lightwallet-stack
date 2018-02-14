@@ -17,6 +17,7 @@
       "outDir": "./dist",
       "target": "es2017",
       "paths": {
+        "merit/*": ["../../app/*"]
       }
     },
     "include": [

@@ -7,18 +7,19 @@ export interface IAddressBook {
 
 export interface IMeritAddress {
   network: string,
-  address: string
+  address: string,
+  alias?: string
 }
 
 export class MeritContact implements IContactProperties {
 
-  id: string;
-  name: IContactName = { formatted: '' };
-  phoneNumbers: IContactField[] = [];
-  emails: IContactField[] = [];
-  photos: IContactField[] = [];
-  urls: Array<any> = [];
-  meritAddresses: Array<IMeritAddress> = [];
+   id: string;
+   name: IContactName = { formatted: '' };
+   phoneNumbers: IContactField[] = [];
+   emails: IContactField[] = [];
+   photos: IContactField[] = [];
+   urls: Array<any> = [];
+   meritAddresses: Array<IMeritAddress> = [];
 
   isValid() {
     if (!this.name) return false;

@@ -149,7 +149,7 @@ export module Verifier {
     if (!creatorSigningPubKey) return false;
 
     var hash;
-    if (parseInt(txp.version) >= 3) {
+    if (parseInt(txp.version) >= Bitcore.Transaction.CURRENT_VERSION) {
       var t = Utils.buildTx(txp);
       hash = t.uncheckedSerialize();
     } else {
@@ -170,7 +170,7 @@ export module Verifier {
   export let checkPaypro = function(txp, payproOpts): boolean {
     var toAddress, amount;
 
-    if (parseInt(txp.version) >= 3) {
+    if (parseInt(txp.version) >= Bitcore.Transaction.CURRENT_VERSION) {
       toAddress = txp.outputs[0].toAddress;
       amount = txp.amount;
     } else {

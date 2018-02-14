@@ -1,21 +1,26 @@
 <ion-list>
-  <button ion-item detail-none *ngFor="let tx of transactions; trackBy: tx?.txid" navPush="TxDetailsView" [navParams]="{ tx: tx }" class="{{ tx.action }}">
-    <ion-avatar img-icon item-start>
+  <button ion-item detail-none *ngFor="let tx of transactions; trackBy: tx?.txid" navPush="TxDetailsView" [navParams]="{ tx: tx }">
+    <contact-avatar item-start *ngIf="isEasySend(tx)" [contact]="getContact(tx)"></contact-avatar>
+    <ion-avatar img-icon item-start *ngIf="!isEasySend(tx)">
       <img *ngIf="isEasySend(tx)" src="assets/img/icons/merit.svg" alt="" />
       <img *ngIf="isMiningReward(tx)" src="assets/img/icons/mining.svg" alt="" />
-      <img *ngIf="isAmbassadorReward(tx)" src="assets/img/icons/ambassador.svg" alt="" />
+      <img *ngIf="isUnlockRequest(tx)" src="assets/img/icons/send_request.svg" alt="" />
+      <img *ngIf="isInvite(tx)" src="assets/img/icons/invite.svg" alt="" />
     </ion-avatar>
     <ion-label>
       <h2>{{ tx.name }}</h2>
       <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </ion-label>
-    <ion-note item-end>
-        <span class="merit-amount" [class.credit]="tx.type == 'credit'">
-          {{ tx.amountStr }}&nbsp;<small>MRT</small>
-        </span>
+    <ion-note *ngIf="!tx.isInvite" item-end>
+      <span class="merit-amount" [class.credit]="isCredit(tx)">
+        {{ tx.amountStr }}&nbsp;<small>MRT</small>
+      </span>
       <span class="fiat-amount">
           {{ tx.alternativeAmountStr }}
       </span>
+    </ion-note>
+    <ion-note *ngIf="isInvite(tx)" item-end class="merit-invite" [class.credit]="isCredit(tx)">
+      {{ isCredit(tx) ? 'Received' : 'Sent' }}
     </ion-note>
   </button>
 </ion-list>

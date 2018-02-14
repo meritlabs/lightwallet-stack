@@ -8,6 +8,14 @@ view-network {
     }
 
     ion-toolbar.toolbar {
+      ion-spinner.spinner {
+        svg > * {
+          stroke: white;
+        }
+        margin-bottom: 20px;
+        min-height: 35px;
+      }
+
       ion-row {
         text-align: center;
         padding: 0;
@@ -50,6 +58,13 @@ view-network {
 
   ion-content.content > .scroll-content {
     background: #f6f8fa;
+
+    ion-spinner.spinner {
+      top: 40px;
+      display: block;
+      float: none;
+      margin: auto;
+    }
   }
 
   button[ion-button][item-end][icon-only] {

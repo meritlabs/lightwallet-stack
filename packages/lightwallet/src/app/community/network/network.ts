@@ -15,27 +15,10 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { createDisplayWallet, IDisplayWallet } from '../../../models/display-wallet';
+import { UnlockRequestService } from 'merit/core/unlock-request.service';
 
-interface DisplayWallet {
-  name: string;
-  locked: boolean;
-  color: string;
-  referrerAddress: string;
-  totalNetworkValueMicro: number;
-  totalNetworkValueMerit: string;
-  totalNetworkValueFiat: string;
-  miningRewardsMicro: number;
-  miningRewardsMerit: string;
-  miningRewardsFiat: string;
-  ambassadorRewardsMicro: number;
-  ambassadorRewardsMerit: string;
-  ambassadorRewardsFiat: string;
-  network: string;
-  credentials: any;
-}
 
-// Network View
-// Part of the Community Tab.
 @IonicPage()
 @Component({
   selector: 'view-network',
@@ -45,12 +28,15 @@ interface DisplayWallet {
 export class NetworkView {
   static readonly RETRY_MAX_ATTEMPTS = 5;
   static readonly RETRY_TIMEOUT = 1000;
-  public displayWallets: Array<DisplayWallet> = [];
+  public displayWallets: Array<IDisplayWallet> = [];
   public loading: boolean;
 
   totalNetworkValue: string;
   totalMiningRewards: string;
   totalAmbassadorRewards: string;
+
+  activeUnlockRequests:number;
+  activeInvites:number;
 
   constructor(private profileService: ProfileService,
               private clipboard: Clipboard,
@@ -60,23 +46,17 @@ export class NetworkView {
               private txFormatService: TxFormatService,
               private logger: Logger,
               private platformService: PlatformService,
-              private bwcService: BwcService) {
-  }
+              private bwcService: BwcService,
+              private unlockRequestService: UnlockRequestService
+            ) {}
 
   // Ensure that the wallets are loaded into the view on first load.
-  async ionViewDidLoad() {
+  async ngOnInit() {
     this.loading = true;
     try {
       const wallets: MeritWalletClient[] = await this.profileService.getWallets();
-      let newDisplayWallets: DisplayWallet[] = [];
-      _.each(wallets, (wallet: MeritWalletClient) => {
-        // The wallet client will already have the below information.
-        let filteredWallet = _.pick(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'referrerAddress');
-        this.logger.info('FilteredWallet: ', filteredWallet);
-        newDisplayWallets.push(<DisplayWallet>filteredWallet);
-      });
-      this.displayWallets = newDisplayWallets;
-      this.logger.info('DisplayWallets after ionViewLoad: ', this.displayWallets);
+      this.displayWallets = await Promise.all(wallets.map((wallet: MeritWalletClient) => createDisplayWallet(wallet, this.walletService)));
+      this.logger.info('DisplayWallets after ngOnInit: ', this.displayWallets);
     } catch (err) {
       this.logger.warn(err);
       this.toastCtrl.create({
@@ -88,7 +68,7 @@ export class NetworkView {
   }
 
   // On each enter, let's update the network data.
-  async ionViewDidEnter() {
+  async ionViewWillEnter() {
     await this.updateView();
   }
 
@@ -102,12 +82,10 @@ export class NetworkView {
   }
 
   async updateView() {
-    if (this.loading === true) return;
-
-    this.loading = true;
-
     try {
+      this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
       await this.formatWallets(await this.loadInfo());
+      this.unlockRequestService.loadRequestsData();
     } catch (err) {
       this.logger.warn(err);
       this.toastCtrl
@@ -117,18 +95,13 @@ export class NetworkView {
         })
         .present();
     }
-
-    this.loading = false;
   }
 
   async copyToClipboard(code) {
     await this.platformService.ready();
 
-    if (Clipboard.installed()) {
+    if (Clipboard.installed())
       await this.clipboard.copy(code);
-    }
-
-    console.log(code);
 
     this.toastCtrl.create({
       message: 'Copied to clipboard',
@@ -149,30 +122,25 @@ export class NetworkView {
   }
 
   private async loadWallets() {
+
     const wallets: MeritWalletClient[] = await this.profileService.getWallets();
 
-    return Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
-      const filteredWallet: DisplayWallet = <DisplayWallet>_.pick(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'totalNetworkValue', 'credentials', 'network');
+    const displayWallets: IDisplayWallet[] = await Promise.all(
+      wallets.map((wallet: MeritWalletClient) =>
+        createDisplayWallet(wallet, this.walletService)
+      )
+    );
 
-      filteredWallet.referrerAddress = this.bwcService.getBitcore().PrivateKey(
-        filteredWallet.credentials.walletPrivKey,
-        filteredWallet.network
-      ).toAddress().toString();
+   this.activeInvites = 0;
+   for (let dWallet of displayWallets) {
+      this.activeInvites += dWallet.invites;
+   }
 
-      filteredWallet.totalNetworkValueMicro = await this.walletService.getANV(wallet);
 
-      const data = await this.walletService.getRewards(wallet);
-
-      // If we cannot properly fetch data, let's return wallets as-is.
-      if (data && !_.isNil(data.mining)) {
-        filteredWallet.miningRewardsMicro = data.mining;
-        filteredWallet.ambassadorRewardsMicro = data.ambassador;
-      }
-      return filteredWallet;
-    }));
+    return displayWallets;
   }
 
-  private async formatWallets(processedWallets: DisplayWallet[]) {
+  private async formatWallets(processedWallets: IDisplayWallet[]) {
     this.displayWallets = await this.formatNetworkInfo(processedWallets);
     let totalNetworkValue = 0, totalMiningRewards = 0, totalAmbassadorRewards = 0;
 
@@ -204,8 +172,8 @@ export class NetworkView {
       .toPromise();
   }
 
-  private async formatNetworkInfo(wallets: DisplayWallet[]): Promise<DisplayWallet[]> {
-    const newDWallets: Array<DisplayWallet> = [];
+  private async formatNetworkInfo(wallets: IDisplayWallet[]): Promise<IDisplayWallet[]> {
+    const newDWallets: Array<IDisplayWallet> = [];
 
     for (let dWallet of wallets) {
       if (!_.isNil(dWallet.totalNetworkValueMicro)) {

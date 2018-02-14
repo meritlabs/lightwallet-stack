@@ -321,6 +321,9 @@ export class SendAmountView {
         feeLevel: this.selectedFeeLevel
       };
 
+      console.log(this.amount);
+      console.log(this.selectedWallet.status.spendableAmount);
+
       if (this.amount.micros == this.selectedWallet.status.spendableAmount) {
         data.sendMax = true;
         data.toAmount = null;
@@ -335,7 +338,7 @@ export class SendAmountView {
       const txpOut = await this.getTxp(_.clone(data), this.selectedWallet, opts.dryRun);
       this.txData.txp = txpOut;
       this.txData.easySend = easyData;
-      this.referralsToSign = _.filter([easyData.recipientReferralOpts, easyData.scriptReferralOpts]);
+      this.referralsToSign = _.filter([easyData.scriptReferralOpts]);
 
       this.txData.txp.availableFeeLevels = [];
       this.knownFeeLevels.forEach((level) => {
@@ -343,7 +346,6 @@ export class SendAmountView {
         let micros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
         let mrt = Math.round(this.rateService.microsToMrt(micros) * 1000000000) / 1000000000;
         //todo add description map
-        // todo add blocks per minute const
 
         // todo check if micros
         let percent = this.feeIncluded ? (micros / (this.amount.micros) * 100) : (micros / (this.amount.micros + micros) * 100);
@@ -361,6 +363,7 @@ export class SendAmountView {
           minutes: level.nbBlocks * this.MINUTE_PER_BLOCK,
           micros: micros,
           mrt: mrt,
+          feePerKb: level.feePerKb,
           percent: percent.toFixed(precision) + '%'
         };
         this.txData.txp.availableFeeLevels.push(fee);
@@ -374,9 +377,9 @@ export class SendAmountView {
     } catch (err) {
       this.txData.txp = null;
       this.logger.warn(err);
-      if (err.text) this.feeCalcError = err.text;
+      if (err.message) this.feeCalcError = err.message;
       return this.toastCtrl.create({
-        message: err.text || 'Unknown error',
+        message: err.message || 'Unknown error',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     } finally {
@@ -397,7 +400,6 @@ export class SendAmountView {
           script: easySend.script,
           toAddress: easySend.scriptAddress.toString(),
           scriptReferralOpts: easySend.scriptReferralOpts,
-          recipientReferralOpts: easySend.recipientReferralOpts,
         };
       });
     }
@@ -449,14 +451,18 @@ export class SendAmountView {
     txp.excludeUnconfirmedUtxos = !tx.allowSpendUnconfirmed;
     if (!dryRun) {
       txp.dryRun = dryRun;
-      if (this.feeIncluded) {
-        txp.fee = this.txData.feeAmount;
-        txp.inputs = this.txData.txp.inputs;
-        txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
+      if (!txp.sendMax) {
+        if (this.feeIncluded) {
+          txp.fee = this.txData.feeAmount;
+          txp.inputs = this.txData.txp.inputs;
+          txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
+        } else {
+          txp.fee = this.txData.feeAmount;
+          txp.inputs = this.txData.txp.inputs;
+          txp.outputs[0].amount = this.txData.amount;
+        }
       } else {
-        txp.fee = this.txData.feeAmount;
-        txp.inputs = this.txData.txp.inputs;
-        txp.outputs[0].amount = this.txData.amount;
+        txp.feePerKb = this.selectedFee.feePerKb;
       }
     }
     return this.walletService.createTx(wallet, txp);

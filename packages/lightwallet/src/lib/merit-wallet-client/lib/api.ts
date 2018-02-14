@@ -448,6 +448,18 @@ export class API {
   }
 
   /**
+   * Creates Address from hdPrivKey
+   */
+  getRootAddress() {
+
+    const xpub = new Bitcore.HDPublicKey(this.credentials.xPubKey);
+    const address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, this.credentials.network);
+
+    return address;
+
+  }
+
+  /**
    * Seed from extended private key
    *
    * @param {String} xPrivKey
@@ -720,6 +732,32 @@ export class API {
       });
     });
   };
+
+  /**
+   * Create and send invite tx to a given address
+   *
+   * @param {string} toAddress - merit address to send invite to
+   * @param {number=} amount - number of invites to send. defaults to 1
+   * @param {string=} message - message to send to a receiver
+   *
+   */
+  async sendInvite(toAddress: string, amount: number = 1, message: string = '', walletPassword: string = ''): Promise<any> {
+    const opts = {
+      invite: true,
+      outputs: [{
+        amount,
+        toAddress,
+        message,
+      }],
+    };
+
+    let txp = await this.createTxProposal(opts)
+    txp = await this.publishTxProposal({ txp });
+    txp = await this.signTxProposal(txp, walletPassword);
+    txp = await this.broadcastTxProposal(txp);
+
+    return txp;
+  }
 
   /**
    * Create an easySend script and create a transaction to the script address
@@ -1689,7 +1727,6 @@ export class API {
    * @param {Number} n
    * @param {object} opts (optional: advanced options)
    * @param {string} opts.network[='livenet']
-   * @param {string} opts.singleAddress[=false] - The wallet will only ever have one address.
    * @param {string} opts.parentAddress - A required parent address to enable this address on the network.
    * @param {String} opts.walletPrivKey - set a walletPrivKey (instead of random)
    * @param {String} opts.id - set a id for wallet (instead of server given)
@@ -1721,32 +1758,35 @@ export class API {
 
       const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey(void 0, network);
       const pubkey = walletPrivKey.toPublicKey();
-      const address = pubkey.toAddress();
-
-      let c = this.credentials;
-      c.addWalletPrivateKey(walletPrivKey.toString());
-      let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
+      this.credentials.addWalletPrivateKey(walletPrivKey.toString());
+      let address = this.getRootAddress();
 
       const referralOpts = {
         parentAddress: opts.parentAddress,
         address: address.toString(),
         pubkey: pubkey.toString(),
-        addressType: 1,
+        addressType: Bitcore.Address.PayToPublicKeyHashType,
         signPrivKey: walletPrivKey,
         network: network,
+        alias: opts.alias
       };
 
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
+
+        let c = this.credentials;
+        let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
+
         let args = {
           name: encWalletName,
           m: m,
           n: n,
           pubKey: pubkey.toString(),
           network: network,
-          singleAddress: !!opts.singleAddress,
+          singleAddress: true, //daedalus wallets are single-addressed
           id: opts.id,
-          parentAddress: opts.parentAddress
+          parentAddress: opts.parentAddress,
+          referralId: refid
         };
 
         return this._doPostRequest('/v1/wallets/', args).then(res => {
@@ -1777,53 +1817,62 @@ export class API {
    * @param {number} opts.addressType      - address type: 1 - pubkey, 2 - sript, 3 - parameterizedscript
    * @param {PrivateKey} opts.signPrivKey  - private key to sign referral
    * @param {string} opts.pubkey        - (optional) pubkey of beaconing address. omitted for script
-   * @param {string} opts.network          - (optional) netowrk
+   * @param {string} opts.network          - (optional) network
+   * @param {string} opts.alias          - (optional) Address alias
    */
-  sendReferral(opts: any = {}): Promise<any> {
-    // $.checkState(this.credentials && this.credentials.isComplete());
+  async sendReferral(opts: any = {}): Promise<any> {
+    if (opts) {
+      $.shouldBeObject(opts);
+    }
 
-    return new Promise((resolve, reject) => {
-      if (opts) {
-        $.shouldBeObject(opts);
-      }
+    let network = opts.network || Common.Constants.DEFAULT_NET;;
+    if (!_.includes(['testnet', 'livenet'], network)) {
+      throw Error('Invalid network');
+    }
 
-      let network = opts.network || Common.Constants.DEFAULT_NET;;
-      if (!_.includes(['testnet', 'livenet'], network)) {
-        return reject(new Error('Invalid network'));
-      }
+    if (network != this.credentials.network) {
+      throw Error('Existing keys were created for a different network');
+    }
 
-      if (network != this.credentials.network) {
-        return reject(new Error('Existing keys were created for a different network'));
-      }
-
-      if (!this.credentials) {
-        this.log.info('Generating new keys');
-        this.seedFromRandom({
-          network: network
-        });
-      } else {
-        this.log.info('Using existing keys');
-      }
-
-      const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-        Bitcore.Address.fromString(opts.parentAddress).toBufferLean(),
-        Bitcore.Address.fromString(opts.address).toBufferLean(),
-      ]));
-
-      const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big');
-
-      const referral = new Bitcore.Referral({
-        parentAddress: Bitcore.Address.fromString(opts.parentAddress),
-        address: Bitcore.Address.fromString(opts.address),
-        addressType: opts.addressType,
-        pubkey: Bitcore.PublicKey.fromString(opts.pubkey),
-        signature,
+    if (!this.credentials) {
+      this.log.info('Generating new keys');
+      this.seedFromRandom({
+        network: network
       });
+    } else {
+      this.log.info('Using existing keys');
+    }
 
-      this._doPostRequest('/v1/referral/', { referral: referral.serialize() })
-        .then(resolve)
-        .catch(reject);
-    });
+    let parentAddress = opts.parentAddress;
+
+    try {
+      Bitcore.encoding.Base58Check.decode(opts.parentAddress);
+    } catch (e) {
+      if (!Bitcore.Referral.validateAlias(opts.parentAddress)) {
+        throw Error('Invalid invite code or alias');
+      }
+
+      const parentReferral = await this._doGetRequest(`/v1/referral/${opts.parentAddress}`);
+      parentAddress = parentReferral.parentAddress;
+    }
+
+    const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
+      Bitcore.Address.fromString(parentAddress, network.name).toBufferLean(),
+      Bitcore.Address.fromString(opts.address, network.name).toBufferLean(),
+    ]));
+
+    const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
+
+    const referral = new Bitcore.Referral({
+      parentAddress,
+      address: opts.address,
+      addressType: opts.addressType,
+      pubkey: opts.pubkey,
+      signature: signature.toString('hex'),
+      alias: opts.alias
+    }, network);
+
+    return this._doPostRequest('/v1/referral/', { referral: referral.serialize() });
   };
   /**
    * Join an existing wallet
@@ -2110,7 +2159,8 @@ export class API {
 
     if (opts.addresses) {
       url += '?' + querystring.stringify({
-        addresses: [].concat(opts.addresses).join(',')
+        addresses: [].concat(opts.addresses).join(','),
+        invites: opts.invites,
       });
     }
     return this._doGetRequest(url);
@@ -2188,7 +2238,7 @@ export class API {
     $.checkArgument(opts)
     $.checkArgument(opts.txp, 'txp is required');
 
-    $.checkState(parseInt(opts.txp.version) >= 3);
+    $.checkState(parseInt(opts.txp.version) >= Bitcore.Transaction.CURRENT_VERSION);
 
     let t = Utils.buildTx(opts.txp);
     let hash = t.uncheckedSerialize();
@@ -2221,7 +2271,7 @@ export class API {
    */
   private _signAddressAndUnlockWithRoot(address: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-    if (address.signed && address.refid) {
+    if (address.signed) {
       return Promise.resolve(address.refid);
     }
 
@@ -2258,13 +2308,16 @@ export class API {
 
       opts.ignoreMaxGap = true;
       return this._doPostRequest('/v1/addresses/', opts).then((address) => {
-        console.dir(address);
         if (!Verifier.checkAddress(this.credentials, address)) {
           return reject(Errors.SERVER_COMPROMISED);
         }
+        if (!address.signed) {
+          return this._signAddressAndUnlockWithRoot(address)
+            .then(() => resolve(address));
+        } else {
+          return resolve(address);
+        }
 
-        return this._signAddressAndUnlockWithRoot(address)
-          .then(() => resolve(address));
       });
     });
   };
@@ -2305,8 +2358,8 @@ export class API {
   };
 
   // Ensure that an address is in a valid format, and that it has been beaconed on the blockchain.
-  validateAddress(address: string, network: string): Promise<any> {
-    const url = `/v1/addresses/${address}/validate/${network}`;
+  validateAddress(address: string): Promise<any> {
+    const url = `/v1/addresses/${address}/validate/`;
     return this._doGetRequest(url);
   };
 
@@ -2354,9 +2407,18 @@ export class API {
     $.checkState(this.credentials && this.credentials.isComplete());
     let url = '/v1/balance/';
     if (opts.twoStep) url += '?twoStep=1';
-    return this._doGetRequest(url).then((balance) => {
-      return balance.availableAmount;
-    });
+
+    return this._doGetRequest(url).then(balance => balance.availableAmount);
+  };
+
+  /**
+   * Update wallet invites balance
+   */
+  getInvitesBalance(opts: any = {}): Promise<number> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+    let url = '/v1/invites/';
+
+    return this._doGetRequest(url);
   };
 
   /**
@@ -2633,11 +2695,56 @@ export class API {
 
     let url = '/v1/txhistory/' + qs;
     return this._doGetRequest(url).then((txs) => {
-      return this._processTxps(txs).then(() => {
-        return Promise.resolve(txs);
-      });
+     return this._processTxps(txs).then(() => {
+
+       return Promise.resolve(txs);
+     });
     });
   };
+
+  /**
+   * Get invite requests
+   *
+   */
+  getInvitesHistory() :Promise<any> {
+
+    return Promise.resolve([
+      {
+        "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
+        "action": "unlock",
+        "amount": 1,
+        "time": 1516968822,
+        "confirmations": 0,
+        "outputs": [
+          {
+            "amount": 1,
+            "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc"
+          }
+        ]
+      }
+    ]);
+
+  }
+
+  /**
+   *
+   * @param address
+   */
+  confirmRequest(request:{refid:string, address:string}): Promise<any> {
+    return Promise.resolve(true);
+  }
+
+  /**
+   * gets all unlock requests (active and hidden) for this wallet
+   *
+   */
+  getUnlockRequests(): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+
+    let url = '/v1/unlockrequests/';
+    return this._doGetRequest(url);
+  }
+
 
   /**
    * getTx

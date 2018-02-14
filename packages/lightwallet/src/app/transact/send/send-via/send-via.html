@@ -60,9 +60,10 @@
         </ion-avatar>
         <ion-avatar item-start *ngIf="i != 0"></ion-avatar>
 
-        <ion-label>
+        <ion-label class="address-label">
           <p>Merit Address</p>
           <h2>{{meritAddress.address}}</h2>
+          <p *ngIf="meritAddress.alias">@{{meritAddress.alias}}</p>
         </ion-label>
       </button>
     </ion-list>
@@ -88,10 +89,11 @@
         </ion-avatar>
         <ion-avatar item-start *ngIf="i != 0"></ion-avatar>
 
-        <ion-label>
-          <p>Merit Address</p>
-          <h2>{{meritAddress.address}}</h2>
-        </ion-label>
+        <ion-label class="address-label">
+            <p>Merit Address</p>
+            <h2>{{meritAddress.address}}</h2>
+            <p *ngIf="meritAddress.alias">@{{meritAddress.alias}}</p>
+          </ion-label>
       </button>
     </ion-list>
 

@@ -71,7 +71,7 @@ function Address(data, network, type) {
        type !== Address.PayToScriptHash &&
        type !== Address.ParameterizedPayToScriptHash)) {
 
-    throw new TypeError('Third argument must be "pubkeyhash", "scripthash", or "paramscripthash" .');
+    throw new TypeError('Third argument must be "pubkeyhash", "scripthash", or "paramscripthash".');
   }
 
   var info = this._classifyArguments(data, network, type);
@@ -123,6 +123,19 @@ Address.PayToScriptHash = 'scripthash';
 /** @static */
 Address.ParameterizedPayToScriptHash = 'paramscripthash';
 
+/** @static */
+Address.PayToPublicKeyHashType = 1;
+/** @static */
+Address.PayToScriptHashType = 2;
+/** @static */
+Address.ParameterizedPayToScriptHashType = 3;
+
+Address.AddressTypes = {
+  [Address.PayToPublicKeyHashType]: Address.PayToPublicKeyHash,
+  [Address.PayToScriptHashType]: Address.PayToScriptHash,
+  [Address.ParameterizedPayToScriptHashType]: Address.ParameterizedPayToScriptHash,
+};
+
 /**
  * @param {Buffer} hash - An instance of a hash Buffer
  * @returns {Object} An object with keys: hashBuffer
@@ -162,11 +175,20 @@ Address._transformObject = function(data) {
  * Internal function to discover the network and type based on the first data byte
  *
  * @param {Buffer} buffer - An instance of a hex encoded address Buffer
+ * @param {string=} network - numeric address type
+ * @param {number=} type - numeric address type
  * @returns {Object} An object with keys: network and type
  * @private
  */
-Address._classifyFromVersion = function(buffer) {
+Address._classifyFromVersion = function(buffer, network, type) {
   var version = {};
+
+  if (_.includes(Object.keys(Address.AddressTypes), type + '') && network) {
+    version.type = Address.AddressTypes[type];
+    version.network = Networks.get(network);
+
+    return version;
+  }
 
   var pubkeyhashNetwork = Networks.get(buffer[0], 'pubkeyhash');
   var scripthashNetwork = Networks.get(buffer[0], 'scripthash');
@@ -201,26 +223,26 @@ Address._transformBuffer = function(buffer, network, type) {
   if (!(buffer instanceof Buffer) && !(buffer instanceof Uint8Array)) {
     throw new TypeError('Address supplied is not a buffer.');
   }
-  if (buffer.length !== 1 + 20) {
-    throw new TypeError('Address buffers must be exactly 21 bytes.');
+  if (buffer.length !== 1 + 20 && !(type && buffer.length === 20)) {
+    throw new TypeError('Address buffers must be exactly 21 bytes or 20 bytes if type is provided.');
   }
 
   var networkObj = Networks.get(network);
-  var bufferVersion = Address._classifyFromVersion(buffer);
+  var bufferVersion = Address._classifyFromVersion(buffer, network, type);
 
   if (network && !networkObj) {
     throw new TypeError('Unknown network');
   }
 
-  if (!bufferVersion.network || (networkObj && networkObj !== bufferVersion.network)) {
+  if (!bufferVersion.network || (networkObj && networkObj.name !== bufferVersion.network.name)) {
     throw new TypeError('Address has mismatched network type.');
   }
 
-  if (!bufferVersion.type || (type && type !== bufferVersion.type)) {
+  if (!bufferVersion.type || (type && (type !== bufferVersion.type && Address.AddressTypes[type] !== bufferVersion.type))) {
     throw new TypeError('Address has mismatched type.');
   }
 
-  info.hashBuffer = buffer.slice(1);
+  info.hashBuffer = buffer.length === 20 ? buffer : buffer.slice(1);
   info.network = bufferVersion.network;
   info.type = bufferVersion.type;
   return info;
@@ -377,6 +399,7 @@ Address.fromScript = function(script, network) {
  * @returns {Address} A new valid and frozen instance of an Address
  */
 Address.fromBuffer = function(buffer, network, type) {
+
   var info = Address._transformBuffer(buffer, network, type);
   return new Address(info.hashBuffer, info.network, info.type);
 };

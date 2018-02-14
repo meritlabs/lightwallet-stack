@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Contact, Contacts, IContactField } from '@ionic-native/contacts';
+import { Contact, ContactField, Contacts, IContactField } from '@ionic-native/contacts';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { PersistenceService } from 'merit/core/persistence.service';
 import { IAddressBook, MeritContact } from '../../models/merit-contact';
@@ -15,11 +15,10 @@ const DESIRED_FIELDS = [
   'photos'
 ];
 
-// TODO merge with AddressBook Service
-
 @Injectable()
 export class ContactsProvider {
 
+  // TODO cache contacts & re-use instead of retrieving them again
   private contacts: MeritContact[];
   private devicePermissionGranted: boolean;
   private devicePermissionStatus: string;
@@ -99,6 +98,7 @@ export class ContactsProvider {
       if (_.some(contact.emails, (email) => email.value.match(exp))) return true;
       if (_.some(contact.phoneNumbers, (phoneNumber) => phoneNumber.value.match(exp))) return true;
       if (_.some(contact.meritAddresses, (address) => address.address.match(exp))) return true;
+      if (_.some(contact.meritAddresses, (address) => address.alias && address.alias.match(exp))) return true;
       return false;
     });
   }

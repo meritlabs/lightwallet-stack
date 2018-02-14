@@ -229,9 +229,6 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.post('/v1/referrals/', function(req, res) {
-
-  });
 
   router.put('/v1/copayers/:id/', function(req, res) {
     req.body.copayerId = req.params['id'];
@@ -378,6 +375,16 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/invites/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+      var opts = {};
+      server.getInvitesBalance(opts, function(err, balance) {
+        if (err) return returnError(err, res, req);
+        res.json(balance);
+      });
+    });
+  });
+
   router.get('/v1/feelevels/', function(req, res) {
     var opts = {};
     if (req.query.network) opts.network = req.query.network;
@@ -409,8 +416,11 @@ ExpressApp.prototype.start = function(opts, cb) {
   });
 
   router.get('/v1/utxos/', function(req, res) {
-    var opts = {};
-    var addresses = req.query.addresses;
+    const opts = {
+      invites: req.query.invites,
+    };
+    const addresses = req.query.addresses;
+
     if (addresses && _.isString(addresses)) opts.addresses = req.query.addresses.split(',');
     getServerWithAuth(req, res, function(server) {
       server.getUtxos(opts, function(err, utxos) {
@@ -499,6 +509,17 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+
+  router.get('/v1/unlockrequests', function(req, res) {
+      getServerWithAuth(req, res, function(server) {
+          server.getUnlockRequests(opts, function(err, refs) {
+              if (err) return returnError(err, res, req);
+              res.json(refs);
+              res.end();
+          });
+      });
+  });
+
   router.get('/v1/txhistory/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       var opts = {};
@@ -524,9 +545,9 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.get('/v1/addresses/:addr/validate/:network', function(req, res) {
+  router.get('/v1/addresses/:addr/validate/', function(req, res) {
     const server = getServer(req, res);
-    server.validateAddress(req.params['addr'], req.params['network'], function(err, result) {
+    server.validateAddress(req.params['addr'], function(err, result) {
       if (err) {
         return returnError(err, res, req);
       }
@@ -801,6 +822,23 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/referral/:refid', function(req, res) {
+    var server;
+    try {
+      server = getServer(req, res);
+    } catch (ex) {
+      return returnError(ex, res, req);
+    }
+
+    server.getReferral(req.params.refid, function(err, referral) {
+      if (err) {
+        return returnError(err, res, req);
+      }
+
+      res.json(referral).end();
+    });
+  });
+
   router.post('/v1/referral/', function(req, res) {
     var server;
     try {
@@ -809,6 +847,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       return returnError(ex, res, req);
     }
 
+    console.log('referral', req.body.referral);
     server.sendReferral(req.body.referral, function(err, refid) {
       if (err) {
         return returnError(err, res, req);

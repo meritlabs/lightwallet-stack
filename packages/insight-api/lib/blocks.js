@@ -69,6 +69,7 @@ BlockController.prototype.block = function(req, res, next) {
       } else if(err) {
         return self.common.handleErrors(err, res);
       }
+
       self.node.services.meritd.getBlockHeader(hash, function(err, info) {
         if (err) {
           return self.common.handleErrors(err, res);
@@ -78,31 +79,12 @@ BlockController.prototype.block = function(req, res, next) {
           self.blockCache.set(hash, blockResult);
         }
         req.block = blockResult;
+        req.rawBlock = block.toString();
+
         next();
       });
     });
   }
-};
-
-/**
- * Find rawblock by hash and height...
- */
-BlockController.prototype.rawBlock = function(req, res, next) {
-  var self = this;
-  var blockHash = req.params.blockHash;
-
-  self.node.getRawBlock(blockHash, function(err, blockBuffer) {
-    if((err && err.code === -5) || (err && err.code === -8)) {
-      return self.common.handleErrors(null, res);
-    } else if(err) {
-      return self.common.handleErrors(err, res);
-    }
-    req.rawBlock = {
-      rawblock: blockBuffer.toString('hex')
-    };
-    next();
-  });
-
 };
 
 BlockController.prototype._normalizePrevHash = function(hash) {
@@ -119,8 +101,11 @@ BlockController.prototype.transformBlock = function(block, info) {
   const transactionIds = blockObj.transactions.map(function(tx) {
     return tx.hash;
   });
-  const beaconedAddresses = blockObj.referrals.map(function (ref) {
-    return ref.address;
+  const inviteIds = blockObj.invites.map(function(invite) {
+    return invite.hash;
+  });
+  const referralIds = blockObj.referrals.map(function (ref) {
+    return ref.hash;
   });
   const result = {
     hash: block.hash,
@@ -129,19 +114,23 @@ BlockController.prototype.transformBlock = function(block, info) {
     version: blockObj.header.version,
     merkleroot: blockObj.header.merkleRoot,
     tx: transactionIds,
-    referrals: beaconedAddresses,
+    invites: inviteIds,
+    referrals: referralIds,
     time: blockObj.header.time,
     nonce: blockObj.header.nonce,
+    cycle: block.header.cycle,
     bits: blockObj.header.bits.toString(16),
+    edgeBits: block.header.edgeBits,
     difficulty: block.header.getDifficulty(),
     chainwork: info.chainWork,
     confirmations: info.confirmations,
     previousblockhash: this._normalizePrevHash(blockObj.header.prevHash),
-    nextblockhash: info.nextHash,
+    nextblockhash: info.nextblockhash,
     reward: this.getBlockReward(info.height) / 1e8,
     isMainChain: (info.confirmations !== -1),
     poolInfo: this.getPoolInfo(block)
   };
+
   return result;
 };
 
@@ -336,6 +325,7 @@ BlockController.prototype.formatTimestamp = function(date) {
   return yyyy + '-' + (mm[1] ? mm : '0' + mm[0]) + '-' + (dd[1] ? dd : '0' + dd[0]); //padding
 };
 
+// TODO: update this one
 BlockController.prototype.getBlockReward = function(height) {
   var halvings = Math.floor(height / 210000);
   // Force block reward to zero when right shift is undefined.

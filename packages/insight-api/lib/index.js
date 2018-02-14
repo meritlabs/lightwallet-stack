@@ -7,6 +7,7 @@ const BaseService = require('./service');
 const inherits = require('util').inherits;
 const BlockController = require('./blocks');
 const TxController = require('./transactions');
+const ReferralsController = require('./referrals');
 const AddressController = require('./addresses');
 const StatusController = require('./status');
 const MessagesController = require('./messages');
@@ -94,7 +95,7 @@ InsightAPI.prototype.getRoutePrefix = function() {
 InsightAPI.prototype.start = function(callback) {
   this.node.services.meritd.on('tx', this.transactionEventHandler.bind(this));
   this.node.services.meritd.on('block', this.blockEventHandler.bind(this));
-  this.node.services.meritd.on('rawreferraltx', this.referralEventHandler.bind(this));
+  this.node.services.meritd.on('referral', this.referralEventHandler.bind(this));
   setImmediate(callback);
 };
 
@@ -179,10 +180,9 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.get('/blocks', this.cacheShort(), blocks.list.bind(blocks));
 
   app.get('/block/:blockHash', this.cacheShort(), blocks.checkBlockHash.bind(blocks), blocks.show.bind(blocks));
-  app.param('blockHash', blocks.block.bind(blocks));
-
   app.get('/rawblock/:blockHash', this.cacheLong(), blocks.checkBlockHash.bind(blocks), blocks.showRaw.bind(blocks));
-  app.param('blockHash', blocks.rawBlock.bind(blocks));
+
+  app.param('blockHash', blocks.block.bind(blocks));
 
   app.get('/block-index/:height', this.cacheShort(), blocks.blockIndex.bind(blocks));
   app.param('height', blocks.blockIndex.bind(blocks));
@@ -206,13 +206,19 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.post('/addrs/utxo', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.multiutxo.bind(addresses));
   app.get('/addrs/:addrs/txs', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.multitxs.bind(addresses));
   app.post('/addrs/txs', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.multitxs.bind(addresses));
+  app.post('/addrs/referrals', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.referrals.bind(addresses));
 
   // Address property routes
   app.get('/addr/:addr/balance', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.balance.bind(addresses));
   app.get('/addr/:addr/totalReceived', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.totalReceived.bind(addresses));
   app.get('/addr/:addr/totalSent', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.totalSent.bind(addresses));
   app.get('/addr/:addr/unconfirmedBalance', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.unconfirmedBalance.bind(addresses));
-  app.get('/addr/:addr/validate', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.validateAddresses.bind(addresses));
+  app.get('/addr/:addr/validate', this.cacheShort(), addresses.checkAddrOrAlias.bind(addresses), addresses.validateAddress.bind(addresses));
+
+  // Referral routes
+  var referrals = new ReferralsController(this.node);
+  app.get('/referral/:refid', this.cacheShort(), referrals.show.bind(referrals));
+  app.param('refid', referrals.referral.bind(referrals));
 
   // Status route
   var status = new StatusController(this.node);
@@ -261,7 +267,7 @@ InsightAPI.prototype.getPublishEvents = function() {
       scope: this,
       subscribe: this.subscribe.bind(this),
       unsubscribe: this.unsubscribe.bind(this),
-      extraEvents: ['tx', 'block', 'rawreferraltx']
+      extraEvents: ['tx', 'block', 'referral']
     }
   ];
 };
@@ -283,10 +289,10 @@ InsightAPI.prototype.transactionEventHandler = function(txBuffer) {
 };
 
 InsightAPI.prototype.referralEventHandler = function(referralBuffer) {
-  var rtx = new Referral().fromBuffer(referralBuffer);
+  var referral = new Referral(this.node.getNetworkName()).fromBuffer(referralBuffer);
 
   for (var i = 0; i < this.subscriptions.inv.length; i++) {
-    this.subscriptions.inv[i].emit('rawreferraltx', rtx);
+    this.subscriptions.inv[i].emit('referral', referral);
   }
 };
 

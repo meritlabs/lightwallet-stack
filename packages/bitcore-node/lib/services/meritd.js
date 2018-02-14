@@ -13,6 +13,7 @@ var MeritRPC = require('meritd-rpc');
 var $ = bitcore.util.preconditions;
 var _  = bitcore.deps._;
 var Transaction = bitcore.Transaction;
+var Referral = bitcore.Referral;
 
 var index = require('../');
 var errors = index.errors;
@@ -88,8 +89,7 @@ Merit.DEFAULT_CONFIG_SETTINGS = {
   spentindex: 1,
   zmqpubrawtx: 'tcp://127.0.0.1:28332',
   zmqpubhashblock: 'tcp://127.0.0.1:28332',
-  zmqpubrawreferraltx: 'tcp://127.0.0.1:28332',
-  zmqpubhashreferraltx: 'tcp://127.0.0.1:28332',
+  zmqpubrawreferral: 'tcp://127.0.0.1:28332',
   rpcallowip: '127.0.0.1',
   rpcuser: 'merit',
   rpcpassword: 'local321',
@@ -102,6 +102,7 @@ Merit.prototype._initDefaults = function(options) {
   // limits
   this.maxTxids = options.maxTxids || Merit.DEFAULT_MAX_TXIDS;
   this.maxTransactionHistory = options.maxTransactionHistory || Merit.DEFAULT_MAX_HISTORY;
+  this.maxReferralHistory = options.maxReferralHistory || Merit.DEFAULT_MAX_HISTORY;
   this.maxAddressesQuery = options.maxAddressesQuery || Merit.DEFAULT_MAX_ADDRESSES_QUERY;
   this.shutdownTimeout = options.shutdownTimeout || Merit.DEFAULT_SHUTDOWN_TIMEOUT;
 
@@ -124,12 +125,15 @@ Merit.prototype._initCaches = function() {
   // caches valid until there is a new block
   this.utxosCache = LRU(50000);
   this.txidsCache = LRU(50000);
+  this.referralsCache = LRU(50000);
+  this.referralCache = LRU(100000);
   this.balanceCache = LRU(50000);
   this.summaryCache = LRU(50000);
   this.blockOverviewCache = LRU(144);
   this.transactionDetailedCache = LRU(100000);
   this.anvCache = LRU(50000);
   this.rewardsCache = LRU(50000);
+
 
 
   // caches valid indefinitely
@@ -195,6 +199,8 @@ Merit.prototype.getAPIMethods = function() {
     ['getanv',                this, this.getANV, 1],
     ['getrewards',     this, this.getRewards, 1],
     ['sendReferral', this, this.sendReferral, 1],
+    ['getReferral', this, this.getReferral, 1],
+    ['getAddressReferrals', this, this.getAddressReferrals, 1]
   ];
   return methods;
 };
@@ -224,6 +230,9 @@ Merit.prototype.getPublishEvents = function() {
     },
     {
       name: 'meritd/rawreferraltx',
+
+
+
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawreferraltx'),
       unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
@@ -440,22 +449,15 @@ Merit.prototype._checkConfigIndexes = function(spawnConfig, node) {
   );
 
   $.checkState(
-    spawnConfig.zmqpubhashreferraltx,
-    '"zmqpubhashreferraltx" option is required to get event updates from meritd. ' +
-      'Please add "zmqpubhashreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
-  );
-
-  $.checkState(
-    spawnConfig.zmqpubrawreferraltx,
-    '"zmqpubrawreferraltx" option is required to get event updates from meritd. ' +
-      'Please add "zmqpubrawreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
+    spawnConfig.zmqpubrawreferral,
+    '"zmqpubrawreferral" option is required to get event updates from meritd. ' +
+      'Please add "zmqpubrawreferral=tcp://127.0.0.1:<port>" to your configuration and restart'
   );
 
   $.checkState(
     (spawnConfig.zmqpubhashblock === spawnConfig.zmqpubrawtx &&
-     spawnConfig.zmqpubrawtx === spawnConfig.zmqpubrawreferraltx &&
-     spawnConfig.zmqpubrawreferraltx === spawnConfig.zmqpubhashreferraltx),
-    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferraltx" and "zmqpubhashreferraltx" are expected to the same host and port in merit.conf'
+     spawnConfig.zmqpubrawtx === spawnConfig.zmqpubrawreferral),
+    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferral" are expected to the same host and port in merit.conf'
   );
 
   if (spawnConfig.reindex && spawnConfig.reindex === 1) {
@@ -471,6 +473,7 @@ Merit.prototype._resetCaches = function() {
   this.transactionDetailedCache.reset();
   this.utxosCache.reset();
   this.txidsCache.reset();
+  this.referralsCache.reset();
   this.balanceCache.reset();
   this.summaryCache.reset();
   this.blockOverviewCache.reset();
@@ -532,10 +535,10 @@ Merit.prototype._initChain = function(callback) {
 
 Merit.prototype._getDefaultConf = function() {
   var networkOptions = {
-    rpcport: 8332
+    rpcport: 8445
   };
   if (this.node.network === bitcore.Networks.testnet) {
-    networkOptions.rpcport = 18332;
+    networkOptions.rpcport = 18445;
   }
   return networkOptions;
 };
@@ -597,6 +600,9 @@ Merit.prototype._rapidProtectedUpdateTip = function(node, message) {
 };
 
 Merit.prototype._updateTip = function(node, message) {
+
+  console.log("\nUPDATE TIP\n", message);
+
   var self = this;
 
   var hex = message.toString('hex');
@@ -1181,8 +1187,9 @@ Merit.prototype.getAddressBalance = function(addressArg, options, callback) {
 Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callback) {
   var self = this;
   var queryMempool = _.isUndefined(options.queryMempool) ? true : options.queryMempool;
+  var invites = !!options.invites;
   var addresses = self._normalizeAddressArg(addressArg);
-  var cacheKey = addresses.join('');
+  var cacheKey = (options.invites ? 'i:' : '') + addresses.join('');
   var utxos = self.utxosCache.get(cacheKey);
 
   function updateWithMempool(confirmedUtxos, mempoolDeltas) {
@@ -1229,7 +1236,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
         callback(null, updateWithMempool(utxos, mempoolDeltas));
       });
     } else {
-      self.client.getAddressUtxos({addresses: addresses}, function(err, response) {
+      self.client.getAddressUtxos({ addresses, invites }, function(err, response) {
         if (err) {
           return callback(self._wrapRPCError(err));
         }
@@ -1545,6 +1552,97 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
 };
 
 /**
+ * Will get a referral as a Bitcore Referral. Results include the mempool.
+ * @param {String} refid - Referral hash, address or alias
+ * @param {Function} callback
+ */
+Merit.prototype.getReferral = function(refid, callback) {
+    var self = this;
+    var referral = self.referralCache.get(refid);
+    if (referral) {
+        return setImmediate(function() {
+            callback(null, referral);
+        });
+    } else {
+        self._tryAllClients(function(client, done) {
+            client.getRawReferral(refid, function(err, response) {
+
+                if (err) {
+                    return done(self._wrapRPCError(err));
+                }
+                var referral = Referral(response.result, self.node.getNetworkName());
+                self.referralCache.set(refid, referral);
+                done(null, referral);
+            });
+        }, callback);
+    }
+};
+
+/**
+ * Will detailed referrals history for an address or multiple addresses
+ * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
+ * @param {Object} options
+ * @param {Function} callback
+ */
+Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
+    var self = this;
+
+    var addresses = self._normalizeAddressArg(addressArg);
+    if (addresses.length > this.maxAddressesQuery) {
+        return callback(new TypeError('Maximum number of addresses (' + this.maxAddressesQuery + ') exceeded'));
+    }
+
+    var cacheKey = addresses.join('');
+
+    function loadFromMempool(cb) {
+        return self.client.getaddressmempoolreferrals({addresses: addresses}, function (err, response) {
+            if (response.error) {
+                console.log('Error occured while requesting referrals from mempool', response.error);
+                return cb(err, [])
+            }
+            console.log('mempool', response.result);
+            return cb(null, response.result);
+        });
+    }
+
+    function loadFromBc(cb) {
+
+        return self.client.getaddressreferrals({addresses: addresses}, function (err, response) {
+            if (response.error) {
+                console.log('Error occured while requesting referrals from blockchain', response.error);
+                return cb(response.error, []);
+            }
+            return cb(null, response.result);
+        });
+    }
+
+    function finish(referrals) {
+        return callback(null, {
+            totalCount: referrals.length,
+            items: referrals
+        });
+    }
+
+    return loadFromMempool(function(err, mempoolReferrals) {
+        var cachedReferrals = self.referralsCache.get(cacheKey);
+        if (cachedReferrals) {
+            var referrals = mempoolReferrals.concat(cachedReferrals);
+            console.log(cachedReferrals.length+' referrals read from  cache + '+mempoolReferrals.length+' from mempool');
+            finish(referrals);
+        } else {
+            loadFromBc(function(err, bcReferrals) {
+                self.referralsCache.set(cacheKey, bcReferrals);
+                referrals = mempoolReferrals.concat(bcReferrals);
+                referrals = _.uniqBy(referrals, 'refid');
+                console.log(bcReferrals.length+' referrals read from  bc + '+mempoolReferrals.length+' from mempool');
+                finish(referrals);
+            })
+        }
+    });
+};
+
+
+/**
  * Will get the summary including txids and balance for an address or multiple addresses
  * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
  * @param {Object} options
@@ -1697,6 +1795,42 @@ Merit.prototype.getRawBlock = function(blockArg, callback) {
 };
 
 /**
+ * Will retrieve a block as a Bitcore object
+ * @param {String|Number} block - A block hash or block height number
+ * @param {Function} callback
+ */
+Merit.prototype.getBlock = function(blockArg, callback) {
+  // TODO apply performance patch to the RPC method for raw data
+  var self = this;
+
+  function queryBlock(err, blockhash) {
+    if (err) {
+      return callback(err);
+    }
+
+    self._tryAllClients(function(client, done) {
+      client.getBlock(blockhash, false, function(err, response) {
+        if (err) {
+          return done(self._wrapRPCError(err));
+        }
+        var blockObj = bitcore.Block.fromString(response.result, self.node.getNetworkName());
+        self.blockCache.set(blockhash, blockObj);
+        done(null, blockObj);
+      });
+    }, callback);
+  }
+
+  var cachedBlock = self.blockCache.get(blockArg);
+  if (cachedBlock) {
+    return setImmediate(function() {
+      callback(null, cachedBlock);
+    });
+  } else {
+    self._maybeGetBlockHash(blockArg, queryBlock);
+  }
+};
+
+/**
  * Similar to getBlockHeader but will include a list of txids
  * @param {String|Number} block - A block hash or block height number
  * @param {Function} callback
@@ -1738,41 +1872,6 @@ Merit.prototype.getBlockOverview = function(blockArg, callback) {
           };
           self.blockOverviewCache.set(blockhash, blockOverview);
           done(null, blockOverview);
-        });
-      }, callback);
-    }
-  }
-
-  self._maybeGetBlockHash(blockArg, queryBlock);
-};
-
-/**
- * Will retrieve a block as a Bitcore object
- * @param {String|Number} block - A block hash or block height number
- * @param {Function} callback
- */
-Merit.prototype.getBlock = function(blockArg, callback) {
-  // TODO apply performance patch to the RPC method for raw data
-  var self = this;
-
-  function queryBlock(err, blockhash) {
-    if (err) {
-      return callback(err);
-    }
-    var cachedBlock = self.blockCache.get(blockhash);
-    if (cachedBlock) {
-      return setImmediate(function() {
-        callback(null, cachedBlock);
-      });
-    } else {
-      self._tryAllClients(function(client, done) {
-        client.getBlock(blockhash, false, function(err, response) {
-          if (err) {
-            return done(self._wrapRPCError(err));
-          }
-          var blockObj = bitcore.Block.fromString(response.result);
-          self.blockCache.set(blockhash, blockObj);
-          done(null, blockObj);
         });
       }, callback);
     }
@@ -1856,6 +1955,7 @@ Merit.prototype.getBlockHeader = function(blockArg, callback) {
 
   self._maybeGetBlockHash(blockArg, queryHeader);
 };
+
 
 /**
  * Will estimate the fee per kilobyte.
@@ -1997,14 +2097,29 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
   var self = this;
   var tx = self.transactionDetailedCache.get(txid);
 
+  function getMicros (input, isInvite) {
+    if (input.valueSat) {
+      return input.valueSat;
+    }
+
+    if (isInvite && input.value) {
+      return input.value;
+    }
+
+    return null;
+  }
+
   // ToDo: valueSat must be valueXXX after renaming in merit-cli
   function addInputsToTx(tx, result) {
     tx.inputs = [];
     tx.inputMicros = 0;
     for(var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
       var input = result.vin[inputIndex];
-      if (!tx.isCoinbase) {
+      if (!tx.isCoinbase && input.valueSat) {
         tx.inputMicros += input.valueSat; // TODO: rename sat
+      }
+      if (!tx.isCoinbase && tx.isInvite) {
+        tx.inputMicros += input.value; // TODO: rename sat
       }
       var script = null;
       var scriptAsm = null;
@@ -2021,7 +2136,8 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
         scriptAsm: scriptAsm || null,
         sequence: input.sequence,
         address: input.address || null,
-        micros: _.isUndefined(input.valueSat) ? null : input.valueSat // TODO: rename sat
+        alias: input.alias || null,
+        micros: getMicros(input, tx), // TODO: rename sat
       });
     }
   }
@@ -2031,19 +2147,22 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
     tx.outputMicros = 0;
     for(var outputIndex = 0; outputIndex < result.vout.length; outputIndex++) {
       var out = result.vout[outputIndex];
-      tx.outputMicros += out.valueSat; // TODO: rename sat
+      tx.outputMicros += !tx.isInvite ? out.valueSat : out.value; // TODO: rename sat
       var address = null;
+      var alias = null;
       if (out.scriptPubKey && out.scriptPubKey.addresses && out.scriptPubKey.addresses.length === 1) {
         address = out.scriptPubKey.addresses[0];
+        alias = out.scriptPubKey.aliases && out.scriptPubKey.aliases.length ? out.scriptPubKey.aliases[0] : null;
       }
       tx.outputs.push({
-        micros: out.valueSat, // TODO: rename sat
+        micros: !tx.isInvite ? out.valueSat : out.value, // TODO: rename sat
         script: out.scriptPubKey.hex,
         scriptAsm: out.scriptPubKey.asm,
         spentTxId: out.spentTxId,
         spentIndex: out.spentIndex,
         spentHeight: out.spentHeight,
-        address: address
+        address,
+        alias
       });
     }
   }
@@ -2066,7 +2185,8 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
           blockTimestamp: result.time,
           version: result.version,
           hash: txid,
-          locktime: result.locktime
+          locktime: result.locktime,
+          isInvite: result.version === bitcore.Transaction.INVITE_VERSION,
         };
 
         if (result.vin[0] && result.vin[0].coinbase) {
@@ -2171,12 +2291,12 @@ Merit.prototype.generateBlock = function(num, callback) {
 };
 
 Merit.prototype.validateAddress = function(address, callback) {
-  log.info('validateAddress called: ', address);
-
   const self = this;
 
   if (typeof address === 'string' || address instanceof String) {
     self.client.validateaddress(address, function(err, response) {
+      log.info('validateAddress result: ', response);
+
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
