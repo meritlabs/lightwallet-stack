@@ -36,3 +36,5 @@ UserInterfaceState.xcuserstate
 
 # Merit
 src/lib/bwc/index.js
+/src/environments/environment.dev.ts
+/src/environments/environment.ts
