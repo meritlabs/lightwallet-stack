@@ -100,6 +100,7 @@ PushNotificationsService.prototype.start = function(opts, cb) {
   self.pushServerUrl = opts.pushNotificationsOpts.pushServerUrl;
   self.authorizationKey = opts.pushNotificationsOpts.authorizationKey;
 
+  self.authorizationKey = 'a'; //todo temp do not commit!!
   if (!self.authorizationKey) return cb(new Error('Missing authorizationKey attribute in configuration.'))
 
   async.parallel([
