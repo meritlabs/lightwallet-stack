@@ -4,6 +4,7 @@ import { Logger } from 'merit/core/logger';
 import { PersistenceService } from 'merit/core/persistence.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { RateService } from 'merit/transact/rate.service';
+import { MeritWalletClient } from "merit/../lib/merit-wallet-client/index";
 
 /*
  Service to help manage sending merit to others.
@@ -14,6 +15,8 @@ export class SendService {
 
   private readonly ADDRESS_LENGTH = 34;
 
+  private client:MeritWalletClient;
+
   constructor(
     private bwcService: BwcService,
     private rate: RateService,
@@ -23,6 +26,7 @@ export class SendService {
   ) {
     this.logger.info('Hello SendService');
     this.bitcore = this.bwcService.getBitcore();
+    this.client = this.bwcService.getClient(null, {});
   }
 
   public isAddress(addr: string): boolean {
@@ -38,12 +42,17 @@ export class SendService {
     return this.bitcore.Referral.validateAlias(alias);
   }
 
+  public async getAddressInfo(addr: string) {
+    return  await this.client.validateAddress(addr);
+  }
+
+
   public async isAddressValid(addr: string): Promise<boolean> {
     if (!this.isAddress(addr)) {
       return false;
     }
 
-    const info = await this.bwcService.getClient(null, {}).validateAddress(addr);
+    const info = await this.getAddressInfo(addr);
 
     return info.isValid && info.isBeaconed && info.isConfirmed;
   }
@@ -53,7 +62,7 @@ export class SendService {
       return false;
     }
 
-    const info = await this.bwcService.getClient(null, {}).validateAddress(addr);
+    const info = await this.getAddressInfo(addr);
 
     return info.isValid && info.isBeaconed;
 
@@ -64,7 +73,7 @@ export class SendService {
       return null;
     }
 
-    const info = await this.bwcService.getClient(null, {}).validateAddress(input);
+    const info = await this.getAddressInfo(input);
 
     if (info && info.isConfirmed) {
       return info.address;
