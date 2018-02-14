@@ -97,6 +97,7 @@ export class SendInviteView {
 
         if (isBeaconed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
+          //todo get network!!
           result.toNewEntity.contact.meritAddresses.push({ address: input, network: 'testnet'});
         } else {
           result.error = ERROR_ADDRESS_NOT_FOUND;
@@ -107,6 +108,7 @@ export class SendInviteView {
 
         if (address) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
+          //todo get network!!
           result.toNewEntity.contact.meritAddresses.push({ alias: alias, address: input, network: 'testnet' });
         } else {
           result.error = ERROR_ALIAS_NOT_FOUND; 
