@@ -89,7 +89,7 @@ Merit.DEFAULT_CONFIG_SETTINGS = {
   spentindex: 1,
   zmqpubrawtx: 'tcp://127.0.0.1:28332',
   zmqpubhashblock: 'tcp://127.0.0.1:28332',
-  zmqpubrawreferral: 'tcp://127.0.0.1:28332',
+  zmqpubrawreferraltx: 'tcp://127.0.0.1:28332',
   rpcallowip: '127.0.0.1',
   rpcuser: 'merit',
   rpcpassword: 'local321',
@@ -449,15 +449,15 @@ Merit.prototype._checkConfigIndexes = function(spawnConfig, node) {
   );
 
   $.checkState(
-    spawnConfig.zmqpubrawreferral,
-    '"zmqpubrawreferral" option is required to get event updates from meritd. ' +
-      'Please add "zmqpubrawreferral=tcp://127.0.0.1:<port>" to your configuration and restart'
+    spawnConfig.zmqpubrawreferraltx,
+    '"zmqpubrawreferraltx" option is required to get event updates from meritd. ' +
+      'Please add "zmqpubrawreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
   );
 
   $.checkState(
     (spawnConfig.zmqpubhashblock === spawnConfig.zmqpubrawtx &&
-     spawnConfig.zmqpubrawtx === spawnConfig.zmqpubrawreferral),
-    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferral" are expected to the same host and port in merit.conf'
+     spawnConfig.zmqpubrawtx === spawnConfig.zmqpubrawreferraltx),
+    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferraltx" are expected to the same host and port in merit.conf'
   );
 
   if (spawnConfig.reindex && spawnConfig.reindex === 1) {
