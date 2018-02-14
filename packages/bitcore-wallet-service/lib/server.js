@@ -399,17 +399,10 @@ WalletService.prototype.createWallet = function(opts, cb) {
             return acb();
           }
 
-          const notification = Notification.create({
-            type: 'IncomingInviteRequest',
+          self._notify('IncomingInviteRequest', {
             walletId: parentAddress.walletId,
             creatorId: parentAddress.walletId,
-            data: {}
-          });
-
-          self.storage.storeNotification(notification.walletId, notification, () => {
-            self.messageBroker.send(notification);
-            acb();
-          });
+          }, null, acb);
         });
       });
     }
@@ -742,8 +735,6 @@ WalletService.prototype._getSigningKey = function(text, signature, pubKeys) {
  * @param {Boolean} opts.isGlobal - If true, the notification is not issued on behalf of any particular copayer (defaults to false)
  */
 WalletService.prototype._notify = function(type, data, opts, cb) {
-  var self = this;
-
   if (_.isFunction(opts)) {
     cb = opts;
     opts = {};
@@ -754,12 +745,12 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
 
   cb = cb || function() {};
 
-  var walletId = self.walletId || data.walletId;
-  var copayerId = self.copayerId || data.copayerId;
+  const walletId = this.walletId || data.walletId;
+  const copayerId = this.copayerId || data.copayerId;
 
   $.checkState(walletId);
 
-  var notification = Model.Notification.create({
+  const notification = Model.Notification.create({
     type: type,
     data: data,
     ticker: this.notifyTicker++,
@@ -767,8 +758,8 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
     walletId: walletId,
   });
 
-  this.storage.storeNotification(walletId, notification, function() {
-    self.messageBroker.send(notification);
+  this.storage.storeNotification(walletId, notification, () => {
+    this.messageBroker.send(notification);
     return cb();
   });
 };
