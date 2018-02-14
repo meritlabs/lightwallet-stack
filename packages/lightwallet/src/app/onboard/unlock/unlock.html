@@ -18,11 +18,21 @@
       You'll need an unlock code from a friend or colleague.
     </p>
 
-    <div class="bottom-buttons">
-      <ion-input placeholder="Invite Code" [class.failed]="unlockState == 'fail'"
+      <div class="bottom-buttons alias-item">
+          <ion-input type="text" placeholder="Add address alias (optional)" [class.failed]="unlockState == 'aliasFail'" [(ngModel)]="formData.alias"
+                     autocomplete="off" autocorrect="off" autocapitalize="off"
+                     (ionChange)="checkAlias()" (ionFocus)="onInputFocus()"
+          ></ion-input>
+          <ion-spinner *ngIf="formData.aliasCheckInProgress" color="primary"></ion-spinner>
+          <p *ngIf="formData.aliasValidationError" class="error-message">{{formData.aliasValidationError}}</p>
+      </div>
+
+
+      <div class="bottom-buttons">
+      <ion-input placeholder="Invite Address or Alias" [class.failed]="unlockState == 'fail'"
                  [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off"
                  autocapitalize="off" (ionFocus)="onInputFocus()"></ion-input>
-      <button (click)="createWallet()" ion-button icon-only>
+      <button (click)="createWallet()" ion-button icon-only  [disabled]="formData.aliasCheckInProgress">
         <ion-icon name="arrow-forward"></ion-icon>
       </button>
     </div>
@@ -48,11 +58,20 @@
       Now you need to enter unlock code to setup your account and accept Merit.
     </p>
 
+    <div class="bottom-buttons alias-item">
+        <ion-input type="text" placeholder="Add address alias (optional)"  [class.failed]="unlockState == 'aliasFail'"  [(ngModel)]="formData.alias"
+                   autocomplete="off" autocorrect="off" autocapitalize="off"
+                   (ionChange)="checkAlias()" (ionFocus)="onInputFocus()"
+        ></ion-input>
+        <ion-spinner *ngIf="formData.aliasCheckInProgress" color="primary"></ion-spinner>
+        <p *ngIf="formData.aliasValidationError" class="error-message">{{formData.aliasValidationError}}</p>
+    </div>
+
     <div class="bottom-buttons">
-      <ion-input placeholder="Invite Address" [class.failed]="unlockState == 'fail'"
+      <ion-input placeholder="Invite Address or Alias" [class.failed]="unlockState == 'fail'"
                  [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off"
                  autocapitalize="off" (ionFocus)="onInputFocus()"></ion-input>
-      <button (click)="createWallet()" ion-button icon-only translate>
+      <button (click)="createWallet()" ion-button icon-only translate [disabled]="formData.aliasCheckInProgress">
         <ion-icon name="arrow-forward"></ion-icon>
       </button>
     </div>

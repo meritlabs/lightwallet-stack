@@ -1,0 +1,86 @@
+<ion-header no-border>
+  <ion-navbar color="light">
+    <ion-title>Invite Requests</ion-title>
+    <ion-buttons end>
+      <div class="total-invites" item-end>
+        <ion-avatar img-icon>
+          <img src="assets/img/icons/invite.svg" alt="">
+        </ion-avatar>
+        <span class="amount">
+        {{ totalInvites }}
+      </span>
+      </div>
+    </ion-buttons>
+  </ion-navbar>
+  <ion-toolbar color="light" mode="md">
+    <ion-segment mode="md" [(ngModel)]="activeTab">
+      <ion-segment-button value="active">Requests</ion-segment-button>
+      <ion-segment-button value="confirmed">Sent</ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-item [hidden]="activeTab === 'confirmed'" *ngIf="hiddenRequests && hiddenRequests.length && !showHiddenRequests">
+    {{hiddenRequests.length}} hidden requests
+    <button ion-button item-end clear (click)="showHiddenRequests = true">show</button>
+  </ion-item>
+
+  <div [hidden]="activeTab === 'confirmed'">
+    <div *ngIf="!activeRequests?.length && !hiddenRequests?.length" class="cta">
+      <img src="assets/img/spread-the-word-picture.png" alt="">
+
+      <div class="info-box">
+        <h2>No Requests Yet</h2>
+        You can spread the word by telling friends, colleagues, and loved ones about Merit.
+        Once they use your alias as their <i>unlock code</i> when signing up, you will receive an "invite request" here.
+        With a simple click, you can send them an invite, and they're in!
+
+        <p>The more people you invite, the higher your chances of winning <strong>ambassador rewards!</strong></p>
+      </div>
+
+      <button ion-button class="action-button">
+        Send an Invite
+      </button>
+    </div>
+
+    <ion-list>
+      <ion-item *ngFor="let request of (showHiddenRequests && hiddenRequests); trackBy: request?.address" (click)="processRequest(request)" text-wrap>
+        <ion-avatar item-start img-icon>
+          <img src="assets/img/icons/incoming_request.svg">
+        </ion-avatar>
+        <h2>{{ request.address }}</h2>
+        <p *ngIf="request.alias">@{{request.alias}}</p>
+      </ion-item>
+
+      <ion-item *ngFor="let request of activeRequests; trackBy: request?.address" (click)="processRequest(request)"
+                text-wrap>
+        <ion-avatar item-start img-icon>
+          <img src="assets/img/icons/incoming_request.svg">
+        </ion-avatar>
+        <h2>{{ request.address }}</h2>
+        <p *ngIf="request.alias">@{{request.alias}}</p>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <ion-list [hidden]="activeTab === 'active'">
+    <div class="info-box" *ngIf="!confirmedRequests?.length">
+      You did not send any requests.
+    </div>
+    <ion-item *ngFor="let request of confirmedRequests; trackBy: request?.address" text-wrap>
+      <contact-avatar item-start [contact]="request.contact" fallback="assets/img/icons/confirm.svg"></contact-avatar>
+      <ion-label>
+        <h2>
+          {{ request.contact?.name?.formatted || request.address }}
+        </h2>
+        <p>
+          <span *ngIf="request.alias">@{{ request.alias }}</span>
+          <span *ngIf="request.contact && !request.alias">{{ request.address }}</span>
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

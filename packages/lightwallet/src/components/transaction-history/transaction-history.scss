@@ -1,5 +1,26 @@
 transaction-history {
   ion-list.list {
+
+    // transaction action specific styles
+    button[ion-item].item {
+      &.unlock {
+        ion-note .unlock-request-status {
+          font-size: 17px;
+          &.pending {
+            color: rgb(255, 160, 0);
+          }
+
+          &.accepted {
+            color: rgb(0, 150, 136);
+          }
+
+          &.declined {
+            color: rgb(208, 2, 27);
+          }
+        }
+      }
+    }
+
     button[ion-item].item {
       // *** iOS ***
       ion-label.label.label-ios {
@@ -13,7 +34,7 @@ transaction-history {
 
       ion-label.label {
         h2 {
-          font-weight: 600;
+          //font-weight: 600;
         }
         p {
           color: #73819b;

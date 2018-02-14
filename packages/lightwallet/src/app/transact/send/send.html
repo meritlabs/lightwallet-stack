@@ -38,7 +38,14 @@
   <div *ngIf="!loadingContacts && searchResult  && hasUnlockedWallets" class="content">
 
     <div class="no-results" *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length">
-      <div class="no-results-label">No results</div>
+
+      <div class="no-results-label" *ngIf="!searchResult.error">No results</div>
+      <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
+        Address is not confirmed yet
+      </div>
+      <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
+        Alias not found 
+      </div>
 
       <div *ngIf="searchResult.toNewEntity">
 

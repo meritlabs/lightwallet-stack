@@ -9,7 +9,8 @@
         <ion-avatar img-icon>
           <img src="assets/img/icons/network_dark.svg" alt="">
         </ion-avatar>
-        <span class="merit-amount">
+        <ion-spinner [hidden]="!loading"></ion-spinner>
+        <span class="merit-amount" [hidden]="loading">
           {{ totalNetworkValue || '0.00'}}
         </span>
       </ion-col>
@@ -18,7 +19,8 @@
         <ion-avatar img-icon>
           <img src="assets/img/icons/mining_dark.svg" alt="">
         </ion-avatar>
-        <span class="merit-amount">
+        <ion-spinner [hidden]="!loading"></ion-spinner>
+        <span class="merit-amount" [hidden]="loading">
           {{ totalMiningRewards || '0.00' }}
           <small>MRT</small>
         </span>
@@ -28,7 +30,8 @@
         <ion-avatar img-icon>
           <img src="assets/img/icons/ambassador_dark.svg" alt="">
         </ion-avatar>
-        <span class="merit-amount">
+        <ion-spinner [hidden]="!loading"></ion-spinner>
+        <span class="merit-amount" [hidden]="loading">
           {{ totalAmbassadorRewards || '0.00' }}
           <small>MRT</small>
         </span>
@@ -39,9 +42,32 @@
 
 <ion-content>
 
-  <ion-refresher (ionRefresh)="doRefresh($event)" [enabled]="!loading">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
+
+  <ion-spinner [hidden]="!loading"></ion-spinner>
+
+  <ion-list no-lines [hidden]="loading">
+    <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: displayWallets }">
+      <ion-avatar item-start img-icon>
+        <img src="assets/img/icons/incoming_request.svg">
+      </ion-avatar>
+      <ion-label>
+        <h2>Invite Requests</h2>
+      </ion-label>
+      <ion-badge item-end>{{activeUnlockRequests}}</ion-badge>
+    </button>
+    <button ion-item class="pending-unlock-requests" navPush="SendInviteView" [navParams]="{wallets: displayWallets }">
+        <ion-avatar item-start img-icon>
+          <img src="assets/img/icons/invite.svg">
+        </ion-avatar>
+        <ion-label>
+          <h2>Invites</h2>
+        </ion-label>
+        <ion-badge item-end>{{activeInvites}}</ion-badge>
+      </button>
+  </ion-list>
 
   <ion-list *ngFor="let wallet of displayWallets" no-lines>
     <ion-item-divider>
@@ -51,9 +77,9 @@
       </span>
     </ion-item-divider>
 
-    <button ion-item detail-none text-wrap (click)="copyToClipboard(wallet.referrerAddress)">
-      <ion-avatar img-icon item-start>
-        <img src="assets/img/icons/invite.svg" alt="">
+    <button ion-item detail-none text-wrap (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress" >
+      <ion-avatar item-start img-icon>
+        <img src="assets/img/icons/invite.svg">
       </ion-avatar>
       <ion-label>
         <p>Invite Code</p>
@@ -63,16 +89,6 @@
         <ion-icon merit-icon name="share"></ion-icon>
       </button>
     </button>
-
-    <ion-item>
-      <ion-avatar img-icon item-start>
-        <img src="assets/img/icons/network.svg" alt="">
-      </ion-avatar>
-      <ion-label>
-        <p>Network Size</p>
-        <h2>{{ wallet.totalNetworkValueMerit || '0.00' }}</h2>
-      </ion-label>
-    </ion-item>
 
     <ion-item>
       <ion-avatar img-icon item-start>
@@ -103,6 +119,7 @@
         </span>
       </ion-note>
     </ion-item>
+
   </ion-list>
 
 </ion-content>

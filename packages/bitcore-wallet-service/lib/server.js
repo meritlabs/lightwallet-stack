@@ -28,6 +28,8 @@ var LocalDaemon = require('./blockchainexplorers/localdaemon');
 
 var request = require('request');
 
+var Notification = require('./model/notification');
+
 var Model = require('./model');
 var Wallet = Model.Wallet;
 
@@ -90,10 +92,11 @@ WalletService.initialize = function(opts, cb) {
 
   opts = opts || {};
   lock = opts.lock || new Lock(opts.lockOpts);
-  blockchainExplorer = opts.blockchainExplorer;
   blockchainExplorerOpts = opts.blockchainExplorerOpts;
+  blockchainExplorer = opts.blockchainExplorer || blockchainExplorer || new BlockchainExplorer(blockchainExplorerOpts);
   localMeritDaemon = new LocalDaemon(opts.node);
   log = opts.node.log;
+
   if (opts.request)
     request = opts.request;
 
@@ -384,6 +387,30 @@ WalletService.prototype.createWallet = function(opts, cb) {
         newWallet = wallet;
         return acb(err);
       });
+    },
+    function (acb) {
+      return acb();
+      // parent address might be an alias, so let's fetch it from blockchain explorer first then get its wallet ID
+      self.blockchainExplorer.getReferral(opts.parentAddress, function(err, referral) {
+        if (err) return acb(err);
+
+        const { address } = referral;
+        self.storage.fetchAddress(address, (err, parentAddress) => {
+          if (err) return acb(err);
+
+          const notification = Notification.create({
+            type: 'IncomingInviteRequest',
+            walletId: parentAddress.walletId,
+            creatorId: parentAddress.walletId,
+            data: {}
+          });
+
+          self.storage.storeNotification(notification.walletId, notification, () => {
+            self.messageBroker.send(notification);
+            acb();
+          });
+        });
+      });
     }
   ], function(err) {
     var newWalletId = newWallet ? newWallet.id : null;
@@ -537,7 +564,6 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
 
     self.storage.storeAddress(address, function(err) {
       if (err) return cb(err.message);
-
       cb(null, address);
     });
   });
@@ -545,10 +571,58 @@ WalletService.prototype.unlockAddress = function (opts, cb) {
 
 /**
  * Broadcasts raw referral.
+ * TODO: update with opts
  * @param {string} rawReferral - Raw referral data.
  */
 WalletService.prototype.sendReferral = function(rawReferral, cb) {
-  localMeritDaemon.sendReferral(rawReferral, cb);
+  var self = this;
+
+  // TODO: check referral exists
+  function checkReferralAlreadyExists(referralAddress, cb) {
+    if (!referralAddress) return cb();
+    self.storage.fetchReferral(self.walletId, referralAddress, cb);
+  };
+
+  // TODO: investigate, if it's better to create wallet first
+  if (this.walletId) {
+    self._runLocked(cb, function(cb) {
+      self.getWallet({}, function(err, wallet) {
+        if (err) return cb(err);
+        if (!wallet.isComplete()) return cb(Errors.WALLET_NOT_COMPLETE);
+
+        checkReferralAlreadyExists(null, function(err, referral) {
+          if (err) {
+            return cb(err);
+          }
+
+          if (referral) {
+            return cb(null, referral);
+          }
+
+          async.series([
+            function(next) {
+              // store address if it's not there yet
+              // self.storage.storeAddressAndWallet(wallet, referral.address, next);
+              return next();
+            },
+            function(next) {
+              // store referral in db
+               self.storage.storeReferral(wallet.id, referral, next);
+               return next();
+            },
+          ], function(err) {
+            if (err) {
+              return cb(err);
+            }
+
+            return localMeritDaemon.sendReferral(rawReferral, cb);
+          });
+        });
+      });
+    });
+  } else {
+    return localMeritDaemon.sendReferral(rawReferral, cb);
+  }
 };
 
 /**
@@ -592,6 +666,13 @@ WalletService.prototype.getStatus = function(opts, cb) {
       self.getBalance(opts, function(err, balance) {
         if (err) return next(err);
         status.balance = balance;
+        next();
+      });
+    },
+    function(next) {
+      self.getInvitesBalance(opts, function(err, balance) {
+        if (err) return next(err);
+        status.invitesBalance = balance;
         next();
       });
     },
@@ -754,6 +835,15 @@ WalletService.prototype._addCopayerToWallet = function(wallet, opts, cb) {
             next();
           }
         },
+        function (next) {
+            if (wallet.isComplete()) {
+                var address = wallet.createAddress(false);
+                address.signed = true;
+                self.storage.storeAddressAndWallet(wallet, [address], function() {
+                    next(err);
+                });
+            }
+        }
       ], function() {
         return cb(null, {
           copayerId: copayer.id,
@@ -1045,7 +1135,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
   function getFirstAddress(wallet, cb) {
     self.storage.fetchAddresses(self.walletId, function(err, addresses) {
       if (err) return cb(err);
-      if (!_.isEmpty(addresses)) return cb(null, _.head(addresses))
+      if (!_.isEmpty(addresses)) return cb(null, _.head(addresses));
       return createNewAddress(wallet, cb);
     });
   };
@@ -1128,21 +1218,26 @@ WalletService.prototype._getBlockchainExplorer = function(network) {
   return new BlockchainExplorer(opts);
 };
 
-WalletService.prototype._getUtxos = function(addresses, cb) {
+WalletService.prototype._getUtxos = function(addresses, invites, cb) {
   var self = this;
+
+  if (_.isFunction(invites)) {
+    cb = invites;
+    invites = false;
+  }
 
   if (addresses.length == 0) return cb(null, []);
   var networkName = Bitcore.Address(addresses[0]).toObject().network;
 
   var bc = self._getBlockchainExplorer(networkName);
-  bc.getUtxos(addresses, function(err, utxos) {
+  bc.getUtxos(addresses, invites, function(err, utxos) {
     if (err) return cb(err);
 
     var utxos = _.map(utxos, function(utxo) {
-      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations', 'isCoinbase', 'isMature', 'isMine', 'isChange']);
+      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations', 'isCoinbase', 'isInvite', 'isMature', 'isMine', 'isChange']);
       u.confirmations = u.confirmations || 0;
       u.locked = false;
-      u.micros = _.isNumber(u.micros) ? +u.micros : Utils.strip(u.amount * 1e8);
+      u.micros = u.isInvite ? u.micros : (_.isNumber(u.micros) ? +u.micros : Utils.strip(u.amount * 1e8));
       delete u.amount;
       return u;
     });
@@ -1151,8 +1246,13 @@ WalletService.prototype._getUtxos = function(addresses, cb) {
   });
 };
 
-WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
+WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites, cb) {
   var self = this;
+
+  if (_.isFunction(invites)) {
+    cb = invites;
+    invites = false;
+  }
 
   function utxoKey(utxo) {
     return utxo.txid + '|' + utxo.vout
@@ -1176,7 +1276,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, cb) {
       if (allAddresses.length == 0) return cb(null, []);
 
       var addressStrs = _.map(allAddresses, 'address');
-      self._getUtxos(addressStrs, function(err, utxos) {
+      self._getUtxos(addressStrs, invites, function(err, utxos) {
         if (err) return next(err);
 
         if (utxos.length == 0) return cb(null, []);
@@ -1258,9 +1358,9 @@ WalletService.prototype.getUtxos = function(opts, cb) {
   opts = opts || {};
 
   if (_.isUndefined(opts.addresses)) {
-    self._getUtxosForCurrentWallet(null, cb);
+    self._getUtxosForCurrentWallet(null, opt.invites, cb);
   } else {
-    self._getUtxos(opts.addresses, cb);
+    self._getUtxos(opts.addresses, opt.invites, cb);
   }
 };
 
@@ -1289,10 +1389,15 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
 };
 
 
-WalletService.prototype._getBalanceFromAddresses = function(addresses, cb) {
+WalletService.prototype._getBalanceFromAddresses = function(addresses, invites, cb) {
   var self = this;
 
-  self._getUtxosForCurrentWallet(addresses, function(err, utxos) {
+  if (_.isFunction(invites)) {
+    cb = invites;
+    invites = false;
+  }
+
+  self._getUtxosForCurrentWallet(addresses, invites, function(err, utxos) {
     if (err) return cb(err);
 
     var balance = self._totalizeUtxos(utxos);
@@ -1322,7 +1427,7 @@ WalletService.prototype._getBalanceOneStep = function(opts, cb) {
 
   self.storage.fetchAddresses(self.walletId, function(err, addresses) {
     if (err) return cb(err);
-    self._getBalanceFromAddresses(addresses, function(err, balance) {
+    self._getBalanceFromAddresses(addresses, opts.invites, function(err, balance) {
       if (err) return cb(err);
 
       // Update cache
@@ -1421,6 +1526,29 @@ WalletService.prototype.getBalance = function(opts, cb) {
     });
   });
 };
+
+WalletService.prototype.getInvitesBalance = function(opts, cb) {
+  this.storage.fetchAddresses(this.walletId, (err, addresses) => {
+    if (err) return cb(err);
+    this._getBalanceFromAddresses(addresses, true, (err, balance) => {
+      if (err) return cb(err);
+
+      // Update cache
+      async.series([
+        next => this.storage.cleanActiveAddresses(this.walletId, next),
+        next => {
+          var active = _.map(balance.byAddress, 'address')
+          this.storage.storeActiveAddresses(this.walletId, active, next);
+        },
+      ], err => {
+        if (err) {
+          log.warn('Could not update wallet cache', err);
+        }
+        return cb(null, balance);
+      });
+    });
+  });
+}
 
 /**
  * Return info needed to send all funds in the wallet
@@ -1702,6 +1830,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
     // We should ensure that utxos are not locked and are mature enough.
     return _.filter(utxos, function(utxo) {
+      if (txp.isInvite !== utxo.isInvite) return false;
       if (utxo.locked) return false;
       if (utxo.micros <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
@@ -1847,7 +1976,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
   log.debug('Selecting inputs for a ' + Utils.formatAmountInMrt(txp.getTotalAmount()) + ' txp');
 
-  self._getUtxosForCurrentWallet(null, function(err, utxos) {
+  self._getUtxosForCurrentWallet(null, txp.isInvite, function(err, utxos) {
     if (err) return cb(err);
 
     var totalAmount;
@@ -1995,7 +2124,7 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
     if (!_.isNumber(output.amount) || _.isNaN(output.amount) || output.amount <= 0) {
       return new ClientError('Invalid amount');
     }
-    if (output.amount < dustThreshold) {
+    if (!opts.invite && output.amount < dustThreshold) {
       return Errors.DUST_AMOUNT;
     }
 
@@ -2011,6 +2140,9 @@ WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) 
   async.series([
 
     function(next) {
+      if (opts.invite) {
+        return next();
+      }
       var feeArgs = !!opts.feeLevel + _.isNumber(opts.feePerKb) + _.isNumber(opts.fee);
       if (feeArgs > 1)
         return next(new ClientError('Only one of feeLevel/feePerKb/fee can be specified'));
@@ -2098,6 +2230,7 @@ WalletService.prototype._getFeePerKb = function(wallet, opts, cb) {
  * Creates a new transaction proposal.
  * @param {Object} opts
  * @param {string} opts.txProposalId - Optional. If provided it will be used as this TX proposal ID. Should be unique in the scope of the wallet.
+ * @param {Array} opts.invite - If tx is an invite.
  * @param {Array} opts.outputs - List of outputs.
  * @param {string} opts.outputs[].toAddress - Destination address.
  * @param {number} opts.outputs[].amount - Amount to transfer in micro.
@@ -2146,7 +2279,7 @@ WalletService.prototype.createTx = function(opts, cb) {
   };
 
   self._runLocked(cb, function(cb) {
-    var txp, changeAddress, feePerKb;
+    var txp, changeAddress, feePerKb = 0;
     self.getWallet({}, function(err, wallet) {
       if (err) return cb(err);
       if (!wallet.isComplete()) return cb(Errors.WALLET_NOT_COMPLETE);
@@ -2162,7 +2295,7 @@ WalletService.prototype.createTx = function(opts, cb) {
           },
           function(next) {
             self._canCreateTx(function(err, canCreate) {
-              if (err) return next(err);
+    if (err) return next(err);
               if (!canCreate) return next(Errors.TX_CANNOT_CREATE);
               next();
             });
@@ -2184,7 +2317,8 @@ WalletService.prototype.createTx = function(opts, cb) {
             });
           },
           function(next) {
-            if (_.isNumber(opts.fee) && !_.isEmpty(opts.inputs)) return next();
+            if (opts.invite || (_.isNumber(opts.fee) && !_.isEmpty(opts.inputs))) return next();
+
             self._getFeePerKb(wallet, opts, function(err, fee) {
               feePerKb = fee;
               next();
@@ -2195,6 +2329,7 @@ WalletService.prototype.createTx = function(opts, cb) {
               id: opts.txProposalId,
               walletId: self.walletId,
               creatorId: self.copayerId,
+              isInvite: opts.invite,
               outputs: opts.outputs,
               message: opts.message,
               changeAddress: changeAddress,
@@ -2209,7 +2344,7 @@ WalletService.prototype.createTx = function(opts, cb) {
               addressType: wallet.addressType,
               customData: opts.customData,
               inputs: opts.inputs,
-              fee: opts.inputs && !_.isNumber(opts.feePerKb) ? opts.fee : null,
+              fee: opts.invite ? 0 : (opts.inputs && !_.isNumber(opts.feePerKb) ? opts.fee : null),
               noShuffleOutputs: opts.noShuffleOutputs
             };
 
@@ -2291,10 +2426,9 @@ WalletService.prototype.publishTx = function(opts, cb) {
           txp.proposalSignaturePubKeySig = signingKey.signature;
         }
 
+        const addresses = txp.inputs;
         // Verify UTXOs are still available
-        self._getUtxosForCurrentWallet({
-          addresses: txp.inputs,
-        }, function(err, utxos) {
+        self._getUtxosForCurrentWallet({ addresses: txp.inputs }, txp.isInvite, function(err, utxos) {
           if (err) return cb(err);
 
           var txpInputs = _.map(txp.inputs, utxoKey);
@@ -2794,21 +2928,23 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
     var inputs = _.map(tx.vin, function(item) {
       return {
         address: item.addr,
+        alias: item.alias,
         amount: item.valueMicros,
       }
     });
 
     var outputs = _.map(tx.vout, function(item) {
-      var itemAddr;
+      var itemAddr, itemAlias;
       // If classic multisig, ignore
       if (item.scriptPubKey && _.isArray(item.scriptPubKey.addresses) && item.scriptPubKey.addresses.length == 1) {
         itemAddr = item.scriptPubKey.addresses[0];
+        itemAlias = item.scriptPubKey.aliases[0];
       }
 
       return {
         address: itemAddr,
+        alias: itemAlias,
         amount: parseInt((item.value * 1e8).toFixed(0)),
-        index: item.n
       }
     });
 
@@ -2825,8 +2961,9 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
       time: t,
       inputs: inputs,
       outputs: outputs,
-      isCoinbase: tx.isCoinbase,
-      isMature: tx.isMature
+      isCoinbase: !!tx.isCoinbase,
+      isMature: !!tx.isCoinbase ? tx.isMature : true,
+      isInvite: !!tx.isInvite,
     };
   });
 };
@@ -2877,6 +3014,49 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
   return cb(null, cache.current);
 };
 
+
+WalletService.prototype.getUnlockRequests = function(opts, cb) {
+    var self = this;
+
+    self.getWallet({}, function(err, wallet) {
+        if (err) return cb(err);
+
+        self.storage.fetchAddresses(wallet.id, function(err, addresses) {
+            if (err) return cb(err);
+
+            if (addresses.length == 0) return cb(null, []);
+            var network = wallet.network;
+            var addressStrs = _.map(addresses, 'address');
+
+            var bc = self._getBlockchainExplorer(network);
+            if (!bc) return next(new Error('Could not get blockchain explorer instance'));
+            bc.getAddressReferrals(addressStrs, function(err, referrals) {
+                if (err) return cb(err);
+                self.storage.fetchInvitedAddresses(wallet.id, function (err, invitedAddresses) {
+                  if (err) return cb(err);
+
+                  var unlockRequests = referrals.map(function(referralObj) {
+                     return Bitcore.Referral(referralObj.raw, network);
+                    }).filter(function(referral) {
+                      return (addressStrs.indexOf(referral.address.toString()) == -1); //filter our own unlock request
+                    }).map(function(referral) {
+
+                      return {
+                        referralId: referral.hash,
+                        address: referral.address.toString(),
+                        parentAddress: referral.parentAddress.toString(),
+                        alias: referral.alias,
+                        isConfirmed: (invitedAddresses.indexOf(referral.address.toString()) != -1)
+                      };
+                    });
+
+                  return cb(null, unlockRequests);
+                });
+            });
+        });
+    });
+};
+
 /**
  * Retrieves all transactions (incoming & outgoing)
  * Times are in UNIX EPOCH
@@ -2888,12 +3068,12 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
  * @returns {TxProposal[]} Transaction proposals, first newer
  */
 WalletService.prototype.getTxHistory = function(opts, cb) {
+
   var self = this;
   if (opts.skip < 0 || opts.skip == opts.limit) {
     log.warn("Invalid parameters sent to getTxHistory.");
     return cb(Errors.INVALID_PARAMETERS);
   }
-
 
   opts = opts || {};
   opts.limit = (_.isUndefined(opts.limit) ? Defaults.HISTORY_LIMIT : opts.limit);
@@ -2912,15 +3092,17 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       return _.sumBy(_.filter(items, filter), 'amount');
     };
 
-    function classify(items) {
+    function classify(items, isInvite) {
       return _.map(items, function(item) {
         var address = indexedAddresses[item.address];
         return {
           address: item.address,
+          alias: item.alias,
           amount: item.amount,
-          index: item.index,
           isMine: !!address,
-          isChange: address ? (address.isChange || wallet.singleAddress) : false,
+          // TODO: handle singleAddress and change addresses
+          // isChange: address ? (address.isChange || wallet.singleAddress) : false,
+          isChange: address ? ((address.isChange || wallet.singleAddress) && !isInvite) : false,
         }
       });
     };
@@ -2930,15 +3112,14 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       var amountIn, amountOut, amountOutChange;
       var amount, action, addressTo;
       var inputs, outputs;
-
       if (tx.outputs.length || tx.inputs.length) {
-
-        inputs = classify(tx.inputs);
-        outputs = classify(tx.outputs);
+        inputs = classify(tx.inputs, tx.isInvite);
+        outputs = classify(tx.outputs, tx.isInvite);
 
         amountIn = sum(inputs, true);
         amountOut = sum(outputs, true, false);
         amountOutChange = sum(outputs, true, true);
+
         if (amountIn == (amountOut + amountOutChange + (amountIn > 0 ? tx.fees : 0))) {
           amount = amountOut;
           action = 'moved';
@@ -2963,7 +3144,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         return {
           amount: o.amount,
           address: o.address,
-          index: o.index
+          alias: o.alias,
         }
       };
 
@@ -2976,7 +3157,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         addressTo: addressTo,
         confirmations: tx.confirmations,
         isCoinbase: tx.isCoinbase,
-        isMature: tx.isMature
+        isMature: tx.isMature,
+        isInvite: tx.isInvite,
       };
 
       if (_.isNumber(tx.size) && tx.size > 0) {
@@ -2985,15 +3167,16 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
       if (opts.includeExtendedInfo) {
         newTx.inputs = _.map(inputs, function(input) {
-          return _.pick(input, 'address', 'amount', 'isMine');
+          return _.pick(input, 'address', 'alias', 'amount', 'isMine');
         });
         newTx.outputs = _.map(outputs, function(output) {
-          return _.pick(output, 'address', 'amount', 'isMine');
+          return _.pick(output, 'address', 'alias', 'amount', 'isMine');
         });
       } else {
-        outputs = _.filter(outputs, {
-          isChange: false
-        });
+        // TODO: handle singleAddress and change addresses
+        // outputs = _.filter(outputs, {
+        //   isChange: false
+        // });
         if (action == 'received') {
           outputs = _.filter(outputs, {
             isMine: true
@@ -3070,7 +3253,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           if (err) return next(err);
 
           txs = self._normalizeTxHistory(rawTxs);
-
           totalItems = total;
           return next();
         });
@@ -3101,7 +3283,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
             }
           });
           log.warn("After blockHeight check");
-          console.log(txs);
           next();
         });
       },
@@ -3146,9 +3327,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
   self.getWallet({}, function(err, wallet) {
     if (err) return cb(err);
 
-    // Get addresses for this wallet
+      // Get addresses for this wallet
     self.storage.fetchAddresses(self.walletId, function(err, addresses) {
       if (err) return cb(err);
+
       if (addresses.length == 0) return cb(null, []);
 
       var from = opts.skip || 0;
@@ -3162,7 +3344,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         },
         function(txs, next) {
           log.warn("Show me the juice of a spruce goose.");
-          console.log(txs);
 
           if (_.isEmpty(txs.items)) {
             return next(null, []);
@@ -3199,7 +3380,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         if (err) return cb(err);
 
         log.warn("What happened after parallel?");
-        console.log(res);
 
         if (!res.txs) {
           var finalTxs = decorate(wallet, [], addresses, [], []);
@@ -3366,14 +3546,9 @@ WalletService.prototype.getFiatRate = function(opts, cb) {
   });
 };
 
-WalletService.prototype.validateAddress = function(address, network, cb) {
-  network = network || 'livenet';
-  if (!_.includes(['livenet', 'testnet'], network)) {
-    return cb(new ClientError('Invalid network'));
-  }
-
+WalletService.prototype.validateAddress = function(address, cb) {
   try {
-    const bc = this._getBlockchainExplorer(network);
+    const bc = this._getBlockchainExplorer();
     bc.validateAddress(address, function(err, result) {
       if (err) return cb(null, false);
       return cb(null, result);
@@ -3450,6 +3625,15 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
   self.storage.removeTxConfirmationSub(self.copayerId, opts.txid, cb);
 };
 
+WalletService.prototype.getReferral = function (refid, cb) {
+  const bc = this._getBlockchainExplorer();
+
+  bc.getReferral(refid, function(err, referral) {
+    if (err) return cb(err);
+
+    cb(null, referral);
+  });
+}
 /**
  * Validate that an EasyScript is on the blockchain, and that it can be unlocked.
  */

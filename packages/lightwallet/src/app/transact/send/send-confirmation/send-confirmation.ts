@@ -215,6 +215,9 @@ export class SendConfirmationView {
     try {
       if (this.referralsToSign) {
         await Promise.all(this.referralsToSign.map(this.txData.wallet.sendReferral.bind(this.txData.wallet)));
+        await Promise.all(this.referralsToSign.map(referral => {
+          return this.txData.wallet.sendInvite(referral.address, 1);
+        }));
       }
       await this.approveTx();
       if (this.txData.sendMethod.type == SendMethod.TYPE_EASY) {

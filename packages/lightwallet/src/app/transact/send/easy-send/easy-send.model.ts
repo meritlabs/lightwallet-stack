@@ -8,7 +8,6 @@ export type EasySend = {
   parentAddress: string;
   blockTimeout: number;
   scriptReferralOpts: any;
-  recipientReferralOpts: any;
   txid?: string;
 }
 

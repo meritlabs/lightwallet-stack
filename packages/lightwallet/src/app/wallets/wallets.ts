@@ -26,7 +26,6 @@ import { ContactsProvider } from '../../providers/contacts/contacts';
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
 
-
 /*
   TODO:
   -- Ensure that we get navParams and then fallback to the wallet service.
@@ -52,6 +51,7 @@ export class WalletsView {
   network: string;
 
   loading: boolean;
+  public formData = { inviteTo: '' };
 
   private get isActivePage(): boolean {
     return this.navCtrl.last().instance instanceof WalletsView;
@@ -165,11 +165,40 @@ export class WalletsView {
     this.loading = false;
   }
 
+  isAddress(address: string) {
+    try {
+      this.bwcService.getBitcore().Address.fromString(address);
+      return true;
+    } catch (_e) {
+      return false;
+    }
+  }
+
   openWallet(wallet) {
     if (!wallet.isComplete) {
       this.navCtrl.push('CopayersView')
     } else {
       this.navCtrl.push('WalletDetailsView', { walletId: wallet.id, wallet: wallet });
+    }
+  }
+
+  async sendInvite(wallet) {
+
+    const toAddress = this.formData.inviteTo;
+    try {
+      await this.walletService.sendInvite(wallet, toAddress);
+
+      this.formData.inviteTo = '';
+      this.toastCtrl.create({
+        message: 'Invite successfully sent',
+        cssClass: ToastConfig.CLASS_MESSAGE
+      }).present();
+    } catch (e) {
+      console.error(e.message);
+      this.toastCtrl.create({
+        message: 'Failed to send invite',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
     }
   }
 
@@ -190,14 +219,13 @@ export class WalletsView {
   toAddWallet() {
 
     if (!_.isEmpty(this.wallets)) {
-      const parentAddress = this.bwcService.getBitcore().PrivateKey(
-        this.wallets[0].credentials.walletPrivKey,
-        this.wallets[0].network
-      ).toAddress().toString();
+
+      // todo check for existing invites and suggest the wallet that has any 
+      const referralAdderss = this.walletService.getRootAddress(this.wallets[0]);
 
       return this.navCtrl.push('CreateWalletView', {
         updateWalletListCB: this.refreshWalletList.bind(this),
-        parentAddress
+        parentAddress: referralAdderss
       });
     }
     return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList.bind(this) });
