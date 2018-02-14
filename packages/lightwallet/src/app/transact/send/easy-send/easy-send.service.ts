@@ -99,7 +99,7 @@ export class EasySendService {
       console.log('Easy send is ', easySend);
       if (!easySend.scriptAddress) return null;
       const txs = await wallet.validateEasyScript(easySend.scriptAddress.toString());
-      return txs.result.found && !txs.result.spent ? easySend : null;
+      return txs.result.every(tx => !tx.spent) ? easySend : null;
     }));
     easySends = easySends.filter((easySend: EasySend) => easySend !== null);
     await this.persistenceService.setPendingEasySends(wallet.id, easySends);

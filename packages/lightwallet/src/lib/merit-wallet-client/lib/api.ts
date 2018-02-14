@@ -8,7 +8,7 @@ import { Logger } from "./log";
 import { Credentials } from './credentials';
 import { Errors } from './errors';
 import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
-import { EasyReceiptTxData } from 'merit/easy-receive/easy-receipt.model';
+import { EasyReceiptResult } from 'merit/easy-receive/easy-receipt.model';
 import * as preconditions from 'preconditions';
 import * as EventEmitter from 'eventemitter3';
 import * as Bitcore from 'bitcore-lib';
@@ -2976,7 +2976,7 @@ export class API {
    * @param cb Callback or handler to manage response from BWS
    * @return {undefined}
    */
-  validateEasyScript(scriptId): Promise<EasyReceiptTxData> {
+  validateEasyScript(scriptId): Promise<EasyReceiptResult> {
     this.log.warn("Validating: " + scriptId);
 
     let url = '/v1/easyreceive/validate/' + scriptId;

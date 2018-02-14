@@ -51,7 +51,6 @@ export class WalletsView {
   network: string;
 
   loading: boolean;
-  public formData = { inviteTo: '' };
 
   private get isActivePage(): boolean {
     return this.navCtrl.last().instance instanceof WalletsView;
@@ -182,26 +181,6 @@ export class WalletsView {
     }
   }
 
-  async sendInvite(wallet) {
-
-    const toAddress = this.formData.inviteTo;
-    try {
-      await this.walletService.sendInvite(wallet, toAddress);
-
-      this.formData.inviteTo = '';
-      this.toastCtrl.create({
-        message: 'Invite successfully sent',
-        cssClass: ToastConfig.CLASS_MESSAGE
-      }).present();
-    } catch (e) {
-      console.error(e.message);
-      this.toastCtrl.create({
-        message: 'Failed to send invite',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
-    }
-  }
-
   sendFeedback() {
     this.feedbackNeeded = false;
     this.feedbackService.sendFeedback(this.feedbackData).catch(() => {
@@ -293,7 +272,7 @@ export class WalletsView {
       txs = [txs];
     }
 
-    if (!txs.every(tx => tx.found)) {
+    if (!txs.length) {
       return this.showPasswordEasyReceivePrompt(receipt, isRetry);
     }
 
@@ -357,7 +336,7 @@ export class WalletsView {
   }
 
   private showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
-    const amount = _.get(_.find(data.txs, tx => !tx.invite), 'amount', 0);
+    const amount = _.get(_.find(data.txs, (tx :any) => !tx.invite), 'amount', 0);
 
     this.alertController.create({
       title: `You've got ${amount} Merit!`,

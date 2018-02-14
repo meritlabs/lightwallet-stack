@@ -49,7 +49,7 @@ export class EasyReceiveService {
 
   public acceptEasyReceipt(receipt: EasyReceipt,
                            wallet: MeritWalletClient,
-                           input: number,
+                           input: any,
                            destinationAddress: any): Promise<void> {
     return this.spendEasyReceipt(receipt, wallet, input, destinationAddress);
   }
@@ -82,7 +82,7 @@ export class EasyReceiveService {
 
       const txs = await walletClient.validateEasyScript(scriptAddress);
 
-      if (txs.result.some(tx => !tx.found)) {
+      if (!txs.result.length) {
         this.logger.warn('Could not validate easyScript on the blockchain.');
         return false
       } else {
@@ -105,13 +105,13 @@ export class EasyReceiveService {
     return this.persistanceService.deletePendingEasyReceipt(receipt);
   }
 
-  private async spendEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: number, destinationAddress: any): Promise<void> {
+  private async spendEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: any, destinationAddress: any): Promise<void> {
     let opts: any = {};
 
-    const invite = _.find(input.txs, tx => tx.invite);
+    const invite = _.find(input.txs, (tx :any) => tx.invite);
     await this.sendEasyReceiveTx(input, invite, destinationAddress, wallet);
 
-    const transact = _.find(input.txs, tx => !tx.invite);
+    const transact = _.find(input.txs, (tx :any) => !tx.invite);
     await this.sendEasyReceiveTx(input, transact, destinationAddress, wallet);
 
     return this.persistanceService.deletePendingEasyReceipt(receipt);
