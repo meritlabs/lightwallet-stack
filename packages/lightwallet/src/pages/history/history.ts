@@ -44,7 +44,7 @@ export class HistoryView {
       return formatWalletHistory(walletHistory, await createDisplayWallet(wallet, this.walletService));
     }));
 
-    this.transactions = sortBy(Array.prototype.concat.apply([], walletHistories), 'time').reverse();
+    this.transactions = Array.prototype.concat.apply([], walletHistories).sort((a, b) => a.time < b.time);
 
     console.log('Transactions are ', this.transactions);
 
