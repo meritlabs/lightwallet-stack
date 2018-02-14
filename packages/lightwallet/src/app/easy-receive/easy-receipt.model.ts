@@ -27,19 +27,17 @@ export class EasyReceipt {
 }
 
 export type EasyReceiptTxData = {
-  result: {
-    found: true,
-    txid: string,
-    index: number
-    amount: number,
-    spending: boolean,
-    spent: boolean,
-    confirmations: number,
-    invite: boolean,
-  },
-} | {
-  result: {
-    found: false
-  }
-}
+  found: true,
+  txid: string,
+  index: number
+  amount: number,
+  spending: boolean,
+  spent: boolean,
+  confirmations: number,
+  invite: boolean,
+};
+
+export type EasyReceiptResult = {
+  result: Array<EasyReceiptTxData>,
+};
 

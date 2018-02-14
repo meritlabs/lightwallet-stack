@@ -242,16 +242,16 @@ export class WalletService {
 
       let _getStatus = async (initStatusHash: any, tries: number): Promise<any> => {
         return new Promise(async (resolve, reject) => {
-          if (isStatusCached() && !opts.force) {
-            this.logger.debug('Wallet status cache hit:' + wallet.id);
-            return cacheStatus(wallet.cachedStatus).then(() => {
-              return processPendingTxps(wallet.cachedStatus).then(() => {
-                return resolve(wallet.cachedStatus);
-              });
-            }).catch((err) => {
-              this.logger.debug('Error in caching status:' + err);
-            });
-          }
+          // if (isStatusCached() && !opts.force) {
+          //   this.logger.debug('Wallet status cache hit:' + wallet.id);
+          //   return cacheStatus(wallet.cachedStatus).then(() => {
+          //     return processPendingTxps(wallet.cachedStatus).then(() => {
+          //       return resolve(wallet.cachedStatus);
+          //     });
+          //   }).catch((err) => {
+          //     this.logger.debug('Error in caching status:' + err);
+          //   });
+          // }
 
           tries = tries || 0;
 
