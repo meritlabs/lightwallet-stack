@@ -2028,10 +2028,10 @@ export class API {
 
     // Resolve all our async calls here, then resolve this wrapping promise.
     return Promise.all([
-      processConfirmStatus(status),
       processCustomData(status),
       this._processWallet(status.wallet),
-      this._processTxps(status.pendingTxps)
+      this._processTxps(status.pendingTxps),
+      processConfirmStatus(status)
     ]).then(() => {
       return Promise.resolve();
     });
@@ -2088,6 +2088,7 @@ export class API {
       }
 
       return this._processStatus(result).then(() => {
+        console.log(JSON.parse(JSON.stringify(result)), 'RESULT'); 
         return Promise.resolve(result);
       });
     });

@@ -134,7 +134,7 @@ export class WalletService {
       };
 
       //TODO: Separate, clarify, and tighten usage of Rate and Tx-Format service below.
-      let cacheBalance = (wallet: MeritWalletClient, balance: any): Promise<any> => {
+      let cacheBalance = (wallet: MeritWalletClient, balance: any, invitesBalance: any): Promise<any> => {
         return new Promise((resolve, reject) => {
           if (!balance) return resolve();
 
@@ -148,6 +148,11 @@ export class WalletService {
 
           // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
           cache.totalBalanceMicros = balance.totalAmount;
+
+          if (invitesBalance) {
+            cache.confirmedInvites = invitesBalance.availableConfirmedAmount;
+          }
+
 
           cache.pendingCoinbaseAmount = balance.totalPendingCoinbaseAmount;
 
@@ -233,7 +238,7 @@ export class WalletService {
         cache.statusUpdatedOn = Date.now();
         cache.isValid = true;
         cache.email = status.preferences ? status.preferences.email : null;
-        return cacheBalance(wallet, status.balance);
+        return cacheBalance(wallet, status.balance, status.invitesBalance);
       };
 
       let walletStatusHash = (status: any): any => {

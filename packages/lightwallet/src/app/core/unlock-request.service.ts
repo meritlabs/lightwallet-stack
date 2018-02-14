@@ -68,9 +68,6 @@ export class UnlockRequestService {
         this.confirmedRequests = requests.confirmed;
         this.activeRequestsNumber =  this.activeRequests.length;
         await this.persistenseService.setActiveRequestsNumber(this.activeRequestsNumber);
-
-        console.log(this.activeRequests, 'ACTIVE REQUESTS');
-
     }
 
     public async confirmRequest(request: IUnlockRequest) {
