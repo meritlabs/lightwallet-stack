@@ -392,7 +392,7 @@ describe('Merit Service', function() {
         whitelist: '127.0.0.1',
         zmqpubhashblock: 'tcp://127.0.0.1:28332',
         zmqpubrawtx: 'tcp://127.0.0.1:28332',
-        zmqpubrawreferral: 'tcp://127.0.0.1:28332',
+        zmqpubrawreferraltx: 'tcp://127.0.0.1:28332',
       });
     });
     it('will expand relative datadir to absolute path', function() {
@@ -491,7 +491,7 @@ describe('Merit Service', function() {
         server: 1,
         zmqpubrawtx: 1,
         zmqpubhashblock: 1,
-        zmqpubrawreferral: 1,
+        zmqpubrawreferraltx: 1,
         reindex: 1
       };
       var node = {};
@@ -508,7 +508,7 @@ describe('Merit Service', function() {
         server: 1,
         zmqpubrawtx: 'tcp://127.0.0.1:28332',
         zmqpubhashblock: 'tcp://127.0.0.1:28331',
-        zmqpubrawreferral: 'tcp://127.0.0.1:28331',
+        zmqpubrawreferraltx: 'tcp://127.0.0.1:28331',
         reindex: 1
       };
       var node = {};
