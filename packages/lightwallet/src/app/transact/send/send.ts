@@ -51,7 +51,7 @@ export class SendView {
 
   private async updateHasUnlocked() {
     const wallets = await this.profileService.getWallets();
-    this.hasUnlockedWallets = wallets && wallets.some(w => w.unlocked);
+    this.hasUnlockedWallets = wallets && wallets.some(w => w.confirmed);
   }
 
   async ionViewWillEnter() {

@@ -79,7 +79,7 @@ export class ReceiveView {
     this.wallets = await this.profileService.getWallets();
     if (this.wallets) {
       this.hasUnlockedWallets = this.wallets.some(w => {
-        if (w.unlocked) {
+        if (w.confirmed) {
           this.wallet = w;
           this.generateAddress();
           return true;
