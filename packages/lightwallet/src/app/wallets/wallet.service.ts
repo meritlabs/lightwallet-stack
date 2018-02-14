@@ -22,7 +22,7 @@ import { RateService } from 'merit/transact/rate.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { Observable } from 'rxjs/Observable';
-
+import { ENV } from '@app/env';
 
 /* Refactor CheckList:
   - Bwc Error provider
@@ -658,7 +658,7 @@ export class WalletService {
     const opts: any = {
       m: 1,
       n: 1,
-      networkName: this.configService.getDefaults().network.name,
+      networkName: ENV.network,
       parentAddress,
       alias
     };
@@ -1389,7 +1389,7 @@ export class WalletService {
   private async seedWallet(opts: any): Promise<MeritWalletClient> {
     opts = opts ? opts : {};
     let walletClient = this.bwcService.getClient(null, opts);
-    let network = opts.networkName || this.configService.getDefaults().network.name;
+    let network = opts.networkName || ENV.network;
 
     if (opts.mnemonic) {
       try {
