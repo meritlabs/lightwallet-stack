@@ -48,6 +48,17 @@ export class SendService {
     return info.isValid && info.isBeaconed && info.isConfirmed;
   }
 
+  public async isAddressBeaconed(addr: string): Promise<boolean> {
+    if (!this.isAddress(addr)) {
+      return false;
+    }
+
+    const info = await this.bwcService.getClient(null, {}).validateAddress(addr);
+
+    return info.isValid && info.isBeaconed;
+
+  }
+
   public async getValidAddress(input: string): Promise<string> {
     if (!(this.isAddress(input) || this.couldBeAlias(input))) {
       return null;
