@@ -71,7 +71,7 @@ export class UnlockRequestService {
     }
 
     public async confirmRequest(request: IUnlockRequest) {
-        await this.walletService.sendInvite(request.wallet.client, request.address);
+        await this.walletService.sendInvite(request.walletClient, request.address);
         request.isConfirmed = true;
 
         this.hiddenAddresses = this.hiddenAddresses.filter(a => a != request.address);
