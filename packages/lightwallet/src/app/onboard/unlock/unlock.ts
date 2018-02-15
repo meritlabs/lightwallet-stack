@@ -23,12 +23,11 @@ import * as _ from 'lodash';
   templateUrl: 'unlock.html',
 })
 export class UnlockView {
-  public unlockState: 'success' | 'fail' | 'aliasFail';
+  public unlockState: 'success' | 'fail' | 'addressFail';
   public formData = {
       parentAddress: '' ,
-      alias: '',
-      aliasValidationError: '',
-      aliasCheckInProgress: false
+      addressCheckError: '',
+      addressCheckInProgress: false
     };
   public easyReceipt: EasyReceipt;
 
@@ -59,91 +58,48 @@ export class UnlockView {
     if (this.easyReceipt) this.formData.parentAddress = this.easyReceipt.parentAddress;
   }
 
-  checkAlias() {
+  checkAddress() {
 
-    if (!this.formData.alias) {
-      this.validateAliasDebounce.cancel();
-      this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = null;
-    }
-
-    if (this.formData.alias.length < 4) {
-      this.validateAliasDebounce.cancel();
-      this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = 'Alias should contain at least 4 symbols';
-    }
-
-    if (!this.sendService.couldBeAlias(this.formData.alias)) {
-      this.validateAliasDebounce.cancel();
-      this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = 'Incorrect alias format';
-    }
-
-    this.formData.aliasValidationError = null;
-
-    this.formData.aliasCheckInProgress = true;
-    this.validateAliasDebounce();
-
+    this.formData.addressCheckInProgress = true;
+    this.validateAddressDebounce();
   }
 
-  private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
+  private validateAddressDebounce = _.debounce(() => { this.validateAddress() }, 750);
 
-  private async validateAlias() {
+  private async validateAddress() {
 
-    let addressExists = await this.sendService.getValidAddress(this.formData.alias);
 
-    if (addressExists) {
-      this.formData.aliasValidationError = 'Alias already in use';
-    } else {
-      this.formData.aliasValidationError = null;
-    }
-
-    this.formData.aliasCheckInProgress = false;
-  }
-
-  async createWallet() {
     if (!this.formData.parentAddress) {
-      this.unlockState = 'fail';
-      return;
-    }
-
-    if (this.formData.aliasValidationError) {
-      this.unlockState = 'aliasFail';
-      return;
-    }
-
-    const loader = this.loaderCtrl.create({ content: 'Creating wallet...' });
-    await loader.present();
-
-    try {
-      const wallet = await this.walletService.createDefaultWallet(this.formData.parentAddress, this.formData.alias);
-      this.logger.info('Created a new default wallet!');
-
-      if (this.config.get().pushNotificationsEnabled) {
-        this.logger.info('Subscribing to push notifications for default wallet');
-        this.pushNotificationService.subscribe(wallet);
+      return this.formData.addressCheckError = 'Address cannot be empty';
+    } else if (!this.sendService.isAddress(this.formData.parentAddress)) {
+      if (!this.sendService.couldBeAlias(this.formData.parentAddress)) {
+        return this.formData.addressCheckError = 'Incorrect address or alias format';
       } else {
-        this.logger.info('Subscribing to long polling for default wallet');
-        this.pollingNotificationService.enablePolling(wallet);
+        let addressExists = await this.sendService.getValidAddress(this.formData.parentAddress);
+        if (!addressExists) {
+          return this.formData.addressCheckError = 'Alias not found';
+        }
       }
-
-      this.navCtrl.push('BackupView', {
-        mnemonic: wallet!.getMnemonic(),
-      });
-    } catch (err) {
-      if (err == Errors.INVALID_REFERRAL) this.unlockState = 'fail';
-      this.logger.debug('Could not unlock wallet: ', err);
-      this.toastCtrl.create({
-        message: err.text || err.message || 'Unknown error',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+    } else {
+      let addressExists = await this.sendService.getValidAddress(this.formData.parentAddress);
+      if (!addressExists) {
+        return this.formData.addressCheckError = 'Address not found';
+      }
     }
 
-    await loader.dismiss();
+    this.formData.addressCheckError = null;
+    this.formData.addressCheckInProgress = false;
   }
 
+  //
   onInputFocus() {
     setTimeout(() => this.content.scrollToBottom(), 500);
+  }
+
+  toAliasView() {
+    if (this.formData.parentAddress && !this.formData.addressCheckInProgress && !this.formData.addressCheckError) {
+      this.navCtrl.push('AliasView', {parentAddress: this.formData.parentAddress});
+    }
   }
 
 }

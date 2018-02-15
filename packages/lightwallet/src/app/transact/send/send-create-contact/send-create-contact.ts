@@ -6,6 +6,8 @@ import { MeritToastController } from "merit/core/toast.controller";
 import { MeritContact } from '../../../../models/merit-contact';
 import { ContactsProvider } from '../../../../providers/contacts/contacts';
 
+import { ENV } from '@app/env';
+
 @IonicPage()
 @Component({
   selector: 'view-send-create-contact',
@@ -33,7 +35,7 @@ export class SendCreateContactView {
   }
 
   save() {
-    return this.contactsService.add(this.contact, this.contact.meritAddresses[0].address, this.contact.meritAddresses[0].network)
+    return this.contactsService.add(this.contact, this.contact.meritAddresses[0].address, ENV.network)
       .then(() => {
         this.viewCtrl.dismiss(this.contact);
       });
@@ -56,7 +58,7 @@ export class SendCreateContactView {
       }).present();
     } 
 
-    let network = this.sendService.getAddressNetwork(address).name;
+    let network = ENV.network;
     let meritAddress = {address, network};
     this.contact.meritAddresses.push(meritAddress);
     this.newAddress = '';

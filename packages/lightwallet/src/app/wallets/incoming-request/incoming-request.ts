@@ -17,7 +17,7 @@ import { IUnlockRequest, UnlockRequestService } from 'merit/core/unlock-request.
 })
 export class IncomingRequestModal {
 
-  public unlockRequest: IUnlockRequest;
+  public unlockRequest: any;
   public contacts: Array<MeritContact> = [];
   public wallets: Array<IDisplayWallet> = [];
 
@@ -31,6 +31,7 @@ export class IncomingRequestModal {
               private unlockService: UnlockRequestService,
               private loadingCtrl: LoadingController) {
     this.unlockRequest = this.navParams.get('request');
+    console.log(this.unlockRequest);
     this.wallets = this.navParams.get('wallets');
   }
 
@@ -91,7 +92,7 @@ export class IncomingRequestModal {
 
   selectWallet() {
     const modal = this.modalCtrl.create('SelectInviteWalletModal', {
-      selectedWallet: this.unlockRequest.wallet,
+      selectedWallet: this.unlockRequest.walletClient,
       availableWallets: this.wallets
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {

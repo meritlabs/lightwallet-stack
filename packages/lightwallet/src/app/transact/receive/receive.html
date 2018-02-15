@@ -69,7 +69,6 @@
 
       <div class="container" *ngIf="wallet && wallet.isComplete() && qrAddress && !addressGenerationInProgress">
         <qr-code *ngIf="address" [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
-        <div class="address" (click)="copyToClipboard(address)" [clip]="qrAddress">{{ qrAddress }}</div>
       </div>
 
       <div class="container">
@@ -120,7 +119,7 @@
           </ion-avatar>
           <ion-label stacked>
             <p>Merit Address</p>
-            <h2>{{ address }}</h2>
+            <h2>{{ alias ? '@'+alias : address }}</h2>
           </ion-label>
         </button>
 

@@ -6,6 +6,8 @@ import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { ConfigService } from 'merit/shared/config.service';
 
+import { ENV } from '@app/env';
+
 @Injectable()
 export class FeeService {
   public feeOpts: Object;
@@ -43,7 +45,7 @@ export class FeeService {
     if (feeLevel == 'custom') return Promise.resolve();
     let self = this;
 
-    network = network || this.configService.getDefaults().network.name;
+    network = network || ENV.network;
 
     return this.getFeeLevel(network, feeLevel).then((levelData: { data: { level: string, feePerKb: number }, fromCache: Boolean }) => {
       let feeLevelRate = levelData.data

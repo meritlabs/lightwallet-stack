@@ -694,3 +694,9 @@ $v-tab-send-selected-icon: url('../img/tab-icons/ico-send-selected.svg') !defaul
 .md ion-item .item-inner {
   border: none !important;
 }
+
+.toolbar-md-light, toolbar-ios-light {
+  .toolbar-title {
+    color: #2d3c50;
+  }
+}

@@ -4,6 +4,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { PopupService } from 'merit/core/popup.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
+import { ENV } from '@app/env';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -33,7 +34,7 @@ export class CreateVaultMasterKeyView {
     if (!data.masterKey) {
       let masterKeyMnemonic = data.selectedWallet.getNewMnemonic(undefined);
 
-      let network = data.selectedWallet.credentials.network || this.configService.getDefaults().network.name;
+      let network = data.selectedWallet.credentials.network || ENV.network;
       let masterKey = masterKeyMnemonic.toHDPrivateKey('', network);
 
       data.masterKey = masterKey;
