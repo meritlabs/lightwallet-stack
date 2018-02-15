@@ -42,12 +42,6 @@ export class EasySendService {
           network: opts.network,
         };
 
-        console.log('script', easySend.script);
-        console.log('secret', easySend.secret);
-        console.log('parentAddress', easySend.parentAddress);
-        console.log('senderPubKey', easySend.senderPubKey);
-        console.log('scriptAddress', easySendAddress);
-
         // easy send address is a mix of script_id pubkey_id
         easySend.scriptAddress = easySendAddress;
         easySend.scriptReferralOpts = scriptReferralOpts;
