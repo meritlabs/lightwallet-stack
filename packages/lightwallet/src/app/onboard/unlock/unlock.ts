@@ -68,21 +68,24 @@ export class UnlockView {
 
   private async validateAddress() {
 
-
     if (!this.formData.parentAddress) {
+      this.formData.addressCheckInProgress = false;
       return this.formData.addressCheckError = 'Address cannot be empty';
     } else if (!this.sendService.isAddress(this.formData.parentAddress)) {
       if (!this.sendService.couldBeAlias(this.formData.parentAddress)) {
+        this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Incorrect address or alias format';
       } else {
         let addressExists = await this.sendService.getValidAddress(this.formData.parentAddress);
         if (!addressExists) {
+          this.formData.addressCheckInProgress = false;
           return this.formData.addressCheckError = 'Alias not found';
         }
       }
     } else {
       let addressExists = await this.sendService.getValidAddress(this.formData.parentAddress);
       if (!addressExists) {
+        this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Address not found';
       }
     }
@@ -93,7 +96,7 @@ export class UnlockView {
 
   //
   onInputFocus() {
-    setTimeout(() => this.content.scrollToBottom(), 500);
+    //setTimeout(() => this.content.scrollToBottom(), 500);
   }
 
   toAliasView() {
