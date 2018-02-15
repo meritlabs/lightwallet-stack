@@ -17,6 +17,8 @@ export class SendViaView {
   public highlightedMethod:SendMethod;
   public suggestedMethod:SendMethod;
 
+  public easySendEnabled: boolean;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -26,9 +28,12 @@ export class SendViaView {
     this.contact = this.navParams.get('contact');
     this.amount = this.navParams.get('amount');
     this.suggestedMethod = this.navParams.get('suggestedMethod');
+    this.easySendEnabled = this.navParams.get('isEasyEnabled');
+    console.log(this.easySendEnabled, 'EASY ENABLED');
   }
 
   async ionViewDidLoad() {
+
 
     let searchIn = (method) => {
       if (method.destination == SendMethod.DESTINATION_SMS) {

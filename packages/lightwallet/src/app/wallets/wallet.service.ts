@@ -22,7 +22,7 @@ import { RateService } from 'merit/transact/rate.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { Observable } from 'rxjs/Observable';
-
+import { ENV } from '@app/env';
 
 /* Refactor CheckList:
   - Bwc Error provider
@@ -134,9 +134,9 @@ export class WalletService {
       };
 
       //TODO: Separate, clarify, and tighten usage of Rate and Tx-Format service below.
-      let cacheBalance = (wallet: MeritWalletClient, balance: any): Promise<any> => {
+      let cacheBalance = (wallet: MeritWalletClient, status: any): Promise<any> => {
         return new Promise((resolve, reject) => {
-          if (!balance) return resolve();
+          if (!status.balance) return resolve();
 
           let configGet: any = this.configService.get();
           let config: any = configGet.wallet;
@@ -144,26 +144,31 @@ export class WalletService {
           let cache = wallet.cachedStatus;
 
           // Address with Balance
-          cache.balanceByAddress = balance.byAddress;
+          cache.balanceByAddress = status.balance.byAddress;
 
           // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
-          cache.totalBalanceMicros = balance.totalAmount;
+          cache.totalBalanceMicros = status.balance.totalAmount;
 
-          cache.pendingCoinbaseAmount = balance.totalPendingCoinbaseAmount;
+          if (status.invitesBalance) {
+            cache.confirmedInvites = status.invitesBalance.availableConfirmedAmount;
+          }
+
+
+          cache.pendingCoinbaseAmount = status.balance.totalPendingCoinbaseAmount;
 
           // Spend unconfirmed funds
           if (config.spendUnconfirmed) {
-            cache.lockedBalanceSat = balance.lockedAmount;
-            cache.availableBalanceSat = balance.availableAmount;
-            cache.totalBytesToSendMax = balance.totalBytesToSendMax;
+            cache.lockedBalanceSat = status.balance.lockedAmount;
+            cache.availableBalanceSat = status.balance.availableAmount;
+            cache.totalBytesToSendMax = status.balance.totalBytesToSendMax;
             cache.pendingAmount = 0;
-            cache.spendableAmount = balance.totalAmount - balance.lockedAmount - balance.totalPendingCoinbaseAmount;
+            cache.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
           } else {
-            cache.lockedBalanceSat = balance.lockedConfirmedAmount;
-            cache.availableBalanceSat = balance.availableConfirmedAmount;
-            cache.totalBytesToSendMax = balance.totalBytesToSendConfirmedMax;
-            cache.pendingAmount = balance.totalAmount - balance.totalConfirmedAmount;
-            cache.spendableAmount = balance.totalConfirmedAmount - balance.lockedAmount - balance.totalPendingCoinbaseAmount;
+            cache.lockedBalanceSat = status.balance.lockedConfirmedAmount;
+            cache.availableBalanceSat = status.balance.availableConfirmedAmount;
+            cache.totalBytesToSendMax = status.balance.totalBytesToSendConfirmedMax;
+            cache.pendingAmount = status.balance.totalAmount - status.balance.totalConfirmedAmount;
+            cache.spendableAmount = status.balance.totalConfirmedAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
           }
 
           // Selected unit
@@ -181,7 +186,7 @@ export class WalletService {
           cache.alternativeIsoCode = config.settings.alternativeIsoCode;
 
           // Check address
-          return this.isAddressUsed(wallet, balance.byAddress).then((used) => {
+          return this.isAddressUsed(wallet, status.balance.byAddress).then((used) => {
             if (used) {
               this.logger.debug('Address used. Creating new');
               // Force new address
@@ -233,7 +238,7 @@ export class WalletService {
         cache.statusUpdatedOn = Date.now();
         cache.isValid = true;
         cache.email = status.preferences ? status.preferences.email : null;
-        return cacheBalance(wallet, status.balance);
+        return cacheBalance(wallet, status);
       };
 
       let walletStatusHash = (status: any): any => {
@@ -653,7 +658,7 @@ export class WalletService {
     const opts: any = {
       m: 1,
       n: 1,
-      networkName: this.configService.getDefaults().network.name,
+      networkName: ENV.network,
       parentAddress,
       alias
     };
@@ -1384,7 +1389,7 @@ export class WalletService {
   private async seedWallet(opts: any): Promise<MeritWalletClient> {
     opts = opts ? opts : {};
     let walletClient = this.bwcService.getClient(null, opts);
-    let network = opts.networkName || this.configService.getDefaults().network.name;
+    let network = opts.networkName || ENV.network;
 
     if (opts.mnemonic) {
       try {

@@ -1,25 +1,36 @@
 view-unlock-requests {
+
+  ion-header {
+    ion-avatar {
+      background: transparent !important;
+      .invites-icon {
+        transform: rotate(-45deg);
+      }
+    }
+  }
+
+
   .cta {
     text-align: center;
     img {
-      max-width: 80%;
+      max-width: 45%;
       height: auto;
-      margin-top: 20px;
+      margin-top: 50px;
+      margin-bottom: 20px;
     }
 
     .info-box {
       text-align: left;
-
-      h2 {
-        margin-top: 0;
-        color: #2d3c50;
-        font-weight: 500;
-      }
-
+      color: #73819B;
+      background: transparent;
       p {
         margin-bottom: 0;
       }
     }
+  }
+
+  h2.address {
+    font-size: 12px;
   }
 
   .total-invites {

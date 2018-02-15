@@ -79,6 +79,7 @@ export class API {
   public started: boolean;
   public copayerId: string;
   public unlocked: boolean;
+  public confirmed: boolean;
   public parentAddress: string;
   public balanceHidden: boolean;
   public eventEmitter: any;
@@ -1960,6 +1961,7 @@ export class API {
 
   private _processWallet(wallet): Promise<any> {
     return new Promise((resolve, reject) => {
+
       let encryptingKey = this.credentials.sharedEncryptingKey;
 
       let name = Utils.decryptMessage(wallet.name, encryptingKey);
@@ -2018,13 +2020,18 @@ export class API {
         // Add it to result
         return resolve(data.customData = customData);
       });
-    }
+    };
+
+    let processConfirmStatus = (status) => {
+        this.confirmed = (status.invitesBalance && status.invitesBalance.availableConfirmedAmount > 0);
+    };
 
     // Resolve all our async calls here, then resolve this wrapping promise.
     return Promise.all([
       processCustomData(status),
       this._processWallet(status.wallet),
-      this._processTxps(status.pendingTxps)
+      this._processTxps(status.pendingTxps),
+      processConfirmStatus(status)
     ]).then(() => {
       return Promise.resolve();
     });

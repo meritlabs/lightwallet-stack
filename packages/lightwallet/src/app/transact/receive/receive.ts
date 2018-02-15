@@ -15,6 +15,7 @@ import { RateService } from 'merit/transact/rate.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { MERIT_MODAL_OPTS } from '../../../utils/constants';
+import { SendService } from 'merit/transact/send/send.service';
 
 
 @IonicPage()
@@ -26,6 +27,7 @@ export class ReceiveView {
 
   protocolHandler: string;
   address: string;
+  alias: string;
   qrAddress: string;
   amount: number;
   amountMicros: number;
@@ -55,13 +57,16 @@ export class ReceiveView {
               private clipboard: Clipboard,
               private rateService: RateService,
               private configService: ConfigService,
-              private events: Events) {
+              private events: Events,
+              private sendService: SendService
+  ) {
     this.protocolHandler = 'merit';
     this.availableUnits = [
       this.configService.get().wallet.settings.unitCode.toUpperCase(),
       this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
     ];
     this.amountCurrency = this.availableUnits[0];
+
   }
 
   async ionViewDidLoad() {
@@ -79,7 +84,7 @@ export class ReceiveView {
     this.wallets = await this.profileService.getWallets();
     if (this.wallets) {
       this.hasUnlockedWallets = this.wallets.some(w => {
-        if (w.unlocked) {
+        if (w.confirmed) {
           this.wallet = w;
           this.generateAddress();
           return true;
@@ -95,8 +100,9 @@ export class ReceiveView {
 
     try {
       this.address = this.walletService.getRootAddress(this.wallet).toString();
+      let info=  await this.sendService.getAddressInfo(this.address);
+      this.alias = info.alias;
       this.addressGenerationInProgress = false;
-      //if (forceNew) this.mainAddressGapReached = false; // that means, we  successfully generated NEW address
       this.formatAddress();
     } catch (err) {
       if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code) {

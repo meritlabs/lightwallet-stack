@@ -6,6 +6,8 @@ import { ConfigService } from 'merit/shared/config.service';
 // Depends on creating typings and publishing the pkg.
 import { MeritWalletClient } from '../../lib/merit-wallet-client';
 
+import { ENV } from '@app/env';
+
 @Injectable()
 export class BwcService {
   public buildTx: Function; // = BWC.buildTx;
@@ -38,8 +40,10 @@ export class BwcService {
   public getClient(walletData, opts: any = {}): MeritWalletClient {
     //note opts use `bwsurl` all lowercase;
 
+    console.log('MWC', opts.bwsurl, ENV.mwsUrl);
+
     let mwc = MeritWalletClient.getInstance({
-      baseUrl: opts.bwsurl || this.config.get().bws.url,
+      baseUrl: opts.bwsurl || ENV.mwsUrl,
       verbose: opts.verbose || false,
       timeout: 100000,
       transports: ['polling'],

@@ -6,6 +6,7 @@ import { IAddressBook, MeritContact } from '../../models/merit-contact';
 import { ConfigService } from 'merit/shared/config.service';
 import { createMeritContact } from '../../utils/contacts';
 import * as _ from 'lodash';
+import { ENV } from '@app/env';
 
 const DESIRED_FIELDS = [
   'displayName',
@@ -42,21 +43,21 @@ export class ContactsProvider {
     this.contacts = await this.getAllMeritContacts();
   }
 
-  list(network: string = this.configService.get().network.name): Promise<IAddressBook> {
+  list(network: string = ENV.network): Promise<IAddressBook> {
     return this.getAddressbook(network)
       .catch((err) => {
         return Promise.reject(new Error('Error listing addressBook: ' + err));
       });
   };
 
-  async add(entry: MeritContact, address: string, network: string = this.configService.get().network.name): Promise<IAddressBook> {
+  async add(entry: MeritContact, address: string, network: string = ENV.network): Promise<IAddressBook> {
     const addressBook = await this.getAddressbook(network);
     addressBook[address] = entry;
     await this.persistenceService.setAddressbook(network, addressBook);
     return addressBook;
   };
 
-  async bindAddressToContact(contact: MeritContact, address: string, network: string = this.configService.get().network.name) {
+  async bindAddressToContact(contact: MeritContact, address: string, network: string = ENV.network) {
     const addressBook: IAddressBook = await this.getAddressbook(network);
 
     let existingContact: MeritContact;
@@ -76,7 +77,7 @@ export class ContactsProvider {
     return this.persistenceService.setAddressbook(network, addressBook);
   }
 
-  async get(addr: string, network: string = this.configService.get().network.name): Promise<MeritContact> {
+  async get(addr: string, network: string = ENV.network): Promise<MeritContact> {
     try {
       const addressBook = await this.getAddressbook(network);
 
@@ -105,7 +106,7 @@ export class ContactsProvider {
 
   async getAllMeritContacts(): Promise<MeritContact[]> {
     const deviceContacts: Contact[] = await this.getDeviceContacts();
-    const localContacts: IAddressBook = await this.getAddressbook(this.configService.get().network.name);
+    const localContacts: IAddressBook = await this.getAddressbook(ENV.network);
 
     const contacts: MeritContact[] = deviceContacts
       .filter((contact: Contact) => !_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails))
@@ -140,14 +141,14 @@ export class ContactsProvider {
     return _.sortBy(contacts, ['name.formatted']);
   }
 
-  async remove(addr: string, network: string = this.configService.get().network.name): Promise<IAddressBook> {
+  async remove(addr: string, network: string = ENV.network): Promise<IAddressBook> {
     const addressBook = await this.getAddressbook(network);
     delete addressBook[addr];
     await this.persistenceService.setAddressbook(network, addressBook);
     return addressBook;
   };
 
-  async getAddressbook(network: string = this.configService.get().network.name): Promise<IAddressBook> {
+  async getAddressbook(network: string = ENV.network): Promise<IAddressBook> {
     const addressBook = await this.persistenceService.getAddressbook(network);
     return _.isEmpty(addressBook) ? {} : addressBook;
   }

@@ -7,6 +7,7 @@ import { ConfigService } from 'merit/shared/config.service';
 import { FeeService } from 'merit/shared/fee/fee.service'
 import { LedgerService } from 'merit/shared/ledger.service';
 
+import { ENV } from '@app/env';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @Injectable()
@@ -69,11 +70,8 @@ export class EasyReceiveService {
     }
   }
 
-  async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = '', network = this.configService.getDefaults().network.name): Promise<any> {
-    const opts: any = {
-      bwsurl: this.configService.getDefaults().bws.url
-    };
-    const walletClient = this.bwcService.getClient(null, opts);
+  async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = '', network = ENV.network): Promise<any> {
+    const walletClient = this.bwcService.getClient(null, {});
 
     try {
       const scriptData = this.generateEasyScipt(receipt, password, network);

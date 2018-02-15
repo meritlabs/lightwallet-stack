@@ -17,18 +17,31 @@
 <ion-content>
 
   <div class="easy-send-section" *ngIf="contact?.phoneNumbers?.length || contact?.emails?.length">
+
+    <div *ngIf="">
+      <div class="unlock-backdrop"></div>
+
+      <div class="unlock-popup">
+          <div class="top-label">Before you start...</div>
+          <img src="assets/img/icons/confirm.svg">
+          <h2>Waiting for unlock</h2>
+          <div class="bottom-label">You cannot receive Merit until your wallet unlock request is confirmed</div>
+      </div>
+    </div>
+
     <ion-item-divider>
       EasySend
       <button ion-button clear (click)="showEasyTooltip()" class="tooltip-button">
         <ion-icon name="ios-information-circle-outline"></ion-icon>
       </button>
-      <p>Powerful tool to make transactions</p>
+      <p *ngIf="easySendEnabled">Powerful tool to make transactions</p>
+      <p *ngIf="!easySendEnabled">EasySend options are disabled because you do not have any invites you can use</p>
     </ion-item-divider>
 
     <ion-list *ngIf="contact?.phoneNumbers?.length">
       <button ion-item detail-none text-wrap *ngFor="let phoneNumber of contact.phoneNumbers; let i = index"
               (click)="select('easy', 'sms', phoneNumber.value)"
-              [class.selected]="highlightedMethod?.value == phoneNumber.value">
+              [class.selected]="highlightedMethod?.value == phoneNumber.value" [disabled]="!easySendEnabled">
         <ion-avatar item-start *ngIf="i == 0">
           <ion-icon name="phone-portrait"></ion-icon>
         </ion-avatar>
@@ -39,7 +52,8 @@
 
     <ion-list *ngIf="contact?.emails?.length">
       <button ion-item detail-none text-wrap *ngFor="let email of contact.emails; let i = index"
-              (click)="select('easy', 'email', email.value)" [class.selected]="highlightedMethod?.value == email.value">
+              (click)="select('easy', 'email', email.value)" [class.selected]="highlightedMethod?.value == email.value"
+              [disabled]="!easySendEnabled">
         <ion-avatar item-start *ngIf="i == 0">
           <ion-icon name="mail"></ion-icon>
         </ion-avatar>
@@ -53,7 +67,8 @@
     <ion-list *ngIf="contact?.meritAddresses?.length">
       <button ion-item detail-none text-wrap *ngFor="let meritAddress of contact.meritAddresses; let i = index"
               (click)="select('easy', 'address', meritAddress.address)"
-              [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'easy'">
+              [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'easy'"
+              [disabled]="!easySendEnabled">
 
         <ion-avatar img-icon item-start *ngIf="i == 0">
           <img src="assets/img/icons/merit.svg">
@@ -82,7 +97,8 @@
 
       <button ion-item detail-none text-wrap *ngFor="let meritAddress of contact.meritAddresses; let i = index"
               (click)="select('classic', 'address', meritAddress.address)"
-              [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'classic'">
+              [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'classic'"
+              [disabled]="!easySendEnabled">
 
         <ion-avatar img-icon item-start *ngIf="i == 0">
           <img src="assets/img/icons/merit.svg">

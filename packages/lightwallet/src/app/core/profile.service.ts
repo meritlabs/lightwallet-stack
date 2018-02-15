@@ -18,6 +18,8 @@ import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
+import { ENV } from '@app/env';
+
 /*
   Historically, this acted as the API-Client
   Now, the goal is to roll up convenience-statistics
@@ -251,10 +253,10 @@ export class ProfileService {
 
       let defaults: any = this.configService.getDefaults();
       let bwsFor: any = {};
-      bwsFor[walletId] = opts.bwsurl || defaults.bws.url;
+      bwsFor[walletId] = opts.bwsurl || ENV.mwsUrl;
 
       // Dont save the default
-      if (bwsFor[walletId] != defaults.bws.url) {
+      if (bwsFor[walletId] != ENV.mwsUrl) {
         this.configService.set({ bwsFor: bwsFor });
       }
 
@@ -605,7 +607,6 @@ export class ProfileService {
       wallet.n = wallet.credentials.n;
       wallet.unlocked = wallet.credentials.unlocked;
       wallet.parentAddress = wallet.credentials.parentAddress;
-
       this.updateWalletSettings(wallet);
       this.wallets[walletId] = wallet;
 
@@ -622,7 +623,7 @@ export class ProfileService {
       wallet.eventEmitter.on('notification', (n: any) => {
         this.logger.info('BWC Notification:', n);
 
-        if (n.type == 'NewBlock' && n.data.network == this.configService.getDefaults().network.name) {
+        if (n.type == 'NewBlock' && n.data.network == ENV.network) {
           this.throttledBwsEvent(n, wallet);
         } else this.propogateBwsEvent(n, wallet);
       });
@@ -742,7 +743,7 @@ export class ProfileService {
     // Create the client
     const config: any = this.configService.get();
     const defaults: any = this.configService.getDefaults();
-    const bwsurl = ((config.bwsFor && config.bwsFor[credentials.walletId]) || defaults.bws.url);
+    const bwsurl = ((config.bwsFor && config.bwsFor[credentials.walletId]) || ENV.mwsUrl);
 
     const walletClient = this.bwcService.getClient(JSON.stringify(credentials), { bwsurl });
 
