@@ -23,7 +23,7 @@ export class UnlockView {
     addressCheckInProgress: false
   };
   public easyReceipt: EasyReceipt;
-  public parsedAddress:'';
+  public parsedAddress: '';
 
   @ViewChild(Content) content: Content;
 
@@ -56,7 +56,9 @@ export class UnlockView {
   private async validateAddress() {
 
 
-let input = (this.formData.parentAddress && this.formData.parentAddress.charAt(0) == '@') ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;    if (!input) {this.formData.addressCheckInProgress = false;
+    let input = (this.formData.parentAddress && this.formData.parentAddress.charAt(0) == '@') ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
+    if (!input) {
+      this.formData.addressCheckInProgress = false;
       return this.formData.addressCheckError = 'Address cannot be empty';
     } else if (!this.sendService.isAddress(input) && !this.sendService.couldBeAlias(input)) {
       this.formData.addressCheckInProgress = false;
@@ -82,7 +84,7 @@ let input = (this.formData.parentAddress && this.formData.parentAddress.charAt(0
 
   toAliasView() {
     if (this.formData.parentAddress && !this.formData.addressCheckInProgress && !this.formData.addressCheckError) {
-      this.navCtrl.push('AliasView', {parentAddress: this.parsedAddress});
+      this.navCtrl.push('AliasView', { parentAddress: this.parsedAddress });
     }
   }
 
