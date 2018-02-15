@@ -45,6 +45,7 @@ export class UnlockRequestService {
         let requests = {hidden: [], active: [], confirmed: []},
           wallet, request, contact;
         for (wallet of await this.profileService.getWallets()) {
+            wallet.status = await this.walletService.getStatus(wallet, { force: true });
             for (request of await this.walletService.getUnlockRequests(wallet)) {
                 request.walletClient = wallet;
                 if (request.isConfirmed) {
