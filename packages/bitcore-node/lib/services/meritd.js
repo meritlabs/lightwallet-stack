@@ -1240,7 +1240,11 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
         if (err) {
           return callback(self._wrapRPCError(err));
         }
+
         var utxos = response.result.reverse();
+        log.debug('self.client.getAddressUtxos invites', invites);
+        log.debug(util.inspect(utxos, false, null));
+
         self.utxosCache.set(cacheKey, utxos);
         callback(null, updateWithMempool(utxos, mempoolDeltas));
       });
@@ -1248,11 +1252,14 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
   }
 
   if (queryMempool) {
-    self.client.getAddressMempool({addresses: addresses}, function(err, response) {
+    self.client.getAddressMempool({ addresses }, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
       }
-      finish(response.result);
+
+      const txs = response.result.filter(tx => tx.isInvite == invites);
+
+      finish(txs);
     });
   } else {
     finish();
