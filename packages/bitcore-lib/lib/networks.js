@@ -253,7 +253,7 @@ function disableRegtest() {
 module.exports = {
   add: addNetwork,
   remove: removeNetwork,
-  defaultNetwork: livenet,
+  defaultNetwork: testnet,
   livenet: livenet,
   mainnet: livenet,
   testnet: testnet,

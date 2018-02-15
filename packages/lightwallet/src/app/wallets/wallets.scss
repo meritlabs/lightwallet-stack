@@ -175,49 +175,4 @@ view-wallets {
     }
 
   }
-
-  .invite-address {
-    button[ion-button][item-end].button {
-      height: 40px;
-      width: 40px;
-
-      ion-avatar[img-icon] {
-        background: #5e6b82;
-        img {
-          margin-right: 2px;
-          margin-bottom: 1px;
-        }
-      }
-    }
-
-    ion-input.input {
-
-      input.text-input {
-        &::placeholder {
-          font-size: 14px;
-          letter-spacing: -0.47px;
-          color: #9da6b7;
-          font-weight: 400;
-        }
-      }
-    }
-  }
-
-  .send-invite {
-    display: flex;
-    padding-left: 18.5px;
-
-    ion-input {
-      line-height: 48px;
-      border-bottom: 1px solid #eee;
-    }
-
-    button {
-      width: 70px;
-
-      &::after {
-        content: none;
-      }
-    }
-  }
 }

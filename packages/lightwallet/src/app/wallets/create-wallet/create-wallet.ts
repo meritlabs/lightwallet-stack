@@ -28,7 +28,9 @@ export class CreateWalletView {
     parentAddress: '',
     alias: '', 
     aliasValidationError: '',
-    aliasCheckInProgress: false,   
+    aliasCheckInProgress: false,
+    addressCheckError: '',
+    addressCheckInProgress: false,
     bwsurl: '',
     recoveryPhrase: '',
     password: '',
@@ -37,6 +39,7 @@ export class CreateWalletView {
     hideBalance: false 
   };
 
+  parsedAddress: string;
   defaultBwsUrl: string;
 
   constructor(public navCtrl: NavController,
@@ -59,8 +62,9 @@ export class CreateWalletView {
   ionViewDidEnter() {
     let parentAddress = this.navParams.get('parentAddress');
     if (!_.isNil(parentAddress)) {
-      this.formData.parentAddress = parentAddress;
+      this.formData.parentAddress = parentAddress.toString();
     }
+    this.validateParentAddress();
   }
 
   isCreationEnabled() {
@@ -69,6 +73,8 @@ export class CreateWalletView {
       && this.formData.walletName
       && !this.formData.aliasCheckInProgress 
       && !this.formData.aliasValidationError
+      && !this.formData.addressCheckInProgress
+      && !this.formData.addressCheckError
     );
   }
 
@@ -84,7 +90,7 @@ export class CreateWalletView {
 
   showAliasTooltip() {
     return this.showTooltip('Add an alias',
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ');
+      'Add alias to your address, so people can recognize you and type something like "@merituser" instead of address.');
   }
   
   private showTooltip(title, message) {
@@ -95,45 +101,90 @@ export class CreateWalletView {
   }
 
   checkAlias() {
+    this.formData.aliasCheckInProgress = true;
+    this.validateAliasDebounce();
+  }
 
-    if (!this.formData.alias) {
+  checkParentAddress() {
+    this.formData.addressCheckInProgress = true;
+    this.validateAddressDebounce(); 
+  }
+
+  private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
+  private validateAddressDebounce = _.debounce(() => { this.validateParentAddress() }, 750);
+
+  private async validateParentAddress() {
+
+    console.log(this.formData.parentAddress);
+    let input = (this.formData.parentAddress && this.formData.parentAddress.charAt(0) == '@') ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
+
+    if (!input) {
+      this.formData.addressCheckInProgress = false;
+      return this.formData.addressCheckError = 'Address cannot be empty';
+    } else if (!this.sendService.isAddress(input)) {
+      if (!this.sendService.couldBeAlias(input)) {
+        this.formData.addressCheckInProgress = false;
+        return this.formData.addressCheckError = 'Incorrect address or alias format';
+      } else {
+        let aliasInfo = await this.sendService.getAddressInfo(input);
+        if (!aliasInfo || !aliasInfo.isValid || !aliasInfo.isBeaconed || !aliasInfo.isConfirmed) {
+          this.formData.addressCheckInProgress = false;
+          return this.formData.addressCheckError = 'Alias not found';
+        } else {
+          this.formData.addressCheckError = null;
+          this.formData.addressCheckInProgress = false;
+          return this.parsedAddress = aliasInfo.address;
+        }
+      }
+    } else {
+      let addressInfo = await this.sendService.getAddressInfo(input);
+      if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
+        this.formData.addressCheckInProgress = false;
+        return this.formData.addressCheckError = 'Address not found';
+      } else {
+        this.formData.addressCheckError = null;
+        this.formData.addressCheckInProgress = false;
+        return this.parsedAddress = addressInfo.address;
+      }
+    }
+
+
+  }
+
+  private async validateAlias() {
+
+    let input = (this.formData.alias && this.formData.alias.charAt(0) == '@') ? this.formData.alias.slice(1) : this.formData.alias;
+
+    if (!input) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
       return this.formData.aliasValidationError = null;
     }
 
-    if (this.formData.alias.length < 4) {
+    if (input.length < 4) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
       return this.formData.aliasValidationError = 'Alias should contain at least 4 symbols';
     }
 
-    if (!this.sendService.couldBeAlias(this.formData.alias)) {
+    if (!this.sendService.couldBeAlias(input)) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
       return this.formData.aliasValidationError = 'Incorrect alias format';
     }
 
-    this.formData.aliasValidationError = null;
 
-    this.formData.aliasCheckInProgress = true;
-    this.validateAliasDebounce();
-    
-  }
-
-  private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
-
-  private async validateAlias() {
-
-    let addressExists = await this.sendService.getValidAddress(this.formData.alias);
+    let addressExists = await this.sendService.getValidAddress(input);
 
     if (addressExists) {
-      this.formData.aliasValidationError = 'Alias already in use';
+      this.formData.aliasCheckInProgress = false;
+      return this.formData.aliasValidationError = 'Alias already in use';
     } else {
       this.formData.aliasValidationError = null;
+      return this.formData.aliasCheckInProgress = false;
     }
 
-    this.formData.aliasCheckInProgress = false;
+
   }
 
   async createWallet() {
@@ -145,13 +196,15 @@ export class CreateWalletView {
       }).present();
     }
 
+    let alias = (this.formData.alias && this.formData.alias.charAt(0) == '@') ? this.formData.alias.slice(1) : this.formData.alias;
+
     const opts = {
       name: this.formData.walletName,
-      parentAddress: this.formData.parentAddress,
+      parentAddress: this.parsedAddress,
+      alias: alias,
       bwsurl: this.formData.bwsurl,
       mnemonic: this.formData.recoveryPhrase,
       networkName: ENV.network,
-      alias: this.formData.alias,
       m: 1, //todo temp!
       n: 1 //todo temp!
     };

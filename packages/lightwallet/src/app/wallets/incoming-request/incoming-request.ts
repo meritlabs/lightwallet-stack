@@ -31,7 +31,6 @@ export class IncomingRequestModal {
               private unlockService: UnlockRequestService,
               private loadingCtrl: LoadingController) {
     this.unlockRequest = this.navParams.get('request');
-    console.log(this.unlockRequest);
     this.wallets = this.navParams.get('wallets');
   }
 

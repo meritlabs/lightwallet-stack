@@ -52,7 +52,6 @@ export class WalletsView {
   network: string;
 
   loading: boolean;
-  public formData = { inviteTo: '' };
 
   private get isActivePage(): boolean {
     return this.navCtrl.last().instance instanceof WalletsView;
@@ -199,7 +198,7 @@ export class WalletsView {
 
     if (!_.isEmpty(this.wallets)) {
 
-      // todo check for existing invites and suggest the wallet that has any 
+      // todo check for existing invites and suggest the wallet that has any
       const referralAdderss = this.walletService.getRootAddress(this.wallets[0]);
 
       return this.navCtrl.push('CreateWalletView', {
@@ -266,22 +265,29 @@ export class WalletsView {
    */
   private async processEasyReceipt(receipt: EasyReceipt, isRetry: boolean): Promise<void> {
     const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, '');
+    let txs = data.txs;
 
-    if (!data.txn.found) return this.showPasswordEasyReceivePrompt(receipt, isRetry); // requires different password
+    if (!_.isArray(txs)) {
+      txs = [txs];
+    }
 
-    if (data.txn.spent) {
+    if (!txs.length) {
+      return this.showPasswordEasyReceivePrompt(receipt, isRetry);
+    }
+
+    if (txs.some(tx => tx.spent)) {
       this.logger.debug('Got a spent easyReceipt. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
       await this.showSpentEasyReceiptAlert();
       return this.processPendingEasyReceipts();
     }
 
-    if (_.isUndefined(data.txn.confirmations)) {
+    if (txs.some(tx => _.isUndefined(tx.confirmations))) {
       this.logger.warn('Got easyReceipt with unknown depth. It might be expired!');
       return this.showConfirmEasyReceivePrompt(receipt, data);
     }
 
-    if (receipt.blockTimeout < data.txn.confirmations) {
+    if (txs.some(tx => receipt.blockTimeout < tx.confirmations)) {
       this.logger.debug('Got an expired easyReceipt. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
       await this.showExpiredEasyReceiptAlert();
@@ -329,8 +335,10 @@ export class WalletsView {
   }
 
   private showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
+    const amount = _.get(_.find(data.txs, (tx :any) => !tx.invite), 'amount', 0);
+
     this.alertController.create({
-      title: `You've got ${data.txn.amount} Merit!`,
+      title: `You've got ${amount} Merit!`,
       buttons: [
         {
           text: 'Reject', role: 'cancel', handler: () => {
@@ -380,8 +388,8 @@ export class WalletsView {
       if (!wallet) return Promise.reject('no wallet');
       let forceNewAddress = false;
 
-      const address = await this.walletService.getAddress(wallet, forceNewAddress);
-      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.address);
+      const address = this.walletService.getRootAddress(wallet);
+      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.toString());
 
       this.logger.info('accepted easy send', acceptanceTx);
     } catch (err) {

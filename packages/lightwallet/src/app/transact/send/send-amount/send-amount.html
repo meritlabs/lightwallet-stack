@@ -28,7 +28,7 @@
                 <ion-input
                         pattern="[0-9\.]"
                         [(ngModel)]="formData.amount"
-                        (ionChange)="processAmount($event)"
+                        (ngModelChange)="processAmount($event)"
                         [placeholder]="'Enter sending amount'"
                 ></ion-input>
             </div>

@@ -321,9 +321,6 @@ export class SendAmountView {
         feeLevel: this.selectedFeeLevel
       };
 
-      console.log(this.amount);
-      console.log(this.selectedWallet.status.spendableAmount);
-
       if (this.amount.micros == this.selectedWallet.status.spendableAmount) {
         data.sendMax = true;
         data.toAmount = null;
@@ -333,11 +330,12 @@ export class SendAmountView {
       const easyData: any = await this.getEasyData();
       data = data || {};
       data = _.merge(data, _.pick(easyData, 'script', 'toAddress'));
-      data.toAddress = data.toAddress || easyData.scriptAddress;
+      data.toAddress = easyData.scriptAddress || data.toAddress;
 
       const txpOut = await this.getTxp(_.clone(data), this.selectedWallet, opts.dryRun);
       this.txData.txp = txpOut;
       this.txData.easySend = easyData;
+      this.txData.easySendUrl = easyData.url;
       this.referralsToSign = _.filter([easyData.scriptReferralOpts]);
 
       this.txData.txp.availableFeeLevels = [];
@@ -395,11 +393,12 @@ export class SendAmountView {
     } else {
       return this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password).then((easySend) => {
         easySend.script.isOutput = true;
-        this.txData.easySendURL = getEasySendURL(easySend);
+
         return {
           script: easySend.script,
-          toAddress: easySend.scriptAddress.toString(),
+          scriptAddress: easySend.scriptAddress,
           scriptReferralOpts: easySend.scriptReferralOpts,
+          url: getEasySendURL(easySend),
         };
       });
     }
