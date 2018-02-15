@@ -140,7 +140,6 @@ Referral.prototype.fromBuffer = function(buffer) {
 
 Referral.prototype.fromBufferReader = function(reader) {
     $.checkArgument(!reader.finished(), 'No referral data received');
-    console.log('referral network', this.network);
     this.version = reader.readInt32LE();
     // we assume parent address type is a pubkeyhash
     this.parentAddress = Address.fromBuffer(reader.read(20), this.network.name, Address.PayToPublicKeyHashType);
