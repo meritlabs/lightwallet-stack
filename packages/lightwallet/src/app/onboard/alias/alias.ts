@@ -60,7 +60,7 @@ export class AliasView {
 
   private async validateAlias() {
 
-    let input = this.formData.alias.charAt(0) == '@' ? this.formData.alias.slice(1) : this.formData.alias;
+    let input =  (this.formData.alias && this.formData.alias.charAt(0) == '@')  ? this.formData.alias.slice(1) : this.formData.alias;
 
     if (!input) {
       this.validateAliasDebounce.cancel();
@@ -100,7 +100,7 @@ export class AliasView {
       return false;
     }
 
-    let alias = this.formData.alias.charAt(0) == '@' ? this.formData.alias.slice(1) : this.formData.alias;
+    let alias = (this.formData.alias && this.formData.alias.charAt(0) == '@') ? this.formData.alias.slice(1) : this.formData.alias;
 
     const loader = this.loaderCtrl.create({ content: 'Creating wallet...' });
     await loader.present();

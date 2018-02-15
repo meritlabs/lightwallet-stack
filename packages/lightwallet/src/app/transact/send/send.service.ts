@@ -43,7 +43,7 @@ export class SendService {
   }
 
   public async getAddressInfo(addr: string) {
-    return  await this.client.validateAddress(addr);
+    return await this.client.validateAddress(addr);
   }
 
 
