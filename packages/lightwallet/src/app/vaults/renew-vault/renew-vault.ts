@@ -9,6 +9,7 @@ import { VaultsService } from 'merit/vaults/vaults.service';
 
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { ENV } from '@app/env';
 
 export interface IWhitelistEntry {
   id: string,
@@ -109,7 +110,7 @@ export class VaultRenewView {
   }
 
   regenerateMasterKey() {
-    let network = this.walletClient.credentials.network || this.configService.getDefaults().network.name;
+    let network = this.walletClient.credentials.network || ENV.network;
     let masterKey = this.bitcore.PrivateKey.fromRandom(network);
     let masterKeyMnemonic = this.walletClient.getNewMnemonic(masterKey.toBuffer());
 

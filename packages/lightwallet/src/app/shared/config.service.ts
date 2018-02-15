@@ -36,10 +36,6 @@ interface Config {
     };
   };
 
-  bws: {
-    url: string;
-  };
-
   download: {
     bitpay: {
       url: string;
@@ -102,9 +98,6 @@ interface Config {
   // Stored like: aliasFor[WalletId] = "Full Wallet"
   aliasFor?: object;
 
-  network: {
-    name: string;
-  }
 };
 
 const configDefault: Config = {
@@ -131,13 +124,6 @@ const configDefault: Config = {
       defaultLanguage: '',
       feeLevel: 'normal'
     }
-  },
-
-  // Bitcore wallet service URL
-  bws: {
-    // url: 'https://mws.merit.me/bws/api'
-    url: 'http://159.203.29.124:3232/bws/api'
-    // url: 'https://stage.mws.merit.me'
   },
 
   download: {
@@ -197,11 +183,8 @@ const configDefault: Config = {
 
   log: {
     filter: 'debug'
-  },
-
-  network: {
-    name: 'testnet'
   }
+
 };
 
 @Injectable()
