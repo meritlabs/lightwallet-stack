@@ -33,6 +33,7 @@ export class UnlockView {
       addressCheckInProgress: false
     };
   public easyReceipt: EasyReceipt;
+  public parsedAddress:'';
 
   @ViewChild(Content) content: Content;
 
@@ -72,7 +73,7 @@ export class UnlockView {
 
   private async validateAddress() {
     
-    let input = this.formData.parentAddress.charAt(0) == '@' ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
+    let input = (this.formData.parentAddress && this.formData.parentAddress.charAt(0) == '@') ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
 
     if (!input) {
       this.formData.addressCheckInProgress = false;
@@ -82,22 +83,29 @@ export class UnlockView {
         this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Incorrect address or alias format';
       } else {
-        let addressExists = await this.sendService.getValidAddress(input);
-        if (!addressExists) {
+        let aliasInfo = await this.sendService.getAddressInfo(input);
+        if (!aliasInfo || !aliasInfo.isValid || !aliasInfo.isBeaconed || !aliasInfo.isConfirmed) {
           this.formData.addressCheckInProgress = false;
           return this.formData.addressCheckError = 'Alias not found';
+        } else {
+          this.formData.addressCheckError = null;
+          this.formData.addressCheckInProgress = false;
+          return this.parsedAddress = aliasInfo.address;
         }
       }
     } else {
-      let addressExists = await this.sendService.getValidAddress(input);
-      if (!addressExists) {
+      let addressInfo = await this.sendService.getAddressInfo(input);
+      if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
         this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Address not found';
+      } else {
+        this.formData.addressCheckError = null;
+        this.formData.addressCheckInProgress = false;
+        return this.parsedAddress = addressInfo.address;
       }
     }
 
-    this.formData.addressCheckError = null;
-    this.formData.addressCheckInProgress = false;
+
   }
 
   //
@@ -106,10 +114,8 @@ export class UnlockView {
   }
 
   toAliasView() {
-    let input = this.formData.parentAddress.charAt(0) == '@' ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
-
     if (this.formData.parentAddress && !this.formData.addressCheckInProgress && !this.formData.addressCheckError) {
-      this.navCtrl.push('AliasView', {parentAddress: input});
+      this.navCtrl.push('AliasView', {parentAddress: this.parsedAddress});
     }
   }
 

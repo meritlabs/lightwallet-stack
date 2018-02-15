@@ -39,6 +39,7 @@ export class CreateWalletView {
     hideBalance: false 
   };
 
+  parsedAddress: string;
   defaultBwsUrl: string;
 
   constructor(public navCtrl: NavController,
@@ -61,8 +62,9 @@ export class CreateWalletView {
   ionViewDidEnter() {
     let parentAddress = this.navParams.get('parentAddress');
     if (!_.isNil(parentAddress)) {
-      this.formData.parentAddress = parentAddress;
+      this.formData.parentAddress = parentAddress.toString();
     }
+    this.validateParentAddress();
   }
 
   isCreationEnabled() {
@@ -113,7 +115,8 @@ export class CreateWalletView {
 
   private async validateParentAddress() {
 
-    let input = this.formData.parentAddress.charAt(0) == '@' ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
+    console.log(this.formData.parentAddress);
+    let input = (this.formData.parentAddress && this.formData.parentAddress.charAt(0) == '@') ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
 
     if (!input) {
       this.formData.addressCheckInProgress = false;
@@ -123,27 +126,34 @@ export class CreateWalletView {
         this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Incorrect address or alias format';
       } else {
-        let addressExists = await this.sendService.getValidAddress(input);
-        if (!addressExists) {
+        let aliasInfo = await this.sendService.getAddressInfo(input);
+        if (!aliasInfo || !aliasInfo.isValid || !aliasInfo.isBeaconed || !aliasInfo.isConfirmed) {
           this.formData.addressCheckInProgress = false;
           return this.formData.addressCheckError = 'Alias not found';
+        } else {
+          this.formData.addressCheckError = null;
+          this.formData.addressCheckInProgress = false;
+          return this.parsedAddress = aliasInfo.address;
         }
       }
     } else {
-      let addressExists = await this.sendService.getValidAddress(input);
-      if (!addressExists) {
+      let addressInfo = await this.sendService.getAddressInfo(input);
+      if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
         this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Address not found';
+      } else {
+        this.formData.addressCheckError = null;
+        this.formData.addressCheckInProgress = false;
+        return this.parsedAddress = addressInfo.address;
       }
     }
 
-    this.formData.addressCheckError = null;
-    this.formData.addressCheckInProgress = false;
+
   }
 
   private async validateAlias() {
 
-    let input = this.formData.alias.charAt(0) == '@' ? this.formData.alias.slice(1) : this.formData.alias;
+    let input = (this.formData.alias && this.formData.alias.charAt(0) == '@') ? this.formData.alias.slice(1) : this.formData.alias;
 
     if (!input) {
       this.validateAliasDebounce.cancel();
@@ -186,12 +196,11 @@ export class CreateWalletView {
       }).present();
     }
 
-    let parentAddress = this.formData.parentAddress.charAt(0) == '@' ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
-    let alias = this.formData.alias.charAt(0) == '@' ? this.formData.alias.slice(1) : this.formData.alias;
+    let alias = (this.formData.alias && this.formData.alias.charAt(0) == '@') ? this.formData.alias.slice(1) : this.formData.alias;
 
     const opts = {
       name: this.formData.walletName,
-      parentAddress: parentAddress,
+      parentAddress: this.parsedAddress,
       alias: alias,
       bwsurl: this.formData.bwsurl,
       mnemonic: this.formData.recoveryPhrase,
