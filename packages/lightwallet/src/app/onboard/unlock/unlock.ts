@@ -13,6 +13,8 @@ import { ConfigService } from 'merit/shared/config.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { SendService } from 'merit/transact/send/send.service';
 import * as _ from 'lodash';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 
 // Unlock view for wallet
 @IonicPage({
@@ -21,6 +23,7 @@ import * as _ from 'lodash';
 @Component({
   selector: 'view-unlock',
   templateUrl: 'unlock.html',
+  providers: [BarcodeScanner]
 })
 export class UnlockView {
   public unlockState: 'success' | 'fail' | 'addressFail';
@@ -44,7 +47,8 @@ export class UnlockView {
               private config: ConfigService,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
-              private sendService: SendService
+              private sendService: SendService,
+              private addressScanner: AddressScannerService
             ) {
   }
 
@@ -104,6 +108,15 @@ export class UnlockView {
   toAliasView() {
     if (this.formData.parentAddress && !this.formData.addressCheckInProgress && !this.formData.addressCheckError) {
       this.navCtrl.push('AliasView', {parentAddress: this.formData.parentAddress});
+    }
+  }
+
+  async openQrScanner() {
+    let address = await this.addressScanner.scanAddress();
+    if (address) {
+      if (address.indesOf('merit:') == 0) address = address.slice(6);
+      this.formData.parentAddress = address;
+      this.checkAddress();
     }
   }
 
