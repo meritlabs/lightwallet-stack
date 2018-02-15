@@ -12,5 +12,5 @@ import { ChunksPipe } from 'merit/shared/chunks.pipe';
     IonicPageModule.forChild(VerifyBackupView),
   ],
 })
-export class BackupModule {
+export class VerifyBackupModule {
 }
