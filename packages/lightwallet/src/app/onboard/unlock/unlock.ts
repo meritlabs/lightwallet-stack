@@ -1,14 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
-import { App, Content, IonicPage, LoadingController, NavController } from 'ionic-angular';
+import { Content, IonicPage, NavController } from 'ionic-angular';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { Logger } from 'merit/core/logger';
-import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
-import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
-import { MeritToastController } from 'merit/core/toast.controller';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { WalletService } from 'merit/wallets/wallet.service';
 import { SendService } from 'merit/transact/send/send.service';
 import * as _ from 'lodash';
 
@@ -34,7 +28,8 @@ export class UnlockView {
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private easyReceiveService: EasyReceiveService,
-              private sendService: SendService) {}
+              private sendService: SendService) {
+  }
 
   async ionViewDidLoad() {
     // An unlock code from a friend sharing the link.
