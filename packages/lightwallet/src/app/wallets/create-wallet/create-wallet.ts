@@ -186,13 +186,16 @@ export class CreateWalletView {
       }).present();
     }
 
+    let parentAddress = this.formData.parentAddress.charAt(0) == '@' ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
+    let alias = this.formData.alias.charAt(0) == '@' ? this.formData.alias.slice(1) : this.formData.alias;
+
     const opts = {
       name: this.formData.walletName,
-      parentAddress: this.formData.parentAddress,
+      parentAddress: parentAddress,
+      alias: alias,
       bwsurl: this.formData.bwsurl,
       mnemonic: this.formData.recoveryPhrase,
       networkName: ENV.network,
-      alias: this.formData.alias,
       m: 1, //todo temp!
       n: 1 //todo temp!
     };

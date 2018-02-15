@@ -5,7 +5,7 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritContact } from '../../models/merit-contact';
 import { ContactsProvider } from '../../providers/contacts/contacts';
-import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
+import { IDisplayWallet } from '../../models/display-wallet';
 
 
 export interface IUnlockRequest {
