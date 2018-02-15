@@ -47,28 +47,12 @@ export class MeritLightWallet {
               pushNotificationService: PushNotificationsService) {}
 
   async ngOnInit() {
-    // TODO copy to interface
-    const MOCK_UNLOCK_REQUEST: {
-      date: number;
-      walletName: string;
-      status: 'pending' | 'accepted' | 'declined';
-    } = {
-      date: Date.now(),
-      walletName: 'joe',
-      status: 'pending'
-    };
-
-    // this.modalCtrl.create('IncomingUnlockRequestModal', { request: MOCK_UNLOCK_REQUEST }, Object.assign(_.clone(MERIT_MODAL_OPTS), { cssClass: MERIT_MODAL_OPTS.cssClass + ' unlock-request-modal' })).present();
-
     this.platform.resume.subscribe(() => {
       this.logger.info('Returning Native App from Background!');
       this.loadProfileAndEasySend();
     });
 
     const readySource = await this.platform.ready();
-
-    if (SplashScreen.installed())
-      await this.splashScreen.show();
 
     const appInfo: any = await this.appService.getInfo();
     this.logger.info(`
