@@ -67,23 +67,25 @@ export class UnlockView {
   private validateAddressDebounce = _.debounce(() => { this.validateAddress() }, 750);
 
   private async validateAddress() {
+    
+    let input = this.formData.parentAddress.charAt(0) == '@' ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
 
-    if (!this.formData.parentAddress) {
+    if (!input) {
       this.formData.addressCheckInProgress = false;
       return this.formData.addressCheckError = 'Address cannot be empty';
-    } else if (!this.sendService.isAddress(this.formData.parentAddress)) {
-      if (!this.sendService.couldBeAlias(this.formData.parentAddress)) {
+    } else if (!this.sendService.isAddress(input)) {
+      if (!this.sendService.couldBeAlias(input)) {
         this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Incorrect address or alias format';
       } else {
-        let addressExists = await this.sendService.getValidAddress(this.formData.parentAddress);
+        let addressExists = await this.sendService.getValidAddress(input);
         if (!addressExists) {
           this.formData.addressCheckInProgress = false;
           return this.formData.addressCheckError = 'Alias not found';
         }
       }
     } else {
-      let addressExists = await this.sendService.getValidAddress(this.formData.parentAddress);
+      let addressExists = await this.sendService.getValidAddress(input);
       if (!addressExists) {
         this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Address not found';
