@@ -1596,8 +1596,8 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
 
     function loadFromMempool(cb) {
         return self.client.getaddressmempoolreferrals({addresses: addresses}, function (err, response) {
-            if (response.error) {
-                console.log('Error occured while requesting referrals from mempool', response.error);
+            if (err || !response || response.error) {
+                console.log('Error occured while requesting referrals from mempool', response? response.error : err);
                 return cb(err, [])
             }
             console.log('mempool', response.result);
@@ -1608,8 +1608,8 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
     function loadFromBc(cb) {
 
         return self.client.getaddressreferrals({addresses: addresses}, function (err, response) {
-            if (response.error) {
-                console.log('Error occured while requesting referrals from blockchain', response.error);
+            if (err || !response || response.error) {
+                console.log('Error occured while requesting referrals from blockchain', response? response.error : err);
                 return cb(response.error, []);
             }
             return cb(null, response.result);
