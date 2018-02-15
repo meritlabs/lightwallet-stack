@@ -106,15 +106,17 @@ export class UnlockView {
   }
 
   toAliasView() {
+    let input = this.formData.parentAddress.charAt(0) == '@' ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
+
     if (this.formData.parentAddress && !this.formData.addressCheckInProgress && !this.formData.addressCheckError) {
-      this.navCtrl.push('AliasView', {parentAddress: this.formData.parentAddress});
+      this.navCtrl.push('AliasView', {parentAddress: input});
     }
   }
 
   async openQrScanner() {
     let address = await this.addressScanner.scanAddress();
     if (address) {
-      if (address.indesOf('merit:') == 0) address = address.slice(6);
+      if (address.indexOf('merit:') == 0) address = address.slice(6);
       this.formData.parentAddress = address;
       this.checkAddress();
     }

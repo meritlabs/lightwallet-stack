@@ -100,11 +100,13 @@ export class AliasView {
       return false;
     }
 
+    let alias = this.formData.alias.charAt(0) == '@' ? this.formData.alias.slice(1) : this.formData.alias;
+
     const loader = this.loaderCtrl.create({ content: 'Creating wallet...' });
     await loader.present();
 
     try {
-      const wallet = await this.walletService.createDefaultWallet(this.parentAddress, this.formData.alias);
+      const wallet = await this.walletService.createDefaultWallet(this.parentAddress, alias);
       this.logger.info('Created a new default wallet!');
 
       if (this.config.get().pushNotificationsEnabled) {

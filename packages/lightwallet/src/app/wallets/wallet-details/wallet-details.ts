@@ -5,6 +5,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 import { formatWalletHistory } from '../../../utils/transactions';
 import { createDisplayWallet, IDisplayWallet } from '../../../models/display-wallet';
+import { SendService } from 'merit/transact/send/send.service';
 
 @IonicPage({
   segment: 'wallet/:walletId',
@@ -23,7 +24,9 @@ export class WalletDetailsView {
               public navParams: NavParams,
               public walletService: WalletService,
               private logger: Logger,
-              private tabsCtrl: Tabs) {
+              private tabsCtrl: Tabs,
+              private sendService: SendService
+  ) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
     // things fast and smooth.  We can refresh as needed.
@@ -32,7 +35,7 @@ export class WalletDetailsView {
 
   async ngOnInit() {
     this.wallet = this.navParams.get('wallet');
-    this.displayWallet = await createDisplayWallet(this.wallet, this.walletService);
+    this.displayWallet = await createDisplayWallet(this.wallet, this.walletService, this.sendService);
     await this.getWalletHistory();
   }
 
