@@ -13,6 +13,8 @@ import { ConfigService } from 'merit/shared/config.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { SendService } from 'merit/transact/send/send.service';
 import * as _ from 'lodash';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 
 // Unlock view for wallet
 @IonicPage({
@@ -21,6 +23,7 @@ import * as _ from 'lodash';
 @Component({
   selector: 'view-unlock',
   templateUrl: 'unlock.html',
+  providers: [BarcodeScanner]
 })
 export class UnlockView {
   public unlockState: 'success' | 'fail' | 'addressFail';
@@ -30,6 +33,7 @@ export class UnlockView {
       addressCheckInProgress: false
     };
   public easyReceipt: EasyReceipt;
+  public parsedAddress:'';
 
   @ViewChild(Content) content: Content;
 
@@ -44,7 +48,8 @@ export class UnlockView {
               private config: ConfigService,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
-              private sendService: SendService
+              private sendService: SendService,
+              private addressScanner: AddressScannerService
             ) {
   }
 
@@ -67,38 +72,59 @@ export class UnlockView {
   private validateAddressDebounce = _.debounce(() => { this.validateAddress() }, 750);
 
   private async validateAddress() {
+    
+    let input = (this.formData.parentAddress && this.formData.parentAddress.charAt(0) == '@') ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
 
-
-    if (!this.formData.parentAddress) {
+    if (!input) {
+      this.formData.addressCheckInProgress = false;
       return this.formData.addressCheckError = 'Address cannot be empty';
-    } else if (!this.sendService.isAddress(this.formData.parentAddress)) {
-      if (!this.sendService.couldBeAlias(this.formData.parentAddress)) {
+    } else if (!this.sendService.isAddress(input)) {
+      if (!this.sendService.couldBeAlias(input)) {
+        this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Incorrect address or alias format';
       } else {
-        let addressExists = await this.sendService.getValidAddress(this.formData.parentAddress);
-        if (!addressExists) {
+        let aliasInfo = await this.sendService.getAddressInfo(input);
+        if (!aliasInfo || !aliasInfo.isValid || !aliasInfo.isBeaconed || !aliasInfo.isConfirmed) {
+          this.formData.addressCheckInProgress = false;
           return this.formData.addressCheckError = 'Alias not found';
+        } else {
+          this.formData.addressCheckError = null;
+          this.formData.addressCheckInProgress = false;
+          return this.parsedAddress = aliasInfo.address;
         }
       }
     } else {
-      let addressExists = await this.sendService.getValidAddress(this.formData.parentAddress);
-      if (!addressExists) {
+      let addressInfo = await this.sendService.getAddressInfo(input);
+      if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
+        this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Address not found';
+      } else {
+        this.formData.addressCheckError = null;
+        this.formData.addressCheckInProgress = false;
+        return this.parsedAddress = addressInfo.address;
       }
     }
 
-    this.formData.addressCheckError = null;
-    this.formData.addressCheckInProgress = false;
+
   }
 
   //
   onInputFocus() {
-    setTimeout(() => this.content.scrollToBottom(), 500);
+    //setTimeout(() => this.content.scrollToBottom(), 500);
   }
 
   toAliasView() {
     if (this.formData.parentAddress && !this.formData.addressCheckInProgress && !this.formData.addressCheckError) {
-      this.navCtrl.push('AliasView', {parentAddress: this.formData.parentAddress});
+      this.navCtrl.push('AliasView', {parentAddress: this.parsedAddress});
+    }
+  }
+
+  async openQrScanner() {
+    let address = await this.addressScanner.scanAddress();
+    if (address) {
+      if (address.indexOf('merit:') == 0) address = address.slice(6);
+      this.formData.parentAddress = address;
+      this.checkAddress();
     }
   }
 

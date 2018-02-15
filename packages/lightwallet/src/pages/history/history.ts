@@ -6,6 +6,7 @@ import { MeritWalletClient } from '../../lib/merit-wallet-client';
 import { sortBy } from 'lodash';
 import { formatWalletHistory } from '../../utils/transactions';
 import { createDisplayWallet } from '../../models/display-wallet';
+import { SendService } from 'merit/transact/send/send.service';
 
 @IonicPage()
 @Component({
@@ -19,7 +20,8 @@ export class HistoryView {
   constructor(
     private walletService: WalletService,
     private profileService: ProfileService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private sendService: SendService
   ) {}
 
   async ngOnInit() {
@@ -41,7 +43,7 @@ export class HistoryView {
     const wallets = await this.profileService.getWallets();
     let walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
       const walletHistory = await this.walletService.getTxHistory(wallet, { force });
-      return formatWalletHistory(walletHistory, await createDisplayWallet(wallet, this.walletService));
+      return formatWalletHistory(walletHistory, await createDisplayWallet(wallet, this.walletService, this.sendService));
     }));
 
     this.transactions = Array.prototype.concat.apply([], walletHistories).sort((a, b) => a.time < b.time);

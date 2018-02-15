@@ -77,13 +77,14 @@
       </span>
     </ion-item-divider>
 
-    <button ion-item detail-none text-wrap (click)="copyToClipboard(wallet.referrerAddress)" [clip]="wallet.referrerAddress" >
+    <button ion-item detail-none text-wrap (click)="copyToClipboard(wallet.referrerAddress)"
+            [clip]="wallet.alias ? '@'+wallet.alias : wallet.referrerAddress" >
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/invite.svg">
       </ion-avatar>
       <ion-label>
         <p>Invite Code</p>
-        <h2>{{ wallet.referrerAddress }}</h2>
+        <h2>{{ wallet.alias ? '@'+wallet.alias : wallet.referrerAddress }}</h2>
       </ion-label>
       <button ion-button icon-only clear item-end>
         <ion-icon merit-icon name="share"></ion-icon>

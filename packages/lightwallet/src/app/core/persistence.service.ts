@@ -488,7 +488,6 @@ export class PersistenceService {
   }
 
   setActiveRequestsNumber(requests:number) {
-   console.log(requests, 'setting requests number');
    return  this.storage.set(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER, requests);
   }
 
