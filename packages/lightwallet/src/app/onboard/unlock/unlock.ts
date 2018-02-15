@@ -58,21 +58,9 @@ export class UnlockView {
 
 let input = (this.formData.parentAddress && this.formData.parentAddress.charAt(0) == '@') ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;    if (!input) {this.formData.addressCheckInProgress = false;
       return this.formData.addressCheckError = 'Address cannot be empty';
-    } else if (!this.sendService.isAddress(input)) {
-      if (!this.sendService.couldBeAlias(input)) {
-        this.formData.addressCheckInProgress = false;
-        return this.formData.addressCheckError = 'Incorrect address or alias format';
-      } else {
-        let aliasInfo = await this.sendService.getAddressInfo(input);
-        if (!aliasInfo || !aliasInfo.isValid || !aliasInfo.isBeaconed || !aliasInfo.isConfirmed) {
-          this.formData.addressCheckInProgress = false;
-          return this.formData.addressCheckError = 'Alias not found';
-        } else {
-          this.formData.addressCheckError = null;
-          this.formData.addressCheckInProgress = false;
-          return this.parsedAddress = aliasInfo.address;
-        }
-      }
+    } else if (!this.sendService.isAddress(input) && !this.sendService.couldBeAlias(input)) {
+      this.formData.addressCheckInProgress = false;
+      return this.formData.addressCheckError = 'Incorrect address or alias format';
     } else {
       let addressInfo = await this.sendService.getAddressInfo(input);
       if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
