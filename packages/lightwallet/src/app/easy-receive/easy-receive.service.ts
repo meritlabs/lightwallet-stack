@@ -44,7 +44,7 @@ export class EasyReceiveService {
   }
 
   async getPendingReceipts(): Promise<Array<EasyReceipt>> {
-    const receipts = []; //(await this.persistanceService.getPendingsEasyReceipts()) || [];
+    const receipts = (await this.persistanceService.getPendingsEasyReceipts()) || [];
     return receipts.map(receipt => new EasyReceipt(receipt));
   }
 
