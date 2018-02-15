@@ -134,41 +134,41 @@ export class WalletService {
       };
 
       //TODO: Separate, clarify, and tighten usage of Rate and Tx-Format service below.
-      let cacheBalance = (wallet: MeritWalletClient, balance: any, invitesBalance: any): Promise<any> => {
+      let cacheBalance = (wallet: MeritWalletClient, status: any): Promise<any> => {
         return new Promise((resolve, reject) => {
-          if (!balance) return resolve();
+          if (!status.balance) return resolve();
 
           let configGet: any = this.configService.get();
           let config: any = configGet.wallet;
 
           let cache = wallet.cachedStatus;
 
-          // Address with Balance
-          cache.balanceByAddress = balance.byAddress;
+          // Address with status.balance
+          cache.status.balanceByAddress = status.balance.byAddress;
 
-          // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
-          cache.totalBalanceMicros = balance.totalAmount;
+          // Total wallet status.balance is same regardless of 'spend unconfirmed funds' setting.
+          cache.totalstatus.balanceMicros = status.balance.totalAmount;
 
-          if (invitesBalance) {
-            cache.confirmedInvites = invitesBalance.availableConfirmedAmount;
+          if (status.invitesBalance) {
+            cache.confirmedInvites = status.invitesBalance.availableConfirmedAmount;
           }
 
 
-          cache.pendingCoinbaseAmount = balance.totalPendingCoinbaseAmount;
+          cache.pendingCoinbaseAmount = status.balance.totalPendingCoinbaseAmount;
 
           // Spend unconfirmed funds
           if (config.spendUnconfirmed) {
-            cache.lockedBalanceSat = balance.lockedAmount;
-            cache.availableBalanceSat = balance.availableAmount;
-            cache.totalBytesToSendMax = balance.totalBytesToSendMax;
+            cache.lockedstatus.balanceSat = status.balance.lockedAmount;
+            cache.availablestatus.balanceSat = status.balance.availableAmount;
+            cache.totalBytesToSendMax = status.balance.totalBytesToSendMax;
             cache.pendingAmount = 0;
-            cache.spendableAmount = balance.totalAmount - balance.lockedAmount - balance.totalPendingCoinbaseAmount;
+            cache.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
           } else {
-            cache.lockedBalanceSat = balance.lockedConfirmedAmount;
-            cache.availableBalanceSat = balance.availableConfirmedAmount;
-            cache.totalBytesToSendMax = balance.totalBytesToSendConfirmedMax;
-            cache.pendingAmount = balance.totalAmount - balance.totalConfirmedAmount;
-            cache.spendableAmount = balance.totalConfirmedAmount - balance.lockedAmount - balance.totalPendingCoinbaseAmount;
+            cache.lockedstatus.balanceSat = status.balance.lockedConfirmedAmount;
+            cache.availablestatus.balanceSat = status.balance.availableConfirmedAmount;
+            cache.totalBytesToSendMax = status.balance.totalBytesToSendConfirmedMax;
+            cache.pendingAmount = status.balance.totalAmount - status.balance.totalConfirmedAmount;
+            cache.spendableAmount = status.balance.totalConfirmedAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
           }
 
           // Selected unit
@@ -176,17 +176,17 @@ export class WalletService {
           cache.satToUnit = 1 / cache.unitToMicro;
 
           //STR
-          cache.totalBalanceStr = this.txFormatService.formatAmountStr(cache.totalBalanceMicros);
-          cache.lockedBalanceStr = this.txFormatService.formatAmountStr(cache.lockedBalanceSat);
-          cache.availableBalanceStr = this.txFormatService.formatAmountStr(cache.availableBalanceSat);
-          cache.spendableBalanceStr = this.txFormatService.formatAmountStr(cache.spendableAmount);
-          cache.pendingBalanceStr = this.txFormatService.formatAmountStr(cache.pendingAmount);
+          cache.totalstatus.balanceStr = this.txFormatService.formatAmountStr(cache.totalstatus.balanceMicros);
+          cache.lockedstatus.balanceStr = this.txFormatService.formatAmountStr(cache.lockedstatus.balanceSat);
+          cache.availablestatus.balanceStr = this.txFormatService.formatAmountStr(cache.availablestatus.balanceSat);
+          cache.spendablestatus.balanceStr = this.txFormatService.formatAmountStr(cache.spendableAmount);
+          cache.pendingstatus.balanceStr = this.txFormatService.formatAmountStr(cache.pendingAmount);
 
           cache.alternativeName = config.settings.alternativeName;
           cache.alternativeIsoCode = config.settings.alternativeIsoCode;
 
           // Check address
-          return this.isAddressUsed(wallet, balance.byAddress).then((used) => {
+          return this.isAddressUsed(wallet, status.balance.byAddress).then((used) => {
             if (used) {
               this.logger.debug('Address used. Creating new');
               // Force new address
@@ -197,21 +197,21 @@ export class WalletService {
           }).then(() => {
             return this.rateService.whenAvailable().then(() => {
 
-              let totalBalanceAlternative = this.rateService.fromMicrosToFiat(cache.totalBalanceMicros, cache.alternativeIsoCode);
-              let totalBalanceAlternativeStr = this.rateService.fromMicrosToFiat(cache.totalBalanceMicros, cache.alternativeIsoCode);
-              let pendingBalanceAlternative = this.rateService.fromMicrosToFiat(cache.pendingAmount, cache.alternativeIsoCode);
-              let lockedBalanceAlternative = this.rateService.fromMicrosToFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
-              let spendableBalanceAlternative = this.rateService.fromMicrosToFiat(cache.spendableAmount, cache.alternativeIsoCode);
+              let totalstatus.balanceAlternative = this.rateService.fromMicrosToFiat(cache.totalstatus.balanceMicros, cache.alternativeIsoCode);
+              let totalstatus.balanceAlternativeStr = this.rateService.fromMicrosToFiat(cache.totalstatus.balanceMicros, cache.alternativeIsoCode);
+              let pendingstatus.balanceAlternative = this.rateService.fromMicrosToFiat(cache.pendingAmount, cache.alternativeIsoCode);
+              let lockedstatus.balanceAlternative = this.rateService.fromMicrosToFiat(cache.lockedstatus.balanceSat, cache.alternativeIsoCode);
+              let spendablestatus.balanceAlternative = this.rateService.fromMicrosToFiat(cache.spendableAmount, cache.alternativeIsoCode);
               let alternativeConversionRate = this.rateService.fromMicrosToFiat(100000000, cache.alternativeIsoCode);
 
-              cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
-              cache.totalBalanceAlternativeStr = cache.totalBalanceAlternative.amountStr;
-              cache.pendingBalanceAlternative = new FiatAmount(pendingBalanceAlternative);
-              cache.lockedBalanceAlternative = new FiatAmount(lockedBalanceAlternative);
-              cache.spendableBalanceAlternative = new FiatAmount(spendableBalanceAlternative);
+              cache.totalstatus.balanceAlternative = new FiatAmount(totalstatus.balanceAlternative);
+              cache.totalstatus.balanceAlternativeStr = cache.totalstatus.balanceAlternative.amountStr;
+              cache.pendingstatus.balanceAlternative = new FiatAmount(pendingstatus.balanceAlternative);
+              cache.lockedstatus.balanceAlternative = new FiatAmount(lockedstatus.balanceAlternative);
+              cache.spendablestatus.balanceAlternative = new FiatAmount(spendablestatus.balanceAlternative);
               cache.alternativeConversionRate = new FiatAmount(alternativeConversionRate);
 
-              cache.alternativeBalanceAvailable = true;
+              cache.alternativestatus.balanceAvailable = true;
               cache.isRateAvailable = true;
               return resolve();
             }).catch((err) => {

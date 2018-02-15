@@ -1,4 +1,4 @@
-<ion-header no-border>
+f<ion-header no-border>
   <ion-navbar color="light">
     <ion-title>Invite Requests</ion-title>
     <ion-buttons end>
@@ -24,7 +24,7 @@
 
   <ion-item [hidden]="activeTab === 'confirmed'"
             (click)="showHiddenRequests = true"
-            *ngIf="hiddenRequests && hiddenRequests.length && !showHiddenRequests">
+            *ngIf="hiddenRequests?.length && !showHiddenRequests">
       <ion-avatar img-icon item-start>
          <img src="assets/img/icons/hidden.svg">
       </ion-avatar>
@@ -55,9 +55,8 @@
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/incoming_request.svg">
         </ion-avatar>
-        <h2 *ngIf="request.alias">@{{request.alias}}</h2>
-        <h2 *ngIf="!request.alias" class="address">{{ request.address }}</h2>
-        <p  *ngIf="request.alias">{{ request.address }}</p>
+          <h2 [class.address]="request.alias">{{ request.alias ? '@' + request.alias : request.address }}</h2>
+          <p *ngIf="request.alias">{{ request.address }}</p>
       </ion-item>
 
       <ion-item *ngFor="let request of activeRequests; trackBy: request?.address" (click)="processRequest(request)"
@@ -65,9 +64,8 @@
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/incoming_request.svg">
         </ion-avatar>
-        <h2 *ngIf="request.alias">@{{request.alias}}</h2>
-        <h2 *ngIf="!request.alias" class="address">{{ request.address }}</h2>
-        <p  *ngIf="request.alias">{{ request.address }}</p>
+          <h2 [class.address]="request.alias">{{ request.alias ? '@' + request.alias : request.address }}</h2>
+          <p *ngIf="request.alias">{{ request.address }}</p>
       </ion-item>
     </ion-list>
   </div>
