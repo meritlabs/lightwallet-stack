@@ -34,6 +34,7 @@ view-unlock {
         padding: 8px 16px;
         margin: 0;
         width: 100%;
+        padding-right: 56px;
         &::placeholder {
           color: rgba(255, 255, 255, 0.6);
           font-size: 16px;
@@ -49,6 +50,21 @@ view-unlock {
         right: 13px;
         height: 30px;
         width: 30px;
+      }
+
+      .qr-button.button {
+        position: absolute;
+        top: 0px;
+        right: 13px;
+        height: 20px;
+        min-height: 20px;
+        width: 20px;
+        padding: 0;
+        img {
+          height: 20px;
+          width: 20px;
+          vertical-align: middle;
+        }
       }
     }
 

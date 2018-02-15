@@ -5,7 +5,7 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritContact } from '../../models/merit-contact';
 import { ContactsProvider } from '../../providers/contacts/contacts';
-import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
+import { IDisplayWallet } from '../../models/display-wallet';
 
 
 export interface IUnlockRequest {
@@ -45,6 +45,7 @@ export class UnlockRequestService {
         let requests = {hidden: [], active: [], confirmed: []},
           wallet, request, contact;
         for (wallet of await this.profileService.getWallets()) {
+            wallet.status = await this.walletService.getStatus(wallet, { force: true });
             for (request of await this.walletService.getUnlockRequests(wallet)) {
                 request.walletClient = wallet;
                 if (request.isConfirmed) {
