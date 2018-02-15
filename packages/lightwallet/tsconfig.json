@@ -15,7 +15,10 @@
     "sourceMap": true,
     "target": "es5",
     "paths": {
-      "merit/*": [ "src/app/*" ]
+      "merit/*": [ "src/app/*" ],
+      "@app/env": [
+        "src/environments/environment"
+      ]
     },
     "typeRoots": [
       "node_modules/@types"

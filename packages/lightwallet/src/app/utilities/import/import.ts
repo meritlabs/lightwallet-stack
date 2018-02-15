@@ -11,6 +11,8 @@ import { DerivationPathService } from 'merit/utilities/mnemonic/derivation-path.
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 
+import { ENV } from '@app/env';
+
 @IonicPage({
   defaultHistory: ['OnboardingView']
 })
@@ -54,8 +56,8 @@ export class ImportView {
               private mnemonicService: MnemonicService,
               private addressScanner: AddressScannerService) {
 
-    this.formData.bwsUrl = config.getDefaults().bws.url;
-    this.formData.network = config.getDefaults().network.name;
+    this.formData.bwsUrl = ENV.mwsUrl;
+    this.formData.network = ENV.network;
     this.formData.derivationPath =
       this.formData.network == 'livenet' ?
         this.derivationPathService.getDefault() :

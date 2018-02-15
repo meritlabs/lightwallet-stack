@@ -65,7 +65,7 @@
   <ion-list class="wallets" *ngIf="wallets">
 
     <div *ngFor="let wallet of wallets; trackBy: wallet?.id">
-      <div *ngIf="!wallet.unlocked" class="wallet">
+      <div *ngIf="!wallet.confirmed" class="wallet">
         <div class="unlock-backdrop"></div>
 
         <div class="unlock-popup">
@@ -86,7 +86,7 @@
         </button>
       </div>
 
-      <button ion-item *ngIf="wallet.unlocked" (click)="openWallet(wallet)" class="wallet">
+      <button ion-item *ngIf="wallet.confirmed" (click)="openWallet(wallet)" class="wallet">
         <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color"
                     [style.box-shadow]="'0 0 0 2px ' + wallet.color">
           <img src="assets/img/icons/wallet.svg">
@@ -101,7 +101,9 @@
             <ion-icon name="ios-timer-outline" *ngIf="walletHasPendingAmount(wallet)"></ion-icon>
           </p>
           <p class="invites">
-            Invites: {{ wallet.status?.invitesBalance?.availableAmount }}
+            Invites: {{ (wallet.status?.confirmedInvites > 1) ?
+              wallet.status?.confirmedInvites -1 : 0
+              }}
           </p>
           <p *ngIf="walletHasPendingAmount(wallet)">Partially confirmed</p>
           <p *ngIf="wallet.balanceHidden">

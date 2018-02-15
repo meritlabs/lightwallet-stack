@@ -27,10 +27,12 @@ export class UnlockRequestsView {
               private navParams: NavParams,
               private toastCtrl: ToastController,
               private unlockRequestService: UnlockRequestService) {
-    this.wallets = navParams.get('wallets');
+    this.wallets = this.navParams.get('wallets');
   }
 
   async ionViewWillEnter() {
+    this.wallets = this.navParams.get('wallets');
+
     this.hiddenRequests = this.unlockRequestService.hiddenRequests;
     this.activeRequests = this.unlockRequestService.activeRequests;
     this.confirmedRequests = this.unlockRequestService.confirmedRequests;
@@ -52,5 +54,9 @@ export class UnlockRequestsView {
       request,
       wallets: this.wallets
     });
+  }
+
+  toSendInvite() {
+    this.navCtrl.push('SendInviteView', {wallets: this.wallets});
   }
 }

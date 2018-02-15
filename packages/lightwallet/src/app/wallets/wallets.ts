@@ -22,6 +22,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { ContactsProvider } from '../../providers/contacts/contacts';
+import { ENV } from '@app/env';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -116,7 +117,7 @@ export class WalletsView {
     this.loading = true;
 
     const fetch = async () => {
-      this.addressbook = await this.contactsService.list(this.configService.getDefaults().network.name);
+      this.addressbook = await this.contactsService.list(ENV.network);
       const wallets = await this.updateAllWallets(opts.force);
 
       if (_.isEmpty(wallets)) {
@@ -132,8 +133,6 @@ export class WalletsView {
         this.updateTxps({ limit: 3 }),
         this.updateVaults(_.head(this.wallets))
       ]);
-
-      console.log(wallets);
 
       this.logger.info('Done updating all info for wallet.');
     };

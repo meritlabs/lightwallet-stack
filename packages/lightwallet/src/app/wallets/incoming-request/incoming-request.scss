@@ -1,19 +1,39 @@
 view-incoming-request {
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-items: center;
-    justify-content: center;
-    align-content: center;
-    height: 100%;
 
-    > div {
+  button.item.send-from {
+    background: #f6f8fa;
+    text-align: left;
+    padding-top: 0;
+    padding-bottom: 0;
+    min-height: 70px;
+    height: 70px;
+    .item-start, .item {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .wallet-icon {
+      height: 25px;
+      margin-right: 15px;
+    }
+
+    .invites-icon {
+      margin-left: 5px;
+    }
+  }
+
+  .container {
+    margin-top: 40px;
+    text-align: center;
+    p {
+      color: #73819b;
+      font-size: 12px;
     }
   }
 
   ion-footer.footer {
 
+    text-align: center;
     &:before {
       display: none;
       border: 0;
@@ -29,6 +49,7 @@ view-incoming-request {
 
       button[ion-item].item {
 
+        text-align: center;
         padding: 0;
         border-top: 1px solid rgb(232, 234, 237);
 
@@ -57,10 +78,6 @@ view-incoming-request {
         }
       }
     }
-  }
-
-  * {
-    text-align: center;
   }
 
   span {
@@ -104,7 +121,7 @@ view-incoming-request {
   }
 
   .scroll-content {
-    ion-avatar {
+    .container ion-avatar {
       height: 80px !important;
       width: 80px !important;
       margin: 24px auto;

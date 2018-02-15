@@ -6,6 +6,7 @@ import { SendService } from 'merit/transact/send/send.service';
 import * as _ from 'lodash';
 import { ContactsProvider } from '../../../../providers/contacts/contacts';
 import { IMeritAddress, MeritContact } from '../../../../models/merit-contact';
+import { ENV } from '@app/env';
 
 @IonicPage()
 @Component({
@@ -54,7 +55,7 @@ export class SendEditContactView {
       }).present();
     }
 
-    let network = this.sendService.getAddressNetwork(address).name;
+    let network = ENV.network;
     let meritAddress = {address, network};
     this.actions.push({type: this.TYPE_ADD, mAddress: meritAddress});
     this.contact.meritAddresses.push(meritAddress);
@@ -78,7 +79,7 @@ export class SendEditContactView {
         this.navCtrl.remove(2,1);
         return this.navCtrl.pop();
       } else {
-        return this.contactsService.add(this.contact, this.contact.meritAddresses[0].address, this.contact.meritAddresses[0].network).then(() => {
+        return this.contactsService.add(this.contact, this.contact.meritAddresses[0].address, ENV.network).then(() => {
           return this.navCtrl.pop();
         });
       }
