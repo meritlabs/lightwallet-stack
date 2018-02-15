@@ -60,19 +60,21 @@ export class AliasView {
 
   private async validateAlias() {
 
-    if (!this.formData.alias) {
+    let input = this.formData.alias.charAt(0) == '@' ? this.formData.alias.slice(1) : this.formData.alias;
+
+    if (!input) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
       return this.formData.aliasValidationError = null;
     }
 
-    if (this.formData.alias.length < 4) {
+    if (input.length < 4) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
       return this.formData.aliasValidationError = 'Alias should contain at least 4 symbols';
     }
 
-    if (!this.sendService.couldBeAlias(this.formData.alias)) {
+    if (!this.sendService.couldBeAlias(input)) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
       return this.formData.aliasValidationError = 'Incorrect alias format';
@@ -81,7 +83,7 @@ export class AliasView {
     this.formData.aliasValidationError = null;
 
 
-    let addressExists = await this.sendService.getValidAddress(this.formData.alias);
+    let addressExists = await this.sendService.getValidAddress(input);
 
     if (addressExists) {
       this.formData.aliasValidationError = 'Alias already in use';
@@ -129,7 +131,7 @@ export class AliasView {
   }
 
   onInputFocus() {
-    setTimeout(() => this.content.scrollToBottom(), 100);
+    //setTimeout(() => this.content.scrollToBottom(), 100);
   }
 
 }
