@@ -21,6 +21,7 @@ export class ContactsProvider {
 
   // TODO cache contacts & re-use instead of retrieving them again
   private contacts: MeritContact[];
+  private addressBook: IAddressBook;
   private devicePermissionGranted: boolean;
   private devicePermissionStatus: string;
 
@@ -41,6 +42,18 @@ export class ContactsProvider {
     }
 
     this.contacts = await this.getAllMeritContacts();
+    this.addressBook = await this.getAddressbook();
+
+    if (_.isEmpty(this.addressBook)) {
+      this.contacts.forEach((contact: MeritContact) =>
+        contact.meritAddresses.forEach(({ address, alias }) => {
+          if (address) this.addressBook[address] = contact;
+          if (alias) this.addressBook[alias] = contact;
+        })
+      );
+
+      await this.persistenceService.setAddressbook(ENV.network, this.addressBook);
+    }
   }
 
   list(network: string = ENV.network): Promise<IAddressBook> {
