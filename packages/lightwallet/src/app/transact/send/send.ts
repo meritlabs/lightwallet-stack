@@ -55,8 +55,7 @@ export class SendView {
   private async updateHasUnlocked() {
     const wallets = await this.profileService.getWallets();
     this.hasUnlockedWallets = wallets && wallets.some(w => w.confirmed);
-    this.hasActiveInvites = wallets && wallets.some(w => w.status && w.status.confirmedInvites > 1);
-    console.log(this.hasActiveInvites, 'active invites');
+    this.hasActiveInvites = wallets && wallets.some(w => w.status && w.status.availableInvites > 0);
   }
 
   async ionViewWillEnter() {
