@@ -27,24 +27,49 @@ export interface IDisplayWallet {
   client: MeritWalletClient;
 }
 
-export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService: SendService): Promise<IDisplayWallet> {
+export interface IDisplayWalletOptions {
+  invites?: boolean;
+  rewards?: boolean;
+  anv?: boolean;
+}
+
+const defaultOptions: IDisplayWalletOptions = {
+  invites: true,
+  rewards: true,
+  anv: true
+};
+
+export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService: SendService, options?: IDisplayWalletOptions): Promise<IDisplayWallet> {
+  options = Object.assign(defaultOptions, options);
+
+  console.log('Options are ', options);
+
   const displayWallet: IDisplayWallet = pick<IDisplayWallet, MeritWalletClient>(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'totalNetworkValue', 'credentials', 'network');
 
   displayWallet.client = wallet;
   displayWallet.referrerAddress = walletService.getRootAddress(wallet).toString();
-  let info = await sendService.getAddressInfo(displayWallet.referrerAddress);
-  if (info.alias) displayWallet.alias = info.alias;
-  displayWallet.totalNetworkValueMicro = await walletService.getANV(wallet);
-  displayWallet.inviteRequests = await walletService.getUnlockRequests(wallet);
-  const invitesInfo = await walletService.getInvitesBalance(wallet);
-  displayWallet.invites = Math.max(0, invitesInfo.availableConfirmedAmount - 1);
 
-  const rewardsData = await walletService.getRewards(wallet);
+  const { alias } = await sendService.getAddressInfo(displayWallet.referrerAddress);
+  if (alias) displayWallet.alias = alias;
 
-  // If we cannot properly fetch data, let's return wallets as-is.
-  if (rewardsData && isNil(rewardsData.mining)) {
-    displayWallet.miningRewardsMicro = rewardsData.mining;
-    displayWallet.ambassadorRewardsMicro = rewardsData.ambassador;
+  if (options.anv) {
+    displayWallet.totalNetworkValueMicro = await walletService.getANV(wallet);
+  }
+
+  if (options.invites) {
+    displayWallet.inviteRequests = await walletService.getUnlockRequests(wallet);
+    const invitesInfo = await walletService.getInvitesBalance(wallet);
+    displayWallet.invites = Math.max(0, invitesInfo.availableConfirmedAmount - 1);
+  }
+
+  if (options.rewards) {
+    const rewardsData = await walletService.getRewards(wallet);
+
+    // If we cannot properly fetch data, let's return wallets as-is.
+    if (rewardsData && isNil(rewardsData.mining)) {
+      displayWallet.miningRewardsMicro = rewardsData.mining;
+      displayWallet.ambassadorRewardsMicro = rewardsData.ambassador;
+    }
   }
 
   return displayWallet;
