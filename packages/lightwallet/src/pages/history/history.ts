@@ -26,9 +26,6 @@ export class HistoryView {
 
   async ngOnInit() {
     await this.loadData();
-    //todo temp!!
-    //let unlockRequest = {timestamp: (new Date()).getTime(), address: 'mTU55fvNoHc4ewK6Rucb3Wnccihr499uGJ', alias: 'mywallet'};
-    //this.processUnlockRequest(unlockRequest);s
   }
 
   async refresh(refresher: any) {
