@@ -15,7 +15,7 @@ export function formatWalletHistory(walletHistory: any[], wallet: IDisplayWallet
         case TransactionAction.SENT:
           tx.type = 'debit';
           tx.addressFrom = wallet.alias || wallet.name;
-          tx.name = tx.inputs[0].alias || wallet.name;
+          tx.name =  _.get(_.find(<any>tx.outputs, { isMine: false }), 'alias', '') || wallet.name;
 
           if (tx.isInvite === true) {
             tx.name = 'Invite Sent';
@@ -29,7 +29,7 @@ export function formatWalletHistory(walletHistory: any[], wallet: IDisplayWallet
         case TransactionAction.RECEIVED:
           tx.addressTo = wallet.name;
           tx.type = 'credit';
-          tx.name =  _.get(_.find(<any>tx.outputs, { isMine: false }), 'alias', '') || wallet.name;
+          tx.name =  _.get(_.find(<any>tx.inputs, { isMine: false }), 'alias', '') || wallet.name;
 
           if (tx.isInvite === true) {
             tx.name = 'Invite Received'
