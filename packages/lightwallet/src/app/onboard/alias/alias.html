@@ -3,28 +3,26 @@
 </ion-header>
 
 <ion-content fullscreen>
-  <div class="container" *ngIf="!easyReceipt">
+  <div class="container">
     <h1 class="title">
       Add alias to your address
     </h1>
 
-    <img src="assets/img/alias.png" id="logo" alt="" />
+    <img src="assets/img/alias.png" class="logo" alt="" />
 
     <p class="text" translate>
       So people can recognize you and type something like '@merituser' instead of address.
     </p>
 
     <div class="bottom-buttons">
-      <div *ngIf="formData.aliasValidationError" class="error-message"><p>{{formData.aliasValidationError}}</p></div>
-      <div class="input-wrapper">
+      <div [hidden]="!formData.aliasValidationError" class="error-message"><p>{{formData.aliasValidationError}}</p></div>
+      <ion-item no-lines class="input-item">
         <ion-input placeholder="Alias (optional)" [(ngModel)]="formData.alias"
-                   autocomplete="off" autocorrect="off" autocapitalize="off"
-                   (ionFocus)="onInputFocus()" (ngModelChange)="checkAlias()"></ion-input>
+                   autocomplete="off" autocorrect="off" autocapitalize="off" (ngModelChange)="checkAlias()"></ion-input>
 
-        <ion-spinner *ngIf="formData.aliasCheckInProgress" color="primary"></ion-spinner>
-        <img class="stop-sign" *ngIf="formData.aliasValidationError" src="assets/img/icons/error-stop.svg">
-      </div>
-
+        <ion-spinner [hidden]="!formData.aliasCheckInProgress" color="primary" item-end></ion-spinner>
+        <img class="stop-sign" [hidden]="!formData.aliasValidationError || formData.aliasCheckInProgress" src="assets/img/icons/error-stop.svg">
+      </ion-item>
       <button block ion-button icon-only translate (click)="createWallet()">
         Done
       </button>
