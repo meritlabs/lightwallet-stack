@@ -6,6 +6,7 @@ import { MeritWalletClient } from '../../lib/merit-wallet-client';
 import { formatWalletHistory } from '../../utils/transactions';
 import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
 import { SendService } from 'merit/transact/send/send.service';
+import { sortBy, flatten } from 'lodash';
 
 @IonicPage()
 @Component({
@@ -42,6 +43,6 @@ export class HistoryView {
       return formatWalletHistory(walletHistory, distplayWallets);
     }));
 
-    this.transactions = Array.prototype.concat.apply([], walletHistories).sort((a, b) => a.time < b.time);
+    this.transactions = sortBy(flatten(walletHistories), 'time').reverse()
   }
 }
