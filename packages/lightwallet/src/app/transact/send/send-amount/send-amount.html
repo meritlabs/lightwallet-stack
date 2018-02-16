@@ -30,7 +30,7 @@
                     type="tel"
                     pattern="[0-9\.]"
                     [(ngModel)]="formData.amount"
-                    (ngModelChange)="processAmount($event)"
+                    (ngModelChange)="processAmount(formData.amount)"
                     [placeholder]="'Enter sending amount'"
                   ></ion-input>
                 </ion-item>
@@ -116,8 +116,8 @@
 
     </div>
 
-  <button ion-button class="action-button" color="primary" (click)="toConfirm()" [disabled]="!isSendAllowed()">
-    NEXT <ion-icon name="arrow-right"></ion-icon>
+  <button ion-button icon-end class="action-button" color="primary" (click)="toConfirm()" [disabled]="!isSendAllowed()">
+    NEXT <ion-icon name="ios-arrow-forward"></ion-icon>
   </button>
 
 </ion-content>
