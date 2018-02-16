@@ -31,7 +31,6 @@ import { MeritContact } from '../../../../models/merit-contact';
 export class SendAmountView {
   public recipient: MeritContact;
   public sendMethod: SendMethod;
-
   public availableUnits: Array<{ type: string, name: string }>;
   public selectedCurrency: { type: string, name: string };
 

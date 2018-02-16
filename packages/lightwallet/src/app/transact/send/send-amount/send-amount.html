@@ -25,12 +25,15 @@
             </div>
 
             <div class="main-amount">
-                <ion-input
-                        pattern="[0-9\.]"
-                        [(ngModel)]="formData.amount"
-                        (ngModelChange)="processAmount($event)"
-                        [placeholder]="'Enter sending amount'"
-                ></ion-input>
+                <ion-item no-lines>
+                  <ion-input
+                    type="tel"
+                    pattern="[0-9\.]"
+                    [(ngModel)]="formData.amount"
+                    (ngModelChange)="processAmount($event)"
+                    [placeholder]="'Enter sending amount'"
+                  ></ion-input>
+                </ion-item>
             </div>
             <div class="alternative-amount">
                 {{selectedCurrency.type == 'mrt' ? amount.fiatStr : amount.mrtStr}}
