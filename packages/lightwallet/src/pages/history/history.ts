@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, ModalController } from 'ionic-angular';
+import { IonicPage } from 'ionic-angular';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MeritWalletClient } from '../../lib/merit-wallet-client';
-import { sortBy } from 'lodash';
 import { formatWalletHistory } from '../../utils/transactions';
 import { createDisplayWallet } from '../../models/display-wallet';
 import { SendService } from 'merit/transact/send/send.service';
@@ -17,12 +16,10 @@ export class HistoryView {
 
   transactions: any[];
 
-  constructor(
-    private walletService: WalletService,
-    private profileService: ProfileService,
-    private modalCtrl: ModalController,
-    private sendService: SendService
-  ) {}
+  constructor(private walletService: WalletService,
+              private profileService: ProfileService,
+              private sendService: SendService) {
+  }
 
   async ngOnInit() {
     await this.loadData();
@@ -31,7 +28,8 @@ export class HistoryView {
   async refresh(refresher: any) {
     try {
       await this.loadData(true);
-    } catch (e) {}
+    } catch (e) {
+    }
 
     refresher.complete();
   }
@@ -44,14 +42,5 @@ export class HistoryView {
     }));
 
     this.transactions = Array.prototype.concat.apply([], walletHistories).sort((a, b) => a.time < b.time);
-
-    console.log('Transactions are ', this.transactions);
-
   }
-
-  public processUnlockRequest(unlockRequest) {
-    let modal = this.modalCtrl.create('IncomingRequestModal', {unlockRequest});
-    modal.present();
-  }
-
 }
