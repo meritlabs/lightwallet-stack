@@ -34,8 +34,8 @@
       <ion-avatar img-icon item-start>
         <img src="assets/img/icons/lock.svg" alt="">
       </ion-avatar>
-      <ion-label stacked>Recovery Phrase Password (optional)</ion-label>
-      <ion-input [(ngModel)]="formData.phrasePassword" [type]="showPassword? 'text' : 'password'" autocapitalize="off"
+      <ion-label stacked>Phrase Password (optional)</ion-label>
+      <ion-input [(ngModel)]="formData.phrasePassword" placeholder="Type it here" [type]="showPassword? 'text' : 'password'" autocapitalize="off"
                  autocomplete="off" autocorrect="off" spellcheck="false"></ion-input>
       <button ion-button item-end (click)="showPassword = !showPassword" clear>{{ showPassword ? 'Hide' : 'Show' }}
       </button>
