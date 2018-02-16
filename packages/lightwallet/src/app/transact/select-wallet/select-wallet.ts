@@ -28,7 +28,9 @@ export class SelectWalletModal {
   }
 
   select(wallet) {
-    this.viewCtrl.dismiss(wallet);
+    if (wallet.confirmed) {
+      this.viewCtrl.dismiss(wallet);
+    }
   }
 
 }
