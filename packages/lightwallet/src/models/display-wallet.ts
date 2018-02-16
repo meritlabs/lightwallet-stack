@@ -1,6 +1,7 @@
 import { MeritWalletClient } from '../lib/merit-wallet-client/index';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { pick, isNil } from 'lodash';
+import { SendService } from 'merit/transact/send/send.service';
 
 export interface IDisplayWallet {
   id: string;
@@ -26,11 +27,13 @@ export interface IDisplayWallet {
   client: MeritWalletClient;
 }
 
-export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService): Promise<IDisplayWallet> {
+export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService: SendService): Promise<IDisplayWallet> {
   const displayWallet: IDisplayWallet = pick<IDisplayWallet, MeritWalletClient>(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'totalNetworkValue', 'credentials', 'network');
 
   displayWallet.client = wallet;
   displayWallet.referrerAddress = walletService.getRootAddress(wallet).toString();
+  let info = await sendService.getAddressInfo(displayWallet.referrerAddress);
+  if (info.alias) displayWallet.alias = info.alias;
   displayWallet.totalNetworkValueMicro = await walletService.getANV(wallet);
   displayWallet.inviteRequests = await walletService.getUnlockRequests(wallet);
   const invitesInfo = await walletService.getInvitesBalance(wallet);
