@@ -75,7 +75,7 @@ export class SendInviteView {
     this.debounceSearch();
   }
 
-  private debounceSearch = _.debounce(() => this.search(), 300)
+  private debounceSearch = _.debounce(() => this.search(), 300);
 
   private async search() {
 
@@ -99,19 +99,17 @@ export class SendInviteView {
 
         if (isBeaconed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          //todo get network!!
           result.toNewEntity.contact.meritAddresses.push({ address: input, network: ENV.network});
         } else {
           result.error = ERROR_ADDRESS_NOT_FOUND;
         }
       } else if (this.couldBeAlias(input)) {
         let alias = input.slice(1);
-        const address = await this.sendService.getValidAddress(alias);
+        const addressInfo = await this.sendService.getAddressInfo(alias);
 
-        if (address) {
+        if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          //todo get network!!
-          result.toNewEntity.contact.meritAddresses.push({ alias: alias, address: input, network: ENV.network});
+          result.toNewEntity.contact.meritAddresses.push({ alias: alias, address: addressInfo.address, network: ENV.network});
         } else {
           result.error = ERROR_ALIAS_NOT_FOUND; 
         }
