@@ -535,10 +535,10 @@ Merit.prototype._initChain = function(callback) {
 
 Merit.prototype._getDefaultConf = function() {
   var networkOptions = {
-    rpcport: 8332
+    rpcport: 8445
   };
   if (this.node.network === bitcore.Networks.testnet) {
-    networkOptions.rpcport = 18332;
+    networkOptions.rpcport = 18445;
   }
   return networkOptions;
 };
@@ -1248,11 +1248,14 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
   }
 
   if (queryMempool) {
-    self.client.getAddressMempool({addresses: addresses}, function(err, response) {
+    self.client.getAddressMempool({ addresses }, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
       }
-      finish(response.result);
+
+      const txs = response.result.filter(tx => tx.isInvite == invites);
+
+      finish(txs);
     });
   } else {
     finish();

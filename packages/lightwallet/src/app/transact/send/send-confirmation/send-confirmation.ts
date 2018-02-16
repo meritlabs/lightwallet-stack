@@ -40,6 +40,7 @@ export class SendConfirmationView {
     sendMethod: SendMethod;
     txp: any;
     easySend?: EasySend;
+    easySendUrl?: string;
     wallet: MeritWalletClient;
   };
 
@@ -222,13 +223,14 @@ export class SendConfirmationView {
       await this.approveTx();
       if (this.txData.sendMethod.type == SendMethod.TYPE_EASY) {
         await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
-
+        console.dir(this.txData.easySend);
+        console.dir(this.txData.easySendUrl);
         switch (this.txData.sendMethod.destination) {
           case SendMethod.DESTINATION_SMS:
             await this.easySendService.sendSMS(
               this.txData.recipient.phoneNumber,
               this.viewData.amountMrt,
-              getEasySendURL(this.txData.easySend)
+              this.txData.easySendUrl,
             );
             break;
 
@@ -236,7 +238,7 @@ export class SendConfirmationView {
             await this.easySendService.sendEmail(
               this.txData.recipient.email,
               this.viewData.amountMrt,
-              getEasySendURL(this.txData.easySend)
+              this.txData.easySendUrl,
             );
             break;
 

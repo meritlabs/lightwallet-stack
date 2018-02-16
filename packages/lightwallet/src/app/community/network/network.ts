@@ -17,7 +17,7 @@ import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { createDisplayWallet, IDisplayWallet } from '../../../models/display-wallet';
 import { UnlockRequestService } from 'merit/core/unlock-request.service';
-
+import { SendService } from 'merit/transact/send/send.service';
 
 @IonicPage()
 @Component({
@@ -47,7 +47,8 @@ export class NetworkView {
               private logger: Logger,
               private platformService: PlatformService,
               private bwcService: BwcService,
-              private unlockRequestService: UnlockRequestService
+              private unlockRequestService: UnlockRequestService,
+              private sendService: SendService
             ) {}
 
   // Ensure that the wallets are loaded into the view on first load.
@@ -55,7 +56,7 @@ export class NetworkView {
     this.loading = true;
     try {
       const wallets: MeritWalletClient[] = await this.profileService.getWallets();
-      this.displayWallets = await Promise.all(wallets.map((wallet: MeritWalletClient) => createDisplayWallet(wallet, this.walletService)));
+      this.displayWallets = await Promise.all(wallets.map((wallet: MeritWalletClient) => createDisplayWallet(wallet, this.walletService, this.sendService)));
       this.logger.info('DisplayWallets after ngOnInit: ', this.displayWallets);
     } catch (err) {
       this.logger.warn(err);
@@ -127,7 +128,7 @@ export class NetworkView {
 
     const displayWallets: IDisplayWallet[] = await Promise.all(
       wallets.map((wallet: MeritWalletClient) =>
-        createDisplayWallet(wallet, this.walletService)
+        createDisplayWallet(wallet, this.walletService, this.sendService)
       )
     );
 

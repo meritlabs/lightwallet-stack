@@ -26,6 +26,9 @@
                          autocapitalize="off" (ionFocus)="onInputFocus()"  (ngModelChange)="checkAddress()"></ion-input>
               <ion-spinner *ngIf="formData.addressCheckInProgress" color="primary"></ion-spinner>
               <img class="stop-sign" *ngIf="formData.addressCheckError" src="assets/img/icons/error-stop.svg">
+              <button ion-button clear class="qr-button" (click)="openQrScanner()" *ngIf="!formData.addressCheckError && !formData.addressCheckInProgress">
+                  <img src="assets/img/icons/qr.svg">
+              </button>
           </div>
 
           <button block ion-button icon-only translate (click)="toAliasView()">
@@ -55,18 +58,6 @@
       Now you need to enter unlock code to setup your account and accept Merit.
     </p>
 
-<<<<<<< HEAD
-    <div class="bottom-buttons alias-item">
-        <ion-input type="text" placeholder="Add address alias (optional)"  [class.failed]="unlockState == 'aliasFail'"  [(ngModel)]="formData.alias"
-                   autocomplete="off" autocorrect="off" autocapitalize="off"
-                   (ionChange)="checkAlias()" (ionFocus)="onInputFocus()"
-        ></ion-input>
-        <ion-spinner *ngIf="formData.aliasCheckInProgress" color="primary"></ion-spinner>
-        <p *ngIf="formData.aliasValidationError" class="error-message">{{formData.aliasValidationError}}</p>
-    </div>
-
-=======
->>>>>>> added alias view
     <div class="bottom-buttons">
       <div *ngIf="formData.addressCheckError" class="error-message"><p>{{formData.addressCheckError}}</p></div>
       <div class="input-wrapper">

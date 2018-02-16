@@ -8,7 +8,7 @@ import { Logger } from "./log";
 import { Credentials } from './credentials';
 import { Errors } from './errors';
 import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
-import { EasyReceiptTxData } from 'merit/easy-receive/easy-receipt.model';
+import { EasyReceiptResult } from 'merit/easy-receive/easy-receipt.model';
 import * as preconditions from 'preconditions';
 import * as EventEmitter from 'eventemitter3';
 import * as Bitcore from 'bitcore-lib';
@@ -815,14 +815,14 @@ export class API {
    * Creates a transaction to redeem an easy send transaction. The input param
    * must contain
    *    {
-   *      txn: <transaction info from getinputforeasysend cli call>,
+   *      txs: [<transaction info from getinputforeasysend cli call>],
    *      privateKey: <private key used to sign script>,
    *      publicKey: <pub key of the private key>,
    *      script: <easysend script to redeem>,
    *      scriptId: <Address used script>
    *    }
    *
-   * input.txn contains
+   * input.txs contains
    *     {
    *      amount: <amount in MRT to redeem>,
    *      index: <index of unspent transaction>,
@@ -831,17 +831,30 @@ export class API {
    * @param {input} Input described above.
    * @param {destinationAddress} Address to put the funds into.
    */
-  buildEasySendRedeemTransaction(input: any, destinationAddress: string, opts: any = {}): Promise<any> {
+  buildEasySendRedeemTransaction(input: any, txn: any, destinationAddress: string, opts: any = {}): Promise<any> {
     //TODO: Create and sign a transaction to redeem easy send. Use input as
     //unspent Txo and use script to create scriptSig
     let inputAddress = input.scriptId;
 
     let fee = opts.fee || DEFAULT_FEE;
-    let microAmount = Bitcore.Unit.fromMRT(input.txn.amount).toMicros();
-    let amount = microAmount - fee;
+    let amount = 0;
+    let micros = 0;
+
+    if (!txn.invite) {
+      micros = Bitcore.Unit.fromMRT(txn.amount).toMicros();
+      amount = micros - fee;
+    } else {
+      micros = txn.amount;
+      amount = micros;
+    }
+
     if (amount <= 0) return Promise.reject(Errors.INSUFFICIENT_FUNDS);
 
     let tx = new Bitcore.Transaction();
+
+    if (txn.invite) {
+      tx.version = Bitcore.Transaction.INVITE_VERSION;
+    }
 
     console.log(input.script.inspect());
     try {
@@ -852,15 +865,18 @@ export class API {
         new Bitcore.Transaction.Input.PayToScriptHashInput({
           output: Bitcore.Transaction.Output.fromObject({
             script: p2shScript,
-            micros: microAmount
+            micros,
           }),
-          prevTxId: input.txn.txid,
-          outputIndex: input.txn.index,
+          prevTxId: txn.txid,
+          outputIndex: txn.index,
           script: input.script
         }, input.script, p2shScript));
 
       tx.to(toAddress, amount);
-      tx.fee(fee);
+
+      if (!txn.invite) {
+        tx.fee(fee);
+      }
 
       let sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, input.script);
       let inputScript = Bitcore.Script.buildEasySendIn(
@@ -871,8 +887,11 @@ export class API {
 
       tx.inputs[0].setScript(inputScript);
 
+      const txOpts = !txn.invite ? {} : {
+        disableSmallFees: true,
+      }
       // Make sure the tx can be serialized
-      tx.serialize();
+      tx.serialize(txOpts);
 
     } catch (ex) {
       this.log.error('Could not build transaction from private key ' + ex.toString());
@@ -2964,7 +2983,7 @@ export class API {
    * @param cb Callback or handler to manage response from BWS
    * @return {undefined}
    */
-  validateEasyScript(scriptId): Promise<EasyReceiptTxData> {
+  validateEasyScript(scriptId): Promise<EasyReceiptResult> {
     this.log.warn("Validating: " + scriptId);
 
     let url = '/v1/easyreceive/validate/' + scriptId;
