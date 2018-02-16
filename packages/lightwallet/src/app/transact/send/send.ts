@@ -122,24 +122,23 @@ export class SendView {
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
       if (this.isAddress(input)) {
-        const address = await this.sendService.getValidAddress(input);
+        const addressInfo = await this.sendService.getAddressInfo(input);
 
-        if (address) {
+        if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ address, network: ENV.network });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
+          result.toNewEntity.contact.meritAddresses.push({ address: addressInfo.address, alias: addressInfo.alias, network: ENV.network });
+          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address };
         } else {
           result.error = ERROR_ADDRESS_NOT_CONFIRMED;
         }
       } else if (this.couldBeAlias(input)) {
         let alias = input.slice(1);
-        console.log('im in');
-        const address = await this.sendService.getValidAddress(alias);
+        const addressInfo = await this.sendService.getAddressInfo(alias);
 
-        if (address) {
+        if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ alias, address, network: ENV.network });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
+          result.toNewEntity.contact.meritAddresses.push({ address: addressInfo.address, alias: addressInfo.alias,  network: ENV.network });
+          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address };
         } else {
           result.error = ERROR_ALIAS_NOT_FOUND; 
         }
