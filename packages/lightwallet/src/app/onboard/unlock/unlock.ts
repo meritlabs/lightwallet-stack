@@ -25,6 +25,14 @@ export class UnlockView {
   public easyReceipt: EasyReceipt;
   public parsedAddress: '';
 
+  get canContinue(): boolean {
+    return Boolean(this.formData.parentAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
+  }
+
+  get shouldShowQRButton(): boolean {
+    return !Boolean(this.formData.parentAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
+  }
+
   @ViewChild(Content) content: Content;
 
   constructor(private navCtrl: NavController,
