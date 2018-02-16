@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { AlertController, IonicPage } from 'ionic-angular';
+import { AlertController, IonicPage, Platform } from 'ionic-angular';
 import { AppService } from 'merit/core/app-settings.service';
+import { AppVersion } from '@ionic-native/app-version';
+
 declare const WEBPACK_CONFIG: any;
 
 @IonicPage()
@@ -13,15 +15,21 @@ export class SettingsAboutView {
 
   version: string;
   commitHash: string = typeof WEBPACK_CONFIG !== 'undefined'? WEBPACK_CONFIG.COMMIT_HASH : '1234';
-  repoUrl: string;
+  repoUrl: string = this.appSettingsService.info.gitHubRepoUrl;
 
   constructor(private  alertCtrl: AlertController,
               private inAppBrowser: InAppBrowser,
-              private appSettingsService: AppService) {}
+              private appSettingsService: AppService,
+              private appVersion: AppVersion,
+              private plt: Platform) {}
 
-  async ionViewDidLoad() {
-    this.version = this.appSettingsService.info.version;
-    this.repoUrl = this.appSettingsService.info.gitHubRepoUrl;
+  async ngOnInit() {
+    try {
+      await this.plt.ready();
+      this.version = 'v' + await this.appVersion.getVersionNumber();
+    } catch (e) {
+      this.version = 'Unavailable';
+    }
   }
 
   toGithub() {
