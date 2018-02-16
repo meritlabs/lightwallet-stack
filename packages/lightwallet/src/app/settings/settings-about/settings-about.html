@@ -16,7 +16,7 @@
         <h2>v{{version}}</h2>
       </ion-label>
     </ion-item>
-    <ion-item (click)="toGithub()">
+    <button ion-item detail-none text-wrap (click)="toGithub()">
       <ion-avatar img-icon item-start>
         <img src="assets/img/icons/hashtags.svg" alt="">
       </ion-avatar>
@@ -24,23 +24,23 @@
         <p>Commit hash</p>
         <h2>#{{ commitHash }}</h2>
       </ion-label>
-    </ion-item>
-    <ion-item (click)="toTermsOfUse()">
+    </button>
+    <button ion-item detail-none navPush="TermsOfUseView">
       <ion-avatar img-icon item-start>
         <img src="assets/img/icons/terms.svg" alt="">
       </ion-avatar>
       <ion-label>
         <h2>Terms of use</h2>
       </ion-label>
-    </ion-item>
-    <ion-item (click)="toSessionLog()">
+    </button>
+    <button ion-item detail-none navPush="SessionLogView">
       <ion-avatar img-icon item-start>
         <img src="assets/img/icons/list.svg" alt="">
       </ion-avatar>
       <ion-label>
         <h2>Session log</h2>
       </ion-label>
-    </ion-item>
+    </button>
   </ion-list>
 
 </ion-content>
