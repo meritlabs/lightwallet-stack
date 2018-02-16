@@ -57,9 +57,7 @@ export class SendInviteView {
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
     this.parseSearch();
-    this.availableInvites = this.wallets.reduce((invites, wallet) => {
-      return invites + wallet.invites;
-    },0);
+    this.availableInvites = this.wallets.reduce((invites, wallet) => invites + wallet.invites, 0);
   }
 
   async parseSearch() {
