@@ -329,12 +329,6 @@ WalletService.prototype.createWallet = function(opts, cb) {
 
   if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey', 'parentAddress'], cb)) return;
 
-  // We should short-circuit the request if there is no parent address.
-  // This belt-and-suspenders check will save time and latency.
-  if (_.isEmpty(opts.parentAddress))
-    return cb(new ClientError('Parent address is empty'));
-
-  if (_.isEmpty(opts.name)) return cb(new ClientError('Invalid wallet name'));
   if (!Wallet.verifyCopayerLimits(opts.m, opts.n))
     return cb(new ClientError('Invalid combination of required copayers / total copayers'));
 
@@ -389,26 +383,26 @@ WalletService.prototype.createWallet = function(opts, cb) {
       });
     },
     function (acb) {
-      return acb();
       // parent address might be an alias, so let's fetch it from blockchain explorer first then get its wallet ID
       self.blockchainExplorer.getReferral(opts.parentAddress, function(err, referral) {
-        if (err) return acb(err);
+        if (err || !referral) {
+          log.debug('Unable to get referral for parent address: ' + opts.parentAddress);
+          log.debug(err);
+          return acb();
+        }
 
         const { address } = referral;
         self.storage.fetchAddress(address, (err, parentAddress) => {
-          if (err) return acb(err);
+          if (err || !parentAddress) {
+            log.debug('Unable to fetch address: ' + address);
+            log.debug(err);
+            return acb();
+          }
 
-          const notification = Notification.create({
-            type: 'IncomingInviteRequest',
+          self._notify('IncomingInviteRequest', {
             walletId: parentAddress.walletId,
             creatorId: parentAddress.walletId,
-            data: {}
-          });
-
-          self.storage.storeNotification(notification.walletId, notification, () => {
-            self.messageBroker.send(notification);
-            acb();
-          });
+          }, null, acb);
         });
       });
     }
@@ -741,8 +735,6 @@ WalletService.prototype._getSigningKey = function(text, signature, pubKeys) {
  * @param {Boolean} opts.isGlobal - If true, the notification is not issued on behalf of any particular copayer (defaults to false)
  */
 WalletService.prototype._notify = function(type, data, opts, cb) {
-  var self = this;
-
   if (_.isFunction(opts)) {
     cb = opts;
     opts = {};
@@ -753,12 +745,12 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
 
   cb = cb || function() {};
 
-  var walletId = self.walletId || data.walletId;
-  var copayerId = self.copayerId || data.copayerId;
+  const walletId = this.walletId || data.walletId;
+  const copayerId = this.copayerId || data.copayerId;
 
   $.checkState(walletId);
 
-  var notification = Model.Notification.create({
+  const notification = Model.Notification.create({
     type: type,
     data: data,
     ticker: this.notifyTicker++,
@@ -766,8 +758,8 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
     walletId: walletId,
   });
 
-  this.storage.storeNotification(walletId, notification, function() {
-    self.messageBroker.send(notification);
+  this.storage.storeNotification(walletId, notification, () => {
+    this.messageBroker.send(notification);
     return cb();
   });
 };
