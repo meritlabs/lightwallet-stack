@@ -11,16 +11,13 @@ import { ConfigService } from 'merit/shared/config.service';
 })
 export class SettingsView {
 
-  public currentLanguageName;
-  public availableLanguages = [];
-  public currentUnitName;
-  public currentAlternativeName;
-  public availableUnits = [];
-  public availableAlternateCurrencies = [];
-
-  public emailNotificationsEnabled;
-
-  private latestEmail;
+  currentLanguageName;
+  availableLanguages = [];
+  currentUnitName;
+  currentAlternativeName;
+  availableUnits = [];
+  availableAlternateCurrencies = [];
+  emailNotificationsEnabled;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -36,17 +33,12 @@ export class SettingsView {
     this.emailNotificationsEnabled = config.emailNotifications.enabled;
   }
 
-  toAddressbook() {
-    this.navCtrl.push('AddressBookView');
-  }
-
   logout() {
     this.app.getRootNavs()[0].setRoot('OnboardingView');
   }
 
   toLanguageSelect() {
-
-    let modal = this.modalCtrl.create('SelectLanguageModal', {
+    const modal = this.modalCtrl.create('SelectLanguageModal', {
       currentLanguage: this.currentLanguageName,
       availableLanguages: [/* */]
     });
@@ -56,13 +48,9 @@ export class SettingsView {
     });
   }
 
-  toFeedback() {
-    this.navCtrl.push('FeedbackView');
-  }
-
   toUnitSelect() {
     //@todo get from service
-    let modal = this.modalCtrl.create('SelectUnitModal', {
+    const modal = this.modalCtrl.create('SelectUnitModal', {
       currentUnit: this.currentUnitName,
       availableUnits: [/* available units */]
     });
@@ -75,7 +63,7 @@ export class SettingsView {
 
   toCurrencySelect() {
     //@todo get from service
-    let modal = this.modalCtrl.create('SelectCurrencyModal', {
+    const modal = this.modalCtrl.create('SelectCurrencyModal', {
       currentCurrency: this.currentAlternativeName,
       availableCurrencies: [/* available currencies */]
     });
@@ -85,40 +73,25 @@ export class SettingsView {
     });
   }
 
-  toAdvancedSettings() {
-    this.navCtrl.push('AdvancedSettingsView')
-  }
-
-  toAbout() {
-    this.navCtrl.push('SettingsAboutView');
-  }
-
-  toNotifications() {
-    this.navCtrl.push('NotificationsView')
-  }
-
   help() {
-
-    let url = this.configService.get().help.url;
-
-    let confirm = this.alertCtrl.create({
+    this.alertCtrl.create({
       title: 'External link',
       message: 'Help and support information is available at the website',
       buttons: [
         {
-          text: 'Cancel', role: 'cancel', handler: () => {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
           }
         },
         {
-          text: 'Open', handler: () => {
-            this.inAppBrowser.create(url);
+          text: 'Open',
+          handler: () => {
+            this.inAppBrowser.create(this.configService.get().help.url);
           }
         }
       ]
-    });
-
-    confirm.present();
-
+    }).present();
   }
 
 }
