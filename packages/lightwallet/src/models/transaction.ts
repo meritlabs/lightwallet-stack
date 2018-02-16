@@ -48,5 +48,7 @@ export interface IDisplayTransaction extends ITransaction {
   isPendingEasySend: boolean;
   addressFrom: string;
   addressTo: string;
-  type: 'credit' | 'debit';
+  type: 'credit' | 'debit' | 'none';
+  input: string;
+  output: string;
 }

@@ -3,23 +3,49 @@ import { IDisplayTransaction, TransactionAction } from '../models/transaction';
 import { ContactsProvider } from '../providers/contacts/contacts';
 import { IDisplayWallet } from '../models/display-wallet';
 
-export function formatWalletHistory(walletHistory: any[], wallet: IDisplayWallet, contactsProvider?: ContactsProvider): any[] {
+export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: IDisplayWallet, contactsProvider?: ContactsProvider): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];
+
+  walletHistory = _.sortBy(walletHistory, 'time');
 
   let pendingString;
 
-  return walletHistory.map((tx: IDisplayTransaction) => {
+  walletHistory = await Promise.all(walletHistory.map(async (tx: IDisplayTransaction, i: number) => {
     if (!_.isNil(tx) && !_.isNil(tx.action)) {
       pendingString = tx.isPendingEasySend ? '(pending) ' : '';
+
+      const { alias: inputAlias, address: inputAddress } = tx.inputs ? tx.inputs[0] : <any>{};
+      const { alias: outputAlias, address: outputAddress } = tx.outputs ? tx.outputs[0] : <any>{};
+
+      tx.input = inputAlias || 'Anonymous';
+      tx.output = outputAlias || 'Anonymous';
+      tx.addressFrom = inputAlias || inputAddress;
+      tx.addressTo = outputAlias || outputAddress;
+
+      if (contactsProvider) {
+        try {
+          tx.input = (await contactsProvider.get(tx.input)).name.formatted;
+        } catch (e) {}
+
+        try {
+          tx.output = (await contactsProvider.get(tx.output)).name.formatted;
+        } catch (e) {}
+      }
+
       switch (tx.action) {
         case TransactionAction.SENT:
           tx.type = 'debit';
           tx.addressFrom = wallet.alias || wallet.name;
-          tx.name = tx.inputs[0].alias || wallet.name;
 
-          if (tx.isInvite === true) {
-            tx.name = 'Invite Sent';
-          } else if (tx.confirmations == 0) {
+          const { alias, address } = tx.inputs[0];
+
+          tx.name = tx.input;
+
+          if (contactsProvider) {
+            contactsProvider.get(alias || address);
+          }
+
+          if (tx.confirmations == 0) {
             tx.actionStr = 'Sending Payment...';
           } else {
             tx.actionStr = 'Payment Sent';
@@ -29,11 +55,9 @@ export function formatWalletHistory(walletHistory: any[], wallet: IDisplayWallet
         case TransactionAction.RECEIVED:
           tx.addressTo = wallet.name;
           tx.type = 'credit';
-          tx.name =  _.get(_.find(<any>tx.outputs, { isMine: false }), 'alias', '') || wallet.name;
+          tx.name =  (i === 0 && tx.isInvite === true) ? 'Wallet unlocked' : tx.output;
 
-          if (tx.isInvite === true) {
-            tx.name = 'Invite Received'
-          } else if (tx.confirmations == 0) {
+          if (tx.confirmations == 0) {
             tx.actionStr = 'Receiving Payment...';
           } else {
             tx.actionStr = 'Payment Received';
@@ -67,5 +91,7 @@ export function formatWalletHistory(walletHistory: any[], wallet: IDisplayWallet
     }
 
     return tx;
-  });
+  }));
+
+  return walletHistory.reverse();
 }

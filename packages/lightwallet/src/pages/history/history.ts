@@ -7,6 +7,7 @@ import { formatWalletHistory } from '../../utils/transactions';
 import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
 import { SendService } from 'merit/transact/send/send.service';
 import { sortBy, flatten } from 'lodash';
+import { ContactsProvider } from '../../providers/contacts/contacts';
 
 @IonicPage()
 @Component({
@@ -19,7 +20,8 @@ export class HistoryView {
 
   constructor(private walletService: WalletService,
               private profileService: ProfileService,
-              private sendService: SendService) {
+              private sendService: SendService,
+              private contactsService: ContactsProvider) {
   }
 
   async ngOnInit() {
@@ -39,10 +41,10 @@ export class HistoryView {
     const wallets = await this.profileService.getWallets();
     const walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
       const walletHistory = await this.walletService.getTxHistory(wallet, { force });
-      const distplayWallets: IDisplayWallet = await createDisplayWallet(wallet, this.walletService, this.sendService, { anv: false, invites: false, rewards: false });
-      return formatWalletHistory(walletHistory, distplayWallets);
+      const displayWallet: IDisplayWallet = await createDisplayWallet(wallet, this.walletService, this.sendService, { anv: false, invites: false, rewards: false });
+      return formatWalletHistory(walletHistory, displayWallet, this.contactsService);
     }));
 
-    this.transactions = sortBy(flatten(walletHistories), 'time').reverse()
+    this.transactions = sortBy(flatten(walletHistories), 'time').reverse();
   }
 }
