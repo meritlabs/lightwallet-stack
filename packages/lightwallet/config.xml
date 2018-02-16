@@ -105,6 +105,8 @@
     <content src="index.html" />
     <allow-navigation href="http://192.168.1.98:8100" />
     <allow-navigation href="http://192.168.1.185:8100" />
+    <engine name="android" spec="^6.4.0" />
+    <engine name="ios" spec="4.5.4" />
     <plugin name="branch-cordova-sdk" spec="^2.6.21" />
     <plugin name="cordova-clipboard" spec="^1.1.1" />
     <plugin name="cordova-plugin-android-fingerprint-auth" spec="^1.4.0" />
@@ -129,7 +131,4 @@
     <plugin name="phonegap-plugin-barcodescanner" spec="^7.0.0">
         <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
     </plugin>
-    <allow-navigation href="http://192.168.1.4:8100" />
-    <engine name="ios" spec="4.5.4" />
-    <engine name="android" spec="^6.4.0" />
 </widget>
