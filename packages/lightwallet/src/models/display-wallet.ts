@@ -40,9 +40,7 @@ const defaultOptions: IDisplayWalletOptions = {
 };
 
 export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService: SendService, options?: IDisplayWalletOptions): Promise<IDisplayWallet> {
-  options = Object.assign(defaultOptions, options);
-
-  console.log('Options are ', options);
+  options = Object.assign({}, defaultOptions, options);
 
   const displayWallet: IDisplayWallet = pick<IDisplayWallet, MeritWalletClient>(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'totalNetworkValue', 'credentials', 'network');
 
