@@ -13,21 +13,21 @@
         <h2>Notifications</h2>
       </ion-label>
     </button>
-    <button ion-item detail-none (click)="toLanguageSelect()" *ngIf="availableLanguages.length > 1">
+    <button ion-item detail-none (click)="toLanguageSelect()" *ngIf="availableLanguages.length">
       <ion-icon name="globe" item-start></ion-icon>
       <ion-label>
         <h2 translate>Language</h2>
         <p>{{currentLanguageName}}</p>
       </ion-label>
     </button>
-    <button ion-item detail-none (click)="toUnitSelect()" *ngIf="availableUnits.length > 1">
+    <button ion-item detail-none (click)="toUnitSelect()" *ngIf="availableUnits.length">
       <ion-icon name="calculator" item-start></ion-icon>
       <ion-label>
         <h2 translate>Currency</h2>
         <p>{{currentUnitName}}</p>
       </ion-label>
     </button>
-    <button ion-item detail-none (click)="toCurrencySelect()" *ngIf="availableAlternateCurrencies.length > 1">
+    <button ion-item detail-none (click)="toCurrencySelect()" *ngIf="availableAlternateCurrencies.length">
       <ion-icon name="cash" item-start></ion-icon>
       <ion-label>
         <h2  translate>Alternative currency</h2>
