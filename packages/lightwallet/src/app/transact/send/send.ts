@@ -87,7 +87,7 @@ export class SendView {
       this.contacts.forEach((contact: MeritContact) => {
         _.isEmpty(contact.meritAddresses) ?  result.noMerit.push(contact) : result.withMerit.push(contact);
       });
-      return this.searchResult = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
+      return this.searchResult = result;
     }
 
     if (this.searchQuery.length > 6 && this.searchQuery.indexOf('merit:') == 0)
