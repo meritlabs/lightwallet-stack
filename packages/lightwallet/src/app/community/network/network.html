@@ -77,8 +77,7 @@
       </span>
     </ion-item-divider>
 
-    <button ion-item detail-none text-wrap (click)="copyToClipboard(wallet.referrerAddress)"
-            [clip]="wallet.alias ? '@'+wallet.alias : wallet.referrerAddress" >
+    <ion-item text-wrap>
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/invite.svg">
       </ion-avatar>
@@ -89,7 +88,7 @@
       <button ion-button icon-only clear item-end>
         <ion-icon merit-icon name="share"></ion-icon>
       </button>
-    </button>
+    </ion-item>
 
     <ion-item>
       <ion-avatar img-icon item-start>
