@@ -98,6 +98,7 @@
         "ionic-plugin-keyboard": "^2.2.1",
         "ionicons": "3.0.0",
         "json-stable-stringify": "^1.0.0",
+        "lodash": "^4.17.5",
         "mkpath": "^1.0.0",
         "ng2-clip": "^1.0.1",
         "node-version-compare": "^1.0.1",
@@ -172,8 +173,8 @@
             "cordova-plugin-filepath": {}
         },
         "platforms": [
-            "android",
-            "ios"
+            "ios",
+            "android"
         ]
     }
 }
