@@ -150,7 +150,7 @@ export class WalletService {
           cache.totalBalanceMicros = status.balance.totalAmount;
 
           if (status.invitesBalance) {
-            cache.confirmedInvites = status.invitesBalance.availableConfirmedAmount;
+            cache.availableInvites = Math.max(0, status.invitesBalance.availableConfirmedAmount - 1);
           }
 
 
