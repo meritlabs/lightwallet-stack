@@ -1134,21 +1134,7 @@ export class WalletService {
       .toPromise<any[]>();
 
     let array: Array<any> = _.compact(txs.concat(confirmedTxs));
-    let newHistory = _.uniqBy(array, (x: any) => {
-      return x.txid;
-    });
-
-
-
-
-
-
-
-
-
-
-
-
+    let newHistory = _.uniqBy(array, 'txid');
 
     const updateNotes = async () => {
       if (!endingTs) return;

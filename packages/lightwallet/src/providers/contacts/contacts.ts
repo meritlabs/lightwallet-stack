@@ -85,10 +85,8 @@ export class ContactsProvider {
         return addressBook[addr];
       }
     } catch (err) {
-      throw new Error('Error getting addressBook entry: ' + err);
+      throw new Error('Contact with address ' + addr + ' not found');
     }
-
-    throw new Error('Contact with address ' + addr + ' not found');
   };
 
   searchContacts(contacts: MeritContact[], searchQuery: string = ''): MeritContact[] {
