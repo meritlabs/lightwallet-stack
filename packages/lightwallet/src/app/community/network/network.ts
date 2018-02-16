@@ -119,7 +119,7 @@ export class NetworkView {
   }
 
   shareAddress(address) {
-    return this.socialSharing.share('merit' + address);
+    return this.socialSharing.share(address);
   }
 
   private async loadWallets() {

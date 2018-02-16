@@ -229,8 +229,9 @@ export class WalletsView {
 
   walletHasPendingAmount(wallet: any): boolean {
     try {
+
       if (wallet.status && wallet.status.balance) {
-        return Number(wallet.status.balance.totalAmount) !== Number(wallet.status.balance.confirmedAmount);
+        return Number(wallet.status.balance.totalAmount) !== Number(wallet.status.balance.totalConfirmedAmount);
       }
     } catch (e) {}
 

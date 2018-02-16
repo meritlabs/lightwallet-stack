@@ -55,8 +55,7 @@ export class SendView {
   private async updateHasUnlocked() {
     const wallets = await this.profileService.getWallets();
     this.hasUnlockedWallets = wallets && wallets.some(w => w.confirmed);
-    this.hasActiveInvites = wallets && wallets.some(w => w.status && w.status.confirmedInvites > 1);
-    console.log(this.hasActiveInvites, 'active invites');
+    this.hasActiveInvites = wallets && wallets.some(w => w.status && w.status.availableInvites > 0);
   }
 
   async ionViewWillEnter() {
@@ -87,7 +86,7 @@ export class SendView {
       this.contacts.forEach((contact: MeritContact) => {
         _.isEmpty(contact.meritAddresses) ?  result.noMerit.push(contact) : result.withMerit.push(contact);
       });
-      return this.searchResult = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
+      return this.searchResult = result;
     }
 
     if (this.searchQuery.length > 6 && this.searchQuery.indexOf('merit:') == 0)
@@ -122,24 +121,23 @@ export class SendView {
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
       if (this.isAddress(input)) {
-        const address = await this.sendService.getValidAddress(input);
+        const addressInfo = await this.sendService.getAddressInfo(input);
 
-        if (address) {
+        if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ address, network: ENV.network });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
+          result.toNewEntity.contact.meritAddresses.push({ address: addressInfo.address, alias: addressInfo.alias, network: ENV.network });
+          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address };
         } else {
           result.error = ERROR_ADDRESS_NOT_CONFIRMED;
         }
       } else if (this.couldBeAlias(input)) {
         let alias = input.slice(1);
-        console.log('im in');
-        const address = await this.sendService.getValidAddress(alias);
+        const addressInfo = await this.sendService.getAddressInfo(alias);
 
-        if (address) {
+        if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ alias, address, network: ENV.network });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: address };
+          result.toNewEntity.contact.meritAddresses.push({ address: addressInfo.address, alias: addressInfo.alias,  network: ENV.network });
+          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address };
         } else {
           result.error = ERROR_ALIAS_NOT_FOUND; 
         }

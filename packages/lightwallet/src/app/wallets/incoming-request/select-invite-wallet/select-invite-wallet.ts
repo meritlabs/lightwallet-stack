@@ -28,7 +28,9 @@ export class SelectInviteWalletModal {
   }
 
   select(wallet: IDisplayWallet) {
-    this.viewCtrl.dismiss(wallet);
+    if (wallet.invites) {
+      this.viewCtrl.dismiss(wallet);
+    }
   }
 
 }
