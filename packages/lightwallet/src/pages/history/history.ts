@@ -15,7 +15,6 @@ import { ContactsProvider } from '../../providers/contacts/contacts';
   templateUrl: 'history.html',
 })
 export class HistoryView {
-
   transactions: any[];
 
   constructor(private walletService: WalletService,

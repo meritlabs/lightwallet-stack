@@ -24,54 +24,33 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
       if (contactsProvider) {
         try {
-          tx.input = (await contactsProvider.get(tx.input)).name.formatted;
-        } catch (e) {}
+          tx.input = (await contactsProvider.get(inputAddress || inputAlias)).name.formatted;
+        } catch (e) {
+          console.log(e);
+        }
 
         try {
-          tx.output = (await contactsProvider.get(tx.output)).name.formatted;
-        } catch (e) {}
+          tx.output = (await contactsProvider.get(outputAddress || outputAlias)).name.formatted;
+        } catch (e) {
+          console.log(e);
+        }
       }
 
       switch (tx.action) {
         case TransactionAction.SENT:
           tx.type = 'debit';
-          tx.addressFrom = wallet.alias || wallet.name;
-
-          const { alias, address } = tx.inputs[0];
-
           tx.name = tx.input;
-
-          if (contactsProvider) {
-            contactsProvider.get(alias || address);
-          }
-
-          if (tx.confirmations == 0) {
-            tx.actionStr = 'Sending Payment...';
-          } else {
-            tx.actionStr = 'Payment Sent';
-          }
           break;
 
         case TransactionAction.RECEIVED:
-          tx.addressTo = wallet.name;
           tx.type = 'credit';
           tx.name =  (i === 0 && tx.isInvite === true) ? 'Wallet unlocked' : tx.output;
-
-          if (tx.confirmations == 0) {
-            tx.actionStr = 'Receiving Payment...';
-          } else {
-            tx.actionStr = 'Payment Received';
-          }
           break;
 
         case TransactionAction.MOVED:
           tx.actionStr = 'Moved Merit';
           tx.name = tx.isInvite? 'Moved Invite' : 'Moved Merit';
           break;
-
-        default:
-          tx.actionStr = 'Recent Transaction';
-          break
       }
       tx.actionStr = pendingString + tx.actionStr;
 
@@ -79,8 +58,12 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
         tx.walletId = wallet.id;
       }
 
-      if (tx.isCoinbase && !tx.isInvite) {
-        if (tx.outputs[0].index === 0) {
+      if (tx.isCoinbase) {
+        if (tx.isInvite) {
+          tx.name = 'Mined Invite';
+          tx.action = TransactionAction.INVITE;
+          tx.type = 'credit';
+        } else if (tx.outputs[0].index === 0) {
           tx.name = 'Mining Reward';
           tx.action = TransactionAction.MINING_REWARD;
         } else {

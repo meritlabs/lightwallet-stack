@@ -6,6 +6,7 @@ import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { ConfigService } from 'merit/shared/config.service';
 import { WalletService } from 'merit/wallets/wallet.service';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 
 @IonicPage()
@@ -15,7 +16,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 })
 export class EditWalletView {
 
-  public wallet: any;
+  public wallet: MeritWalletClient;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -40,7 +41,10 @@ export class EditWalletView {
     if (name) {
       let aliasOpts = { aliasFor: {} };
       aliasOpts.aliasFor[this.wallet.id] = name;
-      this.configService.set(aliasOpts);
+
+      this.wallet.credentials.walletName = name;
+
+      return this.configService.set(aliasOpts);
     }
   }
 
