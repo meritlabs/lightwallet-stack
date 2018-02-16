@@ -4,7 +4,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { MeritWalletClient } from '../../lib/merit-wallet-client';
 import { formatWalletHistory } from '../../utils/transactions';
-import { createDisplayWallet } from '../../models/display-wallet';
+import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
 import { SendService } from 'merit/transact/send/send.service';
 
 @IonicPage()
@@ -36,9 +36,10 @@ export class HistoryView {
 
   async loadData(force?: boolean) {
     const wallets = await this.profileService.getWallets();
-    let walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
+    const walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
       const walletHistory = await this.walletService.getTxHistory(wallet, { force });
-      return formatWalletHistory(walletHistory, await createDisplayWallet(wallet, this.walletService, this.sendService));
+      const distplayWallets: IDisplayWallet = await createDisplayWallet(wallet, this.walletService, this.sendService, { anv: false, invites: false, rewards: false });
+      return formatWalletHistory(walletHistory, distplayWallets);
     }));
 
     this.transactions = Array.prototype.concat.apply([], walletHistories).sort((a, b) => a.time < b.time);
