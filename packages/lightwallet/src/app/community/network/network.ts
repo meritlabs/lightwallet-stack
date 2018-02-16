@@ -46,7 +46,6 @@ export class NetworkView {
               private txFormatService: TxFormatService,
               private logger: Logger,
               private platformService: PlatformService,
-              private bwcService: BwcService,
               private unlockRequestService: UnlockRequestService,
               private sendService: SendService
             ) {}
