@@ -1,15 +1,9 @@
 view-unlock {
   .bottom-buttons {
-    .input-wrapper {
-      input {
-        padding-right: 56px;
-      }
-    }
-
     .qr-button.button {
       position: absolute;
-      top: 0;
-      right: 13px;
+      top: 8px;
+      right: 10px;
       height: 20px;
       min-height: 20px;
       width: 20px;

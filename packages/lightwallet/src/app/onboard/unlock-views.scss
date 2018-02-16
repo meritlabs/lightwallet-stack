@@ -1,4 +1,8 @@
 view-unlock, view-alias {
+  .scroll-content {
+    height: 100vh;
+  }
+
   h1.title {
     font-size: 36px;
     line-height: 38px;
@@ -14,15 +18,23 @@ view-unlock, view-alias {
   .bottom-buttons {
     position: relative;
     height: 122px;
-    .input-wrapper {
+
+    ion-item.item.input-item,
+    ion-item.item.input-item .item-inner,
+    ion-input.text-input {
+      padding: 0;
+      margin: 0;
+    }
+
+    .input-item {
       background: rgb(45, 60, 80);
       border-radius: 4px;
-      position: relative;
-      ion-input, .input-wrapper {
-        padding: 0;
-        margin: 0;
+
+      .item-inner {
+        position: relative;
       }
-      input {
+
+      input.text-input {
         display: block;
         height: 56px;
         min-height: 56px;
@@ -42,13 +54,14 @@ view-unlock, view-alias {
         font-size: 14px;
       }
 
-      ion-spinner {
+      img.stop-sign {
         position: absolute;
-        top: 13px;
-        right: 13px;
-        height: 30px;
-        width: 30px;
+        top: 10px;
+        right: 5px;
+        height: 20px;
+        width: 20px;
       }
+
     }
 
     button {
@@ -59,16 +72,7 @@ view-unlock, view-alias {
       border-radius: 4px;
     }
 
-    .stop-sign {
-      position: absolute;
-      top: 18px;
-      right: 18px;
-      height: 20px;
-      width: 20px;
-    }
-
     .error-message {
-
       margin: 0;
       text-align: center;
       color: white;
@@ -92,7 +96,7 @@ view-unlock, view-alias {
     }
   }
 
-  #logo {
+  img.logo {
     height: 25%;
     margin-top: 5%;
     margin-bottom: 5%;

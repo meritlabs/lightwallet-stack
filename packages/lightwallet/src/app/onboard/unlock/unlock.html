@@ -7,7 +7,7 @@
   <div class="container">
 
     <ng-template *ngIf="easyReceipt; else noReceipt">
-      <img src="assets/img/logo-negative.svg" id="logo"/>
+      <img src="assets/img/logo-negative.svg" class="logo" />
 
       <h1 class="title" translate>
         You've got Merit!!
@@ -30,9 +30,7 @@
         Merit is an invite-only network
       </h1>
 
-      <div class="illustration" translate>
-        <img src="assets/img/invite.svg" alt="">
-      </div>
+      <img src="assets/img/invite.svg" alt="" class="logo" />
 
       <p class="text" translate>
         You'll need an unlock code from a friend or colleague.
@@ -41,17 +39,17 @@
 
     <div class="bottom-buttons">
       <div [hidden]="!formData.addressCheckError" class="error-message"><p>{{ formData.addressCheckError }}</p></div>
-      <div class="input-wrapper">
+      <ion-item no-lines class="input-item">
         <ion-input placeholder="Invite Code" [class.failed]="unlockState == 'fail'"
                    [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off"
-                   autocapitalize="off" (ionFocus)="onInputFocus()" (ngModelChange)="checkAddress()"></ion-input>
-        <ion-spinner [hidden]="!formData.addressCheckInProgress" color="primary"></ion-spinner>
-        <img class="stop-sign" [hidden]="!formData.addressCheckError" src="assets/img/icons/error-stop.svg">
+                   autocapitalize="off" (ngModelChange)="checkAddress()"></ion-input>
+        <ion-spinner [hidden]="!formData.addressCheckInProgress" color="primary" item-end></ion-spinner>
+        <img class="stop-sign" [hidden]="!formData.addressCheckError || formData.addressCheckInProgress" src="assets/img/icons/error-stop.svg">
         <button ion-button clear class="qr-button" (click)="openQrScanner()"
-                [hidden]="!shouldShowQRButton">
+                [hidden]="!shouldShowQRButton" item-end>
           <img src="assets/img/icons/qr.svg">
         </button>
-      </div>
+      </ion-item>
 
       <button block ion-button icon-only translate (click)="toAliasView()" [disabled]="!canContinue">
         Next
