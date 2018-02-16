@@ -71,7 +71,7 @@ f<ion-header no-border>
   </div>
 
   <ion-list [hidden]="activeTab === 'active'">
-      <div *ngIf="!activeRequests?.length && !hiddenRequests?.length" class="cta">
+      <div *ngIf="!confirmedRequests?.length" class="cta">
       <img src="assets/img/invite-sent.svg" alt="">
 
       <div class="info-box">
