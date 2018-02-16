@@ -71,15 +71,15 @@ view-alias {
     .error-message {
 
       margin: 0;
-      text-align: text;
+      text-align: center;
       color: white;
       width: 100%;
       display: block;
       position: absolute;
       top: -22px;
-      left: 0px;
+      left: 0;
+
       p {
-        //background:  color($colors, danger);
         background: rgb(204, 87, 59);
         border-radius: 4px;
         color: white;
@@ -98,6 +98,5 @@ view-alias {
     margin-top: 5%;
     margin-bottom: 5%;
   }
-
 
 }
