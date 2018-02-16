@@ -117,9 +117,6 @@ export class TxFormatService {
           tx.recipientCount = outputsNr;
           tx.hasMultiplesOutputs = true;
         }
-        tx.amount = _.reduce(tx.outputs, function (total: any, o: any) {
-          return total + o.amount;
-        }, 0);
       }
       tx.toAddress = tx.outputs[0].toAddress;
     }
