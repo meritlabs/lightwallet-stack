@@ -31,13 +31,13 @@ export async function createDisplayWallet(wallet: MeritWalletClient, walletServi
   const displayWallet: IDisplayWallet = pick<IDisplayWallet, MeritWalletClient>(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'totalNetworkValue', 'credentials', 'network');
 
   displayWallet.client = wallet;
+  wallet.status =  await walletService.getStatus(wallet, { force: false });
   displayWallet.referrerAddress = walletService.getRootAddress(wallet).toString();
   let info = await sendService.getAddressInfo(displayWallet.referrerAddress);
   if (info.alias) displayWallet.alias = info.alias;
   displayWallet.totalNetworkValueMicro = await walletService.getANV(wallet);
   displayWallet.inviteRequests = await walletService.getUnlockRequests(wallet);
-  const invitesInfo = await walletService.getInvitesBalance(wallet);
-  displayWallet.invites = Math.max(0, invitesInfo.availableConfirmedAmount - 1);
+  displayWallet.invites = wallet.status.availableInvites;
 
   const rewardsData = await walletService.getRewards(wallet);
 

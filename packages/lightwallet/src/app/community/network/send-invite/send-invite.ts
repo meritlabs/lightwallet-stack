@@ -29,6 +29,7 @@ export class SendInviteView {
   public loadingContacts: boolean = false;
   public contacts: Array<MeritContact> = [];
   public amount: number;
+  public availableInvites;
   public searchResult: {
     withMerit: Array<MeritContact>,
     toNewEntity:{destination:string, contact:MeritContact},
@@ -52,11 +53,13 @@ export class SendInviteView {
 
   async ionViewWillEnter() {
     this.wallets = this.navParams.get('wallets');
-    console.log(this.wallets, 'wallets');
     this.loadingContacts = true;
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
     this.parseSearch();
+    this.availableInvites = this.wallets.reduce((invites, wallet) => {
+      return invites + wallet.invites;
+    },0);
   }
 
   async parseSearch() {
