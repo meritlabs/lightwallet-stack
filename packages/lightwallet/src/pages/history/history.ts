@@ -32,7 +32,6 @@ export class HistoryView {
       await this.loadData(true);
     } catch (e) {
     }
-
     refresher.complete();
   }
 

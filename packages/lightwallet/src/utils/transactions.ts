@@ -86,13 +86,13 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           tx.action = TransactionAction.INVITE;
           tx.type = 'credit';
         } else if (tx.outputs[0].index === 0) {
-          tx.name = 'Ambassador Reward';
-          tx.action = TransactionAction.AMBASSADOR_REWARD;
-          tx.isAmbassadorReward = true;
-        } else {
           tx.name = 'Mining Reward';
           tx.action = TransactionAction.MINING_REWARD;
           tx.isMiningReward = true;
+        } else {
+          tx.name = 'Ambassador Reward';
+          tx.action = TransactionAction.AMBASSADOR_REWARD;
+          tx.isAmbassadorReward = true;
         }
       }
     }
