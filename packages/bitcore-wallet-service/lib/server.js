@@ -2183,6 +2183,7 @@ WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) 
         if (err) return next(err);
         opts.outputs[0].amount = info.amount;
         opts.inputs = info.inputs;
+        opts.fee = info.fee;
         return next();
       });
     },
