@@ -201,7 +201,7 @@ Referral.prototype.serialize = Referral.prototype.toString = function() {
 };
 
 Referral.validateAlias = function (alias) {
-    const aliasRegexp = /^[a-z0-9-_]{4,20}$/i;
+    const aliasRegexp = /^[a-z0-9-_]{3,20}$/i;
 
     return aliasRegexp.test(alias);
 }
