@@ -492,7 +492,7 @@ ion-modal.merit-modal {
   .modal-wrapper {
     contain: none;
     height: auto;
-    max-height: calc(100% - 50px);
+    max-height: calc(100% - 75px);
     z-index: 1;
     position: absolute;
     width: 100%;
@@ -528,7 +528,7 @@ ion-modal.merit-modal {
 
       .scroll-content {
         contain: none;
-        min-height: 0px;
+        min-height: 0;
         flex: 1;
         position: relative;
       }
