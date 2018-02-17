@@ -2243,7 +2243,7 @@ export class API {
       }
       return this._processTxps(txp).then(() => {
 
-        if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey)) {
+        if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey, opts.sendMax)) {
           return Promise.reject(Errors.SERVER_COMPROMISED);
         }
         return Promise.resolve(txp);
