@@ -1,3 +1,5 @@
+import { MeritContact } from './merit-contact';
+
 export enum TransactionAction {
   RECEIVED = 'received',
   SENT = 'sent',
@@ -51,4 +53,6 @@ export interface IDisplayTransaction extends ITransaction {
   type: 'credit' | 'debit' | 'none';
   input: string;
   output: string;
+  safeConfirmed?: string;
+  contact?: MeritContact;
 }

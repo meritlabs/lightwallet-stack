@@ -4,6 +4,11 @@ contact-avatar {
     border-radius: 500rem;
     span {
       color: map_get($colors, primary);
+      text-align: center;
+      min-width: 40px;
+      min-height: 40px;
+      display: block;
+      line-height: 40px;
     }
   }
 }

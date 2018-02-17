@@ -1,6 +1,6 @@
 <ion-list>
-  <button ion-item detail-none *ngFor="let tx of transactions; trackBy: tx?.txid" navPush="TxDetailsView" [navParams]="{ tx: tx }">
-    <contact-avatar item-start *ngIf="isEasySend(tx)" [contact]="getContact(tx)"></contact-avatar>
+  <button ion-item detail-none *ngFor="let tx of transactions; trackBy: tx?.txid" (click)="viewTxDetails(tx)">
+    <contact-avatar item-start *ngIf="isEasySend(tx)" [contact]="tx.contact"></contact-avatar>
     <ion-avatar img-icon item-start *ngIf="!isEasySend(tx)">
       <img *ngIf="isEasySend(tx)" src="assets/img/icons/merit.svg" alt="" />
       <img *ngIf="isMiningReward(tx)" src="assets/img/icons/mining.svg" alt="" />
@@ -19,7 +19,7 @@
           {{ tx.alternativeAmountStr }}
       </span>
     </ion-note>
-    <ion-note *ngIf="isInvite(tx)" item-end class="merit-invite" [class.credit]="isCredit(tx)">
+    <ion-note *ngIf="tx.isInvite && !tx.isCoinbase" item-end class="merit-invite" [class.credit]="isCredit(tx)">
       {{ isCredit(tx) ? 'Received' : 'Sent' }}
     </ion-note>
   </button>

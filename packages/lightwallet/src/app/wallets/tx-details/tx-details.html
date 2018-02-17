@@ -1,13 +1,18 @@
 <ion-header no-border>
   <ion-navbar color="primary">
-    <ion-title smaller-title translate>{{ title }}</ion-title>
+    <ion-title smaller-title translate>Payment Details</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="dismiss()">
+        Close
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
   <div class="big-header">
-    <!-- TODO revise this design, doesn't look good -->
     <div class="status">
+
       <div *ngIf="tx.action == 'received'" class="action">
         <img src="assets/img/icons/receive.svg" width="40">
         <span translate>Received</span>
@@ -28,7 +33,7 @@
       {{ tx.type == 'debit'? '-' : ''}}{{tx.alternativeAmountStr || altAmountStr | toFiat : tx.amount | async}}
     </h3>
   </div>
-  <ion-list>
+  <ion-list>`
     <ion-item>
       <ion-label>
         <p translate>To</p>
