@@ -329,12 +329,6 @@ WalletService.prototype.createWallet = function(opts, cb) {
 
   if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey', 'parentAddress'], cb)) return;
 
-  // We should short-circuit the request if there is no parent address.
-  // This belt-and-suspenders check will save time and latency.
-  if (_.isEmpty(opts.parentAddress))
-    return cb(new ClientError('Parent address is empty'));
-
-  if (_.isEmpty(opts.name)) return cb(new ClientError('Invalid wallet name'));
   if (!Wallet.verifyCopayerLimits(opts.m, opts.n))
     return cb(new ClientError('Invalid combination of required copayers / total copayers'));
 
@@ -389,26 +383,26 @@ WalletService.prototype.createWallet = function(opts, cb) {
       });
     },
     function (acb) {
-      return acb();
       // parent address might be an alias, so let's fetch it from blockchain explorer first then get its wallet ID
       self.blockchainExplorer.getReferral(opts.parentAddress, function(err, referral) {
-        if (err) return acb(err);
+        if (err || !referral) {
+          log.debug('Unable to get referral for parent address: ' + opts.parentAddress);
+          log.debug(err);
+          return acb();
+        }
 
         const { address } = referral;
         self.storage.fetchAddress(address, (err, parentAddress) => {
-          if (err) return acb(err);
+          if (err || !parentAddress) {
+            log.debug('Unable to fetch address: ' + address);
+            log.debug(err);
+            return acb();
+          }
 
-          const notification = Notification.create({
-            type: 'IncomingInviteRequest',
+          self._notify('IncomingInviteRequest', {
             walletId: parentAddress.walletId,
             creatorId: parentAddress.walletId,
-            data: {}
-          });
-
-          self.storage.storeNotification(notification.walletId, notification, () => {
-            self.messageBroker.send(notification);
-            acb();
-          });
+          }, null, acb);
         });
       });
     }
@@ -741,8 +735,6 @@ WalletService.prototype._getSigningKey = function(text, signature, pubKeys) {
  * @param {Boolean} opts.isGlobal - If true, the notification is not issued on behalf of any particular copayer (defaults to false)
  */
 WalletService.prototype._notify = function(type, data, opts, cb) {
-  var self = this;
-
   if (_.isFunction(opts)) {
     cb = opts;
     opts = {};
@@ -753,12 +745,12 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
 
   cb = cb || function() {};
 
-  var walletId = self.walletId || data.walletId;
-  var copayerId = self.copayerId || data.copayerId;
+  const walletId = this.walletId || data.walletId;
+  const copayerId = this.copayerId || data.copayerId;
 
   $.checkState(walletId);
 
-  var notification = Model.Notification.create({
+  const notification = Model.Notification.create({
     type: type,
     data: data,
     ticker: this.notifyTicker++,
@@ -766,8 +758,8 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
     walletId: walletId,
   });
 
-  this.storage.storeNotification(walletId, notification, function() {
-    self.messageBroker.send(notification);
+  this.storage.storeNotification(walletId, notification, () => {
+    this.messageBroker.send(notification);
     return cb();
   });
 };
@@ -1981,8 +1973,11 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
     var totalAmount;
     var availableAmount;
+    console.dir(utxos);
 
     var balance = self._totalizeUtxos(utxos);
+    console.log('txp.excludeUnconfirmedUtxos', txp.excludeUnconfirmedUtxos);
+    console.log(balance);
     if (txp.excludeUnconfirmedUtxos) {
       totalAmount = balance.totalConfirmedAmount;
       availableAmount = balance.availableConfirmedAmount;
@@ -2014,6 +2009,8 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       var candidateUtxos = _.filter(utxos, function(utxo) {
         return utxo.confirmations >= group;
       });
+
+      console.dir(candidateUtxos);
 
       log.debug('Group >= ' + group);
 
@@ -3092,9 +3089,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       return _.sumBy(_.filter(items, filter), 'amount');
     };
 
-    function classify(items, isInvite) {
+    function classify(items, isInvite, sent) {
       return _.map(items, function(item) {
         var address = indexedAddresses[item.address];
+        // console.dir(address);
         return {
           address: item.address,
           alias: item.alias,
@@ -3113,12 +3111,24 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       var amount, action, addressTo;
       var inputs, outputs;
       if (tx.outputs.length || tx.inputs.length) {
-        inputs = classify(tx.inputs, tx.isInvite);
-        outputs = classify(tx.outputs, tx.isInvite);
+        const sent = tx.inputs.some(i => !!indexedAddresses[i.address])
+
+        console.log('sent', sent);
+
+        inputs = classify(tx.inputs, tx.isInvite, sent);
+        outputs = classify(tx.outputs, tx.isInvite, sent);
+
+        console.dir(inputs);
+        console.dir(outputs);
 
         amountIn = sum(inputs, true);
         amountOut = sum(outputs, true, false);
         amountOutChange = sum(outputs, true, true);
+
+        console.log('in:', amountIn);
+        console.log('out:', amountOut);
+        console.log('change:', amountOutChange);
+        console.log('fee:', tx.fees);
 
         if (amountIn == (amountOut + amountOutChange + (amountIn > 0 ? tx.fees : 0))) {
           amount = amountOut;
@@ -3127,6 +3137,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           amount = amountIn - amountOut - amountOutChange - ((amountIn > 0 && amountOutChange >0 ) ? tx.fees : 0);
           action = amount > 0 ? 'sent' : 'received';
         }
+
+        console.log('action', action);
+        console.log('amount', amount);
+
 
         amount = Math.abs(amount);
         if (action == 'sent' || action == 'moved') {
@@ -3214,6 +3228,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         newTx.note = _.pick(note, ['body', 'editedBy', 'editedByName', 'editedOn']);
       }
 
+      console.log('final tx amount', newTx.amount);
+
       return newTx;
     });
   };
@@ -3253,6 +3269,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           if (err) return next(err);
 
           txs = self._normalizeTxHistory(rawTxs);
+          txs.forEach(tx => tx.outputs.forEach(o => console.dir(o)));
           totalItems = total;
           return next();
         });
