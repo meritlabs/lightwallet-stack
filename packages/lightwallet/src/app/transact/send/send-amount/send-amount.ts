@@ -87,12 +87,14 @@ export class SendAmountView {
 
   async ionViewDidLoad() {
     this.availableUnits = [
-      { type: this.CURRENCY_TYPE_MRT, name: this.configService.get().wallet.settings.unitCode.toUpperCase() },
-      {
+      { type: this.CURRENCY_TYPE_MRT, name: this.configService.get().wallet.settings.unitCode.toUpperCase() }
+    ];
+    if (this.rateService.getRate(this.configService.get().wallet.settings.alternativeIsoCode) > 0) {
+      this.availableUnits.push({
         type: this.CURRENCY_TYPE_FIAT,
         name: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
-      },
-    ];
+      });
+    }
     this.selectedCurrency = this.availableUnits[0];
     let passedAmount = this.navParams.get('amount') || 0;
     this.formData.amount = String(this.rateService.microsToMrt(passedAmount));
@@ -214,7 +216,9 @@ export class SendAmountView {
     if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
       this.amount.mrt = parseFloat(this.formData.amount) || 0;
       this.amount.micros = this.rateService.mrtToMicro(this.amount.mrt);
-      this.amount.fiat = this.rateService.fromMicrosToFiat(this.amount.micros, this.availableUnits[1].name);
+      if (this.availableUnits[1]) {
+        this.amount.fiat = this.rateService.fromMicrosToFiat(this.amount.micros, this.availableUnits[1].name);
+      }
     } else {
       this.amount.fiat = parseFloat(this.formData.amount) || 0;
       this.amount.micros = this.rateService.fromFiatToMicros(this.amount.fiat, this.availableUnits[1].name);
