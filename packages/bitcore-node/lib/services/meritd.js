@@ -1599,23 +1599,22 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
 
     function loadFromMempool(cb) {
         return self.client.getaddressmempoolreferrals({addresses: addresses}, function (err, response) {
-            if (err || !response || response.error) {
-                console.log('Error occured while requesting referrals from mempool', response? response.error : err);
-                return cb(err, [])
+            if (err) {
+              return done(self._wrapRPCError(err));
             }
+
             console.log('mempool', response.result);
             return cb(null, response.result);
         });
     }
 
     function loadFromBc(cb) {
-
         return self.client.getaddressreferrals({addresses: addresses}, function (err, response) {
-            if (err || !response || response.error) {
-                console.log('Error occured while requesting referrals from blockchain', response? response.error : err);
-                return cb(response.error, []);
-            }
-            return cb(null, response.result);
+          if (err) {
+            return done(self._wrapRPCError(err));
+          }
+
+          return cb(null, response.result);
         });
     }
 
