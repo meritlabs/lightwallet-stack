@@ -6,4 +6,4 @@ export const MERIT_MODAL_OPTS: ModalOptions = {
   cssClass: 'merit-modal'
 };
 
-export const CONFIRMATION_THRESHOLD = 6;
+export const COINBASE_CONFIRMATION_THRESHOLD = 6;
