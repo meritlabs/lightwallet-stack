@@ -34,8 +34,8 @@ export class SendConfirmationView {
     recipient: {
       label: string;
       name: string;
-      email?: string;
-      phoneNumber?: string;
+      emails?: Array<{ value: string }>;
+      phoneNumbers?: Array<{ value: string }>;
     };
     sendMethod: SendMethod;
     txp: any;
@@ -227,7 +227,7 @@ export class SendConfirmationView {
         switch (this.txData.sendMethod.destination) {
           case SendMethod.DESTINATION_SMS:
             await this.easySendService.sendSMS(
-              this.txData.recipient.phoneNumber,
+              _.get(this.txData.recipient.phoneNumbers, '[0].value'),
               this.viewData.amountMrt,
               this.txData.easySendUrl,
             );
@@ -235,7 +235,7 @@ export class SendConfirmationView {
 
           case SendMethod.DESTINATION_EMAIL:
             await this.easySendService.sendEmail(
-              this.txData.recipient.email,
+              _.get(this.txData.recipient.emails, '[0].value'),
               this.viewData.amountMrt,
               this.txData.easySendUrl,
             );
@@ -283,4 +283,3 @@ export class SendConfirmationView {
   }
 
 }
-

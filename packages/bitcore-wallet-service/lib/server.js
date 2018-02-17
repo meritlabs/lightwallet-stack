@@ -1973,8 +1973,8 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
     var totalAmount;
     var availableAmount;
-
     var balance = self._totalizeUtxos(utxos);
+
     if (txp.excludeUnconfirmedUtxos) {
       totalAmount = balance.totalConfirmedAmount;
       availableAmount = balance.availableConfirmedAmount;

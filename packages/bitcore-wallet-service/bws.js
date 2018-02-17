@@ -71,13 +71,10 @@ function startInstance(cb) {
 
 if (config.cluster && cluster.isMaster) {
 
-  // Count the machine's CPUs
-  var instances = config.clusterInstances || require('os').cpus().length;
-
-  log.info('Starting ' + instances + ' instances');
+  log.info('Starting ' + clusterInstances + ' instances');
 
   // Create a worker for each CPU
-  for (var i = 0; i < instances; i += 1) {
+  for (var i = 0; i < clusterInstances; i += 1) {
     cluster.fork();
   }
 
