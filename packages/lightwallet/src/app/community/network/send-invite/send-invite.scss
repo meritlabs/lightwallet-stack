@@ -55,14 +55,15 @@ view-send-invite {
   .scanner-button {
     position: absolute;
     right: 14px;
-    bottom: 7px;
     color: color($colors, primary);
+    padding: 0;
+    min-height: 20px;
+    height: 20px;
     img {
       height: 20px;
       width: 20px;
     }
   }
-
 
   .scroll-content {
     display: flex;
@@ -260,4 +261,11 @@ view-send-invite, view-send-select-bind-contact {
       }
     }
   }
+}
+
+.md view-send-invite .scanner-button{
+  bottom: 15px;
+}
+.ios view-send-invite .scanner-button{
+  bottom: 8px;
 }
