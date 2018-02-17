@@ -3,12 +3,13 @@ contact-avatar {
     background: #e9edf2;
     border-radius: 500rem;
     span {
-      color: map_get($colors, primary);
+      color: rgb(95, 108, 130);
       text-align: center;
       min-width: 40px;
       min-height: 40px;
       display: block;
       line-height: 40px;
+      font-weight: 500;
     }
   }
 }

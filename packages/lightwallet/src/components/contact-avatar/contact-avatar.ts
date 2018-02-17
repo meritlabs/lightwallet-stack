@@ -19,6 +19,7 @@ export class ContactAvatarComponent {
   @Input()
   set contact(contact: MeritContact) {
     if (!contact) return;
+    console.log('Got a contact', contact);
     if (contact.photos && contact.photos.length) {
       this.imageSrc = this._sanitizer.bypassSecurityTrustUrl(contact.photos[0].value);
     } else {
