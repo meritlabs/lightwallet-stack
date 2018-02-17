@@ -13,6 +13,7 @@ import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { EasySend, getEasySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 import * as  _ from 'lodash';
 import { SendMethod } from 'merit/transact/send/send-method.model';
+import { RateService } from 'merit/transact/rate.service';
 
 
 @IonicPage()
@@ -58,6 +59,7 @@ export class SendConfirmationView {
               private easySendService: EasySendService,
               private walletService: WalletService,
               private formatService: TxFormatService,
+              private rateService: RateService,
               private configService: ConfigService,
               private logger: Logger,
               private tabs: Tabs
@@ -88,7 +90,8 @@ export class SendConfirmationView {
       destination: this.txData.sendMethod.value
     };
 
-    const convert = amount => this.formatService.toFiatStr(amount, viewData.fiatCode);
+    let fiatAvailale = this.rateService.getRate(viewData.fiatCode) > 0;
+    const convert = amount => fiatAvailale ? this.formatService.toFiatStr(amount, viewData.fiatCode) : '';
 
     viewData.amountFiat = await convert(this.txData.amount);
     viewData.feeAmountFiat = await convert(this.txData.txp.fee);

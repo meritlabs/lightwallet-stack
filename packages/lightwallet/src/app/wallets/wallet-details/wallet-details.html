@@ -17,7 +17,7 @@
     <div *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount" class="amount-available">
       <small>({{ wallet.status.spendableBalanceStr || 0 }} available)</small>
     </div>
-    <h3 class="detail-fiat">{{ wallet.status.totalBalanceAlternativeStr }}</h3>
+    <h3 class="detail-fiat" *ngIf="wallet.status.alternativeBalanceAvailable">{{ wallet.status.totalBalanceAlternativeStr }}</h3>
     <div class="action-buttons">
       <div class="button-cell">
         <button ion-button (click)="deposit()">

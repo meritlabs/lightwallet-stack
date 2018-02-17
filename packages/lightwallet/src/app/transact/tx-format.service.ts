@@ -71,6 +71,7 @@ export class TxFormatService {
       let settings = this.config.get().wallet.settings;
 
       let v1 = parseFloat((this.rate.fromMicrosToFiat(micros, settings.alternativeIsoCode)).toFixed(2));
+      if (!v1) return resolve(null);
       let v1FormatFiat = new FiatAmount(v1);
       if (!v1FormatFiat) return resolve(null);
 
