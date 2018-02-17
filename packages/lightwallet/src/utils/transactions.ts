@@ -22,15 +22,17 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
       tx.addressFrom = inputAlias || inputAddress;
       tx.addressTo = outputAlias || outputAddress;
 
+      let inputContact, outputContact;
+
       if (contactsProvider) {
         try {
-          tx.input = (await contactsProvider.get(inputAddress || inputAlias)).name.formatted;
+          tx.input = (inputContact = await contactsProvider.get(inputAddress || inputAlias)).name.formatted;
         } catch (e) {
           console.log(e);
         }
 
         try {
-          tx.output = (await contactsProvider.get(outputAddress || outputAlias)).name.formatted;
+          tx.output = (outputContact = await contactsProvider.get(outputAddress || outputAlias)).name.formatted;
         } catch (e) {
           console.log(e);
         }
@@ -40,16 +42,18 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
         case TransactionAction.SENT:
           tx.type = 'debit';
           tx.name = tx.input;
+          tx.contact = outputContact;
           break;
 
         case TransactionAction.RECEIVED:
           tx.type = 'credit';
-          tx.name =  (i === 0 && tx.isInvite === true) ? 'Wallet unlocked' : tx.output;
+          tx.name = (i === 0 && tx.isInvite === true) ? 'Wallet Unlocked' : tx.output;
+          tx.contact = inputContact;
           break;
 
         case TransactionAction.MOVED:
           tx.actionStr = 'Moved Merit';
-          tx.name = tx.isInvite? 'Moved Invite' : 'Moved Merit';
+          tx.name = tx.isInvite ? 'Moved Invite' : 'Moved Merit';
           break;
       }
       tx.actionStr = pendingString + tx.actionStr;

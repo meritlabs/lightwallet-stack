@@ -5,3 +5,5 @@ export const MERIT_MODAL_OPTS: ModalOptions = {
   enterAnimation: 'modal-slide-in',
   cssClass: 'merit-modal'
 };
+
+export const CONFIRMATION_THRESHOLD = 6;

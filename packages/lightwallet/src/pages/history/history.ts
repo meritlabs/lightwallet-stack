@@ -43,7 +43,6 @@ export class HistoryView {
       const displayWallet: IDisplayWallet = await createDisplayWallet(wallet, this.walletService, this.sendService, { hideAnv: true, hideInvites: true, hideRewards: true});
       return formatWalletHistory(walletHistory, displayWallet, this.contactsService);
     }));
-
     this.transactions = sortBy(flatten(walletHistories), 'time').reverse();
   }
 }

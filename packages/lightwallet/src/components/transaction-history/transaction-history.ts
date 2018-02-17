@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
-import { ITransaction, TransactionAction } from '../../models/transaction';
+import { IDisplayTransaction, ITransaction, TransactionAction } from '../../models/transaction';
 import { ContactsProvider } from '../../providers/contacts/contacts';
+import { ModalController } from 'ionic-angular';
+import { MERIT_MODAL_OPTS } from '../../utils/constants';
 
 @Component({
   selector: 'transaction-history',
@@ -9,13 +11,12 @@ import { ContactsProvider } from '../../providers/contacts/contacts';
 })
 export class TransactionHistoryComponent {
   @Input()
-  transactions: ITransaction[];
+  transactions: IDisplayTransaction[];
 
-  constructor(private contacts: ContactsProvider) {}
+  constructor(private modalCtrl: ModalController) {}
 
-  getContact(transaction: ITransaction) {
-    return null;
-    // return this.contacts.get(transaction);
+  viewTxDetails(tx: IDisplayTransaction) {
+    return this.modalCtrl.create('TxDetailsView', { tx }, MERIT_MODAL_OPTS).present();
   }
 
   isUnlockRequest(transaction: ITransaction) {
