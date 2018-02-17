@@ -16,7 +16,7 @@
         <h2>{{ version }}</h2>
       </ion-label>
     </ion-item>
-    <button ion-item detail-none text-wrap (click)="toGithub()">
+    <button ion-item detail-none text-wrap (click)="toGithub()" *ngIf="commitHash">
       <ion-avatar img-icon item-start>
         <img src="assets/img/icons/hashtags.svg" alt="">
       </ion-avatar>
