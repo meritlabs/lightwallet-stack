@@ -493,7 +493,6 @@ ion-modal.merit-modal {
     contain: none;
     height: auto;
     max-height: calc(100% - 50px);
-    min-height: 300px;
     z-index: 1;
     position: absolute;
     width: 100%;
@@ -521,7 +520,6 @@ ion-modal.merit-modal {
 
     ion-content.content {
       contain: none;
-      min-height: 300px;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -530,7 +528,7 @@ ion-modal.merit-modal {
 
       .scroll-content {
         contain: none;
-        min-height: 300px;
+        min-height: 0px;
         flex: 1;
         position: relative;
       }
