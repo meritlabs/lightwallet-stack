@@ -20,7 +20,7 @@
       <h2 class="amount" *ngIf="!(tx.isCoinbase && tx.isInvite)">
         {{ isCredit? '' : '-' }}{{tx.amountStr | toUnit : tx.amount}}&nbsp;<small>MRT</small>
       </h2>
-      <h3 class="detail-fiat" *ngIf="!(tx.isCoinbase && tx.isInvite)">
+      <h3 class="detail-fiat" *ngIf="!tx.isCoinbase">
         {{ isCredit? '' : '-' }}{{tx.alternativeAmountStr || altAmountStr | toFiat : tx.amount | async}}
       </h3>
       <p class="fee" *ngIf="!tx.isCoinbase">

@@ -24,7 +24,7 @@ export class TxDetailsView {
 
   get isReward() {
     try {
-      return Boolean(this.tx.isCoinbase) && this.tx.outputs[0] && !isNaN(this.tx.outputs[0].index);
+      return Boolean(this.tx.isCoinbase) && this.tx.outputs[0] && !isNaN(this.tx.outputs[0].index) && !this.tx.isInvite;
     } catch (e) {
       return false;
     }
@@ -38,20 +38,21 @@ export class TxDetailsView {
   }
 
   async ngOnInit() {
-    this.tx = this.navParams.get('tx');
-    this.isConfirmed = (this.tx.isCoinbase && this.tx.isMature) || this.tx.confirmations >= CONFIRMATION_THRESHOLD;
-    this.isUnlockRequest = this.tx && this.tx.action === TransactionAction.UNLOCK;
-    this.isCredit = this.tx.action === TransactionAction.RECEIVED;
-    this.isInvite = this.tx.isInvite === true;
-    this.isMiningReward = this.isReward && this.tx.outputs[0].index === 0;
-    this.isEasySend = !this.isInvite && !this.isReward;
-    this.confirmations = this.tx.safeConfirmed || (this.tx.confirmations > CONFIRMATION_THRESHOLD) ?  `${CONFIRMATION_THRESHOLD}+ confirmations` : String(this.tx.confirmations) + ' block(s) confirmed from ' + CONFIRMATION_THRESHOLD;
+    const tx = this.navParams.get('tx');
 
-    if (!this.isEasySend) {
-      if (this.tx.isAmbassadorReward) this.image = 'ambassador';
-      else if (this.tx.isMiningReward) this.image = 'mining';
-      else if (this.tx.isInvite) this.image = 'invite';
-      else this.image = 'merit';
-    }
+    this.isConfirmed = (tx.isCoinbase && tx.isMature) || tx.confirmations >= CONFIRMATION_THRESHOLD;
+    this.isUnlockRequest = tx && tx.action === TransactionAction.UNLOCK;
+    this.isCredit = tx.isCoinbase || tx.action === TransactionAction.RECEIVED;
+    this.isInvite = tx.isInvite === true;
+    this.isMiningReward = this.isReward && tx.outputs[0].index === 0;
+    this.isEasySend = !this.isInvite && !this.isReward;
+    this.confirmations = tx.safeConfirmed || (tx.confirmations > CONFIRMATION_THRESHOLD) ?  `${CONFIRMATION_THRESHOLD}+ confirmations` : String(tx.confirmations) + ' block(s) confirmed from ' + CONFIRMATION_THRESHOLD;
+
+    if (tx.isAmbassadorReward) this.image = 'ambassador';
+    else if (tx.isMiningReward) this.image = 'mining';
+    else if (tx.isInvite) this.image = 'invite';
+    else this.image = 'merit';
+
+    this.tx = tx;
   }
 }
