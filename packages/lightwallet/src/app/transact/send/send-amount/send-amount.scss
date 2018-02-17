@@ -60,17 +60,28 @@ view-send-amount {
 
     .main-amount {
       text-align: center;
-      ion-input {
-        display: inline-block;
-      }
-      input {
+      ion-item.item {
+        padding: 0;
         margin: 0;
-        text-align: center;
-        font-size: 40px;
-        color: rgb(70, 85, 111);
-        letter-spacing: -1.3px;
-        font-weight: normal;
-        display: inline-block;
+        background: transparent;
+
+        ion-input {
+          display: inline-block;
+        }
+
+        input.text-input {
+          margin: 0;
+          text-align: center;
+          font-size: 40px;
+          color: rgb(70, 85, 111);
+          letter-spacing: -1.3px;
+          font-weight: normal;
+          display: inline-block;
+
+          &::placeholder {
+            font-size: 18px;
+          }
+        }
       }
     }
 

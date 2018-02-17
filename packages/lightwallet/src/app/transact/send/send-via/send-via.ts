@@ -29,7 +29,6 @@ export class SendViaView {
     this.amount = this.navParams.get('amount');
     this.suggestedMethod = this.navParams.get('suggestedMethod');
     this.easySendEnabled = this.navParams.get('isEasyEnabled');
-    console.log(this.easySendEnabled, 'EASY ENABLED');
   }
 
   async ionViewDidLoad() {

@@ -10,7 +10,7 @@
 </ion-header>
 
 <ion-content>
-  <div class="big-header" (click)="getWalletHistory(true)" [style.background]="wallet.color" [class.default]="!wallet.color">
+  <div class="big-header" [style.background]="wallet.color" [class.default]="!wallet.color">
     <h2 class="amount">
       {{ wallet.status.totalBalanceStr || 0 }}&nbsp;<small>MRT</small>
     </h2>
@@ -37,8 +37,10 @@
       </div>
     </div>
   </div>
-  <ion-item-divider [hidden]="!wallet.completeHistory || !wallet.completeHistory.length">
+
+  <ion-item-divider>
     History
   </ion-item-divider>
+  <ion-spinner [hidden]="wallet.completeHistory && wallet.completeHistory.length"></ion-spinner>
   <transaction-history [transactions]="wallet.completeHistory"></transaction-history>
 </ion-content>

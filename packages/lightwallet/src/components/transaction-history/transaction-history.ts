@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
-import { ITransaction, TransactionAction } from '../../models/transaction';
+import { IDisplayTransaction, ITransaction, TransactionAction } from '../../models/transaction';
 import { ContactsProvider } from '../../providers/contacts/contacts';
+import { ModalController } from 'ionic-angular';
+import { MERIT_MODAL_OPTS } from '../../utils/constants';
 
 @Component({
   selector: 'transaction-history',
@@ -9,46 +11,45 @@ import { ContactsProvider } from '../../providers/contacts/contacts';
 })
 export class TransactionHistoryComponent {
   @Input()
-  transactions: ITransaction[];
+  transactions: IDisplayTransaction[];
 
-  constructor(private contacts: ContactsProvider) {}
+  constructor(private modalCtrl: ModalController) {}
 
-  getContact(transaction: ITransaction) {
-    return null;
-    // return this.contacts.get(transaction);
+  viewTxDetails(tx: IDisplayTransaction) {
+    return this.modalCtrl.create('TxDetailsView', { tx }, MERIT_MODAL_OPTS).present();
   }
 
-  isUnlockRequest(transaction: ITransaction) {
+  isUnlockRequest(transaction: IDisplayTransaction) {
     return transaction.action === TransactionAction.UNLOCK;
   }
 
-  isCredit(transaction: ITransaction) {
-    return transaction.action === TransactionAction.RECEIVED;
+  isCredit(transaction: IDisplayTransaction) {
+    return transaction.isCoinbase || transaction.action === TransactionAction.RECEIVED;
   }
 
-  isInvite(transaction: ITransaction) {
+  isInvite(transaction: IDisplayTransaction) {
     return transaction.isInvite === true;
   }
 
-  isDebit(transaction: ITransaction) {
+  isDebit(transaction: IDisplayTransaction) {
     return transaction.action === TransactionAction.SENT;
   }
 
-  isMiningReward(transaction: ITransaction) {
+  isMiningReward(transaction: IDisplayTransaction) {
     return this.isReward(transaction) && transaction.outputs[0].index === 0;
   }
 
-  isEasySend(transaction: ITransaction) {
-    return !this.isInvite(transaction) && !this.isReward(transaction);
+  isEasySend(transaction: IDisplayTransaction) {
+    return !transaction.isCoinbase && !transaction.isInvite;
   }
 
-  isAmbassadorReward(transaction: ITransaction) {
-    return this.isReward(transaction) && transaction.outputs[0].index > 0;
+  isAmbassadorReward(transaction: IDisplayTransaction) {
+    return transaction.isAmbassadorReward;
   }
 
-  private isReward(transaction: ITransaction) {
+  private isReward(transaction: IDisplayTransaction) {
     try {
-      return Boolean(transaction.isCoinbase) && transaction.outputs[0] && !isNaN(transaction.outputs[0].index);
+      return Boolean(transaction.isCoinbase) && transaction.outputs[0] && !isNaN(transaction.outputs[0].index) && !transaction.isInvite;
     } catch (e) {
       return false;
     }

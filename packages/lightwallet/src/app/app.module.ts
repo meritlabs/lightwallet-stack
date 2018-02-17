@@ -58,6 +58,7 @@ import { ContactsProvider } from '../providers/contacts/contacts';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { Keyboard } from '@ionic-native/keyboard';
 import { UnlockRequestService } from 'merit/core/unlock-request.service';
+import { AppVersion } from '@ionic-native/app-version';
 
 export function getProviders() {
   return [
@@ -115,7 +116,8 @@ export function getIonicNativePlugins() {
     Clipboard,
     File,
     Diagnostic,
-    Keyboard
+    Keyboard,
+    AppVersion
   ];
 }
 

@@ -18,17 +18,6 @@
 
   <div class="easy-send-section" *ngIf="contact?.phoneNumbers?.length || contact?.emails?.length">
 
-    <div *ngIf="">
-      <div class="unlock-backdrop"></div>
-
-      <div class="unlock-popup">
-          <div class="top-label">Before you start...</div>
-          <img src="assets/img/icons/confirm.svg">
-          <h2>Waiting for unlock</h2>
-          <div class="bottom-label">You cannot receive Merit until your wallet unlock request is confirmed</div>
-      </div>
-    </div>
-
     <ion-item-divider>
       EasySend
       <button ion-button clear (click)="showEasyTooltip()" class="tooltip-button">
@@ -42,9 +31,10 @@
       <button ion-item detail-none text-wrap *ngFor="let phoneNumber of contact.phoneNumbers; let i = index"
               (click)="select('easy', 'sms', phoneNumber.value)"
               [class.selected]="highlightedMethod?.value == phoneNumber.value" [disabled]="!easySendEnabled">
-        <ion-avatar item-start *ngIf="i == 0">
+        <ion-avatar img-icon item-start *ngIf="i == 0">
           <ion-icon name="phone-portrait"></ion-icon>
         </ion-avatar>
+        <ion-avatar item-start *ngIf="i != 0"></ion-avatar>
         <h2>Home phone</h2>
         <p>{{phoneNumber.value}}</p>
       </button>
@@ -54,9 +44,10 @@
       <button ion-item detail-none text-wrap *ngFor="let email of contact.emails; let i = index"
               (click)="select('easy', 'email', email.value)" [class.selected]="highlightedMethod?.value == email.value"
               [disabled]="!easySendEnabled">
-        <ion-avatar item-start *ngIf="i == 0">
+        <ion-avatar img-icon item-start *ngIf="i == 0">
           <ion-icon name="mail"></ion-icon>
         </ion-avatar>
+        <ion-avatar item-start *ngIf="i != 0"></ion-avatar>
         <ion-label>
           <h2>Email</h2>
           <p>{{email.value}}</p>
@@ -77,8 +68,7 @@
 
         <ion-label class="address-label">
           <p>Merit Address</p>
-          <h2>{{meritAddress.address}}</h2>
-          <p *ngIf="meritAddress.alias">@{{meritAddress.alias}}</p>
+          <h2 [class.address]="!meritAddress.alias">{{meritAddress.alias ? '@'+meritAddress.alias : meritAddress.address}}</h2>
         </ion-label>
       </button>
     </ion-list>
@@ -97,8 +87,7 @@
 
       <button ion-item detail-none text-wrap *ngFor="let meritAddress of contact.meritAddresses; let i = index"
               (click)="select('classic', 'address', meritAddress.address)"
-              [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'classic'"
-              [disabled]="!easySendEnabled">
+              [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'classic'">
 
         <ion-avatar img-icon item-start *ngIf="i == 0">
           <img src="assets/img/icons/merit.svg">
@@ -107,8 +96,7 @@
 
         <ion-label class="address-label">
             <p>Merit Address</p>
-            <h2>{{meritAddress.address}}</h2>
-            <p *ngIf="meritAddress.alias">@{{meritAddress.alias}}</p>
+            <h2 [class.address]="!meritAddress.alias">{{meritAddress.alias ? '@'+meritAddress.alias : meritAddress.address}}</h2>
           </ion-label>
       </button>
     </ion-list>

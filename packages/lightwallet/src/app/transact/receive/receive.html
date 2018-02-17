@@ -1,6 +1,11 @@
 <ion-header no-border>
   <ion-navbar color="light">
     <ion-title>Receive Merit</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="share()" [hidden]="!showShareButton()">
+        <ion-icon name="share"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 

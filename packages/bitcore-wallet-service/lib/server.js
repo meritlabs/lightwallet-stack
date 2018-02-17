@@ -1973,11 +1973,8 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
     var totalAmount;
     var availableAmount;
-    console.dir(utxos);
-
     var balance = self._totalizeUtxos(utxos);
-    console.log('txp.excludeUnconfirmedUtxos', txp.excludeUnconfirmedUtxos);
-    console.log(balance);
+
     if (txp.excludeUnconfirmedUtxos) {
       totalAmount = balance.totalConfirmedAmount;
       availableAmount = balance.availableConfirmedAmount;
@@ -2009,8 +2006,6 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       var candidateUtxos = _.filter(utxos, function(utxo) {
         return utxo.confirmations >= group;
       });
-
-      console.dir(candidateUtxos);
 
       log.debug('Group >= ' + group);
 
@@ -2927,6 +2922,7 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
         address: item.addr,
         alias: item.alias,
         amount: item.valueMicros,
+        index: item.index
       }
     });
 
@@ -2942,6 +2938,7 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
         address: itemAddr,
         alias: itemAlias,
         amount: parseInt((item.value * 1e8).toFixed(0)),
+        index: item.n
       }
     });
 
@@ -3089,15 +3086,15 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       return _.sumBy(_.filter(items, filter), 'amount');
     };
 
-    function classify(items, isInvite, sent) {
+    function classify(items, isInvite) {
       return _.map(items, function(item) {
         var address = indexedAddresses[item.address];
-        // console.dir(address);
         return {
           address: item.address,
           alias: item.alias,
           amount: item.amount,
           isMine: !!address,
+          index: item.index,
           // TODO: handle singleAddress and change addresses
           // isChange: address ? (address.isChange || wallet.singleAddress) : false,
           isChange: address ? ((address.isChange || wallet.singleAddress) && !isInvite) : false,
@@ -3111,24 +3108,12 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       var amount, action, addressTo;
       var inputs, outputs;
       if (tx.outputs.length || tx.inputs.length) {
-        const sent = tx.inputs.some(i => !!indexedAddresses[i.address])
-
-        console.log('sent', sent);
-
-        inputs = classify(tx.inputs, tx.isInvite, sent);
-        outputs = classify(tx.outputs, tx.isInvite, sent);
-
-        console.dir(inputs);
-        console.dir(outputs);
+        inputs = classify(tx.inputs, tx.isInvite);
+        outputs = classify(tx.outputs, tx.isInvite);
 
         amountIn = sum(inputs, true);
         amountOut = sum(outputs, true, false);
         amountOutChange = sum(outputs, true, true);
-
-        console.log('in:', amountIn);
-        console.log('out:', amountOut);
-        console.log('change:', amountOutChange);
-        console.log('fee:', tx.fees);
 
         if (amountIn == (amountOut + amountOutChange + (amountIn > 0 ? tx.fees : 0))) {
           amount = amountOut;
@@ -3137,10 +3122,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           amount = amountIn - amountOut - amountOutChange - ((amountIn > 0 && amountOutChange >0 ) ? tx.fees : 0);
           action = amount > 0 ? 'sent' : 'received';
         }
-
-        console.log('action', action);
-        console.log('amount', amount);
-
 
         amount = Math.abs(amount);
         if (action == 'sent' || action == 'moved') {
@@ -3159,6 +3140,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           amount: o.amount,
           address: o.address,
           alias: o.alias,
+          index: o.index
         }
       };
 
@@ -3181,10 +3163,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
       if (opts.includeExtendedInfo) {
         newTx.inputs = _.map(inputs, function(input) {
-          return _.pick(input, 'address', 'alias', 'amount', 'isMine');
+          return _.pick(input, 'address', 'alias', 'amount', 'isMine', 'index');
         });
         newTx.outputs = _.map(outputs, function(output) {
-          return _.pick(output, 'address', 'alias', 'amount', 'isMine');
+          return _.pick(output, 'address', 'alias', 'amount', 'isMine', 'index');
         });
       } else {
         // TODO: handle singleAddress and change addresses
@@ -3228,8 +3210,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         newTx.note = _.pick(note, ['body', 'editedBy', 'editedByName', 'editedOn']);
       }
 
-      console.log('final tx amount', newTx.amount);
-
       return newTx;
     });
   };
@@ -3269,7 +3249,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           if (err) return next(err);
 
           txs = self._normalizeTxHistory(rawTxs);
-          txs.forEach(tx => tx.outputs.forEach(o => console.dir(o)));
           totalItems = total;
           return next();
         });

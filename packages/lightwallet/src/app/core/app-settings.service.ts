@@ -6,7 +6,7 @@ import { ConfigService } from 'merit/shared/config.service';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 
 // TODO: Improve implementation
-interface AppSettings {
+export interface AppSettings {
   packageName: string;
   packageDescription: string;
   packageNameId: string;

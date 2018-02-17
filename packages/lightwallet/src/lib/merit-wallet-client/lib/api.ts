@@ -96,6 +96,8 @@ export class API {
   public onAuthenticationError: any;
   public onConnectionRestored: any;
 
+  private _rootAddress: string;
+
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
     this.request = opts.request || request;
@@ -452,12 +454,9 @@ export class API {
    * Creates Address from hdPrivKey
    */
   getRootAddress() {
-
+    if (this._rootAddress) return this._rootAddress;
     const xpub = new Bitcore.HDPublicKey(this.credentials.xPubKey);
-    const address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, this.credentials.network);
-
-    return address;
-
+    return this._rootAddress = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, this.credentials.network);
   }
 
   /**

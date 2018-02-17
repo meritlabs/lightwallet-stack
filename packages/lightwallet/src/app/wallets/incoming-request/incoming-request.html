@@ -2,13 +2,13 @@
   <ion-navbar color="light">
     <ion-title>
       <span *ngIf="!unlockRequest.isConfirmed">Invite Request</span>
-      <span *ngIf="unlockRequest.isConfirmed">Sent Invite</span>
+      <span *ngIf="unlockRequest.isConfirmed">Invite Sent</span>
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <button ion-item text-left (click)="selectWallet()" detail-none class="send-from">
+  <button ion-item text-left (click)="selectWallet()" detail-none class="send-from" *ngIf="!unlockRequest.isConfirmed">
 
     <img src="assets/img/icons/wallet.svg" class="wallet-icon" item-start>
 
@@ -16,7 +16,7 @@
     <p>{{ unlockRequest.walletClient.name }}</p>
 
     <span item-end>
-        {{ unlockRequest?.walletClient?.status?.confirmedInvites || 0}}
+        {{ unlockRequest?.walletClient?.status?.availableInvites || 0 }}
         <img src="assets/img/icons/invite.svg" alt="" class="invites-icon">
     </span>
   </button>
