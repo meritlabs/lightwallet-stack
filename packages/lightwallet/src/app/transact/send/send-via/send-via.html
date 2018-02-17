@@ -57,7 +57,7 @@
 
     <ion-list *ngIf="contact?.meritAddresses?.length">
       <button ion-item detail-none text-wrap *ngFor="let meritAddress of contact.meritAddresses; let i = index"
-              (click)="select('easy', 'address', meritAddress.address)"
+              (click)="select('easy', 'address', meritAddress.address, meritAddress.alias)"
               [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'easy'"
               [disabled]="!easySendEnabled">
 
@@ -86,7 +86,7 @@
       </ion-item-divider>
 
       <button ion-item detail-none text-wrap *ngFor="let meritAddress of contact.meritAddresses; let i = index"
-              (click)="select('classic', 'address', meritAddress.address)"
+              (click)="select('classic', 'address', meritAddress.address,  meritAddress.alias)"
               [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'classic'">
 
         <ion-avatar img-icon item-start *ngIf="i == 0">
