@@ -14,14 +14,16 @@ declare const WEBPACK_CONFIG: any;
 export class SettingsAboutView {
 
   version: string;
-  commitHash: string = typeof WEBPACK_CONFIG !== 'undefined'? WEBPACK_CONFIG.COMMIT_HASH : '1234';
+  commitHash: string;
   repoUrl: string = this.appSettingsService.info.gitHubRepoUrl;
 
   constructor(private  alertCtrl: AlertController,
               private inAppBrowser: InAppBrowser,
               private appSettingsService: AppService,
               private appVersion: AppVersion,
-              private plt: Platform) {}
+              private plt: Platform) {
+    if (typeof WEBPACK_CONFIG !== 'undefined') this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
+  }
 
   async ngOnInit() {
     try {

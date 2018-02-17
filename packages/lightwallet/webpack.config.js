@@ -34,7 +34,6 @@ if (env !== 'prod' && env !== 'dev') {
 
 function environmentPath(env) {
     var filePath = './src/environments/environment' + (env === 'prod' ? '' : '.' + env) + '.ts';
-    //var filePath = './src/environments/environment.ts';
     if (!fs.existsSync(filePath)) {
         console.log(chalk.red('\n' + filePath + ' does not exist!'));
     } else {
@@ -44,7 +43,7 @@ function environmentPath(env) {
 
 const DEFINE_PLUGIN = new webpack.DefinePlugin({
   WEBPACK_CONFIG: {
-    COMMIT_HASH: JSON.stringify(execSync('git rev-parse HEAD').toString().trim())
+    COMMIT_HASH: JSON.stringify(execSync('git rev-parse --short HEAD').toString().trim())
   }
 });
 
