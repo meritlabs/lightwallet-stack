@@ -1,10 +1,12 @@
-var chalk = require("chalk");
-var fs = require('fs');
-var path = require('path');
-var tsconfig = require('./tsconfig.json');
-var webpackConfig = require('@ionic/app-scripts/config/webpack.config.js');
+const chalk = require("chalk");
+const fs = require('fs');
+const path = require('path');
+const tsconfig = require('./tsconfig.json');
+const webpackConfig = require('@ionic/app-scripts/config/webpack.config.js');
+const webpack = require('webpack');
+const { execSync } = require('child_process');
+const  env = process.env.IONIC_ENV;
 
-var env = process.env.IONIC_ENV;
 console.log('environment setting is: ', env);
 
 webpackConfig.prod.resolve = {
@@ -32,13 +34,21 @@ if (env !== 'prod' && env !== 'dev') {
 
 function environmentPath(env) {
     var filePath = './src/environments/environment' + (env === 'prod' ? '' : '.' + env) + '.ts';
-    //var filePath = './src/environments/environment.ts';
     if (!fs.existsSync(filePath)) {
         console.log(chalk.red('\n' + filePath + ' does not exist!'));
     } else {
         return filePath;
     }
 }
+
+const DEFINE_PLUGIN = new webpack.DefinePlugin({
+  WEBPACK_CONFIG: {
+    COMMIT_HASH: JSON.stringify(execSync('git rev-parse --short HEAD').toString().trim())
+  }
+});
+
+webpackConfig.dev.plugins.push(DEFINE_PLUGIN);
+webpackConfig.prod.plugins.push(DEFINE_PLUGIN);
 
 module.exports = function () {
     return webpackConfig;

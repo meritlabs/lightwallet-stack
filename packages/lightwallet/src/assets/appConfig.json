@@ -12,7 +12,7 @@
     "nameCase": "Merit",
     "nameCaseNoSpace": "Merit",
     "gitHubRepoName": "merit",
-    "gitHubRepoUrl": "git://github.com/meritlabs/lightwallet-stack.git",
+    "gitHubRepoUrl": "https://github.com/meritlabs/lightwallet-stack",
     "gitHubRepoBugs": "https://github.com/meritlabs/lightwallet-stack/issues",
     "disclaimerUrl": "https://merit.me/disclaimer",
     "url": "https://merit.me",

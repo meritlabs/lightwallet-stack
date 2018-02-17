@@ -1,0 +1,105 @@
+view-unlock, view-alias {
+  .scroll-content {
+    height: 100vh;
+  }
+
+  h1.title {
+    font-size: 36px;
+    line-height: 38px;
+    color: white;
+    font-weight: 300;
+  }
+
+  p {
+    font-size: 16px;
+    color: rgba(255, 255, 255, .5);
+  }
+
+  .bottom-buttons {
+    position: relative;
+    height: 122px;
+
+    ion-item.item.input-item,
+    ion-item.item.input-item .item-inner,
+    ion-input.text-input {
+      padding: 0;
+      margin: 0;
+    }
+
+    .input-item {
+      background: rgb(45, 60, 80);
+      border-radius: 4px;
+
+      .item-inner {
+        position: relative;
+      }
+
+      input.text-input {
+        display: block;
+        height: 56px;
+        min-height: 56px;
+        line-height: 56px;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        padding: 8px 16px;
+        margin: 0;
+        width: 100%;
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 16px;
+          text-align: center;
+        }
+        color: rgba(255, 255, 255, .8);
+        font-size: 14px;
+      }
+
+      img.stop-sign {
+        position: absolute;
+        top: 10px;
+        right: 5px;
+        height: 20px;
+        width: 20px;
+      }
+
+    }
+
+    button {
+      height: 56px;
+      min-height: 56px;
+      max-height: 56px;
+      margin: 16px auto;
+      border-radius: 4px;
+    }
+
+    .error-message {
+      margin: 0;
+      text-align: center;
+      color: white;
+      width: 100%;
+      display: block;
+      position: absolute;
+      top: -22px;
+      left: 0;
+
+      p {
+        background: rgb(204, 87, 59);
+        border-radius: 4px;
+        color: white;
+        height: 22px;
+        line-height: 22px;
+        padding: 0 12px;
+        font-size: 11px;
+        display: inline-block;
+        margin: 0 auto;
+      }
+    }
+  }
+
+  img.logo {
+    height: 25%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+  }
+
+}

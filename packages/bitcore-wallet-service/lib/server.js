@@ -2922,6 +2922,7 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
         address: item.addr,
         alias: item.alias,
         amount: item.valueMicros,
+        index: item.index
       }
     });
 
@@ -2937,6 +2938,7 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
         address: itemAddr,
         alias: itemAlias,
         amount: parseInt((item.value * 1e8).toFixed(0)),
+        index: item.n
       }
     });
 
@@ -3092,6 +3094,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           alias: item.alias,
           amount: item.amount,
           isMine: !!address,
+          index: item.index,
           // TODO: handle singleAddress and change addresses
           // isChange: address ? (address.isChange || wallet.singleAddress) : false,
           isChange: address ? ((address.isChange || wallet.singleAddress) && !isInvite) : false,
@@ -3137,6 +3140,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           amount: o.amount,
           address: o.address,
           alias: o.alias,
+          index: o.index
         }
       };
 
@@ -3159,10 +3163,10 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
       if (opts.includeExtendedInfo) {
         newTx.inputs = _.map(inputs, function(input) {
-          return _.pick(input, 'address', 'alias', 'amount', 'isMine');
+          return _.pick(input, 'address', 'alias', 'amount', 'isMine', 'index');
         });
         newTx.outputs = _.map(outputs, function(output) {
-          return _.pick(output, 'address', 'alias', 'amount', 'isMine');
+          return _.pick(output, 'address', 'alias', 'amount', 'isMine', 'index');
         });
       } else {
         // TODO: handle singleAddress and change addresses

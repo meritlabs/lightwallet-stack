@@ -1,11 +1,11 @@
 <ion-header no-border>
   <ion-navbar color="secondary">
-    <ion-title>Your Network</ion-title>
+    <ion-title>Your Community</ion-title>
   </ion-navbar>
   <ion-toolbar>
     <ion-row>
       <ion-col col-4>
-        <small>Network<br>Size</small>
+        <small>Community<br>Size</small>
         <ion-avatar img-icon>
           <img src="assets/img/icons/network_dark.svg" alt="">
         </ion-avatar>
@@ -96,8 +96,7 @@
       </span>
     </ion-item-divider>
 
-    <button ion-item detail-none text-wrap (click)="copyToClipboard(wallet.referrerAddress)"
-            [clip]="wallet.alias ? '@'+wallet.alias : wallet.referrerAddress" >
+    <ion-item text-wrap>
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/invite.svg">
       </ion-avatar>
@@ -105,10 +104,10 @@
         <p>Invite Code</p>
         <h2>{{ wallet.alias ? '@'+wallet.alias : wallet.referrerAddress }}</h2>
       </ion-label>
-      <button ion-button icon-only clear item-end>
+      <button ion-button icon-only clear item-end *ngIf="shareButtonAvailable()" (click)="shareAddress(wallet.alias? wallet.alias : wallet.referrerAddress)">
         <ion-icon merit-icon name="share"></ion-icon>
       </button>
-    </button>
+    </ion-item>
 
     <ion-item>
       <ion-avatar img-icon item-start>

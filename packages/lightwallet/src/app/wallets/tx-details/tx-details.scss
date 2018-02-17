@@ -1,67 +1,73 @@
 tx-details-view {
-  ion-header {
-    ion-navbar,
-    .toolbar-background {
-      //background: #00a6d1;
-      border: none !important;
-    }
 
-    button[ion-button], .toolbar-title {
-      color: white;
-    }
+  ion-header.header button[ion-button].bar-button {
+    color: white !important;
+  }
+
+  .scroll-content {
+    margin-top: 0 !important;
   }
 
   .big-header {
-    .status {
-      .action {
-        left: -30px;
-        margin-bottom: 20px;
-        align-items: center;
-        display: inline-block;
-        padding: 15px 30px 15px 15px;
-        position: relative;
-        background: #2d3c50;
-        border-radius: 4px;
+    text-align: center;
 
-        &:before {
-          content: '';
-          display: inline-block;
-          height: 60px;
-          background: rgba(0,0,0,0.1);
-          width: 60px;
-          position: absolute;
-          top: 0;
-          left: 0;
-          border-radius: inherit;
-          padding-left: 25px;
-        }
+    .date {
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+    }
 
-        img {
-          height: 20px;
-          position: absolute;
-          top: 18px;
-          left: 25px;
+    .contact-info {
+      margin-top: 18px;
+
+      contact-avatar,
+      contact-avatar ion-avatar,
+      contact-avatar span{
+        width: 80px;
+        height: 80px;
+      }
+
+      contact-avatar {
+        > ion-avatar {
+          float: none;
+          margin: auto;
+
+          > img {
+            width: 40px;
+            height: 40px;
+          }
         }
 
         span {
-          line-height: 30px;
-          font-size: 20px;
-          font-weight: 400;
-          text-transform: uppercase;
-          margin-left: 95px;
-          letter-spacing: -.47px;
+          font-size: 24px;
+          line-height: 80px;
+          letter-spacing: -1.4px;
         }
       }
+
+      .name {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        font-size: 17px;
+        letter-spacing: -0.2px;
+        font-weight: 500;
+      }
+    }
+
+    .fee {
+      margin-top: 24px;
+      font-size: 13px;
     }
   }
 
-  .amount-str {
-    font-size: 30px;
-    margin-bottom: .5rem;
-  }
-  .amount-alt-str {
-    font-size: 16px;
-    margin-left: 2px;
-    margin-bottom: 1.5rem;
+  ion-item.item.confirmation-status {
+    h2 {
+      color: rgb(255, 160, 0);
+    }
+
+    &.confirmed {
+      h2 {
+        color: rgb(0, 150, 136);
+      }
+    }
   }
 }

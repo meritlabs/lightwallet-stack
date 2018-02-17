@@ -46,7 +46,6 @@ export class NetworkView {
               private txFormatService: TxFormatService,
               private logger: Logger,
               private platformService: PlatformService,
-              private bwcService: BwcService,
               private unlockRequestService: UnlockRequestService,
               private sendService: SendService
             ) {}
@@ -112,10 +111,6 @@ export class NetworkView {
 
   shareButtonAvailable() {
     return this.platformService.isCordova;
-  }
-
-  shareCode(code) {
-    return this.socialSharing.share('My invite code to use Merit: ' + code);
   }
 
   shareAddress(address) {

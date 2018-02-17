@@ -13,7 +13,6 @@ import { MeritToastController } from 'merit/core/toast.controller';
 })
 export class SessionLogView {
 
-  showSettingsBar: boolean = false;
   logLevel = 4;
   filteredLogs = [];
   logsString = '';
@@ -21,12 +20,9 @@ export class SessionLogView {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private logger: Logger,
-              private toastCtrl: MeritToastController) {
-
-  }
+              private toastCtrl: MeritToastController) {}
 
   ionViewDidLoad() {
-
     this.filterLogs();
   }
 
@@ -50,5 +46,4 @@ export class SessionLogView {
   getLogLevelName(level: number) {
     return ['error', 'warn', 'info', 'debug'][level] || '';
   }
-
 }

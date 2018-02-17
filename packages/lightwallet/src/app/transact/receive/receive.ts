@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { Events, IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
-
+import { Events, IonicPage, ModalController, NavController } from 'ionic-angular';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 import { Logger } from 'merit/core/logger';
-
 import { ProfileService } from 'merit/core/profile.service';
 import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
@@ -13,10 +11,9 @@ import { ConfigService } from 'merit/shared/config.service';
 
 import { RateService } from 'merit/transact/rate.service';
 import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { MERIT_MODAL_OPTS } from '../../../utils/constants';
 import { SendService } from 'merit/transact/send/send.service';
-
+import { PlatformService } from 'merit/core/platform.service';
 
 @IonicPage()
 @Component({
@@ -46,11 +43,9 @@ export class ReceiveView {
   loading:boolean;
 
   constructor(private navCtrl: NavController,
-              private navParams: NavParams,
               private modalCtrl: ModalController,
               private profileService: ProfileService,
               private walletService: WalletService,
-              private loadCtrl: LoadingController,
               private toastCtrl: MeritToastController,
               private logger: Logger,
               private socialSharing: SocialSharing,
@@ -58,7 +53,8 @@ export class ReceiveView {
               private rateService: RateService,
               private configService: ConfigService,
               private events: Events,
-              private sendService: SendService
+              private sendService: SendService,
+              private platformService: PlatformService,
   ) {
     this.protocolHandler = 'merit';
     this.availableUnits = [
@@ -66,10 +62,9 @@ export class ReceiveView {
       this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
     ];
     this.amountCurrency = this.availableUnits[0];
-
   }
 
-  async ionViewDidLoad() {
+  ionViewDidLoad() {
     // Get a new address if we just received an incoming TX (on an address we already have)
     this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
       this.logger.info('Got an incomingTx on receive screen: ', n);
@@ -79,7 +74,13 @@ export class ReceiveView {
     });
   }
 
-  async ionViewWillEnter() {
+  ionViewWillEnter() {
+    return this.loadData();
+  }
+
+  async loadData() {
+    if (this.loading) return;
+    console.log('Loading data ... ');
     this.loading = true;
     this.wallets = await this.profileService.getWallets();
     if (this.wallets) {
@@ -91,6 +92,8 @@ export class ReceiveView {
         }
       });
     }
+
+    console.log(this.hasUnlockedWallets);
     this.loading = false;
   }
 
@@ -134,6 +137,16 @@ export class ReceiveView {
       }
     });
     return modal.present();
+  }
+
+  showShareButton() {
+    return (
+      this.platformService.isCordova
+      && this.wallet
+      && this.wallet.isComplete()
+      && this.qrAddress
+      && !this.addressGenerationInProgress
+    )
   }
 
   share() {

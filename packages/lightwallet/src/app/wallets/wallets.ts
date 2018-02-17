@@ -61,12 +61,10 @@ export class WalletsView {
 
   constructor(public navParams: NavParams,
               private navCtrl: NavController,
-              private app: App,
               private logger: Logger,
               private bwcService: BwcService,
               private easyReceiveService: EasyReceiveService,
               private toastCtrl: MeritToastController,
-              private appUpdateService: AppUpdateService,
               private profileService: ProfileService,
               private feedbackService: FeedbackService,
               private inAppBrowser: InAppBrowser,
@@ -74,12 +72,8 @@ export class WalletsView {
               private alertController: AlertController,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private events: Events,
               private contactsService: ContactsProvider,
               private vaultsService: VaultsService,
-              private applicationRef: ApplicationRef,
-              private zone: NgZone,
-              private rateService: RateService,
               private platform: Platform
   ) {
     this.logger.warn('WalletsView constructor!');
@@ -95,7 +89,7 @@ export class WalletsView {
   async refreshAllInfo() {
     if (this.isRefreshingAllInfo) return;
     this.isRefreshingAllInfo = true;
-    await this.updateAllInfo({ force: true });
+    await this.updateAllInfo(true);
     this.isRefreshingAllInfo = false;
   }
 
@@ -108,17 +102,17 @@ export class WalletsView {
       }
     });
 
-    await this.updateAllInfo({ force: true });
+    await this.refreshAllInfo();
     this.logger.info('Got updated data in walletsView on Ready!!');
   }
 
-  async updateAllInfo(opts: { force: boolean } = { force: false }) {
+  async updateAllInfo(force?: boolean) {
 
     this.loading = true;
 
     const fetch = async () => {
       this.addressbook = await this.contactsService.list(ENV.network);
-      const wallets = await this.updateAllWallets(opts.force);
+      const wallets = await this.updateAllWallets(force);
 
       if (_.isEmpty(wallets)) {
         return null; //ToDo: add proper error handling;
@@ -229,7 +223,6 @@ export class WalletsView {
 
   walletHasPendingAmount(wallet: any): boolean {
     try {
-
       if (wallet.status && wallet.status.balance) {
         return Number(wallet.status.balance.totalAmount) !== Number(wallet.status.balance.totalConfirmedAmount);
       }
@@ -462,7 +455,5 @@ export class WalletsView {
     });
     return false;
   }
-
-
 
 }
