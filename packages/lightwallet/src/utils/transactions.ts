@@ -22,20 +22,28 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
       tx.addressFrom = inputAlias || inputAddress;
       tx.addressTo = outputAlias || outputAddress;
 
+      tx.from = {
+        alias: inputAlias,
+        address: inputAddress
+      };
+
+      tx.to = {
+        alias: outputAlias,
+        address: outputAddress
+      };
+
       let inputContact, outputContact;
 
       if (contactsProvider) {
         try {
-          tx.input = (inputContact = await contactsProvider.get(inputAddress || inputAlias)).name.formatted;
-        } catch (e) {
-          console.log(e);
-        }
+          inputContact = await contactsProvider.get(inputAddress || inputAlias);
+          tx.input = inputContact.name.formatted;
+        } catch (e) {}
 
         try {
-          tx.output = (outputContact = await contactsProvider.get(outputAddress || outputAlias)).name.formatted;
-        } catch (e) {
-          console.log(e);
-        }
+          outputContact = await contactsProvider.get(outputAddress || outputAlias);
+          tx.output = outputContact.name.formatted;
+        } catch (e) {}
       }
 
       switch (tx.action) {

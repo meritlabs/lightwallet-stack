@@ -42,10 +42,12 @@ export interface ITransaction {
   parentAddress: string;
   isCoinbase: boolean;
   isInvite: boolean;
+  isMature: boolean;
 }
 
 export interface IDisplayTransaction extends ITransaction {
   actionStr: string;
+  actions: any[];
   walletId: string;
   isPendingEasySend: boolean;
   addressFrom: string;
@@ -55,4 +57,7 @@ export interface IDisplayTransaction extends ITransaction {
   output: string;
   safeConfirmed?: string;
   contact?: MeritContact;
+  feeStr: string;
+  to: { alias: string; address: string; };
+  from: { alias: string; address: string; };
 }

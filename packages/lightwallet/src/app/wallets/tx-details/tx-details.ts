@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { CONFIRMATION_THRESHOLD } from '../../../utils/constants';
-import { IDisplayTransaction } from '../../../models/transaction';
+import { IDisplayTransaction, TransactionAction } from '../../../models/transaction';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -12,37 +12,38 @@ import { IDisplayTransaction } from '../../../models/transaction';
 })
 export class TxDetailsView {
 
-  wallet: any;
   tx: IDisplayTransaction;
   confirmations: string;
-  vault: any;
-  amountStr: string;
+  isUnlockRequest: boolean;
+  isCredit: boolean;
+  isInvite: boolean;
+  isMiningReward: boolean;
+  isEasySend: boolean;
+  isConfirmed: boolean;
+
+  get isReward() {
+    try {
+      return Boolean(this.tx.isCoinbase) && this.tx.outputs[0] && !isNaN(this.tx.outputs[0].index);
+    } catch (e) {
+      return false;
+    }
+  }
 
   constructor(private navParams: NavParams,
-              private viewCtrl: ViewController) {
-    this.tx = this.navParams.get('tx');
-  }
+              private viewCtrl: ViewController) {}
 
   dismiss() {
     return this.viewCtrl.dismiss();
   }
 
   async ngOnInit() {
-    this.updateTxDetails(this.tx);
-  }
-
-  addMemo() {
-    return;
-  }
-
-  public isNotConfirmed(tx: any): boolean {
-    return (tx.isCoinbase && !tx.isMature) || tx.confirmations < 1;
-  }
-
-  private updateTxDetails(tx: IDisplayTransaction): void {
-    if (tx.safeConfirmed) this.confirmations = tx.safeConfirmed;
-    else if (tx.confirmations > CONFIRMATION_THRESHOLD) this.confirmations = `${CONFIRMATION_THRESHOLD}+`;
-
-    this.tx = tx;
+    this.tx = this.navParams.get('tx');
+    this.isConfirmed = (this.tx.isCoinbase && this.tx.isMature) || this.tx.confirmations >= CONFIRMATION_THRESHOLD;
+    this.isUnlockRequest = this.tx && this.tx.action === TransactionAction.UNLOCK;
+    this.isCredit = this.tx.action === TransactionAction.RECEIVED;
+    this.isInvite = this.tx.isInvite === true;
+    this.isMiningReward = this.isReward && this.tx.outputs[0].index === 0;
+    this.isEasySend = !this.isInvite && !this.isReward;
+    this.confirmations = this.tx.safeConfirmed || (this.tx.confirmations > CONFIRMATION_THRESHOLD) ?  `${CONFIRMATION_THRESHOLD}+` : String(this.tx.confirmations) + ' block confirmed from ' + CONFIRMATION_THRESHOLD;
   }
 }
