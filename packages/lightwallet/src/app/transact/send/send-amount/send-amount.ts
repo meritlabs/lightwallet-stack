@@ -31,6 +31,7 @@ import { MeritContact } from '../../../../models/merit-contact';
 export class SendAmountView {
   public recipient: MeritContact;
   public sendMethod: SendMethod;
+
   public availableUnits: Array<{ type: string, name: string }>;
   public selectedCurrency: { type: string, name: string };
 
@@ -61,7 +62,7 @@ export class SendAmountView {
   public feeIncluded: boolean;
   private referralsToSign: Array<any>;
 
-  private allowUnconfirmed: boolean;
+  private allowUnconfirmed: boolean = true;
 
   private loading: boolean;
 

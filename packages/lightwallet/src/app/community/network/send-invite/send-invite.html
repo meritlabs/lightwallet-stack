@@ -1,6 +1,16 @@
 <ion-header no-border>
     <ion-navbar color="light">
         <ion-title  >Send Invite</ion-title>
+        <ion-buttons end>
+            <div class="total-invites" item-end>
+                <ion-avatar img-icon>
+                    <img src="assets/img/icons/invite.svg" alt="" class="invites-icon">
+                </ion-avatar>
+                <span class="amount">
+                {{ availableInvites }}
+              </span>
+            </div>
+        </ion-buttons>
     </ion-navbar>
 
     <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"

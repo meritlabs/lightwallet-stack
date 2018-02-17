@@ -535,10 +535,10 @@ Merit.prototype._initChain = function(callback) {
 
 Merit.prototype._getDefaultConf = function() {
   var networkOptions = {
-    rpcport: 8445
+    rpcport: 8332,
   };
   if (this.node.network === bitcore.Networks.testnet) {
-    networkOptions.rpcport = 18445;
+    networkOptions.rpcport = 18332;
   }
   return networkOptions;
 };

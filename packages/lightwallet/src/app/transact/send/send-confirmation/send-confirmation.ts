@@ -223,7 +223,6 @@ export class SendConfirmationView {
       await this.approveTx();
       if (this.txData.sendMethod.type == SendMethod.TYPE_EASY) {
         await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
-        console.dir(this.txData.easySend);
         console.dir(this.txData.easySendUrl);
         switch (this.txData.sendMethod.destination) {
           case SendMethod.DESTINATION_SMS:

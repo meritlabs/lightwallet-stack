@@ -70,6 +70,25 @@
   </ion-list>
 
   <ion-list *ngFor="let wallet of displayWallets" no-lines>
+
+    <div *ngIf="!wallet.client.confirmed" item-end class="locked-info">
+        <div class="backdrop"></div>
+
+        <div class="popup">
+            <img src="assets/img/icons/confirm.svg">
+            <h2>Waiting for unlock</h2>
+            <div class="bottom-label">You can ask another person for invite by sharing your address: </div>
+            <div class="address-line">
+                <div class="address">
+                    {{wallet.referrerAddress}}
+                </div>
+                <button ion-button icon-only clear (click)="shareAddress(wallet.referrerAddress)">
+                    <ion-icon merit-icon name="share"></ion-icon>
+                </button>
+            </div>
+        </div>
+   </div>
+
     <ion-item-divider>
       {{ wallet.name }}
       <span class="merit-amount">
