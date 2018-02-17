@@ -14,7 +14,7 @@
             <ion-label translate stacked>
               Wallet name
             </ion-label>
-            <ion-input [(ngModel)]="wallet.name" debounce="300" (ionChange)="changeName($event.value)"></ion-input>
+            <ion-input [(ngModel)]="wallet.name" (ionChange)="changeName(wallet.name)"></ion-input>
         </ion-item>
 
         <button ion-item detail-none (click)="changeColor()">

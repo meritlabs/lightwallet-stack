@@ -4,75 +4,58 @@
 
 <ion-content fullscreen>
 
-  <div class="container" *ngIf="!easyReceipt">
+  <div class="container">
 
-    <h1 class="title">
-      Merit is an invite-only network
-    </h1>
+    <ng-template *ngIf="easyReceipt; else noReceipt">
+      <img src="assets/img/logo-negative.svg" class="logo" />
 
-    <div class="illustration" translate>
-      <img src="assets/img/invite.svg" alt="">
-    </div>
+      <h1 class="title" translate>
+        You've got Merit!!
+      </h1>
 
-    <p class="text" translate>
-      You'll need an unlock code from a friend or colleague.
-    </p>
+      <p class="text" translate>
+        {{easyReceipt.senderName ? easyReceipt.senderName : 'Someone'}}
+        sent you
+        <strong *ngIf="easyReceipt.amount">{{ easyReceipt.amount }}</strong>
+        Merit.
+      </p>
 
-      <div class="bottom-buttons">
-          <div *ngIf="formData.addressCheckError" class="error-message"><p>{{formData.addressCheckError}}</p></div>
-          <div class="input-wrapper">
-              <ion-input placeholder="Invite Code" [class.failed]="unlockState == 'fail'"
-                         [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off"
-                         autocapitalize="off" (ionFocus)="onInputFocus()"  (ngModelChange)="checkAddress()"></ion-input>
-              <ion-spinner *ngIf="formData.addressCheckInProgress" color="primary"></ion-spinner>
-              <img class="stop-sign" *ngIf="formData.addressCheckError" src="assets/img/icons/error-stop.svg">
-              <button ion-button clear class="qr-button" (click)="openQrScanner()" *ngIf="!formData.addressCheckError && !formData.addressCheckInProgress">
-                  <img src="assets/img/icons/qr.svg">
-              </button>
-          </div>
+      <p class="text">
+        Now you need to enter unlock code to setup your account and accept Merit.
+      </p>
+    </ng-template>
 
-          <button block ion-button icon-only translate (click)="toAliasView()">
-              Next<ion-icon name="ios-arrow-forward-outline" class="forward-button"></ion-icon>
-          </button>
-      </div>
+    <ng-template #noReceipt>
+      <h1 class="title">
+        Merit is an invite-only network
+      </h1>
 
+      <img src="assets/img/invite.svg" alt="" class="logo" />
 
-  </div>
-
-  <div *ngIf="easyReceipt" class="container">
-
-    <img src="assets/img/logo-negative.svg" id="logo"/>
-
-    <h1 class="title" translate>
-      You've got Merit!!
-    </h1>
-
-    <p class="text" translate>
-      {{easyReceipt.senderName ? easyReceipt.senderName : 'Someone'}}
-      sent you
-      <strong>{{easyReceipt.amount ? easyReceipt.amount : ''}}</strong>
-      Merit.
-    </p>
-
-    <p class="text">
-      Now you need to enter unlock code to setup your account and accept Merit.
-    </p>
+      <p class="text" translate>
+        You'll need an unlock code from a friend or colleague.
+      </p>
+    </ng-template>
 
     <div class="bottom-buttons">
-      <div *ngIf="formData.addressCheckError" class="error-message"><p>{{formData.addressCheckError}}</p></div>
-      <div class="input-wrapper">
-          <ion-input placeholder="Invite Code" [class.failed]="unlockState == 'fail'"
-                     [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off"
-                     autocapitalize="off" (ionFocus)="onInputFocus()"  (ngModelChange)="checkAddress()"></ion-input>
-          <ion-spinner *ngIf="formData.addressCheckInProgress" color="primary"></ion-spinner>
-          <img class="stop-sign" *ngIf="formData.addressCheckError" src="assets/img/icons/error-stop.svg">
-      </div>
+      <div [hidden]="!formData.addressCheckError" class="error-message"><p>{{ formData.addressCheckError }}</p></div>
+      <ion-item no-lines class="input-item">
+        <ion-input placeholder="Invite Code" [class.failed]="unlockState == 'fail'"
+                   [(ngModel)]="formData.parentAddress" autocomplete="off" autocorrect="off"
+                   autocapitalize="off" (ngModelChange)="checkAddress()"></ion-input>
+        <ion-spinner [hidden]="!formData.addressCheckInProgress" color="primary" item-end></ion-spinner>
+        <img class="stop-sign" [hidden]="!formData.addressCheckError || formData.addressCheckInProgress" src="assets/img/icons/error-stop.svg">
+        <button ion-button clear class="qr-button" (click)="openQrScanner()"
+                [hidden]="!shouldShowQRButton" item-end>
+          <img src="assets/img/icons/qr.svg">
+        </button>
+      </ion-item>
 
-      <button block ion-button icon-only translate (click)="toAliasView()">
-          Next<ion-icon name="ios-arrow-forward-outline" class="forward-button"></ion-icon>
+      <button block ion-button icon-only translate (click)="toAliasView()" [disabled]="!canContinue">
+        Next
+        <ion-icon name="ios-arrow-forward-outline" class="forward-button"></ion-icon>
       </button>
     </div>
-
   </div>
 
 </ion-content>

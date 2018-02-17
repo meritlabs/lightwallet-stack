@@ -1,16 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, NavParams } from 'ionic-angular';
-import * as _ from 'lodash';
-import { BwcService } from 'merit/core/bwc.service';
-import { Logger } from 'merit/core/logger';
-import { ProfileService } from 'merit/core/profile.service';
-import { FiatAmount } from 'merit/shared/fiat-amount.model';
-import { RateService } from 'merit/transact/rate.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
-import { VaultsService } from 'merit/vaults/vaults.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-
-const CONFIRMATION_THRESHOLD = 6;
+import { IonicPage, NavParams, ViewController } from 'ionic-angular';
+import { COINBASE_CONFIRMATION_THRESHOLD } from '../../../utils/constants';
+import { IDisplayTransaction, TransactionAction } from '../../../models/transaction';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -21,107 +12,49 @@ const CONFIRMATION_THRESHOLD = 6;
 })
 export class TxDetailsView {
 
-  title: string;
-  wallet: any;
-  tx: any;
-  confirmations: string;
-  vault: any;
-  amountStr: string;
+  tx: IDisplayTransaction;
+  confirmationsExplanation: string;
+  isUnlockRequest: boolean;
+  isCredit: boolean;
+  isInvite: boolean;
+  isMiningReward: boolean;
+  isEasySend: boolean;
+  isConfirmed: boolean;
+  image: string = 'merit';
 
-  private bitcore: any;
-  private txId: string;
+  get isReward() {
+    try {
+      return Boolean(this.tx.isCoinbase) && this.tx.outputs[0] && !isNaN(this.tx.outputs[0].index) && !this.tx.isInvite;
+    } catch (e) {
+      return false;
+    }
+  }
 
   constructor(private navParams: NavParams,
-              private txFormatService: TxFormatService,
-              private walletService: WalletService,
-              private vaultService: VaultsService,
-              private profileService: ProfileService,
-              private logger: Logger,
-              private bws: BwcService,
-              private rateService: RateService,
-              private loadingCtrl: LoadingController) {
-    this.tx = this.navParams.get('tx');
+              private viewCtrl: ViewController) {}
 
-    // this.wallet = this.walletService.getWallet(this.navParams.get('walletId'));
-    // this.vault = this.navParams.get('vault');
-    // this.txId = this.navParams.get('txId');
-    //
-    // this.bitcore = this.bws.getBitcore();
-    //
-    // this.tx = {};
-    // this.confirmations = null;
+  dismiss() {
+    return this.viewCtrl.dismiss();
   }
 
   async ngOnInit() {
-    this.updateTxDetails(this.tx);
-    // const loading = this.loadingCtrl.create({
-    //   content: 'Loading transaction...'
-    // });
-    // loading.present();
+    const tx = this.navParams.get('tx');
 
-    // const vault = this.navParams.get('vault');
-    //
-    // if (vault) {
-    //   const txs = await this.vaultService.getVaultTxHistory(this.wallet, vault);
-    //   const tx = _.find(txs, {
-    //     txid: this.txId
-    //   });
-    //
-    //   if (!tx) throw new Error('Could not get transaction');
-    //
-    //   this.updateTxDetails(this.processTx(tx));
-    // } else {
-    //   try {
-    //     const tx = await this.walletService.getTx(this.wallet, this.txId);
-    //     this.updateTxDetails(tx);
-    //   } catch (err) {
-    //     this.logger.info(err);
-    //   }
-    // }
+    this.isConfirmed = tx.isCoinbase ? tx.isMature : true;
+    this.isUnlockRequest = tx && tx.action === TransactionAction.UNLOCK;
+    this.isCredit = tx.isCoinbase || tx.action === TransactionAction.RECEIVED;
+    this.isInvite = tx.isInvite === true;
+    this.isMiningReward = this.isReward && tx.outputs[0].index === 0;
+    this.isEasySend = !this.isInvite && !this.isReward;
+    if (!tx.isConfirmed) {
+      this.confirmationsExplanation = String(tx.confirmations) + ' block(s) confirmed from ' + COINBASE_CONFIRMATION_THRESHOLD;
+    }
 
-    // loading.dismiss();
-  }
+    if (tx.isAmbassadorReward) this.image = 'ambassador';
+    else if (tx.isMiningReward) this.image = 'mining';
+    else if (tx.isInvite) this.image = 'invite';
+    else this.image = 'merit';
 
-  addMemo() {
-    return;
-  }
-
-  public isNotConfirmed(tx: any): boolean {
-    return (tx.isCoinbase && !tx.isMature) || tx.confirmations < 1;
-  }
-
-  private viewOnBlockchain() {
-    this.logger.warn('Viewing on blockchain is not yet implemented and up for discussion.')
-  }
-
-  private processTx(tx: any): any {
-    const thisAddr = new this.bitcore.Address(this.vault.address).toString();
-    const summ = _.reduce(tx.outputs, (acc: number, output: any) => {
-      if (output.address != thisAddr) {
-        return acc;
-      }
-      return acc + output.amount;
-    }, 0);
-
-    tx.amount = summ;
-    const amountStr = this.txFormatService.formatAmountStr(summ);
-    tx.amountStr = amountStr;
-    this.amountStr = amountStr;
-    tx.altAmount = this.rateService.fromMicrosToFiat(tx.amount, this.wallet.cachedStatus.alternativeIsoCode);
-    tx.altAmountStr = new FiatAmount(tx.altAmount);
-
-    return tx;
-  }
-
-  private updateTxDetails(tx: any): void {
     this.tx = tx;
-    if (this.tx.action == 'sent') this.title = 'Sent Funds';
-    if (this.tx.action == 'received') this.title = 'Received Funds';
-    if (this.tx.action == 'moved') this.title = 'Moved Funds';
-
-    if (this.tx.safeConfirmed) this.confirmations = this.tx.safeConfirmed;
-    else if (this.tx.confirmations > CONFIRMATION_THRESHOLD) this.confirmations = `${CONFIRMATION_THRESHOLD}+`;
   }
-
-
 }

@@ -20,36 +20,35 @@ export class Logger {
   }
 
   error(...messages) {
-    if (!LOGGING_ENABLED) return;
     this.logs.push({ level: Logger.LEVEL_ERROR, timestamp: Date.now(), arguments: messages });
+    if (!LOGGING_ENABLED) return;
     console.error.apply(console, messages);
     if (TRACE_ENABLED)
       console.trace();
   }
 
   warn(...messages) {
-    if (!LOGGING_ENABLED) return;
     this.logs.unshift({ level: Logger.LEVEL_WARN, timestamp: Date.now(), arguments: messages });
+    if (!LOGGING_ENABLED) return;
     console.warn.apply(console, messages);
     if (TRACE_ENABLED)
       console.trace();
   }
 
   info(...messages) {
-    if (!LOGGING_ENABLED) return;
     this.logs.unshift({ level: Logger.LEVEL_INFO, timestamp: Date.now(), arguments: messages });
+    if (!LOGGING_ENABLED) return;
     console.info.apply(console, messages);
   }
 
   debug(...messages) {
-    if (!LOGGING_ENABLED) return;
     this.logs.unshift({ level: Logger.LEVEL_DEBUG, timestamp: Date.now(), arguments: messages });
+    if (!LOGGING_ENABLED) return;
     console.debug.apply(console, messages);
   }
 
   /**  alias -> info   */
   log(...messages) {
-    if (!LOGGING_ENABLED) return;
     this.info(messages);
   }
 }

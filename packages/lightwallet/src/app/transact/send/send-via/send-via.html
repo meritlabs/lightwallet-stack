@@ -87,8 +87,7 @@
 
       <button ion-item detail-none text-wrap *ngFor="let meritAddress of contact.meritAddresses; let i = index"
               (click)="select('classic', 'address', meritAddress.address)"
-              [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'classic'"
-              [disabled]="!easySendEnabled">
+              [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'classic'">
 
         <ion-avatar img-icon item-start *ngIf="i == 0">
           <img src="assets/img/icons/merit.svg">
