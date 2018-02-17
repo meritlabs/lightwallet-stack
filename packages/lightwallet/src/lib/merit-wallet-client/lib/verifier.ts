@@ -81,7 +81,7 @@ export module Verifier {
     return true;
   };
 
-  export let checkProposalCreation = function(args, txp, encryptingKey): boolean {
+  export let checkProposalCreation = function(args, txp, encryptingKey, sendMax?): boolean {
     function strEqual(str1, str2) {
       return ((!str1 && !str2) || (str1 === str2));
     }
@@ -93,7 +93,9 @@ export module Verifier {
       var o2 = args.outputs[i];
       if (!strEqual(o1.toAddress, o2.toAddress)) return false;
       if (!strEqual(o1.script, o2.script)) return false;
-      if (o1.amount != o2.amount) return false;
+      if (!sendMax) {
+        if (o1.amount != o2.amount) return false;
+      }
       let decryptedMessage = null;
       try {
         decryptedMessage = Utils.decryptMessage(o2.message, encryptingKey);

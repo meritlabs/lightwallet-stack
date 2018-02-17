@@ -2041,7 +2041,7 @@ export class API {
     };
 
     let processConfirmStatus = (status) => {
-        this.confirmed = (status.invitesBalance && status.invitesBalance.availableConfirmedAmount > 0);
+        this.confirmed = (status.invitesBalance && status.invitesBalance.availableAmount > 0);
     };
 
     // Resolve all our async calls here, then resolve this wrapping promise.
@@ -2243,7 +2243,7 @@ export class API {
       }
       return this._processTxps(txp).then(() => {
 
-        if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey)) {
+        if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey, opts.sendMax)) {
           return Promise.reject(Errors.SERVER_COMPROMISED);
         }
         return Promise.resolve(txp);
