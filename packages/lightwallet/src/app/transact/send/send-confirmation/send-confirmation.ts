@@ -34,8 +34,8 @@ export class SendConfirmationView {
     recipient: {
       label: string;
       name: string;
-      email?: string;
-      phoneNumber?: string;
+      emails?: Array<{ value: string }>;
+      phoneNumbers?: Array<{ value: string }>;
     };
     sendMethod: SendMethod;
     txp: any;
