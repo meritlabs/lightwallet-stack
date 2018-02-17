@@ -45,7 +45,7 @@
       </ion-avatar>
       <ion-label>
         <h2>{{ isConfirmed? 'Complete' : 'Awaiting confirmation' }}</h2>
-        <p>{{ confirmations }}</p>
+        <p *ngIf="!isConfirmed">{{ confirmationsExplanation }}</p>
       </ion-label>
     </ion-item>
     <div class="info-box" *ngIf="!isConfirmed">
