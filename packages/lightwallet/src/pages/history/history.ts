@@ -40,7 +40,7 @@ export class HistoryView {
     const wallets = await this.profileService.getWallets();
     const walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
       const walletHistory = await this.walletService.getTxHistory(wallet, { force });
-      const displayWallet: IDisplayWallet = await createDisplayWallet(wallet, this.walletService, this.sendService, { anv: false, invites: false, rewards: false });
+      const displayWallet: IDisplayWallet = await createDisplayWallet(wallet, this.walletService, this.sendService, { hideAnv: true, hideInvites: true, hideRewards: true});
       return formatWalletHistory(walletHistory, displayWallet, this.contactsService);
     }));
 

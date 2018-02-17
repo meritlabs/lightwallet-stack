@@ -28,20 +28,12 @@ export interface IDisplayWallet {
 }
 
 export interface IDisplayWalletOptions {
-  invites?: boolean;
-  rewards?: boolean;
-  anv?: boolean;
+  hideInvites?: boolean;
+  hideRewards?: boolean;
+  hideAnv?: boolean;
 }
 
-const defaultOptions: IDisplayWalletOptions = {
-  invites: true,
-  rewards: true,
-  anv: true
-};
-
-export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService: SendService, options?: IDisplayWalletOptions): Promise<IDisplayWallet> {
-  options = Object.assign({}, defaultOptions, options);
-
+export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService: SendService, options: IDisplayWalletOptions = {}): Promise<IDisplayWallet> {
   const displayWallet: IDisplayWallet = pick<IDisplayWallet, MeritWalletClient>(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'totalNetworkValue', 'credentials', 'network');
 
   displayWallet.client = wallet;
@@ -50,17 +42,17 @@ export async function createDisplayWallet(wallet: MeritWalletClient, walletServi
   const { alias } = await sendService.getAddressInfo(displayWallet.referrerAddress);
   if (alias) displayWallet.alias = alias;
 
-  if (options.anv) {
+  if (!options.hideAnv) {
     displayWallet.totalNetworkValueMicro = await walletService.getANV(wallet);
   }
 
-  if (options.invites) {
+  if (!options.hideInvites) {
+    wallet.status =  await walletService.getStatus(wallet, { force: false });
     displayWallet.inviteRequests = await walletService.getUnlockRequests(wallet);
-    const invitesInfo = await walletService.getInvitesBalance(wallet);
-    displayWallet.invites = Math.max(0, invitesInfo.availableConfirmedAmount - 1);
+    displayWallet.invites = wallet.status.availableInvites;
   }
 
-  if (options.rewards) {
+  if (!options.hideRewards) {
     const rewardsData = await walletService.getRewards(wallet);
 
     // If we cannot properly fetch data, let's return wallets as-is.
