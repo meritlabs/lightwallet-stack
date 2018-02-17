@@ -104,7 +104,7 @@
         <p>Invite Code</p>
         <h2>{{ wallet.alias ? '@'+wallet.alias : wallet.referrerAddress }}</h2>
       </ion-label>
-      <button ion-button icon-only clear item-end *ngIf="shareButtonAvailable()" (click)="shareCode(wallet.alias? wallet.alias : wallet.referrerAddress)">
+      <button ion-button icon-only clear item-end *ngIf="shareButtonAvailable()" (click)="shareAddress(wallet.alias? wallet.alias : wallet.referrerAddress)">
         <ion-icon merit-icon name="share"></ion-icon>
       </button>
     </ion-item>

@@ -113,10 +113,6 @@ export class NetworkView {
     return this.platformService.isCordova;
   }
 
-  shareCode(code) {
-    return this.socialSharing.share('My invite code to use Merit: ' + code);
-  }
-
   shareAddress(address) {
     return this.socialSharing.share(address);
   }
