@@ -450,19 +450,17 @@ export class SendAmountView {
     txp.excludeUnconfirmedUtxos = !tx.allowSpendUnconfirmed;
     if (!dryRun) {
       txp.dryRun = dryRun;
-      if (!txp.sendMax) {
-        if (this.feeIncluded) {
-          txp.fee = this.txData.feeAmount;
-          txp.inputs = this.txData.txp.inputs;
-          txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
-        } else {
-          txp.fee = this.txData.feeAmount;
-          txp.inputs = this.txData.txp.inputs;
-          txp.outputs[0].amount = this.txData.amount;
-        }
+      if (txp.sendMax || this.feeIncluded) {
+        txp.sendMax = false; // removing senmax options because we are setting fee and amount values manually
+        txp.fee = this.txData.feeAmount;
+        txp.inputs = this.txData.txp.inputs;
+        txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
       } else {
-        txp.feePerKb = this.selectedFee.feePerKb;
+        txp.fee = this.txData.feeAmount;
+        txp.inputs = this.txData.txp.inputs;
+        txp.outputs[0].amount = this.txData.amount;
       }
+
     }
     return this.walletService.createTx(wallet, txp);
   }
