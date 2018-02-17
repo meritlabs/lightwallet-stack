@@ -2,7 +2,7 @@
   <ion-navbar color="light">
     <ion-title>Receive Merit</ion-title>
     <ion-buttons end>
-      <button ion-button icon-only (click)="share()" [hidden]="!(wallet && wallet.isComplete() && qrAddress && !addressGenerationInProgress)">
+      <button ion-button icon-only (click)="share()" [hidden]="!showShareButton()">
         <ion-icon name="share"></ion-icon>
       </button>
     </ion-buttons>

@@ -13,7 +13,7 @@ import { RateService } from 'merit/transact/rate.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MERIT_MODAL_OPTS } from '../../../utils/constants';
 import { SendService } from 'merit/transact/send/send.service';
-
+import { PlatformService } from 'merit/core/platform.service';
 
 @IonicPage()
 @Component({
@@ -53,7 +53,8 @@ export class ReceiveView {
               private rateService: RateService,
               private configService: ConfigService,
               private events: Events,
-              private sendService: SendService
+              private sendService: SendService,
+              private platformService: PlatformService,
   ) {
     this.protocolHandler = 'merit';
     this.availableUnits = [
@@ -136,6 +137,16 @@ export class ReceiveView {
       }
     });
     return modal.present();
+  }
+
+  showShareButton() {
+    return (
+      this.platformService.isCordova
+      && this.wallet
+      && this.wallet.isComplete()
+      && this.qrAddress
+      && !this.addressGenerationInProgress
+    )
   }
 
   share() {
