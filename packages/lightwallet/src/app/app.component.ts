@@ -21,8 +21,6 @@ import { ConfigService } from 'merit/shared/config.service';
 import { TransactView } from 'merit/transact/transact';
 import { FingerprintLockView } from 'merit/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
-import { MERIT_MODAL_OPTS } from '../utils/constants';
-import { MeritWalletClient } from '../lib/merit-wallet-client/index';
 
 @Component({
   templateUrl: 'app.html'
