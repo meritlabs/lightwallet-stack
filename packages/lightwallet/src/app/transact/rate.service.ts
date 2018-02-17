@@ -10,6 +10,8 @@ import { Observable } from 'rxjs/Observable';
 // const request = require('superagent');
 import * as request from 'superagent';
 
+import { ENV } from '@app/env';
+
 @Injectable()
 export class RateService {
 
@@ -20,7 +22,7 @@ export class RateService {
   private BTC_TO_SAT: any;
   private _isAvailable: boolean = false;
 
-  private rateServiceUrl = 'https://bitpay.com/api/rates';
+  private rateServiceUrl = ENV.rateUrl;
 
   constructor(private logger: Logger) {
     this.logger.info('Hello RateService Service');
