@@ -44,6 +44,6 @@ export class TxDetailsView {
     this.isInvite = this.tx.isInvite === true;
     this.isMiningReward = this.isReward && this.tx.outputs[0].index === 0;
     this.isEasySend = !this.isInvite && !this.isReward;
-    this.confirmations = this.tx.safeConfirmed || (this.tx.confirmations > CONFIRMATION_THRESHOLD) ?  `${CONFIRMATION_THRESHOLD}+` : String(this.tx.confirmations) + ' block confirmed from ' + CONFIRMATION_THRESHOLD;
+    this.confirmations = this.tx.safeConfirmed || (this.tx.confirmations > CONFIRMATION_THRESHOLD) ?  `${CONFIRMATION_THRESHOLD}+` : String(this.tx.confirmations) + ' block(s) confirmed from ' + CONFIRMATION_THRESHOLD;
   }
 }

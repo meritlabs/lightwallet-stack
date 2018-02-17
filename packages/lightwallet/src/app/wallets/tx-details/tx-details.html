@@ -28,7 +28,7 @@
   </div>
 
   <div *ngIf="tx">
-    <ion-item class="confirmation-status" [class.confirmed]="isConfirmed" text-wrap>
+    <ion-item class="confirmation-status" [class.confirmed]="isConfirmed" text-wrap no-lines>
       <ion-avatar img-icon item-start>
         <img [src]="'assets/img/icons/' + (isConfirmed? 'done' : 'timeout') + '.svg'" alt="">
       </ion-avatar>
