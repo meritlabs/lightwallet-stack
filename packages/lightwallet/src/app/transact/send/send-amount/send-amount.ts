@@ -322,7 +322,7 @@ export class SendAmountView {
       let data: any = {
         toAddress: this.sendMethod.value,
         toName: this.txData.recipient.name || '',
-        toAmount: this.txData.amount,
+        toAmount: parseInt(this.txData.amount),
         allowSpendUnconfirmed: this.allowUnconfirmed,
         feeLevel: this.selectedFeeLevel
       };
@@ -460,11 +460,11 @@ export class SendAmountView {
         if (this.feeIncluded) {
           txp.fee = this.txData.feeAmount;
           txp.inputs = this.txData.txp.inputs;
-          txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
+          txp.outputs[0].amount = parseInt(this.txData.amount - this.txData.feeAmount);
         } else {
           txp.fee = this.txData.feeAmount;
           txp.inputs = this.txData.txp.inputs;
-          txp.outputs[0].amount = this.txData.amount;
+          txp.outputs[0].amount = parseInt(this.txData.amount);
         }
       } else {
         txp.feePerKb = this.selectedFee.feePerKb;
