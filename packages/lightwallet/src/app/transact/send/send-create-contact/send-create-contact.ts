@@ -31,7 +31,6 @@ export class SendCreateContactView {
     let address = this.navParams.get('address');
     this.contact = new MeritContact();
     this.contact.meritAddresses.push(address);
-
   }
 
   save() {

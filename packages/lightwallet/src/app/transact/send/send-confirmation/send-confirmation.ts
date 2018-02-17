@@ -14,6 +14,7 @@ import { EasySend, getEasySendURL } from 'merit/transact/send/easy-send/easy-sen
 import * as  _ from 'lodash';
 import { SendMethod } from 'merit/transact/send/send-method.model';
 import { RateService } from 'merit/transact/rate.service';
+import { SendService } from 'merit/transact/send/send.service';
 
 
 @IonicPage()
@@ -62,7 +63,8 @@ export class SendConfirmationView {
               private rateService: RateService,
               private configService: ConfigService,
               private logger: Logger,
-              private tabs: Tabs
+              private tabs: Tabs,
+              private sendService: SendService
   ) {
     this.txData = navParams.get('txData');
     this.referralsToSign = navParams.get('referralsToSign');
@@ -87,7 +89,7 @@ export class SendConfirmationView {
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
       methodName: this.txData.sendMethod.type == SendMethod.TYPE_EASY ? 'Easy Send' : 'Classic Send',
-      destination: this.txData.sendMethod.value
+      destination: this.txData.sendMethod.alias || this.txData.sendMethod.value
     };
 
     let fiatAvailale = this.rateService.getRate(viewData.fiatCode) > 0;
@@ -232,7 +234,7 @@ export class SendConfirmationView {
             await this.easySendService.sendSMS(
               _.get(this.txData.recipient.phoneNumbers, '[0].value'),
               this.viewData.amountMrt,
-              this.txData.easySendUrl,
+              this.txData.easySendUrl
             );
             break;
 
@@ -240,7 +242,7 @@ export class SendConfirmationView {
             await this.easySendService.sendEmail(
               _.get(this.txData.recipient.emails, '[0].value'),
               this.viewData.amountMrt,
-              this.txData.easySendUrl,
+              this.txData.easySendUrl
             );
             break;
 
@@ -249,7 +251,10 @@ export class SendConfirmationView {
         }
       }
 
+
+
       try {
+        await this.sendService.registerSend(this.txData.recipient, this.txData.sendMethod);
         await this.navCtrl.popToRoot();
         await this.tabs.select(0);
         await this.tabs.getActiveChildNavs()[0].popToRoot();
