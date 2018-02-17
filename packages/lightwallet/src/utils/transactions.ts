@@ -14,11 +14,43 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
     if (!_.isNil(tx) && !_.isNil(tx.action)) {
       pendingString = tx.isPendingEasySend ? '(pending) ' : '';
 
-      const { alias: inputAlias, address: inputAddress } = tx.outputs.find((input: ITransactionIO) => !input.isMine) || <any>{};
-      const { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => !output.isMine) || <any>{};
+      let received: boolean = false,
+        isEasySend: boolean;
 
-      tx.input = inputAlias || 'Anonymous';
-      tx.output = outputAlias || 'Anonymous';
+      switch (tx.action) {
+        case TransactionAction.SENT:
+          tx.type = 'debit';
+          isEasySend = true;
+          break;
+
+        case TransactionAction.RECEIVED:
+          tx.type = 'credit';
+
+          if (tx.isInvite) {
+            if (i === 0){
+              tx.isWalletUnlock = true;
+              tx.name = 'Wallet Unlocked';
+            }
+          } else {
+            isEasySend = true;
+          }
+
+          received = true;
+          break;
+
+        case TransactionAction.MOVED:
+          tx.name = tx.actionStr = tx.isInvite ? 'Moved Invite' : 'Moved Merit';
+          break;
+      }
+
+      let { alias: inputAlias, address: inputAddress } = tx.outputs.find((input: ITransactionIO) => input.isMine  === !received) || <any>{};
+      let { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => output.isMine === received) || <any>{};
+
+      tx.input = inputAlias? '@' + inputAlias : 'Anonymous';
+      tx.output = outputAlias? '@' + outputAlias : 'Anonymous';
+
+      tx.name = tx.name || received? tx.input : tx.output;
+
       tx.addressFrom = inputAlias || inputAddress;
       tx.addressTo = outputAlias || outputAddress;
 
@@ -32,42 +64,20 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
         address: outputAddress
       };
 
-      let inputContact, outputContact;
-
-      if (contactsProvider) {
-        try {
-          inputContact = await contactsProvider.get(inputAddress || inputAlias);
-          tx.input = inputContact.name.formatted;
-        } catch (e) {}
+      if (isEasySend && contactsProvider) {
+        const contactAddress = received? inputAddress || inputAlias : outputAddress || outputAlias;
 
         try {
-          outputContact = await contactsProvider.get(outputAddress || outputAlias);
-          tx.output = outputContact.name.formatted;
+          tx.contact = await contactsProvider.get(contactAddress);
+          tx.name = tx.contact.name.formatted;
         } catch (e) {}
       }
 
-      switch (tx.action) {
-        case TransactionAction.SENT:
-          tx.type = 'debit';
-          tx.name = tx.input;
-          tx.contact = outputContact;
-          break;
-
-        case TransactionAction.RECEIVED:
-          tx.type = 'credit';
-          tx.name = (i === 0 && tx.isInvite === true) ? 'Wallet Unlocked' : tx.output;
-          tx.contact = inputContact;
-          break;
-
-        case TransactionAction.MOVED:
-          tx.actionStr = 'Moved Merit';
-          tx.name = tx.isInvite ? 'Moved Invite' : 'Moved Merit';
-          break;
-      }
       tx.actionStr = pendingString + tx.actionStr;
 
       if (wallet && !tx.walletId) {
         tx.walletId = wallet.id;
+        tx.displayWallet = wallet;
       }
 
       if (tx.isCoinbase) {
@@ -76,11 +86,13 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           tx.action = TransactionAction.INVITE;
           tx.type = 'credit';
         } else if (tx.outputs[0].index === 0) {
-          tx.name = 'Mining Reward';
-          tx.action = TransactionAction.MINING_REWARD;
-        } else {
           tx.name = 'Ambassador Reward';
           tx.action = TransactionAction.AMBASSADOR_REWARD;
+          tx.isAmbassadorReward = true;
+        } else {
+          tx.name = 'Mining Reward';
+          tx.action = TransactionAction.MINING_REWARD;
+          tx.isMiningReward = true;
         }
       }
     }
