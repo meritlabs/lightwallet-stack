@@ -20,6 +20,7 @@ export class TxDetailsView {
   isMiningReward: boolean;
   isEasySend: boolean;
   isConfirmed: boolean;
+  image: string = 'merit';
 
   get isReward() {
     try {
@@ -44,6 +45,13 @@ export class TxDetailsView {
     this.isInvite = this.tx.isInvite === true;
     this.isMiningReward = this.isReward && this.tx.outputs[0].index === 0;
     this.isEasySend = !this.isInvite && !this.isReward;
-    this.confirmations = this.tx.safeConfirmed || (this.tx.confirmations > CONFIRMATION_THRESHOLD) ?  `${CONFIRMATION_THRESHOLD}+` : String(this.tx.confirmations) + ' block(s) confirmed from ' + CONFIRMATION_THRESHOLD;
+    this.confirmations = this.tx.safeConfirmed || (this.tx.confirmations > CONFIRMATION_THRESHOLD) ?  `${CONFIRMATION_THRESHOLD}+ confirmations` : String(this.tx.confirmations) + ' block(s) confirmed from ' + CONFIRMATION_THRESHOLD;
+
+    if (!this.isEasySend) {
+      if (this.tx.isAmbassadorReward) this.image = 'ambassador';
+      else if (this.tx.isMiningReward) this.image = 'mining';
+      else if (this.tx.isInvite) this.image = 'invite';
+      else this.image = 'merit';
+    }
   }
 }

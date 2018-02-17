@@ -30,11 +30,17 @@ tx-details-view {
         > ion-avatar {
           float: none;
           margin: auto;
+
+          > img {
+            width: 40px;
+            height: 40px;
+          }
         }
 
         span {
           font-size: 24px;
           line-height: 80px;
+          letter-spacing: -1.4px;
         }
       }
 
