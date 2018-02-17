@@ -62,7 +62,7 @@ export class SendAmountView {
   public feeIncluded: boolean;
   private referralsToSign: Array<any>;
 
-  private allowUnconfirmed: boolean;
+  private allowUnconfirmed: boolean = true;
 
   private loading: boolean;
 

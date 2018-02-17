@@ -488,10 +488,11 @@ ion-backdrop {
 
 ion-modal.merit-modal {
   position: relative;
+
   .modal-wrapper {
-    height: 300px;
-    max-height: 300px;
-    min-height: 300px;
+    contain: none;
+    height: auto;
+    max-height: calc(100% - 75px);
     z-index: 1;
     position: absolute;
     width: 100%;
@@ -500,6 +501,8 @@ ion-modal.merit-modal {
     top: initial;
     left: 0;
     bottom: 0;
+    display: flex;
+    flex-direction:column;
   }
 
   ion-backdrop {
@@ -508,10 +511,33 @@ ion-modal.merit-modal {
   }
 
   .ion-page {
+    contain: none;
+    flex: 1;
+    height: 100%;
+    max-height: 100%;
+    min-height: 100%;
+    position: relative;
+
+    ion-content.content {
+      contain: none;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+
+      .scroll-content {
+        contain: none;
+        min-height: 0;
+        flex: 1;
+        position: relative;
+      }
+    }
 
     ion-header.header {
       background: transparent;
-      ion-navbar.toolbar {
+
+      ion-navbar:not([color]) {
         background: transparent;
         .toolbar-background {
           background: transparent;
@@ -521,12 +547,16 @@ ion-modal.merit-modal {
             font-size: 15px;
             color: #2d3c50;
           }
-
         }
 
         ion-buttons.bar-buttons button[ion-button] {
-          font-size: 15px;
           color: #00b0dd;
+        }
+      }
+
+      ion-navbar.toolbar {
+        ion-buttons.bar-buttons button[ion-button] {
+          font-size: 15px;
           letter-spacing: -0.41px;
           text-transform: capitalize;
         }
@@ -541,6 +571,16 @@ ion-modal.merit-modal {
   .ion-page {
     ion-header.header.header-ios {
 
+      ion-navbar.toolbar.toolbar-ios:not([color]) {
+        .toolbar-background-ios {
+          background: rgb(233, 237, 242);
+        }
+
+        ion-title.title-ios .toolbar-title {
+          color: rgb(45, 60, 80);
+        }
+      }
+
       ion-navbar.toolbar.toolbar-ios {
         padding: 0;
         min-height: 46px;
@@ -548,7 +588,6 @@ ion-modal.merit-modal {
         .toolbar-background-ios {
           padding-top: 0;
           border: none;
-          background: rgb(233, 237, 242);
         }
 
         ion-buttons.bar-buttons {
@@ -577,7 +616,6 @@ ion-modal.merit-modal {
           height: 46px;
 
           .toolbar-title {
-            color: rgb(45, 60, 80);
             letter-spacing: -.4px;
             font-size: 17px;
             font-weight: 600;

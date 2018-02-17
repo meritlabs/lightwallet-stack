@@ -111,7 +111,7 @@ export class ExportWalletView {
 
     let exportData = this.wallet.export({ addressBook: addressbook });
     let encryptedData = this.sjcl.encrypt(this.formData.password, exportData, { iter: 10000 });
-    let walletName = this.wallet.credentials.walletName;
+    let walletName = this.wallet.name;
     let info: any = await this.appService.getInfo();
     let fileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
 

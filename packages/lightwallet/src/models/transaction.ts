@@ -1,3 +1,6 @@
+import { MeritContact } from './merit-contact';
+import { IDisplayWallet } from './display-wallet';
+
 export enum TransactionAction {
   RECEIVED = 'received',
   SENT = 'sent',
@@ -40,13 +43,26 @@ export interface ITransaction {
   parentAddress: string;
   isCoinbase: boolean;
   isInvite: boolean;
+  isMature: boolean;
 }
 
 export interface IDisplayTransaction extends ITransaction {
   actionStr: string;
+  actions: any[];
   walletId: string;
   isPendingEasySend: boolean;
   addressFrom: string;
   addressTo: string;
-  type: 'credit' | 'debit';
+  type: 'credit' | 'debit' | 'none';
+  input: string;
+  output: string;
+  safeConfirmed?: string;
+  contact?: MeritContact;
+  feeStr: string;
+  to: { alias: string; address: string; };
+  from: { alias: string; address: string; };
+  displayWallet?: IDisplayWallet;
+  isMiningReward: boolean;
+  isAmbassadorReward: boolean;
+  isWalletUnlock: boolean;
 }
