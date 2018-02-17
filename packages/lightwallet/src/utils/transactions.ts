@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { IDisplayTransaction, TransactionAction } from '../models/transaction';
+import { IDisplayTransaction, ITransactionIO, TransactionAction } from '../models/transaction';
 import { ContactsProvider } from '../providers/contacts/contacts';
 import { IDisplayWallet } from '../models/display-wallet';
 
@@ -14,8 +14,8 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
     if (!_.isNil(tx) && !_.isNil(tx.action)) {
       pendingString = tx.isPendingEasySend ? '(pending) ' : '';
 
-      const { alias: inputAlias, address: inputAddress } = tx.inputs ? tx.inputs[0] : <any>{};
-      const { alias: outputAlias, address: outputAddress } = tx.outputs ? tx.outputs[0] : <any>{};
+      const { alias: inputAlias, address: inputAddress } = tx.outputs.find((input: ITransactionIO) => !input.isMine) || <any>{};
+      const { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => !output.isMine) || <any>{};
 
       tx.input = inputAlias || 'Anonymous';
       tx.output = outputAlias || 'Anonymous';
