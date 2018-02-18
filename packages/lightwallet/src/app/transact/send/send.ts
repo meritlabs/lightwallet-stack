@@ -59,6 +59,7 @@ export class SendView {
     this.loadingContacts = true;
     await this.updateHasUnlocked();
     this.contacts = await this.contactsService.getAllMeritContacts();
+    console.log('Contacts are ', this.contacts);
     this.loadingContacts = false;
     this.updateRecentContacts();
     this.parseSearch();
@@ -104,14 +105,15 @@ export class SendView {
 
   private async search() {
 
-    let result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
-
+    const result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
     const input = this.searchQuery.split('?')[0].replace(/\s+/g, '');
+    const isAlias = input.charAt(0) === '@';
+
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
 
-    let query = input.indexOf('@') == 0 ? input.slice(1) : input;
+    let query = isAlias ? input.slice(1) : input;
 
-    if (input.indexOf('@') == -1) { //don't search for contacts if it is an alias
+    if (!isAlias) { //don't search for contacts if it is an alias
       this.contactsService.searchContacts(this.contacts, query)
         .forEach((contact: MeritContact) => {
           if (_.isEmpty(contact.meritAddresses)) {
@@ -126,12 +128,12 @@ export class SendView {
         });
     } else {
       query = query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-      result.withMerit = this.contacts.filter(contact => {
-        if (_.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))) return true;
-      });
-      result.recent = this.recentContacts.filter(contact => {
-        if (_.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))) return true;
-      });
+      result.withMerit = this.contacts.filter(contact =>
+        _.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))
+      );
+      result.recent = this.recentContacts.filter(contact =>
+        _.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))
+      );
     }
 
 
@@ -156,8 +158,7 @@ export class SendView {
           result.error = ERROR_ADDRESS_NOT_CONFIRMED;
         }
       } else if (this.couldBeAlias(input)) {
-        let alias = input.slice(1);
-        const addressInfo = await this.sendService.getAddressInfo(alias);
+        const addressInfo = await this.sendService.getAddressInfo(input);
 
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
@@ -198,7 +199,7 @@ export class SendView {
   }
 
   private couldBeAlias(input) {
-    if (input.charAt(0) != '@') return false;
+    if (input.charAt(0) !== '@') return false;
     return this.sendService.couldBeAlias(input.slice(1));
   }
 

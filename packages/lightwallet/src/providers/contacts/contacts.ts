@@ -128,23 +128,26 @@ export class ContactsProvider {
     Object.keys(localContacts)
       .forEach((key: string) => {
         localContact = localContacts[key];
-        deviceContact = contacts.find((c: MeritContact) =>
-          // find by ID
-          (localContact.id === c.id) ||
-          // find by phone number
-          (localContact.phoneNumbers.some((p: IContactField) => Boolean(c.phoneNumbers.find(_p => _p.value == p.value)))) ||
-          // compare emails
-          (localContact.emails.some((e: IContactField) => Boolean(c.emails.find(_e => _e.value == e.value))))
-        );
 
-        if (deviceContact) {
-          // merge addresses
-          deviceContact.meritAddresses = _.uniq(Array.prototype.concat((deviceContact.meritAddresses || []), (localContact.meritAddresses || [])));
-        } else {
-          contacts.push(localContact);
+        if (localContact.id || localContact.phoneNumbers.length || localContact.emails.length) {
+          deviceContact = contacts.find((c: MeritContact) =>
+            // find by ID
+            (localContact.id === c.id) ||
+            // find by phone number
+            (localContact.phoneNumbers.some((p: IContactField) => Boolean(c.phoneNumbers.find(_p => _p.value == p.value)))) ||
+            // compare emails
+            (localContact.emails.some((e: IContactField) => Boolean(c.emails.find(_e => _e.value == e.value))))
+          );
+
+          if (deviceContact) {
+            // merge addresses
+            deviceContact.meritAddresses = _.uniq(Array.prototype.concat((deviceContact.meritAddresses || []), (localContact.meritAddresses || [])));
+            deviceContact = void 0;
+            return;
+          }
         }
 
-        deviceContact = void 0;
+        contacts.push(localContact);
       });
 
     localContact = void 0;
