@@ -96,7 +96,7 @@ view-wallets {
           font-weight: 500;
         }
         ion-avatar {
-          box-shadow: 0 0 0 2px rgba(16, 152, 0, 0.51);
+          box-shadow: 0 0 0 2px map_get($colors, primary);
           border: 2px solid white;
         }
       }

@@ -4,7 +4,7 @@ import { Logger } from 'merit/core/logger';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 import { formatWalletHistory } from '../../../utils/transactions';
-import { createDisplayWallet, IDisplayWallet } from '../../../models/display-wallet';
+import { IDisplayWallet } from '../../../models/display-wallet';
 import { SendService } from 'merit/transact/send/send.service';
 
 @IonicPage({
@@ -24,8 +24,7 @@ export class WalletDetailsView {
               public navParams: NavParams,
               public walletService: WalletService,
               private logger: Logger,
-              private tabsCtrl: Tabs,
-              private sendService: SendService
+              private tabsCtrl: Tabs
   ) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
@@ -34,8 +33,10 @@ export class WalletDetailsView {
   }
 
   async ngOnInit() {
-    this.wallet = this.navParams.get('wallet');
-    this.displayWallet = await createDisplayWallet(this.wallet, this.walletService, this.sendService);
+    this.displayWallet = this.navParams.get('wallet');
+    this.wallet = this.displayWallet.client;
+
+    console.log('WALLET IS ', this.wallet);
     await this.getWalletHistory();
   }
 

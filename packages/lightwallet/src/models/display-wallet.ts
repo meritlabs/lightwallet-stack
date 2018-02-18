@@ -2,6 +2,7 @@ import { MeritWalletClient } from '../lib/merit-wallet-client/index';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { pick, isNil } from 'lodash';
 import { SendService } from 'merit/transact/send/send.service';
+import { DEFAULT_WALLET_COLOR } from '../utils/constants';
 
 export interface IDisplayWallet {
   id: string;
@@ -31,17 +32,20 @@ export interface IDisplayWalletOptions {
   hideInvites?: boolean;
   hideRewards?: boolean;
   hideAnv?: boolean;
+  hideAlias?: boolean;
 }
 
-export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService: SendService, options: IDisplayWalletOptions = {}): Promise<IDisplayWallet> {
+export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService?: SendService, options: IDisplayWalletOptions = {}): Promise<IDisplayWallet> {
   const displayWallet: IDisplayWallet = pick<IDisplayWallet, MeritWalletClient>(wallet, 'id', 'wallet', 'name', 'locked', 'color', 'totalNetworkValue', 'credentials', 'network');
 
   displayWallet.client = wallet;
   displayWallet.referrerAddress = walletService.getRootAddress(wallet).toString();
-  displayWallet.color = displayWallet.color || '#327eff';
+  displayWallet.color = displayWallet.color || DEFAULT_WALLET_COLOR;
 
-  const { alias } = await sendService.getAddressInfo(displayWallet.referrerAddress);
-  if (alias) displayWallet.alias = alias;
+  if (!options.hideAlias) {
+    const { alias } = await sendService.getAddressInfo(displayWallet.referrerAddress);
+    if (alias) displayWallet.alias = alias;
+  }
 
   if (!options.hideAnv) {
     displayWallet.totalNetworkValueMicro = await walletService.getANV(wallet);
