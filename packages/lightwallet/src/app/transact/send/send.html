@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-toolbar>
+  <ion-toolbar *ngIf="hasUnlockedWallets">
     <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
                    (ionCancel)="clearSearch()"></ion-searchbar>
     <ion-buttons end *ngIf="!searchQuery">
@@ -44,7 +44,7 @@
         Address is not confirmed yet
       </div>
       <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
-        Alias not found 
+        Alias not found
       </div>
 
       <div *ngIf="searchResult.toNewEntity">
