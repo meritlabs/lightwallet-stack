@@ -35,8 +35,6 @@ export class WalletDetailsView {
   async ngOnInit() {
     this.displayWallet = this.navParams.get('wallet');
     this.wallet = this.displayWallet.client;
-
-    console.log('WALLET IS ', this.wallet);
     await this.getWalletHistory();
   }
 

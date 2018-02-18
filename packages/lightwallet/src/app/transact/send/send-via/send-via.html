@@ -18,7 +18,7 @@
 
   <div class="easy-send-section" *ngIf="contact?.phoneNumbers?.length || contact?.emails?.length">
 
-    <ion-item-divider>
+    <ion-item-divider text-wrap>
       EasySend
       <button ion-button clear (click)="showEasyTooltip()" class="tooltip-button">
         <ion-icon name="ios-information-circle-outline"></ion-icon>
