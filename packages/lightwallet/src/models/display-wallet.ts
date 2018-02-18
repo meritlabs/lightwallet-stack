@@ -40,7 +40,12 @@ export async function createDisplayWallet(wallet: MeritWalletClient, walletServi
 
   displayWallet.client = wallet;
   displayWallet.referrerAddress = walletService.getRootAddress(wallet).toString();
-  displayWallet.color = displayWallet.color || DEFAULT_WALLET_COLOR;
+
+  Object.defineProperty(displayWallet, 'color', {
+    get: function() {
+      return this.client.color || DEFAULT_WALLET_COLOR;
+    }
+  });
 
   if (!options.hideAlias) {
     const { alias } = await sendService.getAddressInfo(displayWallet.referrerAddress);
