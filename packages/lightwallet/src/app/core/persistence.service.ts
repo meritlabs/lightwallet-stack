@@ -3,6 +3,7 @@ import { Storage } from '@ionic/storage';
 import * as _ from 'lodash';
 import { Logger } from 'merit/core/logger';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
+import { ISendMethod } from 'merit/transact/send/send-method.model';
 
 const Keys = {
   ADDRESS_BOOK: network => 'addressbook-' + network,
@@ -312,11 +313,13 @@ export class PersistenceService {
     return this.storage.get(Keys.SEND_HISTORY);
   }
 
-  registerSend(contact, method) {
+  registerSend(method: ISendMethod) {
     return this.storage.get(Keys.SEND_HISTORY).then((history) => {
       if (!history) history = [];
-      let timestamp = (new Date()).getTime();
-      history.push({contact, method, timestamp});
+      history.push({
+        method,
+        timestamp: Date.now()
+      });
       return this.storage.set(Keys.SEND_HISTORY, history);
     });
   }
@@ -479,7 +482,7 @@ export class PersistenceService {
   }
 
   async setHiddenUnlockRequestsAddresses(addresses:Array<string>) {
-    return this.storage.set(Keys.HIDDEN_REQUESTS_ADDRESSES, addresses); 
+    return this.storage.set(Keys.HIDDEN_REQUESTS_ADDRESSES, addresses);
   }
 
   async getActiveRequestsNumber() {

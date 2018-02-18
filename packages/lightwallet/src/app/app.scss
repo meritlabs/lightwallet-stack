@@ -58,6 +58,11 @@ ion-content.content[fullscreen] {
   background: transparent !important;
 }
 
+ion-avatar > ion-icon {
+  text-align: center;
+  width: 100%;
+}
+
 // Buttons
 @import "core/buttons";
 

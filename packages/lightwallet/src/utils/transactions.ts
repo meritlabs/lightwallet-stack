@@ -68,7 +68,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
         const contactAddress = received? inputAddress || inputAlias : outputAddress || outputAlias;
 
         try {
-          tx.contact = await contactsProvider.get(contactAddress);
+          tx.contact = contactsProvider.get(contactAddress);
           tx.name = tx.contact.name.formatted;
         } catch (e) {}
       }

@@ -5,6 +5,7 @@ import { PersistenceService } from 'merit/core/persistence.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { RateService } from 'merit/transact/rate.service';
 import { MeritWalletClient } from "merit/../lib/merit-wallet-client/index";
+import { ISendMethod } from 'merit/transact/send/send-method.model';
 
 /*
  Service to help manage sending merit to others.
@@ -91,8 +92,8 @@ export class SendService {
     return this.bitcore.Address.fromString(addr).network;
   }
 
-  public async registerSend(contact, method) {
-    return this.persistenceService.registerSend(contact, method);
+  public async registerSend(method: ISendMethod) {
+    return this.persistenceService.registerSend(method);
   }
 
   public async getSendHistory() {

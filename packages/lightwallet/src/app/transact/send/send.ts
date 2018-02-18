@@ -59,31 +59,37 @@ export class SendView {
     this.loadingContacts = true;
     await this.updateHasUnlocked();
     this.contacts = await this.contactsService.getAllMeritContacts();
-    console.log('Contacts are ', this.contacts);
     this.loadingContacts = false;
-    this.updateRecentContacts();
-    this.parseSearch();
+    await this.updateRecentContacts();
+    return this.parseSearch();
   }
 
   async updateRecentContacts() {
     const sendHistory = await this.sendService.getSendHistory();
+    const recentContacts = [];
 
-    let defineName = (record) => {
-      if (record.contact.name && record.contact.name.formatted) return record.contact.name.formatted;
-      return record.method.alias ? '@' + record.method.alias : record.method.value;
-    };
+    let results, contact;
 
-    this.recentContacts = [];
     sendHistory
       .sort((a, b) => b.timestamp - a.timestamp)
       .forEach((record) => {
-        record.contact.name = { formatted: defineName(record) };
-        this.recentContacts.push(record.contact);
+        results = this.contactsService.searchContacts(this.contacts, record.method.value);
+        if (results && results.length) {
+          recentContacts.push(results[0]);
+          results = void 0;
+        } else {
+          contact = new MeritContact();
+          contact.name.formatted = record.method.alias ? '@' + record.method.alias : record.method.value;
+          recentContacts.push(contact);
+          contact = void 0;
+        }
       });
+
+    this.recentContacts = _.uniqBy(recentContacts, 'name.formatted');
   }
 
   async parseSearch() {
-    let result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
+    const result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
 
     if (!this.searchQuery || !this.searchQuery.length) {
       this.clearSearch();
