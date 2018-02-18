@@ -1598,24 +1598,24 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
     var cacheKey = addresses.join('');
 
     function loadFromMempool(cb) {
-        return self.client.getaddressmempoolreferrals({addresses: addresses}, function (err, response) {
-            if (err) {
-              return done(self._wrapRPCError(err));
-            }
+      return self.client.getaddressmempoolreferrals({addresses: addresses}, function (err, response) {
+          if (err) {
+            return cb(self._wrapRPCError(err));
+          }
 
-            console.log('mempool', response.result);
-            return cb(null, response.result);
-        });
+          console.log('mempool', response.result);
+          return cb(null, response.result);
+      });
     }
 
     function loadFromBc(cb) {
-        return self.client.getaddressreferrals({addresses: addresses}, function (err, response) {
-          if (err) {
-            return done(self._wrapRPCError(err));
-          }
+      return self.client.getaddressreferrals({addresses: addresses}, function (err, response) {
+        if (err) {
+          return cb(self._wrapRPCError(err));
+        }
 
-          return cb(null, response.result);
-        });
+        return cb(null, response.result);
+      });
     }
 
     function finish(referrals) {
