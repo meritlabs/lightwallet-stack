@@ -23,7 +23,7 @@
       <h3 class="detail-fiat" *ngIf="!tx.isCoinbase">
         {{ isCredit? '' : '-' }}{{tx.alternativeAmountStr || altAmountStr | toFiat : tx.amount | async}}
       </h3>
-      <p class="fee" *ngIf="!tx.isCoinbase">
+      <p class="fee" *ngIf="!tx.isCoinbase && !tx.isInvite">
         Fee {{ tx.feeStr + ' MRT' }}
       </p>
     </div>
