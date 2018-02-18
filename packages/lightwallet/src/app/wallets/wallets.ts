@@ -21,6 +21,7 @@ import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { ContactsProvider } from '../../providers/contacts/contacts';
 import { ENV } from '@app/env';
+import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -41,12 +42,11 @@ export class WalletsView {
   totalNetworkValueMicros;
   totalNetworkValueFiat;
 
-  wallets: MeritWalletClient[];
+  wallets: IDisplayWallet[];
   vaults;
   feedbackNeeded: boolean;
   feedbackData = new Feedback();
 
-  addressbook;
   txpsData: any[] = [];
   network: string;
 
@@ -75,7 +75,7 @@ export class WalletsView {
               private vaultsService: VaultsService,
               private platform: Platform
   ) {
-    this.logger.warn('WalletsView constructor!');
+    this.logger.debug('WalletsView constructor!');
   }
 
   async doRefresh(refresher) {
@@ -88,12 +88,12 @@ export class WalletsView {
   async refreshAllInfo() {
     if (this.isRefreshingAllInfo) return;
     this.isRefreshingAllInfo = true;
-    await this.updateAllInfo(true);
+    await this.updateAllInfo();
     this.isRefreshingAllInfo = false;
   }
 
-  async ionViewDidLoad() {
-    this.logger.warn('Hello WalletsView :: IonViewDidLoad!');
+  async ngOnInit() {
+    this.logger.debug('Hello WalletsView :: IonViewDidLoad!');
     this.platform.resume.subscribe(() => {
       this.logger.info('WalletView is going to refresh data on resume.');
       if (this.isActivePage) {
@@ -105,26 +105,17 @@ export class WalletsView {
     this.logger.info('Got updated data in walletsView on Ready!!');
   }
 
-  async updateAllInfo(force?: boolean) {
-
+  async updateAllInfo() {
     this.loading = true;
 
     const fetch = async () => {
-      this.addressbook = await this.contactsService.list(ENV.network);
-      const wallets = await this.updateAllWallets(force);
-
-      if (_.isEmpty(wallets)) {
-        return null; //ToDo: add proper error handling;
-      }
-
-      this.wallets = wallets;
-
+      this.wallets = await this.updateAllWallets();
       // Now that we have wallets, we will proceed with the following operations in parallel.
       await Promise.all([
-        this.updateNetworkValue(wallets),
+        this.updateNetworkValue(),
         this.processPendingEasyReceipts(),
-        this.updateTxps({ limit: 3 }),
-        this.updateVaults(_.head(this.wallets))
+        // this.updateTxps({ limit: 3 }),
+        // this.updateVaults(_.head(this.wallets))
       ]);
 
       this.logger.info('Done updating all info for wallet.');
@@ -165,40 +156,31 @@ export class WalletsView {
     }
   }
 
-  openWallet(wallet) {
-    if (!wallet.isComplete) {
-      this.navCtrl.push('CopayersView')
-    } else {
-      this.navCtrl.push('WalletDetailsView', { walletId: wallet.id, wallet: wallet });
-    }
-  }
+  // sendFeedback() {
+  //   this.feedbackNeeded = false;
+  //   this.feedbackService.sendFeedback(this.feedbackData).catch(() => {
+  //     this.toastCtrl.create({
+  //       message: 'Failed to send feedback. Please try again later',
+  //       cssClass: ToastConfig.CLASS_ERROR
+  //     }).present();
+  //   })
+  // }
 
-  sendFeedback() {
-    this.feedbackNeeded = false;
-    this.feedbackService.sendFeedback(this.feedbackData).catch(() => {
-      this.toastCtrl.create({
-        message: 'Failed to send feedback. Please try again later',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
-    })
-  }
-
-  toLatestRelease() {
-    this.inAppBrowser.create(this.configService.get().release.url);
-  }
+  // toLatestRelease() {
+  //   this.inAppBrowser.create(this.configService.get().release.url);
+  // }
 
   toAddWallet() {
-
     if (!_.isEmpty(this.wallets)) {
-
       // todo check for existing invites and suggest the wallet that has any
-      const referralAdderss = this.walletService.getRootAddress(this.wallets[0]);
+      const referralAdderss = this.walletService.getRootAddress(this.wallets[0].client);
 
       return this.navCtrl.push('CreateWalletView', {
         updateWalletListCB: this.refreshWalletList.bind(this),
         parentAddress: referralAdderss
       });
     }
+
     return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList.bind(this) });
   }
 
@@ -215,10 +197,10 @@ export class WalletsView {
     return this.updateVaults(await this.profileService.getHeadWalletClient());
   }
 
-  txpCreatedWithinPastDay(txp) {
-    const createdOn = new Date(txp.createdOn * 1000);
-    return ((new Date()).getTime() - createdOn.getTime()) < (1000 * 60 * 60 * 24);
-  }
+  // txpCreatedWithinPastDay(txp) {
+  //   const createdOn = new Date(txp.createdOn * 1000);
+  //   return ((new Date()).getTime() - createdOn.getTime()) < (1000 * 60 * 60 * 24);
+  // }
 
   walletHasPendingAmount(wallet: any): boolean {
     try {
@@ -230,9 +212,9 @@ export class WalletsView {
     return false;
   }
 
-  private async updateTxps({ limit } = { limit: 3 }): Promise<any> {
-    this.txpsData = await this.profileService.getTxps({ limit });
-  }
+  // private async updateTxps({ limit } = { limit: 3 }): Promise<any> {
+  //   this.txpsData = await this.profileService.getTxps({ limit });
+  // }
 
   private async updateVaults(wallet: MeritWalletClient): Promise<any> {
     const vaults = await this.vaultsService.getVaults(wallet);
@@ -412,13 +394,8 @@ export class WalletsView {
     });
   }
 
-  private async updateNetworkValue(wallets: Array<any>) {
-    let totalAmount: number = 0;
-
-    await Promise.all(wallets.map(async (wallet) => {
-      totalAmount += await this.walletService.getANV(wallet);
-    }));
-
+  private async updateNetworkValue() {
+    const totalAmount: number = this.wallets.reduce((total: number, w: IDisplayWallet) => total + w.totalNetworkValueMicro, 0);
     const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
     this.totalNetworkValueFiat = usdAmount ? new FiatAmount(+usdAmount).amountStr : '';
     this.totalNetworkValue = totalAmount;
@@ -433,13 +410,11 @@ export class WalletsView {
     this.feedbackData.mark = null;
   }
 
-  private async updateAllWallets(force: boolean = false): Promise<MeritWalletClient[]> {
+  private async updateAllWallets(): Promise<IDisplayWallet[]> {
     const wallets = await this.profileService.getWallets();
-    return Promise.all(wallets.map(async (wallet) => {
-      this.profileService.updateWalletSettings(wallet);
-      wallet.status = await this.walletService.getStatus(wallet, { force: force });
-      return wallet;
-    }));
+    return Promise.all<IDisplayWallet>(
+      wallets.map(w => createDisplayWallet(w, this.walletService, null, { hideRewards: true, hideAlias: true }))
+    );
   }
 
   private needWalletStatuses(): boolean {
@@ -448,7 +423,7 @@ export class WalletsView {
     }
 
     _.each(this.wallets, (wallet) => {
-      if (!wallet.status) {
+      if (!wallet.client.status) {
         return true;
       }
     });
