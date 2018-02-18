@@ -210,7 +210,7 @@ export class WalletService {
               cache.spendableBalanceAlternative = new FiatAmount(spendableBalanceAlternative);
               cache.alternativeConversionRate = new FiatAmount(alternativeConversionRate);
 
-              cache.alternativeBalanceAvailable = true;
+              cache.alternativeBalanceAvailable = totalBalanceAlternative > 0;
               cache.isRateAvailable = true;
               return resolve();
             }).catch((err) => {

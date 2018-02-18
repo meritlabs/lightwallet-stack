@@ -69,10 +69,17 @@ export class SendView {
 
   async updateRecentContacts() {
     const sendHistory = await this.sendService.getSendHistory();
+
+    let defineName = (record) => {
+      if (record.contact.name && record.contact.name.formatted) return record.contact.name.formatted;
+      return record.method.alias ? '@'+record.method.alias : record.method.value;
+    };
+
+    this.recentContacts = [];
     sendHistory
       .sort((a, b) => b.timestamp - a.timestamp)
       .forEach((record) => {
-        if (this.recentContacts.some(contact => JSON.stringify(contact.name) == JSON.stringify(record.contact.name))) return;
+        record.contact.name = {formatted: defineName(record)};
         this.recentContacts.push(record.contact);
       });
   }
@@ -86,6 +93,7 @@ export class SendView {
       this.contacts.forEach((contact: MeritContact) => {
         _.isEmpty(contact.meritAddresses) ?  result.noMerit.push(contact) : result.withMerit.push(contact);
       });
+      result.recent = this.recentContacts;
       return this.searchResult = result;
     }
 
@@ -104,20 +112,32 @@ export class SendView {
     const input = this.searchQuery.split('?')[0].replace(/\s+/g, '');
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
 
-    let query = input.indexOf('@') == 0 ? input.slice(1) : input; 
-    this.contactsService.searchContacts(this.contacts, query)
-      .forEach((contact: MeritContact) => {
-        if (_.isEmpty(contact.meritAddresses)) {
-          result.noMerit.push(contact);
-        } else {
-          result.withMerit.push(contact);
-        }
-      });
+    let query = input.indexOf('@') == 0 ? input.slice(1) : input;
 
-    this.contactsService.searchContacts(this.recentContacts, query)
-      .forEach((contact) => {
-        result.recent.push(contact);
-    });
+    if (input.indexOf('@') == -1) { //don't search for contacts if it is an alias
+      this.contactsService.searchContacts(this.contacts, query)
+        .forEach((contact: MeritContact) => {
+          if (_.isEmpty(contact.meritAddresses)) {
+            result.noMerit.push(contact);
+          } else {
+            result.withMerit.push(contact);
+          }
+        });
+      this.contactsService.searchContacts(this.recentContacts, query)
+        .forEach((contact) => {
+          result.recent.push(contact);
+        });
+    } else {
+      query = query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+      result.withMerit = this.contacts.filter(contact => {
+        if (_.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))) return true;
+      });
+      result.recent = this.recentContacts.filter(contact => {
+        if (_.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))) return true;
+      });
+    }
+
+
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
       if (this.isAddress(input)) {
@@ -126,7 +146,7 @@ export class SendView {
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
           result.toNewEntity.contact.meritAddresses.push({ address: addressInfo.address, alias: addressInfo.alias, network: ENV.network });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address };
+          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address, alias: addressInfo.alias };
         } else {
           result.error = ERROR_ADDRESS_NOT_CONFIRMED;
         }
@@ -137,7 +157,7 @@ export class SendView {
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
           result.toNewEntity.contact.meritAddresses.push({ address: addressInfo.address, alias: addressInfo.alias,  network: ENV.network });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address };
+          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address, alias: addressInfo.alias };
         } else {
           result.error = ERROR_ALIAS_NOT_FOUND; 
         }
@@ -152,7 +172,6 @@ export class SendView {
       }
     }
 
-    console.log(result, 'search result'); 
     this.searchResult = result;
   }
 
@@ -189,9 +208,13 @@ export class SendView {
     let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
     let modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
     modal.onDidDismiss((contact) => {
-      console.log(contact);
       if (contact) {
-        this.navCtrl.push('SendViaView', { contact: contact, amount: this.amount, isEasyEnabled: this.hasActiveInvites });
+        this.navCtrl.push('SendViaView', {
+          contact: contact,
+          amount: this.amount,
+          isEasyEnabled: this.hasActiveInvites,
+          suggestedMethod: this.suggestedMethod
+        });
       }
     });
     modal.present();
@@ -214,14 +237,17 @@ export class SendView {
   }
 
   sendToContact(contact) {
-    this.navCtrl.push('SendViaView', { contact: contact, amount: this.amount, suggestedMethod: this.suggestedMethod, isEasyEnabled: this.hasActiveInvites  });
+    this.navCtrl.push('SendViaView', {
+      contact: contact,
+      amount: this.amount,
+      isEasyEnabled: this.hasActiveInvites
+    });
   }
 
   sendToEntity(entity) {
     this.navCtrl.push('SendViaView', {
       contact: entity.contact,
       amount: this.amount,
-      suggestedMethod: this.suggestedMethod,
       isEasyEnabled: this.hasActiveInvites
     });
   }

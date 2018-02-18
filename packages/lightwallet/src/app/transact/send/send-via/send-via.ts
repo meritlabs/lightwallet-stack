@@ -50,21 +50,23 @@ export class SendViaView {
           this.highlightedMethod = this.suggestedMethod;
           return true;
       }
+
+      if (!this.highlightedMethod) {
+        this.sendService.getSendHistory().then((sendHistory) => {
+          sendHistory
+            .sort((a,b) => b.timestamp - a.timestamp)
+            .some((record) => {
+              const entities:Array<any> = this.contact[searchIn(this.suggestedMethod)];
+              if (entities.some(entity => entity.value == record.method.value)) {
+                this.highlightedMethod = record;
+                return true;
+              }
+            });
+        });
+      }
+
     }
 
-    if (!this.highlightedMethod) {
-      this.sendService.getSendHistory().then((sendHistory) => {
-        sendHistory
-          .sort((a,b) => b.timestamp - a.timestamp)
-          .some((record) => {
-          const entities:Array<any> = this.contact[searchIn(this.suggestedMethod)];
-          if (entities.some(entity => entity.value == record.method.value)) {
-            this.highlightedMethod = record;
-            return true;
-          }
-        });
-      });
-    }
   }
 
   getDisplayedName() {
@@ -79,8 +81,8 @@ export class SendViaView {
     return this.navCtrl.push('SendEditContactView', {contact: this.contact, amount: this.amount});
   }
 
-  select(type, destination, value) {
-    return this.navCtrl.push('SendAmountView', {contact: this.contact, amount: this.amount, suggestedMethod: new SendMethod({type, destination, value})});
+  select(type, destination, value, alias?) {
+    return this.navCtrl.push('SendAmountView', {contact: this.contact, amount: this.amount, suggestedMethod: new SendMethod({type, destination, value, alias})});
   }
 
   showClassicTooltip() {

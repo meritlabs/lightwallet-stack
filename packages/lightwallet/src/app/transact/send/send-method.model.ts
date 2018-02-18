@@ -10,11 +10,13 @@ export class SendMethod {
   public type:string;
   public destination:string;
   public value:string;
+  public alias:string;
 
   constructor(opts) {
     this.type = opts.type;
     this.destination = opts.destination;
     this.value = opts.value;
+    this.alias = opts.alias;
   }
 
 }
