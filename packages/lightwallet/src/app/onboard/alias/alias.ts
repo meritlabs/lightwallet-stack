@@ -95,12 +95,11 @@ export class AliasView {
   }
 
   async createWallet() {
-
     if (this.formData.aliasValidationError || this.formData.aliasCheckInProgress) {
       return false;
     }
 
-    let alias = (this.formData.alias && this.formData.alias.charAt(0) == '@') ? this.formData.alias.slice(1) : this.formData.alias;
+    const alias = (this.formData.alias && this.formData.alias.charAt(0) == '@') ? this.formData.alias.slice(1) : this.formData.alias;
 
     const loader = this.loaderCtrl.create({ content: 'Creating wallet...' });
     await loader.present();
@@ -111,15 +110,14 @@ export class AliasView {
 
       if (this.config.get().pushNotificationsEnabled) {
         this.logger.info('Subscribing to push notifications for default wallet');
-        this.pushNotificationService.subscribe(wallet);
+        await this.pushNotificationService.subscribe(wallet);
       } else {
         this.logger.info('Subscribing to long polling for default wallet');
         this.pollingNotificationService.enablePolling(wallet);
       }
 
-      this.navCtrl.push('BackupView', {
-        mnemonic: wallet!.getMnemonic(),
-      });
+      await this.navCtrl.setRoot('BackupView', { mnemonic: wallet.getMnemonic() });
+      await this.navCtrl.popToRoot();
     } catch (err) {
       if (err == Errors.INVALID_REFERRAL) this.unlockState = 'fail';
       this.logger.debug('Could not unlock wallet: ', err);
@@ -130,10 +128,6 @@ export class AliasView {
     }
 
     await loader.dismiss();
-  }
-
-  onInputFocus() {
-    //setTimeout(() => this.content.scrollToBottom(), 100);
   }
 
 }
