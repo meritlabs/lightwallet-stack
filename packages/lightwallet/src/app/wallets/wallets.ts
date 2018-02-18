@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { Platform, AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
+import { AlertController, IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 import { BwcService } from 'merit/core/bwc.service';
@@ -10,17 +9,12 @@ import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
-import { Feedback } from 'merit/feedback/feedback.model'
-import { FeedbackService } from 'merit/feedback/feedback.service'
-import { ConfigService } from 'merit/shared/config.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-import { ContactsProvider } from '../../providers/contacts/contacts';
-import { ENV } from '@app/env';
 import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
 
 const RETRY_MAX_ATTEMPTS = 5;
@@ -41,15 +35,9 @@ export class WalletsView {
   totalNetworkValue;
   totalNetworkValueMicros;
   totalNetworkValueFiat;
-
   wallets: IDisplayWallet[];
   vaults;
-  feedbackNeeded: boolean;
-  feedbackData = new Feedback();
-
-  txpsData: any[] = [];
   network: string;
-
   loading: boolean;
 
   private get isActivePage(): boolean {
@@ -65,23 +53,19 @@ export class WalletsView {
               private easyReceiveService: EasyReceiveService,
               private toastCtrl: MeritToastController,
               private profileService: ProfileService,
-              private feedbackService: FeedbackService,
-              private inAppBrowser: InAppBrowser,
-              private configService: ConfigService,
               private alertController: AlertController,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private contactsService: ContactsProvider,
               private vaultsService: VaultsService,
-              private platform: Platform
-  ) {
+              private platform: Platform) {
     this.logger.debug('WalletsView constructor!');
   }
 
   async doRefresh(refresher) {
     try {
       await this.refreshAllInfo();
-    } catch (e) {}
+    } catch (e) {
+    }
     refresher.complete();
   }
 
@@ -207,7 +191,8 @@ export class WalletsView {
       if (wallet.status && wallet.status.balance) {
         return Number(wallet.status.balance.totalAmount) !== Number(wallet.status.balance.totalConfirmedAmount);
       }
-    } catch (e) {}
+    } catch (e) {
+    }
 
     return false;
   }
@@ -290,44 +275,44 @@ export class WalletsView {
       buttons: [
         {
           text: 'Ignore', role: 'cancel', handler: () => {
-            this.logger.info('You have declined easy receive');
-            this.easyReceiveService.deletePendingReceipt(receipt).then(() =>
-              this.processPendingEasyReceipts()
-            );
-          }
+          this.logger.info('You have declined easy receive');
+          this.easyReceiveService.deletePendingReceipt(receipt).then(() =>
+            this.processPendingEasyReceipts()
+          );
+        }
         },
         {
           text: 'Validate', handler: (data) => {
-            if (!data || !data.password) {
-              this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the moment
-            } else {
-              this.processEasyReceipt(receipt, true);
-            }
+          if (!data || !data.password) {
+            this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the moment
+          } else {
+            this.processEasyReceipt(receipt, true);
           }
+        }
         }
       ]
     }).present();
   }
 
   private showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
-    const amount = _.get(_.find(data.txs, (tx :any) => !tx.invite), 'amount', 0);
+    const amount = _.get(_.find(data.txs, (tx: any) => !tx.invite), 'amount', 0);
 
     this.alertController.create({
       title: `You've got ${amount} Merit!`,
       buttons: [
         {
           text: 'Reject', role: 'cancel', handler: () => {
-            this.rejectEasyReceipt(receipt, data).then(() =>
-              this.processPendingEasyReceipts()
-            );
-          }
+          this.rejectEasyReceipt(receipt, data).then(() =>
+            this.processPendingEasyReceipts()
+          );
+        }
         },
         {
           text: 'Accept', handler: () => {
-            this.acceptEasyReceipt(receipt, data).then(() =>
-              this.processPendingEasyReceipts()
-            );
-          }
+          this.acceptEasyReceipt(receipt, data).then(() =>
+            this.processPendingEasyReceipts()
+          );
+        }
         }
       ]
     }).present();
@@ -402,13 +387,13 @@ export class WalletsView {
     this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
   }
 
-  private rateApp(mark) {
-    this.feedbackData.mark = mark;
-  }
-
-  private cancelFeedback() {
-    this.feedbackData.mark = null;
-  }
+  // private rateApp(mark) {
+  //   this.feedbackData.mark = mark;
+  // }
+  //
+  // private cancelFeedback() {
+  //   this.feedbackData.mark = null;
+  // }
 
   private async updateAllWallets(): Promise<IDisplayWallet[]> {
     const wallets = await this.profileService.getWallets();
@@ -417,17 +402,17 @@ export class WalletsView {
     );
   }
 
-  private needWalletStatuses(): boolean {
-    if (_.isEmpty(this.wallets)) {
-      return true;
-    }
-
-    _.each(this.wallets, (wallet) => {
-      if (!wallet.client.status) {
-        return true;
-      }
-    });
-    return false;
-  }
+  // private needWalletStatuses(): boolean {
+  //   if (_.isEmpty(this.wallets)) {
+  //     return true;
+  //   }
+  //
+  //   _.each(this.wallets, (wallet) => {
+  //     if (!wallet.client.status) {
+  //       return true;
+  //     }
+  //   });
+  //   return false;
+  // }
 
 }
