@@ -68,10 +68,10 @@ export class AliasView {
       return this.formData.aliasValidationError = null;
     }
 
-    if (input.length < 4) {
+    if (input.length < 3) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = 'Alias should contain at least 4 symbols';
+      return this.formData.aliasValidationError = 'Alias should contain at least 3 symbols';
     }
 
     if (!this.sendService.couldBeAlias(input)) {
