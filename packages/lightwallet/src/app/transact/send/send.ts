@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SendService } from 'merit/transact/send/send.service';
-import { SendMethod } from 'merit/transact/send/send-method.model';
+import { ISendMethod, SendMethodDestination, SendMethodType } from 'merit/transact/send/send-method.model';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 import { ProfileService } from 'merit/core/profile.service';
@@ -37,7 +37,7 @@ export class SendView {
     error: string
   } = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
 
-  private suggestedMethod: SendMethod;
+  private suggestedMethod: ISendMethod;
 
   public hasUnlockedWallets: boolean;
   public hasActiveInvites: boolean;
@@ -143,15 +143,15 @@ export class SendView {
         const addressInfo = await this.sendService.getAddressInfo(input);
 
         if (addressInfo && addressInfo.isConfirmed) {
-          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
+          result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
           result.toNewEntity.contact.meritAddresses.push({
             address: addressInfo.address,
             alias: addressInfo.alias,
             network: ENV.network
           });
           this.suggestedMethod = {
-            type: SendMethod.TYPE_CLASSIC,
-            destination: SendMethod.DESTINATION_ADDRESS,
+            type: SendMethodType.Classic,
+            destination: SendMethodDestination.Address,
             value: addressInfo.address,
             alias: addressInfo.alias
           };
@@ -163,15 +163,15 @@ export class SendView {
         const addressInfo = await this.sendService.getAddressInfo(alias);
 
         if (addressInfo && addressInfo.isConfirmed) {
-          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
+          result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
           result.toNewEntity.contact.meritAddresses.push({
             address: addressInfo.address,
             alias: addressInfo.alias,
             network: ENV.network
           });
           this.suggestedMethod = {
-            type: SendMethod.TYPE_CLASSIC,
-            destination: SendMethod.DESTINATION_ADDRESS,
+            type: SendMethodType.Classic,
+            destination: SendMethodDestination.Address,
             value: addressInfo.address,
             alias: addressInfo.alias
           };
@@ -179,13 +179,13 @@ export class SendView {
           result.error = ERROR_ALIAS_NOT_FOUND;
         }
       } else if (this.couldBeEmail(input)) {
-        result.toNewEntity = { destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact() };
+        result.toNewEntity = { destination: SendMethodDestination.Email, contact: new MeritContact() };
         result.toNewEntity.contact.emails.push({ value: input });
-        this.suggestedMethod = { type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input };
+        this.suggestedMethod = { type: SendMethodType.Easy, destination: SendMethodDestination.Email, value: input };
       } else if (this.couldBeSms(input)) {
-        result.toNewEntity = { destination: SendMethod.DESTINATION_SMS, contact: new MeritContact() };
+        result.toNewEntity = { destination: SendMethodDestination.Sms, contact: new MeritContact() };
         result.toNewEntity.contact.phoneNumbers.push({ value: input });
-        this.suggestedMethod = { type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input };
+        this.suggestedMethod = { type: SendMethodType.Easy, destination: SendMethodDestination.Sms, value: input };
       }
     }
 

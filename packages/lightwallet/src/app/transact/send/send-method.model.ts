@@ -1,22 +1,17 @@
-export class SendMethod {
+export enum SendMethodType {
+  Easy = 'easy',
+  Classic = 'classic'
+}
 
-  public static TYPE_EASY = 'easy';
-  public static TYPE_CLASSIC = 'classic';
+export enum SendMethodDestination {
+  Sms = 'sms',
+  Email = 'email',
+  Address = 'address'
+}
 
-  public static DESTINATION_SMS = 'sms';
-  public static DESTINATION_EMAIL = 'email';
-  public static DESTINATION_ADDRESS = 'address';
-
-  public type:string;
-  public destination:string;
-  public value:string;
-  public alias:string;
-
-  constructor(opts) {
-    this.type = opts.type;
-    this.destination = opts.destination;
-    this.value = opts.value;
-    this.alias = opts.alias;
-  }
-
+export interface ISendMethod {
+  type: SendMethodType;
+  destination: SendMethodDestination;
+  value: string;
+  alias?: string;
 }
