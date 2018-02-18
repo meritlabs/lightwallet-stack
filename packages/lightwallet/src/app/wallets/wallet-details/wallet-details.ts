@@ -59,9 +59,6 @@ export class WalletDetailsView {
     }
   }
 
-  goToEditWallet() {
-    this.navCtrl.push('EditWalletView', { wallet: this.wallet });
-  }
 
   // Belt and suspenders check to be sure that the total number of TXs on the page
 
