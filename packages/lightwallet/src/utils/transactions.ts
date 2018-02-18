@@ -43,13 +43,13 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           break;
       }
 
-      let { alias: inputAlias, address: inputAddress } = tx.outputs.find((input: ITransactionIO) => input.isMine  === !received) || <any>{};
-      let { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => output.isMine === received) || <any>{};
+      const { alias: inputAlias, address: inputAddress } = tx.outputs.find((input: ITransactionIO) => input.isMine  === !received) || <any>{};
+      const { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => output.isMine === received) || <any>{};
 
       tx.input = inputAlias? '@' + inputAlias : 'Anonymous';
       tx.output = outputAlias? '@' + outputAlias : 'Anonymous';
 
-      tx.name = tx.name || received? tx.input : tx.output;
+      tx.name = tx.name || (received? tx.input : tx.output);
 
       tx.addressFrom = inputAlias || inputAddress;
       tx.addressTo = outputAlias || outputAddress;
@@ -64,7 +64,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
         address: outputAddress
       };
 
-      if (isEasySend && contactsProvider) {
+      if (!tx.isCoinbase && !tx.isWalletUnlock && contactsProvider) {
         const contactAddress = received? inputAddress || inputAlias : outputAddress || outputAlias;
 
         try {
