@@ -180,9 +180,9 @@ export class SendAmountView {
     }
   }
 
-  async selectAmount(amount) {
+  async selectAmount(amount: string) {
+    let micros;
 
-    let micros = 0;
     if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
       micros = this.rateService.mrtToMicro(parseFloat(amount));
     } else {
