@@ -107,27 +107,69 @@ export class ExportWalletView {
 
   async download() {
 
-    const addressbook = await this.persistenceService.getAddressbook(this.wallet.credentials.network);
+    const addressBook = await this.persistenceService.getAddressbook(this.wallet.credentials.network);
 
-    let exportData = this.wallet.export({ addressBook: addressbook });
-    let encryptedData = this.sjcl.encrypt(this.formData.password, exportData, { iter: 10000 });
-    let walletName = this.wallet.name;
-    let info: any = await this.appService.getInfo();
-    let fileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
-
+    const exportData = this.wallet.export({ addressBook: addressBook });
+    const encryptedData = this.sjcl.encrypt(this.formData.password, exportData, { iter: 10000 });
+    const walletName = this.wallet.name;
+    const info: any = await this.appService.getInfo();
+    const fileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
     const blob = new Blob([encryptedData], { type: 'text/plain;charset=utf-8' });
 
-    if (this.platform.is('ios')) {
-      const root = this.file.documentsDirectory;
-      await this.file.writeFile(root, fileName, blob);
-    } else if (this.platform.is('android')) {
-      const root = this.file.externalRootDirectory;
-      await this.file.writeFile(root, fileName, blob);
+    const done = () => this.toastCtrl.create({ message: `Wallet exported to ${fileName}`, cssClass: ToastConfig.CLASS_MESSAGE }).present();
+
+    if (this.platform.is('cordova')) {
+      const root = this.platform.is('ios')? this.file.documentsDirectory : this.file.externalRootDirectory;
+      return this.alertController.create({
+        title: 'Set file name',
+        message: 'Enter a name for the file to export your wallet',
+        inputs: [
+          {
+            name: 'name',
+            placeholder: 'File name',
+            value: fileName
+          }
+        ],
+        buttons: [
+          'Cancel',
+          {
+            text: 'Export',
+            handler: (data) => {
+              if (data.name && data.name.length) {
+                (async () => {
+                  try {
+                    await this.file.resolveLocalFilesystemUrl(data.name);
+                    // file exists
+                    return this.toastCtrl.create({
+                      message: 'There is already a file with the name you specified. Please pick another name.',
+                      cssClass: ToastConfig.CLASS_ERROR
+                    }).present();
+                  } catch (e) {
+                    // file doesn't exist
+                    try {
+                      await this.file.writeFile(root, data.name, blob);
+                      return done();
+                    } catch (e) {
+                      this.logger.error('Error export wallet to file', e);
+                      return this.toastCtrl.create({
+                        message: 'An error occurred while exporting your wallet.',
+                        cssClass: ToastConfig.CLASS_ERROR
+                      }).present();
+                    }
+                  }
+                })();
+              } else {
+                return false;
+              }
+            }
+          }
+        ]
+      }).present();
+
     } else {
       await FileSaver.saveAs(blob, fileName);
+      return done();
     }
-
-    this.toastCtrl.create({ message: `Wallet exported to ${fileName}`, cssClass: ToastConfig.CLASS_MESSAGE }).present();
   }
 
 }
