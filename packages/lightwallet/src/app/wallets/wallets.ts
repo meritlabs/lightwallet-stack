@@ -1,9 +1,8 @@
-import { ApplicationRef, Component, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { Platform, AlertController, App, Events, IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Platform, AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
-import { AppUpdateService } from 'merit/core/app-update.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
@@ -15,7 +14,6 @@ import { Feedback } from 'merit/feedback/feedback.model'
 import { FeedbackService } from 'merit/feedback/feedback.service'
 import { ConfigService } from 'merit/shared/config.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
-import { RateService } from 'merit/transact/rate.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { WalletService } from 'merit/wallets/wallet.service';
