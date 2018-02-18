@@ -38,6 +38,7 @@ export async function createDisplayWallet(wallet: MeritWalletClient, walletServi
 
   displayWallet.client = wallet;
   displayWallet.referrerAddress = walletService.getRootAddress(wallet).toString();
+  displayWallet.color = displayWallet.color || '#327eff';
 
   const { alias } = await sendService.getAddressInfo(displayWallet.referrerAddress);
   if (alias) displayWallet.alias = alias;
