@@ -24,7 +24,6 @@ export class SelectColorView {
     '#f5a623',
     '#ffc30e',
     '#ffaf37',
-    '#383d43',
     '#8997eb',
     '#808080',
     '#5f6c82',
@@ -35,9 +34,7 @@ export class SelectColorView {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              private viewCtrl: ViewController) {
-
-  }
+              private viewCtrl: ViewController) {}
 
   cancel() {
     this.viewCtrl.dismiss();
