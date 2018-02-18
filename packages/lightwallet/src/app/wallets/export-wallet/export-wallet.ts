@@ -113,10 +113,10 @@ export class ExportWalletView {
     const encryptedData = this.sjcl.encrypt(this.formData.password, exportData, { iter: 10000 });
     const walletName = this.wallet.name;
     const info: any = await this.appService.getInfo();
-    const fileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
+    const defaultFileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
     const blob = new Blob([encryptedData], { type: 'text/plain;charset=utf-8' });
 
-    const done = () => this.toastCtrl.create({ message: `Wallet exported to ${fileName}`, cssClass: ToastConfig.CLASS_MESSAGE }).present();
+    const done = (fileName: string = defaultFileName) => this.toastCtrl.create({ message: `Wallet exported to ${fileName}`, cssClass: ToastConfig.CLASS_MESSAGE }).present();
 
     if (this.platform.is('cordova')) {
       const root = this.platform.is('ios')? this.file.documentsDirectory : this.file.externalRootDirectory;
@@ -127,7 +127,7 @@ export class ExportWalletView {
           {
             name: 'name',
             placeholder: 'File name',
-            value: fileName
+            value: defaultFileName
           }
         ],
         buttons: [
@@ -170,7 +170,7 @@ export class ExportWalletView {
       }).present();
 
     } else {
-      await FileSaver.saveAs(blob, fileName);
+      await FileSaver.saveAs(blob, defaultFileName);
       return done();
     }
   }
