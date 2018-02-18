@@ -80,7 +80,6 @@ export class ReceiveView {
 
   async loadData() {
     if (this.loading) return;
-    console.log('Loading data ... ');
     this.loading = true;
     this.wallets = await this.profileService.getWallets();
     if (this.wallets) {
@@ -93,7 +92,6 @@ export class ReceiveView {
       });
     }
 
-    console.log(this.hasUnlockedWallets);
     this.loading = false;
   }
 
@@ -173,8 +171,10 @@ export class ReceiveView {
   }
 
   toggleCurrency() {
-    this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
-    this.changeAmount();
+    if (this.rateService.getRate(this.availableUnits[1]) > 0) {
+      this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
+      this.changeAmount();
+    }
   }
 
   changeAmount() {

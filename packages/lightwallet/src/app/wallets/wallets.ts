@@ -421,7 +421,7 @@ export class WalletsView {
     }));
 
     const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
-    this.totalNetworkValueFiat = new FiatAmount(+usdAmount).amountStr;
+    this.totalNetworkValueFiat = usdAmount ? new FiatAmount(+usdAmount).amountStr : '';
     this.totalNetworkValue = totalAmount;
     this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
   }

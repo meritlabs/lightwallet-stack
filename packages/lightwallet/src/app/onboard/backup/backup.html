@@ -24,8 +24,8 @@
                 </div>
             </ion-row>
             <ion-row>
-                <div class="bottom-buttons">
-                    <button ion-button block margin-top (click)="toVerify()" [disabled]="false">Verify</button>
+                <div class="bottom-buttons" margin-top>
+                    <button ion-button class="action-button" navPush="VerifyBackupView" [navParams]="{ mnemonic: mnemonic }" [disabled]="false">Verify</button>
                 </div>
             </ion-row>
         </ion-grid>

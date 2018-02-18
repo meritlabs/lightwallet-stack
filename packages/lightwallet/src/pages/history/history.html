@@ -9,5 +9,9 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
+  <div class="no-transactions" *ngIf="!transactions?.length">
+    You do not have any transactions
+  </div>
+
   <transaction-history [transactions]="transactions"></transaction-history>
 </ion-content>

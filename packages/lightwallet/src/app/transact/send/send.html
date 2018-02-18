@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-toolbar>
+  <ion-toolbar *ngIf="hasUnlockedWallets">
     <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
                    (ionCancel)="clearSearch()"></ion-searchbar>
     <ion-buttons end *ngIf="!searchQuery">
@@ -44,7 +44,7 @@
         Address is not confirmed yet
       </div>
       <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
-        Alias not found 
+        Alias not found
       </div>
 
       <div *ngIf="searchResult.toNewEntity">
@@ -94,9 +94,7 @@
           <button ion-button clear item-end (click)="showRecent = false">All Contacts</button>
         </ion-item-divider>
         <ion-item *ngFor="let contact of searchResult.recent" (click)="sendToContact(contact)" class="contact">
-          <ion-avatar item-start>
-          </ion-avatar>
-          {{contact.label}}
+          {{contact.name.formatted}}
           <img src="assets/img/icons/merit.svg" color="primary" item-end *ngIf="contact.meritAddresses.length">
         </ion-item>
         <div *ngIf="!searchResult.recent.length" padding>

@@ -62,6 +62,10 @@ view-send-confirmation {
     }
   }
 
+  .destination .label h2 {
+    font-size: 14px !important;
+  }
+
   ion-avatar.default {
     box-shadow: 0 0 1px 1px $wallet-default-color;
   }
