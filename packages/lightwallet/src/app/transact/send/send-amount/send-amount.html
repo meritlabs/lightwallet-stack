@@ -23,7 +23,7 @@
                         {{currency.name}}
                         <span class="selected-mark" [hidden]="currency.type != selectedCurrency.type"></span>
                     </div>
-                </div> 
+                </div>
             </div>
 
             <div class="main-amount">
@@ -42,7 +42,7 @@
             </div>
 
             <div class="suggested-amounts">
-                <button ion-button outline (click)="selectAmount(amount)" *ngFor="let amount of suggestedAmounts[selectedCurrency.type]">
+                <button ion-button outline *ngFor="let amount of suggestedAmounts[selectedCurrency.type]" (click)="selectAmount(amount)">
                     {{amount}}
                 </button>
             </div>
