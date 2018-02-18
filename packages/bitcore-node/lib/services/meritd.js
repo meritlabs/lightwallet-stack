@@ -1600,7 +1600,7 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
     function loadFromMempool(cb) {
         return self.client.getaddressmempoolreferrals({addresses: addresses}, function (err, response) {
             if (err) {
-              return done(self._wrapRPCError(err));
+              return cb(self._wrapRPCError(err));
             }
 
             console.log('mempool', response.result);
@@ -1611,7 +1611,7 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
     function loadFromBc(cb) {
         return self.client.getaddressreferrals({addresses: addresses}, function (err, response) {
           if (err) {
-            return done(self._wrapRPCError(err));
+            return cb(self._wrapRPCError(err));
           }
 
           return cb(null, response.result);
