@@ -32,9 +32,9 @@ ion-content.content[fullscreen] {
 
 }
 
-
-
-
+.scroll-content {
+  overflow-y: auto;
+}
 
 // Buttons
 @import "core/buttons";
