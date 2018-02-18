@@ -1,6 +1,9 @@
 <ion-header>
 
     <ion-navbar color="light">
+        <ion-buttons start>
+          <button ion-button (click)="cancel()" color="primary"></button>
+        </ion-buttons>
         <ion-title>New Contact</ion-title>
         <ion-buttons end>
             <button ion-button (click)="save()" [disabled]="!isSaveAvailable()" color="primary">
@@ -34,7 +37,7 @@
 
     <ion-item>
         <ion-label stacked>New Address</ion-label>
-        <ion-input type="text" placeholder="Enter Merit Address" [(ngModel)]="newAddress"></ion-input>
+        <ion-input type="text" placeholder="Enter Merit Address or Alias" [(ngModel)]="newAddress"></ion-input>
         <button ion-button icon-only clear item-end (click)="addAddress(newAddress)" *ngIf="newAddress"><ion-icon name="checkmark-circle" color="primary"></ion-icon></button>
     </ion-item>
 

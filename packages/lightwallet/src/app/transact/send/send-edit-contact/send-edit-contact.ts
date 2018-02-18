@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
-import { ToastConfig } from "merit/core/toast.config";
-import { MeritToastController } from "merit/core/toast.controller";
+import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
 import { SendService } from 'merit/transact/send/send.service';
 import * as _ from 'lodash';
 import { ContactsProvider } from '../../../../providers/contacts/contacts';
@@ -15,30 +15,25 @@ import { ENV } from '@app/env';
 })
 export class SendEditContactView {
 
-  public contact:MeritContact;
-  public newAddress:string = '';
+  contact: MeritContact;
+  newAddress: string = '';
 
-  public actions:Array<{type:string, mAddress:IMeritAddress}> = []; //logging all actions to properly modify addressbook
+  private actions: Array<{ type: string, mAddress: IMeritAddress }> = []; //logging all actions to properly modify addressbook
 
   private readonly TYPE_REMOVE = 'remove';
   private readonly TYPE_ADD = 'add';
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private contactsService: ContactsProvider,
-    private toastController: MeritToastController,
-    private sendService: SendService,
-    private alertCtrl: AlertController
-  ) {
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private contactsService: ContactsProvider,
+              private toastController: MeritToastController,
+              private sendService: SendService,
+              private alertCtrl: AlertController) {
     this.contact = this.navParams.get('contact');
   }
 
-  ionViewDidLoad() {
-  }
-
   removeAddress(meritAddress) {
-    this.actions.push({type: this.TYPE_REMOVE, mAddress: meritAddress});
+    this.actions.push({ type: this.TYPE_REMOVE, mAddress: meritAddress });
     this.actions = this.actions.filter((action) => { //removing fresh added address
       return (action.type != this.TYPE_ADD || action.mAddress.address != meritAddress.address);
     });
@@ -47,43 +42,57 @@ export class SendEditContactView {
     });
   }
 
-  addAddress(address) {
-    if (!this.sendService.isAddressValid(address)) {
+  async addAddress(address) {
+    if (address.charAt(0) === '@') address = address.substr(1);
+    if (this.contact.meritAddresses.findIndex(m => m.address == address || m.alias == address) > -1) {
+      return this.toastController.create({
+        message: 'Address is already bound to this contact',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    }
+
+    const info = await this.sendService.getAddressInfoIfValid(address);
+
+    if (!info) {
       return this.toastController.create({
         message: 'Address is invalid or not invited to blockchain yet',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     }
 
-    let network = ENV.network;
-    let meritAddress = {address, network};
-    this.actions.push({type: this.TYPE_ADD, mAddress: meritAddress});
+    const meritAddress: IMeritAddress = {
+      network: ENV.network,
+      address: info.address,
+      alias: info.alias
+    };
+
+    this.actions.push({ type: this.TYPE_ADD, mAddress: meritAddress });
     this.contact.meritAddresses.push(meritAddress);
+    this.newAddress = '';
   }
 
-  save() {
-
-    let removalPromises = [];
-    let addressKey = null;
+  async save() {
+    const removalPromises = [];
     this.actions.forEach((action) => {
       if (action.type == this.TYPE_REMOVE) {
         removalPromises.push(this.contactsService.remove(action.mAddress.address, action.mAddress.network));
       }
     });
+
     //removing all entities with existing addresses key
     this.contact.meritAddresses.forEach((mAddress) => {
       removalPromises.push(this.contactsService.remove(mAddress.address, mAddress.network));
     });
-    return Promise.all(removalPromises).then(() => {
-      if (_.isEmpty(this.contact.meritAddresses)) {
-        this.navCtrl.remove(2,1);
-        return this.navCtrl.pop();
-      } else {
-        return this.contactsService.add(this.contact, this.contact.meritAddresses[0].address, ENV.network).then(() => {
-          return this.navCtrl.pop();
-        });
-      }
-    });
+
+    await Promise.all(removalPromises);
+
+    if (_.isEmpty(this.contact.meritAddresses)) {
+      this.navCtrl.remove(2, 1);
+      return this.navCtrl.pop();
+    } else {
+      await this.contactsService.add(this.contact, this.contact.meritAddresses[0].address, ENV.network);
+      return this.navCtrl.pop();
+    }
   }
 
   // we are able to delete merit contacts and edit name property, instead of contacts in device address book
@@ -108,7 +117,8 @@ export class SendEditContactView {
       title: `Are you sure want to delete this contact?`,
       buttons: [
         {
-          text: 'Cancel', role: 'cancel', handler: () => {}
+          text: 'Cancel', role: 'cancel', handler: () => {
+        }
         },
         {
           text: 'Delete', handler: () => {

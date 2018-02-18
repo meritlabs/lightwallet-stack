@@ -2,11 +2,11 @@
     <ion-navbar color="light">
         <ion-title *ngIf="recipient.name?.formatted">
             <h2>Recipient: {{recipient.name.formatted}}</h2>
-            <p>via {{sendMethod.value|slice:0:25}}</p>
+            <p>via {{sendMethod.alias? '@' + sendMethod.alias : (sendMethod.value|slice:0:25)}}</p>
         </ion-title>
         <ion-title *ngIf="!recipient.name?.formatted">
             <h2>{{sendMethod.type == 'easy' ? 'Easy Send to' : 'Classic Send to'}}</h2>
-            <p>{{sendMethod.value}}</p>
+            <p>{{sendMethod.alias || sendMethod.value}}</p>
         </ion-title>
     </ion-navbar>
 </ion-header>

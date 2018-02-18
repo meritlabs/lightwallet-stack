@@ -94,6 +94,7 @@
           <button ion-button clear item-end (click)="showRecent = false">All Contacts</button>
         </ion-item-divider>
         <ion-item *ngFor="let contact of searchResult.recent" (click)="sendToContact(contact)" class="contact">
+          <contact-avatar [contact]="contact" item-start></contact-avatar>
           {{contact.name.formatted}}
           <img src="assets/img/icons/merit.svg" color="primary" item-end *ngIf="contact.meritAddresses.length">
         </ion-item>

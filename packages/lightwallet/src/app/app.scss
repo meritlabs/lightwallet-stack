@@ -28,8 +28,26 @@ ion-content.content[fullscreen] {
   &:after {
     display: none;
   }
+}
 
+.ios ion-header.header-ios {
+  ion-navbar.toolbar-ios {
+    ion-title.title {
+      .toolbar-title, h2 {
+        letter-spacing: -0.4px;
+        font-weight: 500;
+      }
+    }
+  }
 
+  ion-navbar.toolbar-ios:not([color]),
+  ion-navbar.toolbar-ios[color='light'] {
+    ion-title.title {
+      .toolbar-title, h2 {
+        color: rgb(45, 60, 80);
+      }
+    }
+  }
 }
 
 .scroll-content {

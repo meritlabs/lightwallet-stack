@@ -31,7 +31,7 @@ export class SendService {
 
   public isAddress(addr: string): boolean {
     try {
-      let address = this.bitcore.Address.fromString(addr);
+      this.bitcore.Address.fromString(addr);
       return true;
     } catch (_e) {
       return false;
@@ -42,10 +42,15 @@ export class SendService {
     return this.bitcore.Referral.validateAlias(alias);
   }
 
-  public async getAddressInfo(addr: string) {
-    return await this.client.validateAddress(addr);
+  public getAddressInfo(addr: string) {
+    if (addr.charAt(0) === '@') addr = addr.substr(1);
+    return this.client.validateAddress(addr);
   }
 
+  async getAddressInfoIfValid(addr: string) {
+    const info = await this.getAddressInfo(addr);
+    return info.isValid && info.isBeaconed && info.isConfirmed ? info : null;
+  }
 
   public async isAddressValid(addr: string): Promise<boolean> {
     if (!this.isAddress(addr)) {
