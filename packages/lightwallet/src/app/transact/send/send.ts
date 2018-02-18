@@ -1,4 +1,4 @@
-import { Component, SecurityContext } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SendService } from 'merit/transact/send/send.service';
@@ -15,7 +15,7 @@ import { ENV } from '@app/env';
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
-const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND'; 
+const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 
 @IonicPage()
 @Component({
@@ -31,11 +31,11 @@ export class SendView {
   public amount: number;
   public searchResult: {
     withMerit: Array<MeritContact>,
-    noMerit:Array<MeritContact>,
-    recent:Array<MeritContact>,
-    toNewEntity:{destination:string, contact:MeritContact},
-    error:string
-  } = {withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null};
+    noMerit: Array<MeritContact>,
+    recent: Array<MeritContact>,
+    toNewEntity: { destination: string, contact: MeritContact },
+    error: string
+  } = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
 
   private suggestedMethod: SendMethod;
 
@@ -72,14 +72,14 @@ export class SendView {
 
     let defineName = (record) => {
       if (record.contact.name && record.contact.name.formatted) return record.contact.name.formatted;
-      return record.method.alias ? '@'+record.method.alias : record.method.value;
+      return record.method.alias ? '@' + record.method.alias : record.method.value;
     };
 
     this.recentContacts = [];
     sendHistory
       .sort((a, b) => b.timestamp - a.timestamp)
       .forEach((record) => {
-        record.contact.name = {formatted: defineName(record)};
+        record.contact.name = { formatted: defineName(record) };
         this.recentContacts.push(record.contact);
       });
   }
@@ -91,7 +91,7 @@ export class SendView {
       this.clearSearch();
       this.debounceSearch.cancel();
       this.contacts.forEach((contact: MeritContact) => {
-        _.isEmpty(contact.meritAddresses) ?  result.noMerit.push(contact) : result.withMerit.push(contact);
+        _.isEmpty(contact.meritAddresses) ? result.noMerit.push(contact) : result.withMerit.push(contact);
       });
       result.recent = this.recentContacts;
       return this.searchResult = result;
@@ -103,7 +103,7 @@ export class SendView {
     this.debounceSearch();
   }
 
-  private debounceSearch = _.debounce(() => this.search(), 300)
+  private debounceSearch = _.debounce(() => this.search(), 300);
 
   private async search() {
 
@@ -138,15 +138,23 @@ export class SendView {
     }
 
 
-
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
       if (this.isAddress(input)) {
         const addressInfo = await this.sendService.getAddressInfo(input);
 
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ address: addressInfo.address, alias: addressInfo.alias, network: ENV.network });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address, alias: addressInfo.alias };
+          result.toNewEntity.contact.meritAddresses.push({
+            address: addressInfo.address,
+            alias: addressInfo.alias,
+            network: ENV.network
+          });
+          this.suggestedMethod = {
+            type: SendMethod.TYPE_CLASSIC,
+            destination: SendMethod.DESTINATION_ADDRESS,
+            value: addressInfo.address,
+            alias: addressInfo.alias
+          };
         } else {
           result.error = ERROR_ADDRESS_NOT_CONFIRMED;
         }
@@ -156,19 +164,28 @@ export class SendView {
 
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ address: addressInfo.address, alias: addressInfo.alias,  network: ENV.network });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address, alias: addressInfo.alias };
+          result.toNewEntity.contact.meritAddresses.push({
+            address: addressInfo.address,
+            alias: addressInfo.alias,
+            network: ENV.network
+          });
+          this.suggestedMethod = {
+            type: SendMethod.TYPE_CLASSIC,
+            destination: SendMethod.DESTINATION_ADDRESS,
+            value: addressInfo.address,
+            alias: addressInfo.alias
+          };
         } else {
-          result.error = ERROR_ALIAS_NOT_FOUND; 
+          result.error = ERROR_ALIAS_NOT_FOUND;
         }
       } else if (this.couldBeEmail(input)) {
-        result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
-        result.toNewEntity.contact.emails.push({value: input})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input};
+        result.toNewEntity = { destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact() };
+        result.toNewEntity.contact.emails.push({ value: input });
+        this.suggestedMethod = { type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input };
       } else if (this.couldBeSms(input)) {
-        result.toNewEntity = {destination: SendMethod.DESTINATION_SMS, contact: new MeritContact()};
-        result.toNewEntity.contact.phoneNumbers.push({value: input})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input};
+        result.toNewEntity = { destination: SendMethod.DESTINATION_SMS, contact: new MeritContact() };
+        result.toNewEntity.contact.phoneNumbers.push({ value: input });
+        this.suggestedMethod = { type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input };
       }
     }
 
