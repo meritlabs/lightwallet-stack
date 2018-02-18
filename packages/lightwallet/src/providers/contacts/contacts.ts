@@ -64,10 +64,9 @@ export class ContactsProvider {
   };
 
   async add(entry: MeritContact, address: string, network: string = ENV.network): Promise<IAddressBook> {
-    const addressBook = await this.getAddressbook(network);
-    addressBook[address] = entry;
-    await this.persistenceService.setAddressbook(network, addressBook);
-    return addressBook;
+    this.addressBook[address] = entry;
+    await this.persistenceService.setAddressbook(network, this.addressBook);
+    return this.addressBook;
   };
 
   async bindAddressToContact(contact: MeritContact, address: string, network: string = ENV.network) {
@@ -90,12 +89,10 @@ export class ContactsProvider {
     return this.persistenceService.setAddressbook(network, addressBook);
   }
 
-  async get(addr: string, network: string = ENV.network): Promise<MeritContact> {
+  get(addr: string): MeritContact {
     try {
-      const addressBook = await this.getAddressbook(network);
-
-      if (addressBook && addressBook[addr]) {
-        return addressBook[addr];
+      if (this.addressBook && this.addressBook[addr]) {
+        return this.addressBook[addr];
       }
     } catch (err) {
       throw new Error('Contact with address ' + addr + ' not found');
@@ -117,7 +114,7 @@ export class ContactsProvider {
 
   async getAllMeritContacts(): Promise<MeritContact[]> {
     const deviceContacts: Contact[] = await this.getDeviceContacts();
-    const localContacts: IAddressBook = await this.getAddressbook(ENV.network);
+    const localContacts: IAddressBook = this.addressBook;
 
     const contacts: MeritContact[] = deviceContacts
       .filter((contact: Contact) => !_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails))
@@ -156,10 +153,9 @@ export class ContactsProvider {
   }
 
   async remove(addr: string, network: string = ENV.network): Promise<IAddressBook> {
-    const addressBook = await this.getAddressbook(network);
-    delete addressBook[addr];
-    await this.persistenceService.setAddressbook(network, addressBook);
-    return addressBook;
+    delete this.addressBook[addr];
+    await this.persistenceService.setAddressbook(network, this.addressBook);
+    return this.addressBook;
   };
 
   async getAddressbook(network: string = ENV.network): Promise<IAddressBook> {

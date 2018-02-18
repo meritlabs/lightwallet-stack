@@ -67,7 +67,7 @@
 
     </div>
 
-    <div *ngIf="!showRecent">
+    <div [hidden]="showRecent" class="contacts-list">
       <ion-list *ngIf="searchResult.withMerit.length" class="list-with-merit">
         <ion-item-divider>Friends with Merit
           <button ion-button clear item-end (click)="showRecent = true">Recent</button>
@@ -88,7 +88,7 @@
       </ion-list>
     </div>
 
-    <div *ngIf="showRecent">
+    <div [hidden]="!showRecent" class="contacts-list">
       <ion-list class="list-recent">
         <ion-item-divider>Recent contacts
           <button ion-button clear item-end (click)="showRecent = false">All Contacts</button>
