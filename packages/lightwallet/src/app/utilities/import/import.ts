@@ -86,10 +86,9 @@ export class ImportView {
   }
 
   fileChangeListener($event) {
-
     this.formData.backupFile = $event.target.files[0];
 
-    let reader: any = new FileReader();
+    const reader: any = new FileReader();
     this.loadFileInProgress = true;
     reader.onloadend = (loadEvent: any) => {
       if (loadEvent.target.readyState == 2) { //DONE  == 2

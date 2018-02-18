@@ -137,8 +137,9 @@ export class ExportWalletView {
             handler: (data) => {
               if (data.name && data.name.length) {
                 (async () => {
+
                   try {
-                    await this.file.resolveLocalFilesystemUrl(data.name);
+                    await this.file.checkFile(root, data.name);
                     // file exists
                     return this.toastCtrl.create({
                       message: 'There is already a file with the name you specified. Please pick another name.',
@@ -148,6 +149,7 @@ export class ExportWalletView {
                     // file doesn't exist
                     try {
                       await this.file.writeFile(root, data.name, blob);
+                      console.log('Done writing!');
                       return done();
                     } catch (e) {
                       this.logger.error('Error export wallet to file', e);
@@ -157,6 +159,7 @@ export class ExportWalletView {
                       }).present();
                     }
                   }
+
                 })();
               } else {
                 return false;
