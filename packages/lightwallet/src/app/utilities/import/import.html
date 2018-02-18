@@ -105,8 +105,9 @@
         <img src="assets/img/icons/lock.svg" alt="">
       </ion-avatar>
       <ion-label stacked>Password</ion-label>
-      <ion-input [(ngModel)]="formData.filePassword" type="password" autocomplete="off"
+      <ion-input [(ngModel)]="formData.filePassword" [type]="showPassword2? 'text' : 'password'" autocomplete="off"
                  placeholder="File password"></ion-input>
+      <button ion-button item-end (click)="showPassword2 = !showPassword2" clear>{{ showPassword2 ? 'Hide' : 'Show' }}</button>
     </ion-item>
 
     <ion-item margin-bottom margin-top>
