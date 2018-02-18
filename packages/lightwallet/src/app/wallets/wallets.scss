@@ -1,33 +1,33 @@
-view-wallets {
+.ios view-wallets {
+  .big-header {
+    text-align: center;
+    min-height: 249px;
 
-  .content-ios {
-    .big-header {
-      text-align: center;
+    p {
+      font-weight: 400;
+      font-size: 17px;
+      letter-spacing: -.4px;
+      padding-top: 10px;
+    }
 
-      p {
-        font-weight: 400;
-        font-size: 17px;
-        letter-spacing: -.4px;
-        padding-top: 10px;
-      }
-
-      h2.amount {
-        padding-top: 35px;
-        font-size: 40px;
-        font-weight: 400;
-        small {
-          font-size: inherit;
-          font-weight: inherit;
-        }
-      }
-
-      h3.detail-fiat {
-        font-size: 17px;
-        font-weight: 400;
+    h2.amount {
+      padding-top: 35px;
+      font-size: 40px;
+      font-weight: 400;
+      small {
+        font-size: inherit;
+        font-weight: inherit;
       }
     }
-  }
 
+    h3.detail-fiat {
+      font-size: 17px;
+      font-weight: 400;
+    }
+  }
+}
+
+view-wallets {
   .big-header {
     ion-spinner.spinner {
       margin-top: 25px;
