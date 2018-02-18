@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { DomSanitizer } from '@angular/platform-browser';
+import { IonicPage, ModalController, NavController } from 'ionic-angular';
 import { SendService } from 'merit/transact/send/send.service';
 import { ISendMethod, SendMethodDestination, SendMethodType } from 'merit/transact/send/send-method.model';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
@@ -43,10 +42,8 @@ export class SendView {
   public hasActiveInvites: boolean;
 
   constructor(private navCtrl: NavController,
-              private navParams: NavParams,
               private contactsService: ContactsProvider,
               private profileService: ProfileService,
-              private sanitizer: DomSanitizer,
               private sendService: SendService,
               private modalCtrl: ModalController,
               private addressScanner: AddressScannerService) {

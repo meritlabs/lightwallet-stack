@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { SendService } from 'merit/transact/send/send.service';
-import { SendMethod } from 'merit/transact/send/send-method.model';
+import { ISendMethod, SendMethodDestination } from 'merit/transact/send/send-method.model';
 import { MeritContact } from '../../../../models/merit-contact';
 
 
@@ -14,8 +14,8 @@ export class SendViaView {
 
   public contact:MeritContact;
   public amount:number;
-  public highlightedMethod:SendMethod;
-  public suggestedMethod:SendMethod;
+  public highlightedMethod:ISendMethod;
+  public suggestedMethod:ISendMethod;
 
   public easySendEnabled: boolean;
 
@@ -34,13 +34,16 @@ export class SendViaView {
   async ionViewDidLoad() {
 
 
-    let searchIn = (method) => {
-      if (method.destination == SendMethod.DESTINATION_SMS) {
-        return  'phoneNumbers';
-      } else if (method.destination == SendMethod.DESTINATION_EMAIL) {
-        return 'emails';
-      } else if (method.destination == SendMethod.DESTINATION_ADDRESS) {
-        return 'meritAddresses'
+    let searchIn = (method: ISendMethod) => {
+      switch (method.destination) {
+        case SendMethodDestination.Address:
+          return  'phoneNumbers';
+
+        case SendMethodDestination.Email:
+          return 'emails';
+
+        case SendMethodDestination.Sms:
+          return 'meritAddresses';
       }
     };
 
@@ -82,7 +85,7 @@ export class SendViaView {
   }
 
   select(type, destination, value, alias?) {
-    return this.navCtrl.push('SendAmountView', {contact: this.contact, amount: this.amount, suggestedMethod: new SendMethod({type, destination, value, alias})});
+    return this.navCtrl.push('SendAmountView', {contact: this.contact, amount: this.amount, suggestedMethod: {type, destination, value, alias}});
   }
 
   showClassicTooltip() {
@@ -90,7 +93,7 @@ export class SendViaView {
       'ClassicSend transactions do not have power of EasySend, but fee size is lower.');
   }
 
-  showEasyTooltip() { 
+  showEasyTooltip() {
     return this.showTooltip('Easy Send',
       'EasySend transactions could be returned, password protected and limited by expiration time. You can send Merit either to existing merit address or share a link via sms/email');
   }
