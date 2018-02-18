@@ -35,6 +35,7 @@ export class ContactsProvider {
   }
 
   private async _init() {
+    this.addressBook = await this.getAddressbook();
     this.devicePermissionGranted = await this.hasDevicePermission();
 
     if (!this.devicePermissionGranted && Diagnostic.installed()) {
@@ -42,7 +43,6 @@ export class ContactsProvider {
     }
 
     this.contacts = await this.getAllMeritContacts();
-    this.addressBook = await this.getAddressbook();
 
     if (_.isEmpty(this.addressBook)) {
       this.contacts.forEach((contact: MeritContact) =>
