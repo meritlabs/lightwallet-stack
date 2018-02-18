@@ -8,7 +8,7 @@ import {
   NavParams
 } from 'ionic-angular';
 import * as _ from 'lodash';
-import { SendMethod } from 'merit/transact/send/send-method.model';
+import { ISendMethod, SendMethodType } from 'merit/transact/send/send-method.model';
 import { ConfigService } from 'merit/shared/config.service';
 import { RateService } from 'merit/transact/rate.service';
 import { FeeService } from 'merit/shared/fee/fee.service';
@@ -30,7 +30,7 @@ import { MeritContact } from '../../../../models/merit-contact';
 })
 export class SendAmountView {
   public recipient: MeritContact;
-  public sendMethod: SendMethod;
+  public sendMethod: ISendMethod;
 
   public availableUnits: Array<{ type: string, name: string }>;
   public selectedCurrency: { type: string, name: string };
@@ -394,7 +394,7 @@ export class SendAmountView {
   }
 
   private getEasyData() {
-    if (this.sendMethod.type != SendMethod.TYPE_EASY) {
+    if (this.sendMethod.type != SendMethodType.Easy) {
       return Promise.resolve({});
     } else {
       return this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password).then((easySend) => {

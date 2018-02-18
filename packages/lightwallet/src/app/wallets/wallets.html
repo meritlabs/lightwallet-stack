@@ -7,7 +7,7 @@
     <ion-spinner *ngIf="loading"></ion-spinner>
     <h2 *ngIf="!loading" class="amount">{{ totalNetworkValueMicros || '0' }}&nbsp;<small>MRT</small>
     </h2>
-    <h3 *ngIf="!loading" class="detail-fiat">{{ totalNetworkValueFiat  }}</h3>
+    <h3 *ngIf="!loading" class="detail-fiat">{{ totalNetworkValueFiat || ''}}</h3>
   </div>
 </ion-header>
 <ion-content>

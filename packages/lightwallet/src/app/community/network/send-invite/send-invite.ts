@@ -1,11 +1,9 @@
-import { Component, SecurityContext } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { DomSanitizer } from '@angular/platform-browser';
 import { SendService } from 'merit/transact/send/send.service';
-import { SendMethod } from 'merit/transact/send/send-method.model';
+import { SendMethodDestination } from 'merit/transact/send/send-method.model';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
-import { ProfileService } from 'merit/core/profile.service';
 import * as _ from 'lodash';
 import { ContactsProvider } from 'merit/../providers/contacts/contacts';
 import { MeritContact } from 'merit/../models/merit-contact';
@@ -16,7 +14,7 @@ import { MeritToastController } from 'merit/core/toast.controller';
 import { ENV } from '@app/env';
 
 const ERROR_ADDRESS_NOT_FOUND = 'ADDRESS_NOT_FOUND';
-const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND'; 
+const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 
 @IonicPage()
 @Component({
@@ -42,8 +40,6 @@ export class SendInviteView {
       private navCtrl: NavController,
       private navParams: NavParams,
       private contactsService: ContactsProvider,
-      private profileService: ProfileService,
-      private sanitizer: DomSanitizer,
       private sendService: SendService,
       private modalCtrl: ModalController,
       private addressScanner: AddressScannerService,
@@ -87,7 +83,7 @@ export class SendInviteView {
     const input = this.searchQuery.split('?')[0].replace(/\s+/g, '');
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
 
-    let query = input.indexOf('@') == 0 ? input.slice(1) : input; 
+    let query = input.indexOf('@') == 0 ? input.slice(1) : input;
     this.contactsService.searchContacts(this.contacts, query)
       .forEach((contact: MeritContact) => {
         if (!_.isEmpty(contact.meritAddresses)) {
@@ -101,7 +97,7 @@ export class SendInviteView {
         let isBeaconed = await this.sendService.isAddressBeaconed(input);
 
         if (isBeaconed) {
-          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
+          result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
           result.toNewEntity.contact.meritAddresses.push({ address: input, network: ENV.network});
         } else {
           result.error = ERROR_ADDRESS_NOT_FOUND;
@@ -111,10 +107,10 @@ export class SendInviteView {
         const addressInfo = await this.sendService.getAddressInfo(alias);
 
         if (addressInfo && addressInfo.isConfirmed) {
-          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
+          result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
           result.toNewEntity.contact.meritAddresses.push({ alias: alias, address: addressInfo.address, network: ENV.network});
         } else {
-          result.error = ERROR_ALIAS_NOT_FOUND; 
+          result.error = ERROR_ALIAS_NOT_FOUND;
         }
       }
     }
