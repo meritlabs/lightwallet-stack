@@ -36,6 +36,10 @@ ion-content.content[fullscreen] {
   overflow-y: auto;
 }
 
+.toolbar[transparent] .toolbar-background {
+  background: transparent !important;
+}
+
 // Buttons
 @import "core/buttons";
 
