@@ -857,6 +857,11 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/rates', function(req, res) {
+    const dummy = [{"code": "USD", "name": "US Dollar", "rate": 0}];
+    res.json(dummy);
+    res.end();
+  });
 
   this.app.use(opts.basePath || '/bws/api', router);
 
