@@ -1350,9 +1350,9 @@ WalletService.prototype.getUtxos = function(opts, cb) {
   opts = opts || {};
 
   if (_.isUndefined(opts.addresses)) {
-    self._getUtxosForCurrentWallet(null, opt.invites, cb);
+    self._getUtxosForCurrentWallet(null, opts.invites, cb);
   } else {
-    self._getUtxos(opts.addresses, opt.invites, cb);
+    self._getUtxos(opts.addresses, opts.invites, cb);
   }
 };
 

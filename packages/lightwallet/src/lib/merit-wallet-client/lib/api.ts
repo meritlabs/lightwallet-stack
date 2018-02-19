@@ -741,14 +741,15 @@ export class API {
    * @param {string=} message - message to send to a receiver
    *
    */
-  async sendInvite(toAddress: string, amount: number = 1, message: string = '', walletPassword: string = ''): Promise<any> {
+  async sendInvite(toAddress: string, amount: number = 1, script = null, message: string = '', walletPassword: string = ''): Promise<any> {
     const opts = {
       invite: true,
-      outputs: [{
+      outputs: [_.pickBy({
         amount,
         toAddress,
         message,
-      }],
+        script,
+      })],
     };
 
     let txp = await this.createTxProposal(opts)

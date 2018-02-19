@@ -240,7 +240,8 @@ export class SendView {
     this.navCtrl.push('SendViaView', {
       contact: contact,
       amount: this.amount,
-      isEasyEnabled: this.hasActiveInvites
+      isEasyEnabled: this.hasActiveInvites,
+      suggestedMethod: this.suggestedMethod,
     });
   }
 
@@ -248,7 +249,8 @@ export class SendView {
     this.navCtrl.push('SendViaView', {
       contact: entity.contact,
       amount: this.amount,
-      isEasyEnabled: this.hasActiveInvites
+      isEasyEnabled: this.hasActiveInvites,
+      suggestedMethod: this.suggestedMethod,
     });
   }
 
