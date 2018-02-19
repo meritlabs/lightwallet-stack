@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { ProfileService } from 'merit/core/profile.service';
 
 // TODO use OnPush strategy with appropriate inputs/outputs
 @Component({
@@ -8,14 +9,21 @@ import { NavController } from 'ionic-angular';
 })
 export class VaultsView {
 
+  hasUnlockedWallets: boolean;
+
+  @Input() wallets = [];
   @Input() vaults = [];
 
-  @Input() refreshVaultList = () => {
-  };
-
-  @Output() onChange: EventEmitter<any> = new EventEmitter<any>();
+  @Input() refreshVaultList = () => {};
 
   constructor(private navCtrl: NavController) {
+    this.hasUnlockedWallets = this.wallets.some(w => w.confirmed);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.wallets && changes.wallets.currentValue) {
+      this.hasUnlockedWallets = changes.wallets.currentValue.some(w => w.confirmed);
+    }
   }
 
   toAddVault() {

@@ -2297,8 +2297,6 @@ Merit.prototype.validateAddress = function(address, callback) {
 
   if (typeof address === 'string' || address instanceof String) {
     self.client.validateaddress(address, function(err, response) {
-      log.info('validateAddress result: ', response);
-
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
