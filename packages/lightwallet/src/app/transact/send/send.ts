@@ -15,7 +15,7 @@ import { ENV } from '@app/env';
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
-const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND'; 
+const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 
 @IonicPage()
 @Component({
@@ -159,16 +159,16 @@ export class SendView {
           result.toNewEntity.contact.meritAddresses.push({ address: addressInfo.address, alias: addressInfo.alias,  network: ENV.network });
           this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address, alias: addressInfo.alias };
         } else {
-          result.error = ERROR_ALIAS_NOT_FOUND; 
+          result.error = ERROR_ALIAS_NOT_FOUND;
         }
       } else if (this.couldBeEmail(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
         result.toNewEntity.contact.emails.push({value: input})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input};
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input, alias: ''};
       } else if (this.couldBeSms(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_SMS, contact: new MeritContact()};
         result.toNewEntity.contact.phoneNumbers.push({value: input})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input};
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input, alias: ''};
       }
     }
 
