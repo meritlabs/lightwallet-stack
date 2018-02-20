@@ -36,7 +36,7 @@ export class TransactView {
   ) {}
 
   async ngOnInit() {
-    if (this.plt.is('cordova') && Keyboard.installed()) {
+    if (this.plt.is('android') && Keyboard.installed()) {
       this.subs = [
         this.keyboard.onKeyboardShow()
           .subscribe(() => {
