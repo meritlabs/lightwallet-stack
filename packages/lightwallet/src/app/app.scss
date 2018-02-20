@@ -106,10 +106,6 @@ ion-card {
   border-bottom: none;
 }
 
-.white-space-normal {
-  white-space: normal;
-}
-
 .plain-text {
   padding: 0 10px;
   color: $label-text-color;
@@ -761,7 +757,7 @@ $v-tab-send-selected-icon: url('../img/tab-icons/ico-send-selected.svg') !defaul
   border: none !important;
 }
 
-.toolbar-md-light, toolbar-ios-light {
+.toolbar-md-light, .toolbar-ios-light {
   .toolbar-title {
     color: #2d3c50;
   }
