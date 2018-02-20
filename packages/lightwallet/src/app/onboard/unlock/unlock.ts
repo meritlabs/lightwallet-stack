@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Content, IonicPage, NavController } from 'ionic-angular';
+import { Content, IonicPage, NavController, Platform } from 'ionic-angular';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
@@ -84,10 +84,6 @@ export class UnlockView {
     }
 
 
-  }
-
-  onInputFocus() {
-    setTimeout(() => this.content.scrollToBottom(), 500);
   }
 
   toAliasView() {

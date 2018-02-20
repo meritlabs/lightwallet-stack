@@ -59,8 +59,6 @@ export class WalletDetailsView {
   }
 
 
-  // Belt and suspenders check to be sure that the total number of TXs on the page
-
   private async getWalletHistory(force: boolean = false) {
     try {
       const txs = await this.walletService.getTxHistory(this.wallet, { force });
