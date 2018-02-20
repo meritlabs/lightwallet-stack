@@ -57,6 +57,7 @@ export class SendView {
 
   async ionViewWillEnter() {
     this.loadingContacts = true;
+    await this.contactsService.requestDevicePermission();
     await this.updateHasUnlocked();
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;

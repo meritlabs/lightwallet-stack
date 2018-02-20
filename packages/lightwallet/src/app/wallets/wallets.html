@@ -3,11 +3,16 @@
     <button ion-button clear icon-only class="header-action-button" navPush="SettingsView">
       <ion-icon name="settings" merit-icon></ion-icon>
     </button>
-    <p>Total Value of Your Network</p>
-    <ion-spinner *ngIf="loading"></ion-spinner>
-    <h2 *ngIf="!loading" class="amount">{{ totalNetworkValueMicros || '0.00' }}&nbsp;<small>MRT</small>
-    </h2>
-    <h3 *ngIf="!loading" class="detail-fiat">{{ totalNetworkValueFiat }}</h3>
+    <p>Total Value of Your Wallets</p>
+    <ion-spinner *ngIf="loading; else notLoading"></ion-spinner>
+    <ng-template #notLoading>
+      <h2 *ngIf="allBalancesHidden; else balancesNotHidden"></h2>
+      <ng-template #balancesNotHidden>
+        <h2 class="amount">{{ totalWalletsValueMicros || '0.00' }}&nbsp;<small>MRT</small></h2>
+        <h3 class="detail-fiat">{{ totalWalletsValueFiat }}</h3>
+        <h3 class="detail-fiat">{{ totalInvites }} Invites</h3>
+      </ng-template>
+    </ng-template>
   </div>
 </ion-header>
 <ion-content>
@@ -15,42 +20,7 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <!--<div *ngIf="txpsData?.txpsN && addressbook">-->
-    <!--<ion-item-divider translate>-->
-      <!--Payment Proposals-->
-      <!--<ion-badge item-right>{{txpsData?.txpsN}}</ion-badge>-->
-    <!--</ion-item-divider>-->
-    <!--<ion-list>-->
-      <!--<ion-item *ngFor="let txp of txpsData?.txps" (click)="toTxpDetails(txp)">-->
-                <!--<span *ngIf="!txp.merchant">-->
-
-                    <!--<span *ngIf="txp.message" class="ellipsis">{{txp.message}}</span>-->
-
-                    <!--<span *ngIf="!txp.message && addressbook[txp.toAddress]" class="ellipsis">{{addressbook[txp.toAddress].name || addressbook[txp.toAddress]}}</span>-->
-
-                    <!--<span *ngIf="!txp.message && !addressbook[txp.toAddress]" class="ellipsis" translate>Sending</span>-->
-                <!--</span>-->
-
-        <!--<span *ngIf="txp.merchant">-->
-                    <!--<span *ngIf="txp.merchant.pr.ca" class="ellipsis">-->
-                        <!--<ion-icon name="lock"></ion-icon> {{txp.merchant.domain}}</span>-->
-                    <!--<span *ngIf="!txp.merchant.pr.ca" class="ellipsis">-->
-                        <!--<ion-icon name="unlock"></ion-icon> {{txp.merchant.domain}}</span>-->
-                <!--</span>-->
-
-        <!--<span *ngIf="txp.action == 'sent'">-</span>-->
-        <!--<span *ngIf="txp.action == 'invalid'" translate>(possible double spend)</span>-->
-        <!--<span *ngIf="txp.action != 'invalid'" translate> {{txp.amountStr}}</span>-->
-
-        <!--<div *ngIf="txp.createdOn">-->
-          <!--<small *ngIf="txpCreatedWithinPastDay(txp)">{{txp.createdOn * 1000 | amTimeAgo}}</small>-->
-          <!--<small *ngIf="!txpCreatedWithinPastDay(txp)">{{txp.createdOn * 1000 | date:'MMMM d, y'}}</small>-->
-        <!--</div>-->
-      <!--</ion-item>-->
-    <!--</ion-list>-->
-  <!--</div>-->
-
-  <ion-item-divider translate [hidden]="loading">
+  <ion-item-divider translate>
     Wallets
     <button ion-button item-end round add-button icon-only (click)="toAddWallet()" >
       <ion-icon name="add"></ion-icon>
@@ -73,28 +43,26 @@
 
         <ion-label>
           <h2>{{ wallet.name || wallet.client._id }}</h2>
-          <p class="merit-amount" *ngIf="!wallet.client.balanceHidden && wallet.client.status">
-            {{ wallet.client.status.totalBalanceStr ? wallet.client.status.totalBalanceStr : ( wallet.client.cachedBalance ?
-            wallet.client.cachedBalance + (wallet.client.cachedBalanceUpdatedOn
-            ? ' &middot; ' + ( wallet.client.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '') : '' ) }}&nbsp;<span>MRT</span>
-            <ion-icon name="ios-timer-outline" *ngIf="walletHasPendingAmount(wallet)"></ion-icon>
-          </p>
-          <p class="invites">
-            Invites: {{ wallet.client.status?.availableInvites || 0}}
-          </p>
-          <p *ngIf="walletHasPendingAmount(wallet)">Partially confirmed</p>
-          <p *ngIf="wallet.client.balanceHidden">
+          <p *ngIf="wallet.balanceHidden; else notHidden">
             [Balance Hidden]
+          </p>
+          <ng-template #notHidden>
+            <p class="merit-amount" *ngIf="wallet.totalBalanceStr">
+              {{ wallet.totalBalanceStr }} {{ wallet.cachedBalance ? (' &middot; ' + wallet.client.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '' }}&nbsp;<span>MRT</span>
+            </p>
+          </ng-template>
+          <p class="invites">
+            Invites: {{ wallet.invites || 0}}
           </p>
         </ion-label>
 
         <ion-note *ngIf="!wallet.client.isComplete(); else isComplete" class="assertive">Incomplete</ion-note>
         <ng-template #isComplete>
           <ion-note class="balance" item-end>
-          <span *ngIf="wallet.client.n > 1">
-              {{ wallet.client.m }}-of-{{ wallet.client.n }}
-          </span>
-            <div class="fiat-amount" *ngIf="!wallet.client.balanceHidden && wallet.client.status.alternativeBalanceAvailable">
+            <span *ngIf="wallet.client.n > 1">
+                {{ wallet.client.m }}-of-{{ wallet.client.n }}
+            </span>
+            <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.client.status.alternativeBalanceAvailable">
               {{ wallet.client.status.totalBalanceAlternativeStr }}
             </div>
 

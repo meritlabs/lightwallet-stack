@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Contact, ContactField, Contacts, IContactField } from '@ionic-native/contacts';
+import { Contact, Contacts, IContactField } from '@ionic-native/contacts';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { PersistenceService } from 'merit/core/persistence.service';
 import { IAddressBook, MeritContact } from '../../models/merit-contact';
@@ -185,7 +185,7 @@ export class ContactsProvider {
   }
 
   async getDeviceContacts() {
-    if (!await this.requestDevicePermission())
+    if (!await this.hasDevicePermission())
       return [];
 
     return this.deviceContactsProvider.find(['emails', 'phoneNumbers'], { desiredFields: DESIRED_FIELDS, multiple: true });
@@ -200,7 +200,7 @@ export class ContactsProvider {
 
   private async hasDevicePermission() {
     if (!Diagnostic.installed()) return false;
-    return await this.deviceDiagnosticProvider.isContactsAuthorized();
+    return (await this.deviceDiagnosticProvider.getContactsAuthorizationStatus()) === this.deviceDiagnosticProvider.permissionStatus.GRANTED;
   }
 
 }

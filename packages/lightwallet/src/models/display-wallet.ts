@@ -12,6 +12,10 @@ export interface IDisplayWallet {
   locked: boolean;
   color: string;
   referrerAddress: string;
+  totalBalanceStr?: string;
+  totalBalanceMicros?: number;
+  balanceHidden: boolean;
+  cachedBalanceUpdatedOn: string; // only available if we're using cached balance
   totalNetworkValueMicro: number;
   totalNetworkValueMerit: string;
   totalNetworkValueFiat: string;
@@ -29,10 +33,10 @@ export interface IDisplayWallet {
 }
 
 export interface IDisplayWalletOptions {
-  hideInvites?: boolean;
-  hideRewards?: boolean;
-  hideAnv?: boolean;
-  hideAlias?: boolean;
+  skipStatus?: boolean;
+  skipRewards?: boolean;
+  skipAnv?: boolean;
+  skipAlias?: boolean;
 }
 
 export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService?: SendService, options: IDisplayWalletOptions = {}): Promise<IDisplayWallet> {
@@ -40,6 +44,7 @@ export async function createDisplayWallet(wallet: MeritWalletClient, walletServi
 
   displayWallet.client = wallet;
   displayWallet.referrerAddress = walletService.getRootAddress(wallet).toString();
+  displayWallet.balanceHidden = wallet.balanceHidden;
 
   Object.defineProperty(displayWallet, 'color', {
     get: function() {
@@ -47,22 +52,29 @@ export async function createDisplayWallet(wallet: MeritWalletClient, walletServi
     }
   });
 
-  if (!options.hideAlias) {
+  if (!options.skipAlias) {
     const { alias } = await sendService.getAddressInfo(displayWallet.referrerAddress);
     if (alias) displayWallet.alias = alias;
   }
 
-  if (!options.hideAnv) {
+  if (!options.skipAnv) {
     displayWallet.totalNetworkValueMicro = await walletService.getANV(wallet);
   }
 
-  if (!options.hideInvites) {
-    wallet.status =  await walletService.getStatus(wallet, { force: false });
+  if (!options.skipStatus) {
+    wallet.status =  await walletService.getStatus(wallet, { force: true });
     displayWallet.inviteRequests = await walletService.getUnlockRequests(wallet);
     displayWallet.invites = wallet.status.availableInvites;
+    if (wallet.status && wallet.status.totalBalanceStr) {
+      displayWallet.totalBalanceStr = wallet.status.totalBalanceStr;
+      displayWallet.totalBalanceMicros = wallet.status.totalBalanceMicros;
+    } else {
+      displayWallet.totalBalanceStr = wallet.cachedBalance;
+      displayWallet.cachedBalanceUpdatedOn = wallet.cachedBalanceUpdatedOn;
+    }
   }
 
-  if (!options.hideRewards) {
+  if (!options.skipRewards) {
     const rewardsData = await walletService.getRewards(wallet);
 
     // If we cannot properly fetch data, let's return wallets as-is.
