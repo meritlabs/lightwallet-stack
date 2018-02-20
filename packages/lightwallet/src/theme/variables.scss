@@ -19,28 +19,42 @@ $app-direction: ltr;
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
 
-// Override - Homogenized ionic component styles
-@import 'overrides';
 
+
+// Named Color Variables
+// --------------------------------------------------
+// Named colors makes it easy to reuse colors on various components.
+// It's highly recommended to change the default colors
+// to match your app's branding. Ionic uses a Sass map of
+// colors so you can add, rename and remove colors as needed.
+// The "primary" color is the only required color in the map.
+$colors: (
+  primary:   rgb(0, 176, 221),
+  secondary:  #1a2134,
+  warning:    #EBA133,
+  danger:     #bb331a,
+  success:    #7BC94D,
+  light:      #e9edf2,
+  dark:       #222,
+);
+
+$background-color: white;
 
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here
-
+$background-ios-color: $background-color;
 
 // App Material Design Variables
 // --------------------------------------------------
 // Material Design only Sass variables can go here
 //$item-md-detail-push-show: true;
-$background-md-color: white;
-
+$background-md-color: $background-color;
 
 // App Windows Variables
 // --------------------------------------------------
 // Windows only Sass variables can go here
 $item-wp-detail-push-show: true;
-
-
 
 // App Theme
 // --------------------------------------------------
@@ -50,8 +64,6 @@ $item-wp-detail-push-show: true;
 // default are overridden.
 
 @import "ionic.theme.default";
-@import "global";
-
 
 // Ionicons
 // --------------------------------------------------
@@ -73,7 +85,6 @@ $text-input-md-show-focus-highlight: false;
 
 $label-text-color: #2d3c50;
 $input-text-color: #444;
-
 
 $wallet-default-color: #068cca;
 $vault-default-color: #068cca;
