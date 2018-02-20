@@ -8,7 +8,7 @@ import { MERIT_MODAL_OPTS } from 'merit/../utils/constants';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 import { ToastConfig } from 'merit/core/toast.config';
 import { WalletService } from 'merit/wallets/wallet.service';
-import { IUnlockRequest, UnlockRequestService } from 'merit/core/unlock-request.service';
+import { UnlockRequestService } from 'merit/core/unlock-request.service';
 
 @IonicPage()
 @Component({
@@ -26,7 +26,6 @@ export class IncomingRequestModal {
               private modalCtrl: ModalController,
               private contactsService: ContactsProvider,
               private sendService: SendService,
-              private walletService: WalletService,
               private toastCtrl: ToastController,
               private unlockService: UnlockRequestService,
               private loadingCtrl: LoadingController) {

@@ -9,7 +9,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content no-bounce>
   <div class="big-header" *ngIf="tx">
     <div class="date">{{ tx.time * 1000 | amDateFormat: 'DD MMM, hh:mma' }}</div>
     <div class="contact-info">
