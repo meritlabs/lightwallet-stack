@@ -23,8 +23,8 @@ export class HistoryView {
               private contactsService: ContactsProvider) {
   }
 
-  async ngOnInit() {
-    await this.loadData();
+  ionViewWillEnter() {
+    return this.loadData();
   }
 
   async refresh(refresher: any) {

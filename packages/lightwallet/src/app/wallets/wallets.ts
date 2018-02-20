@@ -40,8 +40,6 @@ export class WalletsView {
   network: string;
   loading: boolean;
 
-  private firstLoad: boolean = true;
-
   private get isActivePage(): boolean {
     return this.navCtrl.last().instance instanceof WalletsView;
   }
@@ -86,18 +84,11 @@ export class WalletsView {
         this.refreshAllInfo();
       }
     });
-
-    await this.refreshAllInfo();
-    this.logger.info('Got updated data in walletsView on Ready!!');
   }
 
   ionViewWillEnter() {
-    if (this.firstLoad === true) {
-      this.firstLoad = false;
-      return;
-    }
-
-    return this.refreshAllInfo();
+    this.refreshAllInfo()
+      .then(() => this.logger.info('Updated info for wallets view'));
   }
 
   async updateAllInfo() {
