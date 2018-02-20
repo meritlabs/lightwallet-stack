@@ -160,6 +160,7 @@ export class SendAmountView {
         this.selectedFeeLevel = data.name;
         this.selectedFee = data;
         this.txData.txp.fee = data.micros;
+        this.updateTxData();
       }
     });
   }
@@ -192,15 +193,13 @@ export class SendAmountView {
     if (micros > this.selectedWallet.status.spendableAmount) {
       micros = this.selectedWallet.status.spendableAmount;
       if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
-        this.formData.amount = String(this.rateService.microsToMrt(micros));
+        this.formData.amount = this.rateService.microsToMrt(micros);
       } else {
-        this.formData.amount = String(this.rateService.fromMicrosToFiat(micros, this.availableUnits[1].name));
+        this.formData.amount = this.rateService.fromMicrosToFiat(micros, this.availableUnits[1].name);
       }
     } else {
       this.formData.amount = amount;
     }
-
-    this.formData.amount = String(Math.round(parseFloat(this.formData.amount) * 1e8) / 1e8);
 
     await this.updateAmount();
     await this.updateTxData();
@@ -237,7 +236,6 @@ export class SendAmountView {
   }
 
   public toggleFeeIncluded() {
-    this.updateTxData();
   }
 
   public isSendAllowed() {
@@ -270,6 +268,7 @@ export class SendAmountView {
     }).catch(() => {
       loadingSpinner.dismiss();
     });
+
   }
 
   selectExpirationDate() {
@@ -291,6 +290,7 @@ export class SendAmountView {
       return this.createTxpDebounce.cancel();
     } else if (this.amount.micros > this.selectedWallet.status.spendableAmount) {
       this.feeCalcError = 'Amount is too big';
+      this.selectedFee = null;
       this.txData = null;
       this.feeLoading = false;
       return this.createTxpDebounce.cancel();
@@ -327,6 +327,7 @@ export class SendAmountView {
         feeLevel: this.selectedFeeLevel
       };
 
+      console.log(this.amount.micros, this.selectedWallet.status.spendableAmount);
       if (this.amount.micros == this.selectedWallet.status.spendableAmount) {
         data.sendMax = true;
         data.toAmount = null;
@@ -382,6 +383,7 @@ export class SendAmountView {
       this.txData.txp = null;
       this.logger.warn(err);
       if (err.message) this.feeCalcError = err.message;
+      this.selectedFee = null;
       return this.toastCtrl.create({
         message: err.message || 'Unknown error',
         cssClass: ToastConfig.CLASS_ERROR
@@ -389,7 +391,6 @@ export class SendAmountView {
     } finally {
       this.feeLoading = false;
     }
-
 
   }
 

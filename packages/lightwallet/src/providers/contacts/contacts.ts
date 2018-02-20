@@ -114,7 +114,7 @@ export class ContactsProvider {
 
   async getAllMeritContacts(): Promise<MeritContact[]> {
     const deviceContacts: Contact[] = await this.getDeviceContacts();
-    const localContacts: IAddressBook = this.addressBook;
+    const localContacts: IAddressBook = this.addressBook || {};
 
     const contacts: MeritContact[] = deviceContacts
       .filter((contact: Contact) => !_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails))
