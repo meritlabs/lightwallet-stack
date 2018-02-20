@@ -24,6 +24,8 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           break;
 
         case TransactionAction.RECEIVED:
+          if (tx.isInvite && !tx.isCoinbase) console.log('TX IS ', tx);
+
           tx.type = 'credit';
 
           if (tx.isInvite) {
@@ -43,7 +45,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           break;
       }
 
-      const { alias: inputAlias, address: inputAddress } = tx.outputs.find((input: ITransactionIO) => input.isMine  === !received) || <any>{};
+      const { alias: inputAlias, address: inputAddress } = tx.inputs.find((input: ITransactionIO) => input.isMine  === !received) || <any>{};
       const { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => output.isMine === received) || <any>{};
 
       tx.input = inputAlias? '@' + inputAlias : 'Anonymous';
@@ -69,7 +71,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
         try {
           tx.contact = contactsProvider.get(contactAddress);
-          tx.name = tx.contact.name.formatted;
+          tx.name = tx.contact? tx.contact.name.formatted : tx.name;
         } catch (e) {}
       }
 
