@@ -942,12 +942,13 @@ Script.buildSimpleVaultScript = function(tag, network) {
 };
 
 /**
- * @param {mode} Mode to select, 0 is spend, and 1 is renew.
+ * @param {number} mode Mode to select, 0 is spend, and 1 is renew.
  * @param {signature} signature to be append to the script
- * @param {vaultScript} The vault script that was signed.
+ * @param {Script} vaultScript vault script that was signed.
+ * @param {PublicKey} signPubKey - pubkey, that vault referral was signed with.
  * @returns {Script}
  */
-Script.buildVaultIn = function(mode, signature, vaultScript) {
+Script.buildVaultIn = function(mode, signature, vaultScript, signPubKey) {
   var s = new Script();
   var sigBuf = BufferUtil.concat([
     signature.toDER(),
@@ -955,6 +956,7 @@ Script.buildVaultIn = function(mode, signature, vaultScript) {
   ]);
   s.add(sigBuf);
   s.add(Opcode.smallInt(mode)); //spend is 0, and renew mode is 1
+  s.add(Hash.sha256ripemd160(signPubKey.toBuffer()));
   s.add(vaultScript.toBuffer());
   return s;
 };
@@ -962,22 +964,24 @@ Script.buildVaultIn = function(mode, signature, vaultScript) {
 /**
  * Build a vault input which selects renew mode
  * @param {signature} signature to be append to the script
- * @param {vaultScript} The vault script that was signed.
+ * @param {Script} vaultScript vault script that was signed.
+ * @param {PublicKey} signPubKey - pubkey, that vault referral was signed with.
  * @returns {Script}
  */
-Script.buildVaultRenewIn = function(signature, vaultScript) {
-  return Script.buildVaultIn(1, signature, vaultScript);
+Script.buildVaultRenewIn = function(signature, vaultScript, signPubKey) {
+  return Script.buildVaultIn(1, signature, vaultScript, signPubKey);
 };
 
 
 /**
  * Build a vault input which selects spend mode
  * @param {signature} signature to be append to the script
- * @param {vaultScript} Vault script that was signed.
+ * @param {Script} vaultScript vault script that was signed.
+ * @param {PublicKey} signPubKey - pubkey, that vault referral was signed with.
  * @returns {Script}
  */
-Script.buildVaultSpendIn = function(signature, vaultScript) {
-  return Script.buildVaultIn(0, signature, vaultScript);
+Script.buildVaultSpendIn = function(signature, vaultScript, signPubKey) {
+  return Script.buildVaultIn(0, signature, vaultScript, signPubKey);
   return s;
 };
 
