@@ -160,6 +160,7 @@ export class SendAmountView {
         this.selectedFeeLevel = data.name;
         this.selectedFee = data;
         this.txData.txp.fee = data.micros;
+        this.updateTxData();
       }
     });
   }
@@ -235,7 +236,6 @@ export class SendAmountView {
   }
 
   public toggleFeeIncluded() {
-    this.updateTxData();
   }
 
   public isSendAllowed() {
@@ -268,6 +268,7 @@ export class SendAmountView {
     }).catch(() => {
       loadingSpinner.dismiss();
     });
+
   }
 
   selectExpirationDate() {
@@ -390,7 +391,6 @@ export class SendAmountView {
     } finally {
       this.feeLoading = false;
     }
-
 
   }
 
