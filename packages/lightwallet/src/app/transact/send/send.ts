@@ -10,6 +10,7 @@ import { ContactsProvider } from '../../../providers/contacts/contacts';
 import { MeritContact } from '../../../models/merit-contact';
 
 import { ENV } from '@app/env';
+import { cleanAddress, isAlias } from '../../../utils/addresses';
 
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
@@ -113,14 +114,14 @@ export class SendView {
   private async search() {
 
     const result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
-    const input = this.searchQuery.split('?')[0].replace(/\s+/g, '');
-    const isAlias = input.charAt(0) === '@';
+    const input = cleanAddress(this.searchQuery.split('?')[0]);
+    const _isAlias = isAlias(input);
 
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
 
-    let query = isAlias ? input.slice(1) : input;
+    let query = _isAlias ? input.slice(1) : input;
 
-    if (!isAlias) { //don't search for contacts if it is an alias
+    if (!_isAlias) { //don't search for contacts if it is an alias
       this.contactsService.searchContacts(this.contacts, query)
         .forEach((contact: MeritContact) => {
           if (_.isEmpty(contact.meritAddresses)) {
@@ -206,7 +207,7 @@ export class SendView {
   }
 
   private couldBeAlias(input) {
-    if (input.charAt(0) !== '@') return false;
+    if (!isAlias(input)) return false;
     return this.sendService.couldBeAlias(input.slice(1));
   }
 
