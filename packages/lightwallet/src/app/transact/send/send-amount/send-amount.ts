@@ -291,6 +291,7 @@ export class SendAmountView {
       return this.createTxpDebounce.cancel();
     } else if (this.amount.micros > this.selectedWallet.status.spendableAmount) {
       this.feeCalcError = 'Amount is too big';
+      this.selectedFee = null;
       this.txData = null;
       this.feeLoading = false;
       return this.createTxpDebounce.cancel();
@@ -382,6 +383,7 @@ export class SendAmountView {
       this.txData.txp = null;
       this.logger.warn(err);
       if (err.message) this.feeCalcError = err.message;
+      this.selectedFee = null;
       return this.toastCtrl.create({
         message: err.message || 'Unknown error',
         cssClass: ToastConfig.CLASS_ERROR
