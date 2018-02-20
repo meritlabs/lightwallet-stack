@@ -18,8 +18,7 @@ export class RateService {
   private _rates: Object;
   private _alternatives: Array<any>;
   private _ratesBCH: Object;
-  private SAT_TO_BTC: any;
-  private BTC_TO_SAT: any;
+  private MRT_TO_MIC = 1e8;
   private _isAvailable: boolean = false;
 
   private rateServiceUrl = ENV.rateUrl;
@@ -28,8 +27,6 @@ export class RateService {
     this.logger.info('Hello RateService Service');
     this._rates = {};
     this._alternatives = [];
-    this.SAT_TO_BTC = 1 / 1e8;
-    this.BTC_TO_SAT = 1e8;
     this.updateRates();
   }
 
@@ -81,11 +78,11 @@ export class RateService {
   }
 
   fromMicrosToFiat(micros: number, code: string) {
-    return micros * this.SAT_TO_BTC * this.getRate(code);
+    return this.microsToMrt(micros) * this.getRate(code);
   }
 
   fromFiatToMicros(amount: number, code: string) {
-    return Math.ceil(amount / this.getRate(code) * this.BTC_TO_SAT);
+    return Math.ceil(amount / this.getRate(code) * this.MRT_TO_MIC);
   }
 
   fromMeritToFiat(merit: number, code: string) {
@@ -99,11 +96,11 @@ export class RateService {
   }
 
   mrtToMicro(mrt) {
-    return mrt * this.BTC_TO_SAT;
+    return Math.round(mrt * this.MRT_TO_MIC);
   }
 
   microsToMrt(micros) {
-    return micros * this.SAT_TO_BTC;
+    return parseFloat((micros/this.MRT_TO_MIC).toFixed(8));
   }
 
   listAlternatives(sort: boolean) {
