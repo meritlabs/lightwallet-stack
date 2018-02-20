@@ -903,6 +903,7 @@ export class API {
   prepareVault(type: number, opts: any = {}) {
     if (type == 0) {
       let tag = opts.masterPubKey.toAddress().hashBuffer;
+      const spendLimit = Bitcore.Unit.fromMRT(Constants.VAULT_SPEND_LIMIT).toMicros();
 
       let whitelist = _.map(opts.whitelist, (e) => {
         return Bitcore.Address.fromBuffer(e).hashBuffer;
@@ -915,7 +916,10 @@ export class API {
         opts.masterPubKey.toBuffer(),
       ];
 
+
+      params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
       params = params.concat(whitelist);
+
       params.push(Bitcore.Opcode.smallInt(whitelist.length));
       params.push(tag);
       params.push(Bitcore.Opcode.smallInt(type));
@@ -959,12 +963,12 @@ export class API {
    * Renew vault
    * Will make all pending tx invalid
    */
-  buildRenewVaultTx(utxos: any[], newVault: any, masterKey: any, opts: any = {}) {
+  buildRenewVaultTx(coins: any[], newVault: any, masterKey: any, opts: any = {}) {
 
     var network = opts.network || Common.Constants.DEFAULT_NET;
     var fee = opts.fee || DEFAULT_FEE;
 
-    let totalAmount = _.sumBy(utxos, 'micros');
+    let totalAmount = _.sumBy(coins, 'micros');
 
     let amount = totalAmount - fee;
     if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
@@ -976,6 +980,8 @@ export class API {
     try {
 
       if (newVault.type == 0) {
+        const spendLimit = Bitcore.Unit.fromMRT(Constants.VAULT_SPEND_LIMIT).toMicros();
+
         let tag = newVault.tag;
 
         let whitelist = _.map(newVault.whitelist, (e) => {
@@ -987,12 +993,13 @@ export class API {
           new Bitcore.PublicKey(newVault.masterPubKey, { network: network }).toBuffer()
         ];
 
+        params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
         params = params.concat(whitelist);
         params.push(Bitcore.Opcode.smallInt(whitelist.length));
         params.push(new Buffer(tag));
         params.push(Bitcore.Opcode.smallInt(newVault.type));
 
-        let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
+        let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, newVault.spendPubKey);
 
         tx.addOutput(new Bitcore.Transaction.Output({
           script: scriptPubKey,
@@ -1001,22 +1008,25 @@ export class API {
 
         tx.fee(fee);
 
-        _.forEach(utxos, (utxo) => {
+        _.forEach(coins, coin => {
           tx.addInput(
             new Bitcore.Transaction.Input.PayToScriptHashInput({
-              prevTxId: utxo.txid,
-              outputIndex: utxo.vout,
+              prevTxId: coin.txid,
+              outputIndex: coin.vout,
               script: redeemScript,
-            }, redeemScript, utxo.scriptPubKey),
-            utxo.scriptPubKey, utxo.micros);
+            }, redeemScript, coin.scriptPubKey),
+            coin.scriptPubKey, coin.micros);
         });
 
         tx.version = 4;
         tx.addressType = 'PP2SH';
 
+        const signPrivKey = Bitcore.HDPrivateKey.fromString(this.credentials.xPrivKey).privateKey;
+        const pubkey = signPrivKey.publicKey;
+
         _.forEach(tx.inputs, (input) => {
           let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript);
+          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, pubkey);
           input.setScript(inputScript);
         });
 
@@ -1036,8 +1046,7 @@ export class API {
   };
 
   /**
-   * Renew vault
-   * Will make all pending tx invalid
+   * Spend vault
    */
   buildSpendVaultTx(vault: any, coins: any[], spendKey: any, amount: number, address:any, opts: any = {}) {
 
@@ -1069,18 +1078,21 @@ export class API {
     try {
 
       if(vault.type == 0) {
+        const spendLimit = Bitcore.Unit.fromMRT(Constants.VAULT_SPEND_LIMIT).toMicros();
+
         let toAddress = Bitcore.Address.fromString(address);
         tx.to(toAddress, amount - fee * 10);
+
+        let whitelist = _.map(vault.whitelist, (e) => {
+          return Bitcore.Address.fromBuffer(e).hashBuffer;
+        });
 
         let params = [
           new Bitcore.PublicKey(vault.spendPubKey, {network: network}).toBuffer(),
           new Bitcore.PublicKey(vault.masterPubKey, {network: network}).toBuffer(),
         ];
 
-        let whitelist = _.map(vault.whitelist, (e) => {
-          return Bitcore.Address.fromBuffer(e).hashBuffer;
-        });
-
+        params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
         params = params.concat(whitelist);
         params.push(Bitcore.Opcode.smallInt(whitelist.length));
         params.push(new Buffer(vault.tag));
@@ -1095,9 +1107,6 @@ export class API {
 
         tx.fee(fee * 10);
 
-        const signPrivKey = Bitcore.HDPrivateKey.fromString(this.credentials.xPrivKey).privateKey;
-        const pubkey = signPrivKey.publicKey;
-
         _.forEach(selectedCoins, (coin) => {
           tx.addInput(
             new Bitcore.Transaction.Input.PayToScriptHashInput({
@@ -1110,6 +1119,9 @@ export class API {
 
         tx.version = 4;
         tx.addressType = 'PP2SH';
+
+        const signPrivKey = Bitcore.HDPrivateKey.fromString(this.credentials.xPrivKey).privateKey;
+        const pubkey = signPrivKey.publicKey;
 
         _.forEach(tx.inputs, (input) => {
           let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
