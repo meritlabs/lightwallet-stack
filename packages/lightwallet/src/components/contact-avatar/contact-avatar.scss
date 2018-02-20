@@ -2,15 +2,17 @@ contact-avatar {
   ion-avatar {
     background: #e9edf2;
     border-radius: 500rem;
+    text-align: center;
     span {
-      color: rgb(95, 108, 130);
-      text-align: center;
+      //color: rgb(95, 108, 130);
+      color: color($colors, primary);
       min-width: 40px;
       min-height: 40px;
       display: block;
       line-height: 40px;
       font-weight: 500;
       letter-spacing: -.8px;
+      font-size: 14px;
     }
   }
 }
