@@ -16,14 +16,14 @@
       <contact-avatar [contact]="isEasySend? tx.contact : null" [fallback]="'assets/img/icons/' + image + '.svg'"></contact-avatar>
       <h2 class="name">{{ tx.name }}</h2>
     </div>
-    <div *ngIf="!tx.isWalletUnlock">
-      <h2 class="amount" *ngIf="!(tx.isCoinbase && tx.isInvite)">
+    <div *ngIf="!tx.isInvite">
+      <h2 class="amount">
         {{ isCredit? '' : '-' }}{{tx.amountStr | toUnit : tx.amount}}&nbsp;<small>MRT</small>
       </h2>
       <h3 class="detail-fiat" *ngIf="!tx.isCoinbase">
         {{ isCredit? '' : '-' }}{{tx.alternativeAmountStr || altAmountStr | toFiat : tx.amount | async}}
       </h3>
-      <p class="fee" *ngIf="!tx.isCoinbase && !tx.isInvite">
+      <p class="fee" *ngIf="!tx.isCoinbase">
         Fee {{ tx.feeStr + ' MRT' }}
       </p>
     </div>
