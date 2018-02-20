@@ -182,7 +182,7 @@ export class SendAmountView {
   }
 
   async selectAmount(amount: string) {
-    let micros;
+    let micros: number;
 
     if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
       micros = this.rateService.mrtToMicro(parseFloat(amount));
@@ -202,7 +202,7 @@ export class SendAmountView {
     }
 
     await this.updateAmount();
-    await this.updateTxData();
+    return this.updateTxData();
   }
 
   async processAmount(value) {
