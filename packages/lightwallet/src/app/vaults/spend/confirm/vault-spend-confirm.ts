@@ -129,7 +129,7 @@ export class VaultSpendConfirmView {
 
     //convert string address to hash buffers
     let whitelist = _.map(this.vault.whitelist, (w: string) => {
-      return this.bitcore.Address.fromString(w).toBuffer();
+      return this.bitcore.Address(w).toBuffer();
     });
 
     this.vault.whitelist = whitelist;

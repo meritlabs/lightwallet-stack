@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { ProfileService } from 'merit/core/profile.service';
 
 // TODO use OnPush strategy with appropriate inputs/outputs
 @Component({

@@ -1086,7 +1086,7 @@ export class API {
         params.push(new Buffer(vault.tag));
         params.push(Bitcore.Opcode.smallInt(vault.type));
 
-        let scriptPubKey = Bitcore.Script.buildParameterizedP2SH(redeemScript, params);
+        let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, vault.spendPubKey);
 
         tx.addOutput(new Bitcore.Transaction.Output({
           script: scriptPubKey,
@@ -1095,12 +1095,15 @@ export class API {
 
         tx.fee(fee * 10);
 
+        const signPrivKey = Bitcore.HDPrivateKey.fromString(this.credentials.xPrivKey).privateKey;
+        const pubkey = signPrivKey.publicKey;
+
         _.forEach(selectedCoins, (coin) => {
           tx.addInput(
             new Bitcore.Transaction.Input.PayToScriptHashInput({
               prevTxId: coin.txid,
               outputIndex: coin.vout,
-              script: redeemScript
+              script: redeemScript,
             }, redeemScript, coin.scriptPubKey),
             coin.scriptPubKey, coin.micros);
         });
@@ -1110,7 +1113,7 @@ export class API {
 
         _.forEach(tx.inputs, (input) => {
           let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript);
+          let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript, pubkey);
           input.setScript(inputScript);
         });
 
