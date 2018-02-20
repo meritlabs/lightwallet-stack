@@ -13,6 +13,7 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { SendService } from 'merit/transact/send/send.service';
 
 import { ENV } from '@app/env';
+import { cleanAddress, isAlias } from '../../../utils/addresses';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -26,7 +27,7 @@ export class CreateWalletView {
   formData = {
     walletName: '',
     parentAddress: '',
-    alias: '', 
+    alias: '',
     aliasValidationError: '',
     aliasCheckInProgress: false,
     addressCheckError: '',
@@ -36,7 +37,7 @@ export class CreateWalletView {
     password: '',
     repeatPassword: '',
     color: '',
-    hideBalance: false 
+    hideBalance: false
   };
 
   parsedAddress: string;
@@ -71,7 +72,7 @@ export class CreateWalletView {
     return (
       this.formData.parentAddress
       && this.formData.walletName
-      && !this.formData.aliasCheckInProgress 
+      && !this.formData.aliasCheckInProgress
       && !this.formData.aliasValidationError
       && !this.formData.addressCheckInProgress
       && !this.formData.addressCheckError
@@ -92,7 +93,7 @@ export class CreateWalletView {
     return this.showTooltip('Add an alias',
       'Add alias to your address, so people can recognize you and type something like "@merituser" instead of address.');
   }
-  
+
   private showTooltip(title, message) {
     return this.alertCtrl.create({
       title, message,
@@ -107,16 +108,15 @@ export class CreateWalletView {
 
   checkParentAddress() {
     this.formData.addressCheckInProgress = true;
-    this.validateAddressDebounce(); 
+    this.validateAddressDebounce();
   }
 
   private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
   private validateAddressDebounce = _.debounce(() => { this.validateParentAddress() }, 750);
 
   private async validateParentAddress() {
-
-    console.log(this.formData.parentAddress);
-    let input = (this.formData.parentAddress && this.formData.parentAddress.charAt(0) == '@') ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
+    this.formData.parentAddress = cleanAddress(this.formData.parentAddress);
+    let input = (this.formData.parentAddress && isAlias(this.formData.parentAddress)) ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
 
     if (!input) {
       this.formData.addressCheckInProgress = false;
@@ -152,8 +152,9 @@ export class CreateWalletView {
   }
 
   private async validateAlias() {
+    this.formData.alias = cleanAddress(this.formData.alias);
 
-    let input = (this.formData.alias && this.formData.alias.charAt(0) == '@') ? this.formData.alias.slice(1) : this.formData.alias;
+    let input = (this.formData.alias && isAlias(this.formData.alias)) ? this.formData.alias.slice(1) : this.formData.alias;
 
     if (!input) {
       this.validateAliasDebounce.cancel();
@@ -196,7 +197,7 @@ export class CreateWalletView {
       }).present();
     }
 
-    let alias = (this.formData.alias && this.formData.alias.charAt(0) == '@') ? this.formData.alias.slice(1) : this.formData.alias;
+    let alias = (this.formData.alias && isAlias(this.formData.alias)) ? this.formData.alias.slice(1) : this.formData.alias;
 
     const opts = {
       name: this.formData.walletName,

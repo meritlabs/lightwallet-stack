@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import { SendService } from 'merit/transact/send/send.service';
 import { SendMethodDestination } from 'merit/transact/send/send-method.model';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 import * as _ from 'lodash';
 import { ContactsProvider } from 'merit/../providers/contacts/contacts';
@@ -12,6 +11,7 @@ import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 
 import { ENV } from '@app/env';
+import { cleanAddress, isAlias } from '../../../../utils/addresses';
 
 const ERROR_ADDRESS_NOT_FOUND = 'ADDRESS_NOT_FOUND';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -19,8 +19,7 @@ const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 @IonicPage()
 @Component({
   selector: 'view-send-invite',
-  templateUrl: 'send-invite.html',
-  providers: [BarcodeScanner]
+  templateUrl: 'send-invite.html'
 })
 export class SendInviteView {
   public searchQuery: string = '';
@@ -80,10 +79,10 @@ export class SendInviteView {
 
     let result = { withMerit: [], toNewEntity: null, error: null };
 
-    const input = this.searchQuery.split('?')[0].replace(/\s+/g, '');
+    const input = cleanAddress(this.searchQuery.split('?')[0]);
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
 
-    let query = input.indexOf('@') == 0 ? input.slice(1) : input;
+    let query = isAlias(input) ? input.slice(1) : input;
     this.contactsService.searchContacts(this.contacts, query)
       .forEach((contact: MeritContact) => {
         if (!_.isEmpty(contact.meritAddresses)) {
@@ -103,12 +102,12 @@ export class SendInviteView {
           result.error = ERROR_ADDRESS_NOT_FOUND;
         }
       } else if (this.couldBeAlias(input)) {
-        let alias = input.slice(1);
+        const alias = input.slice(1);
         const addressInfo = await this.sendService.getAddressInfo(alias);
 
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ alias: alias, address: addressInfo.address, network: ENV.network});
+          result.toNewEntity.contact.meritAddresses.push({ alias, address: addressInfo.address, network: ENV.network});
         } else {
           result.error = ERROR_ALIAS_NOT_FOUND;
         }
@@ -119,7 +118,7 @@ export class SendInviteView {
   }
 
   private couldBeAlias(input) {
-    if (input.charAt(0) != '@') return false;
+    if (!isAlias(input)) return false;
     return this.sendService.couldBeAlias(input.slice(1));
   }
 
@@ -135,8 +134,8 @@ export class SendInviteView {
   }
 
   createContact() {
-    let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
-    let modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
+    const address = this.searchResult.toNewEntity.contact.meritAddresses[0];
+    const modal = this.modalCtrl.create('SendCreateContactView', { address });
     modal.onDidDismiss((contact) => {
       if (contact) {
         return this.sendInvite(this.searchResult.toNewEntity.contact);
@@ -146,8 +145,8 @@ export class SendInviteView {
   }
 
   bindAddressToContact() {
-    let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
-    let modal = this.modalCtrl.create('SendSelectBindContactView', { contacts: this.contacts, address: meritAddress });
+    const address = this.searchResult.toNewEntity.contact.meritAddresses[0];
+    const modal = this.modalCtrl.create('SendSelectBindContactView', { contacts: this.contacts, address });
     modal.onDidDismiss((contact) => {
       if (contact) {
         return this.sendInvite(this.searchResult.toNewEntity.contact);

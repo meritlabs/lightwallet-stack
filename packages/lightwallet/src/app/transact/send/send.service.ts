@@ -6,6 +6,7 @@ import { ConfigService } from 'merit/shared/config.service';
 import { RateService } from 'merit/transact/rate.service';
 import { MeritWalletClient } from "merit/../lib/merit-wallet-client/index";
 import { ISendMethod } from 'merit/transact/send/send-method.model';
+import { isAlias } from '../../../utils/addresses';
 
 /*
  Service to help manage sending merit to others.
@@ -44,7 +45,7 @@ export class SendService {
   }
 
   public getAddressInfo(addr: string) {
-    if (addr.charAt(0) === '@') addr = addr.substr(1);
+    if (isAlias(addr)) addr = addr.slice(1);
     return this.client.validateAddress(addr);
   }
 

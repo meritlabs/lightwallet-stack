@@ -7,6 +7,7 @@ import * as _ from 'lodash';
 import { ContactsProvider } from '../../../../providers/contacts/contacts';
 import { IMeritAddress, MeritContact } from '../../../../models/merit-contact';
 import { ENV } from '@app/env';
+import { cleanAddress, isAlias } from '../../../../utils/addresses';
 
 @IonicPage()
 @Component({
@@ -43,7 +44,8 @@ export class SendEditContactView {
   }
 
   async addAddress(address) {
-    if (address.charAt(0) === '@') address = address.substr(1);
+    address = cleanAddress(address);
+    if (isAlias(address)) address = address.slice(1);
     if (this.contact.meritAddresses.findIndex(m => m.address == address || m.alias == address) > -1) {
       return this.toastController.create({
         message: 'Address is already bound to this contact',
