@@ -46,4 +46,9 @@ export module Constants {
       }
     },
   };
+
+  // value here is NOT limited to max merit supply as in meritd
+  // as it overflows BN max supported value (2^53)
+  export const VAULT_SPEND_LIMIT = 10000000;
+
 };
