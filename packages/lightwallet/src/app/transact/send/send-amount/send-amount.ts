@@ -193,9 +193,9 @@ export class SendAmountView {
     if (micros > this.selectedWallet.status.spendableAmount) {
       micros = this.selectedWallet.status.spendableAmount;
       if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
-        this.formData.amount = this.rateService.microsToMrt(micros);
+        this.formData.amount = String(this.rateService.microsToMrt(micros));
       } else {
-        this.formData.amount = this.rateService.fromMicrosToFiat(micros, this.availableUnits[1].name);
+        this.formData.amount = String(this.rateService.fromMicrosToFiat(micros, this.availableUnits[1].name));
       }
     } else {
       this.formData.amount = amount;
