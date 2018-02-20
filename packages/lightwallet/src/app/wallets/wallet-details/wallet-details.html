@@ -9,7 +9,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content no-bounce>
   <div class="big-header" [style.background]="wallet.color" [class.default]="!wallet.color">
     <h2 class="amount">
       {{ wallet.status.totalBalanceStr || 0 }}&nbsp;<small>MRT</small>
