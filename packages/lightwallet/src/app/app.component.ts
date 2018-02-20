@@ -113,7 +113,7 @@ export class MeritLightWallet {
     if (StatusBar.installed()) {
       // TODO use a status bar service to set color based on page we're on & header color
       if (this.platform.is('android')) {
-        this.statusBar.backgroundColorByHexString('00B0DD');
+        this.statusBar.backgroundColorByHexString('0488ab');
       } else if (this.platform.is('ios')) {
         this.statusBar.styleLightContent();
       }
