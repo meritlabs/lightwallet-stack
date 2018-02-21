@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
 import { Logger } from 'merit/core/logger';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
@@ -42,7 +42,11 @@ export class WalletDetailsView {
     this.navCtrl.popToRoot();
     try {
       await this.tabsCtrl.select(1);
-      await this.tabsCtrl.getActiveChildNavs()[0].popToRoot();
+      const nav: Tab = this.tabsCtrl.getActiveChildNavs()[0];
+      nav.rootParams = {
+        wallet: this.displayWallet.client
+      };
+      await nav.popToRoot();
     } catch (e) {
       console.log(e);
     }
