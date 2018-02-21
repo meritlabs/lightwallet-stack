@@ -64,7 +64,7 @@ export class ImportView {
   }
 
   async openScanner() {
-    let address = await this.addressScanner.scanAddress();
+    const address = await this.addressScanner.scanAddress();
 
     if (address) {
       const parts = address.split('|');
@@ -72,6 +72,8 @@ export class ImportView {
       this.formData.network = parts[2];
       this.formData.derivationPath = parts[3];
       this.formData.hasPassphrase = Boolean(parts[4]);
+    } else {
+      return this.toastCtrl.create({ message: 'Invalid derivation path', cssClass: ToastConfig.CLASS_ERROR }).present();
     }
   }
 
@@ -99,21 +101,20 @@ export class ImportView {
     const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
     loader.present();
 
-    const pathData = this.derivationPathService.parse(this.formData.derivationPath);
-
-    if (!pathData) {
-      return this.toastCtrl.create({ message: 'Invalid derivation path', cssClass: ToastConfig.CLASS_ERROR });
-    }
-
-    const opts: any = {
-      account: pathData.account,
-      networkName: pathData.networkName,
-      derivationStrategy: pathData.derivationStrategy
-    };
-
-    let wallet;
-
     try {
+      const pathData = this.derivationPathService.parse(this.formData.derivationPath);
+      if (!pathData) {
+        throw new Error('Invalid derivation path');
+      }
+
+      const opts: any = {
+        account: pathData.account,
+        networkName: pathData.networkName,
+        derivationStrategy: pathData.derivationStrategy
+      };
+
+      let wallet;
+
       if (this.formData.words.indexOf('xprv') == 0 || this.formData.words.indexOf('tprv') == 0) {
         wallet = await this.profileService.importExtendedPrivateKey(this.formData.words, opts);
       } else if (this.formData.words.indexOf('xpub') == 0 || this.formData.words.indexOf('tpub') == 0) {
