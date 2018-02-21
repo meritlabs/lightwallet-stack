@@ -164,11 +164,11 @@ export class SendView {
       } else if (this.couldBeEmail(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
         result.toNewEntity.contact.emails.push({value: input})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input};
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input, alias: ''};
       } else if (this.couldBeSms(input)) {
         result.toNewEntity = {destination: SendMethod.DESTINATION_SMS, contact: new MeritContact()};
         result.toNewEntity.contact.phoneNumbers.push({value: input})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input};
+        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input, alias: ''};
       }
     }
 
