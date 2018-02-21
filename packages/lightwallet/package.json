@@ -83,7 +83,6 @@
         "cordova-plugin-device": "^1.1.7",
         "cordova-plugin-fcm": "^2.1.2",
         "cordova-plugin-file": "^6.0.1",
-        "cordova-plugin-filepath": "^1.1.0",
         "cordova-plugin-inappbrowser": "^1.7.2",
         "cordova-plugin-ionic-webview": "^1.1.16",
         "cordova-plugin-splashscreen": "^5.0.1",
@@ -172,8 +171,7 @@
             "cordova-plugin-fcm": {},
             "cordova-plugin-compat": {},
             "cordova.plugins.diagnostic": {},
-            "cordova-plugin-app-version": {},
-            "cordova-plugin-filepath": {}
+            "cordova-plugin-app-version": {}
         },
         "platforms": [
             "android",
