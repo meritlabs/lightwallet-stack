@@ -10,6 +10,7 @@ import { AddressScannerService } from 'merit/utilities/import/address-scanner.se
 import { DerivationPathService } from 'merit/utilities/mnemonic/derivation-path.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { WalletService } from 'merit/wallets/wallet.service';
+import { startsWith } from 'lodash';
 
 import { ENV } from '@app/env';
 
@@ -42,16 +43,12 @@ export class ImportView {
   public loadFileInProgress = false;
   private sjcl;
 
-  constructor(private  navCtrl: NavController,
-              private bwcService: BwcService,
-              private config: ConfigService,
+  constructor(private bwcService: BwcService,
               private toastCtrl: MeritToastController,
               private logger: Logger,
               private loadingCtrl: LoadingController,
               private profileService: ProfileService,
-              private walletService: WalletService,
               private derivationPathService: DerivationPathService,
-              private modalCtrl: ModalController,
               private app: App,
               private mnemonicService: MnemonicService,
               private addressScanner: AddressScannerService) {
@@ -178,31 +175,16 @@ export class ImportView {
 
   }
 
-  setDerivationPath() {
-    this.formData.derivationPath = this.formData.testnetEnabled ? this.derivationPathService.getDefaultTestnet() : this.derivationPathService.getDefault();
-  }
-
-  // soccer neither brand seven cry boat guess protect secret guard safe danger
-
   mnemonicImportAllowed() {
+    const { words } = this.formData;
 
-    let checkWords = (words) => {
+    if (!words) return false;
 
-      let beginsWith = (str) => {
-        return (this.formData.words.indexOf(str) == 0);
-      };
-
-      if (beginsWith('xprv') || beginsWith('tprv') || beginsWith('xpub') || beginsWith('tpuv')) {
-        return true;
-      } else {
-        return !(this.formData.words.split(/[\u3000\s]+/).length % 3)
-      }
-
-    };
-
-    return (
-      this.formData.words && checkWords(this.formData.words)
-    )
+    if (startsWith('xprv') || startsWith('tprv') || startsWith('xpub') || startsWith('tpuv')) {
+      return true;
+    } else {
+      return !(words.split(/[\u3000\s]+/).length % 3)
+    }
   }
 
   fileImportAllowed() {
