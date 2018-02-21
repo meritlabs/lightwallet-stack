@@ -16,8 +16,7 @@ export class SelectInviteWalletModal {
 
   constructor(
     private navParams: NavParams,
-    private viewCtrl: ViewController,
-    private profileService: ProfileService
+    private viewCtrl: ViewController
   ) {
     this.wallets = this.navParams.get('availableWallets');
     this.selectedWallet = this.navParams.get('selectedWallet');

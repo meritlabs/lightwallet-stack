@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
-import { IDisplayTransaction, ITransaction, TransactionAction } from '../../models/transaction';
-import { ContactsProvider } from '../../providers/contacts/contacts';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { IDisplayTransaction, TransactionAction } from '../../models/transaction';
 import { ModalController } from 'ionic-angular';
 import { MERIT_MODAL_OPTS } from '../../utils/constants';
 
@@ -13,7 +12,8 @@ export class TransactionHistoryComponent {
   @Input()
   transactions: IDisplayTransaction[];
 
-  constructor(private modalCtrl: ModalController) {}
+  constructor(private modalCtrl: ModalController) {
+  }
 
   viewTxDetails(tx: IDisplayTransaction) {
     return this.modalCtrl.create('TxDetailsView', { tx }, MERIT_MODAL_OPTS).present();

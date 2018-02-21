@@ -40,8 +40,6 @@ export class BwcService {
   public getClient(walletData, opts: any = {}): MeritWalletClient {
     //note opts use `bwsurl` all lowercase;
 
-    console.log('MWC', opts.bwsurl, ENV.mwsUrl);
-
     let mwc = MeritWalletClient.getInstance({
       baseUrl: opts.bwsurl || ENV.mwsUrl,
       verbose: opts.verbose || false,

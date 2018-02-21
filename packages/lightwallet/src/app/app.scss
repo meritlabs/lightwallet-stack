@@ -28,12 +28,39 @@ ion-content.content[fullscreen] {
   &:after {
     display: none;
   }
+}
 
+.ios ion-header.header-ios {
+  ion-navbar.toolbar-ios {
+    ion-title.title {
+      .toolbar-title, h2 {
+        letter-spacing: -0.4px;
+        font-weight: 500;
+      }
+    }
+  }
 
+  ion-navbar.toolbar-ios:not([color]),
+  ion-navbar.toolbar-ios[color='light'] {
+    ion-title.title {
+      .toolbar-title, h2 {
+        color: rgb(45, 60, 80);
+      }
+    }
+  }
 }
 
 .scroll-content {
   overflow-y: auto;
+}
+
+.toolbar[transparent] .toolbar-background {
+  background: transparent !important;
+}
+
+ion-avatar > ion-icon {
+  text-align: center;
+  width: 100%;
 }
 
 // Buttons
@@ -77,10 +104,6 @@ ion-card {
 
 .list-md .item-input:last-child {
   border-bottom: none;
-}
-
-.white-space-normal {
-  white-space: normal;
 }
 
 .plain-text {
@@ -138,7 +161,7 @@ ion-item textarea {
   color: white;
   padding: 28px 26px;
   position: relative;
-  min-height: 152px;
+  min-height: 172px;
 
   p, h2, h3 {
     margin: 0;
@@ -276,6 +299,7 @@ ion-item-divider.item.item-divider {
   border: 0;
   padding-top: 8px;
   padding-left: 18.5px;
+  padding-bottom: 8px;
 
   ion-label.label, ion-label.label h2 {
     font-size: 16px;
@@ -733,7 +757,7 @@ $v-tab-send-selected-icon: url('../img/tab-icons/ico-send-selected.svg') !defaul
   border: none !important;
 }
 
-.toolbar-md-light, toolbar-ios-light {
+.toolbar-md-light, .toolbar-ios-light {
   .toolbar-title {
     color: #2d3c50;
   }

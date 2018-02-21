@@ -2,11 +2,11 @@
     <ion-navbar color="light">
         <ion-title *ngIf="recipient.name?.formatted">
             <h2>Recipient: {{recipient.name.formatted}}</h2>
-            <p>via {{sendMethod.value|slice:0:25}}</p>
+            <p>via {{ sendMethod.alias? '@' + sendMethod.alias : sendMethod.value }}</p>
         </ion-title>
         <ion-title *ngIf="!recipient.name?.formatted">
-            <h2>{{sendMethod.type == 'easy' ? 'Easy Send to' : 'Classic Send to'}}</h2>
-            <p>{{sendMethod.value}}</p>
+            <h2>{{ sendMethod.type == 'easy' ? 'Easy Send to' : 'Classic Send to' }}</h2>
+            <p>{{ sendMethod.alias? '@' + sendMethod.alias : sendMethod.value }}</p>
         </ion-title>
     </ion-navbar>
 </ion-header>
@@ -23,7 +23,7 @@
                         {{currency.name}}
                         <span class="selected-mark" [hidden]="currency.type != selectedCurrency.type"></span>
                     </div>
-                </div> 
+                </div>
             </div>
 
             <div class="main-amount">
@@ -42,7 +42,7 @@
             </div>
 
             <div class="suggested-amounts">
-                <button ion-button outline (click)="selectAmount(amount)" *ngFor="let amount of suggestedAmounts[selectedCurrency.type]">
+                <button ion-button outline *ngFor="let amount of suggestedAmounts[selectedCurrency.type]" (click)="selectAmount(amount)">
                     {{amount}}
                 </button>
             </div>

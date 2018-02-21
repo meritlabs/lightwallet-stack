@@ -4,11 +4,8 @@ import { IonicPageModule } from 'ionic-angular';
 import { SharedModule } from 'merit/shared/shared.module';
 import { WalletDetailsView } from 'merit/wallets/wallet-details/wallet-details';
 import { ComponentsModule } from '../../../components/components.module';
+import { DirectivesModule } from '../../../directives/directives.module';
 
-
-/*
-  ToDo: Work to get this lazy-loadable as possible.
-*/
 @NgModule({
   declarations: [
     WalletDetailsView
@@ -17,7 +14,8 @@ import { ComponentsModule } from '../../../components/components.module';
     IonicPageModule.forChild(WalletDetailsView),
     MomentModule,
     SharedModule,
-    ComponentsModule
+    ComponentsModule,
+    DirectivesModule
   ]
 })
 export class WalletDetailsModule {

@@ -23,8 +23,8 @@ export class HistoryView {
               private contactsService: ContactsProvider) {
   }
 
-  async ngOnInit() {
-    await this.loadData();
+  ionViewWillEnter() {
+    return this.loadData();
   }
 
   async refresh(refresher: any) {
@@ -39,7 +39,7 @@ export class HistoryView {
     const wallets = await this.profileService.getWallets();
     const walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
       const walletHistory = await this.walletService.getTxHistory(wallet, { force });
-      const displayWallet: IDisplayWallet = await createDisplayWallet(wallet, this.walletService, this.sendService, { hideAnv: true, hideInvites: true, hideRewards: true});
+      const displayWallet: IDisplayWallet = await createDisplayWallet(wallet, this.walletService, this.sendService, { skipAnv: true, skipStatus: true, skipRewards: true});
       return formatWalletHistory(walletHistory, displayWallet, this.contactsService);
     }));
     this.transactions = sortBy(flatten(walletHistories), 'time').reverse();

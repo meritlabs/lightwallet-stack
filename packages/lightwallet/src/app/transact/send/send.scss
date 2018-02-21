@@ -48,7 +48,7 @@ view-send {
         display: block;
       }
 
-      > :first-child:not(.no-results) {
+      > :first-child:not(.no-results), .contacts-list {
         height: 100%;
 
         ion-item.item {

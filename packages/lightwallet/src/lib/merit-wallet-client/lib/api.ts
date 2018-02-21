@@ -24,6 +24,8 @@ const Package = require('../../../../package.json');
 
 const DEFAULT_FEE = 10000;
 
+import { ENV } from 'merit/../environments/environment';
+
 /**
  * Merit Wallet Client; (re-)written in typescript.
  * TODO:
@@ -784,7 +786,7 @@ export class API {
         let pubKey = Bitcore.PublicKey.fromString(addr.publicKeys[0]);
 
         // {key, secret}
-        let network = opts.network || Common.Constants.DEFAULT_NET;;
+        let network = opts.network || ENV.network;
         let rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
 
         let pubKeys = [
@@ -950,7 +952,7 @@ export class API {
    */
   buildRenewVaultTx(coins: any[], newVault: any, masterKey: any, opts: any = {}) {
 
-    var network = opts.network || Common.Constants.DEFAULT_NET;
+    var network = opts.network || ENV.network;
     var fee = opts.fee || DEFAULT_FEE;
 
     let totalAmount = _.sumBy(coins, 'micros');
@@ -1718,7 +1720,7 @@ export class API {
   getFeeLevels(network: string): Promise<any> {
       (!$.checkArgument(network || _.includes(['livenet', 'testnet'], network)));
 
-      return this._doGetRequest('/v1/feelevels/?network=' + (network || Common.Constants.DEFAULT_NET));
+      return this._doGetRequest('/v1/feelevels/?network=' + (network || ENV.network));
   };
 
   /**
@@ -1760,7 +1762,7 @@ export class API {
 
       if (opts) $.shouldBeObject(opts);
 
-      let network = opts.network || Common.Constants.DEFAULT_NET;
+      let network = opts.network || ENV.network;
       if (!_.includes(['testnet', 'livenet'], network)) return reject(new Error('Invalid network'));
 
       if (!this.credentials) {
@@ -1845,7 +1847,7 @@ export class API {
       $.shouldBeObject(opts);
     }
 
-    let network = opts.network || Common.Constants.DEFAULT_NET;;
+    let network = opts.network || ENV.network;;
     if (!_.includes(['testnet', 'livenet'], network)) {
       throw Error('Invalid network');
     }
@@ -2042,7 +2044,7 @@ export class API {
     };
 
     let processConfirmStatus = (status) => {
-        this.confirmed = (status.invitesBalance && status.invitesBalance.availableAmount > 0);
+        this.confirmed = (status.invitesBalance && status.invitesBalance.totalConfirmedAmount > 0);
     };
 
     // Resolve all our async calls here, then resolve this wrapping promise.

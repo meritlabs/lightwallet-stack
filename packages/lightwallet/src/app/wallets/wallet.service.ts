@@ -150,7 +150,7 @@ export class WalletService {
           cache.totalBalanceMicros = status.balance.totalAmount;
 
           if (status.invitesBalance) {
-            cache.availableInvites = Math.max(0, status.invitesBalance.availableAmount - 1);
+            cache.availableInvites = Math.max(0, status.invitesBalance.totalConfirmedAmount - 1);
           }
 
           cache.pendingCoinbaseAmount = status.balance.totalPendingCoinbaseAmount;
@@ -471,28 +471,25 @@ export class WalletService {
     });
   }
 
-  public updateRemotePreferences(clients: any, prefs: any = {}): Promise<any> {
+  public updateRemotePreferences(clients: any[], prefs: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
 
       if (!_.isArray(clients))
         clients = [clients];
 
-      let updateRemotePreferencesFor = (clients: any, prefs: any): Promise<any> => {
-        return new Promise((resolve, reject) => {
-          let wallet = clients.shift();
-          if (!wallet) return resolve();
-          this.logger.debug('Saving remote preferences', wallet.credentials.walletName, prefs);
+      const updateRemotePreferencesFor = async (clients: any[], prefs: any): Promise<any> => {
+        const wallet = clients.shift();
+        if (!wallet) return resolve();
 
-          wallet.savePreferences(prefs, (err: any) => {
+        this.logger.debug('Saving remote preferences', wallet.credentials.walletName, prefs);
 
-            if (err) {
-              this.popupService.ionicAlert('Could not save preferences on the server'); //TODO Gettextcatalog
-              return reject(err);
-            }
-
-            updateRemotePreferencesFor(clients, prefs);
-          });
-        });
+        try {
+          await wallet.savePreferences(prefs);
+          return updateRemotePreferencesFor(clients, prefs);
+        } catch (err) {
+          this.popupService.ionicAlert('Could not save preferences on the server'); //TODO Gettextcatalog
+          return reject(err);
+        }
       };
 
       // Update this JIC.
@@ -508,7 +505,6 @@ export class WalletService {
         this.logger.debug('Remote preferences saved for' + _.map(clients, (x: any) => {
           return x.credentials.walletId;
         }).join(','));
-
         _.each(clients, (c: any) => {
           c.preferences = _.assign(prefs, c.preferences);
         });

@@ -7,6 +7,7 @@ import * as sjcl from 'sjcl';
 const $ = preconditions.singleton();
 
 import { Common } from './common';
+import { ENV } from '../../../environments/environment';
 const Constants = Common.Constants;
 const Utils = Common.Utils;
 
@@ -203,9 +204,8 @@ export class Credentials {
   };
 
   constructor() {
-    let fixedNet = Constants.DEFAULT_NET;
-    this.network = fixedNet;
-    this.xPrivKey = (new Bitcore.HDPrivateKey(fixedNet)).toString();
+    this.network = ENV.network;
+    this.xPrivKey = (new Bitcore.HDPrivateKey(ENV.network)).toString();
     this.compliantDerivation = true;
     this.version = '1.0.0';
     this.derivationStrategy = Constants.DERIVATION_STRATEGIES.BIP44;
@@ -322,7 +322,6 @@ export class Credentials {
 
     let deriveFn: any = _.noop;
     let network = this._getNetworkFromExtendedKey(this.xPrivKey || this.xPubKey);
-    console.log(this.network, network);
     if (this.network) {
       $.checkState(this.network == network);
     } else {

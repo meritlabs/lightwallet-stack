@@ -4,20 +4,15 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { App, Events, ModalController, Nav, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
 import { AppService } from 'merit/core/app-settings.service';
-
 import { MWCErrors } from 'merit/core/bwc.service';
 import { DeepLinkService } from 'merit/core/deep-link.service';
-
 import { Logger } from 'merit/core/logger';
 import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
 import { ProfileService } from 'merit/core/profile.service';
-
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
-
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
 import { OnboardingView } from 'merit/onboard/onboarding.view';
 import { ConfigService } from 'merit/shared/config.service';
-
 import { TransactView } from 'merit/transact/transact';
 import { FingerprintLockView } from 'merit/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
@@ -118,7 +113,7 @@ export class MeritLightWallet {
     if (StatusBar.installed()) {
       // TODO use a status bar service to set color based on page we're on & header color
       if (this.platform.is('android')) {
-        this.statusBar.backgroundColorByHexString('00B0DD');
+        this.statusBar.backgroundColorByHexString('0488ab');
       } else if (this.platform.is('ios')) {
         this.statusBar.styleLightContent();
       }
