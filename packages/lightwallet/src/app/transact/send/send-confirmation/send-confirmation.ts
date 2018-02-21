@@ -256,7 +256,7 @@ export class SendConfirmationView {
       try {
         await this.sendService.registerSend(this.txData.sendMethod);
         await this.navCtrl.popToRoot();
-        await this.tabs.select(0);
+        await this.tabs.select(2);
         await this.tabs.getActiveChildNavs()[0].popToRoot();
       } catch (e) {
         console.log(e);
