@@ -104,7 +104,7 @@ export class WalletsView {
       await Promise.all([
         this.updateNetworkValue(),
         this.processPendingEasyReceipts(),
-        // this.updateVaults(_.head(this.wallets))
+        this.updateVaults(_.head(this.wallets).client)
       ]);
 
       this.logger.info('Done updating all info for wallet.');
