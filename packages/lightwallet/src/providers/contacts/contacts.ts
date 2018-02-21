@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Contact, ContactField, Contacts, IContactField } from '@ionic-native/contacts';
+import { Contact, Contacts, IContactField } from '@ionic-native/contacts';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { PersistenceService } from 'merit/core/persistence.service';
 import { IAddressBook, MeritContact } from '../../models/merit-contact';
@@ -35,6 +35,7 @@ export class ContactsProvider {
   }
 
   private async _init() {
+    this.addressBook = await this.getAddressbook();
     this.devicePermissionGranted = await this.hasDevicePermission();
 
     if (!this.devicePermissionGranted && Diagnostic.installed()) {
@@ -42,7 +43,6 @@ export class ContactsProvider {
     }
 
     this.contacts = await this.getAllMeritContacts();
-    this.addressBook = await this.getAddressbook();
 
     if (_.isEmpty(this.addressBook)) {
       this.contacts.forEach((contact: MeritContact) =>
@@ -64,10 +64,9 @@ export class ContactsProvider {
   };
 
   async add(entry: MeritContact, address: string, network: string = ENV.network): Promise<IAddressBook> {
-    const addressBook = await this.getAddressbook(network);
-    addressBook[address] = entry;
-    await this.persistenceService.setAddressbook(network, addressBook);
-    return addressBook;
+    this.addressBook[address] = entry;
+    await this.persistenceService.setAddressbook(network, this.addressBook);
+    return this.addressBook;
   };
 
   async bindAddressToContact(contact: MeritContact, address: string, network: string = ENV.network) {
@@ -90,12 +89,10 @@ export class ContactsProvider {
     return this.persistenceService.setAddressbook(network, addressBook);
   }
 
-  async get(addr: string, network: string = ENV.network): Promise<MeritContact> {
+  get(addr: string): MeritContact {
     try {
-      const addressBook = await this.getAddressbook(network);
-
-      if (addressBook && addressBook[addr]) {
-        return addressBook[addr];
+      if (this.addressBook && this.addressBook[addr]) {
+        return this.addressBook[addr];
       }
     } catch (err) {
       throw new Error('Contact with address ' + addr + ' not found');
@@ -117,7 +114,7 @@ export class ContactsProvider {
 
   async getAllMeritContacts(): Promise<MeritContact[]> {
     const deviceContacts: Contact[] = await this.getDeviceContacts();
-    const localContacts: IAddressBook = await this.getAddressbook(ENV.network);
+    const localContacts: IAddressBook = this.addressBook || {};
 
     const contacts: MeritContact[] = deviceContacts
       .filter((contact: Contact) => !_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails))
@@ -128,23 +125,26 @@ export class ContactsProvider {
     Object.keys(localContacts)
       .forEach((key: string) => {
         localContact = localContacts[key];
-        deviceContact = contacts.find((c: MeritContact) =>
-          // find by ID
-          (localContact.id === c.id) ||
-          // find by phone number
-          (localContact.phoneNumbers.some((p: IContactField) => Boolean(c.phoneNumbers.find(_p => _p.value == p.value)))) ||
-          // compare emails
-          (localContact.emails.some((e: IContactField) => Boolean(c.emails.find(_e => _e.value == e.value))))
-        );
 
-        if (deviceContact) {
-          // merge addresses
-          deviceContact.meritAddresses = _.uniq(Array.prototype.concat((deviceContact.meritAddresses || []), (localContact.meritAddresses || [])));
-        } else {
-          contacts.push(localContact);
+        if (localContact.id || localContact.phoneNumbers.length || localContact.emails.length) {
+          deviceContact = contacts.find((c: MeritContact) =>
+            // find by ID
+            (localContact.id === c.id) ||
+            // find by phone number
+            (localContact.phoneNumbers.some((p: IContactField) => Boolean(c.phoneNumbers.find(_p => _p.value == p.value)))) ||
+            // compare emails
+            (localContact.emails.some((e: IContactField) => Boolean(c.emails.find(_e => _e.value == e.value))))
+          );
+
+          if (deviceContact) {
+            // merge addresses
+            deviceContact.meritAddresses = _.uniq(Array.prototype.concat((deviceContact.meritAddresses || []), (localContact.meritAddresses || [])));
+            deviceContact = void 0;
+            return;
+          }
         }
 
-        deviceContact = void 0;
+        contacts.push(localContact);
       });
 
     localContact = void 0;
@@ -153,10 +153,9 @@ export class ContactsProvider {
   }
 
   async remove(addr: string, network: string = ENV.network): Promise<IAddressBook> {
-    const addressBook = await this.getAddressbook(network);
-    delete addressBook[addr];
-    await this.persistenceService.setAddressbook(network, addressBook);
-    return addressBook;
+    delete this.addressBook[addr];
+    await this.persistenceService.setAddressbook(network, this.addressBook);
+    return this.addressBook;
   };
 
   async getAddressbook(network: string = ENV.network): Promise<IAddressBook> {
@@ -186,7 +185,7 @@ export class ContactsProvider {
   }
 
   async getDeviceContacts() {
-    if (!await this.requestDevicePermission())
+    if (!await this.hasDevicePermission())
       return [];
 
     return this.deviceContactsProvider.find(['emails', 'phoneNumbers'], { desiredFields: DESIRED_FIELDS, multiple: true });
@@ -201,7 +200,7 @@ export class ContactsProvider {
 
   private async hasDevicePermission() {
     if (!Diagnostic.installed()) return false;
-    return await this.deviceDiagnosticProvider.isContactsAuthorized();
+    return (await this.deviceDiagnosticProvider.getContactsAuthorizationStatus()) === this.deviceDiagnosticProvider.permissionStatus.GRANTED;
   }
 
 }

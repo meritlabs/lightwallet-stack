@@ -18,7 +18,7 @@
 
   <div class="easy-send-section" *ngIf="contact?.phoneNumbers?.length || contact?.emails?.length">
 
-    <ion-item-divider>
+    <ion-item-divider text-wrap>
       EasySend
       <button ion-button clear (click)="showEasyTooltip()" class="tooltip-button">
         <ion-icon name="ios-information-circle-outline"></ion-icon>
@@ -61,14 +61,14 @@
               [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'easy'"
               [disabled]="!easySendEnabled">
 
-        <ion-avatar img-icon item-start *ngIf="i == 0">
-          <img src="assets/img/icons/merit.svg">
+        <ion-avatar img-icon item-start>
+          <img src="assets/img/icons/merit.svg" *ngIf="i == 0">
         </ion-avatar>
-        <ion-avatar item-start *ngIf="i != 0"></ion-avatar>
 
         <ion-label class="address-label">
           <p>Merit Address</p>
-          <h2 [class.address]="!meritAddress.alias">{{meritAddress.alias ? '@'+meritAddress.alias : meritAddress.address}}</h2>
+          <h2 [class.address]="!meritAddress.alias">{{meritAddress.alias ? '@'+meritAddress.alias :
+            meritAddress.address}}</h2>
         </ion-label>
       </button>
     </ion-list>
@@ -86,7 +86,7 @@
       </ion-item-divider>
 
       <button ion-item detail-none text-wrap *ngFor="let meritAddress of contact.meritAddresses; let i = index"
-              (click)="select('classic', 'address', meritAddress.address,  meritAddress.alias)"
+              (click)="select('classic', 'address', meritAddress.address, meritAddress.alias)"
               [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'classic'">
 
         <ion-avatar img-icon item-start *ngIf="i == 0">
@@ -95,9 +95,10 @@
         <ion-avatar item-start *ngIf="i != 0"></ion-avatar>
 
         <ion-label class="address-label">
-            <p>Merit Address</p>
-            <h2 [class.address]="!meritAddress.alias">{{meritAddress.alias ? '@'+meritAddress.alias : meritAddress.address}}</h2>
-          </ion-label>
+          <p>Merit Address</p>
+          <h2 [class.address]="!meritAddress.alias">{{meritAddress.alias ? '@'+meritAddress.alias :
+            meritAddress.address}}</h2>
+        </ion-label>
       </button>
     </ion-list>
 

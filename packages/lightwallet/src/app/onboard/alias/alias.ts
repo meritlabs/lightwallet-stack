@@ -11,6 +11,7 @@ import { ConfigService } from 'merit/shared/config.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { SendService } from 'merit/transact/send/send.service';
 import * as _ from 'lodash';
+import { cleanAddress, isAlias } from '../../../utils/addresses';
 
 // Unlock view for wallet
 @IonicPage({
@@ -60,7 +61,8 @@ export class AliasView {
 
   private async validateAlias() {
 
-    let input =  (this.formData.alias && this.formData.alias.charAt(0) == '@')  ? this.formData.alias.slice(1) : this.formData.alias;
+    this.formData.alias = cleanAddress(this.formData.alias);
+    const input = (this.formData.alias && isAlias(this.formData.alias))  ? this.formData.alias.slice(1) : this.formData.alias;
 
     if (!input) {
       this.validateAliasDebounce.cancel();
@@ -68,10 +70,10 @@ export class AliasView {
       return this.formData.aliasValidationError = null;
     }
 
-    if (input.length < 4) {
+    if (input.length < 3) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = 'Alias should contain at least 4 symbols';
+      return this.formData.aliasValidationError = 'Alias should contain at least 3 symbols';
     }
 
     if (!this.sendService.couldBeAlias(input)) {
@@ -99,7 +101,7 @@ export class AliasView {
       return false;
     }
 
-    const alias = (this.formData.alias && this.formData.alias.charAt(0) == '@') ? this.formData.alias.slice(1) : this.formData.alias;
+    const alias = (this.formData.alias && isAlias(this.formData.alias)) ? this.formData.alias.slice(1) : this.formData.alias;
 
     const loader = this.loaderCtrl.create({ content: 'Creating wallet...' });
     await loader.present();

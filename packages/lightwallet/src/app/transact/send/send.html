@@ -67,7 +67,7 @@
 
     </div>
 
-    <div *ngIf="!showRecent">
+    <div [hidden]="showRecent" class="contacts-list">
       <ion-list *ngIf="searchResult.withMerit.length" class="list-with-merit">
         <ion-item-divider>Friends with Merit
           <button ion-button clear item-end (click)="showRecent = true">Recent</button>
@@ -80,7 +80,10 @@
       </ion-list>
 
       <ion-list *ngIf="searchResult.noMerit.length" class="list-no-merit">
-        <ion-item-divider>Other Friends</ion-item-divider>
+        <ion-item-divider>
+          Other Friends
+          <button ion-button clear item-end (click)="showRecent = true" [hidden]="searchResult.withMerit.length">Recent</button>
+        </ion-item-divider>
         <ion-item *ngFor="let contact of searchResult.noMerit" (click)="sendToContact(contact)" class="contact">
           <contact-avatar [contact]="contact" item-start></contact-avatar>
           {{ contact.name.formatted }}
@@ -88,12 +91,13 @@
       </ion-list>
     </div>
 
-    <div *ngIf="showRecent">
+    <div [hidden]="!showRecent" class="contacts-list">
       <ion-list class="list-recent">
-        <ion-item-divider>Recent contacts
+        <ion-item-divider>Recent Contacts
           <button ion-button clear item-end (click)="showRecent = false">All Contacts</button>
         </ion-item-divider>
         <ion-item *ngFor="let contact of searchResult.recent" (click)="sendToContact(contact)" class="contact">
+          <contact-avatar [contact]="contact" item-start></contact-avatar>
           {{contact.name.formatted}}
           <img src="assets/img/icons/merit.svg" color="primary" item-end *ngIf="contact.meritAddresses.length">
         </ion-item>

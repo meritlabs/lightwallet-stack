@@ -1,8 +1,7 @@
-import { Component, SecurityContext } from '@angular/core';
-import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component } from '@angular/core';
+import { IonicPage, ModalController, NavController } from 'ionic-angular';
 import { SendService } from 'merit/transact/send/send.service';
-import { SendMethod } from 'merit/transact/send/send-method.model';
+import { ISendMethod, SendMethodDestination, SendMethodType } from 'merit/transact/send/send-method.model';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 import { ProfileService } from 'merit/core/profile.service';
@@ -11,11 +10,12 @@ import { ContactsProvider } from '../../../providers/contacts/contacts';
 import { MeritContact } from '../../../models/merit-contact';
 
 import { ENV } from '@app/env';
+import { cleanAddress, isAlias } from '../../../utils/addresses';
 
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
-const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND'; 
+const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 
 @IonicPage()
 @Component({
@@ -31,22 +31,20 @@ export class SendView {
   public amount: number;
   public searchResult: {
     withMerit: Array<MeritContact>,
-    noMerit:Array<MeritContact>,
-    recent:Array<MeritContact>,
-    toNewEntity:{destination:string, contact:MeritContact},
-    error:string
-  } = {withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null};
+    noMerit: Array<MeritContact>,
+    recent: Array<MeritContact>,
+    toNewEntity: { destination: string, contact: MeritContact },
+    error: string
+  } = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
 
-  private suggestedMethod: SendMethod;
+  private suggestedMethod: ISendMethod;
 
   public hasUnlockedWallets: boolean;
   public hasActiveInvites: boolean;
 
   constructor(private navCtrl: NavController,
-              private navParams: NavParams,
               private contactsService: ContactsProvider,
               private profileService: ProfileService,
-              private sanitizer: DomSanitizer,
               private sendService: SendService,
               private modalCtrl: ModalController,
               private addressScanner: AddressScannerService) {
@@ -60,38 +58,46 @@ export class SendView {
 
   async ionViewWillEnter() {
     this.loadingContacts = true;
+    await this.contactsService.requestDevicePermission();
     await this.updateHasUnlocked();
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
-    this.updateRecentContacts();
-    this.parseSearch();
+    await this.updateRecentContacts();
+    return this.parseSearch();
   }
 
   async updateRecentContacts() {
     const sendHistory = await this.sendService.getSendHistory();
+    const recentContacts = [];
 
-    let defineName = (record) => {
-      if (record.contact.name && record.contact.name.formatted) return record.contact.name.formatted;
-      return record.method.alias ? '@'+record.method.alias : record.method.value;
-    };
+    let results, contact;
 
-    this.recentContacts = [];
     sendHistory
       .sort((a, b) => b.timestamp - a.timestamp)
       .forEach((record) => {
-        record.contact.name = {formatted: defineName(record)};
-        this.recentContacts.push(record.contact);
+        results = this.contactsService.searchContacts(this.contacts, record.method.value);
+        if (results && results.length) {
+          recentContacts.push(results[0]);
+          results = void 0;
+        } else {
+          contact = new MeritContact();
+          contact.name.formatted = record.method.alias ? '@' + record.method.alias : record.method.value;
+          recentContacts.push(contact);
+          contact = void 0;
+        }
       });
+
+    this.recentContacts = _.uniqBy(recentContacts, 'name.formatted');
   }
 
   async parseSearch() {
-    let result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
+    const result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
 
     if (!this.searchQuery || !this.searchQuery.length) {
       this.clearSearch();
       this.debounceSearch.cancel();
       this.contacts.forEach((contact: MeritContact) => {
-        _.isEmpty(contact.meritAddresses) ?  result.noMerit.push(contact) : result.withMerit.push(contact);
+        _.isEmpty(contact.meritAddresses) ? result.noMerit.push(contact) : result.withMerit.push(contact);
       });
       result.recent = this.recentContacts;
       return this.searchResult = result;
@@ -103,18 +109,19 @@ export class SendView {
     this.debounceSearch();
   }
 
-  private debounceSearch = _.debounce(() => this.search(), 300)
+  private debounceSearch = _.debounce(() => this.search(), 300);
 
   private async search() {
 
-    let result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
+    const result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
+    const input = cleanAddress(this.searchQuery.split('?')[0]);
+    const _isAlias = isAlias(input);
 
-    const input = this.searchQuery.split('?')[0].replace(/\s+/g, '');
     this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
 
-    let query = input.indexOf('@') == 0 ? input.slice(1) : input;
+    let query = _isAlias ? input.slice(1) : input;
 
-    if (input.indexOf('@') == -1) { //don't search for contacts if it is an alias
+    if (!_isAlias) { //don't search for contacts if it is an alias
       this.contactsService.searchContacts(this.contacts, query)
         .forEach((contact: MeritContact) => {
           if (_.isEmpty(contact.meritAddresses)) {
@@ -129,14 +136,13 @@ export class SendView {
         });
     } else {
       query = query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-      result.withMerit = this.contacts.filter(contact => {
-        if (_.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))) return true;
-      });
-      result.recent = this.recentContacts.filter(contact => {
-        if (_.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))) return true;
-      });
+      result.withMerit = this.contacts.filter(contact =>
+        _.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))
+      );
+      result.recent = this.recentContacts.filter(contact =>
+        _.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))
+      );
     }
-
 
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
@@ -144,31 +150,58 @@ export class SendView {
         const addressInfo = await this.sendService.getAddressInfo(input);
 
         if (addressInfo && addressInfo.isConfirmed) {
-          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ address: addressInfo.address, alias: addressInfo.alias, network: ENV.network });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address, alias: addressInfo.alias };
+          result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
+          result.toNewEntity.contact.meritAddresses.push({
+            address: addressInfo.address,
+            alias: addressInfo.alias,
+            network: ENV.network
+          });
+          this.suggestedMethod = {
+            type: SendMethodType.Classic,
+            destination: SendMethodDestination.Address,
+            value: addressInfo.address,
+            alias: addressInfo.alias
+          };
         } else {
           result.error = ERROR_ADDRESS_NOT_CONFIRMED;
         }
       } else if (this.couldBeAlias(input)) {
-        let alias = input.slice(1);
-        const addressInfo = await this.sendService.getAddressInfo(alias);
+        const addressInfo = await this.sendService.getAddressInfo(input);
 
         if (addressInfo && addressInfo.isConfirmed) {
-          result.toNewEntity = { destination: SendMethod.DESTINATION_ADDRESS, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ address: addressInfo.address, alias: addressInfo.alias,  network: ENV.network });
-          this.suggestedMethod = { type: SendMethod.TYPE_CLASSIC, destination: SendMethod.DESTINATION_ADDRESS, value: addressInfo.address, alias: addressInfo.alias };
+          result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
+          result.toNewEntity.contact.meritAddresses.push({
+            address: addressInfo.address,
+            alias: addressInfo.alias,
+            network: ENV.network
+          });
+          this.suggestedMethod = {
+            type: SendMethodType.Classic,
+            destination: SendMethodDestination.Address,
+            value: addressInfo.address,
+            alias: addressInfo.alias
+          };
         } else {
-          result.error = ERROR_ALIAS_NOT_FOUND; 
+          result.error = ERROR_ALIAS_NOT_FOUND;
         }
       } else if (this.couldBeEmail(input)) {
-        result.toNewEntity = {destination: SendMethod.DESTINATION_EMAIL, contact: new MeritContact()};
-        result.toNewEntity.contact.emails.push({value: input})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_EMAIL, value: input, alias: ''};
+        result.toNewEntity = { destination: SendMethodDestination.Email, contact: new MeritContact() };
+        result.toNewEntity.contact.emails.push({ value: input });
+        this.suggestedMethod = {
+          type: SendMethodType.Easy,
+          destination: SendMethodDestination.Email,
+          value: input,
+          alias: ''
+        };
       } else if (this.couldBeSms(input)) {
-        result.toNewEntity = {destination: SendMethod.DESTINATION_SMS, contact: new MeritContact()};
-        result.toNewEntity.contact.phoneNumbers.push({value: input})
-        this.suggestedMethod = {type: SendMethod.TYPE_EASY, destination: SendMethod.DESTINATION_SMS, value: input, alias: ''};
+        result.toNewEntity = { destination: SendMethodDestination.Sms, contact: new MeritContact() };
+        result.toNewEntity.contact.phoneNumbers.push({ value: input });
+        this.suggestedMethod = {
+          type: SendMethodType.Easy,
+          destination: SendMethodDestination.Sms,
+          value: input,
+          alias: ''
+        };
       }
     }
 
@@ -184,7 +217,7 @@ export class SendView {
   }
 
   private couldBeAlias(input) {
-    if (input.charAt(0) != '@') return false;
+    if (!isAlias(input)) return false;
     return this.sendService.couldBeAlias(input.slice(1));
   }
 
@@ -248,7 +281,8 @@ export class SendView {
     this.navCtrl.push('SendViaView', {
       contact: entity.contact,
       amount: this.amount,
-      isEasyEnabled: this.hasActiveInvites
+      isEasyEnabled: this.hasActiveInvites,
+      suggestedMethod: this.suggestedMethod
     });
   }
 

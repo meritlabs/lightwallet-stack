@@ -1,3 +1,31 @@
+.ios {
+  view-send-via,
+  view-send-amount {
+    ion-header {
+      ion-title.title {
+        width: calc(100% - 50px);
+        padding: 0;
+        padding-bottom: 1px;
+        padding-left: 50px;
+
+        h2 {
+          font-size: 15px;
+          margin-bottom: 3px;
+        }
+
+        p {
+          color: rgb(70, 85, 111);
+          font-size: 11px;
+          letter-spacing: -.3px;
+        }
+      }
+    }
+  }
+}
+
+
+
+
 vault-spend-confirm-view,
 send-confirm-view,
 send-amount-view {
