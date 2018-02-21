@@ -916,10 +916,8 @@ export class API {
         opts.masterPubKey.toBuffer(),
       ];
 
-
       params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
       params = params.concat(whitelist);
-
       params.push(Bitcore.Opcode.smallInt(whitelist.length));
       params.push(tag);
       params.push(Bitcore.Opcode.smallInt(type));
@@ -1075,8 +1073,8 @@ export class API {
         });
 
         let params = [
-          new Bitcore.PublicKey(vault.spendPubKey, {network: network}).toBuffer(),
-          new Bitcore.PublicKey(vault.masterPubKey, {network: network}).toBuffer(),
+          new Bitcore.PublicKey(vault.spendPubKey, { network }).toBuffer(),
+          new Bitcore.PublicKey(vault.masterPubKey, { network }).toBuffer(),
         ];
 
         params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
