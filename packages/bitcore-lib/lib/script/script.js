@@ -985,7 +985,6 @@ Script.buildVaultRenewIn = function(signature, vaultScript, signPubKey) {
  */
 Script.buildVaultSpendIn = function(signature, vaultScript, signPubKey) {
   return Script.buildVaultIn(0, signature, vaultScript, signPubKey);
-  return s;
 };
 
 Script.buildParameterizedP2SH = function(script, params) {

@@ -974,8 +974,8 @@ export class API {
         });
 
         let params = [
-          new Bitcore.PublicKey(newVault.spendPubKey, { network: network }).toBuffer(),
-          new Bitcore.PublicKey(newVault.masterPubKey, { network: network }).toBuffer()
+          new Bitcore.PublicKey(newVault.spendPubKey, { network }).toBuffer(),
+          new Bitcore.PublicKey(newVault.masterPubKey, { network }).toBuffer()
         ];
 
         params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
@@ -1009,8 +1009,8 @@ export class API {
         const signPrivKey = Bitcore.HDPrivateKey.fromString(this.credentials.xPrivKey).privateKey;
         const pubkey = signPrivKey.publicKey;
 
-        _.forEach(tx.inputs, (input) => {
-          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
+        _.forEach(tx.inputs, (input, i) => {
+          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
           let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, pubkey);
           input.setScript(inputScript);
         });
