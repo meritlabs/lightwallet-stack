@@ -74,8 +74,6 @@ export class ImportView {
       this.formData.network = parts[2];
       this.formData.derivationPath = parts[3];
       this.formData.hasPassphrase = Boolean(parts[4]);
-    } else {
-      return this.toastCtrl.create({ message: 'Invalid derivation path', cssClass: ToastConfig.CLASS_ERROR }).present();
     }
   }
 
