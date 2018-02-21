@@ -50,7 +50,7 @@
 
     <ion-item>
             <ion-label stacked>New Address</ion-label>
-            <ion-input type="text" placeholder="Enter Merit Address" [(ngModel)]="newAddress"></ion-input>
+            <ion-input type="text" placeholder="Enter Merit Address or Alias" [(ngModel)]="newAddress"></ion-input>
             <button ion-button icon-only clear item-end (click)="addAddress(newAddress)" *ngIf="newAddress"><ion-icon name="checkmark-circle" color="primary"></ion-icon></button>
     </ion-item>
 

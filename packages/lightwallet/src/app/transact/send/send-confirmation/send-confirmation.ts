@@ -12,7 +12,7 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { EasySend, getEasySendURL } from 'merit/transact/send/easy-send/easy-send.model';
 import * as  _ from 'lodash';
-import { SendMethod } from 'merit/transact/send/send-method.model';
+import { ISendMethod, SendMethodDestination, SendMethodType } from 'merit/transact/send/send-method.model';
 import { RateService } from 'merit/transact/rate.service';
 import { SendService } from 'merit/transact/send/send.service';
 
@@ -39,7 +39,7 @@ export class SendConfirmationView {
       emails?: Array<{ value: string }>;
       phoneNumbers?: Array<{ value: string }>;
     };
-    sendMethod: SendMethod;
+    sendMethod: ISendMethod;
     txp: any;
     easySend?: EasySend;
     easySendUrl?: string;
@@ -88,7 +88,7 @@ export class SendConfirmationView {
       ),
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
-      methodName: this.txData.sendMethod.type == SendMethod.TYPE_EASY ? 'Easy Send' : 'Classic Send',
+      methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'Easy Send' : 'Classic Send',
       destination: this.txData.sendMethod.alias || this.txData.sendMethod.value
     };
 
@@ -226,11 +226,11 @@ export class SendConfirmationView {
         }));
       }
       await this.approveTx();
-      if (this.txData.sendMethod.type == SendMethod.TYPE_EASY) {
+      if (this.txData.sendMethod.type == SendMethodType.Easy) {
         await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
         console.dir(this.txData.easySendUrl);
         switch (this.txData.sendMethod.destination) {
-          case SendMethod.DESTINATION_SMS:
+          case SendMethodDestination.Sms:
             await this.easySendService.sendSMS(
               _.get(this.txData.recipient.phoneNumbers, '[0].value'),
               this.viewData.amountMrt,
@@ -238,7 +238,7 @@ export class SendConfirmationView {
             );
             break;
 
-          case SendMethod.DESTINATION_EMAIL:
+          case SendMethodDestination.Email:
             await this.easySendService.sendEmail(
               _.get(this.txData.recipient.emails, '[0].value'),
               this.viewData.amountMrt,
@@ -254,7 +254,7 @@ export class SendConfirmationView {
 
 
       try {
-        await this.sendService.registerSend(this.txData.recipient, this.txData.sendMethod);
+        await this.sendService.registerSend(this.txData.sendMethod);
         await this.navCtrl.popToRoot();
         await this.tabs.select(0);
         await this.tabs.getActiveChildNavs()[0].popToRoot();

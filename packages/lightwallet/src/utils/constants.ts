@@ -7,3 +7,5 @@ export const MERIT_MODAL_OPTS: ModalOptions = {
 };
 
 export const COINBASE_CONFIRMATION_THRESHOLD = 6;
+
+export const DEFAULT_WALLET_COLOR: string = '#00B0DD'; // primary color
