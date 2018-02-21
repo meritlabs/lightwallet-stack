@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { App, IonicPage, LoadingController } from 'ionic-angular';
+import { App, IonicPage, Loading, LoadingController } from 'ionic-angular';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
@@ -12,6 +12,8 @@ import { WalletService } from 'merit/wallets/wallet.service';
 import { startsWith } from 'lodash';
 
 import { ENV } from '@app/env';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
@@ -51,7 +53,7 @@ export class ImportView {
               private app: App,
               private mnemonicService: MnemonicService,
               private addressScanner: AddressScannerService,
-              private walletService: WalletService) {
+              private pushNotificationsService: PushNotificationsService) {
 
     this.formData.bwsUrl = ENV.mwsUrl;
     this.formData.network = ENV.network;
@@ -194,9 +196,10 @@ export class ImportView {
     );
   }
 
-  private async processCreatedWallet(wallet, loader?) {
-    await this.walletService.updateRemotePreferences(wallet);
+  private async processCreatedWallet(wallet: MeritWalletClient, loader?: Loading) {
+    // await this.walletService.updateRemotePreferences(wallet);
     this.profileService.setBackupFlag(wallet.credentials.walletId);
+    this.pushNotificationsService.subscribe(wallet);
     if (loader) loader.dismiss();
     this.app.getRootNavs()[0].setRoot('TransactView');
   }
