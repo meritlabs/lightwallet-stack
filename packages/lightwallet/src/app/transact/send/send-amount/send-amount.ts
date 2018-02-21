@@ -8,7 +8,7 @@ import {
   NavParams
 } from 'ionic-angular';
 import * as _ from 'lodash';
-import { SendMethod } from 'merit/transact/send/send-method.model';
+import { ISendMethod, SendMethodType } from 'merit/transact/send/send-method.model';
 import { ConfigService } from 'merit/shared/config.service';
 import { RateService } from 'merit/transact/rate.service';
 import { FeeService } from 'merit/shared/fee/fee.service';
@@ -30,7 +30,7 @@ import { MeritContact } from '../../../../models/merit-contact';
 })
 export class SendAmountView {
   public recipient: MeritContact;
-  public sendMethod: SendMethod;
+  public sendMethod: ISendMethod;
 
   public availableUnits: Array<{ type: string, name: string }>;
   public selectedCurrency: { type: string, name: string };
@@ -160,6 +160,7 @@ export class SendAmountView {
         this.selectedFeeLevel = data.name;
         this.selectedFee = data;
         this.txData.txp.fee = data.micros;
+        this.updateTxData();
       }
     });
   }
@@ -180,9 +181,9 @@ export class SendAmountView {
     }
   }
 
-  async selectAmount(amount) {
+  async selectAmount(amount: string) {
+    let micros: number;
 
-    let micros = 0;
     if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
       micros = this.rateService.mrtToMicro(parseFloat(amount));
     } else {
@@ -200,10 +201,8 @@ export class SendAmountView {
       this.formData.amount = amount;
     }
 
-    this.formData.amount = String(Math.round(parseFloat(this.formData.amount) * 1e8) / 1e8);
-
     await this.updateAmount();
-    await this.updateTxData();
+    return this.updateTxData();
   }
 
   async processAmount(value) {
@@ -237,7 +236,6 @@ export class SendAmountView {
   }
 
   public toggleFeeIncluded() {
-    this.updateTxData();
   }
 
   public isSendAllowed() {
@@ -270,6 +268,7 @@ export class SendAmountView {
     }).catch(() => {
       loadingSpinner.dismiss();
     });
+
   }
 
   selectExpirationDate() {
@@ -291,6 +290,7 @@ export class SendAmountView {
       return this.createTxpDebounce.cancel();
     } else if (this.amount.micros > this.selectedWallet.status.spendableAmount) {
       this.feeCalcError = 'Amount is too big';
+      this.selectedFee = null;
       this.txData = null;
       this.feeLoading = false;
       return this.createTxpDebounce.cancel();
@@ -327,6 +327,7 @@ export class SendAmountView {
         feeLevel: this.selectedFeeLevel
       };
 
+      console.log(this.amount.micros, this.selectedWallet.status.spendableAmount);
       if (this.amount.micros == this.selectedWallet.status.spendableAmount) {
         data.sendMax = true;
         data.toAmount = null;
@@ -382,6 +383,7 @@ export class SendAmountView {
       this.txData.txp = null;
       this.logger.warn(err);
       if (err.message) this.feeCalcError = err.message;
+      this.selectedFee = null;
       return this.toastCtrl.create({
         message: err.message || 'Unknown error',
         cssClass: ToastConfig.CLASS_ERROR
@@ -390,11 +392,10 @@ export class SendAmountView {
       this.feeLoading = false;
     }
 
-
   }
 
   private getEasyData() {
-    if (this.sendMethod.type != SendMethod.TYPE_EASY) {
+    if (this.sendMethod.type != SendMethodType.Easy) {
       return Promise.resolve({});
     } else {
       return this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password).then((easySend) => {

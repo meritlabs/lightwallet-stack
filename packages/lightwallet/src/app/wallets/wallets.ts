@@ -1,9 +1,7 @@
-import { ApplicationRef, Component, NgZone } from '@angular/core';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { Platform, AlertController, App, Events, IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { AlertController, IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
-import { AppUpdateService } from 'merit/core/app-update.service';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
@@ -11,18 +9,13 @@ import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
 import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
-import { Feedback } from 'merit/feedback/feedback.model'
-import { FeedbackService } from 'merit/feedback/feedback.service'
-import { ConfigService } from 'merit/shared/config.service';
 import { FiatAmount } from 'merit/shared/fiat-amount.model';
-import { RateService } from 'merit/transact/rate.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-import { ContactsProvider } from '../../providers/contacts/contacts';
-import { ENV } from '@app/env';
+import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -38,19 +31,13 @@ const RETRY_TIMEOUT = 1000;
 })
 export class WalletsView {
 
-  totalNetworkValue;
-  totalNetworkValueMicros;
-  totalNetworkValueFiat;
-
-  wallets: MeritWalletClient[];
+  totalInvites: number;
+  totalWalletsValueMicros: string;
+  totalWalletsValueFiat: string;
+  allBalancesHidden: boolean;
+  wallets: IDisplayWallet[];
   vaults;
-  feedbackNeeded: boolean;
-  feedbackData = new Feedback();
-
-  addressbook;
-  txpsData: any[] = [];
   network: string;
-
   loading: boolean;
 
   private get isActivePage(): boolean {
@@ -66,66 +53,54 @@ export class WalletsView {
               private easyReceiveService: EasyReceiveService,
               private toastCtrl: MeritToastController,
               private profileService: ProfileService,
-              private feedbackService: FeedbackService,
-              private inAppBrowser: InAppBrowser,
-              private configService: ConfigService,
               private alertController: AlertController,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private contactsService: ContactsProvider,
               private vaultsService: VaultsService,
-              private platform: Platform
-  ) {
-    this.logger.warn('WalletsView constructor!');
+              private platform: Platform) {
+    this.logger.debug('WalletsView constructor!');
   }
 
   async doRefresh(refresher) {
     try {
       await this.refreshAllInfo();
-    } catch (e) {}
+    } catch (e) {
+    }
     refresher.complete();
   }
 
   async refreshAllInfo() {
     if (this.isRefreshingAllInfo) return;
     this.isRefreshingAllInfo = true;
-    await this.updateAllInfo(true);
+    await this.updateAllInfo();
     this.isRefreshingAllInfo = false;
   }
 
-  async ionViewDidLoad() {
-    this.logger.warn('Hello WalletsView :: IonViewDidLoad!');
+  async ngOnInit() {
+    this.logger.debug('Hello WalletsView :: IonViewDidLoad!');
     this.platform.resume.subscribe(() => {
       this.logger.info('WalletView is going to refresh data on resume.');
       if (this.isActivePage) {
         this.refreshAllInfo();
       }
     });
-
-    await this.refreshAllInfo();
-    this.logger.info('Got updated data in walletsView on Ready!!');
   }
 
-  async updateAllInfo(force?: boolean) {
+  ionViewWillEnter() {
+    this.refreshAllInfo()
+      .then(() => this.logger.info('Updated info for wallets view'));
+  }
 
+  async updateAllInfo() {
     this.loading = true;
 
     const fetch = async () => {
-      this.addressbook = await this.contactsService.list(ENV.network);
-      const wallets = await this.updateAllWallets(force);
-
-      if (_.isEmpty(wallets)) {
-        return null; //ToDo: add proper error handling;
-      }
-
-      this.wallets = wallets;
-
+      this.wallets = await this.updateAllWallets();
       // Now that we have wallets, we will proceed with the following operations in parallel.
       await Promise.all([
-        this.updateNetworkValue(wallets),
+        this.updateNetworkValue(),
         this.processPendingEasyReceipts(),
-        this.updateTxps({ limit: 3 }),
-        this.updateVaults(_.head(this.wallets))
+        // this.updateVaults(_.head(this.wallets))
       ]);
 
       this.logger.info('Done updating all info for wallet.');
@@ -166,40 +141,17 @@ export class WalletsView {
     }
   }
 
-  openWallet(wallet) {
-    if (!wallet.isComplete) {
-      this.navCtrl.push('CopayersView')
-    } else {
-      this.navCtrl.push('WalletDetailsView', { walletId: wallet.id, wallet: wallet });
-    }
-  }
-
-  sendFeedback() {
-    this.feedbackNeeded = false;
-    this.feedbackService.sendFeedback(this.feedbackData).catch(() => {
-      this.toastCtrl.create({
-        message: 'Failed to send feedback. Please try again later',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
-    })
-  }
-
-  toLatestRelease() {
-    this.inAppBrowser.create(this.configService.get().release.url);
-  }
-
   toAddWallet() {
-
     if (!_.isEmpty(this.wallets)) {
-
       // todo check for existing invites and suggest the wallet that has any
-      const referralAdderss = this.walletService.getRootAddress(this.wallets[0]);
+      const referralAdderss = this.walletService.getRootAddress(this.wallets[0].client);
 
       return this.navCtrl.push('CreateWalletView', {
         updateWalletListCB: this.refreshWalletList.bind(this),
         parentAddress: referralAdderss
       });
     }
+
     return this.navCtrl.push('CreateWalletView', { updateWalletListCB: this.refreshWalletList.bind(this) });
   }
 
@@ -214,25 +166,6 @@ export class WalletsView {
 
   async refreshVaultList() {
     return this.updateVaults(await this.profileService.getHeadWalletClient());
-  }
-
-  txpCreatedWithinPastDay(txp) {
-    const createdOn = new Date(txp.createdOn * 1000);
-    return ((new Date()).getTime() - createdOn.getTime()) < (1000 * 60 * 60 * 24);
-  }
-
-  walletHasPendingAmount(wallet: any): boolean {
-    try {
-      if (wallet.status && wallet.status.balance) {
-        return Number(wallet.status.balance.totalAmount) !== Number(wallet.status.balance.totalConfirmedAmount);
-      }
-    } catch (e) {}
-
-    return false;
-  }
-
-  private async updateTxps({ limit } = { limit: 3 }): Promise<any> {
-    this.txpsData = await this.profileService.getTxps({ limit });
   }
 
   private async updateVaults(wallet: MeritWalletClient): Promise<any> {
@@ -309,44 +242,44 @@ export class WalletsView {
       buttons: [
         {
           text: 'Ignore', role: 'cancel', handler: () => {
-            this.logger.info('You have declined easy receive');
-            this.easyReceiveService.deletePendingReceipt(receipt).then(() =>
-              this.processPendingEasyReceipts()
-            );
-          }
+          this.logger.info('You have declined easy receive');
+          this.easyReceiveService.deletePendingReceipt(receipt).then(() =>
+            this.processPendingEasyReceipts()
+          );
+        }
         },
         {
           text: 'Validate', handler: (data) => {
-            if (!data || !data.password) {
-              this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the moment
-            } else {
-              this.processEasyReceipt(receipt, true);
-            }
+          if (!data || !data.password) {
+            this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the moment
+          } else {
+            this.processEasyReceipt(receipt, true);
           }
+        }
         }
       ]
     }).present();
   }
 
   private showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
-    const amount = _.get(_.find(data.txs, (tx :any) => !tx.invite), 'amount', 0);
+    const amount = _.get(_.find(data.txs, (tx: any) => !tx.invite), 'amount', 0);
 
     this.alertController.create({
       title: `You've got ${amount} Merit!`,
       buttons: [
         {
           text: 'Reject', role: 'cancel', handler: () => {
-            this.rejectEasyReceipt(receipt, data).then(() =>
-              this.processPendingEasyReceipts()
-            );
-          }
+          this.rejectEasyReceipt(receipt, data).then(() =>
+            this.processPendingEasyReceipts()
+          );
+        }
         },
         {
           text: 'Accept', handler: () => {
-            this.acceptEasyReceipt(receipt, data).then(() =>
-              this.processPendingEasyReceipts()
-            );
-          }
+          this.acceptEasyReceipt(receipt, data).then(() =>
+            this.processPendingEasyReceipts()
+          );
+        }
         }
       ]
     }).present();
@@ -413,47 +346,32 @@ export class WalletsView {
     });
   }
 
-  private async updateNetworkValue(wallets: Array<any>) {
-    let totalAmount: number = 0;
+  private async updateNetworkValue() {
+    let totalAmount: number = 0,
+      totalInvites: number = 0,
+      allBalancesHidden: boolean = true;
 
-    await Promise.all(wallets.map(async (wallet) => {
-      totalAmount += await this.walletService.getANV(wallet);
-    }));
+    this.wallets.forEach((w: IDisplayWallet) => {
+      totalAmount += w.totalBalanceMicros;
+      totalInvites += w.invites;
+      allBalancesHidden = w.client.balanceHidden && allBalancesHidden;
+    });
 
     const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
-    this.totalNetworkValueFiat = usdAmount ? new FiatAmount(+usdAmount).amountStr : '';
-    this.totalNetworkValue = totalAmount;
-    this.totalNetworkValueMicros = this.txFormatService.parseAmount(this.totalNetworkValue, 'micros').amountUnitStr;
-  }
 
-  private rateApp(mark) {
-    this.feedbackData.mark = mark;
-  }
-
-  private cancelFeedback() {
-    this.feedbackData.mark = null;
-  }
-
-  private async updateAllWallets(force: boolean = false): Promise<MeritWalletClient[]> {
-    const wallets = await this.profileService.getWallets();
-    return Promise.all(wallets.map(async (wallet) => {
-      this.profileService.updateWalletSettings(wallet);
-      wallet.status = await this.walletService.getStatus(wallet, { force: force });
-      return wallet;
-    }));
-  }
-
-  private needWalletStatuses(): boolean {
-    if (_.isEmpty(this.wallets)) {
-      return true;
+    if (!(this.allBalancesHidden = allBalancesHidden)) {
+      this.totalWalletsValueFiat = usdAmount ? new FiatAmount(+usdAmount).amountStr : '';
+      this.totalWalletsValueMicros = this.txFormatService.parseAmount(totalAmount, 'micros').amountUnitStr;
     }
 
-    _.each(this.wallets, (wallet) => {
-      if (!wallet.status) {
-        return true;
-      }
-    });
-    return false;
+    this.totalInvites = totalInvites;
+  }
+
+  private async updateAllWallets(): Promise<IDisplayWallet[]> {
+    const wallets = await this.profileService.getWallets();
+    return Promise.all<IDisplayWallet>(
+      wallets.map(w => createDisplayWallet(w, this.walletService, null, { skipRewards: true, skipAlias: true }))
+    );
   }
 
 }

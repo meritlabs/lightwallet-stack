@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
+import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { SendService } from 'merit/transact/send/send.service';
-import { ToastConfig } from "merit/core/toast.config";
-import { MeritToastController } from "merit/core/toast.controller";
-import { MeritContact } from '../../../../models/merit-contact';
+import { ToastConfig } from 'merit/core/toast.config';
+import { MeritToastController } from 'merit/core/toast.controller';
+import { IMeritAddress, MeritContact } from '../../../../models/merit-contact';
 import { ContactsProvider } from '../../../../providers/contacts/contacts';
 
 import { ENV } from '@app/env';
+import { cleanAddress, isAlias } from '../../../../utils/addresses';
 
 @IonicPage()
 @Component({
@@ -15,19 +16,15 @@ import { ENV } from '@app/env';
 })
 export class SendCreateContactView {
 
-  public contact:MeritContact;
-  public amount:number;
-  public addAddressMode:boolean;
-  public newAddress:string;
+  public contact: MeritContact;
+  public amount: number;
+  public newAddress: string;
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private contactsService: ContactsProvider,
-    private sendService: SendService,
-    private toastController: MeritToastController,
-    private viewCtrl: ViewController
-  ) {
+  constructor(private navParams: NavParams,
+              private contactsService: ContactsProvider,
+              private sendService: SendService,
+              private toastController: MeritToastController,
+              private viewCtrl: ViewController) {
     let address = this.navParams.get('address');
     this.contact = new MeritContact();
     this.contact.meritAddresses.push(address);
@@ -40,25 +37,35 @@ export class SendCreateContactView {
       });
   }
 
-  async addAddress(address) {
+  cancel() {
+    this.viewCtrl.dismiss();
+  }
 
-    if (this.contact.meritAddresses.filter(m => m.address == address).length) {
+  async addAddress(address: string) {
+    address = cleanAddress(address);
+    if (isAlias(address)) address = address.slice(1);
+    if (this.contact.meritAddresses.findIndex(m => m.address == address || m.alias == address) > -1) {
       return this.toastController.create({
         message: 'Address is already bound to this contact',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     }
 
-    let isAddressValid = await this.sendService.isAddressValid(address);
-    if (!isAddressValid) {
+    const info = await this.sendService.getAddressInfoIfValid(address);
+
+    if (!info) {
       return this.toastController.create({
         message: 'Address is invalid or not invited to blockchain yet',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
-    } 
+    }
 
-    let network = ENV.network;
-    let meritAddress = {address, network};
+    const meritAddress: IMeritAddress = {
+      network: ENV.network,
+      address: info.address,
+      alias: info.alias
+    };
+
     this.contact.meritAddresses.push(meritAddress);
     this.newAddress = '';
   }

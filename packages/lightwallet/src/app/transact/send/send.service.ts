@@ -5,6 +5,8 @@ import { PersistenceService } from 'merit/core/persistence.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { RateService } from 'merit/transact/rate.service';
 import { MeritWalletClient } from "merit/../lib/merit-wallet-client/index";
+import { ISendMethod } from 'merit/transact/send/send-method.model';
+import { isAlias } from '../../../utils/addresses';
 
 /*
  Service to help manage sending merit to others.
@@ -31,7 +33,7 @@ export class SendService {
 
   public isAddress(addr: string): boolean {
     try {
-      let address = this.bitcore.Address.fromString(addr);
+      this.bitcore.Address.fromString(addr);
       return true;
     } catch (_e) {
       return false;
@@ -42,10 +44,15 @@ export class SendService {
     return this.bitcore.Referral.validateAlias(alias);
   }
 
-  public async getAddressInfo(addr: string) {
-    return await this.client.validateAddress(addr);
+  public getAddressInfo(addr: string) {
+    if (isAlias(addr)) addr = addr.slice(1);
+    return this.client.validateAddress(addr);
   }
 
+  async getAddressInfoIfValid(addr: string) {
+    const info = await this.getAddressInfo(addr);
+    return info.isValid && info.isBeaconed && info.isConfirmed ? info : null;
+  }
 
   public async isAddressValid(addr: string): Promise<boolean> {
     if (!this.isAddress(addr)) {
@@ -86,8 +93,8 @@ export class SendService {
     return this.bitcore.Address.fromString(addr).network;
   }
 
-  public async registerSend(contact, method) {
-    return this.persistenceService.registerSend(contact, method);
+  public async registerSend(method: ISendMethod) {
+    return this.persistenceService.registerSend(method);
   }
 
   public async getSendHistory() {

@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-navbar color="light">
+  <ion-navbar>
     <ion-title>Select Wallet</ion-title>
     <ion-buttons end>
       <button ion-button (click)="cancel()" translate>
@@ -9,7 +9,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content no-bounce>
   <!-- TODO indicate whether wallet is locked -->
   <div *ngIf="wallets">
     <button ion-item detail-none *ngFor="let wallet of wallets" [class.selected]="selectedWallet.id == wallet.id" (click)="select(wallet)">
@@ -17,7 +17,7 @@
         <h2 translate>
           {{wallet.name || wallet._id}}
         </h2>
-        <p> 
+        <p>
           <span *ngIf="!wallet.confirmed">Not unlocked</span>
           <span *ngIf="wallet.confirmed && !wallet.isComplete()" class="assertive" translate>Incomplete</span>
           <span *ngIf="wallet.confirmed &&  wallet.isComplete()">
