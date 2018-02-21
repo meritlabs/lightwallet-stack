@@ -3,7 +3,7 @@
   <ion-navbar color="light">
     <ion-title>
       <h2>Send</h2>
-      <p>{{getDisplayedName()}}</p>
+      <p>{{ getDisplayedName() }}</p>
     </ion-title>
     <ion-buttons end *ngIf="contact?.name?.formatted">
       <button ion-button (click)="editContact()" translate color="primary">
@@ -32,11 +32,11 @@
               (click)="select('easy', 'sms', phoneNumber.value)"
               [class.selected]="highlightedMethod?.value == phoneNumber.value" [disabled]="!easySendEnabled">
         <ion-avatar img-icon item-start *ngIf="i == 0">
-          <ion-icon name="phone-portrait"></ion-icon>
+          <ion-icon name="phone" merit-icon></ion-icon>
         </ion-avatar>
         <ion-avatar item-start *ngIf="i != 0"></ion-avatar>
         <h2>Home phone</h2>
-        <p>{{phoneNumber.value}}</p>
+        <p>{{ phoneNumber.value }}</p>
       </button>
     </ion-list>
 
@@ -45,12 +45,12 @@
               (click)="select('easy', 'email', email.value)" [class.selected]="highlightedMethod?.value == email.value"
               [disabled]="!easySendEnabled">
         <ion-avatar img-icon item-start *ngIf="i == 0">
-          <ion-icon name="mail"></ion-icon>
+          <ion-icon name="email" merit-icon></ion-icon>
         </ion-avatar>
         <ion-avatar item-start *ngIf="i != 0"></ion-avatar>
         <ion-label>
           <h2>Email</h2>
-          <p>{{email.value}}</p>
+          <p>{{ email.value }}</p>
         </ion-label>
       </button>
     </ion-list>
