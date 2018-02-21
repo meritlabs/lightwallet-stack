@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 import { ProfileService } from 'merit/core/profile.service';
 
-
 import { ConfigService } from 'merit/shared/config.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 
@@ -16,11 +15,11 @@ export class EmailNotificationsService {
     console.log('Hello EmailNotificationsService Service');
   }
 
-  public updateEmail(opts: any) {
+  public async updateEmail(opts: any) {
     opts = opts || {};
     if (!opts.email) return;
 
-    let wallets = this.profileService.getWallets();
+    let wallets = await this.profileService.getWallets();
 
     this.configService.set({
       emailFor: null, // Backward compatibility
