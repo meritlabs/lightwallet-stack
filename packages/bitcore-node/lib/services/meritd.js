@@ -1626,6 +1626,7 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
     }
 
     return loadFromMempool(function(err, mempoolReferrals) {
+        mempoolReferrals = mempoolReferrals || [];
         var cachedReferrals = self.referralsCache.get(cacheKey);
         if (cachedReferrals) {
             var referrals = mempoolReferrals.concat(cachedReferrals);
