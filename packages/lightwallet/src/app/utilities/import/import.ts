@@ -1,11 +1,10 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { App, IonicPage, LoadingController, ModalController, NavController } from 'ionic-angular';
+import { App, IonicPage, LoadingController } from 'ionic-angular';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
 import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
-import { ConfigService } from 'merit/shared/config.service';
 import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 import { DerivationPathService } from 'merit/utilities/mnemonic/derivation-path.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
@@ -51,7 +50,8 @@ export class ImportView {
               private derivationPathService: DerivationPathService,
               private app: App,
               private mnemonicService: MnemonicService,
-              private addressScanner: AddressScannerService) {
+              private addressScanner: AddressScannerService,
+              private walletService: WalletService) {
 
     this.formData.bwsUrl = ENV.mwsUrl;
     this.formData.network = ENV.network;
@@ -61,9 +61,6 @@ export class ImportView {
         this.derivationPathService.getDefaultTestnet();
 
     this.sjcl = this.bwcService.getSJCL();
-  }
-
-  ionViewDidLoad() {
   }
 
   async openScanner() {
@@ -98,33 +95,41 @@ export class ImportView {
   }
 
 
-  importMnemonic() {
-    let loader = this.loadingCtrl.create({ content: 'Importing wallet' });
+  async importMnemonic() {
+    const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
     loader.present();
-    let pathData = this.derivationPathService.parse(this.formData.derivationPath);
+
+    const pathData = this.derivationPathService.parse(this.formData.derivationPath);
+
     if (!pathData) {
       return this.toastCtrl.create({ message: 'Invalid derivation path', cssClass: ToastConfig.CLASS_ERROR });
     }
-    let opts: any = {
+
+    const opts: any = {
       account: pathData.account,
       networkName: pathData.networkName,
       derivationStrategy: pathData.derivationStrategy
     };
 
-    let importCall;
-    if (this.formData.words.indexOf('xprv') == 0 || this.formData.words.indexOf('tprv') == 0) {
-      importCall = this.profileService.importExtendedPrivateKey(this.formData.words, opts);
-    } else if (this.formData.words.indexOf('xpub') == 0 || this.formData.words.indexOf('tpub') == 0) {
-      opts.extendedPublicKey = this.formData.words;
-      importCall = this.profileService.importExtendedPublicKey(opts);
-    } else {
-      opts.passphrase = this.formData.phrasePassword;
-      importCall = this.mnemonicService.importMnemonic(this.formData.words, opts);
-    }
+    let wallet;
 
-    return importCall.then((wallet) => {
-      return this.processCreatedWallet(wallet, loader);
-    }).catch((err) => {
+    try {
+      if (this.formData.words.indexOf('xprv') == 0 || this.formData.words.indexOf('tprv') == 0) {
+        wallet = await this.profileService.importExtendedPrivateKey(this.formData.words, opts);
+      } else if (this.formData.words.indexOf('xpub') == 0 || this.formData.words.indexOf('tpub') == 0) {
+        opts.extendedPublicKey = this.formData.words;
+        wallet = await this.profileService.importExtendedPublicKey(opts);
+      } else {
+        opts.passphrase = this.formData.phrasePassword;
+        wallet = await this.mnemonicService.importMnemonic(this.formData.words, opts);
+      }
+
+      if (wallet) {
+        return this.processCreatedWallet(wallet, loader);
+      }
+
+      throw new Error('An unexpected error occurred while importing your wallet.');
+    } catch (err) {
       loader.dismiss();
 
       let errorMsg = 'Failed to import wallet';
@@ -138,17 +143,13 @@ export class ImportView {
         message: errorMsg,
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
-    });
-
+    }
   }
 
-  importBlob() {
-
+  async importBlob() {
     let decrypted;
     try {
-
       decrypted = this.sjcl.decrypt(this.formData.filePassword, this.formData.backupFileBlob);
-
     } catch (e) {
 
       this.logger.warn(e);
@@ -158,21 +159,20 @@ export class ImportView {
       }).present();
     }
 
-    let loader = this.loadingCtrl.create({ content: 'importingWallet' });
+    const loader = this.loadingCtrl.create({ content: 'importingWallet' });
     loader.present();
 
-    this.profileService.importWallet(decrypted, { bwsurl: this.formData.bwsUrl }).then((wallet) => {
-      this.processCreatedWallet(wallet, loader);
-    }).catch((err) => {
+    try {
+      const wallet = await this.profileService.importWallet(decrypted, { bwsurl: this.formData.bwsUrl });
+      return this.processCreatedWallet(wallet, loader);
+    } catch (err) {
       loader.dismiss();
       this.logger.warn(err);
       this.toastCtrl.create({
         message: err,
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
-    });
-
-
+    }
   }
 
   mnemonicImportAllowed() {
@@ -193,12 +193,11 @@ export class ImportView {
     );
   }
 
-  private processCreatedWallet(wallet, loader?) {
-    //this.walletService.updateRemotePreferences(wallet, {}).then(() => {
+  private async processCreatedWallet(wallet, loader?) {
+    await this.walletService.updateRemotePreferences(wallet);
     this.profileService.setBackupFlag(wallet.credentials.walletId);
     if (loader) loader.dismiss();
     this.app.getRootNavs()[0].setRoot('TransactView');
-    //});
   }
 
 }
