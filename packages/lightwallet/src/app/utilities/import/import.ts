@@ -1,17 +1,19 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { App, IonicPage, LoadingController, ModalController, NavController } from 'ionic-angular';
+import { App, IonicPage, Loading, LoadingController } from 'ionic-angular';
 import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
 import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
-import { ConfigService } from 'merit/shared/config.service';
 import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
 import { DerivationPathService } from 'merit/utilities/mnemonic/derivation-path.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { WalletService } from 'merit/wallets/wallet.service';
+import { startsWith } from 'lodash';
 
 import { ENV } from '@app/env';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
@@ -42,19 +44,16 @@ export class ImportView {
   public loadFileInProgress = false;
   private sjcl;
 
-  constructor(private  navCtrl: NavController,
-              private bwcService: BwcService,
-              private config: ConfigService,
+  constructor(private bwcService: BwcService,
               private toastCtrl: MeritToastController,
               private logger: Logger,
               private loadingCtrl: LoadingController,
               private profileService: ProfileService,
-              private walletService: WalletService,
               private derivationPathService: DerivationPathService,
-              private modalCtrl: ModalController,
               private app: App,
               private mnemonicService: MnemonicService,
-              private addressScanner: AddressScannerService) {
+              private addressScanner: AddressScannerService,
+              private pushNotificationsService: PushNotificationsService) {
 
     this.formData.bwsUrl = ENV.mwsUrl;
     this.formData.network = ENV.network;
@@ -66,11 +65,8 @@ export class ImportView {
     this.sjcl = this.bwcService.getSJCL();
   }
 
-  ionViewDidLoad() {
-  }
-
   async openScanner() {
-    let address = await this.addressScanner.scanAddress();
+    const address = await this.addressScanner.scanAddress();
 
     if (address) {
       const parts = address.split('|');
@@ -101,33 +97,40 @@ export class ImportView {
   }
 
 
-  importMnemonic() {
-    let loader = this.loadingCtrl.create({ content: 'Importing wallet' });
+  async importMnemonic() {
+    const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
     loader.present();
-    let pathData = this.derivationPathService.parse(this.formData.derivationPath);
-    if (!pathData) {
-      return this.toastCtrl.create({ message: 'Invalid derivation path', cssClass: ToastConfig.CLASS_ERROR });
-    }
-    let opts: any = {
-      account: pathData.account,
-      networkName: pathData.networkName,
-      derivationStrategy: pathData.derivationStrategy
-    };
 
-    let importCall;
-    if (this.formData.words.indexOf('xprv') == 0 || this.formData.words.indexOf('tprv') == 0) {
-      importCall = this.profileService.importExtendedPrivateKey(this.formData.words, opts);
-    } else if (this.formData.words.indexOf('xpub') == 0 || this.formData.words.indexOf('tpub') == 0) {
-      opts.extendedPublicKey = this.formData.words;
-      importCall = this.profileService.importExtendedPublicKey(opts);
-    } else {
-      opts.passphrase = this.formData.phrasePassword;
-      importCall = this.mnemonicService.importMnemonic(this.formData.words, opts);
-    }
+    try {
+      const pathData = this.derivationPathService.parse(this.formData.derivationPath);
+      if (!pathData) {
+        throw new Error('Invalid derivation path');
+      }
 
-    return importCall.then((wallet) => {
-      return this.processCreatedWallet(wallet, loader);
-    }).catch((err) => {
+      const opts: any = {
+        account: pathData.account,
+        networkName: pathData.networkName,
+        derivationStrategy: pathData.derivationStrategy
+      };
+
+      let wallet;
+
+      if (this.formData.words.indexOf('xprv') == 0 || this.formData.words.indexOf('tprv') == 0) {
+        wallet = await this.profileService.importExtendedPrivateKey(this.formData.words, opts);
+      } else if (this.formData.words.indexOf('xpub') == 0 || this.formData.words.indexOf('tpub') == 0) {
+        opts.extendedPublicKey = this.formData.words;
+        wallet = await this.profileService.importExtendedPublicKey(opts);
+      } else {
+        opts.passphrase = this.formData.phrasePassword;
+        wallet = await this.mnemonicService.importMnemonic(this.formData.words, opts);
+      }
+
+      if (wallet) {
+        return this.processCreatedWallet(wallet, loader);
+      }
+
+      throw new Error('An unexpected error occurred while importing your wallet.');
+    } catch (err) {
       loader.dismiss();
 
       let errorMsg = 'Failed to import wallet';
@@ -141,17 +144,13 @@ export class ImportView {
         message: errorMsg,
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
-    });
-
+    }
   }
 
-  importBlob() {
-
+  async importBlob() {
     let decrypted;
     try {
-
       decrypted = this.sjcl.decrypt(this.formData.filePassword, this.formData.backupFileBlob);
-
     } catch (e) {
 
       this.logger.warn(e);
@@ -161,48 +160,32 @@ export class ImportView {
       }).present();
     }
 
-    let loader = this.loadingCtrl.create({ content: 'importingWallet' });
+    const loader = this.loadingCtrl.create({ content: 'importingWallet' });
     loader.present();
 
-    this.profileService.importWallet(decrypted, { bwsurl: this.formData.bwsUrl }).then((wallet) => {
-      this.processCreatedWallet(wallet, loader);
-    }).catch((err) => {
+    try {
+      const wallet = await this.profileService.importWallet(decrypted, { bwsurl: this.formData.bwsUrl });
+      return this.processCreatedWallet(wallet, loader);
+    } catch (err) {
       loader.dismiss();
       this.logger.warn(err);
       this.toastCtrl.create({
         message: err,
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
-    });
-
-
+    }
   }
-
-  setDerivationPath() {
-    this.formData.derivationPath = this.formData.testnetEnabled ? this.derivationPathService.getDefaultTestnet() : this.derivationPathService.getDefault();
-  }
-
-  // soccer neither brand seven cry boat guess protect secret guard safe danger
 
   mnemonicImportAllowed() {
+    const { words } = this.formData;
 
-    let checkWords = (words) => {
+    if (!words) return false;
 
-      let beginsWith = (str) => {
-        return (this.formData.words.indexOf(str) == 0);
-      };
-
-      if (beginsWith('xprv') || beginsWith('tprv') || beginsWith('xpub') || beginsWith('tpuv')) {
-        return true;
-      } else {
-        return !(this.formData.words.split(/[\u3000\s]+/).length % 3)
-      }
-
-    };
-
-    return (
-      this.formData.words && checkWords(this.formData.words)
-    )
+    if (startsWith('xprv') || startsWith('tprv') || startsWith('xpub') || startsWith('tpuv')) {
+      return true;
+    } else {
+      return !(words.split(/[\u3000\s]+/).length % 3)
+    }
   }
 
   fileImportAllowed() {
@@ -211,12 +194,12 @@ export class ImportView {
     );
   }
 
-  private processCreatedWallet(wallet, loader?) {
-    //this.walletService.updateRemotePreferences(wallet, {}).then(() => {
+  private async processCreatedWallet(wallet: MeritWalletClient, loader?: Loading) {
+    // await this.walletService.updateRemotePreferences(wallet);
     this.profileService.setBackupFlag(wallet.credentials.walletId);
+    this.pushNotificationsService.subscribe(wallet);
     if (loader) loader.dismiss();
     this.app.getRootNavs()[0].setRoot('TransactView');
-    //});
   }
 
 }

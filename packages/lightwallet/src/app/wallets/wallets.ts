@@ -41,7 +41,11 @@ export class WalletsView {
   loading: boolean;
 
   private get isActivePage(): boolean {
-    return this.navCtrl.last().instance instanceof WalletsView;
+    try {
+      return this.navCtrl.last().instance instanceof WalletsView;
+    } catch (e) {
+      return false;
+    }
   }
 
   private isRefreshingAllInfo: boolean = false;
