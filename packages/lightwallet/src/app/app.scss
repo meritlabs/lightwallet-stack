@@ -710,6 +710,13 @@ ion-avatar[img-icon] {
   &[name="qr-code"] {
     mask-image: url('../assets/img/icons/qr-code.svg');
   }
+  &[name="phone"] {
+    mask-image: url('../assets/img/icons/mem.svg');
+  }
+
+  &[name="email"] {
+    mask-image: url('../assets/img/icons/email.svg');
+  }
 }
 
 .merit-icon-merit {
