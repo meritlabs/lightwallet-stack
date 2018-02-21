@@ -947,19 +947,6 @@ export class API {
   }
 
   /**
-   * Create spend tx for vault
-   */
-  createSpendFromVaultTx(opts: any = {}) {
-    var network = opts.network || Common.Constants.DEFAULT_NET;
-    var fee = opts.fee || DEFAULT_FEE;
-
-    var tx = new Bitcore.Transaction();
-    tx.fee(fee);
-
-    return tx;
-  };
-
-  /**
    * Renew vault
    * Will make all pending tx invalid
    */
@@ -1046,9 +1033,9 @@ export class API {
   };
 
   /**
-   * Spend vault
+   * Build spend tx for vault
    */
-  buildSpendVaultTx(vault: any, coins: any[], spendKey: any, amount: number, address:any, opts: any = {}) {
+  buildSpendVaultTx(vault: any, coins: any[], spendKey: any, amount: number, address: any, opts: any = {}) {
 
     var network = vault.address.network;
     var fee = opts.fee || DEFAULT_FEE;
@@ -1123,8 +1110,8 @@ export class API {
         const signPrivKey = Bitcore.HDPrivateKey.fromString(this.credentials.xPrivKey).privateKey;
         const pubkey = signPrivKey.publicKey;
 
-        _.forEach(tx.inputs, (input) => {
-          let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, redeemScript);
+        _.forEach(tx.inputs, (input, i) => {
+          let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
           let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript, pubkey);
           input.setScript(inputScript);
         });
