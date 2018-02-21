@@ -172,8 +172,7 @@
             "cordova-plugin-fcm": {},
             "cordova-plugin-compat": {},
             "cordova.plugins.diagnostic": {},
-            "cordova-plugin-app-version": {},
-            "cordova-plugin-filepath": {}
+            "cordova-plugin-app-version": {}
         },
         "platforms": [
             "android",
