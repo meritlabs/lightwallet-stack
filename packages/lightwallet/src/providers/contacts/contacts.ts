@@ -178,8 +178,6 @@ export class ContactsProvider {
     if ([this.deviceDiagnosticProvider.permissionStatus.GRANTED, this.deviceDiagnosticProvider.permissionStatus.GRANTED_WHEN_IN_USE].indexOf(status) > -1)
       return this.devicePermissionGranted = true;
 
-    console.log(status);
-
     // permission wasn't granted
     return false;
   }
