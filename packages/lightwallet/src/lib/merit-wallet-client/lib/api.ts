@@ -24,7 +24,7 @@ const Package = require('../../../../package.json');
 
 const DEFAULT_FEE = 10000;
 
-import { ENV } from 'merit/../environments/environment';
+import { ENV } from '@app/env';
 
 /**
  * Merit Wallet Client; (re-)written in typescript.
