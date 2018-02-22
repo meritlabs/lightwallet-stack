@@ -92,7 +92,7 @@ export class WalletsView {
 
   ionViewWillEnter() {
     this.refreshAllInfo()
-      .then(() => this.logger.info('Updated info for wallets view'));
+      .then(() => this.logger.info('Updated info for wallets view'))
   }
 
   async updateAllInfo() {

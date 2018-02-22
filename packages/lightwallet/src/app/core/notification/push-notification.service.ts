@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
-import { App, NavController, Platform } from 'ionic-angular';
+import { App, NavController, Platform, Tab, Tabs } from 'ionic-angular';
 
 import * as _ from 'lodash';
 import { AppService } from 'merit/core/app-settings.service';
@@ -14,10 +14,11 @@ import { PlatformService } from 'merit/core/platform.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { createDisplayWallet } from '../../../models/display-wallet';
+import { WalletService } from 'merit/wallets/wallet.service';
 
 @Injectable()
 export class PushNotificationsService {
-  private navCtrl: NavController;
   private isIOS: boolean;
   private isAndroid: boolean;
   private usePushNotifications: boolean;
@@ -34,14 +35,15 @@ export class PushNotificationsService {
               private bwcService: BwcService,
               private platform: Platform,
               private pollingNotificationService: PollingNotificationsService,
-              private FCM: FCM) {
+              private FCM: FCM,
+              private ngZone: NgZone,
+              private walletService: WalletService) {
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
 
     if (this.usePushNotifications) {
-
       this.platform.ready().then((readySource) => {
         this.init();
       });
@@ -52,16 +54,14 @@ export class PushNotificationsService {
   }
 
 
-  public init(): void {
+  private async init() {
     if (!this.usePushNotifications || this._token) return;
-    this.configService.load().then(() => {
-      if (!this.configService.get().pushNotificationsEnabled) return;
+    await this.configService.load();
+    if (!this.configService.get().pushNotificationsEnabled) return;
 
-      this.logger.info('Starting push notification registration...');
-      this.getToken().then(() => {
-        this.subscribeToEvents();
-      });
-    });
+    this.logger.info('Starting push notification registration...');
+    await this.getToken();
+    this.subscribeToEvents();
   }
 
   // TODO: Chain getting the token as part of a standalone single-wallet subscription.
@@ -79,33 +79,31 @@ export class PushNotificationsService {
     });
     //this.pushObj = this.push.init(this.pushOptions);
 
-    this.FCM.onNotification().subscribe(async (data: any) => {
+    this.FCM.onNotification().subscribe((data: any) => {
       if (!this._token) return;
-      this.navCtrl = this.app.getActiveNav();
       this.logger.info('New Event Push onNotification: ' + JSON.stringify(data));
-      if (data.wasTapped) {
-        // Notification was received on device tray and tapped by the user.
-        let walletIdHashed = data.walletId;
-        if (!walletIdHashed) return;
-        await this.navCtrl.setRoot('TransactView');
-        await this.navCtrl.popToRoot();
-        return this._openWallet(walletIdHashed);
-      } else {
-        // Notification was received in foreground. Let's propogate the event
-        // (using Ionic Events) to the relevant view.
-        if (data.walletId) {
-          let wallet: MeritWalletClient = this.profileService.getWallet(data.walletId);
-          if (!_.isEmpty(wallet)) {
-            // Let's re-shape the event to match the notificatons stored in BWS
-            let shapedEvent = {
-              data: _.pick(data, ['amount', 'address', 'txid']),
-              type: data.type,
-              walletId: data.walletId
+      this.ngZone.run(async () => {
+        if (data.wasTapped) {
+          // Notification was received on device tray and tapped by the user.
+          const wallet = this.walletService.getWallet(data.walletId);
+          if (!wallet) return;
+          return this.app.getActiveNav().push('WalletDetailsView', { wallet: await createDisplayWallet(wallet, this.walletService, null, { skipAlias: true, skipAnv: true, skipRewards: true }) });
+        } else {
+          // Notification was received in foreground. Let's propogate the event
+          // (using Ionic Events) to the relevant view.
+          if (data.walletId) {
+            const wallet: MeritWalletClient = this.profileService.getWallet(data.walletId);
+            if (!_.isEmpty(wallet)) {
+              // Let's re-shape the event to match the notificatons stored in BWS
+              this.profileService.propogateBwsEvent({
+                data: _.pick(data, ['amount', 'address', 'txid']),
+                type: data.type,
+                walletId: data.walletId
+              }, wallet);
             }
-            this.profileService.propogateBwsEvent(shapedEvent, wallet);
           }
         }
-      }
+      });
     });
   }
 
@@ -220,23 +218,6 @@ export class PushNotificationsService {
       } else {
         this.logger.info(walletClient.name + ': Unsubscription Push Notifications Success.');
       }
-    });
-  }
-
-  private _openWallet(walletIdHashed: any): Promise<void> {
-    return this.profileService.getWallets().then((wallets) => {
-      let wallet: MeritWalletClient = _.find(wallets, (w: any) => {
-        let walletIdHash = this.bwcService.getSJCL().hash.sha256.hash(parseInt(w.credentials.walletId));
-        return _.isEqual(walletIdHashed, this.bwcService.getSJCL().codec.hex.fromBits(walletIdHash));
-      });
-
-      if (!wallet) return;
-
-      if (!wallet.isComplete()) {
-        this.navCtrl.push('CopayersView', { walletId: wallet.credentials.walletId });
-        return;
-      }
-      this.navCtrl.push('WalletDetailsViews', { walletId: wallet.credentials.walletId });
     });
   }
 }

@@ -41,12 +41,10 @@ export class WalletDetailsView {
   async deposit() {
     this.navCtrl.popToRoot();
     try {
-      await this.tabsCtrl.select(1);
-      const nav: Tab = this.tabsCtrl.getActiveChildNavs()[0];
-      nav.rootParams = {
-        wallet: this.displayWallet.client
-      };
+      const nav: Tab = this.tabsCtrl._tabs[1];
+      await nav.setRoot('ReceiveView', { wallet: this.displayWallet.client });
       await nav.popToRoot();
+      await this.tabsCtrl.select(1);
     } catch (e) {
       console.log(e);
     }

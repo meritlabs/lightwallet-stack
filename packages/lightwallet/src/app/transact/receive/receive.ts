@@ -55,9 +55,7 @@ export class ReceiveView {
               private events: Events,
               private sendService: SendService,
               private platformService: PlatformService,
-              private navParams: NavParams,
-              private tab: Tab
-  ) {
+              private navParams: NavParams) {
     this.protocolHandler = 'merit';
     this.availableUnits = [
       this.configService.get().wallet.settings.unitCode.toUpperCase(),
@@ -95,9 +93,9 @@ export class ReceiveView {
     }
 
     const { wallet } = this.navParams.data;
+
     if (wallet) {
       this.wallet = wallet;
-      this.tab.rootParams = {};
     }
 
     this.loading = false;
@@ -109,7 +107,7 @@ export class ReceiveView {
 
     try {
       this.address = this.walletService.getRootAddress(this.wallet).toString();
-      let info=  await this.sendService.getAddressInfo(this.address);
+      let info = await this.sendService.getAddressInfo(this.address);
       this.alias = info.alias;
       this.addressGenerationInProgress = false;
       this.formatAddress();
