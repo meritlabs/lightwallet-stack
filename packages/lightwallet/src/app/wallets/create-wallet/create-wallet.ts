@@ -248,7 +248,6 @@ export class CreateWalletView {
       try {
         await Promise.all(promises);
       } catch (e) {
-        console.log(e);
         this.logger.error(e);
       }
 
@@ -259,7 +258,6 @@ export class CreateWalletView {
       await callback();
       return this.navCtrl.pop();
     } catch (err) {
-      console.log(err);
       this.logger.error(err);
       await loader.dismiss();
       await this.toastCtrl.create({
