@@ -24,7 +24,7 @@
             <ion-item *ngFor="let address of whitelistCandidates; trackBy: address?.id">
                 <ion-label>{{ address.name }}</ion-label>
                 <ion-note item-end>({{ address.type }})</ion-note>
-                <ion-checkbox (ionChange)="setWhitelistedWallets()" [(ngModel)]="whitelistedWallets[address.id]"></ion-checkbox>
+                <ion-checkbox (ionChange)="setWhitelistedWallets(address.id)" [(ngModel)]="whitelistedWallets[address.id]"></ion-checkbox>
             </ion-item>
         </ion-item-group>
     </ion-list>

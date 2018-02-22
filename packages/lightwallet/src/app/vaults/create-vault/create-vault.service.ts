@@ -39,65 +39,51 @@ export class CreateVaultService {
     return this.model;
   }
 
-  createVault(): Promise<any> {
+  async createVault(): Promise<any> {
+    const spendKey = this.bitcore.HDPrivateKey.fromString(this.walletClient.credentials.xPrivKey);
 
     if (_.isEmpty(this.model.whitelist)) {
+      const vault = await this.vaultFromModel(spendKey.publicKey, []);
+      this.resetModel();
 
-      return this.walletService.getAddress(this.walletClient, false).then((addresses) => {
-        const spendPubKey = this.bitcore.PublicKey.fromString(addresses.publicKeys[0]);
-        return this.vaultFromModel(spendPubKey, []);
-      }).then((vault) => {
-        this.resetModel();
-        return vault;
-      });
-
+      return vault;
     } else {
-
       const wallet = this.model.selectedWallet;
-      const signPrivKey = this.bitcore.PrivateKey(wallet.credentials.walletPrivKey, wallet.network);
-      const pubkey = signPrivKey.toPublicKey();
 
-      return this.vaultFromModel(pubkey, this.model.whitelist).then((vault) => {
-        let unlock = {
-          parentAddress: pubkey.toAddress().toString(),
-          pubkey: pubkey.toString(),
-          signPrivKey,
-          address: vault.address,
-          addressType: 1, // pubkey address
-          network: wallet.credentials.network
+      try {
+        const vault = await this.vaultFromModel(spendKey.publicKey, this.model.whitelist);
+
+        let scriptReferralOpts = {
+          parentAddress: wallet.getRootAddress().toString(),
+          pubkey: this.model.masterKey.publicKey.toString(),
+          signPrivKey: this.model.masterKey.privateKey,
+          address: vault.address.toString(),
+          addressType: this.bitcore.Address.ParameterizedPayToScriptHashType, // pubkey address
+          network: wallet.network,
         };
 
-        return wallet.signAddressAndUnlock(unlock).then((err, resp1) => {
-          return this.getTxp(vault, false);
-        }).then((txp) => {
-          return this.walletService.prepare(wallet).then((password: string) => {
-            return { password: password, txp: txp };
-          });
-        }).then((args: any) => {
-          return this.walletService.publishTx(wallet, args.txp).then((pubTxp) => {
-            return { password: args.password, txp: pubTxp };
-          });
-        }).then((args: any) => {
-          return this.walletService.signTx(wallet, args.txp, args.password);
-        }).then((signedTxp: any) => {
-          vault.coins.push(signedTxp);
-          return vault;
-        }).then((vault) => {
-          vault.name = this.model.vaultName;
-          return this.walletClient.createVault(vault);
-        }).then((resp) => {
-          return this.profileService.addVault({
-            id: vault.address,
-            copayerId: wallet.credentials.copayerId,
-            name: this.model.vaultName,
-          });
-        }).then(() => {
-          this.resetModel();
+        const password = await this.walletService.prepare(wallet);
+        await wallet.sendReferral(scriptReferralOpts);
+        await wallet.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
+        const txp = await this.getTxp(vault, false);
+        const pubTxp = await this.walletService.publishTx(wallet, txp);
+        const signedTxp = await this.walletService.signTx(wallet, pubTxp, password);
+
+        vault.coins.push(signedTxp);
+        vault.name = this.model.vaultName;
+
+        await wallet.createVault(vault);
+        await this.profileService.addVault({
+          id: vault.address,
+          copayerId: wallet.credentials.copayerId,
+          name: vault.vaultName,
         });
-      }).catch((err) => {
+
+        this.resetModel();
+      } catch(err) {
         this.logger.info('Error while creating vault:', err);
-        return Promise.reject(err);
-      });
+        throw err;
+      };
     }
   }
 
@@ -122,7 +108,7 @@ export class CreateVaultService {
       let address;
       if (w.type == 'wallet') {
         address = this.getAllWallets().then((wallets) => {
-          let foundWallet = _.find(wallets, { id: w.walletClientId });
+          let foundWallet = _.find(wallets, { id: w.id });
           return foundWallet.createAddress().then((resp) => {
             return this.bitcore.Address.fromString(resp.address);
           });
@@ -172,10 +158,6 @@ export class CreateVaultService {
   }
 
   private async getAllWallets(): Promise<Array<any>> {
-    const wallets = await this.profileService.getWallets();
-    return wallets.map(async (wallet: any) => {
-      wallet.status = await this.walletService.getStatus(wallet);
-      return wallet;
-    });
+    return await this.profileService.getWallets();
   }
 }
