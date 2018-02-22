@@ -925,7 +925,7 @@ export class API {
       params.push(Bitcore.Opcode.smallInt(type));
 
       let redeemScript = Bitcore.Script.buildSimpleVaultScript(tag, network);
-      let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, opts.spendPubKey);
+      let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, opts.masterPubKey);
 
       let vault = {
         type: type,
@@ -986,7 +986,7 @@ export class API {
         params.push(new Buffer(tag));
         params.push(Bitcore.Opcode.smallInt(newVault.type));
 
-        let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, newVault.spendPubKey);
+        let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, masterKey.publicKey);
 
         tx.addOutput(new Bitcore.Transaction.Output({
           script: scriptPubKey,
@@ -1009,7 +1009,7 @@ export class API {
 
         _.forEach(tx.inputs, (input, i) => {
           let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, Bitcore.PublicKey(newVault.spendPubKey, network));
+          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, Bitcore.PublicKey(newVault.masterPubKey, network));
           input.setScript(inputScript);
         });
 
@@ -1081,7 +1081,7 @@ export class API {
         params.push(new Buffer(vault.tag));
         params.push(Bitcore.Opcode.smallInt(vault.type));
 
-        let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, vault.spendPubKey);
+        let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, vault.masterPubKey);
 
         tx.addOutput(new Bitcore.Transaction.Output({
           script: scriptPubKey,
@@ -1104,7 +1104,7 @@ export class API {
 
         _.forEach(tx.inputs, (input, i) => {
           let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript, new Bitcore.PublicKey(vault.spendPubKey, network));
+          let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript, new Bitcore.PublicKey(vault.masterPubKey, network));
           input.setScript(inputScript);
         });
 

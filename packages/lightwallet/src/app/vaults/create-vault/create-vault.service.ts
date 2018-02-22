@@ -55,8 +55,8 @@ export class CreateVaultService {
 
         let scriptReferralOpts = {
           parentAddress: wallet.getRootAddress().toString(),
-          pubkey: spendKey.publicKey.toString(),
-          signPrivKey: spendKey.privateKey,
+          pubkey: this.model.masterKey.publicKey.toString(),
+          signPrivKey: this.model.masterKey.privateKey,
           address: vault.address.toString(),
           addressType: this.bitcore.Address.ParameterizedPayToScriptHashType, // pubkey address
           network: wallet.network,
@@ -64,7 +64,7 @@ export class CreateVaultService {
 
         const password = await this.walletService.prepare(wallet);
         await wallet.sendReferral(scriptReferralOpts);
-        await wallet.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toBuffer().toString('hex'));
+        await wallet.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
         const txp = await this.getTxp(vault, false);
         const pubTxp = await this.walletService.publishTx(wallet, txp);
         const signedTxp = await this.walletService.signTx(wallet, pubTxp, password);
