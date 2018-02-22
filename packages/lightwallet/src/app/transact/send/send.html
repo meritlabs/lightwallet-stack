@@ -37,7 +37,7 @@
 
   <div *ngIf="!loadingContacts && searchResult  && hasUnlockedWallets" class="content">
 
-    <div class="no-results" *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length">
+    <div class="no-results" *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length" padding-top>
 
       <div class="no-results-label" *ngIf="!searchResult.error">No results</div>
       <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
@@ -47,7 +47,7 @@
         Alias not found
       </div>
 
-      <div *ngIf="searchResult.toNewEntity">
+      <div *ngIf="searchResult.toNewEntity" margin-top>
 
         <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()"
                 class="send-button" color="light">

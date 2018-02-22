@@ -55,8 +55,6 @@ export class TxDetailsView {
     else if (tx.isInvite) this.image = 'invite';
     else this.image = 'merit';
 
-    console.dir(this);
-
     this.tx = tx;
   }
 }
