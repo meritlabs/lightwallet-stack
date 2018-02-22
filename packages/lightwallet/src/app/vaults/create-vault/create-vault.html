@@ -1,6 +1,6 @@
-<ion-header>
+<ion-header no-border>
 
-    <ion-navbar color="secondary" >
+    <ion-navbar color="light" >
         <ion-title translate>Create Vault</ion-title>
     </ion-navbar>
 
@@ -9,8 +9,39 @@
 
 <ion-content>
 
-    <ion-list margin-top>
-        Root
-    </ion-list>
+        <ion-item-group>
+            <ion-item>
+                <ion-label translate stacked>
+                    <h2>Vault name</h2>
+                </ion-label>
+                <ion-input placeholder="My Vault" [(ngModel)]="formData.vaultName"></ion-input>
+            </ion-item>
+        </ion-item-group>
+
+        <ion-list>
+            <ion-item-divider>Whitelist</ion-item-divider>
+            <ion-item *ngFor="let wallet of formData.wallets">
+                <ion-label>{{wallet.name}}</ion-label>
+                <ion-checkbox [(ngModel)]="wallet.selected"></ion-checkbox>
+            </ion-item>
+        </ion-list>
+
+        <ion-item (click)="selectWallet()">
+            <ion-avatar item-start img-icon [class.default]="!formData.wallet.color" [style.box-shadow]="'0 0 0 2px ' + formData.wallet.color">
+                <img src="assets/img/icons/wallet.svg">
+            </ion-avatar>
+            <p>From</p>
+            <h2>{{formData.wallet.name}}</h2>
+            <p>{{formData.wallet.client.status.spendableBalanceStr}}</p>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked>Amount</ion-label>
+            <ion-input type="number" [(ngModel)]="formData.amount" placeholder="Amount to vault"></ion-input>
+        </ion-item>
+
+    <button ion-button class="action-button" translate (click)="toDeposit()" [disabled]="!isNextStepAvailable" >
+        Next
+    </button>
 
 </ion-content>
