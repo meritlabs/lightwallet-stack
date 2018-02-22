@@ -359,8 +359,8 @@ WalletService.prototype.recreateWallet = function(opts, cb) {
         function(acb) {
 
             self.blockchainExplorer.getAddressReferrals([opts.rootAddress], function(err, referrals) {
-                if (err || !referrals) {
-                    return acb('Cannot recreate wallet : address is not a part of blockchain');
+                if (err || !referrals || !referrals.length) {
+                    return acb(new ClientError('Cannot recreate wallet : address is not a part of blockchain'));
                 }
                 referrals.some(function(referralObj) {
                     var referral =  Bitcore.Referral(referralObj.raw, opts.network);
