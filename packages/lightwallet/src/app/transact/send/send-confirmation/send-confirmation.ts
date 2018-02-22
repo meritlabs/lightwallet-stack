@@ -251,16 +251,11 @@ export class SendConfirmationView {
         }
       }
 
-
-
-      try {
-        await this.sendService.registerSend(this.txData.sendMethod);
-        await this.navCtrl.popToRoot();
-        await this.tabs.select(0);
-        await this.tabs.getActiveChildNavs()[0].popToRoot();
-      } catch (e) {
-        console.log(e);
-      }
+      this.navCtrl.popToRoot();
+      this.toastCtrl.create({
+        message: 'Your transaction is complete',
+        cssClass: ToastConfig.CLASS_SUCCESS
+      }).present();
     } catch (err) {
       this.logger.warn(err);
       return this.toastCtrl.create({

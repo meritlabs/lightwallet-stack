@@ -116,7 +116,8 @@
     <string>false</string>
   </edit-config>
   <allow-navigation href="*"/>
-  <content src="index.html"/>
+  <content src="index.html" />
+  <engine name="android" spec="^6.4.0"/>
   <engine name="ios" spec="4.5.4"/>
   <plugin name="branch-cordova-sdk" spec="^2.6.21"/>
   <plugin name="cordova-clipboard" spec="^1.1.1"/>
@@ -143,5 +144,4 @@
   <plugin name="phonegap-plugin-barcodescanner" spec="^7.0.0">
     <variable name="CAMERA_USAGE_DESCRIPTION" value=" "/>
   </plugin>
-  <engine name="android" spec="~6.4.0"/>
 </widget>

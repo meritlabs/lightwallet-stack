@@ -140,6 +140,30 @@ ion-item textarea {
   }
 }
 
+.toast-success {
+  .toast-container {
+    background: #53be6d;
+
+    .toast-message {
+      position: relative;
+      padding-left: 55px;
+
+      &:before {
+        position: absolute;
+        display: inline-block;
+        content: '\f149';
+        font-family: 'Ionicons';
+        width: 35px;
+        height: 35px;
+        font-size: 35px;
+        left: 15px;
+        top: 10px;
+        -webkit-font-smoothing: antialiased;
+      }
+    }
+  }
+}
+
 // *** iOS ***
 .ios {
   ion-header.header-ios .big-header {
@@ -709,6 +733,13 @@ ion-avatar[img-icon] {
 
   &[name="qr-code"] {
     mask-image: url('../assets/img/icons/qr-code.svg');
+  }
+  &[name="phone"] {
+    mask-image: url('../assets/img/icons/mem.svg');
+  }
+
+  &[name="email"] {
+    mask-image: url('../assets/img/icons/email.svg');
   }
 }
 
