@@ -1005,15 +1005,11 @@ export class API {
             coin.scriptPubKey, coin.micros);
         });
 
-        tx.version = 4;
         tx.addressType = 'PP2SH';
-
-        const signPrivKey = Bitcore.HDPrivateKey.fromString(this.credentials.xPrivKey).privateKey;
-        const pubkey = signPrivKey.publicKey;
 
         _.forEach(tx.inputs, (input, i) => {
           let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, pubkey);
+          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, Bitcore.PublicKey(newVault.spendPubKey, network));
           input.setScript(inputScript);
         });
 
@@ -1104,15 +1100,11 @@ export class API {
             coin.scriptPubKey, coin.micros);
         });
 
-        tx.version = 4;
         tx.addressType = 'PP2SH';
-
-        const signPrivKey = Bitcore.HDPrivateKey.fromString(this.credentials.xPrivKey).privateKey;
-        const pubkey = signPrivKey.publicKey;
 
         _.forEach(tx.inputs, (input, i) => {
           let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript, pubkey);
+          let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript, new Bitcore.PublicKey(vault.spendPubKey, network));
           input.setScript(inputScript);
         });
 
