@@ -96,7 +96,7 @@ export class VaultDetailsView {
       });
     }).then(() => {
       return this.getVaultTxHistory().then((txs) => {
-        this.transactions = _.map(txs, this.processTx.bind(this));
+        this.transactions = txs.filter(tx => !tx.isInvite).map(this.processTx.bind(this));
         this.vault.completeHistory = txs;
         this.formatAmounts();
         return Promise.resolve();
@@ -117,7 +117,7 @@ export class VaultDetailsView {
           walletId: walletClient.credentials.walletId,
           vaultId: this.vault._id,
           vault: this.vault,
-          txId: tx.txid
+          tx
         }
       );
     });
@@ -179,11 +179,11 @@ export class VaultDetailsView {
   }
 
   private processTx(tx: any): any {
-    const thisAddr = new this.bitcore.Address(this.vault.address).toString();
     const summ = _.reduce(tx.outputs, (acc: number, output: any) => {
-      if (output.address != thisAddr) {
+      if (tx.addressTo !== output.address) {
         return acc;
       }
+
       return acc + output.amount;
     }, 0);
 

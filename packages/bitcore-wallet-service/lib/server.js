@@ -3141,7 +3141,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           amount: o.amount,
           address: o.address,
           alias: o.alias,
-          index: o.index
+          index: o.index,
         }
       };
 
@@ -3766,14 +3766,18 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
       return _.sumBy(_.filter(items, filter), 'amount');
     };
 
-    function classify(items) {
+    function classify(items, isInvite) {
       return _.map(items, function(item) {
         var address = indexedAddresses[item.address];
         return {
           address: item.address,
+          alias: item.alias,
           amount: item.amount,
           isMine: !!address,
-          isChange: false,
+          index: item.index,
+          // TODO: handle singleAddress and change addresses
+          // isChange: address ? (address.isChange || wallet.singleAddress) : false,
+          isChange: address ? ((address.isChange || wallet.singleAddress) && !isInvite) : false,
         }
       });
     };
@@ -3786,8 +3790,8 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 
       if (tx.outputs.length || tx.inputs.length) {
 
-        inputs = classify(tx.inputs);
-        outputs = classify(tx.outputs);
+        inputs = classify(tx.inputs, tx.isInvite);
+        outputs = classify(tx.outputs, tx.isInvite);
 
         amountIn = sum(inputs, true);
         amountOut = sum(outputs, true, false);
@@ -3815,7 +3819,9 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
       function formatOutput(o) {
         return {
           amount: o.amount,
-          address: o.address
+          address: o.address,
+          alias: o.alias,
+          index: o.index,
         }
       };
 
@@ -3828,7 +3834,8 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
         addressTo: addressTo,
         confirmations: tx.confirmations,
         isCoinbase: tx.isCoinbase,
-        isMature: tx.isMature
+        isMature: tx.isMature,
+        isInvite: tx.isInvite,
       };
 
       if (_.isNumber(tx.size) && tx.size > 0) {
