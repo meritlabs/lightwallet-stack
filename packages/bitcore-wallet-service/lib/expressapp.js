@@ -237,9 +237,9 @@ ExpressApp.prototype.start = function(opts, cb) {
       return returnError(ex, res, req);
     }
 
-    server.recreateWallet(req.body, function(err, walletId) {
+    server.recreateWallet(req.body, function(err, walletId, parentAddress) {
       if (err) return returnError(err, res, req);
-      res.json({walletId});
+      res.json({walletId, parentAddress}); 
     });
   });
 
