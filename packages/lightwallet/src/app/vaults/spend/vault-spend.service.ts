@@ -31,11 +31,6 @@ export class SpendVaultService {
       return this.vaultsService.getVaultCoins(walletClient, vault);
     }).then((coins) => {
       const tx = this.walletClient.buildSpendVaultTx(vault, coins, spendKey, amount, address, {});
-
-      console.log('SPEND TX');
-      console.log('Plain: ', tx);
-      console.log('Serialized: ', tx.serialize());
-
       return { rawTx: tx.serialize(), network: vault.address.network };
     }).then((tx) => {
       return this.walletClient.broadcastRawTx(tx);

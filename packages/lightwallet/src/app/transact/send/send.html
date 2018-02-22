@@ -1,8 +1,8 @@
 <ion-header no-border>
-  <ion-toolbar *ngIf="hasUnlockedWallets">
+  <ion-toolbar [hidden]="!hasUnlockedWallets">
     <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
                    (ionCancel)="clearSearch()"></ion-searchbar>
-    <ion-buttons end *ngIf="!searchQuery">
+    <ion-buttons end [hidden]="searchQuery">
       <button ion-button icon-only item-end (click)="openScanner()">
         <ion-icon name="qr-code" merit-icon></ion-icon>
       </button>
@@ -37,7 +37,7 @@
 
   <div *ngIf="!loadingContacts && searchResult  && hasUnlockedWallets" class="content">
 
-    <div class="no-results" *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length">
+    <div class="no-results" *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length" padding-top>
 
       <div class="no-results-label" *ngIf="!searchResult.error">No results</div>
       <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
@@ -47,7 +47,7 @@
         Alias not found
       </div>
 
-      <div *ngIf="searchResult.toNewEntity">
+      <div *ngIf="searchResult.toNewEntity" margin-top>
 
         <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()"
                 class="send-button" color="light">

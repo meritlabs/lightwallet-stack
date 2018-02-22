@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { Events, IonicPage, ModalController, NavController } from 'ionic-angular';
+import { Events, IonicPage, ModalController, NavController, NavParams, Tab } from 'ionic-angular';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
 import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
@@ -55,7 +55,7 @@ export class ReceiveView {
               private events: Events,
               private sendService: SendService,
               private platformService: PlatformService,
-  ) {
+              private navParams: NavParams) {
     this.protocolHandler = 'merit';
     this.availableUnits = [
       this.configService.get().wallet.settings.unitCode.toUpperCase(),
@@ -92,6 +92,12 @@ export class ReceiveView {
       });
     }
 
+    const { wallet } = this.navParams.data;
+
+    if (wallet) {
+      this.wallet = wallet;
+    }
+
     this.loading = false;
   }
 
@@ -101,7 +107,7 @@ export class ReceiveView {
 
     try {
       this.address = this.walletService.getRootAddress(this.wallet).toString();
-      let info=  await this.sendService.getAddressInfo(this.address);
+      let info = await this.sendService.getAddressInfo(this.address);
       this.alias = info.alias;
       this.addressGenerationInProgress = false;
       this.formatAddress();
