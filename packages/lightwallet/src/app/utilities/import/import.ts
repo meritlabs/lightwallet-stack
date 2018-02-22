@@ -53,7 +53,8 @@ export class ImportView {
               private app: App,
               private mnemonicService: MnemonicService,
               private addressScanner: AddressScannerService,
-              private pushNotificationsService: PushNotificationsService) {
+              private pushNotificationsService: PushNotificationsService
+  ) {
 
     this.formData.bwsUrl = ENV.mwsUrl;
     this.formData.network = ENV.network;
@@ -177,7 +178,7 @@ export class ImportView {
   }
 
   mnemonicImportAllowed() {
-    const { words } = this.formData;
+    const  words = this.formData.words ? this.formData.words.replace(/\s\s+/g, ' ').trim() : '';
 
     if (!words) return false;
 
@@ -195,11 +196,15 @@ export class ImportView {
   }
 
   private async processCreatedWallet(wallet: MeritWalletClient, loader?: Loading) {
-    // await this.walletService.updateRemotePreferences(wallet);
-    this.profileService.setBackupFlag(wallet.credentials.walletId);
-    this.pushNotificationsService.subscribe(wallet);
-    if (loader) loader.dismiss();
-    this.app.getRootNavs()[0].setRoot('TransactView');
+    try {
+      this.profileService.setBackupFlag(wallet.credentials.walletId);
+      this.pushNotificationsService.subscribe(wallet);
+      this.app.getRootNavs()[0].setRoot('TransactView');
+    } catch (e) {
+      throw e;
+    } finally {
+      if (loader) loader.dismiss();
+    }
   }
 
 }
