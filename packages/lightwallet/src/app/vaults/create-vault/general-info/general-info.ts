@@ -84,10 +84,15 @@ export class CreateVaultGeneralInfoView {
     this.navCtrl.push('CreateVaultDepositView', { refreshVaultList: this.navParams.get('refreshVaultList') });
   }
 
-  setWhitelistedWallets() {
-    this.formData.whitelist = this.whitelistCandidates
-      .filter((w: MeritWalletClient) => this.whitelistCandidates[w.id])
-      .map((w: MeritWalletClient) => w.id);
+  setWhitelistedWallets(id: string) {
+    const whitelistedWalletIndex = _.findIndex(this.formData.whitelist, { id });
+    const candidateWallet = _.find(this.whitelistCandidates, { id });
+
+    if (whitelistedWalletIndex === -1) {
+      this.formData.whitelist.push(candidateWallet);
+    } else {
+      this.formData.whitelist.splice(whitelistedWalletIndex, 1);
+    }
   }
 
   private async getAllWallets(): Promise<Array<any>> {

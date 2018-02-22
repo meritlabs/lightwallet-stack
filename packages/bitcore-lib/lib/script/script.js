@@ -882,71 +882,76 @@ Script.buildEasySendIn = function(signature, easyScript, pubkeyId) {
   return s;
 };
 
-Script.buildSimpleVaultScript = function(tag) {
+Script.buildSimpleVaultScript = function(tag, network) {
   $.checkArgument(tag, 'Tag must be present');
 
   var s = new Script();
+  s._network = network;
 
-  s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] <tag>|
-   .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> [addresses] |
-   .add(Opcode. OP_NTOALTSTACK               )// <sig> <mode> <spend key> <renew key> | [addresses]
-   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> <spend key> | [addresses] <renew key>
-   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> | [addresses] <renew key> <spend key>
-   .add(        Opcode.smallInt(0)           )// <sig> <mode> 0 | [addresses] <renew key> <spend key>
-   .add(Opcode. OP_EQUAL                     )// <sig> <bool> | [addresses] <renew key> <spend key>
-   .add(Opcode. OP_IF                        )// <sig> | [addresses] <renew key> <spend key>
-   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <renew key>
-   .add(Opcode.      OP_DUP                  )// <sig> <spend key> <spend key> | [addresses] <renew key>
-   .add(Opcode.      OP_TOALTSTACK           )// <sig> <spend key> | [addresses] <renew key> <spend key>
-   .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses] <renew key> <spend key>
-   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> | [addresses] <renew key>
-   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> | [addresses]
-   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <0 args> | [addresses]
-   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <0 args> <out index>| [addresses]
-   .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> <0 args> <out index> [addresses] |
-   .add(Opcode.      OP_NDUP                 )// <spend key> <renew key> <0 args> <out index> [addresses] [addresses] |
-   .add(Opcode.      OP_NTOALTSTACK          )// <spend key> <renew key> <0 args> <out index> [addresses] | [addresses]
-   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )// <spend key> <renew key> | [addresses]
-   .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> [addresses] |
-   .add(Opcode.      OP_DUP                  )// <spend key> <renew key> [addresses] <num addresss> |
-   .add(             Opcode.smallInt(5)      )// <spend key> <renew key> [addresses] <num addresss> 4 |
-   .add(Opcode.      OP_ADD                  )// <spend key> <renew key> [addresses] <total args> |
-   .add(Opcode.      OP_TOALTSTACK           )// <spend key> <renew key> [addresses] | <total args>
-   .add(             tag                     )// <spend key> <renew key> [addresses] <tag> |
-   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> [addresses] <tag> <vault type> |
-   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> |
-   .add(             Opcode.smallInt(1)      )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> |
-   .add(             "s"                     )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> |
-   .add(             Opcode.smallInt(1)      )// <spend key> <renew key> [addresses] <tag> <vault type> <total args> <out index> <self> <num addresses>|
+  s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> <spendlimit> [addresses] <tag>|
+   .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> <spendlimit> [addresses] |
+   .add(Opcode. OP_NTOALTSTACK               )// <sig> <mode> <spend key> <renew key> <spendlimit> | [addresses]
+   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> <spend key> <renew key> | [addresses] <spendlimit>
+   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> <spend key> | [addresses] <spendlimit> <renew key>
+   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> | [addresses] <spendlimit> <renew key> <spend key>
+   .add(        Opcode.smallInt(0)           )// <sig> <mode> 0 | [addresses] <spendlimit> <renew key> <spend key>
+   .add(Opcode. OP_EQUAL                     )// <sig> <bool> | [addresses] <spendlimit> <renew key> <spend key>
+   .add(Opcode. OP_IF                        )// <sig> | [addresses] <spendlimit> <renew key> <spend key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <spendlimit> <renew key>
+   .add(Opcode.      OP_DUP                  )// <sig> <spend key> <spend key> | [addresses] <spendlimit> <renew key>
+   .add(Opcode.      OP_TOALTSTACK           )// <sig> <spend key> | [addresses] <spendlimit> <renew key> <spend key>
+   .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses] <spendlimit> <renew key> <spend key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> | [addresses] <spendlimit> <renew key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> | [addresses] <spendlimit>
+   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> <spendlimit> | [addresses]
+   .add(Opcode.      OP_DUP                  )// <spend key> <renew key> <spendlimit> <speedlimit> | [addresses]
+   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <spendlimit> <speedlimit> 0 | [addresses]
+   .add(Opcode.      OP_OUTPUTAMOUNT         )// <spend key> <renew key> <spendlimit> <speedlimit> <output at 0> | [addresses]
+   .add(Opcode.      OP_GREATERTHANOREQUAL   )// <spend key> <renew key> <spendlimit> <true or false> | [addresses]
+   .add(Opcode.      OP_VERIFY               )// <spend key> <renew key> <spendlimit> | [addresses]
+   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <spendlimit> <0 args> | [addresses]
+   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <spendlimit> <0 args> <out index> | [addresses]
+   .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> <spendlimit> <0 args> <out index> [addresses] |
+   .add(Opcode.      OP_NDUP                 )// <spend key> <renew key> <spendlimit> <0 args> <out index> [addresses] [addresses] |
+   .add(Opcode.      OP_NTOALTSTACK          )// <spend key> <renew key> <spendlimit> <0 args> <out index> [addresses] | [addresses]
+   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )// <spend key> <renew key> <spendlimit> | [addresses]
+   .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> <spendlimit> [addresses] |
+   .add(             tag                     )// <spend key> <renew key> <spendlimit> [addresses] <tag> |
+   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> |
+   .add(Opcode.      OP_DEPTH                )// <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> |
+   .add(             Opcode.smallInt(1)      )// <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> <out index> |
+   .add(             "s"                     )// <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> <out index> <self> |
+   .add(             Opcode.smallInt(1)      )// <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> <out index> <self> <num addresses>|
    .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )// |
    .add(             Opcode.smallInt(2)      )// 2 |
    .add(Opcode.      OP_OUTPUTCOUNT          )// <count>
    .add(Opcode.      OP_EQUAL                )// <bool>
    .add(Opcode. OP_ELSE                      )
-   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <renew key>
-   .add(Opcode.      OP_DROP                 )// <sig> | [addresses] <renew key>
+   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <spendlimit> <renew key>
+   .add(Opcode.      OP_DROP                 )// <sig> | [addresses] <spendlimit> <renew key>
    .add(Opcode.      OP_FROMALTSTACK         )// <sig> <renew key> | [addresses]
    .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses]
-   .add(             Opcode.smallInt(0)      )// <total args> | [addresses]
-   .add(             Opcode.smallInt(0)      )// <total args> <out index> | [addresses]
-   .add(             "s"                     )// <total args> <out index> <self> | [addresses]
-   .add(             Opcode.smallInt(1)      )// <total args> <out index> <self> <num addresses>| [addresses]
-   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )//  | [addresses]
-   .add(             Opcode.smallInt(1)      )// 1 | [addresses]
-   .add(Opcode.      OP_OUTPUTCOUNT          )// 1 <count> | [addresses]
-   .add(Opcode.      OP_EQUAL                )// <bool> | [addresses]
+   .add(             Opcode.smallInt(0)      )// <total args> | [addresses] <spendlimit>
+   .add(             Opcode.smallInt(0)      )// <total args> <out index> | [addresses] <spendlimit>
+   .add(             "s"                     )// <total args> <out index> <self> | [addresses] <spendlimit>
+   .add(             Opcode.smallInt(1)      )// <total args> <out index> <self> <num addresses>| [addresses] <spendlimit>
+   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )//  | [addresses] <spendlimit>
+   .add(             Opcode.smallInt(1)      )// 1 | [addresses] <spendlimit>
+   .add(Opcode.      OP_OUTPUTCOUNT          )// 1 <count> | [addresses] <spendlimit>
+   .add(Opcode.      OP_EQUAL                )// <bool> | [addresses] <spendlimit>
    .add(Opcode. OP_ENDIF);
 
   return s;
 };
 
 /**
- * @param {mode} Mode to select, 0 is spend, and 1 is renew.
+ * @param {number} mode Mode to select, 0 is spend, and 1 is renew.
  * @param {signature} signature to be append to the script
- * @param {vaultScript} The vault script that was signed.
+ * @param {Script} vaultScript vault script that was signed.
+ * @param {PublicKey} signPubKey - pubkey, that vault referral was signed with.
  * @returns {Script}
  */
-Script.buildVaultIn = function(mode, signature, vaultScript) {
+Script.buildVaultIn = function(mode, signature, vaultScript, signPubKey) {
   var s = new Script();
   var sigBuf = BufferUtil.concat([
     signature.toDER(),
@@ -954,6 +959,7 @@ Script.buildVaultIn = function(mode, signature, vaultScript) {
   ]);
   s.add(sigBuf);
   s.add(Opcode.smallInt(mode)); //spend is 0, and renew mode is 1
+  s.add(Hash.sha256ripemd160(signPubKey.toBuffer()));
   s.add(vaultScript.toBuffer());
   return s;
 };
@@ -961,23 +967,24 @@ Script.buildVaultIn = function(mode, signature, vaultScript) {
 /**
  * Build a vault input which selects renew mode
  * @param {signature} signature to be append to the script
- * @param {vaultScript} The vault script that was signed.
+ * @param {Script} vaultScript vault script that was signed.
+ * @param {PublicKey} signPubKey - pubkey, that vault referral was signed with.
  * @returns {Script}
  */
-Script.buildVaultRenewIn = function(signature, vaultScript) {
-  return Script.buildVaultIn(1, signature, vaultScript);
+Script.buildVaultRenewIn = function(signature, vaultScript, signPubKey) {
+  return Script.buildVaultIn(1, signature, vaultScript, signPubKey);
 };
 
 
 /**
  * Build a vault input which selects spend mode
  * @param {signature} signature to be append to the script
- * @param {vaultScript} Vault script that was signed.
+ * @param {Script} vaultScript vault script that was signed.
+ * @param {PublicKey} signPubKey - pubkey, that vault referral was signed with.
  * @returns {Script}
  */
-Script.buildVaultSpendIn = function(signature, vaultScript) {
-  return Script.buildVaultIn(0, signature, vaultScript);
-  return s;
+Script.buildVaultSpendIn = function(signature, vaultScript, signPubKey) {
+  return Script.buildVaultIn(0, signature, vaultScript, signPubKey);
 };
 
 Script.buildParameterizedP2SH = function(script, params) {
@@ -996,6 +1003,46 @@ Script.buildParameterizedP2SH = function(script, params) {
   s.add(Opcode.OP_DEPTH)
    .add(Opcode.smallInt(size))
    .add(Opcode.OP_GREATERTHANOREQUAL);
+
+  return s;
+};
+
+/**
+ * @param {Script|Address} script - the redeemScript for the new p2sh output. It can also be a p2sh address
+ * @param {any} params - params of the script
+ * @param {PublicKey} public key used to sign script and generate mixed address
+ *
+ * @returns {Script} new pay to script hash script for given script
+ */
+Script.buildMixedParameterizedP2SH = function(script, params, signerPubKey) {
+  $.checkArgument(script instanceof Script);
+
+  signerPubKey = PublicKey(signerPubKey);
+
+  const mixedAddress = Hash.sha256ripemd160(
+    Buffer.concat([
+      Hash.sha256ripemd160(script.toBuffer()),
+      Hash.sha256ripemd160(signerPubKey.toBuffer())
+    ])
+  );
+
+  var s = new Script();
+
+  s._network = script._network || script.network;
+
+  s.add(Opcode.OP_HASH160)
+    .add(mixedAddress)
+    .add(Opcode.OP_EQUALVERIFY);
+
+  let size = 0;
+  for(let i = 0; i < params.length; i++) {
+    s.add(params[i]);
+    size++;
+  }
+
+  s.add(Opcode.OP_DEPTH)
+    .add(Opcode.smallInt(size))
+    .add(Opcode.OP_GREATERTHANOREQUAL);
 
   return s;
 };
@@ -1077,7 +1124,7 @@ Script.buildScriptHashOut = function(script) {
  * @returns {Script} new pay to script hash script for given script
  */
 Script.buildMixedScriptHashOut = function(script, signerPubKey) {
-  $.checkArgument(script instanceof Script || (script instanceof Address && script.isPayToScriptHash()));
+  $.checkArgument(script instanceof Script);
 
   signerPubKey = PublicKey(signerPubKey);
 
