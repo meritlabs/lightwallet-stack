@@ -39,6 +39,7 @@ export class WalletsView {
   vaults;
   network: string;
   loading: boolean;
+  hasUnlockedWallets: boolean;
 
   private get isActivePage(): boolean {
     try {
@@ -133,6 +134,7 @@ export class WalletsView {
       )
       .toPromise();
 
+    this.hasUnlockedWallets = this.wallets.some(w => w.client.confirmed);
     this.loading = false;
   }
 
@@ -168,6 +170,7 @@ export class WalletsView {
     this.wallets = await this.updateAllWallets();
   }
 
+  //todo do we need this?
   async refreshVaultList() {
     return this.updateVaults(await this.profileService.getHeadWalletClient());
   }
