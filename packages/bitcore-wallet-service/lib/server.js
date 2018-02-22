@@ -326,7 +326,6 @@ WalletService.prototype.logout = function(opts, cb) {
  * @param {string} opts.supportBIP44AndP2PKH[=true] - Client supports BIP44 & P2PKH for new wallets.
  */
 WalletService.prototype.recreateWallet = function(opts, cb) {
-    var self = this, pubKey;
 
     if (!checkRequired(opts, ['walletName', 'm', 'n', 'network', 'pubKey', 'rootAddress'], cb)) return;
 
@@ -339,62 +338,59 @@ WalletService.prototype.recreateWallet = function(opts, cb) {
     opts.name = 'Personal Wallet';
     opts.m = opts.m || 1;
     opts.n = opts.n || 1;
-    var parentAddress = '';
 
     opts.supportBIP44AndP2PKH = _.isBoolean(opts.supportBIP44AndP2PKH) ? opts.supportBIP44AndP2PKH : true;
 
-    var derivationStrategy = opts.supportBIP44AndP2PKH ? Constants.DERIVATION_STRATEGIES.BIP44 : Constants.DERIVATION_STRATEGIES.BIP45;
-    var addressType = (opts.n == 1 && opts.supportBIP44AndP2PKH) ? Constants.SCRIPT_TYPES.P2PKH : Constants.SCRIPT_TYPES.P2SH;
+    const derivationStrategy = opts.supportBIP44AndP2PKH ? Constants.DERIVATION_STRATEGIES.BIP44 : Constants.DERIVATION_STRATEGIES.BIP45;
+    const addressType = (opts.n == 1 && opts.supportBIP44AndP2PKH) ? Constants.SCRIPT_TYPES.P2PKH : Constants.SCRIPT_TYPES.P2SH;
 
+    let pubKey;
+    let newWallet;
+    let parentAddress = '';
     try {
         pubKey = new Bitcore.PublicKey.fromString(opts.pubKey, opts.network);
     } catch (ex) {
         return cb(new ClientError('Invalid public key'));
     };
 
-    var newWallet;
-    var unlocked = true;
 
     async.series([
-        function(acb) {
-
-            self.blockchainExplorer.getAddressReferrals([opts.rootAddress], function(err, referrals) {
+        (acb) => {
+            this.blockchainExplorer.getAddressReferrals([opts.rootAddress], function(err, referrals) {
                 if (err || !referrals || !referrals.length) {
                     return acb(new ClientError('Cannot recreate wallet : address is not a part of blockchain'));
                 }
-                referrals.some(function(referralObj) {
-                    var referral =  Bitcore.Referral(referralObj.raw, opts.network);
+                referrals.find(function(referralObj) {
+                    const referral =  Bitcore.Referral(referralObj.raw, opts.network);
                     if (referral.address.toString() == opts.rootAddress) {
-                        parentAddress = referral.parentAddress.toString();
-                        console.log('REFERRAL FOUND', referral);
-                        return true;
+                        return parentAddress = referral.parentAddress.toString();
                     }
                 });
 
                 return acb();
             });
 
-        }, function(acb) {
-            var wallet = Wallet.create({
+        }, (acb) => {
+            const wallet = Wallet.create({
                 name: opts.walletName,
                 m: opts.m,
                 n: opts.n,
                 network: opts.network,
                 pubKey: pubKey.toString(),
                 singleAddress: !!opts.singleAddress,
+                unlocked: true,
                 derivationStrategy,
-                addressType,
-                unlocked
+                addressType
             });
-            self.storage.storeWallet(wallet, function(err) {
+            this.storage.storeWallet(wallet, function(err) {
                 log.debug('Wallet created', wallet.id, opts.network);
                 newWallet = wallet;
                 return acb(err);
             });
         }
-    ], function(err) {
-        var newWalletId = newWallet ? newWallet.id : null;
-        return cb(err, newWalletId);
+    ], (err) => {
+        const newWalletId = newWallet ? newWallet.id : null;
+        return cb(err, newWalletId, parentAddress);
     });
 };
 
