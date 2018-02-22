@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { NavController } from 'ionic-angular';
 
 // TODO use OnPush strategy with appropriate inputs/outputs
@@ -8,14 +8,21 @@ import { NavController } from 'ionic-angular';
 })
 export class VaultsView {
 
+  hasUnlockedWallets: boolean;
+
+  @Input() wallets = [];
   @Input() vaults = [];
 
-  @Input() refreshVaultList = () => {
-  };
-
-  @Output() onChange: EventEmitter<any> = new EventEmitter<any>();
+  @Input() refreshVaultList = () => {};
 
   constructor(private navCtrl: NavController) {
+    this.hasUnlockedWallets = this.wallets.some(w => w.client.confirmed);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.wallets && changes.wallets.currentValue) {
+      this.hasUnlockedWallets = changes.wallets.currentValue.some(w => w.client.confirmed);
+    }
   }
 
   toAddVault() {
