@@ -360,12 +360,11 @@ WalletService.prototype.recreateWallet = function(opts, cb) {
                 if (err || !referrals || !referrals.length) {
                     return acb(new ClientError('Cannot recreate wallet : address is not a part of blockchain'));
                 }
-                referrals.find(function(referralObj) {
-                    const referral =  Bitcore.Referral(referralObj.raw, opts.network);
-                    if (referral.address.toString() == opts.rootAddress) {
-                        return parentAddress = referral.parentAddress.toString();
-                    }
-                });
+                parentAddress = referrals.reduce((res, referralObj) => {
+                    if (res) return res;
+                    const referral = Bitcore.Referral(referralObj.raw, opts.network);
+                    return res = referral.address.toString() == opts.rootAddress ? referral.parentAddress.toString() : null;
+                }, null);
 
                 return acb();
             });
