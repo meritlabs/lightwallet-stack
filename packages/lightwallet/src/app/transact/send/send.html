@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-toolbar [hidden]="hasUnlockedWallets">
+  <ion-toolbar [hidden]="!hasUnlockedWallets">
     <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
                    (ionCancel)="clearSearch()"></ion-searchbar>
     <ion-buttons end [hidden]="searchQuery">
