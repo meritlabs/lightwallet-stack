@@ -177,7 +177,7 @@ export class ImportView {
   }
 
   mnemonicImportAllowed() {
-    const { words } = this.formData;
+    const  words = this.formData.words ? this.formData.words.replace(/\s\s+/g, ' ').trim() : '';
 
     if (!words) return false;
 
