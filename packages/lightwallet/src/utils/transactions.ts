@@ -24,8 +24,6 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           break;
 
         case TransactionAction.RECEIVED:
-          if (tx.isInvite && !tx.isCoinbase) console.log('TX IS ', tx);
-
           tx.type = 'credit';
 
           if (tx.isInvite) {
