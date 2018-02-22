@@ -24,7 +24,7 @@ export class MeritLightWallet {
 
   @ViewChild(Nav) nav: Nav;
 
-  rootComponent: string = 'OnboardingView';
+  rootComponent: string;
 
   constructor(private platform: Platform,
               private statusBar: StatusBar,
@@ -36,7 +36,6 @@ export class MeritLightWallet {
               private configService: ConfigService,
               private deepLinkService: DeepLinkService,
               private easyReceiveService: EasyReceiveService,
-              private app: App,
               private events: Events,
               pushNotificationService: PushNotificationsService) {}
 
