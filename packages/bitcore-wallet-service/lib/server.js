@@ -313,6 +313,92 @@ WalletService.prototype.logout = function(opts, cb) {
 };
 
 /**
+ * Restore walet if data not exists in database, but address is registred in blockchain
+ * @param {Object} opts
+ * @param {string} opts.name[=Personal Wallet] - The wallet name.
+ * @param {number} opts.m[=1]- Required copayers.
+ * @param {number} opts.n[=1] - Total copayers.
+ * @param {string} opts.rootAddress - Address on which wallet was unlocked
+ * @param {string} opts.pubKey - Public key to verify copayers joining have access to the wallet secret.
+ * @param {string} opts.copayers - Wallet copayers
+ * @param {string} opts.singleAddress[=false] - The wallet will only ever have one address.
+ * @param {string} opts.network - The Merit network for this wallet.
+ * @param {string} opts.supportBIP44AndP2PKH[=true] - Client supports BIP44 & P2PKH for new wallets.
+ */
+WalletService.prototype.recreateWallet = function(opts, cb) {
+    var self = this, pubKey;
+
+    if (!checkRequired(opts, ['walletName', 'm', 'n', 'network', 'pubKey', 'rootAddress'], cb)) return;
+
+    if (!Wallet.verifyCopayerLimits(opts.m, opts.n))
+        return cb(new ClientError('Invalid combination of required copayers / total copayers'));
+
+    if (!_.includes(['livenet', 'testnet'], opts.network))
+        return cb(new ClientError('Invalid network'));
+
+    opts.name = 'Personal Wallet';
+    opts.m = opts.m || 1;
+    opts.n = opts.n || 1;
+    var parentAddress = '';
+
+    opts.supportBIP44AndP2PKH = _.isBoolean(opts.supportBIP44AndP2PKH) ? opts.supportBIP44AndP2PKH : true;
+
+    var derivationStrategy = opts.supportBIP44AndP2PKH ? Constants.DERIVATION_STRATEGIES.BIP44 : Constants.DERIVATION_STRATEGIES.BIP45;
+    var addressType = (opts.n == 1 && opts.supportBIP44AndP2PKH) ? Constants.SCRIPT_TYPES.P2PKH : Constants.SCRIPT_TYPES.P2SH;
+
+    try {
+        pubKey = new Bitcore.PublicKey.fromString(opts.pubKey, opts.network);
+    } catch (ex) {
+        return cb(new ClientError('Invalid public key'));
+    };
+
+    var newWallet;
+    var unlocked = true;
+
+    async.series([
+        function(acb) {
+
+            self.blockchainExplorer.getAddressReferrals([opts.rootAddress], function(err, referrals) {
+                if (err || !referrals) {
+                    return acb('Cannot recreate wallet : address is not a part of blockchain');
+                }
+                referrals.some(function(referralObj) {
+                    var referral =  Bitcore.Referral(referralObj.raw, opts.network);
+                    if (referral.address.toString() == opts.rootAddress) {
+                        parentAddress = referral.parentAddress.toString();
+                        console.log('REFERRAL FOUND', referral);
+                        return true;
+                    }
+                });
+
+                return acb();
+            });
+
+        }, function(acb) {
+            var wallet = Wallet.create({
+                name: opts.walletName,
+                m: opts.m,
+                n: opts.n,
+                network: opts.network,
+                pubKey: pubKey.toString(),
+                singleAddress: !!opts.singleAddress,
+                derivationStrategy,
+                addressType,
+                unlocked
+            });
+            self.storage.storeWallet(wallet, function(err) {
+                log.debug('Wallet created', wallet.id, opts.network);
+                newWallet = wallet;
+                return acb(err);
+            });
+        }
+    ], function(err) {
+        var newWalletId = newWallet ? newWallet.id : null;
+        return cb(err, newWalletId);
+    });
+};
+
+/**
  * Creates a new wallet.
  * @param {Object} opts
  * @param {string} opts.id - The wallet id.
