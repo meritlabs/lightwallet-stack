@@ -7,7 +7,7 @@ import * as sjcl from 'sjcl';
 const $ = preconditions.singleton();
 
 import { Common } from './common';
-import { ENV } from '../../../environments/environment';
+import { ENV } from '@app/env';
 const Constants = Common.Constants;
 const Utils = Common.Utils;
 
