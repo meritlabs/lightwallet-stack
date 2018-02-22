@@ -551,14 +551,46 @@ export class API {
         return await this.openWallet();
       } catch (e) {
 
-        if (this.isPrivKeyExternal())
-          throw new Error('No Private Key!');
-
-        if (e.code == 'NOT_AUTHORIZED') {
-          await this.addAccess({});
-          return await this.openWallet();
-        } else {
+        if (e.code != 'NOT_AUTHORIZED') {
           throw e;
+        } else {
+
+          const walletPrivKey = new Bitcore.PrivateKey(void 0, this.credentials.network);
+          const pubkey = walletPrivKey.toPublicKey();
+          this.credentials.addWalletPrivateKey(walletPrivKey.toString());
+          let rootAddress = this.getRootAddress();
+
+          let defaultOpts = {
+            m: 1,
+            n: 1,
+            walletName: 'Personal Wallet',
+            copayerName: 'me'
+          };
+
+          //call 'recreate wallet' method to create wallet instance with exision
+          let args = {
+            m: defaultOpts.m,
+            n: defaultOpts.n,
+            walletName: defaultOpts.walletName,
+            copayerName: defaultOpts.copayerName,
+            pubKey: pubkey.toString(),
+            rootAddress: rootAddress.toString(),
+            network: this.credentials.network,
+            singleAddress: true, //daedalus wallets are single-addressed
+          };
+
+          let res = await this._doPostRequest('/v1/recreate_wallet/', args);
+
+          if (res) {
+            let walletId = res.walletId;
+            let parentAddress = res.parentAddress;
+            this.credentials.addWalletInfo(walletId, defaultOpts.walletName, defaultOpts.m, defaultOpts.n, defaultOpts.copayerName, parentAddress);
+
+            return this.doJoinWallet(walletId, walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, defaultOpts.copayerName, {});
+          } else {
+            throw new Error('failed to recreate wallet');
+          }
+
         }
 
       }
