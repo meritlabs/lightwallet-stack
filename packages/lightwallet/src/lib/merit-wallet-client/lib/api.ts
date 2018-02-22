@@ -543,32 +543,26 @@ export class API {
     }
   };
 
-  _import(): Promise<any> {
-    return new Promise((resolve, reject) => {
+  async _import(): Promise<any> {
 
       $.checkState(this.credentials);
 
+      try {
+        return await this.openWallet();
+      } catch (e) {
 
-      // First option, grab wallet info from BWS.
-      return this.openWallet().then((ret) => {
-
-        if (ret) return resolve(ret);
-
-        // Is the error other than "copayer was not found"? || or no priv key.
         if (this.isPrivKeyExternal())
-          return reject(new Error('No Private Key!'));
+          throw new Error('No Private Key!');
 
-        //Second option, lets try to add an access
-        this.log.info('Copayer not found, trying to add access');
-        return this.addAccess({}).then(() => {
-          return this.openWallet().then((ret) => {
-            return resolve(ret);
-          });
-        }).catch((err) => {
-          return reject(Errors.WALLET_DOES_NOT_EXIST);
-        });
-      });
-    });
+        if (e.code == 'NOT_AUTHORIZED') {
+          await this.addAccess({});
+          return await this.openWallet();
+        } else {
+          throw e;
+        }
+
+      }
+
   };
 
   /**
@@ -584,7 +578,6 @@ export class API {
    * @param {String} opts.entropySourcePath - Only used if the wallet was created on a HW wallet, in which that private keys was not available for all the needed derivations
    */
   importFromMnemonic(words: string, opts: any = {}): Promise<any> {
-    return new Promise((resolve, reject) => {
       this.log.debug('Importing from 12 Words');
 
       function derive(nonCompliantDerivation) {
@@ -598,21 +591,21 @@ export class API {
         this.credentials = derive(false);
       } catch (e) {
         this.log.info('Mnemonic error:', e);
-        return reject(Errors.INVALID_BACKUP);
+        return Promise.reject(Errors.INVALID_BACKUP);
       }
 
-      return this._import().then((ret) => {
-        return resolve(ret);
-      }).catch((err) => {
-        if (err == Errors.INVALID_BACKUP) return reject(err);
+      return this._import().catch(err => {
+        if (err == Errors.INVALID_BACKUP) return Promise.reject(err);
         if (err == Errors.NOT_AUTHORIZED || err == Errors.WALLET_DOES_NOT_EXIST) {
-          let altCredentials = derive(true);
-          if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return reject(err);
-          this.credentials = altCredentials;
-          return this._import();
+
+            let altCredentials = derive(true);
+            if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return Promise.reject(err);
+            this.credentials = altCredentials;
+            return this._import();
         }
+        return Promise.reject(err);
       });
-    });
+
   };
 
   /*
@@ -1169,6 +1162,8 @@ export class API {
 
           return resolve(ret);
         });
+      }).catch(err => {
+        return reject(err);
       });
     });
   };
