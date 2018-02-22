@@ -54,7 +54,7 @@ export class PushNotificationsService {
   }
 
 
-  private async init() {
+  async init() {
     if (!this.usePushNotifications || this._token) return;
     await this.configService.load();
     if (!this.configService.get().pushNotificationsEnabled) return;
