@@ -360,7 +360,11 @@ export class ProfileService {
   }
 
   public getWallet(walletId: string): MeritWalletClient {
-    return this.wallets[walletId];
+    const wallet = this.wallets[walletId];
+    if (wallet) {
+      this.addLastKnownBalance(wallet);
+      return wallet;
+    }
   }
 
   async toggleHideBalanceFlag(walletId: string): Promise<any> {
@@ -762,6 +766,6 @@ export class ProfileService {
   * returns addresses strings we decided to hide when declining unlock request
   */
   public getHiddenUnlockRequestsAddresses() {
-    return this.persistenceService.getHiddenUnlockRequestsAddresses(); 
+    return this.persistenceService.getHiddenUnlockRequestsAddresses();
   }
 }
