@@ -39,73 +39,51 @@ export class CreateVaultService {
     return this.model;
   }
 
-  createVault(): Promise<any> {
+  async createVault(): Promise<any> {
+    const spendKey = this.bitcore.HDPrivateKey.fromString(this.walletClient.credentials.xPrivKey);
 
     if (_.isEmpty(this.model.whitelist)) {
+      const vault = await this.vaultFromModel(spendKey.publicKey, []);
+      this.resetModel();
 
-      return this.walletService.getAddress(this.walletClient, false).then(address => {
-        const spendPubKey = this.bitcore.PublicKey.fromString(address.publicKeys[0]);
-        return this.vaultFromModel(spendPubKey, []);
-      }).then((vault) => {
-        this.resetModel();
-        return vault;
-      });
-
+      return vault;
     } else {
-
       const wallet = this.model.selectedWallet;
-      const signPrivKey = this.bitcore.HDPrivateKey.fromString(wallet.credentials.xPrivKey).privateKey;
-      const pubkey = signPrivKey.publicKey;
 
-      return this.vaultFromModel(pubkey, this.model.whitelist).then((vault) => {
+      try {
+        const vault = await this.vaultFromModel(spendKey.publicKey, this.model.whitelist);
+
         let scriptReferralOpts = {
           parentAddress: wallet.getRootAddress().toString(),
-          pubkey: pubkey.toString(),
-          signPrivKey,
+          pubkey: spendKey.publicKey.toString(),
+          signPrivKey: spendKey.privateKey,
           address: vault.address.toString(),
           addressType: this.bitcore.Address.ParameterizedPayToScriptHashType, // pubkey address
           network: wallet.network,
         };
 
-        return wallet
-          .sendReferral(scriptReferralOpts).then(() => {
-            return this.getTxp(vault, false);
-          })
-          .then(txp => {
-            return wallet.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toBuffer().toString('hex')).then(() => txp);
-          })
-          .then((txp) => {
-            return this.walletService.prepare(wallet).then((password: string) => {
-              return { password: password, txp: txp };
-            });
-          }).then((args: any) => {
-            return this.walletService.publishTx(wallet, args.txp).then((pubTxp) => {
-              return { password: args.password, txp: pubTxp };
-            });
-          }).then((args: any) => {
-            return this.walletService.signTx(wallet, args.txp, args.password);
-          }).then((signedTxp: any) => {
-            vault.coins.push(signedTxp);
-            return signedTxp;
-          }).then((signedTxp) => {
-            // return wallet.signAddressAndUnlockWithRoot(signedTxp.changeAddress).then(() => vault);
-            return vault;
-          }).then(vault => {
-            vault.name = this.model.vaultName;
-            return wallet.createVault(vault);
-          }).then((resp) => {
-            return this.profileService.addVault({
-              id: vault.address,
-              copayerId: wallet.credentials.copayerId,
-              name: this.model.vaultName,
-            });
-          }).then(() => {
-            this.resetModel();
-          });
-      }).catch((err) => {
+        const password = await this.walletService.prepare(wallet);
+        await wallet.sendReferral(scriptReferralOpts);
+        await wallet.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toBuffer().toString('hex'));
+        const txp = await this.getTxp(vault, false);
+        const pubTxp = await this.walletService.publishTx(wallet, txp);
+        const signedTxp = await this.walletService.signTx(wallet, pubTxp, password);
+
+        vault.coins.push(signedTxp);
+        vault.name = this.model.vaultName;
+
+        await wallet.createVault(vault);
+        await this.profileService.addVault({
+          id: vault.address,
+          copayerId: wallet.credentials.copayerId,
+          name: vault.vaultName,
+        });
+
+        this.resetModel();
+      } catch(err) {
         this.logger.info('Error while creating vault:', err);
-        return Promise.reject(err);
-      });
+        throw err;
+      };
     }
   }
 

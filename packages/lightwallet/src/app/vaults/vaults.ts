@@ -16,12 +16,12 @@ export class VaultsView {
   @Input() refreshVaultList = () => {};
 
   constructor(private navCtrl: NavController) {
-    this.hasUnlockedWallets = this.wallets.some(w => w.confirmed);
+    this.hasUnlockedWallets = this.wallets.some(w => w.client.confirmed);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.wallets && changes.wallets.currentValue) {
-      this.hasUnlockedWallets = changes.wallets.currentValue.some(w => w.confirmed);
+      this.hasUnlockedWallets = changes.wallets.currentValue.some(w => w.client.confirmed);
     }
   }
 
