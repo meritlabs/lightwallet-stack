@@ -1,7 +1,7 @@
 view-select-whitelist {
 
   .selected h2 {
-    color: color($colors, 'primary');
+    color: color($colors, 'primary') !important;
   }
 
   ion-icon {

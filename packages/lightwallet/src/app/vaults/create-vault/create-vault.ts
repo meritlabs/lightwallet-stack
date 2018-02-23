@@ -3,7 +3,7 @@ import { IonicPage, NavParams, NavController, ModalController } from 'ionic-angu
 import { IDisplayWallet } from "merit/../models/display-wallet";
 import { RateService } from "merit/transact/rate.service";
 import { MERIT_MODAL_OPTS } from 'merit/../utils/constants';
-
+import { IWhitelistWallet } from "merit/vaults/select-whitelist/select-whitelist";
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -14,7 +14,11 @@ import { MERIT_MODAL_OPTS } from 'merit/../utils/constants';
 })
 export class CreateVaultView {
 
-  public formData: { vaultName: string, wallets: Array<any>, wallet:IDisplayWallet, amount:number };
+  public vaultName: string;
+  public wallets: Array<IWhitelistWallet>;
+  public wallet: IDisplayWallet;
+  public whiteList: Array<IWhitelistWallet>;
+  public amount: number;
 
   constructor(
     private navCtrl: NavController,
@@ -22,47 +26,52 @@ export class CreateVaultView {
     private rateService: RateService,
     private modalCtrl: ModalController
   ) {
-
     let wallets = this.navParams.get('wallets');
-
-    this.formData = {
-      vaultName: '',
-      wallet: wallets[0],
-      wallets: wallets.map(w => Object.assign({selected: false}, w)),
-      amount: 0
-    };
+    this.wallets = wallets.map(w => Object.assign({selected: false}, w));
+    this.wallet = this.wallets[0];
+    this.whiteList = [];
+    this.amount = 0;
   }
 
   get isNextStepAvailable() {
     return (
-      this.formData.vaultName
-      && this.formData.amount
-      && this.rateService.mrtToMicro(this.formData.amount) < this.formData.wallet.client.status.spendableAmount
-      && this.formData.wallets.filter(w => w.selected).length
+      this.vaultName
+      && this.amount
+      && this.rateService.mrtToMicro(this.amount) < this.wallet.client.status.spendableAmount
+      && this.whiteList.length
     )
+  }
+
+  selectWhitelist() {
+    let modal = this.modalCtrl.create('SelectWhitelistModal', {
+      selectedWallet: this.wallet,
+      availableWallets: this.wallets
+    }, MERIT_MODAL_OPTS);
+
+    modal.onDidDismiss(whitelist => this.whiteList = whitelist.filter(w => w.selected) );
+
+    modal.present();
   }
 
   selectWallet() {
     const modal = this.modalCtrl.create('SelectWalletModal', {
-      selectedWallet: this.formData.wallet,
-      availableWallets: this.formData.wallets
+      selectedWallet: this.wallet,
+      availableWallets: this.wallets.map(w => w.client)
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
-        this.formData.wallet = wallet;
+        this.wallet = this.wallets.find(w => w.client.id == wallet.id);
       }
     });
     return modal.present();
   }
 
   toConfirm() {
-
     this.navCtrl.push('ConfirmView', {
-      whitelist: this.formData.wallets.filter(w => w.selected),
-      wallet: this.formData.wallet,
-      amount: this.formData.amount
+      whiteList: this.whiteList,
+      wallet: this.wallet,
+      amount: this.amount
     });
-
   }
 
 
