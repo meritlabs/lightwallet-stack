@@ -24,7 +24,6 @@ export class VaultDetailsView {
 
   public vault: any;
   public whitelist: Array<any> = [];
-  public coins: Array<any> = [];
   public transactions: Array<any> = [];
   private bitcore: any = null;
   private walletClient: MeritWalletClient;
@@ -123,20 +122,23 @@ export class VaultDetailsView {
     });
   }
 
-  spendToAddress(address): void {
-    let wallet = null;
-    this.profileService.getHeadWalletClient().then((w) => {
-      wallet = w;
-      return this.vaultsService.getVaultCoins(w, this.vault);
-    }).then((coins) => {
-      this.coins = coins;
-      this.navCtrl.push('VaultSpendAmountView', {
-        recipient: address,
-        wallet: wallet,
-        vault: this.vault,
-        vaultId: this.vault.id,
-        coins: coins
-      });
+  // Promise<any> is a hach for async/await
+  async spendToAddress(address): Promise<any> {
+    const wallets = await this.getAllWallets();
+    const wallet = wallets.find(w => w.id === this.vault.walletId);
+
+    if (!wallet) {
+      throw Error("Not wallet found for the vault");
+    }
+
+    const coins = await this.vaultsService.getVaultCoins(wallet, this.vault);
+
+    this.navCtrl.push('VaultSpendAmountView', {
+      recipient: address,
+      vault: this.vault,
+      vaultId: this.vault.id,
+      wallet,
+      coins,
     });
   }
 
@@ -161,10 +163,15 @@ export class VaultDetailsView {
     return this.vaultsService.getVaultCoins(walletClient, this.vault);
   };
 
-  private getVaultTxHistory(): Promise<Array<any>> {
-    return this.profileService.getHeadWalletClient().then((walletClient) => {
-      return this.vaultsService.getVaultTxHistory(walletClient, this.vault);
-    });
+  private async getVaultTxHistory(): Promise<Array<any>> {
+    const wallets = await this.getAllWallets();
+    const wallet = wallets.find(w => w.id === this.vault.walletId);
+
+    if (!wallet) {
+      throw Error("No wallet found for the vault");
+    }
+
+    return await this.vaultsService.getVaultTxHistory(wallet, this.vault);
   };
 
   private formatAmounts(): void {

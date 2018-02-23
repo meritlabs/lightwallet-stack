@@ -82,14 +82,11 @@ export class WalletService {
   }
 
   // TODO: Make async
-  async getStatus(wallet: MeritWalletClient, opts?: any) {
+  async getStatus(wallet: MeritWalletClient, opts?: any): Promise<any> {
     opts = opts || {};
     const walletId = wallet.id;
 
-
     return new Promise((resolve, reject) => {
-
-
       let processPendingTxps = async (status: any): Promise<any> => {
         status = status || {};
         let txps = await status.pendingTxps;

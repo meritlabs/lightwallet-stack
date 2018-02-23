@@ -19,7 +19,7 @@ export interface  ICreateVaultData {
 export class CreateVaultService {
 
   private Bitcore;
-  
+
   constructor(
     private logger: Logger,
     private walletService: WalletService,
@@ -82,7 +82,7 @@ export class CreateVaultService {
       throw new Error('Incorrect data');
     }
 
-    const status = await this.walletService.getStatus(data.wallet.client, {force: true});
+    const status = await this.walletService.getStatus(data.wallet.client, { force: true });
 
     if (!status.availableInvites) {
       throw new Error("You don't have any active invites that you can use to create a vault");
@@ -90,7 +90,7 @@ export class CreateVaultService {
     if (data.amount > status.spendableAmount) {
       throw new Error("Wallet balance is less than vault balance");
     }
-    
+
     return true;
   }
 
