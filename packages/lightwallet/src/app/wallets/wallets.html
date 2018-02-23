@@ -119,9 +119,8 @@
 
         <ion-list class="vaults" *ngIf="vaults && vaults.length">
             <button ion-item detail-none *ngFor="let vault of vaults" navPush="VaultDetailsView" [navParams]="{vaultId: vault._id, vault: vault}">
-
-                <ion-avatar item-start class="btn vault-icon">
-                    <ion-icon name="lock"></ion-icon>
+                <ion-avatar item-start img-icon>
+                    <img src="assets/img/icons/vault-avatar.svg">
                 </ion-avatar>
 
                 <h2 class="vault-name">
