@@ -12,9 +12,8 @@ import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { SpendVaultService } from 'merit/vaults/spend/vault-spend.service';
 import { WalletService } from 'merit/wallets/wallet.service';
-
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { ConfigService } from './../../../shared/config.service';
+import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @IonicPage({
   segment: 'vault/:vaultId/spend/confirm',
@@ -83,7 +82,7 @@ export class VaultSpendConfirmView {
       txp: {},
       toName: this.recipient.name || '',
       toAmount: toAmount * this.unitToMicro, // TODO: get the right number from amount page
-    }
+    };
 
     await this.updateAmount();
 

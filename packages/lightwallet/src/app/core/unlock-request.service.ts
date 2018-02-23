@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ProfileService } from 'merit/core/profile.service';
 import { PersistenceService } from 'merit/core/persistence.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { MeritContact } from '../../models/merit-contact';
 import { ContactsProvider } from '../../providers/contacts/contacts';

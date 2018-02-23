@@ -6,7 +6,7 @@ import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
 import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
 import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { MeritWalletClient } from '../../../../lib/merit-wallet-client/index';
 
 @IonicPage({
   defaultHistory: ['WalletsView']

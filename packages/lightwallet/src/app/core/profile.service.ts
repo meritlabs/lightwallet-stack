@@ -16,9 +16,8 @@ import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-
 import { ENV } from '@app/env';
+import { MeritWalletClient } from '../../lib/merit-wallet-client/index';
 
 /*
   Historically, this acted as the API-Client

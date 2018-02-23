@@ -9,8 +9,7 @@ import { RateService } from 'merit/transact/rate.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 @IonicPage({
   segment: 'vault/:vaultId',

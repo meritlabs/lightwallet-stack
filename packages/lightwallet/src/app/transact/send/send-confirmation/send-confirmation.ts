@@ -9,12 +9,12 @@ import { Logger } from 'merit/core/logger';
 import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
 import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
 import { TxFormatService } from 'merit/transact/tx-format.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-import { EasySend, getEasySendURL } from 'merit/transact/send/easy-send/easy-send.model';
+import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 import * as  _ from 'lodash';
 import { ISendMethod, SendMethodDestination, SendMethodType } from 'merit/transact/send/send-method.model';
 import { RateService } from 'merit/transact/rate.service';
 import { SendService } from 'merit/transact/send/send.service';
+import { MeritWalletClient } from '../../../../lib/merit-wallet-client/index';
 
 
 @IonicPage()

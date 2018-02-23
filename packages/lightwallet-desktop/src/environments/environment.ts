@@ -4,5 +4,10 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  network: 'testnet',
+  mwsUrl: 'http://192.168.1.98:3232/bws/api',
+  rateUrl: 'https://bitpay.com/api/rates'
 };
+
+export { environment as ENV };

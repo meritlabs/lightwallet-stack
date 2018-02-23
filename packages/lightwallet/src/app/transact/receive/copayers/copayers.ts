@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-
+import { MeritWalletClient } from '../../../../lib/merit-wallet-client/index';
 
 @IonicPage({
   segment: 'receive/:walletId',

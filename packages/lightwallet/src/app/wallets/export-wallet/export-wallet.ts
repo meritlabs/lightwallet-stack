@@ -9,7 +9,7 @@ import { PersistenceService } from 'merit/core/persistence.service';
 import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 @IonicPage()
 @Component({

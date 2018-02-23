@@ -1,1 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+//@import '~@angular/material/theming';
+//@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import '~normalize-scss';
+//@include mat-core();
+
+//$merit-primary: mat-palette($mat-indigo);
+//$merit-accent: mat-palette($mat-pink, A200, A100, A400);
+//$warn: mat-palette($mat-red);
+//$app-theme: mat-light-theme($merit-primary, $merit-accent, $warn);
+//$primary: rgb(0, 176, 221);
+//@include mat-button-theme($app-theme);
+
+@include normalize();
+
+*:focus {
+  outline: none;
+}
+
+body {
+  font-family: 'SFUIDisplay-Medium', "Roboto", sans-serif;
+}

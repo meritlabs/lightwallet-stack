@@ -14,8 +14,8 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
+import { MeritWalletClient } from '../../lib/merit-wallet-client/index';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;

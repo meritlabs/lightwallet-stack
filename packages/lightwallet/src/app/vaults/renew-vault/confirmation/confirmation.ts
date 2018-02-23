@@ -4,7 +4,7 @@ import { BwcService } from 'merit/core/bwc.service';
 import { ToastConfig } from 'merit/core/toast.config';
 import { MeritToastController } from 'merit/core/toast.controller';
 import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { MeritWalletClient } from '../../../../lib/merit-wallet-client/index';
 
 @IonicPage({
   segment: 'vault/:vaultId/renew/confirmation',

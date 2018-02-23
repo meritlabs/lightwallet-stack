@@ -4,8 +4,8 @@ import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
 import { ConfigService } from 'merit/shared/config.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { ENV } from '@app/env';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 @Injectable()
 export class MnemonicService {

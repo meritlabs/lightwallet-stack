@@ -9,7 +9,7 @@ import { PlatformService } from 'merit/core/platform.service';
 // Services
 import { ProfileService } from 'merit/core/profile.service';
 import { ConfigService } from 'merit/shared/config.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 @Injectable()
 export class PollingNotificationsService {

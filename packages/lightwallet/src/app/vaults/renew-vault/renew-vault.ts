@@ -6,10 +6,9 @@ import { PopupService } from 'merit/core/popup.service';
 import { ProfileService } from 'merit/core/profile.service';
 import { ConfigService } from 'merit/shared/config.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
-
 import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { ENV } from '@app/env';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 export interface IWhitelistEntry {
   id: string,

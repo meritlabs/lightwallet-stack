@@ -59,9 +59,9 @@
       "spec": false
     },
     "component": {
+      "spec": false,
       "inlineStyle": false,
-      "inlineTemplate": false,
-      "spec": false
+      "inlineTemplate": false
     },
     "directive": {
       "spec": false

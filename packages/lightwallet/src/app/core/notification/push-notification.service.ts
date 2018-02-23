@@ -13,9 +13,9 @@ import { PlatformService } from 'merit/core/platform.service';
 // Services
 import { ProfileService } from 'merit/core/profile.service';
 import { ConfigService } from 'merit/shared/config.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { createDisplayWallet } from '../../../models/display-wallet';
 import { WalletService } from 'merit/wallets/wallet.service';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 @Injectable()
 export class PushNotificationsService {
