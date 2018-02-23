@@ -1,163 +1,121 @@
 import { Injectable } from '@angular/core';
+import { IDisplayWallet } from "merit/../models/display-wallet";
 
-import * as _ from 'lodash';
-import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
-import { ProfileService } from 'merit/core/profile.service';
 import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from './../../../lib/merit-wallet-client';
+import { ProfileService } from 'merit/core/profile.service';
+import { BwcService } from 'merit/core/bwc.service';
+import { RateService } from "merit/transact/rate.service";
+
+export interface  ICreateVaultData {
+  vaultName: string;
+  wallet: IDisplayWallet;
+  whiteList: Array<IDisplayWallet>;
+  amount: number;
+  masterKey: {key: any, phrase: string};
+}
 
 @Injectable()
 export class CreateVaultService {
 
-  private bitcore: any;
-  private walletClient: MeritWalletClient;
-
-  private model = {
-    vaultName: '',
-    whitelist: [],
-    amountToDeposit: '0.0',
-    amountAvailable: 10000,
-    masterKey: null,
-    masterKeyMnemonic: '',
-    selectedWallet: null
-  };
-
-  constructor(private bwcService: BwcService,
-              private walletService: WalletService,
-              private logger: Logger,
-              private profileService: ProfileService,) {
-    this.bitcore = this.bwcService.getBitcore();
+  private Bitcore;
+  
+  constructor(
+    private logger: Logger,
+    private walletService: WalletService,
+    private profileService: ProfileService,
+    private rateService: RateService,
+    bwcService: BwcService
+  ) {
+    this.Bitcore = bwcService.getBitcore();
   }
 
-  updateData(fields: any): void {
-    this.model = _.assign({}, this.model, fields);
-    this.walletClient = this.model.selectedWallet;
-  }
+  async create(data: ICreateVaultData) {
 
-  getData(): any {
-    return this.model;
-  }
+      await this.checkData(data);
 
-  async createVault(): Promise<any> {
-    const spendKey = this.bitcore.HDPrivateKey.fromString(this.walletClient.credentials.xPrivKey);
+      const vault:any = await data.wallet.client.prepareVault(0, {
+        amount: this.rateService.mrtToMicro(data.amount),
+        whitelist: data.whiteList.map(w => w.client.getRootAddress().toBuffer()),
+        masterPubKey: data.masterKey.key.publicKey,
+        spendPubKey: this.Bitcore.HDPrivateKey.fromString(data.wallet.client.credentials.xPrivKey).publicKey,
+      });
 
-    if (_.isEmpty(this.model.whitelist)) {
-      const vault = await this.vaultFromModel(spendKey.publicKey, []);
-      this.resetModel();
-
-      return vault;
-    } else {
-      const wallet = this.model.selectedWallet;
-
-      try {
-        const vault = await this.vaultFromModel(spendKey.publicKey, this.model.whitelist);
-
-        let scriptReferralOpts = {
-          parentAddress: wallet.getRootAddress().toString(),
-          pubkey: this.model.masterKey.publicKey.toString(),
-          signPrivKey: this.model.masterKey.privateKey,
-          address: vault.address.toString(),
-          addressType: this.bitcore.Address.ParameterizedPayToScriptHashType, // pubkey address
-          network: wallet.network,
-        };
-
-        const password = await this.walletService.prepare(wallet);
-        await wallet.sendReferral(scriptReferralOpts);
-        await wallet.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
-        const txp = await this.getTxp(vault, false);
-        const pubTxp = await this.walletService.publishTx(wallet, txp);
-        const signedTxp = await this.walletService.signTx(wallet, pubTxp, password);
-
-        vault.coins.push(signedTxp);
-        vault.name = this.model.vaultName;
-
-        await wallet.createVault(vault);
-        await this.profileService.addVault({
-          id: vault.address,
-          copayerId: wallet.credentials.copayerId,
-          name: vault.vaultName,
-        });
-
-        this.resetModel();
-      } catch(err) {
-        this.logger.info('Error while creating vault:', err);
-        throw err;
+      let scriptReferralOpts = {
+        parentAddress: data.wallet.client.getRootAddress().toString(),
+        pubkey: data.masterKey.key.publicKey.toString(),
+        signPrivKey: data.masterKey.key.privateKey,
+        address: vault.address.toString(),
+        addressType: this.Bitcore.Address.ParameterizedPayToScriptHashType, // pubkey address
+        network: data.wallet.client.network
       };
-    }
+
+      const password = await this.walletService.prepare(data.wallet.client);
+      await data.wallet.client.sendReferral(scriptReferralOpts);
+      await data.wallet.client.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
+      const txp = await this.getTxp(vault, data.wallet);
+      const pubTxp = await this.walletService.publishTx(data.wallet.client, txp);
+      const signedTxp = await this.walletService.signTx(data.wallet.client, pubTxp, password);
+
+      vault.coins.push(signedTxp);
+      vault.name = data.vaultName;
+
+      await data.wallet.client.createVault(vault);
+      await this.profileService.addVault({
+        id: vault.address,
+        copayerId: data.wallet.client.credentials.copayerId,
+        name: vault.vaultName,
+      });
+
   }
 
-  private resetModel() {
-
-    this.model = {
-      vaultName: '',
-      whitelist: [],
-      amountToDeposit: null,
-      amountAvailable: 0,
-      masterKey: null,
-      masterKeyMnemonic: '',
-      selectedWallet: null
+  private async checkData(data) {
+    if (
+      !data.vaultName
+      || !data.wallet
+      || !data.whiteList
+      || !data.whiteList.length
+      || !data.amount
+      || !data.masterKey || !data.masterKey.key || !data.masterKey.phrase
+    ) {
+      this.logger.warn('Incorrect data', data);
+      throw new Error('Incorrect data');
     }
 
+    data.wallet.client.status = await data.wallet.client.getStatus({force: true});
+
+    if (!data.wallet.client.status.availableInvites) {
+      throw new Error("You don't have any active invites that you can use to create a vault");
+    }
+    
+    if (data.amount > data.wallet.client.status.spendableAmount) {
+      throw new Error("Wallet balance is less than vault balance");
+    }
+    
+    return true;
   }
 
-  private async vaultFromModel(spendPubKey: any, whitelistedAddresses: Array<any>): Promise<any> {
-    //currently only supports type 0 which is a whitelisted vault.
-    const amount = this.bitcore.Unit.fromMRT(parseFloat(this.model.amountToDeposit)).toMicros();
-    const addrs = await Promise.all(whitelistedAddresses.map(async (w: any) => {
-      let address;
-      if (w.type == 'wallet') {
-        address = this.getAllWallets().then((wallets) => {
-          let foundWallet = _.find(wallets, { id: w.id });
-          return foundWallet.createAddress().then((resp) => {
-            return this.bitcore.Address.fromString(resp.address);
-          });
-        });
-      } else {
-        address = Promise.resolve(this.bitcore.Address.fromString(w.address));
-      }
-      return address;
-    }));
+  private async getTxp(vault: any, wallet: IDisplayWallet): Promise<any> {
+    let feeLevel = 'normal'; //todo temp
 
-    return this.walletClient.prepareVault(0, {
-      amount: amount,
-      whitelist: _.map(addrs, (addr) => addr.toBuffer()),
-      masterPubKey: this.model.masterKey.publicKey,
-      spendPubKey: spendPubKey,
-    });
+    if (vault.amount > Number.MAX_SAFE_INTEGER) {
+      return Promise.reject(new Error('The amount is too big')); // Because Javascript
+    }
+
+    let txp = {
+      outputs: [{
+        'toAddress': vault.address.toString(),
+        'script': vault.scriptPubKey.toBuffer().toString('hex'),
+        'amount': vault.amount
+      }],
+      addressType: 'PP2SH',
+      inputs: null, //Let merit wallet service figure out the inputs based
+                    //on the selected wallet.
+      feeLevel: feeLevel,
+      excludeUnconfirmedUtxos: true,
+      dryRun: false,
+    };
+    return this.walletService.createTx(wallet.client, txp);
   }
 
-  private getTxp(vault: any, dryRun: boolean): Promise<any> {
-    this.logger.warn('In GetTXP');
-    this.logger.warn(vault);
-    this.logger.warn(this.model.selectedWallet);
-    return this.findFeeLevel(vault.amount).then((feeLevel) => {
-      if (vault.amount > Number.MAX_SAFE_INTEGER) {
-        return Promise.reject(new Error('The amount is too big')); // Because Javascript
-      }
-
-      let txp = {
-        outputs: [{
-          'toAddress': vault.address.toString(),
-          'script': vault.scriptPubKey.toBuffer().toString('hex'),
-          'amount': vault.amount
-        }],
-        addressType: 'PP2SH',
-        inputs: null, //Let merit wallet service figure out the inputs based
-                      //on the selected wallet.
-        feeLevel: feeLevel,
-        excludeUnconfirmedUtxos: true,
-        dryRun: dryRun,
-      };
-      return this.walletService.createTx(this.model.selectedWallet, txp);
-    });
-  }
-
-  private findFeeLevel(amount: number): Promise<any> {
-    return Promise.resolve(null);
-  }
-
-  private async getAllWallets(): Promise<Array<any>> {
-    return await this.profileService.getWallets();
-  }
 }
