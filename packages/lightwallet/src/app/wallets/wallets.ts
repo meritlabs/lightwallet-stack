@@ -39,7 +39,7 @@ export class WalletsView {
   vaults;
   network: string;
   loading: boolean;
-  hasUnlockedWallets: boolean;
+  hasActiveInvites: boolean;
 
   private get isActivePage(): boolean {
     try {
@@ -134,7 +134,7 @@ export class WalletsView {
       )
       .toPromise();
 
-    this.hasUnlockedWallets = this.wallets.some(w => w.client.confirmed);
+    this.hasActiveInvites = this.wallets.some(w => w.invites > 0);
     this.loading = false;
   }
 

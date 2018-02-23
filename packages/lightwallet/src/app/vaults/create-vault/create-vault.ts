@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, NavController, ModalController } from 'ionic-angular';
 import { IDisplayWallet } from "merit/../models/display-wallet";
+import { IWhitelistWallet } from "merit/vaults/select-whitelist/select-whitelist";
 import { RateService } from "merit/transact/rate.service";
 import { MERIT_MODAL_OPTS } from 'merit/../utils/constants';
-import { IWhitelistWallet } from "merit/vaults/select-whitelist/select-whitelist";
-
+import { ENV } from '@app/env';
 @IonicPage({
   defaultHistory: ['WalletsView']
 })
@@ -37,7 +37,7 @@ export class CreateVaultView {
     return (
       this.vaultName
       && this.amount
-      && this.rateService.mrtToMicro(this.amount) < this.wallet.client.status.spendableAmount
+      && this.rateService.mrtToMicro(this.amount) <= this.wallet.client.status.spendableAmount
       && this.whiteList.length
     )
   }
@@ -67,11 +67,17 @@ export class CreateVaultView {
   }
 
   toConfirm() {
-    this.navCtrl.push('ConfirmView', {
+    let network = this.wallet.client.credentials.network || ENV.network;
+    let phrase = this.wallet.client.getNewMnemonic(null);
+    let key = phrase.toHDPrivateKey('', network);
+
+    this.navCtrl.push('CreateVaultConfirmView', {vaultData: {
+      vaultName: this.vaultName,
       whiteList: this.whiteList,
       wallet: this.wallet,
-      amount: this.amount
-    });
+      amount: this.amount,
+      masterKey: {key, phrase}
+    }});
   }
 
 
