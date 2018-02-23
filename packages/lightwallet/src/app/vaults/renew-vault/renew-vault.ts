@@ -86,9 +86,8 @@ export class VaultRenewView {
       if (w.type == 'wallet') {
         address = this.getAllWallets().then((wallets) => {
           let foundWallet = _.find(wallets, { id: w.walletClientId });
-          return foundWallet.createAddress().then((resp) => {
-            return this.bitcore.Address.fromString(resp.address);
-          });
+
+          return foundWallet.getRootAddress();
         });
       } else {
         address = Promise.resolve(this.bitcore.Address.fromString(w.address));
