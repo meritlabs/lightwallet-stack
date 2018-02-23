@@ -105,7 +105,7 @@ export class WalletsView {
       await Promise.all([
         this.updateNetworkValue(),
         this.processPendingEasyReceipts(),
-        this.updateVaults(_.head(this.wallets).client)
+        this.refreshVaultList()
       ]);
 
       this.logger.info('Done updating all info for wallet.');
@@ -172,7 +172,7 @@ export class WalletsView {
 
   //todo do we need this?
   async refreshVaultList() {
-    return this.updateVaults(await this.profileService.getHeadWalletClient());
+    return await Promise.all(this.wallets.map(async w => await this.updateVaults(w.client)));
   }
 
   private async updateVaults(wallet: MeritWalletClient): Promise<any> {

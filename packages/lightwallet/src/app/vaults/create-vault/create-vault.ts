@@ -17,7 +17,6 @@ export class CreateVaultView {
   public vaultName: string;
   public wallets: Array<IWhitelistWallet>;
   public wallet: IDisplayWallet;
-  public whiteList: Array<IWhitelistWallet>;
   public amount: number;
 
   constructor(
@@ -27,9 +26,8 @@ export class CreateVaultView {
     private modalCtrl: ModalController
   ) {
     let wallets = this.navParams.get('wallets');
-    this.wallets = wallets.map(w => Object.assign({selected: false}, w));
+    this.wallets = wallets.map(w => Object.assign({ selected: false }, w));
     this.wallet = this.wallets[0];
-    this.whiteList = [];
     this.amount = 0;
   }
 
@@ -38,8 +36,12 @@ export class CreateVaultView {
       this.vaultName
       && this.amount
       && this.rateService.mrtToMicro(this.amount) <= this.wallet.client.status.spendableAmount
-      && this.whiteList.length
+      && this.wallets.filter(w => w.selected).length
     )
+  }
+
+  get whiteList() {
+    return this.wallets.filter(w => w.selected);
   }
 
   selectWhitelist() {
@@ -47,9 +49,6 @@ export class CreateVaultView {
       selectedWallet: this.wallet,
       availableWallets: this.wallets
     }, MERIT_MODAL_OPTS);
-
-    modal.onDidDismiss(whitelist => this.whiteList = whitelist.filter(w => w.selected) );
-
     modal.present();
   }
 
