@@ -10,6 +10,7 @@ export interface IDisplayWallet {
   alias: string;
   address: string;
   locked: boolean;
+  confirmed: boolean;
   color: string;
   referrerAddress: string;
   totalBalanceStr?: string;
@@ -63,6 +64,7 @@ export async function createDisplayWallet(wallet: MeritWalletClient, walletServi
 
   if (!options.skipStatus) {
     wallet.status =  await walletService.getStatus(wallet, { force: true });
+    displayWallet.confirmed = wallet.confirmed;
     displayWallet.inviteRequests = await walletService.getUnlockRequests(wallet);
     displayWallet.invites = wallet.status.availableInvites;
     if (wallet.status && wallet.status.totalBalanceStr) {

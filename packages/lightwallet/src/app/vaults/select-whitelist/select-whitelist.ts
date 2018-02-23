@@ -1,8 +1,10 @@
-import { find, findIndex } from 'lodash';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { ProfileService } from 'merit/core/profile.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { IDisplayWallet } from "merit/../models/display-wallet";
+
+export interface IWhitelistWallet extends IDisplayWallet {
+  selected: boolean;
+}
 
 @IonicPage()
 @Component({
@@ -11,34 +13,16 @@ import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 })
 export class SelectWhitelistModal {
 
-  wallets: MeritWalletClient[];
-  selectedWallets: MeritWalletClient[];
+  wallets: Array<IWhitelistWallet>;
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              private viewCtrl: ViewController,
-              private profileService: ProfileService) {}
-
-  async ngOnInit() {
-    this.wallets = this.navParams.get('availableWallets') || await this.profileService.getWallets();
-    this.selectedWallets = this.navParams.get('selectedWallets');
-  }
-
-  checkWalletSelected(id) {
-    return this.selectedWallets.some(w => w.id === id);
-  }
-
-  select(wallet: MeritWalletClient) {
-    const selectedWalletIndex = findIndex(this.selectedWallets, { id: wallet.id });
-
-    if (selectedWalletIndex === -1) {
-      this.selectedWallets.push(wallet);
-    } else {
-      this.selectedWallets.splice(selectedWalletIndex, 1);
-    }
+  constructor(
+    public navParams: NavParams,
+    private viewCtrl: ViewController
+  ) {
+    this.wallets = this.navParams.get('availableWallets');
   }
 
   close() {
-    this.viewCtrl.dismiss(this.selectedWallets);
+    this.viewCtrl.dismiss(this.wallets);
   }
 }
