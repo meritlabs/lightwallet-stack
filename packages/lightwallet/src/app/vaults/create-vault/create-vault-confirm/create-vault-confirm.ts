@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { RateService } from "merit/transact/rate.service";
 import { CreateVaultService } from "merit/vaults/create-vault/create-vault.service";
 import { ToastConfig } from 'merit/core/toast.config';
@@ -19,7 +19,8 @@ export class CreateVaultConfirmView {
     private navParams: NavParams,
     private alertCtrl: AlertController,
     private toastCtrl: MeritToastController,
-    private createVaultService: CreateVaultService
+    private createVaultService: CreateVaultService,
+    private loadingCtrl: LoadingController
   ) {
     this.vaultData = this.navParams.get('vaultData');
   }
@@ -38,13 +39,18 @@ export class CreateVaultConfirmView {
 
   private async createVault() {
 
+    const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
+    loader.present();
     try {
       await this.createVaultService.create(this.vaultData);
+      this.navCtrl.popToRoot({});
     } catch (e) {
       this.toastCtrl.create({
         message: e.message || 'Failed to create vault',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
+    } finally  {
+      loader.dismiss();
     }
 
   }
