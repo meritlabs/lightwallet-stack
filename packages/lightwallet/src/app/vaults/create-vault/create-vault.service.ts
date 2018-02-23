@@ -82,13 +82,12 @@ export class CreateVaultService {
       throw new Error('Incorrect data');
     }
 
-    data.wallet.client.status = await data.wallet.client.getStatus({force: true});
+    const status = await this.walletService.getStatus(data.wallet.client, {force: true});
 
-    if (!data.wallet.client.status.availableInvites) {
+    if (!status.availableInvites) {
       throw new Error("You don't have any active invites that you can use to create a vault");
     }
-    
-    if (data.amount > data.wallet.client.status.spendableAmount) {
+    if (data.amount > status.spendableAmount) {
       throw new Error("Wallet balance is less than vault balance");
     }
     
