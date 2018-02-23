@@ -2,9 +2,12 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/app",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "module": "es2015",
-    "types": []
+    "paths": {
+      "@app/env": ["./environments/environment.ts"],
+      "merit/*": ["../../lightwallet/src/app/*"]
+    }
   },
   "exclude": [
     "test.ts",

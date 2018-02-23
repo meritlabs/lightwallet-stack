@@ -5,8 +5,7 @@ import { Logger } from 'merit/core/logger';
 import { ProfileService } from 'merit/core/profile.service';
 import { VaultsService } from 'merit/vaults/vaults.service';
 import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
-
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 @Injectable()
 export class RenewVaultService {

@@ -4,7 +4,6 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicPage } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
-import { BwcService } from 'merit/core/bwc.service';
 import { Logger } from 'merit/core/logger';
 import { PlatformService } from 'merit/core/platform.service';
 import { ProfileService } from 'merit/core/profile.service';
@@ -14,10 +13,10 @@ import { FiatAmount } from 'merit/shared/fiat-amount.model';
 import { TxFormatService } from 'merit/transact/tx-format.service';
 import { WalletService } from 'merit/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 import { createDisplayWallet, IDisplayWallet } from '../../../models/display-wallet';
 import { UnlockRequestService } from 'merit/core/unlock-request.service';
 import { SendService } from 'merit/transact/send/send.service';
+import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 @IonicPage()
 @Component({

@@ -1,0 +1,12 @@
+<nav class="sidenav">
+  <ul>
+    <li *ngFor="let item of menuItems" [routerLink]="item.link" routerLinkActive="active">
+      <img [src]="item.icon" alt="">
+      <span>{{ item.name }}</span>
+    </li>
+  </ul>
+</nav>
+<section class="main-container">
+  <app-toolbar></app-toolbar>
+  <router-outlet></router-outlet>
+</section>

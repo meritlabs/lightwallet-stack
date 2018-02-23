@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 
-
 import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
@@ -23,6 +22,14 @@ import { TxFormatService } from 'merit/transact/tx-format.service';
 import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
 import { Observable } from 'rxjs/Observable';
 import { ENV } from '@app/env';
+
+import 'rxjs/add/observable/defer';
+import 'rxjs/add/observable/range';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/timer';
+import 'rxjs/add/operator/retryWhen';
+import 'rxjs/add/operator/zip';
+import 'rxjs/add/operator/mergeMap';
 
 /* Refactor CheckList:
   - Bwc Error provider
