@@ -17,7 +17,7 @@ app-toolbar {
     margin-left: auto;
   }
 
-  button {
+  button[mat-stroked-button], button[mat-flat-button] {
     border-radius: 4px;
   }
 

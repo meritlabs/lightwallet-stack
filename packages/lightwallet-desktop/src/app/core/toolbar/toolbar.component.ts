@@ -8,9 +8,22 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 })
 export class ToolbarComponent implements OnInit {
 
+  availableCurrencies: string[] = [
+    'USD',
+    'RUB',
+    'CAD',
+    'EUR'
+  ];
+
+  selectedCurrency: string = 'USD';
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  selectCurrency(currency: string) {
+    this.selectedCurrency = currency;
   }
 
 }
