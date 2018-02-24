@@ -4,8 +4,7 @@
 @import '~normalize-scss';
 @include mat-core();
 
-$merit-primary-color: rgb(0, 176, 221);
-$merit-secondary-color: rgb(72, 77, 94);
+@import '~variables.scss';
 
 $merit-primary: (
   50: lighten($merit-secondary-color, 50),
@@ -39,7 +38,6 @@ $merit-primary: (
     A700: $light-primary-text,
   )
 );
-
 
 $merit-primary-palette: mat-palette($merit-primary);
 $merit-accent-palette: mat-palette($merit-primary, A200, A100, A400);
