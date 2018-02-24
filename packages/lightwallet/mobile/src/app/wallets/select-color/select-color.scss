@@ -1,0 +1,49 @@
+view-select-color {
+
+  ion-grid {
+    padding: 0;
+    margin: 0;
+
+    ion-row {
+      padding: 0;
+      margin: 0;
+
+      ion-col {
+        padding: 0;
+        margin: 0;
+
+        text-align: center;
+
+        button[ion-button].button {
+          background: none;
+          padding: 0;
+          box-shadow: none;
+
+          span.color-indicator {
+            width: 22px;
+            height: 22px;
+            border-radius: 500rem;
+            display: block;
+          }
+        }
+      }
+    }
+  }
+
+  .wallet-icon {
+    img {
+      height: 26px;
+      width: 36px;
+      display: inline-block;
+      border-radius: 4px;
+      box-shadow: none;
+      padding: 4px 8px;
+      vertical-align: middle;
+    }
+    &.default img {
+      background: $wallet-default-color;
+    }
+  }
+
+
+}
