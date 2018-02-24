@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
-  { path: 'onboarding', loadChildren: './onboarding/onboarding.module#UnlockModule' },
+  { path: 'onboarding', loadChildren: './onboarding/onboarding.module#OnboardingModule' },
   { path: '', loadChildren: './core/core.module#CoreModule' }
 ];
 
