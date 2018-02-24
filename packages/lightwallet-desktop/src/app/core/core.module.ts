@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { CommunityComponent } from './community/community.component';
+import { NotificationsComponent } from './toolbar/notifications/notifications.component';
 
 export function getPages() {
   return [
@@ -32,6 +33,7 @@ export function getPages() {
     CoreComponent,
     ...getPages(),
     ToolbarComponent,
+    NotificationsComponent,
   ]
 })
 export class CoreModule { }

@@ -1,4 +1,4 @@
-$s: rgb(0, 176, 221);
+@import '~variables.scss';
 
 app-toolbar {
   width: calc(100% - 80px);
@@ -28,14 +28,14 @@ app-toolbar {
   .total-balance {
     .merit-amount {
       font-weight: 500;
-      color: $s;
+      color: $merit-primary-color;
       font-size: 15px;
       letter-spacing: .3px;
     }
 
     .fiat-amount {
       letter-spacing: .3px;;
-      color: rgb(72, 77, 94);
+      color: $merit-secondary-color;
       font-size: 14px;
       line-height: 24px;
     }
