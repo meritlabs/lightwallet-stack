@@ -10,8 +10,14 @@ prepare-prereqs:
 ### lightwallet-app ###
 .PHONY: prepare-lightwallet
 prepare-lightwallet:
-	cd ./packages/lightwallet && npm install
-	cd ./packages/lightwallet && npm run apply
+	rm -rf ./packages/lightwallet/mobile/node_modules
+	cordova platform rm android
+	cordova platform rm ios
+	lerna bootstrap
+	cd ./packages/lightwallet/mobile/
+	cordova platform add android && cordova prepare android
+	cordova platform add ios && cordova prepare ios
+	lerna bootstrap
 
 .PHONY: start-lightwallet
 start-lightwallet:
