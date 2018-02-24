@@ -1,0 +1,21 @@
+view-send-fee {
+  ion-list.list {
+    button[ion-item].item {
+      ion-label {
+        p {
+          text-transform: capitalize;
+        }
+        h2 {
+          font-size: 18px;
+          letter-spacing: .5px;
+        }
+      }
+
+      ion-note {
+        color: rgb(45, 60, 80);
+        letter-spacing: -.5px;
+        font-size: 18px;
+      }
+    }
+  }
+}
