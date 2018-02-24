@@ -1,5 +1,7 @@
 import { Action } from '@ngrx/store';
-import { IDisplayWallet } from '../../../mobile/src/models/display-wallet';
+// import { IDisplayWallet } from '../../../mobile/src/models/display-wallet';
+
+interface IDisplayWallet {}
 
 export interface WalletsState {
   wallets: IDisplayWallet[];
