@@ -36,6 +36,11 @@ export class CoreComponent {
       name: 'History',
       icon: '/assets/icons/icon_history.png',
       link: '/history'
+    },
+    {
+      name: 'Community',
+      icon: '/assets/icons/icon_history.png',
+      link: '/community'
     }
   ];
 

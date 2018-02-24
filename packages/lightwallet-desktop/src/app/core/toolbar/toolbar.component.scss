@@ -1,7 +1,7 @@
 $s: rgb(0, 176, 221);
 
 app-toolbar {
-  width: 100%;
+  width: calc(100% - 80px);
   height: 80px;
   background: white;
   box-shadow: 0 1px 4px rgba(46, 53, 59, 0.05);
@@ -17,26 +17,17 @@ app-toolbar {
     margin-left: auto;
   }
 
+  button {
+    border-radius: 4px;
+  }
+
   .currency-selector {
     margin-right: 20px;
-
-    .dropdown-mock {
-      width: 85px;
-      height: 36px;
-      color: $s;
-      border: 2px solid $s;
-      border-radius: 4px;
-      line-height: 36px;
-      text-align: center;
-      font-size: 14px;
-      letter-spacing: .3px;
-      font-weight: 600;
-    }
   }
 
   .total-balance {
     .merit-amount {
-      font-weight: 600;
+      font-weight: 500;
       color: $s;
       font-size: 15px;
       letter-spacing: .3px;
@@ -55,19 +46,5 @@ app-toolbar {
     height: 36px;
     background: rgba(136, 142, 162, 0.2);
     margin: 0 20px;
-  }
-
-  .buy-merit {
-    button.buy-merit-button {
-      width: 100px;
-      height: 36px;
-      background: $s;
-      border-radius: 4px;
-      border: 0;
-      color: white;
-      font-weight: 600;
-      font-size: 14px;
-      letter-spacing: 0.3px;
-    }
   }
 }
