@@ -3,19 +3,19 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Events, ModalController, Nav, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
-import { AppService } from '@merit/mobile/app/core/app-settings.service';
-import { MWCErrors } from '@merit/mobile/app/core/bwc.service';
 import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
-import { Logger } from '@merit/common/providers/logger';
+import { LoggerService } from '@merit/common/providers/logger';
 import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
-import { EasyReceipt } from '@merit/mobile/app/easy-receive/easy-receipt.model';
-import { EasyReceiveService } from '@merit/mobile/app/easy-receive/easy-receive.service';
 import { OnboardingView } from '@merit/mobile/app/onboard/onboarding.view';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
 import { TransactView } from '@merit/mobile/app/transact/transact';
 import { FingerprintLockView } from '@merit/mobile/app/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from '@merit/mobile/app/utilities/pin-lock/pin-lock';
+import { ProfileService } from '@merit/common/providers/profile';
+import { AppSettingsService } from '@merit/common/providers/app-settings';
+import { ConfigService } from '@merit/common/providers/config';
+import { EasyReceiveService } from '@merit/common/providers/easy-receive';
+import { EasyReceipt } from '@merit/common/models/easy-receipt';
+import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 
 @Component({
   templateUrl: 'app.html'
@@ -30,14 +30,15 @@ export class MeritLightWallet {
               private statusBar: StatusBar,
               private splashScreen: SplashScreen,
               private profileService: ProfileService,
-              private logger: Logger,
+              private logger: LoggerService,
               private modalCtrl: ModalController,
-              private appService: AppService,
+              private appService: AppSettingsService,
               private configService: ConfigService,
               private deepLinkService: DeepLinkService,
               private easyReceiveService: EasyReceiveService,
               private events: Events,
-              pushNotificationService: PushNotificationsService) {}
+              pushNotificationService: PushNotificationsService) {
+  }
 
   async ngOnInit() {
     this.platform.resume.subscribe(() => {
@@ -146,7 +147,7 @@ export class MeritLightWallet {
   }
 
   private registerMwcErrorHandler() {
-    this.events.subscribe(MWCErrors.AUTHENTICATION, () => {
+    this.events.subscribe(MWCErrors.AUTHENTICATION_ERROR.name, () => {
       this.nav.setRoot('NoSessionView');
     });
   }

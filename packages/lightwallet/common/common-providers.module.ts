@@ -13,6 +13,10 @@ import { RateService } from '@merit/common/providers/rate';
 import { TxFormatService } from '@merit/common/providers/tx-format';
 import { UnlockRequestService } from '@merit/common/providers/unlock-request';
 import { WalletService } from '@merit/common/providers/wallet';
+import { LanguageService } from '@merit/common/providers/language';
+import { PopupService } from '@merit/common/providers/popup';
+import { FeeService } from '@merit/common/providers/fee';
+import { EasySendService } from '@merit/common/providers/easy-send';
 
 @NgModule()
 export class CommonProvidersModule {
@@ -24,11 +28,15 @@ export class CommonProvidersModule {
         ConfigService,
         ContactsService,
         EasyReceiveService,
+        EasySendService,
+        FeeService,
+        LanguageService,
         LoggerService,
         MnemonicService,
         MWCService,
         PersistenceService,
         PlatformService,
+        PopupService,
         ProfileService,
         RateService,
         TxFormatService,

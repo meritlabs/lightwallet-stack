@@ -1,4 +1,4 @@
-export type EasySend = {
+export interface EasySend {
   receiverPubKey: any; // TODO: make a publicKey model
   script: any; // TODO: make a script model
   scriptAddress: string;

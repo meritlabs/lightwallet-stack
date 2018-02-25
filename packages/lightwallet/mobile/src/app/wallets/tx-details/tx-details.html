@@ -13,7 +13,8 @@
   <div class="big-header" *ngIf="tx">
     <div class="date">{{ tx.time * 1000 | amDateFormat: 'DD MMM, hh:mma' }}</div>
     <div class="contact-info">
-      <contact-avatar [contact]="isEasySend? tx.contact : null" [fallback]="'assets/img/icons/' + image + '.svg'"></contact-avatar>
+      <contact-avatar [contact]="isEasySend? tx.contact : null"
+                      [fallback]="'assets/img/icons/' + image + '.svg'"></contact-avatar>
       <h2 class="name">{{ tx.name }}</h2>
     </div>
     <div *ngIf="!tx.isInvite">

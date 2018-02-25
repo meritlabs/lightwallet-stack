@@ -8,20 +8,20 @@ import {
   NavParams
 } from 'ionic-angular';
 import * as _ from 'lodash';
+import { MeritContact } from '@merit/common/models/merit-contact';
 import { ISendMethod, SendMethodType } from '@merit/mobile/app/transact/send/send-method.model';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { RateService } from '@merit/mobile/app/transact/rate.service';
-import { FeeService } from '@merit/mobile/app/shared/fee/fee.service';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
-import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
+import { ConfigService } from '@merit/common/providers/config';
+import { RateService } from '@merit/common/providers/rate';
+import { FeeService } from '@merit/common/providers/fee';
+import { ProfileService } from '@merit/common/providers/profile';
+import { TxFormatService } from '@merit/common/providers/tx-format';
 import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { EasySendService } from '@merit/common/providers/easy-send';
+import { WalletService } from '@merit/common/providers/wallet';
+import { LoggerService } from '@merit/common/providers/logger';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { EasySendService } from '@merit/mobile/app/transact/send/easy-send/easy-send.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { getEasySendURL } from '@merit/mobile/app/transact/send/easy-send/easy-send.model';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { MERIT_MODAL_OPTS } from '../../../../utils/constants';
-import { MeritContact } from '../../../../models/merit-contact';
+import { getEasySendURL } from '@merit/common/models/easy-send';
 
 @IonicPage()
 @Component({
@@ -79,7 +79,7 @@ export class SendAmountView {
               private easySendService: EasySendService,
               private walletService: WalletService,
               private loadingCtrl: LoadingController,
-              private logger: Logger) {
+              private logger: LoggerService) {
     this.recipient = this.navParams.get('contact');
     this.sendMethod = this.navParams.get('suggestedMethod');
     this.loading = true;

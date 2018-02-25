@@ -1,5 +1,5 @@
 export static class DerivationPath {
-  static getDefaultDerivationPath() {
+  static getDefault() {
     return 'm/44\'/0\'/0\'';
   }
 

@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
-import { formatWalletHistory } from '../../../utils/transactions';
-import { IDisplayWallet } from '../../../models/display-wallet';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { IDisplayWallet } from '@merit/common/models/display-wallet';
+import { WalletService } from '@merit/common/providers/wallet';
+import { LoggerService } from '@merit/common/providers/logger';
+import { formatWalletHistory } from '@merit/common/utils/transactions';
 
 @IonicPage({
   segment: 'wallet/:walletId',
@@ -20,12 +19,11 @@ export class WalletDetailsView {
   wallet: MeritWalletClient;
   displayWallet: IDisplayWallet;
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              public walletService: WalletService,
-              private logger: Logger,
-              private tabsCtrl: Tabs
-  ) {
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private walletService: WalletService,
+              private logger: LoggerService,
+              private tabsCtrl: Tabs) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
     // things fast and smooth.  We can refresh as needed.

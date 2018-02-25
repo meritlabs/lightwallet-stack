@@ -6,4 +6,5 @@ import { IonicPage } from 'ionic-angular';
   selector: 'view-terms-of-use',
   templateUrl: 'terms-of-use.html',
 })
-export class TermsOfUseView {}
+export class TermsOfUseView {
+}

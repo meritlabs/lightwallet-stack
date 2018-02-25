@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AlertController, App, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { ConfigService } from '@merit/common/providers/config';
+import { LoggerService } from '@merit/common/providers/logger';
 
 @IonicPage()
 @Component({
@@ -19,14 +19,14 @@ export class SettingsView {
   availableAlternateCurrencies = [];
   emailNotificationsEnabled;
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
               private app: App,
               private alertCtrl: AlertController,
               private inAppBrowser: InAppBrowser,
               private modalCtrl: ModalController,
               private configService: ConfigService,
-              private logger: Logger) {
+              private logger: LoggerService) {
     let config = this.configService.get();
     this.currentUnitName = config.wallet.settings.unitName;
     this.currentAlternativeName = config.wallet.settings.alternativeName;

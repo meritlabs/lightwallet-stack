@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { IDisplayWallet } from 'src/models/display-wallet';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
-
+import { IonicPage, NavParams, ViewController } from 'ionic-angular';
+import { IDisplayWallet } from '@merit/common/models/display-wallet';
 
 @IonicPage()
 @Component({
@@ -14,10 +12,8 @@ export class SelectInviteWalletModal {
   public wallets: Array<IDisplayWallet>;
   public selectedWallet: IDisplayWallet;
 
-  constructor(
-    private navParams: NavParams,
-    private viewCtrl: ViewController
-  ) {
+  constructor(private navParams: NavParams,
+              private viewCtrl: ViewController) {
     this.wallets = this.navParams.get('availableWallets');
     this.selectedWallet = this.navParams.get('selectedWallet');
   }

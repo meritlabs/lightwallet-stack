@@ -31,7 +31,8 @@ export class TxDetailsView {
   }
 
   constructor(private navParams: NavParams,
-              private viewCtrl: ViewController) {}
+              private viewCtrl: ViewController) {
+  }
 
   dismiss() {
     return this.viewCtrl.dismiss();

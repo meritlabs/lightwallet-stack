@@ -1,21 +1,19 @@
 import { AlertController, IonicPage, LoadingController, NavController, NavParams, Tabs } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { TouchIdService } from '@merit/mobile/app/shared/touch-id/touch-id.service';
-import { EasySendService } from '@merit/mobile/app/transact/send/easy-send/easy-send.service';
-import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
-import { EasySend } from '@merit/mobile/app/transact/send/easy-send/easy-send.model';
 import * as  _ from 'lodash';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/mobile/app/transact/send/send-method.model';
-import { RateService } from '@merit/mobile/app/transact/rate.service';
+import { EasySend } from '@merit/common/models/easy-send';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { TouchIdService } from '@merit/mobile/providers/touch-id.service';
+import { EasySendService } from '@merit/common/providers/easy-send';
+import { WalletService } from '@merit/common/providers/wallet';
+import { TxFormatService } from '@merit/common/providers/tx-format';
+import { RateService } from '@merit/common/providers/rate';
+import { ConfigService } from '@merit/common/providers/config';
+import { LoggerService } from '@merit/common/providers/logger';
 import { SendService } from '@merit/mobile/app/transact/send/send.service';
-import { MeritWalletClient } from '../../../../lib/merit-wallet-client/index';
-
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 
 @IonicPage()
 @Component({
@@ -62,10 +60,9 @@ export class SendConfirmationView {
               private formatService: TxFormatService,
               private rateService: RateService,
               private configService: ConfigService,
-              private logger: Logger,
+              private logger: LoggerService,
               private tabs: Tabs,
-              private sendService: SendService
-  ) {
+              private sendService: SendService) {
     this.txData = navParams.get('txData');
     this.referralsToSign = navParams.get('referralsToSign');
   }

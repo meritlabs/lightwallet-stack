@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-
+import { WalletService } from '@merit/common/providers/wallet';
 
 @IonicPage()
 @Component({
@@ -12,11 +11,11 @@ import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
 })
 export class SetWalletPasswordView {
 
-  public wallet: any;
+  wallet: any;
 
-  public isWalletEncrypted: boolean;
+  isWalletEncrypted: boolean;
 
-  public formData = {
+  formData = {
     password: '',
     repeatPassword: '',
     currentPassword: ''
@@ -70,7 +69,7 @@ export class SetWalletPasswordView {
 
   }
 
-  public saveEnabled() {
+  saveEnabled() {
     return (
       this.formData.password
       && (this.isWalletEncrypted ? this.formData.currentPassword : true)

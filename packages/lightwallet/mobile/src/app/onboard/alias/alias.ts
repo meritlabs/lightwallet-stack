@@ -1,17 +1,16 @@
 import { Component, ViewChild } from '@angular/core';
-import { App, Content, IonicPage, LoadingController, NavController } from 'ionic-angular';
-import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { Errors } from '@merit/mobile/lib/merit-wallet-client/lib/errors';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
-import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
+import { App, Content, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { cleanAddress, isAlias } from '../../../utils/addresses';
+import { WalletService } from '@merit/common/providers/wallet';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { LoggerService } from '@merit/common/providers/logger';
+import { ConfigService } from '@merit/common/providers/config';
+import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
+import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 
 // Unlock view for wallet
 @IonicPage({
@@ -39,7 +38,7 @@ export class AliasView {
               private loaderCtrl: LoadingController,
               private navCtrl: NavController,
               private navParams: NavParams,
-              private logger: Logger,
+              private logger: LoggerService,
               private config: ConfigService,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
@@ -121,7 +120,7 @@ export class AliasView {
       await this.navCtrl.setRoot('BackupView', { mnemonic: wallet.getMnemonic() });
       await this.navCtrl.popToRoot();
     } catch (err) {
-      if (err == Errors.INVALID_REFERRAL) this.unlockState = 'fail';
+      if (err == MWCErrors.INVALID_REFERRAL) this.unlockState = 'fail';
       this.logger.debug('Could not unlock wallet: ', err);
       this.toastCtrl.create({
         message: err.text || err.message || 'Unknown error',

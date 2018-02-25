@@ -1,5 +1,6 @@
 import { Injectable, Optional } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Platform } from 'ionic-angular/platform/platform';
+import { LoggerService } from '@merit/common/providers/logger';
 
 declare const window: any;
 
@@ -15,7 +16,7 @@ export class PlatformService {
   supportsLedger: boolean;
 
   constructor(@Optional() private platform: Platform,
-              private log: Logger) {
+              private log: LoggerService) {
     let ua = navigator ? navigator.userAgent : null;
 
     if (!ua) {

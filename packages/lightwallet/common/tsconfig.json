@@ -18,8 +18,10 @@
       "@merit/common/*": ["./*"],
       "@app/env": ["../mobile/src/environments/environment"],
       "@angular/*": ["../mobile/node_modules/@angular/*"],
+      "@ionic-native/*": ["../mobile/node_modules/@ionic-native/*"],
       "@ngx-translate/*": ["../mobile/node_modules/@ngx-translate/*"],
-      "ionic-angular/*": ["../mobile/node_modules/ionic-angular/*"]
+      "ionic-angular/*": ["../mobile/node_modules/ionic-angular/*"],
+      "rxjs/*": ["../mobile/node_modules/rxjs/*"]
     },
     "typeRoots": [
       "node_modules/@types"

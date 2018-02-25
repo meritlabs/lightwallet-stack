@@ -16,6 +16,7 @@ import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
 import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
 import { MeritWalletClient } from '../../lib/merit-wallet-client/index';
+import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -92,7 +93,7 @@ export class WalletsView {
 
   ionViewWillEnter() {
     this.refreshAllInfo()
-      .then(() => this.logger.info('Updated info for wallets view'))
+      .then(() => this.logger.info('Updated info for wallets view'));
   }
 
   async updateAllInfo() {
@@ -117,7 +118,7 @@ export class WalletsView {
             this.logger.info('Error updating information for all wallets.');
             this.logger.info(err);
 
-            if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
+            if (err.code == MWCErrors.CONNECTION_ERROR.code || err.code == MWCErrors.SERVER_UNAVAILABLE.code) {
               if (attempt < RETRY_MAX_ATTEMPTS) {
                 return Observable.timer(RETRY_TIMEOUT);
               }

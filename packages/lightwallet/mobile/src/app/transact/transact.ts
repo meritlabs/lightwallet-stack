@@ -1,13 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, ModalController, NavController, NavParams, Platform, Tabs } from 'ionic-angular';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
+import { IonicPage, NavController, NavParams, Platform, Tabs } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Subscription } from 'rxjs/Subscription';
-import { UnlockRequestService } from '@merit/mobile/app/core/unlock-request.service';
-
-// Transact is the proposed name of the umbrella for the primary actions
-// That exist through the tabs on the bottom of the screen.
+import { LoggerService } from '@merit/common/providers/logger';
+import { ProfileService } from '@merit/common/providers/profile';
+import { UnlockRequestService } from '@merit/common/providers/unlock-request';
 
 @IonicPage({
   segment: 'transact'
@@ -25,15 +22,14 @@ export class TransactView {
   private subs: Subscription[];
   keyboardVisible: boolean = false;
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private logger: Logger,
-    private profileService: ProfileService,
-    private plt: Platform,
-    private keyboard: Keyboard,
-    private unlockRequestService: UnlockRequestService
-  ) {}
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private logger: LoggerService,
+              private profileService: ProfileService,
+              private plt: Platform,
+              private keyboard: Keyboard,
+              private unlockRequestService: UnlockRequestService) {
+  }
 
   async ngOnInit() {
     if (this.plt.is('android') && Keyboard.installed()) {

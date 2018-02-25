@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
-import { IAddressBook, MeritContact } from '../../models/merit-contact';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { createMeritContact } from '../../utils/contacts';
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
+import { Contact, IContactField } from '@ionic-native/contacts';
+import { IAddressBook, MeritContact } from '@merit/common/models/merit-contact';
+import { PersistenceService } from '@merit/common/providers/persistence';
+import { createMeritContact } from '@merit/common/utils/contacts';
 
 @Injectable()
 export class ContactsService {
 
   // TODO cache contacts & re-use instead of retrieving them again
-  private contacts: MeritContact[];
-  private addressBook: IAddressBook;
+  protected contacts: MeritContact[];
+  protected addressBook: IAddressBook;
 
   init: Promise<void>;
 
@@ -92,12 +92,12 @@ export class ContactsService {
     });
   }
 
-  async getAllMeritContacts(deviceContacts: any[] = []): Promise<MeritContact[]> {
+  async getAllMeritContacts(deviceContacts: Contact[] = []): Promise<MeritContact[]> {
     const localContacts: IAddressBook = this.addressBook || {};
 
     const contacts: MeritContact[] = deviceContacts
-      .filter((contact: any) => !_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails))
-      .map((contact: any) => createMeritContact(contact));
+      .filter((contact: Contact) => !_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails))
+      .map((contact: Contact) => createMeritContact(contact));
 
     let localContact: MeritContact, deviceContact: MeritContact;
 

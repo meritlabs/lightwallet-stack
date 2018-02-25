@@ -5,7 +5,7 @@ export class MwcError extends Error {
 }
 
 
-export class Errors {
+export class MWCErrors {
   public static INVALID_BACKUP = new MwcError('INVALID_BACKUP', 'Invalid backup');
   public static WALLET_DOES_NOT_EXIST = new MwcError('WALLET_DOES_NOT_EXIST', 'Wallet does not exist');
   public static MISSING_PRIVATE_KEY = new MwcError('MISSING_PRIVATE_KEY', 'Missing private keys to sign');

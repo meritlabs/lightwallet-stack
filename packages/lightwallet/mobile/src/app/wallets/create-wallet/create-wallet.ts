@@ -1,19 +1,23 @@
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, ModalController, NavController, NavParams, AlertController } from 'ionic-angular';
-
-import * as _ from 'lodash';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
-
-import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
-
+import {
+  AlertController,
+  IonicPage,
+  LoadingController,
+  ModalController,
+  NavController,
+  NavParams
+} from 'ionic-angular';
 import { ENV } from '@app/env';
-import { cleanAddress, isAlias } from '../../../utils/addresses';
+import * as _ from 'lodash';
+import { ConfigService } from '@merit/common/providers/config';
+import { WalletService } from '@merit/common/providers/wallet';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { LoggerService } from '@merit/common/providers/logger';
+import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
+import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -50,12 +54,11 @@ export class CreateWalletView {
               private loadCtrl: LoadingController,
               private toastCtrl: MeritToastController,
               private modalCtrl: ModalController,
-              private logger: Logger,
+              private logger: LoggerService,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
               private alertCtrl: AlertController,
-              private sendService: SendService
-            ) {
+              private sendService: SendService) {
     this.formData.bwsurl = ENV.mwsUrl;
     this.defaultBwsUrl = ENV.mwsUrl;
   }
@@ -111,8 +114,12 @@ export class CreateWalletView {
     this.validateAddressDebounce();
   }
 
-  private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
-  private validateAddressDebounce = _.debounce(() => { this.validateParentAddress() }, 750);
+  private validateAliasDebounce = _.debounce(() => {
+    this.validateAlias();
+  }, 750);
+  private validateAddressDebounce = _.debounce(() => {
+    this.validateParentAddress();
+  }, 750);
 
   private async validateParentAddress() {
     this.formData.parentAddress = cleanAddress(this.formData.parentAddress);

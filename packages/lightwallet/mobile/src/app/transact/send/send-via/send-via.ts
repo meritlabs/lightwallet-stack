@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { ISendMethod, SendMethodDestination } from '@merit/mobile/app/transact/send/send-method.model';
-import { MeritContact } from '../../../../models/merit-contact';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
 
 const searchIn = (method: ISendMethod) => {
   switch (method.destination) {
@@ -70,7 +70,7 @@ export class SendViaView {
     if (this.contact && this.contact.name && this.contact.name.formatted) {
       return this.contact.name.formatted;
     } else {
-      return this.suggestedMethod.alias? '@' + this.suggestedMethod.alias : this.suggestedMethod.value;
+      return this.suggestedMethod.alias ? '@' + this.suggestedMethod.alias : this.suggestedMethod.value;
     }
   }
 

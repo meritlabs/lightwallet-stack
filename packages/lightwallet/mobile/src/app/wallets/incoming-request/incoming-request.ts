@@ -1,14 +1,19 @@
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
+import {
+  IonicPage,
+  LoadingController,
+  ModalController,
+  NavController,
+  NavParams,
+  ToastController
+} from 'ionic-angular';
 import { SendService } from '@merit/mobile/app/transact/send/send.service';
-import { ContactsProvider } from '../../../providers/contacts/contacts';
-import { MeritContact } from '../../../models/merit-contact';
-import { IDisplayWallet } from '@merit/mobile/models/display-wallet';
-import { MERIT_MODAL_OPTS } from '@merit/mobile/utils/constants';
-import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { UnlockRequestService } from '@merit/mobile/app/core/unlock-request.service';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { IDisplayWallet } from '@merit/common/models/display-wallet';
+import { ContactsService } from '@merit/mobile/providers/contacts';
+import { UnlockRequestService } from '@merit/common/providers/unlock-request';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 
 @IonicPage()
 @Component({
@@ -24,7 +29,7 @@ export class IncomingRequestModal {
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private modalCtrl: ModalController,
-              private contactsService: ContactsProvider,
+              private contactsService: ContactsService,
               private sendService: SendService,
               private toastCtrl: ToastController,
               private unlockService: UnlockRequestService,
@@ -100,5 +105,4 @@ export class IncomingRequestModal {
     });
     return modal.present();
   }
-
 }

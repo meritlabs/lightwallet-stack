@@ -1,15 +1,11 @@
 <ion-header no-border>
-
   <ion-navbar color="light">
     <ion-title translate>Session log</ion-title>
-
   </ion-navbar>
-
 </ion-header>
 
 
 <ion-content>
-
   <p *ngIf="!filteredLogs.length" translate>
     No logs for selected level
   </p>
@@ -18,8 +14,6 @@
     <b>[{{l.timestamp|amDateFormat}}]</b> <b>[{{getLogLevelName(l.level)}}]</b> <span
     *ngFor="let message of l.arguments">{{message}} </span>
   </p>
-
-
 </ion-content>
 
 <ion-footer>
