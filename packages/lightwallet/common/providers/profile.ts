@@ -1,23 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Events } from 'ionic-angular/util/events';
 import * as _ from 'lodash';
-import { AppService } from 'merit/core/app-settings.service';
-import { BwcError } from 'merit/core/bwc-error.model';
-import { BwcService } from 'merit/core/bwc.service';
-import { LanguageService } from 'merit/core/language.service';
-import { Logger } from 'merit/core/logger';
-import { PersistenceService } from 'merit/core/persistence.service';
-import { PlatformService } from 'merit/core/platform.service';
-import { Profile } from 'merit/core/profile.model';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ConfigService } from 'merit/shared/config.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
+import { AppService } from '@merit/mobile/app/core/app-settings.service';
+import { LanguageService } from '@merit/mobile/app/core/language.service';
+import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
+import { PlatformService } from '@merit/mobile/app/core/platform.service';
+import { Profile } from '@merit/mobile/app/core/profile.model';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
 import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
 import { ENV } from '@app/env';
-import { MeritWalletClient } from '../../lib/merit-wallet-client/index';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 /*
   Historically, this acted as the API-Client
@@ -41,8 +38,7 @@ export class ProfileService {
   constructor(private logger: Logger,
               private persistenceService: PersistenceService,
               private configService: ConfigService,
-              private bwcService: BwcService,
-              private bwcErrorService: BwcError,
+              private bwcService: MWCService,
               private platformService: PlatformService,
               private appService: AppService,
               private languageService: LanguageService,
@@ -279,7 +275,7 @@ export class ProfileService {
       if (err instanceof this.errors.NOT_AUTHORIZED) {
         throw err;
       }
-      throw this.bwcErrorService.cb(err, 'Could not import');
+      throw 'MWC Error: Could not import';
     }
   }
 
@@ -301,7 +297,7 @@ export class ProfileService {
       if (err instanceof this.errors.NOT_AUTHORIZED)
         err.name = 'WALLET_DOES_NOT_EXIST';
 
-      throw this.bwcErrorService.cb(err, 'Could not import');
+      throw 'MWC Error: Could not import';
     }
   }
 
@@ -696,7 +692,7 @@ export class ProfileService {
     this.logger.debug('ValidatingWallet: ' + walletId + ' skip Device:' + skipDeviceValidation);
     try {
       const isOK: boolean = await Observable.fromPromise(wallet.validateKeyDerivation({
-        skipDeviceValidation: skipDeviceValidation,
+        skipDeviceValidation,
       })).timeout(1000).toPromise();
 
       this.validationLock = false;

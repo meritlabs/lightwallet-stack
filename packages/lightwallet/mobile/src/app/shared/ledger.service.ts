@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { PlatformService } from 'merit/core/platform.service';
+import { PlatformService } from '@merit/mobile/app/core/platform.service';
 
 @Injectable()
 export class LedgerService {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { Logger } from 'merit/core/logger';
-import { PersistenceService } from 'merit/core/persistence.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
 
 declare const Branch: any;
 

@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { App, NavController, Platform } from 'ionic-angular';
 
 import * as _ from 'lodash';
-import { AppService } from 'merit/core/app-settings.service';
+import { AppService } from '@merit/mobile/app/core/app-settings.service';
 
-import { Logger } from 'merit/core/logger';
-import { PlatformService } from 'merit/core/platform.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { PlatformService } from '@merit/mobile/app/core/platform.service';
 // Services
-import { ProfileService } from 'merit/core/profile.service';
-import { ConfigService } from 'merit/shared/config.service';
+import { ProfileService } from '@merit/mobile/app/core/profile.service';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 @Injectable()

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Referral } from 'merit/community/referral.model';
-import { BwcService } from 'merit/core/bwc.service';
+import { Referral } from '@merit/mobile/app/community/referral.model';
+import { BwcService } from '@merit/mobile/app/core/bwc.service';
 
-import { Logger } from 'merit/core/logger';
-import { PersistenceService } from 'merit/core/persistence.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { TransactionProposal } from 'merit/transact/transaction-proposal.model';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
+import { ProfileService } from '@merit/mobile/app/core/profile.service';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { TransactionProposal } from '@merit/mobile/app/transact/transaction-proposal.model';
 
 type Subject = TransactionProposal | Referral
 

@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import * as _ from 'lodash';
-import { Logger } from 'merit/core/logger';
+import { Logger } from '@merit/mobile/app/core/logger';
 
-import { ConfigService } from 'merit/shared/config.service';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
 
 // Language Service!
 // Uses POs

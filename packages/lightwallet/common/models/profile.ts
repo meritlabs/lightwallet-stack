@@ -1,13 +1,13 @@
 export class Profile {
 
-  public version: string;
-  public createdOn: Number;
-  public credentials: Array<any>;
-  public disclaimerAccepted: boolean;
-  public checked: Object;
-  public checkedUA?: any;
-  public dirty: boolean;
-  public vaults: Array<any>;
+  version: string;
+  createdOn: Number;
+  credentials: Array<any>;
+  disclaimerAccepted: boolean;
+  checked: Object;
+  checkedUA?: any;
+  dirty: boolean;
+  vaults: Array<any>;
 
   constructor() {
     this.version = '1.0.0';
@@ -15,18 +15,18 @@ export class Profile {
     this.vaults = [];
   }
 
-  public create(opts?: any): any {
+  static create(opts?: any): any {
     opts = opts ? opts : {};
-    let x = new Profile();
-    x.createdOn = Date.now();
-    x.credentials = opts.credentials || [];
-    x.disclaimerAccepted = false;
-    x.checked = {};
-    x.vaults = opts.vaults || [];
-    return x;
+    const profile = new Profile();
+    profile.createdOn = Date.now();
+    profile.credentials = opts.credentials || [];
+    profile.disclaimerAccepted = false;
+    profile.checked = {};
+    profile.vaults = opts.vaults || [];
+    return profile;
   };
 
-  public fromObj(obj: any): any {
+  fromObj(obj: any): any {
     let x = new Profile();
 
     x.createdOn = obj.createdOn;
@@ -42,17 +42,17 @@ export class Profile {
     return x;
   };
 
-  public fromString(str: string): any {
+  fromString(str: string): any {
     return this.fromObj(JSON.parse(str));
   };
 
-  public toObj(): string {
+  toObj(): string {
     delete this.dirty;
     return JSON.stringify(this);
   };
 
 
-  public hasWallet(walletId: string): boolean {
+  hasWallet(walletId: string): boolean {
     for (let i in this.credentials) {
       let c = this.credentials[i];
       if (c.walletId == walletId) return true;
@@ -61,26 +61,26 @@ export class Profile {
     return false;
   };
 
-  public isChecked(ua: any, walletId: string): boolean {
+  isChecked(ua: any, walletId: string): boolean {
     return !!(this.checkedUA == ua && this.checked[walletId]);
-  };
+  }
 
 
-  public isDeviceChecked(ua: any): boolean {
+  isDeviceChecked(ua: any): boolean {
     return this.checkedUA == ua;
-  };
+  }
 
 
-  public setChecked(ua: any, walletId: string): void {
+  setChecked(ua: any, walletId: string): void {
     if (this.checkedUA != ua) {
       this.checkedUA = ua;
       this.checked = {};
     }
     this.checked[walletId] = true;
     this.dirty = true;
-  };
+  }
 
-  public addWallet(credentials: any): boolean {
+  addWallet(credentials: any): boolean {
     if (!credentials.walletId)
       throw 'credentials must have .walletId';
 
@@ -90,9 +90,9 @@ export class Profile {
     this.credentials.push(credentials);
     this.dirty = true;
     return true;
-  };
+  }
 
-  public updateWallet(credentials: any): boolean {
+  updateWallet(credentials: any): boolean {
     if (!credentials.walletId)
       throw 'credentials must have .walletId';
 
@@ -105,9 +105,9 @@ export class Profile {
 
     this.dirty = true;
     return true;
-  };
+  }
 
-  public deleteWallet(walletId: string): boolean {
+  deleteWallet(walletId: string): boolean {
     if (!this.hasWallet(walletId))
       return false;
 
@@ -117,18 +117,17 @@ export class Profile {
 
     this.dirty = true;
     return true;
-  };
+  }
 
-  public hasVault(id: string): boolean {
+  hasVault(id: string): boolean {
     for (let i in this.vaults) {
       let c = this.vaults[i];
       if (c.id == id) return true;
     }
-    ;
     return false;
-  };
+  }
 
-  public addVault(vault: any): boolean {
+  addVault(vault: any): boolean {
     if (!vault.id)
       throw 'vault must have .id';
 
@@ -138,9 +137,9 @@ export class Profile {
     this.vaults.push(vault);
     this.dirty = true;
     return true;
-  };
+  }
 
-  public updateVault(vault: any): boolean {
+  updateVault(vault: any): boolean {
     if (!vault.id)
       throw 'vault must have .id';
 
@@ -153,9 +152,9 @@ export class Profile {
 
     this.dirty = true;
     return true;
-  };
+  }
 
-  public deleteVault(vaultId: string): boolean {
+  deleteVault(vaultId: string): boolean {
     if (!this.hasVault(vaultId))
       return false;
 
@@ -163,7 +162,6 @@ export class Profile {
       return c.vaultId != vaultId;
     });
 
-    this.dirty = true;
-    return true;
-  };
+    return this.dirty = true;
+  }
 }

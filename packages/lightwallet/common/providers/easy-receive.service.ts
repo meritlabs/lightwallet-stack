@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
-import { BwcService } from 'merit/core/bwc.service';
-import { Logger } from 'merit/core/logger';
-import { PersistenceService } from 'merit/core/persistence.service';
-import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
-import { ConfigService } from 'merit/shared/config.service';
-import { FeeService } from 'merit/shared/fee/fee.service'
-import { LedgerService } from 'merit/shared/ledger.service';
+import { BwcService } from '@merit/mobile/app/core/bwc.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
+import { EasyReceipt } from '@merit/mobile/app/easy-receive/easy-receipt.model';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { FeeService } from '@merit/mobile/app/shared/fee/fee.service'
+import { LedgerService } from '@merit/mobile/app/shared/ledger.service';
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '../../lib/merit-wallet-client/index';
 

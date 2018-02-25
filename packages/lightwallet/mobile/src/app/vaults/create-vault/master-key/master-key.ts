@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { BwcService } from 'merit/core/bwc.service';
-import { PopupService } from 'merit/core/popup.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
+import { BwcService } from '@merit/mobile/app/core/bwc.service';
+import { PopupService } from '@merit/mobile/app/core/popup.service';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
 import { ENV } from '@app/env';
 
 @IonicPage({

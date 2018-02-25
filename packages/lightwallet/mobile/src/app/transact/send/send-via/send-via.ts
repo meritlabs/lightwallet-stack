@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
-import { SendService } from 'merit/transact/send/send.service';
-import { ISendMethod, SendMethodDestination } from 'merit/transact/send/send-method.model';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
+import { ISendMethod, SendMethodDestination } from '@merit/mobile/app/transact/send/send-method.model';
 import { MeritContact } from '../../../../models/merit-contact';
 
 const searchIn = (method: ISendMethod) => {

@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ConfigService } from 'merit/shared/config.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
 
 @Pipe({ name: 'toUnit' })
 export class ToUnitPipe implements PipeTransform {

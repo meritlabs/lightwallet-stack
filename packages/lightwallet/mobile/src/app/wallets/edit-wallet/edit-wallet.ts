@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { AlertController, App, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { Logger } from 'merit/core/logger';
-import { ProfileService } from 'merit/core/profile.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ConfigService } from 'merit/shared/config.service';
-import { WalletService } from 'merit/wallets/wallet.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { ProfileService } from '@merit/mobile/app/core/profile.service';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 

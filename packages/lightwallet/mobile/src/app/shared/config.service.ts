@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { Events } from 'ionic-angular';
 
 import * as _ from 'lodash';
-import { Logger } from 'merit/core/logger';
+import { Logger } from '@merit/mobile/app/core/logger';
 
 
-import { PersistenceService } from 'merit/core/persistence.service';
+import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
 
 /*
   Need to think about how to name this optimally, given..

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AlertController, IonicPage, Platform } from 'ionic-angular';
-import { AppService } from 'merit/core/app-settings.service';
+import { AppService } from '@merit/mobile/app/core/app-settings.service';
 import { AppVersion } from '@ionic-native/app-version';
 
 declare const WEBPACK_CONFIG: any;

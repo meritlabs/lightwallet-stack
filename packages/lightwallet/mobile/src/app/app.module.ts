@@ -18,106 +18,107 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MomentModule } from 'angular2-moment';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { MeritLightWallet } from 'merit/app.component';
-import { AppService } from 'merit/core/app-settings.service';
-import { AppUpdateService } from 'merit/core/app-update.service';
-import { BwcError } from 'merit/core/bwc-error.model';
-import { BwcService } from 'merit/core/bwc.service';
-import { DeepLinkService } from 'merit/core/deep-link.service';
-import { LanguageService } from 'merit/core/language.service';
-import { Logger } from 'merit/core/logger';
-import { EmailNotificationsService } from 'merit/core/notification/email-notification.service';
-import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
-import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
-import { PersistenceService } from 'merit/core/persistence.service';
-import { PlatformService } from 'merit/core/platform.service';
-import { PopupService } from 'merit/core/popup.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
-import { FeedbackService } from 'merit/feedback/feedback.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { FeeLevelModal } from 'merit/shared/fee/fee-level-modal';
-import { FeeService } from 'merit/shared/fee/fee.service';
-import { LedgerService } from 'merit/shared/ledger.service';
-import { NotificationService } from 'merit/shared/notification.service';
-import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
-import { RateService } from 'merit/transact/rate.service';
-import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { SendService } from 'merit/transact/send/send.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
-import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
-import { DerivationPathService } from 'merit/utilities/mnemonic/derivation-path.service';
-import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
-import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
-import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service';
-import { SpendVaultService } from 'merit/vaults/spend/vault-spend.service';
-import { VaultsService } from 'merit/vaults/vaults.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { ContactsProvider } from '../providers/contacts/contacts';
+import { MeritLightWallet } from '@merit/mobile/app/app.component';
+import { AppService } from '@merit/mobile/app/core/app-settings.service';
+import { AppUpdateService } from '@merit/mobile/app/core/app-update.service';
+import { BwcError } from '@merit/mobile/app/core/bwc-error.model';
+import { BwcService } from '@merit/mobile/app/core/bwc.service';
+import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
+import { LanguageService } from '@merit/mobile/app/core/language.service';
+import { EmailNotificationsService } from '@merit/mobile/app/core/notification/email-notification.service';
+import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
+import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
+import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
+import { PlatformService } from '@merit/mobile/app/core/platform.service';
+import { PopupService } from '@merit/mobile/app/core/popup.service';
+import { ProfileService } from '@merit/mobile/app/core/profile.service';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { EasyReceiveService } from '@merit/mobile/app/easy-receive/easy-receive.service';
+import { FeedbackService } from '@merit/mobile/app/feedback/feedback.service';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { FeeLevelModal } from '@merit/mobile/app/shared/fee/fee-level-modal';
+import { FeeService } from '@merit/mobile/app/shared/fee/fee.service';
+import { LedgerService } from '@merit/mobile/app/shared/ledger.service';
+import { NotificationService } from '@merit/mobile/app/shared/notification.service';
+import { TouchIdService } from '@merit/mobile/app/shared/touch-id/touch-id.service';
+import { RateService } from '@merit/mobile/app/transact/rate.service';
+import { EasySendService } from '@merit/mobile/app/transact/send/easy-send/easy-send.service';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
+import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
+import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
+import { DerivationPathService } from '@merit/mobile/app/utilities/mnemonic/derivation-path.service';
+import { MnemonicService } from '@merit/mobile/app/utilities/mnemonic/mnemonic.service';
+import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
+import { RenewVaultService } from '@merit/mobile/app/vaults/renew-vault/renew-vault.service';
+import { SpendVaultService } from '@merit/mobile/app/vaults/spend/vault-spend.service';
+import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
+import { ContactsProvider as MobileContactsProvider } from '../providers/contacts';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { Keyboard } from '@ionic-native/keyboard';
-import { UnlockRequestService } from 'merit/core/unlock-request.service';
+import { UnlockRequestService } from '@merit/mobile/app/core/unlock-request.service';
 import { AppVersion } from '@ionic-native/app-version';
+import { ContactsProvider } from '@merit/common/providers/contacts';
+import { WalletService } from '@merit/common/providers/wallet';
+import { Logger } from '@merit/common/providers/logger';
 
 export function getProviders() {
   return [
-    Logger,
-    BwcService,
+    AddressScannerService,
+    AppService,
+    AppUpdateService,
     BwcError,
-    PopupService,
-    MeritToastController,
+    BwcService,
+    ConfigService,
+    { provide: ContactsProvider, useClass: MobileContactsProvider },
+    CreateVaultService,
     DeepLinkService,
+    DerivationPathService,
+    EasyReceiveService,
+    EasySendService,
+    EmailNotificationsService,
+    FeedbackService,
+    FeeLevelModal,
+    FeeService,
+    LanguageService,
+    LedgerService,
+    Logger,
+    MeritToastController,
+    MnemonicService,
+    NotificationService,
     PersistenceService,
     PlatformService,
-    ProfileService,
-    LanguageService,
-    TxFormatService,
-    AppService,
-    ConfigService,
-    TouchIdService,
-    EasyReceiveService,
-    LedgerService,
-    WalletService,
-    MnemonicService,
-    CreateVaultService,
-    VaultsService,
     PollingNotificationsService,
+    PopupService,
+    ProfileService,
     PushNotificationsService,
-    EmailNotificationsService,
-    AppUpdateService,
-    FeedbackService,
-    SendService,
-    AddressScannerService,
-    FeeService,
     RateService,
-    EasySendService,
-    NotificationService,
-    FeeLevelModal,
-    DerivationPathService,
     RenewVaultService,
+    SendService,
     SpendVaultService,
-    ContactsProvider,
-    UnlockRequestService
+    TouchIdService,
+    TxFormatService,
+    UnlockRequestService,
+    VaultsService,
+    WalletService
   ];
 }
 
 export function getIonicNativePlugins() {
   return [
-    BarcodeScanner,
-    StatusBar,
-    SplashScreen,
-    TouchID,
-    FCM,
     AndroidFingerprintAuth,
-    InAppBrowser,
-    Contacts,
-    SocialSharing,
+    AppVersion,
+    BarcodeScanner,
     Clipboard,
-    File,
+    Contacts,
     Diagnostic,
+    FCM,
+    File,
+    InAppBrowser,
     Keyboard,
-    AppVersion
+    SocialSharing,
+    SplashScreen,
+    StatusBar,
+    TouchID,
   ];
 }
 

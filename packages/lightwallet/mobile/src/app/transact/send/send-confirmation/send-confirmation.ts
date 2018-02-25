@@ -1,19 +1,19 @@
 import { AlertController, IonicPage, LoadingController, NavController, NavParams, Tabs } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ToastConfig } from 'merit/core/toast.config';
-import { ConfigService } from 'merit/shared/config.service';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
 
-import { WalletService } from 'merit/wallets/wallet.service';
-import { Logger } from 'merit/core/logger';
-import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
-import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
-import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
+import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { TouchIdService } from '@merit/mobile/app/shared/touch-id/touch-id.service';
+import { EasySendService } from '@merit/mobile/app/transact/send/easy-send/easy-send.service';
+import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
+import { EasySend } from '@merit/mobile/app/transact/send/easy-send/easy-send.model';
 import * as  _ from 'lodash';
-import { ISendMethod, SendMethodDestination, SendMethodType } from 'merit/transact/send/send-method.model';
-import { RateService } from 'merit/transact/rate.service';
-import { SendService } from 'merit/transact/send/send.service';
+import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/mobile/app/transact/send/send-method.model';
+import { RateService } from '@merit/mobile/app/transact/rate.service';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { MeritWalletClient } from '../../../../lib/merit-wallet-client/index';
 
 

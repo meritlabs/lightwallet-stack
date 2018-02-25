@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AlertController, App, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { Logger } from 'merit/core/logger';
-import { ConfigService } from 'merit/shared/config.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
 
 @IonicPage()
 @Component({

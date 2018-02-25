@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LanguageService } from 'merit/core/language.service';
-import { Logger } from 'merit/core/logger';
-import { ConfigService } from 'merit/shared/config.service';
-import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
+import { LanguageService } from '@merit/mobile/app/core/language.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { TouchIdService } from '@merit/mobile/app/shared/touch-id/touch-id.service';
 
 // TODO: Improve implementation
 export interface AppSettings {

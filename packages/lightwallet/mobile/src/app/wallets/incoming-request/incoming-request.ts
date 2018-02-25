@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
-import { SendService } from 'merit/transact/send/send.service';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { ContactsProvider } from '../../../providers/contacts/contacts';
 import { MeritContact } from '../../../models/merit-contact';
-import { IDisplayWallet } from 'merit/../models/display-wallet';
-import { MERIT_MODAL_OPTS } from 'merit/../utils/constants';
+import { IDisplayWallet } from '@merit/mobile/models/display-wallet';
+import { MERIT_MODAL_OPTS } from '@merit/mobile/utils/constants';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
-import { ToastConfig } from 'merit/core/toast.config';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { UnlockRequestService } from 'merit/core/unlock-request.service';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
+import { UnlockRequestService } from '@merit/mobile/app/core/unlock-request.service';
 
 @IonicPage()
 @Component({
