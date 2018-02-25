@@ -2,20 +2,20 @@ import * as _ from 'lodash';
 
 export class FiatAmount {
 
-  public formats: {
+  formats: {
     CURRENCY_SYM: string,
     DECIMAL_SEP: string,
     GROUP_SEP: string
   };
-  public amount: number;
-  public amountStr: string;
+  amount: number;
+  amountStr: string;
 
   constructor(amount: number) {
     this.formats = {
       CURRENCY_SYM: '$',
       DECIMAL_SEP: '.',
       GROUP_SEP: ','
-    }
+    };
     this.amount = this.formatFiatAmount(amount);
     this.amountStr = this.formatAmountStr(amount);
   }
@@ -23,14 +23,14 @@ export class FiatAmount {
   // Inserts commas and decimals to formal an amount.
   // Example: 123456789.12 -> 123,456,789.12
   formatFiatAmount(amount: number) {
-    var value: any;
-    var sep: any;
-    var group: any;
-    var intValue: any;
-    var floatValue: any;
-    var finalValue: any;
+    let value: any,
+      sep: any,
+      group: any,
+      intValue: any,
+      floatValue: any,
+      finalValue: any,
+      fractionSize = 2;
 
-    var fractionSize = 2;
     value = _.round(amount, fractionSize).toString();
     sep = value.indexOf(this.formats.DECIMAL_SEP);
     group = value.indexOf(this.formats.GROUP_SEP);
@@ -55,7 +55,7 @@ export class FiatAmount {
   }
 
   formatAmountStr(amount: number): string {
-    var formatter = new Intl.NumberFormat('en-US', {
+    let formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,

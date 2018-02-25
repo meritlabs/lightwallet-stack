@@ -1,36 +1,31 @@
-import { Injectable } from '@angular/core';
-
-
-@Injectable()
-export class DerivationPathService {
-
-  getDefault() {
-    return "m/44'/0'/0'";
+export static class DerivationPath {
+  static getDefaultDerivationPath() {
+    return 'm/44\'/0\'/0\'';
   }
 
-  getDefaultTestnet() {
-    return "m/44'/1'/0'";
+  static getDefaultTestnet() {
+    return 'm/44\'/1\'/0\'';
   }
 
-  parse(str) {
+  static parse(str: string) {
     let arr = str.split('/');
 
-    let ret:any = {};
+    let ret: any = {};
 
     if (arr[0] != 'm')
       return false;
 
     switch (arr[1]) {
-      case "44'":
+      case '44\'':
         ret.derivationStrategy = 'BIP44';
         break;
-      case "45'":
+      case '45\'':
         return {
           derivationStrategy: 'BIP45',
           networkName: 'livenet',
           account: 0,
         };
-      case "48'":
+      case '48\'':
         ret.derivationStrategy = 'BIP48';
         break;
       default:
@@ -38,10 +33,10 @@ export class DerivationPathService {
     }
 
     switch (arr[2]) {
-      case "0'":
+      case '0\'':
         ret.networkName = 'livenet';
         break;
-      case "1'":
+      case '1\'':
         ret.networkName = 'testnet';
         break;
       default:

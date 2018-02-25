@@ -13,7 +13,7 @@ export enum LogLevel {
 declare const process: any;
 
 @Injectable()
-export class Logger {
+export class LoggerService {
 
   private logs = [];
 

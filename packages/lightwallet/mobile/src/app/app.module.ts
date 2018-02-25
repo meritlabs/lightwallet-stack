@@ -39,7 +39,6 @@ import { ConfigService } from '@merit/mobile/app/shared/config.service';
 import { FeeLevelModal } from '@merit/mobile/app/shared/fee/fee-level-modal';
 import { FeeService } from '@merit/mobile/app/shared/fee/fee.service';
 import { LedgerService } from '@merit/mobile/app/shared/ledger.service';
-import { NotificationService } from '@merit/mobile/app/shared/notification.service';
 import { TouchIdService } from '@merit/mobile/app/shared/touch-id/touch-id.service';
 import { RateService } from '@merit/mobile/app/transact/rate.service';
 import { EasySendService } from '@merit/mobile/app/transact/send/easy-send/easy-send.service';
@@ -84,7 +83,6 @@ export function getProviders() {
     Logger,
     MeritToastController,
     MnemonicService,
-    NotificationService,
     PersistenceService,
     PlatformService,
     PollingNotificationsService,

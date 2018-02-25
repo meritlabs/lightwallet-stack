@@ -1,18 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Events } from 'ionic-angular';
-
 import * as _ from 'lodash';
 import { Logger } from '@merit/mobile/app/core/logger';
-
-
 import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
 
-/*
-  Need to think about how to name this optimally, given..
-  "AppService"
-*/
-
-interface Config {
+export interface AppConfig {
   limits: {
     totalCopayers: number;
     mPlusN: number;
@@ -98,9 +90,9 @@ interface Config {
   // Stored like: aliasFor[WalletId] = "Full Wallet"
   aliasFor?: object;
 
-};
+}
 
-const configDefault: Config = {
+const configDefault: AppConfig = {
   // wallet limits
   limits: {
     totalCopayers: 6,
@@ -189,7 +181,7 @@ const configDefault: Config = {
 
 @Injectable()
 export class ConfigService {
-  private configCache: Config;
+  private configCache: AppConfig;
 
   constructor(private logger: Logger,
               private events: Events,
@@ -199,7 +191,7 @@ export class ConfigService {
         this.logger.debug('ConfigService initialized.');
       }).catch(err => {
       this.logger.warn('ConfigService could not load default config');
-    })
+    });
   }
 
   async load() {
@@ -213,7 +205,7 @@ export class ConfigService {
     }
   }
 
-  async set(newOpts: object): Promise<any> {
+  async set(newOpts: object) {
     let config = _.cloneDeep(configDefault);
 
     if (_.isString(newOpts)) {
@@ -229,11 +221,11 @@ export class ConfigService {
     return this.configCache;
   }
 
-  public get(): Config {
+  get(): AppConfig {
     return this.configCache;
   }
 
-  public getDefaults(): Config {
+  getDefaults(): AppConfig {
     return configDefault;
   }
 

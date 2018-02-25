@@ -1,5 +1,4 @@
 export class EasyReceipt {
-
   parentAddress: string;
   senderName: string;
   secret: string;
@@ -23,21 +22,19 @@ export class EasyReceipt {
       && this.blockTimeout
     );
   }
-
 }
 
-export type EasyReceiptTxData = {
-  found: true,
-  txid: string,
+export interface EasyReceiptTxData {
+  found: true;
+  txid: string;
   index: number
-  amount: number,
-  spending: boolean,
-  spent: boolean,
-  confirmations: number,
-  invite: boolean,
-};
+  amount: number;
+  spending: boolean;
+  spent: boolean;
+  confirmations: number;
+  invite: boolean;
+}
 
-export type EasyReceiptResult = {
-  result: Array<EasyReceiptTxData>,
-};
-
+export interface EasyReceiptResult {
+  result: EasyReceiptTxData[];
+}

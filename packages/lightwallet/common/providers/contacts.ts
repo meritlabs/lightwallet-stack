@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import { ENV } from '@app/env';
 
 @Injectable()
-export class ContactsProvider {
+export class ContactsService {
 
   // TODO cache contacts & re-use instead of retrieving them again
   private contacts: MeritContact[];
