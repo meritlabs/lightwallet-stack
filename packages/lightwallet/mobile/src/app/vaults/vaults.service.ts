@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BwcService } from 'merit/core/bwc.service';
-import { Logger } from 'merit/core/logger';
+import { BwcService } from '@merit/mobile/app/core/bwc.service';
+import { Logger } from '@merit/mobile/app/core/logger';
 import { MeritWalletClient } from '../../lib/merit-wallet-client/index';
 
 @Injectable()

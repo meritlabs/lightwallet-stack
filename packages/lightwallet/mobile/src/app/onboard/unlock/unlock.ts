@@ -1,11 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { Content, IonicPage, NavController, Platform } from 'ionic-angular';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
-import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
-import { SendService } from 'merit/transact/send/send.service';
+import { EasyReceipt } from '@merit/mobile/app/easy-receive/easy-receipt.model';
+import { EasyReceiveService } from '@merit/mobile/app/easy-receive/easy-receive.service';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import * as _ from 'lodash';
-import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
+import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { cleanAddress, isAlias } from '../../../utils/addresses';
 
 // Unlock view for wallet

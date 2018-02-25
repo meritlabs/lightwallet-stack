@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController } from 'ionic-angular';
-import { SendService } from 'merit/transact/send/send.service';
-import { ISendMethod, SendMethodDestination, SendMethodType } from 'merit/transact/send/send-method.model';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
+import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/mobile/app/transact/send/send-method.model';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
-import { ProfileService } from 'merit/core/profile.service';
+import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
+import { ProfileService } from '@merit/mobile/app/core/profile.service';
 import * as _ from 'lodash';
 import { ContactsProvider } from '../../../providers/contacts/contacts';
 import { MeritContact } from '../../../models/merit-contact';

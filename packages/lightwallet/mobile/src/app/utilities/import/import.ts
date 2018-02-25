@@ -1,19 +1,19 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { App, IonicPage, Loading, LoadingController } from 'ionic-angular';
-import { BwcService } from 'merit/core/bwc.service';
-import { Logger } from 'merit/core/logger';
-import { ProfileService } from 'merit/core/profile.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
-import { DerivationPathService } from 'merit/utilities/mnemonic/derivation-path.service';
-import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
-import { WalletService } from 'merit/wallets/wallet.service';
+import { BwcService } from '@merit/mobile/app/core/bwc.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { ProfileService } from '@merit/mobile/app/core/profile.service';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
+import { DerivationPathService } from '@merit/mobile/app/utilities/mnemonic/derivation-path.service';
+import { MnemonicService } from '@merit/mobile/app/utilities/mnemonic/mnemonic.service';
+import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
 import { startsWith } from 'lodash';
 
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
-import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
+import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']

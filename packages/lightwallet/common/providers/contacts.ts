@@ -1,20 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Contact, Contacts, IContactField } from '@ionic-native/contacts';
-import { Diagnostic } from '@ionic-native/diagnostic';
-import { PersistenceService } from 'merit/core/persistence.service';
+import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
 import { IAddressBook, MeritContact } from '../../models/merit-contact';
-import { ConfigService } from 'merit/shared/config.service';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
 import { createMeritContact } from '../../utils/contacts';
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
-
-const DESIRED_FIELDS = [
-  'displayName',
-  'emails',
-  'name',
-  'phoneNumbers',
-  'photos'
-];
 
 @Injectable()
 export class ContactsProvider {
@@ -22,25 +12,15 @@ export class ContactsProvider {
   // TODO cache contacts & re-use instead of retrieving them again
   private contacts: MeritContact[];
   private addressBook: IAddressBook;
-  private devicePermissionGranted: boolean;
-  private devicePermissionStatus: string;
 
   init: Promise<void>;
 
-  constructor(private deviceContactsProvider: Contacts,
-              private deviceDiagnosticProvider: Diagnostic,
-              private persistenceService: PersistenceService,
-              private configService: ConfigService) {
+  constructor(private persistenceService: PersistenceService) {
     this.init = this._init();
   }
 
-  private async _init() {
+  protected async _init() {
     this.addressBook = await this.getAddressbook();
-    this.devicePermissionGranted = await this.hasDevicePermission();
-
-    if (!this.devicePermissionGranted && Diagnostic.installed()) {
-      this.devicePermissionStatus = await this.deviceDiagnosticProvider.getContactsAuthorizationStatus();
-    }
 
     this.contacts = await this.getAllMeritContacts();
 
@@ -112,13 +92,12 @@ export class ContactsProvider {
     });
   }
 
-  async getAllMeritContacts(): Promise<MeritContact[]> {
-    const deviceContacts: Contact[] = await this.getDeviceContacts();
+  async getAllMeritContacts(deviceContacts: any[] = []): Promise<MeritContact[]> {
     const localContacts: IAddressBook = this.addressBook || {};
 
     const contacts: MeritContact[] = deviceContacts
-      .filter((contact: Contact) => !_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails))
-      .map((contact: Contact) => createMeritContact(contact));
+      .filter((contact: any) => !_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails))
+      .map((contact: any) => createMeritContact(contact));
 
     let localContact: MeritContact, deviceContact: MeritContact;
 
@@ -163,42 +142,6 @@ export class ContactsProvider {
     return _.isEmpty(addressBook) ? {} : addressBook;
   }
 
-  async requestDevicePermission() {
-    if (!Diagnostic.installed())
-      return false;
 
-    // we have permission, no need to request it again
-    if (await this.hasDevicePermission())
-      return true;
-
-    // we do not have permission
-    const status: string = this.devicePermissionStatus = await this.deviceDiagnosticProvider.requestContactsAuthorization();
-
-    // permission was granted
-    if ([this.deviceDiagnosticProvider.permissionStatus.GRANTED, this.deviceDiagnosticProvider.permissionStatus.GRANTED_WHEN_IN_USE].indexOf(status) > -1)
-      return this.devicePermissionGranted = true;
-
-    // permission wasn't granted
-    return false;
-  }
-
-  async getDeviceContacts() {
-    if (!await this.hasDevicePermission())
-      return [];
-
-    return this.deviceContactsProvider.find(['emails', 'phoneNumbers'], { desiredFields: DESIRED_FIELDS, multiple: true });
-  }
-
-  async isDevicePermissionDeclined() {
-    await this.init;
-
-    if (this.devicePermissionGranted === true) return true;
-    return [this.deviceDiagnosticProvider.permissionStatus.DENIED, this.deviceDiagnosticProvider.permissionStatus.DENIED_ALWAYS].indexOf(this.devicePermissionStatus) > -1;
-  }
-
-  private async hasDevicePermission() {
-    if (!Diagnostic.installed()) return false;
-    return (await this.deviceDiagnosticProvider.getContactsAuthorizationStatus()) === this.deviceDiagnosticProvider.permissionStatus.GRANTED;
-  }
 
 }

@@ -1,21 +1,21 @@
 import { Component, ViewChild } from '@angular/core';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
-import { App, Events, ModalController, Nav, Platform } from 'ionic-angular';
+import { Events, ModalController, Nav, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
-import { AppService } from 'merit/core/app-settings.service';
-import { MWCErrors } from 'merit/core/bwc.service';
-import { DeepLinkService } from 'merit/core/deep-link.service';
-import { Logger } from 'merit/core/logger';
-import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
-import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
-import { OnboardingView } from 'merit/onboard/onboarding.view';
-import { ConfigService } from 'merit/shared/config.service';
-import { TransactView } from 'merit/transact/transact';
-import { FingerprintLockView } from 'merit/utilities/fingerprint-lock/fingerprint-lock';
-import { PinLockView } from 'merit/utilities/pin-lock/pin-lock';
+import { AppService } from '@merit/mobile/app/core/app-settings.service';
+import { MWCErrors } from '@merit/mobile/app/core/bwc.service';
+import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
+import { Logger } from '@merit/common/providers/logger';
+import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
+import { ProfileService } from '@merit/mobile/app/core/profile.service';
+import { EasyReceipt } from '@merit/mobile/app/easy-receive/easy-receipt.model';
+import { EasyReceiveService } from '@merit/mobile/app/easy-receive/easy-receive.service';
+import { OnboardingView } from '@merit/mobile/app/onboard/onboarding.view';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { TransactView } from '@merit/mobile/app/transact/transact';
+import { FingerprintLockView } from '@merit/mobile/app/utilities/fingerprint-lock/fingerprint-lock';
+import { PinLockView } from '@merit/mobile/app/utilities/pin-lock/pin-lock';
 
 @Component({
   templateUrl: 'app.html'

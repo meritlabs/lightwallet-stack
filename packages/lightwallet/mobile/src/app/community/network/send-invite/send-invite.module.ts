@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { SendInviteView } from 'merit/community/network/send-invite/send-invite';
-import { SharedModule } from 'merit/shared/shared.module';
-import { ComponentsModule } from 'merit/../components/components.module';
+import { SendInviteView } from '@merit/mobile/app/community/network/send-invite/send-invite';
+import { SharedModule } from '@merit/mobile/app/shared/shared.module';
+import { ComponentsModule } from '@merit/mobile/components/components.module';
 
 @NgModule({
   declarations: [

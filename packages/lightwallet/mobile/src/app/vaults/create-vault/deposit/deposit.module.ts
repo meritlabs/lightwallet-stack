@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { CreateVaultDepositView } from 'merit/vaults/create-vault/deposit/deposit';
+import { CreateVaultDepositView } from '@merit/mobile/app/vaults/create-vault/deposit/deposit';
 
 @NgModule({
   declarations: [

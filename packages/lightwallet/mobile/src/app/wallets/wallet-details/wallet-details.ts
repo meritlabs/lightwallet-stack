@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
-import { Logger } from 'merit/core/logger';
-import { WalletService } from 'merit/wallets/wallet.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 import { formatWalletHistory } from '../../../utils/transactions';
 import { IDisplayWallet } from '../../../models/display-wallet';
-import { SendService } from 'merit/transact/send/send.service';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
 
 @IonicPage({
   segment: 'wallet/:walletId',

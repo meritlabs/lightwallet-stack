@@ -2,16 +2,16 @@ import { Component } from '@angular/core';
 import { IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
 
 import * as  _ from 'lodash';
-import { BwcService } from 'merit/core/bwc.service';
-import { Logger } from 'merit/core/logger';
-import { PopupService } from 'merit/core/popup.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { FeeService } from 'merit/shared/fee/fee.service';
-import { NotificationService } from 'merit/shared/notification.service';
-import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
-import { SpendVaultService } from 'merit/vaults/spend/vault-spend.service';
-import { WalletService } from 'merit/wallets/wallet.service';
+import { BwcService } from '@merit/mobile/app/core/bwc.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { PopupService } from '@merit/mobile/app/core/popup.service';
+import { ProfileService } from '@merit/mobile/app/core/profile.service';
+import { FeeService } from '@merit/mobile/app/shared/fee/fee.service';
+import { NotificationService } from '@merit/mobile/app/shared/notification.service';
+import { EasySendService } from '@merit/mobile/app/transact/send/easy-send/easy-send.service';
+import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
+import { SpendVaultService } from '@merit/mobile/app/vaults/spend/vault-spend.service';
+import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
 import { ConfigService } from './../../../shared/config.service';
 import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 

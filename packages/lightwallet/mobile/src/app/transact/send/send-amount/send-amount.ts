@@ -8,18 +8,18 @@ import {
   NavParams
 } from 'ionic-angular';
 import * as _ from 'lodash';
-import { ISendMethod, SendMethodType } from 'merit/transact/send/send-method.model';
-import { ConfigService } from 'merit/shared/config.service';
-import { RateService } from 'merit/transact/rate.service';
-import { FeeService } from 'merit/shared/fee/fee.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ToastConfig } from 'merit/core/toast.config';
-import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { getEasySendURL } from 'merit/transact/send/easy-send/easy-send.model';
-import { Logger } from 'merit/core/logger';
+import { ISendMethod, SendMethodType } from '@merit/mobile/app/transact/send/send-method.model';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { RateService } from '@merit/mobile/app/transact/rate.service';
+import { FeeService } from '@merit/mobile/app/shared/fee/fee.service';
+import { ProfileService } from '@merit/mobile/app/core/profile.service';
+import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { EasySendService } from '@merit/mobile/app/transact/send/easy-send/easy-send.service';
+import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
+import { getEasySendURL } from '@merit/mobile/app/transact/send/easy-send/easy-send.model';
+import { Logger } from '@merit/mobile/app/core/logger';
 import { MERIT_MODAL_OPTS } from '../../../../utils/constants';
 import { MeritContact } from '../../../../models/merit-contact';
 

@@ -2,15 +2,15 @@ import { Component } from '@angular/core';
 import { IonicPage, LoadingController, ModalController, NavController, NavParams, AlertController } from 'ionic-angular';
 
 import * as _ from 'lodash';
-import { Logger } from 'merit/core/logger';
-import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
 
-import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ConfigService } from 'merit/shared/config.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { SendService } from 'merit/transact/send/send.service';
+import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
 
 import { ENV } from '@app/env';
 import { cleanAddress, isAlias } from '../../../utils/addresses';

@@ -15,25 +15,12 @@
     "sourceMap": true,
     "target": "es5",
     "paths": {
-      "@merit/mobile/*": ["./src/*"],
-      "@merit/common/*": ["../common/*"],
-      "@app/env": [
-        "src/environments/environment"
-      ]
+      "@merit/common/*": ["./*"],
+      "@app/env": ["../mobile/src/environments/environment"],
+      "**": ["../mobile/node_modules/*"]
     },
     "typeRoots": [
       "node_modules/@types"
     ]
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "src/lib"
-  ],
-  "compileOnSave": false,
-  "atom": {
-    "rewriteTsconfig": false
   }
 }

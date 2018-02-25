@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { SendService } from 'merit/transact/send/send.service';
-import { SendMethodDestination } from 'merit/transact/send/send-method.model';
-import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
+import { SendMethodDestination } from '@merit/mobile/app/transact/send/send-method.model';
+import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import * as _ from 'lodash';
-import { ContactsProvider } from 'merit/../providers/contacts/contacts';
-import { MeritContact } from 'merit/../models/merit-contact';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
+import { ContactsProvider } from '@merit/mobile/providers/contacts/contacts';
+import { MeritContact } from '@merit/mobile/models/merit-contact';
+import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 
 import { ENV } from '@app/env';
 import { cleanAddress, isAlias } from '../../../../utils/addresses';

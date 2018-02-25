@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { ProfileService } from 'merit/core/profile.service';
+import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
+import { ProfileService } from '@merit/mobile/app/core/profile.service';
 import { MeritWalletClient } from '../../lib/merit-wallet-client';
 import { formatWalletHistory } from '../../utils/transactions';
 import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
-import { SendService } from 'merit/transact/send/send.service';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { sortBy, flatten } from 'lodash';
 import { ContactsProvider } from '../../providers/contacts/contacts';
 

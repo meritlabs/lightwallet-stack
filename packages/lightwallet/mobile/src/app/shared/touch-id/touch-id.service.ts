@@ -3,9 +3,9 @@ import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
 
 
 import { TouchID } from '@ionic-native/touch-id';
-import { Logger } from 'merit/core/logger';
-import { PlatformService } from 'merit/core/platform.service';
-import { ConfigService } from 'merit/shared/config.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { PlatformService } from '@merit/mobile/app/core/platform.service';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
 
 @Injectable()
 export class TouchIdService {

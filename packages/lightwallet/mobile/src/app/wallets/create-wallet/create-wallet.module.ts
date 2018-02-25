@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { CreateWalletView } from 'merit/wallets/create-wallet/create-wallet';
+import { CreateWalletView } from '@merit/mobile/app/wallets/create-wallet/create-wallet';
 
 @NgModule({
   declarations: [

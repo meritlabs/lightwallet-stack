@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { AlertController } from 'ionic-angular/components/alert/alert-controller';
 import * as _ from 'lodash';
-import { Logger } from 'merit/core/logger';
+import { Logger } from '@merit/mobile/app/core/logger';
 
 
 @IonicPage({

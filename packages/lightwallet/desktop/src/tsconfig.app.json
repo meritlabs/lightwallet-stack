@@ -6,7 +6,8 @@
     "module": "es2015",
     "paths": {
       "@app/env": ["./environments/environment.ts"],
-      "merit/*": ["../../lightwallet/src/app/*"]
+      "@merit/common/*": ["../../common/*"],
+      "@merit/desktop/*": ["./*"]
     }
   },
   "exclude": [

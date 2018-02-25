@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { CreateVaultSummaryView } from 'merit/vaults/create-vault/vault-summary/vault-summary';
+import { CreateVaultSummaryView } from '@merit/mobile/app/vaults/create-vault/vault-summary/vault-summary';
 
 @NgModule({
   declarations: [

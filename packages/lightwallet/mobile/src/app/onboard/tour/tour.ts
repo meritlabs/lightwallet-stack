@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
-import { RateService } from 'merit/transact/rate.service';
+import { RateService } from '@merit/mobile/app/transact/rate.service';
 
 
 @IonicPage({

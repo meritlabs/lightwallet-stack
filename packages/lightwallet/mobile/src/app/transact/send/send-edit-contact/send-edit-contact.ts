@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { SendService } from 'merit/transact/send/send.service';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import * as _ from 'lodash';
 import { ContactsProvider } from '../../../../providers/contacts/contacts';
 import { IMeritAddress, MeritContact } from '../../../../models/merit-contact';

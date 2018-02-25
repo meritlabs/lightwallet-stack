@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import * as _ from 'lodash';
-import { Logger } from 'merit/core/logger';
-import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
-import { ISendMethod } from 'merit/transact/send/send-method.model';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { EasyReceipt } from '@merit/mobile/app/easy-receive/easy-receipt.model';
+import { ISendMethod } from '@merit/mobile/app/transact/send/send-method.model';
 
 const Keys = {
   ADDRESS_BOOK: network => 'addressbook-' + network,

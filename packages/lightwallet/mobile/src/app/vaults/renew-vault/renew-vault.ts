@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { BwcService } from 'merit/core/bwc.service';
-import { PopupService } from 'merit/core/popup.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { VaultsService } from 'merit/vaults/vaults.service';
-import { WalletService } from 'merit/wallets/wallet.service';
+import { BwcService } from '@merit/mobile/app/core/bwc.service';
+import { PopupService } from '@merit/mobile/app/core/popup.service';
+import { ProfileService } from '@merit/mobile/app/core/profile.service';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
+import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 

@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 
 
 import * as _ from 'lodash';
-import { BwcService } from 'merit/core/bwc.service';
-import { Logger } from 'merit/core/logger';
-import { ConfigService } from 'merit/shared/config.service';
-import { FiatAmount } from 'merit/shared/fiat-amount.model';
-import { RateService } from 'merit/transact/rate.service';
+import { BwcService } from '@merit/mobile/app/core/bwc.service';
+import { Logger } from '@merit/mobile/app/core/logger';
+import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { FiatAmount } from '@merit/mobile/app/shared/fiat-amount.model';
+import { RateService } from '@merit/mobile/app/transact/rate.service';
 import 'rxjs/add/operator/map';
 
 /*

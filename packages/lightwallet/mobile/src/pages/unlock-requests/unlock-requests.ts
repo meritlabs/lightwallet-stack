@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { IDisplayWallet } from 'merit/../models/display-wallet';
-import { ToastConfig } from 'merit/core/toast.config';
+import { IDisplayWallet } from '@merit/mobile/models/display-wallet';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
-import { IUnlockRequest, UnlockRequestService } from 'merit/core/unlock-request.service';
+import { IUnlockRequest, UnlockRequestService } from '@merit/mobile/app/core/unlock-request.service';
 
 @IonicPage()
 @Component({

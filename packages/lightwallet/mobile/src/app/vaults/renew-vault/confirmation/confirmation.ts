@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { BwcService } from 'merit/core/bwc.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { RenewVaultService } from 'merit/vaults/renew-vault/renew-vault.service';
+import { BwcService } from '@merit/mobile/app/core/bwc.service';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { RenewVaultService } from '@merit/mobile/app/vaults/renew-vault/renew-vault.service';
 import { MeritWalletClient } from '../../../../lib/merit-wallet-client/index';
 
 @IonicPage({
