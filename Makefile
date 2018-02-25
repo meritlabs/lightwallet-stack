@@ -1,7 +1,6 @@
 ### pre-requisites ###
 .PHONY: prepare-prereqs
 prepare-prereqs:
-	npm i -g npm
 	npm i -g lerna
 	npm i -g grunt
 	npm i -g cordova
