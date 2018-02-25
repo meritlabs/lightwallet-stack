@@ -7,7 +7,6 @@ import { Logger } from '@merit/mobile/app/core/logger';
 import { PopupService } from '@merit/mobile/app/core/popup.service';
 import { ProfileService } from '@merit/mobile/app/core/profile.service';
 import { FeeService } from '@merit/mobile/app/shared/fee/fee.service';
-import { NotificationService } from '@merit/mobile/app/shared/notification.service';
 import { EasySendService } from '@merit/mobile/app/transact/send/easy-send/easy-send.service';
 import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
 import { SpendVaultService } from '@merit/mobile/app/vaults/spend/vault-spend.service';
@@ -54,7 +53,6 @@ export class VaultSpendConfirmView {
               private txFormatService: TxFormatService,
               private popupService: PopupService,
               private modalCtrl: ModalController,
-              private notificationService: NotificationService,
               private loadingCtrl: LoadingController,
               private easySendService: EasySendService,
               private bwc: BwcService,

@@ -9,6 +9,7 @@ import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/zip';
 import 'rxjs/add/operator/mergeMap';
 import { MeritWalletClient } from '../../mobile/src/lib/merit-wallet-client/index';
+import { TxFormatService } from '../../mobile/src/app/transact/tx-format.service';
 
 // Ratio low amount warning (fee/amount) in incoming TX
 const LOW_AMOUNT_RATIO: number = 0.15;

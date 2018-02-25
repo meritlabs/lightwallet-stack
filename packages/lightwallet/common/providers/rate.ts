@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-
 import * as _ from 'lodash';
 import { Logger } from '@merit/mobile/app/core/logger';
 import 'rxjs/add/observable/fromPromise';
@@ -7,8 +6,6 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
-// const request = require('superagent');
-import * as request from 'superagent';
 
 import { ENV } from '@app/env';
 

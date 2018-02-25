@@ -17,7 +17,7 @@
     "paths": {
       "@merit/common/*": ["./*"],
       "@app/env": ["../mobile/src/environments/environment"],
-      "**": ["../mobile/node_modules/*"]
+      "@angular/*": ["../mobile/node_modules/@angular/*"]
     },
     "typeRoots": [
       "node_modules/@types"

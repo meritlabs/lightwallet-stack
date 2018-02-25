@@ -313,22 +313,21 @@ export class PersistenceService {
     return this.storage.get(Keys.SEND_HISTORY);
   }
 
-  registerSend(method: ISendMethod) {
-    return this.storage.get(Keys.SEND_HISTORY).then((history) => {
-      if (!history) history = [];
-      history.push({
-        method,
-        timestamp: Date.now()
-      });
-      return this.storage.set(Keys.SEND_HISTORY, history);
+  async registerSend(method: ISendMethod) {
+    const history = await this.storage.get(Keys.SEND_HISTORY) || [];
+    history.push({
+      method,
+      timestamp: Date.now()
     });
+    return this.storage.set(Keys.SEND_HISTORY, history);
   }
 
   setPendingEasySends(walletId: string, easysends: any): Promise<void> {
-    return this.set(Keys.PENDING_EASY_SENDS(walletId), easysends).catch(err => {
-      this.log.error('Error saving pending EasySends. Size:' + easysends.length);
-      this.log.error(err);
-    });
+    return this.set(Keys.PENDING_EASY_SENDS(walletId), easysends)
+      .catch(err => {
+        this.log.error('Error saving pending EasySends. Size:' + easysends.length);
+        this.log.error(err);
+      });
   }
 
   getPendingEasySends(walletId: string): Promise<any> {
@@ -399,89 +398,12 @@ export class PersistenceService {
     return this.remove(Keys.TX_CONFIRM_NOTIF(txid));
   };
 
-  //
-  getBitpayAccounts(network: string): Promise<any> {
-    return this.get(Keys.BITPAY_ACCOUNTS_V2(network));
-  };
-
-  setBitpayAccount(network: string, data: {
-    email: string,
-    token: string,
-    familyName?: string, // last name
-    givenName?: string, // firstName
-  }): Promise<any> {
-    return this.getBitpayAccounts(network)
-      .then(allAccounts => {
-        allAccounts = allAccounts || {};
-        let account = allAccounts[data.email] || {};
-        account.token = data.token;
-        account.familyName = data.familyName;
-        account.givenName = data.givenName;
-        allAccounts[data.email] = account;
-
-        this.log.info('Storing BitPay accounts with new account:' + data.email);
-        return this.set(Keys.BITPAY_ACCOUNTS_V2(network), allAccounts);
-      });
-  };
-
-  removeBitpayAccount(network: string, email: string): Promise<void> {
-    return this.getBitpayAccounts(network)
-      .then(allAccounts => {
-        allAccounts = allAccounts || {};
-        delete allAccounts[email];
-        return this.set(Keys.BITPAY_ACCOUNTS_V2(network), allAccounts);
-      });
-  };
-
-
-  setBitpayDebitCards(network: string, email: string, cards: any): Promise<void> {
-    return this.getBitpayAccounts(network)
-      .then(allAccounts => {
-        allAccounts = allAccounts || {};
-        if (!allAccounts[email]) throw new Error('Cannot set cards for unknown account ' + email);
-        allAccounts[email].cards = cards;
-        return this.set(Keys.BITPAY_ACCOUNTS_V2(network), allAccounts);
-      });
-  };
-
-  getBitpayDebitCards(network: string): Promise<any[]> {
-    return this.getBitpayAccounts(network)
-      .then(allAccounts => {
-        let allCards = [];
-        _.each(allAccounts, (account, email) => {
-          if (account.cards) {
-            // Add account's email to each card
-            let cards = _.clone(account.cards);
-            _.each(cards, function (x) {
-              x.email = email;
-            });
-
-            allCards = allCards.concat(cards);
-          }
-        });
-        return allCards;
-      });
-  };
-
-  removeBitpayDebitCard(network: string, cardEid: string): Promise<void> {
-    return this.getBitpayAccounts(network)
-      .then(allAccounts => {
-        return _.each(allAccounts, function (account) {
-          account.cards = _.reject(account.cards, {
-            eid: cardEid
-          });
-        });
-      }).then(allAccounts => {
-        return this.set(Keys.BITPAY_ACCOUNTS_V2(network), allAccounts);
-      });
-  };
-
   async getHiddenUnlockRequestsAddresses() {
     let addresses = await this.storage.get(Keys.HIDDEN_REQUESTS_ADDRESSES);
     return addresses || [];
   }
 
-  async setHiddenUnlockRequestsAddresses(addresses:Array<string>) {
+  async setHiddenUnlockRequestsAddresses(addresses: Array<string>) {
     return this.storage.set(Keys.HIDDEN_REQUESTS_ADDRESSES, addresses);
   }
 
@@ -490,8 +412,8 @@ export class PersistenceService {
     return requests || 0;
   }
 
-  setActiveRequestsNumber(requests:number) {
-   return  this.storage.set(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER, requests);
+  setActiveRequestsNumber(requests: number) {
+    return this.storage.set(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER, requests);
   }
 
 
@@ -504,6 +426,6 @@ export class PersistenceService {
   }
 
   private remove(key: any) {
-    return this.storage.remove(key)
+    return this.storage.remove(key);
   }
 }
