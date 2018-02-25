@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { AppService } from '@merit/mobile/app/core/app-settings.service';
-import { EmailNotificationsService } from '@merit/mobile/app/core/notification/email-notification.service';
+import { ConfigService } from '@merit/common/providers/config';
+import { AppSettingsService } from '@merit/common/providers/app-settings';
+import { PlatformService } from '@merit/common/providers/platform';
 import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
-import { PlatformService } from '@merit/mobile/app/core/platform.service';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { EmailValidator } from '@merit/mobile/app/shared/email.validator';
+import { EmailNotificationsService } from '@merit/mobile/app/core/notification/email-notification.service';
+import { EmailValidator } from '@merit/common/email.validator';
 
 @IonicPage()
 @Component({
@@ -29,7 +29,7 @@ export class NotificationsView {
               public navParams: NavParams,
               public formBuilder: FormBuilder,
               private configService: ConfigService,
-              private appService: AppService,
+              private appService: AppSettingsService,
               private platformService: PlatformService,
               private pushService: PushNotificationsService,
               private emailService: EmailNotificationsService) {

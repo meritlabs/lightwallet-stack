@@ -10,4 +10,5 @@ import { SendCreateContactView } from './send-create-contact';
     IonicPageModule.forChild(SendCreateContactView),
   ],
 })
-export class SendCreateContactModule {}
+export class SendCreateContactModule {
+}

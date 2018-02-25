@@ -1,7 +1,8 @@
-<ion-tabs tabs-only class="tabs"  tabsPlacement="bottom" #tabs>
-    <ion-tab root="WalletsView" name="wallets" tabTitle="Wallets" tabIcon="home"></ion-tab>
-    <ion-tab root="ReceiveView" name="receive" tabTitle="Receive"  tabIcon="qr-code"></ion-tab>
-    <ion-tab root="HistoryView" name="history" tabTitle="History"  tabIcon="history"></ion-tab>
-    <ion-tab root="SendView"    name="send" tabTitle="Send"  tabIcon="send"></ion-tab>
-    <ion-tab root="NetworkView" name="network" tabTitle="Community"  tabIcon="md-people" [tabBadge]="countUnlockRequests()"></ion-tab>
+<ion-tabs tabs-only class="tabs" tabsPlacement="bottom" #tabs>
+  <ion-tab root="WalletsView" name="wallets" tabTitle="Wallets" tabIcon="home"></ion-tab>
+  <ion-tab root="ReceiveView" name="receive" tabTitle="Receive" tabIcon="qr-code"></ion-tab>
+  <ion-tab root="HistoryView" name="history" tabTitle="History" tabIcon="history"></ion-tab>
+  <ion-tab root="SendView" name="send" tabTitle="Send" tabIcon="send"></ion-tab>
+  <ion-tab root="NetworkView" name="network" tabTitle="Community" tabIcon="md-people"
+           [tabBadge]="countUnlockRequests()"></ion-tab>
 </ion-tabs>

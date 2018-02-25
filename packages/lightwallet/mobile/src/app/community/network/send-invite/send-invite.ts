@@ -4,14 +4,13 @@ import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { SendMethodDestination } from '@merit/mobile/app/transact/send/send-method.model';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import * as _ from 'lodash';
-import { ContactsProvider } from '@merit/mobile/providers/contacts/contacts';
-import { MeritContact } from '@merit/mobile/models/merit-contact';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
 import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-
 import { ENV } from '@app/env';
-import { cleanAddress, isAlias } from '../../../../utils/addresses';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { ContactsService } from '@merit/mobile/providers/contacts';
+import { WalletService } from '@merit/common/providers/wallet';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 
 const ERROR_ADDRESS_NOT_FOUND = 'ADDRESS_NOT_FOUND';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -38,7 +37,7 @@ export class SendInviteView {
   constructor(
       private navCtrl: NavController,
       private navParams: NavParams,
-      private contactsService: ContactsProvider,
+      private contactsService: ContactsService,
       private sendService: SendService,
       private modalCtrl: ModalController,
       private addressScanner: AddressScannerService,

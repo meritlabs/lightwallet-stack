@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '@merit/common/providers/logger';
+import { Observable } from 'rxjs/Observable';
+import { Events } from 'ionic-angular/util/events';
+import * as _ from 'lodash';
+import { ENV } from '@app/env';
 
 import 'rxjs/add/observable/defer';
 import 'rxjs/add/observable/range';
@@ -8,23 +11,51 @@ import 'rxjs/add/observable/timer';
 import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/zip';
 import 'rxjs/add/operator/mergeMap';
-import { MeritWalletClient } from '../../mobile/src/lib/merit-wallet-client/index';
-import { TxFormatService } from '../../mobile/src/app/transact/tx-format.service';
+import { LoggerService } from '@merit/common/providers/logger';
+import { MWCService } from '@merit/common/providers/mwc';
+import { TxFormatService } from '@merit/common/providers/tx-format';
+import { ConfigService } from '@merit/common/providers/config';
+import { ProfileService } from '@merit/common/providers/profile';
+import { PersistenceService } from '@merit/common/providers/persistence';
+import { RateService } from '@merit/common/providers/rate';
+import { PopupService } from '@merit/common/providers/popup';
+import { TouchIdService } from '../../mobile/src/providers/touch-id.service';
+import { LanguageService } from '@merit/common/providers/language';
+import { MnemonicService } from '@merit/common/providers/mnemonic';
+import { EasySendService } from '@merit/common/providers/easy-send';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { FiatAmount } from '@merit/common/models/fiat-amount';
+import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
+import { EasySend } from '@merit/common/models/easy-send';
 
-// Ratio low amount warning (fee/amount) in incoming TX
-const LOW_AMOUNT_RATIO: number = 0.15;
-// Ratio of "many utxos" warning in total balance (fee/amount)
-const TOTAL_LOW_WARNING_RATIO: number = .3;
-const WALLET_STATUS_MAX_TRIES: number = 7;
-const WALLET_STATUS_DELAY_BETWEEN_TRIES: number = 1.4 * 1000;
-const SOFT_CONFIRMATION_LIMIT: number = 12;
-const SAFE_CONFIRMATIONS: number = 6;
+/* Refactor CheckList:
+  - Bwc Error provider
+  - Remove ongoingProcess provider, and handle Loading indicators in controllers
+  - Decouple the tight dependencies on ProfileService; and create logical separation concerns
+  - Ensure that anything returning a promise has promises through the stack.
+*/
 
 @Injectable()
 export class WalletService {
 
-  constructor(private logger: Logger,
-              private bwcService: BwcService,
+  // TODO: Implement wallet model.
+  private wallets: any = {};
+
+  // Ratio low amount warning (fee/amount) in incoming TX
+  private LOW_AMOUNT_RATIO: number = 0.15;
+
+  // Ratio of "many utxos" warning in total balance (fee/amount)
+  private TOTAL_LOW_WARNING_RATIO: number = .3;
+
+  private WALLET_STATUS_MAX_TRIES: number = 7;
+  private WALLET_STATUS_DELAY_BETWEEN_TRIES: number = 1.4 * 1000;
+  private SOFT_CONFIRMATION_LIMIT: number = 12;
+  private SAFE_CONFIRMATIONS: number = 6;
+
+  //private errors: any = this.bwcService.getErrors();
+
+  constructor(private logger: LoggerService,
+              private bwcService: MWCService,
               private txFormatService: TxFormatService,
               private configService: ConfigService,
               private profileService: ProfileService,
@@ -34,8 +65,281 @@ export class WalletService {
               private touchidService: TouchIdService,
               private languageService: LanguageService,
               private mnemonicService: MnemonicService,
-              private easySendService: EasySendService) {
+              private easySendService: EasySendService,
+              private events: Events) {
     this.logger.info('Hello WalletService Service');
+  }
+
+  invalidateCache(wallet: MeritWalletClient) {
+    if (wallet.cachedStatus)
+      wallet.cachedStatus.isValid = false;
+
+    if (wallet.completeHistory)
+      wallet.completeHistory.isValid = false;
+
+    if (wallet.cachedActivity)
+      wallet.cachedActivity.isValid = false;
+
+    if (wallet.cachedTxps)
+      wallet.cachedTxps.isValid = false;
+  }
+
+  // TODO: Make async
+  async getStatus(wallet: MeritWalletClient, opts?: any) {
+    opts = opts || {};
+    const walletId = wallet.id;
+
+
+    return new Promise((resolve, reject) => {
+
+
+      let processPendingTxps = async (status: any): Promise<any> => {
+        status = status || {};
+        let txps = await status.pendingTxps;
+        let now = Math.floor(Date.now() / 1000);
+
+        wallet.pendingTxps = await Promise.all(txps.map(async (tx: any) => {
+          const pTx = await this.txFormatService.processTx(tx);
+
+          // no future transactions...
+          if (pTx.createdOn > now)
+            pTx.createdOn = now;
+
+          pTx.wallet = wallet;
+
+          if (!pTx.wallet) {
+            this.logger.error('no wallet at pTxp?');
+            return;
+          }
+
+          let action: any = _.find(pTx.actions, {
+            copayerId: pTx.wallet.copayerId
+          });
+
+          if (!action && pTx.status == 'pending') {
+            pTx.pendingForUs = true;
+          }
+
+          if (action && action.type == 'accept') {
+            pTx.statusForUs = 'accepted';
+          } else if (action && action.type == 'reject') {
+            pTx.statusForUs = 'rejected';
+          } else {
+            pTx.statusForUs = 'pending';
+          }
+
+          if (!pTx.deleteLockTime)
+            pTx.canBeRemoved = true;
+
+          return pTx;
+        }));
+
+      };
+
+      //TODO: Separate, clarify, and tighten usage of Rate and Tx-Format service below.
+      let cacheBalance = (wallet: MeritWalletClient, status: any): Promise<any> => {
+        return new Promise((resolve, reject) => {
+          if (!status.balance) return resolve();
+
+          let configGet: any = this.configService.get();
+          let config: any = configGet.wallet;
+
+          let cache = wallet.cachedStatus;
+
+          // Address with Balance
+          cache.balanceByAddress = status.balance.byAddress;
+
+          // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
+          cache.totalBalanceMicros = status.balance.totalAmount;
+
+          if (status.invitesBalance) {
+            cache.availableInvites = Math.max(0, status.invitesBalance.totalConfirmedAmount - 1);
+          }
+
+          cache.pendingCoinbaseAmount = status.balance.totalPendingCoinbaseAmount;
+
+          // Spend unconfirmed funds
+          if (config.spendUnconfirmed) {
+            cache.lockedBalanceSat = status.balance.lockedAmount;
+            cache.availableBalanceSat = status.balance.availableAmount;
+            cache.totalBytesToSendMax = status.balance.totalBytesToSendMax;
+            cache.pendingAmount = 0;
+            cache.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
+          } else {
+            cache.lockedBalanceSat = status.balance.lockedConfirmedAmount;
+            cache.availableBalanceSat = status.balance.availableConfirmedAmount;
+            cache.totalBytesToSendMax = status.balance.totalBytesToSendConfirmedMax;
+            cache.pendingAmount = status.balance.totalAmount - status.balance.totalConfirmedAmount;
+            cache.spendableAmount = status.balance.totalConfirmedAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
+          }
+
+          // Selected unit
+          cache.unitToMicro = config.settings.unitToMicro;
+          cache.satToUnit = 1 / cache.unitToMicro;
+
+          //STR
+          cache.totalBalanceStr = this.txFormatService.formatAmountStr(cache.totalBalanceMicros);
+          cache.lockedBalanceStr = this.txFormatService.formatAmountStr(cache.lockedBalanceSat);
+          cache.availableBalanceStr = this.txFormatService.formatAmountStr(cache.availableBalanceSat);
+          cache.spendableBalanceStr = this.txFormatService.formatAmountStr(cache.spendableAmount);
+          cache.pendingBalanceStr = this.txFormatService.formatAmountStr(cache.pendingAmount);
+
+          cache.alternativeName = config.settings.alternativeName;
+          cache.alternativeIsoCode = config.settings.alternativeIsoCode;
+
+          // Check address
+          return this.isAddressUsed(wallet, status.balance.byAddress).then((used) => {
+            if (used) {
+              this.logger.debug('Address used. Creating new');
+              // Force new address
+              return this.getAddress(wallet, true).then((addr) => {
+                this.logger.debug('New address: ', addr);
+              });
+            }
+          }).then(() => {
+            return this.rateService.whenAvailable().then(() => {
+
+              let totalBalanceAlternative = this.rateService.fromMicrosToFiat(cache.totalBalanceMicros, cache.alternativeIsoCode);
+              let totalBalanceAlternativeStr = this.rateService.fromMicrosToFiat(cache.totalBalanceMicros, cache.alternativeIsoCode);
+              let pendingBalanceAlternative = this.rateService.fromMicrosToFiat(cache.pendingAmount, cache.alternativeIsoCode);
+              let lockedBalanceAlternative = this.rateService.fromMicrosToFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
+              let spendableBalanceAlternative = this.rateService.fromMicrosToFiat(cache.spendableAmount, cache.alternativeIsoCode);
+              let alternativeConversionRate = this.rateService.fromMicrosToFiat(100000000, cache.alternativeIsoCode);
+
+              cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
+              cache.totalBalanceAlternativeStr = cache.totalBalanceAlternative.amountStr;
+              cache.pendingBalanceAlternative = new FiatAmount(pendingBalanceAlternative);
+              cache.lockedBalanceAlternative = new FiatAmount(lockedBalanceAlternative);
+              cache.spendableBalanceAlternative = new FiatAmount(spendableBalanceAlternative);
+              cache.alternativeConversionRate = new FiatAmount(alternativeConversionRate);
+
+              cache.alternativeBalanceAvailable = totalBalanceAlternative > 0;
+              cache.isRateAvailable = true;
+              return resolve();
+            }).catch((err) => {
+              // We don't want to blow up the promise chain if the rateService is down.
+              // TODO: Fallback to last known conversion rate.
+              this.logger.warn('Could not get rates from rateService.');
+              return resolve();
+            });
+          }).catch((err) => {
+            return reject(err);
+          });
+        });
+      };
+
+      let isStatusCached = (): any => {
+        return wallet.cachedStatus && wallet.cachedStatus.isValid;
+      };
+
+      let cacheStatus = (status: any): Promise<any> => {
+        if (status.wallet && status.wallet.scanStatus == 'running') return;
+
+        wallet.cachedStatus = status || {};
+        let cache = wallet.cachedStatus;
+        cache.statusUpdatedOn = Date.now();
+        cache.isValid = true;
+        cache.email = status.preferences ? status.preferences.email : null;
+        return cacheBalance(wallet, status);
+      };
+
+      let walletStatusHash = (status: any): any => {
+        return status ? status.balance.totalAmount : wallet.totalBalanceMicros;
+      };
+
+      let _getStatus = async (initStatusHash: any, tries: number): Promise<any> => {
+        return new Promise(async (resolve, reject) => {
+          if (isStatusCached() && !opts.force) {
+            this.logger.debug('Wallet status cache hit:' + wallet.id);
+            return cacheStatus(wallet.cachedStatus).then(() => {
+              return processPendingTxps(wallet.cachedStatus).then(() => {
+                return resolve(wallet.cachedStatus);
+              });
+            }).catch((err) => {
+              this.logger.debug('Error in caching status:' + err);
+            });
+          }
+
+          tries = tries || 0;
+
+          try {
+            const status = await wallet.getStatus({});
+            let currentStatusHash = walletStatusHash(status);
+            this.logger.debug('Status update. hash:' + currentStatusHash + ' Try:' + tries);
+            if (opts.untilItChanges && initStatusHash == currentStatusHash && tries < this.WALLET_STATUS_MAX_TRIES && walletId == wallet.credentials.walletId) {
+
+              return new Promise<any>((resolve) => {
+                setTimeout(() => {
+                  this.logger.debug('Retrying update... ' + walletId + ' Try:' + tries);
+                  resolve(_getStatus(initStatusHash, ++tries));
+                }, this.WALLET_STATUS_DELAY_BETWEEN_TRIES * tries);
+              });
+            }
+
+
+            await processPendingTxps(status);
+            await cacheStatus(status);
+            wallet.scanning = status.wallet && status.wallet.scanStatus == 'running';
+            return resolve(status);
+
+          } catch (err) {
+            this.logger.error('Could not get the status!');
+            this.logger.error(err);
+            return reject(err);
+          }
+
+        });
+      };
+
+      return _getStatus(walletStatusHash(null), 0).then((status) => {
+        return resolve(status);
+      }).catch((err) => {
+        this.logger.warn('Error getting status: ', err);
+        return reject(err);
+      });
+    });
+
+  }
+
+  getRootAddress(wallet: MeritWalletClient) {
+    return wallet.getRootAddress();
+  }
+
+  getAddress(wallet: MeritWalletClient, forceNew: boolean): Promise<any> {
+
+    return new Promise((resolve, reject) => {
+      return this.persistenceService.getLastAddress(wallet.id).then((addr) => {
+        if (!forceNew && addr) return resolve(addr);
+
+        if (!wallet.isComplete())
+          return reject(new Error('WALLET_NOT_COMPLETE'));
+
+        return wallet.createAddress({}).then((address) => {
+          return this.persistenceService.storeLastAddress(wallet.id, address).then(() => {
+            return resolve(address);
+          });
+        }).catch((err) => {
+          if (err.code == MWCErrors.MAIN_ADDRESS_GAP_REACHED.code && !forceNew) {
+            return this.getMainAddress(wallet).then((address) => {
+              return this.persistenceService.storeLastAddress(wallet.id, address).then(() => {
+                return resolve(address);
+              });
+            });
+          } else {
+            return reject(err);
+          }
+        });
+
+      }).catch((err) => {
+        return reject(err);
+      });
+    });
+  }
+
+  // Approx utxo amount, from which the uxto is economically redeemable
+  getLowAmount(wallet: MeritWalletClient, feeLevels: any, nbOutputs?: number) {
+    let minFee: number = this.getMinFee(wallet, feeLevels, nbOutputs);
+    return (minFee / this.LOW_AMOUNT_RATIO);
   }
 
   getTxNote(wallet: MeritWalletClient, txid: string): Promise<any> {
@@ -52,37 +356,30 @@ export class WalletService {
     return wallet.getTx(txpid);
   }
 
-  private invalidateCache(wallet: MeritWalletClient) {
-    if (wallet.cachedStatus)
-      wallet.cachedStatus.isValid = false;
+  getTx(wallet: MeritWalletClient, txid: string) {
+    return new Promise((resolve, reject) => {
+      let finish = (list: any) => {
+        let tx = _.find(list, {
+          txid: txid
+        });
 
-    if (wallet.completeHistory)
-      wallet.completeHistory.isValid = false;
+        if (!tx) return reject(new Error('Could not get transaction'));
+        return resolve(tx);
+      };
 
-    if (wallet.cachedActivity)
-      wallet.cachedActivity.isValid = false;
-
-    if (wallet.cachedTxps)
-      wallet.cachedTxps.isValid = false;
-  }
-
-  private getLowAmount(wallet: MeritWalletClient, feeLevels: any, nbOutputs?: number) {
-    let minFee: number = this.getMinFee(wallet, feeLevels, nbOutputs);
-    return (minFee / LOW_AMOUNT_RATIO);
-  }
-
-  async getTx(wallet: MeritWalletClient, txid: string) {
-    let history;
-
-    if (wallet.completeHistory && wallet.completeHistory.isValid) {
-      history = wallet.completeHistory;
-    } else {
-      history = await this.getTxHistory(wallet, { limitTx: txId });
-    }
-
-    const tx = history.find((tx: any) => tx.txid === txid);
-    if (tx) return tx;
-    throw new Error('Could not get transaction');
+      if (wallet.completeHistory && wallet.completeHistory.isValid) {
+        finish(wallet.completeHistory);
+      } else {
+        let opts = {
+          limitTx: txid
+        };
+        return this.getTxHistory(wallet, opts).then((txHistory: any) => {
+          finish(txHistory);
+        }).catch((err) => {
+          return reject(err);
+        });
+      }
+    });
   }
 
   async getTxHistory(wallet: MeritWalletClient, opts?: any): Promise<any> {
@@ -144,6 +441,8 @@ export class WalletService {
     return wallet.signTxProposal(txp, password);
   }
 
+  // These 2 functions were taken from
+
   broadcastTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     if (_.isEmpty(txp) || _.isEmpty(wallet))
       return Promise.reject(new Error('MISSING_PARAMETER'));
@@ -191,7 +490,7 @@ export class WalletService {
           await wallet.savePreferences(prefs);
           return updateRemotePreferencesFor(clients, prefs);
         } catch (err) {
-          this.popupService.ionicAlert('Could not save preferences on the server'); //TODO Gettextcatalog
+          this.popupService.alert('Could not save preferences on the server'); //TODO Gettextcatalog
           return reject(err);
         }
       };
@@ -346,7 +645,7 @@ export class WalletService {
         return resolve({
           allUtxos: resp || [],
           lowUtxos: lowUtxos || [],
-          warning: minFee / balance > TOTAL_LOW_WARNING_RATIO,
+          warning: minFee / balance > this.TOTAL_LOW_WARNING_RATIO,
           minFee: minFee,
         });
       });
@@ -417,6 +716,7 @@ export class WalletService {
     return new Promise((resolve, reject) => {
       return this.publishTx(wallet, txp).then((publishedTxp) => {
         this.invalidateCache(wallet);
+        this.events.publish('Local:Tx:Publish', publishedTxp);
         return resolve();
       }).catch((err) => {
         return reject(err);
@@ -580,7 +880,7 @@ export class WalletService {
         let name = item.copayerName || ('copayer ' + copayer++);
         return newWallet.doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {}).then((err) => {
           //Ignore error is copayer already in wallet
-          if (err && !(err == Errors.COPAYER_IN_WALLET)) return reject(err);
+          if (err && !(err == MWCErrors.COPAYER_IN_WALLET)) return reject(err);
           if (++i == wallet.credentials.publicKeyRing.length) return resolve();
         });
       });
@@ -657,7 +957,7 @@ export class WalletService {
       return wallet.createAddress({}).then((address) => {
         return resolve(address);
       }).catch((err) => {
-        if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code) {
+        if (err.code == MWCErrors.MAIN_ADDRESS_GAP_REACHED.code) {
           return this.getMainAddress(wallet).then((address) => {
             return resolve(address);
           });
@@ -821,7 +1121,7 @@ export class WalletService {
       .retryWhen(errors =>
         errors.zip(Observable.range(1, 3))
           .mergeMap(([err, attempt]) => {
-            if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE && attempt < 3) {
+            if (err.code == MWCErrors.CONNECTION_ERROR.code || err.code == MWCErrors.SERVER_UNAVAILABLE && attempt < 3) {
               this.logger.info('Retrying history download in 5 secs...');
               // TODO: use RxJS
               return Observable.timer(5000);
@@ -903,8 +1203,8 @@ export class WalletService {
       if (pTx.time > now)
         pTx.time = now;
 
-      if (pTx.confirmations >= SAFE_CONFIRMATIONS) {
-        pTx.safeConfirmed = SAFE_CONFIRMATIONS + '+';
+      if (pTx.confirmations >= this.SAFE_CONFIRMATIONS) {
+        pTx.safeConfirmed = this.SAFE_CONFIRMATIONS + '+';
       } else {
         pTx.safeConfirmed = false;
         wallet.hasUnsafeConfirmed = true;
@@ -928,7 +1228,7 @@ export class WalletService {
 
   private removeAndMarkSoftConfirmedTx(txs: any): Array<any> {
     return _.filter(txs, (tx: any) => {
-      if (tx.confirmations >= SOFT_CONFIRMATION_LIMIT)
+      if (tx.confirmations >= this.SOFT_CONFIRMATION_LIMIT)
         return tx;
       tx.recent = true;
     });
@@ -976,7 +1276,7 @@ export class WalletService {
   // An alert dialog
   private askPassword(name: string, title: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      return this.popupService.ionicPrompt(title, name, null, null).then((res: any) => {
+      return this.popupService.prompt(title, name, null, null).then((res: any) => {
         return resolve(res);
       }).catch((err: any) => {
         return reject(err);
@@ -996,12 +1296,18 @@ export class WalletService {
         if (signedTxp.status == 'accepted') {
           return this.broadcastTx(wallet, signedTxp).then((broadcastedTxp: any) => {
             this.logger.info('@@SB: AfterBroadCast');
+
+            this.events.publish('Local:Tx:Broadcast', broadcastedTxp);
+            //$rootScope.$emit('Local/TxAction', wallet.id);
             return resolve(broadcastedTxp);
           }).catch((err) => {
             return reject(err);
           });
         } else {
           this.logger.info('@@SB: ElseBlock');
+
+          //$rootScope.$emit('Local/TxAction', wallet.id);
+          this.events.publish('Local:Tx:Signed', signedTxp);
           return resolve(signedTxp);
         }
         ;
@@ -1045,12 +1351,12 @@ export class WalletService {
           .zip(Observable.range(1, 3))
           .mergeMap(([err, i]) => {
             this.logger.warn('Error creating wallet in DCW: ', err);
-            if (err == Errors.CONNECTION_ERROR && i < 3) {
+            if (err == MWCErrors.CONNECTION_ERROR && i < 3) {
               return Observable.timer(2000);
             }
 
             if (err && err.message === 'Checksum mismatch') {
-              err = Errors.REFERRER_INVALID;
+              err = MWCErrors.REFERRER_INVALID;
             }
 
             return Observable.throw(err);
@@ -1135,5 +1441,4 @@ export class WalletService {
       return tx;
     });
   }
-
 }

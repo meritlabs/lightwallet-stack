@@ -1,19 +1,18 @@
 import { Component } from '@angular/core';
 import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { Events, IonicPage, ModalController, NavController, NavParams, Tab } from 'ionic-angular';
-import { Errors } from '@merit/mobile/lib/merit-wallet-client/lib/errors';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { Events, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
+import { ProfileService } from '@merit/common/providers/profile';
+import { WalletService } from '@merit/common/providers/wallet';
 import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-
-import { RateService } from '@merit/mobile/app/transact/rate.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { MERIT_MODAL_OPTS } from '../../../utils/constants';
+import { LoggerService } from '@merit/common/providers/logger';
+import { RateService } from '@merit/common/providers/rate';
+import { ConfigService } from '@merit/common/providers/config';
 import { SendService } from '@merit/mobile/app/transact/send/send.service';
-import { PlatformService } from '@merit/mobile/app/core/platform.service';
+import { PlatformService } from '@merit/common/providers/platform';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
+import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 
 @IonicPage()
 @Component({
@@ -39,15 +38,15 @@ export class ReceiveView {
   error: string;
   mainAddressGapReached: boolean;
 
-  hasUnlockedWallets:boolean;
-  loading:boolean;
+  hasUnlockedWallets: boolean;
+  loading: boolean;
 
   constructor(private navCtrl: NavController,
               private modalCtrl: ModalController,
               private profileService: ProfileService,
               private walletService: WalletService,
               private toastCtrl: MeritToastController,
-              private logger: Logger,
+              private logger: LoggerService,
               private socialSharing: SocialSharing,
               private clipboard: Clipboard,
               private rateService: RateService,
@@ -112,7 +111,7 @@ export class ReceiveView {
       this.addressGenerationInProgress = false;
       this.formatAddress();
     } catch (err) {
-      if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code) {
+      if (err.code == MWCErrors.MAIN_ADDRESS_GAP_REACHED.code) {
         this.mainAddressGapReached = true;
         return this.generateAddress();
       } else {
@@ -150,7 +149,7 @@ export class ReceiveView {
       && this.wallet.isComplete()
       && this.qrAddress
       && !this.addressGenerationInProgress
-    )
+    );
   }
 
   share() {

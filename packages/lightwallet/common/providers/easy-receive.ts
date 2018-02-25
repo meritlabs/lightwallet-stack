@@ -1,23 +1,18 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
-import { EasyReceipt } from '@merit/mobile/app/easy-receive/easy-receipt.model';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { FeeService } from '@merit/mobile/app/shared/fee/fee.service';
-import { LedgerService } from '@merit/mobile/app/shared/ledger.service';
-import { ENV } from '@app/env';
-import { MeritWalletClient } from '../../lib/merit-wallet-client/index';
 import { MWCService } from '@merit/common/providers/mwc';
+import { LoggerService } from '@merit/common/providers/logger';
+import { PersistenceService } from '@merit/common/providers/persistence';
+import { FeeService } from '@merit/common/providers/fee';
+import { EasyReceipt } from '@merit/common/models/easy-receipt';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @Injectable()
 export class EasyReceiveService {
-  constructor(private logger: Logger,
+  constructor(private logger: LoggerService,
               private persistanceService: PersistenceService,
               private feeService: FeeService,
-              private mwcService: MWCService,
-              private ledger: LedgerService) {
+              private mwcService: MWCService) {
   }
 
   async validateAndSaveParams(params: any): Promise<EasyReceipt> {
@@ -70,34 +65,6 @@ export class EasyReceiveService {
     }
   }
 
-  async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = '', network = ENV.network): Promise<any> {
-    const walletClient = this.mwcService.getClient(null, {});
-
-    try {
-      const scriptData = this.generateEasyScipt(receipt, password, network);
-      const scriptAddress = this.mwcService.getBitcore().Address(scriptData.scriptPubKey.getAddressInfo()).toString();
-
-      const txs = await walletClient.validateEasyScript(scriptAddress);
-
-      if (!txs.result.length) {
-        this.logger.warn('Could not validate easyScript on the blockchain.');
-        return false;
-      } else {
-        return {
-          senderPublicKey: receipt.senderPublicKey,
-          txs: txs.result,
-          privateKey: scriptData.privateKey,
-          publicKey: scriptData.publicKey,
-          script: scriptData.script,
-          scriptId: scriptAddress,
-        };
-      }
-    } catch (err) {
-      this.logger.warn('Could not validate easyScript on the blockchain.', err);
-      throw err;
-    }
-  }
-
   deletePendingReceipt(receipt: EasyReceipt) {
     return this.persistanceService.deletePendingEasyReceipt(receipt);
   }
@@ -129,21 +96,5 @@ export class EasyReceiveService {
 
     const finalTx = await wallet.buildEasySendRedeemTransaction(input, tx, destinationAddress, opts);
     return await wallet.broadcastRawTx({ rawTx: finalTx.serialize(txOpts), network: wallet.network });
-  }
-
-  private generateEasyScipt(receipt: EasyReceipt, password, network) {
-    const secret = this.ledger.hexToString(receipt.secret);
-    const receivePrv = this.mwcService.getBitcore().PrivateKey.forEasySend(secret, password, network);
-    const receivePub = this.mwcService.getBitcore().PublicKey.fromPrivateKey(receivePrv).toBuffer();
-    const senderPubKey = this.ledger.hexToArray(receipt.senderPublicKey);
-    const publicKeys = [receivePub, senderPubKey];
-    const script = this.mwcService.getBitcore().Script.buildEasySendOut(publicKeys, receipt.blockTimeout, network);
-
-    return {
-      privateKey: receivePrv,
-      publicKey: receivePub,
-      script: script,
-      scriptPubKey: script.toMixedScriptHashOut(senderPubKey),
-    };
   }
 }

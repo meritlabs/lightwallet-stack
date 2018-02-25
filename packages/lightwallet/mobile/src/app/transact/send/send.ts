@@ -1,16 +1,14 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController } from 'ionic-angular';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
-import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/mobile/app/transact/send/send-method.model';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
 import * as _ from 'lodash';
-import { ContactsProvider } from '../../../providers/contacts/contacts';
-import { MeritContact } from '../../../models/merit-contact';
-
 import { ENV } from '@app/env';
-import { cleanAddress, isAlias } from '../../../utils/addresses';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/mobile/app/transact/send/send-method.model';
+import { ContactsService } from '@merit/mobile/providers/contacts';
+import { ProfileService } from '@merit/common/providers/profile';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
+import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
@@ -20,8 +18,7 @@ const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 @IonicPage()
 @Component({
   selector: 'view-send',
-  templateUrl: 'send.html',
-  providers: [BarcodeScanner]
+  templateUrl: 'send.html'
 })
 export class SendView {
   public searchQuery: string = '';
@@ -43,7 +40,7 @@ export class SendView {
   public hasActiveInvites: boolean;
 
   constructor(private navCtrl: NavController,
-              private contactsService: ContactsProvider,
+              private contactsService: ContactsService,
               private profileService: ProfileService,
               private sendService: SendService,
               private modalCtrl: ModalController,

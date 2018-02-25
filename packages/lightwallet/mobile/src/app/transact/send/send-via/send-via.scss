@@ -11,7 +11,7 @@ view-send-via {
     margin-left: -4px;
     height: 20px;
     ion-icon {
-     font-size: 20px;
+      font-size: 20px;
       color: #9ba6b9;
       font-weight: 600;
     }
@@ -30,11 +30,9 @@ view-send-via {
     border: none;
   }
 
-
   ion-item:not(:nth-last-child(1)):after {
     display: none;
   }
-
 
   ion-header {
     ion-navbar {
@@ -63,13 +61,12 @@ view-send-via {
 
   .label.address-label {
     h2 {
-      color: rgba(0,0,0,0.7) !important;
+      color: rgba(0, 0, 0, 0.7) !important;
       font-size: 16px !important;
       &.address {
         font-size: 12px !important;
       }
     }
   }
-
 
 }

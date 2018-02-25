@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
 import { App, NavController, Platform } from 'ionic-angular';
-
 import * as _ from 'lodash';
-import { AppService } from '@merit/mobile/app/core/app-settings.service';
-
-import { Logger } from '@merit/mobile/app/core/logger';
-import { PlatformService } from '@merit/mobile/app/core/platform.service';
-// Services
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { ProfileService } from '@merit/common/providers/profile';
+import { ConfigService } from '@merit/common/providers/config';
+import { PlatformService } from '@merit/common/providers/platform';
+import { LoggerService } from '@merit/common/providers/logger';
+import { AppSettingsService } from '@merit/common/providers/app-settings';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @Injectable()
 export class PollingNotificationsService {
@@ -21,8 +18,8 @@ export class PollingNotificationsService {
   constructor(public profileService: ProfileService,
               public platformService: PlatformService,
               public configService: ConfigService,
-              public logger: Logger,
-              public appService: AppService,
+              public logger: LoggerService,
+              public appService: AppSettingsService,
               private app: App,
               private platform: Platform) {
     this.logger.info('Hello PollingNotification Service');
@@ -63,7 +60,7 @@ export class PollingNotificationsService {
       _.forEach(wallets, (walletClient: MeritWalletClient) => {
         this.disablePolling(walletClient);
       });
-    })
+    });
   }
 
 

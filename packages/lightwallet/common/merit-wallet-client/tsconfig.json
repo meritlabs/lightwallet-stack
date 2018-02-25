@@ -17,7 +17,7 @@
       "outDir": "./dist",
       "target": "es2017",
       "paths": {
-        "merit/*": ["../../app/*"]
+        "**": ["../../mobile/node_modules/*"]
       }
     },
     "include": [

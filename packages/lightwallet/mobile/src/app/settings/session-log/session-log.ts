@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Logger } from '@merit/mobile/app/core/logger';
-
 import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-
+import { LoggerService } from '@merit/common/providers/logger';
 
 @IonicPage()
 @Component({
@@ -19,8 +17,9 @@ export class SessionLogView {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              private logger: Logger,
-              private toastCtrl: MeritToastController) {}
+              private logger: LoggerService,
+              private toastCtrl: MeritToastController) {
+  }
 
   ionViewDidLoad() {
     this.filterLogs();

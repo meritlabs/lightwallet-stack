@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AndroidFingerprintAuth } from '@ionic-native/android-fingerprint-auth';
-
-
 import { TouchID } from '@ionic-native/touch-id';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { PlatformService } from '@merit/mobile/app/core/platform.service';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { PlatformService } from '@merit/common/providers/platform';
+import { ConfigService } from '@merit/common/providers/config';
+import { LoggerService } from '@merit/common/providers/logger';
 
 @Injectable()
 export class TouchIdService {
@@ -16,7 +14,7 @@ export class TouchIdService {
               private androidFingerprintAuth: AndroidFingerprintAuth,
               private platform: PlatformService,
               private config: ConfigService,
-              private log: Logger) {
+              private log: LoggerService) {
   }
 
   init() {
@@ -40,7 +38,7 @@ export class TouchIdService {
     if (isAvailable) {
       this._isAvailable = isAvailable;
     } else {
-      this.log.info('Fingerprint is not available')
+      this.log.info('Fingerprint is not available');
     }
   }
 
@@ -87,10 +85,10 @@ export class TouchIdService {
 
     try {
       if (this.platform.isIOS) {
-        await this.verifyIOSFingerprint()
+        await this.verifyIOSFingerprint();
       }
       if (this.platform.isAndroid) {
-        await this.verifyAndroidFingerprint()
+        await this.verifyAndroidFingerprint();
       }
     } catch (err) {
       throw new Error('Fingerprint not verified');

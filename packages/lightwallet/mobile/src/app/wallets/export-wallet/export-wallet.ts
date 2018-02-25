@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 import { File } from '@ionic-native/file';
 import * as FileSaver from 'file-saver';
 import { AlertController, IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
-import { AppService } from '@merit/mobile/app/core/app-settings.service';
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
 import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { WalletService } from '@merit/common/providers/wallet';
+import { PersistenceService } from '@merit/common/providers/persistence';
+import { AppSettingsService } from '@merit/common/providers/app-settings';
+import { MWCService } from '@merit/common/providers/mwc';
+import { LoggerService } from '@merit/common/providers/logger';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @IonicPage()
 @Component({
@@ -34,12 +34,12 @@ export class ExportWalletView {
               private walletsService: WalletService,
               private alertController: AlertController,
               private persistenceService: PersistenceService,
-              private appService: AppService,
-              private bwcService: BwcService,
+              private appService: AppSettingsService,
+              private bwcService: MWCService,
               private toastCtrl: MeritToastController,
               private file: File,
               private platform: Platform,
-              private logger: Logger) {
+              private logger: LoggerService) {
     this.wallet = this.navParams.get('wallet');
     if (this.wallet) {
       this.mnemonic = this.wallet.getMnemonic();
@@ -71,22 +71,22 @@ export class ExportWalletView {
           buttons: [
             {
               text: 'Cancel', role: 'cancel', handler: () => {
-                this.navCtrl.pop();
-              }
+              this.navCtrl.pop();
+            }
             },
             {
               text: 'Ok', handler: (data) => {
-                if (!data.password) {
-                  showPrompt(true);
-                } else {
-                  this.walletsService.decrypt(this.wallet, data.password).then(() => {
-                    setQrInfo(data.password);
-                    this.accessGranted = true;
-                  }).catch((err) => {
-                    showPrompt()
-                  })
-                }
+              if (!data.password) {
+                showPrompt(true);
+              } else {
+                this.walletsService.decrypt(this.wallet, data.password).then(() => {
+                  setQrInfo(data.password);
+                  this.accessGranted = true;
+                }).catch((err) => {
+                  showPrompt();
+                });
               }
+            }
             }
           ]
         }).present();
@@ -102,7 +102,7 @@ export class ExportWalletView {
     return (
       this.formData.password
       && this.formData.password == this.formData.repeatPassword
-    )
+    );
   }
 
   async download() {
@@ -116,10 +116,13 @@ export class ExportWalletView {
     const defaultFileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
     const blob = new Blob([encryptedData], { type: 'text/plain;charset=utf-8' });
 
-    const done = (fileName: string = defaultFileName) => this.toastCtrl.create({ message: `Wallet exported to ${fileName}`, cssClass: ToastConfig.CLASS_MESSAGE }).present();
+    const done = (fileName: string = defaultFileName) => this.toastCtrl.create({
+      message: `Wallet exported to ${fileName}`,
+      cssClass: ToastConfig.CLASS_MESSAGE
+    }).present();
 
     if (this.platform.is('cordova')) {
-      const root = this.platform.is('ios')? this.file.documentsDirectory : this.file.externalRootDirectory;
+      const root = this.platform.is('ios') ? this.file.documentsDirectory : this.file.externalRootDirectory;
       return this.alertController.create({
         title: 'Set file name',
         message: 'Enter a name for the file to export your wallet',

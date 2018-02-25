@@ -1,37 +1,30 @@
 import { Injectable } from '@angular/core';
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { RateService } from '@merit/mobile/app/transact/rate.service';
-import { MeritWalletClient } from "merit/../lib/merit-wallet-client/index";
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { RateService } from '@merit/common/providers/rate';
+import { MWCService } from '@merit/common/providers/mwc';
+import { ConfigService } from '@merit/common/providers/config';
+import { PersistenceService } from '@merit/common/providers/persistence';
+import { LoggerService } from '@merit/common/providers/logger';
+import { isAlias } from '@merit/common/utils/addresses';
 import { ISendMethod } from '@merit/mobile/app/transact/send/send-method.model';
-import { isAlias } from '../../../utils/addresses';
 
-/*
- Service to help manage sending merit to others.
- */
 @Injectable()
 export class SendService {
   private bitcore: any;
-
   private readonly ADDRESS_LENGTH = 34;
+  private client: MeritWalletClient;
 
-  private client:MeritWalletClient;
-
-  constructor(
-    private bwcService: BwcService,
-    private rate: RateService,
-    private config: ConfigService,
-    private persistenceService: PersistenceService,
-    private logger: Logger
-  ) {
+  constructor(private mwcService: MWCService,
+              private rate: RateService,
+              private config: ConfigService,
+              private persistenceService: PersistenceService,
+              private logger: LoggerService) {
     this.logger.info('Hello SendService');
-    this.bitcore = this.bwcService.getBitcore();
-    this.client = this.bwcService.getClient(null, {});
+    this.bitcore = this.mwcService.getBitcore();
+    this.client = this.mwcService.getClient(null, {});
   }
 
-  public isAddress(addr: string): boolean {
+  isAddress(addr: string): boolean {
     try {
       this.bitcore.Address.fromString(addr);
       return true;
@@ -40,11 +33,11 @@ export class SendService {
     }
   }
 
-  public couldBeAlias(alias: string): boolean {
+  couldBeAlias(alias: string): boolean {
     return this.bitcore.Referral.validateAlias(alias);
   }
 
-  public getAddressInfo(addr: string) {
+  getAddressInfo(addr: string) {
     if (isAlias(addr)) addr = addr.slice(1);
     return this.client.validateAddress(addr);
   }
@@ -54,7 +47,7 @@ export class SendService {
     return info.isValid && info.isBeaconed && info.isConfirmed ? info : null;
   }
 
-  public async isAddressValid(addr: string): Promise<boolean> {
+  async isAddressValid(addr: string): Promise<boolean> {
     if (!this.isAddress(addr)) {
       return false;
     }
@@ -64,7 +57,7 @@ export class SendService {
     return info.isValid && info.isBeaconed && info.isConfirmed;
   }
 
-  public async isAddressBeaconed(addr: string): Promise<boolean> {
+  async isAddressBeaconed(addr: string): Promise<boolean> {
     if (!this.isAddress(addr)) {
       return false;
     }
@@ -75,7 +68,7 @@ export class SendService {
 
   }
 
-  public async getValidAddress(input: string): Promise<string> {
+  async getValidAddress(input: string): Promise<string> {
     if (!(this.isAddress(input) || this.couldBeAlias(input))) {
       return null;
     }
@@ -89,17 +82,16 @@ export class SendService {
     return null;
   }
 
-  public getAddressNetwork(addr) {
+  getAddressNetwork(addr) {
     return this.bitcore.Address.fromString(addr).network;
   }
 
-  public async registerSend(method: ISendMethod) {
+  async registerSend(method: ISendMethod) {
     return this.persistenceService.registerSend(method);
   }
 
-  public async getSendHistory() {
+  async getSendHistory() {
     let history = await this.persistenceService.getSendHistory();
     return history || [];
   }
-
 }

@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { AlertController, App, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
 import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
-
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { ProfileService } from '@merit/common/providers/profile';
+import { ConfigService } from '@merit/common/providers/config';
+import { LoggerService } from '@merit/common/providers/logger';
+import { WalletService } from '@merit/common/providers/wallet';
 
 @IonicPage()
 @Component({
@@ -15,8 +14,7 @@ import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
   templateUrl: 'edit-wallet.html',
 })
 export class EditWalletView {
-
-  public wallet: MeritWalletClient;
+  wallet: MeritWalletClient;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -27,7 +25,7 @@ export class EditWalletView {
               private toastCtrl: MeritToastController,
               private configService: ConfigService,
               private walletService: WalletService,
-              private logger: Logger) {
+              private logger: LoggerService) {
     this.wallet = this.navParams.get('wallet');
     this.logger.info(this.wallet);
   }
@@ -91,13 +89,11 @@ export class EditWalletView {
               this.toastCtrl.create({
                 message: JSON.stringify(err),
                 cssClass: ToastConfig.CLASS_ERROR
-              })
+              });
             });
           }
         }
       ]
     }).present();
   }
-
-
 }

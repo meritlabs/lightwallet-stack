@@ -10,4 +10,5 @@ import { SelectInviteWalletModal } from './select-invite-wallet';
     IonicPageModule.forChild(SelectInviteWalletModal),
   ],
 })
-export class SelectInviteModule {}
+export class SelectInviteModule {
+}

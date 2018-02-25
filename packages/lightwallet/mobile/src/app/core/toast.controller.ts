@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-
 import { Toast, ToastController, ToastOptions } from 'ionic-angular';
 import { ToastConfig } from './toast.config';
 
@@ -10,7 +9,6 @@ export class MeritToastController {
   }
 
   create(opts?: ToastOptions): Toast {
-
     if (!opts) opts = {};
     if (!opts.position) opts.position = ToastConfig.POSITION;
     if (!opts.duration) opts.duration = ToastConfig.DURATION;
@@ -20,7 +18,6 @@ export class MeritToastController {
   }
 
   createSticky(opts?: ToastOptions): Toast {
-
     if (!opts) opts = {};
     if (!opts.position) opts.position = ToastConfig.POSITION;
     if (!opts.cssClass) opts.cssClass = ToastConfig.CLASS_MESSAGE;

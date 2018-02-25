@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ContactsProvider as OriginalContactsProvider } from '@merit/common/providers/contacts';
+import { ContactsService as OriginalContactsProvider } from '@merit/common/providers/contacts';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { Contacts } from '@ionic-native/contacts';
-import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
+import { PersistenceService } from '@merit/common/providers/persistence';
 
 const DESIRED_FIELDS = [
   'displayName',
@@ -13,7 +13,7 @@ const DESIRED_FIELDS = [
 ];
 
 @Injectable()
-export class ContactsProvider extends OriginalContactsProvider {
+export class ContactsService extends OriginalContactsProvider {
 
   private devicePermissionGranted: boolean;
   private devicePermissionStatus: string;

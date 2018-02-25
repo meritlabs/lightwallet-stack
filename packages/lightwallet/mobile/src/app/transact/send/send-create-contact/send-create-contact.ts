@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { IMeritAddress, MeritContact } from '../../../../models/merit-contact';
-import { ContactsProvider } from '../../../../providers/contacts/contacts';
-
 import { ENV } from '@app/env';
-import { cleanAddress, isAlias } from '../../../../utils/addresses';
+import { IMeritAddress, MeritContact } from '@merit/common/models/merit-contact';
+import { SendService } from '@merit/mobile/app/transact/send/send.service';
+import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { ContactsService } from '@merit/mobile/providers/contacts';
 
 @IonicPage()
 @Component({
@@ -16,18 +15,17 @@ import { cleanAddress, isAlias } from '../../../../utils/addresses';
 })
 export class SendCreateContactView {
 
-  public contact: MeritContact;
-  public amount: number;
-  public newAddress: string;
+  contact: MeritContact;
+  amount: number;
+  newAddress: string;
 
-  constructor(private navParams: NavParams,
-              private contactsService: ContactsProvider,
+  constructor(navParams: NavParams,
+              private contactsService: ContactsService,
               private sendService: SendService,
               private toastController: MeritToastController,
               private viewCtrl: ViewController) {
-    let address = this.navParams.get('address');
     this.contact = new MeritContact();
-    this.contact.meritAddresses.push(address);
+    this.contact.meritAddresses.push(navParams.get('address'));
   }
 
   save() {

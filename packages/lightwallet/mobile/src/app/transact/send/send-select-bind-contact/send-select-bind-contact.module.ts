@@ -12,4 +12,5 @@ import { ComponentsModule } from '../../../../components/components.module';
     ComponentsModule
   ],
 })
-export class SendSelectBindContactModule {}
+export class SendSelectBindContactModule {
+}

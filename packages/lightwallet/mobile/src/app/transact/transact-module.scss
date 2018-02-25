@@ -3,21 +3,20 @@ view-receive,
 view-select-sending-option,
 view-select-wallet,
 view-vaults,
-//view-wallets,
+  //view-wallets,
 
 vault-spend-confirm-view,
 send-confirm-view,
-send-amount-view
-{
+send-amount-view {
 
   .wallet-icon {
-      height: 36px;
-      border-radius: 4px;
-      padding: 4px 8px;
-      [class^="merit-icon"] {
-        height: 20px;
-        background: white;
-      }
+    height: 36px;
+    border-radius: 4px;
+    padding: 4px 8px;
+    [class^="merit-icon"] {
+      height: 20px;
+      background: white;
+    }
     &.default {
       background: $wallet-default-color;
     }
@@ -29,7 +28,6 @@ send-amount-view
   .error {
     color: color($colors, 'danger');
   }
-
 
   ion-card ion-icon {
     font-size: 50px !important;

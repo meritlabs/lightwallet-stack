@@ -42,7 +42,8 @@ export class SettingsAboutView {
         {
           text: 'Cancel',
           role: 'cancel',
-          handler: () => {}
+          handler: () => {
+          }
         },
         {
           text: 'Open GitHub',

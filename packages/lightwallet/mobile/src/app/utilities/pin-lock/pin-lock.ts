@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ViewController } from 'ionic-angular';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { ConfigService } from '@merit/common/providers/config';
+import { LoggerService } from '@merit/common/providers/logger';
 
 @Component({
   selector: 'page-pin-lock',
@@ -9,21 +9,21 @@ import { ConfigService } from '@merit/mobile/app/shared/config.service';
 })
 export class PinLockView {
 
-  public currentAttempts: number = 0;
-  public currentPin: string = '';
-  public firstPinEntered: string = '';
-  public confirmingPin: boolean = false;
-  public action: string = '';
-  public appName: string = 'merit';
-  public disableButtons: boolean = false;
-  public expires: string = '';
+  currentAttempts: number = 0;
+  currentPin: string = '';
+  firstPinEntered: string = '';
+  confirmingPin: boolean = false;
+  action: string = '';
+  appName: string = 'merit';
+  disableButtons: boolean = false;
+  expires: string = '';
   private ATTEMPT_LIMIT: number = 3;
   private ATTEMPT_LOCK_OUT_TIME: number = 5 * 60;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private config: ConfigService,
-              private logger: Logger,
+              private logger: LoggerService,
               private viewCtrl: ViewController) {
 
     switch (this.navParams.get('action')) {
@@ -34,7 +34,7 @@ export class PinLockView {
         this.action = 'pinSetUp';
         break;
       case 'removeLock':
-        this.action = 'removeLock'
+        this.action = 'removeLock';
     }
 
     if (this.action === 'checkPin' || this.action === 'removeLock') {

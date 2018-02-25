@@ -3,27 +3,26 @@ import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicPage } from 'ionic-angular';
 import * as _ from 'lodash';
-import { Errors } from '@merit/mobile/lib/merit-wallet-client/lib/errors';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { PlatformService } from '@merit/mobile/app/core/platform.service';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
 import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { FiatAmount } from '@merit/mobile/app/shared/fiat-amount.model';
-import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
-import { createDisplayWallet, IDisplayWallet } from '../../../models/display-wallet';
-import { UnlockRequestService } from '@merit/mobile/app/core/unlock-request.service';
 import { SendService } from '@merit/mobile/app/transact/send/send.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { createDisplayWallet, IDisplayWallet } from '@merit/common/models/display-wallet';
+import { ProfileService } from '@merit/common/providers/profile';
+import { WalletService } from '@merit/common/providers/wallet';
+import { TxFormatService } from '@merit/common/providers/tx-format';
+import { LoggerService } from '@merit/common/providers/logger';
+import { PlatformService } from '@merit/common/providers/platform';
+import { UnlockRequestService } from '@merit/common/providers/unlock-request';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { FiatAmount } from '@merit/common/models/fiat-amount';
+import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 
 @IonicPage()
 @Component({
   selector: 'view-network',
   templateUrl: 'network.html',
 })
-
 export class NetworkView {
   static readonly RETRY_MAX_ATTEMPTS = 5;
   static readonly RETRY_TIMEOUT = 1000;
@@ -43,7 +42,7 @@ export class NetworkView {
               private socialSharing: SocialSharing,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private logger: Logger,
+              private logger: LoggerService,
               private platformService: PlatformService,
               private unlockRequestService: UnlockRequestService,
               private sendService: SendService
@@ -156,7 +155,7 @@ export class NetworkView {
         err
           .zip(Observable.range(1, NetworkView.RETRY_MAX_ATTEMPTS))
           .mergeMap(([err, attempt]) => {
-            if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
+            if (err.code == MWCErrors.CONNECTION_ERROR.code || err.code == MWCErrors.SERVER_UNAVAILABLE.code) {
               if (attempt < NetworkView.RETRY_MAX_ATTEMPTS) {
                 return Observable.timer(NetworkView.RETRY_TIMEOUT);
               }
