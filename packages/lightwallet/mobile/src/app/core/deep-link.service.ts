@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
+import { LoggerService } from '@merit/common/providers/logger';
 
 declare const Branch: any;
 
 @Injectable()
 export class DeepLinkService {
-  constructor(private persistenceService: PersistenceService,
-              private logger: Logger,
+  constructor(private logger: LoggerService,
               private platform: Platform) {
     this.logger.info('Hello Deep Link Service');
   }

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Events } from 'ionic-angular';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { Events } from 'ionic-angular/util/events';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
 
@@ -11,9 +10,9 @@ export enum MWCErrors {
 
 @Injectable()
 export class MWCService {
+  private MWC: MeritWalletClient = this.getClient(null);
   buildTx: Function = this.MWC.buildTx;
   parseSecret: Function = this.MWC.parseSecret;
-  private MWC: MeritWalletClient = this.getClient(null);
 
   constructor(private events: Events) {
   }

@@ -1,4 +1,5 @@
-import { ModuleWithProviders, NgModule } from '@angular/core@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
+import { AppSettingsService } from '@merit/common/providers/app-settings';
 import { ConfigService } from '@merit/common/providers/config';
 import { ContactsService } from '@merit/common/providers/contacts';
 import { EasyReceiveService } from '@merit/common/providers/easy-receive';
@@ -17,8 +18,9 @@ import { WalletService } from '@merit/common/providers/wallet';
 export class CommonProvidersModule {
   static forRoot(): ModuleWithProviders {
     return {
-      module: CommonProvidersModule,
+      ngModule: CommonProvidersModule,
       providers: [
+        AppSettingsService,
         ConfigService,
         ContactsService,
         EasyReceiveService,

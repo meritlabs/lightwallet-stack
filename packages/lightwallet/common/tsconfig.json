@@ -17,7 +17,9 @@
     "paths": {
       "@merit/common/*": ["./*"],
       "@app/env": ["../mobile/src/environments/environment"],
-      "@angular/*": ["../mobile/node_modules/@angular/*"]
+      "@angular/*": ["../mobile/node_modules/@angular/*"],
+      "@ngx-translate/*": ["../mobile/node_modules/@ngx-translate/*"],
+      "ionic-angular/*": ["../mobile/node_modules/ionic-angular/*"]
     },
     "typeRoots": [
       "node_modules/@types"
