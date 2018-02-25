@@ -5,7 +5,6 @@
 @include mat-core();
 
 @import '~variables.scss';
-
 $merit-primary: (
   50: lighten($merit-secondary-color, 50),
   100: lighten($merit-secondary-color, 40),
