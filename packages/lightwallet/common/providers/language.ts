@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-
 import * as _ from 'lodash';
-import { Logger } from '@merit/mobile/app/core/logger';
-
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
+import { LoggerService } from '@merit/common/providers/logger';
+import { ConfigService } from '@merit/common/providers/config';
 
 // Language Service!
 // Uses POs
@@ -47,7 +45,7 @@ export class LanguageService {
   ];
   private current: string;
 
-  constructor(private logger: Logger,
+  constructor(private logger: LoggerService,
               private translate: TranslateService,
               private config: ConfigService) {
     this.logger.info('LanguageService initialized.');
@@ -62,7 +60,7 @@ export class LanguageService {
     else {
       // Get from browser
       let browserLang = this.translate.getBrowserLang();
-      let validBrowserLang = this.getName(browserLang) ? true : false;
+      let validBrowserLang = Boolean(this.getName(browserLang));
       if (validBrowserLang) this.current = browserLang;
       else this.current = this.getDefault();
     }

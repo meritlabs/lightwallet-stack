@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LanguageService } from '@merit/mobile/app/core/language.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { TouchIdService } from '@merit/mobile/app/shared/touch-id/touch-id.service';
+import { LoggerService } from '@merit/common/providers/logger';
+import { ConfigService } from '@merit/common/providers/config';
+import { LanguageService } from '../../mobile/src/app/core/language.service';
 
 // TODO: Improve implementation
 export interface AppSettings {
@@ -40,15 +39,14 @@ export interface AppSettings {
 }
 
 @Injectable()
-export class AppService {
+export class AppSettingsService {
   public info: AppSettings;
   private jsonPath: string = 'assets/appConfig.json';
 
   constructor(public http: HttpClient,
-              private logger: Logger,
+              private logger: LoggerService,
               private language: LanguageService,
-              private config: ConfigService,
-              private touchid: TouchIdService) {
+              private config: ConfigService) {
     this.logger.info('AppService initialized.');
   }
 
@@ -71,7 +69,6 @@ export class AppService {
       throw new Error(e);
     }
   }
-
 
   private loadInfo(): Promise<AppSettings> {
     return this.http.get<AppSettings>(this.jsonPath).toPromise();
