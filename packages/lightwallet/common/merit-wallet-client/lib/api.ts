@@ -17,7 +17,7 @@ import * as request from 'superagent';
 const $ = preconditions.singleton();
 const { Constants, Utils } = Common;
 
-const Package = require('../../../../package.json');
+const Package = require('../../../package.json');
 
 const DEFAULT_FEE = 10000;
 

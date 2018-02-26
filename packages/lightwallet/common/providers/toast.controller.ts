@@ -1,10 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Toast, ToastController, ToastOptions } from 'ionic-angular';
-import { ToastConfig } from './toast.config';
+import { ToastController } from 'ionic-angular/components/toast/toast-controller';
+import { ToastOptions } from 'ionic-angular/components/toast/toast-options';
+import { Toast } from 'ionic-angular/components/toast/toast';
+
+export class ToastConfig {
+  static DURATION = 3000;
+  static POSITION = 'top';
+  static CLASS_ERROR = 'toast-error';
+  static CLASS_MESSAGE = 'toast-message';
+  static CLASS_SUCCESS = 'toast-success';
+}
 
 @Injectable()
 export class MeritToastController {
-
   constructor(private toastCtrl: ToastController) {
   }
 
@@ -25,5 +33,4 @@ export class MeritToastController {
 
     return this.toastCtrl.create(opts);
   }
-
 }
