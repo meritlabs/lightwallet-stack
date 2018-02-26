@@ -1,20 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Events } from 'ionic-angular/util/events';
 import * as _ from 'lodash';
-import { AppService } from '@merit/mobile/app/core/app-settings.service';
-import { LanguageService } from '@merit/mobile/app/core/language.service';
-import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
-import { PlatformService } from '@merit/mobile/app/core/platform.service';
-import { Profile } from '@merit/mobile/app/core/profile.model';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
 import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { Profile } from '@merit/common/models/profile';
+import { LoggerService } from '@merit/common/providers/logger';
+import { PersistenceService } from '@merit/common/providers/persistence';
+import { ConfigService } from '@merit/common/providers/config';
+import { MWCService } from '@merit/common/providers/mwc';
+import { PlatformService } from '@merit/common/providers/platform';
+import { AppSettingsService } from '@merit/common/providers/app-settings';
+import { LanguageService } from '@merit/common/providers/language';
+import { MeritToastController } from '../../mobile/src/app/core/toast.controller';
+import { TxFormatService } from '@merit/common/providers/tx-format';
 
 /*
   Historically, this acted as the API-Client
@@ -35,12 +37,12 @@ export class ProfileService {
     this.propogateBwsEvent(n, wallet);
   }, 10000);
 
-  constructor(private logger: Logger,
+  constructor(private logger: LoggerService,
               private persistenceService: PersistenceService,
               private configService: ConfigService,
               private bwcService: MWCService,
               private platformService: PlatformService,
-              private appService: AppService,
+              private appService: AppSettingsService,
               private languageService: LanguageService,
               private txFormatService: TxFormatService,
               private toastCtrl: MeritToastController,

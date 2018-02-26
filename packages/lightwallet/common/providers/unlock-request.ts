@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
-import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { MeritContact } from '../../models/merit-contact';
-import { ContactsProvider } from '../../providers/contacts/contacts';
-import { IDisplayWallet } from '../../models/display-wallet';
+import { ProfileService } from '@merit/common/providers/profile';
+import { PersistenceService } from '@merit/common/providers/persistence';
+import { WalletService } from '@merit/common/providers/wallet';
+import { ContactsService } from '@merit/common/providers/contacts';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { IDisplayWallet } from '@merit/common/models/display-wallet';
 
 export interface IUnlockRequest {
   address: string;
@@ -12,7 +12,7 @@ export interface IUnlockRequest {
   isConfirmed: boolean;
   referralId: string;
   wallet: IDisplayWallet;
-  contact: MeritContact
+  contact: MeritContact;
 }
 
 @Injectable()
@@ -27,7 +27,7 @@ export class UnlockRequestService {
   constructor(private profileService: ProfileService,
               private persistenseService: PersistenceService,
               private walletService: WalletService,
-              private contactsService: ContactsProvider) {
+              private contactsService: ContactsService) {
   }
 
   //todo subscribe to new block event, then update info

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { FiatAmount } from '@merit/mobile/app/shared/fiat-amount.model';
-import { RateService } from '@merit/mobile/app/transact/rate.service';
 import 'rxjs/add/operator/map';
+import { MWCService } from '@merit/common/providers/mwc';
+import { RateService } from '@merit/common/providers/rate';
+import { ConfigService } from '@merit/common/providers/config';
+import { LoggerService } from '@merit/common/providers/logger';
+import { FiatAmount } from '@merit/common/models/fiat-amount';
 
 @Injectable()
 export class TxFormatService {
@@ -13,10 +13,10 @@ export class TxFormatService {
   // TODO: implement configService
   pendingTxProposalsCountForUs: number;
 
-  constructor(private bwc: BwcService,
+  constructor(private mwcService: MWCService,
               private rate: RateService,
               private config: ConfigService,
-              private logger: Logger) {
+              private logger: LoggerService) {
     this.logger.info('Hello TxFormatService Service');
   }
 
@@ -29,7 +29,7 @@ export class TxFormatService {
     let opts = {
       fullPrecision: !!fullPrecision
     };
-    return this.bwc.getUtils().formatAmount(micros, settings.unitCode, opts);
+    return this.mwcService.getUtils().formatAmount(micros, settings.unitCode, opts);
   }
 
   // Todo: Improve
@@ -51,7 +51,7 @@ export class TxFormatService {
     });
   }
 
-  formatToUSD(micros: number): Promise<string> {
+  formatToUSD(micros: number): string {
     if (isNaN(micros)) return;
     let v1 = this.rate.fromMicrosToFiat(micros, 'USD');
     if (!v1) return null;

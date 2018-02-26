@@ -17,20 +17,18 @@
     "paths": {
       "@merit/mobile/*": ["./src/*"],
       "@merit/common/*": ["../common/*"],
-      "@app/env": [
-        "src/environments/environment"
-      ]
+      "@app/env": ["src/environments/environment"]
     },
     "typeRoots": [
       "node_modules/@types"
     ]
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "../common/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "src/lib"
+    "node_modules"
   ],
   "compileOnSave": false,
   "atom": {

@@ -1,23 +1,21 @@
 import { Injectable } from '@angular/core';
-import { BwcError } from '@merit/mobile/app/core/bwc-error.model';
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
 import { ENV } from '@app/env';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { LoggerService } from '@merit/common/providers/logger';
+import { ProfileService } from '@merit/common/providers/profile';
+import { MWCService } from '@merit/common/providers/mwc';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @Injectable()
 export class MnemonicService {
 
-  constructor(private logger: Logger,
+  constructor(private logger: LoggerService,
               private profileService: ProfileService,
-              private bwcService: BwcService) {
+              private mwcService: MWCService) {
   }
 
   async importMnemonic(words: string, opts: any): Promise<MeritWalletClient> {
 
-    const walletClient = this.bwcService.getClient(null, opts);
+    const walletClient = this.mwcService.getClient(null, opts);
 
     this.logger.debug('Importing Wallet Mnemonic');
     words = this.normalizeMnemonic(words);
