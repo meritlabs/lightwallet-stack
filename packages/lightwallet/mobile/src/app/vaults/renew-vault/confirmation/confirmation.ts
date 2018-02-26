@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { MWCService } from '@merit/common/providers/mwc';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
 import { RenewVaultService } from '@merit/mobile/app/vaults/renew-vault/renew-vault.service';
-import { MeritWalletClient } from '../../../../lib/merit-wallet-client/index';
 
 @IonicPage({
   segment: 'vault/:vaultId/renew/confirmation',
@@ -23,10 +22,10 @@ export class VaultRenewConfirmationView {
   private walletClient: MeritWalletClient = null;
 
   constructor(private navCtrl: NavController,
-              public navParams: NavParams,
-              private bwc: BwcService,
+              private navParams: NavParams,
+              private bwc: MWCService,
               private toastCtrl: MeritToastController,
-              private renewVaultService: RenewVaultService,) {
+              private renewVaultService: RenewVaultService) {
     this.updatedVault = this.navParams.get('updatedVault');
     this.vault = this.navParams.get('vault');
     this.bitcore = this.bwc.getBitcore();

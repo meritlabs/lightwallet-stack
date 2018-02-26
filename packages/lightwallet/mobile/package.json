@@ -53,7 +53,8 @@
     "typescript": "2.4.2"
   },
   "config": {
-    "ionic_webpack": "webpack.config.js"
+    "ionic_webpack": "webpack.config.js",
+    "ionic_angular_dir": "../node_modules/ionic-angular"
   },
   "cordova": {
     "plugins": {

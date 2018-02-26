@@ -9,19 +9,18 @@ import {
 } from 'ionic-angular';
 import * as _ from 'lodash';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { ISendMethod, SendMethodType } from '@merit/mobile/app/transact/send/send-method.model';
 import { ConfigService } from '@merit/common/providers/config';
 import { RateService } from '@merit/common/providers/rate';
 import { FeeService } from '@merit/common/providers/fee';
 import { ProfileService } from '@merit/common/providers/profile';
 import { TxFormatService } from '@merit/common/providers/tx-format';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 import { EasySendService } from '@merit/common/providers/easy-send';
 import { WalletService } from '@merit/common/providers/wallet';
 import { LoggerService } from '@merit/common/providers/logger';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { getEasySendURL } from '@merit/common/models/easy-send';
+import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
 
 @IonicPage()
 @Component({

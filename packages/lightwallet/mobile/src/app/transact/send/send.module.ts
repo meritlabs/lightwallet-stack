@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { SendView } from '@merit/mobile/app/transact/send/send';
-import { SharedModule } from '@merit/mobile/app/shared/shared.module';
 import { ComponentsModule } from '../../../components/components.module';
 
 @NgModule({

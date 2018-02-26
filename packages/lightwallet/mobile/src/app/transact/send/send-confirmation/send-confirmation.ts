@@ -1,10 +1,8 @@
 import { AlertController, IonicPage, LoadingController, NavController, NavParams, Tabs } from 'ionic-angular';
 import { Component } from '@angular/core';
 import * as  _ from 'lodash';
-import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/mobile/app/transact/send/send-method.model';
 import { EasySend } from '@merit/common/models/easy-send';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 import { TouchIdService } from '@merit/mobile/providers/touch-id.service';
 import { EasySendService } from '@merit/common/providers/easy-send';
 import { WalletService } from '@merit/common/providers/wallet';
@@ -12,8 +10,9 @@ import { TxFormatService } from '@merit/common/providers/tx-format';
 import { RateService } from '@merit/common/providers/rate';
 import { ConfigService } from '@merit/common/providers/config';
 import { LoggerService } from '@merit/common/providers/logger';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { SendService } from '@merit/common/providers/send';
 
 @IonicPage()
 @Component({
@@ -60,9 +59,7 @@ export class SendConfirmationView {
               private formatService: TxFormatService,
               private rateService: RateService,
               private configService: ConfigService,
-              private logger: LoggerService,
-              private tabs: Tabs,
-              private sendService: SendService) {
+              private logger: LoggerService) {
     this.txData = navParams.get('txData');
     this.referralsToSign = navParams.get('referralsToSign');
   }

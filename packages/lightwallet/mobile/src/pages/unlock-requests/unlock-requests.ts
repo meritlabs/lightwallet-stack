@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { IDisplayWallet } from '@merit/mobile/models/display-wallet';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
-import { IUnlockRequest, UnlockRequestService } from '@merit/mobile/app/core/unlock-request.service';
+import { ToastConfig } from '@merit/common/providers/toast.controller';
+import { IDisplayWallet } from '@merit/common/models/display-wallet';
+import { IUnlockRequest, UnlockRequestService } from '@merit/common/providers/unlock-request';
 
 @IonicPage()
 @Component({
@@ -57,6 +57,6 @@ export class UnlockRequestsView {
   }
 
   toSendInvite() {
-    this.navCtrl.push('SendInviteView', {wallets: this.wallets});
+    this.navCtrl.push('SendInviteView', { wallets: this.wallets });
   }
 }

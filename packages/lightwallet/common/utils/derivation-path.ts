@@ -1,4 +1,4 @@
-export static class DerivationPath {
+export class DerivationPath {
   static getDefault() {
     return 'm/44\'/0\'/0\'';
   }

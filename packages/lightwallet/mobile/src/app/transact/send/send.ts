@@ -3,12 +3,12 @@ import { IonicPage, ModalController, NavController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/mobile/app/transact/send/send-method.model';
 import { ContactsService } from '@merit/mobile/providers/contacts';
 import { ProfileService } from '@merit/common/providers/profile';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
+import { SendService } from '@merit/common/providers/send';
 
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
@@ -21,12 +21,13 @@ const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
   templateUrl: 'send.html'
 })
 export class SendView {
-  public searchQuery: string = '';
-  public loadingContacts: boolean = false;
-  public contacts: Array<MeritContact> = [];
   private recentContacts: Array<MeritContact> = [];
-  public amount: number;
-  public searchResult: {
+  private suggestedMethod: ISendMethod;
+  searchQuery: string = '';
+  loadingContacts: boolean = false;
+  contacts: Array<MeritContact> = [];
+  amount: number;
+  searchResult: {
     withMerit: Array<MeritContact>,
     noMerit: Array<MeritContact>,
     recent: Array<MeritContact>,
@@ -34,10 +35,9 @@ export class SendView {
     error: string
   } = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
 
-  private suggestedMethod: ISendMethod;
 
-  public hasUnlockedWallets: boolean;
-  public hasActiveInvites: boolean;
+  hasUnlockedWallets: boolean;
+  hasActiveInvites: boolean;
 
   constructor(private navCtrl: NavController,
               private contactsService: ContactsService,

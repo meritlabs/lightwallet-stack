@@ -1,18 +1,16 @@
 import { Component, ViewChild } from '@angular/core';
-import { App, Content, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { Content, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 import { WalletService } from '@merit/common/providers/wallet';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 import { LoggerService } from '@merit/common/providers/logger';
 import { ConfigService } from '@merit/common/providers/config';
 import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
 import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { SendService } from '@merit/common/providers/send';
 
-// Unlock view for wallet
 @IonicPage({
   defaultHistory: ['OnboardingView']
 })
@@ -21,19 +19,18 @@ import { ToastConfig } from '@merit/mobile/app/core/toast.config';
   templateUrl: 'alias.html',
 })
 export class AliasView {
-  public unlockState: 'success' | 'fail' | 'aliasFail';
-  public formData = {
-      alias: '',
-      aliasValidationError: '',
-      aliasCheckInProgress: false
-    };
+  unlockState: 'success' | 'fail' | 'aliasFail';
+  formData = {
+    alias: '',
+    aliasValidationError: '',
+    aliasCheckInProgress: false
+  };
 
   @ViewChild(Content) content: Content;
 
-  private parentAddress:string;
+  private parentAddress: string;
 
-  constructor(private app: App,
-              private walletService: WalletService,
+  constructor(private walletService: WalletService,
               private toastCtrl: MeritToastController,
               private loaderCtrl: LoadingController,
               private navCtrl: NavController,
@@ -42,8 +39,7 @@ export class AliasView {
               private config: ConfigService,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
-              private sendService: SendService
-            ) {
+              private sendService: SendService) {
   }
 
   async ionViewDidLoad() {
@@ -56,12 +52,14 @@ export class AliasView {
     this.validateAliasDebounce();
   }
 
-  private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
+  private validateAliasDebounce = _.debounce(() => {
+    this.validateAlias();
+  }, 750);
 
   private async validateAlias() {
 
     this.formData.alias = cleanAddress(this.formData.alias);
-    const input = (this.formData.alias && isAlias(this.formData.alias))  ? this.formData.alias.slice(1) : this.formData.alias;
+    const input = (this.formData.alias && isAlias(this.formData.alias)) ? this.formData.alias.slice(1) : this.formData.alias;
 
     if (!input) {
       this.validateAliasDebounce.cancel();
@@ -130,5 +128,4 @@ export class AliasView {
 
     await loader.dismiss();
   }
-
 }

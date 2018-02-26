@@ -24,8 +24,6 @@ import { EmailNotificationsService } from '@merit/mobile/app/core/notification/e
 import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
 import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
 import { PopupService } from '@merit/mobile/app/core/popup.service';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
 import { RenewVaultService } from '@merit/mobile/app/vaults/renew-vault/renew-vault.service';
@@ -38,6 +36,8 @@ import { AppVersion } from '@ionic-native/app-version';
 import { TouchIdService } from '@merit/mobile/providers/touch-id.service';
 import { AppSettingsService } from '@merit/common/providers/app-settings';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
+import { MeritToastController } from '@merit/common/providers/toast.controller';
+import { SendService } from '@merit/common/providers/send';
 
 export function getProviders() {
   return [

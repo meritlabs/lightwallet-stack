@@ -3,15 +3,14 @@ import { App, IonicPage, Loading, LoadingController } from 'ionic-angular';
 import { startsWith } from 'lodash';
 import { ENV } from '@app/env';
 import { MWCService } from '@merit/common/providers/mwc';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 import { LoggerService } from '@merit/common/providers/logger';
 import { ProfileService } from '@merit/common/providers/profile';
 import { MnemonicService } from '@merit/common/providers/mnemonic';
+import { DerivationPath } from '@merit/common/utils/derivation-path';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
-import { DerivationPath } from '@merit/common/utils/derivation-path';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
@@ -21,7 +20,6 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
   templateUrl: 'import.html',
 })
 export class ImportView {
-
   @ViewChild('fileInput') input: ElementRef;
 
   segment = 'phrase';
@@ -202,5 +200,4 @@ export class ImportView {
       if (loader) loader.dismiss();
     }
   }
-
 }
