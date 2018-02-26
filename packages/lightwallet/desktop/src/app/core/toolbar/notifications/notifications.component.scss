@@ -1,0 +1,16 @@
+@import '~variables.scss';
+
+:host {
+  position: relative;
+
+  > span {
+    position: absolute;
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 500rem;
+    background-color: $merit-primary-color;
+    top: 0;
+    right: 7px;
+  }
+}

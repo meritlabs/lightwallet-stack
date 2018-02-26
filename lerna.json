@@ -1,7 +1,9 @@
 {
   "lerna": "2.1.2",
   "packages": [
-    "packages/*"
+    "packages/*",
+    "packages/lightwallet/desktop",
+    "packages/lightwallet/mobile"
   ],
   "version": "0.0.0"
 }
