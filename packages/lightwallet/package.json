@@ -90,6 +90,7 @@
   },
   "config": {
     "ionic_webpack": "mobile/webpack.config.js",
+    "ionic_watch": "mobile/watch.config.js",
     "ionic_root_dir": "mobile",
     "ionic_src_dir": "mobile/src",
     "ionic_www_dir": "mobile/www",
