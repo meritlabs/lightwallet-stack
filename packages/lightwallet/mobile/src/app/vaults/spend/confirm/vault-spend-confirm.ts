@@ -2,15 +2,15 @@ import { Component } from '@angular/core';
 import { IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
 import * as  _ from 'lodash';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { ConfigService } from '@merit/common/providers/config';
-import { ProfileService } from '@merit/common/providers/profile';
-import { LoggerService } from '@merit/common/providers/logger';
-import { FeeService } from '@merit/common/providers/fee';
-import { WalletService } from '@merit/common/providers/wallet';
-import { TxFormatService } from '@merit/common/providers/tx-format';
-import { PopupService } from '@merit/common/providers/popup';
-import { EasySendService } from '@merit/common/providers/easy-send';
-import { MWCService } from '@merit/common/providers/mwc';
+import { ConfigService } from '@merit/common/providers/config.service';
+import { ProfileService } from '@merit/common/providers/profile.service';
+import { LoggerService } from '@merit/common/providers/logger.service';
+import { FeeService } from '@merit/common/providers/fee.service';
+import { WalletService } from '@merit/common/providers/wallet.service';
+import { TxFormatService } from '@merit/common/providers/tx-format.service';
+import { PopupService } from '@merit/common/providers/popup.service';
+import { EasySendService } from '@merit/common/providers/easy-send.service';
+import { MWCService } from '@merit/common/providers/mwc.service';
 import { SpendVaultService } from '@merit/mobile/app/vaults/spend/vault-spend.service';
 
 @IonicPage({

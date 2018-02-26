@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { MWCService } from '@merit/common/providers/mwc';
-import { LoggerService } from '@merit/common/providers/logger';
-import { WalletService } from '@merit/common/providers/wallet';
-import { ProfileService } from '@merit/common/providers/profile';
+import { MWCService } from '@merit/common/providers/mwc.service';
+import { LoggerService } from '@merit/common/providers/logger.service';
+import { WalletService } from '@merit/common/providers/wallet.service';
+import { ProfileService } from '@merit/common/providers/profile.service';
 
 @Injectable()
 export class CreateVaultService {

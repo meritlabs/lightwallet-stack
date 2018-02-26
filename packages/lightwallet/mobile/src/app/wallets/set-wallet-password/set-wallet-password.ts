@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { WalletService } from '@merit/common/providers/wallet';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { WalletService } from '@merit/common/providers/wallet.service';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller.service';
 
 @IonicPage()
 @Component({

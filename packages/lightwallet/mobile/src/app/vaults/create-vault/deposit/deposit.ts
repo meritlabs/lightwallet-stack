@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
-import { ProfileService } from '@merit/common/providers/profile';
-import { WalletService } from '@merit/common/providers/wallet';
-import { MWCService } from '@merit/common/providers/mwc';
-import { LoggerService } from '@merit/common/providers/logger';
+import { ProfileService } from '@merit/common/providers/profile.service';
+import { WalletService } from '@merit/common/providers/wallet.service';
+import { MWCService } from '@merit/common/providers/mwc.service';
+import { LoggerService } from '@merit/common/providers/logger.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @IonicPage({

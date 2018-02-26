@@ -4,11 +4,11 @@ import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { ContactsService } from '@merit/mobile/providers/contacts';
-import { ProfileService } from '@merit/common/providers/profile';
+import { ProfileService } from '@merit/common/providers/profile.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
-import { SendService } from '@merit/common/providers/send';
+import { SendService } from '@merit/common/providers/send.service';
 
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;

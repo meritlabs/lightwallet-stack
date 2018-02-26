@@ -4,8 +4,8 @@ import { ENV } from '@app/env';
 import { IMeritAddress, MeritContact } from '@merit/common/models/merit-contact';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { ContactsService } from '@merit/mobile/providers/contacts';
-import { SendService } from '@merit/common/providers/send';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { SendService } from '@merit/common/providers/send.service';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller.service';
 
 @IonicPage()
 @Component({

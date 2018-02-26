@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { flatten, sortBy } from 'lodash';
-import { WalletService } from '@merit/common/providers/wallet';
-import { SendService } from '@merit/common/providers/send';
-import { ProfileService } from '@merit/common/providers/profile';
+import { WalletService } from '@merit/common/providers/wallet.service';
+import { SendService } from '@merit/common/providers/send.service';
+import { ProfileService } from '@merit/common/providers/profile.service';
 import { ContactsService } from '@merit/mobile/providers/contacts';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { createDisplayWallet, IDisplayWallet } from '@merit/common/models/display-wallet';

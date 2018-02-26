@@ -9,14 +9,14 @@ import {
 } from 'ionic-angular';
 import { ENV } from '@app/env';
 import * as _ from 'lodash';
-import { ConfigService } from '@merit/common/providers/config';
-import { WalletService } from '@merit/common/providers/wallet';
-import { LoggerService } from '@merit/common/providers/logger';
+import { ConfigService } from '@merit/common/providers/config.service';
+import { WalletService } from '@merit/common/providers/wallet.service';
+import { LoggerService } from '@merit/common/providers/logger.service';
 import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
 import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
-import { SendService } from '@merit/common/providers/send';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller.service';
+import { SendService } from '@merit/common/providers/send.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']

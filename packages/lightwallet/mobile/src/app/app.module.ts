@@ -34,10 +34,10 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 import { Keyboard } from '@ionic-native/keyboard';
 import { AppVersion } from '@ionic-native/app-version';
 import { TouchIdService } from '@merit/mobile/providers/touch-id.service';
-import { AppSettingsService } from '@merit/common/providers/app-settings';
+import { AppSettingsService } from '@merit/common/providers/app-settings.service';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
-import { MeritToastController } from '@merit/common/providers/toast.controller';
-import { SendService } from '@merit/common/providers/send';
+import { MeritToastController } from '@merit/common/providers/toast.controller.service';
+import { SendService } from '@merit/common/providers/send.service';
 
 export function getProviders() {
   return [

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Events } from 'ionic-angular/util/events';
 import * as _ from 'lodash';
-import { LoggerService } from '@merit/common/providers/logger';
-import { PersistenceService } from '@merit/common/providers/persistence';
+import { LoggerService } from '@merit/common/providers/logger.service';
+import { PersistenceService } from '@merit/common/providers/persistence.service';
 
 export interface AppConfig {
   limits: {

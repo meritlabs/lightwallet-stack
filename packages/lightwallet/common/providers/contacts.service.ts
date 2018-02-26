@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { Contact, IContactField } from '@ionic-native/contacts';
 import { IAddressBook, MeritContact } from '@merit/common/models/merit-contact';
-import { PersistenceService } from '@merit/common/providers/persistence';
+import { PersistenceService } from '@merit/common/providers/persistence.service';
 import { createMeritContact } from '@merit/common/utils/contacts';
 
 @Injectable()

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 import 'rxjs/add/operator/map';
-import { MWCService } from '@merit/common/providers/mwc';
-import { RateService } from '@merit/common/providers/rate';
-import { ConfigService } from '@merit/common/providers/config';
-import { LoggerService } from '@merit/common/providers/logger';
+import { MWCService } from '@merit/common/providers/mwc.service';
+import { RateService } from '@merit/common/providers/rate.service';
+import { ConfigService } from '@merit/common/providers/config.service';
+import { LoggerService } from '@merit/common/providers/logger.service';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 
 @Injectable()

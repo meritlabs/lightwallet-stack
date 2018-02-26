@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { AlertController, App, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { ProfileService } from '@merit/common/providers/profile';
-import { ConfigService } from '@merit/common/providers/config';
-import { LoggerService } from '@merit/common/providers/logger';
-import { WalletService } from '@merit/common/providers/wallet';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { ProfileService } from '@merit/common/providers/profile.service';
+import { ConfigService } from '@merit/common/providers/config.service';
+import { LoggerService } from '@merit/common/providers/logger.service';
+import { WalletService } from '@merit/common/providers/wallet.service';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller.service';
 
 @IonicPage()
 @Component({
