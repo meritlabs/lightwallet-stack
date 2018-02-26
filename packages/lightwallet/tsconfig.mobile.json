@@ -14,11 +14,6 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "target": "es5",
-    "paths": {
-      "@merit/mobile/*": ["mobile/src/*"],
-      "@merit/common/*": ["common/*"],
-      "@app/env": ["mobile/src/environments/environment"]
-    },
     "typeRoots": [
       "node_modules/@types"
     ]
