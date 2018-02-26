@@ -1,16 +1,15 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
-import { SendMethodDestination } from '@merit/mobile/app/transact/send/send-method.model';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import * as _ from 'lodash';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 import { ENV } from '@app/env';
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { ContactsService } from '@merit/mobile/providers/contacts';
 import { WalletService } from '@merit/common/providers/wallet';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { SendService } from '@merit/common/providers/send';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { SendMethodDestination } from '@merit/common/models/send-method';
 
 const ERROR_ADDRESS_NOT_FOUND = 'ADDRESS_NOT_FOUND';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -21,29 +20,28 @@ const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
   templateUrl: 'send-invite.html'
 })
 export class SendInviteView {
-  public searchQuery: string = '';
-  public loadingContacts: boolean = false;
-  public contacts: Array<MeritContact> = [];
-  public amount: number;
-  public availableInvites;
-  public searchResult: {
+  searchQuery: string = '';
+  loadingContacts: boolean = false;
+  contacts: Array<MeritContact> = [];
+  amount: number;
+  availableInvites;
+  searchResult: {
     withMerit: Array<MeritContact>,
-    toNewEntity:{destination:string, contact:MeritContact},
-    error:string
-  } = {withMerit: [], toNewEntity: null, error: null};
+    toNewEntity: { destination: string, contact: MeritContact },
+    error: string
+  } = { withMerit: [], toNewEntity: null, error: null };
 
-  private wallets:Array<any>;
+  private wallets: Array<any>;
 
-  constructor(
-      private navCtrl: NavController,
-      private navParams: NavParams,
-      private contactsService: ContactsService,
-      private sendService: SendService,
-      private modalCtrl: ModalController,
-      private addressScanner: AddressScannerService,
-      private walletService: WalletService,
-      private toastCtrl: MeritToastController
-  ) {  }
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private contactsService: ContactsService,
+              private sendService: SendService,
+              private modalCtrl: ModalController,
+              private addressScanner: AddressScannerService,
+              private walletService: WalletService,
+              private toastCtrl: MeritToastController) {
+  }
 
   async ionViewWillEnter() {
     this.wallets = this.navParams.get('wallets');
@@ -96,7 +94,7 @@ export class SendInviteView {
 
         if (isBeaconed) {
           result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ address: input, network: ENV.network});
+          result.toNewEntity.contact.meritAddresses.push({ address: input, network: ENV.network });
         } else {
           result.error = ERROR_ADDRESS_NOT_FOUND;
         }
@@ -106,7 +104,7 @@ export class SendInviteView {
 
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ alias, address: addressInfo.address, network: ENV.network});
+          result.toNewEntity.contact.meritAddresses.push({ alias, address: addressInfo.address, network: ENV.network });
         } else {
           result.error = ERROR_ALIAS_NOT_FOUND;
         }
@@ -159,7 +157,7 @@ export class SendInviteView {
     this.parseSearch();
   }
 
-  public async sendInvite(contact) {
+  async sendInvite(contact) {
 
     const toAddress = contact.meritAddresses[0].address;
 
@@ -186,6 +184,5 @@ export class SendInviteView {
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     }
-
   }
 }

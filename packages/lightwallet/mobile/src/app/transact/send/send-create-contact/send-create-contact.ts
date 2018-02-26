@@ -2,11 +2,10 @@ import { Component } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { ENV } from '@app/env';
 import { IMeritAddress, MeritContact } from '@merit/common/models/merit-contact';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { ContactsService } from '@merit/mobile/providers/contacts';
+import { SendService } from '@merit/common/providers/send';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
 
 @IonicPage()
 @Component({

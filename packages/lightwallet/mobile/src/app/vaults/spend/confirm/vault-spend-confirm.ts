@@ -1,18 +1,17 @@
 import { Component } from '@angular/core';
 import { IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
-
 import * as  _ from 'lodash';
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { PopupService } from '@merit/mobile/app/core/popup.service';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
-import { FeeService } from '@merit/mobile/app/shared/fee/fee.service';
-import { EasySendService } from '@merit/mobile/app/transact/send/easy-send/easy-send.service';
-import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { ConfigService } from '@merit/common/providers/config';
+import { ProfileService } from '@merit/common/providers/profile';
+import { LoggerService } from '@merit/common/providers/logger';
+import { FeeService } from '@merit/common/providers/fee';
+import { WalletService } from '@merit/common/providers/wallet';
+import { TxFormatService } from '@merit/common/providers/tx-format';
+import { PopupService } from '@merit/common/providers/popup';
+import { EasySendService } from '@merit/common/providers/easy-send';
+import { MWCService } from '@merit/common/providers/mwc';
 import { SpendVaultService } from '@merit/mobile/app/vaults/spend/vault-spend.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { ConfigService } from './../../../shared/config.service';
-import { MeritWalletClient } from 'src/lib/merit-wallet-client';
 
 @IonicPage({
   segment: 'vault/:vaultId/spend/confirm',
@@ -47,7 +46,7 @@ export class VaultSpendConfirmView {
               private navCtrl: NavController,
               private navParams: NavParams,
               private profileService: ProfileService,
-              private logger: Logger,
+              private logger: LoggerService,
               private feeService: FeeService,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
@@ -55,8 +54,8 @@ export class VaultSpendConfirmView {
               private modalCtrl: ModalController,
               private loadingCtrl: LoadingController,
               private easySendService: EasySendService,
-              private bwc: BwcService,
-              private spendVaultService: SpendVaultService,) {
+              private bwc: MWCService,
+              private spendVaultService: SpendVaultService) {
     this.logger.info('Hello SendConfirm View');
     this.walletConfig = this.configService.get().wallet;
     this.bitcore = this.bwc.getBitcore();
@@ -112,12 +111,9 @@ export class VaultSpendConfirmView {
     this.txData.amountStr = this.txFormatService.formatAmountStr(this.txData.toAmount);
     this.txData.amountValueStr = this.txData.amountStr.split(' ')[0];
     this.txData.amountUnitStr = this.txData.amountStr.split(' ')[1];
-    this.txFormatService.formatAlternativeStr(this.txData.toAmount).then((v) => {
-      this.txData.alternativeAmountStr = v;
-    });
-    this.txFormatService.formatAlternativeStr(this.wallet.getDefaultFee()).then((v) => {
-      this.dummyFeeReplaceMeWithActualFeeDontBeADummyUSD = v;
-    });
+
+    this.txData.alternativeAmountStr = this.txFormatService.formatAlternativeStr(this.txData.toAmount);
+    this.dummyFeeReplaceMeWithActualFeeDontBeADummyUSD = this.txFormatService.formatAlternativeStr(this.wallet.getDefaultFee());
   }
 
   private spend() {

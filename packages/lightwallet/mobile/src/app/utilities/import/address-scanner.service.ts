@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { ModalController } from 'ionic-angular';
-import { MERIT_MODAL_OPTS } from '../../../utils/constants';
 import { Diagnostic } from '@ionic-native/diagnostic';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 
 @Injectable()
 export class AddressScannerService {

@@ -1,15 +1,14 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
-import { FiatAmount } from '@merit/mobile/app/shared/fiat-amount.model';
-import { RateService } from '@merit/mobile/app/transact/rate.service';
-import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { ProfileService } from '@merit/common/providers/profile';
+import { WalletService } from '@merit/common/providers/wallet';
 import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { MWCService } from '@merit/common/providers/mwc';
+import { TxFormatService } from '@merit/common/providers/tx-format';
+import { RateService } from '@merit/common/providers/rate';
+import { FiatAmount } from '@merit/common/models/fiat-amount';
 
 @IonicPage({
   segment: 'vault/:vaultId',
@@ -30,13 +29,12 @@ export class VaultDetailsView {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              private logger: Logger,
               private profileService: ProfileService,
               private walletService: WalletService,
               private vaultsService: VaultsService,
-              private bwc: BwcService,
+              private bwc: MWCService,
               private txFormatService: TxFormatService,
-              private rateService: RateService,) {
+              private rateService: RateService) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
     // things fast and smooth.  We can refresh as needed.

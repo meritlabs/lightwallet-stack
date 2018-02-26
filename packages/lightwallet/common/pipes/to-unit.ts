@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
+import { ConfigService } from '@merit/common/providers/config';
+import { TxFormatService } from '@merit/common/providers/tx-format';
 
 @Pipe({ name: 'toUnit' })
 export class ToUnitPipe implements PipeTransform {
@@ -11,7 +11,7 @@ export class ToUnitPipe implements PipeTransform {
     this.unitCode = this.configProvider.get().wallet.settings.unitCode;
   }
 
-  transform(value: string, satoshis: number): any {
+  transform(value: string, satoshis: number): string {
     return this.txFormatProvider.formatAmountStr(satoshis);
   }
 }

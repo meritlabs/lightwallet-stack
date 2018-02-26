@@ -1,22 +1,16 @@
 import { Injectable } from '@angular/core';
-
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
 import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { MWCService } from '@merit/common/providers/mwc';
+import { ProfileService } from '@merit/common/providers/profile';
 
 @Injectable()
 export class RenewVaultService {
 
   private bitcore: any;
-  private walletClient: MeritWalletClient = null;
-  private vault: any;
+  private walletClient: MeritWalletClient;
 
-  constructor(private bwcService: BwcService,
-              private walletService: WalletService,
-              private logger: Logger,
+  constructor(private bwcService: MWCService,
               private profileService: ProfileService,
               private vaultsService: VaultsService,) {
     this.bitcore = bwcService.getBitcore();
@@ -30,7 +24,6 @@ export class RenewVaultService {
       return this.vaultsService.getVaultCoins(walletClient, vault);
     }).then((coins) => {
 
-      let address = this.bitcore.Address.fromObject(vault.address);
       let network = this.walletClient.credentials.network;
 
       let tx = this.walletClient.buildRenewVaultTx(coins, vault, masterKey, { network: network });
@@ -44,7 +37,6 @@ export class RenewVaultService {
     }).catch((err) => {
       throw err;
     });
-    ;
   }
 
 }

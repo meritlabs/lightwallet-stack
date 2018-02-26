@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { SharedModule } from '@merit/mobile/app/shared/shared.module';
 import { VaultSpendAmountView } from './vault-spend-amount';
 
 @NgModule({
@@ -8,8 +7,7 @@ import { VaultSpendAmountView } from './vault-spend-amount';
     VaultSpendAmountView,
   ],
   imports: [
-    IonicPageModule.forChild(VaultSpendAmountView),
-    SharedModule,
+    IonicPageModule.forChild(VaultSpendAmountView)
   ]
 })
 export class VaultSpendAmountModule {

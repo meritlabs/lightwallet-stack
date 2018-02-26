@@ -34,7 +34,7 @@ export class NotificationsView {
               private pushService: PushNotificationsService,
               private emailService: EmailNotificationsService) {
     this.emailForm = this.formBuilder.group({
-      email: ['', Validators.compose([Validators.required, new EmailValidator(configService, emailService).isValid])]
+      email: ['', Validators.compose([Validators.required, <any>(new EmailValidator(configService, emailService).isValid)])]
     });
   }
 

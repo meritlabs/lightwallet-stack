@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-
 import * as _ from 'lodash';
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { MeritWalletClient } from './../../../lib/merit-wallet-client';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { MWCService } from '@merit/common/providers/mwc';
+import { LoggerService } from '@merit/common/providers/logger';
+import { WalletService } from '@merit/common/providers/wallet';
+import { ProfileService } from '@merit/common/providers/profile';
 
 @Injectable()
 export class CreateVaultService {
@@ -23,11 +22,11 @@ export class CreateVaultService {
     selectedWallet: null
   };
 
-  constructor(private bwcService: BwcService,
+  constructor(private mwcService: MWCService,
               private walletService: WalletService,
-              private logger: Logger,
-              private profileService: ProfileService,) {
-    this.bitcore = this.bwcService.getBitcore();
+              private logger: LoggerService,
+              private profileService: ProfileService) {
+    this.bitcore = this.mwcService.getBitcore();
   }
 
   updateData(fields: any): void {

@@ -4,15 +4,14 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { Events, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import { ProfileService } from '@merit/common/providers/profile';
 import { WalletService } from '@merit/common/providers/wallet';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 import { LoggerService } from '@merit/common/providers/logger';
 import { RateService } from '@merit/common/providers/rate';
 import { ConfigService } from '@merit/common/providers/config';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { PlatformService } from '@merit/common/providers/platform';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { SendService } from '@merit/common/providers/send';
 
 @IonicPage()
 @Component({
@@ -20,7 +19,6 @@ import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
   templateUrl: 'receive.html',
 })
 export class ReceiveView {
-
   protocolHandler: string;
   address: string;
   alias: string;
@@ -194,5 +192,4 @@ export class ReceiveView {
   private formatAddress() {
     this.qrAddress = `${ this.protocolHandler }:${ this.address }${ this.amountMicros ? '?micros=' + this.amountMicros : '' }`;
   }
-
 }

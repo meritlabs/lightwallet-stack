@@ -3,11 +3,10 @@ import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angu
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { IMeritAddress, MeritContact } from '@merit/common/models/merit-contact';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { ContactsService } from '@merit/mobile/providers/contacts';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { SendService } from '@merit/common/providers/send';
 
 @IonicPage()
 @Component({
@@ -128,5 +127,4 @@ export class SendEditContactView {
       ]
     }).present();
   }
-
 }

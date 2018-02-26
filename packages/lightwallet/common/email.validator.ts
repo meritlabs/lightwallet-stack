@@ -1,21 +1,14 @@
-import { FormControl } from '@angular/forms';
+import { AbstractControl, ValidationErrors } from '@angular/forms';
 import { ConfigService } from '@merit/common/providers/config';
 import { EmailNotificationsService } from '../mobile/src/app/core/notification/email-notification.service';
 
 export class EmailValidator {
 
-  static cnf: ConfigService;
-  static eml: EmailNotificationsService;
+  constructor(private cnf: ConfigService, private eml: EmailNotificationsService) {}
 
-  constructor(cnf: ConfigService, eml: EmailNotificationsService) {
-    EmailValidator.cnf = cnf;
-    EmailValidator.eml = eml;
-  }
-
-  isValid(control: FormControl): any {
-
-    let config = EmailValidator.cnf.get();
-    let latestEmail = EmailValidator.eml.getEmailIfEnabled(config);
+  isValid(control: AbstractControl): ValidationErrors | null {
+    let config = this.cnf.get();
+    let latestEmail = this.eml.getEmailIfEnabled(config);
 
     let validEmail = (/^[a-zA-Z0-9.!#$%&*+=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/).test(control.value);
     if (validEmail && control.value != latestEmail) {

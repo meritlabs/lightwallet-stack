@@ -3,10 +3,7 @@ import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicPage } from 'ionic-angular';
 import * as _ from 'lodash';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 import { Observable } from 'rxjs/Observable';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { createDisplayWallet, IDisplayWallet } from '@merit/common/models/display-wallet';
 import { ProfileService } from '@merit/common/providers/profile';
 import { WalletService } from '@merit/common/providers/wallet';
@@ -17,6 +14,8 @@ import { UnlockRequestService } from '@merit/common/providers/unlock-request';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { SendService } from '@merit/common/providers/send';
 
 @IonicPage()
 @Component({
@@ -26,15 +25,15 @@ import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 export class NetworkView {
   static readonly RETRY_MAX_ATTEMPTS = 5;
   static readonly RETRY_TIMEOUT = 1000;
-  public displayWallets: Array<IDisplayWallet> = [];
-  public loading: boolean;
+  displayWallets: Array<IDisplayWallet> = [];
+  loading: boolean;
 
   totalNetworkValue: string;
   totalMiningRewards: string;
   totalAmbassadorRewards: string;
 
-  activeUnlockRequests:number;
-  activeInvites:number;
+  activeUnlockRequests: number;
+  activeInvites: number;
 
   constructor(private profileService: ProfileService,
               private clipboard: Clipboard,
@@ -45,8 +44,8 @@ export class NetworkView {
               private logger: LoggerService,
               private platformService: PlatformService,
               private unlockRequestService: UnlockRequestService,
-              private sendService: SendService
-            ) {}
+              private sendService: SendService) {
+  }
 
   // Ensure that the wallets are loaded into the view on first load.
   async ngOnInit() {
@@ -72,7 +71,7 @@ export class NetworkView {
 
   async doRefresh(refresher) {
     try {
-      await this.updateView()
+      await this.updateView();
     } catch (err) {
     }
 
@@ -125,10 +124,10 @@ export class NetworkView {
       )
     );
 
-   this.activeInvites = 0;
-   for (let dWallet of displayWallets) {
+    this.activeInvites = 0;
+    for (let dWallet of displayWallets) {
       this.activeInvites += dWallet.invites;
-   }
+    }
 
 
     return displayWallets;
@@ -190,6 +189,4 @@ export class NetworkView {
 
     return newDWallets;
   }
-
-
 }

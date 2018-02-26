@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 import { LoggerService } from '@merit/common/providers/logger';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
 
 @IonicPage()
 @Component({
@@ -10,7 +9,6 @@ import { LoggerService } from '@merit/common/providers/logger';
   templateUrl: 'session-log.html',
 })
 export class SessionLogView {
-
   logLevel = 4;
   filteredLogs = [];
   logsString = '';

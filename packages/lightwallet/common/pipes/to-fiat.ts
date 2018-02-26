@@ -1,7 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { TxFormatService } from '@merit/mobile/app/transact/tx-format.service';
-
+import { ConfigService } from '@merit/common/providers/config';
+import { TxFormatService } from '@merit/common/providers/tx-format';
 
 @Pipe({ name: 'toFiat' })
 export class ToFiatPipe implements PipeTransform {
@@ -12,9 +11,7 @@ export class ToFiatPipe implements PipeTransform {
     this.unitCode = this.configProvider.get().wallet.settings.unitCode;
   }
 
-  transform(value: string, satoshis: number): Promise<string> {
-    return this.txFormatProvider.formatAlternativeStr(satoshis).then((altSr: string) => {
-      return Promise.resolve(altSr);
-    });
+  transform(value: string, satoshis: number): string {
+    return this.txFormatProvider.formatAlternativeStr(satoshis);
   }
 }

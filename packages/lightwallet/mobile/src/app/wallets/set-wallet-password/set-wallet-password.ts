@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 import { WalletService } from '@merit/common/providers/wallet';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
 
 @IonicPage()
 @Component({

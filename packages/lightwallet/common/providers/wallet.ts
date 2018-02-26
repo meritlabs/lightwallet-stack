@@ -722,56 +722,59 @@ export class WalletService {
     });
   }
 
-  // prepare(wallet: MeritWalletClient): Promise<any> {
-  //   return new Promise((resolve, reject) => {
-  //     return this.touchidService.checkWallet(wallet).then(() => {
-  //       return this.handleEncryptedWallet(wallet).then((password: string) => {
-  //         return resolve(password);
-  //       }).catch((err) => {
-  //         return reject(err);
-  //       });
-  //     }).catch((err) => {
-  //       return reject(err);
-  //     });
-  //   });
-  // }
+  prepare(wallet: MeritWalletClient): Promise<any> {
+    return this.handleEncryptedWallet(wallet)
+    // TODO: rewrite this when integrating Fingerprint service
 
-  // publishAndSign(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
-  //   this.logger.info('@@PS: ENTER');
-  //   return new Promise((resolve, reject) => {
-  //     // Already published?
-  //     let walletPassword = '';
-  //     if (txp.status == 'pending') {
-  //       this.logger.info('@@PS: PENDING');
-  //
-  //       return this.prepare(wallet).then((password: string) => {
-  //         return this.signAndBroadcast(wallet, txp, password, customStatusHandler)
-  //           .then((broadcastedTxp: any) => {
-  //             return resolve(broadcastedTxp);
-  //           }).catch((err) => {
-  //             return reject(err);
-  //           });
-  //       });
-  //     } else {
-  //       this.logger.info('@@PS: NOT PENDING');
-  //
-  //       return this.prepare(wallet).then((password: string) => {
-  //         this.logger.info('@@PS: AFTER PREPARE');
-  //
-  //         walletPassword = password;
-  //         return this.publishTx(wallet, txp);
-  //       }).then((publishedTxp: any) => {
-  //         this.logger.info('@@PS: AFTER PublishTx');
-  //         return this.signAndBroadcast(wallet, publishedTxp, walletPassword, customStatusHandler);
-  //       }).then((signedTxp) => {
-  //         return resolve(signedTxp);
-  //       }).catch((err) => {
-  //         return reject(err);
-  //       });
-  //     }
-  //     ;
-  //   });
-  // }
+    // return new Promise((resolve, reject) => {
+    //   return this.touchidService.checkWallet(wallet).then(() => {
+    //     return this.handleEncryptedWallet(wallet).then((password: string) => {
+    //       return resolve(password);
+    //     }).catch((err) => {
+    //       return reject(err);
+    //     });
+    //   }).catch((err) => {
+    //     return reject(err);
+    //   });
+    // });
+  }
+
+  publishAndSign(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
+    this.logger.info('@@PS: ENTER');
+    return new Promise((resolve, reject) => {
+      // Already published?
+      let walletPassword = '';
+      if (txp.status == 'pending') {
+        this.logger.info('@@PS: PENDING');
+
+        return this.prepare(wallet).then((password: string) => {
+          return this.signAndBroadcast(wallet, txp, password, customStatusHandler)
+            .then((broadcastedTxp: any) => {
+              return resolve(broadcastedTxp);
+            }).catch((err) => {
+              return reject(err);
+            });
+        });
+      } else {
+        this.logger.info('@@PS: NOT PENDING');
+
+        return this.prepare(wallet).then((password: string) => {
+          this.logger.info('@@PS: AFTER PREPARE');
+
+          walletPassword = password;
+          return this.publishTx(wallet, txp);
+        }).then((publishedTxp: any) => {
+          this.logger.info('@@PS: AFTER PublishTx');
+          return this.signAndBroadcast(wallet, publishedTxp, walletPassword, customStatusHandler);
+        }).then((signedTxp) => {
+          return resolve(signedTxp);
+        }).catch((err) => {
+          return reject(err);
+        });
+      }
+      ;
+    });
+  }
 
   getEncodedWalletInfo(wallet: MeritWalletClient, password: string): Promise<any> {
     return new Promise((resolve, reject) => {

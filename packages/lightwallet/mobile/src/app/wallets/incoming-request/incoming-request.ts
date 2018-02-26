@@ -7,13 +7,13 @@ import {
   NavParams,
   ToastController
 } from 'ionic-angular';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { IDisplayWallet } from '@merit/common/models/display-wallet';
 import { ContactsService } from '@merit/mobile/providers/contacts';
 import { UnlockRequestService } from '@merit/common/providers/unlock-request';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
+import { SendService } from '@merit/common/providers/send';
+import { ToastConfig } from '@merit/common/providers/toast.controller';
 
 @IonicPage()
 @Component({

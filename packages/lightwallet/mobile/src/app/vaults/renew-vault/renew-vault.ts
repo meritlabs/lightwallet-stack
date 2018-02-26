@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { PopupService } from '@merit/mobile/app/core/popup.service';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
-import { ConfigService } from '@merit/mobile/app/shared/config.service';
-import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
 import { ENV } from '@app/env';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { PopupService } from '@merit/common/providers/popup';
+import { MWCService } from '@merit/common/providers/mwc';
+import { WalletService } from '@merit/common/providers/wallet';
+import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
+import { ProfileService } from '@merit/common/providers/profile';
 
 export interface IWhitelistEntry {
   id: string,
@@ -44,11 +43,10 @@ export class VaultRenewView {
   constructor(private navCtrl: NavController,
               public navParams: NavParams,
               private popupService: PopupService,
-              private configService: ConfigService,
-              private bwc: BwcService,
+              private bwc: MWCService,
               private walletService: WalletService,
               private vaultsService: VaultsService,
-              private profileService: ProfileService,) {
+              private profileService: ProfileService) {
     this.vault = this.navParams.get('vault');
     this.bitcore = this.bwc.getBitcore();
   }
@@ -67,7 +65,7 @@ export class VaultRenewView {
   }
 
   confirmRenew() {
-    this.popupService.ionicConfirm(
+    this.popupService.confirm(
       'Reset vault?',
       'All pending transactions will be canceled and timeout will be reset. Do you want to reset the vault?',
       'Yes',
@@ -115,7 +113,7 @@ export class VaultRenewView {
 
     this.formData.masterKey = masterKey;
 
-    this.popupService.ionicAlert(
+    this.popupService.alert(
       'Master key',
       masterKeyMnemonic,
       'I copied the Master Key.'

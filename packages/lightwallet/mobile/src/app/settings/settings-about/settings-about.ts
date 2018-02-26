@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AlertController, IonicPage, Platform } from 'ionic-angular';
-import { AppService } from '@merit/mobile/app/core/app-settings.service';
 import { AppVersion } from '@ionic-native/app-version';
+import { AppSettingsService } from '@merit/common/providers/app-settings';
 
 declare const WEBPACK_CONFIG: any;
 
@@ -12,14 +12,13 @@ declare const WEBPACK_CONFIG: any;
   templateUrl: 'settings-about.html',
 })
 export class SettingsAboutView {
-
   version: string;
   commitHash: string;
   repoUrl: string = this.appSettingsService.info.gitHubRepoUrl;
 
   constructor(private  alertCtrl: AlertController,
               private inAppBrowser: InAppBrowser,
-              private appSettingsService: AppService,
+              private appSettingsService: AppSettingsService,
               private appVersion: AppVersion,
               private plt: Platform) {
     if (typeof WEBPACK_CONFIG !== 'undefined') this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
@@ -54,5 +53,4 @@ export class SettingsAboutView {
       ]
     }).present();
   }
-
 }

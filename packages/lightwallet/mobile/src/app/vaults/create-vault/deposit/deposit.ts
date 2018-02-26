@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { BwcService } from '@merit/mobile/app/core/bwc.service';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { ProfileService } from '@merit/mobile/app/core/profile.service';
 import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
-import { MeritWalletClient } from '../../../../lib/merit-wallet-client/index';
+import { ProfileService } from '@merit/common/providers/profile';
+import { WalletService } from '@merit/common/providers/wallet';
+import { MWCService } from '@merit/common/providers/mwc';
+import { LoggerService } from '@merit/common/providers/logger';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -31,8 +31,8 @@ export class CreateVaultDepositView {
               private createVaultService: CreateVaultService,
               private profileService: ProfileService,
               private walletService: WalletService,
-              private bwcService: BwcService,
-              private logger: Logger,
+              private bwcService: MWCService,
+              private logger: LoggerService,
               public navParams: NavParams,) {
   }
 

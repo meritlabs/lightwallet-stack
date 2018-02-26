@@ -11,13 +11,12 @@ import { ENV } from '@app/env';
 import * as _ from 'lodash';
 import { ConfigService } from '@merit/common/providers/config';
 import { WalletService } from '@merit/common/providers/wallet';
-import { MeritToastController } from '@merit/mobile/app/core/toast.controller';
 import { LoggerService } from '@merit/common/providers/logger';
 import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
 import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { ToastConfig } from '@merit/mobile/app/core/toast.config';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { SendService } from '@merit/common/providers/send';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -36,7 +35,7 @@ export class CreateWalletView {
     aliasCheckInProgress: false,
     addressCheckError: '',
     addressCheckInProgress: false,
-    bwsurl: '',
+    bwsurl: ENV.mwsUrl,
     recoveryPhrase: '',
     password: '',
     repeatPassword: '',
@@ -45,10 +44,10 @@ export class CreateWalletView {
   };
 
   parsedAddress: string;
-  defaultBwsUrl: string;
+  defaultBwsUrl: string = ENV.mwsUrl;
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
               private config: ConfigService,
               private walletService: WalletService,
               private loadCtrl: LoadingController,
@@ -59,8 +58,6 @@ export class CreateWalletView {
               private pollingNotificationService: PollingNotificationsService,
               private alertCtrl: AlertController,
               private sendService: SendService) {
-    this.formData.bwsurl = ENV.mwsUrl;
-    this.defaultBwsUrl = ENV.mwsUrl;
   }
 
   ionViewDidEnter() {
