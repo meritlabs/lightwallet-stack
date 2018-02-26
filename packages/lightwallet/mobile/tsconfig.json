@@ -1,11 +1,3 @@
 {
-  "extends": "../tsconfig.mobile.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@merit/mobile/*": ["src/*"],
-      "@merit/common/*": ["../common/*"],
-      "@app/env": ["src/environments/environment"]
-    }
-  }
+  "extends": "../tsconfig.mobile.json"
 }
