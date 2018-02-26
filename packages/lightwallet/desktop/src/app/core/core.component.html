@@ -1,12 +1,12 @@
-<nav class="sidenav">
-  <ul>
+<div class="container--fluid dashboard">
+  <ul class="dashboard__aside">
     <li *ngFor="let item of menuItems" [routerLink]="item.link" routerLinkActive="active">
       <img [src]="item.icon" alt="">
       <span>{{ item.name }}</span>
     </li>
   </ul>
-</nav>
-<section class="main-container">
-  <app-toolbar></app-toolbar>
-  <router-outlet></router-outlet>
-</section>
+  <div class="dashboard__main">
+    <app-toolbar></app-toolbar>
+    <router-outlet></router-outlet>
+  </div>
+</div>

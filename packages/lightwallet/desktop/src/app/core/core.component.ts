@@ -6,7 +6,7 @@ import { ReceiveComponent } from './receive/receive.component';
 @Component({
   selector: 'view-core',
   templateUrl: './core.component.html',
-  styleUrls: ['./core.component.scss'],
+  styleUrls: ['./core.component.sass'],
   encapsulation: ViewEncapsulation.None
 })
 export class CoreComponent {
