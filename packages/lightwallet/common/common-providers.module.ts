@@ -14,6 +14,7 @@ import { TxFormatService } from '@merit/common/providers/tx-format';
 import { UnlockRequestService } from '@merit/common/providers/unlock-request';
 import { WalletService } from '@merit/common/providers/wallet';
 import { LanguageService } from '@merit/common/providers/language';
+import { LedgerService } from '@merit/common/providers/ledger';
 import { PopupService } from '@merit/common/providers/popup';
 import { FeeService } from '@merit/common/providers/fee';
 import { EasySendService } from '@merit/common/providers/easy-send';
@@ -31,6 +32,7 @@ export class CommonProvidersModule {
         EasySendService,
         FeeService,
         LanguageService,
+        LedgerService,
         LoggerService,
         MnemonicService,
         MWCService,
