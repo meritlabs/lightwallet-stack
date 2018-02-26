@@ -1,4 +1,4 @@
-import { Injectable, Optional } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular/platform/platform';
 import { LoggerService } from '@merit/common/providers/logger';
 
@@ -15,7 +15,7 @@ export class PlatformService {
   isDevel: boolean;
   supportsLedger: boolean;
 
-  constructor(@Optional() private platform: Platform,
+  constructor(private platform: Platform,
               private log: LoggerService) {
     let ua = navigator ? navigator.userAgent : null;
 

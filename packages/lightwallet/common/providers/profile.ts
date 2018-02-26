@@ -14,8 +14,6 @@ import { ConfigService } from '@merit/common/providers/config';
 import { MWCService } from '@merit/common/providers/mwc';
 import { PlatformService } from '@merit/common/providers/platform';
 import { AppSettingsService } from '@merit/common/providers/app-settings';
-import { LanguageService } from '@merit/common/providers/language';
-import { MeritToastController } from '../../mobile/src/app/core/toast.controller';
 import { TxFormatService } from '@merit/common/providers/tx-format';
 
 /*
@@ -43,9 +41,7 @@ export class ProfileService {
               private bwcService: MWCService,
               private platformService: PlatformService,
               private appService: AppSettingsService,
-              private languageService: LanguageService,
               private txFormatService: TxFormatService,
-              private toastCtrl: MeritToastController,
               private events: Events) {
     this.logger.info('Hello ProfileService!');
   }
