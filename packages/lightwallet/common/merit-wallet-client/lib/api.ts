@@ -1,14 +1,11 @@
 import * as _ from 'lodash';
-
 import * as util from 'util';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { Common } from './common';
 import { Logger } from "./log";
 import { Credentials } from './credentials';
-import { Errors } from './errors';
-import { EasySend } from '@merit/mobile/app/transact/send/easy-send/easy-send.model';
-import { EasyReceiptResult } from '@merit/mobile/app/easy-receive/easy-receipt.model';
+import { MWCErrors } from './errors';
 import * as preconditions from 'preconditions';
 import * as EventEmitter from 'eventemitter3';
 import * as Bitcore from 'bitcore-lib';
@@ -25,6 +22,8 @@ const Package = require('../../../../package.json');
 const DEFAULT_FEE = 10000;
 
 import { ENV } from '@app/env';
+import { EasySend } from '../../models/easy-send';
+import { EasyReceiptResult } from '../../models/easy-receipt';
 
 /**
  * Merit Wallet Client; (re-)written in typescript.
@@ -171,7 +170,7 @@ export class API {
         this.log.warn("Init Notifications done");
       }).catch((err) => {
         if (err) {
-          if (err == Errors.NOT_FOUND || err == Errors.NOT_AUTHORIZED) {
+          if (err == MWCErrors.NOT_FOUND || err == MWCErrors.NOT_AUTHORIZED) {
             this._disposeNotifications();
           }
         }
@@ -301,8 +300,8 @@ export class API {
     }
     let ret;
     if (body.code) {
-      if (Errors[body.code]) {
-        ret = Errors[body.code];
+      if (MWCErrors[body.code]) {
+        ret = MWCErrors[body.code];
         if (body.message) ret.message = body.message;
       } else {
         ret = new Error(body.code + ': ' + body.message);
@@ -539,7 +538,7 @@ export class API {
       let credentials = Credentials.fromObj(JSON.parse(str));
       this.credentials = credentials;
     } catch (ex) {
-      throw Errors.INVALID_BACKUP;
+      throw MWCErrors.INVALID_BACKUP;
     }
   };
 
@@ -623,12 +622,12 @@ export class API {
         this.credentials = derive(false);
       } catch (e) {
         this.log.info('Mnemonic error:', e);
-        return Promise.reject(Errors.INVALID_BACKUP);
+        return Promise.reject(MWCErrors.INVALID_BACKUP);
       }
 
       return this._import().catch(err => {
-        if (err == Errors.INVALID_BACKUP) return Promise.reject(err);
-        if (err == Errors.NOT_AUTHORIZED || err == Errors.WALLET_DOES_NOT_EXIST) {
+        if (err == MWCErrors.INVALID_BACKUP) return Promise.reject(err);
+        if (err == MWCErrors.NOT_AUTHORIZED || err == MWCErrors.WALLET_DOES_NOT_EXIST) {
 
             let altCredentials = derive(true);
             if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return Promise.reject(err);
@@ -655,7 +654,7 @@ export class API {
       this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       this.log.info('xPriv error:', e);
-      return new Promise((resolve, reject) => { return reject(Errors.INVALID_BACKUP); });
+      return new Promise((resolve, reject) => { return reject(MWCErrors.INVALID_BACKUP); });
     };
 
     return this._import();
@@ -679,7 +678,7 @@ export class API {
       this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       this.log.info('xPriv error:', e);
-      return new Promise((resolve, reject) => { return reject(Errors.INVALID_BACKUP); });
+      return new Promise((resolve, reject) => { return reject(MWCErrors.INVALID_BACKUP); });
     };
 
     return this._import();
@@ -736,7 +735,7 @@ export class API {
 
         let fee = opts.fee || DEFAULT_FEE;
         let amount = _.sumBy(utxos, 'micros') - fee;
-        if (amount <= 0) return reject(Errors.INSUFFICIENT_FUNDS);
+        if (amount <= 0) return reject(MWCErrors.INSUFFICIENT_FUNDS);
 
         let tx;
         try {
@@ -753,7 +752,7 @@ export class API {
 
         } catch (ex) {
           this.log.error('Could not build transaction from private key', ex);
-          return reject(Errors.COULD_NOT_BUILD_TRANSACTION);
+          return reject(MWCErrors.COULD_NOT_BUILD_TRANSACTION);
         }
         return resolve(tx);
       });
@@ -875,7 +874,7 @@ export class API {
       amount = micros;
     }
 
-    if (amount <= 0) return Promise.reject(Errors.INSUFFICIENT_FUNDS);
+    if (amount <= 0) return Promise.reject(MWCErrors.INSUFFICIENT_FUNDS);
 
     let tx = new Bitcore.Transaction();
 
@@ -922,7 +921,7 @@ export class API {
 
     } catch (ex) {
       this.log.error('Could not build transaction from private key ' + ex.toString());
-      return Promise.reject(Errors.COULD_NOT_BUILD_TRANSACTION);
+      return Promise.reject(MWCErrors.COULD_NOT_BUILD_TRANSACTION);
     }
     return Promise.resolve(tx);
   };
@@ -983,7 +982,7 @@ export class API {
     let totalAmount = _.sumBy(coins, 'micros');
 
     let amount = totalAmount - fee;
-    if (amount <= 0) return Errors.INSUFFICIENT_FUNDS;
+    if (amount <= 0) return MWCErrors.INSUFFICIENT_FUNDS;
 
     let redeemScript = new Bitcore.Script(newVault.redeemScript);
 
@@ -1043,11 +1042,11 @@ export class API {
 
       } else {
         this.log.error('Vault type is not supported:', newVault.type);
-        return Errors.COULD_NOT_BUILD_TRANSACTION;
+        return MWCErrors.COULD_NOT_BUILD_TRANSACTION;
       }
     } catch (ex) {
       this.log.error('Could not build transaction from private key', ex);
-      return Errors.COULD_NOT_BUILD_TRANSACTION;
+      return MWCErrors.COULD_NOT_BUILD_TRANSACTION;
     }
 
     return tx;
@@ -1063,7 +1062,7 @@ export class API {
 
     let availableAmount = _.sumBy(coins, 'micros');
 
-    if (amount >= availableAmount) throw Errors.INSUFFICIENT_FUNDS;
+    if (amount >= availableAmount) throw MWCErrors.INSUFFICIENT_FUNDS;
 
     let selectedCoins = [];
     let selectedAmount = 0;
@@ -1075,7 +1074,7 @@ export class API {
     }
 
     //should never be true
-    if(selectedAmount < amount) throw Errors.INSUFFICIENT_FUNDS;
+    if(selectedAmount < amount) throw MWCErrors.INSUFFICIENT_FUNDS;
 
     let change = selectedAmount - amount;
 
@@ -1138,11 +1137,11 @@ export class API {
 
       } else {
         this.log.error('Vault type is not supported:', vault.type);
-        throw Errors.COULD_NOT_BUILD_TRANSACTION;
+        throw MWCErrors.COULD_NOT_BUILD_TRANSACTION;
       }
     } catch (ex) {
       this.log.error('Could not build transaction from private key', ex);
-      throw Errors.COULD_NOT_BUILD_TRANSACTION;
+      throw MWCErrors.COULD_NOT_BUILD_TRANSACTION;
     }
 
     return tx;
@@ -1181,7 +1180,7 @@ export class API {
 
           if (this.credentials.walletPrivKey) {
             if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
-              return reject(Errors.SERVER_COMPROMISED);
+              return reject(MWCErrors.SERVER_COMPROMISED);
             }
           } else {
             // this should only happen in AIR-GAPPED flows
@@ -1274,15 +1273,15 @@ export class API {
 
         if (res.status !== 200) {
           if (res.status === 404)
-            return reject(Errors.NOT_FOUND);
+            return reject(MWCErrors.NOT_FOUND);
 
-          if (res.code == Errors.AUTHENTICATION_ERROR.code) {
+          if (res.code == MWCErrors.AUTHENTICATION_ERROR.code) {
             if (this.onAuthenticationError) this.onAuthenticationError();
-            return reject(Errors.AUTHENTICATION_ERROR);
+            return reject(MWCErrors.AUTHENTICATION_ERROR);
           }
 
           if (!res.status) {
-            return reject(Errors.CONNECTION_ERROR);
+            return reject(MWCErrors.CONNECTION_ERROR);
           }
 
           this.log.error('HTTP Error:' + res.status);
@@ -1293,7 +1292,7 @@ export class API {
         }
 
         if (res.body === '{"error":"read ECONNRESET"}') {
-          return reject(Errors.ECONNRESET_ERROR);
+          return reject(MWCErrors.ECONNRESET_ERROR);
         }
 
         if(this.onConnectionRestored) {
@@ -1304,9 +1303,9 @@ export class API {
       }).catch((err) => {
 
         if (!err.status) {
-          return reject(Errors.CONNECTION_ERROR);
+          return reject(MWCErrors.CONNECTION_ERROR);
         } else if (err.status == 502 || err.status == 504){
-          return reject(Errors.SERVER_UNAVAILABLE);
+          return reject(MWCErrors.SERVER_UNAVAILABLE);
         }
 
         if (!err.response || !err.response.text) {
@@ -1320,7 +1319,7 @@ export class API {
           return reject(err);
         }
 
-        if (errObj.code == Errors.AUTHENTICATION_ERROR.code) {
+        if (errObj.code == MWCErrors.AUTHENTICATION_ERROR.code) {
           if (!secondRun) { //trying to restore session one time
             return this._doRequest('post', '/v1/login', {}, null, true).then(() => {
               return this._doRequest(method, url, args, useSession, true);
@@ -1336,7 +1335,7 @@ export class API {
           }
         }
 
-        if (errObj.code && Errors[errObj.code]) return reject(Errors[errObj.code]);
+        if (errObj.code && MWCErrors[errObj.code]) return reject(MWCErrors[errObj.code]);
         return reject(err);
       });
     });
@@ -1363,7 +1362,7 @@ export class API {
     let doLogin = (): Promise<any> => {
       return new Promise((resolve, reject) => {
         return this._login().then((s) => {
-          if (!s) return reject(Errors.NOT_AUTHORIZED);
+          if (!s) return reject(MWCErrors.NOT_AUTHORIZED);
           this.session = s;
           return resolve();
         }).catch((err) => {
@@ -2261,12 +2260,12 @@ export class API {
         return Promise.reject(new Error("Could not get transaction proposal from server."));
       }
       if (txp.code && txp.code == "INSUFFICIENT_FUNDS") {
-        return Promise.reject(Errors.INSUFFICIENT_FUNDS);
+        return Promise.reject(MWCErrors.INSUFFICIENT_FUNDS);
       }
       return this._processTxps(txp).then(() => {
 
         if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey, opts.sendMax)) {
-          return Promise.reject(Errors.SERVER_COMPROMISED);
+          return Promise.reject(MWCErrors.SERVER_COMPROMISED);
         }
         return Promise.resolve(txp);
       });
@@ -2356,7 +2355,7 @@ export class API {
       opts.ignoreMaxGap = true;
       return this._doPostRequest('/v1/addresses/', opts).then((address) => {
         if (!Verifier.checkAddress(this.credentials, address)) {
-          return reject(Errors.SERVER_COMPROMISED);
+          return reject(MWCErrors.SERVER_COMPROMISED);
         }
         if (!address.signed) {
           return this.signAddressAndUnlockWithRoot(address)
@@ -2437,7 +2436,7 @@ export class API {
             return !Verifier.checkAddress(this.credentials, address);
           });
           if (fake) {
-            return reject(Errors.SERVER_COMPROMISED);
+            return reject(MWCErrors.SERVER_COMPROMISED);
           }
         }
         return resolve(addresses);
@@ -2490,7 +2489,7 @@ export class API {
                     if (!Verifier.checkTxProposal(this.credentials, txp, {
                             paypro: paypro,
                         })) {
-                        Promise.reject(Errors.SERVER_COMPROMISED);
+                        Promise.reject(MWCErrors.SERVER_COMPROMISED);
                     }
                 });
             }
@@ -2542,10 +2541,10 @@ export class API {
 
       if (!txp.signatures) {
         if (!this.canSign())
-          return reject(Errors.MISSING_PRIVATE_KEY);
+          return reject(MWCErrors.MISSING_PRIVATE_KEY);
 
         if (this.isPrivKeyEncrypted() && !password)
-          return reject(Errors.ENCRYPTED_PRIVATE_KEY);
+          return reject(MWCErrors.ENCRYPTED_PRIVATE_KEY);
       }
 
       return this.getPayPro(txp).then((paypro) => {
@@ -2554,7 +2553,7 @@ export class API {
         });
 
         if (!isLegit)
-          return reject(Errors.SERVER_COMPROMISED);
+          return reject(MWCErrors.SERVER_COMPROMISED);
 
         let signatures = txp.signatures;
 
@@ -2589,10 +2588,10 @@ export class API {
   signTxProposalFromAirGapped(txp: any, encryptedPkr: string, m: number, n: number, password: string): Promise<any> {
     $.checkState(this.credentials);
     if (!this.canSign())
-      throw Errors.MISSING_PRIVATE_KEY;
+      throw MWCErrors.MISSING_PRIVATE_KEY;
 
     if (this.isPrivKeyEncrypted() && !password)
-      throw Errors.ENCRYPTED_PRIVATE_KEY;
+      throw MWCErrors.ENCRYPTED_PRIVATE_KEY;
 
     let publicKeyRing;
     try {

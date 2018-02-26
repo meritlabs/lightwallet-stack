@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { Logger } from '@merit/mobile/app/core/logger';
 import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
-
 import { ENV } from '@app/env';
+import { LoggerService } from '@merit/common/providers/logger';
+import * as request from 'superagent';
 
 @Injectable()
 export class RateService {
@@ -20,7 +20,7 @@ export class RateService {
 
   private rateServiceUrl = ENV.rateUrl;
 
-  constructor(private logger: Logger) {
+  constructor(private logger: LoggerService) {
     this.logger.info('Hello RateService Service');
     this._rates = {};
     this._alternatives = [];

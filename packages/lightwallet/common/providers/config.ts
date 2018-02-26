@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Events } from 'ionic-angular';
+import { Events } from 'ionic-angular/util/events';
 import * as _ from 'lodash';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { PersistenceService } from '@merit/mobile/app/core/persistence.service';
+import { LoggerService } from '@merit/common/providers/logger';
+import { PersistenceService } from '@merit/common/providers/persistence';
 
 export interface AppConfig {
   limits: {
@@ -183,7 +183,7 @@ const configDefault: AppConfig = {
 export class ConfigService {
   private configCache: AppConfig;
 
-  constructor(private logger: Logger,
+  constructor(private logger: LoggerService,
               private events: Events,
               private persistence: PersistenceService) {
     this.load()

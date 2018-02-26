@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import * as _ from 'lodash';
-import { Logger } from '@merit/mobile/app/core/logger';
-import { EasyReceipt } from '@merit/mobile/app/easy-receive/easy-receipt.model';
-import { ISendMethod } from '@merit/mobile/app/transact/send/send-method.model';
+import { LoggerService } from '@merit/common/providers/logger';
+import { EasyReceipt } from '@merit/common/models/easy-receipt';
+import { ISendMethod } from '@merit/common/models/send-method';
 
 const Keys = {
   ADDRESS_BOOK: network => 'addressbook-' + network,
@@ -43,7 +43,7 @@ const Keys = {
 export class PersistenceService {
 
   constructor(private storage: Storage,
-              private log: Logger) {
+              private log: LoggerService) {
   }
 
   storeNewProfile(profile): Promise<void> {

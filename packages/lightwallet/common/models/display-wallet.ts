@@ -1,8 +1,8 @@
-import { MeritWalletClient } from '../lib/merit-wallet-client/index';
-import { WalletService } from '@merit/mobile/app/wallets/wallet.service';
 import { pick, isNil } from 'lodash';
-import { SendService } from '@merit/mobile/app/transact/send/send.service';
 import { DEFAULT_WALLET_COLOR } from '../utils/constants';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { WalletService } from '@merit/common/providers/wallet';
+import { SendService } from '@merit/common/providers/send';
 
 export interface IDisplayWallet {
   id: string;

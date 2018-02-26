@@ -6,7 +6,7 @@ import { ConfigService } from '@merit/common/providers/config';
 import { PersistenceService } from '@merit/common/providers/persistence';
 import { LoggerService } from '@merit/common/providers/logger';
 import { isAlias } from '@merit/common/utils/addresses';
-import { ISendMethod } from '@merit/mobile/app/transact/send/send-method.model';
+import { ISendMethod } from '@merit/common/models/send-method';
 
 @Injectable()
 export class SendService {

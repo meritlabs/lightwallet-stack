@@ -15,6 +15,7 @@ import { CommunityComponent } from './community/community.component';
 import { NotificationsComponent } from './toolbar/notifications/notifications.component';
 import { contactsReducer } from '../../reducers/contacts';
 import { walletsReducer } from '../../reducers/wallets';
+import { CommonProvidersModule } from '../../../../common/common-providers.module';
 
 export function getPages() {
   return [
@@ -37,7 +38,8 @@ export const reducers = {
     CoreRoutingModule,
     StoreModule.forRoot(reducers),
     MatButtonModule,
-    MatMenuModule
+    MatMenuModule,
+    CommonProvidersModule.forRoot()
   ],
   declarations: [
     CoreComponent,

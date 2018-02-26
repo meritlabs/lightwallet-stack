@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoggerService } from '@merit/common/providers/logger';
 import { ConfigService } from '@merit/common/providers/config';
-import { LanguageService } from '../../mobile/src/app/core/language.service';
+import { LanguageService } from '@merit/common/providers/language';
 
 // TODO: Improve implementation
 export interface AppSettings {
