@@ -229,6 +229,20 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.post('/v1/recreate_wallet/', createWalletLimiter, function(req, res) {
+    var server;
+    try {
+      server = getServer(req, res);
+    } catch (ex) {
+      return returnError(ex, res, req);
+    }
+
+    server.recreateWallet(req.body, function(err, walletId, parentAddress) {
+      if (err) return returnError(err, res, req);
+      res.json({walletId, parentAddress}); 
+    });
+  });
+
 
   router.put('/v1/copayers/:id/', function(req, res) {
     req.body.copayerId = req.params['id'];

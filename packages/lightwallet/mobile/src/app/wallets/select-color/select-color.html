@@ -1,0 +1,24 @@
+<ion-header no-border>
+    <ion-navbar color="light">
+        <ion-title>Change Color</ion-title>
+        <ion-buttons end>
+            <button ion-button color="primary" (click)="cancel()" translate>
+                Cancel
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col col-2 *ngFor="let color of availableColors">
+        <button ion-button [class.selected]="color == selectedColor" (click)="select(color)">
+          <span class="color-indicator" [style.background]="color"></span>
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

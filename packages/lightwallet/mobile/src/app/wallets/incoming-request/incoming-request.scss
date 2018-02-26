@@ -1,0 +1,134 @@
+view-incoming-request {
+
+  button.item.send-from {
+    background: #f6f8fa;
+    text-align: left;
+    padding-top: 0;
+    padding-bottom: 0;
+    min-height: 70px;
+    height: 70px;
+    .item-start, .item {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .wallet-icon {
+      height: 25px;
+      margin-right: 15px;
+    }
+
+    .invites-icon {
+      margin-left: 5px;
+    }
+  }
+
+
+  .container {
+    margin-top: 40px;
+    text-align: center;
+    p {
+      color: #73819b;
+      font-size: 12px;
+    }
+  }
+
+  ion-footer.footer {
+
+    text-align: center;
+    &:before {
+      display: none;
+      border: 0;
+    }
+
+    ion-toolbar.toolbar {
+      padding: 0;
+
+    }
+
+    ion-list.list {
+      margin: 0;
+
+      button[ion-item].item {
+
+        text-align: center;
+        padding: 0;
+        border-top: 1px solid rgb(232, 234, 237);
+
+        &.wallet-selector {
+          padding: 7px 17px;
+
+          * {
+            text-align: left;
+          }
+        }
+
+        &:not(.wallet-selector) {
+          height: 54px;
+          max-height: 54px;
+
+          ion-label.label {
+            color: rgb(0, 176, 221);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+          }
+        }
+
+        .item-inner {
+          border-bottom: none;
+        }
+      }
+    }
+  }
+
+  span {
+    display: block;
+  }
+
+  .date {
+    font-size: 13px;
+    color: rgb(115, 129, 155);
+    margin-top: 24px;
+  }
+
+  .wallet-name {
+    margin-top: 25px;
+    color: rgb(45, 60, 80);
+    font-size: 17px;
+    letter-spacing: -.5px;
+    font-weight: 500;
+  }
+
+  .status {
+    &.pending {
+      color: rgb(255, 160, 0);
+    }
+
+    &.accepted {
+      color: rgb(0, 150, 136);
+    }
+
+    &.hidden {
+      color: rgb(208, 2, 27);
+    }
+
+    margin-top: 4px;
+    letter-spacing: -.2px;
+    font-size: 17px;
+  }
+
+  .to-wallet {
+    color: rgb(115, 129, 155);
+  }
+
+  .scroll-content {
+    .container ion-avatar {
+      height: 80px !important;
+      width: 80px !important;
+      margin: 24px auto;
+      img {
+        height: 30px !important;
+      }
+    }
+  }
+}
