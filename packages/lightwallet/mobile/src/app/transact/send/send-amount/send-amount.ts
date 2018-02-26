@@ -9,18 +9,18 @@ import {
 } from 'ionic-angular';
 import * as _ from 'lodash';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { ConfigService } from '@merit/common/providers/config';
-import { RateService } from '@merit/common/providers/rate';
-import { FeeService } from '@merit/common/providers/fee';
-import { ProfileService } from '@merit/common/providers/profile';
-import { TxFormatService } from '@merit/common/providers/tx-format';
-import { EasySendService } from '@merit/common/providers/easy-send';
-import { WalletService } from '@merit/common/providers/wallet';
-import { LoggerService } from '@merit/common/providers/logger';
+import { ConfigService } from '@merit/common/providers/config.service';
+import { RateService } from '@merit/common/providers/rate.service';
+import { FeeService } from '@merit/common/providers/fee.service';
+import { ProfileService } from '@merit/common/providers/profile.service';
+import { TxFormatService } from '@merit/common/providers/tx-format.service';
+import { EasySendService } from '@merit/common/providers/easy-send.service';
+import { WalletService } from '@merit/common/providers/wallet.service';
+import { LoggerService } from '@merit/common/providers/logger.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { getEasySendURL } from '@merit/common/models/easy-send';
 import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller.service';
 
 @IonicPage()
 @Component({

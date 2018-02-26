@@ -10,10 +10,10 @@ import {
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { IDisplayWallet } from '@merit/common/models/display-wallet';
 import { ContactsService } from '@merit/mobile/providers/contacts';
-import { UnlockRequestService } from '@merit/common/providers/unlock-request';
+import { UnlockRequestService } from '@merit/common/providers/unlock-request.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
-import { SendService } from '@merit/common/providers/send';
-import { ToastConfig } from '@merit/common/providers/toast.controller';
+import { SendService } from '@merit/common/providers/send.service';
+import { ToastConfig } from '@merit/common/providers/toast.controller.service';
 
 @IonicPage()
 @Component({

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
-import { MWCService } from '@merit/common/providers/mwc';
-import { WalletService } from '@merit/common/providers/wallet';
-import { LoggerService } from '@merit/common/providers/logger';
-import { ProfileService } from '@merit/common/providers/profile';
+import { MWCService } from '@merit/common/providers/mwc.service';
+import { WalletService } from '@merit/common/providers/wallet.service';
+import { LoggerService } from '@merit/common/providers/logger.service';
+import { ProfileService } from '@merit/common/providers/profile.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @Injectable()

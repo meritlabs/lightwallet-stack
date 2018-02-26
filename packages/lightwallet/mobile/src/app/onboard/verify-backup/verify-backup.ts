@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { LoggerService } from '@merit/common/providers/logger';
+import { LoggerService } from '@merit/common/providers/logger.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']

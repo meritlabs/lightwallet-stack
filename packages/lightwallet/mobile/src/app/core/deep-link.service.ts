@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { LoggerService } from '@merit/common/providers/logger';
+import { LoggerService } from '@merit/common/providers/logger.service';
 
 declare const Branch: any;
 

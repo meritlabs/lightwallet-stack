@@ -5,17 +5,17 @@ import { IonicPage } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs/Observable';
 import { createDisplayWallet, IDisplayWallet } from '@merit/common/models/display-wallet';
-import { ProfileService } from '@merit/common/providers/profile';
-import { WalletService } from '@merit/common/providers/wallet';
-import { TxFormatService } from '@merit/common/providers/tx-format';
-import { LoggerService } from '@merit/common/providers/logger';
-import { PlatformService } from '@merit/common/providers/platform';
-import { UnlockRequestService } from '@merit/common/providers/unlock-request';
+import { ProfileService } from '@merit/common/providers/profile.service';
+import { WalletService } from '@merit/common/providers/wallet.service';
+import { TxFormatService } from '@merit/common/providers/tx-format.service';
+import { LoggerService } from '@merit/common/providers/logger.service';
+import { PlatformService } from '@merit/common/providers/platform.service';
+import { UnlockRequestService } from '@merit/common/providers/unlock-request.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
-import { SendService } from '@merit/common/providers/send';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller.service';
+import { SendService } from '@merit/common/providers/send.service';
 
 @IonicPage()
 @Component({

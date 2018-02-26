@@ -8,13 +8,13 @@ import { Observable } from 'rxjs/Observable';
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { Profile } from '@merit/common/models/profile';
-import { LoggerService } from '@merit/common/providers/logger';
-import { PersistenceService } from '@merit/common/providers/persistence';
-import { ConfigService } from '@merit/common/providers/config';
-import { MWCService } from '@merit/common/providers/mwc';
-import { PlatformService } from '@merit/common/providers/platform';
-import { AppSettingsService } from '@merit/common/providers/app-settings';
-import { TxFormatService } from '@merit/common/providers/tx-format';
+import { LoggerService } from '@merit/common/providers/logger.service';
+import { PersistenceService } from '@merit/common/providers/persistence.service';
+import { ConfigService } from '@merit/common/providers/config.service';
+import { MWCService } from '@merit/common/providers/mwc.service';
+import { PlatformService } from '@merit/common/providers/platform.service';
+import { AppSettingsService } from '@merit/common/providers/app-settings.service';
+import { TxFormatService } from '@merit/common/providers/tx-format.service';
 
 /*
   Historically, this acted as the API-Client

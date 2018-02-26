@@ -2,16 +2,16 @@ import { Component } from '@angular/core';
 import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Events, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { ProfileService } from '@merit/common/providers/profile';
-import { WalletService } from '@merit/common/providers/wallet';
-import { LoggerService } from '@merit/common/providers/logger';
-import { RateService } from '@merit/common/providers/rate';
-import { ConfigService } from '@merit/common/providers/config';
-import { PlatformService } from '@merit/common/providers/platform';
+import { ProfileService } from '@merit/common/providers/profile.service';
+import { WalletService } from '@merit/common/providers/wallet.service';
+import { LoggerService } from '@merit/common/providers/logger.service';
+import { RateService } from '@merit/common/providers/rate.service';
+import { ConfigService } from '@merit/common/providers/config.service';
+import { PlatformService } from '@merit/common/providers/platform.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
-import { SendService } from '@merit/common/providers/send';
+import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller.service';
+import { SendService } from '@merit/common/providers/send.service';
 
 @IonicPage()
 @Component({

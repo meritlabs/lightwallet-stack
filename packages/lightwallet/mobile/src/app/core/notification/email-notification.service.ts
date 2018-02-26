@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { ConfigService } from '@merit/common/providers/config';
-import { ProfileService } from '@merit/common/providers/profile';
-import { WalletService } from '@merit/common/providers/wallet';
+import { ConfigService } from '@merit/common/providers/config.service';
+import { ProfileService } from '@merit/common/providers/profile.service';
+import { WalletService } from '@merit/common/providers/wallet.service';
 
 @Injectable()
 export class EmailNotificationsService {

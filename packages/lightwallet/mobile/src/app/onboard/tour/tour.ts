@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
-import { RateService } from '@merit/common/providers/rate';
+import { RateService } from '@merit/common/providers/rate.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
