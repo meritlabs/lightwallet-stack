@@ -14,32 +14,32 @@ export class CoreComponent {
   menuItems: any[] = [
     {
       name: 'Dashboard',
-      icon: '/assets/icons/icon_home.png',
+      icon: '/assets/v1/icons/ui/aside-navigation/home.svg',
       link: '/dashboard'
     },
     {
       name: 'Wallets',
-      icon: '/assets/icons/icon_wallet.png',
+      icon: '',
       link: '/wallets'
     },
     {
       name: 'Receive Merit',
-      icon: '/assets/icons/icon_receive.png',
+      icon: '',
       link: '/receive'
     },
     {
       name: 'Send Merit',
-      icon: '/assets/icons/icon_send.png',
+      icon: '',
       link: '/send'
     },
     {
       name: 'History',
-      icon: '/assets/icons/icon_history.png',
+      icon: '',
       link: '/history'
     },
     {
       name: 'Community',
-      icon: '/assets/icons/icon_history.png',
+      icon: '',
       link: '/community'
     }
   ];
