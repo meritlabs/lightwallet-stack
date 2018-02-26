@@ -1,0 +1,29 @@
+.dashboard
+  background: $dashboard-bg
+  display: flex
+  flex-flow: row wrap
+  height: 100vh
+  &__aside
+    width: 240pt
+    background: $dashboard-aside-bg
+    box-sizing: border-box
+    padding: 45pt 0
+    &__item
+      +font($baseFont--medium, 15pt, 15pt, $blue-grey, none, none, none)
+      cursor: pointer
+      border-left: 5pt solid transparent
+      padding-left: 25pt
+      min-height: 50pt
+      display: flex
+      align-items: center
+      background: transparent
+      +transition(.3s, linear)
+      &:hover,
+      &.active
+        color: $white
+        background: $slate-grey
+      &.active
+        border-left: 5pt solid $blue
+.dashboard
+  &__main
+    width: calc(100% - 240pt)
