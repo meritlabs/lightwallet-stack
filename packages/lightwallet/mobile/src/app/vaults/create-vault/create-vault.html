@@ -27,6 +27,9 @@
 
                 <ion-label translate>
                     <h2>Whitelist</h2>
+                     <span *ngFor="let wallet of whiteList; let last = last">
+                        {{wallet.name}}<span *ngIf="!last">, </span>
+                     </span>
                 </ion-label>
                 <button ion-button item-end round add-button icon-only>
                     <ion-icon name="add"></ion-icon>

@@ -33,7 +33,7 @@
         <p>Whitelist</p>
         <h2>
             <span *ngFor="let wallet of vaultData.whiteList; let last = last">
-                {{vaultData.wallet.name}}<span *ngIf="!last">, </span>
+                {{wallet.name}}<span *ngIf="!last">, </span>
             </span>
         </h2>
     </ion-item>
