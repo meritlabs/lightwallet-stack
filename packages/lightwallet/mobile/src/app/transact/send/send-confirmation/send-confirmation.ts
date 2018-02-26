@@ -12,7 +12,6 @@ import { ConfigService } from '@merit/common/providers/config';
 import { LoggerService } from '@merit/common/providers/logger';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
 import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
-import { SendService } from '@merit/common/providers/send';
 
 @IonicPage()
 @Component({
