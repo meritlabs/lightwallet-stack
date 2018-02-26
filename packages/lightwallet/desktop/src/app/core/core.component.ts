@@ -11,7 +11,7 @@ import { ReceiveComponent } from './receive/receive.component';
 })
 export class CoreComponent {
 
-  menuItems: any[] = [
+  topMenuItems: any[] = [
     {
       name: 'Dashboard',
       icon: '/assets/v1/icons/ui/aside-navigation/home.svg',
@@ -19,31 +19,37 @@ export class CoreComponent {
     },
     {
       name: 'Wallets',
-      icon: '',
+      icon: '/assets/v1/icons/ui/aside-navigation/wallet.svg',
       link: '/wallets'
     },
     {
       name: 'Receive Merit',
-      icon: '',
+      icon: '/assets/v1/icons/ui/aside-navigation/receive.svg',
       link: '/receive'
     },
     {
       name: 'Send Merit',
-      icon: '',
+      icon: '/assets/v1/icons/ui/aside-navigation/send.svg',
       link: '/send'
     },
     {
       name: 'History',
-      icon: '',
+      icon: '/assets/v1/icons/ui/aside-navigation/history.svg',
       link: '/history'
     },
     {
       name: 'Community',
-      icon: '',
+      icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
       link: '/community'
     }
   ];
-
+  bottomMenuItems: any[] = [
+    {
+      name: 'Help & Support',
+      icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
+      link: 'https://www.merit.me/'
+    }
+  ];
   constructor() { }
 
   onMenuItemClick(item: any) {
