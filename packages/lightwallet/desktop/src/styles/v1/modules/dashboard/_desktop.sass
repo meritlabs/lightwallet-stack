@@ -55,3 +55,24 @@
     &__col
       display: flex
       align-content: center
+      flex-flow: row wrap
+      &--left
+        padding-right: 20pt
+    &__divider
+      width: 3px
+      height: 36pt
+      background: $steel
+      margin: 0 20pt
+      opacity: .2
+.dashboard__toolbar__balance
+  display: flex
+  flex-flow: row wrap
+  align-content: center
+  margin: 0 0 0 20pt
+  width: auto
+  &__item
+    width: 100%
+    &--large-blue
+      +font($baseFont--semibold, 15pt, 15pt, $blue, none, none, none)
+    &--regular-grey
+      +font($baseFont--semibold, 14pt, 24pt, $gun-metal, none, none, none)
