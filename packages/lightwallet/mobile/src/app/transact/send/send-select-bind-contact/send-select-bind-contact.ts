@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { ContactsService } from '@merit/mobile/providers/contacts';
+import { ContactsService } from '@merit/mobile/services/contacts.service';
 
 @IonicPage()
 @Component({

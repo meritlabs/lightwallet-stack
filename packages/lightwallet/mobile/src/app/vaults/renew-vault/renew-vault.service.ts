@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { MWCService } from '@merit/common/providers/mwc.service';
-import { ProfileService } from '@merit/common/providers/profile.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { ProfileService } from '@merit/common/services/profile.service';
 
 @Injectable()
 export class RenewVaultService {

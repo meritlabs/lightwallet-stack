@@ -3,11 +3,11 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
 import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
-import { ProfileService } from '@merit/common/providers/profile.service';
-import { WalletService } from '@merit/common/providers/wallet.service';
-import { MWCService } from '@merit/common/providers/mwc.service';
-import { LoggerService } from '@merit/common/providers/logger.service';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']

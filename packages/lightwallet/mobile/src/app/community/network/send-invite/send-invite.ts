@@ -4,11 +4,11 @@ import { AddressScannerService } from '@merit/mobile/app/utilities/import/addres
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { ContactsService } from '@merit/mobile/providers/contacts';
-import { WalletService } from '@merit/common/providers/wallet.service';
+import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { WalletService } from '@merit/common/services/wallet.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { SendService } from '@merit/common/providers/send.service';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller.service';
+import { SendService } from '@merit/common/services/send.service';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { SendMethodDestination } from '@merit/common/models/send-method';
 
 const ERROR_ADDRESS_NOT_FOUND = 'ADDRESS_NOT_FOUND';

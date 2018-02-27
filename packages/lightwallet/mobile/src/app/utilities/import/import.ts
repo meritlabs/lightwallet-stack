@@ -2,13 +2,13 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { App, IonicPage, Loading, LoadingController } from 'ionic-angular';
 import { startsWith } from 'lodash';
 import { ENV } from '@app/env';
-import { MWCService } from '@merit/common/providers/mwc.service';
-import { LoggerService } from '@merit/common/providers/logger.service';
-import { ProfileService } from '@merit/common/providers/profile.service';
-import { MnemonicService } from '@merit/common/providers/mnemonic.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { MnemonicService } from '@merit/common/services/mnemonic.service';
 import { DerivationPath } from '@merit/common/utils/derivation-path';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller.service';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
 

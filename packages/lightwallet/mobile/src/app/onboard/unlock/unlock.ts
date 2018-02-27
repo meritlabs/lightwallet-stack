@@ -2,10 +2,10 @@ import { Component, ViewChild } from '@angular/core';
 import { Content, IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
-import { EasyReceiveService } from '@merit/common/providers/easy-receive.service';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { SendService } from '@merit/common/providers/send.service';
+import { SendService } from '@merit/common/services/send.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
