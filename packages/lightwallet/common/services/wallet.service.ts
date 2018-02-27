@@ -893,9 +893,7 @@ export class WalletService {
    * @param wallet
    */
   getANV(wallet: MeritWalletClient): Promise<any> {
-    let pubkey = this.mwcService.getBitcore().PrivateKey.fromString(wallet.credentials.walletPrivKey).toPublicKey();
-    let address = pubkey.toAddress(wallet.credentials.network);
-    return wallet.getANV(address);
+    return wallet.getANV(wallet.getRootAddress())
   }
 
   /**
@@ -903,40 +901,15 @@ export class WalletService {
    * @param wallet
    * @returns {Reward} An object with the 'mining' and 'ambassador' properties.
    */
-  getRewards(wallet: MeritWalletClient): Promise<any> {
-    interface MWSRewardsResponse extends _.NumericDictionary<number> {
-      address: string,
-      rewards: { mining: number, ambassador: number }
-    };
-
-    interface FilteredRewards {
-      mining: number,
-      ambassador: number
+  async getRewards(wallet: MeritWalletClient): Promise<{ mining: number; ambassador: number; }> {
+    try {
+      return (await wallet.getRewards(wallet.getRootAddress())).rewards;
+    } catch (e) {
+      return {
+        mining: 0,
+        ambassador: 0
+      }
     }
-
-    return new Promise((resolve, reject) => {
-      return this.getMainAddresses(wallet).then((addresses) => {
-        if (_.isEmpty(addresses)) {
-          this.logger.info('Addresses are empty!  Defaulting rewards to Zero');
-          return resolve({ mining: 0, ambassador: 0 });
-        }
-        return wallet.getRewards(addresses).then((rewards: MWSRewardsResponse) => {
-          let totalRewards: FilteredRewards = _.reduce(rewards, (totalR: any, reward: any) => {
-            if (!_.isEmpty(reward.rewards)) {
-              if (reward.rewards.mining) {
-                totalR.mining += reward.rewards.mining;
-              }
-              if (reward.rewards.ambassador) {
-                totalR.ambassador += reward.rewards.ambassador;
-              }
-              return totalR;
-            }
-          }, { mining: 0, ambassador: 0 });
-
-          return resolve(totalRewards);
-        });
-      });
-    });
   }
 
   // Check address
