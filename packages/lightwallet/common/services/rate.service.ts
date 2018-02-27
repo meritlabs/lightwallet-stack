@@ -6,7 +6,7 @@ import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
 import { ENV } from '@app/env';
-import { LoggerService } from '@merit/common/providers/logger.service';
+import { LoggerService } from '@merit/common/services/logger.service';
 import * as request from 'superagent';
 
 @Injectable()

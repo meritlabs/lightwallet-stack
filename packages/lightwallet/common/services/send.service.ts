@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { RateService } from '@merit/common/providers/rate.service';
-import { MWCService } from '@merit/common/providers/mwc.service';
-import { ConfigService } from '@merit/common/providers/config.service';
-import { PersistenceService } from '@merit/common/providers/persistence.service';
-import { LoggerService } from '@merit/common/providers/logger.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
+import { LoggerService } from '@merit/common/services/logger.service';
 import { isAlias } from '@merit/common/utils/addresses';
 import { ISendMethod } from '@merit/common/models/send-method';
 

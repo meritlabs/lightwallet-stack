@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ProfileService } from '@merit/common/providers/profile.service';
-import { PersistenceService } from '@merit/common/providers/persistence.service';
-import { WalletService } from '@merit/common/providers/wallet.service';
-import { ContactsService } from '@merit/common/providers/contacts.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { IDisplayWallet } from '@merit/common/models/display-wallet';
 

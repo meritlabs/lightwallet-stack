@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ConfigService } from '@merit/common/providers/config.service';
-import { TxFormatService } from '@merit/common/providers/tx-format.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
 
 @Pipe({ name: 'toFiat' })
 export class ToFiatPipe implements PipeTransform {

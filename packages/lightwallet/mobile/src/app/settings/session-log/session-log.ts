@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { LoggerService } from '@merit/common/providers/logger.service';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 
 @IonicPage()
 @Component({
