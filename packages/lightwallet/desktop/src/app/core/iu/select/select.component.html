@@ -1,0 +1,8 @@
+<div class="selectbox">
+  <button class="ui-button ui-button--white ui-button--md ui-button--with-caret ui-button--wallet-icon">
+    {{ selected }}
+  </button>
+  <div class="selectbox__dropdown">
+    <button mat-menu-item *ngFor="let item of input" (click)="select(item)">{{ item }}</button>
+  </div>
+</div>
