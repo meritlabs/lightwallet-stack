@@ -22,8 +22,8 @@ export class ToolbarComponent implements OnInit {
   ngOnInit() {
   }
 
-  selectCurrency(currency: string) {
-    this.selectedCurrency = currency;
+  receiveMessage($event) {
+    this.selectedCurrency = $event
   }
 
 }
