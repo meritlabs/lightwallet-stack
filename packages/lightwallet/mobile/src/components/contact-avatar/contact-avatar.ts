@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { getContactInitials } from '../../utils/contacts';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MeritContact } from '../../models/merit-contact';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { getContactInitials } from '@merit/common/utils/contacts';
 
 @Component({
   selector: 'contact-avatar',
-  template: `    
-  <ion-avatar [attr.img-icon]="!imageSrc && !contactInitials ? true : null">
-    <img *ngIf="!imageSrc && !contactInitials" [src]="fallback" alt="" />
-    <img *ngIf="imageSrc" [src]="imageSrc">
-    <span *ngIf="contactInitials" color="primary">{{ contactInitials }}</span>
-  </ion-avatar>
+  template: `
+    <ion-avatar [attr.img-icon]="!imageSrc && !contactInitials ? true : null">
+      <img *ngIf="!imageSrc && !contactInitials" [src]="fallback" alt=""/>
+      <img *ngIf="imageSrc" [src]="imageSrc">
+      <span *ngIf="contactInitials" color="primary">{{ contactInitials }}</span>
+    </ion-avatar>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -32,5 +32,6 @@ export class ContactAvatarComponent {
   imageSrc: any;
   contactInitials: string;
 
-  constructor(private _sanitizer: DomSanitizer) {}
+  constructor(private _sanitizer: DomSanitizer) {
+  }
 }

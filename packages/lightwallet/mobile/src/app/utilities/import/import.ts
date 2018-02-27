@@ -1,19 +1,16 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { App, IonicPage, Loading, LoadingController } from 'ionic-angular';
-import { BwcService } from 'merit/core/bwc.service';
-import { Logger } from 'merit/core/logger';
-import { ProfileService } from 'merit/core/profile.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
-import { DerivationPathService } from 'merit/utilities/mnemonic/derivation-path.service';
-import { MnemonicService } from 'merit/utilities/mnemonic/mnemonic.service';
-import { WalletService } from 'merit/wallets/wallet.service';
 import { startsWith } from 'lodash';
-
 import { ENV } from '@app/env';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
-import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { MnemonicService } from '@merit/common/services/mnemonic.service';
+import { DerivationPath } from '@merit/common/utils/derivation-path';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
+import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
@@ -23,11 +20,10 @@ import { PushNotificationsService } from 'merit/core/notification/push-notificat
   templateUrl: 'import.html',
 })
 export class ImportView {
-
   @ViewChild('fileInput') input: ElementRef;
 
-  public segment = 'phrase';
-  public formData = {
+  segment = 'phrase';
+  formData = {
     words: '',
     phrasePassword: '',
     derivationPath: '',
@@ -41,27 +37,25 @@ export class ImportView {
     hasPassphrase: false
   };
 
-  public loadFileInProgress = false;
+  loadFileInProgress = false;
   private sjcl;
 
-  constructor(private bwcService: BwcService,
+  constructor(private bwcService: MWCService,
               private toastCtrl: MeritToastController,
-              private logger: Logger,
+              private logger: LoggerService,
               private loadingCtrl: LoadingController,
               private profileService: ProfileService,
-              private derivationPathService: DerivationPathService,
               private app: App,
               private mnemonicService: MnemonicService,
               private addressScanner: AddressScannerService,
-              private pushNotificationsService: PushNotificationsService
-  ) {
+              private pushNotificationsService: PushNotificationsService) {
 
     this.formData.bwsUrl = ENV.mwsUrl;
     this.formData.network = ENV.network;
     this.formData.derivationPath =
       this.formData.network == 'livenet' ?
-        this.derivationPathService.getDefault() :
-        this.derivationPathService.getDefaultTestnet();
+        DerivationPath.getDefault() :
+        DerivationPath.getDefaultTestnet();
 
     this.sjcl = this.bwcService.getSJCL();
   }
@@ -103,7 +97,7 @@ export class ImportView {
     loader.present();
 
     try {
-      const pathData = this.derivationPathService.parse(this.formData.derivationPath);
+      const pathData = DerivationPath.parse(this.formData.derivationPath);
       if (!pathData) {
         throw new Error('Invalid derivation path');
       }
@@ -136,7 +130,7 @@ export class ImportView {
 
       let errorMsg = 'Failed to import wallet';
       if (err && err.message) {
-        errorMsg = err.message
+        errorMsg = err.message;
       } else if (typeof err === 'string') {
         errorMsg = err;
       }
@@ -178,14 +172,14 @@ export class ImportView {
   }
 
   mnemonicImportAllowed() {
-    const  words = this.formData.words ? this.formData.words.replace(/\s\s+/g, ' ').trim() : '';
+    const words = this.formData.words ? this.formData.words.replace(/\s\s+/g, ' ').trim() : '';
 
     if (!words) return false;
 
     if (startsWith('xprv') || startsWith('tprv') || startsWith('xpub') || startsWith('tpuv')) {
       return true;
     } else {
-      return !(words.split(/[\u3000\s]+/).length % 3)
+      return !(words.split(/[\u3000\s]+/).length % 3);
     }
   }
 
@@ -206,5 +200,4 @@ export class ImportView {
       if (loader) loader.dismiss();
     }
   }
-
 }

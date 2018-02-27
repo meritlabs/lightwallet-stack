@@ -10,4 +10,5 @@ import { SendViaView } from './send-via';
     IonicPageModule.forChild(SendViaView),
   ],
 })
-export class SendViaModule {}
+export class SendViaModule {
+}

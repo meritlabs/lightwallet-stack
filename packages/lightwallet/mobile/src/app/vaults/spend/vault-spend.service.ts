@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BwcService } from 'merit/core/bwc.service';
-import { Logger } from 'merit/core/logger';
-import { ProfileService } from 'merit/core/profile.service';
-import { VaultsService } from 'merit/vaults/vaults.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @Injectable()
 export class SpendVaultService {
@@ -13,9 +13,9 @@ export class SpendVaultService {
   private walletClient: MeritWalletClient = null;
   private vault: any;
 
-  constructor(private bwcService: BwcService,
+  constructor(private bwcService: MWCService,
               private walletService: WalletService,
-              private logger: Logger,
+              private logger: LoggerService,
               private profileService: ProfileService,
               private vaultsService: VaultsService,) {
     this.bitcore = bwcService.getBitcore();

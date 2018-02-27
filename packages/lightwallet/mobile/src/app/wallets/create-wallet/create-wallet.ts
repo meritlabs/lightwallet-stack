@@ -1,19 +1,22 @@
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, ModalController, NavController, NavParams, AlertController } from 'ionic-angular';
-
-import * as _ from 'lodash';
-import { Logger } from 'merit/core/logger';
-import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
-
-import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ConfigService } from 'merit/shared/config.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { SendService } from 'merit/transact/send/send.service';
-
+import {
+  AlertController,
+  IonicPage,
+  LoadingController,
+  ModalController,
+  NavController,
+  NavParams
+} from 'ionic-angular';
 import { ENV } from '@app/env';
-import { cleanAddress, isAlias } from '../../../utils/addresses';
+import * as _ from 'lodash';
+import { ConfigService } from '@merit/common/services/config.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
+import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { SendService } from '@merit/common/services/send.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -32,7 +35,7 @@ export class CreateWalletView {
     aliasCheckInProgress: false,
     addressCheckError: '',
     addressCheckInProgress: false,
-    bwsurl: '',
+    bwsurl: ENV.mwsUrl,
     recoveryPhrase: '',
     password: '',
     repeatPassword: '',
@@ -41,23 +44,20 @@ export class CreateWalletView {
   };
 
   parsedAddress: string;
-  defaultBwsUrl: string;
+  defaultBwsUrl: string = ENV.mwsUrl;
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
               private config: ConfigService,
               private walletService: WalletService,
               private loadCtrl: LoadingController,
               private toastCtrl: MeritToastController,
               private modalCtrl: ModalController,
-              private logger: Logger,
+              private logger: LoggerService,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
               private alertCtrl: AlertController,
-              private sendService: SendService
-            ) {
-    this.formData.bwsurl = ENV.mwsUrl;
-    this.defaultBwsUrl = ENV.mwsUrl;
+              private sendService: SendService) {
   }
 
   ionViewDidEnter() {
@@ -111,8 +111,12 @@ export class CreateWalletView {
     this.validateAddressDebounce();
   }
 
-  private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
-  private validateAddressDebounce = _.debounce(() => { this.validateParentAddress() }, 750);
+  private validateAliasDebounce = _.debounce(() => {
+    this.validateAlias();
+  }, 750);
+  private validateAddressDebounce = _.debounce(() => {
+    this.validateParentAddress();
+  }, 750);
 
   private async validateParentAddress() {
     this.formData.parentAddress = cleanAddress(this.formData.parentAddress);

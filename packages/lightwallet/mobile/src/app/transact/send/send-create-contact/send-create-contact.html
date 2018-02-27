@@ -1,44 +1,48 @@
 <ion-header>
 
-    <ion-navbar color="light">
-        <ion-buttons start>
-          <button ion-button (click)="cancel()" color="primary"></button>
-        </ion-buttons>
-        <ion-title>New Contact</ion-title>
-        <ion-buttons end>
-            <button ion-button (click)="save()" [disabled]="!isSaveAvailable()" color="primary">
-                Done
-            </button>
-        </ion-buttons>
-    </ion-navbar>
+  <ion-navbar color="light">
+    <ion-buttons start>
+      <button ion-button (click)="cancel()" color="primary"></button>
+    </ion-buttons>
+    <ion-title>New Contact</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="save()" [disabled]="!isSaveAvailable()" color="primary">
+        Done
+      </button>
+    </ion-buttons>
+  </ion-navbar>
 
 </ion-header>
 
 
 <ion-content>
 
-    <ion-list>
-        <ion-item>
-            <ion-label stacked>Name</ion-label>
-            <ion-input type="text" [(ngModel)]="contact.name.formatted" placeholder="Enter contact name"></ion-input>
-        </ion-item>
-    </ion-list>
-
-    <ion-list *ngIf="contact.meritAddresses.length">
-        <div *ngFor="let mAddress of contact.meritAddresses">
-            <ion-item >
-                <ion-label stacked>Merit Address</ion-label>
-                <ion-label>{{mAddress.address}}</ion-label>
-                <ion-label class="alias-label" *ngIf="mAddress.alias">@{{mAddress.alias}}</ion-label>
-                <button ion-button icon-only clear item-end (click)="removeAddress(mAddress)"><ion-icon name="remove-circle" color="danger"></ion-icon></button>
-            </ion-item>
-        </div>
-    </ion-list>
-
+  <ion-list>
     <ion-item>
-        <ion-label stacked>New Address</ion-label>
-        <ion-input type="text" placeholder="Enter Merit Address or Alias" [(ngModel)]="newAddress"></ion-input>
-        <button ion-button icon-only clear item-end (click)="addAddress(newAddress)" *ngIf="newAddress"><ion-icon name="checkmark-circle" color="primary"></ion-icon></button>
+      <ion-label stacked>Name</ion-label>
+      <ion-input type="text" [(ngModel)]="contact.name.formatted" placeholder="Enter contact name"></ion-input>
     </ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="contact.meritAddresses.length">
+    <div *ngFor="let mAddress of contact.meritAddresses">
+      <ion-item>
+        <ion-label stacked>Merit Address</ion-label>
+        <ion-label>{{mAddress.address}}</ion-label>
+        <ion-label class="alias-label" *ngIf="mAddress.alias">@{{mAddress.alias}}</ion-label>
+        <button ion-button icon-only clear item-end (click)="removeAddress(mAddress)">
+          <ion-icon name="remove-circle" color="danger"></ion-icon>
+        </button>
+      </ion-item>
+    </div>
+  </ion-list>
+
+  <ion-item>
+    <ion-label stacked>New Address</ion-label>
+    <ion-input type="text" placeholder="Enter Merit Address or Alias" [(ngModel)]="newAddress"></ion-input>
+    <button ion-button icon-only clear item-end (click)="addAddress(newAddress)" *ngIf="newAddress">
+      <ion-icon name="checkmark-circle" color="primary"></ion-icon>
+    </button>
+  </ion-item>
 
 </ion-content>

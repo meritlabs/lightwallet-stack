@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
 import { AlertController, App, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
-import { Logger } from 'merit/core/logger';
-import { ProfileService } from 'merit/core/profile.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ConfigService } from 'merit/shared/config.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
-
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 
 @IonicPage()
 @Component({
@@ -15,8 +13,7 @@ import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
   templateUrl: 'edit-wallet.html',
 })
 export class EditWalletView {
-
-  public wallet: MeritWalletClient;
+  wallet: MeritWalletClient;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -27,7 +24,7 @@ export class EditWalletView {
               private toastCtrl: MeritToastController,
               private configService: ConfigService,
               private walletService: WalletService,
-              private logger: Logger) {
+              private logger: LoggerService) {
     this.wallet = this.navParams.get('wallet');
     this.logger.info(this.wallet);
   }
@@ -91,13 +88,11 @@ export class EditWalletView {
               this.toastCtrl.create({
                 message: JSON.stringify(err),
                 cssClass: ToastConfig.CLASS_ERROR
-              })
+              });
             });
           }
         }
       ]
     }).present();
   }
-
-
 }

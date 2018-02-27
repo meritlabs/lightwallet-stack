@@ -1,10 +1,10 @@
 <div class="currency-selector">
-  <button mat-stroked-button color="accent" [matMenuTriggerFor]="currencySelectMenu">
+  <button stroked-button>
     {{ selectedCurrency }}
   </button>
-  <mat-menu #currencySelectMenu="matMenu">
-    <button mat-menu-item *ngFor="let currency of availableCurrencies" (click)="selectCurrency(currency)">{{ currency }}</button>
-  </mat-menu>
+  <!--<mat-menu #currencySelectMenu="matMenu">-->
+    <!--<button mat-menu-item *ngFor="let currency of availableCurrencies" (click)="selectCurrency(currency)">{{ currency }}</button>-->
+  <!--</mat-menu>-->
 </div>
 <div class="total-balance">
   <div class="merit-amount">3988.39 MRT</div>
@@ -12,7 +12,7 @@
 </div>
 <div class="divider"></div>
 <div class="buy-merit">
-  <button mat-flat-button color="accent">
+  <button flat-button>
     Buy Merit
   </button>
 </div>

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "dom",
+      "es2015"
+    ],
+    "baseUrl": ".",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "target": "es5",
+    "paths": {
+      "@app/env": ["../mobile/src/environments/environment"],
+      "@merit/common/*": ["./*"]
+    },
+    "typeRoots": [
+      "../node_modules/@types"
+    ]
+  }
+}

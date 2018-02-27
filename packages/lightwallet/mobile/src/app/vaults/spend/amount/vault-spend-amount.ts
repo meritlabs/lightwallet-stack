@@ -1,7 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { Logger } from 'merit/core/logger';
+import { LoggerService } from '@merit/common/services/logger.service';
 
 @IonicPage({
   segment: 'vault/:vaultId/spend/amount',
@@ -32,7 +32,7 @@ export class VaultSpendAmountView {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              private log: Logger) {
+              private log: LoggerService) {
     this.amount = '';
     this.allowSend = false;
   }
@@ -46,7 +46,8 @@ export class VaultSpendAmountView {
     this.displayName = !_.isEmpty(this.recipient.name) ? this.recipient.name : this.recipient.meritAddress;
   }
 
-  @HostListener('document:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
     if (!event.key) return;
     if (event.which === 8) {
       event.preventDefault();

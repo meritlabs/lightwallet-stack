@@ -19,7 +19,7 @@ export class SelectLanguageModal {
               private viewCtrl: ViewController,
               private iap: InAppBrowser) {
     this.currentLanguage = this.navParams.get('currentLanguage');
-    this.availableLanguages = this.navParams.get('availableLanguages')
+    this.availableLanguages = this.navParams.get('availableLanguages');
   }
 
   ionViewDidLoad() {
@@ -36,13 +36,13 @@ export class SelectLanguageModal {
       buttons: [
         {
           text: 'Cancel', role: 'cancel', handler: () => {
-          }
+        }
         },
         {
           text: 'Open GitHub', handler: () => {
-            // TODO use an IAP service w/ chrome/safari
-            this.iap.create(url);
-          }
+          // TODO use an IAP service w/ chrome/safari
+          this.iap.create(url);
+        }
         }
       ]
     });

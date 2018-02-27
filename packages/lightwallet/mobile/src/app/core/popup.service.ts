@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
-
-import { Logger } from 'merit/core/logger';
-
+import { LoggerService } from '@merit/common/services/logger.service';
+import { PopupService as BasePopupService } from '@merit/common/services/popup.service';
 
 @Injectable()
-export class PopupService {
+export class PopupService extends BasePopupService {
   constructor(public alertCtrl: AlertController,
-              private log: Logger) {
+              private log: LoggerService) {
+    super();
   }
 
-  public ionicAlert(title: string, subTitle?: string, okText?: string): Promise<any> {
+  alert(title: string, subTitle?: string, okText?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let alert = this.alertCtrl.create({
         title: title,
@@ -29,7 +29,7 @@ export class PopupService {
     });
   };
 
-  public ionicConfirm(title, message, okText, cancelText): Promise<any> {
+  confirm(title, message, okText, cancelText): Promise<any> {
     return new Promise((resolve, reject) => {
       let confirm = this.alertCtrl.create({
         title: title,
@@ -55,7 +55,7 @@ export class PopupService {
     });
   };
 
-  public ionicPrompt(title: string, message: string, opts: any, okText?: string, cancelText?: string): Promise<any> {
+  prompt(title: string, message: string, opts: any, okText?: string, cancelText?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let prompt = this.alertCtrl.create({
         title: title,
