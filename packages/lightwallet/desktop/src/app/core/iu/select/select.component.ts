@@ -14,7 +14,9 @@ export class SelectComponent implements OnInit {
   @Output() messageEvent = new EventEmitter<string>();
   @Input() selected: string;
   @Input() input: any;
+  show: boolean = false;
   select(item) {
+    this.show = false;
     this.messageEvent.emit(item)
   }
 }
