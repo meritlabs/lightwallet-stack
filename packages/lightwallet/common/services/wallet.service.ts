@@ -892,10 +892,13 @@ export class WalletService {
    * Gets the ANV for a list of addresses.
    * @param wallet
    */
-  getANV(wallet: MeritWalletClient): Promise<any> {
-    let pubkey = this.mwcService.getBitcore().PrivateKey.fromString(wallet.credentials.walletPrivKey).toPublicKey();
-    let address = pubkey.toAddress(wallet.credentials.network);
-    return wallet.getANV(address);
+  async getANV(wallet: MeritWalletClient): Promise<any> {
+    const addresses = await this.getMainAddresses(wallet);
+    let anv = 0;
+    await Promise.all(addresses.map(async (addr: string) => {
+      anv += await wallet.getANV(addr);
+    }));
+    return anv;
   }
 
   /**
