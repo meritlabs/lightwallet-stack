@@ -1,4 +1,6 @@
-<button mat-icon-button>
-  <img src="/assets/icons/icon_notification.png" alt="Notifications Icon">
-</button>
-<span *ngIf="hasNewNotifications"></span>
+<div class="notification__box">
+  <button class="notification__button">
+    <img src="/assets/v1/icons/ui/notification.svg" alt="Notifications Icon">
+    <span *ngIf="hasNewNotifications" class="notification__indicator"></span>
+  </button>
+</div>
