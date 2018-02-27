@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { IDisplayTransaction, TransactionAction } from '../../models/transaction';
 import { ModalController } from 'ionic-angular';
-import { MERIT_MODAL_OPTS } from '../../utils/constants';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
+import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 
 @Component({
   selector: 'transaction-history',

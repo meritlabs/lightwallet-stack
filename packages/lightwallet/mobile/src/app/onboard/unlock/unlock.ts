@@ -1,14 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
-import { Content, IonicPage, NavController, Platform } from 'ionic-angular';
-import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
-import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
-import { SendService } from 'merit/transact/send/send.service';
+import { Content, IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
-import { cleanAddress, isAlias } from '../../../utils/addresses';
+import { EasyReceipt } from '@merit/common/models/easy-receipt';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { SendService } from '@merit/common/services/send.service';
 
-// Unlock view for wallet
 @IonicPage({
   defaultHistory: ['OnboardingView']
 })
@@ -17,14 +15,14 @@ import { cleanAddress, isAlias } from '../../../utils/addresses';
   templateUrl: 'unlock.html',
 })
 export class UnlockView {
-  public unlockState: 'success' | 'fail' | 'addressFail';
-  public formData = {
+  unlockState: 'success' | 'fail' | 'addressFail';
+  formData = {
     parentAddress: '',
     addressCheckError: '',
     addressCheckInProgress: false
   };
-  public easyReceipt: EasyReceipt;
-  public parsedAddress: '';
+  easyReceipt: EasyReceipt;
+  parsedAddress: '';
 
   get canContinue(): boolean {
     return Boolean(this.formData.parentAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
@@ -58,12 +56,26 @@ export class UnlockView {
     this.validateAddressDebounce();
   }
 
+  toAliasView() {
+    if (this.formData.parentAddress && !this.formData.addressCheckInProgress && !this.formData.addressCheckError) {
+      this.navCtrl.push('AliasView', { parentAddress: this.parsedAddress });
+    }
+  }
+
+  async openQrScanner() {
+    let address = await this.addressScanner.scanAddress();
+    if (address) {
+      if (address.indexOf('merit:') == 0) address = address.slice(6);
+      this.formData.parentAddress = address;
+      this.checkAddress();
+    }
+  }
+
   private validateAddressDebounce = _.debounce(() => {
     this.validateAddress();
   }, 750);
 
   private async validateAddress() {
-
     this.formData.parentAddress = cleanAddress(this.formData.parentAddress);
 
     let input = (this.formData.parentAddress && isAlias(this.formData.parentAddress)) ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
@@ -84,23 +96,5 @@ export class UnlockView {
         return this.parsedAddress = addressInfo.address;
       }
     }
-
-
   }
-
-  toAliasView() {
-    if (this.formData.parentAddress && !this.formData.addressCheckInProgress && !this.formData.addressCheckError) {
-      this.navCtrl.push('AliasView', { parentAddress: this.parsedAddress });
-    }
-  }
-
-  async openQrScanner() {
-    let address = await this.addressScanner.scanAddress();
-    if (address) {
-      if (address.indexOf('merit:') == 0) address = address.slice(6);
-      this.formData.parentAddress = address;
-      this.checkAddress();
-    }
-  }
-
 }

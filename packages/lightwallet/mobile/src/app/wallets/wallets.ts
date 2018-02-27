@@ -1,21 +1,20 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
-import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
-import { BwcService } from 'merit/core/bwc.service';
-import { Logger } from 'merit/core/logger';
-import { ProfileService } from 'merit/core/profile.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
-import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
-import { FiatAmount } from 'merit/shared/fiat-amount.model';
-import { TxFormatService } from 'merit/transact/tx-format.service';
-import { VaultsService } from 'merit/vaults/vaults.service';
-import { WalletService } from 'merit/wallets/wallet.service';
+import { createDisplayWallet, IDisplayWallet } from '@merit/common/models/display-wallet';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
 import { Observable } from 'rxjs/Observable';
-import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
-import { MeritWalletClient } from '../../lib/merit-wallet-client/index';
+import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { FiatAmount } from '@merit/common/models/fiat-amount';
+import { EasyReceipt } from '@merit/common/models/easy-receipt';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -52,8 +51,8 @@ export class WalletsView {
 
   constructor(public navParams: NavParams,
               private navCtrl: NavController,
-              private logger: Logger,
-              private bwcService: BwcService,
+              private logger: LoggerService,
+              private bwcService: MWCService,
               private easyReceiveService: EasyReceiveService,
               private toastCtrl: MeritToastController,
               private profileService: ProfileService,
@@ -92,7 +91,7 @@ export class WalletsView {
 
   ionViewWillEnter() {
     this.refreshAllInfo()
-      .then(() => this.logger.info('Updated info for wallets view'))
+      .then(() => this.logger.info('Updated info for wallets view'));
   }
 
   async updateAllInfo() {
@@ -117,7 +116,7 @@ export class WalletsView {
             this.logger.info('Error updating information for all wallets.');
             this.logger.info(err);
 
-            if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
+            if (err.code == MWCErrors.CONNECTION_ERROR.code || err.code == MWCErrors.SERVER_UNAVAILABLE.code) {
               if (attempt < RETRY_MAX_ATTEMPTS) {
                 return Observable.timer(RETRY_TIMEOUT);
               }

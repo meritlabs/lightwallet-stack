@@ -46,10 +46,11 @@
       </ion-item-group>
       <ion-item-group *ngIf="unlockRequest.isConfirmed" detail-none>
         <button ion-item (click)="createContact()" detail-none>
-          <ion-icon name="add"></ion-icon> Create new contact
+          <ion-icon name="add"></ion-icon>
+          Create new contact
         </button>
         <button ion-item (click)="bindContact()" detail-none>Bind to existing contact</button>
-        <button ion-item (click)="continue()"> Continue </button>
+        <button ion-item (click)="continue()"> Continue</button>
       </ion-item-group>
     </ion-list>
 

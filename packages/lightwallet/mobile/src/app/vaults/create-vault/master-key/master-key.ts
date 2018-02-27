@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { BwcService } from 'merit/core/bwc.service';
-import { PopupService } from 'merit/core/popup.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
+import { PopupService } from '@merit/mobile/app/core/popup.service';
+import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
 import { ENV } from '@app/env';
+import { MWCService } from '@merit/common/services/mwc.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -19,10 +18,9 @@ export class CreateVaultMasterKeyView {
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
-              private configService: ConfigService,
               private createVaultService: CreateVaultService,
               private popupService: PopupService,
-              private bwcService: BwcService,) {
+              private bwcService: MWCService) {
   }
 
   ionViewDidLoad() {
@@ -49,7 +47,7 @@ export class CreateVaultMasterKeyView {
   }
 
   confirm() {
-    this.popupService.ionicConfirm(
+    this.popupService.confirm(
       'Master key', 'Did you copy the master key?', 'Yes', 'No')
       .then((result: boolean) => {
         if (result) this.toVautlSummary();

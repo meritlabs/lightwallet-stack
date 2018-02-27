@@ -1,21 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
-import { App, NavController, Platform, Tab, Tabs } from 'ionic-angular';
-
+import { App, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
-import { AppService } from 'merit/core/app-settings.service';
-import { BwcService } from 'merit/core/bwc.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { PlatformService } from '@merit/common/services/platform.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { AppSettingsService } from '@merit/common/services/app-settings.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { createDisplayWallet } from '@merit/common/models/display-wallet';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
-import { Logger } from 'merit/core/logger';
-import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
-import { PlatformService } from 'merit/core/platform.service';
-// Services
-import { ProfileService } from 'merit/core/profile.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { createDisplayWallet } from '../../../models/display-wallet';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
 
 @Injectable()
 export class PushNotificationsService {
@@ -29,10 +27,10 @@ export class PushNotificationsService {
               public profileService: ProfileService,
               public platformService: PlatformService,
               public configService: ConfigService,
-              public logger: Logger,
-              public appService: AppService,
+              public logger: LoggerService,
+              public appService: AppSettingsService,
               private app: App,
-              private bwcService: BwcService,
+              private mwcService: MWCService,
               private platform: Platform,
               private pollingNotificationService: PollingNotificationsService,
               private FCM: FCM,
@@ -87,7 +85,13 @@ export class PushNotificationsService {
           // Notification was received on device tray and tapped by the user.
           const wallet = this.walletService.getWallet(data.walletId);
           if (!wallet) return;
-          return this.app.getActiveNav().push('WalletDetailsView', { wallet: await createDisplayWallet(wallet, this.walletService, null, { skipAlias: true, skipAnv: true, skipRewards: true }) });
+          return this.app.getActiveNav().push('WalletDetailsView', {
+            wallet: await createDisplayWallet(wallet, this.walletService, null, {
+              skipAlias: true,
+              skipAnv: true,
+              skipRewards: true
+            })
+          });
         } else {
           // Notification was received in foreground. Let's propogate the event
           // (using Ionic Events) to the relevant view.

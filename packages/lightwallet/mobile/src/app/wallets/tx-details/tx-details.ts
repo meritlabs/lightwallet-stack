@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
-import { COINBASE_CONFIRMATION_THRESHOLD } from '../../../utils/constants';
-import { IDisplayTransaction, TransactionAction } from '../../../models/transaction';
+import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
+import { COINBASE_CONFIRMATION_THRESHOLD } from '@merit/common/utils/constants';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -31,7 +31,8 @@ export class TxDetailsView {
   }
 
   constructor(private navParams: NavParams,
-              private viewCtrl: ViewController) {}
+              private viewCtrl: ViewController) {
+  }
 
   dismiss() {
     return this.viewCtrl.dismiss();

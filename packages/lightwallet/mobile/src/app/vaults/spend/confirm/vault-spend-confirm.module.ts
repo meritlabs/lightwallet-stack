@@ -1,15 +1,13 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { SharedModule } from 'merit/shared/shared.module';
 import { VaultSpendConfirmView } from './vault-spend-confirm';
 
 @NgModule({
   declarations: [
-    VaultSpendConfirmView,
+    VaultSpendConfirmView
   ],
   imports: [
-    IonicPageModule.forChild(VaultSpendConfirmView),
-    SharedModule,
+    IonicPageModule.forChild(VaultSpendConfirmView)
   ]
 })
 export class VaultSpendConfirmModule {

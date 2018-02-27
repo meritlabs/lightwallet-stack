@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { SendService } from 'merit/transact/send/send.service';
 import * as _ from 'lodash';
-import { ContactsProvider } from '../../../../providers/contacts/contacts';
-import { IMeritAddress, MeritContact } from '../../../../models/merit-contact';
 import { ENV } from '@app/env';
-import { cleanAddress, isAlias } from '../../../../utils/addresses';
+import { IMeritAddress, MeritContact } from '@merit/common/models/merit-contact';
+import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { SendService } from '@merit/common/services/send.service';
 
 @IonicPage()
 @Component({
@@ -15,7 +14,6 @@ import { cleanAddress, isAlias } from '../../../../utils/addresses';
   templateUrl: 'send-edit-contact.html',
 })
 export class SendEditContactView {
-
   contact: MeritContact;
   newAddress: string = '';
 
@@ -26,7 +24,7 @@ export class SendEditContactView {
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
-              private contactsService: ContactsProvider,
+              private contactsService: ContactsService,
               private toastController: MeritToastController,
               private sendService: SendService,
               private alertCtrl: AlertController) {
@@ -107,7 +105,6 @@ export class SendEditContactView {
   }
 
   deleteContact() {
-
     let remove = () => {
       this.contact.meritAddresses.forEach((m) => {
         this.removeAddress(m);
@@ -129,8 +126,5 @@ export class SendEditContactView {
         }
       ]
     }).present();
-
-
   }
-
 }

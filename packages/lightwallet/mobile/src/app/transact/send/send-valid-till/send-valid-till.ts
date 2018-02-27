@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
+import { IonicPage } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -8,15 +7,4 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'send-valid-till.html',
 })
 export class SendValidTillView {
-
-
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams) {
-
-  }
-
-  ionViewDidLoad() {
-    //do something here
-  }
-
 }

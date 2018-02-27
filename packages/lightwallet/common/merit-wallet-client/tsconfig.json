@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+      "allowSyntheticDefaultImports": true,
+      "allowUnreachableCode": true,
+      "declaration": true,
+      "noEmit": false,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "lib": [
+        "dom",
+        "es7"
+      ],
+      "baseUrl": ".",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "outDir": "./dist",
+      "target": "es2017",
+      "paths": {
+        "**": ["../../mobile/node_modules/*"]
+      }
+    },
+    "include": [
+      "**/*.ts",
+      "*.ts"
+    ],
+    "exclude": [
+      "node_modules",
+      "src/lib"
+    ],
+    "compileOnSave": false,
+    "atom": {
+      "rewriteTsconfig": false
+    }
+  }

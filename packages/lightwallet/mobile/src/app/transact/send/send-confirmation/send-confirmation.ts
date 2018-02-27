@@ -1,21 +1,17 @@
 import { AlertController, IonicPage, LoadingController, NavController, NavParams, Tabs } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ToastConfig } from 'merit/core/toast.config';
-import { ConfigService } from 'merit/shared/config.service';
-
-import { WalletService } from 'merit/wallets/wallet.service';
-import { Logger } from 'merit/core/logger';
-import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
-import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
-import { EasySend } from 'merit/transact/send/easy-send/easy-send.model';
 import * as  _ from 'lodash';
-import { ISendMethod, SendMethodDestination, SendMethodType } from 'merit/transact/send/send-method.model';
-import { RateService } from 'merit/transact/rate.service';
-import { SendService } from 'merit/transact/send/send.service';
-import { MeritWalletClient } from '../../../../lib/merit-wallet-client/index';
-
+import { EasySend } from '@merit/common/models/easy-send';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { TouchIdService } from '@merit/mobile/services/touch-id.service';
+import { EasySendService } from '@merit/common/services/easy-send.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 
 @IonicPage()
 @Component({
@@ -62,10 +58,7 @@ export class SendConfirmationView {
               private formatService: TxFormatService,
               private rateService: RateService,
               private configService: ConfigService,
-              private logger: Logger,
-              private tabs: Tabs,
-              private sendService: SendService
-  ) {
+              private logger: LoggerService) {
     this.txData = navParams.get('txData');
     this.referralsToSign = navParams.get('referralsToSign');
   }

@@ -3,39 +3,37 @@ import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicPage } from 'ionic-angular';
 import * as _ from 'lodash';
-import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
-import { Logger } from 'merit/core/logger';
-import { PlatformService } from 'merit/core/platform.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { FiatAmount } from 'merit/shared/fiat-amount.model';
-import { TxFormatService } from 'merit/transact/tx-format.service';
-import { WalletService } from 'merit/wallets/wallet.service';
 import { Observable } from 'rxjs/Observable';
-import { createDisplayWallet, IDisplayWallet } from '../../../models/display-wallet';
-import { UnlockRequestService } from 'merit/core/unlock-request.service';
-import { SendService } from 'merit/transact/send/send.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { createDisplayWallet, IDisplayWallet } from '@merit/common/models/display-wallet';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { PlatformService } from '@merit/common/services/platform.service';
+import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { FiatAmount } from '@merit/common/models/fiat-amount';
+import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { SendService } from '@merit/common/services/send.service';
 
 @IonicPage()
 @Component({
   selector: 'view-network',
   templateUrl: 'network.html',
 })
-
 export class NetworkView {
   static readonly RETRY_MAX_ATTEMPTS = 5;
   static readonly RETRY_TIMEOUT = 1000;
-  public displayWallets: Array<IDisplayWallet> = [];
-  public loading: boolean;
+  displayWallets: Array<IDisplayWallet> = [];
+  loading: boolean;
 
   totalNetworkValue: string;
   totalMiningRewards: string;
   totalAmbassadorRewards: string;
 
-  activeUnlockRequests:number;
-  activeInvites:number;
+  activeUnlockRequests: number;
+  activeInvites: number;
 
   constructor(private profileService: ProfileService,
               private clipboard: Clipboard,
@@ -43,11 +41,11 @@ export class NetworkView {
               private socialSharing: SocialSharing,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private logger: Logger,
+              private logger: LoggerService,
               private platformService: PlatformService,
               private unlockRequestService: UnlockRequestService,
-              private sendService: SendService
-            ) {}
+              private sendService: SendService) {
+  }
 
   // Ensure that the wallets are loaded into the view on first load.
   async ngOnInit() {
@@ -73,7 +71,7 @@ export class NetworkView {
 
   async doRefresh(refresher) {
     try {
-      await this.updateView()
+      await this.updateView();
     } catch (err) {
     }
 
@@ -126,10 +124,10 @@ export class NetworkView {
       )
     );
 
-   this.activeInvites = 0;
-   for (let dWallet of displayWallets) {
+    this.activeInvites = 0;
+    for (let dWallet of displayWallets) {
       this.activeInvites += dWallet.invites;
-   }
+    }
 
 
     return displayWallets;
@@ -156,7 +154,7 @@ export class NetworkView {
         err
           .zip(Observable.range(1, NetworkView.RETRY_MAX_ATTEMPTS))
           .mergeMap(([err, attempt]) => {
-            if (err.code == Errors.CONNECTION_ERROR.code || err.code == Errors.SERVER_UNAVAILABLE.code) {
+            if (err.code == MWCErrors.CONNECTION_ERROR.code || err.code == MWCErrors.SERVER_UNAVAILABLE.code) {
               if (attempt < NetworkView.RETRY_MAX_ATTEMPTS) {
                 return Observable.timer(NetworkView.RETRY_TIMEOUT);
               }
@@ -191,6 +189,4 @@ export class NetworkView {
 
     return newDWallets;
   }
-
-
 }

@@ -1,44 +1,45 @@
-const chalk = require("chalk");
+const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
-const tsconfig = require('./tsconfig.json');
 const webpackConfig = require('@ionic/app-scripts/config/webpack.config.js');
 const webpack = require('webpack');
 const { execSync } = require('child_process');
-const  env = process.env.IONIC_ENV;
+const env = process.env.IONIC_ENV;
 
 console.log('environment setting is: ', env);
 
 webpackConfig.prod.resolve = {
-    alias: {
-        "@app/env": path.resolve(environmentPath('prod')),
-        'merit': path.resolve(tsconfig.compilerOptions.baseUrl, './src/app')
-    },
-    extensions: ['.ts', '.js', '.json'],
-    modules: [path.resolve('node_modules')]
+  alias: {
+    '@app/env': path.resolve(environmentPath('prod')),
+    '@merit/mobile': path.resolve(__dirname, './src'),
+    '@merit/common': path.resolve(__dirname, '../common')
+  },
+  extensions: ['.ts', '.js', '.json'],
+  modules: [path.resolve('node_modules')]
 };
 
 webpackConfig.dev.resolve = {
-    alias: {
-        "@app/env": path.resolve(environmentPath('dev')),
-        'merit': path.resolve(tsconfig.compilerOptions.baseUrl, './src/app')
-    },
-    extensions: ['.ts', '.js', '.json'],
-    modules: [path.resolve('node_modules')]
+  alias: {
+    '@app/env': path.resolve(environmentPath('dev')),
+    '@merit/mobile': path.resolve(__dirname, './src'),
+    '@merit/common': path.resolve(__dirname, '../common')
+  },
+  extensions: ['.ts', '.js', '.json'],
+  modules: [path.resolve('node_modules')]
 };
 
 if (env !== 'prod' && env !== 'dev') {
-    // Default to dev config
-    webpackConfig[env] = webpackConfig.dev;
+  // Default to dev config
+  webpackConfig[env] = webpackConfig.dev;
 }
 
 function environmentPath(env) {
-    var filePath = './src/environments/environment' + (env === 'prod' ? '' : '.' + env) + '.ts';
-    if (!fs.existsSync(filePath)) {
-        console.log(chalk.red('\n' + filePath + ' does not exist!'));
-    } else {
-        return filePath;
-    }
+  var filePath = path.resolve(__dirname, './src/environments/environment' + (env === 'prod' ? '' : '.' + env) + '.ts');
+  if (!fs.existsSync(filePath)) {
+    console.log(chalk.red('\n' + filePath + ' does not exist!'));
+  } else {
+    return filePath;
+  }
 }
 
 const DEFINE_PLUGIN = new webpack.DefinePlugin({
@@ -51,5 +52,5 @@ webpackConfig.dev.plugins.push(DEFINE_PLUGIN);
 webpackConfig.prod.plugins.push(DEFINE_PLUGIN);
 
 module.exports = function () {
-    return webpackConfig;
+  return webpackConfig;
 };

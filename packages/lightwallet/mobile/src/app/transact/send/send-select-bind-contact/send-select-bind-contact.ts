@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController, AlertController } from 'ionic-angular';
-import { MeritContact } from '../../../../models/merit-contact';
-import { ContactsProvider } from '../../../../providers/contacts/contacts';
+import { AlertController, IonicPage, NavParams, ViewController } from 'ionic-angular';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { ContactsService } from '@merit/mobile/services/contacts.service';
 
 @IonicPage()
 @Component({
@@ -10,20 +10,17 @@ import { ContactsProvider } from '../../../../providers/contacts/contacts';
 })
 export class SendSelectBindContactView {
 
-  public contacts:Array<MeritContact>;
-  public foundContacts:Array<MeritContact> = [];
+  public contacts: Array<MeritContact>;
+  public foundContacts: Array<MeritContact> = [];
   public searchQuery: string = '';
-  public meritAddress:{address:string, network:string};
+  public meritAddress: { address: string, network: string };
 
- constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private viewCtrl: ViewController,
-    private contactsService: ContactsProvider,
-    private alertCtrl: AlertController
-  ) {
-   this.contacts = this.navParams.get('contacts');
-   this.meritAddress = this.navParams.get('address');
+  constructor(private navParams: NavParams,
+              private viewCtrl: ViewController,
+              private contactsService: ContactsService,
+              private alertCtrl: AlertController) {
+    this.contacts = this.navParams.get('contacts');
+    this.meritAddress = this.navParams.get('address');
   }
 
   ionViewDidLoad() {
@@ -35,17 +32,20 @@ export class SendSelectBindContactView {
   }
 
   select(contact) {
-
     this.alertCtrl.create({
       title: `Bind this address to contact '${contact.name.formatted}'?`,
       buttons: [
-        {text: 'Cancel', role: 'cancel', handler: () => {}},
-        {text: 'Bind', handler: () => {
+        {
+          text: 'Cancel', role: 'cancel', handler: () => {
+        }
+        },
+        {
+          text: 'Bind', handler: () => {
           this.contactsService.bindAddressToContact(contact, this.meritAddress.address, this.meritAddress.network)
             .then(() => {
               this.viewCtrl.dismiss(contact);
             });
-          }
+        }
         }
       ]
     }).present();
@@ -55,7 +55,7 @@ export class SendSelectBindContactView {
     if (!contact.name || !contact.name.formatted) return '';
     let nameParts = contact.name.formatted.toUpperCase().replace(/\s\s+/g, ' ').split(' ');
     let name = nameParts[0].charAt(0);
-    if (nameParts[1]) name += ' '+nameParts[1].charAt(0);
+    if (nameParts[1]) name += ' ' + nameParts[1].charAt(0);
     return name;
   }
 
@@ -70,8 +70,8 @@ export class SendSelectBindContactView {
     }
 
     this.foundContacts = this.contacts.filter((contact) => {
-      return (!!contact.name && !!contact.name.formatted && contact.name.formatted.toLowerCase().match(this.searchQuery.toLowerCase()))
-    })
+      return (!!contact.name && !!contact.name.formatted && contact.name.formatted.toLowerCase().match(this.searchQuery.toLowerCase()));
+    });
   }
 
 }

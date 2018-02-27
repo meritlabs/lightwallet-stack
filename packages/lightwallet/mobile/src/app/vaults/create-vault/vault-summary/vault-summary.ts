@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
+import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']

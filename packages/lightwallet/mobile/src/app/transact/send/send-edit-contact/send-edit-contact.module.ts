@@ -10,4 +10,5 @@ import { SendEditContactView } from './send-edit-contact';
     IonicPageModule.forChild(SendEditContactView),
   ],
 })
-export class SendEditContactModule {}
+export class SendEditContactModule {
+}

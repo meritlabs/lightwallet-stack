@@ -1,15 +1,13 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { BwcService } from 'merit/core/bwc.service';
-import { Logger } from 'merit/core/logger';
-import { ProfileService } from 'merit/core/profile.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { CreateVaultService } from 'merit/vaults/create-vault/create-vault.service';
-import { VaultsService } from 'merit/vaults/vaults.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from '../../../../lib/merit-wallet-client';
+import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
+import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -30,8 +28,8 @@ export class CreateVaultGeneralInfoView {
               private profileService: ProfileService,
               private walletService: WalletService,
               private vaultsService: VaultsService,
-              private bwc: BwcService,
-              private logger: Logger,
+              private bwc: MWCService,
+              private logger: LoggerService,
               private toastCtrl: MeritToastController,
               public navParams: NavParams,) {}
 

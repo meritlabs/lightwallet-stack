@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { MeritContact } from '../../../mobile/src/models/merit-contact';
+import { MeritContact } from '../../../common/models/merit-contact';
 
 export interface ContactsState {
   contacts: MeritContact[];

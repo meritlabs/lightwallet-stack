@@ -1,15 +1,14 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { BwcService } from 'merit/core/bwc.service';
-import { Logger } from 'merit/core/logger';
-import { ProfileService } from 'merit/core/profile.service';
-import { FiatAmount } from 'merit/shared/fiat-amount.model';
-import { RateService } from 'merit/transact/rate.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
-import { VaultsService } from 'merit/vaults/vaults.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { MeritWalletClient } from '../../../lib/merit-wallet-client/index';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { FiatAmount } from '@merit/common/models/fiat-amount';
 
 @IonicPage({
   segment: 'vault/:vaultId',
@@ -30,13 +29,12 @@ export class VaultDetailsView {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              private logger: Logger,
               private profileService: ProfileService,
               private walletService: WalletService,
               private vaultsService: VaultsService,
-              private bwc: BwcService,
+              private bwc: MWCService,
               private txFormatService: TxFormatService,
-              private rateService: RateService,) {
+              private rateService: RateService) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
     // things fast and smooth.  We can refresh as needed.

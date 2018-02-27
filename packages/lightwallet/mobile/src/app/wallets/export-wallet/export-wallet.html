@@ -1,66 +1,66 @@
 <ion-header no-border>
-    <ion-navbar color="light">
-        <ion-title>Export Wallet</ion-title>
-    </ion-navbar>
-    <ion-toolbar color="light" mode="md">
-        <ion-segment [(ngModel)]="segment" mode="md">
-            <ion-segment-button value="mnemonic">
-                Phrase
-            </ion-segment-button>
-            <ion-segment-button value="file">
-                File
-            </ion-segment-button>
-            <ion-segment-button value="code">
-                QR Code
-            </ion-segment-button>
-        </ion-segment>
-    </ion-toolbar>
+  <ion-navbar color="light">
+    <ion-title>Export Wallet</ion-title>
+  </ion-navbar>
+  <ion-toolbar color="light" mode="md">
+    <ion-segment [(ngModel)]="segment" mode="md">
+      <ion-segment-button value="mnemonic">
+        Phrase
+      </ion-segment-button>
+      <ion-segment-button value="file">
+        File
+      </ion-segment-button>
+      <ion-segment-button value="code">
+        QR Code
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <div *ngIf="accessGranted">
+  <div *ngIf="accessGranted">
 
-        <div *ngIf="segment == 'mnemonic'">
-          <ion-item-divider>
-            Wallet Recovery Phrase
-          </ion-item-divider>
-          <ion-list>
-              <ion-item>
-                  <div class="key">{{ mnemonic }}</div>
-              </ion-item>
-              <ion-item>
-                  <div class="description">You can use this phrase to recover your wallet.</div>
-              </ion-item>
-          </ion-list>
-        </div>
-
-        <div *ngIf="segment == 'file'">
-            <ion-list>
-                <ion-item>
-                    <ion-label stacked>
-                      <p>Set up password</p>
-                    </ion-label>
-                    <ion-input type="password" [(ngModel)]="formData.password"></ion-input>
-                </ion-item>
-
-                <ion-item>
-                    <ion-label stacked>
-                      <p>Repeat password</p>
-                    </ion-label>
-                    <ion-input type="password" [(ngModel)]="formData.repeatPassword"></ion-input>
-                </ion-item>
-            </ion-list>
-
-          <button ion-button class="action-button" [disabled]="!saveEnabled()" (click)="download()">
-            Export
-          </button>
-        </div>
-
-        <div *ngIf="segment == 'code'">
-            <qr-code *ngIf="qrcode" [value]="qrcode" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
-            <p text-center>
-              From the destination device, go to Wallets &gt; Import wallet and scan this QR code.
-            </p>
-        </div>
+    <div *ngIf="segment == 'mnemonic'">
+      <ion-item-divider>
+        Wallet Recovery Phrase
+      </ion-item-divider>
+      <ion-list>
+        <ion-item>
+          <div class="key">{{ mnemonic }}</div>
+        </ion-item>
+        <ion-item>
+          <div class="description">You can use this phrase to recover your wallet.</div>
+        </ion-item>
+      </ion-list>
     </div>
+
+    <div *ngIf="segment == 'file'">
+      <ion-list>
+        <ion-item>
+          <ion-label stacked>
+            <p>Set up password</p>
+          </ion-label>
+          <ion-input type="password" [(ngModel)]="formData.password"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label stacked>
+            <p>Repeat password</p>
+          </ion-label>
+          <ion-input type="password" [(ngModel)]="formData.repeatPassword"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <button ion-button class="action-button" [disabled]="!saveEnabled()" (click)="download()">
+        Export
+      </button>
+    </div>
+
+    <div *ngIf="segment == 'code'">
+      <qr-code *ngIf="qrcode" [value]="qrcode" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
+      <p text-center>
+        From the destination device, go to Wallets &gt; Import wallet and scan this QR code.
+      </p>
+    </div>
+  </div>
 </ion-content>

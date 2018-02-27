@@ -8,11 +8,11 @@ view-create-wallet {
     background: white;
     &:not(:last-child) {
       margin-bottom: 12px;
-      border-bottom: 1px solid rgba(0,0,0,0.1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     &:not(:first-child) {
-      border-top: 1px solid rgba(0,0,0,0.1);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
   }
 
@@ -20,7 +20,7 @@ view-create-wallet {
     background: color($colors, 'danger');
   }
 
-  .warning ion-label{
+  .warning ion-label {
     white-space: normal;
   }
 
@@ -29,9 +29,9 @@ view-create-wallet {
     padding: 0;
     margin: 0;
     height: 20px;
-    width: 20px; 
+    width: 20px;
     ion-icon {
-     font-size: 20px;
+      font-size: 20px;
       color: color($colors, primary);
       font-weight: 600;
     }
@@ -42,14 +42,14 @@ view-create-wallet {
     padding: 0;
     margin: 0;
     height: 15px;
-    line-height: 15px; 
-    padding-left: 15px; 
+    line-height: 15px;
+    padding-left: 15px;
   }
-  
+
   .alias-item {
     position: relative;
     ion-item:after {
-      display: none; 
+      display: none;
     }
     ion-spinner {
       height: 20px;
