@@ -1,6 +1,17 @@
 {
-  "name": "lightwallet",
-  "version": "0.0.1",
+  "name": "merit-lightwallet",
+  "description": "Merit LightWallet application",
+  "author": "Merit Foundation",
+  "version": "1.1.0",
+  "keywords": [
+    "merit",
+    "wallet",
+    "lightwallet",
+    "labs",
+    "mrt",
+    "multisignature",
+    "bitcore"
+  ],
   "scripts": {
     "clean": "ionic-app-scripts clean",
     "build": "ionic-app-scripts build",
