@@ -16,6 +16,10 @@
     background: $white
     color: $blue
     border: 2px solid $blue
+  &--transparent
+    background: transparent
+    color: $blue
+    border: 2px solid $blue
   &--with-arrow
     &:after
       content: "→"
@@ -27,7 +31,7 @@
       &:after
         transform: translateX(2pt)
   &--with-caret
-    &.ui-button--sm
+    &.ui-button--md
       padding: 8pt 10pt
       font-family: $baseFont--regular
     &:after
@@ -52,10 +56,26 @@
       background-size: 13pt
       position: relative
       top: 2px
-      margin-right: 6pt
+      margin-right: 10pt
+  &--add
+    &:before
+      content: "+"
+      display: inline-block
+      position: relative
+      margin-right: 10pt
+      font-size: 15pt
+      top: -1pt
+      font-family: $baseFont--bold
 .ui-button
-  &--sm
+  &--md
     font-family: $baseFont--bold
     +chageFontSize(14pt, 14pt)
     padding: 8pt 18pt
     letter-spacing: .3pt
+  &--sm
+    font-family: $baseFont--regular
+    +chageFontSize(14pt, 14pt)
+    padding: 6pt 15pt
+    letter-spacing: .3pt
+    &.ui-button--add
+      padding: 6pt 15pt 6pt 11pt
