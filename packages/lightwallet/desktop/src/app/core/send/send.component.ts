@@ -48,6 +48,28 @@ export class SendComponent implements OnInit {
     "name": 'I pay the fee',
     "value": 10
   };
+  availableWallets: any = [
+    {
+      "name": 'Personal Wallet',
+      "value": 10,
+      "icon": "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg"
+    },
+    {
+      "name": 'Reserve Wallet',
+      "value": 200,
+      "icon": "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg"
+    },
+    {
+      "name": 'Pension Savings',
+      "value": 200,
+      "icon": "/assets/v1/icons/ui/wallets/vault-ico-grey.svg"
+    }
+  ];
+  selectedWallet:any = {
+    "name": 'Personal Wallet',
+    "value": 10,
+    "icon": "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg"
+  };
   converted: any;
   amount: number = 0;
   constructor() { }
@@ -62,6 +84,9 @@ export class SendComponent implements OnInit {
   }
   selectFee($event) {
     this.selectedFee = $event
+  }
+  selectWallet($event) {
+    this.selectedWallet = $event
   }
   onKey(event: any) {
     var currency = this.selectedCurrency;
