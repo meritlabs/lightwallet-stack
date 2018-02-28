@@ -41,12 +41,9 @@
           style="ui-input ui-input--select ui-input--form"></app-select>
       </div>
       <div class="sendMerit__form__group">
-        <label for="" class="ui-label">Send to <span class="">address</span></label>
-        <app-select
-          (selectionEvent)="selectWallet($event)"
-          [selected]="selectedWallet"
-          [input]="availableWallets"
-          style="ui-input ui-input--select ui-input--form"></app-select>
+        <label for="" class="ui-label">Send to <span class="fee-label">address / alias</span></label>
+        <input type="text" name="" value="" placeholder="Paste address / alias here"
+        class="ui-input ui-input--form ui-input--text">
       </div>
       <div class="sendMerit__form__group">
         <button type="button" name="button" class="ui-button ui-button--blue">Send Merit</button>
