@@ -40,6 +40,17 @@
           [input]="availableWallets"
           style="ui-input ui-input--select ui-input--form"></app-select>
       </div>
+      <div class="sendMerit__form__group">
+        <label for="" class="ui-label">Send to <span class="">address</span></label>
+        <app-select
+          (selectionEvent)="selectWallet($event)"
+          [selected]="selectedWallet"
+          [input]="availableWallets"
+          style="ui-input ui-input--select ui-input--form"></app-select>
+      </div>
+      <div class="sendMerit__form__group">
+        <button type="button" name="button" class="ui-button ui-button--blue">Send Merit</button>
+      </div>
     </div>
     <div class="sendMerit__totals">
 
