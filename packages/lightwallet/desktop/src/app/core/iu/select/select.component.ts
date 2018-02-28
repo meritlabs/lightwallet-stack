@@ -12,8 +12,9 @@ export class SelectComponent implements OnInit {
   ngOnInit() {
   }
   @Output() messageEvent = new EventEmitter<string>();
-  @Input() selected: string;
+  @Input() selected: any;
   @Input() input: any;
+  @Input() style: any;
   show: boolean = false;
   select(item) {
     this.show = false;

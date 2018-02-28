@@ -1,9 +1,11 @@
 <div class="selectbox" on-blur="show=false">
   <button (click)="show=!show"
-    class="ui-button ui-button--white ui-button--md ui-button--with-caret ui-button--wallet-icon">
-    {{ selected }}
+    class="{{style}}">
+    {{ selected.name }}
   </button>
   <div class="selectbox__dropdown" [hidden]="!show">
-    <button mat-menu-item *ngFor="let item of input" (click)="select(item)" class="selectbox__dropdown__item">{{ item }}</button>
+    <button mat-menu-item *ngFor="let item of input"
+      (click)="select(item)" class="selectbox__dropdown__item">
+      {{ item.name }}</button>
   </div>
 </div>
