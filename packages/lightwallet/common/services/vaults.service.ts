@@ -28,8 +28,7 @@ export class VaultsService {
 
   async getWalletVaults(wallet: IDisplayWallet): Promise<Array<any>> {
     const vaults = await wallet.client.getVaults();
-    console.log(vaults);
-    return vaults;
+    return vaults.map(v => Object.assign(v, {walletClient: wallet.client}));
   }
 
   getVaultInfo(vault: IVault) {
@@ -98,7 +97,7 @@ export class VaultsService {
 
     const vault:any = await data.wallet.client.prepareVault(0, {
       amount: this.rateService.mrtToMicro(data.amount),
-      whitelist: data.whiteList.map(w => w.client.getRootAddress().toBuffer()),
+      whitelist: data.whiteList,
       masterPubKey: data.masterKey.key.publicKey,
       spendPubKey: this.Bitcore.HDPrivateKey.fromString(data.wallet.client.credentials.xPrivKey).publicKey,
     });
