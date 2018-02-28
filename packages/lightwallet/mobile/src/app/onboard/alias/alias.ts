@@ -1,19 +1,16 @@
 import { Component, ViewChild } from '@angular/core';
-import { App, Content, IonicPage, LoadingController, NavController } from 'ionic-angular';
-import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
-import { Logger } from 'merit/core/logger';
-import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
-import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ConfigService } from 'merit/shared/config.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { SendService } from 'merit/transact/send/send.service';
+import { Content, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { cleanAddress, isAlias } from '../../../utils/addresses';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
+import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { AddressService } from '@merit/common/services/address.service';
 
-// Unlock view for wallet
 @IonicPage({
   defaultHistory: ['OnboardingView']
 })
@@ -22,29 +19,27 @@ import { cleanAddress, isAlias } from '../../../utils/addresses';
   templateUrl: 'alias.html',
 })
 export class AliasView {
-  public unlockState: 'success' | 'fail' | 'aliasFail';
-  public formData = {
-      alias: '',
-      aliasValidationError: '',
-      aliasCheckInProgress: false
-    };
+  unlockState: 'success' | 'fail' | 'aliasFail';
+  formData = {
+    alias: '',
+    aliasValidationError: '',
+    aliasCheckInProgress: false
+  };
 
   @ViewChild(Content) content: Content;
 
-  private parentAddress:string;
+  private parentAddress: string;
 
-  constructor(private app: App,
-              private walletService: WalletService,
+  constructor(private walletService: WalletService,
               private toastCtrl: MeritToastController,
               private loaderCtrl: LoadingController,
               private navCtrl: NavController,
               private navParams: NavParams,
-              private logger: Logger,
+              private logger: LoggerService,
               private config: ConfigService,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
-              private sendService: SendService
-            ) {
+              private addressService: AddressService) {
   }
 
   async ionViewDidLoad() {
@@ -57,12 +52,14 @@ export class AliasView {
     this.validateAliasDebounce();
   }
 
-  private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
+  private validateAliasDebounce = _.debounce(() => {
+    this.validateAlias();
+  }, 750);
 
   private async validateAlias() {
 
     this.formData.alias = cleanAddress(this.formData.alias);
-    const input = (this.formData.alias && isAlias(this.formData.alias))  ? this.formData.alias.slice(1) : this.formData.alias;
+    const input = (this.formData.alias && isAlias(this.formData.alias)) ? this.formData.alias.slice(1) : this.formData.alias;
 
     if (!input) {
       this.validateAliasDebounce.cancel();
@@ -76,7 +73,7 @@ export class AliasView {
       return this.formData.aliasValidationError = 'Alias should contain at least 3 symbols';
     }
 
-    if (!this.sendService.couldBeAlias(input)) {
+    if (!this.addressService.couldBeAlias(input)) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
       return this.formData.aliasValidationError = 'Incorrect alias format';
@@ -85,7 +82,7 @@ export class AliasView {
     this.formData.aliasValidationError = null;
 
 
-    let addressExists = await this.sendService.getValidAddress(input);
+    let addressExists = await this.addressService.getValidAddress(input);
 
     if (addressExists) {
       this.formData.aliasValidationError = 'Alias already in use';
@@ -121,7 +118,7 @@ export class AliasView {
       await this.navCtrl.setRoot('BackupView', { mnemonic: wallet.getMnemonic() });
       await this.navCtrl.popToRoot();
     } catch (err) {
-      if (err == Errors.INVALID_REFERRAL) this.unlockState = 'fail';
+      if (err == MWCErrors.INVALID_REFERRAL) this.unlockState = 'fail';
       this.logger.debug('Could not unlock wallet: ', err);
       this.toastCtrl.create({
         message: err.text || err.message || 'Unknown error',
@@ -131,5 +128,4 @@ export class AliasView {
 
     await loader.dismiss();
   }
-
 }

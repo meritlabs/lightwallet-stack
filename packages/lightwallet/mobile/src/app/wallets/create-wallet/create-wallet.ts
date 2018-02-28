@@ -1,19 +1,22 @@
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, ModalController, NavController, NavParams, AlertController } from 'ionic-angular';
-
-import * as _ from 'lodash';
-import { Logger } from 'merit/core/logger';
-import { PollingNotificationsService } from 'merit/core/notification/polling-notification.service';
-
-import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ConfigService } from 'merit/shared/config.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { SendService } from 'merit/transact/send/send.service';
-
+import {
+  AlertController,
+  IonicPage,
+  LoadingController,
+  ModalController,
+  NavController,
+  NavParams
+} from 'ionic-angular';
 import { ENV } from '@app/env';
-import { cleanAddress, isAlias } from '../../../utils/addresses';
+import * as _ from 'lodash';
+import { ConfigService } from '@merit/common/services/config.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
+import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -32,7 +35,7 @@ export class CreateWalletView {
     aliasCheckInProgress: false,
     addressCheckError: '',
     addressCheckInProgress: false,
-    bwsurl: '',
+    bwsurl: ENV.mwsUrl,
     recoveryPhrase: '',
     password: '',
     repeatPassword: '',
@@ -41,23 +44,20 @@ export class CreateWalletView {
   };
 
   parsedAddress: string;
-  defaultBwsUrl: string;
+  defaultBwsUrl: string = ENV.mwsUrl;
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
               private config: ConfigService,
               private walletService: WalletService,
               private loadCtrl: LoadingController,
               private toastCtrl: MeritToastController,
               private modalCtrl: ModalController,
-              private logger: Logger,
+              private logger: LoggerService,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
               private alertCtrl: AlertController,
-              private sendService: SendService
-            ) {
-    this.formData.bwsurl = ENV.mwsUrl;
-    this.defaultBwsUrl = ENV.mwsUrl;
+              private addressService: AddressService) {
   }
 
   ionViewDidEnter() {
@@ -111,8 +111,12 @@ export class CreateWalletView {
     this.validateAddressDebounce();
   }
 
-  private validateAliasDebounce = _.debounce(() => { this.validateAlias() }, 750);
-  private validateAddressDebounce = _.debounce(() => { this.validateParentAddress() }, 750);
+  private validateAliasDebounce = _.debounce(() => {
+    this.validateAlias();
+  }, 750);
+  private validateAddressDebounce = _.debounce(() => {
+    this.validateParentAddress();
+  }, 750);
 
   private async validateParentAddress() {
     this.formData.parentAddress = cleanAddress(this.formData.parentAddress);
@@ -121,12 +125,12 @@ export class CreateWalletView {
     if (!input) {
       this.formData.addressCheckInProgress = false;
       return this.formData.addressCheckError = 'Address cannot be empty';
-    } else if (!this.sendService.isAddress(input)) {
-      if (!this.sendService.couldBeAlias(input)) {
+    } else if (!this.addressService.isAddress(input)) {
+      if (!this.addressService.couldBeAlias(input)) {
         this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Incorrect address or alias format';
       } else {
-        let aliasInfo = await this.sendService.getAddressInfo(input);
+        let aliasInfo = await this.addressService.getAddressInfo(input);
         if (!aliasInfo || !aliasInfo.isValid || !aliasInfo.isBeaconed || !aliasInfo.isConfirmed) {
           this.formData.addressCheckInProgress = false;
           return this.formData.addressCheckError = 'Alias not found';
@@ -137,7 +141,7 @@ export class CreateWalletView {
         }
       }
     } else {
-      let addressInfo = await this.sendService.getAddressInfo(input);
+      let addressInfo = await this.addressService.getAddressInfo(input);
       if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
         this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Address not found';
@@ -168,14 +172,14 @@ export class CreateWalletView {
       return this.formData.aliasValidationError = 'Alias should contain at least 4 symbols';
     }
 
-    if (!this.sendService.couldBeAlias(input)) {
+    if (!this.addressService.couldBeAlias(input)) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
       return this.formData.aliasValidationError = 'Incorrect alias format';
     }
 
 
-    let addressExists = await this.sendService.getValidAddress(input);
+    let addressExists = await this.addressService.getValidAddress(input);
 
     if (addressExists) {
       this.formData.aliasCheckInProgress = false;

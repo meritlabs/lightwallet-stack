@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ViewController } from 'ionic-angular';
-import { TouchIdService } from 'merit/shared/touch-id/touch-id.service';
+import { TouchIdService } from '@merit/mobile/services/touch-id.service';
 
 @Component({
   selector: 'page-fingerprint-lock',

@@ -1,24 +1,24 @@
 <ion-header>
-    <ion-navbar>
-        <ion-title></ion-title>
-        <ion-buttons end>
-            <button ion-button (click)="close()">
-                Close
-            </button>
-        </ion-buttons>
-    </ion-navbar>
+  <ion-navbar>
+    <ion-title></ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="close()">
+        Close
+      </button>
+    </ion-buttons>
+  </ion-navbar>
 </ion-header>
 
 <ion-content no-bounce>
 
-    <div class="container">
-      <div class="icon">
-        <img src="assets/img/icons/qr-code.svg">
-      </div>
-      <ion-item-divider>
-        <h2>QR Scanner not available</h2>
-        <p>{{ err }}</p>
-      </ion-item-divider>
+  <div class="container">
+    <div class="icon">
+      <img src="assets/img/icons/qr-code.svg">
     </div>
+    <ion-item-divider>
+      <h2>QR Scanner not available</h2>
+      <p>{{ err }}</p>
+    </ion-item-divider>
+  </div>
 
 </ion-content>

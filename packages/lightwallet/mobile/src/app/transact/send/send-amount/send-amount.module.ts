@@ -10,4 +10,5 @@ import { SendAmountView } from './send-amount';
     IonicPageModule.forChild(SendAmountView),
   ],
 })
-export class $$moduleName$$Module {}
+export class $$moduleName$$Module {
+}

@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { MeritWalletClient } from '../../lib/merit-wallet-client';
-import { formatWalletHistory } from '../../utils/transactions';
-import { createDisplayWallet, IDisplayWallet } from '../../models/display-wallet';
-import { SendService } from 'merit/transact/send/send.service';
-import { sortBy, flatten } from 'lodash';
-import { ContactsProvider } from '../../providers/contacts/contacts';
+import { flatten, sortBy } from 'lodash';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { AddressService } from '@merit/common/services/address.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { createDisplayWallet, IDisplayWallet } from '@merit/common/models/display-wallet';
+import { formatWalletHistory } from '@merit/common/utils/transactions';
 
 @IonicPage()
 @Component({
@@ -19,8 +19,8 @@ export class HistoryView {
 
   constructor(private walletService: WalletService,
               private profileService: ProfileService,
-              private sendService: SendService,
-              private contactsService: ContactsProvider) {
+              private addressService: AddressService,
+              private contactsService: ContactsService) {
   }
 
   ionViewWillEnter() {
@@ -39,7 +39,11 @@ export class HistoryView {
     const wallets = await this.profileService.getWallets();
     const walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
       const walletHistory = await this.walletService.getTxHistory(wallet, { force });
-      const displayWallet: IDisplayWallet = await createDisplayWallet(wallet, this.walletService, this.sendService, { skipAnv: true, skipStatus: true, skipRewards: true});
+      const displayWallet: IDisplayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, {
+        skipAnv: true,
+        skipStatus: true,
+        skipRewards: true
+      });
       return formatWalletHistory(walletHistory, displayWallet, this.contactsService);
     }));
     this.transactions = sortBy(flatten(walletHistories), 'time').reverse();

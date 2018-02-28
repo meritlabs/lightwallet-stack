@@ -1,19 +1,13 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { AliasView } from 'merit/onboard/alias/alias';
-import { WalletsModule } from 'merit/wallets/wallets.module';
+import { AliasView } from '@merit/mobile/app/onboard/alias/alias';
 
-/*
-  This module represents the unlock wallet page, and is the f
-*/
 @NgModule({
   declarations: [
     AliasView,
   ],
-  providers: [],
   imports: [
-    IonicPageModule.forChild(AliasView),
-    WalletsModule
+    IonicPageModule.forChild(AliasView)
   ],
 })
 export class AliasViewModule {

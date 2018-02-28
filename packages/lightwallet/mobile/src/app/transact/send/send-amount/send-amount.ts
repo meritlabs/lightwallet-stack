@@ -8,20 +8,19 @@ import {
   NavParams
 } from 'ionic-angular';
 import * as _ from 'lodash';
-import { ISendMethod, SendMethodType } from 'merit/transact/send/send-method.model';
-import { ConfigService } from 'merit/shared/config.service';
-import { RateService } from 'merit/transact/rate.service';
-import { FeeService } from 'merit/shared/fee/fee.service';
-import { ProfileService } from 'merit/core/profile.service';
-import { TxFormatService } from 'merit/transact/tx-format.service';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ToastConfig } from 'merit/core/toast.config';
-import { EasySendService } from 'merit/transact/send/easy-send/easy-send.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { getEasySendURL } from 'merit/transact/send/easy-send/easy-send.model';
-import { Logger } from 'merit/core/logger';
-import { MERIT_MODAL_OPTS } from '../../../../utils/constants';
-import { MeritContact } from '../../../../models/merit-contact';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { ConfigService } from '@merit/common/services/config.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { FeeService } from '@merit/common/services/fee.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { EasySendService } from '@merit/common/services/easy-send.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
+import { getEasySendURL } from '@merit/common/models/easy-send';
+import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 
 @IonicPage()
 @Component({
@@ -79,7 +78,7 @@ export class SendAmountView {
               private easySendService: EasySendService,
               private walletService: WalletService,
               private loadingCtrl: LoadingController,
-              private logger: Logger) {
+              private logger: LoggerService) {
     this.recipient = this.navParams.get('contact');
     this.sendMethod = this.navParams.get('suggestedMethod');
     this.loading = true;

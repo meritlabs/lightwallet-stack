@@ -34,7 +34,8 @@ export class SelectColorView {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              private viewCtrl: ViewController) {}
+              private viewCtrl: ViewController) {
+  }
 
   cancel() {
     this.viewCtrl.dismiss();
