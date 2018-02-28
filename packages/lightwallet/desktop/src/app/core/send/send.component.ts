@@ -20,12 +20,12 @@ export class SendComponent implements OnInit {
     },
     {
       "name": 'CAD',
-      "symbol": 'R',
+      "symbol": 'C',
       "value": 2
     },
     {
       "name": 'EUR',
-      "symbol": 'R',
+      "symbol": 'E',
       "value": 3
     }
   ];
