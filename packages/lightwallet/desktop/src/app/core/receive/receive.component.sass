@@ -23,7 +23,7 @@
   &__form
     padding-right: 40pt
   &__totals
-    padding-right: 80pt
+    padding-top: 30pt
   .fee-label
     +font($baseFont--medium, 15pt, 15pt, $blue, uppercase, none, none)
     padding-left: 2pt
@@ -45,3 +45,20 @@
       width: 100%
       background: $pale-grey-two
       margin: 30pt 0
+.receiveMerit__totals__qr
+  background: $white
+  padding: 30pt 30pt 20pt
+  max-width: 220pt
+  width: 100%
+  text-align: center
+  &__box
+    margin-bottom: 20pt
+    img
+      max-width: 160pt
+      width: 100%
+  &__copy
+    +font($baseFont--regular, 14pt, 24pt, $blue, none, none, none)
+    border: 0
+    background: transparent
+    &:hover
+      text-decoration: underline
