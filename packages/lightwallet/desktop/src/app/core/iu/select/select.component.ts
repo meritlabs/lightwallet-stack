@@ -11,13 +11,13 @@ export class SelectComponent implements OnInit {
 
   ngOnInit() {
   }
-  @Output() messageEvent = new EventEmitter<string>();
+  @Output() selectionEvent = new EventEmitter<string>();
   @Input() selected: any;
   @Input() input: any;
   @Input() style: any;
   show: boolean = false;
   select(item) {
     this.show = false;
-    this.messageEvent.emit(item)
+    this.selectionEvent.emit(item)
   }
 }
