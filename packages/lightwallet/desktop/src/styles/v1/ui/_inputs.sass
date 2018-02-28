@@ -9,4 +9,18 @@
   border: 0
   margin-bottom: 30pt
   &--text
-    padding: 11pt 16pt
+    padding: 13pt 16pt
+  &--form
+    background: $pale-grey-two
+.ui-input
+  &__wrapper
+    position: relative
+    input
+      z-index: 1
+    &--mrt
+      +font($baseFont--regular, 14pt, 24pt, $gun-metal, uppercase, none, none)
+      letter-spacing: .3pt
+  &__addon
+    position: absolute
+    right: 17pt
+    top: 11pt
