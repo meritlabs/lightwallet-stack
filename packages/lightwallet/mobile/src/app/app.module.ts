@@ -37,6 +37,7 @@ import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { MeritToastController } from '@merit/common/services/toast.controller.service';
 import { AddressService } from '@merit/common/services/address.service';
 
+
 export function getProviders() {
   return [
     { provide: ContactsService, useClass: MobileContactsProvider },

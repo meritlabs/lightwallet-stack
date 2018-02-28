@@ -7,7 +7,7 @@ export interface IVault {
   coins: Array<any>;
   masterPubKey: any;
   status: string;
-  whiteList: Array<{address: string, alias: string}>;
+  whitelist: Array<{address: string, alias: string}>;
   walletClient: MeritWalletClient;
 
 }

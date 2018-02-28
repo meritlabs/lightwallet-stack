@@ -19,6 +19,7 @@ import { PopupService } from '@merit/common/services/popup.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 
+
 @NgModule()
 export class CommonProvidersModule {
   static forRoot(): ModuleWithProviders {

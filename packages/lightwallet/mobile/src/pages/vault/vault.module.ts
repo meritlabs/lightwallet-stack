@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { VaultView } from './vault';
-import { ComponentsModule } from '../../components/components.module';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
+import { ComponentsModule } from '@merit/mobile/components/components.module';
 
 @NgModule({
   declarations: [
@@ -9,6 +10,7 @@ import { ComponentsModule } from '../../components/components.module';
   ],
   imports: [
     IonicPageModule.forChild(VaultView),
+    CommonPipesModule,
     ComponentsModule
   ]
 })

@@ -16,16 +16,12 @@ export class VaultView {
   public wallets: Array<IDisplayWallet>;
   public transactions: Array<any>;
 
-  public whiteList: Array<{label: string, address: string, alias: string}>;
+  public whitelist: Array<{label: string, address: string, alias: string}>;
 
   constructor(
     private navParams: NavParams,
     private vaultsService: VaultsService
   ) {
-
-  }
-
-  ionViewDidLoad() {
     this.vault = this.navParams.get('vault');
     this.vaultId = this.navParams.get('vaultId');
     this.wallets = this.navParams.get('wallets');
@@ -33,18 +29,32 @@ export class VaultView {
 
   async ionViewWillEnter() {
     this.formatWhiteList();
-    this.transactions = await this.vaultsService.getTxHistory(this.vault); 
+    const transactions = await this.vaultsService.getTxHistory(this.vault);
+    this.transactions = transactions.filter(t => !t.isInvite).map(t => {
+      const wallet = this.wallets.find(w => w.client.getRootAddress().toString() == t.addressTo);
+
+      const amount = t.outputs.reduce((sum, output) => {
+        return sum = sum + output.amount;
+      }, 0);
+
+      return {
+        name: wallet ? wallet.name : t.address,
+        amount: amount,
+        fee: t.fee
+      }
+
+    });
   }
 
   //todo do we need this? Or is alias+address enough?
   private formatWhiteList() {
-    const whiteList = [];
-    for (let entity of this.vault.whiteList) {
+    const whitelist = [];
+    for (let entity of this.vault.whitelist) {
       const wallet = this.wallets.find(w => w.client.getRootAddress().toString() == entity.address);
       const label = (wallet && wallet.name) ? wallet.name : (entity.alias || entity.address);
-      this.whiteList.push({label, address: entity.address, alias: entity.alias});
+      whitelist.push({label, address: entity.address, alias: entity.alias});
     }
-    this.whiteList = whiteList;
+    this.whitelist = whitelist;
   }
 
 
