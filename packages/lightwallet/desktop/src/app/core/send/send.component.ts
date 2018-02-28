@@ -29,11 +29,6 @@ export class SendComponent implements OnInit {
       "value": 3
     }
   ];
-  selectedCurrency:any = {
-    "name": 'USD',
-    "symbol": '$',
-    "value": 10
-  };
   availableFeesVariants: any = [
     {
       "name": 'I pay the fee',
@@ -70,12 +65,16 @@ export class SendComponent implements OnInit {
     "value": 10,
     "icon": "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg"
   };
-  converted: any;
+  converted: any = 0;
   amount: number = 0;
+  selectedCurrency: any = {
+    "name": 'USD',
+    "symbol": '$',
+    "value": 10
+  };
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   selectCurrency($event) {
     var currency = this.selectedCurrency;
