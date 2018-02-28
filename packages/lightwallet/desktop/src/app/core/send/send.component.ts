@@ -29,10 +29,23 @@ export class SendComponent implements OnInit {
       "value": 3
     }
   ];
-
   selectedCurrency:any = {
     "name": 'USD',
     "symbol": '$',
+    "value": 10
+  };
+  availableFeesVariants: any = [
+    {
+      "name": 'I pay the fee',
+      "value": 10
+    },
+    {
+      "name": 'Recipient will pay the fee',
+      "value": 0
+    }
+  ];
+  selectedFee:any = {
+    "name": 'I pay the fee',
     "value": 10
   };
   converted: any;
@@ -46,6 +59,9 @@ export class SendComponent implements OnInit {
     var currency = this.selectedCurrency;
     this.selectedCurrency = $event
     this.converted = `${currency.symbol} ${this.amount * currency.value}`;
+  }
+  receiveFee($event) {
+    this.selectedFee = $event
   }
   onKey(event: any) {
     var currency = this.selectedCurrency;

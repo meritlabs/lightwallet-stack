@@ -27,9 +27,9 @@
       <div class="sendMerit__form__group">
         <label for="" class="ui-label">Fee:<span class="fee-label">0.285 MRT</span></label>
         <app-select
-          (selectionEvent)="receiveSelection($event)"
-          [selected]="selectedCurrency"
-          [input]="availableCurrencies"
+          (selectionEvent)="receiveFee($event)"
+          [selected]="selectedFee"
+          [input]="availableFeesVariants"
           style="ui-input ui-input--select ui-input--form"></app-select>
       </div>
     </div>
