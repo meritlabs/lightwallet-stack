@@ -7,10 +7,50 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None
 })
 export class SendComponent implements OnInit {
+  availableCurrencies: any = [
+    {
+      "name": 'USD',
+      "symbol": '$',
+      "value": 10
+    },
+    {
+      "name": 'RUB',
+      "symbol": 'R',
+      "value": 0.1
+    },
+    {
+      "name": 'CAD',
+      "symbol": 'R',
+      "value": 2
+    },
+    {
+      "name": 'EUR',
+      "symbol": 'R',
+      "value": 3
+    }
+  ];
 
+  selectedCurrency:any = {
+    "name": 'USD',
+    "symbol": '$',
+    "value": 10
+  };
+  converted: any;
+  amount: number = 0;
   constructor() { }
 
   ngOnInit() {
+  }
+
+  receiveSelection($event) {
+    var currency = this.selectedCurrency;
+    this.selectedCurrency = $event
+    this.converted = `${currency.symbol} ${this.amount * currency.value}`;
+  }
+  onKey(event: any) {
+    var currency = this.selectedCurrency;
+    this.amount = event.target.value;
+    this.converted = `${currency.symbol} ${this.amount * currency.value}`;
   }
 
 }
