@@ -121,7 +121,8 @@
         </ion-item-divider>
 
         <ion-list class="vaults" *ngIf="vaults && vaults.length">
-            <button ion-item detail-none *ngFor="let vault of vaults" navPush="VaultView" [navParams]="{vaultId: vault._id, vault: vault}">
+            <button ion-item detail-none *ngFor="let vault of vaults"
+                    navPush="VaultView" [navParams]="{vaultId: vault._id, vault: vault, wallets: wallets}">
                 <ion-avatar item-start img-icon>
                     <img src="assets/img/icons/vault-avatar.svg">
                 </ion-avatar>

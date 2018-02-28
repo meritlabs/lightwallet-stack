@@ -31,14 +31,6 @@ export class VaultsService {
     return vaults.map(v => Object.assign(v, {walletClient: wallet.client}));
   }
 
-  getVaultInfo(vault: IVault) {
-
-    //const coins = await vault.walletClient.getVaultCoins(vault.address.toString());
-
-
-    // get whiteList
-  }
-
   getTxHistory(vault: any): Promise<Array<any>> {
     return vault.walletClient.getVaultTxHistory(vault._id, vault.address.network);
   }

@@ -4,6 +4,8 @@ import { MomentModule } from 'angular2-moment';
 import { IonicModule } from 'ionic-angular';
 import { SlideToActionComponent } from './slide-to-action/slide-to-action';
 import { ContactAvatarComponent } from './contact-avatar/contact-avatar';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
+
 @NgModule({
 	declarations: [
     TransactionHistoryComponent,
@@ -12,6 +14,7 @@ import { ContactAvatarComponent } from './contact-avatar/contact-avatar';
   ],
 	imports: [
     MomentModule,
+    CommonPipesModule,
     IonicModule
   ],
 	exports: [
