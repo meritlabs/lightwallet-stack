@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { MomentModule } from 'angular2-moment';
 import { IonicPageModule } from 'ionic-angular';
-import { SelectWhitelistModal } from '@merit/mobile/vaults/select-whitelist/select-whitelist';
+import { SelectWhitelistModal } from './select-whitelist';
 
 @NgModule({
   declarations: [

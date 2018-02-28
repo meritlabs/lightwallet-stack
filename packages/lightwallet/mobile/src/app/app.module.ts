@@ -26,10 +26,7 @@ import { PushNotificationsService } from '@merit/mobile/app/core/notification/pu
 import { PopupService } from '@merit/common/services/popup.service';
 import { PopupService as MobilePopupService } from '@merit/mobile/app/core/popup.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
-import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
-import { RenewVaultService } from '@merit/mobile/app/vaults/renew-vault/renew-vault.service';
-import { SpendVaultService } from '@merit/mobile/app/vaults/spend/vault-spend.service';
-import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
+import { VaultsService } from '@merit/common/services/vaults.service';
 import { ContactsService, ContactsService as MobileContactsProvider } from '../services/contacts.service';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { Keyboard } from '@ionic-native/keyboard';
@@ -45,15 +42,12 @@ export function getProviders() {
     { provide: ContactsService, useClass: MobileContactsProvider },
     { provide: PopupService, useClass: MobilePopupService },
     AddressScannerService,
-    CreateVaultService,
     DeepLinkService,
     EmailNotificationsService,
     MeritToastController,
     PollingNotificationsService,
     PushNotificationsService,
-    RenewVaultService,
     AddressService,
-    SpendVaultService,
     TouchIdService,
     VaultsService
   ];

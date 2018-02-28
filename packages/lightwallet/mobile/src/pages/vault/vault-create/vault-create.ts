@@ -3,7 +3,7 @@ import { IonicPage, NavParams, NavController, ModalController } from 'ionic-angu
 import { IDisplayWallet } from "@merit/common/models/display-wallet";
 import { RateService } from "@merit/common/services/rate.service";
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
-import { IWhitelistWallet } from "@merit/common/vaults/select-whitelist/select-whitelist";
+import { IWhitelistWallet } from "@merit/mobile/pages/vault/select-whitelist/select-whitelist";
 import { ENV } from '@app/env';
 
 

@@ -3,11 +3,10 @@ import { Injectable } from '@angular/core';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { IDisplayWallet } from "@merit/common/models/display-wallet";
-import { Vault } from "@merit/common/models/vault";
+import { IVault } from "@merit/common/models/vault";
 import { WalletService } from '@merit/common/services/wallet.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from "@merit/common/services/rate.service";
-import { MwcService } from '@merit/common/services/mwc.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { AddressService } from "@merit/common/services/address.service";
 
@@ -27,13 +26,13 @@ export class VaultsService {
     this.Bitcore = bwcService.getBitcore();
   }
 
-  async getWalletVaults(walletClient: MeritWalletClient): Promise<Array<any>> {
-    const vaults = await walletClient.getVaults();
+  async getWalletVaults(wallet: IDisplayWallet): Promise<Array<any>> {
+    const vaults = await wallet.client.getVaults();
     console.log(vaults);
     return vaults;
   }
 
-  getVaultInfo(vault: Vault) {
+  getVaultInfo(vault: IVault) {
 
     //const coins = await vault.walletClient.getVaultCoins(vault.address.toString());
 
@@ -41,11 +40,7 @@ export class VaultsService {
     // get whiteList
   }
 
-  getVaultCoins(vault: Vault): Promise<Array<any> {
-
-  }
-
-  getTxHistory(vault: any): Promise<Array<any> {
+  getTxHistory(vault: any): Promise<Array<any>> {
     return vault.walletClient.getVaultTxHistory(vault._id, vault.address.network);
   }
 
@@ -72,7 +67,7 @@ export class VaultsService {
     //;
   }
 
-  editVault(vault: Vault) {
+  editVault(vault: IVault) {
       //return this.profileService.getHeadWalletClient().then((walletClient) => {
       //  if (!this.walletClient) {
       //    this.walletClient = walletClient;
@@ -96,7 +91,8 @@ export class VaultsService {
   }
 
 
-  async createVault(data: ICreateVaultData) {
+  // todo ICreateVaultData
+  async createVault(data: any) {
 
     await this.checkCreateData(data);
 
