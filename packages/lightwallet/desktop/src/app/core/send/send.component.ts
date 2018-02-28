@@ -77,9 +77,8 @@ export class SendComponent implements OnInit {
   ngOnInit() {}
 
   selectCurrency($event) {
-    var currency = this.selectedCurrency;
     this.selectedCurrency = $event
-    this.converted = `${currency.symbol} ${this.amount * currency.value}`;
+    this.converted = `${$event.symbol} ${this.amount * $event.value}`;
   }
   selectFee($event) {
     this.selectedFee = $event
