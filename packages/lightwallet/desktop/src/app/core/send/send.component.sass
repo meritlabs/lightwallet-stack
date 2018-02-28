@@ -10,6 +10,11 @@
   &__form,
   &__totals
     width: 50%
+    box-sizing: border-box
+  &__form
+    padding-right: 40pt
+  &__totals
+    padding-right: 80pt
   .fee-label
     +font($baseFont--medium, 15pt, 15pt, $blue, uppercase, none, none)
     padding-left: 2pt
@@ -17,3 +22,17 @@
   margin-bottom: 30pt
   .ui-input
     margin-bottom: 5pt
+.sendMerit__totals__table
+  background: $white
+  padding: 30px
+  box-sizing: border-box
+  +font($baseFont--medium, 14pt, 24pt, $gun-metal, none, none, none)
+  &__row
+    display: flex
+    justify-content: space-between
+    margin-bottom: 10pt
+    &--devider
+      height: 1px
+      width: 100%
+      background: $pale-grey-two
+      margin: 30pt 0
