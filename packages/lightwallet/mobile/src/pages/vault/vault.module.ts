@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { VaultView } from './vault';
+import { ComponentsModule } from '../../components/components.module';
 
 @NgModule({
   declarations: [
@@ -8,6 +9,7 @@ import { VaultView } from './vault';
   ],
   imports: [
     IonicPageModule.forChild(VaultView),
+    ComponentsModule
   ]
 })
 export class VaultModule {}

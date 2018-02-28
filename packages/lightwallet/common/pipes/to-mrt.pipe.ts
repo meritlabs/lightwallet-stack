@@ -9,7 +9,7 @@ export class ToMrtPipe implements PipeTransform {
     private rateService: RateService
   ) {}
 
-  transform(value: string, micros: number): string {
+  transform(micros: number): string {
     return this.rateService.microsToMrt(micros)+' MRT';
   }
 }
