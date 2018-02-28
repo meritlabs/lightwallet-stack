@@ -35,7 +35,8 @@
         <img src="assets/img/icons/lock.svg" alt="">
       </ion-avatar>
       <ion-label stacked>Phrase Password (optional)</ion-label>
-      <ion-input [(ngModel)]="formData.phrasePassword" placeholder="Type it here" [type]="showPassword? 'text' : 'password'" autocapitalize="off"
+      <ion-input [(ngModel)]="formData.phrasePassword" placeholder="Type it here"
+                 [type]="showPassword? 'text' : 'password'" autocapitalize="off"
                  autocomplete="off" autocorrect="off" spellcheck="false"></ion-input>
       <button ion-button item-end (click)="showPassword = !showPassword" clear>{{ showPassword ? 'Hide' : 'Show' }}
       </button>
@@ -98,7 +99,8 @@
       <ion-label stacked>Password</ion-label>
       <ion-input [(ngModel)]="formData.filePassword" [type]="showPassword2? 'text' : 'password'" autocomplete="off"
                  placeholder="File password"></ion-input>
-      <button ion-button item-end (click)="showPassword2 = !showPassword2" clear>{{ showPassword2 ? 'Hide' : 'Show' }}</button>
+      <button ion-button item-end (click)="showPassword2 = !showPassword2" clear>{{ showPassword2 ? 'Hide' : 'Show' }}
+      </button>
     </ion-item>
 
     <ion-item margin-bottom margin-top>

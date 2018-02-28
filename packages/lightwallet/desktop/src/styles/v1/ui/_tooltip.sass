@@ -1,0 +1,46 @@
+.ui-tooltip
+  display: inline-block
+  position: relative
+  &:before
+    display: block
+    content: ""
+    background: url('assets/v1/icons/ui/info.svg') no-repeat 50% 50%
+    background-size: 16pt
+    width: 14pt
+    height: 14pt
+    cursor: pointer
+    position: relative
+    top: 2px
+  &__text
+    position: absolute
+    z-index: 2
+    bottom: calc(100% + 5pt)
+    +font($baseFont--medium, 10pt, 10pt, $dark-blue, none, none, none)
+    width: 200px
+    background: $white-1
+    border-radius: 4pt
+    left: -6pt
+    padding: 8pt
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, .3)
+    +transition(.3s, linear)
+    display: none
+    opacity: 0
+    &:after
+      content: ""
+      display: block
+      background: $white-1
+      transform: rotate(45deg)
+      position: absolute
+      height: 10pt
+      width: 10pt
+.ui-tooltip:hover
+  .ui-tooltip__text
+    display: block
+    animation: showToolTip .3s cubic-bezier(1.000, 0.008, 0.565, 1.650) .1s 1 forwards
+@keyframes showToolTip
+  from
+    opacity: 0
+    transform: translateY(-2pt)
+  to
+    opacity: 1
+    transform: translateY(0pt)

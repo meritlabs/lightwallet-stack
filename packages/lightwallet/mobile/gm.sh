@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-node ./generator/run.js $1з
+node ./generator/run.js $1

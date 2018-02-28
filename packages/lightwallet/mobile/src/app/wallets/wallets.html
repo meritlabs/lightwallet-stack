@@ -8,7 +8,8 @@
     <ng-template #notLoading>
       <h2 *ngIf="allBalancesHidden; else balancesNotHidden"></h2>
       <ng-template #balancesNotHidden>
-        <h2 class="amount">{{ totalWalletsValueMicros || '0.00' }}&nbsp;<small>MRT</small></h2>
+        <h2 class="amount">{{ totalWalletsValueMicros || '0.00' }}&nbsp;<small>MRT</small>
+        </h2>
         <h3 class="detail-fiat">{{ totalWalletsValueFiat }}</h3>
         <h3 class="detail-fiat">{{ totalInvites }} Invites</h3>
       </ng-template>
@@ -22,7 +23,7 @@
 
   <ion-item-divider translate>
     Wallets
-    <button ion-button item-end round add-button icon-only (click)="toAddWallet()" >
+    <button ion-button item-end round add-button icon-only (click)="toAddWallet()">
       <ion-icon name="add"></ion-icon>
     </button>
   </ion-item-divider>
@@ -35,7 +36,8 @@
   <ion-list class="wallets" *ngIf="wallets">
 
     <div *ngFor="let wallet of wallets; trackBy: wallet?.id">
-      <button ion-item *ngIf="wallet.client.confirmed; else notConfirmed" navPush="WalletDetailsView" [navParams]="{ wallet: wallet, walletId: wallet.id }" class="wallet">
+      <button ion-item *ngIf="wallet.client.confirmed; else notConfirmed" navPush="WalletDetailsView"
+              [navParams]="{ wallet: wallet }" class="wallet">
         <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color"
                     [style.box-shadow]="'0 0 0 2px ' + wallet.color">
           <img src="assets/img/icons/wallet.svg">
@@ -48,7 +50,8 @@
           </p>
           <ng-template #notHidden>
             <p class="merit-amount" *ngIf="wallet.totalBalanceStr">
-              {{ wallet.totalBalanceStr }} {{ wallet.cachedBalance ? (' &middot; ' + wallet.client.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '' }}&nbsp;<span>MRT</span>
+              {{ wallet.totalBalanceStr }} {{ wallet.cachedBalance ? (' &middot; ' +
+              wallet.client.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '' }}&nbsp;<span>MRT</span>
             </p>
           </ng-template>
           <p class="invites">
@@ -107,7 +110,7 @@
     </button>
   </ion-list>
 
-  <ion-list class="vaults-section">
+    <ion-list class="vaults-section">
         <ion-item-divider>
             Vaults
             <button ion-button item-end round add-button icon-only

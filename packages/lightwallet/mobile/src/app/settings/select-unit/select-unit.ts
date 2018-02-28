@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-
+import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -8,19 +7,13 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
   templateUrl: 'select-unit.html',
 })
 export class SelectUnitModal {
+  currentUnit;
+  availableUnits;
 
-  public currentUnit;
-  public availableUnits;
-
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
+  constructor(private navParams: NavParams,
               private viewCtrl: ViewController) {
     this.currentUnit = this.navParams.get('currentUnit');
-    this.availableUnits = this.navParams.get('availableUnits')
-  }
-
-  ionViewDidLoad() {
-    //do something here
+    this.availableUnits = this.navParams.get('availableUnits');
   }
 
   cancel() {
@@ -30,5 +23,4 @@ export class SelectUnitModal {
   select(unit) {
     this.viewCtrl.dismiss(unit);
   }
-
 }

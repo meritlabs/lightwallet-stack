@@ -1,14 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
-import { Content, IonicPage, NavController, Platform } from 'ionic-angular';
-import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { EasyReceipt } from 'merit/easy-receive/easy-receipt.model';
-import { EasyReceiveService } from 'merit/easy-receive/easy-receive.service';
-import { SendService } from 'merit/transact/send/send.service';
+import { Content, IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
-import { cleanAddress, isAlias } from '../../../utils/addresses';
+import { EasyReceipt } from '@merit/common/models/easy-receipt';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { AddressService } from '@merit/common/services/address.service';
 
-// Unlock view for wallet
 @IonicPage({
   defaultHistory: ['OnboardingView']
 })
@@ -17,14 +15,14 @@ import { cleanAddress, isAlias } from '../../../utils/addresses';
   templateUrl: 'unlock.html',
 })
 export class UnlockView {
-  public unlockState: 'success' | 'fail' | 'addressFail';
-  public formData = {
+  unlockState: 'success' | 'fail' | 'addressFail';
+  formData = {
     parentAddress: '',
     addressCheckError: '',
     addressCheckInProgress: false
   };
-  public easyReceipt: EasyReceipt;
-  public parsedAddress: '';
+  easyReceipt: EasyReceipt;
+  parsedAddress: '';
 
   get canContinue(): boolean {
     return Boolean(this.formData.parentAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
@@ -39,7 +37,7 @@ export class UnlockView {
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private easyReceiveService: EasyReceiveService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private addressScanner: AddressScannerService) {
   }
 
@@ -58,36 +56,6 @@ export class UnlockView {
     this.validateAddressDebounce();
   }
 
-  private validateAddressDebounce = _.debounce(() => {
-    this.validateAddress();
-  }, 750);
-
-  private async validateAddress() {
-
-    this.formData.parentAddress = cleanAddress(this.formData.parentAddress);
-
-    let input = (this.formData.parentAddress && isAlias(this.formData.parentAddress)) ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
-    if (!input) {
-      this.formData.addressCheckInProgress = false;
-      return this.formData.addressCheckError = 'Address cannot be empty';
-    } else if (!this.sendService.isAddress(input) && !this.sendService.couldBeAlias(input)) {
-      this.formData.addressCheckInProgress = false;
-      return this.formData.addressCheckError = 'Incorrect address or alias format';
-    } else {
-      let addressInfo = await this.sendService.getAddressInfo(input);
-      if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
-        this.formData.addressCheckInProgress = false;
-        return this.formData.addressCheckError = 'Address not found';
-      } else {
-        this.formData.addressCheckError = null;
-        this.formData.addressCheckInProgress = false;
-        return this.parsedAddress = addressInfo.address;
-      }
-    }
-
-
-  }
-
   toAliasView() {
     if (this.formData.parentAddress && !this.formData.addressCheckInProgress && !this.formData.addressCheckError) {
       this.navCtrl.push('AliasView', { parentAddress: this.parsedAddress });
@@ -103,4 +71,30 @@ export class UnlockView {
     }
   }
 
+  private validateAddressDebounce = _.debounce(() => {
+    this.validateAddress();
+  }, 750);
+
+  private async validateAddress() {
+    this.formData.parentAddress = cleanAddress(this.formData.parentAddress);
+
+    let input = (this.formData.parentAddress && isAlias(this.formData.parentAddress)) ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
+    if (!input) {
+      this.formData.addressCheckInProgress = false;
+      return this.formData.addressCheckError = 'Address cannot be empty';
+    } else if (!this.addressService.isAddress(input) && !this.addressService.couldBeAlias(input)) {
+      this.formData.addressCheckInProgress = false;
+      return this.formData.addressCheckError = 'Incorrect address or alias format';
+    } else {
+      let addressInfo = await this.addressService.getAddressInfo(input);
+      if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
+        this.formData.addressCheckInProgress = false;
+        return this.formData.addressCheckError = 'Address not found';
+      } else {
+        this.formData.addressCheckError = null;
+        this.formData.addressCheckInProgress = false;
+        return this.parsedAddress = addressInfo.address;
+      }
+    }
+  }
 }

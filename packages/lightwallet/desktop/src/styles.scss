@@ -1,55 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
-@import '~@angular/material/theming';
-//@import '~@angular/material/prebuilt-themes/indigo-pink.css';
-@import '~normalize-scss';
-@include mat-core();
-
-@import '~variables.scss';
-
-$merit-primary: (
-  50: lighten($merit-secondary-color, 50),
-  100: lighten($merit-secondary-color, 40),
-  200: lighten($merit-secondary-color, 30),
-  300: lighten($merit-secondary-color, 20),
-  400: lighten($merit-secondary-color, 10),
-  500: $merit-secondary-color,
-  600: darken($merit-secondary-color, 10),
-  700: darken($merit-secondary-color, 20),
-  800: darken($merit-secondary-color, 30),
-  900: darken($merit-secondary-color, 40),
-  A100: lighten($merit-primary-color, 10),
-  A200: $merit-primary-color,
-  A400: darken($merit-primary-color, 10),
-  A700: darken($merit-primary-color, 20),
-  contrast: (
-    50: $dark-primary-text,
-    100: $dark-primary-text,
-    200: $dark-primary-text,
-    300: $dark-primary-text,
-    400: $dark-primary-text,
-    500: $light-primary-text,
-    600: $light-primary-text,
-    700: $light-primary-text,
-    800: $light-primary-text,
-    900: $light-primary-text,
-    A100: $light-primary-text,
-    A200: $light-primary-text,
-    A400: $light-primary-text,
-    A700: $light-primary-text,
-  )
-);
-
-$merit-primary-palette: mat-palette($merit-primary);
-$merit-accent-palette: mat-palette($merit-primary, A200, A100, A400);
-$app-theme: mat-light-theme($merit-primary-palette, $merit-accent-palette);
-
-@include angular-material-theme($app-theme);
-@include normalize();
-
 *:focus {
   outline: none;
 }
 
 body {
-  font-family: 'SFUIDisplay-Medium', "Roboto", sans-serif;
+  font-family: 'SFUIDisplay-Medium', sans-serif;
 }

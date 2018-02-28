@@ -12,5 +12,5 @@ import { ExportWalletView } from './export-wallet';
     IonicPageModule.forChild(ExportWalletView),
   ]
 })
-export class $$moduleName$$Module {
+export class ExportWalletModule {
 }

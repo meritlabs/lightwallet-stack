@@ -1,19 +1,17 @@
 import { Component } from '@angular/core';
 import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { Events, IonicPage, ModalController, NavController, NavParams, Tab } from 'ionic-angular';
-import { Errors } from 'merit/../lib/merit-wallet-client/lib/errors';
-import { Logger } from 'merit/core/logger';
-import { ProfileService } from 'merit/core/profile.service';
-import { ToastConfig } from 'merit/core/toast.config';
-import { MeritToastController } from 'merit/core/toast.controller';
-import { ConfigService } from 'merit/shared/config.service';
-
-import { RateService } from 'merit/transact/rate.service';
-import { WalletService } from 'merit/wallets/wallet.service';
-import { MERIT_MODAL_OPTS } from '../../../utils/constants';
-import { SendService } from 'merit/transact/send/send.service';
-import { PlatformService } from 'merit/core/platform.service';
+import { Events, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { PlatformService } from '@merit/common/services/platform.service';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
+import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 @IonicPage()
 @Component({
@@ -21,7 +19,6 @@ import { PlatformService } from 'merit/core/platform.service';
   templateUrl: 'receive.html',
 })
 export class ReceiveView {
-
   protocolHandler: string;
   address: string;
   alias: string;
@@ -39,21 +36,21 @@ export class ReceiveView {
   error: string;
   mainAddressGapReached: boolean;
 
-  hasUnlockedWallets:boolean;
-  loading:boolean;
+  hasUnlockedWallets: boolean;
+  loading: boolean;
 
   constructor(private navCtrl: NavController,
               private modalCtrl: ModalController,
               private profileService: ProfileService,
               private walletService: WalletService,
               private toastCtrl: MeritToastController,
-              private logger: Logger,
+              private logger: LoggerService,
               private socialSharing: SocialSharing,
               private clipboard: Clipboard,
               private rateService: RateService,
               private configService: ConfigService,
               private events: Events,
-              private sendService: SendService,
+              private addressService: AddressService,
               private platformService: PlatformService,
               private navParams: NavParams) {
     this.protocolHandler = 'merit';
@@ -107,12 +104,12 @@ export class ReceiveView {
 
     try {
       this.address = this.walletService.getRootAddress(this.wallet).toString();
-      let info = await this.sendService.getAddressInfo(this.address);
+      let info = await this.addressService.getAddressInfo(this.address);
       this.alias = info.alias;
       this.addressGenerationInProgress = false;
       this.formatAddress();
     } catch (err) {
-      if (err.code == Errors.MAIN_ADDRESS_GAP_REACHED.code) {
+      if (err.code == MWCErrors.MAIN_ADDRESS_GAP_REACHED.code) {
         this.mainAddressGapReached = true;
         return this.generateAddress();
       } else {
@@ -150,7 +147,7 @@ export class ReceiveView {
       && this.wallet.isComplete()
       && this.qrAddress
       && !this.addressGenerationInProgress
-    )
+    );
   }
 
   share() {
@@ -195,5 +192,4 @@ export class ReceiveView {
   private formatAddress() {
     this.qrAddress = `${ this.protocolHandler }:${ this.address }${ this.amountMicros ? '?micros=' + this.amountMicros : '' }`;
   }
-
 }

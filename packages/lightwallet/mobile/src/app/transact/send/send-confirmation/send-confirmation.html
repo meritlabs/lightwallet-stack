@@ -48,7 +48,7 @@
             <span class="right">{{ viewData.amountFiat }}</span>
           </h2>
           <p class="fee">
-            Fee {{ viewData.feeAmountMrt }}  MRT
+            Fee {{ viewData.feeAmountMrt }} MRT
             <span class="right">{{ viewData.feeAmountFiat }}</span>
           </p>
           <p class="total">
@@ -81,7 +81,9 @@
         </ion-avatar>
         <ion-label stacked>Password</ion-label>
         <ion-input [(ngModel)]="viewData.password" [type]="showPassword? 'text' : 'password'" disabled></ion-input>
-        <button ion-button clear color="primary" item-end (click)="showPassword = !showPassword">{{ showPassword? 'Hide' : 'Show' }}</button>
+        <button ion-button clear color="primary" item-end (click)="showPassword = !showPassword">{{ showPassword? 'Hide'
+          : 'Show' }}
+        </button>
       </ion-item>
     </ion-list>
 

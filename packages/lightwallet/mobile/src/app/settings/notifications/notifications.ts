@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { AppService } from 'merit/core/app-settings.service';
-import { EmailNotificationsService } from 'merit/core/notification/email-notification.service';
-import { PushNotificationsService } from 'merit/core/notification/push-notification.service';
-import { PlatformService } from 'merit/core/platform.service';
-import { ConfigService } from 'merit/shared/config.service';
-import { EmailValidator } from 'merit/shared/email.validator';
+import { ConfigService } from '@merit/common/services/config.service';
+import { AppSettingsService } from '@merit/common/services/app-settings.service';
+import { PlatformService } from '@merit/common/services/platform.service';
+import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
+import { EmailNotificationsService } from '@merit/mobile/app/core/notification/email-notification.service';
+import { EmailValidator } from '@merit/common/email.validator';
 
 @IonicPage()
 @Component({
@@ -29,12 +29,12 @@ export class NotificationsView {
               public navParams: NavParams,
               public formBuilder: FormBuilder,
               private configService: ConfigService,
-              private appService: AppService,
+              private appService: AppSettingsService,
               private platformService: PlatformService,
               private pushService: PushNotificationsService,
               private emailService: EmailNotificationsService) {
     this.emailForm = this.formBuilder.group({
-      email: ['', Validators.compose([Validators.required, new EmailValidator(configService, emailService).isValid])]
+      email: ['', Validators.compose([Validators.required, <any>(new EmailValidator(configService, emailService).isValid)])]
     });
   }
 

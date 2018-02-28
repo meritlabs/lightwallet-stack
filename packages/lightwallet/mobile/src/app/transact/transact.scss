@@ -13,14 +13,14 @@ view-transact {
   ion-tabs.tabs {
     &.tabs-ios {
       a.tab-button[aria-selected="true"] {
-        background: rgba(255,255,255,0.1);
+        background: rgba(255, 255, 255, 0.1);
       }
     }
 
     .tabbar {
       background: rgb(12, 13, 41);
       a.tab-button, ion-icon.icon {
-        color: rgb(151,151,163);
+        color: rgb(151, 151, 163);
       }
 
       a.tab-button[aria-selected="true"] {
@@ -54,7 +54,7 @@ view-transact {
     }
 
     //&[class*='people'] {
-      //mask-image: url(../assets/img/icons/network.svg);
+    //mask-image: url(../assets/img/icons/network.svg);
     //}
 
     &[class*='send'] {

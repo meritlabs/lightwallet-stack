@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 
-
 @IonicPage()
 @Component({
   selector: 'view-select-currency',
@@ -25,17 +24,12 @@ export class SelectCurrencyModal {
     this.findCurrencies();
   }
 
-  ionViewDidLoad() {
-    //do something here
-  }
-
   findCurrencies() {
-
     if (!this.searchQuery) {
       this.foundCurrencies = this.availableCurrencies;
     } else {
       this.foundCurrencies = this.availableCurrencies.filter((c: string) => {
-        return (c.toLowerCase().indexOf(this.searchQuery.toLowerCase()) != -1)
+        return (c.toLowerCase().indexOf(this.searchQuery.toLowerCase()) != -1);
       });
     }
   }

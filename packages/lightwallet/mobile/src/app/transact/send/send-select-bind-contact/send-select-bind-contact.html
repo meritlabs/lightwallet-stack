@@ -8,19 +8,20 @@
     </ion-buttons>
   </ion-navbar>
   <ion-toolbar color="light">
-    <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()" (ionCancel)="clearSearch()"></ion-searchbar>
+    <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
+                   (ionCancel)="clearSearch()"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-item no-lines *ngIf="!foundContacts.length">
-        No contacts found
-    </ion-item>
+  <ion-item no-lines *ngIf="!foundContacts.length">
+    No contacts found
+  </ion-item>
 
   <ion-list no-lines>
     <ion-item *ngFor="let contact of foundContacts" (click)="select(contact)">
       <contact-avatar [contact]="contact" item-start></contact-avatar>
       {{ contact.name.formatted }}
-      <img src="assets/img/icons/merit.svg"  color="primary" item-end>
+      <img src="assets/img/icons/merit.svg" color="primary" item-end>
     </ion-item>
   </ion-list>
 

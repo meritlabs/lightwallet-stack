@@ -1,7 +1,6 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
-import { RateService } from 'merit/transact/rate.service';
-
+import { RateService } from '@merit/common/services/rate.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
@@ -39,7 +38,7 @@ export class TourView {
   }
 
   onSlideWillChange(slides: Slides) {
-    switch(slides.getActiveIndex()) {
+    switch (slides.getActiveIndex()) {
       case 0:
         slides.lockSwipeToPrev(true);
         slides.lockSwipeToNext(false);

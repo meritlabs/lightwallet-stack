@@ -1,16 +1,14 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController } from 'ionic-angular';
-import { SendService } from 'merit/transact/send/send.service';
-import { ISendMethod, SendMethodDestination, SendMethodType } from 'merit/transact/send/send-method.model';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { AddressScannerService } from 'merit/utilities/import/address-scanner.service';
-import { ProfileService } from 'merit/core/profile.service';
 import * as _ from 'lodash';
-import { ContactsProvider } from '../../../providers/contacts/contacts';
-import { MeritContact } from '../../../models/merit-contact';
-
 import { ENV } from '@app/env';
-import { cleanAddress, isAlias } from '../../../utils/addresses';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
+import { AddressService } from '@merit/common/services/address.service';
 
 const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
 const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
@@ -20,16 +18,16 @@ const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 @IonicPage()
 @Component({
   selector: 'view-send',
-  templateUrl: 'send.html',
-  providers: [BarcodeScanner]
+  templateUrl: 'send.html'
 })
 export class SendView {
-  public searchQuery: string = '';
-  public loadingContacts: boolean = false;
-  public contacts: Array<MeritContact> = [];
   private recentContacts: Array<MeritContact> = [];
-  public amount: number;
-  public searchResult: {
+  private suggestedMethod: ISendMethod;
+  searchQuery: string = '';
+  loadingContacts: boolean = false;
+  contacts: Array<MeritContact> = [];
+  amount: number;
+  searchResult: {
     withMerit: Array<MeritContact>,
     noMerit: Array<MeritContact>,
     recent: Array<MeritContact>,
@@ -37,15 +35,14 @@ export class SendView {
     error: string
   } = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
 
-  private suggestedMethod: ISendMethod;
 
-  public hasUnlockedWallets: boolean;
-  public hasActiveInvites: boolean;
+  hasUnlockedWallets: boolean;
+  hasActiveInvites: boolean;
 
   constructor(private navCtrl: NavController,
-              private contactsService: ContactsProvider,
+              private contactsService: ContactsService,
               private profileService: ProfileService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private modalCtrl: ModalController,
               private addressScanner: AddressScannerService) {
   }
@@ -67,7 +64,7 @@ export class SendView {
   }
 
   async updateRecentContacts() {
-    const sendHistory = await this.sendService.getSendHistory();
+    const sendHistory = await this.addressService.getSendHistory();
     const recentContacts = [];
 
     let results, contact;
@@ -147,7 +144,7 @@ export class SendView {
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
       if (this.isAddress(input)) {
-        const addressInfo = await this.sendService.getAddressInfo(input);
+        const addressInfo = await this.addressService.getAddressInfo(input);
 
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
@@ -166,7 +163,7 @@ export class SendView {
           result.error = ERROR_ADDRESS_NOT_CONFIRMED;
         }
       } else if (this.couldBeAlias(input)) {
-        const addressInfo = await this.sendService.getAddressInfo(input);
+        const addressInfo = await this.addressService.getAddressInfo(input);
 
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
@@ -218,15 +215,15 @@ export class SendView {
 
   private couldBeAlias(input) {
     if (!isAlias(input)) return false;
-    return this.sendService.couldBeAlias(input.slice(1));
+    return this.addressService.couldBeAlias(input.slice(1));
   }
 
   private async isValidAddress(input) {
-    return await this.sendService.isAddressValid(input);
+    return await this.addressService.isAddressValid(input);
   }
 
   private isAddress(input) {
-    return this.sendService.isAddress(input);
+    return this.addressService.isAddress(input);
   }
 
   clearSearch() {
