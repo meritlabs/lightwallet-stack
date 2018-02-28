@@ -9,12 +9,13 @@ import { MeritToastController, ToastConfig } from '@merit/common/services/toast.
 import { ProfileService } from '@merit/common/services/profile.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
+import { VaultsService } from '@merit/common/services/vaults.service';
 import { Observable } from 'rxjs/Observable';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
+import { IVault } from '@merit/common/models/vault';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -35,7 +36,7 @@ export class WalletsView {
   totalWalletsValueFiat: string;
   allBalancesHidden: boolean;
   wallets: IDisplayWallet[];
-  vaults;
+  vaults: Array<IVault>;
   network: string;
   loading: boolean;
   hasActiveInvites: boolean;
@@ -104,7 +105,7 @@ export class WalletsView {
       await Promise.all([
         this.updateNetworkValue(),
         this.processPendingEasyReceipts(),
-        this.refreshVaultList()
+        this.updateVaults()
       ]);
 
       this.logger.info('Done updating all info for wallet.');
@@ -169,22 +170,14 @@ export class WalletsView {
     this.wallets = await this.updateAllWallets();
   }
 
-  //todo do we need this?
-  async refreshVaultList() {
-    return await Promise.all(this.wallets.map(async w => await this.updateVaults(w.client)));
-  }
+  private async updateVaults(): Promise<any> {
+    let vaults = [];
 
-  private async updateVaults(wallet: MeritWalletClient): Promise<any> {
-    const vaults = await this.vaultsService.getVaults(wallet);
-    this.logger.info('getting vaults', vaults);
-    this.vaults = await Promise.all(vaults.map(async vault => {
-      let coins = await this.vaultsService.getVaultCoins(wallet, vault);
-      vault.amount = _.sumBy(coins, 'micros');
-      await this.txFormatService.toFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode);
-      vault.altAmountStr = new FiatAmount(vault.altAmount).amountStr;
-      vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
-      return vault;
-    }));
+    for (let wallet of this.wallets) {
+      vaults = vaults.concat(await this.vaultsService.getWalletVaults(wallet));
+    }
+
+    this.vaults = vaults;
   }
 
   /**

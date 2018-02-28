@@ -114,7 +114,7 @@
         <ion-item-divider>
             Vaults
             <button ion-button item-end round add-button icon-only
-                    navPush="CreateVaultView" [navParams]="{wallets: wallets, refreshVaultList: refreshVaultList}"
+                    navPush="CreateVaultView" [navParams]="{wallets: wallets}"
                     [disabled]="!hasActiveInvites">
                 <ion-icon name="add"></ion-icon>
             </button>
@@ -132,10 +132,10 @@
 
                 <div class="detail" item-end>
                     <div class="amount">
-                        {{ vault.amountStr }}
+                        {{ vault.amount | toMRT }}
                     </div>
                     <div class="detail-fiat">
-                        {{ vault.altAmountStr.amountStr }}
+                        {{ vault.amount | toFiat }}
                     </div>
                     <div *ngIf="vault.status == 'pending'" class="assertive detail-status" translate>
                         Pending
@@ -144,13 +144,25 @@
             </button>
         </ion-list>
 
-        <ion-list *ngIf="!vaults || !vaults.length">
+        <ion-list *ngIf="vaults && !vaults.length">
             <ion-item class="add-vault-block">
                 <ion-thumbnail item-start>
                     <img src="assets/img/icons/vault.svg" alt="">
                 </ion-thumbnail>
                 <ion-label>
                     <h2>Create your vault</h2>
+                    <p>Vaults are a way to keep your Merit safe</p>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+
+        <ion-list *ngIf="!vaults">
+            <ion-item class="add-vault-block">
+                <ion-thumbnail item-start>
+                    <img src="assets/img/icons/vault.svg" alt="">
+                </ion-thumbnail>
+                <ion-label>
+                    <h2>Loading vaults data...</h2>
                     <p>Vaults are a way to keep your Merit safe</p>
                 </ion-label>
             </ion-item>

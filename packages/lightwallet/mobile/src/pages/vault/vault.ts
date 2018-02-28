@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage,  NavParams } from 'ionic-angular';
 import { IVault } from '@merit/common/models/vault';
-import { IDisplayWallet } from '@merit/common/models/wallet';
-import { VaultService }from '@merit/common/services/vaults.service';
+import { IDisplayWallet } from '@merit/common/models/display-wallet';
+import { VaultsService }from '@merit/common/services/vaults.service';
 
 @IonicPage()
 @Component({
@@ -20,7 +20,7 @@ export class VaultView {
 
   constructor(
     private navParams: NavParams,
-    private vaultService: VaultService
+    private vaultsService: VaultsService
   ) {
 
   }
@@ -33,18 +33,18 @@ export class VaultView {
 
   async ionViewWillEnter() {
     this.formatWhiteList();
-    this.transactions = this.vaultService.getTxHistory(this.vault);
+    this.transactions = await this.vaultsService.getTxHistory(this.vault); 
   }
 
   //todo do we need this? Or is alias+address enough?
   private formatWhiteList() {
     const whiteList = [];
-    for (let wallet of this.wallets) {
-      let wallet = this.wallets.find(w => w.client.getRootAddress().toString() == address);
-
-      let info = {address: addressInfo.address, alias: addressInfo.alias, label: ''};
-      info.label = (wallet && wallet.name) ? wallet.name : (addressInfo.alias || addressInfo.address);
+    for (let entity of this.vault.whiteList) {
+      const wallet = this.wallets.find(w => w.client.getRootAddress().toString() == entity.address);
+      const label = (wallet && wallet.name) ? wallet.name : (entity.alias || entity.address);
+      this.whiteList.push({label, address: entity.address, alias: entity.alias});
     }
+    this.whiteList = whiteList;
   }
 
 
