@@ -16,6 +16,7 @@ import { walletsReducer } from '../../reducers/wallets';
 import { CommonProvidersModule } from '../../../../common/common-providers.module';
 import { SelectComponent } from './iu/select/select.component';
 import { RowItemComponent } from './history/row-item/row-item.component';
+import { NetworkComponent } from './network/network.component';
 
 export function getPages() {
   return [
@@ -46,6 +47,7 @@ export const reducers = {
     NotificationsComponent,
     SelectComponent,
     RowItemComponent,
+    NetworkComponent,
   ]
 })
 export class CoreModule { }

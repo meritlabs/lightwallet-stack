@@ -38,6 +38,11 @@ export class CoreComponent {
       link: '/history'
     },
     {
+      name: 'Network',
+      icon: '/assets/v1/icons/ui/aside-navigation/network.svg',
+      link: '/network'
+    },
+    {
       name: 'Community',
       icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
       link: '/community'
