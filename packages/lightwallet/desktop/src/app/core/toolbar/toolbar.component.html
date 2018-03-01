@@ -1,22 +1,26 @@
-<div class="currency-selector">
-  <button stroked-button>
-    {{ selectedCurrency }}
-  </button>
-  <!--<mat-menu #currencySelectMenu="matMenu">-->
-    <!--<button mat-menu-item *ngFor="let currency of availableCurrencies" (click)="selectCurrency(currency)">{{ currency }}</button>-->
-  <!--</mat-menu>-->
-</div>
-<div class="total-balance">
-  <div class="merit-amount">3988.39 MRT</div>
-  <div class="fiat-amount">$16455.28</div>
-</div>
-<div class="divider"></div>
-<div class="buy-merit">
-  <button flat-button>
-    Buy Merit
-  </button>
-</div>
-<div class="right">
-  <app-notifications hasNewNotifications="true"></app-notifications>
-  <div class="profile"></div>
+<div class="dashboard__toolbar">
+  <div class="dashboard__toolbar__col dashboard__toolbar__col--left">
+    <div class="dashboard__toolbar__currency-selector">
+      <button class="ui-button ui-button--white ui-button--md ui-button--with-caret ui-button--wallet-icon">
+        {{ selectedCurrency }}
+      </button>
+      <!--<mat-menu #currencySelectMenu="matMenu">-->
+        <!--<button mat-menu-item *ngFor="let currency of availableCurrencies" (click)="selectCurrency(currency)">{{ currency }}</button>-->
+      <!--</mat-menu>-->
+    </div>
+    <div class="dashboard__toolbar__balance">
+      <div class="dashboard__toolbar__balance__item dashboard__toolbar__balance__item--large-blue">3988.39 MRT</div>
+      <div class="dashboard__toolbar__balance__item dashboard__toolbar__balance__item--regular-grey">$ 16455.28</div>
+    </div>
+    <div class="dashboard__toolbar__divider"></div>
+    <div class="buy-merit">
+      <button class="ui-button ui-button--blue ui-button--md">
+        Buy Merit
+      </button>
+    </div>
+  </div>
+  <div class="dashboard__toolbar__col dashboard__toolbar__col--right">
+    <app-notifications hasNewNotifications="true"></app-notifications>
+    <div class="profile"></div>
+  </div>
 </div>
