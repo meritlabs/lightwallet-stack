@@ -72,7 +72,7 @@ export class VaultCreateView {
     let phrase = this.wallet.client.getNewMnemonic(null);
     let key = phrase.toHDPrivateKey('', network);
 
-    this.navCtrl.push('CreateVaultConfirmView', {vaultData: {
+    this.navCtrl.push('VaultCreateConfirmView', {vaultData: {
       vaultName: this.vaultName,
       whiteList: this.whiteList,
       wallet: this.wallet,

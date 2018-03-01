@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
-
+import { MWCService } from '@merit/common/services/mwc.service';
+import { IVault } from '@merit/common/models/vault';
+import { VaultsService } from '@merit/common/services/vaults.service';
 @IonicPage()
 @Component({
   selector: 'view-vault-spend',
@@ -9,12 +10,37 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class VaultSpendView {
 
+  private bitcore;
+
+  public amount: number;
+  public vault: IVault;
+  public recipient: {label: string, address: string, alias: string};
+  public fee: number;
 
   constructor(
     private navCtrl: NavController,
-    private navParams: NavParams
+    private navParams: NavParams,
+    private vaultsService: VaultsService,
+    mwcService: MWCService
   ) {
+    this.recipient = this.navParams.get('recipient');
+    this.vault = this.navParams.get('vault');
+    this.bitcore = mwcService.getBitcore();
+  }
 
+  async send() {
+    if (!this.amount) return;
+    const spendKey = this.bitcore.HDPrivateKey.fromString(this.vault.walletClient.credentials.xPrivKey);
+
+    ////convert string address to hash buffers todo do we need this?
+    //let whitelist = _.map(this.vault.whitelist, (w: string) => {
+    //  return this.bitcore.Address(w).toBuffer();
+    //});
+
+    //this.vault.whitelist = whitelist;
+
+    await this.vaultsService.sendFromVault(this.vault, spendKey, this.amount, this.recipient.address);
+    this.navCtrl.pop();
   }
 
   /***
