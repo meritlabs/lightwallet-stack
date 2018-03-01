@@ -5,22 +5,22 @@
     display: block
     content: ""
     background: url('/assets/v1/icons/ui/info.svg') no-repeat 50% 50%
-    background-size: 16pt
-    width: 14pt
-    height: 14pt
+    background-size: 16px
+    width: 14px
+    height: 14px
     cursor: pointer
     position: relative
     top: 2px
   &__text
     position: absolute
     z-index: 2
-    bottom: calc(100% + 5pt)
-    +font($baseFont--medium, 10pt, 10pt, $dark-blue, none, none, none)
+    bottom: calc(100% + 5px)
+    +font($baseFont--medium, 10px, 10px, $dark-blue, none, none, none)
     width: 200px
     background: $white-1
-    border-radius: 4pt
-    left: -6pt
-    padding: 8pt
+    border-radius: 4px
+    left: -6px
+    padding: 8px
     box-shadow: 0px 0px 15px rgba(0, 0, 0, .3)
     +transition(.3s, linear)
     display: none
@@ -31,8 +31,8 @@
       background: $white-1
       transform: rotate(45deg)
       position: absolute
-      height: 10pt
-      width: 10pt
+      height: 10px
+      width: 10px
 .ui-tooltip:hover
   .ui-tooltip__text
     display: block
@@ -40,7 +40,7 @@
 @keyframes showToolTip
   from
     opacity: 0
-    transform: translateY(-2pt)
+    transform: translateY(-2px)
   to
     opacity: 1
-    transform: translateY(0pt)
+    transform: translateY(0px)
