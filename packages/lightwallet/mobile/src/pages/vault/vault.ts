@@ -54,6 +54,7 @@ export class VaultView {
       const addressInfo = await this.addressService.getAddressInfo(address);
       const wallet = this.wallets.find(w => w.client.getRootAddress().toString() == addressInfo.address);
       const label = (wallet && wallet.name) ? wallet.name : (addressInfo.alias || addressInfo.address);
+      console.log(wallet, label);
       whitelist.push({label, address: addressInfo.address, alias: addressInfo.alias});
     }
     this.whitelist = whitelist;

@@ -10,6 +10,8 @@ import { RateService } from "@merit/common/services/rate.service";
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { AddressService } from "@merit/common/services/address.service";
 
+import { ENV } from '@app/env';
+
 @Injectable()
 export class VaultsService {
 
@@ -35,28 +37,13 @@ export class VaultsService {
     return vault.walletClient.getVaultTxHistory(vault._id, vault.address.network);
   }
 
-  sendFromVault(vault: any, spendKey: any, amount: number, address: any) {
-    //return this.profileService.getHeadWalletClient().then((walletClient) => {
-    //  if (!this.walletClient) {
-    //    this.walletClient = walletClient;
-    //  }
-    //  return this.vaultsService.getVaultCoins(walletClient, vault);
-    //}).then((coins) => {
-    //  const tx = this.walletClient.buildSpendVaultTx(vault, coins, spendKey, amount, address, {});
-    //
-    //  console.log('SPEND TX');
-    //  console.log('Plain: ', tx);
-    //  console.log('Serialized: ', tx.serialize());
-    //
-    //  return { rawTx: tx.serialize(), network: vault.address.network };
-    //}).then((tx) => {
-    //  return this.walletClient.broadcastRawTx(tx);
-    //}).catch((err) => {
-    //  console.log('Error while spending vault:', err);
-    //  throw err;
-    //});
-    //;
+  async sendFromVault(vault: any, spendKey: any, amount: number, address: any) {
+    const tx = vault.walletClient.buildSpendVaultTx(vault, vault.coins, spendKey, amount, address, {});
+    console.log(tx, 'vault tx');
+    //return this.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
   }
+
+
 
   editVault(vault: IVault) {
       //return this.profileService.getHeadWalletClient().then((walletClient) => {
