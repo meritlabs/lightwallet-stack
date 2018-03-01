@@ -1,7 +1,7 @@
 <ion-header no-border>
 
     <ion-navbar color="light" >
-        <ion-title translate>Create Vault</ion-title>
+        <ion-title>Create Vault</ion-title>
     </ion-navbar>
 
 </ion-header>
@@ -14,7 +14,7 @@
                 <img src="assets/img/icons/vault-avatar.svg">
             </ion-avatar>
 
-            <ion-label translate stacked>
+            <ion-label stacked>
                 <h2>Vault name</h2>
             </ion-label>
             <ion-input placeholder="Set vault name" [(ngModel)]="vaultName"></ion-input>
@@ -25,7 +25,7 @@
                 <img src="assets/img/icons/unlock.svg">
             </ion-avatar>
 
-            <ion-label translate>
+            <ion-label >
                 <h2>Whitelist</h2>
                      <span *ngFor="let wallet of whiteList; let last = last">
                         {{wallet.name}}<span *ngIf="!last">, </span>
@@ -46,14 +46,16 @@
         </button>
 
         <ion-item>
-            <ion-avatar item-start img-icon></ion-avatar>
+            <ion-avatar item-start img-icon>
+                <img src="assets/img/icons/merit.svg">
+            </ion-avatar>
             <ion-label stacked>Amount</ion-label>
             <ion-input type="number" [(ngModel)]="amount" placeholder="Amount to store"></ion-input>
         </ion-item>
 
     </ion-list>
 
-    <button ion-button class="action-button" translate (click)="toConfirm()" [disabled]="!isNextStepAvailable" >
+    <button ion-button class="action-button" (click)="toConfirm()" [disabled]="!isNextStepAvailable" >
         Create Vault
     </button>
 

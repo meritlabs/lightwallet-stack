@@ -1,99 +1,82 @@
-view-vault {
-    .scroll-content {
-      margin-top: 0 !important;
-    }
-
-    ion-header {
-      color: color($colors, light);
-      &:after {
-        display: none;
-      }
-      ion-navbar,
-      .toolbar-background {
-        background-color: $vault-default-color;
-        border: none !important;
-      }
-    }
-
-    .toolbar {
-      color: color($colors, light);
-    }
-    .bar-button {
-      color: color($colors, light);
-    }
-    .toolbar-title {
-      color: color($colors, light);
-    }
-
-    .balance-header {
-      padding-bottom: 2rem;
-      margin-top: 0;
-      color: color($colors, light);
-      height: 20%;
-      text-align: center;
-      background: color($colors, secondary);
-    }
-    .balance-header.default {
-      background-color: $vault-default-color;
-    }
-    .balance-str {
-      padding-top: 10rem;
-      font-size: 2rem;
-      font-weight: 600;
-    }
-    .balance-alt-str {
-      font-size: 1.25rem;
-      font-weight: 500;
-    }
-    .label {
-      display: -webkit-inline-box !important;
-    }
-    .action {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .detail {
-      position: absolute;
-      right: 40px;
-      text-align: end;
-      .amount {
-        color: color($colors, primary);
-        font-size: 16px;
-      }
-      .date {
-        font-size: 12.5px;
-      }
-    }
-    .wallet-type {
-      color: #777;
-    }
-    .vault-actions {
-      display: flex;
-      flex-direction: row-reverse;
-      padding-right: 5vw;
-    }
-
-    .spend[item-end] {
-      margin: 0;
-      color: rgba(0, 0, 0, 0.6);
-      font-size: 12px;
-    }
-
-    & ion-avatar.btn.whitelist-icon {
-      background: #068cca;
-      height: 36px;
-      width: 48px;
-      border-radius: 4px;
-      padding: 0 4px;
-      line-height: 36px;
-      text-align: center;
-
-      & ion-icon {
-        color: white;
-        font-size: 1.5em;
-        line-height: 1.5em;
-      }
-    }
+.ios view-vault ion-header.header-ios ion-title.title.title-ios .toolbar-title.toolbar-title-ios {
+  color: white;
 }
 
+
+
+view-vault {
+
+  ion-header .toolbar-background {
+    background: #4bb0dd !important;
+  }
+
+  .content-ios {
+    .big-header {
+      text-align: center;
+
+      h2.amount {
+        font-weight: 300;
+        > small {
+          font-size: inherit;
+          font-weight: inherit;
+        }
+      }
+
+      h3.detail-fiat {
+        font-weight: 400;
+        font-size: 17px;
+      }
+
+      .action-buttons {
+        margin: 30px -8px -8px -8px;
+        border-radius: 8px;
+        overflow: hidden;
+
+        button[ion-button].button.button-ios {
+          .button-inner {
+            .inner-container {
+              ion-icon {
+                font-size: 1.6em;
+              }
+
+              span {
+                font-size: 13px;
+                letter-spacing: .2px;
+                font-weight: 300;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  ion-header.header {
+    button[ion-button], .toolbar-title {
+      color: white;
+    }
+  }
+  .big-header {
+    background: color($colors, primary);
+    padding-top: 0;
+    min-height: 90px;
+    h2 {
+      font-weight: 400;
+    }
+
+    .amount-available {
+      font-size: 17px;
+      color: rgba(255, 255, 255, 0.74);
+    }
+  }
+
+  ion-list.list {
+    button[ion-item].item {
+      ion-note.detail[item-end] {
+        text-align: right;
+        font-size: 13px;
+        color: #73819b;
+      }
+    }
+  }
+}
