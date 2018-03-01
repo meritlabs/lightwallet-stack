@@ -76,7 +76,7 @@ export class VaultCreateView {
       vaultName: this.vaultName,
       whiteList: this.whiteList,
       wallet: this.wallet,
-      amount: this.amount,
+      amount: this.rateService.mrtToMicro(this.amount),
       masterKey: {key, phrase}
     }});
   }

@@ -130,17 +130,12 @@
                 <h2 class="vault-name">
                     {{ vault.name || vault._id }}
                 </h2>
+                <p class="merit-amount" *ngIf="vault.amount">
+                    {{ vault.amount | toMRT }}
+                </p>
 
-                <div class="detail" item-end>
-                    <div class="amount">
-                        {{ vault.amount | toMRT }}
-                    </div>
-                    <div class="detail-fiat">
-                        {{ vault.amount | toFiat }}
-                    </div>
-                    <div *ngIf="vault.status == 'pending'" class="assertive detail-status" translate>
-                        Pending
-                    </div>
+                <div class="detail" item-end *ngIf="vault.status == 'pending'" >
+                    Pending
                 </div>
             </button>
         </ion-list>
