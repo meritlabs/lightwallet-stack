@@ -9,4 +9,42 @@
   border: 0
   margin-bottom: 30pt
   &--text
-    padding: 11pt 16pt
+    padding: 13pt 16pt
+  &--form
+    background: $pale-grey-two
+  &--select
+    text-align: left
+    padding: 15pt 16pt 14.76pt
+    position: relative
+    &::after
+      content: ""
+      display: inline-block
+      margin-left: 4pt
+      transform: rotate(45deg)
+      width: 4pt
+      height: 4pt
+      border: 2px solid $input-text-color
+      border-left: 0
+      border-top: 0
+      position: absolute
+      top: calc(50% - 3pt)
+      right: 16pt
+    & ~ .selectbox__dropdown .selectbox__dropdown__item
+      text-align: left
+.ui-input
+  &__wrapper
+    position: relative
+    input
+      z-index: 1
+    &--mrt
+      +font($baseFont--regular, 14pt, 24pt, $gun-metal, uppercase, none, none)
+      letter-spacing: .3pt
+    &--currency
+      .ui-input__addon
+        top: 6pt
+        right: 8pt
+  &__addon
+    position: absolute
+    right: 16pt
+    top: 11pt
+.ui-select
