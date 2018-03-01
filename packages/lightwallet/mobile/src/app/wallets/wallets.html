@@ -127,12 +127,16 @@
                     <img src="assets/img/icons/vault-avatar.svg">
                 </ion-avatar>
 
-                <h2 class="vault-name">
-                    {{ vault.name || vault._id }}
-                </h2>
-                <p class="merit-amount" *ngIf="vault.amount">
-                    {{ vault.amount | toMRT }}
-                </p>
+                <ion-label>
+                    <h2 class="vault-name">
+                        {{ vault.name || vault._id }}
+                    </h2>
+                    <p class="merit-amount" *ngIf="vault.amount">
+                        {{ vault.amount | toMRT }}
+                    </p>
+                </ion-label>
+
+
 
                 <div class="detail" item-end *ngIf="vault.status == 'pending'" >
                     Pending
