@@ -39,8 +39,6 @@ export class VaultSpendView {
     this.vault = this.navParams.get('vault');
   }
 
-
-
   async send() {
 
     const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
@@ -71,6 +69,11 @@ export class VaultSpendView {
     return modal.present();
   }
 
-
+  get isSendingAvailable() {
+    return (
+        this.amount
+        && this.rateService.mrtToMicro(this.amount) < this.vault.amount
+    )
+  }
 
 }

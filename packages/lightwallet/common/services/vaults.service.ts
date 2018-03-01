@@ -40,7 +40,7 @@ export class VaultsService {
   async sendFromVault(vault: any, amount: number, address: any) {
 
     //convert string address to hash buffers
-    vault = JSON.parse(JSON.stringify(vault));
+    //vault = JSON.parse(JSON.stringify(vault));
     vault.whitelist = vault.whitelist.map(w => this.Bitcore.Address(w).toBuffer());
     // todo do we need this? ^^
 

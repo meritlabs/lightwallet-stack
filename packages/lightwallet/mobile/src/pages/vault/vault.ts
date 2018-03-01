@@ -30,7 +30,9 @@ export class VaultView {
   }
 
   async ionViewWillEnter() {
-    this.formatWhiteList();
+    this.whitelist = await this.formatWhiteList(this.vault.whitelist);
+    console.log(this.whitelist, 'whitelist');
+
     const transactions = await this.vaultsService.getTxHistory(this.vault);
     this.transactions = transactions.filter(t => !t.isInvite).map(t => {
       const wallet = this.wallets.find(w => w.client.getRootAddress().toString() == t.addressTo);
@@ -48,25 +50,18 @@ export class VaultView {
     });
   }
 
-  private async formatWhiteList() {
-    const whitelist = [];
-    for (let address of this.vault.whitelist) {
+  private async formatWhiteList(whitelist) {
+    const formattedWhitelist = [];
+    for (let address of whitelist) {
       const addressInfo = await this.addressService.getAddressInfo(address);
-      const wallet = this.wallets.find(w => w.client.getRootAddress().toString() == addressInfo.address);
-      const label = (wallet && wallet.name) ? wallet.name : (addressInfo.alias || addressInfo.address);
-      console.log(wallet, label);
-      whitelist.push({label, address: addressInfo.address, alias: addressInfo.alias});
+      console.log(addressInfo, 'info');
+      if (addressInfo.isConfirmed) {
+        const wallet = this.wallets.find(w => w.client.getRootAddress().toString() == addressInfo.address);
+        const label = (wallet && wallet.name) ? wallet.name : (addressInfo.alias || addressInfo.address);
+        formattedWhitelist.push({label, address: addressInfo.address, alias: addressInfo.alias});
+      }
     }
-    this.whitelist = whitelist;
+    return formattedWhitelist;
   }
-
-
-  //todo  navigate to sendtoaddress
-  //todo  navigate to resetVault
-
-
-
-
-
 
 }
