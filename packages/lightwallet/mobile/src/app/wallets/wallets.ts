@@ -101,11 +101,12 @@ export class WalletsView {
 
     const fetch = async () => {
       this.wallets = await this.updateAllWallets();
-      // Now that we have wallets, we will proceed with the following operations in parallel.
+      await this.updateVaults();
+      // Now that we have wallets and vaults, we will proceed with the following operations in parallel.
+
       await Promise.all([
         this.updateNetworkValue(),
-        this.processPendingEasyReceipts(),
-        this.updateVaults()
+        this.processPendingEasyReceipts()
       ]);
 
       this.logger.info('Done updating all info for wallet.');
@@ -355,6 +356,8 @@ export class WalletsView {
       totalInvites += w.invites;
       allBalancesHidden = w.client.balanceHidden && allBalancesHidden;
     });
+
+    this.vaults.forEach(v => totalAmount += v.amount );
 
     const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
 
