@@ -15,23 +15,19 @@
     <div class="big-header" color="primary">
         <h2 class="amount">{{ vault.amount | toMRT }} </h2>
         <h3 class="detail-fiat">{{ vault.amount |toFiat  }}</h3>
-    </div>
 
-    <ion-item-divider>
-        Whitelist
-    </ion-item-divider>
-    <ion-list>
-        <button ion-item detail-none *ngFor="let address of whitelist"
-                navPush="VaultSpendView" [navParams]="{vault: vault, recipient: address}">  
-            <ion-avatar item-start img-icon>
-                <img src="assets/img/icons/wallet.svg">
-            </ion-avatar>
-            <p>
-                {{ address.label }}
-            </p>
-            <ion-icon item-end name="ios-arrow-forward"></ion-icon>
-        </button>
-    </ion-list>
+        <div class="action-buttons">
+            <div class="button-cell">
+                <button ion-button navPush="VaultSpendView" [navParams]="{vault: vault, whitelist: whitelist}">
+                  <span class="inner-container">
+                    <ion-icon name="ios-send"></ion-icon>
+                    <span>Send to whitelist</span>
+                  </span>
+                </button>
+            </div>
+        </div>
+
+    </div>
 
     <ion-item-divider>
         History

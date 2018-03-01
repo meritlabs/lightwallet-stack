@@ -6,12 +6,12 @@
 
 <ion-content>
 
-    <ion-item (click)="selectWallet()">
+    <ion-item (click)="selectWallet()" *ngIf="recipient">
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/wallet.svg">
         </ion-avatar>
         <h2>Send to</h2>
-        <p>{{ recipient.label }}</p>
+        <p>{{ recipient.name }}</p>
     </ion-item>
 
     <ion-item>

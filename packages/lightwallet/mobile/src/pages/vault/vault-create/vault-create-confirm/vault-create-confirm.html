@@ -1,14 +1,16 @@
 <ion-header>
-
     <ion-navbar color="light">
-
         <ion-title>Confirm Creation</ion-title>
     </ion-navbar>
-
 </ion-header>
 
-
 <ion-content>
+
+    <ion-item>
+        <p>Send from</p>
+        <h2>{{vault.name}}</h2>
+        <p>{{vault.amount | toMRT}}</p>
+    </ion-item>
 
     <ion-item>
         <ion-avatar item-start img-icon>
@@ -46,7 +48,7 @@
         <h2>{{vaultData.masterKey.phrase}}</h2>
     </ion-item>
 
-    <button ion-button class="action-button" translate (click)="create()" >
+    <button ion-button class="action-button" translate (click)="create()" [disabled]="isSendingEnabled">
         Create Vault
     </button>
 

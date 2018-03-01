@@ -27,8 +27,8 @@ export class VaultCreateView {
     private rateService: RateService,
     private modalCtrl: ModalController
   ) {
-    let wallets = this.navParams.get('wallets');
-    this.wallets = wallets.map(w => Object.assign({ selected: false }, w));
+    const wallets = this.navParams.get('wallets');
+    this.wallets = wallets.filter(w => w.confirmed).map(w => Object.assign({ selected: false }, w));
     this.wallet = this.wallets[0];
     this.amount = 0;
   }
