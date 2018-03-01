@@ -2,14 +2,24 @@
   display: inline-block
   border: none
   +font($baseFont--medium, 15pt, 15pt, initial, none, none, none)
-  padding: 12pt 45pt
+  padding: 11pt 45pt
   border-radius: 4pt
+  box-sizing: border-box
   +transition(.3s, linear)
   &--blue
     background: $blue-button-bg
     color: $white
+    border: 2px solid transparent
     &:hover
       background: $blue-button-bg-hover
+  &--white
+    background: $white
+    color: $blue
+    border: 2px solid $blue
+  &--transparent
+    background: transparent
+    color: $blue
+    border: 2px solid $blue
   &--with-arrow
     &:after
       content: "→"
@@ -20,3 +30,52 @@
     &:hover
       &:after
         transform: translateX(2pt)
+  &--with-caret
+    &.ui-button--md
+      padding: 8pt 10pt
+      font-family: $baseFont--regular
+    &:after
+      content: ""
+      display: inline-block
+      margin-left: 4pt
+      transform: rotate(45deg)
+      width: 4pt
+      height: 4pt
+      border: 2px solid $blue
+      border-left: 0
+      border-top: 0
+      position: relative
+      top: -4px
+  &--wallet-icon
+    &:before
+      content: ""
+      display: inline-block
+      width: 13pt
+      height: 13pt
+      background: url('/assets/v1/icons/ui/wallet-button-ico.svg') no-repeat 0 0
+      background-size: 13pt
+      position: relative
+      top: 2px
+      margin-right: 10pt
+  &--add
+    &:before
+      content: "+"
+      display: inline-block
+      position: relative
+      margin-right: 10pt
+      font-size: 15pt
+      top: -1pt
+      font-family: $baseFont--bold
+.ui-button
+  &--md
+    font-family: $baseFont--bold
+    +chageFontSize(14pt, 14pt)
+    padding: 8pt 18pt
+    letter-spacing: .3pt
+  &--sm
+    font-family: $baseFont--regular
+    +chageFontSize(14pt, 14pt)
+    padding: 6pt 15pt
+    letter-spacing: .3pt
+    &.ui-button--add
+      padding: 6pt 15pt 6pt 11pt
