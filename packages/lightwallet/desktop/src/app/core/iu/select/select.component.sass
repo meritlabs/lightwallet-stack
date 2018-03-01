@@ -1,0 +1,24 @@
+@import "~styles/v1/theme"
+.selectbox
+  position: relative
+  &__dropdown
+    position: absolute
+    top: calc(100% + 10pt)
+    background: $white
+    box-shadow: 0px 2px 2px rgba(46,53,59, .05)
+    width: 100%
+    padding: 10pt
+    z-index: 99
+    &__icon
+      max-width: 13pt
+      width: 100%
+      margin-right: 5pt
+    &__item
+      width: 100%
+      display: flex
+      align-items: center
+      background: transparent
+      border: 0px
+      +font($baseFont--medium, 14pt, 24pt, $gun-metal, none, none, none)
+      &:hover
+        color: $blue

@@ -14,6 +14,7 @@ import { NotificationsComponent } from './toolbar/notifications/notifications.co
 import { contactsReducer } from '../../reducers/contacts';
 import { walletsReducer } from '../../reducers/wallets';
 import { CommonProvidersModule } from '../../../../common/common-providers.module';
+import { SelectComponent } from './iu/select/select.component';
 
 export function getPages() {
   return [
@@ -42,6 +43,7 @@ export const reducers = {
     ...getPages(),
     ToolbarComponent,
     NotificationsComponent,
+    SelectComponent,
   ]
 })
 export class CoreModule { }
