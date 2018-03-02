@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { RateService } from "@merit/common/services/rate.service";
-import { VaultsService } from "@merit/common/services/vaults.service";
+import { IVaultCreateData, VaultsService } from "@merit/common/services/vaults.service";
 import { ToastConfig, MeritToastController } from '@merit/common/services/toast.controller.service';
+import { IDisplayWallet } from "@merit/common/models/display-wallet";
 
 @IonicPage()
 @Component({
@@ -11,7 +12,7 @@ import { ToastConfig, MeritToastController } from '@merit/common/services/toast.
 })
 export class VaultCreateConfirmView {
 
-  private vaultData;
+  private vaultData: IVaultCreateData;
 
   constructor(
     private navCtrl: NavController,

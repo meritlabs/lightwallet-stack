@@ -7,6 +7,8 @@ import { IWhitelistWallet } from "@merit/mobile/pages/vault/select-whitelist/sel
 import { ENV } from '@app/env';
 
 
+
+
 @IonicPage({
   defaultHistory: ['WalletsView']
 })
@@ -30,7 +32,6 @@ export class VaultCreateView {
     const wallets = this.navParams.get('wallets');
     this.wallets = wallets.filter(w => w.confirmed).map(w => Object.assign({ selected: false }, w));
     this.wallet = this.wallets[0];
-    this.amount = 0;
   }
 
   get isNextStepAvailable() {
@@ -69,6 +70,7 @@ export class VaultCreateView {
 
   toConfirm() {
     let network = this.wallet.client.credentials.network || ENV.network;
+
     let phrase = this.wallet.client.getNewMnemonic(null);
     let key = phrase.toHDPrivateKey('', network);
 
