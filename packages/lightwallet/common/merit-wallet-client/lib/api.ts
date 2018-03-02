@@ -1055,12 +1055,14 @@ export class API {
   /**
    * Build spend tx for vault
    */
-  buildSpendVaultTx(vault: any, coins: any[], spendKey: any, amount: number, address: any, opts: any = {}) {
+  buildSpendVaultTx(vault: any, coins: Array<any>, spendKey: any, amount: number, address: any, opts: any = {}) {
 
-    var network = vault.address.network;
-    var fee = opts.fee || DEFAULT_FEE;
+    var network = ENV.network;
+    var fee = opts.fee || DEFAULT_FEE; //todo why default fee??
 
-    let availableAmount = _.sumBy(coins, 'micros');
+    let availableAmount = coins.reduce((amount, coin) => {
+      return amount + coin.micros;
+    },0);
 
     if (amount >= availableAmount) throw MWCErrors.INSUFFICIENT_FUNDS;
 
@@ -1090,9 +1092,7 @@ export class API {
         let toAddress = Bitcore.Address.fromString(address);
         tx.to(toAddress, amount - fee * 10);
 
-        let whitelist = _.map(vault.whitelist, (e) => {
-          return Bitcore.Address.fromBuffer(e).hashBuffer;
-        });
+        let whitelist = vault.whitelist.map(w => Bitcore.Address(w).hashBuffer);
 
         let params = [
           new Bitcore.PublicKey(vault.spendPubKey, { network }).toBuffer(),
@@ -1114,14 +1114,10 @@ export class API {
 
         tx.fee(fee * 10);
 
-        _.forEach(selectedCoins, (coin) => {
-          tx.addInput(
-            new Bitcore.Transaction.Input.PayToScriptHashInput({
-              prevTxId: coin.txid,
-              outputIndex: coin.vout,
-              script: redeemScript,
-            }, redeemScript, coin.scriptPubKey),
-            coin.scriptPubKey, coin.micros);
+        selectedCoins.forEach(coin => {
+          const input = { prevTxId: coin.txid, outputIndex: coin.vout, script: redeemScript };
+          const PP2SHInput = new Bitcore.Transaction.Input.PayToScriptHashInput(input, redeemScript, coin.scriptPubKey);
+          tx.addInput(PP2SHInput, coin.scriptPubKey, coin.micros);
         });
 
         tx.addressType = 'PP2SH';
