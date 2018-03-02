@@ -32,7 +32,7 @@ export class VaultSpendView {
     this.whitelist = whitelist.map(w => {
       return {
         name: w.label,
-        unlock: true,
+        confirmed: true,
         address: w.address,
         alias: w.alias
       }
@@ -46,7 +46,9 @@ export class VaultSpendView {
     const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
     loader.present();
     try {
-      await this.vaultsService.sendFromVault(this.vault, this.amount, this.recipient.address);
+      const amount =  this.rateService.mrtToMicro(this.amount);
+      const address = this.recipient.address;
+      await this.vaultsService.sendFromVault(this.vault, amount, address);
       this.navCtrl.pop();
     } catch (e) {
       this.toastCtrl.create({

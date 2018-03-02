@@ -45,15 +45,15 @@ export class VaultsService {
     return vault.walletClient.getVaultTxHistory(vault._id, vault.address.network);
   }
 
-  async sendFromVault(vault: any, amount: number, address: any) {
+  async sendFromVault(vault: any, amount: number, recipientAddress: any) {
 
     //convert string address to hash buffers
     //vault = JSON.parse(JSON.stringify(vault));
-    vault.whitelist = vault.whitelist.map(w => this.Bitcore.Address(w).toBuffer());
-    // todo do we need this? ^^
-
+    const coins = await vault.walletClient.getVaultCoins(recipientAddress.toString());
+    const address = this.Bitcore.Address.fromObject(vault.address);
     const spendKey = this.Bitcore.HDPrivateKey.fromString(vault.walletClient.credentials.xPrivKey);
-    const tx = vault.walletClient.buildSpendVaultTx(vault, vault.coins, spendKey, amount, address, {});
+
+    const tx = vault.walletClient.buildSpendVaultTx(vault, coins, spendKey, amount, recipientAddress, {});
     return vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
   }
 
