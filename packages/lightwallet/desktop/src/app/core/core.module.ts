@@ -17,6 +17,7 @@ import { CommonProvidersModule } from '../../../../common/common-providers.modul
 import { SelectComponent } from './iu/select/select.component';
 import { RowItemComponent } from './history/row-item/row-item.component';
 import { NetworkComponent } from './network/network.component';
+import { ProfileStatsComponent } from './profile-stats/profile-stats.component';
 
 export function getPages() {
   return [
@@ -48,6 +49,7 @@ export const reducers = {
     SelectComponent,
     RowItemComponent,
     NetworkComponent,
+    ProfileStatsComponent,
   ]
 })
 export class CoreModule { }
