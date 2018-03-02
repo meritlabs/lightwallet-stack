@@ -8,6 +8,7 @@ import { CoreComponent } from './core.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CommunityComponent } from './community/community.component';
 import { NetworkComponent } from './network/network.component';
+import { BackupComponent } from './backup/backup.component';
 
 const routes: Routes = [
   {
@@ -20,6 +21,7 @@ const routes: Routes = [
       { path: 'history', component: HistoryComponent },
       { path: 'community', component: CommunityComponent },
       { path: 'network', component: NetworkComponent },
+      { path: 'backup', component: BackupComponent },
       { path: '**', redirectTo: 'dashboard' }
     ]
   }
