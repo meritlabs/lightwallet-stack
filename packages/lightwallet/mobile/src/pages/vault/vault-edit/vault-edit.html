@@ -1,64 +1,52 @@
-<!--<ion-header>-->
+<ion-header>
 
-    <!--<ion-navbar color="secondary" >-->
-        <!--<ion-title translate>Reset Vault</ion-title>-->
-    <!--</ion-navbar>-->
+    <ion-navbar color="light" >
+        <ion-title translate>Edit Vault</ion-title>
+    </ion-navbar>
 
-<!--</ion-header>-->
+</ion-header>
 
 
-<!--<ion-content>-->
+<ion-content>
 
-    <!--<ion-list margin-top>-->
-        <!--<ion-item>-->
-            <!--<ion-label translate>Vault name</ion-label>-->
-            <!--<ion-input-->
-                    <!--text-right-->
-                    <!--[placeholder]="'My Vault'"-->
-                    <!--[(ngModel)]="formData.vaultName"-->
-                    <!--(ngModelChange)="checkCanConfirm()">-->
-            <!--</ion-input>-->
-        <!--</ion-item>-->
-    <!--</ion-list>-->
+    <ion-item>
+        <ion-label stacked>Vault name</ion-label>
+        <ion-input
+                [placeholder]="'My Vault'"
+                [(ngModel)]="vaultName">
+        </ion-input>
+    </ion-item>
 
-    <!--<ion-list>-->
-        <!--<ion-item>-->
-            <!--<ion-label translate>Master key</ion-label>-->
-            <!--<ion-input-->
-                    <!--text-right-->
-                    <!--[placeholder]="'Old key will be used'"-->
-                    <!--[(ngModel)]="formData.masterKey"-->
-                    <!--[disabled]="true">-->
-            <!--</ion-input>-->
-        <!--</ion-item>-->
-        <!--<ion-item>-->
-            <!--<button ion-button type="button" translate (click)="regenerateMasterKey()">-->
-                <!--Generate new-->
-            <!--</button>-->
-        <!--</ion-item>-->
-    <!--</ion-list>-->
+    <ion-item>
+        <h2>Recovery Phrase</h2>
+        <p>{{masterKey}}</p>
 
-    <!--<ion-list>-->
-        <!--<ion-item>-->
-            <!--<ion-label translate>Whitelist</ion-label>-->
-            <!--<ion-select-->
-                    <!--[compareWith]="compareWhitelistEntries"-->
-                    <!--[(ngModel)]="formData.whitelist"-->
-                    <!--(ngModelChange)="checkCanConfirm()"-->
-                    <!--okText="Ok"-->
-                    <!--cancelText="Dismiss"-->
-                    <!--multiple="true" >-->
-                <!--<ion-option *ngFor="let address of whitelistCandidates" [value]="address">-->
-                    <!--{{address.name}} <span class="wallet-type">({{ address.type }})</span>-->
-                <!--</ion-option>-->
-            <!--</ion-select>-->
-        <!--</ion-item>-->
-    <!--</ion-list>-->
+        <button ion-button item-end icon-only clear>
+            <ion-icon name="refresh"></ion-icon>
+        </button>
 
-    <!--<div class="control-buttons">-->
-        <!--<button ion-button type="button" translate (click)="confirmRenew()" [(disabled)]="!canConfirm">-->
-            <!--Reset-->
-        <!--</button>-->
-    <!--</div>-->
+    </ion-item>
 
-<!--</ion-content>-->
+    <button ion-item detail-none (click)="selectWhitelist()">
+        <ion-label>
+            <h2>Whitelist</h2>
+            <p>
+                 <span *ngFor="let wallet of whitelist; let last = last">
+                    {{wallet.name}}<span *ngIf="!last">, </span>
+                 </span>
+            </p>
+        </ion-label>
+        <button ion-button item-end round add-button icon-only>
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </button>
+
+
+    <div class="control-buttons">
+        <button ion-button type="button" translate (click)="edit()" [disabled]="!isNextStepAvailable">
+            Reset
+        </button>
+    </div>
+
+</ion-content>
+

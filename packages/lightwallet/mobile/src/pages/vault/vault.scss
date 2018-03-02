@@ -4,6 +4,10 @@
 
 view-vault {
 
+  ion-header.header ion-title[smaller-title] .toolbar-title {
+    font-size: 24px;
+  }
+
   ion-header .toolbar-background {
     background: #4bb0dd !important;
   }
@@ -25,27 +29,6 @@ view-vault {
         font-size: 17px;
       }
 
-      .action-buttons {
-        margin: 30px -8px -8px -8px;
-        border-radius: 8px;
-        overflow: hidden;
-
-        button[ion-button].button.button-ios {
-          .button-inner {
-            .inner-container {
-              ion-icon {
-                font-size: 1.6em;
-              }
-
-              span {
-                font-size: 13px;
-                letter-spacing: .2px;
-                font-weight: 300;
-              }
-            }
-          }
-        }
-      }
     }
   }
 
@@ -68,7 +51,11 @@ view-vault {
     }
 
     .action-buttons {
-      margin: 21px -18px -18px -18px;
+      //margin: 21px -18px -18px -18px;
+      margin-top: 0;
+      margin-bottom: -18px;
+      margin-left: -18px;
+      margin-right: -18px;
       height: 85px;
       background: rgba(0, 0, 0, 0.08);
       display: flex;
@@ -79,17 +66,16 @@ view-vault {
         flex: 1;
         position: relative;
 
-        // todo uncomment when second button added
-        //&:first-child:after {
-        //  content: '';
-        //  height: 41px;
-        //  width: 1px;
-        //  display: block;
-        //  position: absolute;
-        //  right: 1px;
-        //  top: 23px;
-        //  background: rgba(255, 255, 255, .2);
-        //}
+        &:first-child:after {
+          content: '';
+          height: 41px;
+          width: 1px;
+          display: block;
+          position: absolute;
+          right: 1px;
+          top: 23px;
+          background: rgba(255, 255, 255, .2);
+        }
 
         button[ion-button].button {
           height: inherit;
@@ -132,6 +118,12 @@ view-vault {
       ion-icon {
         color: #73819b;
       }
+    }
+  }
+
+  transaction-history {
+    .merit-amount {
+      font-size: 14px !important;
     }
   }
 }
