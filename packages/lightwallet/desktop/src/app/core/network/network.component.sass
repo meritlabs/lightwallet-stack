@@ -1,0 +1,51 @@
+@import "~styles/v1/theme"
+.network__personal-wallet
+  padding: 50px 40px
+  &__title
+    margin-bottom: 10px
+  &__toolbar
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 30px
+    &__item
+      &--mrt
+        +font($baseFont--medium, 14px, 14px, $blue, uppercase, none, none)
+        span
+          font-size: 12px
+      &--currency
+        +font($baseFont--medium, 15px, 14px, $steel-two, uppercase, none, none)
+  &__panel
+    background: $white
+    box-shadow: 0px 2px 5px rgba(46,51,88, 0.22)
+    border-radius: 5px
+    padding: 20px 20px
+    &__row
+      display: flex
+      flex-flow: row wrap
+      justify-content: space-between
+      align-items: center
+      border-bottom: 1px solid $pale-grey-two
+      padding: 20px 0
+      &:last-of-type
+        border-bottom: 0
+    &__col
+      display: flex
+      align-items: center
+    &__icon
+      background: $pale-grey-three
+      width: 40px
+      height: 40px
+      border-radius: 40px
+      display: flex
+      justify-content: center
+      align-items: center
+      margin-right: 16px
+    &__info
+      &__small
+        +font($baseFont--regular, 15px, 14px, $dark-grey-blue, none, none, none)
+        margin-bottom: 6px
+      &__regular
+        +font($baseFont--semibold, 17px, 17px, $dark-grey-blue, none, none, none)
+        span
+          font-size: 14px
