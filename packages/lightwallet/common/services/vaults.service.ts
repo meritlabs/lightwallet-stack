@@ -12,6 +12,14 @@ import { AddressService } from "@merit/common/services/address.service";
 
 import { ENV } from '@app/env';
 
+export interface IVaultCreateData {
+  vaultName: string,
+  whiteList: Array<IDisplayWallet>,
+  wallet: IDisplayWallet,
+  amount: number,
+  masterKey: {key: any, phrase: string}
+}
+
 @Injectable()
 export class VaultsService {
 
@@ -62,14 +70,13 @@ export class VaultsService {
   }
 
 
-  // todo ICreateVaultData
-  async createVault(data: any) {
+  async createVault(data: IVaultCreateData) {
 
     await this.checkCreateData(data);
 
     const vault:any = await data.wallet.client.prepareVault(0, {
-      amount: this.rateService.mrtToMicro(data.amount),
-      whitelist: data.whiteList,
+      amount: data.amount,
+      whitelist: data.whiteList.map(w => w.client.getRootAddress().toBuffer()),
       masterPubKey: data.masterKey.key.publicKey,
       spendPubKey: this.Bitcore.HDPrivateKey.fromString(data.wallet.client.credentials.xPrivKey).publicKey,
     });
