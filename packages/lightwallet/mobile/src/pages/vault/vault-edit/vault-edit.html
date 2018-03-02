@@ -19,12 +19,12 @@
 
     <ion-item>
         <h2>Recovery Phrase</h2>
-        <p>{{masterKey}}</p>
+        <p class="masterkey" *ngIf="masterKey">{{masterKey}}</p>
+        <p class="masterkey" *ngIf="!masterKey">Current phrase will be used</p>
 
-        <button ion-button item-end icon-only clear>
+        <button ion-button item-end add-button icon-only color="primary" (click)="regenerateMasterKey()">
             <ion-icon name="refresh"></ion-icon>
         </button>
-
     </ion-item>
 
     <button ion-item detail-none (click)="selectWhitelist()">
@@ -42,11 +42,10 @@
     </button>
 
 
-    <div class="control-buttons">
-        <button ion-button type="button" translate (click)="edit()" [disabled]="!isNextStepAvailable">
-            Reset
-        </button>
-    </div>
+
+    <button ion-button  class="action-button"   (click)="edit()" [disabled]="!isNextStepAvailable">
+        Reset
+    </button>
 
 </ion-content>
 
