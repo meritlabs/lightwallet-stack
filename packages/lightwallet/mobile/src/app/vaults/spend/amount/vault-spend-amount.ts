@@ -1,7 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
-import { LoggerService } from '@merit/common/providers/logger';
+import { LoggerService } from '@merit/common/services/logger.service';
 
 @IonicPage({
   segment: 'vault/:vaultId/spend/amount',

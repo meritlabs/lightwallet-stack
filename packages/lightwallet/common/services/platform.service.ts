@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular/platform/platform';
-import { LoggerService } from '@merit/common/providers/logger';
+import { LoggerService } from '@merit/common/services/logger.service';
 
 declare const window: any;
 

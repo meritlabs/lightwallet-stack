@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { PopupService } from '@merit/mobile/app/core/popup.service';
 import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
 import { ENV } from '@app/env';
-import { MWCService } from '@merit/common/providers/mwc';
+import { MWCService } from '@merit/common/services/mwc.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']

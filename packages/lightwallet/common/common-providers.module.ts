@@ -1,23 +1,23 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { AppSettingsService } from '@merit/common/providers/app-settings';
-import { ConfigService } from '@merit/common/providers/config';
-import { ContactsService } from '@merit/common/providers/contacts';
-import { EasyReceiveService } from '@merit/common/providers/easy-receive';
-import { LoggerService } from '@merit/common/providers/logger';
-import { MnemonicService } from '@merit/common/providers/mnemonic';
-import { MWCService } from '@merit/common/providers/mwc';
-import { PersistenceService } from '@merit/common/providers/persistence';
-import { PlatformService } from '@merit/common/providers/platform';
-import { ProfileService } from '@merit/common/providers/profile';
-import { RateService } from '@merit/common/providers/rate';
-import { TxFormatService } from '@merit/common/providers/tx-format';
-import { UnlockRequestService } from '@merit/common/providers/unlock-request';
-import { WalletService } from '@merit/common/providers/wallet';
-import { LanguageService } from '@merit/common/providers/language';
-import { LedgerService } from '@merit/common/providers/ledger';
-import { PopupService } from '@merit/common/providers/popup';
-import { FeeService } from '@merit/common/providers/fee';
-import { EasySendService } from '@merit/common/providers/easy-send';
+import { AppSettingsService } from '@merit/common/services/app-settings.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { MnemonicService } from '@merit/common/services/mnemonic.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
+import { PlatformService } from '@merit/common/services/platform.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { LanguageService } from '@merit/common/services/language.service';
+import { LedgerService } from '@merit/common/services/ledger.service';
+import { PopupService } from '@merit/common/services/popup.service';
+import { FeeService } from '@merit/common/services/fee.service';
+import { EasySendService } from '@merit/common/services/easy-send.service';
 
 @NgModule()
 export class CommonProvidersModule {

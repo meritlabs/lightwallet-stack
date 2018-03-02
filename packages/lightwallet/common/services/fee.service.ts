@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
-import { MWCService } from '@merit/common/providers/mwc';
-import { ConfigService } from '@merit/common/providers/config';
-import { LoggerService } from '@merit/common/providers/logger';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { LoggerService } from '@merit/common/services/logger.service';
 
 @Injectable()
 export class FeeService {

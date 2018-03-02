@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ConfigService } from '@merit/common/providers/config';
-import { AppSettingsService } from '@merit/common/providers/app-settings';
-import { PlatformService } from '@merit/common/providers/platform';
+import { ConfigService } from '@merit/common/services/config.service';
+import { AppSettingsService } from '@merit/common/services/app-settings.service';
+import { PlatformService } from '@merit/common/services/platform.service';
 import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
 import { EmailNotificationsService } from '@merit/mobile/app/core/notification/email-notification.service';
 import { EmailValidator } from '@merit/common/email.validator';

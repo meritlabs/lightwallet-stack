@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ViewController } from 'ionic-angular';
-import { ConfigService } from '@merit/common/providers/config';
-import { LoggerService } from '@merit/common/providers/logger';
+import { ConfigService } from '@merit/common/services/config.service';
+import { LoggerService } from '@merit/common/services/logger.service';
 
 @Component({
   selector: 'page-pin-lock',
