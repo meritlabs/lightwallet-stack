@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { IDisplayTransaction, ITransactionIO, TransactionAction } from '@merit/common/models/transaction';
 import { IDisplayWallet } from '@merit/common/models/display-wallet';
-import { ContactsService } from '@merit/common/providers/contacts';
+import { ContactsService } from '@merit/common/services/contacts.service';
 
 export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: IDisplayWallet, contactsProvider?: ContactsService): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];

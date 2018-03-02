@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import * as _ from 'lodash';
-import { LoggerService } from '@merit/common/providers/logger';
+import { LoggerService } from '@merit/common/services/logger.service';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { ISendMethod } from '@merit/common/models/send-method';
 

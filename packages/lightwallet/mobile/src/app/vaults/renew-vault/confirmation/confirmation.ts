@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { MWCService } from '@merit/common/providers/mwc';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { RenewVaultService } from '@merit/mobile/app/vaults/renew-vault/renew-vault.service';
 
 @IonicPage({

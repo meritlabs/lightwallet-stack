@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
-import { LoggerService } from '@merit/common/providers/logger';
-import { PopupService as BasePopupService } from '@merit/common/providers/popup';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { PopupService as BasePopupService } from '@merit/common/services/popup.service';
 
 @Injectable()
 export class PopupService extends BasePopupService {

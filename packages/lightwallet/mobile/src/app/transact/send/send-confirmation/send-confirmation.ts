@@ -3,15 +3,15 @@ import { Component } from '@angular/core';
 import * as  _ from 'lodash';
 import { EasySend } from '@merit/common/models/easy-send';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { TouchIdService } from '@merit/mobile/providers/touch-id.service';
-import { EasySendService } from '@merit/common/providers/easy-send';
-import { WalletService } from '@merit/common/providers/wallet';
-import { TxFormatService } from '@merit/common/providers/tx-format';
-import { RateService } from '@merit/common/providers/rate';
-import { ConfigService } from '@merit/common/providers/config';
-import { LoggerService } from '@merit/common/providers/logger';
+import { TouchIdService } from '@merit/mobile/services/touch-id.service';
+import { EasySendService } from '@merit/common/services/easy-send.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { LoggerService } from '@merit/common/services/logger.service';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 
 @IonicPage()
 @Component({

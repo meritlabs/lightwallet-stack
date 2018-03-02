@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ContactsService as OriginalContactsProvider } from '@merit/common/providers/contacts';
+import { ContactsService as OriginalContactsProvider } from '@merit/common/services/contacts.service';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { Contacts } from '@ionic-native/contacts';
-import { PersistenceService } from '@merit/common/providers/persistence';
+import { PersistenceService } from '@merit/common/services/persistence.service';
 
 const DESIRED_FIELDS = [
   'displayName',

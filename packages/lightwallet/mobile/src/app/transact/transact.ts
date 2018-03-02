@@ -2,9 +2,9 @@ import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform, Tabs } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Subscription } from 'rxjs/Subscription';
-import { LoggerService } from '@merit/common/providers/logger';
-import { ProfileService } from '@merit/common/providers/profile';
-import { UnlockRequestService } from '@merit/common/providers/unlock-request';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 
 @IonicPage({
   segment: 'transact'
