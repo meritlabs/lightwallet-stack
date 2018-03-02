@@ -1,9 +1,9 @@
 .ui-button
   display: inline-block
   border: none
-  +font($baseFont--medium, 15pt, 15pt, initial, none, none, none)
-  padding: 11pt 45pt
-  border-radius: 4pt
+  +font($baseFont--medium, 15px, 15px, initial, none, none, none)
+  padding: 11px 45px
+  border-radius: 4px
   box-sizing: border-box
   +transition(.3s, linear)
   &--blue
@@ -12,6 +12,7 @@
     border: 2px solid transparent
     &:hover
       background: $blue-button-bg-hover
+      border: 2px solid transparent
   &--white
     background: $white
     color: $blue
@@ -25,22 +26,22 @@
       content: "→"
       display: inline-block
       font-weight: 900
-      margin-left: 16pt
+      margin-left: 16px
       +transition(.1s, linear)
     &:hover
       &:after
-        transform: translateX(2pt)
+        transform: translateX(2px)
   &--with-caret
     &.ui-button--md
-      padding: 8pt 10pt
+      padding: 8px 10px
       font-family: $baseFont--regular
     &:after
       content: ""
       display: inline-block
-      margin-left: 4pt
+      margin-left: 4px
       transform: rotate(45deg)
-      width: 4pt
-      height: 4pt
+      width: 4px
+      height: 4px
       border: 2px solid $blue
       border-left: 0
       border-top: 0
@@ -50,32 +51,32 @@
     &:before
       content: ""
       display: inline-block
-      width: 13pt
-      height: 13pt
+      width: 13px
+      height: 13px
       background: url('/assets/v1/icons/ui/wallet-button-ico.svg') no-repeat 0 0
-      background-size: 13pt
+      background-size: 13px
       position: relative
       top: 2px
-      margin-right: 10pt
+      margin-right: 10px
   &--add
     &:before
       content: "+"
       display: inline-block
       position: relative
-      margin-right: 10pt
-      font-size: 15pt
-      top: -1pt
+      margin-right: 10px
+      font-size: 15px
+      top: -1px
       font-family: $baseFont--bold
 .ui-button
   &--md
     font-family: $baseFont--bold
-    +chageFontSize(14pt, 14pt)
-    padding: 8pt 18pt
-    letter-spacing: .3pt
+    +chageFontSize(14px, 14px)
+    padding: 8px 18px
+    letter-spacing: .3px
   &--sm
     font-family: $baseFont--regular
-    +chageFontSize(14pt, 14pt)
-    padding: 6pt 15pt
-    letter-spacing: .3pt
+    +chageFontSize(14px, 14px)
+    padding: 6px 15px
+    letter-spacing: .3px
     &.ui-button--add
-      padding: 6pt 15pt 6pt 11pt
+      padding: 6px 15px 6px 11px
