@@ -1,21 +1,12 @@
 <ion-header no-border >
     <ion-navbar color="primary">
         <ion-title smaller-title>{{ vault.name || vault.id }}</ion-title>
-        <ion-buttons end>
-            <button ion-button clear icon-only class="header-action-button"
-                    navPush="VaultEdit" [navParams]="{vault: vault, vaultId: vaultId, wallets: wallets}">
-                <ion-icon name="settings" merit-icon></ion-icon>
-            </button>
-        </ion-buttons>
     </ion-navbar>
 </ion-header>
 
 <ion-content no-bounce>
 
     <div class="big-header" color="primary">
-        <h2 class="amount">{{ vault.amount | toMRT }} </h2>
-        <h3 class="detail-fiat">{{ vault.amount |toFiat  }}</h3>
-
         <div class="action-buttons">
             <div class="button-cell">
                 <button ion-button navPush="VaultSpendView" [navParams]="{vault: vault, whitelist: whitelist}">
@@ -25,9 +16,32 @@
                   </span>
                 </button>
             </div>
+            <div class="button-cell">
+                <button ion-button navPush="VaultEditView" [navParams]="{vault: vault, whitelist: whitelist}">
+                  <span class="inner-container">
+                    <ion-icon name="settings" merit-icon></ion-icon>
+                    <span>Renew</span>
+                  </span>
+                </button>
+            </div>
         </div>
-
     </div>
+
+    <ion-list>
+        <ion-item>
+            <h2>Amount</h2>
+            <p class="amount">{{ vault.amount | toMRT }} </p>
+            <p class="detail-fiat" item-end>{{ vault.amount |toFiat  }}</p>
+        </ion-item>
+        <ion-item>
+            <h2>Whitelist</h2>
+            <p>
+              <span *ngFor="let wallet of whitelist; let last = last">
+                {{wallet.name}}<span *ngIf="!last">, </span>
+              </span>
+            </p>
+        </ion-item>
+    </ion-list>
 
     <ion-item-divider>
         History

@@ -4,6 +4,7 @@ import { IVault } from '@merit/common/models/vault';
 import { VaultsService } from '@merit/common/services/vaults.service';
 import { ToastConfig, MeritToastController } from '@merit/common/services/toast.controller.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
+import { RateService } from "@merit/common/services/rate.service";
 
 @IonicPage()
 @Component({
@@ -24,7 +25,8 @@ export class VaultSpendView {
     private vaultsService: VaultsService,
     private loadingCtrl: LoadingController,
     private toastCtrl: MeritToastController,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private rateService: RateService
   ) {
     const whitelist = this.navParams.get('whitelist');
     this.whitelist = whitelist.map(w => {

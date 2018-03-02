@@ -46,33 +46,19 @@ export class VaultsService {
 
     const spendKey = this.Bitcore.HDPrivateKey.fromString(vault.walletClient.credentials.xPrivKey);
     const tx = vault.walletClient.buildSpendVaultTx(vault, vault.coins, spendKey, amount, address, {});
-    console.log(tx, 'vault tx');
     return vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
   }
 
+  async editVault(vault: IVault, masterKey) {
+    //
+    let tx = vault.walletClient.buildRenewVaultTx(vault.coins, vault, masterKey, { network: ENV.network });
+    vault.coins = [{ raw: tx.serialize(), network: ENV.network }];
+    return await vault.walletClient.renewVault(vault);
+  }
 
-
-  editVault(vault: IVault) {
-      //return this.profileService.getHeadWalletClient().then((walletClient) => {
-      //  if (!this.walletClient) {
-      //    this.walletClient = walletClient;
-      //  }
-      //  return this.vaultsService.getVaultCoins(walletClient, vault);
-      //}).then((coins) => {
-      //
-      //  let network = this.walletClient.credentials.network;
-      //
-      //  let tx = this.walletClient.buildRenewVaultTx(coins, vault, masterKey, { network: network });
-      //
-      //  console.log('RENEW TX');
-      //  console.log('tx: ', tx);
-      //  console.log('Serialized: ', tx.serialize());
-      //  vault.coins = [{ raw: tx.serialize(), network: network }];
-      //
-      //  return this.walletClient.renewVault(vault);
-      //}).catch((err) => {
-      //  throw err;
-      //});
+  createMasterKey(vault: IVault) {
+    const masterKey = this.Bitcore.PrivateKey.fromRandom(ENV.network);
+    return vault.walletClient.getNewMnemonic(masterKey.toBuffer());
   }
 
 
