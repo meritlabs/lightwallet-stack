@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { IDisplayWallet } from '@merit/common/models/display-wallet';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
@@ -17,7 +17,7 @@ import { formatWalletHistory } from '@merit/common/utils/transactions';
 export class WalletDetailsView {
 
   wallet: MeritWalletClient;
-  displayWallet: IDisplayWallet;
+  displayWallet: DisplayWallet;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,

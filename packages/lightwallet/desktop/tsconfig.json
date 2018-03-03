@@ -8,6 +8,12 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
+    "baseUrl": ".",
+    "paths": {
+      "@app/env": ["./src/environments/environment.ts"],
+      "@merit/common/*": ["../common/*"],
+      "@merit/desktop/*": ["./src/*"]
+    },
     "typeRoots": [
       "../node_modules/@types"
     ],

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
-import { createDisplayWallet, IDisplayWallet } from '@merit/common/models/display-wallet';
+import { createDisplayWallet, DisplayWallet } from '@merit/common/models/display-wallet';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
@@ -34,7 +34,7 @@ export class WalletsView {
   totalWalletsValueMicros: string;
   totalWalletsValueFiat: string;
   allBalancesHidden: boolean;
-  wallets: IDisplayWallet[];
+  wallets: DisplayWallet[];
   vaults;
   network: string;
   loading: boolean;
@@ -354,7 +354,7 @@ export class WalletsView {
       totalInvites: number = 0,
       allBalancesHidden: boolean = true;
 
-    this.wallets.forEach((w: IDisplayWallet) => {
+    this.wallets.forEach((w: DisplayWallet) => {
       totalAmount += w.totalBalanceMicros;
       totalInvites += w.invites;
       allBalancesHidden = w.client.balanceHidden && allBalancesHidden;
@@ -370,9 +370,9 @@ export class WalletsView {
     this.totalInvites = totalInvites;
   }
 
-  private async updateAllWallets(): Promise<IDisplayWallet[]> {
+  private async updateAllWallets(): Promise<DisplayWallet[]> {
     const wallets = await this.profileService.getWallets();
-    return Promise.all<IDisplayWallet>(
+    return Promise.all<DisplayWallet>(
       wallets.map(w => createDisplayWallet(w, this.walletService, null, { skipRewards: true, skipAlias: true }))
     );
   }

@@ -12,8 +12,6 @@
   },
   "private": true,
   "dependencies": {
-    "@ngrx/effects": "^5.1.0",
-    "@ngrx/store": "^5.1.0",
     "buffer-compare": "^1.1.1",
     "elliptic": "^6.4.0",
     "hammerjs": "^2.0.8",
