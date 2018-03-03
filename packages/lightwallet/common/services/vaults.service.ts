@@ -58,17 +58,18 @@ export class VaultsService {
   }
 
   async editVault(vault: IVault, masterKey) {
-    //
-    let tx = vault.walletClient.buildRenewVaultTx(vault.coins, vault, masterKey, { network: ENV.network });
+    const coins = await vault.walletClient.getVaultCoins(vault.address.toString());
+
+    let tx = vault.walletClient.buildRenewVaultTx(coins, vault, masterKey);
     vault.coins = [{ raw: tx.serialize(), network: ENV.network }];
     return await vault.walletClient.renewVault(vault);
   }
 
   createMasterKey(vault: IVault) {
-    const masterKey = this.Bitcore.PrivateKey.fromRandom(ENV.network);
-    return vault.walletClient.getNewMnemonic(masterKey.toBuffer());
+    const key = this.Bitcore.PrivateKey.fromRandom(ENV.network);
+    const phrase = vault.walletClient.getNewMnemonic(key.toBuffer());
+    return {key, phrase};
   }
-
 
   async createVault(data: IVaultCreateData) {
 

@@ -19,7 +19,7 @@
 
     <ion-item>
         <h2>Recovery Phrase</h2>
-        <p class="masterkey" *ngIf="masterKey">{{masterKey}}</p>
+        <p class="masterkey" *ngIf="masterKey">{{masterKey.phrase}}</p> 
         <p class="masterkey" *ngIf="!masterKey">Current phrase will be used</p>
 
         <button ion-button item-end add-button icon-only color="primary" (click)="regenerateMasterKey()">
@@ -31,17 +31,15 @@
         <ion-label>
             <h2>Whitelist</h2>
             <p>
-                 <span *ngFor="let wallet of whitelist; let last = last">
-                    {{wallet.name}}<span *ngIf="!last">, </span>
-                 </span>
+             <span *ngFor="let wallet of whiteList; let last = last">
+                {{wallet.name}}<span *ngIf="!last">, </span>
+             </span>
             </p>
         </ion-label>
         <button ion-button item-end round add-button icon-only>
             <ion-icon name="add"></ion-icon>
         </button>
     </button>
-
-
 
     <button ion-button  class="action-button"   (click)="edit()" [disabled]="!isNextStepAvailable">
         Reset

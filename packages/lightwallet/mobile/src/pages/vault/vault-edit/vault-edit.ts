@@ -22,7 +22,7 @@ export class VaultEditView {
   public wallets: Array<IWhitelistWallet>;
   public wallet: IDisplayWallet;
   public amount: number;
-  public masterKey: string;
+  public masterKey: {key: any, phrase: string};
 
   constructor(
     private navCtrl: NavController,
@@ -36,8 +36,14 @@ export class VaultEditView {
     this.vaultName = this.vault.name;
     this.amount = this.vault.amount;
     this.masterKey = this.vault.masterKey;
-    this.whitelist = this.navParams.get('whitelist');
     this.wallets = this.navParams.get('wallets');
+
+    this.wallets.forEach(w => {
+      if (this.vault.whitelist.some(addr => addr == w.client.getRootAddress())) {
+        w.selected = true;
+      }
+    });
+
   }
 
   get whiteList() {
@@ -61,10 +67,9 @@ export class VaultEditView {
   toConfirm() {
     this.navCtrl.push('VaultEditConfirmView', {vaultData: {
       vaultName: this.vaultName,
-      whitelist: this.whitelist,
-      wallet: this.wallet,
-      amount: this.rateService.mrtToMicro(this.amount),
-      masterKey: this.masterKey
+      whitelist: this.whiteList,
+      masterKey: this.masterKey,
+      vault: this.vault
     }});
   }
 
@@ -79,12 +84,13 @@ export class VaultEditView {
   get isNextStepAvailable() {
     return (
       this.vaultName
-      && this.whitelist
+      && this.wallets.filter(w => w.selected).length
     )
   }
 
   regenerateMasterKey() {
     this.masterKey = this.vaultsService.createMasterKey(this.vault);
   }
+
 
 }
