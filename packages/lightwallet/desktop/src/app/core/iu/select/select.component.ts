@@ -20,4 +20,10 @@ export class SelectComponent implements OnInit {
     this.show = false;
     this.selectionEvent.emit(item)
   }
+  onBlur() {
+    let _this = this;
+    setTimeout(function() {
+      _this.show = false;
+    },200)
+  }
 }
