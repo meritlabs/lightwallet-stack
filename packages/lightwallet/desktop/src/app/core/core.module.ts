@@ -20,6 +20,8 @@ import { NetworkComponent } from './network/network.component';
 import { ProfileStatsComponent } from './profile-stats/profile-stats.component';
 import { BackupComponent } from './backup/backup.component';
 import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phrase.component';
+import { PersonalComponent } from './wallets/personal/personal.component';
+import { VaultsComponent } from './wallets/vaults/vaults.component';
 
 export function getPages() {
   return [
@@ -54,6 +56,8 @@ export const reducers = {
     ProfileStatsComponent,
     BackupComponent,
     MnemonicPhraseComponent,
+    PersonalComponent,
+    VaultsComponent,
   ]
 })
 export class CoreModule { }
