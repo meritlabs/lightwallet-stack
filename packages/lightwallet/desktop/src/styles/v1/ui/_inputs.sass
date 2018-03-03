@@ -3,15 +3,19 @@
   width: 100%
   box-sizing: border-box
   background: $white-1
-  border-radius: 2px
+  border-radius: 5px
   +font($baseFont--medium, 14px, 14px, $input-text-color, none, none, none)
   letter-spacing: .3px
   border: 0
   margin-bottom: 30px
+  border: 1px solid transparent
+  +transition(.3, linear)
+  &:focus
+    border-color: $blue
   &--text
-    padding: 13px 16px
+    padding: 15px 16px
   &--form
-    background: $pale-grey-two
+    background: $white
   &--select
     text-align: left
     padding: 15px 16px 14.76px
