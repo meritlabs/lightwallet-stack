@@ -46,12 +46,13 @@ export class CoreComponent {
       name: 'Backup',
       icon: '/assets/v1/icons/ui/aside-navigation/backup.svg',
       link: '/backup'
-    },
-    {
-      name: 'Community',
-      icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
-      link: '/community'
     }
+    // ,
+    // {
+    //   name: 'Community',
+    //   icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
+    //   link: '/community'
+    // }
   ];
   bottomMenuItems: any[] = [
     {
