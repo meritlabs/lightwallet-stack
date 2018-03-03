@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 
-export interface AppConfig {
+export interface IAppConfig {
   limits: {
     totalCopayers: number;
     mPlusN: number;
@@ -92,7 +92,7 @@ export interface AppConfig {
 
 }
 
-const configDefault: AppConfig = {
+const configDefault: IAppConfig = {
   // wallet limits
   limits: {
     totalCopayers: 6,
@@ -181,7 +181,7 @@ const configDefault: AppConfig = {
 
 @Injectable()
 export class ConfigService {
-  private configCache: AppConfig;
+  private configCache: IAppConfig;
 
   constructor(private logger: LoggerService,
               private events: Events,
@@ -221,11 +221,11 @@ export class ConfigService {
     return this.configCache;
   }
 
-  get(): AppConfig {
+  get(): IAppConfig {
     return this.configCache;
   }
 
-  getDefaults(): AppConfig {
+  getDefaults(): IAppConfig {
     return configDefault;
   }
 

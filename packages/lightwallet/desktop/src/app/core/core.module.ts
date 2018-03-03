@@ -11,11 +11,11 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { CommunityComponent } from './community/community.component';
 import { NotificationsComponent } from './toolbar/notifications/notifications.component';
-import { contactsReducer } from '../../reducers/contacts';
-import { walletsReducer } from '../../reducers/wallets';
-import { CommonProvidersModule } from '../../../../common/common-providers.module';
 import { SelectComponent } from './iu/select/select.component';
 import { RowItemComponent } from './history/row-item/row-item.component';
+import { contactsReducer } from '@merit/common/reducers/contacts';
+import { walletsReducer } from '@merit/common/reducers/wallet.reducers';
+import { CommonProvidersModule } from '@merit/common/common-providers.module';
 
 export function getPages() {
   return [
@@ -37,7 +37,8 @@ export const reducers = {
     CommonModule,
     CoreRoutingModule,
     StoreModule.forRoot(reducers),
-    CommonProvidersModule.forRoot()
+    CommonProvidersModule.forRoot(),
+    
   ],
   declarations: [
     CoreComponent,

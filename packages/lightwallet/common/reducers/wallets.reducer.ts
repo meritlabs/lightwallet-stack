@@ -1,22 +1,25 @@
 import { Action } from '@ngrx/store';
-// import { IDisplayWallet } from '../../../mobile/src/models/display-wallet';
-
-interface IDisplayWallet {}
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 export interface WalletsState {
-  wallets: IDisplayWallet[];
+  wallets: DisplayWallet[];
 }
 
 export enum WalletsActionType {
-  DELETE = 'delete',
-  UPDATE = 'update',
-  REFRESH = 'refresh',
-  REFRESHED = 'refreshed'
+  Add = 'add'
 }
 
 export interface WalletsAction extends Action {
   type: WalletsActionType;
-  wallets: IDisplayWallet[];
+  wallets: DisplayWallet[];
+}
+
+export class AddWalletAction implements Action {
+  type = WalletsActionType.Add;
+
+  constructor(public payload: MeritWalletClient) {
+  }
 }
 
 const DEFAULT_STATE: WalletsState = {
@@ -25,7 +28,7 @@ const DEFAULT_STATE: WalletsState = {
 
 export function walletsReducer(state: WalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
-    case WalletsActionType.UPDATE:
+    case WalletsActionType.Add:
       state.wallets = action.wallets;
       break;
   }

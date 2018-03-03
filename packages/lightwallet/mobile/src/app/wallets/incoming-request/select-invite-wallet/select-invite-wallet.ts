@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
-import { IDisplayWallet } from '@merit/common/models/display-wallet';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @IonicPage()
 @Component({
@@ -9,8 +9,8 @@ import { IDisplayWallet } from '@merit/common/models/display-wallet';
 })
 export class SelectInviteWalletModal {
 
-  public wallets: Array<IDisplayWallet>;
-  public selectedWallet: IDisplayWallet;
+  public wallets: Array<DisplayWallet>;
+  public selectedWallet: DisplayWallet;
 
   constructor(private navParams: NavParams,
               private viewCtrl: ViewController) {
@@ -22,7 +22,7 @@ export class SelectInviteWalletModal {
     this.viewCtrl.dismiss();
   }
 
-  select(wallet: IDisplayWallet) {
+  select(wallet: DisplayWallet) {
     if (wallet.invites) {
       this.viewCtrl.dismiss(wallet);
     }
