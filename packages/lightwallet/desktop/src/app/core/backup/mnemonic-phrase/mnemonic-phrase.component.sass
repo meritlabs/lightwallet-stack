@@ -8,10 +8,25 @@
   &__back-navogator
     margin-bottom: 20px
     cursor: pointer
-  &__mnemonic
-    padding-top: 30px
   &__header
     display: flex
     justify-content: space-between
     max-width: 900px
     width: 100%
+  &__mnemonic
+    padding-top: 30px
+    &__container
+      background: $white
+      box-shadow: 0 2px 4px rgba(46,51,88,0.22)
+      padding: 35px 55px
+      +font($baseFont--regular, 35px, 45px, $gun-metal, none, none, none)
+      letter-spacing: -1px
+      text-align: center
+      word-spacing: 20px
+      p
+        display: inline-block
+        max-width: 750px
+        width: 100%
+        margin: 0px auto
+    button
+      margin-bottom: 30px
