@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-personal',
@@ -6,10 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./personal.component.sass']
 })
 export class PersonalComponent implements OnInit {
-
+  @Input() showButton: boolean;
   constructor() { }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }
