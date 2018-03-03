@@ -31,7 +31,6 @@ export class VaultView {
 
   async ionViewWillEnter() {
     this.whitelist = await this.formatWhiteList(this.vault.whitelist);
-    console.log(this.whitelist, 'whitelist');
 
     const transactions = await this.vaultsService.getTxHistory(this.vault);
     this.transactions = transactions.filter(t => !t.isInvite).map(t => {

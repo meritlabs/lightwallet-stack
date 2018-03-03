@@ -40,7 +40,9 @@ export class VaultEditConfirmView {
     const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
     loader.present();
     try {
-      await this.vaultsService.editVault(this.vaultData, this.vaultData.masterKey);
+      this.vaultData.vault.name = this.vaultData.vaultName;
+      this.vaultData.vault.whitelist = this.vaultData.whitelist;
+      await this.vaultsService.editVault(this.vaultData.vault, this.vaultData.masterKey);
       this.navCtrl.popToRoot({});
     } catch (e) {
       this.toastCtrl.create({
@@ -50,8 +52,9 @@ export class VaultEditConfirmView {
     } finally  {
       loader.dismiss();
     }
-
   }
+
+
 
 
 
