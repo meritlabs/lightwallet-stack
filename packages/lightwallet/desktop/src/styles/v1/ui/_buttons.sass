@@ -43,7 +43,7 @@
       transform: rotate(45deg)
       width: 4px
       height: 4px
-      border: 1px solid $blue
+      border: 2px solid $blue
       border-left: 0
       border-top: 0
       position: relative
@@ -86,3 +86,10 @@
     display: none
   &--true
     display: inline-block
+.ui-button
+  &--select-currency
+    border: transparent
+    &::after
+      border: 2px solid $input-text-color
+      border-left: 0
+      border-top: 0
