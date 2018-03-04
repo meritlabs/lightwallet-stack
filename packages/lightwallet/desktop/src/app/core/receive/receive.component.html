@@ -1,8 +1,8 @@
 <div class="container--fluid receiveMerit">
-  <div class="receiveMerit__header title--primary">
+  <div class="receiveMerit__header container--inner title--primary">
     <p>Receive Merit</p>
   </div>
-  <div class="receiveMerit__content">
+  <div class="receiveMerit__content container--inner">
     <div class="receiveMerit__form">
       <div class="receiveMerit__form__group">
         <label for="" class="ui-label">Amount</label>
@@ -48,9 +48,11 @@
     </div>
   </div>
   <div class="receiveMerit__footer">
-    <p class="receiveMerit__footer__caption">You can also buy Merit using your
-      credit or debit card, Paypal or bank transfer</p>
-    <button type="button" name="button" [routerLink]='"/send"'
-      class="ui-button ui-button--blue ui-button--with-arrow">Send Merit</button>
+    <div class="container--inner">
+      <p class="receiveMerit__footer__caption">You can also buy Merit using your
+        credit or debit card, Paypal or bank transfer</p>
+      <button type="button" name="button" [routerLink]='"/send"'
+        class="ui-button ui-button--blue ui-button--with-arrow">Send Merit</button>
+    </div>
   </div>
 </div>
