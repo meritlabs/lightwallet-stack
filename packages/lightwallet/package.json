@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@angular/animations": "5.0.3",
-    "@angular/router": "5.0.3",
     "@angular/common": "5.0.3",
     "@angular/compiler": "5.0.3",
     "@angular/compiler-cli": "5.0.3",
@@ -19,6 +18,7 @@
     "@angular/forms": "5.0.3",
     "@angular/platform-browser": "5.0.3",
     "@angular/platform-browser-dynamic": "5.0.3",
+    "@angular/router": "5.0.3",
     "@ionic-native/android-fingerprint-auth": "4.5.2",
     "@ionic-native/app-version": "^4.5.3",
     "@ionic-native/barcode-scanner": "4.5.2",
@@ -53,6 +53,7 @@
     "ionicons": "3.0.0",
     "json-stable-stringify": "^1.0.0",
     "lodash": "^4.17.5",
+    "ng-click-outside": "^3.2.0",
     "ng2-clip": "^1.0.1",
     "plist": "^2.1.0",
     "preconditions": "^2.2.0",
