@@ -10,11 +10,16 @@
     background: $white
   &__form,
   &__totals
-    width: 50%
     box-sizing: border-box
     padding: 30px 40px
+  &__form
+    width: 60%
+  &__totals
+    width: 40%
   &__totals
     background: $pale-grey-four
+    .sendMerit__form__group
+      height: 100%
   .fee-label
     +font($baseFont--medium, 15px, 15px, $blue, uppercase, none, none)
     padding-left: 2px
@@ -24,13 +29,25 @@
     margin-bottom: 5px
 .sendMerit__totals__table
   box-sizing: border-box
-  +font($baseFont--medium, 14px, 24px, $gun-metal, none, none, none)
+  +font($baseFont--medium, 16px, 24px, $gun-metal, none, none, none)
+  display: flex
+  align-items: flex-start
+  flex-flow: row wrap
+  height: 100%
+  &--top
+    width: 100%
+  &--bottom
+    width: 100%
+    align-self: flex-end
   &__row
     display: flex
     justify-content: space-between
     margin-bottom: 10px
+    width: 100%
     &--devider
-      height: 1px
+      height: 2px
       width: 100%
       background: $pale-grey-two
       margin: 30px 0
+    &--strong
+      font-family: $baseFont--heavy
