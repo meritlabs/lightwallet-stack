@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-history-list',
@@ -6,6 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./history-list.component.sass']
 })
 export class HistoryListComponent implements OnInit {
+  @Input() limit: any = 100;
   history: any = [
     {
       "name": 'mny89ri53nmfCvSp6jq90',
