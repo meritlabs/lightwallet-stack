@@ -32,6 +32,5 @@ export class NotificationsComponent implements OnInit {
     }else {
       return false;
     }
-
   }
 }

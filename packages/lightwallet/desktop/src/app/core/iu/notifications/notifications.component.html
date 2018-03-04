@@ -3,8 +3,9 @@
     <img src="/assets/v1/icons/ui/notification.svg" alt="Notifications Icon">
     <span *ngIf="hasNewNotifications" class="notification__indicator"></span>
   </button>
+  {{showHistory}}
 </div>
-<app-notifications-history [showHistory]=showHistory [notifications]=notifications></app-notifications-history>
+<app-notifications-history [showHistory]="showHistory" [notifications]="notifications"></app-notifications-history>
 <app-toast-notification
   [show]=false
   [message]="{status: 'success', title: 'Success!', text: 'Your transaction is confirmed!'}">
