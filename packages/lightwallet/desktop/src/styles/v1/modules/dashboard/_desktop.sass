@@ -5,13 +5,15 @@
   height: 100vh
   overflow: hidden
   &__aside
-    width: 240px
+    width: 300px
     background: $dashboard-aside-bg
     box-sizing: border-box
     padding: 45px 0 25px
     display: flex
     align-content: space-between
     flex-flow: row wrap
+    overflow-y: auto
+    user-select: none
     &__wrap
       display: block
       width: 100%
@@ -44,22 +46,23 @@
 .dashboard
   &__main
     padding-top: 74px
-    width: calc(100% - 240px)
+    width: calc(100% - 300px)
     height: 100vh
     overflow-y: auto
 .dashboard
   &__toolbar
     box-sizing: border-box
     padding: 17px 40px
-    width: calc(100% - 240px)
-    display: flex
+    width: calc(100% - 300px)
     background: $white
-    justify-content: space-between
     box-shadow: 0px 2px 2px rgba(46,53,59, .05)
     position: fixed
     top: 0
     right: 0
     z-index: 99
+    &__wrap
+      display: flex
+      justify-content: space-between
     &__col
       display: flex
       align-content: center

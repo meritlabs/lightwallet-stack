@@ -11,5 +11,4 @@ export class BackupComponent implements OnInit {
 
   ngOnInit() {
   }
-
 }
