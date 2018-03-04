@@ -1,8 +1,6 @@
 .wallets
   &__group
     padding: 50px 40px 30px
-    &--vaults
-      background: $white
     &__header
       display: flex
       justify-content: space-between
@@ -14,16 +12,19 @@
       flex-flow: row wrap
       justify-content: flex-start
       align-items: center
-      padding-bottom: 20px
+      padding: 20px
+      background: $white
+      margin-bottom: 10px
+      border-radius: 5px
+      box-shadow: 0 2px 4px rgba(46,51,88, .22)
       &__icon
-        width: 70px
-        height: 70px
+        width: 40px
+        height: 40px
         display: flex
         justify-content: center
         align-items: center
         img
-          width: 24px
-          height: 24px
+          width: 100%
       &__info
         padding-left: 20px
         letter-spacing: .3px
@@ -31,10 +32,3 @@
           +font($baseFont--medium, 15px, 22px, $gun-metal, none, none, none)
         .regular-blue-text
           +font($baseFont--medium, 14px, 24px, $blue, none, none, none)
-    &__wallet
-      &--green .wallets__group__wallet__icon
-        background: $light-sea-green
-      &--rose .wallets__group__wallet__icon
-        background: $rose-pink
-      &--lavand .wallets__group__wallet__icon
-        background: $lavender
