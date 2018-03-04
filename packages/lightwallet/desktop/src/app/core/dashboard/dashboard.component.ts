@@ -9,8 +9,11 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 export class DashboardComponent implements OnInit {
   amount: number = null;
   constructor() { }
-
-  ngOnInit() {
+  ngOnInit() {}
+  sendSubmit($event) {
+    if($event.keyCode === 13) {
+      let element: HTMLElement = document.getElementById('sendMrt') as HTMLElement;
+      element.click();
+    }
   }
-
 }

@@ -9,10 +9,11 @@
         <div class="title--primary">Send merit</div>
         <div class="ui-input__wrapper ui-input__wrapper--mrt">
           <input type="text" name="" [value]="amount" (input)="amount = $event.target.value"
+          (keypress)="sendSubmit($event)"
           class="ui-input ui-input--form ui-input--text">
           <div class="ui-input__addon">MRT</div>
           <div *ngIf="amount > 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }"
-            class="ui-button ui-button--blue ui-button--sm">SEND</div>
+            class="ui-button ui-button--blue ui-button--sm" id="sendMrt">SEND</div>
         </div>
       </div>
       <app-personal [showButton]=false></app-personal>
