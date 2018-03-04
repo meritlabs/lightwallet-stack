@@ -8,5 +8,5 @@ import { Component, OnInit, Input } from '@angular/core';
 export class NotificationsHistoryComponent implements OnInit {
   constructor() {}
   ngOnInit() {}
-  @Input() showHistory: boolean = false;
+  @Input() showHistory: boolean;
 }

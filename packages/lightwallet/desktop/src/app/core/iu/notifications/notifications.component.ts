@@ -10,7 +10,7 @@ export class NotificationsComponent implements OnInit {
 
   @Input()
   hasNewNotifications: boolean = false;
-  showHistory: boolean = false;
+  showHistory: boolean = true;
   constructor() {}
   ngOnInit() {}
 
