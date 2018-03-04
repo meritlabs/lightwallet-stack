@@ -24,6 +24,7 @@ import { VaultsComponent } from './wallets/vaults/vaults.component';
 import { HistoryListComponent } from './history/history-list/history-list.component';
 import { NotificationsComponent } from './iu/notifications/notifications.component';
 import { ToastNotificationComponent } from './iu/notifications/toast-notification/toast-notification.component';
+import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
 export function getPages() {
   return [
     WalletsComponent, HistoryComponent, ReceiveComponent, SendComponent, DashboardComponent, CommunityComponent
@@ -61,6 +62,7 @@ export const reducers = {
     VaultsComponent,
     HistoryListComponent,
     ToastNotificationComponent,
+    NotificationsHistoryComponent,
   ]
 })
 export class CoreModule { }
