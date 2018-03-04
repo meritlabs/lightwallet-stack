@@ -1,13 +1,10 @@
 <div class="notification__box">
-  <button class="notification__button">
+  <button class="notification__button" (click)="showHistory=!showHistory">
     <img src="/assets/v1/icons/ui/notification.svg" alt="Notifications Icon">
     <span *ngIf="hasNewNotifications" class="notification__indicator"></span>
   </button>
 </div>
-<app-notifications-history></app-notifications-history>
-
-
-
+<app-notifications-history [showHistory]=showHistory></app-notifications-history>
 <app-toast-notification
   [show]=false
   [message]="{status: 'success', title: 'Success!', text: 'Your transaction is confirmed!'}">
