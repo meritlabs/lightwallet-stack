@@ -1,31 +1,35 @@
-<div class="container dashboard-panel">
+<div class="dashboard-panel">
   <div class="dashboard-panel__title title--primary">
-    <p>Hello, <span>@alias</span></p>
+    <div class="container--inner">
+      <p>Hello, <span>@alias</span></p>
+    </div>
   </div>
   <app-profile-stats></app-profile-stats>
   <div class="dashboard-panel__group">
-    <div class="dashboard-panel__widged">
-      <div class="dashboard-panel__quick-sending">
-        <div class="title--primary">Send merit</div>
-        <div class="ui-input__wrapper ui-input__wrapper--mrt">
-          <input type="text" name="" [value]="amount" (input)="amount = $event.target.value"
-          (keypress)="sendSubmit($event)"
-          class="ui-input ui-input--form ui-input--text">
-          <div class="ui-input__addon">MRT</div>
-          <div *ngIf="amount > 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }"
-            class="ui-button ui-button--blue ui-button--sm" id="sendMrt">SEND</div>
+    <div class="dashboard-panel__group__wrap container--inner">
+      <div class="dashboard-panel__widged">
+        <div class="dashboard-panel__quick-sending">
+          <div class="title--primary">Send merit</div>
+          <div class="ui-input__wrapper ui-input__wrapper--mrt">
+            <input type="text" name="" [value]="amount" (input)="amount = $event.target.value"
+            (keypress)="sendSubmit($event)"
+            class="ui-input ui-input--form ui-input--text">
+            <div class="ui-input__addon">MRT</div>
+            <div *ngIf="amount > 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }"
+              class="ui-button ui-button--blue ui-button--sm" id="sendMrt">SEND</div>
+          </div>
         </div>
+        <app-personal [showButton]=false></app-personal>
+        <app-vaults [showButton]=false></app-vaults>
       </div>
-      <app-personal [showButton]=false></app-personal>
-      <app-vaults [showButton]=false></app-vaults>
-    </div>
-    <div class="dashboard-panel__widged dashboard-panel__widged--latest-transactions">
-      <div class="title--primary">
-        <p>Latest transactions</p>
+      <div class="dashboard-panel__widged dashboard-panel__widged--latest-transactions">
+        <div class="title--primary">
+          <p>Latest transactions</p>
+        </div>
+        <app-history-list [limit]=5></app-history-list>
+        <div [routerLink]='"/history"'
+          class="ui-button ui-button--blue">SHOW FULL HISTORY</div>
       </div>
-      <app-history-list [limit]=5></app-history-list>
-      <div [routerLink]='"/history"'
-        class="ui-button ui-button--blue">SHOW FULL HISTORY</div>
     </div>
   </div>
 </div>
