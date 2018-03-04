@@ -23,6 +23,7 @@ import { PersonalComponent } from './wallets/personal/personal.component';
 import { VaultsComponent } from './wallets/vaults/vaults.component';
 import { HistoryListComponent } from './history/history-list/history-list.component';
 import { NotificationsComponent } from './iu/notifications/notifications.component';
+import { ToastNotificationComponent } from './iu/notifications/toast-notification/toast-notification.component';
 export function getPages() {
   return [
     WalletsComponent, HistoryComponent, ReceiveComponent, SendComponent, DashboardComponent, CommunityComponent
@@ -59,6 +60,7 @@ export const reducers = {
     PersonalComponent,
     VaultsComponent,
     HistoryListComponent,
+    ToastNotificationComponent,
   ]
 })
 export class CoreModule { }
