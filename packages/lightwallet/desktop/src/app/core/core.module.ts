@@ -23,6 +23,7 @@ import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phras
 import { PersonalComponent } from './wallets/personal/personal.component';
 import { VaultsComponent } from './wallets/vaults/vaults.component';
 import { HistoryListComponent } from './history/history-list/history-list.component';
+import { NotificationComponent } from './iu/notification/notification.component';
 
 export function getPages() {
   return [
@@ -60,6 +61,7 @@ export const reducers = {
     PersonalComponent,
     VaultsComponent,
     HistoryListComponent,
+    NotificationComponent,
   ]
 })
 export class CoreModule { }
