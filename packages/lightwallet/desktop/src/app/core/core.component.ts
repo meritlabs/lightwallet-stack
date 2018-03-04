@@ -43,6 +43,11 @@ export class CoreComponent {
       link: '/network'
     },
     {
+      name: 'Backup',
+      icon: '/assets/v1/icons/ui/aside-navigation/backup.svg',
+      link: '/backup'
+    },
+    {
       name: 'Community',
       icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
       link: '/community'

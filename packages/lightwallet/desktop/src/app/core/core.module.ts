@@ -18,6 +18,8 @@ import { SelectComponent } from './iu/select/select.component';
 import { RowItemComponent } from './history/row-item/row-item.component';
 import { NetworkComponent } from './network/network.component';
 import { ProfileStatsComponent } from './profile-stats/profile-stats.component';
+import { BackupComponent } from './backup/backup.component';
+import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phrase.component';
 
 export function getPages() {
   return [
@@ -50,6 +52,8 @@ export const reducers = {
     RowItemComponent,
     NetworkComponent,
     ProfileStatsComponent,
+    BackupComponent,
+    MnemonicPhraseComponent,
   ]
 })
 export class CoreModule { }
