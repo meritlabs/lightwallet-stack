@@ -3,7 +3,6 @@
     <img src="/assets/v1/icons/ui/notification.svg" alt="Notifications Icon">
     <span *ngIf="hasNewNotifications" class="notification__indicator"></span>
   </button>
-  {{showHistory}}
 </div>
 <app-notifications-history [showHistory]="showHistory" [notifications]="notifications"></app-notifications-history>
 <app-toast-notification
