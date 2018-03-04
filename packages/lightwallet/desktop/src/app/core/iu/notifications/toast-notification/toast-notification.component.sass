@@ -1,0 +1,38 @@
+@import "~styles/v1/theme"
+.notification__toast
+  position: fixed
+  right: 30px
+  top: 30px
+  width: 300px
+  padding: 20px
+  &__close
+    position: absolute
+    right: 10px
+    top: 10px
+    height: 15px
+    width: 15px
+    cursor: pointer
+    &::after,
+    &::before
+      content: ""
+      width: 100%
+      height: 2px
+      display: block
+      background: $white
+      position: absolute
+    &::after
+      transform: rotate(45deg)
+      top: 5px
+      left: 0
+    &::before
+      transform: rotate(-45deg)
+      top: 5px
+      right: 0
+  &__title
+    margin-bottom: 5px
+    font-family: $baseFont--heavy
+  &--success
+    background: rgba(0,130,18, .8)
+    border-radius: 5px
+    box-shadow: 0 0 20px rgba(0,0,0, .3)
+    +font($baseFont--medium, 16px, 24px, $white, none, none, none)
