@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'view-send',
@@ -67,14 +68,24 @@ export class SendComponent implements OnInit {
   };
   converted: any = 0;
   amount: number = 0;
+  mrt: number = null;
   selectedCurrency: any = {
     "name": 'USD',
     "symbol": '$',
     "value": 10
   };
-  constructor() { }
+  constructor(private route: ActivatedRoute) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if(params['amount']) {
+        let currency = this.selectedCurrency;
+        this.mrt = params['amount'];
+        this.amount = params['amount'];
+        this.converted = `${currency.symbol} ${this.amount * currency.value}`;
+      }
+    })
+  }
 
   selectCurrency($event) {
     this.selectedCurrency = $event

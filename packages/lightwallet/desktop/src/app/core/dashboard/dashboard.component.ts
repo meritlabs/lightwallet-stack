@@ -7,7 +7,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None
 })
 export class DashboardComponent implements OnInit {
-
+  amount: number = null;
   constructor() { }
 
   ngOnInit() {
