@@ -9,11 +9,9 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 export class NotificationsComponent implements OnInit {
 
   @Input()
-  hasNewNotifications: boolean;
-
-  constructor() { }
-
-  ngOnInit() {
-  }
+  hasNewNotifications: boolean = false;
+  showHistory: boolean = false;
+  constructor() {}
+  ngOnInit() {}
 
 }
