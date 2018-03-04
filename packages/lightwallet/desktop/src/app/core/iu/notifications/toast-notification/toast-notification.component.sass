@@ -5,6 +5,9 @@
   top: 30px
   width: 300px
   padding: 20px
+  border-radius: 5px
+  box-shadow: 0 0 20px rgba(0,0,0, .3)
+  +font($baseFont--medium, 16px, 24px, $white, none, none, none)
   &__close
     position: absolute
     right: 10px
@@ -33,6 +36,12 @@
     font-family: $baseFont--heavy
   &--success
     background: rgba(0,130,18, .8)
-    border-radius: 5px
-    box-shadow: 0 0 20px rgba(0,0,0, .3)
-    +font($baseFont--medium, 16px, 24px, $white, none, none, none)
+  &--error
+    background: rgba(175,62,62, .8)
+  &--regular
+    background: rgba(250,250,250, .8)
+    color: $gun-metal
+    .notification__toast__close
+      &::after,
+      &::before
+        background: $gun-metal

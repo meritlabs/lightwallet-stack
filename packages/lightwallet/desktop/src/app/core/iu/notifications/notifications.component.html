@@ -4,4 +4,16 @@
     <span *ngIf="hasNewNotifications" class="notification__indicator"></span>
   </button>
 </div>
-<app-toast-notification [show]=true></app-toast-notification>
+
+<app-toast-notification
+  [show]=false
+  [message]="{status: 'success', title: 'Success!', text: 'Your transaction is confirmed!'}">
+</app-toast-notification>
+<app-toast-notification
+  [show]=false
+  [message]="{status: 'regular', title: 'Mining reward!', text: '+0.00030002 MRT'}">
+</app-toast-notification>
+<app-toast-notification
+  [show]=true
+  [message]="{status: 'error', title: 'ERROR!', text: 'Connection lost!'}">
+</app-toast-notification>
