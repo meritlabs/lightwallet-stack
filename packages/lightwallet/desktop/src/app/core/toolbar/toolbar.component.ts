@@ -37,11 +37,8 @@ export class ToolbarComponent implements OnInit {
     "value": '1'
   };
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  constructor() {}
+  ngOnInit() {}
   receiveSelection($event) {
     this.selectedCurrency = $event
   }
