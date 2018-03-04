@@ -4,7 +4,7 @@
     <span *ngIf="hasNewNotifications" class="notification__indicator"></span>
   </button>
 </div>
-<app-notifications-history [showHistory]=showHistory></app-notifications-history>
+<app-notifications-history [showHistory]=showHistory [notifications]=notifications></app-notifications-history>
 <app-toast-notification
   [show]=false
   [message]="{status: 'success', title: 'Success!', text: 'Your transaction is confirmed!'}">

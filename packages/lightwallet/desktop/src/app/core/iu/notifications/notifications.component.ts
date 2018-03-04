@@ -9,9 +9,29 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 export class NotificationsComponent implements OnInit {
 
   @Input()
-  hasNewNotifications: boolean = false;
-  showHistory: boolean = true;
+  showHistory: boolean = false;
+  notifications: Object[] = [
+    {
+      "title": "Success!",
+      "status": "success",
+      "date": "11:42 PM",
+      "text": "Your transaction is confirmed!"
+    },
+    {
+      "title": "Success!",
+      "status": "success",
+      "date": "11:42 PM",
+      "text": "Your transaction is confirmed!"
+    }
+  ]
   constructor() {}
   ngOnInit() {}
+  get hasNewNotifications() {
+    if(this.notifications.length > 0) {
+      return true;
+    }else {
+      return false;
+    }
 
+  }
 }
