@@ -9,4 +9,5 @@ export class NotificationsHistoryComponent implements OnInit {
   constructor() {}
   ngOnInit() {}
   @Input() showHistory: boolean;
+  @Input() notifications: Object[];
 }
