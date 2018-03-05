@@ -65,7 +65,10 @@ export class VaultsService {
 
   async editVault(vault: IVault, masterKey) {
 
-    const tx = await vault.walletClient.buildRenewVaultTx(vault, masterKey);
+    const txp = await vault.walletClient.buildRenewVaultTx(vault, masterKey);
+    const feePerKB = await this.feeService.getCurrentFeeRate(ENV.network);
+    const fee = Math.round(feePerKB * txp.serialize().length / 2000);
+    const tx = await vault.walletClient.buildRenewVaultTx(vault, masterKey, {fee});
     let newVault = Object.assign({
       coins: [{ raw: tx.serialize(), network: ENV.network }]
     }, vault);
