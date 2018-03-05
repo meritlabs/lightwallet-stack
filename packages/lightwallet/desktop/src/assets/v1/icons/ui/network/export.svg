@@ -1,0 +1,14 @@
+<svg width="16px" height="18px" viewBox="0 0 16 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Group 9</title>
+  <desc>Created with Sketch.</desc>
+  <defs></defs>
+  <g id="Screens" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="network" transform="translate(-1131.000000, -511.000000)">
+      <g id="Group-9" transform="translate(1132.000000, 512.000000)">
+        <path d="M14,11 L14,14.5964848 C14,15.2611679 13.5301917,15.8 12.9477246,15.8 L1.05227542,15.8 C0.471119753,15.8 0,15.2617639 0,14.5964848 L0,11" id="Rectangle" stroke="#00B0DD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <rect id="Rectangle-2" fill="#00A3CC" x="6" y="0" width="2" height="11.2" rx="1"></rect>
+        <polyline id="Rectangle-3" stroke="#00A3CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="3 4.4 7.4 0 11.8 4.4"></polyline>
+      </g>
+    </g>
+  </g>
+</svg>
