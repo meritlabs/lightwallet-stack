@@ -10,21 +10,20 @@ prepare-prereqs:
 ### lightwallet-app ###
 .PHONY: prepare-lightwallet
 prepare-lightwallet:
-	rm -rf ./packages/lightwallet/mobile/node_modules
-	cordova platform rm android
-	cordova platform rm ios
 	lerna bootstrap
-	cd ./packages/lightwallet/mobile/
-	cordova platform add android && cordova prepare android
-	cordova platform add ios && cordova prepare ios
-	lerna bootstrap
+	cd ./packages/lightwallet/mobile/ && cordova platform add android && cordova prepare android
+	cd ./packages/lightwallet/mobile/ && cordova platform add ios && cordova prepare ios
 
 .PHONY: start-lightwallet
 start-lightwallet:
-	cd ./packages/lightwallet && npm run apply && npm run livestart
+	cd ./packages/lightwallet && ionic serve
 
 .PHONY: clean-lightwallet
 clean-lightwallet:
+	cd ./packages/lightwallet/mobile/ && cordova platform rm android
+	cd ./packages/lightwallet/mobile/ && cordova platform rm ios
+	rm -rf ./packages/lightwallet/desktop/node_modules
+	rm -rf ./packages/lightwallet/mobile/node_modules
 	rm -rf ./packages/lightwallet/node_modules
 	rm -rf ./packages/lightwallet/plugins
 	rm -rf ./packages/lightwallet/platforms/ios
