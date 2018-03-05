@@ -47,22 +47,21 @@ export class VaultsService {
 
   async sendFromVault(vault: any, amount: number, recipientAddress: any) {
 
-    //convert string address to hash buffers
-    //vault = JSON.parse(JSON.stringify(vault));
-    const coins = await vault.walletClient.getVaultCoins(recipientAddress.toString());
-    const address = this.Bitcore.Address.fromObject(vault.address);
-    const spendKey = this.Bitcore.HDPrivateKey.fromString(vault.walletClient.credentials.xPrivKey);
-
-    const tx = vault.walletClient.buildSpendVaultTx(vault, coins, spendKey, amount, recipientAddress, {});
+    const tx = await vault.walletClient.buildSpendVaultTx(vault, amount, recipientAddress, {});
     return vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
   }
 
   async editVault(vault: IVault, masterKey) {
-    const coins = await vault.walletClient.getVaultCoins(vault.address.toString());
 
-    let tx = vault.walletClient.buildRenewVaultTx(coins, vault, masterKey);
-    vault.coins = [{ raw: tx.serialize(), network: ENV.network }];
-    return await vault.walletClient.renewVault(vault);
+    const tx = await vault.walletClient.buildRenewVaultTx(vault, masterKey);
+    let newVault = Object.assign({
+      coins: [{ raw: tx.serialize(), network: ENV.network }]
+    }, vault);
+    newVault.whitelist = vault.whitelist.map(w => w.client.getRootAddress().toBuffer());
+    newVault.masterPubKey = this.Bitcore.PublicKey.fromPrivateKey(masterKey.key);
+    delete newVault.walletClient;
+
+    return await vault.walletClient.renewVault(newVault);
   }
 
   createMasterKey(vault: IVault) {

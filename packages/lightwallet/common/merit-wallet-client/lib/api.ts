@@ -974,7 +974,9 @@ export class API {
    * Renew vault
    * Will make all pending tx invalid
    */
-  buildRenewVaultTx(coins: any[], newVault: any, masterKey: any, opts: any = {}) {
+  async buildRenewVaultTx(newVault: any, masterKey: any, opts: any = {}) {
+
+    const coins = await newVault.walletClient.getVaultCoins(newVault);
 
     var network = opts.network || ENV.network;
     var fee = opts.fee || DEFAULT_FEE;
@@ -995,9 +997,7 @@ export class API {
 
         let tag = newVault.tag;
 
-        let whitelist = _.map(newVault.whitelist, (e) => {
-          return Bitcore.Address.fromBuffer(e).hashBuffer;
-        });
+        let whitelist = newVault.whitelist.map(w => w.client.getRootAddress().toBuffer());
 
         let params = [
           new Bitcore.PublicKey(newVault.spendPubKey, { network }).toBuffer(),
@@ -1010,7 +1010,10 @@ export class API {
         params.push(new Buffer(tag));
         params.push(Bitcore.Opcode.smallInt(newVault.type));
 
-        let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, masterKey.publicKey);
+
+        let masterPubKey = Bitcore.PublicKey.fromPrivateKey(masterKey.key); //todo if not exitsts use current
+        let masterPrivKey = masterKey.key; //todo what if not exitsts???
+        let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, masterPubKey);
 
         tx.addOutput(new Bitcore.Transaction.Output({
           script: scriptPubKey,
@@ -1032,8 +1035,8 @@ export class API {
         tx.addressType = 'PP2SH';
 
         _.forEach(tx.inputs, (input, i) => {
-          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, Bitcore.PublicKey(newVault.masterPubKey, network));
+          let sig = Bitcore.Transaction.Sighash.sign(tx, masterPrivKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
+          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, Bitcore.PublicKey(masterPubKey, network));
           input.setScript(inputScript);
         });
 
@@ -1042,11 +1045,11 @@ export class API {
 
       } else {
         this.log.error('Vault type is not supported:', newVault.type);
-        return MWCErrors.COULD_NOT_BUILD_TRANSACTION;
+        throw MWCErrors.COULD_NOT_BUILD_TRANSACTION;
       }
     } catch (ex) {
       this.log.error('Could not build transaction from private key', ex);
-      return MWCErrors.COULD_NOT_BUILD_TRANSACTION;
+      throw MWCErrors.COULD_NOT_BUILD_TRANSACTION;
     }
 
     return tx;
@@ -1055,7 +1058,10 @@ export class API {
   /**
    * Build spend tx for vault
    */
-  buildSpendVaultTx(vault: any, coins: Array<any>, spendKey: any, amount: number, address: any, opts: any = {}) {
+  async buildSpendVaultTx(vault: any, amount: number, address: any, opts: any = {}) {
+
+    const coins = await vault.walletClient.getVaultCoins(vault);
+    const spendKey = Bitcore.HDPrivateKey.fromString(vault.walletClient.credentials.xPrivKey);
 
     var network = ENV.network;
     var fee = opts.fee || DEFAULT_FEE; //todo why default fee??
@@ -3030,8 +3036,8 @@ export class API {
     return this._doPostRequest(url, vault);
   };
 
-  getVaultCoins(vaultAddress: any) {
-    return this.getUtxos({ addresses: [vaultAddress] });
+  getVaultCoins(vault: any) {
+    return this.getUtxos({ addresses: [Bitcore.Address(vault.address).toString()] });
   };
 
   getVaultTxHistory(vaultId: string, network: string): Promise<Array<any>> {
