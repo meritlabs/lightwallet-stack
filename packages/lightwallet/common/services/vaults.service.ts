@@ -57,7 +57,7 @@ export class VaultsService {
     let newVault = Object.assign({
       coins: [{ raw: tx.serialize(), network: ENV.network }]
     }, vault);
-    newVault.whitelist = vault.whitelist.map(w => w.client.getRootAddress().toBuffer());
+    newVault.whitelist = vault.whitelist.map((w:any) => w.client.getRootAddress().toBuffer());
     newVault.masterPubKey = this.Bitcore.PublicKey.fromPrivateKey(masterKey.key);
     delete newVault.walletClient;
 

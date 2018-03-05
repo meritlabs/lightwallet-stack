@@ -167,6 +167,7 @@ export class WalletService {
             cache.pendingAmount = status.balance.totalAmount - status.balance.totalConfirmedAmount;
             cache.spendableAmount = status.balance.totalConfirmedAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
           }
+          cache.confirmedAmount = status.balance.totalConfirmedAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
 
           // Selected unit
           cache.unitToMicro = config.settings.unitToMicro;

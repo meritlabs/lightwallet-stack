@@ -4,4 +4,8 @@ view-vault-create {
     font-size: 13px;
   }
 
+  .error {
+    color: color($colors, danger);
+  }
+
 }
