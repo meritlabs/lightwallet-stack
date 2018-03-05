@@ -9,6 +9,8 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from "@merit/common/services/rate.service";
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { AddressService } from "@merit/common/services/address.service";
+import { FeeService } from '@merit/common/services/fee.service';
+
 
 import { ENV } from '@app/env';
 
@@ -31,6 +33,7 @@ export class VaultsService {
     private profileService: ProfileService,
     private rateService: RateService,
     private addressService: AddressService,
+    private feeService: FeeService,
     bwcService: MWCService
   ) {
     this.Bitcore = bwcService.getBitcore();
@@ -47,7 +50,10 @@ export class VaultsService {
 
   async sendFromVault(vault: any, amount: number, recipientAddress: any) {
 
-    const tx = await vault.walletClient.buildSpendVaultTx(vault, amount, recipientAddress, {});
+    const txp = await vault.walletClient.buildSpendVaultTx(vault, amount, recipientAddress, {});
+    const feePerKB = await this.feeService.getCurrentFeeRate(ENV.network);
+    const fee = Math.round(feePerKB * txp.serialize().length / 2000);
+    const tx = await vault.walletClient.buildSpendVaultTx(vault, amount, recipientAddress, {fee});
     await vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
     vault.coins =  await vault.walletClient.getVaultCoins(vault);
     vault.amount = vault.coins.reduce((amount, coin) => {
@@ -143,7 +149,7 @@ export class VaultsService {
 
 
   private async getCreateTxp(vault: any, wallet: IDisplayWallet): Promise<any> {
-    let feeLevel = 'normal'; //todo temp
+    let feeLevel = this.feeService.getCurrentFeeLevel();
 
     if (vault.amount > Number.MAX_SAFE_INTEGER) {
       return Promise.reject(new Error('The amount is too big')); // Because Javascript
