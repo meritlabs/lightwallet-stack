@@ -82,6 +82,7 @@ Run these in the order listed.
 ```sh
 make prepare-stack
 cp packages/lightwallet/mobile/src/environments/environment.example.ts packages/lightwallet/mobile/src/environments/environment.dev.ts
+cp packages/lightwallet/mobile/src/environments/environment.example.ts packages/lightwallet/mobile/src/environments/environment.ts
 # here you may want to edit your environment.dev.ts file to modify URLs
 make start-lightwallet-stack
 ```
@@ -91,6 +92,7 @@ make start-lightwallet-stack
 ```sh
 make prepare-stack
 cp packages/lightwallet/mobile/src/environments/environment.example.ts packages/lightwallet/mobile/src/environments/environment.dev.ts
+cp packages/lightwallet/mobile/src/environments/environment.example.ts packages/lightwallet/mobile/src/environments/environment.ts
 # here you may want to edit your environment.dev.ts file to modify URLs
 make start-lightwallet
 ```
