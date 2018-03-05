@@ -7,6 +7,9 @@ import { HistoryComponent } from './history/history.component';
 import { CoreComponent } from './core.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CommunityComponent } from './community/community.component';
+import { NetworkComponent } from './network/network.component';
+import { BackupComponent } from './backup/backup.component';
+import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phrase.component';
 
 const routes: Routes = [
   {
@@ -18,6 +21,9 @@ const routes: Routes = [
       { path: 'send', component: SendComponent },
       { path: 'history', component: HistoryComponent },
       { path: 'community', component: CommunityComponent },
+      { path: 'network', component: NetworkComponent },
+      { path: 'backup', component: BackupComponent },
+      { path: 'backup/mnemonic-phrase', component: MnemonicPhraseComponent },
       { path: '**', redirectTo: 'dashboard' }
     ]
   }
