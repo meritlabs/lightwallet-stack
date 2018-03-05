@@ -819,6 +819,15 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.post('/v1/vaults/:id/update_info', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+        server.updateVaultInfo(req.body, function(err, vault) {
+            if (err) return returnError(err, res, req);
+            res.json(vault);
+        });
+    });
+  });
+
   router.get('/v1/vaults/:id/txhistory', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       var opts = {};

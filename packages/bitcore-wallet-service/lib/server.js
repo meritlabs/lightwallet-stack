@@ -4008,10 +4008,8 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
           if (err) return next(err);
 
           log.warn("GNT: getTransaction, raw");
-          console.log(rawTxs);
           txs = self._normalizeTxHistory(rawTxs);
           log.warn("GNT: getTransaction, after normalization");
-          console.log(txs);
 
           totalItems = total;
           return next();
@@ -4043,7 +4041,6 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
             }
           });
           log.warn("After blockHeight check");
-          console.log(txs);
           next();
         });
       },
@@ -4086,10 +4083,8 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
   };
 
   this.storage.fetchVaultByCopayerId(self.copayerId, opts.id, function (err, vault) {
-    console.log(vault.address);
 
     var address = new Bitcore.Address(vault.address).toString();
-    console.log(address);
     var addresses = [address];
       if (err) return cb(err);
       if (addresses.length == 0) return cb(null, []);
@@ -4105,7 +4100,6 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
         },
         function(txs, next) {
           log.warn("Show me the juice of a spruce goose.");
-          console.log(txs);
 
           if (_.isEmpty(txs.items)) {
             return next(null, []);
@@ -4142,7 +4136,6 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
         if (err) return cb(err);
 
         log.warn("What happened after parallel?");
-        console.log(res);
 
         if (!res.txs) {
           var finalTxs = decorate([], addresses, [], []);
@@ -4164,6 +4157,25 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
         });
       });
     });
+};
+
+WalletService.prototype.updateVaultInfo = function(opts, cb) {
+
+
+    this.storage.fetchVaultById(opts._id, (err, vault) => {
+       if (err) return cb(err);
+       if (err) return cb(Errors.INVALID_PARAMETERS);
+
+        vault.name = opts.name;
+        vault.coins = opts.coins;
+        vault.amount = opts.amount;
+
+        this.storage.updateVault(this.copayerId, vault, (err, vault) => {
+            if (err) return cb(err);
+            return cb(null, vault);
+        })
+    });
+
 };
 
 WalletService.prototype.renewVault = function(opts, cb) {
@@ -4203,11 +4215,11 @@ WalletService.prototype.renewVault = function(opts, cb) {
           txid: txid,
         };
 
-        toStore.id = vaultId;
-        toStore.coins[0] = coin;
-        toStore.initialTxId = txid;
+          toStore.id = vaultId;
+          toStore.coins[0] = coin;
+          toStore.initialTxId = txid;
 
-        self.storage.updateVault(self.copayerId, toStore, function(err, result) {
+          self.storage.updateVault(self.copayerId, toStore, function(err, result) {
           if (err) return cb(err);
 
           return next();

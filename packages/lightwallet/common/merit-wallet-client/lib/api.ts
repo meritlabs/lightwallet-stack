@@ -1056,6 +1056,14 @@ export class API {
   };
 
   /**
+   * Updating vault info on MWS
+   */
+  updateVaultInfo(vault) {
+    return this._doPostRequest(`/v1/vaults/${vault._id}/update_info`, vault);
+  }
+
+
+  /**
    * Build spend tx for vault
    */
   async buildSpendVaultTx(vault: any, amount: number, address: any, opts: any = {}) {

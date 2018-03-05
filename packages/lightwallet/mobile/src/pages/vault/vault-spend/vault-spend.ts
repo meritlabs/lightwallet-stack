@@ -43,7 +43,7 @@ export class VaultSpendView {
 
   async send() {
 
-    const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
+    const loader = this.loadingCtrl.create({ content: 'Creating transaction' });
     loader.present();
     try {
       const amount =  this.rateService.mrtToMicro(this.amount);
@@ -76,7 +76,7 @@ export class VaultSpendView {
   get isSendingAvailable() {
     return (
         this.amount
-        && this.rateService.mrtToMicro(this.amount) < this.vault.amount
+        && this.rateService.mrtToMicro(this.amount) <= this.vault.amount
     )
   }
 
