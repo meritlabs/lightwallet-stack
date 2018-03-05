@@ -121,9 +121,16 @@ view-vault {
     }
   }
 
-  transaction-history {
-    .merit-amount {
-      font-size: 14px !important;
+  .transaction {
+    ion-note {
+      font-size: 14px;
+      .stored {
+        color: rgb(0, 150, 136);
+      }
+      .sent {
+        color: #ea8496;
+      }
     }
   }
+
 }
