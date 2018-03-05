@@ -23,15 +23,11 @@ start-desktop-lightwallet:
 
 .PHONY: clean-lightwallet
 clean-lightwallet:
-	cd ./packages/lightwallet/mobile/ && cordova platform rm android
-	cd ./packages/lightwallet/mobile/ && cordova platform rm ios
+	rm -rf ./packages/lightwallet/mobile/platforms
+	rm -rf ./packages/lightwallet/mobile/plugins
 	rm -rf ./packages/lightwallet/desktop/node_modules
 	rm -rf ./packages/lightwallet/mobile/node_modules
 	rm -rf ./packages/lightwallet/node_modules
-	rm -rf ./packages/lightwallet/plugins
-	rm -rf ./packages/lightwallet/platforms/ios
-	rm -rf ./packages/lightwallet/platforms/windows
-	rm -rf ./packages/lightwallet/platforms/android
 
 
 ### lightwallet-stack ###
