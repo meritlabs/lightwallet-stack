@@ -1072,7 +1072,7 @@ export class API {
     const spendKey = Bitcore.HDPrivateKey.fromString(vault.walletClient.credentials.xPrivKey);
 
     var network = ENV.network;
-    var fee = opts.fee || DEFAULT_FEE; //todo why default fee??
+    var fee = opts.fee || DEFAULT_FEE;
 
     let availableAmount = coins.reduce((amount, coin) => {
       return amount + coin.micros;
