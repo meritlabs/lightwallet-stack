@@ -4,6 +4,8 @@ import { IVault } from '@merit/common/models/vault';
 import { IDisplayWallet } from '@merit/common/models/display-wallet';
 import { VaultsService }from '@merit/common/services/vaults.service';
 import { AddressService } from "@merit/common/services/address.service";
+import { ModalController } from 'ionic-angular';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 
 @IonicPage()
 @Component({
@@ -22,7 +24,8 @@ export class VaultView {
   constructor(
     private navParams: NavParams,
     private vaultsService: VaultsService,
-    private addressService: AddressService
+    private addressService: AddressService,
+    private modalCtrl: ModalController
   ) {
     this.vault = this.navParams.get('vault');
     this.vaultId = this.navParams.get('vaultId');
@@ -33,34 +36,34 @@ export class VaultView {
     this.whitelist = await this.formatWhiteList(this.vault.whitelist);
 
     const transactions = await this.vaultsService.getTxHistory(this.vault);
-    this.transactions = transactions.filter(t => !t.isInvite).map(t => {
-      const wallet = this.wallets.find(w => w.client.getRootAddress().toString() == t.addressTo);
-
-      const amount = t.outputs.reduce((sum, output) => {
-        return sum = sum + output.amount;
-      }, 0);
-
-      return {
-        name: wallet ? wallet.name : t.address,
-        amount: amount,
-        fee: t.fee
+    this.transactions = transactions.map((tx:any) => {
+      if (tx.type == 'stored') {
+        tx.label = 'Stored';
+      } else {
+          let wallet = this.wallets.find(w => w.client.getRootAddress().toString() == tx.address);
+          tx.label = wallet ? wallet.name : (tx.alias || tx.address);
       }
-
+      return tx;
     });
+
   }
 
   private async formatWhiteList(whitelist) {
     const formattedWhitelist = [];
     for (let address of whitelist) {
       const addressInfo = await this.addressService.getAddressInfo(address);
-      console.log(addressInfo, 'info');
       if (addressInfo.isConfirmed) {
         const wallet = this.wallets.find(w => w.client.getRootAddress().toString() == addressInfo.address);
         const label = (wallet && wallet.name) ? wallet.name : (addressInfo.alias || addressInfo.address);
         formattedWhitelist.push({label, address: addressInfo.address, alias: addressInfo.alias});
       }
+
     }
     return formattedWhitelist;
+  }
+
+  viewTxDetails(tx) {
+    return this.modalCtrl.create('TxDetailsView', { tx }, MERIT_MODAL_OPTS).present();
   }
 
 }

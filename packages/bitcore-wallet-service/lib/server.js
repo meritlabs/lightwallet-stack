@@ -3833,145 +3833,26 @@ WalletService.prototype.createVault = function(opts, cb) {
 WalletService.prototype.getVaultTxHistory = function(opts, cb) {
   var self = this;
 
-  function decorate(txs, addresses, proposals, notes) {
-    var indexedAddresses = _.keyBy(addresses, 'address');
-    var indexedProposals = _.keyBy(proposals, 'txid');
-    var indexedNotes = _.keyBy(notes, 'txid');
 
-    function sum(items, isMine, isChange) {
-      var filter = {};
-      if (_.isBoolean(isMine)) filter.isMine = isMine;
-      if (_.isBoolean(isChange)) filter.isChange = isChange;
-      return _.sumBy(_.filter(items, filter), 'amount');
-    };
+  let decorate = (vault, txs) => {
 
-    function classify(items, isInvite) {
-      return _.map(items, function(item) {
-        var address = indexedAddresses[item.address];
-        return {
-          address: item.address,
-          alias: item.alias,
-          amount: item.amount,
-          isMine: !!address,
-          index: item.index,
-          // TODO: handle singleAddress and change addresses
-          // isChange: address ? (address.isChange || wallet.singleAddress) : false,
-          isChange: address ? ((address.isChange || wallet.singleAddress) && !isInvite) : false,
-        }
+      return txs.filter(tx => !tx.isInvite).map(tx => {
+
+         const output = tx.outputs[0]; // [1] is change output
+
+         return {
+             txid: tx.txid,
+             confirmations: tx.confirmation,
+             time: tx.time,
+             amount: output.amount,
+             type:  output.address == new Bitcore.Address(vault.address).toString() ? 'stored' : 'sent',
+             address: output.address,
+             alias: output.alias,
+             fee: tx.fees
+         }
       });
-    };
-
-    return _.map(txs, function(tx) {
-
-      var amountIn, amountOut, amountOutChange;
-      var amount, action, addressTo;
-      var inputs, outputs;
-
-      if (tx.outputs.length || tx.inputs.length) {
-
-        inputs = classify(tx.inputs, tx.isInvite);
-        outputs = classify(tx.outputs, tx.isInvite);
-
-        amountIn = sum(inputs, true);
-        amountOut = sum(outputs, true, false);
-        amountOutChange = sum(outputs, true, true);
-        if (amountIn == (amountOut + amountOutChange + (amountIn > 0 ? tx.fees : 0))) {
-          amount = amountOut;
-          action = 'moved';
-        } else {
-          amount = amountIn - amountOut - amountOutChange - ((amountIn > 0 && amountOutChange >0 ) ? tx.fees : 0);
-          action = amount > 0 ? 'sent' : 'received';
-        }
-
-        amount = Math.abs(amount);
-        if (action == 'sent' || action == 'moved') {
-          var firstExternalOutput = _.find(outputs, {
-            isMine: false
-          });
-          addressTo = firstExternalOutput ? firstExternalOutput.address : 'N/A';
-        };
-      } else {
-        action = 'invalid';
-        amount = 0;
-      }
-
-      function formatOutput(o) {
-        return {
-          amount: o.amount,
-          address: o.address,
-          alias: o.alias,
-          index: o.index,
-        }
-      };
-
-      var newTx = {
-        txid: tx.txid,
-        action: action,
-        amount: amount,
-        fees: tx.fees,
-        time: tx.time,
-        addressTo: addressTo,
-        confirmations: tx.confirmations,
-        isCoinbase: tx.isCoinbase,
-        isMature: tx.isMature,
-        isInvite: tx.isInvite,
-      };
-
-      if (_.isNumber(tx.size) && tx.size > 0) {
-        newTx.feePerKb = +(tx.fees * 1000 / tx.size).toFixed();
-      }
-
-      if (opts.includeExtendedInfo) {
-        newTx.inputs = _.map(inputs, function(input) {
-          return _.pick(input, 'address', 'amount', 'isMine');
-        });
-        newTx.outputs = _.map(outputs, function(output) {
-          return _.pick(output, 'address', 'amount', 'isMine');
-        });
-      } else {
-        outputs = _.filter(outputs, {
-          isChange: false
-        });
-        if (action == 'received') {
-          outputs = _.filter(outputs, {
-            isMine: true
-          });
-        }
-        newTx.outputs = _.map(outputs, formatOutput);
-      }
-
-      var proposal = indexedProposals[tx.txid];
-      if (proposal) {
-        newTx.createdOn = proposal.createdOn;
-        newTx.proposalId = proposal.id;
-        newTx.proposalType = proposal.type;
-        newTx.creatorName = proposal.creatorName;
-        newTx.message = proposal.message;
-        newTx.actions = _.map(proposal.actions, function(action) {
-          return _.pick(action, ['createdOn', 'type', 'copayerId', 'copayerName', 'comment']);
-        });
-        _.each(newTx.outputs, function(output) {
-          var query = {
-            toAddress: output.address,
-            amount: output.amount
-          };
-          var txpOut = _.find(proposal.outputs, query);
-          output.message = txpOut ? txpOut.message : null;
-        });
-        newTx.customData = proposal.customData;
-        // newTx.sentTs = proposal.sentTs;
-        // newTx.merchant = proposal.merchant;
-        //newTx.paymentAckMemo = proposal.paymentAckMemo;
-      }
-
-      var note = indexedNotes[tx.txid];
-      if (note) {
-        newTx.note = _.pick(note, ['body', 'editedBy', 'editedByName', 'editedOn']);
-      }
-
-      return newTx;
-    });
   };
+
 
   function getNormalizedTxs(addresses, from, to, cb) {
     var txs, fromCache, totalItems;
@@ -4138,12 +4019,12 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
         log.warn("What happened after parallel?");
 
         if (!res.txs) {
-          var finalTxs = decorate([], addresses, [], []);
+          var finalTxs = decorate(vault, []);
           res.txs = {
             fromCache: false
           };
         } else {
-          var finalTxs = decorate(res.txs.items, addresses, res.txps, res.notes);
+          var finalTxs = decorate(vault, res.txs.items);
         }
 
         tagLowFees(finalTxs, function(err) {

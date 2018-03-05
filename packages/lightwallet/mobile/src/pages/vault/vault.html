@@ -47,6 +47,23 @@
         History
     </ion-item-divider>
 
-    <transaction-history [transactions]="transactions" *ngIf="transactions"></transaction-history>
+    <ion-list>
+        <button ion-item detail-none *ngFor="let tx of transactions; trackBy: tx?.txid" (click)="viewTxDetails(tx)" class="transaction">
+            <ion-avatar img-icon item-start >
+                <img *ngIf="tx.type == 'stored'" src="assets/img/icons/vault-avatar.svg" alt="" />
+                <img *ngIf="tx.type == 'sent'" src="assets/img/icons/merit.svg" alt="" />
+            </ion-avatar>
+            <ion-label>
+                <h2>{{ tx.label }}</h2>
+                <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
+            </ion-label>
+            <ion-note item-end>
+              <span class="merit-amount" [class]="tx.type">
+                {{ tx.amount | toMRT}}
+              </span>
+            </ion-note>
+        </button>
+    </ion-list>
+
 
 </ion-content>
