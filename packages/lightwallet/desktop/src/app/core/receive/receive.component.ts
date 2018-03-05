@@ -15,17 +15,17 @@ export class ReceiveComponent implements OnInit {
     },
     {
       "name": 'RUB',
-      "symbol": 'R',
+      "symbol": '₽',
       "value": 0.1
     },
     {
       "name": 'CAD',
-      "symbol": 'C',
+      "symbol": 'C$',
       "value": 2
     },
     {
       "name": 'EUR',
-      "symbol": 'E',
+      "symbol": '€',
       "value": 3
     }
   ];
@@ -76,7 +76,7 @@ export class ReceiveComponent implements OnInit {
 
   ngOnInit() {}
   selectCurrency($event) {
-    this.selectedCurrency = $event
+    this.selectedCurrency = $event;
     this.converted = `${$event.symbol} ${this.amount * $event.value}`;
   }
   selectFee($event) {
@@ -86,7 +86,7 @@ export class ReceiveComponent implements OnInit {
     this.selectedWallet = $event
   }
   onKey(event: any) {
-    var currency = this.selectedCurrency;
+    let currency = this.selectedCurrency;
     this.amount = event.target.value;
     this.converted = `${currency.symbol} ${this.amount * currency.value}`;
   }

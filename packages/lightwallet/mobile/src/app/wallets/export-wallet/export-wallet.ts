@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { File } from '@ionic-native/file';
 import * as FileSaver from 'file-saver';
 import { AlertController, IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
-import { WalletService } from '@merit/common/providers/wallet';
-import { PersistenceService } from '@merit/common/providers/persistence';
-import { AppSettingsService } from '@merit/common/providers/app-settings';
-import { MWCService } from '@merit/common/providers/mwc';
-import { LoggerService } from '@merit/common/providers/logger';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
+import { AppSettingsService } from '@merit/common/services/app-settings.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { LoggerService } from '@merit/common/services/logger.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { MeritToastController, ToastConfig } from '@merit/common/providers/toast.controller';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 
 @IonicPage()
 @Component({

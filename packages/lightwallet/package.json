@@ -1,6 +1,17 @@
 {
-  "name": "lightwallet",
-  "version": "0.0.1",
+  "name": "merit-lightwallet",
+  "description": "Merit LightWallet application",
+  "author": "Merit Foundation",
+  "version": "1.1.0",
+  "keywords": [
+    "merit",
+    "wallet",
+    "lightwallet",
+    "labs",
+    "mrt",
+    "multisignature",
+    "bitcore"
+  ],
   "scripts": {
     "clean": "ionic-app-scripts clean",
     "build": "ionic-app-scripts build",
@@ -91,6 +102,7 @@
   },
   "config": {
     "ionic_webpack": "mobile/webpack.config.js",
+    "ionic_watch": "mobile/watch.config.js",
     "ionic_root_dir": "mobile",
     "ionic_src_dir": "mobile/src",
     "ionic_www_dir": "mobile/www",

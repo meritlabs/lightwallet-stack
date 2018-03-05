@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { IDisplayWallet } from '@merit/common/models/display-wallet';
-import { WalletService } from '@merit/common/providers/wallet';
-import { LoggerService } from '@merit/common/providers/logger';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { LoggerService } from '@merit/common/services/logger.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 
 @IonicPage({

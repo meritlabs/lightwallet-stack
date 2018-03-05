@@ -23,32 +23,33 @@ import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
 import { EmailNotificationsService } from '@merit/mobile/app/core/notification/email-notification.service';
 import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
 import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
-import { PopupService } from '@merit/mobile/app/core/popup.service';
+import { PopupService } from '@merit/common/services/popup.service';
+import { PopupService as MobilePopupService } from '@merit/mobile/app/core/popup.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
 import { RenewVaultService } from '@merit/mobile/app/vaults/renew-vault/renew-vault.service';
 import { SpendVaultService } from '@merit/mobile/app/vaults/spend/vault-spend.service';
 import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
-import { ContactsService, ContactsService as MobileContactsProvider } from '../providers/contacts';
+import { ContactsService, ContactsService as MobileContactsProvider } from '../services/contacts.service';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { Keyboard } from '@ionic-native/keyboard';
 import { AppVersion } from '@ionic-native/app-version';
-import { TouchIdService } from '@merit/mobile/providers/touch-id.service';
-import { AppSettingsService } from '@merit/common/providers/app-settings';
+import { TouchIdService } from '@merit/mobile/services/touch-id.service';
+import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
-import { MeritToastController } from '@merit/common/providers/toast.controller';
-import { SendService } from '@merit/common/providers/send';
+import { MeritToastController } from '@merit/common/services/toast.controller.service';
+import { SendService } from '@merit/common/services/send.service';
 
 export function getProviders() {
   return [
-    AddressScannerService,
     { provide: ContactsService, useClass: MobileContactsProvider },
+    { provide: PopupService, useClass: MobilePopupService },
+    AddressScannerService,
     CreateVaultService,
     DeepLinkService,
     EmailNotificationsService,
     MeritToastController,
     PollingNotificationsService,
-    PopupService,
     PushNotificationsService,
     RenewVaultService,
     SendService,
