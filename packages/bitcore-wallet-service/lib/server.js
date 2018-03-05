@@ -3787,15 +3787,13 @@ WalletService.prototype.createVault = function(opts, cb) {
   toStore.walletId = self.walletId;
   toStore.copayerId = self.copayerId;
 
-  console.log(toStore);
-
   async.series([
     function(next) {
       self.storage.storeVault(self.copayerId, self.walletId, toStore, function(err, result) {
         if (err) return cb(err);
 
         vaultId = result.insertedId;
-        toStore.id = vaultId;
+        toStore._id = vaultId;
 
         return next();
       });
