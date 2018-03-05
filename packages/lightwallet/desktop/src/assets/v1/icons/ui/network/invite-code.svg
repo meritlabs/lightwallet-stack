@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="14px" viewBox="0 0 19 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Screens" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="network" transform="translate(-302.000000, -508.000000)">
+            <g id="Group" transform="translate(303.000000, 509.000000)">
+                <path d="M11.5,0.5 L11.5,11.5" id="Line-2" stroke="#00B0DD" stroke-width="1.8" stroke-dasharray="2,3"></path>
+                <path d="M12.2627389,0 L17,0 L17,3.55000906 C15.9188432,3.78164422 15.1050955,4.79052104 15.1050955,6 C15.1050955,7.20947896 15.9188432,8.21835578 17,8.44999094 L17,12 L12.2627389,12 L8.44585987,12 L0,12 L0,8.44999094 C1.08115684,8.21835578 1.89490446,7.20947896 1.89490446,6 C1.89490446,4.79052104 1.08115684,3.78164422 0,3.55000906 L0,0 L8.44585987,0 L12.2627389,0 Z" id="Combined-Shape" stroke="#5F6C82" stroke-width="1.7"></path>
+            </g>
+        </g>
+    </g>
+</svg>

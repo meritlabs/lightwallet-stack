@@ -1,0 +1,13 @@
+<div class="selectbox">
+  <button (click)="show=!show" (blur)="onBlur()"
+    class="{{style}}">
+    <img src="{{selected.icon}}" alt="" *ngIf="selected.icon" class="selectbox__dropdown__icon">
+    <span>{{ selected.name }}</span>
+  </button>
+  <div class="selectbox__dropdown showHidden" [hidden]="!show" [ngClass]="{'showHidden--animated' : show}">
+    <button mat-menu-item *ngFor="let item of input"
+      (click)="select(item)" class="selectbox__dropdown__item">
+      <img src="{{item.icon}}" alt="" *ngIf="item.icon" class="selectbox__dropdown__icon">
+      <span>{{ item.name }}</span></button>
+  </div>
+</div>

@@ -32,5 +32,12 @@ packages/bitcore-node/bin/meritd
 .env
 /packages/lightwallet/mobile/src/environments/environment.ts
 /packages/lightwallet/mobile/src/environments/environment.dev.ts
+/packages/lightwallet/mobile/src/environments/environment.prod.ts
 /packages/lightwallet/src/environments/environment.ts
-/packages/lightwallet/src/environments/environment.dev..ts
+/packages/lightwallet/src/environments/environment.dev.ts
+/packages/lightwallet/src/environments/environment.dev.prod.ts
+
+# Node & packages
+lerna-debug.log
+node_modules/
+package-lock.json
