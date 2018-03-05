@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="62px" height="37px" viewBox="0 0 62 37" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>mnemonic</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Screens" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="backup" transform="translate(-689.000000, -224.000000)">
+            <g id="mnemonic" transform="translate(690.000000, 224.000000)">
+                <rect id="Rectangle-8" fill="#73819B" x="10" y="0" width="51" height="26" rx="4"></rect>
+                <path d="M2,10 L49,10 C50.1045695,10 51,10.8954305 51,12 L51,34 C51,35.1045695 50.1045695,36 49,36 L2,36 C0.8954305,36 1.3527075e-16,35.1045695 0,34 L0,12 C-1.3527075e-16,10.8954305 0.8954305,10 2,10 Z" id="Rectangle-8-Copy" stroke="#73819B" stroke-width="2" stroke-linecap="round" stroke-dasharray="4,4"></path>
+                <text id="word" font-family=".AppleSystemUIFont" font-size="13" font-weight="normal" letter-spacing="-0.472222209" fill="#FFFFFF">
+                    <tspan x="20.976671" y="18">word</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

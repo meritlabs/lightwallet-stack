@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#DEC198" offset="0%"></stop>
+            <stop stop-color="#AB8051" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Screens" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="backup" transform="translate(-1011.000000, -213.000000)">
+            <g id="Group" transform="translate(1010.000000, 213.000000)">
+                <g id="file" fill="url(#linearGradient-1)">
+                    <path d="M8.46509221,0 L29.5349078,0 C31.1972703,0 33.17572,1.11928813 33.9538988,2.5 L36.7719334,7.5 C37.5501122,8.88071187 36.2725943,10 33.9185172,10 L4.08148275,10 C1.72740574,10 0.449887799,8.88071187 1.22806658,7.5 L4.04610123,2.5 C4.82428001,1.11928813 6.80272966,0 8.46509221,0 Z" id="Rectangle-23-Copy-4"></path>
+                    <rect id="Rectangle-23" x="1" y="5" width="36" height="31" rx="4"></rect>
+                </g>
+                <path d="M15.2661311,18.6552432 L15.2661311,15 L22.5766175,15 L22.5766175,18.6552432 L29,18.6552432 L19,28.6552432 L9,18.6552432 L15.2661311,18.6552432 Z" id="Combined-Shape" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="21px" height="17px" viewBox="0 0 21 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 5</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Screens" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
+        <g id="network" transform="translate(-302.000000, -591.000000)">
+            <g id="Group-5" transform="translate(303.000000, 592.000000)">
+                <path d="M6,3 L13,3" id="Path-2" stroke="#00B0DD" stroke-width="1.63636364"></path>
+                <path d="M8,10 L5,5" id="Path-4" stroke="#00B0DD" stroke-width="1.63636364"></path>
+                <path d="M14,5 L11,10" id="Path-3" stroke="#00B0DD" stroke-width="1.63636364"></path>
+                <ellipse id="Oval-2" stroke="#5F6C82" stroke-width="1.7" stroke-linejoin="round" cx="10" cy="12.5" rx="3" ry="2.5"></ellipse>
+                <ellipse id="Oval-2-Copy" stroke="#5F6C82" stroke-width="1.7" stroke-linejoin="round" cx="3" cy="2.5" rx="3" ry="2.5"></ellipse>
+                <ellipse id="Oval-2-Copy-2" stroke="#5F6C82" stroke-width="1.7" stroke-linejoin="round" cx="16" cy="2.5" rx="3" ry="2.5"></ellipse>
+            </g>
+        </g>
+    </g>
+</svg>
