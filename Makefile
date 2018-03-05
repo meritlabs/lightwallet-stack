@@ -6,7 +6,6 @@ prepare-prereqs:
 	npm install -g grunt
 	npm install -g cordova
 
-
 ### lightwallet-app ###
 .PHONY: prepare-lightwallet
 prepare-lightwallet:
@@ -17,6 +16,10 @@ prepare-lightwallet:
 .PHONY: start-lightwallet
 start-lightwallet:
 	cd ./packages/lightwallet && ionic serve
+
+.PHONY: start-desktop-lightwallet
+start-desktop-lightwallet:
+	cd ./packages/lightwallet/desktop && npm run start
 
 .PHONY: clean-lightwallet
 clean-lightwallet:
