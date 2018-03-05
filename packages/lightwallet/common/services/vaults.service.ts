@@ -48,7 +48,13 @@ export class VaultsService {
   async sendFromVault(vault: any, amount: number, recipientAddress: any) {
 
     const tx = await vault.walletClient.buildSpendVaultTx(vault, amount, recipientAddress, {});
-    return vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
+    await vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
+    vault.coins =  await vault.walletClient.getVaultCoins(vault);
+    vault.amount = vault.coins.reduce((amount, coin) => {
+      return amount + coin.micros;
+    }, 0);
+    const infoToUpdate = { _id: vault._id, name: vault.name, coins: vault.coins,  amount: vault.amount};
+    return vault.walletClient.updateVaultInfo(infoToUpdate);
   }
 
   async editVault(vault: IVault, masterKey) {
