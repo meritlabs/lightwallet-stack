@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { MWCService } from '@merit/common/providers/mwc';
-import { PersistenceService } from '@merit/common/providers/persistence';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { EasySend } from '@merit/common/models/easy-send';
 

@@ -3,11 +3,11 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { PopupService } from '@merit/common/providers/popup';
-import { MWCService } from '@merit/common/providers/mwc';
-import { WalletService } from '@merit/common/providers/wallet';
+import { PopupService } from '@merit/common/services/popup.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { WalletService } from '@merit/common/services/wallet.service';
 import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
-import { ProfileService } from '@merit/common/providers/profile';
+import { ProfileService } from '@merit/common/services/profile.service';
 
 export interface IWhitelistEntry {
   id: string,

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ENV } from '@app/env';
-import { LoggerService } from '@merit/common/providers/logger';
-import { ProfileService } from '@merit/common/providers/profile';
-import { MWCService } from '@merit/common/providers/mwc';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { MWCService } from '@merit/common/services/mwc.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @Injectable()

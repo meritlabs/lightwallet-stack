@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
-import { MWCService } from '@merit/common/providers/mwc';
-import { LoggerService } from '@merit/common/providers/logger';
-import { PersistenceService } from '@merit/common/providers/persistence';
-import { FeeService } from '@merit/common/providers/fee';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
+import { FeeService } from '@merit/common/services/fee.service';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
-import { LedgerService } from '@merit/common/providers/ledger';
+import { LedgerService } from '@merit/common/services/ledger.service';
 
 @Injectable()
 export class EasyReceiveService {

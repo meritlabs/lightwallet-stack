@@ -11,17 +11,17 @@ import 'rxjs/add/observable/timer';
 import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/zip';
 import 'rxjs/add/operator/mergeMap';
-import { LoggerService } from '@merit/common/providers/logger';
-import { MWCService } from '@merit/common/providers/mwc';
-import { TxFormatService } from '@merit/common/providers/tx-format';
-import { ConfigService } from '@merit/common/providers/config';
-import { ProfileService } from '@merit/common/providers/profile';
-import { PersistenceService } from '@merit/common/providers/persistence';
-import { RateService } from '@merit/common/providers/rate';
-import { PopupService } from '@merit/common/providers/popup';
-import { LanguageService } from '@merit/common/providers/language';
-import { MnemonicService } from '@merit/common/providers/mnemonic';
-import { EasySendService } from '@merit/common/providers/easy-send';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { PopupService } from '@merit/common/services/popup.service';
+import { LanguageService } from '@merit/common/services/language.service';
+import { MnemonicService } from '@merit/common/services/mnemonic.service';
+import { EasySendService } from '@merit/common/services/easy-send.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
@@ -893,9 +893,7 @@ export class WalletService {
    * @param wallet
    */
   getANV(wallet: MeritWalletClient): Promise<any> {
-    let pubkey = this.mwcService.getBitcore().PrivateKey.fromString(wallet.credentials.walletPrivKey).toPublicKey();
-    let address = pubkey.toAddress(wallet.credentials.network);
-    return wallet.getANV(address);
+    return wallet.getANV(wallet.getRootAddress())
   }
 
   /**
@@ -903,40 +901,15 @@ export class WalletService {
    * @param wallet
    * @returns {Reward} An object with the 'mining' and 'ambassador' properties.
    */
-  getRewards(wallet: MeritWalletClient): Promise<any> {
-    interface MWSRewardsResponse extends _.NumericDictionary<number> {
-      address: string,
-      rewards: { mining: number, ambassador: number }
-    };
-
-    interface FilteredRewards {
-      mining: number,
-      ambassador: number
+  async getRewards(wallet: MeritWalletClient): Promise<{ mining: number; ambassador: number; }> {
+    try {
+      return (await wallet.getRewards(wallet.getRootAddress())).rewards;
+    } catch (e) {
+      return {
+        mining: 0,
+        ambassador: 0
+      }
     }
-
-    return new Promise((resolve, reject) => {
-      return this.getMainAddresses(wallet).then((addresses) => {
-        if (_.isEmpty(addresses)) {
-          this.logger.info('Addresses are empty!  Defaulting rewards to Zero');
-          return resolve({ mining: 0, ambassador: 0 });
-        }
-        return wallet.getRewards(addresses).then((rewards: MWSRewardsResponse) => {
-          let totalRewards: FilteredRewards = _.reduce(rewards, (totalR: any, reward: any) => {
-            if (!_.isEmpty(reward.rewards)) {
-              if (reward.rewards.mining) {
-                totalR.mining += reward.rewards.mining;
-              }
-              if (reward.rewards.ambassador) {
-                totalR.ambassador += reward.rewards.ambassador;
-              }
-              return totalR;
-            }
-          }, { mining: 0, ambassador: 0 });
-
-          return resolve(totalRewards);
-        });
-      });
-    });
   }
 
   // Check address
