@@ -1,7 +1,7 @@
 # Merit Development Bootstrap
 
 ## Getting started
-The lightwallet development environment consists of: 
+The lightwallet development environment consists of:
 * Bitcore Wallet Service
 * Bitcore-Node
 * Insight-api
@@ -80,15 +80,26 @@ make stop-mongo
 Run these in the order listed.
 
 ```sh
-lerna bootstrap
-make symlink-bitcore-node
+make prepare-stack
+cp packages/lightwallet/mobile/src/environments/environment.example.ts packages/lightwallet/mobile/src/environments/environment.dev.ts
+# here you may want to edit your environment.dev.ts file to modify URLs
 make start-lightwallet-stack
 ```
 
-### Run LightWallet-App
+### Run Mobile LightWallet
 
 ```sh
-make start-lightwallet-app
+make prepare-stack
+cp packages/lightwallet/mobile/src/environments/environment.example.ts packages/lightwallet/mobile/src/environments/environment.dev.ts
+# here you may want to edit your environment.dev.ts file to modify URLs
+make start-lightwallet
+```
+
+### Run Desktop LightWallet
+
+```sh
+make prepare-stack
+make start-desktop-lightwallet
 ```
 
 ### Start Bitcore Individually
