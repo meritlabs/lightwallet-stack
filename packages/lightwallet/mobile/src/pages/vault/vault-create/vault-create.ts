@@ -22,6 +22,8 @@ export class VaultCreateView {
   public wallets: Array<IWhitelistWallet>;
   public wallet: IDisplayWallet;
   public amount: number;
+  public spendaleConfirmAmount: number;
+  public insufficientConfirmedAmountError: boolean;
 
   constructor(
     private navCtrl: NavController,
@@ -38,13 +40,19 @@ export class VaultCreateView {
     return (
       this.vaultName
       && this.amount
-      && this.rateService.mrtToMicro(this.amount) <= this.wallet.client.status.spendableAmount
+      && this.rateService.mrtToMicro(this.amount) <= this.wallet.client.status.confirmedAmount
       && this.wallets.filter(w => w.selected).length
     )
   }
 
   get whiteList() {
     return this.wallets.filter(w => w.selected);
+  }
+
+  hasInsufficientConfirmedFunds() {
+    if (!this.wallet) return false;
+    const micros = this.rateService.mrtToMicro(this.amount);
+    return (this.wallet.client.status.confirmedAmount <  micros) && (micros < this.wallet.client.status.spendableAmount);
   }
 
   selectWhitelist() {

@@ -58,6 +58,9 @@
 
     </ion-list>
 
+    <div class="error" *ngIf="hasInsufficientConfirmedFunds()" padding>
+        You have {{ this.wallet.client.status.confirmedAmount | toMRT }} confirmed on selected wallet. You can use only confirmed balance to create a wallet.
+    </div>
 
     <button ion-button class="action-button" (click)="toConfirm()" [disabled]="!isNextStepAvailable">
         Create Vault
