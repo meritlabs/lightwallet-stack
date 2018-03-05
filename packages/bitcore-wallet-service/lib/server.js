@@ -3838,7 +3838,8 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 
       return txs.filter(tx => !tx.isInvite).map(tx => {
 
-         const output = tx.outputs[0]; // [1] is change output
+         const inputsAddresses = tx.inputs.map(i => i.address);
+         const output = tx.outputs.filter(o => inputsAddresses.indexOf(o.address) == -1)[0]; // filtering change outputs
 
          return {
              txid: tx.txid,
