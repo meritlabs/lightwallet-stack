@@ -1,0 +1,35 @@
+.wallets
+  padding: 50px 40px 30px
+  &__group
+    padding-bottom: 30px
+    &__header
+      display: flex
+      justify-content: space-between
+      margin-bottom: 30px
+      &__title
+        color: $gun-metal
+    &__wallet
+      display: flex
+      flex-flow: row wrap
+      justify-content: flex-start
+      align-items: center
+      padding: 20px
+      background: $white
+      margin-bottom: 10px
+      border-radius: 5px
+      box-shadow: 0 2px 4px rgba(46,51,88, .22)
+      &__icon
+        width: 40px
+        height: 40px
+        display: flex
+        justify-content: center
+        align-items: center
+        img
+          width: 100%
+      &__info
+        padding-left: 20px
+        letter-spacing: .3px
+        .large-black-text
+          +font($baseFont--medium, 15px, 22px, $gun-metal, normal, none, none)
+        .regular-blue-text
+          +font($baseFont--medium, 14px, 24px, $blue, normal, none, none)

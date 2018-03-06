@@ -2,20 +2,26 @@
   display: block
   width: 100%
   box-sizing: border-box
-  background: $white-1
-  border-radius: 2px
-  +font($baseFont--medium, 14px, 14px, $input-text-color, none, none, none)
+  background: $pale-grey
+  border-radius: 5px
+  +font($baseFont--medium, 14px, 14px, $input-text-color, normal, none, none)
   letter-spacing: .3px
-  border: 0
+  border: 1px solid transparent
   margin-bottom: 30px
+  border: 1px solid transparent
+  +transition(.3, linear)
+  &:focus
+    border-color: $blue
   &--text
-    padding: 13px 16px
+    padding: 15px 16px
+    border: 1px solid $light-blue-grey
   &--form
-    background: $pale-grey-two
+    background: $white
   &--select
     text-align: left
     padding: 15px 16px 14.76px
     position: relative
+    border: 1px solid $light-blue-grey
     &::after
       content: ""
       display: inline-block
@@ -41,10 +47,9 @@
       letter-spacing: .3px
     &--currency
       .ui-input__addon
-        top: 6px
+        top: 8px
         right: 8px
   &__addon
     position: absolute
     right: 16px
     top: 11px
-.ui-select

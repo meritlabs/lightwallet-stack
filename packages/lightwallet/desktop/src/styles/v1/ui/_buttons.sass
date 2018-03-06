@@ -1,26 +1,27 @@
 .ui-button
   display: inline-block
   border: none
-  +font($baseFont--medium, 15px, 15px, initial, none, none, none)
-  padding: 11px 45px
+  +font($baseFont--medium, 15px, 15px, initial, normal, none, none)
+  padding: 12px 45px 10px
   border-radius: 4px
   box-sizing: border-box
+  cursor: pointer
   +transition(.3s, linear)
   &--blue
     background: $blue-button-bg
     color: $white
-    border: 2px solid transparent
+    border: 1px solid transparent
     &:hover
       background: $blue-button-bg-hover
-      border: 2px solid transparent
+      border: 1px solid transparent
   &--white
     background: $white
     color: $blue
-    border: 2px solid $blue
+    border: 1px solid $blue
   &--transparent
     background: transparent
-    color: $blue
-    border: 2px solid $blue
+    color: $gun-metal
+    border: 1px solid $blue
   &--with-arrow
     &:after
       content: "→"
@@ -74,9 +75,21 @@
     padding: 8px 18px
     letter-spacing: .3px
   &--sm
-    font-family: $baseFont--regular
+    font-family: $baseFont--semibold
     +chageFontSize(14px, 14px)
     padding: 6px 15px
     letter-spacing: .3px
     &.ui-button--add
       padding: 6px 15px 6px 11px
+.ui-button
+  &--false
+    display: none
+  &--true
+    display: inline-block
+.ui-button
+  &--select-currency
+    border: transparent
+    &::after
+      border: 2px solid $input-text-color
+      border-left: 0
+      border-top: 0

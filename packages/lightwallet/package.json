@@ -68,6 +68,7 @@
     "ionicons": "3.0.0",
     "json-stable-stringify": "^1.0.0",
     "lodash": "^4.17.5",
+    "ng-click-outside": "^3.2.0",
     "ng2-clip": "^1.0.1",
     "plist": "^2.1.0",
     "preconditions": "^2.2.0",

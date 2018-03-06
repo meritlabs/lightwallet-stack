@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="16px" viewBox="0 0 18 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Screens" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="backup" transform="translate(-27.000000, -348.000000)">
+            <g id="Group-2" transform="translate(27.000000, 349.000000)">
+                <path d="M5.63834133,12.4753678 C6.83467873,13.4296241 8.35073015,14 10,14 C13.8659932,14 17,10.8659932 17,7 C17,3.13400675 13.8659932,0 10,0 C6.13400675,0 3,3.13400675 3,7" id="Oval-9" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M2.4404117,9.74998174 L0.130739117,6.95614593 C-0.0924752561,6.68614042 -0.0228787168,6.30917576 0.286187339,6.11417178 C0.403824369,6.03994918 0.545243495,6 0.690352714,6 L5.30969787,6 C5.69094121,6 6,6.26999916 6,6.60306 C6,6.72982995 5.95427155,6.85337617 5.86931147,6.95614593 L3.55963889,9.74998174 C3.33642452,10.0199872 2.90492597,10.080788 2.59585992,9.88578402 C2.53607275,9.84806155 2.48359132,9.80221286 2.4404117,9.74998174 Z" id="Triangle-2-Copy" fill="#FFFFFF"></path>
+                <circle id="Oval-9-Copy" stroke="#FFFFFF" stroke-width="2" fill="#FFFFFF" cx="10" cy="7" r="2"></circle>
+            </g>
+        </g>
+    </g>
+</svg>
