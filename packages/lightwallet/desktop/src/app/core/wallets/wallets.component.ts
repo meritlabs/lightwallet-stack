@@ -3,6 +3,8 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { RefreshWalletsAction, WalletsState } from '@merit/common/reducers/wallets.reducer';
 import { Store } from '@ngrx/store';
 import { getWallets } from '@merit/common/reducers';
+import { Observable } from 'rxjs/Observable';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @Component({
   selector: 'view-wallets',
@@ -11,14 +13,14 @@ import { getWallets } from '@merit/common/reducers';
   encapsulation: ViewEncapsulation.None
 })
 export class WalletsComponent implements OnInit {
+  wallets$: Observable<DisplayWallet[]>;
+
   constructor(private walletService: WalletService,
               private store: Store<WalletsState>) {
+    this.wallets$ = store.select(getWallets);
   }
 
   ngOnInit() {
-    console.log('On init called');
     this.store.dispatch(new RefreshWalletsAction());
-
-    console.log('Wallets are ', this.store.select(getWallets));
   }
 }

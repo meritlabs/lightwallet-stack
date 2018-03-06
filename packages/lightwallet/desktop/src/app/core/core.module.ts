@@ -18,8 +18,8 @@ import { NetworkComponent } from './network/network.component';
 import { ProfileStatsComponent } from './profile-stats/profile-stats.component';
 import { BackupComponent } from './backup/backup.component';
 import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phrase.component';
-import { PersonalComponent } from './wallets/personal/personal.component';
-import { VaultsComponent } from './wallets/vaults/vaults.component';
+import { WalletsListComponent } from './wallets/wallets/wallets.component';
+import { VaultsListComponent } from './wallets/vaults/vaults.component';
 import { HistoryListComponent } from './history/history-list/history-list.component';
 import { NotificationsComponent } from './iu/notifications/notifications.component';
 import { ToastNotificationComponent } from './iu/notifications/toast-notification/toast-notification.component';
@@ -61,8 +61,8 @@ export function getPages() {
     ProfileStatsComponent,
     BackupComponent,
     MnemonicPhraseComponent,
-    PersonalComponent,
-    VaultsComponent,
+    WalletsListComponent,
+    VaultsListComponent,
     HistoryListComponent,
     ToastNotificationComponent,
     NotificationsHistoryComponent,
