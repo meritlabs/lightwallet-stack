@@ -1,6 +1,6 @@
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 import { ConfigService } from '@merit/common/services/config.service';
-import { EmailNotificationsService } from '../mobile/src/app/core/notification/email-notification.service';
+import { EmailNotificationsService } from '@merit/mobile/app/core/notification/email-notification.service';
 
 export class EmailValidator {
 
