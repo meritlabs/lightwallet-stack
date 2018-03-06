@@ -1,79 +1,85 @@
-<div class="container--fluid sendMerit">
-  <div class="sendMerit__header title--primary">
-    <p>Send Merit</p>
-  </div>
-  <div class="sendMerit__content">
-    <div class="sendMerit__form">
-      <div class="sendMerit__form__group">
-        <label for="" class="ui-label">Amount</label>
-        <div class="ui-input__wrapper ui-input__wrapper--mrt">
-          <input type="text" name="" value=""
-          (keyup)="onKey($event)"
-          class="ui-input ui-input--form ui-input--text">
-          <div class="ui-input__addon">MRT</div>
-        </div>
-        <div class="ui-input__wrapper ui-input__wrapper--currency">
-          <input type="text" name="" value="{{converted}}" disabled
-            class="ui-input ui-input--form ui-input--text">
-          <div class="ui-input__addon">
-            <app-select
-              (selectionEvent)="selectCurrency($event)"
-              [selected]="selectedCurrency"
-              [input]="availableCurrencies"
-              style="ui-button ui-button--transparent ui-button--md ui-button--with-caret"></app-select>
-          </div>
-        </div>
-      </div>
-      <div class="sendMerit__form__group">
-        <label for="" class="ui-label">Fee:<span class="fee-label">0.285 MRT</span></label>
-        <app-select
-          (selectionEvent)="selectFee($event)"
-          [selected]="selectedFee"
-          [input]="availableFeesVariants"
-          style="ui-input ui-input--select ui-input--form"></app-select>
-      </div>
-      <div class="sendMerit__form__group">
-        <label for="" class="ui-label">Send from</label>
-        <app-select
-          (selectionEvent)="selectWallet($event)"
-          [selected]="selectedWallet"
-          [input]="availableWallets"
-          style="ui-input ui-input--select ui-input--form"></app-select>
-      </div>
-      <div class="sendMerit__form__group">
-        <label for="" class="ui-label">Send to <span class="fee-label">address / alias</span></label>
-        <input type="text" name="" value="" placeholder="Paste address / alias here"
-        class="ui-input ui-input--form ui-input--text">
-      </div>
-      <div class="sendMerit__form__group">
-        <button type="button" name="button" class="ui-button ui-button--blue">Send Merit</button>
-      </div>
+<div class="sendMerit">
+  <div class="container--inner">
+    <div class="sendMerit__header title--primary">
+      <p>Send Merit</p>
     </div>
-    <div class="sendMerit__totals">
-      <div class="sendMerit__form__group">
-        <label for="" class="ui-label">Receipx</label>
-        <div class="sendMerit__totals__table">
-          <div class="sendMerit__totals__table__row">
-            <div class="sendMerit__totals__table__column">Amount</div>
-            <div class="sendMerit__totals__table__column">{{amount}} MRT</div>
+    <div class="sendMerit__content">
+      <div class="sendMerit__form">
+        <div class="sendMerit__form__group">
+          <label for="" class="ui-label">Amount</label>
+          <div class="ui-input__wrapper ui-input__wrapper--mrt">
+            <input type="text" name="" [value]=mrt
+            (keyup)="onKey($event)"
+            class="ui-input ui-input--form ui-input--text">
+            <div class="ui-input__addon">MRT</div>
           </div>
-          <div class="sendMerit__totals__table__row">
-            <div class="sendMerit__totals__table__column">Fees</div>
-            <div class="sendMerit__totals__table__column">0.285 MRT</div>
+          <div class="ui-input__wrapper ui-input__wrapper--currency">
+            <input type="text" name="" value="{{converted}}" disabled
+              class="ui-input ui-input--form ui-input--text">
+            <div class="ui-input__addon">
+              <app-select
+                (selectionEvent)="selectCurrency($event)"
+                [selected]="selectedCurrency"
+                [input]="availableCurrencies"
+                style="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
+            </div>
           </div>
-          <div class="sendMerit__totals__table__row">
-            <div class="sendMerit__totals__table__column">Total Including Fees</div>
-            <div class="sendMerit__totals__table__column">1000.285 MRT</div>
-          </div>
-          <div class="sendMerit__totals__table__row sendMerit__totals__table__row--devider">
-          </div>
-          <div class="sendMerit__totals__table__row">
-            <div class="sendMerit__totals__table__column">In Wallet</div>
-            <div class="sendMerit__totals__table__column">3988.39 MRT</div>
-          </div>
-          <div class="sendMerit__totals__table__row">
-            <div class="sendMerit__totals__table__column">Total Remaining</div>
-            <div class="sendMerit__totals__table__column">2988.105 MRT</div>
+        </div>
+        <div class="sendMerit__form__group">
+          <label for="" class="ui-label">Fee:<span class="fee-label">0.285 MRT</span></label>
+          <app-select
+            (selectionEvent)="selectFee($event)"
+            [selected]="selectedFee"
+            [input]="availableFeesVariants"
+            style="ui-input ui-input--select ui-input--form"></app-select>
+        </div>
+        <div class="sendMerit__form__group">
+          <label for="" class="ui-label">Send from</label>
+          <app-select
+            (selectionEvent)="selectWallet($event)"
+            [selected]="selectedWallet"
+            [input]="availableWallets"
+            style="ui-input ui-input--select ui-input--form"></app-select>
+        </div>
+        <div class="sendMerit__form__group">
+          <label for="" class="ui-label">Send to <span class="fee-label">address / alias</span></label>
+          <input type="text" name="" value="" placeholder="Paste address / alias here"
+          class="ui-input ui-input--form ui-input--text">
+        </div>
+        <div class="sendMerit__form__group">
+          <button type="button" name="button" class="ui-button ui-button--blue">Send Merit</button>
+        </div>
+      </div>
+      <div class="sendMerit__totals">
+        <div class="sendMerit__form__group">
+          <div class="sendMerit__totals__table">
+            <div class="sendMerit__totals__table--top">
+              <label for="" class="ui-label">Receipx</label>
+              <div class="sendMerit__totals__table__row">
+                <div class="sendMerit__totals__table__column">Amount</div>
+                <div class="sendMerit__totals__table__column">{{amount}} MRT</div>
+              </div>
+              <div class="sendMerit__totals__table__row">
+                <div class="sendMerit__totals__table__column">Fees</div>
+                <div class="sendMerit__totals__table__column">0.285 MRT</div>
+              </div>
+              <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
+                <div class="sendMerit__totals__table__column">Total</div>
+                <div class="sendMerit__totals__table__column">1000.285 MRT</div>
+              </div>
+            </div>
+            <div class="sendMerit__totals__table--bottom">
+              <div class="sendMerit__totals__table__row sendMerit__totals__table__row--devider">
+              </div>
+              <div class="sendMerit__totals__table__row">
+                <div class="sendMerit__totals__table__column">In Wallet</div>
+                <div class="sendMerit__totals__table__column">3988.39 MRT</div>
+              </div>
+              <div class="sendMerit__totals__table__row">
+                <div class="sendMerit__totals__table__column">Total Remaining</div>
+                <div class="sendMerit__totals__table__column">2988.105 MRT</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

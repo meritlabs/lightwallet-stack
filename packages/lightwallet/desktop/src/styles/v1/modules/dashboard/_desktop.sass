@@ -5,18 +5,20 @@
   height: 100vh
   overflow: hidden
   &__aside
-    width: 240px
+    width: 300px
     background: $dashboard-aside-bg
     box-sizing: border-box
     padding: 45px 0 25px
     display: flex
     align-content: space-between
     flex-flow: row wrap
+    overflow-y: auto
+    user-select: none
     &__wrap
       display: block
       width: 100%
     &__item
-      +font($baseFont--medium, 15px, 15px, $white, none, none, none)
+      +font($baseFont--medium, 15px, 15px, $white, normal, none, none)
       cursor: pointer
       border-left: 5px solid transparent
       padding-left: 25px
@@ -27,7 +29,7 @@
       opacity: .6
       +transition(.3s, linear)
       a
-        +font($baseFont--medium, 15px, 15px, $white, none, none, none)
+        +font($baseFont--medium, 15px, 15px, $white, normal, none, none)
         min-height: 50px
         display: flex
         align-items: center
@@ -43,23 +45,24 @@
         margin-right: 16px
 .dashboard
   &__main
-    padding-top: 80px
-    width: calc(100% - 240px)
+    padding-top: 74px
+    width: calc(100% - 300px)
     height: 100vh
     overflow-y: auto
 .dashboard
   &__toolbar
     box-sizing: border-box
     padding: 17px 40px
-    width: calc(100% - 240px)
-    display: flex
+    width: calc(100% - 300px)
     background: $white
-    justify-content: space-between
     box-shadow: 0px 2px 2px rgba(46,53,59, .05)
     position: fixed
     top: 0
     right: 0
     z-index: 99
+    &__wrap
+      display: flex
+      justify-content: space-between
     &__col
       display: flex
       align-content: center
@@ -81,6 +84,6 @@
   &__item
     width: 100%
     &--large-blue
-      +font($baseFont--semibold, 15px, 15px, $blue, none, none, none)
+      +font($baseFont--semibold, 15px, 15px, $blue, normal, none, none)
     &--regular-grey
-      +font($baseFont--semibold, 14px, 24px, $gun-metal, none, none, none)
+      +font($baseFont--semibold, 14px, 24px, $gun-metal, normal, none, none)

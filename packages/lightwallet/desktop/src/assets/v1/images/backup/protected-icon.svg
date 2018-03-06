@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="51px" height="58px" viewBox="0 0 51 58" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#8BA3B8" offset="0%"></stop>
+            <stop stop-color="#384C62" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#9BB2C7" offset="0%"></stop>
+            <stop stop-color="#384C62" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-3">
+            <stop stop-color="#57C6FB" offset="0%"></stop>
+            <stop stop-color="#33B3F0" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Screens" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="mnemonic-pharse-hidden" transform="translate(-1116.000000, -157.000000)">
+            <g id="Group" transform="translate(1120.000000, 162.000000)">
+                <g id="lazarus">
+                    <path d="M21.287638,51.1330614 C7.30494867,47.0133459 -0.310852659,33.9782622 -1.63491521,12.4343963 L-1.74176031,10.6959162 L0,10.6959162 C4.93134607,10.6959162 11.8747915,6.75855338 20.6491625,-1.21241596 L21.7505669,-2.21297317 L22.8519712,-1.21241596 C31.6263423,6.75855338 38.5697877,10.6959162 43.5011338,10.6959162 L45.2428941,10.6959162 L45.136049,12.4343963 C43.8119864,33.9782622 36.1961851,47.0133459 22.2134958,51.1330614 L21.7505669,51.2694539 L21.287638,51.1330614 Z" id="Combined-Shape" stroke="#E1E5F6" stroke-width="3.276"></path>
+                    <path d="M21.7505669,0 L21.7505669,49.5618386 C8.53623391,45.6685038 1.28604494,33.2591963 0,12.3339162 C5.44900219,12.3339162 12.6991912,8.2226108 21.7505669,0 Z" id="Path-23" fill="url(#linearGradient-1)"></path>
+                    <path d="M43.5011338,0 L43.5011338,49.5618386 C30.2868008,45.6685038 23.0366118,33.2591963 21.7505669,12.3339162 C27.1995691,12.3339162 34.449758,8.2226108 43.5011338,0 Z" id="Path-23-Copy-2" fill="url(#linearGradient-2)" opacity="0.620527627" transform="translate(32.625850, 24.780919) scale(-1, 1) translate(-32.625850, -24.780919) "></path>
+                    <ellipse id="Oval-23" fill="url(#linearGradient-3)" cx="21.7505669" cy="24.7809193" rx="13.0503401" ry="12.9291753"></ellipse>
+                    <polyline id="Path-6" stroke="#FFFFFF" stroke-width="2.184" stroke-linecap="round" stroke-linejoin="round" points="16.3129252 25.4669947 20.5213128 30.6382275 27.1882086 19.8247354"></polyline>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
