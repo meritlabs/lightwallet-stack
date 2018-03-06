@@ -8,15 +8,14 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @Component({
   selector: 'view-wallets',
-  templateUrl: './wallets.component.html',
-  styleUrls: ['./wallets.component.sass'],
+  templateUrl: './wallets.view.html',
+  styleUrls: ['./wallets.view.sass'],
   encapsulation: ViewEncapsulation.None
 })
 export class WalletsComponent implements OnInit {
   wallets$: Observable<DisplayWallet[]>;
 
-  constructor(private walletService: WalletService,
-              private store: Store<WalletsState>) {
+  constructor(private store: Store<WalletsState>) {
     this.wallets$ = store.select(getWallets);
   }
 

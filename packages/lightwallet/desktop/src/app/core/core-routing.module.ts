@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { WalletsComponent } from './wallets/wallets.component';
+import { WalletsComponent } from './wallets/wallets.view';
 import { ReceiveComponent } from './receive/receive.component';
 import { SendComponent } from './send/send.component';
 import { HistoryComponent } from './history/history.component';
