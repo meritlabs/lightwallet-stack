@@ -12,17 +12,14 @@
   <div class="wallet-detail__content">
     <div class="wallet-detail__content__navigation">
       <ul>
-        <li><a href="">Receive Merit</a></li>
-        <li><a href="">Send Merit</a></li>
-        <li><a href="">Wallet preferences</a></li>
-        <li><a href="" class="active">Wallet transactions</a></li>
+        <li><a [routerLink]="['receive']">Receive Merit</a></li>
+        <li><a [routerLink]="['send']">Send Merit</a></li>
+        <li><a [routerLink]="['settings']" >Wallet preferences</a></li>
+        <li><a [routerLink]="['history']">Wallet transactions</a></li>
       </ul>
     </div>
     <div class="wallet-detail__content__wrap container--inner">
-      <div class="wallet-detail__content__title">
-        <p>Wallet transactions history</p>
-      </div>
-      <app-history-list></app-history-list>
+      <router-outlet></router-outlet>
     </div>
   </div>
 </div>

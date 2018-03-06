@@ -14,6 +14,7 @@ import { CreateWalletComponent } from '@merit/desktop/app/core/wallets/create-wa
 import { WalletDetailsView } from '../../../../mobile/src/app/wallets/wallet-details/wallet-details';
 import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-settings/wallet-settings.component';
 import { WalletDetailComponent } from '@merit/desktop/app/core/wallets/wallet-detail/wallet-detail.component';
+import { WalletDetailHistoryComponent } from '@merit/desktop/app/core/wallets/wallet-detail/wallet-detail-history/wallet-detail-history.component';
 
 const routes: Routes = [
   {
@@ -22,7 +23,13 @@ const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'wallets', component: WalletsViewComponent, pathMatch: 'full' },
       { path: 'wallets/create', component: CreateWalletComponent },
-      { path: 'wallets/:id', component: WalletDetailComponent },
+      { path: 'wallets/:id', component: WalletDetailComponent, children: [
+        { path: '', component: WalletDetailHistoryComponent },
+        { path: 'history', component: WalletDetailHistoryComponent },
+        { path: 'settings', component: WalletSettingsComponent },
+        { path: 'send', component: SendComponent },
+        { path: 'receive', component: ReceiveComponent }
+      ]},
       { path: 'receive', component: ReceiveComponent },
       { path: 'send', component: SendComponent },
       { path: 'history', component: HistoryComponent },
