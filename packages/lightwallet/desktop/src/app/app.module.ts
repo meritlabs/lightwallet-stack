@@ -10,8 +10,11 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { StoreModule } from '@ngrx/store';
-import { walletsReducer } from '@merit/common/reducers/wallets.reducer';
-import { transactionsReducer } from '@merit/common/reducers/transactions.reducer';
+import { reducer } from '@merit/common/reducers';
+import { EffectsModule } from '@ngrx/effects';
+import { WalletEffects } from '@merit/common/effects/wallet.effects';
+import { CommonProvidersModule } from '@merit/common/common-providers.module';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
@@ -40,10 +43,12 @@ export function getProviders() {
         deps: [HttpClient]
       }
     }),
-    StoreModule.forRoot({
-      wallets: walletsReducer,
-      transactions: transactionsReducer
-    })
+    StoreModule.forRoot(reducer),
+    EffectsModule.forRoot([
+      WalletEffects
+    ]),
+    CommonProvidersModule.forRoot(),
+    StoreDevtoolsModule.instrument()
   ],
   providers: [
     ...getProviders()
