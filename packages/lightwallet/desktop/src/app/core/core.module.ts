@@ -26,6 +26,7 @@ import { ToastNotificationComponent } from './iu/notifications/toast-notificatio
 import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { WalletDetailHistoryComponent } from './wallets/wallet-detail/wallet-detail-history/wallet-detail-history.component';
 
 export function getPages() {
   return [
@@ -68,6 +69,7 @@ export function getPages() {
     HistoryListComponent,
     ToastNotificationComponent,
     NotificationsHistoryComponent,
+    WalletDetailHistoryComponent,
   ]
 })
 export class CoreModule {
