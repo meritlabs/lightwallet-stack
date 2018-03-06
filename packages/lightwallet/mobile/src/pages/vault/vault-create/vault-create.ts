@@ -52,7 +52,7 @@ export class VaultCreateView {
   hasInsufficientConfirmedFunds() {
     if (!this.wallet) return false;
     const micros = this.rateService.mrtToMicro(this.amount);
-    return (this.wallet.client.status.confirmedAmount <  micros) && (micros < this.wallet.client.status.spendableAmount);
+    return (this.wallet.client.status.confirmedAmount <  micros) && (micros <= this.wallet.client.status.spendableAmount);
   }
 
   selectWhitelist() {

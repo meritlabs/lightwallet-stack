@@ -1010,7 +1010,6 @@ export class API {
         params.push(new Buffer(tag));
         params.push(Bitcore.Opcode.smallInt(newVault.type));
 
-
         let masterPubKey = Bitcore.PublicKey.fromPrivateKey(masterKey.key); //todo if not exitsts use current
         let masterPrivKey = masterKey.key; //todo what if not exitsts???
         let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, masterPubKey);
@@ -1078,7 +1077,8 @@ export class API {
       return amount + coin.micros;
     },0);
 
-    if (amount >= availableAmount) throw MWCErrors.INSUFFICIENT_FUNDS;
+    if (amount > availableAmount) throw MWCErrors.INSUFFICIENT_FUNDS;
+    if (amount + fee > availableAmount) amount = availableAmount - fee;
 
     let selectedCoins = [];
     let selectedAmount = 0;

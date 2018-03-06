@@ -158,7 +158,7 @@ export class VaultsService {
       return Promise.reject(new Error('The amount is too big')); // Because Javascript
     }
 
-    let txp = {
+    let txp:any = {
       outputs: [{
         'toAddress': vault.address.toString(),
         'script': vault.scriptPubKey.toBuffer().toString('hex'),
@@ -169,9 +169,22 @@ export class VaultsService {
                     //on the selected wallet.
       feeLevel: feeLevel,
       excludeUnconfirmedUtxos: true,
-      dryRun: false,
+      dryRun: true
     };
-    return this.walletService.createTx(wallet.client, txp);
+    if (vault.amount == wallet.client.status.confirmedAmount) {
+      delete txp.outputs[0].amount;
+      txp.sendMax = true;
+    }
+    const createdTx = await wallet.client.createTxProposal(txp);
+    if (txp.sendMax) {
+      delete txp.sendMax;
+      delete txp.feeLevel;
+      txp.fee = createdTx.fee;
+      txp.outputs[0].amount = createdTx.outputs[0].amount;
+      txp.inputs = createdTx.inputs;
+    }
+    txp.dryRun = false;
+    return await wallet.client.createTxProposal(txp);
   }
 
 }

@@ -210,9 +210,8 @@ export module Utils {
       });
     }
 
-    console.log(txp);
     t.fee(txp.fee);
-    t.change(txp.changeAddress.address);
+    if (txp.changeAddress) t.change(txp.changeAddress.address);
 
     // Shuffle outputs for improved privacy
     if (t.outputs.length > 1) {
