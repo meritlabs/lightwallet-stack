@@ -12,8 +12,8 @@
   <div class="wallet-detail__content">
     <div class="wallet-detail__content__navigation">
       <ul>
-        <li><a [routerLink]="['receive']" routerLinkActive="active">Receive Merit</a></li>
-        <li><a [routerLink]="['send']" routerLinkActive="active">Send Merit</a></li>
+        <li><a [routerLink]="['receive']" [queryParams]="{ injected: true }" routerLinkActive="active">Receive Merit</a></li>
+        <li><a [routerLink]="['send']" [queryParams]="{ amount: 200, injected: true }" routerLinkActive="active">Send Merit</a></li>
         <li><a [routerLink]="['settings']" routerLinkActive="active">Wallet preferences</a></li>
         <li><a [routerLink]="['history']" routerLinkActive="active">Wallet transactions</a></li>
       </ul>
