@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -14,11 +15,14 @@ import { reducer } from '@merit/common/reducers';
 import { EffectsModule } from '@ngrx/effects';
 import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { ReactiveFormsModule } from '@angular/forms';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
+}
+
+export function loadConfigs(appService) {
+  return () => appService.getInfo();
 }
 
 export function getProviders() {
@@ -50,11 +54,16 @@ export function getProviders() {
     ReactiveFormsModule,
     EffectsModule.forRoot([
       WalletEffects
-    ]),
-    StoreDevtoolsModule.instrument(),
+    ])
   ],
   providers: [
-    ...getProviders()
+    ...getProviders(),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: loadConfigs,
+      deps: [AppSettingsService],
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

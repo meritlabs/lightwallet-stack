@@ -14,8 +14,6 @@
   },
   "private": true,
   "dependencies": {
-    "buffer-compare": "^1.1.1",
-    "elliptic": "^6.4.0",
     "hammerjs": "^2.0.8",
     "normalize-scss": "^7.0.1"
   },
