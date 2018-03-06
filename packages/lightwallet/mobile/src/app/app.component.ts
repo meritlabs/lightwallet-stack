@@ -5,7 +5,7 @@ import { Events, ModalController, Nav, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
 import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { PushNotificationsService } from '@merit/mobile/../../../common/services/push-notification.service';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { OnboardingView } from '@merit/mobile/app/onboard/onboarding.view';
 import { TransactView } from '@merit/mobile/app/transact/transact';
 import { FingerprintLockView } from '@merit/mobile/app/utilities/fingerprint-lock/fingerprint-lock';

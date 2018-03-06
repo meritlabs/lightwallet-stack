@@ -11,12 +11,15 @@ export interface IDisplayWalletOptions {
   skipAlias?: boolean;
 }
 
-export const ClientProperty: PropertyDecorator = (target: DisplayWallet, key: keyof MeritWalletClient) => {
+export function ClientProperty(target: DisplayWallet, key: keyof MeritWalletClient) {
   Object.defineProperty(target, key, {
     enumerable: true,
-    get: () => target.client[key]
+    get: function() {
+      return this.client[key];
+    }
   });
-};
+}
+
 
 export class DisplayWallet {
   @ClientProperty readonly id: string;
@@ -55,9 +58,10 @@ export class DisplayWallet {
               private sendService?: SendService) {
     this.referrerAddress = this.walletService.getRootAddress(this.client).toString();
 
-    if (!this.color) {
+    if (!this.client.color) {
       this.client.color = DEFAULT_WALLET_COLOR;
     }
+    debugger;
   }
 
   async updateAlias() {
@@ -65,10 +69,12 @@ export class DisplayWallet {
     if (alias) {
       this.alias = alias;
     }
+    debugger;
   }
 
   async updateAnv() {
     this.totalNetworkValueMicro = await this.walletService.getANV(this.client);
+    debugger;
   }
 
   async updateStatus() {
@@ -82,6 +88,7 @@ export class DisplayWallet {
       this.totalBalanceStr = this.client.cachedBalance;
       this.cachedBalanceUpdatedOn = this.client.cachedBalanceUpdatedOn;
     }
+    debugger;
   }
 
   async updateRewards() {
@@ -91,6 +98,7 @@ export class DisplayWallet {
       this.miningRewardsMicro = rewardsData.mining;
       this.ambassadorRewardsMicro = rewardsData.ambassador;
     }
+    debugger;
   }
 }
 

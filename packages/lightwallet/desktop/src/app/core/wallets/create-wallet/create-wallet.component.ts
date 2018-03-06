@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ENV } from '@merit/desktop/environments/environment';
-import { PasswordValidator } from '@merit/common/validators/password.validator';
-import { WalletService } from '@merit/common/services/wallet.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { createDisplayWallet } from '@merit/common/models/display-wallet';
+import { IAppState } from '@merit/common/reducers';
+import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { PushNotificationsService } from '../../../../../../common/services/push-notification.service';
-import { Route, Router } from '@angular/router';
+import { SendService } from '@merit/common/services/send.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { PasswordValidator } from '@merit/common/validators/password.validator';
+import { ENV } from '@merit/desktop/environments/environment';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'view-create-wallet',
@@ -17,10 +21,10 @@ export class CreateWalletComponent {
 
   formData: FormGroup = this.formBuilder.group({
     walletName: ['', Validators.required],
-    parentAddress: ['', Validators.required],
+    parentAddress: ['', Validators.required], // TODO(ibby): add parent address validator
     alias: '', // TODO(ibby): add alias validator
     bwsurl: [ENV.mwsUrl, Validators.required],
-    recoveryPhrase: '',
+    recoveryPhrase: '', // TODO(ibby): add mnemonic validator
     password: '',
     repeatPassword: ['', PasswordValidator.MatchPassword],
     color: '',
@@ -31,8 +35,9 @@ export class CreateWalletComponent {
               private walletService: WalletService,
               private config: ConfigService,
               private logger: LoggerService,
-              private router: Router
-              ) {
+              private router: Router,
+              private store: Store<IAppState>,
+              private sendService: SendService) {
   }
 
   async create() {
@@ -82,6 +87,7 @@ export class CreateWalletComponent {
       }
 
       if (color) {
+        // TODO(ibby): fix this implementation here & in mobile version
         const colorOpts = {
           colorFor: {
             [wallet.id]: color
@@ -96,8 +102,10 @@ export class CreateWalletComponent {
         this.logger.error(e);
       }
 
-      this.router.navigateByUrl('/wallets');
+      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.sendService);
+      this.store.dispatch(new AddWalletAction(displayWallet));
 
+      return this.router.navigateByUrl('/wallets');
     } catch (err) {
       this.logger.error(err);
       // TODO: display error to user

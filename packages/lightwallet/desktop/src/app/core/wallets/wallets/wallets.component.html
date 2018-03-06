@@ -3,7 +3,7 @@
     <div class="wallets__group__header__title title--primary">
       <p>Wallets</p>
       <!-- TODO: Show spinner while loading -->
-      <span [hidden]="!loading">~ Loading ~</span>
+      <small [hidden]="!loading">~ Loading ~</small>
     </div>
     <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm
       ui-button--add ui-button--transparent ui-button--{{showButton}}" routerLink="/wallets/create">Create new wallet</button>
