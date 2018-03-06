@@ -25,6 +25,7 @@ import { NotificationsComponent } from './iu/notifications/notifications.compone
 import { ToastNotificationComponent } from './iu/notifications/toast-notification/toast-notification.component';
 import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 export function getPages() {
   return [
@@ -49,6 +50,7 @@ export function getPages() {
     CommonModule,
     CoreRoutingModule,
     CommonProvidersModule.forRoot(),
+    ReactiveFormsModule
   ],
   declarations: [
     CoreComponent,
