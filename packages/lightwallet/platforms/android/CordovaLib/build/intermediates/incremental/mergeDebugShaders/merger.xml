@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/lw-2/platforms/android/CordovaLib/src/main/shaders"/></dataSet><dataSet config="debug"><source path="/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/lw-2/platforms/android/CordovaLib/src/debug/shaders"/></dataSet></merger>
