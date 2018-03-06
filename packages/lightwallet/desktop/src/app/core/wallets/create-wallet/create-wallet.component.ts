@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ENV } from '@merit/desktop/environments/environment';
+import { PasswordValidator } from '@merit/common/validators/password.validator';
 
 @Component({
   selector: 'view-create-wallet',
@@ -12,11 +13,11 @@ export class CreateWalletComponent {
   formData: FormGroup = this.formBuilder.group({
     walletName: ['', Validators.required],
     parentAddress: ['', Validators.required],
-    alias: '',
+    alias: '', // TODO(ibby): add alias validator
     bwsurl: [ENV.mwsUrl, Validators.required],
     recoveryPhrase: '',
     password: '',
-    repeatPassword: '',
+    repeatPassword: ['', PasswordValidator.MatchPassword],
     color: '',
     hideBalance: false
   });
