@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CoreRoutingModule } from './core-routing.module';
-import { WalletsComponent } from './wallets/wallets.component';
+import { WalletsComponent } from './wallets/wallets.view';
 import { HistoryComponent } from './history/history.component';
 import { ReceiveComponent } from './receive/receive.component';
 import { SendComponent } from './send/send.component';
