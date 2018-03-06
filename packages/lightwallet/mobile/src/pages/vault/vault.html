@@ -30,7 +30,7 @@
     <ion-list>
         <ion-item>
             <h2>Amount</h2>
-            <p class="amount">{{ vault.amount | toMRT }} </p>
+            <p class="amount">{{ vault.amount  | toMRT }} </p>
             <p class="detail-fiat" item-end>{{ vault.amount |toFiat  }}</p>
         </ion-item>
         <ion-item>
@@ -52,13 +52,14 @@
             <ion-avatar img-icon item-start >
                 <img *ngIf="tx.type == 'stored'" src="assets/img/icons/vault-avatar.svg" alt="" />
                 <img *ngIf="tx.type == 'sent'" src="assets/img/icons/merit.svg" alt="" />
+                <ion-icon name="refresh" *ngIf="tx.type == 'renewal'" color="primary"></ion-icon>
             </ion-avatar>
             <ion-label>
                 <h2>{{ tx.label }}</h2>
                 <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
             </ion-label>
             <ion-note item-end>
-              <span class="merit-amount" [class]="tx.type">
+              <span class="merit-amount" [class]="tx.type" *ngIf="tx.type != 'renewal'">
                 {{ tx.amount | toMRT}}
               </span>
             </ion-note>

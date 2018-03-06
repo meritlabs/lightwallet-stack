@@ -44,7 +44,7 @@ export class VaultsService {
     return vaults.map(v => {
       const amount = v.coins.reduce((amount, coin) => {
         return amount + coin.amount
-      }, 0);
+      }, 0) || 0;
       return Object.assign(v, {walletClient: wallet.client, amount: amount});
     });
   }
@@ -72,14 +72,13 @@ export class VaultsService {
 
     const txp = await vault.walletClient.buildRenewVaultTx(vault, masterKey);
     const feePerKB = await this.feeService.getCurrentFeeRate(ENV.network);
-    const fee = Math.round(feePerKB * txp.serialize().length / 2000);
+    const fee = Math.round(feePerKB * txp.serialize().length / 1024);
     const tx = await vault.walletClient.buildRenewVaultTx(vault, masterKey, {fee});
-    let newVault = Object.assign({
+    let newVault = Object.assign(vault, {
       coins: [{ raw: tx.serialize(), network: ENV.network }]
-    }, vault);
+    });
     newVault.whitelist = vault.whitelist.map((w:any) => w.client.getRootAddress().toBuffer());
-    newVault.masterPubKey = this.Bitcore.PublicKey.fromPrivateKey(masterKey.key);
-    delete newVault.walletClient;
+    newVault.masterPubKey = this.Bitcore.PublicKey.fromPrivateKey(masterKey.privateKey);
 
     return await vault.walletClient.renewVault(newVault);
   }

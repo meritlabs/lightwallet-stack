@@ -37,7 +37,10 @@ export class VaultView {
 
     const transactions = await this.vaultsService.getTxHistory(this.vault);
     this.transactions = transactions.map((tx:any) => {
-      if (tx.type == 'stored') {
+      if (tx.type == 'renewal') {
+        tx.label = 'renewed';
+      }
+      else if (tx.type == 'stored') {
         tx.label = 'Stored';
       } else {
           let wallet = this.wallets.find(w => w.client.getRootAddress().toString() == tx.address);

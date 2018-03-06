@@ -139,6 +139,9 @@
                 <div class="detail" item-end *ngIf="vault.status == 'pending'" >
                     Pending
                 </div>
+                <div class="detail" item-end *ngIf="vault.status == 'renewing'" >
+                    Renewing
+                </div>
             </button>
         </ion-list>
 
