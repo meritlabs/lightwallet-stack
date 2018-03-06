@@ -976,7 +976,7 @@ export class API {
    */
   async buildRenewVaultTx(newVault: any, masterKey: any, opts: any = {}) {
 
-    const coins = await newVault.walletClient.getVaultCoins(newVault);
+    const coins = await this.getVaultCoins(newVault);
 
     var network = opts.network || ENV.network;
     var fee = opts.fee || DEFAULT_FEE;
@@ -1010,9 +1010,7 @@ export class API {
         params.push(new Buffer(tag));
         params.push(Bitcore.Opcode.smallInt(newVault.type));
 
-        let masterPubKey = Bitcore.PublicKey.fromPrivateKey(masterKey.key); //todo if not exitsts use current
-        let masterPrivKey = masterKey.key; //todo what if not exitsts???
-        let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, masterPubKey);
+        let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, masterKey.publicKey);
 
         tx.addOutput(new Bitcore.Transaction.Output({
           script: scriptPubKey,
@@ -1034,8 +1032,8 @@ export class API {
         tx.addressType = 'PP2SH';
 
         _.forEach(tx.inputs, (input, i) => {
-          let sig = Bitcore.Transaction.Sighash.sign(tx, masterPrivKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, Bitcore.PublicKey(masterPubKey, network));
+          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
+          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, Bitcore.PublicKey(newVault.masterPubKey, network));
           input.setScript(inputScript);
         });
 
@@ -3038,6 +3036,8 @@ export class API {
 
   renewVault(vault: any) {
     $.checkState(this.credentials);
+
+    delete vault.walletClient; 
 
     var url = `/v1/vaults/${vault._id}`;
     return this._doPostRequest(url, vault);
