@@ -3833,7 +3833,6 @@ WalletService.prototype.createVault = function(opts, cb) {
 WalletService.prototype.getVaultTxHistory = function(opts, cb) {
   var self = this;
 
-
   let decorate = (vault, txs) => {
 
       return txs.filter(tx => !tx.isInvite).map(tx => {
@@ -3841,16 +3840,28 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
          const inputsAddresses = tx.inputs.map(i => i.address);
          const output = tx.outputs.filter(o => inputsAddresses.indexOf(o.address) == -1)[0]; // filtering change outputs
 
-         return {
-             txid: tx.txid,
-             confirmations: tx.confirmation,
-             time: tx.time,
-             amount: output.amount,
-             type:  output.address == new Bitcore.Address(vault.address).toString() ? 'stored' : 'sent',
-             address: output.address,
-             alias: output.alias,
-             fee: tx.fees
+         if (!output) { //renewal tx
+             return {
+                 txid: tx.txid,
+                 confirmations: tx.confirmation,
+                 time: tx.time,
+                 type:  'renewal',
+                 fee: tx.fees,
+                 amount: tx.outputs[0].amount
+             }
+         } else {
+             return {
+                 txid: tx.txid,
+                 confirmations: tx.confirmation,
+                 time: tx.time,
+                 amount: output.amount,
+                 type:  output.address == new Bitcore.Address(vault.address).toString() ? 'stored' : 'sent',
+                 address: output.address,
+                 alias: output.alias,
+                 fee: tx.fees
+             }
          }
+
       });
   };
 
@@ -4089,6 +4100,8 @@ WalletService.prototype.renewVault = function(opts, cb) {
       //TODO: Loop
       var tx = opts.coins[0];
       var bc = self._getBlockchainExplorer(tx.network);
+
+      console.log('BROADCASTING', tx);
 
       bc.broadcast(tx.raw, function(err, txid) {
         if (err) return cb(err);
