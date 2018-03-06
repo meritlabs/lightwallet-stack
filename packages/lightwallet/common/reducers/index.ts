@@ -17,5 +17,5 @@ export function reducer(state: any, action: any) {
 }
 
 export const selectWalletsState = createFeatureSelector<WalletsState>('wallets');
-export const getWallestLoading = createSelector(selectWalletsState, state => state.loading);
+export const getWalletsLoading = createSelector(selectWalletsState, state => state.loading);
 export const getWallets = createSelector(selectWalletsState, state => state.wallets);

@@ -9,4 +9,5 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 export class WalletsListComponent {
   @Input() showButton: boolean = true;
   @Input() wallets: DisplayWallet[];
+  @Input() loading: boolean;
 }
