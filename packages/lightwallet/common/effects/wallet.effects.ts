@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs/observable/of';
-import { switchMap, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { UpdateWalletsAction, WalletsActionType } from '@merit/common/reducers/wallets.reducer';
 import { WalletService } from '@merit/common/services/wallet.service';
@@ -15,14 +15,8 @@ export class WalletEffects {
   @Effect()
   refresh$: Observable<UpdateWalletsAction> = this.actions$.pipe(
     ofType(WalletsActionType.Refresh),
-    switchMap(() =>
-      Observable.fromPromise(this.updateAllWallets())
-        .map((wallets: DisplayWallet[]) => new UpdateWalletsAction(wallets))
-    )
-  );
-
-  @Effect({ dispatch: false }) init$: Observable<any> = defer(() => of(null)).pipe(
-    tap(() => console.log('init$')),
+    switchMap(() => Observable.fromPromise(this.updateAllWallets())),
+    map((wallets: DisplayWallet[]) => new UpdateWalletsAction(wallets))
   );
 
   constructor(private actions$: Actions,

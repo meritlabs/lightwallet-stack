@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { WalletsComponent } from './wallets/wallets.view';
+import { WalletsViewComponent } from './wallets/wallets.view';
 import { ReceiveComponent } from './receive/receive.component';
 import { SendComponent } from './send/send.component';
 import { HistoryComponent } from './history/history.component';
@@ -20,7 +20,7 @@ const routes: Routes = [
     path: '', component: CoreComponent,
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'wallets', component: WalletsComponent, pathMatch: 'full' },
+      { path: 'wallets', component: WalletsViewComponent, pathMatch: 'full' },
       { path: 'wallets/create', component: CreateWalletComponent },
       { path: 'wallets/:id', component: WalletDetailComponent },
       { path: 'receive', component: ReceiveComponent },
