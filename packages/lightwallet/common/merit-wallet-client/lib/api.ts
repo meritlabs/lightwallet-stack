@@ -1078,7 +1078,6 @@ export class API {
     },0);
 
     if (amount > availableAmount) throw MWCErrors.INSUFFICIENT_FUNDS;
-    if (amount + fee > availableAmount) amount = availableAmount - fee;
 
     let selectedCoins = [];
     let selectedAmount = 0;
@@ -1104,7 +1103,7 @@ export class API {
         const spendLimit = Bitcore.Unit.fromMRT(Constants.VAULT_SPEND_LIMIT).toMicros();
 
         let toAddress = Bitcore.Address.fromString(address);
-        tx.to(toAddress, amount - fee * 10);
+        tx.to(toAddress, amount - fee);
 
         let whitelist = vault.whitelist.map(w => Bitcore.Address(w).hashBuffer);
 
@@ -1126,7 +1125,7 @@ export class API {
           micros: change
         }));
 
-        tx.fee(fee * 10);
+        tx.fee(fee);
 
         selectedCoins.forEach(coin => {
           const input = { prevTxId: coin.txid, outputIndex: coin.vout, script: redeemScript };
