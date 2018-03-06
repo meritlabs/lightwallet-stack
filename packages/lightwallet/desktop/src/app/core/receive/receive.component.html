@@ -1,5 +1,5 @@
-<div class="container--fluid receiveMerit">
-  <div class="receiveMerit__header container--inner title--primary">
+<div class="{{injected ? 'receiveMerit--injected' : 'receiveMerit'}}">
+  <div class="{{injected ? 'wallet-detail__content__title' : 'receiveMerit__header container--inner title--primary'}}">
     <p>Receive Merit</p>
   </div>
   <div class="receiveMerit__content container--inner">
@@ -47,7 +47,7 @@
       </div>
     </div>
   </div>
-  <div class="receiveMerit__footer">
+  <div class="receiveMerit__footer" *ngIf="!injected">
     <div class="container--inner">
       <p class="receiveMerit__footer__caption">You can also buy Merit using your
         credit or debit card, Paypal or bank transfer</p>
