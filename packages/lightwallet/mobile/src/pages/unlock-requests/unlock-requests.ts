@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 import { ToastConfig } from '@merit/common/services/toast.controller.service';
-import { IDisplayWallet } from '@merit/common/models/display-wallet';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IUnlockRequest, UnlockRequestService } from '@merit/common/services/unlock-request.service';
 
 @IonicPage()
@@ -18,7 +18,7 @@ export class UnlockRequestsView {
 
   activeTab: 'active' | 'confirmed' = 'active';
 
-  private wallets: Array<IDisplayWallet> = [];
+  private wallets: Array<DisplayWallet> = [];
   private totalInvites: number = 0;
 
   showHiddenRequests: boolean;

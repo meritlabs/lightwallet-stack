@@ -15,7 +15,8 @@
     "target": "es5",
     "paths": {
       "@app/env": ["../mobile/src/environments/environment"],
-      "@merit/common/*": ["./*"]
+      "@merit/common/*": ["./*"],
+      "@merit/mobile/*": ["../mobile/src/*"]
     },
     "typeRoots": [
       "../node_modules/@types"

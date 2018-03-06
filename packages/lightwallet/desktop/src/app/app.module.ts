@@ -3,9 +3,29 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Events } from 'ionic-angular/util/events';
+import { Platform } from 'ionic-angular/platform/platform';
+import { IonicStorageModule } from '@ionic/storage';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { StoreModule } from '@ngrx/store';
+import { reducer } from '@merit/common/reducers';
+import { EffectsModule } from '@ngrx/effects';
+import { WalletEffects } from '@merit/common/effects/wallet.effects';
+import { CommonProvidersModule } from '@merit/common/common-providers.module';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { ReactiveFormsModule } from '@angular/forms';
+
+export function createTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http, 'assets/i18n');
+}
 
 export function getProviders() {
-  return [];
+  return [
+    Events,
+    Platform
+  ];
 }
 
 @NgModule({
@@ -15,11 +35,28 @@ export function getProviders() {
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    IonicStorageModule.forRoot(),
+    HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: createTranslateLoader,
+        deps: [HttpClient]
+      }
+    }),
+    CommonProvidersModule.forRoot(),
+    StoreModule.forRoot(reducer),
+    ReactiveFormsModule,
+    EffectsModule.forRoot([
+      WalletEffects
+    ]),
+    StoreDevtoolsModule.instrument(),
   ],
   providers: [
     ...getProviders()
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
