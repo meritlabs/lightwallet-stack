@@ -1,0 +1,21 @@
+@import "~styles/v1/theme"
+.wallet-detail
+  &__header
+    &__wrap
+      display: flex
+      justify-content: flex-start
+      align-items: center
+      padding: 40px
+    &__amount
+      display: flex
+      justify-content: flex-start
+      align-items: center
+      +font($baseFont--heavy, 32px, 32px, $white, normal, none, none)
+      padding-right: 40px
+      &__icon
+        margin-right: 30px
+    &__navigation
+      &__button
+        text-transform: uppercase
+        font-family: $baseFont--semibold
+        margin: 0 5px
