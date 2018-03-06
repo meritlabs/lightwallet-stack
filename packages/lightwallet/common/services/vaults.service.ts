@@ -57,7 +57,7 @@ export class VaultsService {
 
     const txp = await vault.walletClient.buildSpendVaultTx(vault, amount, recipientAddress, {});
     const feePerKB = await this.feeService.getCurrentFeeRate(ENV.network);
-    const fee = Math.round(feePerKB * txp.serialize().length / 2000);
+    const fee = Math.round(feePerKB * txp.serialize().length / 1024);
     const tx = await vault.walletClient.buildSpendVaultTx(vault, amount, recipientAddress, {fee});
     await vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
     vault.coins =  await vault.walletClient.getVaultCoins(vault);
