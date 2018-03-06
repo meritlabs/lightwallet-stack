@@ -17,7 +17,10 @@ export class WalletEffects {
   refresh$: Observable<UpdateWalletsAction> = this.actions$.pipe(
     ofType(WalletsActionType.Refresh),
     switchMap(() => Observable.fromPromise(this.updateAllWallets())),
-    map((wallets: DisplayWallet[]) => new UpdateWalletsAction(wallets))
+    map((wallets: DisplayWallet[]) => {
+      console.log('Updating wallets in state', wallets);
+      return new UpdateWalletsAction(wallets);
+    })
   );
 
   constructor(private actions$: Actions,

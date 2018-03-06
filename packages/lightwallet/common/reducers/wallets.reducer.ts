@@ -37,19 +37,27 @@ const DEFAULT_STATE: WalletsState = {
 export function walletsReducer(state: WalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
     case WalletsActionType.Add:
-      state.wallets.push((action as AddWalletAction).payload);
-      break;
+      return {
+        ...state,
+        wallets: [
+          ...state.wallets,
+          (action as AddWalletAction).payload
+        ]
+      };
 
     case WalletsActionType.Refresh:
-      state.loading = true;
-      break;
+      return {
+        ...state,
+        loading: true
+      };
 
     case WalletsActionType.Update:
-      state.loading = false;
-      state.wallets = (action as UpdateWalletsAction).payload;
-      break;
-  }
+      return {
+        wallets: (action as UpdateWalletsAction).payload,
+        loading: false
+      };
 
-  return state;
+    default: return state;
+  }
 }
 
