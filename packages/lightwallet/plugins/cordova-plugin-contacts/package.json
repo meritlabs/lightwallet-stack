@@ -1,0 +1,87 @@
+{
+  "_from": "cordova-plugin-contacts@~2.3.1",
+  "_id": "cordova-plugin-contacts@2.3.1",
+  "_inBundle": false,
+  "_integrity": "sha1-PRQ2hYVxIK+Jcxupobc9UAeSWdI=",
+  "_location": "/cordova-plugin-contacts",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "cordova-plugin-contacts@~2.3.1",
+    "name": "cordova-plugin-contacts",
+    "escapedName": "cordova-plugin-contacts",
+    "rawSpec": "~2.3.1",
+    "saveSpec": null,
+    "fetchSpec": "~2.3.1"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-contacts/-/cordova-plugin-contacts-2.3.1.tgz",
+  "_shasum": "3d143685857120af89731ba9a1b73d50079259d2",
+  "_spec": "cordova-plugin-contacts@~2.3.1",
+  "_where": "/Users/adilwali/Development/src/github.com/meritlabs/lightwallet-stack/packages/lw-2/node_modules",
+  "author": {
+    "name": "Apache Software Foundation"
+  },
+  "bugs": {
+    "url": "https://github.com/apache/cordova-plugin-contacts/issues"
+  },
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "cordova-plugin-contacts",
+    "platforms": [
+      "android",
+      "amazon-fireos",
+      "ubuntu",
+      "ios",
+      "blackberry10",
+      "wp8",
+      "firefoxos",
+      "windows8",
+      "windows"
+    ]
+  },
+  "deprecated": false,
+  "description": "Cordova Contacts Plugin",
+  "devDependencies": {
+    "jshint": "^2.6.0"
+  },
+  "engines": {
+    "cordovaDependencies": {
+      "3.0.0": {
+        "cordova": ">100"
+      }
+    }
+  },
+  "homepage": "https://github.com/apache/cordova-plugin-contacts#readme",
+  "keywords": [
+    "cordova",
+    "contacts",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-amazon-fireos",
+    "cordova-ubuntu",
+    "cordova-ios",
+    "cordova-blackberry10",
+    "cordova-wp7",
+    "cordova-wp8",
+    "cordova-firefoxos",
+    "cordova-windows8",
+    "cordova-windows"
+  ],
+  "license": "Apache-2.0",
+  "name": "cordova-plugin-contacts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apache/cordova-plugin-contacts.git"
+  },
+  "scripts": {
+    "jshint": "node node_modules/jshint/bin/jshint www && node node_modules/jshint/bin/jshint src && node node_modules/jshint/bin/jshint tests",
+    "test": "npm run jshint"
+  },
+  "types": "./types/index.d.ts",
+  "version": "2.3.1"
+}

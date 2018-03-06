@@ -1,0 +1,73 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "branch-cordova-sdk": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-clipboard": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-android-fingerprint-auth": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-contacts": {
+      "CONTACTS_USAGE_DESCRIPTION": " ",
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-fcm": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-ionic-webview": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-splashscreen": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-statusbar": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-touch-id": {
+      "FACEID_USAGE_DESCRIPTION": " ",
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "cordova-plugin-x-socialsharing": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "ionic-plugin-keyboard": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "phonegap-plugin-barcodescanner": {
+      "CAMERA_USAGE_DESCRIPTION": " ",
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "phonegap-plugin-push": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    }
+  },
+  "dependent_plugins": {
+    "cordova-plugin-compat": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    },
+    "es6-promise-plugin": {
+      "PACKAGE_NAME": "me.merit.wallet"
+    }
+  }
+}

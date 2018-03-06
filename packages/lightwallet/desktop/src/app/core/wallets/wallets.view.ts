@@ -17,8 +17,8 @@ export class WalletsComponent implements OnInit {
   walletsLoading$: Observable<boolean>;
 
   constructor(private store: Store<WalletsState>) {
-    this.wallets$ = store.select(getWallets);
-    this.walletsLoading$ = store.select(getWalletsLoading);
+    //this.wallets$ = store.select(getWallets);
+    //this.walletsLoading$ = store.select(getWalletsLoading);
   }
 
   ngOnInit() {
