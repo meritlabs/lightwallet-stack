@@ -15,11 +15,12 @@ import { EffectsModule } from '@ngrx/effects';
 import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
 }
+
 export function getProviders() {
   return [
     Events,
@@ -44,17 +45,18 @@ export function getProviders() {
         deps: [HttpClient]
       }
     }),
+    CommonProvidersModule.forRoot(),
     StoreModule.forRoot(reducer),
+    ReactiveFormsModule,
     EffectsModule.forRoot([
       WalletEffects
     ]),
-    CommonProvidersModule.forRoot(),
     StoreDevtoolsModule.instrument(),
-    ReactiveFormsModule
   ],
   providers: [
     ...getProviders()
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
