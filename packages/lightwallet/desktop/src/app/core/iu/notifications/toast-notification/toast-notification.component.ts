@@ -1,5 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
 
+type INotification = {
+  status: string,
+  title: string,
+  text: string,
+};
+
 @Component({
   selector: 'app-toast-notification',
   templateUrl: './toast-notification.component.html',
@@ -9,7 +15,7 @@ export class ToastNotificationComponent implements OnInit {
   constructor() {}
   ngOnInit() {}
   @Input() show: boolean = false;
-  @Input() message: Object = {
+  @Input() message: INotification = {
     "status": null,
     "title": null,
     "text": null
