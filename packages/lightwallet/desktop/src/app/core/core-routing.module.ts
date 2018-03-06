@@ -20,20 +20,9 @@ const routes: Routes = [
     path: '', component: CoreComponent,
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      {
-        path: 'wallets',
-        component: WalletsComponent,
-        children: [
-          { path: 'create', component: CreateWalletComponent },
-          {
-            path: ':id',
-            component: WalletDetailComponent,
-            children: [
-              { path: 'settings', component: WalletSettingsComponent }
-            ]
-          },
-        ]
-      },
+      { path: 'wallets', component: WalletsComponent, pathMatch: 'full' },
+      { path: 'wallets/create', component: CreateWalletComponent },
+      { path: 'wallets/:id', component: WalletDetailComponent },
       { path: 'receive', component: ReceiveComponent },
       { path: 'send', component: SendComponent },
       { path: 'history', component: HistoryComponent },
