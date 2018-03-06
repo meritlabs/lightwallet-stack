@@ -13,16 +13,12 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
   encapsulation: ViewEncapsulation.None
 })
 export class WalletsViewComponent implements OnInit {
-  wallets$: Observable<DisplayWallet[]>;
-  walletsLoading$: Observable<boolean>;
+  wallets$: Observable<DisplayWallet[]> = this.store.select(getWallets);
+  walletsLoading$: Observable<boolean> = this.store.select(getWalletsLoading);
 
-  constructor(private store: Store<IAppState>) {
-    this.store.dispatch(new RefreshWalletsAction());
-  }
+  constructor(private store: Store<IAppState>) {}
 
   ngOnInit() {
     this.store.dispatch(new RefreshWalletsAction());
-    // this.wallets$ = this.store.select(getWallets);
-    // this.walletsLoading$ = this.store.select(getWalletsLoading);
   }
 }

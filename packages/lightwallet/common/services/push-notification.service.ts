@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, Optional } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
 import { App, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
@@ -9,10 +9,10 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { MWCService } from '@merit/common/services/mwc.service';
-import { PollingNotificationsService } from '@merit/mobile/app/core/notification/polling-notification.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 
 
 @Injectable()
@@ -32,7 +32,7 @@ export class PushNotificationsService {
               private app: App,
               private mwcService: MWCService,
               private platform: Platform,
-              private pollingNotificationService: PollingNotificationsService,
+              @Optional() private pollingNotificationService: PollingNotificationsService,
               private FCM: FCM,
               private ngZone: NgZone,
               private walletService: WalletService) {

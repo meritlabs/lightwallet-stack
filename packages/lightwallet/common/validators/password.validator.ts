@@ -2,12 +2,14 @@ import { AbstractControl } from '@angular/forms';
 
 export class PasswordValidator {
   static MatchPassword(control: AbstractControl) {
-    const password = control.get('password').value,
-      repeatPassword = control.get('repeatPassword').value;
+    try {
+      const password = control.parent.get('password').value,
+        repeatPassword = control.value;
 
-    if (password != repeatPassword) {
-      control.get('repeatPassword').setErrors({ PasswordMatch: true });
-    }
+      if (password != repeatPassword) {
+        control.get('repeatPassword').setErrors({ PasswordMatch: true });
+      }
+    } catch (e) {}
 
     return true;
   }
