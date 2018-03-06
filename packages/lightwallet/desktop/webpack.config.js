@@ -502,10 +502,7 @@ module.exports = {
     "crypto": true,
     "tls": "empty",
     "net": "empty",
-    "process": true,
-    "module": false,
-    "clearImmediate": false,
-    "setImmediate": false
+    "process": true
   },
   "devServer": {
     "historyApiFallback": true

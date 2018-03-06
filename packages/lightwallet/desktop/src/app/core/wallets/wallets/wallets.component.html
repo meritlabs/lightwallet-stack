@@ -3,7 +3,7 @@
     <div class="wallets__group__header__title title--primary">
       <p>Wallets</p>
       <!-- TODO: Show spinner while loading -->
-      <span [hidden]="!loading">~ Loading ~</span>
+      <small [hidden]="!loading">~ Loading ~</small>
     </div>
     <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm
       ui-button--add ui-button--transparent ui-button--{{showButton}}" routerLink="/wallets/create">Create new wallet</button>
@@ -14,7 +14,7 @@
         <img src="/assets/v1/images/wallets/personal.svg" alt="">
       </div>
       <div class="wallets__group__wallet__info">
-        <p class="large-black-text">Personal Wallet</p>
+        <p class="large-black-text">{{ wallet.name }}</p>
         <p class="regular-blue-text">3788.39 MRT ($15652.96)</p>
       </div>
     </div>

@@ -4,12 +4,12 @@ import * as _ from 'lodash';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ConfigService } from '@merit/common/services/config.service';
-import { PushNotificationsService } from '@merit/mobile/../../../../../common/services/push-notification.service';
-import { PollingNotificationsService } from '@merit/mobile/../../../../../common/services/polling-notification.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { SendService } from '@merit/common/services/send.service';
+import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
