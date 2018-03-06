@@ -1,37 +1,55 @@
 import { Action } from '@ngrx/store';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 export interface WalletsState {
   wallets: DisplayWallet[];
+  loading: boolean;
 }
 
 export enum WalletsActionType {
-  Add = 'add'
-}
-
-export interface WalletsAction extends Action {
-  type: WalletsActionType;
-  wallets: DisplayWallet[];
+  Add = '[Wallets] Add',
+  Update = '[Wallets] Update',
+  Refresh = '[Wallets] Refresh'
 }
 
 export class AddWalletAction implements Action {
   type = WalletsActionType.Add;
 
-  constructor(public payload: MeritWalletClient) {
-  }
+  constructor(public payload: DisplayWallet) {}
 }
 
+export class UpdateWalletsAction implements Action {
+  type = WalletsActionType.Update;
+  constructor(public payload: DisplayWallet[]) {}
+}
+
+export class RefreshWalletsAction implements Action {
+  type = WalletsActionType.Refresh;
+}
+
+export type WalletsAction = AddWalletAction | UpdateWalletsAction | RefreshWalletsAction;
+
 const DEFAULT_STATE: WalletsState = {
-  wallets: []
+  wallets: [],
+  loading: false
 };
 
 export function walletsReducer(state: WalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
     case WalletsActionType.Add:
-      state.wallets = action.wallets;
+      state.wallets.push((action as AddWalletAction).payload);
+      break;
+
+    case WalletsActionType.Refresh:
+      state.loading = true;
+      break;
+
+    case WalletsActionType.Update:
+      state.loading = false;
+      state.wallets = (action as UpdateWalletsAction).payload;
       break;
   }
 
   return state;
 }
+

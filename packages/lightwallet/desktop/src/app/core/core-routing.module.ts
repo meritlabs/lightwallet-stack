@@ -7,18 +7,35 @@ import { HistoryComponent } from './history/history.component';
 import { CoreComponent } from './core.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CommunityComponent } from './community/community.component';
+import { CreateWalletComponent } from '@merit/desktop/app/core/wallets/create-wallet/create-wallet.component';
+import { WalletDetailsView } from '../../../../mobile/src/app/wallets/wallet-details/wallet-details';
+import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-settings/wallet-settings.component';
+import { WalletDetailComponent } from '@merit/desktop/app/core/wallets/wallet-detail/wallet-detail.component';
 
 const routes: Routes = [
   {
     path: '', component: CoreComponent,
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'wallets', component: WalletsComponent },
+      {
+        path: 'wallets',
+        component: WalletsComponent,
+        children: [
+          { path: 'create', component: CreateWalletComponent },
+          {
+            path: ':id',
+            component: WalletDetailComponent,
+            children: [
+              { path: 'settings', component: WalletSettingsComponent }
+            ]
+          },
+        ]
+      },
       { path: 'receive', component: ReceiveComponent },
       { path: 'send', component: SendComponent },
       { path: 'history', component: HistoryComponent },
       { path: 'community', component: CommunityComponent },
-      { path: '**', redirectTo: 'dashboard' }
+      { path: '**', redirectTo: 'dashboard' },
     ]
   }
 ];
