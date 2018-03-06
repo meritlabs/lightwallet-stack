@@ -11,28 +11,44 @@
     &__wallet
       display: flex
       flex-flow: row wrap
-      justify-content: flex-start
+      justify-content: space-between
       align-items: center
       padding: 20px
       background: $white
       margin-bottom: 10px
       border-radius: 5px
       box-shadow: 0 2px 4px rgba(46,51,88, .22)
+      cursor: pointer
+      user-select: none
+      position: relative
+      +transition(.3s, linear)
+      opacity: .7
+      &__edit
+        opacity: 0
+        transform: translateX(-10px)
+        +transition(.3s, linear)
       &__icon
         width: 40px
         height: 40px
         display: flex
         justify-content: center
         align-items: center
+        margin-right: 20px
         img
           width: 100%
       &__info
-        padding-left: 20px
         letter-spacing: .3px
+        display: flex
+        flex-flow: row wrap
         .large-black-text
           +font($baseFont--medium, 15px, 22px, $gun-metal, normal, none, none)
         .regular-blue-text
           +font($baseFont--medium, 14px, 24px, $blue, normal, none, none)
+      &:hover
+        opacity: 1
+        .wallets__group__wallet__edit
+          opacity: 1
+          transform: translateX(0)
 .wallet-detail
   &__header
     &__wrap
