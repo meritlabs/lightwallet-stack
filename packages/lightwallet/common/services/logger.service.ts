@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-const LOGGING_ENABLED = false;
+const LOGGING_ENABLED = true;
 const TRACE_ENABLED = false;
 
 export enum LogLevel {

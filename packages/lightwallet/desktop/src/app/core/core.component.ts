@@ -1,6 +1,6 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { WalletsComponent } from './wallets/wallets.component';
+import { WalletsViewComponent } from './wallets/wallets.view';
 import { ReceiveComponent } from './receive/receive.component';
 
 @Component({

@@ -1,12 +1,12 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-vaults',
+  selector: 'vaults-list',
   templateUrl: './vaults.component.html',
-  styleUrls: ['./vaults.component.sass']
+  styleUrls: ['./vaults.component.sass'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class VaultsComponent implements OnInit {
-  @Input() showButton: boolean;
-  constructor() {}
-  ngOnInit() {}
+export class VaultsListComponent {
+  @Input() showButton: boolean = true;
+  @Input() vaults: any[];
 }

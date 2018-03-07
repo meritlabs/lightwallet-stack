@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
@@ -10,7 +10,7 @@ export class EasySendService {
   private bitcore: any = this.mwcService.getBitcore();
 
   constructor(private persistenceService: PersistenceService,
-              private socialSharing: SocialSharing,
+              @Optional() private socialSharing: SocialSharing,
               private mwcService: MWCService) {}
 
   async createEasySendScriptHash(wallet: MeritWalletClient, password:string = ''): Promise<EasySend> {
