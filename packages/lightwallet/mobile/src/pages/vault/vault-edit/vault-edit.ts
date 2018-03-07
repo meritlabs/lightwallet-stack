@@ -43,11 +43,7 @@ export class VaultEditView {
         w.selected = true;
       }
     });
-
-  }
-
-  get whiteList() {
-    return this.wallets.filter(w => w.selected);
+    this.whitelist = this.wallets.filter(w => w.selected);
   }
 
   edit() {
@@ -58,7 +54,7 @@ export class VaultEditView {
       title: 'Did you write your recovery phrase down?',
       message: 'It is necessary to keep your money save ',
       buttons: [
-        { text: 'Cancel', role: 'cancel', handler: () => {} },
+        { text: 'Cancel', role: 'cancel' },
         { text: 'Yes', handler: () => this.toConfirm() }
       ]
     }).present();
@@ -67,7 +63,7 @@ export class VaultEditView {
   toConfirm() {
     this.navCtrl.push('VaultEditConfirmView', {vaultData: {
       vaultName: this.vaultName,
-      whitelist: this.whiteList,
+      whitelist: this.whitelist,
       masterKey: this.masterKey,
       vault: this.vault
     }});
@@ -78,13 +74,16 @@ export class VaultEditView {
       selectedWallet: this.wallet,
       availableWallets: this.wallets
     }, MERIT_MODAL_OPTS);
+    modal.onDidDismiss(() => {
+      this.whitelist = this.wallets.filter(w => w.selected);
+    });
     modal.present();
   }
 
   get isNextStepAvailable() {
     return (
       this.vaultName
-      && this.wallets.filter(w => w.selected).length
+      && this.whitelist.length
     )
   }
 

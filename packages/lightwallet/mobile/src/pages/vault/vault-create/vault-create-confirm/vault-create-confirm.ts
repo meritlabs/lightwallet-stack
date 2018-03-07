@@ -31,7 +31,7 @@ export class VaultCreateConfirmView {
       title: 'Did you write your recovery phrase down?',
       message: 'It is necessary to keep your money save ',
       buttons: [
-        { text: 'Cancel', role: 'cancel', handler: () => {} },
+        { text: 'Cancel', role: 'cancel' },
         { text: 'Yes', handler: () => { this.createVault(); }}
       ]
     }).present();
@@ -43,7 +43,7 @@ export class VaultCreateConfirmView {
     loader.present();
     try {
       await this.vaultsService.createVault(this.vaultData);
-      this.navCtrl.popToRoot({});
+      this.navCtrl.popToRoot();
     } catch (e) {
       this.toastCtrl.create({
         message: e.message || 'Failed to create vault',

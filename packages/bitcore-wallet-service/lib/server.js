@@ -3814,7 +3814,8 @@ WalletService.prototype.createVault = function(opts, cb) {
         self._processBroadcast(txp, {
           byThirdParty: true
         },  function(err, txp) {
-          self.storage.updateVault(self.copayerId, toStore, function(err, result) {
+
+         self.updateVaultInfo(toStore, function(err, result) {
             if (err) return cb(err);
 
             return next();
@@ -4055,65 +4056,51 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 
 WalletService.prototype.updateVaultInfo = function(opts, cb) {
 
-    this.storage.updateVault(this.copayerId, _.pick(opts, ['_id', 'name', 'coins', 'amount']), (err, vault) => {
+    this.storage.fetchVaultById(opts._id, (err, vault) => {
         if (err) return cb(err);
         if (!vault) return cb(Errors.INVALID_PARAMETERS);
-        return cb(null, vault);
+
+        vault = Object.assign(vault, opts);
+        vault.name = opts.name;
+        this.getUtxos({addresses: [new Bitcore.Address(vault.address).toString()]}, (err, coins) => {
+            if (err) return cb(err);
+            vault.coins = coins;
+            console.log(vault.coins);
+            vault.amount = vault.coins.reduce((amount, coin) => {
+                    return amount + coin.micros
+                }, 0) || 0;
+
+            this.storage.updateVault(this.copayerId, vault, (err, vault) => {
+                if (err) return cb(err);
+                return cb(null, vault);
+            })
+        });
     });
 };
 
 WalletService.prototype.renewVault = function(opts, cb) {
   const self = this;
 
-  const readableWhitelist = _.map(opts.whitelist, (wl) => {
-      return Bitcore.Address.fromBuffer(new Buffer(wl.data)).toString();
-  });
-
   let toStore = _.cloneDeep(opts);
   toStore.status = Bitcore.Vault.Vault.VaultStates.RENEWING;
-  toStore.whitelist = readableWhitelist;
+  toStore.whitelist = opts.whitelist.map(w => Bitcore.Address.fromBuffer(new Buffer(w.data)).toString());
   toStore.walletId = self.walletId;
   toStore.copayerId = self.copayerId;
 
-  let vaultId = '';
+  var tx = opts.coins[0];
+  var bc = self._getBlockchainExplorer(tx.network);
 
-  async.series([
-    function(next) {
-      self.storage.updateVault(self.copayerId, toStore, function(err, result) {
-        if (err) return cb(err);
-
-        vaultId = result.insertedId;
-
-        return next();
-      });
-    },
-    function(next) {
-      //TODO: Loop
-      var tx = opts.coins[0];
-      var bc = self._getBlockchainExplorer(tx.network);
-
-      bc.broadcast(tx.raw, function(err, txid) {
-        if (err) return cb(err);
-
-          tx.txid = txid;
-
-          toStore.id = vaultId;
-          toStore.coins[0] = tx;
-          toStore.initialTxId = txid;
-
-          self.storage.updateVault(self.copayerId, toStore, function(err, result) {
+  bc.broadcast(tx.raw, (err, txid)  => {
+      if (err) return cb(err);
+      tx.txid = txid;
+      toStore.coins[0] = tx;
+      toStore.initialTxId = txid;
+      this.updateVaultInfo(toStore, function (err, result) {
           if (err) return cb(err);
-
-          return next();
-        });
+          return cb(null, result);
       });
-    }, // Enable me later when transaction is constructed successfully
-    function(next) {
-      self.getVaults(opts, cb);
+  });
 
-      return next();
-    }
-  ]);
 };
 
 module.exports = WalletService;
