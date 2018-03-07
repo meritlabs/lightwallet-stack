@@ -2,13 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/app",
-    "baseUrl": ".",
-    "module": "es2015",
-    "paths": {
-      "@app/env": ["./environments/environment.ts"],
-      "@merit/common/*": ["../../common/*"],
-      "@merit/desktop/*": ["./*"]
-    }
+    "module": "es2015"
   },
   "exclude": [
     "test.ts",

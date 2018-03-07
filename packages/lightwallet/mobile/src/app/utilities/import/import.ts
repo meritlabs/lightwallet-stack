@@ -10,7 +10,7 @@ import { DerivationPath } from '@merit/common/utils/derivation-path';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
-import { PushNotificationsService } from '@merit/mobile/app/core/notification/push-notification.service';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']

@@ -8,6 +8,7 @@ import 'rxjs/add/observable/defer';
 import 'rxjs/add/observable/range';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/timer';
+import 'rxjs/add/observable/throw';
 import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/zip';
 import 'rxjs/add/operator/mergeMap';
@@ -38,7 +39,7 @@ import { EasySend } from '@merit/common/models/easy-send';
 export class WalletService {
 
   // TODO: Implement wallet model.
-  private wallets: any = {};
+  private wallets: { [walletId: string]: MeritWalletClient; } = <any>{};
 
   // Ratio low amount warning (fee/amount) in incoming TX
   private LOW_AMOUNT_RATIO: number = 0.15;
@@ -82,7 +83,6 @@ export class WalletService {
       wallet.cachedTxps.isValid = false;
   }
 
-  // TODO: Make async
   async getStatus(wallet: MeritWalletClient, opts?: any) {
     opts = opts || {};
     const walletId = wallet.id;
@@ -851,16 +851,11 @@ export class WalletService {
   //   });
   // };
 
-  setHiddenBalanceOption(walletId: string, hideBalance: boolean): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (!this.wallets[walletId]) this.wallets[walletId] = {};
+  async setHiddenBalanceOption(walletId: string, hideBalance: boolean): Promise<void> {
+    if (this.wallets[walletId]) {
       this.wallets[walletId].balanceHidden = hideBalance;
-      this.persistenceService.setHideBalanceFlag(walletId, this.wallets[walletId].balanceHidden + '').then(() => {
-        return resolve();
-      }).catch((err: any) => {
-        return reject(err);
-      });
-    });
+      await this.persistenceService.setHideBalanceFlag(walletId, String(hideBalance));
+    }
   }
 
   getSendMaxInfo(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
