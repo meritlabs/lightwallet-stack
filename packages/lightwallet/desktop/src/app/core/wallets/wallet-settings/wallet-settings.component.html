@@ -1,6 +1,16 @@
 <div class="wallet-details__content__title">
   <p>Wallet preferences</p>
 </div>
-<label class="ui-label">Edit  wallet name</label>
-<input type="text" name="" [value]="wallet.name" (keyup)="wallet.name = $event.target.value" placeholder="Enter wallet name here"
-class="ui-input ui-input--form ui-input--text">
+<div class="wallet-settings__group">
+  <label class="ui-label">Edit wallet name</label>
+  <input type="text" name="" [value]="wallet.name" (keyup)="wallet.name = $event.target.value" placeholder="Enter wallet name here"
+  class="ui-input ui-idnput--form ui-input--text">
+</div>
+<div class="wallet-settings__group">
+  <label class="ui-label">Select identification color</label>
+  <app-select
+    (selectionEvent)="selectColor($event)"
+    [selected]="wallet.color"
+    [input]="avalibleColors"
+    style="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
+</div>
