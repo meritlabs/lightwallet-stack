@@ -61,7 +61,6 @@ export class DisplayWallet {
     if (!this.client.color) {
       this.client.color = DEFAULT_WALLET_COLOR;
     }
-    debugger;
   }
 
   async updateAlias() {
@@ -69,12 +68,10 @@ export class DisplayWallet {
     if (alias) {
       this.alias = alias;
     }
-    debugger;
   }
 
   async updateAnv() {
     this.totalNetworkValueMicro = await this.walletService.getANV(this.client);
-    debugger;
   }
 
   async updateStatus() {
@@ -88,7 +85,6 @@ export class DisplayWallet {
       this.totalBalanceStr = this.client.cachedBalance;
       this.cachedBalanceUpdatedOn = this.client.cachedBalanceUpdatedOn;
     }
-    debugger;
   }
 
   async updateRewards() {
@@ -98,7 +94,6 @@ export class DisplayWallet {
       this.miningRewardsMicro = rewardsData.mining;
       this.ambassadorRewardsMicro = rewardsData.ambassador;
     }
-    debugger;
   }
 }
 
