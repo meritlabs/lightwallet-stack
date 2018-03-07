@@ -15,7 +15,7 @@ import { Store } from '@ngrx/store';
 @Component({
   selector: 'view-create-wallet',
   templateUrl: './create-wallet.component.html',
-  styleUrls: ['./create-wallet.component.scss']
+  styleUrls: ['./create-wallet.component.sass']
 })
 export class CreateWalletComponent {
 
