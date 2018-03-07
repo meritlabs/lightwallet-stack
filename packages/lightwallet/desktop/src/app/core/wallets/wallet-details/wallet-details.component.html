@@ -1,16 +1,16 @@
-<div class="wallet-detail container--fluid">
-  <div class="wallet-detail__header" style="background: rgba(87,182,121, .6)">
-    <div class="wallet-detail__header__wrap container--inner">
-      <div class="wallet-detail__header__amount">
+<div class="wallet-details container--fluid">
+  <div class="wallet-details__header" style="background: rgba(87,182,121, .6)">
+    <div class="wallet-details__header__wrap container--inner">
+      <div class="wallet-details__header__amount">
         <img src="/assets/v1/images/wallets/personal.svg" alt=""
-          class="wallet-detail__header__amount__icon">
-        <p><span class="wallet-detail__header__amount__name">@Wallet name</span>
+          class="wallet-details__header__amount__icon">
+        <p><span class="wallet-details__header__amount__name">@Wallet name</span>
           <small>Avalible:</small> 0.00 <small>MRT</small></p>
       </div>
     </div>
   </div>
-  <div class="wallet-detail__content">
-    <div class="wallet-detail__content__navigation">
+  <div class="wallet-details__content">
+    <div class="wallet-details__content__navigation">
       <ul>
         <li><a [routerLink]="['receive']" [queryParams]="{ injected: true }" routerLinkActive="active">Receive Merit</a></li>
         <li><a [routerLink]="['send']" [queryParams]="{ amount: 200, injected: true }" routerLinkActive="active">Send Merit</a></li>
@@ -18,7 +18,7 @@
         <li><a [routerLink]="['history']" routerLinkActive="active">Wallet transactions</a></li>
       </ul>
     </div>
-    <div class="wallet-detail__content__wrap container--inner">
+    <div class="wallet-details__content__wrap container--inner">
       <router-outlet></router-outlet>
     </div>
   </div>

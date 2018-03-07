@@ -1,3 +1,6 @@
-<div class="wallet-detail__content__title">
+<div class="wallet-details__content__title">
   <p>Wallet preferences</p>
 </div>
+<label class="ui-label">Edit  wallet name</label>
+<input type="text" name="" [value]="wallet.name" (keyup)="wallet.name = $event.target.value" placeholder="Enter wallet name here"
+class="ui-input ui-input--form ui-input--text">
