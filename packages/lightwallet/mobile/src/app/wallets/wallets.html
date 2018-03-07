@@ -28,7 +28,7 @@
     </button>
   </ion-item-divider>
 
-  <ion-item no-lines *ngIf="(!wallets || !wallets.length) && loading">
+  <ion-item no-lines *ngIf="!wallets?.length && loading">
     <ion-spinner item-start></ion-spinner>
     <h2>Loading...</h2>
   </ion-item>
