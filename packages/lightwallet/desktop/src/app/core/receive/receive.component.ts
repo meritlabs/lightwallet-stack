@@ -8,6 +8,7 @@ import { Observable } from 'rxjs/Observable';
 import { getWalletsLoading, getWallets, IAppState } from '@merit/common/reducers';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Store } from '@ngrx/store';
+import { SendService } from '@merit/common/services/send.service';
 
 
 
@@ -67,7 +68,7 @@ export class ReceiveComponent implements OnInit {
     "name": 'I pay the fee',
     "value": 10
   };
-  availableWallets: any = [
+  previouslyAvailableWallets: any = [
     {
       "name": 'Personal Wallet',
       "value": 10,
@@ -84,11 +85,10 @@ export class ReceiveComponent implements OnInit {
       "icon": "/assets/v1/icons/ui/wallets/vault-ico-grey.svg"
     }
   ];
-  selectedWallet:any = {
-    "name": 'Personal Wallet',
-    "value": 10,
-    "icon": "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg"
-  };
+
+  // For now, the first wallet in the list of wallets is the default. 
+  // TODO(AW): Let's add a setting where the user can choose their default wallet.
+  selectedWallet:DisplayWallet = this.wallets$[0];
 
   selectedCurrency: any = {
     "name": 'USD',
@@ -97,15 +97,38 @@ export class ReceiveComponent implements OnInit {
   };
   constructor(
     private configService: ConfigService,
-    private store: Store<IAppState>
+    private store: Store<IAppState>,
+    private walletService: WalletService,
+    private sendService: SendService    
   ) {
-    this.availableUnits = [
-      this.configService.get().wallet.settings.unitCode.toUpperCase(),
-      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
-    ];
+    try {
+      this.availableUnits = [
+        this.configService.get().wallet.settings.unitCode.toUpperCase(),
+        this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
+      ];
+    } catch (err) {
+      console.log("Error reading the config service.");
+      console.log(err);
+    }
   }
 
-  ngOnInit() {}
+  async ngOnInit() {
+    try {
+      this.address = this.walletService.getRootAddress(this.selectedWallet).toString();
+      let info = await this.sendService.getAddressInfo(this.address);
+      this.alias = info.alias;
+      this.formatAddress();
+    } catch (err) {
+      if (err.text)
+        this.error = err.text;
+        console.log("Could not initialize: ", err.text);
+      // return this.toastCtrl.create({
+      //   message: err.text || 'Failed to generate new address',
+      //   cssClass: ToastConfig.CLASS_ERROR
+      // }).present();
+    }
+
+  }
   selectCurrency($event) {
     this.selectedCurrency = $event;
     this.converted = `${$event.symbol} ${this.amount * $event.value}`;
@@ -122,4 +145,7 @@ export class ReceiveComponent implements OnInit {
     this.converted = `${currency.symbol} ${this.amount * currency.value}`;
   }
 
+  private formatAddress() {
+    this.qrAddress = `${ this.protocolHandler }:${ this.address }${ this.amountMicros ? '?micros=' + this.amountMicros : '' }`;
+  }
 }
