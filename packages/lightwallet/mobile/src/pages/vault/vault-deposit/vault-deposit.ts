@@ -20,7 +20,8 @@ export class VaultDepositView {
     private rateService: RateService,
     private vaultsService: VaultsService
   ) {
-   this.vault = this.navParams.get('vault');
+    this.vault = this.navParams.get('vault');
+    console.log(this.vault);
   }
 
   get isSendingAvailable() {

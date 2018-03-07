@@ -883,7 +883,6 @@ export class API {
       tx.version = Bitcore.Transaction.INVITE_VERSION;
     }
 
-    console.log(input.script.inspect());
     try {
       let toAddress = destinationAddress;
       let p2shScript = input.script.toMixedScriptHashOut(input.senderPublicKey);
@@ -930,7 +929,6 @@ export class API {
   prepareVault(type: number, opts: any = {}) {
     if (type == 0) {
       let tag = opts.masterPubKey.toAddress().hashBuffer;
-      const spendLimit = Bitcore.Unit.fromMRT(Constants.VAULT_SPEND_LIMIT).toMicros();
 
       let whitelist = _.map(opts.whitelist, (e) => {
         return Bitcore.Address.fromBuffer(e).hashBuffer;
@@ -943,6 +941,7 @@ export class API {
         opts.masterPubKey.toBuffer(),
       ];
 
+      const spendLimit = Bitcore.Unit.fromMRT(Constants.VAULT_SPEND_LIMIT).toMicros();       
       params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
       params = params.concat(whitelist);
       params.push(Bitcore.Opcode.smallInt(whitelist.length));
@@ -977,7 +976,7 @@ export class API {
    */
   async buildRenewVaultTx(newVault: any, masterKey: any, opts: any = {}) {
 
-    const coins = await this.getVaultCoins(newVault);
+    const coins = newVault.coins;
 
     var network = opts.network || ENV.network;
     var fee = opts.fee || DEFAULT_FEE;
@@ -994,17 +993,15 @@ export class API {
     try {
 
       if (newVault.type == 0) {
-        const spendLimit = Bitcore.Unit.fromMRT(Constants.VAULT_SPEND_LIMIT).toMicros();
-
         let tag = newVault.tag;
-
-        let whitelist = newVault.whitelist.map(w => w.client.getRootAddress().toBuffer());
 
         let params = [
           new Bitcore.PublicKey(newVault.spendPubKey, { network }).toBuffer(),
           new Bitcore.PublicKey(newVault.masterPubKey, { network }).toBuffer()
         ];
 
+        const whitelist = newVault.whitelist.map(w => Bitcore.Address(w).hashBuffer);
+        const spendLimit = Bitcore.Unit.fromMRT(Constants.VAULT_SPEND_LIMIT).toMicros();
         params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
         params = params.concat(whitelist);
         params.push(Bitcore.Opcode.smallInt(whitelist.length));
@@ -1020,7 +1017,7 @@ export class API {
 
         tx.fee(fee);
 
-        _.forEach(coins, coin => {
+        coins.forEach(coin => {
           tx.addInput(
             new Bitcore.Transaction.Input.PayToScriptHashInput({
               prevTxId: coin.txid,
@@ -1032,7 +1029,7 @@ export class API {
 
         tx.addressType = 'PP2SH';
 
-        _.forEach(tx.inputs, (input, i) => {
+        tx.inputs.forEach((input, i) => {
           let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
           let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, Bitcore.PublicKey(newVault.masterPubKey, network));
           input.setScript(inputScript);
@@ -1134,7 +1131,7 @@ export class API {
 
         tx.addressType = 'PP2SH';
 
-        _.forEach(tx.inputs, (input, i) => {
+        tx.inputs.forEach((input, i) => {
           let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
           let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript, new Bitcore.PublicKey(vault.masterPubKey, network));
           input.setScript(inputScript);
