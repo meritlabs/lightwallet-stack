@@ -6,9 +6,11 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { Observable } from 'rxjs/Observable';
 import { getWalletsLoading, getWallets, IAppState } from '@merit/common/reducers';
+import { RefreshWalletsAction, WalletsState } from '@merit/common/reducers/wallets.reducer';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Store } from '@ngrx/store';
 import { SendService } from '@merit/common/services/send.service';
+import 'rxjs/add/operator/take';
 
 
 
@@ -90,7 +92,7 @@ export class ReceiveComponent implements OnInit {
 
   // For now, the first wallet in the list of wallets is the default. 
   // TODO(AW): Let's add a setting where the user can choose their default wallet.
-  selectedWallet:DisplayWallet = this.wallets$[0];
+  selectedWallet:DisplayWallet;
 
   selectedCurrency: any = {
     "name": 'USD',
@@ -116,6 +118,8 @@ export class ReceiveComponent implements OnInit {
 
   async ngOnInit() {
     try {
+      //this.store.dispatch(new RefreshWalletsAction());
+      this.selectedWallet = (await this.wallets$.take(1).toPromise())[0];
       this.address = this.walletService.getRootAddress(this.selectedWallet.client).toString();
       let info = await this.sendService.getAddressInfo(this.address);
       this.alias = info.alias;

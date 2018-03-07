@@ -7,7 +7,7 @@
   <div class="selectbox__dropdown showHidden" [hidden]="!show" [ngClass]="{'showHidden--animated' : show}">
     <button mat-menu-item *ngFor="let item of input"
       (click)="select(item)" class="selectbox__dropdown__item">
-      <img src="{{item.icon}}" alt="" *ngIf="item.icon" class="selectbox__dropdown__icon">
+      <img src="{{item.iconUrl}}" alt="" *ngIf="item.iconUrl" class="selectbox__dropdown__icon">
       <span>{{ item.name }}</span></button>
   </div>
 </div>

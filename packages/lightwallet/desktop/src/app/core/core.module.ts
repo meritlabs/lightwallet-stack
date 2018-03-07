@@ -26,6 +26,8 @@ import { ToastNotificationComponent } from './iu/notifications/toast-notificatio
 import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { QRCodeModule } from 'angular2-qrcode';
+
 
 export function getPages() {
   return [
@@ -50,7 +52,8 @@ export function getPages() {
     CommonModule,
     CoreRoutingModule,
     CommonProvidersModule.forRoot(),
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    QRCodeModule
   ],
   declarations: [
     CoreComponent,
