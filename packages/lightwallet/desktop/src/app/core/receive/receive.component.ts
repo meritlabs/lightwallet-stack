@@ -1,4 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
+
 
 @Component({
   selector: 'view-receive',
