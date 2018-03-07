@@ -6,12 +6,30 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./wallet-settings.component.sass']
 })
 export class WalletSettingsComponent implements OnInit {
-  wallet: Object = {
-    name: 'Wallet name'
+  wallet: any = {
+    name: 'Wallet name',
+    color: {
+      name: 'Green',
+      rgba: '87,182,121, .6'
+    }
   };
+  avalibleColors: any = [
+    {
+      name: 'Green',
+      rgba: '87,182,121, .6'
+    },
+    {
+      name: 'Blue',
+      rgba: '0,0,255, .5'
+    },
+    {
+      name: 'Red',
+      rgba: '255,0,0, .5'
+    }
+  ];
   constructor() { }
-
-  ngOnInit() {
+  ngOnInit() { }
+  selectColor($event) {
+    this.wallet.color = $event
   }
-
 }
