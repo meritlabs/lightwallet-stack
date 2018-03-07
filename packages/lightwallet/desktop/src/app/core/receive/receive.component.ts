@@ -6,6 +6,8 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { Observable } from 'rxjs/Observable';
 import { getWalletsLoading, getWallets, IAppState } from '@merit/common/reducers';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { Store } from '@ngrx/store';
 
 
 
