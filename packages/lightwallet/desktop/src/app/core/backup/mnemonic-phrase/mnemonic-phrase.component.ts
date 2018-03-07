@@ -6,8 +6,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./mnemonic-phrase.component.sass']
 })
 export class MnemonicPhraseComponent implements OnInit {
+  show: boolean = false;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
   }

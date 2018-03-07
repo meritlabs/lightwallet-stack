@@ -4,14 +4,14 @@ import { PersistenceService } from '@merit/common/services/persistence.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { IDisplayWallet } from '@merit/common/models/display-wallet';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 export interface IUnlockRequest {
   address: string;
   alias: string;
   isConfirmed: boolean;
   referralId: string;
-  wallet: IDisplayWallet;
+  wallet: DisplayWallet;
   contact: MeritContact;
 }
 

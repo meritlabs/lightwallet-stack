@@ -8,7 +8,7 @@ import {
   ToastController
 } from 'ionic-angular';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { IDisplayWallet } from '@merit/common/models/display-wallet';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { ContactsService } from '@merit/mobile/services/contacts.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
@@ -24,7 +24,7 @@ export class IncomingRequestModal {
 
   public unlockRequest: any;
   public contacts: Array<MeritContact> = [];
-  public wallets: Array<IDisplayWallet> = [];
+  public wallets: Array<DisplayWallet> = [];
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,

@@ -6,7 +6,7 @@ import { AddressService } from '@merit/common/services/address.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { ContactsService } from '@merit/mobile/services/contacts.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { createDisplayWallet, IDisplayWallet } from '@merit/common/models/display-wallet';
+import { createDisplayWallet, DisplayWallet } from '@merit/common/models/display-wallet';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 
 @IonicPage()
@@ -39,7 +39,7 @@ export class HistoryView {
     const wallets = await this.profileService.getWallets();
     const walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
       const walletHistory = await this.walletService.getTxHistory(wallet, { force });
-      const displayWallet: IDisplayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, {
+      const displayWallet: DisplayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, {
         skipAnv: true,
         skipStatus: true,
         skipRewards: true

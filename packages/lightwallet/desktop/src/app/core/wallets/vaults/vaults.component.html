@@ -3,9 +3,9 @@
     <div class="wallets__group__header__title title--primary">
       <p>Vaults</p>
     </div>
-    <button type="button" name="button" class="ui-button ui-button--sm ui-button--{{showButton}}
+    <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm ui-button--{{showButton}}
       ui-button--add ui-button--transparent">
-      Create new wallet</button>
+      Create new vault</button>
   </div>
   <div class="wallets__group__content">
     <div class="wallets__group__wallet">

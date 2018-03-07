@@ -96,6 +96,7 @@ export class API {
   public onConnectionError: any;
   public onAuthenticationError: any;
   public onConnectionRestored: any;
+  locked: boolean;
 
   private _rootAddress: string;
 
