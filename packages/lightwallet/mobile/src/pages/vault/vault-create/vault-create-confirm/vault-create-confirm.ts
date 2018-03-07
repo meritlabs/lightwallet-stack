@@ -3,7 +3,6 @@ import { IonicPage, NavController, NavParams, AlertController, LoadingController
 import { RateService } from "@merit/common/services/rate.service";
 import { IVaultCreateData, VaultsService } from "@merit/common/services/vaults.service";
 import { ToastConfig, MeritToastController } from '@merit/common/services/toast.controller.service';
-import { IDisplayWallet } from "@merit/common/models/display-wallet";
 
 @IonicPage()
 @Component({

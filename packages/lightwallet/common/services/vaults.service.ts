@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MWCService } from '@merit/common/services/mwc.service';
-import { IDisplayWallet } from "@merit/common/models/display-wallet";
+import { DisplayWallet } from "@merit/common/models/display-wallet";
 import { IVault } from "@merit/common/models/vault";
 import { WalletService } from '@merit/common/services/wallet.service';
 import { ProfileService } from '@merit/common/services/profile.service';
@@ -16,8 +16,8 @@ import { ENV } from '@app/env';
 
 export interface IVaultCreateData {
   vaultName: string,
-  whiteList: Array<IDisplayWallet>,
-  wallet: IDisplayWallet,
+  whiteList: Array<DisplayWallet>,
+  wallet: DisplayWallet,
   amount: number,
   masterKey: {key: any, phrase: string}
 }
@@ -39,7 +39,7 @@ export class VaultsService {
     this.Bitcore = bwcService.getBitcore();
   }
 
-  async getWalletVaults(wallet: IDisplayWallet): Promise<Array<any>> {
+  async getWalletVaults(wallet: DisplayWallet): Promise<Array<any>> {
     const vaults = await wallet.client.getVaults();
     return vaults.map(v => Object.assign(v, {walletClient: wallet.client}) );
   }
@@ -150,7 +150,7 @@ export class VaultsService {
 
 
 
-  private async getCreateTxp(vault: any, wallet: IDisplayWallet): Promise<any> {
+  private async getCreateTxp(vault: any, wallet: DisplayWallet): Promise<any> {
     let feeLevel = this.feeService.getCurrentFeeLevel();
 
     if (vault.amount > Number.MAX_SAFE_INTEGER) {

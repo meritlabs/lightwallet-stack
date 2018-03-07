@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { IDisplayWallet } from "@merit/common/models/display-wallet";
+import { DisplayWallet } from "@merit/common/models/display-wallet";
 
-export interface IWhitelistWallet extends IDisplayWallet {
+export interface IWhitelistWallet extends DisplayWallet {
   selected: boolean;
 }
 

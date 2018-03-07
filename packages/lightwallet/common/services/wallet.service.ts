@@ -83,7 +83,7 @@ export class WalletService {
       wallet.cachedTxps.isValid = false;
   }
 
-  async getStatus(wallet: MeritWalletClient, opts?: any) {
+  async getStatus(wallet: MeritWalletClient, opts?: any): Promise<any> {
     opts = opts || {};
     const walletId = wallet.id;
 

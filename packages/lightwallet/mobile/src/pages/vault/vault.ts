@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage,  NavParams } from 'ionic-angular';
 import { IVault } from '@merit/common/models/vault';
-import { IDisplayWallet } from '@merit/common/models/display-wallet';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { VaultsService }from '@merit/common/services/vaults.service';
 import { AddressService } from "@merit/common/services/address.service";
 import { ModalController } from 'ionic-angular';
@@ -16,9 +16,9 @@ export class VaultView {
 
   public vault: IVault;
   public vaultId: string;
-  public wallets: Array<IDisplayWallet>;
+  public wallets: Array<DisplayWallet>;
   public transactions: Array<any>;
-  public indexedWallets: { [rootAddress: string]: IDisplayWallet };
+  public indexedWallets: { [rootAddress: string]: DisplayWallet };
 
   public whitelist: Array<{label: string, address: string, alias: string}>;
 
