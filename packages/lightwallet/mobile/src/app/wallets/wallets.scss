@@ -175,51 +175,10 @@ view-wallets {
   }
 
   .vaults-section {
-
-    [class^="merit-icon"] {
-      width: 30px;
-      height: 30px;
-      margin-top: 5px;
-      background: color($colors, primary);
-    }
-
-    & ion-avatar.btn.vault-icon {
-      background: #068cca;
-    }
-
-    .vaults {
-      @extend ion-item;
-      .detail {
-        margin: 2px 0;
+      .item .detail {
+        font-size: 13px;
+        color: rgba(0,0,0,0.6);
       }
-    }
-
-    ion-item {
-      h2 {
-        white-space: normal;
-      }
-      .detail {
-        text-align: center;
-        color: rgba(0, 0, 0, 0.6);
-
-        .amount {
-          color: color($colors, primary);
-          font-size: 16px;
-        }
-
-        .detail-fiat {
-          font-size: 12px;
-        }
-
-        .detail-status {
-          font-size: 12px;
-        }
-      }
-    }
-
-    ion-label.vault-item {
-      height: 50px;
-    }
   }
 
 }

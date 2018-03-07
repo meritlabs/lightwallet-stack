@@ -18,6 +18,7 @@ export class VaultView {
   public vaultId: string;
   public wallets: Array<IDisplayWallet>;
   public transactions: Array<any>;
+  public indexedWallets: { [rootAddress: string]: IDisplayWallet };
 
   public whitelist: Array<{label: string, address: string, alias: string}>;
 
@@ -30,6 +31,10 @@ export class VaultView {
     this.vault = this.navParams.get('vault');
     this.vaultId = this.navParams.get('vaultId');
     this.wallets = this.navParams.get('wallets');
+    this.indexedWallets = this.wallets.reduce((result, w) => {
+      result[w.client.getRootAddress().toString()] = w;
+      return result;
+    }, {});
   }
 
   async ionViewWillEnter() {
@@ -39,33 +44,33 @@ export class VaultView {
     });
 
     this.whitelist = await this.formatWhiteList(this.vault.whitelist);
-
     const transactions = await this.vaultsService.getTxHistory(this.vault);
     this.transactions = transactions.map((tx:any) => {
       if (tx.type == 'renewal') {
         tx.label = 'renewed';
-      }
-      else if (tx.type == 'stored') {
+      }      else if (tx.type == 'stored') {
         tx.label = 'Stored';
       } else {
-          let wallet = this.wallets.find(w => w.client.getRootAddress().toString() == tx.address);
-          tx.label = wallet ? wallet.name : (tx.alias || tx.address);
+        tx.label = this.indexedWallets[tx.address]
+          ? this.indexedWallets[tx.address].name
+          : (tx.alias || tx.address);
       }
       return tx;
     });
 
   }
 
+
+
   private async formatWhiteList(whitelist) {
     const formattedWhitelist = [];
     for (let address of whitelist) {
       const addressInfo = await this.addressService.getAddressInfo(address);
       if (addressInfo.isConfirmed) {
-        const wallet = this.wallets.find(w => w.client.getRootAddress().toString() == addressInfo.address);
+        const wallet = this.indexedWallets[addressInfo.address];
         const label = (wallet && wallet.name) ? wallet.name : (addressInfo.alias || addressInfo.address);
         formattedWhitelist.push({label, address: addressInfo.address, alias: addressInfo.alias});
       }
-
     }
     return formattedWhitelist;
   }

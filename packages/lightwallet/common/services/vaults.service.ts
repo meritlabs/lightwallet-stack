@@ -41,12 +41,7 @@ export class VaultsService {
 
   async getWalletVaults(wallet: IDisplayWallet): Promise<Array<any>> {
     const vaults = await wallet.client.getVaults();
-    return vaults.map(v => {
-      const amount = v.coins.reduce((amount, coin) => {
-        return amount + coin.amount
-      }, 0) || 0;
-      return Object.assign(v, {walletClient: wallet.client, amount: amount});
-    });
+    return vaults.map(v => Object.assign(v, {walletClient: wallet.client}) );
   }
 
   getTxHistory(vault: any): Promise<Array<any>> {

@@ -6,6 +6,8 @@ import { ToastConfig, MeritToastController } from '@merit/common/services/toast.
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { RateService } from "@merit/common/services/rate.service";
 
+interface IWhiteListRecord {name: string, confirmed: boolean, address: string, alias: string}
+
 @IonicPage()
 @Component({
   selector: 'view-vault-spend',
@@ -15,8 +17,8 @@ export class VaultSpendView {
 
   public amount: number;
   public vault: IVault;
-  public whitelist: Array<{name: string, unlocked: boolean, address: string, alias: string}>;
-  public recipient: {name: string, unlocked: boolean, address: string, alias: string};
+  public whitelist: Array<IWhiteListRecord>;
+  public recipient: IWhiteListRecord;
   public fee: number;
 
   constructor(
@@ -28,8 +30,7 @@ export class VaultSpendView {
     private modalCtrl: ModalController,
     private rateService: RateService
   ) {
-    const whitelist = this.navParams.get('whitelist');
-    this.whitelist = whitelist.map(w => {
+    this.whitelist = this.navParams.get('whitelist').map(w => {
       return {
         name: w.label,
         confirmed: true,
