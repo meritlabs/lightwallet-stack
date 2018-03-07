@@ -26,15 +26,6 @@
         </h2>
     </ion-item>
 
-    <ion-item>
-        <ion-avatar item-start img-icon>
-            <img src="assets/img/icons/masterkey.svg">
-        </ion-avatar>
-        <p>Recovery phrase</p>
-        <h2 *ngIf="vaultData.masterKey" class="phrase">{{vaultData.masterKey.phrase}}</h2>
-        <h2 *ngIf="!vaultData.masterKey">Current phrase will be used</h2>
-    </ion-item>
-
     <button ion-button class="action-button" translate (click)="save()">
         Renew Vault
     </button>

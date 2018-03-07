@@ -17,15 +17,6 @@
         </ion-input>
     </ion-item>
 
-    <ion-item>
-        <h2>Recovery Phrase</h2>
-        <p class="masterkey">{{masterKey?.phrase || 'Current phrase will be used'}}</p>
-
-        <button ion-button item-end add-button icon-only color="primary" (click)="regenerateMasterKey()">
-            <ion-icon name="refresh"></ion-icon>
-        </button>
-    </ion-item>
-
     <button ion-item detail-none (click)="selectWhitelist()">
         <ion-label>
             <h2>Whitelist</h2>
