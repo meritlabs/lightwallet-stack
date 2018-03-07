@@ -3838,27 +3838,28 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
       return txs.filter(tx => !tx.isInvite).map(tx => {
 
          const inputsAddresses = tx.inputs.map(i => i.address);
-         const output = tx.outputs.filter(o => inputsAddresses.indexOf(o.address) == -1)[0]; // filtering change outputs
+         const output = tx.outputs.find(o => inputsAddresses.indexOf(o.address) == -1); // filtering change outputs
 
-         if (!output) { //renewal tx
+         const txData = {
+             txid: tx.txid,
+             confirmations: tx.confirmation,
+             time: tx.time,
+             fee: tx.fees
+         };
+
+         if (!output) {
              return {
-                 txid: tx.txid,
-                 confirmations: tx.confirmation,
-                 time: tx.time,
+                 ...txData,
                  type:  'renewal',
-                 fee: tx.fees,
                  amount: tx.outputs[0].amount
              }
          } else {
              return {
-                 txid: tx.txid,
-                 confirmations: tx.confirmation,
-                 time: tx.time,
+                 ...txData,
                  amount: output.amount,
                  type:  output.address == new Bitcore.Address(vault.address).toString() ? 'stored' : 'sent',
                  address: output.address,
-                 alias: output.alias,
-                 fee: tx.fees
+                 alias: output.alias
              }
          }
 
@@ -4054,21 +4055,11 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 
 WalletService.prototype.updateVaultInfo = function(opts, cb) {
 
-
-    this.storage.fetchVaultById(opts._id, (err, vault) => {
-       if (err) return cb(err);
-       if (err) return cb(Errors.INVALID_PARAMETERS);
-
-        vault.name = opts.name;
-        vault.coins = opts.coins;
-        vault.amount = opts.amount;
-
-        this.storage.updateVault(this.copayerId, vault, (err, vault) => {
-            if (err) return cb(err);
-            return cb(null, vault);
-        })
+    this.storage.updateVault(this.copayerId, _.pick(opts, ['_id', 'name', 'coins', 'amount']), (err, vault) => {
+        if (err) return cb(err);
+        if (!vault) return cb(Errors.INVALID_PARAMETERS);
+        return cb(null, vault);
     });
-
 };
 
 WalletService.prototype.renewVault = function(opts, cb) {
@@ -4101,17 +4092,13 @@ WalletService.prototype.renewVault = function(opts, cb) {
       var tx = opts.coins[0];
       var bc = self._getBlockchainExplorer(tx.network);
 
-      console.log('BROADCASTING', tx);
-
       bc.broadcast(tx.raw, function(err, txid) {
         if (err) return cb(err);
 
-        let coin = {
-          txid: txid,
-        };
+          tx.txid = txid;
 
           toStore.id = vaultId;
-          toStore.coins[0] = coin;
+          toStore.coins[0] = tx;
           toStore.initialTxId = txid;
 
           self.storage.updateVault(self.copayerId, toStore, function(err, result) {
