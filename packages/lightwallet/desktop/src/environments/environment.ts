@@ -5,8 +5,8 @@
 
 export const environment = {
   production: false,
-  network: 'livenet',
-  mwsUrl: 'https://mws.merit.me/bws/api',
+  network: 'testnet',
+  mwsUrl: 'http://testnet.mws.merit.me/bws/api',
   rateUrl: 'https://bitpay.com/api/rates'
 };
 
