@@ -29,7 +29,7 @@
         <app-select
           (selectionEvent)="selectWallet($event)"
           [selected]="selectedWallet"
-          [input]="availableWallets"
+          [input]="wallets$ | async"
           style="ui-input ui-input--select ui-input--form"></app-select>
       </div>
       <div class="receiveMerit__form__group">

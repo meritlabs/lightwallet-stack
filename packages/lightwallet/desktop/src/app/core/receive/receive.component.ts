@@ -4,6 +4,9 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
+import { Observable } from 'rxjs/Observable';
+import { getWalletsLoading, getWallets, IAppState } from '@merit/common/reducers';
+
 
 
 @Component({
@@ -13,7 +16,10 @@ import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
   encapsulation: ViewEncapsulation.None
 })
 export class ReceiveComponent implements OnInit {
-  protocolHandler: string;
+  wallets$: Observable<DisplayWallet[]> = this.store.select(getWallets);
+  walletsLoading$: Observable<boolean> = this.store.select(getWalletsLoading);
+
+  protocolHandler: string = "merit";
   address: string;
   alias: string;
   qrAddress: string;
@@ -89,7 +95,7 @@ export class ReceiveComponent implements OnInit {
   };
   constructor(
     private configService: ConfigService,
-    
+    private store: Store<IAppState>
   ) {
     this.availableUnits = [
       this.configService.get().wallet.settings.unitCode.toUpperCase(),
