@@ -50,6 +50,7 @@ export class DisplayWallet {
   ambassadorRewardsMerit: string;
   ambassadorRewardsFiat: string;
 
+  confirmed: boolean;
   inviteRequests: any[];
   invites: number;
 
@@ -78,6 +79,7 @@ export class DisplayWallet {
     this.client.status = await this.walletService.getStatus(this.client, { force: true });
     this.inviteRequests = await this.walletService.getUnlockRequests(this.client);
     this.invites = this.status.availableInvites;
+    this.confirmed = this.client.confirmed;
     if (this.status.totalBalanceStr) {
       this.totalBalanceStr = this.client.status.totalBalanceStr;
       this.totalBalanceMicros = this.client.status.totalBalanceMicros;

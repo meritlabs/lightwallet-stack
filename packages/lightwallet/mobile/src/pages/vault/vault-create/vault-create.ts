@@ -29,9 +29,11 @@ export class VaultCreateView {
     private rateService: RateService,
     private modalCtrl: ModalController
   ) {
-    const wallets = this.navParams.get('wallets');
-    this.wallets = wallets.filter(w => w.confirmed).map(w => Object.assign({ selected: false }, w));
+    this.wallets = this.navParams.get('wallets')
+      .filter(w => w.confirmed)
+      .map(w => Object.assign({ selected: false, name: w.name }, w));
     this.wallet = this.wallets[0];
+
   }
 
   get isNextStepAvailable() {
@@ -54,6 +56,7 @@ export class VaultCreateView {
   }
 
   selectWhitelist() {
+
     let modal = this.modalCtrl.create('SelectWhitelistModal', {
       selectedWallet: this.wallet,
       availableWallets: this.wallets
