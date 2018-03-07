@@ -1190,8 +1190,7 @@ Storage.prototype.storeVault = function(copayerId, walletId, vaultTx, cb) {
 };
 
 Storage.prototype.updateVault = function(copayerId, vaultTx, cb) {
-  vaultTx._id = new ObjectID(vaultTx._id);
-  this.db.collection(collections.VAULTS).update({
+  this.db.collection(collections.VAULTS).findOneAndUpdate({
     copayerId,
     _id: new ObjectID(vaultTx._id),
   }, vaultTx, {
