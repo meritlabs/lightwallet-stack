@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, ModalController } from 'ionic-angular';
 
-import { IDisplayWallet } from "@merit/common/models/display-wallet";
+import { DisplayWallet } from "@merit/common/models/display-wallet";
 import { IWhitelistWallet } from "@merit/mobile/pages/vault/select-whitelist/select-whitelist";
 import { RateService } from "@merit/common/services/rate.service";
 import { VaultsService } from "@merit/common/services/vaults.service";
@@ -20,7 +20,7 @@ export class VaultEditView {
   public vaultName: string;
   public whitelist: any;
   public wallets: Array<IWhitelistWallet>;
-  public wallet: IDisplayWallet;
+  public wallet: DisplayWallet;
   public amount: number;
   public masterKey: {key: any, phrase: string};
 

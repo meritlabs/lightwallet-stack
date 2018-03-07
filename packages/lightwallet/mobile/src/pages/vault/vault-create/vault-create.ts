@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, NavController, ModalController } from 'ionic-angular';
-import { IDisplayWallet } from "@merit/common/models/display-wallet";
+import { DisplayWallet } from "@merit/common/models/display-wallet";
 import { RateService } from "@merit/common/services/rate.service";
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { IWhitelistWallet } from "@merit/mobile/pages/vault/select-whitelist/select-whitelist";
 import { ENV } from '@app/env';
-
-
 
 
 @IonicPage({
@@ -20,7 +18,7 @@ export class VaultCreateView {
 
   public vaultName: string;
   public wallets: Array<IWhitelistWallet>;
-  public wallet: IDisplayWallet;
+  public wallet: DisplayWallet;
   public amount: number;
   public spendaleConfirmAmount: number;
   public insufficientConfirmedAmountError: boolean;
