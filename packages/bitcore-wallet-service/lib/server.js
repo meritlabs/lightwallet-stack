@@ -4060,12 +4060,15 @@ WalletService.prototype.updateVaultInfo = function(opts, cb) {
         if (err) return cb(err);
         if (!vault) return cb(Errors.INVALID_PARAMETERS);
 
+        console.log(vault, 'vault');
+
         vault = Object.assign(vault, opts);
-        vault.name = opts.name;
         this.getUtxos({addresses: [new Bitcore.Address(vault.address).toString()]}, (err, coins) => {
+
+            console.log(coins, 'VAULT COINS');
+
             if (err) return cb(err);
             vault.coins = coins;
-            console.log(vault.coins);
             vault.amount = vault.coins.reduce((amount, coin) => {
                     return amount + coin.micros
                 }, 0) || 0;
@@ -4079,25 +4082,26 @@ WalletService.prototype.updateVaultInfo = function(opts, cb) {
 };
 
 WalletService.prototype.renewVault = function(opts, cb) {
-  const self = this;
 
   let toStore = _.cloneDeep(opts);
   toStore.status = Bitcore.Vault.Vault.VaultStates.RENEWING;
-  toStore.whitelist = opts.whitelist.map(w => Bitcore.Address.fromBuffer(new Buffer(w.data)).toString());
-  toStore.walletId = self.walletId;
-  toStore.copayerId = self.copayerId;
+  toStore.whitelist = opts.whitelist.map(w => Bitcore.Address.fromBuffer(new Buffer(w.data)).toString() );
+  toStore.walletId = this.walletId;
+  toStore.copayerId = this.copayerId;
 
-  var tx = opts.coins[0];
-  var bc = self._getBlockchainExplorer(tx.network);
-
-  bc.broadcast(tx.raw, (err, txid)  => {
+  let txp = Model.TxProposal.fromObj(opts.coins[0]);
+  const bc = this._getBlockchainExplorer(txp.network);
+  const rawTx = txp.getRawTx();
+  bc.broadcast(rawTx, (err, txid)  => {
       if (err) return cb(err);
-      tx.txid = txid;
-      toStore.coins[0] = tx;
+      txp.txid = txid;
+      toStore.coins[0] = txp;
       toStore.initialTxId = txid;
-      this.updateVaultInfo(toStore, function (err, result) {
-          if (err) return cb(err);
-          return cb(null, result);
+      this._processBroadcast(txp, { byThirdParty: true }, (err, tx)  => {
+          this.updateVaultInfo(toStore, (err, result) => {
+              if (err) return cb(err);
+              return cb(null, result);
+          });
       });
   });
 
