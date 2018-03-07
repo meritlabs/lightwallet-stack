@@ -7,37 +7,36 @@
       <div class="receiveMerit__form__group">
         <label for="receiveAmount" class="ui-label">Amount</label>
         <div class="ui-input__wrapper ui-input__wrapper--mrt">
-          <input type="text" name="" id="receiveAmount" value=""
-          (keyup)="onKey($event)"
-          class="ui-input ui-input--form ui-input--text">
+          <input type="text" name="" id="receiveAmount" value="" (keyup)="onKey($event)" class="ui-input ui-input--form ui-input--text">
           <div class="ui-input__addon">MRT</div>
         </div>
         <div class="ui-input__wrapper ui-input__wrapper--currency">
-          <input type="text" name="" value="{{converted}}" disabled
-            class="ui-input ui-input--form ui-input--text">
+          <input type="text" name="" value="{{converted}}" disabled class="ui-input ui-input--form ui-input--text">
           <div class="ui-input__addon">
-            <app-select
-              (selectionEvent)="selectCurrency($event)"
-              [selected]="selectedCurrency"
-              [input]="availableCurrencies"
-              style="ui-button ui-button--transparent ui-button--md ui-button--with-caret"></app-select>
+            <app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency" [input]="availableCurrencies" style="ui-button ui-button--transparent ui-button--md ui-button--with-caret"></app-select>
           </div>
         </div>
       </div>
-      <div class="receiveMerit__form__group">
-        <label for="" class="ui-label">Receive in</label>
-        <app-select
-          (selectionEvent)="selectWallet($event)"
-          [selected]="selectedWallet"
-          [input]="wallets$ | async"
-          style="ui-input ui-input--select ui-input--form"></app-select>
-      </div>
-      <div class="receiveMerit__form__group">
-        <label for="" class="ui-label">Address</label>
-        <input type="text" name="" value="" placeholder="Paste address here"
-        class="ui-input ui-input--form ui-input--text">
+      <div *ngIf="!wallets$ | async as wallets; else empty">
+        <div class="receiveMerit__form__group">
+          <label for="" class="ui-label">Receive in</label>
+          <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" style="ui-input ui-input--select ui-input--form"></app-select>
+        </div>
+
+        <div class="receiveMerit__form__group">
+          <label for="" class="ui-label">Address</label>
+          <input type="text" name="" value="" placeholder="Paste address here" class="ui-input ui-input--form ui-input--text">
+        </div>
       </div>
     </div>
+    <ng-template #empty>
+      <div class="receiveMeritEmpty">
+        <div class="receiveMeritEmpty__header">
+          <h3>You need to create a wallet before you can receive Merit.</h3>
+        </div>
+        <div class="receiveMeritEmpty__description"><a href="">Click here</a> to create one.</div>
+      </div>
+    </ng-template>
     <div class="receiveMerit__totals">
       <div class="receiveMerit__totals__qr">
         <div class="receiveMerit__totals__qr__box">
@@ -50,10 +49,8 @@
   </div>
   <div class="receiveMerit__footer">
     <div class="container--inner">
-      <p class="receiveMerit__footer__caption">You can also buy Merit using your
-        credit or debit card, Paypal or bank transfer</p>
-      <button type="button" name="button" [routerLink]='"/send"'
-        class="ui-button ui-button--blue ui-button--with-arrow">Send Merit</button>
+      <p class="receiveMerit__footer__caption">You can also buy Merit using your credit or debit card, Paypal or bank transfer</p>
+      <button type="button" name="button" [routerLink]='"/send"' class="ui-button ui-button--blue ui-button--with-arrow">Send Merit</button>
     </div>
   </div>
 </div>
