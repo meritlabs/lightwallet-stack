@@ -107,7 +107,8 @@ export class VaultsService {
     const password = await this.walletService.prepare(data.wallet.client);
     await data.wallet.client.sendReferral(scriptReferralOpts);
     await data.wallet.client.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
-    const txp = await this.getCreateTxp(vault, data.wallet);
+    vault.scriptPubKey = vault.scriptPubKey.toBuffer().toString('hex');
+    const txp = await this.getCreateTxp(vault, data.wallet.client);
     const pubTxp = await this.walletService.publishTx(data.wallet.client, txp);
     const signedTxp = await this.walletService.signTx(data.wallet.client, pubTxp, password);
 
@@ -122,6 +123,13 @@ export class VaultsService {
     });
   }
 
+  async depositVault(vault, amount) {
+    const address = this.Bitcore.Address(vault.address);
+    const scriptPubKey = this.Bitcore.Script(vault.scriptPubKey).toBuffer().toString('hex');
+    const txp = await this.getCreateTxp({address, scriptPubKey, amount}, vault.walletClient);
+    await this.walletService.publishAndSign(vault.walletClient, txp);
+    return vault.walletClient.updateVaultInfo({_id: vault._id, name: vault.name});
+  }
 
   private async checkCreateData(data) {
     if (
@@ -149,18 +157,18 @@ export class VaultsService {
   }
 
 
-
-  private async getCreateTxp(vault: any, wallet: DisplayWallet): Promise<any> {
+  private async getCreateTxp(vault: any, wallet: MeritWalletClient): Promise<any> {
     let feeLevel = this.feeService.getCurrentFeeLevel();
 
     if (vault.amount > Number.MAX_SAFE_INTEGER) {
       return Promise.reject(new Error('The amount is too big')); // Because Javascript
     }
 
+
     let txp:any = {
       outputs: [{
         'toAddress': vault.address.toString(),
-        'script': vault.scriptPubKey.toBuffer().toString('hex'),
+        'script': vault.scriptPubKey,
         'amount': vault.amount
       }],
       addressType: 'PP2SH',
@@ -170,11 +178,11 @@ export class VaultsService {
       excludeUnconfirmedUtxos: true,
       dryRun: true
     };
-    if (vault.amount == wallet.client.status.confirmedAmount) {
+    if (vault.amount == wallet.status.confirmedAmount) {
       delete txp.outputs[0].amount;
       txp.sendMax = true;
     }
-    const createdTx = await wallet.client.createTxProposal(txp);
+    const createdTx = await wallet.createTxProposal(txp);
     if (txp.sendMax) {
       delete txp.sendMax;
       delete txp.feeLevel;
@@ -183,7 +191,7 @@ export class VaultsService {
       txp.inputs = createdTx.inputs;
     }
     txp.dryRun = false;
-    return await wallet.client.createTxProposal(txp);
+    return await wallet.createTxProposal(txp);
   }
 
 }

@@ -737,7 +737,7 @@ export class WalletService {
     // });
   }
 
-  publishAndSign(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
+  publishAndSign(wallet: MeritWalletClient, txp: any, customStatusHandler?: any): Promise<any> {
     this.logger.info('@@PS: ENTER');
     return new Promise((resolve, reject) => {
       // Already published?

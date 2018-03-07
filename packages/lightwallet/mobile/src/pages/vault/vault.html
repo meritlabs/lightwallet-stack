@@ -1,6 +1,13 @@
 <ion-header no-border >
     <ion-navbar color="primary">
         <ion-title smaller-title>{{ vault.name || vault.id }}</ion-title>
+
+        <ion-buttons end>
+            <button ion-button icon-only navPush="VaultEditView" [navParams]="{vault: vault, whitelist: whitelist, wallets: wallets}">
+                <ion-icon name="settings" merit-icon></ion-icon>
+            </button>
+        </ion-buttons>
+
     </ion-navbar>
 </ion-header>
 
@@ -9,18 +16,19 @@
     <div class="big-header" color="primary">
         <div class="action-buttons">
             <div class="button-cell">
+                <button ion-button navPush="VaultDepositView" [navParams]="{vault: vault}">
+                  <span class="inner-container">
+                    <ion-icon name="md-add-circle"></ion-icon>
+                    <span>Deposit</span>
+                  </span>
+                </button>
+            </div>
+
+            <div class="button-cell">
                 <button ion-button navPush="VaultSpendView" [navParams]="{vault: vault, whitelist: whitelist}">
                   <span class="inner-container">
                     <ion-icon name="ios-send"></ion-icon>
                     <span>Send to whitelist</span>
-                  </span>
-                </button>
-            </div>
-            <div class="button-cell">
-                <button ion-button navPush="VaultEditView" [navParams]="{vault: vault, whitelist: whitelist, wallets: wallets}">
-                  <span class="inner-container">
-                    <ion-icon name="settings" merit-icon></ion-icon>
-                    <span>Renew</span>
                   </span>
                 </button>
             </div>
