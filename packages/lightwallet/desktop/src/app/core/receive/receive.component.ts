@@ -31,7 +31,9 @@ export class ReceiveComponent implements OnInit {
   availableUnits: Array<string>;
   amountCurrency: string;
   converted: any = 0;
-
+  walletIcon: string = "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg";
+  vaultIcon: string = "/assets/v1/icons/ui/wallets/vault-ico-grey.svg";
+  
   availableCurrencies: any = [
     {
       "name": 'USD',
@@ -114,13 +116,13 @@ export class ReceiveComponent implements OnInit {
 
   async ngOnInit() {
     try {
-      this.address = this.walletService.getRootAddress(this.selectedWallet).toString();
+      this.address = this.walletService.getRootAddress(this.selectedWallet.client).toString();
       let info = await this.sendService.getAddressInfo(this.address);
       this.alias = info.alias;
       this.formatAddress();
     } catch (err) {
       if (err.text)
-        this.error = err.text;
+        //this.error = err.text;
         console.log("Could not initialize: ", err.text);
       // return this.toastCtrl.create({
       //   message: err.text || 'Failed to generate new address',
