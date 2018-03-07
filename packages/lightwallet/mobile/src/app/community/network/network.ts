@@ -4,7 +4,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { IonicPage } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs/Observable';
-import { createDisplayWallet, IDisplayWallet } from '@merit/common/models/display-wallet';
+import { createDisplayWallet, DisplayWallet } from '@merit/common/models/display-wallet';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
@@ -25,7 +25,7 @@ import { AddressService } from '@merit/common/services/address.service';
 export class NetworkView {
   static readonly RETRY_MAX_ATTEMPTS = 5;
   static readonly RETRY_TIMEOUT = 1000;
-  displayWallets: Array<IDisplayWallet> = [];
+  displayWallets: Array<DisplayWallet> = [];
   loading: boolean;
 
   totalNetworkValue: string;
@@ -118,7 +118,7 @@ export class NetworkView {
 
     const wallets: MeritWalletClient[] = await this.profileService.getWallets();
 
-    const displayWallets: IDisplayWallet[] = await Promise.all(
+    const displayWallets: DisplayWallet[] = await Promise.all(
       wallets.map((wallet: MeritWalletClient) =>
         createDisplayWallet(wallet, this.walletService, this.addressService)
       )
@@ -133,7 +133,7 @@ export class NetworkView {
     return displayWallets;
   }
 
-  private async formatWallets(processedWallets: IDisplayWallet[]) {
+  private async formatWallets(processedWallets: DisplayWallet[]) {
     this.displayWallets = await this.formatNetworkInfo(processedWallets);
     let totalNetworkValue = 0, totalMiningRewards = 0, totalAmbassadorRewards = 0;
 
@@ -165,8 +165,8 @@ export class NetworkView {
       .toPromise();
   }
 
-  private async formatNetworkInfo(wallets: IDisplayWallet[]): Promise<IDisplayWallet[]> {
-    const newDWallets: Array<IDisplayWallet> = [];
+  private async formatNetworkInfo(wallets: DisplayWallet[]): Promise<DisplayWallet[]> {
+    const newDWallets: Array<DisplayWallet> = [];
 
     for (let dWallet of wallets) {
       if (!_.isNil(dWallet.totalNetworkValueMicro)) {

@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StoreModule } from '@ngrx/store';
 import { CoreRoutingModule } from './core-routing.module';
-import { WalletsComponent } from './wallets/wallets.component';
+import { WalletsViewComponent } from './wallets/wallets.view';
 import { HistoryComponent } from './history/history.component';
 import { ReceiveComponent } from './receive/receive.component';
 import { SendComponent } from './send/send.component';
@@ -10,31 +9,37 @@ import { CoreComponent } from './core.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { CommunityComponent } from './community/community.component';
-import { contactsReducer } from '../../reducers/contacts';
-import { walletsReducer } from '../../reducers/wallets';
-import { CommonProvidersModule } from '../../../../common/common-providers.module';
 import { SelectComponent } from './iu/select/select.component';
 import { RowItemComponent } from './history/row-item/row-item.component';
+import { CreateWalletComponent } from './wallets/create-wallet/create-wallet.component';
+import { WalletDetailComponent } from './wallets/wallet-detail/wallet-detail.component';
+import { WalletSettingsComponent } from './wallets/wallet-settings/wallet-settings.component';
 import { NetworkComponent } from './network/network.component';
 import { ProfileStatsComponent } from './profile-stats/profile-stats.component';
 import { BackupComponent } from './backup/backup.component';
 import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phrase.component';
-import { PersonalComponent } from './wallets/personal/personal.component';
-import { VaultsComponent } from './wallets/vaults/vaults.component';
+import { WalletsListComponent } from './wallets/wallets/wallets.component';
+import { VaultsListComponent } from './wallets/vaults/vaults.component';
 import { HistoryListComponent } from './history/history-list/history-list.component';
 import { NotificationsComponent } from './iu/notifications/notifications.component';
 import { ToastNotificationComponent } from './iu/notifications/toast-notification/toast-notification.component';
 import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
+import { CommonProvidersModule } from '@merit/common/common-providers.module';
+import { ReactiveFormsModule } from '@angular/forms';
+
 export function getPages() {
   return [
-    WalletsComponent, HistoryComponent, ReceiveComponent, SendComponent, DashboardComponent, CommunityComponent
+    WalletsViewComponent,
+    HistoryComponent,
+    ReceiveComponent,
+    SendComponent,
+    DashboardComponent,
+    CommunityComponent,
+    CreateWalletComponent,
+    WalletDetailComponent,
+    WalletSettingsComponent,
   ];
 }
-
-export const reducers = {
-  contacts: contactsReducer,
-  wallets: walletsReducer
-};
 
 @NgModule({
   entryComponents: [
@@ -44,8 +49,8 @@ export const reducers = {
   imports: [
     CommonModule,
     CoreRoutingModule,
-    StoreModule.forRoot(reducers),
-    CommonProvidersModule.forRoot()
+    CommonProvidersModule.forRoot(),
+    ReactiveFormsModule
   ],
   declarations: [
     CoreComponent,
@@ -58,11 +63,12 @@ export const reducers = {
     ProfileStatsComponent,
     BackupComponent,
     MnemonicPhraseComponent,
-    PersonalComponent,
-    VaultsComponent,
+    WalletsListComponent,
+    VaultsListComponent,
     HistoryListComponent,
     ToastNotificationComponent,
     NotificationsHistoryComponent,
   ]
 })
-export class CoreModule { }
+export class CoreModule {
+}
