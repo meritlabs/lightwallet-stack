@@ -13,6 +13,16 @@ import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
   encapsulation: ViewEncapsulation.None
 })
 export class ReceiveComponent implements OnInit {
+  protocolHandler: string;
+  address: string;
+  alias: string;
+  qrAddress: string;
+  amount: number = 0;
+  amountMicros: number;
+  availableUnits: Array<string>;
+  amountCurrency: string;
+  converted: any = 0;
+
   availableCurrencies: any = [
     {
       "name": 'USD',
@@ -71,14 +81,21 @@ export class ReceiveComponent implements OnInit {
     "value": 10,
     "icon": "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg"
   };
-  converted: any = 0;
-  amount: number = 0;
+
   selectedCurrency: any = {
     "name": 'USD',
     "symbol": '$',
     "value": 10
   };
-  constructor() {}
+  constructor(
+    private configService: ConfigService,
+    
+  ) {
+    this.availableUnits = [
+      this.configService.get().wallet.settings.unitCode.toUpperCase(),
+      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
+    ];
+  }
 
   ngOnInit() {}
   selectCurrency($event) {
