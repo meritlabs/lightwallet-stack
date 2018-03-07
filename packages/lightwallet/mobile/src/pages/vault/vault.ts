@@ -35,6 +35,8 @@ export class VaultView {
       result[w.client.getRootAddress().toString()] = w;
       return result;
     }, {});
+
+    console.log(this.vault, 'vault');
   }
 
   async ionViewWillEnter() {

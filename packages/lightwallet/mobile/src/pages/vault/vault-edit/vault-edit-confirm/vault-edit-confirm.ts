@@ -27,8 +27,6 @@ export class VaultEditConfirmView {
 
   save(highlightInvalidInput = false, previousValue = '') {
 
-    console.log(previousValue);
-
     this.alertCtrl.create({
       title: 'Renew Vault?',
       message: 'All pending transactions will be canceled and timeout will be reset. Do you want to reset the vault?',
@@ -58,10 +56,11 @@ export class VaultEditConfirmView {
     const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
     loader.present();
     try {
-      this.vaultData.vault.name = this.vaultData.vaultName;
-      this.vaultData.vault.whitelist = this.vaultData.whitelist;
-      this.vaultData.vault.masterKey = this.vaultData.masterKey.key;
-      await this.vaultsService.editVault(this.vaultData.vault, xMasterKey);
+      const newData = {
+        name: this.vaultData.vaultName,
+        whitelist: this.vaultData.whitelist,
+      };
+      await this.vaultsService.editVault(this.vaultData.vault, newData, xMasterKey);
       this.navCtrl.popToRoot({});
     } catch (e) {
       this.toastCtrl.create({

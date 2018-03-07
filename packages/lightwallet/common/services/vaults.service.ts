@@ -49,7 +49,6 @@ export class VaultsService {
   }
 
   async sendFromVault(vault: any, amount: number, recipientAddress: any) {
-
     const txp = await vault.walletClient.buildSpendVaultTx(vault, amount, recipientAddress, {});
     const feePerKB = await this.feeService.getCurrentFeeRate(ENV.network);
     const fee = Math.round(feePerKB * txp.serialize().length / 1024);
@@ -63,25 +62,20 @@ export class VaultsService {
     return vault.walletClient.updateVaultInfo(infoToUpdate);
   }
 
-  async editVault(vault: IVault, masterKey) {
+  async editVault(vault: IVault, data:{name: string, whitelist: Array<DisplayWallet>},  masterKey) {
 
     const txp = await vault.walletClient.buildRenewVaultTx(vault, masterKey);
     const feePerKB = await this.feeService.getCurrentFeeRate(ENV.network);
     const fee = Math.round(feePerKB * txp.serialize().length / 1024);
     const tx = await vault.walletClient.buildRenewVaultTx(vault, masterKey, {fee});
+
     let newVault = Object.assign(vault, {
-      coins: [{ raw: tx.serialize(), network: ENV.network }]
+      coins: [{ raw: tx.serialize(), network: ENV.network }],
+      whitelist: data.whitelist.map(w => w.client.getRootAddress().toBuffer()),
+      name: data.name
     });
-    newVault.whitelist = vault.whitelist.map((w:any) => w.client.getRootAddress().toBuffer());
-    newVault.masterPubKey = this.Bitcore.PublicKey.fromPrivateKey(masterKey.privateKey);
 
     return await vault.walletClient.renewVault(newVault);
-  }
-
-  createMasterKey(vault: IVault) {
-    const key = this.Bitcore.PrivateKey.fromRandom(ENV.network);
-    const phrase = vault.walletClient.getNewMnemonic(key.toBuffer());
-    return {key, phrase};
   }
 
   async createVault(data: IVaultCreateData) {

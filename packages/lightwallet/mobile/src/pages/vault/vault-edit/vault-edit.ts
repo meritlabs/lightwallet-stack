@@ -22,7 +22,6 @@ export class VaultEditView {
   public wallets: Array<IWhitelistWallet>;
   public wallet: DisplayWallet;
   public amount: number;
-  public masterKey: {key: any, phrase: string};
 
   constructor(
     private navCtrl: NavController,
@@ -35,7 +34,6 @@ export class VaultEditView {
     this.vault = this.navParams.get('vault');
     this.vaultName = this.vault.name;
     this.amount = this.vault.amount;
-    this.masterKey = this.vault.masterKey;
     this.wallets = this.navParams.get('wallets');
 
     this.wallets.forEach(w => {
@@ -47,24 +45,13 @@ export class VaultEditView {
   }
 
   edit() {
-
-    if (!this.masterKey) return this.toConfirm();
-
-    this.alertCtrl.create({
-      title: 'Did you write your recovery phrase down?',
-      message: 'It is necessary to keep your money save ',
-      buttons: [
-        { text: 'Cancel', role: 'cancel' },
-        { text: 'Yes', handler: () => this.toConfirm() }
-      ]
-    }).present();
+    this.toConfirm()
   }
 
   toConfirm() {
     this.navCtrl.push('VaultEditConfirmView', {vaultData: {
       vaultName: this.vaultName,
       whitelist: this.whitelist,
-      masterKey: this.masterKey,
       vault: this.vault
     }});
   }
@@ -85,10 +72,6 @@ export class VaultEditView {
       this.vaultName
       && this.whitelist.length
     )
-  }
-
-  regenerateMasterKey() {
-    this.masterKey = this.vaultsService.createMasterKey(this.vault);
   }
 
 
