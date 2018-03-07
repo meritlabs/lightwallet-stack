@@ -6,7 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./wallet-settings.component.sass']
 })
 export class WalletSettingsComponent implements OnInit {
-
+  wallet: Object = {
+    name: 'Wallet name'
+  };
   constructor() { }
 
   ngOnInit() {

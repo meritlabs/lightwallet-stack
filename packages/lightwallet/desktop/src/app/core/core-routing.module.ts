@@ -11,8 +11,8 @@ import { NetworkComponent } from './network/network.component';
 import { BackupComponent } from './backup/backup.component';
 import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phrase.component';
 import { CreateWalletComponent } from '@merit/desktop/app/core/wallets/create-wallet/create-wallet.component';
-import { WalletDetailComponent } from '@merit/desktop/app/core/wallets/wallet-detail/wallet-detail.component';
-import { WalletDetailHistoryComponent } from '@merit/desktop/app/core/wallets/wallet-detail/wallet-detail-history/wallet-detail-history.component';
+import { WalletDetailComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details.component';
+import { WalletDetailHistoryComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details-history/wallet-details-history.component';
 import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-settings/wallet-settings.component';
 
 
