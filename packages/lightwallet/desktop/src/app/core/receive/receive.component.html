@@ -17,7 +17,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="!wallets$ | async as wallets; else empty">
+      <div *ngIf="wallets$ | async as wallets; else empty">
         <div class="receiveMerit__form__group">
           <label for="" class="ui-label">Receive in</label>
           <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" style="ui-input ui-input--select ui-input--form"></app-select>
@@ -40,7 +40,12 @@
     <div class="receiveMerit__totals">
       <div class="receiveMerit__totals__qr">
         <div class="receiveMerit__totals__qr__box">
-          <img src="/assets/v1/images/receive-merit/qr-example.png" alt="">
+            <div *ngIf="selectedWallet && selectedWallet.client.isComplete() && qrAddress; else loading">
+                <qr-code *ngIf="address" [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
+              </div>
+          <ng-template #loading>
+            <img src="/assets/v1/images/receive-merit/qr-example.png" alt="">
+          </ng-template>
         </div>
         <h3>or</h3>
         <button class="receiveMerit__totals__qr__copy">Copy Link</button>
