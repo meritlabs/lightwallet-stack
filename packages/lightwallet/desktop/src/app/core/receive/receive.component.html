@@ -27,6 +27,10 @@
           <label for="" class="ui-label">Address</label>
           <input type="text" name="" [value]="address"  disabled="disabled" placeholder="Loading address.." class="ui-input ui-input--form ui-input--text">
         </div>
+        <div *ngIf="alias" class="receiveMerit__form__group">
+          <label for="" class="ui-label">Alias</label>
+          <input type="text" name="" [value]="alias"  disabled="disabled" placeholder="Loading alias.." class="ui-input ui-input--form ui-input--text">
+        </div>
       </div>
     </div>
     <ng-template #empty>
