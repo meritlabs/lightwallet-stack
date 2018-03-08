@@ -7,11 +7,11 @@
       <div class="receiveMerit__form__group">
         <label for="receiveAmount" class="ui-label">Amount</label>
         <div class="ui-input__wrapper ui-input__wrapper--mrt">
-          <input type="text" name="" id="receiveAmount" value="" (keyup)="onKey($event)" class="ui-input ui-input--form ui-input--text">
+          <input type="text" name="" id="receiveAmount" value="" (keyup)="changeAmount($event)" class="ui-input ui-input--form ui-input--text">
           <div class="ui-input__addon">MRT</div>
         </div>
         <div class="ui-input__wrapper ui-input__wrapper--currency">
-          <input type="text" name="" value="{{converted}}" disabled class="ui-input ui-input--form ui-input--text">
+          <input type="text" name="" value="{{amountInFiat}}" disabled class="ui-input ui-input--form ui-input--text">
           <div class="ui-input__addon">
             <app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency" [input]="availableCurrencies" style="ui-button ui-button--transparent ui-button--md ui-button--with-caret"></app-select>
           </div>
