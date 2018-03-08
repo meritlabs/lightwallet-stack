@@ -32,7 +32,7 @@ export class ReceiveComponent implements OnInit {
   amountMicros: number;
   availableUnits: Array<string>;
   amountCurrency: string;
-  converted: any = 0;
+  amountInFiat: any = 0;
   walletIcon: string = "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg";
   vaultIcon: string = "/assets/v1/icons/ui/wallets/vault-ico-grey.svg";
   
@@ -103,7 +103,8 @@ export class ReceiveComponent implements OnInit {
     private configService: ConfigService,
     private store: Store<IAppState>,
     private walletService: WalletService,
-    private sendService: SendService    
+    private sendService: SendService,
+    private rateService: RateService       
   ) {
     try {
       this.availableUnits = [
@@ -137,7 +138,7 @@ export class ReceiveComponent implements OnInit {
   }
   selectCurrency($event) {
     this.selectedCurrency = $event;
-    this.converted = `${$event.symbol} ${this.amount * $event.value}`;
+    this.amountInFiat = `${$event.symbol} ${this.amount * $event.value}`;
   }
   selectFee($event) {
     this.selectedFee = $event
@@ -148,7 +149,16 @@ export class ReceiveComponent implements OnInit {
   onKey(event: any) {
     let currency = this.selectedCurrency;
     this.amount = event.target.value;
-    this.converted = `${currency.symbol} ${this.amount * currency.value}`;
+    this.amountInFiat = `${currency.symbol} ${this.amount * currency.value}`;
+  }
+
+  changeAmount(event: any) {
+    this.amount = event.target.value;
+    let currency = this.selectedCurrency;
+     
+    this.amountMicros = this.rateService.mrtToMicro(this.amount);
+    this.amountInFiat = `${currency.symbol} ${this.amount * currency.value}`;
+    this.formatAddress();
   }
 
   private formatAddress() {
