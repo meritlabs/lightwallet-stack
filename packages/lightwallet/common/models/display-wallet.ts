@@ -62,8 +62,9 @@ export class DisplayWallet {
 
   constructor(public client: MeritWalletClient,
               private walletService: WalletService,
-              private txFormatService: TxFormatService,
-              private sendService?: SendService) {
+              private sendService?: SendService,
+              private txFormatService?: TxFormatService
+            ) {
     this.referrerAddress = this.walletService.getRootAddress(this.client).toString();
 
     if (!this.client.color) {
@@ -117,8 +118,8 @@ export class DisplayWallet {
   }
 }
 
-export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, txFormatService: TxFormatService, sendService?: SendService, options: IDisplayWalletOptions = {}): Promise<DisplayWallet> {
-  const displayWallet = new DisplayWallet(wallet, walletService, txFormatService, sendService);
+export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService?: SendService, txFormatService?: TxFormatService, options: IDisplayWalletOptions = {}): Promise<DisplayWallet> {
+  const displayWallet = new DisplayWallet(wallet, walletService, sendService, txFormatService);
 
   if (!options.skipAlias)
     await displayWallet.updateAlias();
