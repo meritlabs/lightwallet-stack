@@ -17,6 +17,8 @@
         </ion-input>
     </ion-item>
 
+
+
     <button ion-item detail-none (click)="selectWhitelist()">
         <ion-label>
             <h2>Whitelist</h2>
@@ -31,7 +33,7 @@
         </button>
     </button>
 
-    <button ion-button  class="action-button"   (click)="edit()" [disabled]="!isNextStepAvailable">
+    <button ion-button  class="action-button"   (click)="edit()" [disabled]="!isEditAvailable">
         Reset
     </button>
 

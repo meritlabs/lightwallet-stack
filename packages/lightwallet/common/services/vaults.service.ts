@@ -62,20 +62,23 @@ export class VaultsService {
     return vault.walletClient.updateVaultInfo(infoToUpdate);
   }
 
-  async editVault(vault: IVault, data:{name: string, whitelist: Array<DisplayWallet>},  masterKey) {
+  async editVaultName(vault: IVault, newName: string) {
+    return vault.walletClient.updateVaultInfo({_id: vault._id, name: newName});
+  }
 
-    const txp = await vault.walletClient.buildRenewVaultTx(vault, masterKey);
-    const feePerKB = await this.feeService.getCurrentFeeRate(ENV.network);
-    const fee = Math.round(feePerKB * txp.serialize().length / 1024);
-    const tx = await vault.walletClient.buildRenewVaultTx(vault, masterKey, {fee});
+  async renewVaultWhitelist(vault: IVault, newWhitelist: Array<any>, masterKey) {
 
-    let newVault = Object.assign(vault, {
-      coins: [{ raw: tx.serialize(), network: ENV.network }],
-      whitelist: data.whitelist.map(w => w.client.getRootAddress().toBuffer()),
-      name: data.name
-    });
+    //const txp = await vault.walletClient.buildRenewVaultTx(vault, masterKey);
+    //
+    //let newVault = Object.assign(vault, {
+    //  coins: [signedTxp],
+    //  whitelist: data.whitelist.map(w => w.client.getRootAddress().toBuffer()),
+    //  name: data.name
+    //});
+    //
+    //return await vault.walletClient.renewVault(newVault);
+    return Promise.resolve();
 
-    return await vault.walletClient.renewVault(newVault);
   }
 
   async createVault(data: IVaultCreateData) {
