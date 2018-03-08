@@ -172,13 +172,7 @@ export class WalletsView {
   }
 
   private async updateVaults(): Promise<any> {
-    let vaults = [];
-
-    for (let wallet of this.wallets) {
-      vaults = vaults.concat(await this.vaultsService.getWalletVaults(wallet));
-    }
-
-    this.vaults = vaults;
+    this.vaults = await this.profileService.getVaults(true); 
   }
 
   /**

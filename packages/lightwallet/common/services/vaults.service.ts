@@ -39,9 +39,9 @@ export class VaultsService {
     this.Bitcore = bwcService.getBitcore();
   }
 
-  async getWalletVaults(wallet: DisplayWallet): Promise<Array<any>> {
-    const vaults = await wallet.client.getVaults();
-    return vaults.map(v => Object.assign(v, {walletClient: wallet.client}) );
+  async getWalletVaults(wallet: MeritWalletClient): Promise<Array<any>> {
+    const vaults = await wallet.getVaults();
+    return vaults.map(v => Object.assign(v, {walletClient: wallet}) ); 
   }
 
   getTxHistory(vault: any): Promise<Array<any>> {
