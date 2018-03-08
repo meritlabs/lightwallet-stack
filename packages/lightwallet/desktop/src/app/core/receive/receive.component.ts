@@ -72,23 +72,6 @@ export class ReceiveComponent implements OnInit {
     "name": 'I pay the fee',
     "value": 10
   };
-  previouslyAvailableWallets: any = [
-    {
-      "name": 'Personal Wallet',
-      "value": 10,
-      "icon": "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg"
-    },
-    {
-      "name": 'Reserve Wallet',
-      "value": 200,
-      "icon": "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg"
-    },
-    {
-      "name": 'Pension Savings',
-      "value": 200,
-      "icon": "/assets/v1/icons/ui/wallets/vault-ico-grey.svg"
-    }
-  ];
 
   // For now, the first wallet in the list of wallets is the default. 
   // TODO(AW): Let's add a setting where the user can choose their default wallet.
@@ -119,7 +102,6 @@ export class ReceiveComponent implements OnInit {
 
   async ngOnInit() {
     try {
-      //this.store.dispatch(new RefreshWalletsAction());
       this.selectedWallet = (await this.wallets$.take(1).toPromise())[0];
       this.address = this.walletService.getRootAddress(this.selectedWallet.client).toString();
       let info = await this.sendService.getAddressInfo(this.address);
@@ -145,11 +127,6 @@ export class ReceiveComponent implements OnInit {
   }
   selectWallet($event) {
     this.selectedWallet = $event
-  }
-  onKey(event: any) {
-    let currency = this.selectedCurrency;
-    this.amount = event.target.value;
-    this.amountInFiat = `${currency.symbol} ${this.amount * currency.value}`;
   }
 
   changeAmount(event: any) {
