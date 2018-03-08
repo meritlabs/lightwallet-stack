@@ -15,6 +15,8 @@ import { MWCService } from '@merit/common/services/mwc.service';
 import { PlatformService } from '@merit/common/services/platform.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { IVault } from "@merit/common/models/vault";
+import { VaultsService } from "@merit/common/services/vaults.service";
 
 /*
   Historically, this acted as the API-Client
@@ -24,6 +26,7 @@ import { TxFormatService } from '@merit/common/services/tx-format.service';
 @Injectable()
 export class ProfileService {
   public wallets: Map<string, MeritWalletClient> = new Map<string, MeritWalletClient>();
+  public vaults: Array<IVault> = [];
   public profile: Profile = new Profile();
 
   private UPDATE_PERIOD = 3;
@@ -35,14 +38,17 @@ export class ProfileService {
     this.propogateBwsEvent(n, wallet);
   }, 10000);
 
-  constructor(private logger: LoggerService,
-              private persistenceService: PersistenceService,
-              private configService: ConfigService,
-              private bwcService: MWCService,
-              private platformService: PlatformService,
-              private appService: AppSettingsService,
-              private txFormatService: TxFormatService,
-              private events: Events) {
+  constructor(
+    private logger: LoggerService,
+    private persistenceService: PersistenceService,
+    private configService: ConfigService,
+    private bwcService: MWCService,
+    private platformService: PlatformService,
+    private appService: AppSettingsService,
+    private txFormatService: TxFormatService,
+    private events: Events,
+    private vaultsService: VaultsService
+  ) {
     this.logger.info('Hello ProfileService!');
   }
 
@@ -542,9 +548,14 @@ export class ProfileService {
     return this.persistenceService.storeProfile(this.profile);
   }
 
-  public getVaults(): Array<any> {
-    this.logger.info('Getting vaults');
-    return this.profile.vaults;
+  public async getVaults(reload: boolean = false): Array<IVault> {
+    if (!this.wallets) return [];
+    if (!this.vaults.length || !reload) {
+        for (let wallet of _.values(this.wallets)) {
+          this.vaults = this.vaults.concat(await this.vaultsService.getWalletVaults(wallet));
+        }
+    }
+    return this.vaults;
   }
 
   private requiresBackup(wallet: MeritWalletClient): boolean {
@@ -761,4 +772,5 @@ export class ProfileService {
   public getHiddenUnlockRequestsAddresses() {
     return this.persistenceService.getHiddenUnlockRequestsAddresses();
   }
+
 }
