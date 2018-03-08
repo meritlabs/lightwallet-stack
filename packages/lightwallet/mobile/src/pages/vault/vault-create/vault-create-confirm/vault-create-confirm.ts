@@ -27,7 +27,7 @@ export class VaultCreateConfirmView {
   create() {
     //todo change text
     this.alertCtrl.create({
-      title: 'Did you write your recovery phrase down?',
+      title: 'Did you write your master key phrase down?',
       message: 'It is necessary to keep your money save ',
       buttons: [
         { text: 'Cancel', role: 'cancel' },
