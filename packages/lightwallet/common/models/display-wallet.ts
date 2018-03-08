@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import { isNil, sumBy } from 'lodash';
 import { DEFAULT_WALLET_COLOR } from '../utils/constants';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { WalletService } from '@merit/common/services/wallet.service';
@@ -111,9 +111,9 @@ export class DisplayWallet {
   async updateRewards() {
     const rewardsData = await this.walletService.getRewards(this.client);
     // If we cannot properly fetch data, let's return wallets as-is.
-    if (rewardsData && isNil(rewardsData.mining)) {
-      this.miningRewardsMicro = rewardsData.mining;
-      this.ambassadorRewardsMicro = rewardsData.ambassador;
+    if (rewardsData && rewardsData.length > 0) {
+      this.miningRewardsMicro = sumBy(rewardsData, 'rewards.mining')
+      this.ambassadorRewardsMicro = sumBy(rewardsData, 'rewards.ambassador')
     }
   }
 }
