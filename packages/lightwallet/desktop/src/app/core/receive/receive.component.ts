@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'view-receive',
@@ -72,9 +73,16 @@ export class ReceiveComponent implements OnInit {
     "symbol": '$',
     "value": 10
   };
-  constructor() {}
+  injected: boolean = false;
+  constructor(private route: ActivatedRoute) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if(params['injected']) {
+        this.injected = params['injected'];
+      }
+    })
+  }
   selectCurrency($event) {
     this.selectedCurrency = $event;
     this.converted = `${$event.symbol} ${this.amount * $event.value}`;

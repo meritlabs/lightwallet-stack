@@ -74,6 +74,7 @@ export class SendComponent implements OnInit {
     "symbol": '$',
     "value": 10
   };
+  injected: boolean = false;
   constructor(private route: ActivatedRoute) { }
 
   ngOnInit() {
@@ -83,6 +84,9 @@ export class SendComponent implements OnInit {
         this.mrt = params['amount'];
         this.amount = params['amount'];
         this.converted = `${currency.symbol} ${this.amount * currency.value}`;
+      }
+      if(params['injected']) {
+        this.injected = params['injected'];
       }
     })
   }
