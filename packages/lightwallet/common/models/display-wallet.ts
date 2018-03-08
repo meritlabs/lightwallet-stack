@@ -33,6 +33,8 @@ export class DisplayWallet {
 
   referrerAddress: string;
   alias: string;
+  // We will only have one icon type to start.
+  iconUrl: string = "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg";
 
   totalBalanceStr?: string;
   totalBalanceMicros?: number;
