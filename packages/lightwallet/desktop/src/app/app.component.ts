@@ -12,7 +12,7 @@ export class AppComponent {
   constructor(private profileService: ProfileService) {}
 
   async ngOnInit() {
-    await this.profileService.loadAndBindProfile();
+    await this.profileService.getProfile();
   }
 
 }
