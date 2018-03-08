@@ -3817,7 +3817,6 @@ WalletService.prototype.createVault = function(opts, cb) {
 
          self.updateVaultInfo(toStore, function(err, result) {
             if (err) return cb(err);
-
             return next();
           });
         });
@@ -4081,31 +4080,6 @@ WalletService.prototype.updateVaultInfo = function(opts, cb) {
     });
 };
 
-WalletService.prototype.renewVault = function(opts, cb) {
-
-  let toStore = _.cloneDeep(opts);
-  toStore.status = Bitcore.Vault.Vault.VaultStates.RENEWING;
-  toStore.whitelist = opts.whitelist.map(w => Bitcore.Address.fromBuffer(new Buffer(w.data)).toString() );
-  toStore.walletId = this.walletId;
-  toStore.copayerId = this.copayerId;
-
-  let txp = Model.TxProposal.fromObj(opts.coins[0]);
-  const bc = this._getBlockchainExplorer(txp.network);
-  const rawTx = txp.getRawTx();
-  bc.broadcast(rawTx, (err, txid)  => {
-      if (err) return cb(err);
-      txp.txid = txid;
-      toStore.coins[0] = txp;
-      toStore.initialTxId = txid;
-      this._processBroadcast(txp, { byThirdParty: true }, (err, tx)  => {
-          this.updateVaultInfo(toStore, (err, result) => {
-              if (err) return cb(err);
-              return cb(null, result);
-          });
-      });
-  });
-
-};
 
 module.exports = WalletService;
 module.exports.ClientError = ClientError;
