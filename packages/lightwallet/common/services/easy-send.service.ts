@@ -23,7 +23,7 @@ export class EasySendService {
     const pubkey = signPrivKey.publicKey;
 
     try {
-      const easySend = await this.bulidScript(wallet, opts);
+      const easySend = await this.bulidScript(wallet, password);
       const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo()).toString();
 
       const scriptReferralOpts = {

@@ -11,6 +11,8 @@ export class FeeService {
   private CACHE_TIME_TS: number;
   private cache: { updateTs: number, data: any };
 
+  public static DEFAULT_FEE = 100000;
+
   constructor(private mwcService: MWCService,
               private configService: ConfigService,
               private logger: LoggerService) {
@@ -92,11 +94,11 @@ export class FeeService {
     }
   }
 
-  private async getTxpFee(txp) {
+  public async getTxpFee(txp) {
     const feePerKB = await this.getCurrentFeeRate(ENV.network);
     const fee = Math.round(feePerKB * txp.serialize().length / 1024);
     return fee; 
   }
 
-  
+
 }
