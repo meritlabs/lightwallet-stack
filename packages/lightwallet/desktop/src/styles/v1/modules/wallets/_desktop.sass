@@ -11,25 +11,152 @@
     &__wallet
       display: flex
       flex-flow: row wrap
-      justify-content: flex-start
+      justify-content: space-between
       align-items: center
       padding: 20px
       background: $white
       margin-bottom: 10px
       border-radius: 5px
       box-shadow: 0 2px 4px rgba(46,51,88, .22)
+      cursor: pointer
+      user-select: none
+      position: relative
+      +transition(.3s, linear)
+      opacity: .7
+      &__edit
+        opacity: 0
+        transform: translateX(-10px)
+        +transition(.3s, linear)
       &__icon
         width: 40px
         height: 40px
         display: flex
         justify-content: center
         align-items: center
+        margin-right: 20px
         img
           width: 100%
       &__info
-        padding-left: 20px
         letter-spacing: .3px
+        display: flex
+        flex-flow: row wrap
         .large-black-text
           +font($baseFont--medium, 15px, 22px, $gun-metal, normal, none, none)
         .regular-blue-text
           +font($baseFont--medium, 14px, 24px, $blue, normal, none, none)
+      &:hover
+        opacity: 1
+        .wallets__group__wallet__edit
+          opacity: 1
+          transform: translateX(0)
+.wallet-details
+  &__header
+    &__wrap
+      display: flex
+      justify-content: flex-start
+      align-items: center
+      padding: 40px
+    &__amount
+      display: flex
+      justify-content: flex-start
+      align-items: center
+      +font($baseFont--heavy, 32px, 32px, $white, normal, none, none)
+      padding-right: 40px
+      small
+        font-family: $baseFont--semibold
+      &__name
+        font-family: $baseFont--semibold
+        padding: 0px 20px
+        border-right: 2px solid rgba(255,255,255, .2)
+        margin-right: 20px
+      &__balance
+        font-size: 20px
+    &__navigation
+      &__button
+        text-transform: uppercase
+        font-family: $baseFont--semibold
+        margin: 0 5px
+  &__content
+    padding: 40px
+    &__navigation
+      margin-bottom: 60px
+      ul
+        display: flex
+        justify-content: flex-start
+        margin-left: -20px
+        li
+          padding: 10px 20px
+          border-right: 2px solid $pale-grey-two
+          &:last-of-type
+            border: 0px
+          a
+            +font($baseFont--regular, 20px, 20px, $gun-metal, normal, none, none)
+            +transition(.3s, linear)
+            &::after
+              content: ""
+              display: block
+              width: 100%
+              height: 2px
+              background: $blue
+              transform: scaleX(0)
+              +transition(.3s, linear)
+            &.active,
+            &:hover
+              color: $blue
+              &::after
+                transform: scaleX(1)
+    &__title
+      +font($baseFont--heavy, 28px, 32px, $blue, normal, none, none)
+      margin-bottom: 40px
+.wallet-settings__group
+  max-width: 550px
+  width: 100%
+  &__checkbox
+    display: flex
+    justify-content: flex-start
+    align-items: center
+    margin-bottom: 30px
+    .ui-label
+      width: initial
+      display: inline-block
+      margin-right: 20px
+      margin-bottom: 0
+      position: relative
+      top: -2px
+  &__export-wallet
+    display: flex
+    justify-content: flex-start
+    align-items: center
+    margin-bottom: 30px
+    .ui-label
+      width: initial
+      display: inline-block
+      margin-right: 20px
+      margin-bottom: 0
+      position: relative
+    .ui-button
+      padding: 2px 15px
+      min-width: 60px
+      box-sizing: border-box
+      img
+        width: 15px
+.wallet-settings__multi-group
+  border: 1px solid $light-blue-grey
+  border-radius: 4px
+  padding: 20px
+  max-width: 550px
+  width: 100%
+  margin-bottom: 30px
+.submit__password
+  display: flex
+  justify-content: space-between
+  align-items: center
+.submit__password__warning
+  padding-right: 20px
+  p
+    margin-bottom: 10px
+    +chageFontSize(14px, 16px)
+    strong
+      +chageFontSize(16px, 18px)
+      font-family: $baseFont--semibold
+      color: $rose-pink
