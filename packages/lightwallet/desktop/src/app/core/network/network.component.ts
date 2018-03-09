@@ -16,38 +16,14 @@ import * as _ from 'lodash';
   styleUrls: ['./network.component.sass']
 })
 export class NetworkComponent implements OnInit {
-  wallets$: Observable<Array<DisplayWallet & any>> = this.store.select(getWallets)
-  .map((dWallets: DisplayWallet[]) => dWallets.map((dWallet: DisplayWallet) => {
-    if (!_.isNil(dWallet.totalNetworkValueMicro)) {
-      dWallet.totalNetworkValueMerit = this.txFormatService.parseAmount(dWallet.totalNetworkValueMicro, 'micros').amountUnitStr;
-      dWallet.totalNetworkValueFiat = new FiatAmount(+this.txFormatService.formatToUSD(dWallet.totalNetworkValueMicro)).amountStr;
-    }
-
-    if (!_.isNil(dWallet.miningRewardsMicro)) {
-      dWallet.miningRewardsMerit = this.txFormatService.parseAmount(dWallet.miningRewardsMicro, 'micros').amountUnitStr;
-      dWallet.miningRewardsFiat = new FiatAmount(+this.txFormatService.formatToUSD(dWallet.miningRewardsMicro)).amountStr;
-    }
-
-    if (!_.isNil(dWallet.ambassadorRewardsMicro)) {
-      dWallet.ambassadorRewardsMerit = this.txFormatService.parseAmount(dWallet.ambassadorRewardsMicro, 'micros').amountUnitStr;
-      dWallet.ambassadorRewardsFiat = new FiatAmount(+this.txFormatService.formatToUSD(dWallet.ambassadorRewardsMicro)).amountStr;
-    }
-    return dWallet;
-    
-  }));
+  wallets$: Observable<Array<DisplayWallet>> = this.store.select(getWallets);
   walletsLoading$: Observable<boolean> = this.store.select(getWalletsLoading);
-  communityTotals$: Observable<any>;
-  //walletSource = Rx.Observable.from(this.wallets$);
+
 
   constructor(
     private store: Store<IAppState>,
-    private txFormatService: TxFormatService    
   ) { 
     
-    const checking$ = this.wallets$.pipe(
-      groupBy(dWallet => (dWallet as any).totalBalanceMicros)
-    )
-    const subscribe = checking$.subscribe(val => console.log(val));
   }
 
   ngOnInit() {
