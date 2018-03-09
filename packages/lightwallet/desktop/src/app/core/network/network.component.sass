@@ -17,7 +17,7 @@
         +font($baseFont--medium, 15px, 14px, $steel-two, uppercase, none, none)
   &__panel
     background: $white
-    box-shadow: 0px 2px 5px rgba(46,51,88, 0.22)
+    box-shadow: 0 2px 5px rgba(46,51,88, 0.17)
     border-radius: 5px
     padding: 20px 20px
     &__row
@@ -27,8 +27,18 @@
       align-items: center
       border-bottom: 1px solid $pale-grey-two
       padding: 20px 0
-      &:last-of-type
+      &:last-child
         border-bottom: 0
+      &.invite-code
+        cursor: pointer
+        &:hover
+          small.click_to_copy
+            opacity: 0.999
+        small.click_to_copy
+          opacity: 0
+          color: $blue
+          transition: opacity .3s ease-in-out
+
     &__col
       display: flex
       align-items: center
