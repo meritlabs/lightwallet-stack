@@ -89,10 +89,6 @@ export class DisplayWallet {
     }
   }
 
-  async updateAnv() {
-    this.totalNetworkValueMicro = await this.walletService.getANV(this.client);
-  }
-
   async updateStatus() {
     this.client.status = await this.walletService.getStatus(this.client, { force: true });
     this.inviteRequests = await this.walletService.getUnlockRequests(this.client);
@@ -109,23 +105,42 @@ export class DisplayWallet {
   }
 
   async updateRewards() {
+    this.totalNetworkValueMicro = await this.walletService.getANV(this.client);
+
     const rewardsData = await this.walletService.getRewards(this.client);
     // If we cannot properly fetch data, let's return wallets as-is.
     if (rewardsData && rewardsData.length > 0) {
-      this.miningRewardsMicro = sumBy(rewardsData, 'rewards.mining')
-      this.ambassadorRewardsMicro = sumBy(rewardsData, 'rewards.ambassador')
+      this.miningRewardsMicro = sumBy(rewardsData, 'rewards.mining');
+      this.ambassadorRewardsMicro = sumBy(rewardsData, 'rewards.ambassador');
+      this.formatNetworkInfo();
+    }
+  }
+
+  private formatNetworkInfo() {
+    if (!isNil(this.totalNetworkValueMicro)) {
+      this.totalNetworkValueMerit = this.txFormatService.parseAmount(this.totalNetworkValueMicro, 'micros').amountUnitStr;
+      this.totalNetworkValueFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.totalNetworkValueMicro)).amountStr;
+    }
+
+    if (!isNil(this.miningRewardsMicro)) {
+      this.miningRewardsMerit = this.txFormatService.parseAmount(this.miningRewardsMicro, 'micros').amountUnitStr;
+      this.miningRewardsFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.miningRewardsMicro)).amountStr;
+    }
+
+    if (!isNil(this.ambassadorRewardsMicro)) {
+      this.ambassadorRewardsMerit = this.txFormatService.parseAmount(this.ambassadorRewardsMicro, 'micros').amountUnitStr;
+      this.ambassadorRewardsFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.ambassadorRewardsMicro)).amountStr;
     }
   }
 }
+
+
 
 export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService?: SendService, txFormatService?: TxFormatService, options: IDisplayWalletOptions = {}): Promise<DisplayWallet> {
   const displayWallet = new DisplayWallet(wallet, walletService, sendService, txFormatService);
 
   if (!options.skipAlias)
     await displayWallet.updateAlias();
-
-  if (!options.skipAnv)
-    await displayWallet.updateAnv();
 
   if (!options.skipStatus)
     await displayWallet.updateStatus();
