@@ -22,7 +22,6 @@ const Package = require('../../../package.json');
 const DEFAULT_FEE = 10000;
 
 import { ENV } from '@app/env';
-import { EasySend } from '../../models/easy-send';
 import { EasyReceiptResult } from '../../models/easy-receipt';
 
 /**
@@ -785,57 +784,6 @@ export class API {
     txp = await this.broadcastTxProposal(txp);
 
     return txp;
-  }
-
-  /**
-   * Create an easySend script and create a transaction to the script address
-   *
-   * @param {Object}      opts
-   * @param {string}      opts.passphrase       - optional password to generate receiver's private key
-   * @param {number}      opts.timeout          - maximum depth transaction is redeemable by receiver
-   * @param {string}      opts.walletPassword   - maximum depth transaction is redeemable by receiver
-   * @param {string}      opts.parentAddress    - parent address of easy send recipient
-   * @param {Callback}    cb
-   */
-  buildEasySendScript(opts: any = {}): Promise<EasySend> {
-    return new Promise((resolve, reject) => {
-
-      let result: any = {}
-      return this.getMainAddresses().then((addresses) => {
-        if(_.isEmpty(addresses)) return this.createAddress({});
-        return _.sample(addresses);
-      }).then((addr) => {
-        if (addr.publicKeys.length < 1) {
-          return reject(Error('Error creating an address for easySend'));
-        }
-        let pubKey = Bitcore.PublicKey.fromString(addr.publicKeys[0]);
-
-        // {key, secret}
-        let network = opts.network || ENV.network;
-        let rcvPair = Bitcore.PrivateKey.forNewEasySend(opts.passphrase, network);
-
-        let pubKeys = [
-          rcvPair.key.publicKey.toBuffer(),
-          pubKey.toBuffer()
-        ];
-
-        let timeout = opts.timeout || 1008;
-        let script = Bitcore.Script.buildEasySendOut(pubKeys, timeout, network);
-
-        result = {
-          receiverPubKey: rcvPair.key.publicKey,
-          script: script.toMixedScriptHashOut(pubKey),
-          senderName: 'Someone', // TODO: get user name or drop sender name from data
-          senderPubKey: pubKey.toString(),
-          secret: rcvPair.secret.toString('hex'),
-          blockTimeout: timeout,
-          parentAddress: opts.parentAddress
-        };
-
-        return resolve(result);
-      });
-
-    });
   }
 
   /**
