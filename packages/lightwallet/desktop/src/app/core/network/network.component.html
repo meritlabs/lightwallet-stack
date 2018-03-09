@@ -1,5 +1,5 @@
 <div class="network">
-  <app-profile-stats></app-profile-stats>
+  <app-profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></app-profile-stats>
   <ng-container *ngIf="wallets$ | async as wallets; else noWallets">
     <ng-container *ngFor="let wallet of wallets">
       <div class="network__personal-wallet">
