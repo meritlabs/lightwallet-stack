@@ -1,5 +1,4 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { ProfileService } from '@merit/common/services/profile.service';
 
 @Component({
   selector: 'merit-lw',
@@ -9,10 +8,5 @@ import { ProfileService } from '@merit/common/services/profile.service';
 })
 export class AppComponent {
 
-  constructor(private profileService: ProfileService) {}
-
-  async ngOnInit() {
-    await this.profileService.loadAndBindProfile();
-  }
 
 }

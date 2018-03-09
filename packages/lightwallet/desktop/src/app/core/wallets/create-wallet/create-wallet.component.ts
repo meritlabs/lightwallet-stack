@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
-import { IAppState } from '@merit/common/reducers';
+import { IRootAppState } from '@merit/common/reducers';
 import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
@@ -36,7 +36,7 @@ export class CreateWalletComponent {
               private config: ConfigService,
               private logger: LoggerService,
               private router: Router,
-              private store: Store<IAppState>,
+              private store: Store<IRootAppState>,
               private sendService: SendService) {
   }
 
