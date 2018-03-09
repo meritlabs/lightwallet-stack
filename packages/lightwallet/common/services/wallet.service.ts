@@ -894,16 +894,19 @@ export class WalletService {
   /**
    * Gets the aggregate rewards for a list of addresses.
    * @param wallet
-   * @returns {Reward} An object with the 'mining' and 'ambassador' properties.
+   * @returns [{address, rewards: {mining, ambassador}}] An array of objects, each with an 'address' and a corresponding 'rewards' object that contains the 'mining' and 'ambassador' properties.
    */
-  async getRewards(wallet: MeritWalletClient): Promise<{ mining: number; ambassador: number; }> {
+  async getRewards(wallet: MeritWalletClient): Promise<{ address: string; rewards: {mining: number; ambassador: number;}}[]> {
     try {
-      return (await wallet.getRewards(wallet.getRootAddress())).rewards;
+      return await wallet.getRewards(wallet.getRootAddress());
     } catch (e) {
-      return {
-        mining: 0,
-        ambassador: 0
-      }
+      return [{
+        address: wallet.displayAddress,
+        rewards: {
+          mining: 0,
+          ambassador: 0
+        }
+      }]
     }
   }
 

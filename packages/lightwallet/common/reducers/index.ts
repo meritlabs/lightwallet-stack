@@ -12,3 +12,4 @@ export const reducer = {
 export const selectWalletsState = createFeatureSelector<WalletsState>('wallets');
 export const getWalletsLoading = createSelector(selectWalletsState, state => state.loading);
 export const getWallets = createSelector(selectWalletsState, state => state.wallets);
+export const getWalletTotals = createSelector(selectWalletsState, state => state.totals);

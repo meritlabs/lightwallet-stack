@@ -9,6 +9,11 @@ import { ENV } from '@app/env';
 import { LoggerService } from '@merit/common/services/logger.service';
 import * as request from 'superagent';
 
+/* TODOS:
+* - Not use superagent
+* - Not be dependency injected
+* - Cache the value of the exchange rate for a reasonable period of time
+*/ 
 @Injectable()
 export class RateService {
 
