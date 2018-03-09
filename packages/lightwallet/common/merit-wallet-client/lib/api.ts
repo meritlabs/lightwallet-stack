@@ -1033,7 +1033,7 @@ export class API {
         tx.serialize();
 
       } else {
-        this.log.error('Vault type is not supported:', newVault.type);
+        this.log.error('Vault type is not supported:', vault.type);
         throw MWCErrors.COULD_NOT_BUILD_TRANSACTION;
       }
     } catch (ex) {
