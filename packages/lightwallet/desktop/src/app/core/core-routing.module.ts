@@ -11,7 +11,10 @@ import { NetworkComponent } from './network/network.component';
 import { BackupComponent } from './backup/backup.component';
 import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phrase.component';
 import { CreateWalletComponent } from '@merit/desktop/app/core/wallets/create-wallet/create-wallet.component';
-import { WalletDetailComponent } from '@merit/desktop/app/core/wallets/wallet-detail/wallet-detail.component';
+import { WalletDetailComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details.component';
+import { WalletDetailHistoryComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details-history/wallet-details-history.component';
+import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-settings/wallet-settings.component';
+
 
 const routes: Routes = [
   {
@@ -20,7 +23,13 @@ const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'wallets', component: WalletsViewComponent, pathMatch: 'full' },
       { path: 'wallets/create', component: CreateWalletComponent },
-      { path: 'wallets/:id', component: WalletDetailComponent },
+      { path: 'wallets/:id', component: WalletDetailComponent, children: [
+        { path: '', component: WalletDetailHistoryComponent },
+        { path: 'history', component: WalletDetailHistoryComponent },
+        { path: 'settings', component: WalletSettingsComponent },
+        { path: 'send', component: SendComponent },
+        { path: 'receive', component: ReceiveComponent }
+      ]},
       { path: 'receive', component: ReceiveComponent },
       { path: 'send', component: SendComponent },
       { path: 'history', component: HistoryComponent },
