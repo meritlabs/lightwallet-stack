@@ -1,3 +1,30 @@
 @import "~styles/v1/theme"
 .global-settings
   padding: 50px 40px
+  &__title
+    margin-bottom: 40px
+  &__group
+    margin-bottom: 30px
+    background: $white
+    padding: 30px 20px 20px
+    &__title
+      +chageFontSize(20px, 24px)
+      font-family: $baseFont--semibold
+      color: $blue
+      margin-bottom: 20px
+    &__item
+      display: flex
+      justify-content: space-between
+      flex-flow: row wrap
+      align-items: center
+      border-bottom: 1px solid $light-blue-grey
+      padding: 20px 0px 18px
+      &:last-of-type
+        border-bottom: 0px
+      .ui-label
+        color: $steel-two
+        margin-bottom: 0
+      &--70
+        width: 70%
+      &--30
+        width: 30%
