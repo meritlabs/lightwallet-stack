@@ -28,6 +28,7 @@ import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { WalletDetailHistoryComponent } from './wallets/wallet-details/wallet-details-history/wallet-details-history.component';
 import { QRCodeModule } from 'angular2-qrcode';
+import { GlobalSettingsComponent } from './global-settings/global-settings.component';
 
 
 export function getPages() {
@@ -73,6 +74,7 @@ export function getPages() {
     ToastNotificationComponent,
     NotificationsHistoryComponent,
     WalletDetailHistoryComponent,
+    GlobalSettingsComponent,
   ]
 })
 export class CoreModule {
