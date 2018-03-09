@@ -1,4 +1,4 @@
-import { Action } from '@ngrx/store';
+import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 export interface WalletsState {
@@ -61,3 +61,6 @@ export function walletsReducer(state: WalletsState = DEFAULT_STATE, action: Wall
   }
 }
 
+export const selectWalletsState = createFeatureSelector<WalletsState>('wallets');
+export const getWalletsLoading = createSelector(selectWalletsState, state => state.loading);
+export const getWallets = createSelector(selectWalletsState, state => state.wallets);
