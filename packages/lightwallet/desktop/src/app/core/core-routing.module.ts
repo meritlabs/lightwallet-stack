@@ -17,6 +17,7 @@ import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-
 import { GlobalSettingsComponent } from '@merit/desktop/app/core/global-settings/global-settings.component';
 import { SettingsPreferencesComponent } from '@merit/desktop/app/core/global-settings/settings-preferences/settings-preferences.component';
 import { SettingsTermsOfUsComponent } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.component'
+import { SettingsSessionLogComponent } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.component'
 
 const routes: Routes = [
   {
@@ -42,6 +43,7 @@ const routes: Routes = [
       { path: 'settings', component: GlobalSettingsComponent, children: [
         { path: '', component: SettingsPreferencesComponent },
         { path: 'terms-of-use', component: SettingsTermsOfUsComponent },
+        { path: 'session-log', component: SettingsSessionLogComponent }
       ]},
       { path: '**', redirectTo: 'dashboard' }
     ]
