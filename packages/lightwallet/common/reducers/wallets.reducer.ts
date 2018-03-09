@@ -1,9 +1,11 @@
 import { Action } from '@ngrx/store';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { formatAmount } from '@merit/common/utils/format';
 
 export interface WalletsState {
   wallets: DisplayWallet[];
   loading: boolean;
+  totals: any;
 }
 
 export enum WalletsActionType {
@@ -20,7 +22,25 @@ export class AddWalletAction implements Action {
 
 export class UpdateWalletsAction implements Action {
   type = WalletsActionType.Update;
-  constructor(public payload: DisplayWallet[]) {}
+  totals: any;
+  constructor(public payload: DisplayWallet[]) {
+    let totalMicros: any = {
+      totalNetworkValue: 0,
+      totalMiningRewards: 0, 
+      totalAmbassadorRewards: 0,
+      totalWalletsBalance: 0
+    }
+    payload.forEach(w => {
+      totalMicros.totalNetworkValue += w.totalNetworkValueMicro;
+      totalMicros.totalMiningRewards += w.miningRewardsMicro;
+      totalMicros.totalAmbassadorRewards += w.ambassadorRewardsMicro;
+    });
+    this.totals = {
+      totalNetworkValue: formatAmount(totalMicros.totalNetworkValue,'mrt', {}),
+      totalMiningRewards: formatAmount(totalMicros.totalMiningRewards,'mrt', {}),
+      totalAmbassadorRewards: formatAmount(totalMicros.totalAmbassadorRewards,'mrt', {})
+    }
+  }
 }
 
 export class RefreshWalletsAction implements Action {
@@ -31,18 +51,29 @@ export type WalletsAction = AddWalletAction | UpdateWalletsAction | RefreshWalle
 
 const DEFAULT_STATE: WalletsState = {
   wallets: [],
-  loading: false
+  loading: false,
+  totals: {
+    totalNetworkValue: 0,
+    totalMiningRewards: 0, 
+    totalAmbassadorRewards: 0
+  }
 };
 
 export function walletsReducer(state: WalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
     case WalletsActionType.Add:
+      const newWallet:DisplayWallet = (action as AddWalletAction).payload;
       return {
         ...state,
         wallets: [
           ...state.wallets,
-          (action as AddWalletAction).payload
-        ]
+          newWallet
+        ],
+        totals: {
+          totalNetworkValue: state.totals.totalNetworkValue + newWallet.totalNetworkValueMicro,
+          totalMiningRewards: state.totals.totalMiningRewards + newWallet.miningRewardsMicro,
+          totalAmbassadorRewards: state.totals.totalAmbassadorRewards + newWallet.ambassadorRewardsMicro,
+        }
       };
 
     case WalletsActionType.Refresh:
@@ -54,7 +85,8 @@ export function walletsReducer(state: WalletsState = DEFAULT_STATE, action: Wall
     case WalletsActionType.Update:
       return {
         wallets: (action as UpdateWalletsAction).payload,
-        loading: false
+        loading: false,
+        totals: (action as UpdateWalletsAction).totals
       };
 
     default: return state;
