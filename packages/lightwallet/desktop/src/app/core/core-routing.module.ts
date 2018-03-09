@@ -15,6 +15,8 @@ import { WalletDetailComponent } from '@merit/desktop/app/core/wallets/wallet-de
 import { WalletDetailHistoryComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details-history/wallet-details-history.component';
 import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-settings/wallet-settings.component';
 import { GlobalSettingsComponent } from '@merit/desktop/app/core/global-settings/global-settings.component';
+import { SettingsPreferencesComponent } from '@merit/desktop/app/core/global-settings/settings-preferences/settings-preferences.component';
+
 
 const routes: Routes = [
   {
@@ -37,7 +39,9 @@ const routes: Routes = [
       { path: 'network', component: NetworkComponent },
       { path: 'backup', component: BackupComponent },
       { path: 'backup/mnemonic-phrase', component: MnemonicPhraseComponent },
-      { path: 'settings', component: GlobalSettingsComponent },
+      { path: 'settings', component: GlobalSettingsComponent, children: [
+        { path: '', component: SettingsPreferencesComponent },
+      ]},
       { path: '**', redirectTo: 'dashboard' }
     ]
   }
