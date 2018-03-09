@@ -9,6 +9,8 @@
     width: 100%
     padding: 10px
     z-index: 99
+    max-height: 182px
+    overflow-y: auto
     &__icon
       max-width: 13px
       width: 100%
@@ -22,3 +24,12 @@
       +font($baseFont--medium, 14px, 24px, $gun-metal, normal, none, none)
       &:hover
         color: $blue
+  &__color
+    width: 20px
+    height: 15px
+    border-radius: 3px
+    display: inline-block
+    margin-right: 10px
+  &__selected
+    display: flex
+    align-items: center

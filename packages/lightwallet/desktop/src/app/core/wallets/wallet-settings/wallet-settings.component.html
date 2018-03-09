@@ -1,3 +1,48 @@
-<div class="wallet-detail__content__title">
+<div class="wallet-details__content__title">
   <p>Wallet preferences</p>
+</div>
+<div class="wallet-settings__group">
+  <label class="ui-label">Edit wallet name</label>
+  <input type="text" name="" [value]="wallet.name" (keyup)="wallet.name = $event.target.value" placeholder="Enter wallet name here"
+  class="ui-input ui-input--form ui-input--text">
+</div>
+<div class="wallet-settings__group">
+  <label class="ui-label">Select identification color</label>
+  <app-select
+    (selectionEvent)="selectColor($event)"
+    [selected]="wallet.color"
+    [input]="avalibleColors"
+    style="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
+</div>
+<div class="wallet-settings__group wallet-settings__group__checkbox">
+  <label class="ui-label">Hide balance</label>
+  <div class="ui-checkbox">
+    <input type="checkbox" name="" value="">
+    <span class="ui-checkbox__switcher"></span>
+  </div>
+</div>
+<div class="wallet-settings__group wallet-settings__group__export-wallet">
+  <label class="ui-label">Export wallet</label>
+  <button type="button" name="button" class="ui-button ui-button--blue">
+    <img src="/assets/v1/icons/ui/aside-navigation/send.svg" alt="">
+  </button>
+</div>
+<div class="wallet-settings__multi-group">
+  <label class="ui-label">Set password</label>
+  <div class="wallet-settings__group">
+    <label class="ui-label"><small>Password</small></label>
+    <input type="password" name="" class="ui-input ui-input--form ui-input--text">
+  </div>
+  <div class="wallet-settings__group">
+    <label class="ui-label"><small>Confirm password</small></label>
+    <input type="password" name="" class="ui-input ui-input--form ui-input--text">
+  </div>
+  <div class="wallet-settings__group submit__password">
+    <div class="submit__password__warning">
+      <p><strong>WARNING</strong></p>
+      <p>This password cannot be rocovered. If the password is lost,
+        there is no way could recover your funds!</p>
+    </div>
+    <button type="button" name="button" class="ui-button ui-button--blue ui-button--md">SUBMIT</button>
+  </div>
 </div>

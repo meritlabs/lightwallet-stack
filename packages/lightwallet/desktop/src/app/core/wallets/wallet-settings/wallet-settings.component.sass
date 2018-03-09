@@ -1,0 +1,52 @@
+@import "~styles/v1/theme"
+.wallet-settings__group
+  max-width: 550px
+  width: 100%
+  &__checkbox
+    display: flex
+    justify-content: flex-start
+    align-items: center
+    margin-bottom: 30px
+    .ui-label
+      width: initial
+      display: inline-block
+      margin-right: 20px
+      margin-bottom: 0
+      position: relative
+      top: -2px
+  &__export-wallet
+    display: flex
+    justify-content: flex-start
+    align-items: center
+    margin-bottom: 30px
+    .ui-label
+      width: initial
+      display: inline-block
+      margin-right: 20px
+      margin-bottom: 0
+      position: relative
+    .ui-button
+      padding: 2px 15px
+      min-width: 60px
+      box-sizing: border-box
+      img
+        width: 15px
+.wallet-settings__multi-group
+  border: 1px solid $light-blue-grey
+  border-radius: 4px
+  padding: 20px
+  max-width: 550px
+  width: 100%
+.submit__password
+  display: flex
+  justify-content: space-between
+  align-items: center
+.submit__password__warning
+  padding-right: 20px
+  p
+    margin-bottom: 10px
+    +chageFontSize(14px, 16px)
+    strong
+      +chageFontSize(16px, 18px)
+      font-family: $baseFont--semibold
+      color: $rose-pink

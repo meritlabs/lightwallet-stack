@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-wallet-detail-history',
-  templateUrl: './wallet-detail-history.component.html',
-  styleUrls: ['./wallet-detail-history.component.sass']
+  selector: 'app-wallet-details-history',
+  templateUrl: './wallet-details-history.component.html',
+  styleUrls: ['./wallet-details-history.component.sass']
 })
 export class WalletDetailHistoryComponent implements OnInit {
 
