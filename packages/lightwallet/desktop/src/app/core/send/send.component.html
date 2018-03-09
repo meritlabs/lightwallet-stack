@@ -29,8 +29,11 @@
             </div>
           </div>
           <div class="sendMerit__form__group">
-            <label for="" class="ui-label">Include fee in the amount:</label>
-            <input type="checkbox" formControlName="feeIncluded">
+            <label for="feeIncluded" class="ui-label">Include fee in the amount:</label>
+            <div class="ui-checkbox">
+              <input type="checkbox" name="feeIncluded" id="feeIncluded" formControlName="feeIncluded">
+              <span class="ui-checkbox__switcher"></span>
+            </div>
           </div>
           <div class="sendMerit__form__group">
             <label for="" class="ui-label">Send from</label>
