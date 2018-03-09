@@ -1,4 +1,4 @@
-<div class="history__item">
+<div class="history__item" (click)="show=!show">
   <div class="history__item__icon">
     <img src="/assets/v1/images/history/transaction-{{item.type}}.png" alt="">
   </div>
@@ -10,8 +10,18 @@
     <div>
       <p class="history__item__info__amount history__item__info__amount--plus"
         *ngIf="item.value > 0">{{item.value}} MRT</p>
-      <p class="history__item__info__amount history__item__info__amount--minus" 
+      <p class="history__item__info__amount history__item__info__amount--minus"
         *ngIf="item.value < 0">{{item.value}} MRT</p>
+    </div>
+  </div>
+  <div class="history__item__details" *ngIf="show">
+    <div class="history__item__details__row">
+      <div class="history__item__details__column">Received to</div>
+      <div class="history__item__details__column">Personal Wallet</div>
+    </div>
+    <div class="history__item__details__row">
+      <div class="history__item__details__column">Status</div>
+      <div class="history__item__details__column">Success</div>
     </div>
   </div>
 </div>
