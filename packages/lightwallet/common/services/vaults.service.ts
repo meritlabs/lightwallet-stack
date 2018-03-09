@@ -24,8 +24,6 @@ export interface IVaultCreateData {
 @Injectable()
 export class VaultsService {
 
-  private readonly DEFAULT_FEE = 100000;
-
   private Bitcore;
 
   constructor(
@@ -175,10 +173,10 @@ export class VaultsService {
   * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes 
   * so we take all utxos and send them to the same address but differrent scriptPubkey
   */
-  private getRenewTxp(vault, newWhitelist, masterKey, fee = this.DEFAULT_FEE) {
+  private getRenewTxp(vault, newWhitelist, masterKey, fee = FeeService.DEFAULT_FEE) {
     const amount = vault.amount - fee;
 
-    if (vault.type != 0) throw 'Vault type is not supported';
+    if (vault.type != 0) throw new Error('Vault type is not supported');
 
     let tx = Bitcore.Transaction();
     
@@ -222,9 +220,9 @@ export class VaultsService {
   /*
   * creating transaction to transfer money from vault to one of whitelisted addresses
   */
-  private getSendTxp(vault, amount, address, fee = this.DEFAULT_FEE) {
+  private getSendTxp(vault, amount, address, fee = FeeService.DEFAULT_FEE) {
     
-    if (vault.type != 0) throw 'Vault type is not supported';
+    if (vault.type != 0) throw new Error('Vault type is not supported');
 
     //todo why are we using wallet private key here???
     const spendKey = Bitcore.HDPrivateKey.fromString(vault.walletClient.credentials.xPrivKey);
@@ -290,9 +288,7 @@ export class VaultsService {
   private async getDepositTxp(vault: any, wallet: MeritWalletClient): Promise<any> {
     let feeLevel = this.feeService.getCurrentFeeLevel();
 
-    if (vault.amount > Number.MAX_SAFE_INTEGER) {
-      return Promise.reject(new Error('The amount is too big')); // Because Javascript
-    }
+    if (vault.amount > Number.MAX_SAFE_INTEGER)  throw new Error('The amount is too big'); // Because Javascript
 
     let txp:any = {
       outputs: [{
@@ -328,7 +324,7 @@ export class VaultsService {
   */
   private prepareVault(type: number, opts: any = {}) {
     
-    if (type != 0) throw 'Vault type is not supported';
+    if (type != 0) throw new Error('Vault type is not supported');
 
     let tag = opts.masterPubKey.toAddress().hashBuffer;
 

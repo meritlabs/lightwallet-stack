@@ -8,14 +8,19 @@ import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
 import { LedgerService } from '@merit/common/services/ledger.service';
+import * as Bitcore from 'bitcore-lib';
+import { RateService } from 'services/rate.service';
 
 @Injectable()
 export class EasyReceiveService {
-  constructor(private logger: LoggerService,
-              private persistanceService: PersistenceService,
-              private feeService: FeeService,
-              private mwcService: MWCService,
-              private ledger: LedgerService) {
+  constructor(
+    private logger: LoggerService,
+    private persistanceService: PersistenceService,
+    private feeService: FeeService,
+    private mwcService: MWCService,
+    private ledger: LedgerService,
+    private rateService: RateService
+  ) {
   }
 
   async validateAndSaveParams(params: any): Promise<EasyReceipt> {
@@ -34,8 +39,7 @@ export class EasyReceiveService {
       return receipt;
     } else {
       this.logger.warn('EasyReceipt parameters are invalid: ', receipt);
-      // We resolve if the easyReceipt is invalid because it does not
-      // affect the control flow.
+      // No error thrown because invalid EasyReceipt should not break the flow
       return null;
     }
   }
@@ -53,12 +57,9 @@ export class EasyReceiveService {
   }
 
   rejectEasyReceipt(wallet, receipt: EasyReceipt, input): Promise<any> {
-    const senderAddress = this.mwcService
-      .getBitcore()
-      .PublicKey.fromString(receipt.senderPublicKey, 'hex')
-      .toAddress(wallet.network)
+    const senderAddress = Bitcore.PublicKey.fromString(receipt.senderPublicKey, 'hex')
+      .toAddress(ENV.network)
       .toString();
-
 
     try {
       return this.spendEasyReceipt(receipt, wallet, input, senderAddress);
@@ -77,7 +78,7 @@ export class EasyReceiveService {
 
     try {
       const scriptData = this.generateEasyScipt(receipt, password, network);
-      const scriptAddress = this.mwcService.getBitcore().Address(scriptData.scriptPubKey.getAddressInfo()).toString();
+      const scriptAddress = Bitcore.Address(scriptData.scriptPubKey.getAddressInfo()).toString();
 
       const txs = await walletClient.validateEasyScript(scriptAddress);
 
@@ -103,39 +104,29 @@ export class EasyReceiveService {
   private async spendEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: any, destinationAddress: any): Promise<void> {
     let opts: any = {};
 
-    const invite = _.find(input.txs, (tx: any) => tx.invite);
+    const invite = input.txs.find(tx => tx.invite);
     await this.sendEasyReceiveTx(input, invite, destinationAddress, wallet);
 
-    const transact = _.find(input.txs, (tx: any) => !tx.invite);
+    const transact = input.txs.find(tx => !tx.invite);
     await this.sendEasyReceiveTx(input, transact, destinationAddress, wallet);
 
     return this.persistanceService.deletePendingEasyReceipt(receipt);
   }
 
   private async sendEasyReceiveTx(input: any, tx: any, destinationAddress: string, wallet: MeritWalletClient) {
-    let opts: any = {};
-    let testTx = await wallet.buildEasySendRedeemTransaction(input, tx, destinationAddress, opts);
-
-    const txOpts = !tx.invite ? {} : { disableSmallFees: true };
-    const rawTxLength = testTx.serialize(txOpts).length;
-
-    if (!tx.invite) {
-      const feePerKB = await this.feeService.getCurrentFeeRate(wallet.network);
-      //TODO: Don't use magic numbers
-      opts.fee = Math.round(feePerKB * rawTxLength / 2000);
-    }
-
-    const finalTx = await wallet.buildEasySendRedeemTransaction(input, tx, destinationAddress, opts);
-    return await wallet.broadcastRawTx({ rawTx: finalTx.serialize(txOpts), network: wallet.network });
+    let txp = await this.buildEasySendRedeemTransaction(input, tx, destinationAddress);
+    let fee = !tx.invite ? await this.feeService.getTxpFee(tx) : null;
+    txp = await this.buildEasySendRedeemTransaction(input, tx, destinationAddress, fee);
+    return wallet.broadcastRawTx({ rawTx: txp.serialize(), network: ENV.network });
   }
 
   private generateEasyScipt(receipt: EasyReceipt, password, network) {
     const secret = this.ledger.hexToString(receipt.secret);
-    const receivePrv = this.mwcService.getBitcore().PrivateKey.forEasySend(secret, password, network);
-    const receivePub = this.mwcService.getBitcore().PublicKey.fromPrivateKey(receivePrv).toBuffer();
+    const receivePrv = Bitcore.PrivateKey.forEasySend(secret, password, network);
+    const receivePub = Bitcore.PublicKey.fromPrivateKey(receivePrv).toBuffer();
     const senderPubKey = this.ledger.hexToArray(receipt.senderPublicKey);
     const publicKeys = [receivePub, senderPubKey];
-    const script = this.mwcService.getBitcore().Script.buildEasySendOut(publicKeys, receipt.blockTimeout, network);
+    const script = Bitcore.Script.buildEasySendOut(publicKeys, receipt.blockTimeout, network);
 
     return {
       privateKey: receivePrv,
@@ -143,5 +134,66 @@ export class EasyReceiveService {
       script: script,
       scriptPubKey: script.toMixedScriptHashOut(senderPubKey),
     };
+  }
+
+    /**
+   * Creates a transaction to redeem an easy send transaction. The input param
+   * must contain
+   *    {
+   *      txs: [<transaction info from getinputforeasysend cli call>],
+   *      privateKey: <private key used to sign script>,
+   *      publicKey: <pub key of the private key>,
+   *      script: <easysend script to redeem>,
+   *      scriptId: <Address used script>
+   *    }
+   *
+   * input.txs contains
+   *     {
+   *      amount: <amount in MRT to redeem>,
+   *      index: <index of unspent transaction>,
+   *      txid: <id of transaction associated with the scriptId>
+   *     }
+   * @param {input} Input described above.
+   * @param {toAddress} Address to put the funds into.
+   */
+  buildEasySendRedeemTransaction(input: any, txn: any, toAddress: string, fee = FeeService.DEFAULT_FEE): Promise<any> {
+    
+    //TODO: Create and sign a transaction to redeem easy send. Use input as
+    //unspent Txo and use script to create scriptSig
+    let inputAddress = input.scriptId;
+
+    const totalAmount = txn.invite ? txn.amount : this.rateService.mrtToMicro(txn.amount);
+    const amount =  txn.invite ? txn.amount : totalAmount - fee; 
+
+    if (amount <= 0) throw new Error('Insufficient funds')
+
+    let tx = new Bitcore.Transaction();
+
+    if (txn.invite) {
+      tx.version = Bitcore.Transaction.INVITE_VERSION;
+    }
+
+    let p2shScript = input.script.toMixedScriptHashOut(input.senderPublicKey);
+    const p2shInput = {
+      output: Bitcore.Transaction.Output.fromObject({script: p2shScript,totalAmount}),
+      prevTxId: txn.txid,
+      outputIndex: txn.index,
+      script: input.script
+    };
+    tx.addInput(new Bitcore.Transaction.Input.PayToScriptHashInput(p2shInput, input.script, p2shScript));
+
+    tx.to(toAddress, amount);
+
+    if (!txn.invite) {
+      tx.fee(fee);
+    }
+
+    const sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, input.script);
+    const pubKeyId = Bitcore.PublicKey.fromString(input.senderPublicKey)._getID();
+    let inputScript = Bitcore.Script.buildEasySendIn(sig, input.script, pubKeyId);
+    tx.inputs[0].setScript(inputScript);
+
+    return tx;
+
   }
 }
