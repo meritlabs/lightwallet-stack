@@ -59,7 +59,7 @@ export class VaultsService {
     vault = await this.getVaultInfo(vault);
 
     const txp = await vault.walletClient.buildSpendVaultTx(vault, amount, toAddress, {});
-    const fee = await this.getTxpFee(txp);
+    const fee = await this.feeService.getTxpFee(txp);
     const tx = await vault.walletClient.buildSpendVaultTx(vault, amount, toAddress, fee);
     await vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
     vault = vault.walletClient.updateVaultInfo({_id: vault._id}); 
@@ -76,7 +76,7 @@ export class VaultsService {
 
     newWhitelist = newWhitelist.map(w => w.client.getRootAddress().toString());
     let txp = await this.getRenewTxp(vault, newWhitelist, masterKey);
-    const fee = await this.getTxpFee(txp);
+    const fee = await this.feeService.getTxpFee(txp);
     txp = await this.getRenewTxp(vault, newWhitelist, masterKey, fee);
 
     let txid = await vault.walletClient.broadcastRawTx({ rawTx: txp.serialize(), network: ENV.network });
@@ -90,6 +90,9 @@ export class VaultsService {
     return vault.walletClient.updateVaultInfo(infoToUpdate);
   }
 
+  /* 
+  * create and deposit new vault 
+  */
   async createVault(data: IVaultCreateData) {
     await this.checkCreateData(data);
 
@@ -320,12 +323,9 @@ export class VaultsService {
     return await wallet.createTxProposal(txp);
   }
 
-  private async getTxpFee(txp) {
-    const feePerKB = await this.feeService.getCurrentFeeRate(ENV.network);
-    const fee = Math.round(feePerKB * txp.serialize().length / 1024);
-    return fee; 
-  }
-
+  /* 
+  * create vautl object before transfering merit
+  */
   private prepareVault(type: number, opts: any = {}) {
     
     if (type != 0) throw 'Vault type is not supported';
@@ -363,5 +363,3 @@ export class VaultsService {
   }
 
 }
-
-

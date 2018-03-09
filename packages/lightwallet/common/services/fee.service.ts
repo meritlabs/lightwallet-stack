@@ -91,4 +91,12 @@ export class FeeService {
       return { data: this.cache.data, fromCache: false };
     }
   }
+
+  private async getTxpFee(txp) {
+    const feePerKB = await this.getCurrentFeeRate(ENV.network);
+    const fee = Math.round(feePerKB * txp.serialize().length / 1024);
+    return fee; 
+  }
+
+  
 }
