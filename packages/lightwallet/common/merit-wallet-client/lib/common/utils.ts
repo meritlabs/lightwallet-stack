@@ -9,6 +9,7 @@ import { Transaction, HDPublicKey, HDPrivateKey, Address, PrivateKey, PublicKey,
 
 import { Constants } from './constants';
 import { Defaults } from './defaults';
+import { formatAmount as meritCoreFormatAmount } from '@merit/common/utils/format';
 
 
 
@@ -139,36 +140,11 @@ export module Utils {
     return this.verifyMessage(requestPubKey, signature, pub.toString());
   };
 
+  // Beginning the process of refactoring common methods into a unified merit core location.
   export const  formatAmount = function(micros: number, unit: string, opts: any) {
     $.checkArgument(_.includes(_.keys(Constants.UNITS), unit));
 
-    function clipDecimals(number, decimals) {
-      let x = number.toString().split('.');
-      let d = (x[1] || '0').substring(0, decimals);
-      return parseFloat(x[0] + '.' + d);
-    };
-
-    function addSeparators(nStr, thousands, decimal, minDecimals) {
-      nStr = nStr.replace('.', decimal);
-      let x = nStr.split(decimal);
-      let x0 = x[0];
-      let x1 = x[1];
-
-      x1 = _.dropRightWhile(x1, function(n, i) {
-        return n == '0' && i >= minDecimals;
-      }).join('');
-      let x2 = x.length > 1 ? decimal + x1 : '';
-
-      x0 = x0.replace(/\B(?=(\d{3})+(?!\d))/g, thousands);
-      return x0 + x2;
-    };
-
-    opts = opts || {};
-
-    let u = Constants.UNITS[unit];
-    let precision = opts.fullPrecision ? 'full' : 'short';
-    let amount = clipDecimals((micros / u.toMicros), u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
-    return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u[precision].minDecimals);
+    return meritCoreFormatAmount(micros, unit, opts);
   };
 
   export const buildTx = function(txp) {

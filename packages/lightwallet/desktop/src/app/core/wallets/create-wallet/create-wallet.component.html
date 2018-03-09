@@ -1,66 +1,60 @@
-<h1>Create wallet</h1>
-
-<form [formGroup]="formData" (ngSubmit)="create()">
-  <div>
-    <div>
-      <label for="name">Wallet name</label>
-      <input type="text" name="name" id="name" formControlName="walletName">
-    </div>
-
-    <div>
-      <label for="parentAddress">Referrer address</label>
-      <input type="text" name="parentAddress" id="parentAddress" formControlName="parentAddress">
-    </div>
-
-    <div>
-      <label for="alias">Address alias <span>(optional)</span></label>
-      <!-- TODO: add tooltip that briefly explains what an alias is -->
-      <input type="text" name="alias" id="alias" formControlName="alias">
-    </div>
-
-    <div>
-      <label>Color</label>
-      <!-- TODO: create a button that opens a dialog to pick wallet color -->
-    </div>
-
-    <div>
-      <label for="hideBalance">Hide balance</label>
-      <input type="checkbox" name="hideBalance" id="hideBalance" formControlName="hideBalance">
-    </div>
+<div class="wallet__create">
+  <div class="wallet__create__title title--primary">
+    <p>Create wallet</p>
   </div>
-
-  <div>
-    <h3>Password (optional)</h3>
-    <p>
-      <b>Warning:</b> This password cannot be recovered. If the password is lost, there is no way you could recover your funds!
-    </p>
-
-    <div>
-      <label for="password">Password</label>
-      <input type="password" name="password" id="password" formControlName="password">
+  <form [formGroup]="formData" (ngSubmit)="create()">
+    <div class="wallet-settings__group">
+      <label class="ui-label" for="name">Wallet name</label>
+      <input type="text" name="name" id="name" formControlName="walletName" class="ui-input ui-input--form ui-input--text">
     </div>
-
-    <div>
-      <label for="repeatPassword">Confirm password</label>
-      <input type="password" name="repeatPassword" id="repeatPassword" formControlName="repeatPassword">
+    <div class="wallet-settings__group">
+      <label class="ui-label" for="parentAddress">Referrer address</label>
+      <input type="text" name="parentAddress" id="parentAddress" formControlName="parentAddress" class="ui-input ui-input--form ui-input--text">
     </div>
-
-    <div>
-      <label for="recoveryPhrase">Recovery phrase</label>
-      <textarea name="recoveryPhrase" id="recoveryPhrase" rows="4" placeholder="Enter the recovery phrase (BIP39)" formControlName="recoveryPhrase"></textarea>
+    <div class="wallet-settings__group">
+      <label for="alias" class="ui-label">Address alias <span>(optional)</span>
+        <span class="ui-tooltip">
+            <span class="ui-tooltip__text">
+              add tooltip that briefly explains what an alias is
+            </span>
+          </span>
+      </label>
+      <input type="text" name="alias" id="alias" formControlName="alias" class="ui-input ui-input--form ui-input--text">
     </div>
-  </div>
-
-
-  <div>
-    <h3>Advanced options</h3>
-    <div>
-      <label for="mwsUrl">Wallet Service URL</label>
-      <input type="text" id="mwsUrl" name="mwsUrl" formControlName="bwsurl">
+    <div class="wallet-settings__group">
+      <label class="ui-label">Color</label>
+      <input type="text" [value]="wallet.color" name="color" id="color" formControlName="color" hidden>
+      <app-select (selectionEvent)="selectColor($event)" [selected]="wallet.color" [input]="avalibleColors" style="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
     </div>
-  </div>
-
-  <button role="button" type="submit">
-    Create wallet
-  </button>
-</form>
+    <div class="wallet-settings__group wallet-settings__group__checkbox">
+      <label class="ui-label" for="hideBalance">Hide balance</label>
+      <div class="ui-checkbox">
+        <input type="checkbox" name="hideBalance" id="hideBalance" formControlName="hideBalance">
+        <span class="ui-checkbox__switcher"></span>
+      </div>
+    </div>
+    <div class="wallet-settings__multi-group">
+      <label class="ui-label">Password (optional)</label>
+      <div class="wallet-settings__group">
+        <label class="ui-label" for="password"><small>Password</small></label>
+        <input type="password" name="password" id="password" formControlName="password" class="ui-input ui-input--form ui-input--text">
+      </div>
+      <div class="wallet-settings__group">
+        <label class="ui-label" for="repeatPassword"><small>Confirm password</small></label>
+        <input type="password" name="repeatPassword" id="repeatPassword" formControlName="repeatPassword" class="ui-input ui-input--form ui-input--text">
+      </div>
+      <div class="wallet-settings__group">
+        <label for="recoveryPhrase" class="ui-label">Recovery phrase</label>
+        <textarea name="recoveryPhrase" id="recoveryPhrase" rows="4" class="ui-input ui-input--form ui-input--text" placeholder="Enter the recovery phrase (BIP39)" formControlName="recoveryPhrase"></textarea>
+      </div>
+    </div>
+    <div class="wallet-settings__multi-group">
+      <label class="ui-label">Advanced options</label>
+      <div class="wallet-settings__group">
+        <label class="ui-label" for="mwsUrl"><small>Wallet Service URL</small></label>
+        <input type="text" id="mwsUrl" name="mwsUrl" formControlName="bwsurl" class="ui-input ui-input--form ui-input--text">
+      </div>
+    </div>
+    <button role="button" type="submit" type="button" name="button" class="ui-button ui-button--blue ui-button--md">Create wallet</button>
+  </form>
+</div>
