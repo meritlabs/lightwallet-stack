@@ -97,3 +97,4 @@ export const selectWalletsState = createFeatureSelector<WalletsState>('wallets')
 export const getWalletsLoading = createSelector(selectWalletsState, state => state.loading);
 export const getWallets = createSelector(selectWalletsState, state => state.wallets);
 export const getWalletTotals = createSelector(selectWalletsState, state => state.totals);
+export const getWalletById = (id: string) => createSelector(selectWalletsState, state => state.wallets.find((wallet: DisplayWallet) => wallet.id === id));
