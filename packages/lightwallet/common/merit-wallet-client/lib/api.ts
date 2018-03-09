@@ -1736,7 +1736,7 @@ export class API {
    * @param {string} network - 'livenet' (default) or 'testnet'
    * @returns {Callback} cb - Returns error or an object with status information
    */
-  getFeeLevels(network: string): Promise<any> {
+  getFeeLevels(network: string = this.network): Promise<any> {
       (!$.checkArgument(network || _.includes(['livenet', 'testnet'], network)));
 
       return this._doGetRequest('/v1/feelevels/?network=' + (network || ENV.network));

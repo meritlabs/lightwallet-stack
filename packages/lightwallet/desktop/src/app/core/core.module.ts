@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
+import { ComponentsModule } from '@merit/desktop/app/components/components.module';
 import { CoreRoutingModule } from './core-routing.module';
 import { WalletsViewComponent } from './wallets/wallets.view';
 import { HistoryComponent } from './history/history.component';
@@ -24,7 +26,6 @@ import { HistoryListComponent } from './history/history-list/history-list.compon
 import { NotificationsComponent } from './iu/notifications/notifications.component';
 import { ToastNotificationComponent } from './iu/notifications/toast-notification/toast-notification.component';
 import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
-import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
 export function getPages() {
@@ -49,8 +50,9 @@ export function getPages() {
   imports: [
     CommonModule,
     CoreRoutingModule,
-    CommonProvidersModule.forRoot(),
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    CommonPipesModule,
+    ComponentsModule
   ],
   declarations: [
     CoreComponent,

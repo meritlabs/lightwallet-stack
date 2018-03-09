@@ -1,5 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
+import { AppEffects } from '@merit/common/effects/app.effects';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -34,7 +36,7 @@ export function getProviders() {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
@@ -50,9 +52,11 @@ export function getProviders() {
       }
     }),
     CommonProvidersModule.forRoot(),
+    CommonPipesModule,
     StoreModule.forRoot(reducer),
     ReactiveFormsModule,
     EffectsModule.forRoot([
+      AppEffects,
       WalletEffects
     ])
   ],
