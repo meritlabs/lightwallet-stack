@@ -1,5 +1,5 @@
-<div class="container--fluid receiveMerit">
-  <div class="receiveMerit__header container--inner title--primary">
+<div class="{{injected ? 'receiveMerit--injected' : 'receiveMerit'}}">
+  <div class="{{injected ? 'wallet-details__content__title' : 'receiveMerit__header container--inner title--primary'}}">
     <p>Receive Merit</p>
   </div>
   <div class="receiveMerit__content container--inner">
@@ -59,7 +59,7 @@
       </div>
     </div>
   </div>
-  <div class="receiveMerit__footer">
+  <div class="receiveMerit__footer" *ngIf="!injected">
     <div class="container--inner">
       <p class="receiveMerit__footer__caption"><strong>Did you know</strong> that you can receive Merit by simply giving people your @alias?  They can type it or paste it in and send to you with ease!</p>
     </div>

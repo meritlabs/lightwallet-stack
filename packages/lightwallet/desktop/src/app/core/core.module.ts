@@ -12,7 +12,7 @@ import { CommunityComponent } from './community/community.component';
 import { SelectComponent } from './iu/select/select.component';
 import { RowItemComponent } from './history/row-item/row-item.component';
 import { CreateWalletComponent } from './wallets/create-wallet/create-wallet.component';
-import { WalletDetailComponent } from './wallets/wallet-detail/wallet-detail.component';
+import { WalletDetailComponent } from './wallets/wallet-details/wallet-details.component';
 import { WalletSettingsComponent } from './wallets/wallet-settings/wallet-settings.component';
 import { NetworkComponent } from './network/network.component';
 import { ProfileStatsComponent } from './profile-stats/profile-stats.component';
@@ -26,6 +26,7 @@ import { ToastNotificationComponent } from './iu/notifications/toast-notificatio
 import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { WalletDetailHistoryComponent } from './wallets/wallet-details/wallet-details-history/wallet-details-history.component';
 import { QRCodeModule } from 'angular2-qrcode';
 
 
@@ -71,6 +72,7 @@ export function getPages() {
     HistoryListComponent,
     ToastNotificationComponent,
     NotificationsHistoryComponent,
+    WalletDetailHistoryComponent,
   ]
 })
 export class CoreModule {

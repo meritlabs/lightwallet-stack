@@ -35,7 +35,7 @@ export class ReceiveComponent implements OnInit {
   amountInFiat: any = 0;
   walletIcon: string = "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg";
   vaultIcon: string = "/assets/v1/icons/ui/wallets/vault-ico-grey.svg";
-  
+
   availableCurrencies: any = [
     {
       "name": 'USD',
@@ -73,7 +73,7 @@ export class ReceiveComponent implements OnInit {
     "value": 10
   };
 
-  // For now, the first wallet in the list of wallets is the default. 
+  // For now, the first wallet in the list of wallets is the default.
   // TODO(AW): Let's add a setting where the user can choose their default wallet.
   selectedWallet:DisplayWallet;
 
@@ -87,7 +87,7 @@ export class ReceiveComponent implements OnInit {
     private store: Store<IAppState>,
     private walletService: WalletService,
     private sendService: SendService,
-    private rateService: RateService       
+    private rateService: RateService
   ) {
     try {
       this.availableUnits = [
@@ -132,7 +132,7 @@ export class ReceiveComponent implements OnInit {
   changeAmount(event: any) {
     this.amount = event.target.value;
     let currency = this.selectedCurrency;
-     
+
     this.amountMicros = this.rateService.mrtToMicro(this.amount);
     this.amountInFiat = `${currency.symbol} ${this.amount * currency.value}`;
     this.formatAddress();
