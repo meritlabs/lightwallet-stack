@@ -29,6 +29,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { WalletDetailHistoryComponent } from './wallets/wallet-details/wallet-details-history/wallet-details-history.component';
 import { QRCodeModule } from 'angular2-qrcode';
 import { GlobalSettingsComponent } from './global-settings/global-settings.component';
+import { SettingsPreferencesComponent } from './global-settings/settings-preferences/settings-preferences.component';
 
 
 export function getPages() {
@@ -75,6 +76,7 @@ export function getPages() {
     NotificationsHistoryComponent,
     WalletDetailHistoryComponent,
     GlobalSettingsComponent,
+    SettingsPreferencesComponent,
   ]
 })
 export class CoreModule {
