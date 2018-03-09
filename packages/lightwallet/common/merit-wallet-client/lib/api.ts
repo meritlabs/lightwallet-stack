@@ -926,226 +926,6 @@ export class API {
     return Promise.resolve(tx);
   };
 
-  prepareVault(type: number, opts: any = {}) {
-    if (type == 0) {
-      let tag = opts.masterPubKey.toAddress().hashBuffer;
-
-      let whitelist = _.map(opts.whitelist, (e) => {
-        return Bitcore.Address.fromBuffer(e).hashBuffer;
-      });
-
-      const network = opts.masterPubKey.network.name;
-
-      let params = [
-        opts.spendPubKey.toBuffer(),
-        opts.masterPubKey.toBuffer(),
-      ];
-
-      const spendLimit = Bitcore.Unit.fromMRT(Constants.VAULT_SPEND_LIMIT).toMicros();       
-      params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
-      params = params.concat(whitelist);
-      params.push(Bitcore.Opcode.smallInt(whitelist.length));
-      params.push(tag);
-      params.push(Bitcore.Opcode.smallInt(type));
-
-      let redeemScript = Bitcore.Script.buildSimpleVaultScript(tag, network);
-      let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, opts.masterPubKey);
-
-      let vault = {
-        type: type,
-        amount: opts.amount,
-        tag: opts.masterPubKey.toAddress().hashBuffer,
-        whitelist: opts.whitelist,
-        spendPubKey: opts.spendPubKey,
-        masterPubKey: opts.masterPubKey,
-        redeemScript: redeemScript,
-        scriptPubKey: scriptPubKey,
-        address: Bitcore.Address(scriptPubKey.getAddressInfo()),
-        coins: []
-      };
-
-      return vault;
-    } else {
-      throw new Error('Unsupported vault type');
-    }
-  }
-
-  /**
-   * Renew vault
-   * Will make all pending tx invalid
-   */
-  async buildRenewVaultTx(vault: any, newWhitelist: Array<any>, masterKey: any, opts: any = {}) {
-
-    const coins = vault.coins;
-
-    var network = opts.network || ENV.network;
-    var fee = opts.fee || DEFAULT_FEE;
-
-    let totalAmount = _.sumBy(coins, 'micros');
-
-    let amount = totalAmount - fee;
-    if (amount <= 0) return MWCErrors.INSUFFICIENT_FUNDS;
-
-    var tx = new Bitcore.Transaction();
-
-    try {
-
-      if (vault.type == 0) {
-
-        let params = [
-          new Bitcore.PublicKey(vault.spendPubKey, { network }).toBuffer(),
-          new Bitcore.PublicKey(vault.masterPubKey, { network }).toBuffer()
-        ];
-
-        const whitelist = newWhitelist.map(w => Bitcore.Address(w).hashBuffer);
-        const spendLimit = Bitcore.Unit.fromMRT(Constants.VAULT_SPEND_LIMIT).toMicros();
-        params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
-        params = params.concat(whitelist);
-        params.push(Bitcore.Opcode.smallInt(whitelist.length));
-        params.push(new Buffer(vault.tag));
-        params.push(Bitcore.Opcode.smallInt(vault.type));
-
-        const redeemScript = new Bitcore.Script(vault.redeemScript);
-        const scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, masterKey.publicKey);
-
-        tx.addOutput(new Bitcore.Transaction.Output({
-          script: scriptPubKey,
-          micros: amount,
-        }));
-
-        tx.fee(fee);
-
-        coins.forEach(coin => {
-          const input = { prevTxId: coin.txid, outputIndex: coin.vout, script: redeemScript };
-          const PP2SHInput = new Bitcore.Transaction.Input.PayToScriptHashInput(input, redeemScript, coin.scriptPubKey);
-          tx.addInput(PP2SHInput, coin.scriptPubKey, coin.micros);
-        });
-
-        tx.addressType = 'PP2SH';
-
-        tx.inputs.forEach((input, i) => {
-          let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, Bitcore.PublicKey(vault.masterPubKey, network));
-          input.setScript(inputScript);
-        });
-
-        // Make sure the tx can be serialized
-        tx.serialize();
-
-      } else {
-        this.log.error('Vault type is not supported:', vault.type);
-        throw MWCErrors.COULD_NOT_BUILD_TRANSACTION;
-      }
-    } catch (ex) {
-      this.log.error('Could not build transaction from private key', ex);
-      throw MWCErrors.COULD_NOT_BUILD_TRANSACTION;
-    }
-
-    return tx;
-  };
-
-  /**
-   * Updating vault info on MWS
-   */
-  updateVaultInfo(vault) {
-    return this._doPostRequest(`/v1/vaults/${vault._id}/update_info`, vault);
-  }
-
-
-  /**
-   * Build spend tx for vault
-   */
-  async buildSpendVaultTx(vault: any, amount: number, address: any, opts: any = {}) {
-
-    const coins = await vault.walletClient.getVaultCoins(vault);
-    const spendKey = Bitcore.HDPrivateKey.fromString(vault.walletClient.credentials.xPrivKey);
-
-    var network = ENV.network;
-    var fee = opts.fee || DEFAULT_FEE;
-
-    let availableAmount = coins.reduce((amount, coin) => {
-      return amount + coin.micros;
-    },0);
-
-    if (amount > availableAmount) throw MWCErrors.INSUFFICIENT_FUNDS;
-
-    let selectedCoins = [];
-    let selectedAmount = 0;
-    for(let c = 0; c < coins.length && selectedAmount < amount; c++) {
-      let coin = coins[c];
-
-      selectedAmount += coin.micros;
-      selectedCoins.push(coin);
-    }
-
-    //should never be true
-    if(selectedAmount < amount) throw MWCErrors.INSUFFICIENT_FUNDS;
-
-    let change = selectedAmount - amount;
-
-    let redeemScript = new Bitcore.Script(vault.redeemScript);
-
-    let tx = new Bitcore.Transaction();
-
-    try {
-
-      if(vault.type == 0) {
-        const spendLimit = Bitcore.Unit.fromMRT(Constants.VAULT_SPEND_LIMIT).toMicros();
-
-        let toAddress = Bitcore.Address.fromString(address);
-        tx.to(toAddress, amount - fee);
-
-        let whitelist = vault.whitelist.map(w => Bitcore.Address(w).hashBuffer);
-
-        let params = [
-          new Bitcore.PublicKey(vault.spendPubKey, { network }).toBuffer(),
-          new Bitcore.PublicKey(vault.masterPubKey, { network }).toBuffer(),
-        ];
-
-        params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
-        params = params.concat(whitelist);
-        params.push(Bitcore.Opcode.smallInt(whitelist.length));
-        params.push(new Buffer(vault.tag));
-        params.push(Bitcore.Opcode.smallInt(vault.type));
-
-        let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, vault.masterPubKey);
-
-        tx.addOutput(new Bitcore.Transaction.Output({
-          script: scriptPubKey,
-          micros: change
-        }));
-
-        tx.fee(fee);
-
-        selectedCoins.forEach(coin => {
-          const input = { prevTxId: coin.txid, outputIndex: coin.vout, script: redeemScript };
-          const PP2SHInput = new Bitcore.Transaction.Input.PayToScriptHashInput(input, redeemScript, coin.scriptPubKey);
-          tx.addInput(PP2SHInput, coin.scriptPubKey, coin.micros);
-        });
-
-        tx.addressType = 'PP2SH';
-
-        tx.inputs.forEach((input, i) => {
-          let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
-          let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript, new Bitcore.PublicKey(vault.masterPubKey, network));
-          input.setScript(inputScript);
-        });
-
-        // Make sure the tx can be serialized
-        tx.serialize();
-
-      } else {
-        this.log.error('Vault type is not supported:', vault.type);
-        throw MWCErrors.COULD_NOT_BUILD_TRANSACTION;
-      }
-    } catch (ex) {
-      this.log.error('Could not build transaction from private key', ex);
-      throw MWCErrors.COULD_NOT_BUILD_TRANSACTION;
-    }
-
-    return tx;
-  };
-
   /**
    * Open a wallet and try to complete the public key ring.
    *
@@ -3019,6 +2799,22 @@ export class API {
     return this._doGetRequest(url);
   };
 
+  getVault(vaultId) {
+    $.checkState(this.credentials);
+
+    var url = '/v1/vaults/${vaultId}';
+    return this._doGetRequest(url);
+  }
+
+  /**
+   * Updating vault info on MWS side. Coins and amount will be calculated and stored on backend
+   */
+  updateVaultInfo(vault) {
+    $.checkState(this.credentials);
+
+     return this._doPostRequest(`/v1/vaults/${vault._id}/update_info`, vault);
+  }
+
   createVault(vault: any) {
     $.checkState(this.credentials);
 
@@ -3028,15 +2824,10 @@ export class API {
 
   renewVault(vault: any) {
     $.checkState(this.credentials);
-
     delete vault.walletClient; 
 
     var url = `/v1/vaults/${vault._id}`;
     return this._doPostRequest(url, vault);
-  };
-
-  getVaultCoins(vault: any) {
-    return this.getUtxos({ addresses: [Bitcore.Address(vault.address).toString()] });
   };
 
   getVaultTxHistory(vaultId: string, network: string): Promise<Array<any>> {

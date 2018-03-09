@@ -539,13 +539,16 @@ export class ProfileService {
   }
 
   public addVault(vault: any): Promise<void> {
-    this.profile.addVault(vault);
-    return this.persistenceService.storeProfile(this.profile);
+    this.vaults.push(vault);
   }
 
   public updateVault(vault: any): Promise<void> {
-    this.profile.updateVault(vault);
-    return this.persistenceService.storeProfile(this.profile);
+    this.vaults.some(v => {
+      if (vault._id == v._id) {
+        v = vault; 
+        return true;
+      }
+    });
   }
 
   public async getVaults(reload: boolean = false): Promise<Array<IVault>> {
