@@ -548,10 +548,11 @@ export class ProfileService {
     return this.persistenceService.storeProfile(this.profile);
   }
 
-  public async getVaults(reload: boolean = false): Array<IVault> {
+  public async getVaults(reload: boolean = false): Promise<Array<IVault>> {
     if (!this.wallets) return [];
     if (!this.vaults.length || !reload) {
-        for (let wallet of _.values(this.wallets)) {
+        let wallets: MeritWalletClient[] = _.values(this.wallets);  
+        for (let wallet of wallets) {
           this.vaults = this.vaults.concat(await this.vaultsService.getWalletVaults(wallet));
         }
     }
