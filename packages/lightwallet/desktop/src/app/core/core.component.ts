@@ -44,7 +44,7 @@ export class CoreComponent {
     },
     {
       name: 'Settings',
-      icon: '/assets/v1/icons/ui/aside-navigation/backup.svg',
+      icon: '/assets/v1/icons/ui/aside-navigation/settings.svg',
       link: '/settings'
     }
     // ,
