@@ -31,6 +31,7 @@ import { QRCodeModule } from 'angular2-qrcode';
 import { GlobalSettingsComponent } from './global-settings/global-settings.component';
 import { SettingsPreferencesComponent } from './global-settings/settings-preferences/settings-preferences.component';
 import { SettingsTermsOfUsComponent } from './global-settings/settings-terms-of-use/settings-terms-of-use.component';
+import { SettingsSessionLogComponent } from './global-settings/settings-session-log/settings-session-log.component';
 
 
 export function getPages() {
@@ -79,6 +80,7 @@ export function getPages() {
     GlobalSettingsComponent,
     SettingsPreferencesComponent,
     SettingsTermsOfUsComponent,
+    SettingsSessionLogComponent,
   ]
 })
 export class CoreModule {
