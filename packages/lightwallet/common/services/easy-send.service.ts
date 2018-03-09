@@ -4,10 +4,14 @@ import { MWCService } from '@merit/common/services/mwc.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { EasySend } from '@merit/common/models/easy-send';
+import { ENV } from '@app/env';
+import * as Bitcore from 'bitcore-lib';
 
 @Injectable()
 export class EasySendService {
   private bitcore: any = this.mwcService.getBitcore();
+
+  private readonly DEFAULT_TIMEOUT = 1008;
 
   constructor(private persistenceService: PersistenceService,
               @Optional() private socialSharing: SocialSharing,
@@ -18,15 +22,8 @@ export class EasySendService {
     const signPrivKey = rootKey.privateKey;
     const pubkey = signPrivKey.publicKey;
 
-    // TODO: get a passphrase from the user
-    let opts = {
-      network: wallet.network,
-      parentAddress: wallet.getRootAddress().toString(),
-      passphrase: password,
-    };
-
     try {
-      const easySend = await wallet.buildEasySendScript(opts);
+      const easySend = await this.bulidScript(wallet, opts);
       const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo()).toString();
 
       const scriptReferralOpts = {
@@ -35,10 +32,11 @@ export class EasySendService {
         signPrivKey,
         address: easySendAddress,
         addressType: this.bitcore.Address.PayToScriptHashType, // script address
-        network: opts.network,
+        network: ENV.network,
       };
 
       // easy send address is a mix of script_id pubkey_id
+      easySend.parentAddress = wallet.getRootAddress().toString();
       easySend.scriptAddress = easySendAddress;
       easySend.scriptReferralOpts = scriptReferralOpts;
 
@@ -101,5 +99,32 @@ export class EasySendService {
     const history: EasySend[] = await this.persistenceService.getPendingEasySends(walletId) || [];
     history.push(easySend);
     return this.persistenceService.setPendingEasySends(walletId, history);
+  }
+
+  /**
+   * Create an easySend script and create a transaction to the script address
+   */
+  private async bulidScript(wallet, passphrase = '', timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
+
+    const address = wallet.getRootAddress(); //todo check
+    const pubKey  = Bitcore.PublicKey.fromString(address.publicKeys[0]);
+    const rcvPair = Bitcore.PrivateKey.forNewEasySend(passphrase, ENV.network);
+    let pubKeys = [
+      rcvPair.key.publicKey.toBuffer(),
+      pubKey.toBuffer()
+    ];
+    const script = Bitcore.Script.buildEasySendOut(pubKeys, timeout, ENV.network);
+
+    return {
+      receiverPubKey: rcvPair.key.publicKey,
+      script: script.toMixedScriptHashOut(pubKey),
+      senderName: 'Someone', // TODO: get user name or drop sender name from data
+      senderPubKey: pubKey.toString(),
+      secret: rcvPair.secret.toString('hex'),
+      blockTimeout: timeout,
+      parentAddress: '',
+      scriptAddress: '',
+      scriptReferralOpts: {}
+    };
   }
 }
