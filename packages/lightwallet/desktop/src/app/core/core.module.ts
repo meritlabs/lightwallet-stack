@@ -30,6 +30,7 @@ import { WalletDetailHistoryComponent } from './wallets/wallet-details/wallet-de
 import { QRCodeModule } from 'angular2-qrcode';
 import { GlobalSettingsComponent } from './global-settings/global-settings.component';
 import { SettingsPreferencesComponent } from './global-settings/settings-preferences/settings-preferences.component';
+import { SettingsTermsOfUsComponent } from './global-settings/settings-terms-of-use/settings-terms-of-use.component';
 
 
 export function getPages() {
@@ -77,6 +78,7 @@ export function getPages() {
     WalletDetailHistoryComponent,
     GlobalSettingsComponent,
     SettingsPreferencesComponent,
+    SettingsTermsOfUsComponent,
   ]
 })
 export class CoreModule {

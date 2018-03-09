@@ -16,7 +16,7 @@ import { WalletDetailHistoryComponent } from '@merit/desktop/app/core/wallets/wa
 import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-settings/wallet-settings.component';
 import { GlobalSettingsComponent } from '@merit/desktop/app/core/global-settings/global-settings.component';
 import { SettingsPreferencesComponent } from '@merit/desktop/app/core/global-settings/settings-preferences/settings-preferences.component';
-
+import { SettingsTermsOfUsComponent } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.component'
 
 const routes: Routes = [
   {
@@ -41,6 +41,7 @@ const routes: Routes = [
       { path: 'backup/mnemonic-phrase', component: MnemonicPhraseComponent },
       { path: 'settings', component: GlobalSettingsComponent, children: [
         { path: '', component: SettingsPreferencesComponent },
+        { path: 'terms-of-use', component: SettingsTermsOfUsComponent },
       ]},
       { path: '**', redirectTo: 'dashboard' }
     ]
