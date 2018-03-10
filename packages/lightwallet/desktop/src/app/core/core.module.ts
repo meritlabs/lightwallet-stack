@@ -26,7 +26,7 @@ import { HistoryListComponent } from './history/history-list/history-list.compon
 import { NotificationsComponent } from './iu/notifications/notifications.component';
 import { ToastNotificationComponent } from './iu/notifications/toast-notification/toast-notification.component';
 import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { WalletDetailHistoryComponent } from './wallets/wallet-details/wallet-details-history/wallet-details-history.component';
 import { QRCodeModule } from 'angular2-qrcode';
 
@@ -57,7 +57,8 @@ export function getPages() {
     QRCodeModule,
     ReactiveFormsModule,
     CommonPipesModule,
-    ComponentsModule
+    ComponentsModule,
+    FormsModule
   ],
   declarations: [
     CoreComponent,

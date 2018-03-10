@@ -1,4 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { Store } from '@ngrx/store';
+import { IRootAppState } from '@merit/common/reducers';
+import { ActivatedRoute } from '@angular/router';
+import { switchMap, tap } from 'rxjs/operators';
+import { selectWalletById } from '@merit/common/reducers/wallets.reducer';
 
 @Component({
   selector: 'view-wallet-settings',
@@ -6,13 +13,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./wallet-settings.component.sass']
 })
 export class WalletSettingsComponent implements OnInit {
-  wallet: any = {
-    name: 'Wallet name',
-    color: {
-      name: 'Sunglo',
-      color: 'rgba(87,182,121, .6)'
-    }
-  };
   avalibleColors: any = [
     {
       name: 'Sunglo',
@@ -91,9 +91,25 @@ export class WalletSettingsComponent implements OnInit {
       color: '#383d43'
     }
   ];
-  constructor() { }
-  ngOnInit() { }
+
+  wallet: DisplayWallet;
+
+  constructor(private store: Store<IRootAppState>,
+              private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    const sub = this.route.parent.params.pipe(
+      tap(params => console.log('Params are ', params)),
+      switchMap(({ id }) => this.store.select(selectWalletById(id)))
+    ).subscribe((wallet: DisplayWallet) => {
+      this.wallet = wallet;
+      if (sub) {
+        sub.unsubscribe();
+      }
+    });
+  }
+
   selectColor($event) {
-    this.wallet.color = $event
+    this.wallet.client.color = $event
   }
 }
