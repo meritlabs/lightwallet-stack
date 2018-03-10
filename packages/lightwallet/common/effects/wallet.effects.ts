@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { of } from 'rxjs/observable/of';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { UpdateWalletsAction, WalletsActionType } from '@merit/common/reducers/wallets.reducer';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { defer } from 'rxjs/observable/defer';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { createDisplayWallet, DisplayWallet } from '@merit/common/models/display-wallet';
 import 'rxjs/add/observable/fromPromise';
@@ -25,8 +23,7 @@ export class WalletEffects {
               private walletService: WalletService,
               private sendService: SendService,
               private profileService: ProfileService,
-              private txFormatService: TxFormatService
-            ) {
+              private txFormatService: TxFormatService) {
   }
 
   private async updateAllWallets(): Promise<DisplayWallet[]> {

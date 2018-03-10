@@ -4,6 +4,7 @@ import { formatAmount } from '@merit/common/utils/format';
 
 export interface WalletsState {
   wallets: DisplayWallet[];
+  walletsMap: { [walletId: string]: DisplayWallet; };
   loading: boolean;
   totals: any;
 }
@@ -17,29 +18,36 @@ export enum WalletsActionType {
 export class AddWalletAction implements Action {
   type = WalletsActionType.Add;
 
-  constructor(public payload: DisplayWallet) {}
+  constructor(public payload: DisplayWallet) {
+  }
 }
 
 export class UpdateWalletsAction implements Action {
   type = WalletsActionType.Update;
   totals: any;
+  walletsMap: any = {};
+
   constructor(public payload: DisplayWallet[]) {
-    let totalMicros: any = {
+    const totalMicros: any = {
       totalNetworkValue: 0,
       totalMiningRewards: 0,
       totalAmbassadorRewards: 0,
       totalWalletsBalance: 0
-    }
+    };
+
     payload.forEach(w => {
       totalMicros.totalNetworkValue += w.totalNetworkValueMicro;
       totalMicros.totalMiningRewards += w.miningRewardsMicro;
       totalMicros.totalAmbassadorRewards += w.ambassadorRewardsMicro;
+
+      this.walletsMap[w.id] = w;
     });
+
     this.totals = {
-      totalNetworkValue: formatAmount(totalMicros.totalNetworkValue,'mrt', {}),
-      totalMiningRewards: formatAmount(totalMicros.totalMiningRewards,'mrt', {}),
-      totalAmbassadorRewards: formatAmount(totalMicros.totalAmbassadorRewards,'mrt', {})
-    }
+      totalNetworkValue: formatAmount(totalMicros.totalNetworkValue, 'mrt', {}),
+      totalMiningRewards: formatAmount(totalMicros.totalMiningRewards, 'mrt', {}),
+      totalAmbassadorRewards: formatAmount(totalMicros.totalAmbassadorRewards, 'mrt', {})
+    };
   }
 }
 
@@ -51,6 +59,7 @@ export type WalletsAction = AddWalletAction | UpdateWalletsAction | RefreshWalle
 
 const DEFAULT_STATE: WalletsState = {
   wallets: [],
+  walletsMap: {},
   loading: false,
   totals: {
     totalNetworkValue: 0,
@@ -65,6 +74,10 @@ export function walletsReducer(state: WalletsState = DEFAULT_STATE, action: Wall
       const newWallet: DisplayWallet = (action as AddWalletAction).payload;
       return {
         ...state,
+        walletsMap: {
+          ...state.walletsMap,
+          [newWallet.id]: newWallet
+        },
         wallets: [
           ...state.wallets,
           newWallet
@@ -72,7 +85,7 @@ export function walletsReducer(state: WalletsState = DEFAULT_STATE, action: Wall
         totals: {
           totalNetworkValue: state.totals.totalNetworkValue + newWallet.totalNetworkValueMicro,
           totalMiningRewards: state.totals.totalMiningRewards + newWallet.miningRewardsMicro,
-          totalAmbassadorRewards: state.totals.totalAmbassadorRewards + newWallet.ambassadorRewardsMicro,
+          totalAmbassadorRewards: state.totals.totalAmbassadorRewards + newWallet.ambassadorRewardsMicro
         }
       };
 
@@ -86,10 +99,12 @@ export function walletsReducer(state: WalletsState = DEFAULT_STATE, action: Wall
       return {
         wallets: (action as UpdateWalletsAction).payload,
         loading: false,
-        totals: (action as UpdateWalletsAction).totals
+        totals: (action as UpdateWalletsAction).totals,
+        walletsMap: (action as UpdateWalletsAction).walletsMap
       };
 
-    default: return state;
+    default:
+      return state;
   }
 }
 
@@ -97,4 +112,4 @@ export const selectWalletsState = createFeatureSelector<WalletsState>('wallets')
 export const getWalletsLoading = createSelector(selectWalletsState, state => state.loading);
 export const getWallets = createSelector(selectWalletsState, state => state.wallets);
 export const getWalletTotals = createSelector(selectWalletsState, state => state.totals);
-export const getWalletById = (id: string) => createSelector(selectWalletsState, state => state.wallets.find((wallet: DisplayWallet) => wallet.id === id));
+export const getWalletById = (id: string) => createSelector(selectWalletsState, state => state.walletsMap[id]);
