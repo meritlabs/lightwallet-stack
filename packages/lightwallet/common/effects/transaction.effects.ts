@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { selectWalletById, selectWallets } from '@merit/common/reducers/wallets.reducer';
+import {
+  AddWalletAction, selectWalletById, selectWallets,
+  WalletsActionType
+} from '@merit/common/reducers/wallets.reducer';
 import { Observable } from 'rxjs/Observable';
 import {
   RefreshOneWalletTransactions,
@@ -20,6 +23,12 @@ import { formatWalletHistory } from '@merit/common/utils/transactions';
 
 @Injectable()
 export class TransactionEffects {
+  @Effect()
+  refreshOnWalletRefresh$: Observable<RefreshOneWalletTransactions> = this.actions$.pipe(
+    ofType(WalletsActionType.Add),
+    map((action: AddWalletAction) => new RefreshOneWalletTransactions(action.payload.id))
+  );
+
   @Effect()
   refresh$: Observable<UpdateTransactionsAction> = this.actions$.pipe(
     ofType(TransactionActionType.Refresh),
