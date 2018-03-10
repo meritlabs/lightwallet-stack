@@ -9,6 +9,10 @@
     border-bottom: 1px solid $pale-grey-two
     padding-bottom: 15px
     margin-bottom: 15px
+    position: relative
+    +transition(.3s, linear)
+    &:hover
+      cursor: pointer
     &__icon
       background: $pale-grey
       width: 60px
@@ -33,3 +37,45 @@
           color: $blue
         &--minus
           color: $gun-metal
+    &__details
+      background: $pale-grey
+      width: 100%
+      top: 100%
+      left: 0
+      z-index: 2
+      max-height: 0px
+      transition: max-height .3s linear
+      overflow: hidden
+      box-sizing: border-box
+      position: relative
+      &::after,
+      &::before
+        content: ""
+        display: block
+        right: 20px
+        top: 20px
+        position: absolute
+        width: 10px
+        height: 1px
+        background: $gun-metal
+      &::after
+        transform: rotate(45deg)
+      &::before
+        transform: rotate(-45deg)
+      &__wrap
+        padding: 30px 0 20px
+      &__row
+        cursor: default
+        width: 100%
+        display: flex
+        justify-content: space-between
+        padding: 10px 20px 0px
+        font-family: $baseFont--medium
+        color: $blue-grey
+        .source
+          color: $blue
+        .success
+          color: $dark-green
+      &--show
+        max-height: 200px
+        transition: max-height .2s easy-out

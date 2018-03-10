@@ -14,14 +14,20 @@
         *ngIf="item.value < 0">{{item.value}} MRT</p>
     </div>
   </div>
-  <div class="history__item__details" *ngIf="show">
-    <div class="history__item__details__row">
-      <div class="history__item__details__column">Received to</div>
-      <div class="history__item__details__column">Personal Wallet</div>
-    </div>
-    <div class="history__item__details__row">
-      <div class="history__item__details__column">Status</div>
-      <div class="history__item__details__column">Success</div>
+  <div class="history__item__details" [ngClass]="{'history__item__details--show' : show}">
+    <div class="history__item__details__wrap">
+      <div class="history__item__details__row">
+        <div class="history__item__details__column">Received to</div>
+        <div class="history__item__details__column">
+          <i class="source">Personal Wallet</i>
+        </div>
+      </div>
+      <div class="history__item__details__row">
+        <div class="history__item__details__column">Status</div>
+        <div class="history__item__details__column">
+          <i class="success">Success</i>
+        </div>
+      </div>
     </div>
   </div>
 </div>
