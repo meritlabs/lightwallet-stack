@@ -76,6 +76,15 @@
           color: $blue
         .success
           color: $dark-green
+          &::before
+            display: inline-block
+            position: relative
+            margin-right: 5px
+            top: 1px
+            content: ""
+            width: 15px
+            height: 15px
+            background: url('/assets/v1/icons/ui/history/success.svg') no-repeat 0 0
       &--show
         max-height: 200px
         transition: max-height .2s easy-out
