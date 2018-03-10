@@ -1,12 +1,15 @@
 <ng-container *ngIf="wallet$ | async as wallet; else walletLoading">
   <div class="wallet-details container--fluid">
-    <div class="wallet-details__header" style="background: rgba(87,182,121, .6)">
+    <div class="wallet-details__header" [style.background]="wallet.color">
       <div class="wallet-details__header__wrap container--inner">
-        <div class="wallet-details__header__amount">
-          <img src="/assets/v1/images/wallets/personal.svg" alt=""
-               class="wallet-details__header__amount__icon">
-          <p><span class="wallet-details__header__amount__name">{{ wallet.name }}</span>
-            <small>Avalible:</small> 0.00 <small>MRT</small></p>
+        <div class="details">
+          <div class="name-container">
+            <!-- TODO(ibby/fedor): switch icon to vault if we're looking at a vault -->
+            <merit-icon name="wallet"></merit-icon>
+            <div class="name">{{ wallet.name }}</div>
+          </div>
+          <div class="address">{{ wallet.alias? '@' + wallet.alias : wallet.referrerAddress }}</div>
+          <div class="balance">0.00 <small>MRT</small></div>
         </div>
       </div>
     </div>
