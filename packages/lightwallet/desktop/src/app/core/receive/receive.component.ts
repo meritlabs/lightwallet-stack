@@ -7,7 +7,7 @@ import {DisplayWallet} from '@merit/common/models/display-wallet';
 import {Store} from '@ngrx/store';
 import {SendService} from '@merit/common/services/send.service';
 import 'rxjs/add/operator/take';
-import {getWallets, getWalletsLoading} from "@merit/common/reducers/wallets.reducer";
+import {selectWallets, selectWalletsLoading} from "@merit/common/reducers/wallets.reducer";
 import {IRootAppState} from "@merit/common/reducers";
 
 
@@ -18,8 +18,8 @@ import {IRootAppState} from "@merit/common/reducers";
   encapsulation: ViewEncapsulation.None
 })
 export class ReceiveComponent implements OnInit {
-  wallets$: Observable<DisplayWallet[]> = this.store.select(getWallets);
-  walletsLoading$: Observable<boolean> = this.store.select(getWalletsLoading);
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
+  walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
 
   protocolHandler: string = "merit";
   address: string;
