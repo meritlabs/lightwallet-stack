@@ -74,8 +74,7 @@
         color: $blue-grey
         .source
           color: $blue
-        .success
-          color: $dark-green
+        .status
           &::before
             display: inline-block
             position: relative
@@ -84,7 +83,15 @@
             content: ""
             width: 15px
             height: 15px
-            background: url('/assets/v1/icons/ui/history/success.svg') no-repeat 0 0
+          &--success
+            color: $dark-green
+            &::before
+              background: url('/assets/v1/icons/ui/history/success.svg') no-repeat 0 0
+          &--unconfirmed
+            color: $gun-metal
+            opacity: .7
+            &::before
+              background: url('/assets/v1/icons/ui/history/unconfirmed.svg') no-repeat 0 0
       &--show
         max-height: 200px
         transition: max-height .2s easy-out
