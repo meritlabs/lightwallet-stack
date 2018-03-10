@@ -19,20 +19,23 @@ export function ClientProperty(target: DisplayWallet, key: keyof MeritWalletClie
     enumerable: true,
     get: function() {
       return this.client[key];
+    },
+    set: function(value: any) {
+      this.client[key] = value;
     }
   });
 }
 
-
 export class DisplayWallet {
   @ClientProperty readonly id: string;
-  @ClientProperty readonly name: string;
+  @ClientProperty name: string;
   @ClientProperty readonly locked: boolean;
-  @ClientProperty readonly color: string;
-  @ClientProperty readonly totalNetworkValue: number;
-  @ClientProperty readonly credentials: any;
-  @ClientProperty readonly network: string;
-  @ClientProperty readonly status: any;
+  @ClientProperty color: string;
+  @ClientProperty totalNetworkValue: number;
+  @ClientProperty credentials: any;
+  @ClientProperty network: string;
+  @ClientProperty status: any;
+  @ClientProperty balanceHidden: boolean;
 
   referrerAddress: string;
   alias: string;
@@ -79,7 +82,7 @@ export class DisplayWallet {
     }
   }
 
-  // Alias if you have one; otherwise address. 
+  // Alias if you have one; otherwise address.
   async updateShareCode() {
     const { alias } = await this.sendService.getAddressInfo(this.referrerAddress);
     if (alias) {
@@ -134,11 +137,12 @@ export class DisplayWallet {
   }
 }
 
-
-
 export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService?: SendService, txFormatService?: TxFormatService, options: IDisplayWalletOptions = {}): Promise<DisplayWallet> {
   const displayWallet = new DisplayWallet(wallet, walletService, sendService, txFormatService);
+  return updateDisplayWallet(displayWallet, options);
+}
 
+export async function updateDisplayWallet(displayWallet: DisplayWallet, options: IDisplayWalletOptions) {
   if (!options.skipAlias)
     await displayWallet.updateAlias();
 
@@ -147,7 +151,7 @@ export async function createDisplayWallet(wallet: MeritWalletClient, walletServi
 
   if (!options.skipRewards)
     await displayWallet.updateRewards();
- 
+
   if (!options.skipShareCode)
     await displayWallet.updateShareCode();
 

@@ -26,7 +26,7 @@ export class TransactionEffects {
   @Effect()
   refreshOnWalletRefresh$: Observable<RefreshOneWalletTransactions> = this.actions$.pipe(
     ofType(WalletsActionType.Add),
-    map((action: AddWalletAction) => new RefreshOneWalletTransactions(action.payload.id))
+    map((action: AddWalletAction) => new RefreshOneWalletTransactions(action.wallet.id))
   );
 
   @Effect()
