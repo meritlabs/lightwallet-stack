@@ -12,7 +12,8 @@ export interface IWalletsState {
 export enum WalletsActionType {
   Add = '[Wallets] Add',
   Update = '[Wallets] Update',
-  Refresh = '[Wallets] Refresh'
+  Refresh = '[Wallets] Refresh',
+  UpdateOne = '[Wallets] Update one'
 }
 
 export class AddWalletAction implements Action {
