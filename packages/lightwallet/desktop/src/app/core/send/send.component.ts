@@ -6,7 +6,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { getEasySendURL } from '@merit/common/models/easy-send';
 import { SendMethodType } from '@merit/common/models/send-method';
 import { IRootAppState } from '@merit/common/reducers';
-import { getWallets } from '@merit/common/reducers/wallets.reducer';
+import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { ConfigService } from '@merit/common/services/config.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { FeeService } from '@merit/common/services/fee.service';
@@ -101,7 +101,7 @@ export class SendComponent implements OnInit {
     'value': 10
   };
 
-  wallets$: Observable<DisplayWallet[]> = this.store.select(getWallets);
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
 
   formData: FormGroup = this.formBuilder.group({
     amount: [0],

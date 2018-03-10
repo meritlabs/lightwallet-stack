@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { ActivatedRoute } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
-import { getWalletById } from '@merit/common/reducers/wallets.reducer';
+import { selectWalletById } from '@merit/common/reducers/wallets.reducer';
 
 @Component({
   selector: 'view-wallet-details',
@@ -16,7 +16,7 @@ export class WalletDetailComponent {
   wallet$: Observable<DisplayWallet> = this.route.params
     .pipe(
       switchMap(({ id }) =>
-        this.store.select(getWalletById(id))
+        this.store.select(selectWalletById(id))
       )
     );
 

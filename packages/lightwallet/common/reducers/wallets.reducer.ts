@@ -2,7 +2,7 @@ import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { formatAmount } from '@merit/common/utils/format';
 
-export interface WalletsState {
+export interface IWalletsState {
   wallets: DisplayWallet[];
   walletsMap: { [walletId: string]: DisplayWallet; };
   loading: boolean;
@@ -57,7 +57,7 @@ export class RefreshWalletsAction implements Action {
 
 export type WalletsAction = AddWalletAction | UpdateWalletsAction | RefreshWalletsAction;
 
-const DEFAULT_STATE: WalletsState = {
+const DEFAULT_STATE: IWalletsState = {
   wallets: [],
   walletsMap: {},
   loading: false,
@@ -68,7 +68,7 @@ const DEFAULT_STATE: WalletsState = {
   }
 };
 
-export function walletsReducer(state: WalletsState = DEFAULT_STATE, action: WalletsAction) {
+export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
     case WalletsActionType.Add:
       const newWallet: DisplayWallet = (action as AddWalletAction).payload;
@@ -108,8 +108,8 @@ export function walletsReducer(state: WalletsState = DEFAULT_STATE, action: Wall
   }
 }
 
-export const selectWalletsState = createFeatureSelector<WalletsState>('wallets');
-export const getWalletsLoading = createSelector(selectWalletsState, state => state.loading);
-export const getWallets = createSelector(selectWalletsState, state => state.wallets);
-export const getWalletTotals = createSelector(selectWalletsState, state => state.totals);
-export const getWalletById = (id: string) => createSelector(selectWalletsState, state => state.walletsMap[id]);
+export const selectWalletsState = createFeatureSelector<IWalletsState>('wallets');
+export const selectWalletsLoading = createSelector(selectWalletsState, state => state.loading);
+export const selectWallets = createSelector(selectWalletsState, state => state.wallets);
+export const selectWalletTotals = createSelector(selectWalletsState, state => state.totals);
+export const selectWalletById = (id: string) => createSelector(selectWalletsState, state => state.walletsMap[id]);
