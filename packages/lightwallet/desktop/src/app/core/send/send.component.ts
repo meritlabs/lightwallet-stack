@@ -256,22 +256,30 @@ export class SendComponent implements OnInit {
   }
 
   async send() {
+    console.log('Sending...');
     // TODO: show loading popup
     try {
-      if (this.referralsToSign) {
-        await Promise.all(this.referralsToSign.map(this.txData.wallet.sendReferral.bind(this.txData.wallet)));
+      if (this.referralsToSign && this.referralsToSign.length) {
+        console.log('Signing referrals...', this.referralsToSign);
+        await Promise.all(this.referralsToSign.map(ref => this.txData.wallet.sendReferral(ref)));
+        console.log('Sent referrals...');
         await Promise.all(this.referralsToSign.map(referral => {
           return this.txData.wallet.sendInvite(referral.address, 1);
         }));
+        console.log('Sent invites... ');
       }
+
+      console.log('Approving tx');
       await this.approveTx();
 
-      if (this.txData.sendMethod.type == SendMethodType.Easy) {
+      if (this.getType() == SendMethodType.Easy) {
         // TODO(ibby): handle easy-send
         await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
+        this.easySendUrl = this.txData.easySendUrl;
         console.log(this.txData.easySendUrl);
-
       }
+
+      console.log('Done sending!');
 
       // TODO: Show a toast telling the user that the transaction was successful
       // TODO: Redirect the user to the wallet history page
@@ -343,9 +351,8 @@ export class SendComponent implements OnInit {
     const { type, toAddress, amount, feeIncluded } = this.formData.getRawValue();
     const txData: any = {};
 
-    if (this.selectedWallet.client.status.spendableAmount == 0) {
+    if (this.selectedWallet.client.status.spendableAmount == 0)
       throw 'Insufficient funds';
-    }
 
     try {
 
@@ -407,6 +414,8 @@ export class SendComponent implements OnInit {
 
       txData.txp.fee = feeMicros;
       txData.feeAmount = feeMicros;
+
+      txData.wallet = this.selectedWallet.client;
 
       return txData;
     } catch (err) {

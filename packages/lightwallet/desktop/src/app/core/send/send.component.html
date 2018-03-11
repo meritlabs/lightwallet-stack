@@ -29,10 +29,14 @@
             </div>
           </div>
           <div class="sendMerit__form__group">
-            <label for="feeIncluded" class="ui-label">Include fee in the amount:</label>
-            <div class="ui-checkbox">
-              <input type="checkbox" name="feeIncluded" id="feeIncluded" formControlName="feeIncluded">
-              <span class="ui-checkbox__switcher"></span>
+            <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
+              <label for="feeIncluded" class="ui-label">Include fee in the amount:</label>
+            </div>
+            <div class="sendMerit__form__group__column sendMerit__form_group__column--30">
+              <div class="ui-checkbox">
+                <input type="checkbox" name="feeIncluded" id="feeIncluded" formControlName="feeIncluded">
+                <span class="ui-checkbox__switcher"></span>
+              </div>
             </div>
           </div>
           <div class="sendMerit__form__group">
@@ -50,18 +54,29 @@
                      class="ui-input ui-input--form ui-input--text" formControlName="toAddress">
             </div>
             <div class="sendMerit__form__group">
-              <div class="switchType">
+              <div class="switch-type">
+                <br>
                 Not sure if they have a Merit address?
                 <div>
-                  <a (click)="setType('easy')">Send via EasySend</a> instead.
+                  <a (click)="setType('easy')">Send via EasySend</a>.
                 </div>
               </div>
             </div>
           </div>
           <ng-template #classicSend>
-            <h2>Sending via EasySend</h2>
-            <p>You will see a sharable link after confirming the transaction.</p>
-            <small><a (click)="setType('classic')">Send via ClassicSend</a></small>
+            <div class="sendMerit__form__group">
+              <label class="ui-label">Sending via EasySend</label>
+              <p>You will see a link after confirming the transaction that you can share with your recipient.</p>
+            </div>
+            <div class="sendMerit__form__group">
+              <div class="switch-type">
+                <br>
+                Want to send to a Merit address?
+                <div>
+                  <a (click)="setType('classic')">Send via ClassicSend</a>.
+                </div>
+              </div>
+            </div>
           </ng-template>
           <div class="sendMerit__form__group">
             <button type="button" name="button" class="ui-button ui-button--blue" (click)="send()">Send Merit</button>
