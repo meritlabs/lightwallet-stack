@@ -17,28 +17,31 @@ export interface IDisplayWalletOptions {
 export function ClientProperty(target: DisplayWallet, key: keyof MeritWalletClient) {
   Object.defineProperty(target, key, {
     enumerable: true,
-    get: function() {
+    get: function () {
       return this.client[key];
+    },
+    set: function (value: any) {
+      this.client[key] = value;
     }
   });
 }
 
-
 export class DisplayWallet {
   @ClientProperty readonly id: string;
-  @ClientProperty readonly name: string;
   @ClientProperty readonly locked: boolean;
-  @ClientProperty readonly color: string;
-  @ClientProperty readonly totalNetworkValue: number;
-  @ClientProperty readonly credentials: any;
-  @ClientProperty readonly network: string;
-  @ClientProperty readonly status: any;
+  @ClientProperty name: string;
+  @ClientProperty color: string;
+  @ClientProperty totalNetworkValue: number;
+  @ClientProperty credentials: any;
+  @ClientProperty network: string;
+  @ClientProperty status: any;
+  @ClientProperty balanceHidden: boolean;
 
   referrerAddress: string;
   alias: string;
   shareCode: string;
   // We will only have one icon type to start.
-  iconUrl: string = "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg";
+  iconUrl: string = '/assets/v1/icons/ui/wallets/wallet-ico-grey.svg';
 
   totalBalanceStr?: string;
   totalBalanceMicros?: number;
@@ -63,13 +66,32 @@ export class DisplayWallet {
   constructor(public client: MeritWalletClient,
               private walletService: WalletService,
               private sendService?: SendService,
-              private txFormatService?: TxFormatService
-            ) {
+              private txFormatService?: TxFormatService) {
+    this.client = client;
+    this.walletService = walletService;
+    this.sendService = sendService;
+    this.txFormatService = txFormatService;
+
     this.referrerAddress = this.walletService.getRootAddress(this.client).toString();
 
     if (!this.client.color) {
       this.client.color = DEFAULT_WALLET_COLOR;
     }
+  }
+
+  exportPreferences() {
+    return {
+      id: this.id,
+      name: this.name,
+      color: this.color,
+      balanceHidden: this.balanceHidden
+    };
+  }
+
+  importPreferences(preferences: any) {
+    this.name = preferences.name || this.name;
+    this.color = preferences.color || this.color;
+    this.balanceHidden = Boolean(preferences.balanceHidden);
   }
 
   async updateAlias() {
@@ -79,7 +101,7 @@ export class DisplayWallet {
     }
   }
 
-  // Alias if you have one; otherwise address. 
+  // Alias if you have one; otherwise address.
   async updateShareCode() {
     const { alias } = await this.sendService.getAddressInfo(this.referrerAddress);
     if (alias) {
@@ -134,11 +156,12 @@ export class DisplayWallet {
   }
 }
 
-
-
 export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService?: SendService, txFormatService?: TxFormatService, options: IDisplayWalletOptions = {}): Promise<DisplayWallet> {
   const displayWallet = new DisplayWallet(wallet, walletService, sendService, txFormatService);
+  return updateDisplayWallet(displayWallet, options);
+}
 
+export async function updateDisplayWallet(displayWallet: DisplayWallet, options: IDisplayWalletOptions) {
   if (!options.skipAlias)
     await displayWallet.updateAlias();
 
@@ -147,7 +170,7 @@ export async function createDisplayWallet(wallet: MeritWalletClient, walletServi
 
   if (!options.skipRewards)
     await displayWallet.updateRewards();
- 
+
   if (!options.skipShareCode)
     await displayWallet.updateShareCode();
 
