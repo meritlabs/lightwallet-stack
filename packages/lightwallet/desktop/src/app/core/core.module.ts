@@ -32,6 +32,7 @@ import { GlobalSettingsComponent } from './global-settings/global-settings.compo
 import { SettingsPreferencesComponent } from './global-settings/settings-preferences/settings-preferences.component';
 import { SettingsTermsOfUsComponent } from './global-settings/settings-terms-of-use/settings-terms-of-use.component';
 import { SettingsSessionLogComponent } from './global-settings/settings-session-log/settings-session-log.component';
+import { ImportWalletComponent } from './wallets/import-wallet/import-wallet.component';
 
 
 export function getPages() {
@@ -81,6 +82,7 @@ export function getPages() {
     SettingsPreferencesComponent,
     SettingsTermsOfUsComponent,
     SettingsSessionLogComponent,
+    ImportWalletComponent,
   ]
 })
 export class CoreModule {
