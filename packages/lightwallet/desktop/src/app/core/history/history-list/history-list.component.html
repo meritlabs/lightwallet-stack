@@ -3,7 +3,10 @@
   <div *ngFor="let item of history; let i=index">
     <app-row-item [item]="item"
                   *ngIf="i < limit"
-                  [expande]="expande"
-                  (expandEv)="receiveSelection($event)"></app-row-item>
+                  [ngClass]="{'active' : activeIndex === i}"
+                  [activeIndex] = "activeIndex"
+                  [index] = "i"
+                  (click)="toggleClass($event, i)"
+                  ></app-row-item>
   </div>
 </div>
