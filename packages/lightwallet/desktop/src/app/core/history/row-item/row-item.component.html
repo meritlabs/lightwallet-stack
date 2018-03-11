@@ -1,4 +1,4 @@
-<div class="history__item" (click)="show=!show">
+<div class="history__item" (click)="expandThis(expande)">
   <div class="history__item__icon">
     <img src="/assets/v1/images/history/transaction-{{item.type}}.png" alt="">
   </div>
@@ -14,7 +14,7 @@
         *ngIf="item.value < 0">{{item.value}} MRT</p>
     </div>
   </div>
-  <div class="history__item__details" [ngClass]="{'history__item__details--show' : show}">
+  <div class="history__item__details" [ngClass]="{'history__item__details--show': expande}">
     <div class="history__item__details__wrap">
       <div class="history__item__details__row">
         <div class="history__item__details__column">Received to</div>
