@@ -1245,7 +1245,7 @@ export class API {
   protected _doRequest(method: string, url: string, args: any, useSession: boolean, secondRun = false): Promise<{ body: any, header: any }> {
     return new Promise((resolve, reject) => {
 
-      let headers = this._getHeaders(method, url, args);
+      let headers = this._getHeaders();
 
       if (this.credentials) {
         headers['x-identity'] = this.credentials.copayerId;
@@ -1888,31 +1888,28 @@ export class API {
    * @param {string} opts.network          - (optional) network
    * @param {string} opts.alias          - (optional) Address alias
    */
-  async sendReferral(opts: ISendReferralOptions = {}): Promise<any> {
+  async sendReferral(opts?: ISendReferralOptions): Promise<any> {
+    opts = {
+      network: ENV.network,
+      ...opts
+    };
 
-    if (opts) {
-      $.shouldBeObject(opts);
-    }
-
-    const network = opts.network || ENV.network;
-    if (!_.includes(['testnet', 'livenet'], network)) {
+    if (!_.includes(['testnet', 'livenet'], opts.network)) {
       throw Error('Invalid network');
     }
 
-    if (network != this.credentials.network) {
+    if (opts.network != this.credentials.network) {
       throw Error('Existing keys were created for a different network');
     }
 
     if (!this.credentials) {
       this.log.info('Generating new keys');
       this.seedFromRandom({
-        network: network
+        network: opts.network
       });
     } else {
       this.log.info('Using existing keys');
     }
-
-    let parentAddress = opts.parentAddress;
 
     try {
       Bitcore.encoding.Base58Check.decode(opts.parentAddress);
@@ -1926,8 +1923,8 @@ export class API {
     }
 
     const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-      Bitcore.Address.fromString(parentAddress, network.name).toBufferLean(),
-      Bitcore.Address.fromString(opts.address, network.name).toBufferLean()
+      Bitcore.Address.fromString(parentAddress, opts.network).toBufferLean(),
+      Bitcore.Address.fromString(opts.address, opts.network).toBufferLean()
     ]));
 
     const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
@@ -1939,7 +1936,7 @@ export class API {
       pubkey: opts.pubkey,
       signature: signature.toString('hex'),
       alias: opts.alias
-    }, network);
+    }, opts.network);
 
     return this._doPostRequest('/v1/referral/', { referral: referral.serialize() });
   };
