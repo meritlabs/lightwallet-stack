@@ -45,10 +45,12 @@ export class HistoryListComponent implements OnInit {
       "type": "regular"
     }
   ];
-  expande: boolean = false;
-  receiveSelection($event) {
-    this.expande = $event
-  }
+  activeIndex: number = 0;
+
+  toggleClass(event, i: number) {
+   event.preventDefault();
+   this.activeIndex = i;
+ }
   constructor() {}
   ngOnInit() {}
 }

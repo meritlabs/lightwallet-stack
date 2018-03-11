@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-row-item',
@@ -7,27 +7,9 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class RowItemComponent implements OnInit {
   @Input() item: any;
-  @Input() expande: Boolean;
+  @Input() activeIndex: number;
+  @Input() index: number;
 
   constructor() {}
-  @Output() expandEv = new EventEmitter<boolean>();
-  expandThis(value) {
-this.expandEv.emit(true);
-    if(this.expande === false) {
-
-      this.expande = true;
-      this.expandEv.emit(false);
-    }else{
-      this.expande = false;
-    }
-
-    // if(show === false) {
-    //   this.show = true;
-    // }else{
-    //   this.show = false;
-    // }
-
-
-  }
   ngOnInit() {}
 }
