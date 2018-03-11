@@ -396,6 +396,8 @@ export class WalletService {
   }
 
   async publishTx(wallet: MeritWalletClient, txp: any): Promise<any> {
+    if (_.isEmpty(txp) || _.isEmpty(wallet))
+      throw new Error('MISSING_PARAMETER');
     try {
       return wallet.publishTxProposal({ txp })
     } catch (err) {
@@ -633,13 +635,13 @@ export class WalletService {
 
     if (txp.status == 'pending') {
       this.logger.info('@@PS: PENDING');
-      return this.signAndBroadcast(wallet, txp, password);
     } else {
       this.logger.info('@@PS: NOT PENDING');
-      const publishedTxp = await this.publishTx(wallet, txp);
+      txp = await this.publishTx(wallet, txp);
       this.logger.info('@@PS: AFTER PublishTx');
-      return this.signAndBroadcast(wallet, publishedTxp, password);
     }
+
+    return this.signAndBroadcast(wallet, txp, password);
   }
 
   async getEncodedWalletInfo(wallet: MeritWalletClient, password: string): Promise<any> {
