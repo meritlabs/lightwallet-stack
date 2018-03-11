@@ -397,9 +397,7 @@ export class WalletService {
 
   async publishTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     try {
-      return wallet.publishTxProposal({
-        txp: txp
-      })
+      return wallet.publishTxProposal({ txp })
     } catch (err) {
       throw new Error('error publishing tx: ' + err);
     }

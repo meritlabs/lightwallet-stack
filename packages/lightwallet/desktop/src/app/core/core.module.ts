@@ -24,7 +24,7 @@ import { WalletsListComponent } from './wallets/wallets/wallets.component';
 import { VaultsListComponent } from './wallets/vaults/vaults.component';
 import { HistoryListComponent } from './history/history-list/history-list.component';
 import { NotificationsComponent } from './iu/notifications/notifications.component';
-import { ToastNotificationComponent } from './iu/notifications/toast-notification/toast-notification.component';
+import { ToastNotificationComponent } from '../components/toast-notification/toast-notification.component';
 import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { WalletDetailHistoryComponent } from './wallets/wallet-details/wallet-details-history/wallet-details-history.component';
