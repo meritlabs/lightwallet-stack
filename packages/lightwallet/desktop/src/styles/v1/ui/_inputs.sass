@@ -63,28 +63,30 @@
     height: 30px
     cursor: pointer
     opacity: 0
-    &:checked ~ .ui-checkbox__switcher::after
-      left: 31px
+    &:checked ~ .ui-checkbox__switcher
       background: $blue
+      &::after
+        left: 14px
   &__switcher
     position: relative
     z-index: 1
     display: inline-block
-    height: 30px
-    width: 60px
+    height: 14px
+    width: 34px
     border-radius: 50px
-    background: $white
-    border: 1px solid $light-blue-grey
-    box-shadow: inset 1px 1px 2px rgba(0,0,0, .4)
+    background: #e9edf2
+    border: 1px solid #b7bcc8
+    +transition(.15s, ease-out)
     &::after
       content: ""
       display: block
       position: absolute
-      width: 23px
-      height: 23px
+      width: 18px
+      height: 18px
       border-radius: 25px
-      background: $light-blue-grey
-      left: 4px
-      top: 2px
-      box-shadow: 1px 1px 2px rgba(0,0,0, .4)
-      +transition(.3s, linear)
+      background: white
+      border: 1px solid #b7bcc8
+      left: -1px
+      top: -4px
+      //box-shadow: 1px 1px 2px rgba(0,0,0, .4)
+      +transition(.15s, ease-out)
