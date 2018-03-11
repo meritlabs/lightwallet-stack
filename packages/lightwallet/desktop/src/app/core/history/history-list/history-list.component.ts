@@ -45,11 +45,15 @@ export class HistoryListComponent implements OnInit {
       "type": "regular"
     }
   ];
-  activeIndex: number = 0;
+  activeIndex: number;
 
   toggleClass(event, i: number) {
    event.preventDefault();
-   this.activeIndex = i;
+   if(this.activeIndex !== i) {
+     this.activeIndex = i;
+   }else {
+     this.activeIndex = null;
+   }
  }
   constructor() {}
   ngOnInit() {}
