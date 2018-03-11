@@ -1952,7 +1952,7 @@ export class API {
   /**
    * Recreates a wallet, given credentials (with wallet id)
    */
-  recreateWallet(c: any): Promise<any> {
+  recreateWallet(): Promise<any> {
     $.checkState(this.credentials);
     $.checkState(this.credentials.isComplete());
     $.checkState(this.credentials.walletPrivKey);

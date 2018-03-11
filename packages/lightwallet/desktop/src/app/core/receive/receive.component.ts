@@ -99,7 +99,7 @@ export class ReceiveComponent implements OnInit {
   async ngOnInit() {
     try {
       this.selectedWallet = (await this.wallets$.take(1).toPromise())[0];
-      this.address = this.walletService.getRootAddress(this.selectedWallet.client).toString();
+      this.address = this.selectedWallet.client.getRootAddress().toString();
       let info = await this.sendService.getAddressInfo(this.address);
       this.alias = info.alias;
       this.formatAddress();

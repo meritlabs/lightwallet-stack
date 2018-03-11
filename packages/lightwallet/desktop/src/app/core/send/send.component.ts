@@ -113,6 +113,10 @@ export class SendComponent implements OnInit {
 
   availableUnits: Array<{ type: string, name: string }>;
 
+  easySendUrl: string;
+
+  error: string;
+
   receipt$: Observable<Partial<ISendReceipt>> = merge(
     defer(() => of(this.formData.getRawValue())),
     this.formData.valueChanges.debounceTime(500)
@@ -176,8 +180,6 @@ export class SendComponent implements OnInit {
       })
     );
 
-  error: string;
-
   private referralsToSign: any[];
   private txData: any;
   private amount: any;
@@ -190,7 +192,8 @@ export class SendComponent implements OnInit {
               private rateService: RateService,
               private easySendService: EasySendService,
               private txFormatService: TxFormatService,
-              private configService: ConfigService) {
+              private configService: ConfigService,
+              private walletService: WalletService) {
   }
 
   async ngOnInit() {
@@ -253,7 +256,40 @@ export class SendComponent implements OnInit {
   }
 
   async send() {
+    // TODO: show loading popup
+    try {
+      if (this.referralsToSign) {
+        await Promise.all(this.referralsToSign.map(this.txData.wallet.sendReferral.bind(this.txData.wallet)));
+        await Promise.all(this.referralsToSign.map(referral => {
+          return this.txData.wallet.sendInvite(referral.address, 1);
+        }));
+      }
+      await this.approveTx();
 
+      if (this.txData.sendMethod.type == SendMethodType.Easy) {
+        // TODO(ibby): handle easy-send
+        await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
+        console.log(this.txData.easySendUrl);
+
+      }
+
+      // TODO: Show a toast telling the user that the transaction was successful
+      // TODO: Redirect the user to the wallet history page
+    } catch (err) {
+      this.logger.warn(err);
+      // TODO: display error to user
+    } finally {
+      // TODO: dismiss the loading dialog
+    }
+  }
+
+  private approveTx() {
+    if (!this.txData.wallet.canSign() && !this.txData.wallet.isPrivKeyExternal()) {
+      this.logger.info('No signing proposal: No private key');
+      return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp);
+    } else {
+      return this.walletService.publishAndSign(this.txData.wallet, this.txData.txp);
+    }
   }
 
   private async getEasyData() {

@@ -72,7 +72,7 @@ export class DisplayWallet {
     this.sendService = sendService;
     this.txFormatService = txFormatService;
 
-    this.referrerAddress = this.walletService.getRootAddress(this.client).toString();
+    this.referrerAddress = this.client.getRootAddress().toString();
 
     if (!this.client.color) {
       this.client.color = DEFAULT_WALLET_COLOR;
@@ -113,7 +113,7 @@ export class DisplayWallet {
 
   async updateStatus() {
     this.client.status = await this.walletService.getStatus(this.client, { force: true });
-    this.inviteRequests = await this.walletService.getUnlockRequests(this.client);
+    this.inviteRequests = await this.client.getUnlockRequests();
     this.invites = this.status.availableInvites;
     if (this.status.totalBalanceStr) {
       this.totalBalanceStr = this.client.status.totalBalanceStr;
