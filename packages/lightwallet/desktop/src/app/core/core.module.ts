@@ -15,7 +15,7 @@ import { SelectComponent } from './iu/select/select.component';
 import { RowItemComponent } from './history/row-item/row-item.component';
 import { CreateWalletComponent } from './wallets/create-wallet/create-wallet.component';
 import { WalletDetailComponent } from './wallets/wallet-details/wallet-details.component';
-import { WalletSettingsComponent } from './wallets/wallet-settings/wallet-settings.component';
+import { WalletSettingsComponent } from './wallets/wallet-details/wallet-settings/wallet-settings.component';
 import { NetworkComponent } from './network/network.component';
 import { ProfileStatsComponent } from './profile-stats/profile-stats.component';
 import { BackupComponent } from './backup/backup.component';

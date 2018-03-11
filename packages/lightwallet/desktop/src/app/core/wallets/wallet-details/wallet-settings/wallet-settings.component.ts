@@ -1,19 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
 import { ActivatedRoute } from '@angular/router';
-import { switchMap, tap } from 'rxjs/operators';
-import { selectWalletById } from '@merit/common/reducers/wallets.reducer';
+import { debounceTime, switchMap, tap } from 'rxjs/operators';
+import { selectWalletById, UpdateOneWalletAction } from '@merit/common/reducers/wallets.reducer';
+import { FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'view-wallet-settings',
   templateUrl: './wallet-settings.component.html',
   styleUrls: ['./wallet-settings.component.sass']
 })
-export class WalletSettingsComponent implements OnInit {
-  avalibleColors: any = [
+export class WalletSettingsComponent implements OnInit, OnDestroy {
+  availableColors: any = [
     {
       name: 'Sunglo',
       color: '#E57373'
@@ -92,24 +92,55 @@ export class WalletSettingsComponent implements OnInit {
     }
   ];
 
+  selectedColor: any;
+
   wallet: DisplayWallet;
 
+  settingsForm = this.formBuilder.group({
+    name: '',
+    balanceHidden: false
+  });
+
+  passwordChangeForm = this.formBuilder.group({
+    currentPassword: '',
+    password: '',
+    repeatPassword: ''
+  });
+
+  private subs: any[] = [];
+
   constructor(private store: Store<IRootAppState>,
-              private route: ActivatedRoute) {}
+              private route: ActivatedRoute,
+              private formBuilder: FormBuilder) {}
 
   ngOnInit() {
-    const sub = this.route.parent.params.pipe(
+    this.subs.push(this.route.parent.params.pipe(
       tap(params => console.log('Params are ', params)),
       switchMap(({ id }) => this.store.select(selectWalletById(id)))
     ).subscribe((wallet: DisplayWallet) => {
       this.wallet = wallet;
-      if (sub) {
-        sub.unsubscribe();
-      }
-    });
+
+      this.settingsForm.get('name').setValue(wallet.name);
+      this.settingsForm.get('balanceHidden').setValue(wallet.balanceHidden);
+
+      this.selectedColor = this.availableColors.find(c => wallet.color == c.color);
+      this.subs.push(this.settingsForm.valueChanges.pipe(debounceTime(100)).subscribe(({ name, balanceHidden }) => {
+        this.wallet.name = name;
+        this.wallet.balanceHidden = balanceHidden;
+        this.store.dispatch(new UpdateOneWalletAction(this.wallet));
+      }));
+    }));
   }
 
-  selectColor($event) {
-    this.wallet.client.color = $event
+  ngOnDestroy() {
+    try {
+      this.subs.forEach(sub => sub.unsubscribe());
+    } catch (e) {}
+  }
+
+  selectColor(selectedColor: any) {
+    this.selectedColor = selectedColor;
+    this.wallet.color = selectedColor.color;
+    this.store.dispatch(new UpdateOneWalletAction(this.wallet));
   }
 }

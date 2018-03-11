@@ -9,7 +9,14 @@
             <div class="name">{{ wallet.name }}</div>
           </div>
           <div class="address">{{ wallet.alias? '@' + wallet.alias : wallet.referrerAddress }}</div>
-          <div class="balance">0.00 <small>MRT</small></div>
+          <div class="balance">
+            <ng-container *ngIf="!wallet.balanceHidden; else balanceHidden">
+              {{ wallet.totalBalanceStr }} <small>MRT</small>
+            </ng-container>
+            <ng-template #balanceHidden>
+              [Balance hidden]
+            </ng-template>
+          </div>
         </div>
       </div>
     </div>
