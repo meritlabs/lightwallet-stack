@@ -13,7 +13,7 @@ import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phras
 import { CreateWalletComponent } from '@merit/desktop/app/core/wallets/create-wallet/create-wallet.component';
 import { WalletDetailComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details.component';
 import { WalletDetailHistoryComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details-history/wallet-details-history.component';
-import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-settings/wallet-settings.component';
+import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-settings/wallet-settings.component';
 
 
 const routes: Routes = [

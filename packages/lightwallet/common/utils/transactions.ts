@@ -27,7 +27,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           tx.type = 'credit';
 
           if (tx.isInvite) {
-            if (i === 0){
+            if (i === 0) {
               tx.isWalletUnlock = true;
               tx.name = 'Wallet Unlocked';
             }
@@ -43,13 +43,13 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           break;
       }
 
-      const { alias: inputAlias, address: inputAddress } = tx.inputs.find((input: ITransactionIO) => input.isMine  === !received) || <any>{};
-      const { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => output.isMine === received) || <any>{};
+      const {alias: inputAlias, address: inputAddress} = tx.inputs.find((input: ITransactionIO) => input.isMine === !received) || <any>{};
+      const {alias: outputAlias, address: outputAddress} = tx.outputs.find((output: ITransactionIO) => output.isMine === received) || <any>{};
 
-      tx.input = inputAlias? '@' + inputAlias : 'Anonymous';
-      tx.output = outputAlias? '@' + outputAlias : 'Anonymous';
+      tx.input = inputAlias ? '@' + inputAlias : 'Anonymous';
+      tx.output = outputAlias ? '@' + outputAlias : 'Anonymous';
 
-      tx.name = tx.name || (received? tx.input : tx.output);
+      tx.name = tx.name || (received ? tx.input : tx.output);
 
       tx.addressFrom = inputAlias || inputAddress;
       tx.addressTo = outputAlias || outputAddress;
@@ -65,12 +65,13 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
       };
 
       if (!tx.isCoinbase && !tx.isWalletUnlock && contactsProvider) {
-        const contactAddress = received? inputAddress || inputAlias : outputAddress || outputAlias;
+        const contactAddress = received ? inputAddress || inputAlias : outputAddress || outputAlias;
 
         try {
           tx.contact = contactsProvider.get(contactAddress);
-          tx.name = tx.contact? tx.contact.name.formatted : tx.name;
-        } catch (e) {}
+          tx.name = tx.contact ? tx.contact.name.formatted : tx.name;
+        } catch (e) {
+        }
       }
 
       tx.actionStr = pendingString + tx.actionStr;
