@@ -16,8 +16,9 @@ import { WalletDetailHistoryComponent } from '@merit/desktop/app/core/wallets/wa
 import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-settings/wallet-settings.component';
 import { GlobalSettingsComponent } from '@merit/desktop/app/core/global-settings/global-settings.component';
 import { SettingsPreferencesComponent } from '@merit/desktop/app/core/global-settings/settings-preferences/settings-preferences.component';
-import { SettingsTermsOfUsComponent } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.component'
-import { SettingsSessionLogComponent } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.component'
+import { SettingsTermsOfUsComponent } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.component';
+import { SettingsSessionLogComponent } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.component';
+import { ImportWalletComponent } from '@merit/desktop/app/core/wallets/import-wallet/import-wallet.component';
 
 const routes: Routes = [
   {
@@ -26,6 +27,7 @@ const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'wallets', component: WalletsViewComponent, pathMatch: 'full' },
       { path: 'wallets/create', component: CreateWalletComponent },
+      { path: 'wallets/import', component: ImportWalletComponent },
       { path: 'wallets/:id', component: WalletDetailComponent, children: [
         { path: '', component: WalletDetailHistoryComponent },
         { path: 'history', component: WalletDetailHistoryComponent },
