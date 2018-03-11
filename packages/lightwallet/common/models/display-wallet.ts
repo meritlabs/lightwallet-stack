@@ -17,10 +17,10 @@ export interface IDisplayWalletOptions {
 export function ClientProperty(target: DisplayWallet, key: keyof MeritWalletClient) {
   Object.defineProperty(target, key, {
     enumerable: true,
-    get: function() {
+    get: function () {
       return this.client[key];
     },
-    set: function(value: any) {
+    set: function (value: any) {
       this.client[key] = value;
     }
   });
@@ -28,8 +28,8 @@ export function ClientProperty(target: DisplayWallet, key: keyof MeritWalletClie
 
 export class DisplayWallet {
   @ClientProperty readonly id: string;
-  @ClientProperty name: string;
   @ClientProperty readonly locked: boolean;
+  @ClientProperty name: string;
   @ClientProperty color: string;
   @ClientProperty totalNetworkValue: number;
   @ClientProperty credentials: any;
@@ -41,7 +41,7 @@ export class DisplayWallet {
   alias: string;
   shareCode: string;
   // We will only have one icon type to start.
-  iconUrl: string = "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg";
+  iconUrl: string = '/assets/v1/icons/ui/wallets/wallet-ico-grey.svg';
 
   totalBalanceStr?: string;
   totalBalanceMicros?: number;
@@ -66,13 +66,32 @@ export class DisplayWallet {
   constructor(public client: MeritWalletClient,
               private walletService: WalletService,
               private sendService?: SendService,
-              private txFormatService?: TxFormatService
-            ) {
+              private txFormatService?: TxFormatService) {
+    this.client = client;
+    this.walletService = walletService;
+    this.sendService = sendService;
+    this.txFormatService = txFormatService;
+
     this.referrerAddress = this.walletService.getRootAddress(this.client).toString();
 
     if (!this.client.color) {
       this.client.color = DEFAULT_WALLET_COLOR;
     }
+  }
+
+  exportPreferences() {
+    return {
+      id: this.id,
+      name: this.name,
+      color: this.color,
+      balanceHidden: this.balanceHidden
+    };
+  }
+
+  importPreferences(preferences: any) {
+    this.name = preferences.name || this.name;
+    this.color = preferences.color || this.color;
+    this.balanceHidden = Boolean(preferences.balanceHidden);
   }
 
   async updateAlias() {
