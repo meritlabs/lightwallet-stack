@@ -22,3 +22,37 @@
         margin-bottom: 30px
       &__caption
         +font($baseFont--regular, 14px, 14px, $dark-grey-blue, normal, none, none)
+.backup
+  padding: 50px 40px
+  &__title
+    margin-bottom: 10px
+  &__caption
+    +font($baseFont--regular, 15px, 22px, $gun-metal, normal, none, none)
+  &__back-navigator
+    margin-bottom: 20px
+    padding-top: 50px
+    cursor: pointer
+  &__header
+    display: flex
+    justify-content: space-between
+    max-width: 900px
+    width: 100%
+  &__mnemonic
+    padding-top: 30px
+    &__container
+      background: $white
+      box-shadow: 0 2px 4px rgba(46,51,88,0.22)
+      padding: 35px 55px
+      +font($baseFont--regular, 35px, 45px, $gun-metal, normal, none, none)
+      letter-spacing: -1px
+      text-align: center
+      word-spacing: 20px
+      p
+        display: inline-block
+        max-width: 750px
+        width: 100%
+        margin: 0px auto
+    button
+      margin-bottom: 30px
+.backup__mnenmonic__wrap
+  padding: 0px 40px
