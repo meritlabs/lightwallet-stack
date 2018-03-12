@@ -19,6 +19,10 @@ import { SettingsPreferencesComponent } from '@merit/desktop/app/core/global-set
 import { SettingsTermsOfUsComponent } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.component';
 import { SettingsSessionLogComponent } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.component';
 import { ImportWalletComponent } from '@merit/desktop/app/core/wallets/import-wallet/import-wallet.component';
+import { PhraseImportComponent } from '@merit/desktop/app/core/wallets/import-wallet/phrase-import/phrase-import.component';
+import { QuickImportComponent } from '@merit/desktop/app/core/wallets/import-wallet/quick-import/quick-import.component';
+
+
 
 const routes: Routes = [
   {
@@ -27,7 +31,10 @@ const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'wallets', component: WalletsViewComponent, pathMatch: 'full' },
       { path: 'wallets/create', component: CreateWalletComponent },
-      { path: 'wallets/import', component: ImportWalletComponent },
+      { path: 'wallets/import', component: ImportWalletComponent, children: [
+        { path: '', component: QuickImportComponent },
+        { path: 'pharse', component: PhraseImportComponent }
+      ]},
       { path: 'wallets/:id', component: WalletDetailComponent, children: [
         { path: '', component: WalletDetailHistoryComponent },
         { path: 'history', component: WalletDetailHistoryComponent },
