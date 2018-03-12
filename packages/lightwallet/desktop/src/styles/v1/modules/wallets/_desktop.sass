@@ -41,9 +41,9 @@
         display: flex
         flex-flow: row wrap
         .large-black-text
-          +font($baseFont--medium, 15px, 22px, $gun-metal, normal, none, none)
+          +font($baseFont--medium, 15px, 22px, $gun-metal)
         .regular-blue-text
-          +font($baseFont--medium, 14px, 24px, $blue, normal, none, none)
+          +font($baseFont--medium, 14px, 24px, $blue)
       &:hover
         opacity: 1
         .wallets__group__wallet__edit
@@ -56,11 +56,25 @@
       justify-content: flex-start
       align-items: center
       padding: 40px
+    .details
+      display: flex
+      flex-direction: column
+      .name-container
+        display: flex
+        flex-direction: row
+        align-items: center
+        +font($baseFont--semibold, 32px, 32px, $white)
+        .name
+          display: inline-block
+          padding-left: 20px
+      .address, .balance
+        +font($baseFont--regular, 18px, 18px, $white)
+
     &__amount
       display: flex
       justify-content: flex-start
       align-items: center
-      +font($baseFont--heavy, 32px, 32px, $white, normal, none, none)
+      +font($baseFont--heavy, 32px, 32px, $white)
       padding-right: 40px
       small
         font-family: $baseFont--semibold
@@ -90,7 +104,7 @@
           &:last-of-type
             border: 0px
           a
-            +font($baseFont--regular, 20px, 20px, $gun-metal, normal, none, none)
+            +font($baseFont--regular, 20px, 20px, $gun-metal)
             +transition(.3s, linear)
             &::after
               content: ""
@@ -106,7 +120,7 @@
               &::after
                 transform: scaleX(1)
     &__title
-      +font($baseFont--heavy, 28px, 32px, $blue, normal, none, none)
+      +font($baseFont--heavy, 28px, 32px, $blue)
       margin-bottom: 40px
 .wallet-settings__group
   max-width: 550px

@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
+import { ComponentsModule } from '@merit/desktop/app/components/components.module';
 import { CoreRoutingModule } from './core-routing.module';
 import { WalletsViewComponent } from './wallets/wallets.view';
 import { HistoryComponent } from './history/history.component';
@@ -13,7 +15,7 @@ import { SelectComponent } from './iu/select/select.component';
 import { RowItemComponent } from './history/row-item/row-item.component';
 import { CreateWalletComponent } from './wallets/create-wallet/create-wallet.component';
 import { WalletDetailComponent } from './wallets/wallet-details/wallet-details.component';
-import { WalletSettingsComponent } from './wallets/wallet-settings/wallet-settings.component';
+import { WalletSettingsComponent } from './wallets/wallet-details/wallet-settings/wallet-settings.component';
 import { NetworkComponent } from './network/network.component';
 import { ProfileStatsComponent } from './profile-stats/profile-stats.component';
 import { BackupComponent } from './backup/backup.component';
@@ -22,10 +24,9 @@ import { WalletsListComponent } from './wallets/wallets/wallets.component';
 import { VaultsListComponent } from './wallets/vaults/vaults.component';
 import { HistoryListComponent } from './history/history-list/history-list.component';
 import { NotificationsComponent } from './iu/notifications/notifications.component';
-import { ToastNotificationComponent } from './iu/notifications/toast-notification/toast-notification.component';
+import { ToastNotificationComponent } from '../components/toast-notification/toast-notification.component';
 import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
-import { CommonProvidersModule } from '@merit/common/common-providers.module';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { WalletDetailHistoryComponent } from './wallets/wallet-details/wallet-details-history/wallet-details-history.component';
 import { QRCodeModule } from 'angular2-qrcode';
 import { GlobalSettingsComponent } from './global-settings/global-settings.component';
@@ -56,9 +57,12 @@ export function getPages() {
   imports: [
     CommonModule,
     CoreRoutingModule,
-    CommonProvidersModule.forRoot(),
     ReactiveFormsModule,
-    QRCodeModule
+    QRCodeModule,
+    ReactiveFormsModule,
+    CommonPipesModule,
+    ComponentsModule,
+    FormsModule
   ],
   declarations: [
     CoreComponent,

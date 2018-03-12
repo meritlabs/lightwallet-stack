@@ -1,32 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Observable } from 'rxjs/Observable';
-import { from } from 'rxjs/observable/from';
 import { Store } from '@ngrx/store';
-//import { Rx } from 'rxjs/rx';
-import { reduce, groupBy } from 'rxjs/operators';
-import { getWalletsLoading, getWallets, IAppState } from '@merit/common/reducers';
-import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { FiatAmount } from '@merit/common/models/fiat-amount';
-import * as _ from 'lodash';
+import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
+import { IRootAppState } from '@merit/common/reducers';
 
 @Component({
   selector: 'app-network',
   templateUrl: './network.component.html',
   styleUrls: ['./network.component.sass']
 })
-export class NetworkComponent implements OnInit {
-  wallets$: Observable<Array<DisplayWallet>> = this.store.select(getWallets);
-  walletsLoading$: Observable<boolean> = this.store.select(getWalletsLoading);
+export class NetworkComponent {
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
+  walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
+  totals$: Observable<any> = this.store.select(selectWalletTotals);
 
-
-  constructor(
-    private store: Store<IAppState>,
-  ) { 
-    
-  }
-
-  ngOnInit() {
+  constructor(private store: Store<IRootAppState>) {
   }
 
 }
