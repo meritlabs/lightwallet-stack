@@ -460,6 +460,13 @@ export class API {
     return this._rootAddress = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, this.credentials.network);
   }
 
+  getRootAddressPubkey() {
+    const xpub = new Bitcore.HDPublicKey(this.credentials.xPubKey);
+    return xpub.deriveChild('m/0/0').publicKey;
+  }
+
+
+
   /**
    * Seed from extended private key
    *
