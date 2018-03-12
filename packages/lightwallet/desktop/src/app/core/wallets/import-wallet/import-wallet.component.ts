@@ -6,10 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./import-wallet.component.sass']
 })
 export class ImportWalletComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  showPass: boolean = false;
+  constructor() {}
+  ngOnInit() {}
 }
