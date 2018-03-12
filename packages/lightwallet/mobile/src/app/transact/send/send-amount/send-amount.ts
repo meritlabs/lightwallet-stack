@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import {
   AlertController,
   IonicPage,
@@ -68,6 +68,8 @@ export class SendAmountView {
   private allowUnconfirmed: boolean = true;
 
   private loading: boolean;
+
+  @ViewChild('amount') amountInput: ElementRef;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -209,6 +211,10 @@ export class SendAmountView {
 
     await this.updateAmount();
     return this.updateTxData();
+  }
+
+  amountKeypress(key) {
+    if (key == 13) return this.amountInput['_native']['_elementRef']['nativeElement'].blur();
   }
 
   async processAmount(value) {

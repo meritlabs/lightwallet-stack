@@ -29,11 +29,13 @@
       <div class="main-amount">
         <ion-item no-lines>
           <ion-input
-            type="tel"
+            #amount 
+            type="number"
             pattern="[0-9\.]"
             [(ngModel)]="formData.amount"
             (ngModelChange)="processAmount(formData.amount)"
             [placeholder]="'Enter sending amount'"
+            (keypress)="amountKeypress($event.keyCode)" 
           ></ion-input>
         </ion-item>
       </div>
