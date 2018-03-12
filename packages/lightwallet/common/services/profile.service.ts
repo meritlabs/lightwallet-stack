@@ -555,7 +555,7 @@ export class ProfileService {
         let wallets: MeritWalletClient[] = _.values(this.wallets);  
         for (let wallet of wallets) {
           const vaults = await wallet.getVaults();
-          this.vaults = this.vaults.concat( vaults.map(v => Object.assign(v, {walletClient: wallet})) ); 
+          this.vaults = this.vaults.concat( vaults.map(v => Object.assign(v, {walletClient: wallet})) );  
         }
     }
     return this.vaults; 
