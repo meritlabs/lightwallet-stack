@@ -46,18 +46,13 @@ export enum AddressType {
   ParameterizedScript
 }
 
-export enum NetworkType {
-  Livenet = 'livenet',
-  Testnet = 'testnet'
-}
-
 export interface ISendReferralOptions {
   parentAddress: string;
   address?: string;
   addressType: AddressType;
   signPrivKey: string;
   pubkey?: string;
-  network?: NetworkType;
+  network?: string;
   alias?: string;
 }
 
@@ -1889,10 +1884,7 @@ export class API {
    * @param {string} opts.alias          - (optional) Address alias
    */
   async sendReferral(opts?: ISendReferralOptions): Promise<any> {
-    opts = {
-      network: ENV.network,
-      ...opts
-    };
+    opts.network = opts.network || ENV.network;
 
     if (!_.includes(['testnet', 'livenet'], opts.network)) {
       throw Error('Invalid network');
@@ -1911,14 +1903,16 @@ export class API {
       this.log.info('Using existing keys');
     }
 
+    let parentAddress = opts.parentAddress;
+
     try {
-      Bitcore.encoding.Base58Check.decode(opts.parentAddress);
+      Bitcore.encoding.Base58Check.decode(parentAddress);
     } catch (e) {
-      if (!Bitcore.Referral.validateAlias(opts.parentAddress)) {
+      if (!Bitcore.Referral.validateAlias(parentAddress)) {
         throw Error('Invalid invite code or alias');
       }
 
-      const parentReferral = await this._doGetRequest(`/v1/referral/${opts.parentAddress}`);
+      const parentReferral = await this._doGetRequest(`/v1/referral/${parentAddress}`);
       parentAddress = parentReferral.parentAddress;
     }
 
