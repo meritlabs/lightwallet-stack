@@ -4,7 +4,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { DisplayWallet } from "@merit/common/models/display-wallet";
 import { IVault } from "@merit/common/models/vault";
 import { WalletService } from '@merit/common/services/wallet.service';
-import { ProfileService } from '@merit/common/services/profile.service';
+import { ProfileService } from '@merit/common/services/profile.service'; 
 import { RateService } from "@merit/common/services/rate.service";
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { Constants } from '@merit/common/merit-wallet-client/lib/common/constants';
@@ -34,11 +34,6 @@ export class VaultsService {
     private addressService: AddressService,
     private feeService: FeeService
   ) {
-  }
-
-  async getWalletVaults(wallet: MeritWalletClient): Promise<Array<any>> {
-    const vaults = await wallet.getVaults();
-    return vaults.map(v => Object.assign(v, {walletClient: wallet}) ); 
   }
 
   async getVaultInfo(vault: IVault): Promise<IVault> {
