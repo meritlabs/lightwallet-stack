@@ -25,9 +25,9 @@ export class SendConfirmationView {
 
   txData: {
     amount: number; // micros
-    amountUSD: string; // micros
     totalAmount: number; // micros
     feeIncluded: boolean;
+    easyFee: number, 
     password: string;
     recipient: {
       label: string;
@@ -64,11 +64,11 @@ export class SendConfirmationView {
   }
 
   async ngOnInit() {
-    this.txData.amountUSD = await this.formatService.formatToUSD(this.txData.amount);
 
     const viewData: any = {
       recipient: this.txData.recipient,
       amount: this.txData.amount,
+      easyFee: this.txData.easyFee, 
       password: this.txData.password,
       feePercent: this.txData.txp.feePercent,
       fee: this.txData.txp.fee, 
@@ -76,7 +76,7 @@ export class SendConfirmationView {
       walletName: this.txData.wallet.name || this.txData.wallet.id,
       walletColor: this.txData.wallet.color,
       walletCurrentBalance: this.txData.wallet.status.totalBalanceMicros,
-      walletRemainingBalance: this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount,
+      walletRemainingBalance: this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount - this.txData.easyFee,
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
       methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'Easy Send' : 'Classic Send',
@@ -90,7 +90,7 @@ export class SendConfirmationView {
   }
 
   sendAllowed() {
-    return this.txData && !_.isEmpty(this.txData.txp);
+    return this.txData && !_.isEmpty(this.txData.txp); 
   }
 
   approve() {
@@ -183,13 +183,14 @@ export class SendConfirmationView {
     if (this.walletService.isEncrypted(this.txData.wallet)) {
       return showPassPrompt();
     } else {
-      if (parseInt(this.txData.amountUSD) >= this.CONFIRM_LIMIT_USD) {
-        if (this.touchIdService.isAvailable()) {
+      
+      // if (parseInt(this.txData.amountUSD) >= this.CONFIRM_LIMIT_USD) {
+        if (this.touchIdService.isAvailable()) { 
           return showTouchIDPrompt();
         } else {
           return showNoPassPrompt();
         }
-      }
+      // }
     }
   }
 

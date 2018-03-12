@@ -113,6 +113,7 @@ export class EasyReceiveService {
   }
 
   private async sendEasyReceiveTx(input: any, tx: any, destinationAddress: string, wallet: MeritWalletClient) {
+    if (!tx.invite) tx.amount = this.rateService.mrtToMicro(tx.amount); 
     let txp = await this.buildEasySendRedeemTransaction(input, tx, destinationAddress);
     let fee = !tx.invite ? await this.feeService.getTxpFee(tx) : null;
     txp = await this.buildEasySendRedeemTransaction(input, tx, destinationAddress, fee);
@@ -159,9 +160,9 @@ export class EasyReceiveService {
     
     //TODO: Create and sign a transaction to redeem easy send. Use input as
     //unspent Txo and use script to create scriptSig
-    let inputAddress = input.scriptId;
+    let inputAddress = input.scriptId; 
 
-    const totalAmount = txn.invite ? txn.amount : this.rateService.mrtToMicro(txn.amount);
+    const totalAmount = txn.invite ? txn.amount : txn.amount;
     const amount =  txn.invite ? txn.amount : totalAmount - fee; 
 
     if (amount <= 0) throw new Error('Insufficient funds');
@@ -174,24 +175,24 @@ export class EasyReceiveService {
 
     let p2shScript = input.script.toMixedScriptHashOut(input.senderPublicKey);
     const p2shInput = {
-      output: Bitcore.Transaction.Output.fromObject({script: p2shScript,totalAmount}),
+      output: Bitcore.Transaction.Output.fromObject({script: p2shScript, micros: totalAmount}),
       prevTxId: txn.txid,
       outputIndex: txn.index,
       script: input.script
     };
-    tx.addInput(new Bitcore.Transaction.Input.PayToScriptHashInput(p2shInput, input.script, p2shScript));
+    tx.addInput(new Bitcore.Transaction.Input.PayToScriptHashInput(p2shInput, input.script, p2shScript)); 
 
     tx.to(toAddress, amount);
 
     if (!txn.invite) {
       tx.fee(fee);
     }
-
+    
     const sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, input.script);
     const pubKeyId = Bitcore.PublicKey.fromString(input.senderPublicKey)._getID();
     let inputScript = Bitcore.Script.buildEasySendIn(sig, input.script, pubKeyId);
     tx.inputs[0].setScript(inputScript);
-
+     
     return tx;
 
   }

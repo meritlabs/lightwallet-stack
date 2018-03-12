@@ -25,6 +25,7 @@ import { getEasySendURL } from '@merit/common/models/easy-send';
 import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { ENV } from '@app/env';
+import * as Bitcore from 'bitcore-lib'; //todo temp!!!
 
 @IonicPage()
 @Component({
@@ -257,6 +258,7 @@ if (value != this.lastAmount) {
     });
     loadingSpinner.present();
     try {
+      this.txData.amount += this.txData.easyFee;
       this.txData.txp = await this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
       this.navCtrl.push('SendConfirmationView', { txData: this.txData, referralsToSign: this.referralsToSign });
     } catch (e) {
@@ -302,7 +304,8 @@ if (value != this.lastAmount) {
         recipient: this.recipient,
         sendMethod: this.sendMethod,
         feeIncluded: this.feeIncluded,
-        timeout: this.formData.nbBlocks
+        timeout: this.formData.nbBlocks,
+        easyFee: 0
       };
 
       this.createTxpDebounce();
@@ -323,42 +326,21 @@ if (value != this.lastAmount) {
 
           const easySend = await  this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password);
           easySend.script.isOutput = true;
-          this.txData.txp = this.easySendService.prepareTxp(this.txData.wallet, this.amount.micros, easySend);
+          this.txData.txp = await this.easySendService.prepareTxp(this.txData.wallet, this.amount.micros, easySend);
           this.txData.easySend = easySend;
           this.txData.easySendUrl = getEasySendURL(easySend);
           this.txData.referralsToSign = [easySend.scriptReferralOpts];
     
-          const testEasyScript = this.easyReceiveSerivce.generateEasyScipt(new EasyReceipt({
-            secret: easySend.secret,
-            senderPublicKey: easySend.senderPubKey,
-            blockTimeout: easySend.blockTimeout
-          }), this.txData.password, ENV.network);
-    
-          const testEasyTxData = { //creating fake data for easy redeem tx so we can estimate fee
-            toAddress: this.txData.wallet.getRootAddress(),
-            input: {
-              senderPublicKey: easySend.senderPubKey,
-              script: testEasyScript.script,
-              privateKey: testEasyScript.privateKey
-            },
-            txn: {
-              invite: false,
-              amount: this.txData.amount,
-              txId: '',
-              index: 0
-            }
-          };
-          const redeemTxp = this.easyReceiveSerivce
-            .buildEasySendRedeemTransaction(testEasyTxData.input, testEasyTxData.txn, testEasyTxData.toAddress);
-    
-          this.txData.txp = this.txData.txp.fee + this.feeService.getTxpFee(redeemTxp); 
-          
-    
+          if (this.feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed 
+            this.txData.easyFee  = await this.feeService.getEasyReceiveFee();
+          }
+        
         } else {
           this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, this.sendMethod.value);
         }
         
       } catch (err) {
+        console.log(err); 
         this.txData.txp = null;
         this.logger.warn(err);
         if (err.message) this.feeCalcError = err.message; 

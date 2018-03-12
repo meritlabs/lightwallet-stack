@@ -48,12 +48,12 @@
             <span class="right">{{ viewData.amount | toFiat }}</span>
           </h2>
           <p class="fee">
-            Fee {{ viewData.fee | toMRT }}
-            <span class="right">{{ viewData.fee | toFiat }}</span>
+            Fee {{ viewData.fee + viewData.easyFee | toMRT }}
+            <span class="right">{{ viewData.fee + viewData.easyFee| toFiat }}</span>
           </p>
           <p class="total">
-            Total {{ viewData.totalAmount | toMRT }}
-            <span class="right">{{ viewData.totalAmount | toFiat }}</span>
+            Total {{ viewData.totalAmount + viewData.easyFee | toMRT }}
+            <span class="right">{{ viewData.totalAmount + viewData.easyFee | toFiat }}</span>
           </p>
         </ion-label>
       </ion-item>
