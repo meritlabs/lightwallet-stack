@@ -36,6 +36,7 @@ import { ImportWalletComponent } from './wallets/import-wallet/import-wallet.com
 import { QuickImportComponent } from './wallets/import-wallet/quick-import/quick-import.component';
 import { PhraseImportComponent } from './wallets/import-wallet/phrase-import/phrase-import.component';
 import { ImportByQrComponent } from './wallets/import-wallet/import-by-qr/import-by-qr.component';
+import { ImportWithFileComponent } from './wallets/import-wallet/import-with-file/import-with-file.component';
 
 
 export function getPages() {
@@ -89,6 +90,7 @@ export function getPages() {
     QuickImportComponent,
     PhraseImportComponent,
     ImportByQrComponent,
+    ImportWithFileComponent,
   ]
 })
 export class CoreModule {
