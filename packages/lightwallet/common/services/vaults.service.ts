@@ -7,7 +7,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from "@merit/common/services/rate.service";
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { Constants } from '@merit/common/merit-wallet-client/common/constants';
+import { Constants } from '@merit/common/merit-wallet-client/lib/common/constants';
 import { AddressService } from "@merit/common/services/address.service";
 import { FeeService } from '@merit/common/services/fee.service';
 import { ENV } from '@app/env';

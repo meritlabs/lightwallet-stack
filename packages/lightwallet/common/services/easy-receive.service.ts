@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { LoggerService } from '@merit/common/services/logger.service';
@@ -9,7 +8,7 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
 import { LedgerService } from '@merit/common/services/ledger.service';
 import * as Bitcore from 'bitcore-lib';
-import { RateService } from 'services/rate.service';
+import { RateService } from '@merit/common/services/rate.service';
 
 @Injectable()
 export class EasyReceiveService {
@@ -165,7 +164,7 @@ export class EasyReceiveService {
     const totalAmount = txn.invite ? txn.amount : this.rateService.mrtToMicro(txn.amount);
     const amount =  txn.invite ? txn.amount : totalAmount - fee; 
 
-    if (amount <= 0) throw new Error('Insufficient funds')
+    if (amount <= 0) throw new Error('Insufficient funds');
 
     let tx = new Bitcore.Transaction();
 

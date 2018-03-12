@@ -41,10 +41,6 @@ export class VaultView {
 
   async ionViewWillEnter() {
 
-    this.vault.walletClient.getVaultCoins(this.vault).then(coins => {
-      this.vault.amount = coins.reduce((amount, coin) => { return amount + coin.micros }, 0) || 0;
-    });
-
     this.whitelist = await this.formatWhiteList(this.vault.whitelist);
     const transactions = await this.vaultsService.getTxHistory(this.vault);
     this.transactions = transactions.map((tx:any) => {
