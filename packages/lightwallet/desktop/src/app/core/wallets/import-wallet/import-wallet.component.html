@@ -2,23 +2,12 @@
   <div class="wallet__import__title title--primary">
     <p>Import wallet</p>
   </div>
-  <router-outlet></router-outlet>
   <div class="global-settings__group">
-    <label class="ui-label global-settings__group__title">Phrase</label>
-    <div class="sendMerit__form__group">
-      <label for="" class="ui-label">Recovery phrase (12 words)</label>
-      <div class="ui-input__wrapper">
-        <textarea type="text" name="" class="ui-input ui-input--form ui-input--textarea">
-        </textarea>
-      </div>
+    <div class="wallet__import__navigation">
+      <label class="ui-label global-settings__group__title" [routerLink]="['quick']" routerLinkActive="active">Quick</label>
+      <label class="ui-label global-settings__group__title" [routerLink]="['pharse']" routerLinkActive="active">Phrase</label>
     </div>
-    <div class="sendMerit__form__group">
-      <label for="" class="ui-label">Phrase password (optional)</label>
-      <div class="ui-input__wrapper ui-input__wrapper--password">
-        <input type="{{ showPass == true ? 'text' : 'password' }}" name="" class="ui-input ui-input--form ui-input--text">
-        <div class="show-hide-password" (click)="showPass=!showPass">{{ showPass == true ? 'Hide' : 'Show' }}</div>
-      </div>
-    </div>
+    <router-outlet></router-outlet>
     <div class="wallet-settings__multi-group wallet-settings__multi-group--fullWidth">
       <label class="ui-label">Advanced options</label>
       <div class="sendMerit__form__group">
