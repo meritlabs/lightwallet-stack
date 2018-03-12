@@ -373,7 +373,7 @@ export class WalletsView {
   private async updateAllWallets(): Promise<DisplayWallet[]> {
     const wallets = await this.profileService.getWallets();
     return Promise.all<DisplayWallet>(
-      wallets.map(w => createDisplayWallet(w, this.walletService, null, { skipRewards: true, skipAlias: true }))
+      wallets.map(w => createDisplayWallet(w, this.walletService, null, null, { skipRewards: true, skipAlias: true }))
     );
   }
 
