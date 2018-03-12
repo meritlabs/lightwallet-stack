@@ -21,8 +21,7 @@ import { SettingsSessionLogComponent } from '@merit/desktop/app/core/global-sett
 import { ImportWalletComponent } from '@merit/desktop/app/core/wallets/import-wallet/import-wallet.component';
 import { PhraseImportComponent } from '@merit/desktop/app/core/wallets/import-wallet/phrase-import/phrase-import.component';
 import { QuickImportComponent } from '@merit/desktop/app/core/wallets/import-wallet/quick-import/quick-import.component';
-
-
+import { ImportByQrComponent } from '@merit/desktop/app/core/wallets/import-wallet/import-by-qr/import-by-qr.component';
 
 const routes: Routes = [
   {
@@ -31,11 +30,8 @@ const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'wallets', component: WalletsViewComponent, pathMatch: 'full' },
       { path: 'wallets/create', component: CreateWalletComponent },
-      { path: 'wallets/import', component: ImportWalletComponent, children: [
-        { path: '', component: QuickImportComponent },
-        { path: 'quick', component: QuickImportComponent },
-        { path: 'pharse', component: PhraseImportComponent }
-      ]},
+      { path: 'wallets/import', component: ImportWalletComponent },
+      { path: 'wallets/import/qr-code', component: ImportByQrComponent },
       { path: 'wallets/:id', component: WalletDetailComponent, children: [
         { path: '', component: WalletDetailHistoryComponent },
         { path: 'history', component: WalletDetailHistoryComponent },

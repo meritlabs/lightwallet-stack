@@ -35,6 +35,7 @@ import { SettingsSessionLogComponent } from './global-settings/settings-session-
 import { ImportWalletComponent } from './wallets/import-wallet/import-wallet.component';
 import { QuickImportComponent } from './wallets/import-wallet/quick-import/quick-import.component';
 import { PhraseImportComponent } from './wallets/import-wallet/phrase-import/phrase-import.component';
+import { ImportByQrComponent } from './wallets/import-wallet/import-by-qr/import-by-qr.component';
 
 
 export function getPages() {
@@ -87,6 +88,7 @@ export function getPages() {
     ImportWalletComponent,
     QuickImportComponent,
     PhraseImportComponent,
+    ImportByQrComponent,
   ]
 })
 export class CoreModule {
