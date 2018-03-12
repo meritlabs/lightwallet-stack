@@ -31,7 +31,8 @@ const routes: Routes = [
         { path: 'history', component: WalletDetailHistoryComponent },
         { path: 'settings', component: WalletSettingsComponent },
         { path: 'send', component: SendComponent },
-        { path: 'receive', component: ReceiveComponent }
+        { path: 'receive', component: ReceiveComponent },
+        { path: 'export', component: ExportComponent }
       ]},
       { path: 'receive', component: ReceiveComponent },
       { path: 'send', component: SendComponent },
