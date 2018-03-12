@@ -11,7 +11,7 @@ export class ToUnitPipe implements PipeTransform {
     this.unitCode = this.configProvider.get().wallet.settings.unitCode;
   }
 
-  transform(value: string, satoshis: number): string {
-    return this.txFormatProvider.formatAmountStr(satoshis);
+  transform(value: string): string {
+    return this.txFormatProvider.formatAmountStr(Number(value));
   }
 }

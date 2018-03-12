@@ -378,6 +378,7 @@ export class SendAmountView {
         }
       });
       this.feeCalcError = null;
+      console.log(this);
     } catch (err) {
       this.txData.txp = null;
       this.logger.warn(err);

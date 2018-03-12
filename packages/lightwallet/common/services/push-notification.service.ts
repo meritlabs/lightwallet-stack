@@ -86,7 +86,7 @@ export class PushNotificationsService {
           const wallet = this.walletService.getWallet(data.walletId);
           if (!wallet) return;
           return this.app.getActiveNav().push('WalletDetailsView', {
-            wallet: await createDisplayWallet(wallet, this.walletService, null, {
+            wallet: await createDisplayWallet(wallet, this.walletService, null, null, {
               skipAlias: true,
               skipAnv: true,
               skipRewards: true

@@ -19,6 +19,7 @@ import { PopupService } from '@merit/common/services/popup.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { SendService } from '@merit/common/services/send.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 @NgModule()
 export class CommonProvidersModule {
@@ -38,6 +39,7 @@ export class CommonProvidersModule {
         MnemonicService,
         MWCService,
         PersistenceService,
+        PersistenceService2,
         PlatformService,
         PopupService,
         ProfileService,
