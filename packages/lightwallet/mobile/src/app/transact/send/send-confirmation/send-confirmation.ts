@@ -72,7 +72,7 @@ export class SendConfirmationView {
       password: this.txData.password,
       feePercent: this.txData.txp.feePercent,
       fee: this.txData.txp.fee, 
-      totalAmount: this.txData.totalAmount,
+      totalAmount: this.txData.feeIncluded ? this.txData.amount : this.txData.txp.fee + this.txData.amount, 
       walletName: this.txData.wallet.name || this.txData.wallet.id,
       walletColor: this.txData.wallet.color,
       walletCurrentBalance: this.txData.wallet.status.totalBalanceMicros,
@@ -82,8 +82,6 @@ export class SendConfirmationView {
       methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'Easy Send' : 'Classic Send',
       destination: this.txData.sendMethod.alias || this.txData.sendMethod.value
     };
-
-    console.log('txp received', this.txData.txp);  
 
     let fiatAvailale = this.rateService.getRate(viewData.fiatCode) > 0;
     const convert = amount => fiatAvailale ? this.formatService.toFiatStr(amount, viewData.fiatCode) : '';
