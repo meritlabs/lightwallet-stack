@@ -33,6 +33,7 @@ const routes: Routes = [
       { path: 'wallets/create', component: CreateWalletComponent },
       { path: 'wallets/import', component: ImportWalletComponent, children: [
         { path: '', component: QuickImportComponent },
+        { path: 'quick', component: QuickImportComponent },
         { path: 'pharse', component: PhraseImportComponent }
       ]},
       { path: 'wallets/:id', component: WalletDetailComponent, children: [

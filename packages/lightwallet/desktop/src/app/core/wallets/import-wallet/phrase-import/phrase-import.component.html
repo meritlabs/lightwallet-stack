@@ -1,3 +1,14 @@
-<p>
-  phrase-import works!
-</p>
+<div class="sendMerit__form__group">
+  <label for="" class="ui-label">Recovery phrase (12 words)</label>
+  <div class="ui-input__wrapper">
+    <textarea type="text" name="" class="ui-input ui-input--form ui-input--textarea">
+    </textarea>
+  </div>
+</div>
+<div class="sendMerit__form__group">
+  <label for="" class="ui-label">Phrase password (optional)</label>
+  <div class="ui-input__wrapper ui-input__wrapper--password">
+    <input type="{{ showPass == true ? 'text' : 'password' }}" name="" class="ui-input ui-input--form ui-input--text">
+    <div class="show-hide-password" (click)="showPass=!showPass">{{ showPass == true ? 'Hide' : 'Show' }}</div>
+  </div>
+</div>
