@@ -1,10 +1,5 @@
 <div class="dashboard-panel">
-  <div class="dashboard-panel__title title--primary">
-    <div class="container--inner">
-      <p>Hello, <span>@alias</span></p>
-    </div>
-  </div>
-  <app-profile-stats></app-profile-stats>
+  <app-profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></app-profile-stats>
   <div class="dashboard-panel__group">
     <div class="dashboard-panel__group__wrap container--inner">
       <div class="dashboard-panel__widged">
@@ -19,14 +14,14 @@
               class="ui-button ui-button--blue ui-button--sm" id="sendMrt">SEND</div>
           </div>
         </div>
-        <wallets-list [showButton]=false></wallets-list>
+        <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async" [showButton]=false></wallets-list>
         <vaults-list [showButton]=false></vaults-list>
       </div>
       <div class="dashboard-panel__widged dashboard-panel__widged--latest-transactions">
         <div class="title--primary">
           <p>Latest transactions</p>
         </div>
-        <app-history-list [limit]=5></app-history-list>
+        <app-history-list [transactions]="transactions$ | async" [loading]="transactionsLoading$ | async" limit="5"></app-history-list>
         <div [routerLink]='"/history"'
           class="ui-button ui-button--blue">SHOW FULL HISTORY</div>
       </div>

@@ -13,11 +13,12 @@ import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phras
 import { CreateWalletComponent } from '@merit/desktop/app/core/wallets/create-wallet/create-wallet.component';
 import { WalletDetailComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details.component';
 import { WalletDetailHistoryComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details-history/wallet-details-history.component';
-import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-settings/wallet-settings.component';
 import { GlobalSettingsComponent } from '@merit/desktop/app/core/global-settings/global-settings.component';
 import { SettingsPreferencesComponent } from '@merit/desktop/app/core/global-settings/settings-preferences/settings-preferences.component';
 import { SettingsTermsOfUsComponent } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.component'
 import { SettingsSessionLogComponent } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.component'
+import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-settings/wallet-settings.component';
+
 
 const routes: Routes = [
   {

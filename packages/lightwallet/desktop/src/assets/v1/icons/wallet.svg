@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="19px" viewBox="0 0 18 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>wallet</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4-numbers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons" transform="translate(-850.000000, -446.000000)">
+            <g id="wallet" transform="translate(839.000000, 436.000000)">
+                <g id="Group-4" transform="translate(12.000000, 11.000000)">
+                    <g id="wallet">
+                        <rect id="Rectangle" stroke="#5F6C82" stroke-width="1.7" x="0" y="4" width="16" height="13" rx="2.24299065"></rect>
+                        <circle id="Oval-3" fill="#00B0DD" cx="12.5" cy="10.5" r="1.5"></circle>
+                        <path d="M12.5079585,2.6490162 C12.5079585,2.72517852 12.5079585,2.2293416 12.5079585,1.16150542 C12.5079585,-0.440248843 10.9829147,0.132016782 9.52475175,0.593171296 C8.06658879,1.05432581 4.02869451,2.16666667 2.43056367,2.6490162 C0.832432827,3.13136574 0.0716997664,4.07335069 0.0716997664,5.95037616" id="Path-5" stroke="#5F6C82" stroke-width="1.7"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
