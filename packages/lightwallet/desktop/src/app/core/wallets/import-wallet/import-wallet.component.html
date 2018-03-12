@@ -15,8 +15,16 @@
       <label for="" class="ui-label">Phrase password (optional)</label>
       <div class="ui-input__wrapper ui-input__wrapper--password">
         <input type="{{ showPass == true ? 'text' : 'password' }}" name="" class="ui-input ui-input--form ui-input--text">
-        <div class="show-hide-password"
-        (click)="showPass=!showPass">{{ showPass == true ? 'Hide' : 'Show' }}</div>
+        <div class="show-hide-password" (click)="showPass=!showPass">{{ showPass == true ? 'Hide' : 'Show' }}</div>
+      </div>
+    </div>
+    <div class="wallet-settings__multi-group wallet-settings__multi-group--fullWidth">
+      <label class="ui-label">Advanced options</label>
+      <div class="sendMerit__form__group">
+        <label for="" class="ui-label ui-label--muted">Wallet service URL</label>
+        <div class="ui-input__wrapper">
+          <input type="" name="" value="https://mws.merit.me/bws/api" class="ui-input ui-input--form ui-input--text">
+        </div>
       </div>
     </div>
   </div>
