@@ -33,7 +33,6 @@ import { SettingsPreferencesComponent } from './global-settings/settings-prefere
 import { SettingsTermsOfUsComponent } from './global-settings/settings-terms-of-use/settings-terms-of-use.component';
 import { SettingsSessionLogComponent } from './global-settings/settings-session-log/settings-session-log.component';
 import { ImportWalletComponent } from './wallets/import-wallet/import-wallet.component';
-import { QuickImportComponent } from './wallets/import-wallet/quick-import/quick-import.component';
 import { PhraseImportComponent } from './wallets/import-wallet/phrase-import/phrase-import.component';
 import { ImportByQrComponent } from './wallets/import-wallet/import-by-qr/import-by-qr.component';
 import { ImportWithFileComponent } from './wallets/import-wallet/import-with-file/import-with-file.component';
@@ -87,7 +86,6 @@ export function getPages() {
     SettingsTermsOfUsComponent,
     SettingsSessionLogComponent,
     ImportWalletComponent,
-    QuickImportComponent,
     PhraseImportComponent,
     ImportByQrComponent,
     ImportWithFileComponent,
