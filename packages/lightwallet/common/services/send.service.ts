@@ -37,19 +37,21 @@ export class SendService {
 
   }
 
-  finalizeTxp(wallet, preparedTxp) {
+  finalizeTxp(wallet, preparedTxp, feeIncluded) {
 
     let txp:any = {
       outputs: preparedTxp.outputs,
       inputs: preparedTxp.inputs,
       fee: preparedTxp.fee,
       excludeUnconfirmedUtxos: false,
-      dryRun: true
+      dryRun: false,
+      addressType: preparedTxp.addressType
     };
 
-    if (preparedTxp.sendMax) txp.outputs[0].amount = preparedTxp.outputs[0].amount - preparedTxp.fee;
+    if (preparedTxp.sendMax || feeIncluded) txp.outputs[0].amount = preparedTxp.outputs[0].amount - preparedTxp.fee;
 
     return wallet.createTxProposal(txp);
+
   }
 
 }

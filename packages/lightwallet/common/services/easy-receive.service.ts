@@ -119,7 +119,7 @@ export class EasyReceiveService {
     return wallet.broadcastRawTx({ rawTx: txp.serialize(), network: ENV.network });
   }
 
-  private generateEasyScipt(receipt: EasyReceipt, password, network) {
+  generateEasyScipt(receipt: EasyReceipt, password, network) {
     const secret = this.ledger.hexToString(receipt.secret);
     const receivePrv = Bitcore.PrivateKey.forEasySend(secret, password, network);
     const receivePub = Bitcore.PublicKey.fromPrivateKey(receivePrv).toBuffer();
