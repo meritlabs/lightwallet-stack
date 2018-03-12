@@ -60,7 +60,9 @@ export class SendAmountView {
 
   public feePercent: number; 
   public feeIncluded: boolean;
+  public feeTogglerEnabled: boolean = true; 
   private referralsToSign: Array<any>;
+
 
   private allowUnconfirmed: boolean = true;
 
@@ -196,7 +198,7 @@ export class SendAmountView {
   }
 
   async processAmount(value) {
-    if (value != this.lastAmount) {
+if (value != this.lastAmount) {
       this.lastAmount = value;
       await this.updateAmount();
       await this.updateTxData();
@@ -219,7 +221,12 @@ export class SendAmountView {
     this.amount.fiatStr = await this.txFormatService.formatAlternativeStr(this.amount.micros);
 
     if (this.selectedWallet && this.selectedWallet.status) {
-      if (this.amount.micros == this.selectedWallet.status.spendableAmount) this.feeIncluded = true;
+      if (this.amount.micros == this.selectedWallet.status.spendableAmount)  {
+        this.feeIncluded = true; 
+        this.feeTogglerEnabled = false; 
+      } else {
+        this.feeTogglerEnabled = true; 
+      }
     }
 
     return this.amount;
@@ -250,7 +257,7 @@ export class SendAmountView {
     });
     loadingSpinner.present();
     try {
-      this.txData.txp = this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
+      this.txData.txp = await this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
       this.navCtrl.push('SendConfirmationView', { txData: this.txData, referralsToSign: this.referralsToSign });
     } catch (e) {
       this.logger.warn(e);

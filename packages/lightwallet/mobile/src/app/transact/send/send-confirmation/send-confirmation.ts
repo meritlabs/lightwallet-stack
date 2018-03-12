@@ -68,33 +68,25 @@ export class SendConfirmationView {
 
     const viewData: any = {
       recipient: this.txData.recipient,
-      amountMrt: this.formatService.formatAmount(this.txData.amount),
+      amount: this.txData.amount,
       password: this.txData.password,
       feePercent: this.txData.txp.feePercent,
-      feeAmountMrt: this.formatService.formatAmount(this.txData.txp.fee),
-      totalAmountMrt: this.formatService.formatAmount(this.txData.totalAmount),
+      fee: this.txData.txp.fee, 
+      totalAmount: this.txData.totalAmount,
       walletName: this.txData.wallet.name || this.txData.wallet.id,
       walletColor: this.txData.wallet.color,
-      walletCurrentBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.totalBalanceMicros),
-      walletRemainingBalanceMrt: this.formatService.formatAmount(
-        this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount
-      ),
+      walletCurrentBalance: this.txData.wallet.status.totalBalanceMicros,
+      walletRemainingBalance: this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount,
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
       methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'Easy Send' : 'Classic Send',
       destination: this.txData.sendMethod.alias || this.txData.sendMethod.value
     };
 
+    console.log('txp received', this.txData.txp);  
+
     let fiatAvailale = this.rateService.getRate(viewData.fiatCode) > 0;
     const convert = amount => fiatAvailale ? this.formatService.toFiatStr(amount, viewData.fiatCode) : '';
-
-    viewData.amountFiat = await convert(this.txData.amount);
-    viewData.feeAmountFiat = await convert(this.txData.txp.fee);
-    viewData.totalAmountFiat = await convert(this.txData.totalAmount);
-    viewData.walletCurrentBalanceFiat = await convert(this.txData.wallet.status.totalBalanceMicros);
-    viewData.walletRemainingBalanceFiat = await convert(
-      this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount
-    );
 
     this.viewData = viewData;
   }

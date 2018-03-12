@@ -72,7 +72,7 @@
         <span *ngIf="!feeLoading">Not calculated</span>
         <ion-spinner *ngIf="feeLoading"></ion-spinner>
       </h2>
-      <p *ngIf="feeCalcError">{{feeCalcError}}</p>
+      <p *ngIf="feeCalcError" class="feeCalcError">{{feeCalcError}}</p>
 
       <p *ngIf="feePercent">{{feePercent}}</p>
       <div item-end *ngIf="txData?.txp?.fee">
@@ -89,7 +89,7 @@
           <ion-icon name="ios-information-circle-outline"></ion-icon>
         </button>
       </ion-label>
-      <ion-toggle [(ngModel)]="feeIncluded"></ion-toggle>
+      <ion-toggle [(ngModel)]="feeIncluded" [disabled]="!feeTogglerEnabled"></ion-toggle>
     </ion-item>
 
     <ion-list *ngIf="sendMethod.type == 'easy'">
