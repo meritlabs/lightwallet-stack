@@ -6,6 +6,7 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { EasySend } from '@merit/common/models/easy-send';
 import { ENV } from '@app/env';
 import * as Bitcore from 'bitcore-lib';
+import { FeeService } from '@merit/common/services/fee.service';
 
 @Injectable()
 export class EasySendService {
@@ -13,9 +14,12 @@ export class EasySendService {
 
   private readonly DEFAULT_TIMEOUT = 1008;
 
-  constructor(private persistenceService: PersistenceService,
-              @Optional() private socialSharing: SocialSharing,
-              private mwcService: MWCService) {}
+  constructor(
+    private feeService: FeeService,
+    private persistenceService: PersistenceService,
+    @Optional() private socialSharing: SocialSharing,
+    private mwcService: MWCService
+  ) {}
 
   async createEasySendScriptHash(wallet: MeritWalletClient, password:string = ''): Promise<EasySend> {
     const rootKey = this.bitcore.HDPrivateKey.fromString(wallet.credentials.xPrivKey);
@@ -101,6 +105,32 @@ export class EasySendService {
     return this.persistenceService.setPendingEasySends(walletId, history);
   }
 
+  prepareTxp(wallet: MeritWalletClient, amount: number, easySend: EasySend) {
+
+    if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
+
+    let txp:any = {
+      outputs: [{
+        'script': easySend.script.toHex(),
+        'toAddress': easySend.scriptAddress,
+        'amount': amount
+      }],
+      inputs: [], // will be defined on MWS side
+      feeLevel: this.feeService.getCurrentFeeLevel(),
+      excludeUnconfirmedUtxos: false,
+      dryRun: true,
+      addressType: 'P2SH'
+    };
+
+    if (amount == wallet.status.spendableAmount) {
+      delete txp.outputs[0].amount;
+      txp.sendMax = true;
+    }
+
+    return wallet.createTxProposal(txp);
+
+  }
+
   /**
    * Create an easySend script
    */
@@ -128,8 +158,6 @@ export class EasySendService {
     };
   }
 
-  private prepareTxp(wallet: MeritWalletClient, easySend: EasySend) {
-
-  }
+  
 
 }

@@ -9,6 +9,7 @@ import {
 } from 'ionic-angular';
 import * as _ from 'lodash';
 import { MeritContact } from '@merit/common/models/merit-contact';
+import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { ConfigService } from '@merit/common/services/config.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { FeeService } from '@merit/common/services/fee.service';
@@ -23,6 +24,7 @@ import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { getEasySendURL } from '@merit/common/models/easy-send';
 import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ENV } from '@app/env';
 
 @IonicPage()
 @Component({
@@ -81,7 +83,9 @@ export class SendAmountView {
               private easyReceiveSerivce: EasyReceiveService,
               private walletService: WalletService,
               private loadingCtrl: LoadingController,
-              private logger: LoggerService) {
+              private logger: LoggerService,
+              private sendService: SendService
+            ) {
     this.recipient = this.navParams.get('contact');
     this.sendMethod = this.navParams.get('suggestedMethod');
     this.loading = true;
@@ -248,7 +252,7 @@ export class SendAmountView {
     );
   }
 
-  public toConfirm() {
+  public async toConfirm() {
 
     if (this.formData.password != this.formData.confirmPassword) {
       return this.toastCtrl.create({
@@ -264,12 +268,14 @@ export class SendAmountView {
       dismissOnPageChange: true
     });
     loadingSpinner.present();
-    this.createTxp({ dryRun: false }).then(() => {
-      loadingSpinner.dismiss();
+    try {
+      this.txData.txp = this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
       this.navCtrl.push('SendConfirmationView', { txData: this.txData, referralsToSign: this.referralsToSign });
-    }).catch(() => {
+    } catch (e) {
+      this.logger.warn(e);
+    } finally {
       loadingSpinner.dismiss();
-    });
+    }
 
   }
 
@@ -326,34 +332,36 @@ export class SendAmountView {
 
       const easySend = await  this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password);
       easySend.script.isOutput = true;
-      this.txData.txp = this.easySendService.prepareTxp(this.txData.wallet, easySend);
-      this.txData.easySend = easyData;
-      this.txData.easySendUrl = easyData.url;
+      this.txData.txp = this.easySendService.prepareTxp(this.txData.wallet, this.amount.micros, easySend);
+      this.txData.easySend = easySend;
+      this.txData.easySendUrl = getEasySendURL(easySend);
       this.txData.referralsToSign = [easySend.scriptReferralOpts];
 
-      const easyData = this.easyReceiveSerivce.generateEasyScipt({
+      const testEasyScript = this.easyReceiveSerivce.generateEasyScipt(new EasyReceipt({
         secret: easySend.secret,
         senderPublicKey: easySend.senderPubKey,
         blockTimeout: easySend.blockTimeout
-      });
+      }), this.txData.password, ENV.network);
 
-      const testEasyData = { //creating fake data for easy redeem tx so we can estimate fee
+      const testEasyTxData = { //creating fake data for easy redeem tx so we can estimate fee
         toAddress: this.txData.wallet.getRootAddress(),
         input: {
           senderPublicKey: easySend.senderPubKey,
-          script: easyData.script,
-          privateKey: easyData.privateKey
+          script: testEasyScript.script,
+          privateKey: testEasyScript.privateKey
         },
         txn: {
           invite: false,
           amount: this.txData.amount,
           txId: '',
-          index: ''
+          index: 0
         }
       };
-      const redeemTxp = this.easyReceiveSerivce.buildEasySendRedeemTransaction(testEasyData.input, testEasyData.txn, testEasyData.toAddress);
+      const redeemTxp = this.easyReceiveSerivce
+        .buildEasySendRedeemTransaction(testEasyTxData.input, testEasyTxData.txn, testEasyTxData.toAddress);
 
-      const fee = this.txData.txp.fee + this.feeService.getTxpFee(redeemTxp);
+      this.txData.txp = this.txData.txp.fee + this.feeService.getTxpFee(redeemTxp);
+      
 
     } else {
 
