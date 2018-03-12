@@ -16,7 +16,6 @@ import { PlatformService } from '@merit/common/services/platform.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { IVault } from "@merit/common/models/vault";
-import { VaultsService } from "@merit/common/services/vaults.service";
 
 /*
   Historically, this acted as the API-Client
@@ -46,8 +45,7 @@ export class ProfileService {
     private platformService: PlatformService,
     private appService: AppSettingsService,
     private txFormatService: TxFormatService,
-    private events: Events,
-    private vaultsService: VaultsService
+    private events: Events
   ) {
     this.logger.info('Hello ProfileService!');
   }
@@ -551,15 +549,16 @@ export class ProfileService {
     });
   }
 
-  public async getVaults(reload: boolean = false): Promise<Array<IVault>> {
+  public async getVaults(reload: boolean = false) {
     if (!this.wallets) return [];
     if (!this.vaults.length || !reload) {
         let wallets: MeritWalletClient[] = _.values(this.wallets);  
         for (let wallet of wallets) {
-          this.vaults = this.vaults.concat(await this.vaultsService.getWalletVaults(wallet));
+          const vaults = await wallet.getVaults();
+          this.vaults = this.vaults.concat( vaults.map(v => Object.assign(v, {walletClient: wallet})) ); 
         }
     }
-    return this.vaults;
+    return this.vaults; 
   }
 
   private requiresBackup(wallet: MeritWalletClient): boolean {
