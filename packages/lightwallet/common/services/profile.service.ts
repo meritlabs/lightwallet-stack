@@ -538,12 +538,12 @@ export class ProfileService {
     return totalMicros > 0;
   }
 
-  public addVault(vault: any): Promise<void> {
+  public addVault(vault: any) {
     this.vaults.push(vault);
   }
 
-  public updateVault(vault: any): Promise<void> {
-    this.vaults.some(v => {
+  public updateVault(vault: any) {
+    this.vaults.some((v:any) => {
       if (vault._id == v._id) {
         v = vault; 
         return true;

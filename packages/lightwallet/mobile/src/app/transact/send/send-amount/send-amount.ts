@@ -15,6 +15,8 @@ import { FeeService } from '@merit/common/services/fee.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { SendService } from '@merit/common/services/send.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
@@ -76,6 +78,7 @@ export class SendAmountView {
               private toastCtrl: MeritToastController,
               private alertCtrl: AlertController,
               private easySendService: EasySendService,
+              private easyReceiveSerivce: EasyReceiveService,
               private walletService: WalletService,
               private loadingCtrl: LoadingController,
               private logger: LoggerService) {
@@ -317,156 +320,46 @@ export class SendAmountView {
 
   private async createTxp(opts: { dryRun: boolean }) {
 
-    try {
-      let data: any = {
-        toAddress: this.sendMethod.value,
-        toName: this.txData.recipient.name || '',
-        toAmount: parseInt(this.txData.amount),
-        allowSpendUnconfirmed: this.allowUnconfirmed,
-        feeLevel: this.selectedFeeLevel
-      };
+    if (this.amount.micros == this.selectedWallet.status.spendableAmount) this.feeIncluded = true;
 
-      console.log(this.amount.micros, this.selectedWallet.status.spendableAmount);
-      if (this.amount.micros == this.selectedWallet.status.spendableAmount) {
-        data.sendMax = true;
-        data.toAmount = null;
-        this.feeIncluded = true;
-      }
+    if (this.sendMethod.type == SendMethodType.Easy) {
 
-      const easyData: any = await this.getEasyData();
-      data = data || {};
-      data = _.merge(data, _.pick(easyData, 'script', 'toAddress'));
-      data.toAddress = easyData.scriptAddress || data.toAddress;
-
-      const txpOut = await this.getTxp(_.clone(data), this.selectedWallet, opts.dryRun);
-      this.txData.txp = txpOut;
+      const easySend = await  this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password);
+      easySend.script.isOutput = true;
+      this.txData.txp = this.easySendService.prepareTxp(this.txData.wallet, easySend);
       this.txData.easySend = easyData;
       this.txData.easySendUrl = easyData.url;
-      this.referralsToSign = _.filter([easyData.scriptReferralOpts]);
+      this.txData.referralsToSign = [easySend.scriptReferralOpts];
 
-      this.txData.txp.availableFeeLevels = [];
-      this.knownFeeLevels.forEach((level) => {
-        // todo IF EASY ADD  easySend.size*feeLevel.feePerKb !!!!!!
-        let micros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
-        let mrt = Math.round(this.rateService.microsToMrt(micros) * 1000000000) / 1000000000;
-        //todo add description map
-
-        // todo check if micros
-        let percent = this.feeIncluded ? (micros / (this.amount.micros) * 100) : (micros / (this.amount.micros + micros) * 100);
-        let precision = 1;
-        if (percent > 0) {
-          while (percent * Math.pow(10, precision) < 1) {
-            precision++;
-          }
-        }
-        precision++; //showing two valued digits
-
-        let fee = {
-          description: level.level,
-          name: level.level,
-          minutes: level.nbBlocks * this.MINUTE_PER_BLOCK,
-          micros: micros,
-          mrt: mrt,
-          feePerKb: level.feePerKb,
-          percent: percent.toFixed(precision) + '%'
-        };
-        this.txData.txp.availableFeeLevels.push(fee);
-        if (level.level == this.selectedFeeLevel) {
-          this.selectedFee = fee;
-          this.txData.txp.fee = fee.micros;
-          this.txData.feeAmount = fee.micros;
-        }
+      const easyData = this.easyReceiveSerivce.generateEasyScipt({
+        secret: easySend.secret,
+        senderPublicKey: easySend.senderPubKey,
+        blockTimeout: easySend.blockTimeout
       });
-      this.feeCalcError = null;
-    } catch (err) {
-      this.txData.txp = null;
-      this.logger.warn(err);
-      if (err.message) this.feeCalcError = err.message;
-      this.selectedFee = null;
-      return this.toastCtrl.create({
-        message: err.message || 'Unknown error',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
-    } finally {
-      this.feeLoading = false;
-    }
 
-  }
+      const testEasyData = { //creating fake data for easy redeem tx so we can estimate fee
+        toAddress: this.txData.wallet.getRootAddress(),
+        input: {
+          senderPublicKey: easySend.senderPubKey,
+          script: easyData.script,
+          privateKey: easyData.privateKey
+        },
+        txn: {
+          invite: false,
+          amount: this.txData.amount,
+          txId: '',
+          index: ''
+        }
+      };
+      const redeemTxp = this.easyReceiveSerivce.buildEasySendRedeemTransaction(testEasyData.input, testEasyData.txn, testEasyData.toAddress);
 
-  private getEasyData() {
-    if (this.sendMethod.type != SendMethodType.Easy) {
-      return Promise.resolve({});
+      const fee = this.txData.txp.fee + this.feeService.getTxpFee(redeemTxp);
+
     } else {
-      return this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password).then((easySend) => {
-        easySend.script.isOutput = true;
 
-        return {
-          script: easySend.script,
-          scriptAddress: easySend.scriptAddress,
-          scriptReferralOpts: easySend.scriptReferralOpts,
-          url: getEasySendURL(easySend),
-        };
-      });
+      this.txData.txp = await this.sendService.prepareTxp(this.txData.walltet, this.amount.micros, this.txData.recipient.address);
+
     }
   }
-
-  private getTxp(tx, wallet, dryRun) {
-    // ToDo: use a credential's (or fc's) function for this
-    if (tx.description && !wallet.credentials.sharedEncryptingKey) {
-      return Promise.reject(new Error('Need a shared encryption key to add message!'));
-    }
-
-    if (tx.toAmount > Number.MAX_SAFE_INTEGER) {
-      return Promise.reject(new Error('The amount is too big')); //.  Because, Javascript.
-    }
-
-    let txp: any = {};
-
-    if (tx.script) {
-      txp.outputs = [{
-        'script': tx.script.toHex(),
-        'toAddress': tx.toAddress,
-        'amount': tx.toAmount,
-        'message': tx.description
-      }];
-      txp.addressType = 'P2SH';
-    } else {
-      txp.outputs = [{
-        'toAddress': tx.toAddress,
-        'amount': tx.toAmount,
-        'message': tx.description
-      }];
-    }
-
-    txp.sendMax = tx.sendMax;
-    if (tx.sendMaxInfo) {
-      txp.inputs = tx.sendMaxInfo.inputs;
-      txp.fee = tx.sendMaxInfo.fee;
-    } else {
-      if (this.txData.usingCustomFee) {
-        txp.feePerKb = tx.feeRate;
-      } else txp.feeLevel = tx.feeLevelName;
-    }
-
-    txp.message = tx.description;
-
-    if (tx.paypro) {
-      txp.payProUrl = tx.paypro.url;
-    }
-    txp.excludeUnconfirmedUtxos = !tx.allowSpendUnconfirmed;
-    if (!dryRun) {
-      txp.dryRun = dryRun;
-      txp.fee = this.txData.feeAmount;
-      txp.inputs = this.txData.txp.inputs;
-      if (txp.sendMax || this.feeIncluded) {
-        txp.sendMax = false; // removing senmax options because we are setting fee and amount values manually
-        txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
-      } else {
-        txp.outputs[0].amount = this.txData.amount;
-      }
-    }
-    return this.walletService.createTx(wallet, txp);
-  }
-
 
 }

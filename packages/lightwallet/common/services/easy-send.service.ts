@@ -102,7 +102,7 @@ export class EasySendService {
   }
 
   /**
-   * Create an easySend script and create a transaction to the script address
+   * Create an easySend script
    */
   private async bulidScript(wallet, passphrase = '', timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
 
@@ -127,4 +127,9 @@ export class EasySendService {
       scriptReferralOpts: {}
     };
   }
+
+  private prepareTxp(wallet: MeritWalletClient, easySend: EasySend) {
+
+  }
+
 }
