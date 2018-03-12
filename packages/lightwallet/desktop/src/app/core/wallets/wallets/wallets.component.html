@@ -5,8 +5,14 @@
       <!-- TODO: Show spinner while loading -->
       <small [hidden]="!loading">~ Loading ~</small>
     </div>
-    <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm
-      ui-button--add ui-button--transparent ui-button--{{showButton}}" routerLink="/wallets/create">Create new wallet</button>
+    <div>
+      <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm
+        ui-button--add ui-button--transparent ui-button--{{showButton}}"
+        routerLink="/wallets/import">Import wallet</button>
+      <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm
+        ui-button--add ui-button--transparent ui-button--{{showButton}}"
+        routerLink="/wallets/create">Create new wallet</button>
+    </div>
   </div>
   <div class="wallets__group__content">
     <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: wallet?.id">
