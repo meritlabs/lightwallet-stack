@@ -1245,7 +1245,7 @@ export class API {
   protected _doRequest(method: string, url: string, args: any, useSession: boolean, secondRun = false): Promise<{ body: any, header: any }> {
     return new Promise((resolve, reject) => {
 
-      let headers = this._getHeaders(method, url, args);
+      let headers = this._getHeaders();
 
       if (this.credentials) {
         headers['x-identity'] = this.credentials.copayerId;
@@ -1888,7 +1888,7 @@ export class API {
    * @param {string} opts.network          - (optional) network
    * @param {string} opts.alias          - (optional) Address alias
    */
-  async sendReferral(opts: ISendReferralOptions = {}): Promise<any> {
+  async sendReferral(opts: ISendReferralOptions): Promise<any> {
 
     if (opts) {
       $.shouldBeObject(opts);
@@ -1926,8 +1926,8 @@ export class API {
     }
 
     const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-      Bitcore.Address.fromString(parentAddress, network.name).toBufferLean(),
-      Bitcore.Address.fromString(opts.address, network.name).toBufferLean()
+      Bitcore.Address.fromString(parentAddress, network).toBufferLean(),
+      Bitcore.Address.fromString(opts.address, network).toBufferLean()
     ]));
 
     const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
