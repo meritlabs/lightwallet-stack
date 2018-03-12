@@ -9,7 +9,6 @@ import { MeritToastController, ToastConfig } from '@merit/common/services/toast.
 import { ProfileService } from '@merit/common/services/profile.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { VaultsService } from '@merit/common/services/vaults.service';
 import { Observable } from 'rxjs/Observable';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
@@ -61,7 +60,6 @@ export class WalletsView {
               private alertController: AlertController,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private vaultsService: VaultsService,
               private platform: Platform) {
     this.logger.debug('WalletsView constructor!');
   }
