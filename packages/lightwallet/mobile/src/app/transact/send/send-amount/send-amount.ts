@@ -55,13 +55,10 @@ export class SendAmountView {
   public wallets: Array<any>;
   public selectedWallet: any;
 
-  public knownFeeLevels: Array<{ level: string, nbBlocks: number, feePerKb: number }>;
-  public selectedFeeLevel: string = 'normal';
-  public selectedFee: any;
-
   public suggestedAmounts = {};
   public lastAmount: string;
 
+  public feePercent: number; 
   public feeIncluded: boolean;
   private referralsToSign: Array<any>;
 
@@ -114,7 +111,6 @@ export class SendAmountView {
 
     this.wallets = await this.profileService.getWallets();
     await this.chooseAppropriateWallet();
-    this.knownFeeLevels = await this.feeService.getFeeLevels(this.selectedWallet.network);
     this.loading = false;
   }
 
@@ -152,24 +148,6 @@ export class SendAmountView {
         this.selectedWallet = wallet;
       }
       this.updateTxData();
-    });
-  }
-
-  selectFee() {
-    if (!this.txData || !this.txData.txp) return;
-    const modal = this.modalCtrl.create('SendFeeView',
-      {
-        feeLevels: this.txData.txp.availableFeeLevels,
-        selectedFeeLevelName: this.selectedFeeLevel
-      }, MERIT_MODAL_OPTS);
-    modal.present();
-    modal.onDidDismiss((data) => {
-      if (data) {
-        this.selectedFeeLevel = data.name;
-        this.selectedFee = data;
-        this.txData.txp.fee = data.micros;
-        this.updateTxData();
-      }
     });
   }
 
@@ -247,9 +225,6 @@ export class SendAmountView {
     return this.amount;
   }
 
-  public toggleFeeIncluded() {
-  }
-
   public isSendAllowed() {
     return (
       this.amount.micros > 0
@@ -297,6 +272,7 @@ export class SendAmountView {
   private updateTxData() {
     this.feeLoading = true;
     this.feeCalcError = null;
+    this.feePercent = null; 
 
     if (!this.amount.micros) {
       this.txData = null;
@@ -304,11 +280,11 @@ export class SendAmountView {
       return this.createTxpDebounce.cancel();
     } else if (this.amount.micros > this.selectedWallet.status.spendableAmount) {
       this.feeCalcError = 'Amount is too big';
-      this.selectedFee = null;
       this.txData = null;
       this.feeLoading = false;
       return this.createTxpDebounce.cancel();
     } else {
+
       this.txData = {
         txp: null,
         wallet: this.selectedWallet,
@@ -322,58 +298,71 @@ export class SendAmountView {
         timeout: this.formData.nbBlocks
       };
 
-      this.createTxpDebounce({ dryRun: true });
+      this.createTxpDebounce();
     }
   }
 
-  private createTxpDebounce = _.debounce((opts: { dryRun: boolean }) => {
-    this.createTxp(opts);
+  private createTxpDebounce = _.debounce(() => {
+    this.createTxp();
   }, 1000);
 
-  private async createTxp(opts: { dryRun: boolean }) {
+  private async createTxp() { 
 
     if (this.amount.micros == this.selectedWallet.status.spendableAmount) this.feeIncluded = true;
 
-    if (this.sendMethod.type == SendMethodType.Easy) {
+    try {
 
-      const easySend = await  this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password);
-      easySend.script.isOutput = true;
-      this.txData.txp = this.easySendService.prepareTxp(this.txData.wallet, this.amount.micros, easySend);
-      this.txData.easySend = easySend;
-      this.txData.easySendUrl = getEasySendURL(easySend);
-      this.txData.referralsToSign = [easySend.scriptReferralOpts];
+        if (this.sendMethod.type == SendMethodType.Easy) {
 
-      const testEasyScript = this.easyReceiveSerivce.generateEasyScipt(new EasyReceipt({
-        secret: easySend.secret,
-        senderPublicKey: easySend.senderPubKey,
-        blockTimeout: easySend.blockTimeout
-      }), this.txData.password, ENV.network);
-
-      const testEasyTxData = { //creating fake data for easy redeem tx so we can estimate fee
-        toAddress: this.txData.wallet.getRootAddress(),
-        input: {
-          senderPublicKey: easySend.senderPubKey,
-          script: testEasyScript.script,
-          privateKey: testEasyScript.privateKey
-        },
-        txn: {
-          invite: false,
-          amount: this.txData.amount,
-          txId: '',
-          index: 0
+          const easySend = await  this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password);
+          easySend.script.isOutput = true;
+          this.txData.txp = this.easySendService.prepareTxp(this.txData.wallet, this.amount.micros, easySend);
+          this.txData.easySend = easySend;
+          this.txData.easySendUrl = getEasySendURL(easySend);
+          this.txData.referralsToSign = [easySend.scriptReferralOpts];
+    
+          const testEasyScript = this.easyReceiveSerivce.generateEasyScipt(new EasyReceipt({
+            secret: easySend.secret,
+            senderPublicKey: easySend.senderPubKey,
+            blockTimeout: easySend.blockTimeout
+          }), this.txData.password, ENV.network);
+    
+          const testEasyTxData = { //creating fake data for easy redeem tx so we can estimate fee
+            toAddress: this.txData.wallet.getRootAddress(),
+            input: {
+              senderPublicKey: easySend.senderPubKey,
+              script: testEasyScript.script,
+              privateKey: testEasyScript.privateKey
+            },
+            txn: {
+              invite: false,
+              amount: this.txData.amount,
+              txId: '',
+              index: 0
+            }
+          };
+          const redeemTxp = this.easyReceiveSerivce
+            .buildEasySendRedeemTransaction(testEasyTxData.input, testEasyTxData.txn, testEasyTxData.toAddress);
+    
+          this.txData.txp = this.txData.txp.fee + this.feeService.getTxpFee(redeemTxp); 
+          
+    
+        } else {
+          this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, this.sendMethod.value);
         }
-      };
-      const redeemTxp = this.easyReceiveSerivce
-        .buildEasySendRedeemTransaction(testEasyTxData.input, testEasyTxData.txn, testEasyTxData.toAddress);
+        
+      } catch (err) {
+        this.txData.txp = null;
+        this.logger.warn(err);
+        if (err.message) this.feeCalcError = err.message; 
+        return this.toastCtrl.create({
+          message: err.message || 'Unknown error',
+          cssClass: ToastConfig.CLASS_ERROR
+        }).present();
+      } finally {
+        this.feeLoading = false; 
+      }
 
-      this.txData.txp = this.txData.txp.fee + this.feeService.getTxpFee(redeemTxp);
-      
-
-    } else {
-
-      this.txData.txp = await this.sendService.prepareTxp(this.txData.walltet, this.amount.micros, this.txData.recipient.address);
-
-    }
-  }
+  } 
 
 }
