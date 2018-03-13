@@ -14,10 +14,10 @@ import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'view-create-wallet',
-  templateUrl: './create-wallet.component.html',
-  styleUrls: ['./create-wallet.component.sass']
+  templateUrl: './create-wallet.view.html',
+  styleUrls: ['./create-wallet.view.sass']
 })
-export class CreateWalletComponent {
+export class CreateWalletView {
 
   formData: FormGroup = this.formBuilder.group({
     walletName: ['', Validators.required],

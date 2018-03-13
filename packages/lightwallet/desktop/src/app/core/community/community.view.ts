@@ -6,11 +6,11 @@ import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/
 import { IRootAppState } from '@merit/common/reducers';
 
 @Component({
-  selector: 'app-network',
-  templateUrl: './network.component.html',
-  styleUrls: ['./network.component.sass']
+  selector: 'view-network',
+  templateUrl: './community.view.html',
+  styleUrls: ['./community.view.sass']
 })
-export class NetworkComponent {
+export class CommunityView {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   totals$: Observable<any> = this.store.select(selectWalletTotals);

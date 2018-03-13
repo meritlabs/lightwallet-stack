@@ -9,11 +9,11 @@ import { selectTransactions, selectTransactionsLoading } from '@merit/common/red
 
 @Component({
   selector: 'view-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.sass'],
+  templateUrl: './dashboard.view.html',
+  styleUrls: ['./dashboard.view.sass'],
   encapsulation: ViewEncapsulation.None
 })
-export class DashboardComponent {
+export class DashboardView {
   amount: number = null;
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);

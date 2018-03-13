@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-backup',
-  templateUrl: './backup.component.html',
-  styleUrls: ['./backup.component.sass']
+  templateUrl: './backup.view.html',
+  styleUrls: ['./backup.view.sass']
 })
 export class BackupComponent implements OnInit {
 

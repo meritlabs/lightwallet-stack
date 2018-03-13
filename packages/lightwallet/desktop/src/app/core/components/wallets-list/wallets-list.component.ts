@@ -3,8 +3,8 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @Component({
   selector: 'wallets-list',
-  templateUrl: './wallets.component.html',
-  styleUrls: ['./wallets.component.sass'],
+  templateUrl: './wallets-list.component.html',
+  styleUrls: ['./wallets-list.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WalletsListComponent {
