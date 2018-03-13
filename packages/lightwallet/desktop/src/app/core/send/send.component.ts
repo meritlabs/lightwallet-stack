@@ -18,15 +18,10 @@ import { Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/take';
-import { ENV } from '@app/env';
 import { defer } from 'rxjs/observable/defer';
-import { interval } from 'rxjs/observable/interval';
 import { merge } from 'rxjs/observable/merge';
 import { of } from 'rxjs/observable/of';
-import {
-  catchError, distinct, distinctUntilChanged, distinctUntilKeyChanged, map, switchMap,
-  tap
-} from 'rxjs/operators';
+import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import 'rxjs/add/operator/debounceTime';
 
@@ -150,7 +145,7 @@ export class SendComponent implements OnInit {
                     amount: txData.txp.amount,
                     fee: txData.feeAmount,
                     total: txData.txp.amount + txData.feeAmount
-                  }
+                  };
                 } else {
                   throw void 0;
                 }
@@ -164,7 +159,7 @@ export class SendComponent implements OnInit {
                   amount: 0,
                   fee: 0,
                   total: 0
-                })
+                });
               })
             )
         );
@@ -176,7 +171,7 @@ export class SendComponent implements OnInit {
           amount: 0,
           fee: 0,
           total: 0
-        })
+        });
       })
     );
 
@@ -226,7 +221,7 @@ export class SendComponent implements OnInit {
 
   selectCurrency($event) {
     this.selectedCurrency = $event;
-    this.updateFiatAmount()
+    this.updateFiatAmount();
   }
 
   updateFiatAmount() {
@@ -314,30 +309,21 @@ export class SendComponent implements OnInit {
         script: easySend.script,
         scriptAddress: easySend.scriptAddress,
         scriptReferralOpts: easySend.scriptReferralOpts,
-        url: getEasySendURL(easySend),
+        url: getEasySendURL(easySend)
       };
     }
   }
 
   private async updateAmount(formData: any) {
     const amount: any = {};
-    // if (this.selectedCurrency.type == CURRENCY_TYPE_MRT) {
-      amount.mrt = parseFloat(formData.amount) || 0;
-      amount.micros = this.rateService.mrtToMicro(amount.mrt);
-      if (this.availableUnits[1]) {
-        amount.fiat = this.rateService.fromMicrosToFiat(amount.micros, this.availableUnits[1].name);
-      }
-    // } else {
-    //   amount.fiat = parseFloat(formData.amount) || 0;
-    //   amount.micros = this.rateService.fromFiatToMicros(amount.fiat, this.availableUnits[1].name);
-    //   amount.mrt = this.rateService.fromFiatToMerit(amount.fiat, this.availableUnits[1].name);
-    // }
+
+    amount.mrt = parseFloat(formData.amount) || 0;
+    amount.micros = this.rateService.mrtToMicro(amount.mrt);
+    if (this.availableUnits[1]) {
+      amount.fiat = this.rateService.fromMicrosToFiat(amount.micros, this.availableUnits[1].name);
+    }
     amount.mrtStr = this.txFormatService.formatAmountStr(amount.micros) + ' MRT';
     amount.fiatStr = await this.txFormatService.formatAlternativeStr(amount.micros);
-
-    // if (this.selectedWallet && this.selectedWallet.status) {
-    //   if (amount.micros == this.selectedWallet.status.spendableAmount) this.formData.get('feeIncluded').setValue(true);
-    // }
 
     console.log('Amount is ', amount);
 
@@ -345,8 +331,6 @@ export class SendComponent implements OnInit {
   }
 
   private async createTxp(formattedAmount: any, dryRun?: boolean) {
-
-    console.log('Form data is ', this.formData.getRawValue());
 
     const { type, toAddress, amount, feeIncluded } = this.formData.getRawValue();
     const txData: any = {};
@@ -357,7 +341,7 @@ export class SendComponent implements OnInit {
     try {
 
       let data: any = {
-        toAddress: type === 'classic'? toAddress : '',
+        toAddress: type === 'classic' ? toAddress : '',
         toName: '',
         toAmount: parseInt(formattedAmount.micros),
         allowSpendUnconfirmed: true,
@@ -401,19 +385,37 @@ export class SendComponent implements OnInit {
       txData.easySendUrl = easyData.url;
       this.referralsToSign = _.filter([easyData.scriptReferralOpts]);
 
-      txData.txp.availableFeeLevels = [];
-
       const level = {
         level: 'superEconomy',
         feePerKb: 20000,
         nbBlocks: 24
       };
 
-      // todo IF EASY ADD  easySend.size*feeLevel.feePerKb !!!!!!
-      const feeMicros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
+      let micros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
+      let mrt = Math.round(this.rateService.microsToMrt(micros) * 1000000000) / 1000000000;
+      let percent = this.formData.get('feeIncluded') ? (micros / (amount.micros) * 100) : (micros / (amount.micros + micros) * 100);
+      let precision = 1;
+      if (percent > 0) {
+        while (percent * Math.pow(10, precision) < 1) {
+          precision++;
+        }
+      }
+      precision++; //showing two valued digits
 
-      txData.txp.fee = feeMicros;
-      txData.feeAmount = feeMicros;
+      let fee = {
+        description: level.level,
+        name: level.level,
+        minutes: level.nbBlocks * MINUTE_PER_BLOCK,
+        micros: micros,
+        mrt: mrt,
+        feePerKb: level.feePerKb,
+        percent: percent.toFixed(precision) + '%'
+      };
+
+      txData.txp.availableFeeLevels = [fee];
+
+      // todo IF EASY ADD  easySend.size*feeLevel.feePerKb !!!!!!
+      txData.txp.fee = txData.feeAmount = fee.micros;
 
       txData.wallet = this.selectedWallet.client;
 
@@ -423,7 +425,7 @@ export class SendComponent implements OnInit {
       this.logger.warn(err);
 
       if (err.message) {
-       throw new Error(err.message);
+        throw new Error(err.message);
       }
 
       this.selectedFee = null;
