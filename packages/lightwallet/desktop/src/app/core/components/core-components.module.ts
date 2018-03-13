@@ -9,6 +9,8 @@ import { ToolbarComponent } from '@merit/desktop/app/core/components/toolbar/too
 import { WalletsListComponent } from '@merit/desktop/app/core/components/wallets-list/wallets-list.component';
 import { VaultsListComponent } from '@merit/desktop/app/core/components/vaults-list/vaults-list.component';
 import { ProfileStatsComponent } from '@merit/desktop/app/core/components/profile-stats/profile-stats.component';
+import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
+import { RouterModule } from '@angular/router';
 
 export function getComponents() {
   return [
@@ -25,7 +27,11 @@ export function getComponents() {
 }
 
 @NgModule({
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    SharedComponentsModule,
+    RouterModule
+  ],
   declarations: getComponents(),
   exports: getComponents()
 })

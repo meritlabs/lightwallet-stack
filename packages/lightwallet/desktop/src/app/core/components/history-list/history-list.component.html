@@ -1,12 +1,11 @@
 <div class="history__list">
-  {{expande}}
   <div *ngFor="let item of history; let i=index">
-    <app-row-item [item]="item"
+    <history-item [item]="item"
                   *ngIf="i < limit"
                   [ngClass]="{'active' : activeIndex === i}"
                   [activeIndex] = "activeIndex"
                   [index] = "i"
                   (click)="toggleClass($event, i)"
-                  ></app-row-item>
+                  ></history-item>
   </div>
 </div>

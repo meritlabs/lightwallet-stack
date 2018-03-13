@@ -1,7 +1,4 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { DashboardView } from './dashboard/dashboard.view';
-import { WalletsView } from './wallets/wallets.view';
-import { ReceiveComponent } from './receive/receive.view';
 
 @Component({
   selector: 'view-core',
@@ -9,7 +6,7 @@ import { ReceiveComponent } from './receive/receive.view';
   styleUrls: ['./core.component.sass'],
   encapsulation: ViewEncapsulation.None
 })
-export class CoreComponent {
+export class CoreView {
 
   topMenuItems: any[] = [
     {
@@ -38,21 +35,15 @@ export class CoreComponent {
       link: '/history'
     },
     {
-      name: 'Network',
+      name: 'Community',
       icon: '/assets/v1/icons/ui/aside-navigation/network.svg',
-      link: '/network'
+      link: '/community'
     },
     {
       name: 'Settings',
       icon: '/assets/v1/icons/ui/aside-navigation/settings.svg',
       link: '/settings'
     }
-    // ,
-    // {
-    //   name: 'Community',
-    //   icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
-    //   link: '/community'
-    // }
   ];
   bottomMenuItems: any[] = [
     {
@@ -61,10 +52,4 @@ export class CoreComponent {
       link: 'https://www.merit.me/'
     }
   ];
-  constructor() { }
-
-  onMenuItemClick(item: any) {
-
-  }
-
 }

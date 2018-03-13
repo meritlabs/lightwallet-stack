@@ -16,7 +16,7 @@ import { IRootAppState } from '@merit/common/reducers';
   styleUrls: ['./receive.view.sass'],
   encapsulation: ViewEncapsulation.None
 })
-export class ReceiveComponent implements OnInit {
+export class ReceiveView implements OnInit {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
 
