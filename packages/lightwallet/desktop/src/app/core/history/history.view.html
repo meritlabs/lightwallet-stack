@@ -3,6 +3,6 @@
     <div class="history__header title--primary">
       <p>History</p>
     </div>
-    <history-list></history-list>
+    <history-list [transactions]="transactions$ | async" [loading]="loading$ | async"></history-list>
   </div>
 </div>

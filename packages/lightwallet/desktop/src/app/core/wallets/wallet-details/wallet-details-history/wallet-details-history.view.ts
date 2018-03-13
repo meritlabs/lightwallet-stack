@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { Observable } from 'rxjs/Observable';
 import { ActivatedRoute } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
+import { selectTransactionsByWalletId, selectTransactionsLoading } from '@merit/common/reducers/transactions.reducer';
+import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'app-wallet-details-history',
@@ -11,7 +13,11 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./wallet-details-history.view.sass']
 })
 export class WalletDetailHistoryView {
-  wallet$: Observable<DisplayWallet>;
+  transactions$: Observable<IDisplayTransaction[]> = this.route.parent.params.pipe(
+    switchMap(({ id }) => this.store.select(selectTransactionsByWalletId(id)))
+  );
+
+  loading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
 
   constructor(private store: Store<IRootAppState>,
               private route: ActivatedRoute) {

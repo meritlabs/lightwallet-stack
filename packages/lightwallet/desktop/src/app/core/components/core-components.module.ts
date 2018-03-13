@@ -11,6 +11,7 @@ import { VaultsListComponent } from '@merit/desktop/app/core/components/vaults-l
 import { ProfileStatsComponent } from '@merit/desktop/app/core/components/profile-stats/profile-stats.component';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { RouterModule } from '@angular/router';
+import { MomentModule } from 'angular2-moment';
 
 export function getComponents() {
   return [
@@ -30,7 +31,8 @@ export function getComponents() {
   imports: [
     CommonModule,
     SharedComponentsModule,
-    RouterModule
+    RouterModule,
+    MomentModule
   ],
   declarations: getComponents(),
   exports: getComponents()
