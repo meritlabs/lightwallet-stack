@@ -33,14 +33,13 @@ const routes: Routes = [
         { path: 'settings', component: WalletSettingsComponent },
         { path: 'send', component: SendComponent },
         { path: 'receive', component: ReceiveComponent },
-        { path: 'export', component: ExportComponent }
+        { path: 'backup', component: BackupComponent },
       ]},
       { path: 'receive', component: ReceiveComponent },
       { path: 'send', component: SendComponent },
       { path: 'history', component: HistoryComponent },
       { path: 'community', component: CommunityComponent },
       { path: 'network', component: NetworkComponent },
-      { path: 'backup', component: BackupComponent },
       { path: 'backup/mnemonic-phrase', component: MnemonicPhraseComponent },
       { path: 'settings', component: GlobalSettingsComponent, children: [
         { path: '', component: SettingsPreferencesComponent },
