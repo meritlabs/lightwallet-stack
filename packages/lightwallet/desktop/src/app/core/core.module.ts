@@ -12,7 +12,6 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { CommunityComponent } from './community/community.component';
 import { SelectComponent } from './iu/select/select.component';
-import { RowItemComponent } from './history/history-item/history-item.component';
 import { CreateWalletComponent } from './wallets/create-wallet/create-wallet.component';
 import { WalletDetailComponent } from './wallets/wallet-details/wallet-details.component';
 import { WalletSettingsComponent } from './wallets/wallet-details/wallet-settings/wallet-settings.component';
@@ -22,7 +21,6 @@ import { BackupComponent } from './backup/backup.component';
 import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phrase.component';
 import { WalletsListComponent } from './wallets/wallets/wallets.component';
 import { VaultsListComponent } from './wallets/vaults/vaults.component';
-import { HistoryListComponent } from './history/history-list/history-list.component';
 import { NotificationsComponent } from './iu/notifications/notifications.component';
 import { ToastNotificationComponent } from '../components/toast-notification/toast-notification.component';
 import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
@@ -70,14 +68,12 @@ export function getPages() {
     ToolbarComponent,
     NotificationsComponent,
     SelectComponent,
-    RowItemComponent,
     NetworkComponent,
     ProfileStatsComponent,
     BackupComponent,
     MnemonicPhraseComponent,
     WalletsListComponent,
     VaultsListComponent,
-    HistoryListComponent,
     ToastNotificationComponent,
     NotificationsHistoryComponent,
     WalletDetailHistoryComponent,
