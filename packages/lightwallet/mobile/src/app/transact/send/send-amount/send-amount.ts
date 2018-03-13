@@ -60,7 +60,7 @@ export class SendAmountView {
   public lastAmount: string;
 
   public feePercent: number; 
-  public feeIncluded: boolean;
+  public feeIncluded: boolean = false;
   public feeTogglerEnabled: boolean = true; 
   private referralsToSign: Array<any>;
 
@@ -153,6 +153,7 @@ export class SendAmountView {
       this.updateTxData();
     });
   }
+
 
   showFeeIncludedTooltip() {
     this.alertCtrl.create({
@@ -325,14 +326,14 @@ if (value != this.lastAmount) {
         if (this.sendMethod.type == SendMethodType.Easy) {
 
           const easySend = await  this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password);
-          easySend.script.isOutput = true;
-          this.txData.txp = await this.easySendService.prepareTxp(this.txData.wallet, this.amount.micros, easySend);
           this.txData.easySend = easySend;
+          this.txData.txp = await this.easySendService.prepareTxp(this.txData.wallet, this.amount.micros, easySend);
           this.txData.easySendUrl = getEasySendURL(easySend);
           this.txData.referralsToSign = [easySend.scriptReferralOpts];
-    
-          if (this.feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed 
-            this.txData.easyFee  = await this.feeService.getEasyReceiveFee();
+
+          if (!this.feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed 
+            this.txData.easyFee  = await this.feeService.getEasyReceiveFee(); 
+            console.log(this.txData.easyFee, 'easyfee'); 
           }
         
         } else {
@@ -340,7 +341,6 @@ if (value != this.lastAmount) {
         }
         
       } catch (err) {
-        console.log(err); 
         this.txData.txp = null;
         this.logger.warn(err);
         if (err.message) this.feeCalcError = err.message; 

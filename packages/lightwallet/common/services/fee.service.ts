@@ -95,9 +95,17 @@ export class FeeService {
   }
 
   public async getTxpFee(txp) {
+
+    console.log(txp.serialize().length, 'TXP size');  
+
     const feePerKB = await this.getCurrentFeeRate(ENV.network);
     const fee = Math.round(feePerKB * txp.serialize().length / 1024);
     return fee; 
+  }
+
+  public async getEasyReceiveFee() {
+    //todo TEMP! MOVE THIS TO MWS
+    return Promise.resolve(100000);     
   }
 
 
