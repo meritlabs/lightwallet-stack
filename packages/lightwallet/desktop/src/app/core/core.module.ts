@@ -24,6 +24,10 @@ import { SettingsTermsOfUseView } from './global-settings/settings-terms-of-use/
 import { SettingsSessionLogView } from './global-settings/settings-session-log/settings-session-log.view';
 import { CoreComponentsModule } from '@merit/desktop/app/core/components/core-components.module';
 import { MomentModule } from 'angular2-moment';
+import { ImportWalletView } from '@merit/desktop/app/core/wallets/import-wallet/import-wallet.view';
+import { ImportByQrView } from '@merit/desktop/app/core/wallets/import-wallet/import-by-qr/import-by-qr.view';
+import { ImportWithFileView } from '@merit/desktop/app/core/wallets/import-wallet/import-with-file/import-with-file.view';
+import { PhraseImportView } from '@merit/desktop/app/core/wallets/import-wallet/phrase-import/phrase-import.view';
 
 export function getPages() {
   return [
@@ -42,7 +46,11 @@ export function getPages() {
     GlobalSettingsView,
     SettingsPreferencesView,
     SettingsTermsOfUseView,
-    SettingsSessionLogView
+    SettingsSessionLogView,
+    ImportWalletView,
+    ImportByQrView,
+    ImportWithFileView,
+    PhraseImportView
   ];
 }
 

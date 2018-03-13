@@ -17,6 +17,10 @@ import { SettingsPreferencesView } from '@merit/desktop/app/core/global-settings
 import { SettingsTermsOfUseView } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.view'
 import { SettingsSessionLogView } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.view'
 import { WalletSettingsView } from '@merit/desktop/app/core/wallets/wallet-details/wallet-settings/wallet-settings.view';
+import { ImportWalletView } from '@merit/desktop/app/core/wallets/import-wallet/import-wallet.view';
+import { ImportByQrView } from '@merit/desktop/app/core/wallets/import-wallet/import-by-qr/import-by-qr.view';
+import { ImportWithFileView } from '@merit/desktop/app/core/wallets/import-wallet/import-with-file/import-with-file.view';
+import { PhraseImportView } from '@merit/desktop/app/core/wallets/import-wallet/phrase-import/phrase-import.view';
 
 
 const routes: Routes = [
@@ -26,6 +30,10 @@ const routes: Routes = [
       { path: 'dashboard', component: DashboardView },
       { path: 'wallets', component: WalletsView, pathMatch: 'full' },
       { path: 'wallets/create', component: CreateWalletView },
+      { path: 'wallets/import', component: ImportWalletView },
+      { path: 'wallets/import/qr-code', component: ImportByQrView },
+      { path: 'wallets/import/file', component: ImportWithFileView },
+      { path: 'wallets/import/phrase', component: PhraseImportView },
       { path: 'wallets/:id', component: WalletDetailView, children: [
         { path: '', component: WalletDetailHistoryView },
         { path: 'history', component: WalletDetailHistoryView },
