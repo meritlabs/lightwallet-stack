@@ -48,7 +48,10 @@ export class UnlockView {
     const receipts = await this.easyReceiveService.getPendingReceipts();
     this.easyReceipt = receipts.pop();
     // The unlock code from a pending easyReceipt takes priority.
-    if (this.easyReceipt) this.formData.parentAddress = this.easyReceipt.parentAddress;
+    if (this.easyReceipt) {
+      this.formData.parentAddress = this.easyReceipt.parentAddress;
+      this.validateAddress();
+    }
   }
 
   checkAddress() {
