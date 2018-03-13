@@ -5,6 +5,13 @@ import { DerivationPath } from '@merit/common/utils/derivation-path';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { MnemonicService } from '@merit/common/services/mnemonic.service';
 import { startsWith } from 'lodash';
+import { IRootAppState } from '@merit/common/reducers';
+import { Store } from '@ngrx/store';
+import { createDisplayWallet } from '@merit/common/models/display-wallet';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { SendService } from '@merit/common/services/send.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
 
 @Component({
   selector: 'view-phrase-import',
@@ -25,7 +32,11 @@ export class PhraseImportView {
 
   constructor(private formBuilder: FormBuilder,
               private profileService: ProfileService,
-              private mnemonicService: MnemonicService) {}
+              private mnemonicService: MnemonicService,
+              private store: Store<IRootAppState>,
+              private walletService: WalletService,
+              private sendService: SendService,
+              private txFormatService: TxFormatService) {}
 
 
   async importMnemonic() {
@@ -63,6 +74,12 @@ export class PhraseImportView {
         // this.pushNotificationsService.subscribe(wallet);
 
         console.log('Done importing wallet!');
+        this.store.dispatch(
+          new AddWalletAction(
+            await createDisplayWallet(wallet, this.walletService, this.sendService, this.txFormatService)
+          )
+        );
+
         return;
       }
 
