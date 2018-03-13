@@ -15,6 +15,7 @@ import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
+import { SendService } from '../../../../common/services/send.service';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -60,7 +61,8 @@ export class WalletsView {
               private walletService: WalletService,
               private txFormatService: TxFormatService,
               private vaultsService: VaultsService,
-              private platform: Platform) {
+              private platform: Platform,
+              private sendService: SendService) {
     this.logger.debug('WalletsView constructor!');
   }
 
@@ -373,7 +375,7 @@ export class WalletsView {
   private async updateAllWallets(): Promise<DisplayWallet[]> {
     const wallets = await this.profileService.getWallets();
     return Promise.all<DisplayWallet>(
-      wallets.map(w => createDisplayWallet(w, this.walletService, null, this.txFormatService, { skipRewards: true, skipAlias: true }))
+      wallets.map(w => createDisplayWallet(w, this.walletService, this.sendService, this.txFormatService, { skipRewards: true, skipAlias: true }))
     );
   }
 

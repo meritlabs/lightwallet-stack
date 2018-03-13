@@ -156,7 +156,7 @@ export class DisplayWallet {
   }
 }
 
-export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService?: SendService, txFormatService?: TxFormatService, options: IDisplayWalletOptions = {}): Promise<DisplayWallet> {
+export function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, sendService?: SendService, txFormatService?: TxFormatService, options: IDisplayWalletOptions = {}): Promise<DisplayWallet> {
   const displayWallet = new DisplayWallet(wallet, walletService, sendService, txFormatService);
   return updateDisplayWallet(displayWallet, options);
 }
