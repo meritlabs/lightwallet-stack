@@ -1,0 +1,124 @@
+<div class="{{injected ? 'sendMerit--injected' : 'sendMerit'}}">
+  <div class="container--inner">
+    <div class="{{injected ? 'wallet-details__content__title' : 'sendMerit__header title--primary'}}">
+      <p>Send Merit</p>
+    </div>
+
+    <error-message *ngIf="error">{{ error }}</error-message>
+
+    <div class="sendMerit__content">
+
+      <form [formGroup]="formData" class="sendMerit__form">
+          <div class="sendMerit__form__group">
+            <label for="" class="ui-label">Amount</label>
+            <div class="ui-input__wrapper ui-input__wrapper--mrt">
+              <input type="text" name="" formControlName="amount"
+                     class="ui-input ui-input--form ui-input--text">
+              <div class="ui-input__addon">MRT</div>
+            </div>
+            <div class="ui-input__wrapper ui-input__wrapper--currency">
+              <input type="text" name="" value="{{fiatAmount}}" disabled
+                     class="ui-input ui-input--form ui-input--text">
+              <div class="ui-input__addon">
+                <app-select
+                  (selectionEvent)="selectCurrency($event)"
+                  [selected]="selectedCurrency"
+                  [input]="availableCurrencies"
+                  style="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
+              </div>
+            </div>
+          </div>
+          <div class="sendMerit__form__group">
+            <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
+              <label for="feeIncluded" class="ui-label">Include fee in the amount:</label>
+            </div>
+            <div class="sendMerit__form__group__column sendMerit__form_group__column--30">
+              <div class="ui-checkbox">
+                <input type="checkbox" name="feeIncluded" id="feeIncluded" formControlName="feeIncluded">
+                <span class="ui-checkbox__switcher"></span>
+              </div>
+            </div>
+          </div>
+          <div class="sendMerit__form__group">
+            <label for="" class="ui-label">Send from</label>
+            <app-select
+              (selectionEvent)="selectWallet($event)"
+              [selected]="selectedWallet"
+              [input]="wallets$ | async"
+              style="ui-input ui-input--select ui-input--form"></app-select>
+          </div>
+          <div *ngIf="getType() === 'classic'; else classicSend">
+            <div class="sendMerit__form__group">
+              <label for="" class="ui-label">Send to address / alias</label>
+              <input type="text" name="" value="" placeholder="Paste address / alias here"
+                     class="ui-input ui-input--form ui-input--text" formControlName="toAddress">
+            </div>
+            <div class="sendMerit__form__group">
+              <div class="switch-type">
+                <br>
+                Not sure if they have a Merit address?
+                <div>
+                  <a (click)="setType('easy')">Send via EasySend</a>.
+                </div>
+              </div>
+            </div>
+          </div>
+          <ng-template #classicSend>
+            <div class="sendMerit__form__group">
+              <label class="ui-label">Sending via EasySend</label>
+              <p>You will see a link after confirming the transaction that you can share with your recipient.</p>
+            </div>
+            <div class="sendMerit__form__group">
+              <div class="switch-type">
+                <br>
+                Want to send to a Merit address?
+                <div>
+                  <a (click)="setType('classic')">Send via ClassicSend</a>.
+                </div>
+              </div>
+            </div>
+          </ng-template>
+          <div class="sendMerit__form__group">
+            <button type="button" name="button" class="ui-button ui-button--blue" (click)="send()">Send Merit</button>
+          </div>
+      </form>
+
+      <div class="sendMerit__totals">
+        <div class="sendMerit__form__group">
+          <div class="sendMerit__totals__table" *ngIf="receipt$ | async as receipt">
+            <loading-spinner *ngIf="receipt.loading; else hasData"></loading-spinner>
+            <ng-template #hasData>
+              <div class="sendMerit__totals__table--top">
+                <label for="" class="ui-label">Receipt</label>
+                <div class="sendMerit__totals__table__row">
+                  <div class="sendMerit__totals__table__column">Amount</div>
+                  <div class="sendMerit__totals__table__column">{{ receipt.amount | toUnit }} MRT</div>
+                </div>
+                <div class="sendMerit__totals__table__row">
+                  <div class="sendMerit__totals__table__column">Fees</div>
+                  <div class="sendMerit__totals__table__column">{{ receipt.fee | toUnit }} MRT</div>
+                </div>
+                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
+                  <div class="sendMerit__totals__table__column">Total</div>
+                  <div class="sendMerit__totals__table__column">{{ receipt.total | toUnit }} MRT</div>
+                </div>
+              </div>
+              <div class="sendMerit__totals__table--bottom">
+                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--devider">
+                </div>
+                <div class="sendMerit__totals__table__row">
+                  <div class="sendMerit__totals__table__column">In Wallet</div>
+                  <div class="sendMerit__totals__table__column">{{ (selectedWallet?.totalBalanceMicros || 0) | toUnit }} MRT</div>
+                </div>
+                <div class="sendMerit__totals__table__row">
+                  <div class="sendMerit__totals__table__column">Total Remaining</div>
+                  <div class="sendMerit__totals__table__column">{{ ((selectedWallet?.totalBalanceMicros || 0) - receipt.total) | toUnit }} MRT</div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
