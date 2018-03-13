@@ -1,7 +1,7 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'app-profile-stats',
+  selector: 'profile-stats',
   templateUrl: './profile-stats.component.html',
   styleUrls: ['./profile-stats.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush

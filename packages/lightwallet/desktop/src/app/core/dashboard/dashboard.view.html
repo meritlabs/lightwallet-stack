@@ -1,5 +1,5 @@
 <div class="dashboard-panel">
-  <app-profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></app-profile-stats>
+  <profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></profile-stats>
   <div class="dashboard-panel__group">
     <div class="dashboard-panel__group__wrap container--inner">
       <div class="dashboard-panel__widged">
@@ -21,7 +21,7 @@
         <div class="title--primary">
           <p>Latest transactions</p>
         </div>
-        <app-history-list [transactions]="transactions$ | async" [loading]="transactionsLoading$ | async" limit="5"></app-history-list>
+        <history-list [transactions]="transactions$ | async" [loading]="transactionsLoading$ | async" limit="5"></history-list>
         <div [routerLink]='"/history"'
           class="ui-button ui-button--blue">SHOW FULL HISTORY</div>
       </div>
