@@ -10,7 +10,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { CommunityComponent } from './community/community.component';
 import { SelectComponent } from './iu/select/select.component';
-import { RowItemComponent } from './history/row-item/row-item.component';
+import { RowItemComponent } from './history/row-item/history-item.component';
 import { CreateWalletComponent } from './wallets/create-wallet/create-wallet.component';
 import { WalletDetailComponent } from './wallets/wallet-details/wallet-details.component';
 import { WalletSettingsComponent } from './wallets/wallet-settings/wallet-settings.component';
