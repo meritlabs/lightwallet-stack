@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { WalletsViewComponent } from './wallets/wallets.view';
 import { ReceiveComponent } from './receive/receive.component';
 import { SendComponent } from './send/send.component';
-import { HistoryComponent } from './history/history.component';
+import { HistoryComponent } from './history/history.view';
 import { CoreComponent } from './core.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CommunityComponent } from './community/community.component';

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CoreRoutingModule } from './core-routing.module';
 import { WalletsViewComponent } from './wallets/wallets.view';
-import { HistoryComponent } from './history/history.component';
+import { HistoryComponent } from './history/history.view';
 import { ReceiveComponent } from './receive/receive.component';
 import { SendComponent } from './send/send.component';
 import { CoreComponent } from './core.component';
