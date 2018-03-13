@@ -15,6 +15,7 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IVault } from '@merit/common/models/vault';
+import { FeeService } from '@merit/common/services/fee.service';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -60,7 +61,9 @@ export class WalletsView {
               private alertController: AlertController,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private platform: Platform) {
+              private platform: Platform,
+              private feeService: FeeService
+            ) {
     this.logger.debug('WalletsView constructor!');
   }
 
@@ -257,8 +260,9 @@ export class WalletsView {
     }).present();
   }
 
-  private showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
-    const amount = _.get(_.find(data.txs, (tx: any) => !tx.invite), 'amount', 0);
+  private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
+    let amount = _.get(_.find(data.txs, (tx: any) => !tx.invite), 'amount', 0);
+    amount -= await this.feeService.getEasyReceiveFee();
 
     this.alertController.create({
       title: `You've got ${amount} Merit!`,
