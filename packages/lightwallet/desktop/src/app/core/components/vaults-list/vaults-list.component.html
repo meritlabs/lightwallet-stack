@@ -3,9 +3,14 @@
     <div class="wallets__group__header__title title--primary">
       <p>Vaults</p>
     </div>
-    <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm ui-button--{{showButton}}
-      ui-button--add ui-button--transparent">
-      Create new vault</button>
+    <div>
+      <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--blue
+        ui-button--sm ui-button--{{showButton}}"
+        routerLink="/wallets/import">Import wallet</button>
+      <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm ui-button--{{showButton}}
+        ui-button--add ui-button--white">
+        Create new vault</button>
+    </div>
   </div>
   <div class="wallets__group__content" routerLink="/wallets/test/history">
     <div class="wallets__group__wallet">
@@ -18,8 +23,6 @@
           <p class="regular-blue-text">500.00 MRT ($1924.88)</p>
         </div>
       </div>
-      <div class="wallets__group__wallet__edit ui-button ui-button--sm
-        ui-button--transparent ui-button--with-arrow">Get info</div>
     </div>
   </div>
 </div>

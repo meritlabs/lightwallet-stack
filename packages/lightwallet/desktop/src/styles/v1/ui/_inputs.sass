@@ -50,6 +50,15 @@
       .ui-input__addon
         top: 8px
         right: 8px
+    &--password
+      position: relative
+      .show-hide-password
+        position: absolute
+        right: 20px
+        top: 16px
+        cursor: pointer
+        user-select: none
+        +font($baseFont--heavy, 14px, 14px, $blue, uppercase, none, none)
   &__addon
     position: absolute
     right: 16px
@@ -88,5 +97,9 @@
       border: 1px solid #b7bcc8
       left: -1px
       top: -4px
-      //box-shadow: 1px 1px 2px rgba(0,0,0, .4)
       +transition(.15s, ease-out)
+.ui-input--textarea
+  padding: 15px 16px
+  border: 1px solid $light-blue-grey
+  resize: none
+  height: 100px
