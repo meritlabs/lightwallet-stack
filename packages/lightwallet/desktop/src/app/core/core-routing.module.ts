@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { WalletsViewComponent } from './wallets/wallets.view';
 import { ReceiveComponent } from './receive/receive.component';
 import { SendComponent } from './send/send.component';
-import { HistoryComponent } from './history/history.view';
+import { HistoryView } from './history/history.view';
 import { CoreComponent } from './core.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CommunityComponent } from './community/community.component';
@@ -35,7 +35,7 @@ const routes: Routes = [
       ]},
       { path: 'receive', component: ReceiveComponent },
       { path: 'send', component: SendComponent },
-      { path: 'history', component: HistoryComponent },
+      { path: 'history', component: HistoryView },
       { path: 'community', component: CommunityComponent },
       { path: 'network', component: NetworkComponent },
       { path: 'backup', component: BackupComponent },

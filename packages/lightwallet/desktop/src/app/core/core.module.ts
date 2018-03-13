@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CoreRoutingModule } from './core-routing.module';
 import { WalletsViewComponent } from './wallets/wallets.view';
-import { HistoryComponent } from './history/history.view';
+import { HistoryView } from './history/history.view';
 import { ReceiveComponent } from './receive/receive.component';
 import { SendComponent } from './send/send.component';
 import { CoreComponent } from './core.component';
@@ -10,7 +10,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { CommunityComponent } from './community/community.component';
 import { SelectComponent } from './iu/select/select.component';
-import { RowItemComponent } from './history/row-item/history-item.component';
+import { RowItemComponent } from './history/history-item/history-item.component';
 import { CreateWalletComponent } from './wallets/create-wallet/create-wallet.component';
 import { WalletDetailComponent } from './wallets/wallet-details/wallet-details.component';
 import { WalletSettingsComponent } from './wallets/wallet-settings/wallet-settings.component';
@@ -37,7 +37,7 @@ import { SettingsSessionLogComponent } from './global-settings/settings-session-
 export function getPages() {
   return [
     WalletsViewComponent,
-    HistoryComponent,
+    HistoryView,
     ReceiveComponent,
     SendComponent,
     DashboardComponent,
