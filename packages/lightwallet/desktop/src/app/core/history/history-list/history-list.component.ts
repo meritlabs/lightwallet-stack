@@ -6,7 +6,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./history-list.component.sass']
 })
 export class HistoryListComponent implements OnInit {
-  @Input() limit: any = 100;
+  @Input() limit: number = 100;
   history: any = [
     {
       "name": 'mny89ri53nmfCvSp6jq90',
@@ -48,7 +48,6 @@ export class HistoryListComponent implements OnInit {
   activeIndex: number;
 
   toggleClass(event, i: number) {
-   event.preventDefault();
    if(this.activeIndex !== i) {
      this.activeIndex = i;
    }else {
