@@ -5,5 +5,5 @@ import { Component } from '@angular/core';
   templateUrl: './history.view.html',
   styleUrls: ['./history.view.sass']
 })
-export class HistoryComponent {
+export class HistoryView {
 }
