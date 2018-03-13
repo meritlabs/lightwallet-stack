@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
   selector: 'vaults-list',
-  templateUrl: './vaults.component.html',
-  styleUrls: ['./vaults.component.sass'],
+  templateUrl: './vaults-list.component.html',
+  styleUrls: ['./vaults-list.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VaultsListComponent {

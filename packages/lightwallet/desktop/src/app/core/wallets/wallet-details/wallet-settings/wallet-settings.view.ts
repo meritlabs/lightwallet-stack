@@ -9,10 +9,10 @@ import { FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'view-wallet-settings',
-  templateUrl: './wallet-settings.component.html',
-  styleUrls: ['./wallet-settings.component.sass']
+  templateUrl: './wallet-settings.view.html',
+  styleUrls: ['./wallet-settings.view.sass']
 })
-export class WalletSettingsComponent implements OnInit, OnDestroy {
+export class WalletSettingsView implements OnInit, OnDestroy {
   availableColors: any = [
     {
       name: 'Sunglo',

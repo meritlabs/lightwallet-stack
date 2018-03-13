@@ -7,10 +7,10 @@ import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-wallet-details-history',
-  templateUrl: './wallet-details-history.component.html',
-  styleUrls: ['./wallet-details-history.component.sass']
+  templateUrl: './wallet-details-history.view.html',
+  styleUrls: ['./wallet-details-history.view.sass']
 })
-export class WalletDetailHistoryComponent {
+export class WalletDetailHistoryView {
   wallet$: Observable<DisplayWallet>;
 
   constructor(private store: Store<IRootAppState>,

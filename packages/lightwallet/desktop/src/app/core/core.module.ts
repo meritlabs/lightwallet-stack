@@ -1,49 +1,45 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
-import { ComponentsModule } from '@merit/desktop/app/components/components.module';
+import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { CoreRoutingModule } from './core-routing.module';
-import { WalletsViewComponent } from './wallets/wallets.view';
+import { WalletsView } from './wallets/wallets.view';
 import { HistoryView } from './history/history.view';
-import { ReceiveComponent } from './receive/receive.component';
-import { SendComponent } from './send/send.component';
+import { ReceiveComponent } from './receive/receive.view';
+import { SendView } from './send/send.view';
 import { CoreComponent } from './core.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardView } from './dashboard/dashboard.view';
 import { ToolbarComponent } from './toolbar/toolbar.component';
-import { CommunityComponent } from './community/community.component';
-import { SelectComponent } from './iu/select/select.component';
-import { CreateWalletComponent } from './wallets/create-wallet/create-wallet.component';
-import { WalletDetailComponent } from './wallets/wallet-details/wallet-details.component';
-import { WalletSettingsComponent } from './wallets/wallet-details/wallet-settings/wallet-settings.component';
-import { NetworkComponent } from './network/network.component';
+import { CommunityComponent, CommunityView } from './community/community.view';
+import { CreateWalletView } from './wallets/create-wallet/create-wallet.view';
+import { WalletDetailComponent } from './wallets/wallet-details/wallet-details.view';
+import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wallet-settings.view';
 import { ProfileStatsComponent } from './profile-stats/profile-stats.component';
-import { BackupComponent } from './backup/backup.component';
-import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phrase.component';
-import { WalletsListComponent } from './wallets/wallets/wallets.component';
-import { VaultsListComponent } from './wallets/vaults/vaults.component';
-import { NotificationsComponent } from './iu/notifications/notifications.component';
-import { ToastNotificationComponent } from '../components/toast-notification/toast-notification.component';
-import { NotificationsHistoryComponent } from './iu/notifications/notifications-history/notifications-history.component';
+import { BackupComponent } from './backup/backup.view';
+import { MnemonicPhraseView } from './backup/mnemonic-phrase/mnemonic-phrase.view';
+import { WalletsListComponent } from './wallets/wallets-list/wallets-list.component';
+import { VaultsListComponent } from './wallets/vaults-list/vaults-list.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { WalletDetailHistoryComponent } from './wallets/wallet-details/wallet-details-history/wallet-details-history.component';
+import { WalletDetailHistoryView } from './wallets/wallet-details/wallet-details-history/wallet-details-history.view';
 import { QRCodeModule } from 'angular2-qrcode';
-import { GlobalSettingsComponent } from './global-settings/global-settings.component';
-import { SettingsPreferencesComponent } from './global-settings/settings-preferences/settings-preferences.component';
-import { SettingsTermsOfUsComponent } from './global-settings/settings-terms-of-use/settings-terms-of-use.component';
-import { SettingsSessionLogComponent } from './global-settings/settings-session-log/settings-session-log.component';
+import { GlobalSettingsView } from './global-settings/global-settings.view';
+import { SettingsPreferencesView } from './global-settings/settings-preferences/settings-preferences.view';
+import { SettingsTermsOfUseView } from './global-settings/settings-terms-of-use/settings-terms-of-use.view';
+import { SettingsSessionLogView } from './global-settings/settings-session-log/settings-session-log.view';
+import { CoreComponentsModule } from '@merit/desktop/app/core/components/core-components.module';
 
 
 export function getPages() {
   return [
-    WalletsViewComponent,
+    WalletsView,
     HistoryView,
     ReceiveComponent,
-    SendComponent,
-    DashboardComponent,
+    SendView,
+    DashboardView,
     CommunityComponent,
-    CreateWalletComponent,
+    CreateWalletView,
     WalletDetailComponent,
-    WalletSettingsComponent,
+    WalletSettingsView
   ];
 }
 
@@ -59,28 +55,22 @@ export function getPages() {
     QRCodeModule,
     ReactiveFormsModule,
     CommonPipesModule,
-    ComponentsModule,
+    SharedComponentsModule,
+    CoreComponentsModule,
     FormsModule
   ],
   declarations: [
     CoreComponent,
     ...getPages(),
     ToolbarComponent,
-    NotificationsComponent,
-    SelectComponent,
-    NetworkComponent,
-    ProfileStatsComponent,
+    CommunityView,
     BackupComponent,
-    MnemonicPhraseComponent,
-    WalletsListComponent,
-    VaultsListComponent,
-    ToastNotificationComponent,
-    NotificationsHistoryComponent,
-    WalletDetailHistoryComponent,
-    GlobalSettingsComponent,
-    SettingsPreferencesComponent,
-    SettingsTermsOfUsComponent,
-    SettingsSessionLogComponent,
+    MnemonicPhraseView,
+    WalletDetailHistoryView,
+    GlobalSettingsView,
+    SettingsPreferencesView,
+    SettingsTermsOfUseView,
+    SettingsSessionLogView
   ]
 })
 export class CoreModule {

@@ -46,11 +46,11 @@ interface ISendReceipt {
 
 @Component({
   selector: 'view-send',
-  templateUrl: './send.component.html',
-  styleUrls: ['./send.component.sass'],
+  templateUrl: './send.view.html',
+  styleUrls: ['./send.view.sass'],
   encapsulation: ViewEncapsulation.None
 })
-export class SendComponent implements OnInit {
+export class SendView implements OnInit {
   availableCurrencies: any = [
     {
       'name': 'USD',

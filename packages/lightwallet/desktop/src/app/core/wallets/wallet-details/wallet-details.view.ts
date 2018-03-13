@@ -9,8 +9,8 @@ import { selectWalletById } from '@merit/common/reducers/wallets.reducer';
 
 @Component({
   selector: 'view-wallet-details',
-  templateUrl: './wallet-details.component.html',
-  styleUrls: ['./wallet-details.component.sass']
+  templateUrl: './wallet-details.view.html',
+  styleUrls: ['./wallet-details.view.sass']
 })
 export class WalletDetailComponent {
   wallet$: Observable<DisplayWallet> = this.route.params

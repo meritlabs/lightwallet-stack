@@ -1,27 +1,26 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {WalletService} from '@merit/common/services/wallet.service';
-import {RateService} from '@merit/common/services/rate.service';
-import {ConfigService} from '@merit/common/services/config.service';
-import {Observable} from 'rxjs/Observable';
-import {DisplayWallet} from '@merit/common/models/display-wallet';
-import {Store} from '@ngrx/store';
-import {SendService} from '@merit/common/services/send.service';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { Observable } from 'rxjs/Observable';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { Store } from '@ngrx/store';
+import { SendService } from '@merit/common/services/send.service';
 import 'rxjs/add/operator/take';
-import {selectWallets, selectWalletsLoading} from "@merit/common/reducers/wallets.reducer";
-import {IRootAppState} from "@merit/common/reducers";
-
+import { selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
+import { IRootAppState } from '@merit/common/reducers';
 
 @Component({
   selector: 'view-receive',
-  templateUrl: './receive.component.html',
-  styleUrls: ['./receive.component.sass'],
+  templateUrl: './receive.view.html',
+  styleUrls: ['./receive.view.sass'],
   encapsulation: ViewEncapsulation.None
 })
 export class ReceiveComponent implements OnInit {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
 
-  protocolHandler: string = "merit";
+  protocolHandler: string = 'merit';
   address: string;
   alias: string;
   qrAddress: string;
@@ -30,44 +29,46 @@ export class ReceiveComponent implements OnInit {
   availableUnits: Array<string>;
   amountCurrency: string;
   amountInFiat: any = 0;
-  walletIcon: string = "/assets/v1/icons/ui/wallets/wallet-ico-grey.svg";
-  vaultIcon: string = "/assets/v1/icons/ui/wallets/vault-ico-grey.svg";
+  walletIcon: string = '/assets/v1/icons/ui/wallets/wallet-ico-grey.svg';
+  vaultIcon: string = '/assets/v1/icons/ui/wallets/vault-ico-grey.svg';
 
   availableCurrencies: any = [
     {
-      "name": 'USD',
-      "symbol": '$',
-      "value": 10
+      'name': 'USD',
+      'symbol': '$',
+      'value': 10
     },
     {
-      "name": 'RUB',
-      "symbol": '₽',
-      "value": 0.1
+      'name': 'RUB',
+      'symbol': '₽',
+      'value': 0.1
     },
     {
-      "name": 'CAD',
-      "symbol": 'C$',
-      "value": 2
+      'name': 'CAD',
+      'symbol': 'C$',
+      'value': 2
     },
     {
-      "name": 'EUR',
-      "symbol": '€',
-      "value": 3
+      'name': 'EUR',
+      'symbol': '€',
+      'value': 3
     }
   ];
+
   availableFeesVariants: any = [
     {
-      "name": 'I pay the fee',
-      "value": 10
+      'name': 'I pay the fee',
+      'value': 10
     },
     {
-      "name": 'Recipient will pay the fee',
-      "value": 0
+      'name': 'Recipient will pay the fee',
+      'value': 0
     }
   ];
+
   selectedFee: any = {
-    "name": 'I pay the fee',
-    "value": 10
+    'name': 'I pay the fee',
+    'value': 10
   };
 
   // For now, the first wallet in the list of wallets is the default.
@@ -75,9 +76,9 @@ export class ReceiveComponent implements OnInit {
   selectedWallet: DisplayWallet;
 
   selectedCurrency: any = {
-    "name": 'USD',
-    "symbol": '$',
-    "value": 10
+    'name': 'USD',
+    'symbol': '$',
+    'value': 10
   };
 
   constructor(private configService: ConfigService,
@@ -91,7 +92,7 @@ export class ReceiveComponent implements OnInit {
         this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
       ];
     } catch (err) {
-      console.log("Error reading the config service.");
+      console.log('Error reading the config service.');
       console.log(err);
     }
   }
@@ -106,7 +107,7 @@ export class ReceiveComponent implements OnInit {
     } catch (err) {
       if (err.text)
       //this.error = err.text;
-        console.log("Could not initialize: ", err.text);
+        console.log('Could not initialize: ', err.text);
       // return this.toastCtrl.create({
       //   message: err.text || 'Failed to generate new address',
       //   cssClass: ToastConfig.CLASS_ERROR
@@ -120,11 +121,11 @@ export class ReceiveComponent implements OnInit {
   }
 
   selectFee($event) {
-    this.selectedFee = $event
+    this.selectedFee = $event;
   }
 
   selectWallet($event) {
-    this.selectedWallet = $event
+    this.selectedWallet = $event;
   }
 
   changeAmount(event: any) {

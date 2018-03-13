@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { WalletsViewComponent } from './wallets/wallets.view';
-import { ReceiveComponent } from './receive/receive.component';
+import { DashboardView } from './dashboard/dashboard.view';
+import { WalletsView } from './wallets/wallets.view';
+import { ReceiveComponent } from './receive/receive.view';
 
 @Component({
   selector: 'view-core',
