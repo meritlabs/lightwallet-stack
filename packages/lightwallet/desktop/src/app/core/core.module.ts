@@ -23,6 +23,7 @@ import { SettingsPreferencesView } from './global-settings/settings-preferences/
 import { SettingsTermsOfUseView } from './global-settings/settings-terms-of-use/settings-terms-of-use.view';
 import { SettingsSessionLogView } from './global-settings/settings-session-log/settings-session-log.view';
 import { CoreComponentsModule } from '@merit/desktop/app/core/components/core-components.module';
+import { MomentModule } from 'angular2-moment';
 
 export function getPages() {
   return [
@@ -59,7 +60,8 @@ export function getPages() {
     CommonPipesModule,
     SharedComponentsModule,
     CoreComponentsModule,
-    FormsModule
+    FormsModule,
+    MomentModule
   ],
   declarations: [
     CoreView,
