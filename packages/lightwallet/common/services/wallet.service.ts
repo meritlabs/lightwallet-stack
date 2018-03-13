@@ -644,7 +644,7 @@ export class WalletService {
     return this.signAndBroadcast(wallet, txp, password);
   }
 
-  async getEncodedWalletInfo(wallet: MeritWalletClient, password: string): Promise<any> {
+  async getEncodedWalletInfo(wallet: MeritWalletClient, password: string): Promise<string> {
     const derivationPath = wallet.credentials.getBaseAddressDerivationPath();
     const encodingType = {
       mnemonic: 1,
