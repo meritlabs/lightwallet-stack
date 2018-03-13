@@ -299,39 +299,27 @@ export class WalletService {
 
   }
 
-  getRootAddress(wallet: MeritWalletClient) {
-    return wallet.getRootAddress();
-  }
+  async getAddress(wallet: MeritWalletClient, forceNew: boolean): Promise<any> {
 
-  getAddress(wallet: MeritWalletClient, forceNew: boolean): Promise<any> {
+    const addr = await this.persistenceService.getLastAddress(wallet.id);
+    if (!forceNew && addr) return addr;
 
-    return new Promise((resolve, reject) => {
-      return this.persistenceService.getLastAddress(wallet.id).then((addr) => {
-        if (!forceNew && addr) return resolve(addr);
+    if (!wallet.isComplete())
+      throw new Error('WALLET_NOT_COMPLETE');
 
-        if (!wallet.isComplete())
-          return reject(new Error('WALLET_NOT_COMPLETE'));
+    try {
+      const address = await wallet.createAddress({});
+      await this.persistenceService.storeLastAddress(wallet.id, address);
+      return address;
+    } catch (err) {
+      if (err.code == MWCErrors.MAIN_ADDRESS_GAP_REACHED.code && !forceNew) {
+        const address = await this.getMainAddress(wallet);
+        await this.persistenceService.storeLastAddress(wallet.id, address);
+        return address;
+      }
 
-        return wallet.createAddress({}).then((address) => {
-          return this.persistenceService.storeLastAddress(wallet.id, address).then(() => {
-            return resolve(address);
-          });
-        }).catch((err) => {
-          if (err.code == MWCErrors.MAIN_ADDRESS_GAP_REACHED.code && !forceNew) {
-            return this.getMainAddress(wallet).then((address) => {
-              return this.persistenceService.storeLastAddress(wallet.id, address).then(() => {
-                return resolve(address);
-              });
-            });
-          } else {
-            return reject(err);
-          }
-        });
-
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
+      throw err;
+    }
   }
 
   // Approx utxo amount, from which the uxto is economically redeemable
@@ -354,30 +342,18 @@ export class WalletService {
     return wallet.getTx(txpid);
   }
 
-  getTx(wallet: MeritWalletClient, txid: string) {
-    return new Promise((resolve, reject) => {
-      let finish = (list: any) => {
-        let tx = _.find(list, {
-          txid: txid
-        });
+  async getTx(wallet: MeritWalletClient, txid: string) {
+    const finish = (list: any) => {
+      const tx = list.find(tx => tx.txid == txid);
+      if (!tx) throw new Error('Could not get transaction');
+      return tx;
+    };
 
-        if (!tx) return reject(new Error('Could not get transaction'));
-        return resolve(tx);
-      };
+    if (wallet.completeHistory && wallet.completeHistory.isValid) {
+      return finish(wallet.completeHistory);
+    }
 
-      if (wallet.completeHistory && wallet.completeHistory.isValid) {
-        finish(wallet.completeHistory);
-      } else {
-        let opts = {
-          limitTx: txid
-        };
-        return this.getTxHistory(wallet, opts).then((txHistory: any) => {
-          finish(txHistory);
-        }).catch((err) => {
-          return reject(err);
-        });
-      }
-    });
+    return finish(await this.getTxHistory(wallet, { limitTx: txid }));
   }
 
   async getTxHistory(wallet: MeritWalletClient, opts?: any): Promise<any> {
@@ -419,127 +395,85 @@ export class WalletService {
     return wallet.createTxProposal(txp);
   }
 
-  publishTx(wallet: MeritWalletClient, txp: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (_.isEmpty(txp) || _.isEmpty(wallet))
-        return reject(new Error('MISSING_PARAMETER'));
-      return resolve(wallet.publishTxProposal({
-        txp: txp
-      }));
-    }).catch((err) => {
-      Promise.reject(new Error('error publishing tx: ' + err));
-    });
+  async publishTx(wallet: MeritWalletClient, txp: any): Promise<any> {
+    if (_.isEmpty(txp) || _.isEmpty(wallet))
+      throw new Error('MISSING_PARAMETER');
+    try {
+      return wallet.publishTxProposal({ txp })
+    } catch (err) {
+      throw new Error('error publishing tx: ' + err);
+    }
   }
 
   signTx(wallet: MeritWalletClient, txp: any, password: string): Promise<any> {
-    if (!wallet || !txp) {
-      return Promise.reject(new Error('MISSING_PARAMETER'));
-    }
+    if (!wallet || !txp)
+      throw new Error('MISSING_PARAMETER');
 
     return wallet.signTxProposal(txp, password);
   }
 
-  // These 2 functions were taken from
-
   broadcastTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     if (_.isEmpty(txp) || _.isEmpty(wallet))
-      return Promise.reject(new Error('MISSING_PARAMETER'));
+      throw new Error('MISSING_PARAMETER');
 
     if (txp.status != 'accepted')
-      return Promise.reject(new Error('TX_NOT_ACCEPTED'));
+      throw new Error('TX_NOT_ACCEPTED');
 
     return wallet.broadcastTxProposal(txp);
   }
 
   rejectTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     if (_.isEmpty(txp) || _.isEmpty(wallet))
-      return Promise.reject(new Error('MISSING_PARAMETER'));
+      throw new Error('MISSING_PARAMETER');
 
     return wallet.rejectTxProposal(txp, null);
   }
 
-  removeTx(wallet: MeritWalletClient, txp: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (_.isEmpty(txp) || _.isEmpty(wallet))
-        return reject(new Error('MISSING_PARAMETER'));
+  async removeTx(wallet: MeritWalletClient, txp: any): Promise<any> {
+    if (_.isEmpty(txp) || _.isEmpty(wallet))
+      throw new Error('MISSING_PARAMETER');
 
-      return wallet.removeTxProposal(txp).then(() => {
-        this.logger.debug('Transaction removed');
-        this.invalidateCache(wallet);
-        // $rootScope.$emit('Local/TxAction', wallet.id);
-        return resolve();
-      });
+    await wallet.removeTxProposal(txp);
+
+    this.logger.debug('Transaction removed');
+    this.invalidateCache(wallet);
+  }
+
+  private updateRemotePreferencesFor(clients: any[], prefs: any): Promise<any> {
+    return Promise.all(clients.map((wallet: any) =>
+      wallet.savePreferences(prefs)
+    ));
+  }
+
+  async updateRemotePreferences(clients: any[], prefs: any = {}): Promise<any> {
+    if (!_.isArray(clients))
+      clients = [clients];
+
+    // Update this JIC.
+    let config: any = this.configService.get();
+    let walletSettings = config.wallet.settings;
+
+    //prefs.email  (may come from arguments)
+    prefs.email = config.emailNotifications.email;
+    prefs.language = 'English'; // This line was hardcoded - TODO: prefs.language = uxLanguage.getCurrentLanguage();
+    // prefs.unit = walletSettings.unitCode; // TODO: remove, not used
+
+    await this.updateRemotePreferencesFor(_.clone(clients), prefs);
+    this.logger.debug('Remote preferences saved');
+
+    clients.forEach(c => {
+      c.preferences = _.assign(prefs, c.preferences);
     });
   }
 
-  updateRemotePreferences(clients: any[], prefs: any = {}): Promise<any> {
-    return new Promise((resolve, reject) => {
+  async startScan(wallet: MeritWalletClient): Promise<any> {
+    this.logger.debug('Scanning wallet ' + wallet.id);
+    if (!wallet.isComplete())
+      throw new Error('Wallet is not complete');
 
-      if (!_.isArray(clients))
-        clients = [clients];
-
-      const updateRemotePreferencesFor = async (clients: any[], prefs: any): Promise<any> => {
-        const wallet = clients.shift();
-        if (!wallet) return resolve();
-
-        this.logger.debug('Saving remote preferences', wallet.credentials.walletName, prefs);
-
-        try {
-          await wallet.savePreferences(prefs);
-          return updateRemotePreferencesFor(clients, prefs);
-        } catch (err) {
-          this.popupService.alert('Could not save preferences on the server'); //TODO Gettextcatalog
-          return reject(err);
-        }
-      };
-
-      // Update this JIC.
-      let config: any = this.configService.get();
-      let walletSettings = config.wallet.settings;
-
-      //prefs.email  (may come from arguments)
-      prefs.email = config.emailNotifications.email;
-      prefs.language = 'English'; // This line was hardcoded - TODO: prefs.language = uxLanguage.getCurrentLanguage();
-      // prefs.unit = walletSettings.unitCode; // TODO: remove, not used
-
-      return updateRemotePreferencesFor(_.clone(clients), prefs).then(() => {
-        this.logger.debug('Remote preferences saved for' + _.map(clients, (x: any) => {
-          return x.credentials.walletId;
-        }).join(','));
-        _.each(clients, (c: any) => {
-          c.preferences = _.assign(prefs, c.preferences);
-        });
-        return resolve();
-      }).catch((err: any) => {
-        return reject(err);
-      });
-    });
-  }
-
-  getUnlockRequests(wallet: MeritWalletClient) {
-    return wallet.getUnlockRequests();
-  }
-
-  recreate(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.logger.debug('Recreating wallet:', wallet.id);
-      wallet.recreateWallet((err: any) => {
-        wallet.notAuthorized = false;
-        if (err) return reject(err);
-        return resolve();
-      });
-    });
-  }
-
-  startScan(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.logger.debug('Scanning wallet ' + wallet.id);
-      if (!wallet.isComplete()) return reject(new Error('Wallet is not complete'));
-
-      wallet.scanning = true;
-      return Promise.resolve(wallet.startScan({
-        includeCopayerBranches: true,
-      }));
+    wallet.scanning = true;
+    return wallet.startScan({
+      includeCopayerBranches: true
     });
   }
 
@@ -550,48 +484,32 @@ export class WalletService {
     return wallet;
   }
 
-  async createReferral(pubkey: any, parentAddress: any): Promise<any> {
-    return true;
-  }
-
   // joins and stores a wallet
-  joinWallet(opts: any): Promise<any> {
-    return new Promise((resolve, reject) => {
+  async joinWallet(opts: any): Promise<any> {
+    this.logger.debug('Joining Wallet:', opts);
 
-      let walletClient = this.mwcService.getClient(null, opts);
-      this.logger.debug('Joining Wallet:', opts);
+    let walletData;
 
-      try {
-        var walletData = this.mwcService.parseSecret(opts.secret);
+    try {
+      walletData = this.mwcService.parseSecret(opts.secret);
+    } catch (ex) {
+      this.logger.debug(ex);
+      throw new Error('Bad wallet invitation'); // TODO getTextCatalog
+    }
 
-        // check if exist
-        if (_.find(this.profileService.profile.credentials, {
-            'walletId': walletData.walletId
-          })) {
-          return reject(new Error('Cannot join the same wallet more that once')); // TODO getTextCatalog
-        }
-      } catch (ex) {
-        this.logger.debug(ex);
-        return reject(new Error('Bad wallet invitation')); // TODO getTextCatalog
-      }
-      opts.networkName = walletData.network;
-      this.logger.debug('Joining Wallet:', opts);
+    if (this.profileService.profile.credentials.find(wallet => wallet.walletId == walletData.walletId)) {
+      throw new Error('Cannot join the same wallet more that once'); // TODO getTextCatalog
+    }
 
-      return this.seedWallet(opts).then((walletClient: any) => {
-        walletClient.joinWallet(opts.secret, opts.myName || 'me', {}, (err: any) => {
-          if (err) {
-            return reject(new Error('Could not join wallet'));
-          } else {
-            return this.profileService.addAndBindWalletClient(walletClient, {
-              bwsurl: opts.bwsurl
-            }).then((wallet: MeritWalletClient) => {
-              return resolve(wallet);
-            });
-          }
-        });
-      }).catch((err: any) => {
-        return reject(err);
-      });
+    opts.networkName = walletData.network;
+    this.logger.debug('Joining Wallet:', opts);
+
+    const walletClient: any = await this.seedWallet(opts);
+
+    await walletClient.joinWallet(opts.secret, opts.myName || 'me');
+
+    return this.profileService.addAndBindWalletClient(walletClient, {
+      bwsurl: opts.bwsurl
     });
   }
 
@@ -600,14 +518,8 @@ export class WalletService {
   };
 
   expireAddress(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.logger.debug('Cleaning Address ' + wallet.id);
-      return this.persistenceService.clearLastAddress(wallet.id).then(() => {
-        return resolve();
-      }).catch((err: any) => {
-        return reject(err);
-      });
-    });
+    this.logger.debug('Cleaning Address ' + wallet.id);
+    return this.persistenceService.clearLastAddress(wallet.id);
   }
 
   async getMainAddresses(wallet: MeritWalletClient, opts: any = {}): Promise<Array<any>> {
@@ -624,30 +536,24 @@ export class WalletService {
     return wallet.getInvitesBalance(opts);
   }
 
-  getLowUtxos(wallet: any, levels: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      wallet.getUtxos({}, (err, resp) => {
-        if (err || !resp || !resp.length) return reject(err);
+  async getLowUtxos(wallet: any, levels: any): Promise<any> {
+    const resp = await wallet.getUtxos();
 
-        let minFee = this.getMinFee(wallet, levels, resp.length);
+    if (!resp || !resp.length) throw '';
 
-        let balance = _.sumBy(resp, 'micros');
+    const minFee = this.getMinFee(wallet, levels, resp.length);
+    const balance = _.sumBy(resp, 'micros');
 
-        // for 2 outputs
-        let lowAmount = this.getLowAmount(wallet, levels);
-        let lowUtxos = _.filter(resp, (x: any) => {
-          return x.micros < lowAmount;
-        });
+    // for 2 outputs
+    const lowAmount = this.getLowAmount(wallet, levels);
+    const lowUtxos = resp.filter(x => x.micros < lowAmount);
 
-        let totalLow = _.sumBy(lowUtxos, 'micros');
-        return resolve({
-          allUtxos: resp || [],
-          lowUtxos: lowUtxos || [],
-          warning: minFee / balance > this.TOTAL_LOW_WARNING_RATIO,
-          minFee: minFee,
-        });
-      });
-    });
+    return {
+      allUtxos: resp || [],
+      lowUtxos: lowUtxos || [],
+      warning: minFee / balance > this.TOTAL_LOW_WARNING_RATIO,
+      minFee: minFee
+    };
   }
 
   createDefaultWallet(parentAddress: string, alias: string) {
@@ -676,54 +582,37 @@ export class WalletService {
 
   // create and store a wallet
 
-  decrypt(wallet: MeritWalletClient, password: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      try {
-        wallet.decryptPrivateKey(password);
-      } catch (e) {
-        return reject(e);
-      }
-      return resolve();
-    });
+  async decrypt(wallet: MeritWalletClient, password: string) {
+    wallet.decryptPrivateKey(password);
   }
 
-  handleEncryptedWallet(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (!this.isEncrypted(wallet)) return resolve();
-      return this.askPassword(wallet.name, 'Enter Spending Password').then((password: string) => { //TODO gettextcatalog
-        if (!password) return reject(new Error('No password'));
-        if (!wallet.checkPassword(password)) return reject(new Error('Wrong password'));
-        return resolve(password);
-      });
-    });
+  async handleEncryptedWallet(wallet: MeritWalletClient): Promise<any> {
+    if (!this.isEncrypted(wallet)) return;
+    const password: string = await this.askPassword(wallet.name, 'Enter Spending Password');
+
+    if (!password)
+      throw new Error('No password');
+
+    if (!wallet.checkPassword(password))
+      throw new Error('Wrong password');
+
+    return password;
   }
 
-  reject(wallet: MeritWalletClient, txp: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      return this.rejectTx(wallet, txp).then((txpr: any) => {
-        this.invalidateCache(wallet);
-        //$rootScope.$emit('Local/TxAction', wallet.id);
-        return resolve(txpr);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
+  async reject(wallet: MeritWalletClient, txp: any): Promise<any> {
+    const txpr = await this.rejectTx(wallet, txp);
+    this.invalidateCache(wallet);
+    return txpr;
   }
 
-  onlyPublish(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      return this.publishTx(wallet, txp).then((publishedTxp) => {
-        this.invalidateCache(wallet);
-        this.events.publish('Local:Tx:Publish', publishedTxp);
-        return resolve();
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
+  async onlyPublish(wallet: MeritWalletClient, txp: any): Promise<any> {
+    const publishedTxp = await this.publishTx(wallet, txp);
+    this.invalidateCache(wallet);
+    this.events.publish('Local:Tx:Publish', publishedTxp);
   }
 
   prepare(wallet: MeritWalletClient): Promise<any> {
-    return this.handleEncryptedWallet(wallet)
+    return this.handleEncryptedWallet(wallet);
     // TODO: rewrite this when integrating Fingerprint service
 
     // return new Promise((resolve, reject) => {
@@ -739,73 +628,50 @@ export class WalletService {
     // });
   }
 
-  publishAndSign(wallet: MeritWalletClient, txp: any, customStatusHandler: any): Promise<any> {
+  async publishAndSign(wallet: MeritWalletClient, txp: any): Promise<any> {
     this.logger.info('@@PS: ENTER');
-    return new Promise((resolve, reject) => {
-      // Already published?
-      let walletPassword = '';
-      if (txp.status == 'pending') {
-        this.logger.info('@@PS: PENDING');
+    const password = await this.prepare(wallet);
+    this.logger.info('@@PS: AFTER PREPARE');
 
-        return this.prepare(wallet).then((password: string) => {
-          return this.signAndBroadcast(wallet, txp, password, customStatusHandler)
-            .then((broadcastedTxp: any) => {
-              return resolve(broadcastedTxp);
-            }).catch((err) => {
-              return reject(err);
-            });
-        });
-      } else {
-        this.logger.info('@@PS: NOT PENDING');
+    if (txp.status == 'pending') {
+      this.logger.info('@@PS: PENDING');
+    } else {
+      this.logger.info('@@PS: NOT PENDING');
+      txp = await this.publishTx(wallet, txp);
+      this.logger.info('@@PS: AFTER PublishTx');
+    }
 
-        return this.prepare(wallet).then((password: string) => {
-          this.logger.info('@@PS: AFTER PREPARE');
-
-          walletPassword = password;
-          return this.publishTx(wallet, txp);
-        }).then((publishedTxp: any) => {
-          this.logger.info('@@PS: AFTER PublishTx');
-          return this.signAndBroadcast(wallet, publishedTxp, walletPassword, customStatusHandler);
-        }).then((signedTxp) => {
-          return resolve(signedTxp);
-        }).catch((err) => {
-          return reject(err);
-        });
-      }
-      ;
-    });
+    return this.signAndBroadcast(wallet, txp, password);
   }
 
-  getEncodedWalletInfo(wallet: MeritWalletClient, password: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let derivationPath = wallet.credentials.getBaseAddressDerivationPath();
-      let encodingType = {
-        mnemonic: 1,
-        xpriv: 2,
-        xpub: 3
+  async getEncodedWalletInfo(wallet: MeritWalletClient, password: string): Promise<any> {
+    const derivationPath = wallet.credentials.getBaseAddressDerivationPath();
+    const encodingType = {
+      mnemonic: 1,
+      xpriv: 2,
+      xpub: 3
+    };
+    let info: any = {};
+
+    // not supported yet
+    if (wallet.credentials.derivationStrategy != 'BIP44' || !wallet.canSign())
+      throw new Error('Exporting via QR not supported for this wallet'); //TODO gettextcatalog
+
+    const keys = this.getKeysWithPassword(wallet, password);
+
+    if (keys.mnemonic) {
+      info = {
+        type: encodingType.mnemonic,
+        data: keys.mnemonic
       };
-      let info: any = {};
+    } else {
+      info = {
+        type: encodingType.xpriv,
+        data: keys.xPrivKey
+      };
+    }
 
-      // not supported yet
-      if (wallet.credentials.derivationStrategy != 'BIP44' || !wallet.canSign())
-        return reject(new Error('Exporting via QR not supported for this wallet')); //TODO gettextcatalog
-
-      var keys = this.getKeysWithPassword(wallet, password);
-
-      if (keys.mnemonic) {
-        info = {
-          type: encodingType.mnemonic,
-          data: keys.mnemonic,
-        };
-      } else {
-        info = {
-          type: encodingType.xpriv,
-          data: keys.xPrivKey
-        };
-      }
-
-      return resolve(info.type + '|' + info.data + '|' + wallet.credentials.network.toLowerCase() + '|' + derivationPath + '|' + (wallet.credentials.mnemonicHasPassphrase));
-    });
+    return info.type + '|' + info.data + '|' + wallet.credentials.network.toLowerCase() + '|' + derivationPath + '|' + (wallet.credentials.mnemonicHasPassphrase);
   }
 
   getKeysWithPassword(wallet: MeritWalletClient, password: string): any {
@@ -888,7 +754,7 @@ export class WalletService {
    * @param wallet
    */
   getANV(wallet: MeritWalletClient): Promise<any> {
-    return wallet.getANV(wallet.getRootAddress())
+    return wallet.getANV(wallet.getRootAddress());
   }
 
   /**
@@ -896,7 +762,7 @@ export class WalletService {
    * @param wallet
    * @returns [{address, rewards: {mining, ambassador}}] An array of objects, each with an 'address' and a corresponding 'rewards' object that contains the 'mining' and 'ambassador' properties.
    */
-  async getRewards(wallet: MeritWalletClient): Promise<{ address: string; rewards: {mining: number; ambassador: number;}}[]> {
+  async getRewards(wallet: MeritWalletClient): Promise<{ address: string; rewards: { mining: number; ambassador: number; } }[]> {
     try {
       return await wallet.getRewards(wallet.getRootAddress());
     } catch (e) {
@@ -906,7 +772,7 @@ export class WalletService {
           mining: 0,
           ambassador: 0
         }
-      }]
+      }];
     }
   }
 
@@ -981,7 +847,7 @@ export class WalletService {
       return wallet.getTxHistory({
         skip: skip,
         limit: limit,
-        includeExtendedInfo: true,
+        includeExtendedInfo: true
       }).then((txsFromServer: Array<any>) => {
         if (!txsFromServer || !txsFromServer.length) {
           return resolve();
@@ -1073,7 +939,7 @@ export class WalletService {
       // Needs corresponding BWS method.
       if (opts.limitTx) {
         foundLimitTx = _.find(newTxs, {
-          txid: opts.limitTx,
+          txid: opts.limitTx
         });
         if (!_.isEmpty(foundLimitTx)) {
           this.logger.debug('Found limitTX: ' + opts.limitTx);
@@ -1256,7 +1122,7 @@ export class WalletService {
     });
   };
 
-  private signAndBroadcast(wallet: MeritWalletClient, publishedTxp: any, password: any, customStatusHandler: any): Promise<any> {
+  private signAndBroadcast(wallet: MeritWalletClient, publishedTxp: any, password: any): Promise<any> {
     this.logger.info('@@SB: ENTRY');
 
     return new Promise((resolve, reject) => {

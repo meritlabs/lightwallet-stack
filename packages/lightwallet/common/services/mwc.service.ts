@@ -10,7 +10,7 @@ export enum MWCErrors {
 
 @Injectable()
 export class MWCService {
-  private MWC: MeritWalletClient = this.getClient(null);
+  private MWC: MeritWalletClient = this.getClient();
   buildTx: Function = this.MWC.buildTx;
   parseSecret: Function = this.MWC.parseSecret;
 
@@ -33,7 +33,11 @@ export class MWCService {
     return this.MWC.Utils;
   }
 
-  public getClient(walletData, opts: any = {}): MeritWalletClient {
+  public getClient(walletData?, opts?: { bwsurl?: string; verbose?: boolean; }): MeritWalletClient {
+    if (!walletData && !opts && this.MWC) return this.MWC;
+
+    opts = opts || {};
+
     const mwc = MeritWalletClient.getInstance({
       baseUrl: opts.bwsurl || ENV.mwsUrl,
       verbose: opts.verbose || false,
