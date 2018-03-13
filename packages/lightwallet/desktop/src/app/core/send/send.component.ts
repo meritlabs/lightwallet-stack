@@ -401,21 +401,43 @@ export class SendComponent implements OnInit {
       txData.easySendUrl = easyData.url;
       this.referralsToSign = _.filter([easyData.scriptReferralOpts]);
 
-      txData.txp.availableFeeLevels = [];
-
       const level = {
         level: 'superEconomy',
         feePerKb: 20000,
         nbBlocks: 24
       };
 
-      // todo IF EASY ADD  easySend.size*feeLevel.feePerKb !!!!!!
-      const feeMicros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
+      let micros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
+      let mrt = Math.round(this.rateService.microsToMrt(micros) * 1000000000) / 1000000000;
+      let percent = this.formData.get('feeIncluded') ? (micros / (amount.micros) * 100) : (micros / (amount.micros + micros) * 100);
+      let precision = 1;
+      if (percent > 0) {
+        while (percent * Math.pow(10, precision) < 1) {
+          precision++;
+        }
+      }
+      precision++; //showing two valued digits
 
-      txData.txp.fee = feeMicros;
-      txData.feeAmount = feeMicros;
+      let fee = {
+        description: level.level,
+        name: level.level,
+        minutes: level.nbBlocks * MINUTE_PER_BLOCK,
+        micros: micros,
+        mrt: mrt,
+        feePerKb: level.feePerKb,
+        percent: percent.toFixed(precision) + '%'
+      };
+
+      txData.txp.availableFeeLevels = [fee];
+
+      // todo IF EASY ADD  easySend.size*feeLevel.feePerKb !!!!!!
+      // const feeMicros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
+
+      txData.txp.fee = txData.feeAmount = fee.micros;
 
       txData.wallet = this.selectedWallet.client;
+
+      console.log('Tx data is ', txData);
 
       return txData;
     } catch (err) {
