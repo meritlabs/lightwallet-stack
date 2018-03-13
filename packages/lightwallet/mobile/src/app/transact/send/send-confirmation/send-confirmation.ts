@@ -204,7 +204,7 @@ export class SendConfirmationView {
   }
 
 
-  private async send() {
+  async send() {
     const loadingSpinner = this.loadingCtrl.create({
       content: 'Sending transaction...',
       dismissOnPageChange: true,
@@ -264,9 +264,9 @@ export class SendConfirmationView {
   private approveTx() {
     if (!this.txData.wallet.canSign() && !this.txData.wallet.isPrivKeyExternal()) {
       this.logger.info('No signing proposal: No private key');
-      return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp, _.noop);
+      return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp);
     } else {
-      return this.walletService.publishAndSign(this.txData.wallet, this.txData.txp, _.noop);
+      return this.walletService.publishAndSign(this.txData.wallet, this.txData.txp);
     }
   }
 
