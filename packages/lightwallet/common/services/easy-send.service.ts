@@ -26,28 +26,25 @@ export class EasySendService {
     const signPrivKey = rootKey.privateKey;
     const pubkey = signPrivKey.publicKey;
 
-    try {
-      const easySend = await this.bulidScript(wallet, password);
-      const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo()).toString();
+    const easySend = await this.bulidScript(wallet, password);
+    const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo()).toString();
 
-      const scriptReferralOpts = {
-        parentAddress: wallet.getRootAddress().toString(),
-        pubkey: pubkey.toString(), // sign pubkey used to verify signature
-        signPrivKey,
-        address: easySendAddress,
-        addressType: this.bitcore.Address.PayToScriptHashType, // script address
-        network: ENV.network,
-      };
+    const scriptReferralOpts = {
+      parentAddress: wallet.getRootAddress().toString(),
+      pubkey: pubkey.toString(), // sign pubkey used to verify signature
+      signPrivKey,
+      address: easySendAddress,
+      addressType: this.bitcore.Address.PayToScriptHashType, // script address
+      network: ENV.network,
+    };
 
-      // easy send address is a mix of script_id pubkey_id
-      easySend.parentAddress = wallet.getRootAddress().toString();
-      easySend.scriptAddress = easySendAddress;
-      easySend.scriptReferralOpts = scriptReferralOpts;
+    // easy send address is a mix of script_id pubkey_id
+    easySend.parentAddress = wallet.getRootAddress().toString();
+    easySend.scriptAddress = easySendAddress;
+    easySend.scriptReferralOpts = scriptReferralOpts;
 
-      return easySend;
-    } catch (err) {
-      throw new Error('error building easysend script' + err);
-    }
+    easySend.script.isOutput = true;
+    return easySend; 
   }
 
   async sendSMS(phoneNumber: string, amountMrt: string, url: string): Promise<any> {
@@ -136,9 +133,8 @@ export class EasySendService {
    */
   private async bulidScript(wallet, passphrase = '', timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
 
-    const address = wallet.getRootAddress(); //todo check
-    const pubKey  = Bitcore.PublicKey.fromString(address.publicKeys[0]);
-    const rcvPair = Bitcore.PrivateKey.forNewEasySend(passphrase, ENV.network);
+    const pubKey  = wallet.getRootAddressPubkey();
+    const rcvPair = Bitcore.PrivateKey.forNewEasySend(passphrase, ENV.network); 
     let pubKeys = [
       rcvPair.key.publicKey.toBuffer(),
       pubKey.toBuffer()

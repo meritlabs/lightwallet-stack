@@ -76,7 +76,7 @@
 
       <p *ngIf="feePercent">{{feePercent}}</p>
       <div item-end *ngIf="txData?.txp?.fee">
-        {{txData?.txp?.fee + txData.easyFee | toMRT}} 
+        {{ txData?.txp?.fee + txData.easyFee | toMRT}} 
         <ion-icon name="ios-arrow-down"></ion-icon>
       </div>
     </button>

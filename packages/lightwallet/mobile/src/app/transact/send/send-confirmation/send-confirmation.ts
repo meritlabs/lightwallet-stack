@@ -67,21 +67,21 @@ export class SendConfirmationView {
 
     const viewData: any = {
       recipient: this.txData.recipient,
-      amount: this.txData.amount,
-      easyFee: this.txData.easyFee, 
+      amount: this.txData.feeIncluded ? this.txData.amount : this.txData.amount - this.txData.easyFee,
       password: this.txData.password,
       feePercent: this.txData.txp.feePercent,
-      fee: this.txData.txp.fee, 
-      totalAmount: this.txData.feeIncluded ? this.txData.amount : this.txData.txp.fee + this.txData.amount, 
+      fee: this.txData.txp.fee + this.txData.easyFee, 
       walletName: this.txData.wallet.name || this.txData.wallet.id,
       walletColor: this.txData.wallet.color,
       walletCurrentBalance: this.txData.wallet.status.totalBalanceMicros,
-      walletRemainingBalance: this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount - this.txData.easyFee,
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
       methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'Easy Send' : 'Classic Send',
-      destination: this.txData.sendMethod.alias || this.txData.sendMethod.value
+      destination: this.txData.sendMethod.alias || this.txData.sendMethod.value 
     };
+
+    viewData.totalAmount = this.txData.feeIncluded ? this.txData.amount : viewData.amount + viewData.fee;
+    viewData.walletRemainingBalance =  this.txData.wallet.status.totalBalanceMicros - viewData.totalAmount; 
 
     let fiatAvailale = this.rateService.getRate(viewData.fiatCode) > 0;
     const convert = amount => fiatAvailale ? this.formatService.toFiatStr(amount, viewData.fiatCode) : '';
