@@ -316,23 +316,14 @@ export class SendComponent implements OnInit {
 
   private async updateAmount(formData: any) {
     const amount: any = {};
-    // if (this.selectedCurrency.type == CURRENCY_TYPE_MRT) {
+
     amount.mrt = parseFloat(formData.amount) || 0;
     amount.micros = this.rateService.mrtToMicro(amount.mrt);
     if (this.availableUnits[1]) {
       amount.fiat = this.rateService.fromMicrosToFiat(amount.micros, this.availableUnits[1].name);
     }
-    // } else {
-    //   amount.fiat = parseFloat(formData.amount) || 0;
-    //   amount.micros = this.rateService.fromFiatToMicros(amount.fiat, this.availableUnits[1].name);
-    //   amount.mrt = this.rateService.fromFiatToMerit(amount.fiat, this.availableUnits[1].name);
-    // }
     amount.mrtStr = this.txFormatService.formatAmountStr(amount.micros) + ' MRT';
     amount.fiatStr = await this.txFormatService.formatAlternativeStr(amount.micros);
-
-    // if (this.selectedWallet && this.selectedWallet.status) {
-    //   if (amount.micros == this.selectedWallet.status.spendableAmount) this.formData.get('feeIncluded').setValue(true);
-    // }
 
     console.log('Amount is ', amount);
 
@@ -340,8 +331,6 @@ export class SendComponent implements OnInit {
   }
 
   private async createTxp(formattedAmount: any, dryRun?: boolean) {
-
-    console.log('Form data is ', this.formData.getRawValue());
 
     const { type, toAddress, amount, feeIncluded } = this.formData.getRawValue();
     const txData: any = {};
@@ -426,13 +415,9 @@ export class SendComponent implements OnInit {
       txData.txp.availableFeeLevels = [fee];
 
       // todo IF EASY ADD  easySend.size*feeLevel.feePerKb !!!!!!
-      // const feeMicros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
-
       txData.txp.fee = txData.feeAmount = fee.micros;
 
       txData.wallet = this.selectedWallet.client;
-
-      console.log('Tx data is ', txData);
 
       return txData;
     } catch (err) {
