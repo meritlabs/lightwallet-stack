@@ -12,6 +12,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { SendService } from '@merit/common/services/send.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'view-phrase-import',
@@ -36,7 +37,8 @@ export class PhraseImportView {
               private store: Store<IRootAppState>,
               private walletService: WalletService,
               private sendService: SendService,
-              private txFormatService: TxFormatService) {}
+              private txFormatService: TxFormatService,
+              private router: Router) {}
 
 
   async importMnemonic() {
@@ -80,7 +82,7 @@ export class PhraseImportView {
           )
         );
 
-        return;
+        return this.router.navigateByUrl('/wallets');
       }
 
       throw new Error('An unexpected error occurred while importing your wallet.');
