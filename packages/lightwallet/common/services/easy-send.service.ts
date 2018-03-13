@@ -7,6 +7,7 @@ import { EasySend } from '@merit/common/models/easy-send';
 import { ENV } from '@app/env';
 import * as Bitcore from 'bitcore-lib';
 import { FeeService } from '@merit/common/services/fee.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 @Injectable()
 export class EasySendService {
@@ -18,6 +19,7 @@ export class EasySendService {
     private feeService: FeeService,
     private persistenceService: PersistenceService,
     @Optional() private socialSharing: SocialSharing,
+    private addressService: AddressService,
     private mwcService: MWCService
   ) {}
 
@@ -141,10 +143,12 @@ export class EasySendService {
     ];
     const script = Bitcore.Script.buildEasySendOut(pubKeys, timeout, ENV.network);
 
+    const addressInfo = await this.addressService.getAddressInfo(wallet.getRootAddress().root()); 
+
     return {
       receiverPubKey: rcvPair.key.publicKey,
       script: script.toMixedScriptHashOut(pubKey),
-      senderName: 'Someone', // TODO: get user name or drop sender name from data
+      senderName: addressInfo.alias ? '@'+addressInfo.alias : 'Someone', 
       senderPubKey: pubKey.toString(),
       secret: rcvPair.secret.toString('hex'),
       blockTimeout: timeout,
