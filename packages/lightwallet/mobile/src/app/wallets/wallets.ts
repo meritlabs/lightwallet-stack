@@ -186,6 +186,10 @@ export class WalletsView {
     const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, '');
     let txs = data.txs;
 
+    if (!txs) {
+      return await this.easyReceiveService.deletePendingReceipt(receipt); 
+    }  
+
     if (!_.isArray(txs)) {
       txs = [txs];
     }
