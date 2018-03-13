@@ -4,7 +4,7 @@
   box-sizing: border-box
   background: $pale-grey
   border-radius: 5px
-  +font($baseFont--medium, 14px, 14px, $input-text-color, normal, none, none)
+  +font($baseFont--medium, 14px, 14px, $input-text-color)
   letter-spacing: .3px
   border: 1px solid transparent
   margin-bottom: 30px
@@ -64,27 +64,29 @@
     cursor: pointer
     opacity: 0
     &:checked ~ .ui-checkbox__switcher
+      background: $blue
       &::after
-        left: 22px
-        background: $blue
+        left: 14px
   &__switcher
     position: relative
     z-index: 1
     display: inline-block
-    height: 11px
-    width: 45px
+    height: 14px
+    width: 34px
     border-radius: 50px
-    background: $white
-    border: 1px solid $light-blue-grey
+    background: #e9edf2
+    border: 1px solid #b7bcc8
+    +transition(.15s, ease-out)
     &::after
       content: ""
       display: block
       position: absolute
-      width: 22px
-      height: 22px
+      width: 18px
+      height: 18px
       border-radius: 25px
-      background: $light-blue-grey
+      background: white
+      border: 1px solid #b7bcc8
       left: -1px
-      top: -7px
-      box-shadow: 1px 1px 2px rgba(0,0,0, .4)
-      +transition(.1s, ease-out)
+      top: -4px
+      //box-shadow: 1px 1px 2px rgba(0,0,0, .4)
+      +transition(.15s, ease-out)

@@ -21,7 +21,7 @@ export class SendService {
               private logger: LoggerService) {
     this.logger.info('Hello SendService');
     this.bitcore = this.mwcService.getBitcore();
-    this.client = this.mwcService.getClient(null, {});
+    this.client = this.mwcService.getClient();
   }
 
   isAddress(addr: string): boolean {
