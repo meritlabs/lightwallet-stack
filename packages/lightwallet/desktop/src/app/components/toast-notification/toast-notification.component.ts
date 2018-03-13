@@ -7,7 +7,7 @@ export interface INotificationMessage {
 }
 
 @Component({
-  selector: 'app-toast-notification',
+  selector: 'toast-notification',
   templateUrl: './toast-notification.component.html',
   styleUrls: ['./toast-notification.component.sass']
 })
