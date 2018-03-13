@@ -1,50 +1,48 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { WalletsViewComponent } from './wallets/wallets.view';
-import { ReceiveComponent } from './receive/receive.component';
-import { SendComponent } from './send/send.component';
-import { HistoryComponent } from './history/history.component';
-import { CoreComponent } from './core.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { CommunityComponent } from './community/community.component';
-import { NetworkComponent } from './network/network.component';
-import { BackupComponent } from './backup/backup.component';
-import { MnemonicPhraseComponent } from './backup/mnemonic-phrase/mnemonic-phrase.component';
-import { CreateWalletComponent } from '@merit/desktop/app/core/wallets/create-wallet/create-wallet.component';
-import { WalletDetailComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details.component';
-import { WalletDetailHistoryComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details-history/wallet-details-history.component';
-import { GlobalSettingsComponent } from '@merit/desktop/app/core/global-settings/global-settings.component';
-import { SettingsPreferencesComponent } from '@merit/desktop/app/core/global-settings/settings-preferences/settings-preferences.component';
-import { SettingsTermsOfUsComponent } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.component'
-import { SettingsSessionLogComponent } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.component'
-import { WalletSettingsComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-settings/wallet-settings.component';
+import { WalletsView } from './wallets/wallets.view';
+import { ReceiveView } from './receive/receive.view';
+import { SendView } from './send/send.view';
+import { HistoryView } from './history/history.view';
+import { CoreView } from './core.component';
+import { DashboardView } from './dashboard/dashboard.view';
+import { CommunityView } from './community/community.view';
+import { BackupView } from './backup/backup.view';
+import { MnemonicPhraseView } from './backup/mnemonic-phrase/mnemonic-phrase.view';
+import { CreateWalletView } from '@merit/desktop/app/core/wallets/create-wallet/create-wallet.view';
+import { WalletDetailView } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details.view';
+import { WalletDetailHistoryView } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details-history/wallet-details-history.view';
+import { GlobalSettingsView } from '@merit/desktop/app/core/global-settings/global-settings.view';
+import { SettingsPreferencesView } from '@merit/desktop/app/core/global-settings/settings-preferences/settings-preferences.view';
+import { SettingsTermsOfUseView } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.view'
+import { SettingsSessionLogView } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.view'
+import { WalletSettingsView } from '@merit/desktop/app/core/wallets/wallet-details/wallet-settings/wallet-settings.view';
 
 
 const routes: Routes = [
   {
-    path: '', component: CoreComponent,
+    path: '', component: CoreView,
     children: [
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'wallets', component: WalletsViewComponent, pathMatch: 'full' },
-      { path: 'wallets/create', component: CreateWalletComponent },
-      { path: 'wallets/:id', component: WalletDetailComponent, children: [
-        { path: '', component: WalletDetailHistoryComponent },
-        { path: 'history', component: WalletDetailHistoryComponent },
-        { path: 'settings', component: WalletSettingsComponent },
-        { path: 'send', component: SendComponent },
-        { path: 'receive', component: ReceiveComponent }
+      { path: 'dashboard', component: DashboardView },
+      { path: 'wallets', component: WalletsView, pathMatch: 'full' },
+      { path: 'wallets/create', component: CreateWalletView },
+      { path: 'wallets/:id', component: WalletDetailView, children: [
+        { path: '', component: WalletDetailHistoryView },
+        { path: 'history', component: WalletDetailHistoryView },
+        { path: 'settings', component: WalletSettingsView },
+        { path: 'send', component: SendView },
+        { path: 'receive', component: ReceiveView }
       ]},
-      { path: 'receive', component: ReceiveComponent },
-      { path: 'send', component: SendComponent },
-      { path: 'history', component: HistoryComponent },
-      { path: 'community', component: CommunityComponent },
-      { path: 'network', component: NetworkComponent },
-      { path: 'backup', component: BackupComponent },
-      { path: 'backup/mnemonic-phrase', component: MnemonicPhraseComponent },
-      { path: 'settings', component: GlobalSettingsComponent, children: [
-        { path: '', component: SettingsPreferencesComponent },
-        { path: 'terms-of-use', component: SettingsTermsOfUsComponent },
-        { path: 'session-log', component: SettingsSessionLogComponent }
+      { path: 'receive', component: ReceiveView },
+      { path: 'send', component: SendView },
+      { path: 'history', component: HistoryView },
+      { path: 'community', component: CommunityView },
+      { path: 'backup', component: BackupView },
+      { path: 'backup/mnemonic-phrase', component: MnemonicPhraseView },
+      { path: 'settings', component: GlobalSettingsView, children: [
+        { path: '', component: SettingsPreferencesView },
+        { path: 'terms-of-use', component: SettingsTermsOfUseView },
+        { path: 'session-log', component: SettingsSessionLogView }
       ]},
       { path: '**', redirectTo: 'dashboard' }
     ]
