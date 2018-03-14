@@ -1,14 +1,16 @@
-import { walletsReducer, WalletsState } from '@merit/common/reducers/wallets.reducer';
-import { combineReducers, createFeatureSelector, createSelector } from '@ngrx/store';
+import { appReducer, IAppState } from '@merit/common/reducers/app.reducer';
+import { walletsReducer, IWalletsState } from '@merit/common/reducers/wallets.reducer';
+import { ITransactionsState, transactionsReducer } from '@merit/common/reducers/transactions.reducer';
 
-export interface IAppState {
-  wallets: WalletsState;
+export interface IRootAppState {
+  app: IAppState;
+  wallets: IWalletsState;
+  transactions: ITransactionsState;
 }
 
 export const reducer = {
-  wallets: walletsReducer
+  wallets: walletsReducer,
+  app: appReducer,
+  transactions: transactionsReducer
 };
 
-export const selectWalletsState = createFeatureSelector<WalletsState>('wallets');
-export const getWalletsLoading = createSelector(selectWalletsState, state => state.loading);
-export const getWallets = createSelector(selectWalletsState, state => state.wallets);

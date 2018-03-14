@@ -43,7 +43,7 @@ export class UnlockRequestService {
       wallet, request, contact;
     for (wallet of await this.profileService.getWallets()) {
       wallet.status = await this.walletService.getStatus(wallet, { force: true });
-      for (request of await this.walletService.getUnlockRequests(wallet)) {
+      for (request of await wallet.getUnlockRequests()) {
         request.walletClient = wallet;
         if (request.isConfirmed) {
           request.status = 'accepted';

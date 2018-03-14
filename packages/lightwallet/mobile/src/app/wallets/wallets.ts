@@ -17,6 +17,7 @@ import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IVault } from '@merit/common/models/vault';
 import { FeeService } from '@merit/common/services/fee.service';
 import { RateService } from '@merit/common/services/rate.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -64,7 +65,8 @@ export class WalletsView {
               private txFormatService: TxFormatService,
               private platform: Platform,
               private feeService: FeeService,
-              private rateService: RateService
+              private rateService: RateService, 
+              private addressService: AddressService
             ) {
     this.logger.debug('WalletsView constructor!');
   }
@@ -154,7 +156,7 @@ export class WalletsView {
   toAddWallet() {
     if (!_.isEmpty(this.wallets)) {
       // todo check for existing invites and suggest the wallet that has any
-      const referralAdderss = this.walletService.getRootAddress(this.wallets[0].client);
+      const referralAdderss = this.wallets[0].client.getRootAddress();
 
       return this.navCtrl.push('CreateWalletView', {
         updateWalletListCB: this.refreshWalletList.bind(this),
@@ -314,10 +316,10 @@ export class WalletsView {
       const wallets = await this.profileService.getWallets();
       // TODO: Allow a user to choose which wallet to receive into.
       let wallet = wallets[0];
-      if (!wallet) return Promise.reject('no wallet');
+      if (!wallet) throw 'no wallet';
       let forceNewAddress = false;
 
-      const address = this.walletService.getRootAddress(wallet);
+      const address = wallet.getRootAddress();
       const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.toString());
 
       this.updateAllInfo();
@@ -376,7 +378,7 @@ export class WalletsView {
   private async updateAllWallets(): Promise<DisplayWallet[]> {
     const wallets = await this.profileService.getWallets();
     return Promise.all<DisplayWallet>(
-      wallets.map(w => createDisplayWallet(w, this.walletService, null, { skipRewards: true, skipAlias: true }))
+      wallets.map(w => createDisplayWallet(w, this.walletService, this.addressService, this.txFormatService, { skipRewards: true, skipAlias: true }))
     );
   }
 

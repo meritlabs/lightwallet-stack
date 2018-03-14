@@ -145,7 +145,7 @@
             </button>
         </ion-list>
 
-        <ion-list *ngIf="vaults?.length">
+        <ion-list *ngIf="!vaults?.length">
             <ion-item class="add-vault-block">
                 <ion-thumbnail item-start>
                     <img src="assets/img/icons/vault.svg" alt="">
@@ -157,7 +157,7 @@
             </ion-item>
         </ion-list>
 
-        <ion-list *ngIf="!vaults?.length" >
+        <ion-list *ngIf="!vaults" >
             <ion-item class="add-vault-block">
                 <ion-thumbnail item-start>
                     <img src="assets/img/icons/vault.svg" alt="">

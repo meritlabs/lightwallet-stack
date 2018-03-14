@@ -13,6 +13,8 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 
 @Injectable()
@@ -35,7 +37,9 @@ export class PushNotificationsService {
               @Optional() private pollingNotificationService: PollingNotificationsService,
               private FCM: FCM,
               private ngZone: NgZone,
-              private walletService: WalletService) {
+              private walletService: WalletService,
+              private txFormatService: TxFormatService,
+              private addressService: AddressService) {
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;
@@ -86,10 +90,10 @@ export class PushNotificationsService {
           const wallet = this.walletService.getWallet(data.walletId);
           if (!wallet) return;
           return this.app.getActiveNav().push('WalletDetailsView', {
-            wallet: await createDisplayWallet(wallet, this.walletService, null, {
-              skipAlias: true,
+            wallet: await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, {
               skipAnv: true,
-              skipRewards: true
+              skipRewards: true,
+              skipAlias: true
             })
           });
         } else {
