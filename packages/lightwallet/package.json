@@ -30,6 +30,8 @@
     "@angular/platform-browser": "5.0.3",
     "@angular/platform-browser-dynamic": "5.0.3",
     "@angular/router": "5.0.3",
+    "@firebase/app": "^0.1.10",
+    "@firebase/messaging": "^0.2.2",
     "@ionic-native/android-fingerprint-auth": "4.5.2",
     "@ionic-native/app-version": "^4.5.3",
     "@ionic-native/barcode-scanner": "4.5.2",
