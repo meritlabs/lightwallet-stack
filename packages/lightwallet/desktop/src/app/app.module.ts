@@ -18,6 +18,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TransactionEffects } from '@merit/common/effects/transaction.effects';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
@@ -57,7 +58,8 @@ export function getProviders() {
     ReactiveFormsModule,
     EffectsModule.forRoot([
       AppEffects,
-      WalletEffects
+      WalletEffects,
+      TransactionEffects
     ])
   ],
   providers: [

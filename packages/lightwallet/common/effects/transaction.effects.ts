@@ -1,25 +1,28 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import {
-  AddWalletAction, selectWalletById, selectWallets,
+  AddWalletAction,
+  selectWalletById,
+  selectWallets,
   WalletsActionType
 } from '@merit/common/reducers/wallets.reducer';
 import { Observable } from 'rxjs/Observable';
 import {
   RefreshOneWalletTransactions,
+  RefreshTransactionsAction,
   TransactionActionType,
   UpdateOneWalletTransactions,
   UpdateTransactionsAction
 } from '@merit/common/reducers/transactions.reducer';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { flatten } from 'lodash';
-import 'rxjs/add/observable/fromPromise';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
+import 'rxjs/add/observable/fromPromise';
 
 @Injectable()
 export class TransactionEffects {
@@ -27,6 +30,12 @@ export class TransactionEffects {
   refreshOnWalletRefresh$: Observable<RefreshOneWalletTransactions> = this.actions$.pipe(
     ofType(WalletsActionType.Add),
     map((action: AddWalletAction) => new RefreshOneWalletTransactions(action.wallet.id))
+  );
+
+  @Effect()
+  refreshOnWalletsRefresh$: Observable<RefreshTransactionsAction> = this.actions$.pipe(
+    ofType(WalletsActionType.Update),
+    map(() => new RefreshTransactionsAction())
   );
 
   @Effect()
@@ -57,7 +66,7 @@ export class TransactionEffects {
   }
 
   private async getWalletHistory(wallet: DisplayWallet): Promise<IDisplayTransaction[]> {
-    const walletHistory = await this.walletService.getTxHistory(wallet.client, {force: true});
+    const walletHistory = await this.walletService.getTxHistory(wallet.client, { force: true });
     return formatWalletHistory(walletHistory, wallet);
   }
 }
