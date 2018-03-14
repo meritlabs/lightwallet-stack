@@ -248,7 +248,7 @@ export class SendConfirmationView {
       }).present();
     } finally {
       loadingSpinner.dismiss();
-      this.referralsToSign = [];
+      this.txData.referralsToSign = []; 
     }
   }
 
