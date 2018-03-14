@@ -1,18 +1,16 @@
 import { Injectable } from '@angular/core';
 
 import { LoggerService } from '@merit/common/services/logger.service';
-import { MWCService } from '@merit/common/services/mwc.service';
 import { DisplayWallet } from "@merit/common/models/display-wallet";
 import { IVault } from "@merit/common/models/vault";
 import { WalletService } from '@merit/common/services/wallet.service';
-import { ProfileService } from '@merit/common/services/profile.service';
+import { ProfileService } from '@merit/common/services/profile.service'; 
 import { RateService } from "@merit/common/services/rate.service";
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { AddressService } from "@merit/common/services/address.service";
+import { Constants } from '@merit/common/merit-wallet-client/lib/common/constants';
 import { FeeService } from '@merit/common/services/fee.service';
-
-
 import { ENV } from '@app/env';
+import { HDPrivateKey, Address, Script, Transaction, PublicKey, Opcode, crypto } from 'bitcore-lib';
 
 export interface IVaultCreateData {
   vaultName: string,
@@ -25,57 +23,52 @@ export interface IVaultCreateData {
 @Injectable()
 export class VaultsService {
 
-  private Bitcore;
-
   constructor(
     private logger: LoggerService,
     private walletService: WalletService,
     private profileService: ProfileService,
     private rateService: RateService,
-    private addressService: AddressService,
-    private feeService: FeeService,
-    bwcService: MWCService
+    private feeService: FeeService
   ) {
-    this.Bitcore = bwcService.getBitcore();
   }
 
-  async getWalletVaults(wallet: DisplayWallet): Promise<Array<any>> {
-    const vaults = await wallet.client.getVaults();
-    return vaults.map(v => Object.assign(v, {walletClient: wallet.client}) );
+  async getVaultInfo(vault: IVault): Promise<IVault> {
+    return Object.assign(vault, await vault.walletClient.getVault(vault._id));
   }
 
   getTxHistory(vault: any): Promise<Array<any>> {
     return vault.walletClient.getVaultTxHistory(vault._id, vault.address.network);
   }
 
-  async sendFromVault(vault: any, amount: number, recipientAddress: any) {
-    const txp = await vault.walletClient.buildSpendVaultTx(vault, amount, recipientAddress, {});
-    const feePerKB = await this.feeService.getCurrentFeeRate(ENV.network);
-    const fee = Math.round(feePerKB * txp.serialize().length / 1024);
-    const tx = await vault.walletClient.buildSpendVaultTx(vault, amount, recipientAddress, {fee});
-    await vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
-    vault.coins =  await vault.walletClient.getVaultCoins(vault);
-    vault.amount = vault.coins.reduce((amount, coin) => {
-      return amount + coin.micros;
-    }, 0);
-    const infoToUpdate = { _id: vault._id, name: vault.name, coins: vault.coins,  amount: vault.amount};
-    return vault.walletClient.updateVaultInfo(infoToUpdate);
-  }
-
   async editVaultName(vault: IVault, newName: string) {
     return vault.walletClient.updateVaultInfo({_id: vault._id, name: newName});
   }
 
+  async sendFromVault(vault: any, amount: number, toAddress: any) {
+    vault = await this.getVaultInfo(vault);
+
+    const txp = await this.getSendTxp(vault, amount, toAddress);
+    const fee = await this.feeService.getTxpFee(txp);
+    const tx = await this.getSendTxp(vault, amount, toAddress, fee);
+    await vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
+    vault = vault.walletClient.updateVaultInfo({_id: vault._id}); 
+    this.profileService.updateVault(vault);
+    return vault; 
+  }
+
+  /*
+  * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes 
+  * so we take all utxos and send them to the same address but differrent scriptPubkey
+  */
   async renewVaultWhitelist(vault: IVault, newWhitelist: Array<any>, masterKey) {
+    vault = await this.getVaultInfo(vault);
 
     newWhitelist = newWhitelist.map(w => w.client.getRootAddress().toString());
+    let txp = await this.getRenewTxp(vault, newWhitelist, masterKey);
+    const fee = await this.feeService.getTxpFee(txp);
+    txp = await this.getRenewTxp(vault, newWhitelist, masterKey, fee);
 
-    let tx = await vault.walletClient.buildRenewVaultTx(vault, newWhitelist, masterKey);
-    const feePerKB = await this.feeService.getCurrentFeeRate(ENV.network);
-    const fee = Math.round(feePerKB * tx.serialize().length / 1024);
-    tx = await vault.walletClient.buildRenewVaultTx(vault, newWhitelist, masterKey);
-
-    let txid = await vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
+    let txid = await vault.walletClient.broadcastRawTx({ rawTx: txp.serialize(), network: ENV.network });
 
     const infoToUpdate = {
       _id: vault._id,
@@ -86,15 +79,16 @@ export class VaultsService {
     return vault.walletClient.updateVaultInfo(infoToUpdate);
   }
 
+  /* 
+  * create and deposit new vault 
+  */
   async createVault(data: IVaultCreateData) {
-
     await this.checkCreateData(data);
 
-    const vault:any = await data.wallet.client.prepareVault(0, {
-      amount: data.amount,
+    const vault:any = this.prepareVault(0, {
       whitelist: data.whiteList.map(w => w.client.getRootAddress().toBuffer()),
       masterPubKey: data.masterKey.key.publicKey,
-      spendPubKey: this.Bitcore.HDPrivateKey.fromString(data.wallet.client.credentials.xPrivKey).publicKey,
+      spendPubKey: HDPrivateKey.fromString(data.wallet.client.credentials.xPrivKey).publicKey,
     });
 
     let scriptReferralOpts = {
@@ -102,7 +96,7 @@ export class VaultsService {
       pubkey: data.masterKey.key.publicKey.toString(),
       signPrivKey: data.masterKey.key.privateKey,
       address: vault.address.toString(),
-      addressType: this.Bitcore.Address.ParameterizedPayToScriptHashType, // pubkey address
+      addressType: Address.ParameterizedPayToScriptHashType, // pubkey address
       network: data.wallet.client.network
     };
 
@@ -110,29 +104,37 @@ export class VaultsService {
     await data.wallet.client.sendReferral(scriptReferralOpts);
     await data.wallet.client.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
     vault.scriptPubKey = vault.scriptPubKey.toBuffer().toString('hex');
-    const txp = await this.getCreateTxp(vault, data.wallet.client);
+
+    const depositData = {amount: data, address: vault.address, scriptPubKey: vault.data};
+    const txp = await this.getDepositTxp(depositData, data.wallet.client);
     const pubTxp = await this.walletService.publishTx(data.wallet.client, txp);
     const signedTxp = await this.walletService.signTx(data.wallet.client, pubTxp, password);
 
-    vault.coins.push(signedTxp);
+    vault.coins = [signedTxp];
     vault.name = data.vaultName;
-
     await data.wallet.client.createVault(vault);
-    await this.profileService.addVault({
-      id: vault.address,
-      copayerId: data.wallet.client.credentials.copayerId,
-      name: vault.vaultName,
-    });
+    this.profileService.addVault(vault);
+    return vault;
   }
 
+  /* 
+  * sending money to existing vault
+  */
   async depositVault(vault, amount) {
-    const address = this.Bitcore.Address(vault.address);
-    const scriptPubKey = this.Bitcore.Script(vault.scriptPubKey).toBuffer().toString('hex');
-    const txp = await this.getCreateTxp({address, scriptPubKey, amount}, vault.walletClient);
+    vault = await this.getVaultInfo(vault);
+
+    const address = Address(vault.address);
+    const scriptPubKey = Script(vault.scriptPubKey).toBuffer().toString('hex');
+    const txp = await this.getDepositTxp({address, scriptPubKey, amount}, vault.walletClient);
     await this.walletService.publishAndSign(vault.walletClient, txp);
-    return vault.walletClient.updateVaultInfo({_id: vault._id, name: vault.name});
+    vault =  vault.walletClient.updateVaultInfo({_id: vault._id, name: vault.name});
+    this.profileService.updateVault(vault);
+    return vault; 
   }
 
+  /* 
+  * check if we can create vault 
+  */
   private async checkCreateData(data) {
     if (
       !data.vaultName
@@ -158,14 +160,128 @@ export class VaultsService {
     return true;
   }
 
+  /*
+  * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes 
+  * so we take all utxos and send them to the same address but differrent scriptPubkey
+  */
+  private getRenewTxp(vault, newWhitelist, masterKey, fee = FeeService.DEFAULT_FEE) {
+    const amount = vault.amount - fee;
 
-  private async getCreateTxp(vault: any, wallet: MeritWalletClient): Promise<any> {
-    let feeLevel = this.feeService.getCurrentFeeLevel();
+    if (vault.type != 0) throw new Error('Vault type is not supported');
 
-    if (vault.amount > Number.MAX_SAFE_INTEGER) {
-      return Promise.reject(new Error('The amount is too big')); // Because Javascript
+    let tx = Transaction();
+    
+    let params = [
+      new PublicKey(vault.spendPubKey, { network: ENV.network }).toBuffer(),
+      new PublicKey(vault.masterPubKey, { network: ENV.network }).toBuffer()
+    ];
+
+    const whitelist = newWhitelist.map(w => Address(w).hashBuffer);
+    const spendLimit = this.rateService.mrtToMicro(Constants.VAULT_SPEND_LIMIT);
+    params.push(crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
+    params = params.concat(whitelist);
+    params.push(Opcode.smallInt(whitelist.length));
+    params.push(new Buffer(vault.tag));
+    params.push(Opcode.smallInt(vault.type));
+
+    const redeemScript = Script(vault.redeemScript);
+    const scriptPubKey = Script.buildMixedParameterizedP2SH(redeemScript, params, masterKey.publicKey);
+
+    const output = Transaction.Output({ script: scriptPubKey, micros: amount });
+    tx.addOutput(output);
+    tx.fee(fee);
+
+    vault.coins.forEach(coin => {
+      const input = { prevTxId: coin.txid, outputIndex: coin.vout, script: redeemScript };
+      const PP2SHInput = Transaction.Input.PayToScriptHashInput(input, redeemScript, coin.scriptPubKey);
+      tx.addInput(PP2SHInput, coin.scriptPubKey, coin.micros);
+    });
+
+    tx.addressType = 'PP2SH';
+
+    tx.inputs.forEach((input, i) => {
+      let sig = Transaction.Sighash.sign(tx, masterKey.privateKey, crypto.Signature.SIGHASH_ALL, i, redeemScript);
+      let inputScript = Script.buildVaultRenewIn(sig, redeemScript, PublicKey(vault.masterPubKey, ENV.network));
+      input.setScript(inputScript);
+    });
+
+    return tx;
+  }
+
+  /*
+  * creating transaction to transfer money from vault to one of whitelisted addresses
+  */
+  private getSendTxp(vault, amount, address, fee = FeeService.DEFAULT_FEE) {
+    
+    if (vault.type != 0) throw new Error('Vault type is not supported');
+
+    //todo why are we using wallet private key here???
+    const spendKey = HDPrivateKey.fromString(vault.walletClient.credentials.xPrivKey);
+
+    let selectedCoins = [];
+    let selectedAmount = 0;
+    for(let c = 0; c < vault.coins.length && selectedAmount < amount; c++) {
+      let coin = vault.coins[c];
+      selectedAmount += coin.micros;
+      selectedCoins.push(coin);
     }
 
+    if(selectedAmount < amount) throw new Error('Insufficient funds');
+
+    const change = selectedAmount - amount;
+
+    let tx = new Transaction();
+    tx.to(Address.fromString(address), amount - fee);
+
+    let redeemScript = Script(vault.redeemScript);
+
+    let params = [
+      PublicKey(vault.spendPubKey, { network: ENV.network }).toBuffer(),
+      PublicKey(vault.masterPubKey, { network: ENV.network }).toBuffer(),
+    ];
+
+    let whitelist = vault.whitelist.map(w => Address(w).hashBuffer);
+    const spendLimit = this.rateService.mrtToMicro(Constants.VAULT_SPEND_LIMIT);
+    params.push(crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
+    params = params.concat(whitelist);
+    params.push(Opcode.smallInt(whitelist.length));
+    params.push(new Buffer(vault.tag));
+    params.push(Opcode.smallInt(vault.type));
+
+    let scriptPubKey = Script.buildMixedParameterizedP2SH(redeemScript, params, vault.masterPubKey);
+
+    tx.addOutput(Transaction.Output({
+      script: scriptPubKey,
+      micros: change
+    }));
+
+    tx.fee(fee);
+
+    selectedCoins.forEach(coin => {
+      const input = { prevTxId: coin.txid, outputIndex: coin.vout, script: redeemScript };
+      const PP2SHInput = new Transaction.Input.PayToScriptHashInput(input, redeemScript, coin.scriptPubKey);
+      tx.addInput(PP2SHInput, coin.scriptPubKey, coin.micros);
+    });
+
+    tx.addressType = 'PP2SH';
+
+    tx.inputs.forEach((input, i) => {
+      let sig = Transaction.Sighash.sign(tx, spendKey.privateKey, crypto.Signature.SIGHASH_ALL, i, redeemScript);
+      let inputScript = Script.buildVaultSpendIn(sig, redeemScript, PublicKey(vault.masterPubKey, ENV.network));
+      input.setScript(inputScript);
+    });
+
+    return tx;
+
+  }  
+
+  /* 
+  * transfer money to vault
+  */ 
+  private async getDepositTxp(vault: any, wallet: MeritWalletClient): Promise<any> {
+    let feeLevel = this.feeService.getCurrentFeeLevel();
+
+    if (vault.amount > Number.MAX_SAFE_INTEGER)  throw new Error('The amount is too big'); // Because Javascript
 
     let txp:any = {
       outputs: [{
@@ -196,6 +312,43 @@ export class VaultsService {
     return await wallet.createTxProposal(txp);
   }
 
+  /* 
+  * create vautl object before transfering merit
+  */
+  private prepareVault(type: number, opts: any = {}) {
+    
+    if (type != 0) throw new Error('Vault type is not supported');
+
+    let tag = opts.masterPubKey.toAddress().hashBuffer;
+
+    let whitelist = opts.whitelist.map(w => Address(w).hashBuffer);
+
+    let params = [
+      opts.spendPubKey.toBuffer(),
+      opts.masterPubKey.toBuffer(),
+    ];
+    const spendLimit = this.rateService.mrtToMicro(Constants.VAULT_SPEND_LIMIT);       
+    params.push(crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
+    params = params.concat(whitelist);
+    params.push(Opcode.smallInt(whitelist.length));
+    params.push(tag);
+    params.push(Opcode.smallInt(type));
+
+    let redeemScript = Script.buildSimpleVaultScript(tag, ENV.network);
+    let scriptPubKey = Script.buildMixedParameterizedP2SH(redeemScript, params, opts.masterPubKey);
+
+    let vault = {
+      type: type,
+      tag: opts.masterPubKey.toAddress().hashBuffer,
+      whitelist: opts.whitelist,
+      spendPubKey: opts.spendPubKey,
+      masterPubKey: opts.masterPubKey,
+      redeemScript: redeemScript,
+      scriptPubKey: scriptPubKey,
+      address: Address(scriptPubKey.getAddressInfo())
+    };
+
+    return vault;
+  }
+
 }
-
-

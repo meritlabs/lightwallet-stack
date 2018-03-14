@@ -414,6 +414,10 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/easy_fee/', function(req, res) {
+    res.json(Defaults.EASYRECEIVE_FEE);
+  });
+
   router.get('/v1/sendmaxinfo/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       var q = req.query;
@@ -833,6 +837,16 @@ ExpressApp.prototype.start = function(opts, cb) {
         res.json(txs);
         res.end();
       });
+    });
+  });
+
+
+  router.get('/v1/vaults/:vaultId', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+        server.getVault(req.params.vaultId, function(err, vault) {
+            if (err) return returnError(err, res, req);
+            res.json(vault);
+        });
     });
   });
 

@@ -18,7 +18,9 @@ import { LedgerService } from '@merit/common/services/ledger.service';
 import { PopupService } from '@merit/common/services/popup.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
+import { SendService } from '@merit/common/services/send.service';
 import { AddressService } from '@merit/common/services/address.service';
+import { VaultsService } from '@merit/common/services/vaults.service';
 
 
 @NgModule()
@@ -32,6 +34,7 @@ export class CommonProvidersModule {
         ContactsService,
         EasyReceiveService,
         EasySendService,
+        SendService, 
         FeeService,
         LanguageService,
         LedgerService,
@@ -41,6 +44,7 @@ export class CommonProvidersModule {
         PersistenceService,
         PlatformService,
         PopupService,
+        VaultsService, 
         ProfileService,
         RateService,
         TxFormatService,

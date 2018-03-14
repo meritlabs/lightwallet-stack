@@ -9,13 +9,13 @@ import { MeritToastController, ToastConfig } from '@merit/common/services/toast.
 import { ProfileService } from '@merit/common/services/profile.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { VaultsService } from '@merit/common/services/vaults.service';
 import { Observable } from 'rxjs/Observable';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IVault } from '@merit/common/models/vault';
+import { FeeService } from '@merit/common/services/fee.service';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -61,8 +61,9 @@ export class WalletsView {
               private alertController: AlertController,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private vaultsService: VaultsService,
-              private platform: Platform) {
+              private platform: Platform,
+              private feeService: FeeService
+            ) {
     this.logger.debug('WalletsView constructor!');
   }
 
@@ -172,13 +173,7 @@ export class WalletsView {
   }
 
   private async updateVaults(): Promise<any> {
-    let vaults = [];
-
-    for (let wallet of this.wallets) {
-      vaults = vaults.concat(await this.vaultsService.getWalletVaults(wallet));
-    }
-
-    this.vaults = vaults;
+    this.vaults = await this.profileService.getVaults(true); 
   }
 
   /**
@@ -193,6 +188,10 @@ export class WalletsView {
   private async processEasyReceipt(receipt: EasyReceipt, isRetry: boolean): Promise<void> {
     const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, '');
     let txs = data.txs;
+
+    if (!txs) {
+      return await this.easyReceiveService.deletePendingReceipt(receipt); 
+    }  
 
     if (!_.isArray(txs)) {
       txs = [txs];
@@ -261,8 +260,8 @@ export class WalletsView {
     }).present();
   }
 
-  private showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
-    const amount = _.get(_.find(data.txs, (tx: any) => !tx.invite), 'amount', 0);
+  private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
+    let amount = _.get(_.find(data.txs, (tx: any) => !tx.invite), 'amount', 0);
 
     this.alertController.create({
       title: `You've got ${amount} Merit!`,
@@ -320,6 +319,7 @@ export class WalletsView {
 
       this.logger.info('accepted easy send', acceptanceTx);
     } catch (err) {
+      console.log(err);
       this.toastCtrl.create({
         message: 'There was an error retrieving your incoming payment.',
         cssClass: ToastConfig.CLASS_ERROR

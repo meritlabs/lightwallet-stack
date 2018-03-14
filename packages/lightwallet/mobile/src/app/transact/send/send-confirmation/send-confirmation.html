@@ -44,16 +44,16 @@
         <ion-label>
           <p>Send</p>
           <h2>
-            {{ viewData.amountMrt }} MRT
-            <span class="right">{{ viewData.amountFiat }}</span>
+            {{ viewData.amount | toMRT }}
+            <span class="right">{{ viewData.amount | toFiat }}</span>
           </h2>
           <p class="fee">
-            Fee {{ viewData.feeAmountMrt }} MRT
-            <span class="right">{{ viewData.feeAmountFiat }}</span>
+            Fee {{ viewData.fee  | toMRT }}
+            <span class="right">{{ viewData.fee | toFiat }}</span>
           </p>
           <p class="total">
-            Total {{ viewData.totalAmountMrt }} MRT
-            <span class="right">{{ viewData.totalAmountFiat }}</span>
+            Total {{ viewData.totalAmount | toMRT }}
+            <span class="right">{{ viewData.totalAmount | toFiat }}</span>
           </p>
         </ion-label>
       </ion-item>
@@ -67,8 +67,8 @@
           <p>From</p>
           <h2>{{ viewData.walletName }}</h2>
           <p class="before-after">
-            <span class="before">{{ viewData.walletCurrentBalanceMrt }} MRT</span>
-            <span class="after">{{ viewData.walletRemainingBalanceMrt }} MRT</span>
+            <span class="before">{{ viewData.walletCurrentBalance | toMRT }} </span>
+            <span class="after">{{ viewData.walletRemainingBalance | toMRT }}</span>
           </p>
         </ion-label>
       </ion-item>

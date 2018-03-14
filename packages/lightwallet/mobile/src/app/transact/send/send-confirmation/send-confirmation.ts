@@ -25,9 +25,9 @@ export class SendConfirmationView {
 
   txData: {
     amount: number; // micros
-    amountUSD: string; // micros
     totalAmount: number; // micros
     feeIncluded: boolean;
+    easyFee: number, 
     password: string;
     recipient: {
       label: string;
@@ -40,9 +40,9 @@ export class SendConfirmationView {
     easySend?: EasySend;
     easySendUrl?: string;
     wallet: MeritWalletClient;
+    referralsToSign: Array<any>;
   };
 
-  referralsToSign: Array<any>;
   viewData: any;
 
   unlockValue: number = 0;
@@ -60,47 +60,36 @@ export class SendConfirmationView {
               private configService: ConfigService,
               private logger: LoggerService) {
     this.txData = navParams.get('txData');
-    this.referralsToSign = navParams.get('referralsToSign');
   }
 
   async ngOnInit() {
-    this.txData.amountUSD = await this.formatService.formatToUSD(this.txData.amount);
 
     const viewData: any = {
       recipient: this.txData.recipient,
-      amountMrt: this.formatService.formatAmount(this.txData.amount),
+      amount:  this.txData.amount,
+      totalAmount: this.txData.feeIncluded ? this.txData.amount : this.txData.amount + this.txData.txp.fee + this.txData.easyFee, 
       password: this.txData.password,
       feePercent: this.txData.txp.feePercent,
-      feeAmountMrt: this.formatService.formatAmount(this.txData.txp.fee),
-      totalAmountMrt: this.formatService.formatAmount(this.txData.totalAmount),
+      fee: this.txData.txp.fee + this.txData.easyFee, 
       walletName: this.txData.wallet.name || this.txData.wallet.id,
       walletColor: this.txData.wallet.color,
-      walletCurrentBalanceMrt: this.formatService.formatAmount(this.txData.wallet.status.totalBalanceMicros),
-      walletRemainingBalanceMrt: this.formatService.formatAmount(
-        this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount
-      ),
+      walletCurrentBalance: this.txData.wallet.status.totalBalanceMicros,
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
       methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'Easy Send' : 'Classic Send',
-      destination: this.txData.sendMethod.alias || this.txData.sendMethod.value
+      destination: this.txData.sendMethod.alias || this.txData.sendMethod.value 
     };
+
+    viewData.walletRemainingBalance =  this.txData.wallet.status.totalBalanceMicros - viewData.totalAmount; 
 
     let fiatAvailale = this.rateService.getRate(viewData.fiatCode) > 0;
     const convert = amount => fiatAvailale ? this.formatService.toFiatStr(amount, viewData.fiatCode) : '';
-
-    viewData.amountFiat = await convert(this.txData.amount);
-    viewData.feeAmountFiat = await convert(this.txData.txp.fee);
-    viewData.totalAmountFiat = await convert(this.txData.totalAmount);
-    viewData.walletCurrentBalanceFiat = await convert(this.txData.wallet.status.totalBalanceMicros);
-    viewData.walletRemainingBalanceFiat = await convert(
-      this.txData.wallet.status.totalBalanceMicros - this.txData.totalAmount
-    );
 
     this.viewData = viewData;
   }
 
   sendAllowed() {
-    return this.txData && !_.isEmpty(this.txData.txp);
+    return this.txData && !_.isEmpty(this.txData.txp); 
   }
 
   approve() {
@@ -193,13 +182,14 @@ export class SendConfirmationView {
     if (this.walletService.isEncrypted(this.txData.wallet)) {
       return showPassPrompt();
     } else {
-      if (parseInt(this.txData.amountUSD) >= this.CONFIRM_LIMIT_USD) {
-        if (this.touchIdService.isAvailable()) {
+      
+      // if (parseInt(this.txData.amountUSD) >= this.CONFIRM_LIMIT_USD) {
+        if (this.touchIdService.isAvailable()) { 
           return showTouchIDPrompt();
         } else {
           return showNoPassPrompt();
         }
-      }
+      // }
     }
   }
 
@@ -212,11 +202,12 @@ export class SendConfirmationView {
     loadingSpinner.present();
 
     try {
-      if (this.referralsToSign) {
-        await Promise.all(this.referralsToSign.map(this.txData.wallet.sendReferral.bind(this.txData.wallet)));
-        await Promise.all(this.referralsToSign.map(referral => {
-          return this.txData.wallet.sendInvite(referral.address, 1);
-        }));
+
+      if (this.txData.referralsToSign) {
+        for (let referral of this.txData.referralsToSign) {
+          await this.txData.wallet.sendReferral(referral);
+          await this.txData.wallet.sendInvite(referral.address);
+        }
       }
       await this.approveTx();
       if (this.txData.sendMethod.type == SendMethodType.Easy) {
