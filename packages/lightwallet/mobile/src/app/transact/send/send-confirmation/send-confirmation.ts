@@ -40,9 +40,9 @@ export class SendConfirmationView {
     easySend?: EasySend;
     easySendUrl?: string;
     wallet: MeritWalletClient;
+    referralsToSign: Array<any>;
   };
 
-  referralsToSign: Array<any>;
   viewData: any;
 
   unlockValue: number = 0;
@@ -60,7 +60,6 @@ export class SendConfirmationView {
               private configService: ConfigService,
               private logger: LoggerService) {
     this.txData = navParams.get('txData');
-    this.referralsToSign = navParams.get('referralsToSign');
   }
 
   async ngOnInit() {
@@ -203,11 +202,12 @@ export class SendConfirmationView {
     loadingSpinner.present();
 
     try {
-      if (this.referralsToSign) {
-        await Promise.all(this.referralsToSign.map(this.txData.wallet.sendReferral.bind(this.txData.wallet)));
-        await Promise.all(this.referralsToSign.map(referral => {
-          return this.txData.wallet.sendInvite(referral.address, 1);
-        }));
+
+      if (this.txData.referralsToSign) {
+        for (let referral of this.txData.referralsToSign) {
+          await this.txData.wallet.sendReferral(referral);
+          await this.txData.wallet.sendInvite(referral.address);
+        }
       }
       await this.approveTx();
       if (this.txData.sendMethod.type == SendMethodType.Easy) {
