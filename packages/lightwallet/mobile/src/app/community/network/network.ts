@@ -52,7 +52,7 @@ export class NetworkView {
     this.loading = true;
     try {
       const wallets: MeritWalletClient[] = await this.profileService.getWallets();
-      this.displayWallets = await Promise.all(wallets.map((wallet: MeritWalletClient) => createDisplayWallet(wallet, this.walletService, this.addressService)));
+      this.displayWallets = await Promise.all(wallets.map((wallet: MeritWalletClient) => createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)));
       this.logger.info('DisplayWallets after ngOnInit: ', this.displayWallets);
     } catch (err) {
       this.logger.warn(err);
@@ -120,7 +120,7 @@ export class NetworkView {
 
     const displayWallets: DisplayWallet[] = await Promise.all(
       wallets.map((wallet: MeritWalletClient) =>
-        createDisplayWallet(wallet, this.walletService, this.addressService)
+        createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
       )
     );
 
