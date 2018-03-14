@@ -12,6 +12,8 @@
           <div class="balance">
             <ng-container *ngIf="!wallet.balanceHidden; else balanceHidden">
               {{ wallet.totalBalanceStr }} <small>MRT</small>
+              <br>
+              {{ wallet.invites }} <small>Invites</small>
             </ng-container>
             <ng-template #balanceHidden>
               [Balance hidden]
