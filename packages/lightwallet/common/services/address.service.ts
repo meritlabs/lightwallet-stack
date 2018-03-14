@@ -7,26 +7,26 @@ import { PersistenceService } from '@merit/common/services/persistence.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { isAlias } from '@merit/common/utils/addresses';
 import { ISendMethod } from '@merit/common/models/send-method';
+import { Address, Referral } from 'bitcore-lib';
 
 @Injectable()
 export class AddressService {
-  private bitcore: any;
   private readonly ADDRESS_LENGTH = 34;
   private client: MeritWalletClient;
 
-  constructor(private mwcService: MWCService,
-              private rate: RateService,
-              private config: ConfigService,
-              private persistenceService: PersistenceService,
-              private logger: LoggerService) {
-    this.logger.info('Hello SendService');
-    this.bitcore = this.mwcService.getBitcore();
-    this.client = this.mwcService.getClient(null, {});
+  constructor(
+    private rate: RateService,
+    private config: ConfigService,
+    private persistenceService: PersistenceService,
+    private logger: LoggerService,
+    mwcService: MWCService
+  ) {
+    this.client = mwcService.getClient(null);
   }
 
   isAddress(addr: string): boolean {
     try {
-      this.bitcore.Address.fromString(addr);
+      Address.fromString(addr);
       return true;
     } catch (_e) {
       return false;
@@ -34,7 +34,7 @@ export class AddressService {
   }
 
   couldBeAlias(alias: string): boolean {
-    return this.bitcore.Referral.validateAlias(alias);
+    return Referral.validateAlias(alias);
   }
 
   getAddressInfo(addr: string) {
@@ -83,7 +83,7 @@ export class AddressService {
   }
 
   getAddressNetwork(addr) {
-    return this.bitcore.Address.fromString(addr).network;
+    return Address.fromString(addr).network;
   }
 
   async registerSend(method: ISendMethod) {

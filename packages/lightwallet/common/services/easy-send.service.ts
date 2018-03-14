@@ -1,17 +1,15 @@
 import { Injectable, Optional } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { MWCService } from '@merit/common/services/mwc.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { EasySend } from '@merit/common/models/easy-send';
 import { ENV } from '@app/env';
-import * as Bitcore from 'bitcore-lib';
+import { HDPrivateKey, Address, PrivateKey,Script } from 'bitcore-lib';
 import { FeeService } from '@merit/common/services/fee.service';
 import { AddressService } from '@merit/common/services/address.service';
 
 @Injectable()
 export class EasySendService {
-  private bitcore: any = this.mwcService.getBitcore();
 
   private readonly DEFAULT_TIMEOUT = 1008;
 
@@ -19,24 +17,23 @@ export class EasySendService {
     private feeService: FeeService,
     private persistenceService: PersistenceService,
     @Optional() private socialSharing: SocialSharing,
-    private addressService: AddressService,
-    private mwcService: MWCService
+    private addressService: AddressService
   ) {}
 
   async createEasySendScriptHash(wallet: MeritWalletClient, password:string = ''): Promise<EasySend> {
-    const rootKey = this.bitcore.HDPrivateKey.fromString(wallet.credentials.xPrivKey);
+    const rootKey = HDPrivateKey.fromString(wallet.credentials.xPrivKey);
     const signPrivKey = rootKey.privateKey;
     const pubkey = signPrivKey.publicKey;
 
     const easySend = await this.bulidScript(wallet, password);
-    const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo()).toString();
+    const easySendAddress = Address(easySend.script.getAddressInfo()).toString();
 
     const scriptReferralOpts = {
       parentAddress: wallet.getRootAddress().toString(),
       pubkey: pubkey.toString(), // sign pubkey used to verify signature
       signPrivKey,
       address: easySendAddress,
-      addressType: this.bitcore.Address.PayToScriptHashType, // script address
+      addressType: Address.PayToScriptHashType, // script address
       network: ENV.network,
     };
 
@@ -136,12 +133,12 @@ export class EasySendService {
   private async bulidScript(wallet, passphrase = '', timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
 
     const pubKey  = wallet.getRootAddressPubkey();
-    const rcvPair = Bitcore.PrivateKey.forNewEasySend(passphrase, ENV.network); 
+    const rcvPair = PrivateKey.forNewEasySend(passphrase, ENV.network);
     let pubKeys = [
       rcvPair.key.publicKey.toBuffer(),
       pubKey.toBuffer()
     ];
-    const script = Bitcore.Script.buildEasySendOut(pubKeys, timeout, ENV.network);
+    const script = Script.buildEasySendOut(pubKeys, timeout, ENV.network);
 
     const addressInfo = await this.addressService.getAddressInfo(wallet.getRootAddress().toString());
 
