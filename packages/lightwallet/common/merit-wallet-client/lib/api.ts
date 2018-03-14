@@ -1716,7 +1716,7 @@ export class API {
     };
 
     let processConfirmStatus = (status) => {
-        this.confirmed = (status.invitesBalance && status.invitesBalance.totalConfirmedAmount > 0);
+        this.confirmed = (status.invitesBalance && status.invitesBalance.totalAmount > 0);
     };
 
     // Resolve all our async calls here, then resolve this wrapping promise.
