@@ -2666,10 +2666,10 @@ export class API {
     return this._doGetRequest(url);
   };
 
-  getVault(vaultId) {
+  getVault(address) {
     $.checkState(this.credentials);
 
-    var url = '/v1/vaults/${vaultId}';
+    var url = `/v1/vaults/${address}`;
     return this._doGetRequest(url);
   }
 

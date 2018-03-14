@@ -836,6 +836,16 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+
+  router.get('/v1/vaults/:vaultId', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+        server.getVault(req.params.vaultId, function(err, vault) {
+            if (err) return returnError(err, res, req);
+            res.json(vault);
+        });
+    });
+  });
+
   router.get('/v1/referral/:refid', function(req, res) {
     var server;
     try {

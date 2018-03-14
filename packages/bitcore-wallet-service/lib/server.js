@@ -3772,6 +3772,18 @@ WalletService.prototype.getVaults = function(opts, cb) {
   });
 };
 
+/**
+ * Vaulting
+ */
+WalletService.prototype.getVault = function(vaultId, cb) {
+  const self = this;
+
+  self.storage.fetchVaultById(vaultId, function(err, result) {
+    if (err) return cb(err);
+    return cb(null, result);
+  });
+};
+
 WalletService.prototype.createVault = function(opts, cb) {
   const self = this;
 
@@ -4059,12 +4071,8 @@ WalletService.prototype.updateVaultInfo = function(opts, cb) {
         if (err) return cb(err);
         if (!vault) return cb(Errors.INVALID_PARAMETERS);
 
-        console.log(vault, 'vault');
-
         vault = Object.assign(vault, opts);
         this.getUtxos({addresses: [new Bitcore.Address(vault.address).toString()]}, (err, coins) => {
-
-            console.log(coins, 'VAULT COINS');
 
             if (err) return cb(err);
             vault.coins = coins;

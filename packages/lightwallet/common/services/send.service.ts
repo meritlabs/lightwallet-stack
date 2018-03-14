@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { RateService } from '@merit/common/services/rate.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
-import * as Bitcore from 'bitcore-lib';
-import {MeritWalletClient} from "../merit-wallet-client/index";
 
 @Injectable()
 export class SendService {
@@ -14,7 +13,6 @@ export class SendService {
     private rateService: RateService
   ) {
   }
-
 
   prepareTxp(wallet: MeritWalletClient, amount, toAddress) {
 
