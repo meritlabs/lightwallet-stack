@@ -143,7 +143,7 @@ export class EasySendService {
     ];
     const script = Bitcore.Script.buildEasySendOut(pubKeys, timeout, ENV.network);
 
-    const addressInfo = await this.addressService.getAddressInfo(wallet.getRootAddress().root()); 
+    const addressInfo = await this.addressService.getAddressInfo(wallet.getRootAddress().toString());
 
     return {
       receiverPubKey: rcvPair.key.publicKey,

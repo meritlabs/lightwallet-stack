@@ -1388,6 +1388,14 @@ export class API {
   };
 
   /**
+   * Get fee for easy receive
+   * fees for easy receive transactions are fixed and received from MWS side
+   */
+  getEasyReceiveFee(): Promise<any> {
+      return this._doGetRequest('/v1/easy_fee/');
+  };
+
+  /**
    * Get service version
    *
    * @param {Callback} cb
