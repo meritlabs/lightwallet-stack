@@ -1,38 +1,50 @@
 <div class="history__item">
   <div class="history__item__icon">
-    <img src="/assets/v1/images/history/transaction-{{item.type}}.png" alt="">
+    <img [src]="'/assets/v1/icons/' + image + '.svg'" alt="">
   </div>
   <div class="history__item__info">
     <div>
-      <p class="history__item__info__title">{{item.name}}</p>
-      <p class="history__item__info__date">{{item.date}}</p>
+      <p class="history__item__info__title">{{ tx.name }}</p>
+      <p class="history__item__info__date">{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </div>
-    <div>
-      <p class="history__item__info__amount history__item__info__amount--plus"
-        *ngIf="item.value > 0">{{item.value}} MRT</p>
-      <p class="history__item__info__amount history__item__info__amount--minus"
-        *ngIf="item.value < 0">{{item.value}} MRT</p>
+    <div *ngIf="!tx.isInvite">
+      <span class="merit-amount" [class.credit]="isCredit">{{ tx.amountStr }} MRT</span>
+      <span class="fiat-amount">{{ tx.alternativeAmountStr }}</span>
     </div>
   </div>
-  <div class="history__item__details" [ngClass]="{'history__item__details--show': activeIndex === index}">
+  <div class="history__item__details">
     <div class="history__item__details__wrap">
-      <div class="history__item__details__row">
-        <div class="history__item__details__column">Received to</div>
+      <div class="history__item__details__row" *ngIf="tx.displayWallet">
+        <div class="history__item__details__column">{{ isCredit? 'Received to' : 'Sent from' }}</div>
         <div class="history__item__details__column">
-          <i class="source">Personal Wallet</i>
+          <i class="source">{{ tx.displayWallet.name }}</i>
         </div>
       </div>
-      <div class="history__item__details__row">
+      <div class="history__item__details__row confirmation-status">
         <div class="history__item__details__column">Status</div>
-        <div class="history__item__details__column">
-          <i class="status status--success">Success</i>
-        </div>
+        <ng-container *ngIf="isConfirmed; else notConfirmed">
+          <div class="history__item__details__column status-container confirmed">
+            <span class="status-icon">
+              <img src="/assets/v1/icons/done.svg" alt="">
+            </span>
+            <span class="status">Complete</span>
+          </div>
+        </ng-container>
+        <ng-template #notConfirmed>
+          <div class="history__item__details__column status-container">
+            <span class="status-icon">
+              <img src="/assets/v1/icons/timeout.svg" alt="">
+            </span>
+            <span class="status">
+              Awaiting confirmation
+              <span class="confirmations">{{ confirmationsExplanation }}</span>
+            </span>
+          </div>
+        </ng-template>
       </div>
-      <div class="history__item__details__row">
-        <div class="history__item__details__column">Status (example)</div>
-        <div class="history__item__details__column">
-          <i class="status status--unconfirmed">Unconfirmed</i>
-        </div>
+      <div class="info-box" *ngIf="!isConfirmed">
+        You have money available, but it cannot be spent until it confirms on the blockchain.
+        Wait some time. Usually 5-10 mins.
       </div>
     </div>
   </div>

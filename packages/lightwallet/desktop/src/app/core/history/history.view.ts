@@ -1,4 +1,9 @@
 import { Component } from '@angular/core';
+import { IRootAppState } from '@merit/common/reducers';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+import { selectTransactions, selectTransactionsLoading } from '@merit/common/reducers/transactions.reducer';
+import { IDisplayTransaction } from '@merit/common/models/transaction';
 
 @Component({
   selector: 'view-history',
@@ -6,4 +11,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./history.view.sass']
 })
 export class HistoryView {
+  loading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
+  transactions$: Observable<IDisplayTransaction[]> = this.store.select(selectTransactions);
+
+  constructor(private store: Store<IRootAppState>){}
 }
