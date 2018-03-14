@@ -25,7 +25,6 @@ import { getEasySendURL } from '@merit/common/models/easy-send';
 import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { ENV } from '@app/env';
-import * as Bitcore from 'bitcore-lib'; //todo temp!!!
 
 @IonicPage()
 @Component({
@@ -332,8 +331,7 @@ if (value != this.lastAmount) {
           this.txData.referralsToSign = [easySend.scriptReferralOpts];
 
           if (!this.feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed 
-            this.txData.easyFee  = await this.feeService.getEasyReceiveFee(); 
-            console.log(this.txData.easyFee, 'easyfee'); 
+            this.txData.easyFee  = await this.feeService.getEasyReceiveFee();
           }
         
         } else {

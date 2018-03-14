@@ -8,10 +8,9 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from "@merit/common/services/rate.service";
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { Constants } from '@merit/common/merit-wallet-client/lib/common/constants';
-import { AddressService } from "@merit/common/services/address.service";
 import { FeeService } from '@merit/common/services/fee.service';
 import { ENV } from '@app/env';
-import * as Bitcore from 'bitcore-lib';
+import { HDPrivateKey, Address, Script, Transaction, PublicKey, Opcode, crypto } from 'bitcore-lib';
 
 export interface IVaultCreateData {
   vaultName: string,
@@ -24,20 +23,17 @@ export interface IVaultCreateData {
 @Injectable()
 export class VaultsService {
 
-  private Bitcore;
-
   constructor(
     private logger: LoggerService,
     private walletService: WalletService,
     private profileService: ProfileService,
     private rateService: RateService,
-    private addressService: AddressService,
     private feeService: FeeService
   ) {
   }
 
   async getVaultInfo(vault: IVault): Promise<IVault> {
-    return Object.assign(vault, await vault.walletClient.getVault(vault.address));
+    return Object.assign(vault, await vault.walletClient.getVault(vault._id));
   }
 
   getTxHistory(vault: any): Promise<Array<any>> {
@@ -51,9 +47,9 @@ export class VaultsService {
   async sendFromVault(vault: any, amount: number, toAddress: any) {
     vault = await this.getVaultInfo(vault);
 
-    const txp = await vault.walletClient.buildSpendVaultTx(vault, amount, toAddress, {});
+    const txp = await this.getSendTxp(vault, amount, toAddress);
     const fee = await this.feeService.getTxpFee(txp);
-    const tx = await vault.walletClient.buildSpendVaultTx(vault, amount, toAddress, fee);
+    const tx = await this.getSendTxp(vault, amount, toAddress, fee);
     await vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
     vault = vault.walletClient.updateVaultInfo({_id: vault._id}); 
     this.profileService.updateVault(vault);
@@ -92,7 +88,7 @@ export class VaultsService {
     const vault:any = this.prepareVault(0, {
       whitelist: data.whiteList.map(w => w.client.getRootAddress().toBuffer()),
       masterPubKey: data.masterKey.key.publicKey,
-      spendPubKey: this.Bitcore.HDPrivateKey.fromString(data.wallet.client.credentials.xPrivKey).publicKey,
+      spendPubKey: HDPrivateKey.fromString(data.wallet.client.credentials.xPrivKey).publicKey,
     });
 
     let scriptReferralOpts = {
@@ -100,7 +96,7 @@ export class VaultsService {
       pubkey: data.masterKey.key.publicKey.toString(),
       signPrivKey: data.masterKey.key.privateKey,
       address: vault.address.toString(),
-      addressType: this.Bitcore.Address.ParameterizedPayToScriptHashType, // pubkey address
+      addressType: Address.ParameterizedPayToScriptHashType, // pubkey address
       network: data.wallet.client.network
     };
 
@@ -127,8 +123,8 @@ export class VaultsService {
   async depositVault(vault, amount) {
     vault = await this.getVaultInfo(vault);
 
-    const address = this.Bitcore.Address(vault.address);
-    const scriptPubKey = this.Bitcore.Script(vault.scriptPubKey).toBuffer().toString('hex');
+    const address = Address(vault.address);
+    const scriptPubKey = Script(vault.scriptPubKey).toBuffer().toString('hex');
     const txp = await this.getDepositTxp({address, scriptPubKey, amount}, vault.walletClient);
     await this.walletService.publishAndSign(vault.walletClient, txp);
     vault =  vault.walletClient.updateVaultInfo({_id: vault._id, name: vault.name});
@@ -173,39 +169,39 @@ export class VaultsService {
 
     if (vault.type != 0) throw new Error('Vault type is not supported');
 
-    let tx = Bitcore.Transaction();
+    let tx = Transaction();
     
     let params = [
-      new Bitcore.PublicKey(vault.spendPubKey, { network: ENV.network }).toBuffer(),
-      new Bitcore.PublicKey(vault.masterPubKey, { network: ENV.network }).toBuffer()
+      new PublicKey(vault.spendPubKey, { network: ENV.network }).toBuffer(),
+      new PublicKey(vault.masterPubKey, { network: ENV.network }).toBuffer()
     ];
 
-    const whitelist = newWhitelist.map(w => Bitcore.Address(w).hashBuffer);
+    const whitelist = newWhitelist.map(w => Address(w).hashBuffer);
     const spendLimit = this.rateService.mrtToMicro(Constants.VAULT_SPEND_LIMIT);
-    params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
+    params.push(crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
     params = params.concat(whitelist);
-    params.push(Bitcore.Opcode.smallInt(whitelist.length));
+    params.push(Opcode.smallInt(whitelist.length));
     params.push(new Buffer(vault.tag));
-    params.push(Bitcore.Opcode.smallInt(vault.type));
+    params.push(Opcode.smallInt(vault.type));
 
-    const redeemScript = new Bitcore.Script(vault.redeemScript);
-    const scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, masterKey.publicKey);
+    const redeemScript = Script(vault.redeemScript);
+    const scriptPubKey = Script.buildMixedParameterizedP2SH(redeemScript, params, masterKey.publicKey);
 
-    const output = new Bitcore.Transaction.Output({ script: scriptPubKey, micros: amount });
+    const output = Transaction.Output({ script: scriptPubKey, micros: amount });
     tx.addOutput(output);
     tx.fee(fee);
 
     vault.coins.forEach(coin => {
       const input = { prevTxId: coin.txid, outputIndex: coin.vout, script: redeemScript };
-      const PP2SHInput = new Bitcore.Transaction.Input.PayToScriptHashInput(input, redeemScript, coin.scriptPubKey);
+      const PP2SHInput = Transaction.Input.PayToScriptHashInput(input, redeemScript, coin.scriptPubKey);
       tx.addInput(PP2SHInput, coin.scriptPubKey, coin.micros);
     });
 
     tx.addressType = 'PP2SH';
 
     tx.inputs.forEach((input, i) => {
-      let sig = Bitcore.Transaction.Sighash.sign(tx, masterKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
-      let inputScript = Bitcore.Script.buildVaultRenewIn(sig, redeemScript, Bitcore.PublicKey(vault.masterPubKey, ENV.network));
+      let sig = Transaction.Sighash.sign(tx, masterKey.privateKey, crypto.Signature.SIGHASH_ALL, i, redeemScript);
+      let inputScript = Script.buildVaultRenewIn(sig, redeemScript, PublicKey(vault.masterPubKey, ENV.network));
       input.setScript(inputScript);
     });
 
@@ -220,7 +216,7 @@ export class VaultsService {
     if (vault.type != 0) throw new Error('Vault type is not supported');
 
     //todo why are we using wallet private key here???
-    const spendKey = Bitcore.HDPrivateKey.fromString(vault.walletClient.credentials.xPrivKey);
+    const spendKey = HDPrivateKey.fromString(vault.walletClient.credentials.xPrivKey);
 
     let selectedCoins = [];
     let selectedAmount = 0;
@@ -234,25 +230,25 @@ export class VaultsService {
 
     const change = selectedAmount - amount;
 
-    let tx = new Bitcore.Transaction();
-    let redeemScript = new Bitcore.Script(vault.redeemScript);
+    let tx = new Transaction();
+    let redeemScript = Script(vault.redeemScript);
 
     let params = [
-      new Bitcore.PublicKey(vault.spendPubKey, { network: ENV.network }).toBuffer(),
-      new Bitcore.PublicKey(vault.masterPubKey, { network: ENV.network }).toBuffer(),
+      PublicKey(vault.spendPubKey, { network: ENV.network }).toBuffer(),
+      PublicKey(vault.masterPubKey, { network: ENV.network }).toBuffer(),
     ];
 
-    let whitelist = vault.whitelist.map(w => Bitcore.Address(w).hashBuffer);
+    let whitelist = vault.whitelist.map(w => Address(w).hashBuffer);
     const spendLimit = this.rateService.mrtToMicro(Constants.VAULT_SPEND_LIMIT);
-    params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
+    params.push(crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
     params = params.concat(whitelist);
-    params.push(Bitcore.Opcode.smallInt(whitelist.length));
+    params.push(Opcode.smallInt(whitelist.length));
     params.push(new Buffer(vault.tag));
-    params.push(Bitcore.Opcode.smallInt(vault.type));
+    params.push(Opcode.smallInt(vault.type));
 
-    let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, vault.masterPubKey);
+    let scriptPubKey = Script.buildMixedParameterizedP2SH(redeemScript, params, vault.masterPubKey);
 
-    tx.addOutput(new Bitcore.Transaction.Output({
+    tx.addOutput(Transaction.Output({
       script: scriptPubKey,
       micros: change
     }));
@@ -261,15 +257,15 @@ export class VaultsService {
 
     selectedCoins.forEach(coin => {
       const input = { prevTxId: coin.txid, outputIndex: coin.vout, script: redeemScript };
-      const PP2SHInput = new Bitcore.Transaction.Input.PayToScriptHashInput(input, redeemScript, coin.scriptPubKey);
+      const PP2SHInput = new Transaction.Input.PayToScriptHashInput(input, redeemScript, coin.scriptPubKey);
       tx.addInput(PP2SHInput, coin.scriptPubKey, coin.micros);
     });
 
     tx.addressType = 'PP2SH';
 
     tx.inputs.forEach((input, i) => {
-      let sig = Bitcore.Transaction.Sighash.sign(tx, spendKey.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, i, redeemScript);
-      let inputScript = Bitcore.Script.buildVaultSpendIn(sig, redeemScript, new Bitcore.PublicKey(vault.masterPubKey, ENV.network));
+      let sig = Transaction.Sighash.sign(tx, spendKey.privateKey, crypto.Signature.SIGHASH_ALL, i, redeemScript);
+      let inputScript = Script.buildVaultSpendIn(sig, redeemScript, PublicKey(vault.masterPubKey, ENV.network));
       input.setScript(inputScript);
     });
 
@@ -323,21 +319,21 @@ export class VaultsService {
 
     let tag = opts.masterPubKey.toAddress().hashBuffer;
 
-    let whitelist = opts.vault.whitelist.map(w => Bitcore.Address(w).hashBuffer);
+    let whitelist = opts.vault.whitelist.map(w => Address(w).hashBuffer);
 
     let params = [
       opts.spendPubKey.toBuffer(),
       opts.masterPubKey.toBuffer(),
     ];
     const spendLimit = this.rateService.mrtToMicro(Constants.VAULT_SPEND_LIMIT);       
-    params.push(Bitcore.crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
+    params.push(crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
     params = params.concat(whitelist);
-    params.push(Bitcore.Opcode.smallInt(whitelist.length));
+    params.push(Opcode.smallInt(whitelist.length));
     params.push(tag);
-    params.push(Bitcore.Opcode.smallInt(type));
+    params.push(Opcode.smallInt(type));
 
-    let redeemScript = Bitcore.Script.buildSimpleVaultScript(tag, ENV.network);
-    let scriptPubKey = Bitcore.Script.buildMixedParameterizedP2SH(redeemScript, params, opts.masterPubKey);
+    let redeemScript = Script.buildSimpleVaultScript(tag, ENV.network);
+    let scriptPubKey = Script.buildMixedParameterizedP2SH(redeemScript, params, opts.masterPubKey);
 
     let vault = {
       type: type,
@@ -347,7 +343,7 @@ export class VaultsService {
       masterPubKey: opts.masterPubKey,
       redeemScript: redeemScript,
       scriptPubKey: scriptPubKey,
-      address: Bitcore.Address(scriptPubKey.getAddressInfo())
+      address: Address(scriptPubKey.getAddressInfo())
     };
 
     return vault;

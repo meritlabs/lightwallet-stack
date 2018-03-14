@@ -7,7 +7,7 @@ import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
 import { LedgerService } from '@merit/common/services/ledger.service';
-import * as Bitcore from 'bitcore-lib';
+import { PublicKey, PrivateKey, Script, Address, Transaction, crypto} from 'bitcore-lib';
 import { RateService } from '@merit/common/services/rate.service';
 
 @Injectable()
@@ -56,7 +56,7 @@ export class EasyReceiveService {
   }
 
   rejectEasyReceipt(wallet, receipt: EasyReceipt, input): Promise<any> {
-    const senderAddress = Bitcore.PublicKey.fromString(receipt.senderPublicKey, 'hex')
+    const senderAddress = PublicKey.fromString(receipt.senderPublicKey, 'hex')
       .toAddress(ENV.network)
       .toString();
 
@@ -77,7 +77,7 @@ export class EasyReceiveService {
 
     try {
       const scriptData = this.generateEasyScipt(receipt, password, network);
-      const scriptAddress = Bitcore.Address(scriptData.scriptPubKey.getAddressInfo()).toString();
+      const scriptAddress = Address(scriptData.scriptPubKey.getAddressInfo()).toString();
 
       const txs = await walletClient.validateEasyScript(scriptAddress);
 
@@ -122,11 +122,11 @@ export class EasyReceiveService {
 
   generateEasyScipt(receipt: EasyReceipt, password, network) {
     const secret = this.ledger.hexToString(receipt.secret);
-    const receivePrv = Bitcore.PrivateKey.forEasySend(secret, password, network);
-    const receivePub = Bitcore.PublicKey.fromPrivateKey(receivePrv).toBuffer();
+    const receivePrv = PrivateKey.forEasySend(secret, password, network);
+    const receivePub = PublicKey.fromPrivateKey(receivePrv).toBuffer();
     const senderPubKey = this.ledger.hexToArray(receipt.senderPublicKey);
     const publicKeys = [receivePub, senderPubKey];
-    const script = Bitcore.Script.buildEasySendOut(publicKeys, receipt.blockTimeout, network);
+    const script = Script.buildEasySendOut(publicKeys, receipt.blockTimeout, network);
 
     return {
       privateKey: receivePrv,
@@ -167,20 +167,20 @@ export class EasyReceiveService {
 
     if (amount <= 0) throw new Error('Insufficient funds');
 
-    let tx = new Bitcore.Transaction();
+    let tx = new Transaction();
 
     if (txn.invite) {
-      tx.version = Bitcore.Transaction.INVITE_VERSION;
+      tx.version = Transaction.INVITE_VERSION;
     }
 
     let p2shScript = input.script.toMixedScriptHashOut(input.senderPublicKey);
     const p2shInput = {
-      output: Bitcore.Transaction.Output.fromObject({script: p2shScript, micros: totalAmount}),
+      output: Transaction.Output.fromObject({script: p2shScript, micros: totalAmount}),
       prevTxId: txn.txid,
       outputIndex: txn.index,
       script: input.script
     };
-    tx.addInput(new Bitcore.Transaction.Input.PayToScriptHashInput(p2shInput, input.script, p2shScript)); 
+    tx.addInput(new Transaction.Input.PayToScriptHashInput(p2shInput, input.script, p2shScript));
 
     tx.to(toAddress, amount);
 
@@ -188,9 +188,9 @@ export class EasyReceiveService {
       tx.fee(fee);
     }
     
-    const sig = Bitcore.Transaction.Sighash.sign(tx, input.privateKey, Bitcore.crypto.Signature.SIGHASH_ALL, 0, input.script);
-    const pubKeyId = Bitcore.PublicKey.fromString(input.senderPublicKey)._getID();
-    let inputScript = Bitcore.Script.buildEasySendIn(sig, input.script, pubKeyId);
+    const sig = Transaction.Sighash.sign(tx, input.privateKey, crypto.Signature.SIGHASH_ALL, 0, input.script);
+    const pubKeyId = PublicKey.fromString(input.senderPublicKey)._getID();
+    let inputScript = Script.buildEasySendIn(sig, input.script, pubKeyId);
     tx.inputs[0].setScript(inputScript);
      
     return tx;
