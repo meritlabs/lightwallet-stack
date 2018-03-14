@@ -258,7 +258,7 @@ if (value != this.lastAmount) {
     });
     loadingSpinner.present();
     try {
-      this.txData.amount += this.txData.easyFee;
+      this.txData.txp.amount += this.txData.easyFee;
       this.txData.txp = await this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
       this.navCtrl.push('SendConfirmationView', { txData: this.txData, referralsToSign: this.referralsToSign });
     } catch (e) {
