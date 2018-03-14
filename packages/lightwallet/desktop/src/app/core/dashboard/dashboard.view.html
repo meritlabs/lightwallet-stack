@@ -1,0 +1,30 @@
+<div class="dashboard-panel">
+  <profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></profile-stats>
+  <div class="dashboard-panel__group">
+    <div class="dashboard-panel__group__wrap container--inner">
+      <div class="dashboard-panel__widged">
+        <div class="dashboard-panel__quick-sending">
+          <div class="title--primary">Send merit</div>
+          <div class="ui-input__wrapper ui-input__wrapper--mrt">
+            <input type="text" name="" [value]="amount" (input)="amount = $event.target.value"
+            (keypress)="sendSubmit($event)"
+            class="ui-input ui-input--form ui-input--text">
+            <div class="ui-input__addon">MRT</div>
+            <div *ngIf="amount > 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }"
+              class="ui-button ui-button--blue ui-button--sm" id="sendMrt">SEND</div>
+          </div>
+        </div>
+        <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async" [showButton]=false></wallets-list>
+        <vaults-list [showButton]=false></vaults-list>
+      </div>
+      <div class="dashboard-panel__widged dashboard-panel__widged--latest-transactions">
+        <div class="title--primary">
+          <p>Latest transactions</p>
+        </div>
+        <history-list [transactions]="transactions$ | async" [loading]="transactionsLoading$ | async" limit="5"></history-list>
+        <div [routerLink]='"/history"'
+          class="ui-button ui-button--blue">SHOW FULL HISTORY</div>
+      </div>
+    </div>
+  </div>
+</div>
