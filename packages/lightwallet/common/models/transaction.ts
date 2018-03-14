@@ -65,4 +65,5 @@ export interface IDisplayTransaction extends ITransaction {
   isMiningReward: boolean;
   isAmbassadorReward: boolean;
   isWalletUnlock: boolean;
+  isConfirmed?: boolean;
 }
