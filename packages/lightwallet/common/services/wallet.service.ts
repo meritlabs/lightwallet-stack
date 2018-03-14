@@ -1113,13 +1113,7 @@ export class WalletService {
 
   // An alert dialog
   private askPassword(name: string, title: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      return this.popupService.prompt(title, name, null, null).then((res: any) => {
-        return resolve(res);
-      }).catch((err: any) => {
-        return reject(err);
-      });
-    });
+    return this.popupService.prompt(title, name, null, null);
   };
 
   private signAndBroadcast(wallet: MeritWalletClient, publishedTxp: any, password: any): Promise<any> {
