@@ -66,7 +66,8 @@ export class SendConfirmationView {
 
     const viewData: any = {
       recipient: this.txData.recipient,
-      amount: this.txData.feeIncluded ? this.txData.amount : this.txData.amount - this.txData.easyFee,
+      amount:  this.txData.amount,
+      totalAmount: this.txData.feeIncluded ? this.txData.amount : this.txData.amount + this.txData.txp.fee + this.txData.easyFee, 
       password: this.txData.password,
       feePercent: this.txData.txp.feePercent,
       fee: this.txData.txp.fee + this.txData.easyFee, 
@@ -79,7 +80,6 @@ export class SendConfirmationView {
       destination: this.txData.sendMethod.alias || this.txData.sendMethod.value 
     };
 
-    viewData.totalAmount = this.txData.feeIncluded ? this.txData.amount : viewData.amount + viewData.fee;
     viewData.walletRemainingBalance =  this.txData.wallet.status.totalBalanceMicros - viewData.totalAmount; 
 
     let fiatAvailale = this.rateService.getRate(viewData.fiatCode) > 0;
