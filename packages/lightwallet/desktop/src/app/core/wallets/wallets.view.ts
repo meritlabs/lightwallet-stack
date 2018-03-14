@@ -11,7 +11,7 @@ import { Observable } from 'rxjs/Observable';
   styleUrls: ['./wallets.view.sass'],
   encapsulation: ViewEncapsulation.None
 })
-export class WalletsViewComponent {
+export class WalletsView {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
 
