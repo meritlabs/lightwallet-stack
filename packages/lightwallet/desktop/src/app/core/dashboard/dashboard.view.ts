@@ -7,6 +7,7 @@ import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { selectTransactions, selectTransactionsLoading } from '@merit/common/reducers/transactions.reducer';
 import { map } from 'rxjs/operators';
+import { isArray } from 'lodash';
 
 @Component({
   selector: 'view-dashboard',
@@ -21,7 +22,7 @@ export class DashboardView {
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   totals$: Observable<any> = this.store.select(selectWalletTotals);
   transactions$: Observable<IDisplayTransaction[]> = this.store.select(selectTransactions).pipe(
-    map((transactions: IDisplayTransaction[]) => transactions.splice(0, 5))
+    map((transactions: IDisplayTransaction[]) => isArray(transactions)? transactions.splice(0, 5) : [])
   );
   transactionsLoading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
 
