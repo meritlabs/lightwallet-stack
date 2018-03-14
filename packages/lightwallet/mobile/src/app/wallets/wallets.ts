@@ -16,6 +16,7 @@ import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IVault } from '@merit/common/models/vault';
 import { FeeService } from '@merit/common/services/fee.service';
+import { RateService } from '@merit/common/services/rate.service';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -62,7 +63,8 @@ export class WalletsView {
               private walletService: WalletService,
               private txFormatService: TxFormatService,
               private platform: Platform,
-              private feeService: FeeService
+              private feeService: FeeService,
+              private rateService: RateService
             ) {
     this.logger.debug('WalletsView constructor!');
   }
@@ -101,7 +103,7 @@ export class WalletsView {
     this.loading = true;
 
     const fetch = async () => {
-      this.wallets = await this.updateAllWallets();
+      this.wallets = await this.updateAllWallets(); 
       await this.updateVaults();
       // Now that we have wallets and vaults, we will proceed with the following operations in parallel.
 
@@ -262,6 +264,7 @@ export class WalletsView {
 
   private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
     let amount = _.get(_.find(data.txs, (tx: any) => !tx.invite), 'amount', 0);
+    amount -= this.rateService.microsToMrt( await this.feeService.getEasyReceiveFee() ); 
 
     this.alertController.create({
       title: `You've got ${amount} Merit!`,
@@ -317,6 +320,7 @@ export class WalletsView {
       const address = this.walletService.getRootAddress(wallet);
       const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.toString());
 
+      this.updateAllInfo();
       this.logger.info('accepted easy send', acceptanceTx);
     } catch (err) {
       console.log(err);
