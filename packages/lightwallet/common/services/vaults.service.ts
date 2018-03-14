@@ -231,6 +231,8 @@ export class VaultsService {
     const change = selectedAmount - amount;
 
     let tx = new Transaction();
+    tx.to(Address.fromString(address), amount - fee);
+
     let redeemScript = Script(vault.redeemScript);
 
     let params = [
@@ -319,7 +321,7 @@ export class VaultsService {
 
     let tag = opts.masterPubKey.toAddress().hashBuffer;
 
-    let whitelist = opts.vault.whitelist.map(w => Address(w).hashBuffer);
+    let whitelist = opts.whitelist.map(w => Address(w).hashBuffer);
 
     let params = [
       opts.spendPubKey.toBuffer(),
