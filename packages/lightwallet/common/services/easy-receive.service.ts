@@ -113,11 +113,10 @@ export class EasyReceiveService {
   }
 
   private async sendEasyReceiveTx(input: any, tx: any, destinationAddress: string, wallet: MeritWalletClient) {
-    if (!tx.invite) tx.amount = this.rateService.mrtToMicro(tx.amount); 
-    let txp = await this.buildEasySendRedeemTransaction(input, tx, destinationAddress);
-    let fee = !tx.invite ? await this.feeService.getTxpFee(tx) : null;
-    txp = await this.buildEasySendRedeemTransaction(input, tx, destinationAddress, fee);
-    return wallet.broadcastRawTx({ rawTx: txp.serialize(), network: ENV.network });
+    if (!tx.invite) tx.amount = this.rateService.mrtToMicro(tx.amount);
+    const fee = tx.invite ? 0 : await this.feeService.getEasyReceiveFee();
+    const txp = await this.buildEasySendRedeemTransaction(input, tx, destinationAddress, fee);
+    return wallet.broadcastRawTx({ rawTx: txp.serialize({disableSmallFees: tx.invite}), network: ENV.network });
   }
 
   generateEasyScipt(receipt: EasyReceipt, password, network) {
@@ -173,6 +172,7 @@ export class EasyReceiveService {
       tx.version = Transaction.INVITE_VERSION;
     }
 
+    console.log(input.script.inspect());
     let p2shScript = input.script.toMixedScriptHashOut(input.senderPublicKey);
     const p2shInput = {
       output: Transaction.Output.fromObject({script: p2shScript, micros: totalAmount}),
