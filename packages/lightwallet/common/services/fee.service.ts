@@ -37,7 +37,7 @@ export class FeeService {
       return this.cache.levels[levelName];
     } else {
       const levels = await this.mwClient.getFeeLevels(ENV.network);
-      this.cache = {updatedTs: date.now(), levels};
+      this.cache = {updatedTs: Date.now(), levels};
       return levels[levelName];
     }
   }

@@ -46,7 +46,11 @@ export class SendService {
       addressType: preparedTxp.addressType
     };
 
-    if (preparedTxp.sendMax || feeIncluded) txp.outputs[0].amount = preparedTxp.outputs[0].amount - preparedTxp.fee;
+    if (preparedTxp.sendMax || feeIncluded) {
+      txp.outputs[0].amount = preparedTxp.amount - preparedTxp.fee;
+    } else {
+      txp.outputs[0].amount = preparedTxp.amount;
+    }
 
     return wallet.createTxProposal(txp);
 
