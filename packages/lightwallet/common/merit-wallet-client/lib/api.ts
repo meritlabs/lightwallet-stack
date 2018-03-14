@@ -3,7 +3,7 @@ import * as util from 'util';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { Common } from './common';
-import { Logger } from "./log";
+import { Logger } from './log';
 import { Credentials } from './credentials';
 import { MWCErrors } from './errors';
 import * as preconditions from 'preconditions';
@@ -37,6 +37,22 @@ export interface InitOptions {
   doNotVerifyPayPro?: boolean;
   timeout?: number;
   logLevel?: string;
+}
+
+export enum AddressType {
+  PubKey = 1,
+  Script,
+  ParameterizedScript
+}
+
+export interface ISendReferralOptions {
+  parentAddress: string;
+  address?: string;
+  addressType: AddressType;
+  signPrivKey: string;
+  pubkey?: string;
+  network?: string;
+  alias?: string;
 }
 
 export class API {
@@ -109,7 +125,7 @@ export class API {
     this.logLevel = opts.logLevel || 'debug';
     this.log = Logger.getInstance();
     this.log.setLevel(this.logLevel);
-    this.log.info("Hello Merit Wallet Client!");
+    this.log.info('Hello Merit Wallet Client!');
   }
 
 
@@ -141,10 +157,10 @@ export class API {
   }
 
   _fetchLatestNotifications(interval): Promise<any> {
-    this.log.info("_fetchLatestNotifications called.");
+    this.log.info('_fetchLatestNotifications called.');
     let opts: any = {
       lastNotificationId: this.lastNotificationId,
-      includeOwn: this.notificationIncludeOwn,
+      includeOwn: this.notificationIncludeOwn
     };
 
     if (!this.lastNotificationId) {
@@ -157,7 +173,7 @@ export class API {
       }
 
       return Promise.all(notifications.map(async (notification) => {
-          this.eventEmitter.emit('notification', notification);
+        this.eventEmitter.emit('notification', notification);
       }));
     });
 
@@ -167,7 +183,7 @@ export class API {
     const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode; pollutes request stream..
     this.notificationsIntervalId = setInterval(() => {
       this._fetchLatestNotifications(interval).then(() => {
-        this.log.warn("Init Notifications done");
+        this.log.warn('Init Notifications done');
       }).catch((err) => {
         if (err) {
           if (err == MWCErrors.NOT_FOUND || err == MWCErrors.NOT_AUTHORIZED) {
@@ -344,7 +360,6 @@ export class API {
   };
 
 
-
   /**
    * Seed from random
    *
@@ -371,12 +386,12 @@ export class API {
       };
 
       function testHardcodedKeys() {
-        let words = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+        let words = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
         let xpriv = Mnemonic(words).toHDPrivateKey();
 
         if (xpriv.toString() != 'xprv9s21ZrQH143K2jHFB1HM4GNbVaBSSnjHDQP8uBtKKTvusxMirfmKEmaUS4fkwqeoLqVVT2ShayUSmnEZNV1AKqTSESqyAFCBW8nvEqKfvGy') return false;
 
-        xpriv = xpriv.deriveChild("m/44'/0'/0'");
+        xpriv = xpriv.deriveChild('m/44\'/0\'/0\'');
         if (xpriv.toString() != 'xprv9ynVfpDwjVTeyQALCLp4EVHwonHHoE37DoUkjsj6A5vxXK1Wh6YEQVPdgdGdtvqWttM4nqgxK8kgmmRD5yfKhWGbD75JGdsDb9yMtozdVc6') return false;
 
         let xpub = Bitcore.HDPublicKey.fromString('xpub6Cmr5KkqZs1xBtEoJNM4bdEgMp7nCgkxb2QMYG8hiRTwQ7LfEdrUxHi7XrjNxkeuRrNSqHLXHAuwZvqoeASrp5jxjnpMa4d8PFpA9TRxVCd');
@@ -387,7 +402,8 @@ export class API {
         let words;
         try {
           words = c.getMnemonic();
-        } catch (ex) { }
+        } catch (ex) {
+        }
 
         let xpriv;
         if (words && (!c.mnemonicHasPassphrase || opts.passphrase)) {
@@ -430,7 +446,8 @@ export class API {
     $.checkArgument(arguments.length <= 1, 'DEPRECATED: only 1 argument accepted.');
     $.checkArgument(_.isUndefined(opts) || _.isObject(opts), 'DEPRECATED: argument should be an options object.');
 
-    this.credentials = Credentials.createWithMnemonic(opts.network || 'livenet', opts.passphrase, opts.language || 'en', opts.account || 0);;
+    this.credentials = Credentials.createWithMnemonic(opts.network || 'livenet', opts.passphrase, opts.language || 'en', opts.account || 0);
+    ;
   };
 
   getMnemonic(): any {
@@ -440,7 +457,6 @@ export class API {
   mnemonicHasPassphrase(): any {
     return this.credentials.mnemonicHasPassphrase;
   };
-
 
 
   clearMnemonic(): any {
@@ -551,55 +567,55 @@ export class API {
 
   async _import(): Promise<any> {
 
-      $.checkState(this.credentials);
+    $.checkState(this.credentials);
 
-      try {
-        return await this.openWallet();
-      } catch (e) {
+    try {
+      return await this.openWallet();
+    } catch (e) {
 
-        if (e.code != 'NOT_AUTHORIZED') {
-          throw e;
+      if (e.code != 'NOT_AUTHORIZED') {
+        throw e;
+      } else {
+
+        const walletPrivKey = new Bitcore.PrivateKey(void 0, this.credentials.network);
+        const pubkey = walletPrivKey.toPublicKey();
+        this.credentials.addWalletPrivateKey(walletPrivKey.toString());
+        let rootAddress = this.getRootAddress();
+
+        let defaultOpts = {
+          m: 1,
+          n: 1,
+          walletName: 'Personal Wallet',
+          copayerName: 'me'
+        };
+
+        //call 'recreate wallet' method to create wallet instance with exision
+        let args = {
+          m: defaultOpts.m,
+          n: defaultOpts.n,
+          walletName: defaultOpts.walletName,
+          copayerName: defaultOpts.copayerName,
+          pubKey: pubkey.toString(),
+          rootAddress: rootAddress.toString(),
+          network: this.credentials.network,
+          singleAddress: true //daedalus wallets are single-addressed
+        };
+
+        let res = await this._doPostRequest('/v1/recreate_wallet/', args);
+
+        if (res) {
+          let walletId = res.walletId;
+          let parentAddress = res.parentAddress;
+          this.credentials.addWalletInfo(walletId, defaultOpts.walletName, defaultOpts.m, defaultOpts.n, defaultOpts.copayerName, parentAddress);
+
+          return this.doJoinWallet(walletId, walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, defaultOpts.copayerName, {});
         } else {
-
-          const walletPrivKey = new Bitcore.PrivateKey(void 0, this.credentials.network);
-          const pubkey = walletPrivKey.toPublicKey();
-          this.credentials.addWalletPrivateKey(walletPrivKey.toString());
-          let rootAddress = this.getRootAddress();
-
-          let defaultOpts = {
-            m: 1,
-            n: 1,
-            walletName: 'Personal Wallet',
-            copayerName: 'me'
-          };
-
-          //call 'recreate wallet' method to create wallet instance with exision
-          let args = {
-            m: defaultOpts.m,
-            n: defaultOpts.n,
-            walletName: defaultOpts.walletName,
-            copayerName: defaultOpts.copayerName,
-            pubKey: pubkey.toString(),
-            rootAddress: rootAddress.toString(),
-            network: this.credentials.network,
-            singleAddress: true, //daedalus wallets are single-addressed
-          };
-
-          let res = await this._doPostRequest('/v1/recreate_wallet/', args);
-
-          if (res) {
-            let walletId = res.walletId;
-            let parentAddress = res.parentAddress;
-            this.credentials.addWalletInfo(walletId, defaultOpts.walletName, defaultOpts.m, defaultOpts.n, defaultOpts.copayerName, parentAddress);
-
-            return this.doJoinWallet(walletId, walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, defaultOpts.copayerName, {});
-          } else {
-            throw new Error('failed to recreate wallet');
-          }
-
+          throw new Error('failed to recreate wallet');
         }
 
       }
+
+    }
 
   };
 
@@ -616,33 +632,33 @@ export class API {
    * @param {String} opts.entropySourcePath - Only used if the wallet was created on a HW wallet, in which that private keys was not available for all the needed derivations
    */
   importFromMnemonic(words: string, opts: any = {}): Promise<any> {
-      this.log.debug('Importing from 12 Words');
+    this.log.debug('Importing from 12 Words');
 
-      function derive(nonCompliantDerivation) {
-        return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, {
-          nonCompliantDerivation: nonCompliantDerivation,
-          entropySourcePath: opts.entropySourcePath,
-        });
-      };
-
-      try {
-        this.credentials = derive(false);
-      } catch (e) {
-        this.log.info('Mnemonic error:', e);
-        return Promise.reject(MWCErrors.INVALID_BACKUP);
-      }
-
-      return this._import().catch(err => {
-        if (err == MWCErrors.INVALID_BACKUP) return Promise.reject(err);
-        if (err == MWCErrors.NOT_AUTHORIZED || err == MWCErrors.WALLET_DOES_NOT_EXIST) {
-
-            let altCredentials = derive(true);
-            if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return Promise.reject(err);
-            this.credentials = altCredentials;
-            return this._import();
-        }
-        return Promise.reject(err);
+    function derive(nonCompliantDerivation) {
+      return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, {
+        nonCompliantDerivation: nonCompliantDerivation,
+        entropySourcePath: opts.entropySourcePath
       });
+    };
+
+    try {
+      this.credentials = derive(false);
+    } catch (e) {
+      this.log.info('Mnemonic error:', e);
+      return Promise.reject(MWCErrors.INVALID_BACKUP);
+    }
+
+    return this._import().catch(err => {
+      if (err == MWCErrors.INVALID_BACKUP) return Promise.reject(err);
+      if (err == MWCErrors.NOT_AUTHORIZED || err == MWCErrors.WALLET_DOES_NOT_EXIST) {
+
+        let altCredentials = derive(true);
+        if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return Promise.reject(err);
+        this.credentials = altCredentials;
+        return this._import();
+      }
+      return Promise.reject(err);
+    });
 
   };
 
@@ -661,8 +677,11 @@ export class API {
       this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       this.log.info('xPriv error:', e);
-      return new Promise((resolve, reject) => { return reject(MWCErrors.INVALID_BACKUP); });
-    };
+      return new Promise((resolve, reject) => {
+        return reject(MWCErrors.INVALID_BACKUP);
+      });
+    }
+    ;
 
     return this._import();
   };
@@ -678,15 +697,18 @@ export class API {
    * @param {String} opts.derivationStrategy - default 'BIP44'
    */
   importFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any = {}): Promise<any> {
-    $.checkArgument(arguments.length == 5, "DEPRECATED: should receive 5 arguments");
+    $.checkArgument(arguments.length == 5, 'DEPRECATED: should receive 5 arguments');
 
     this.log.debug('Importing from Extended Private Key');
     try {
       this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
     } catch (e) {
       this.log.info('xPriv error:', e);
-      return new Promise((resolve, reject) => { return reject(MWCErrors.INVALID_BACKUP); });
-    };
+      return new Promise((resolve, reject) => {
+        return reject(MWCErrors.INVALID_BACKUP);
+      });
+    }
+    ;
 
     return this._import();
   };
@@ -723,7 +745,7 @@ export class API {
       let privateKey = new Bitcore.PrivateKey(_privateKey);
       let address = privateKey.publicKey.toAddress();
       return this.getUtxos({
-        addresses: address.toString(),
+        addresses: address.toString()
       }).then((utxos) => {
         return resolve(_.sumBy(utxos, 'micros'));
       });
@@ -736,7 +758,7 @@ export class API {
       let address = privateKey.publicKey.toAddress();
 
       return this.getUtxos({
-        addresses: address.toString(),
+        addresses: address.toString()
       }).then((utxos) => {
         if (!_.isArray(utxos) || utxos.length == 0) return reject(new Error('No utxos found'));
 
@@ -781,11 +803,11 @@ export class API {
         amount,
         toAddress,
         message,
-        script,
-      })],
+        script
+      })]
     };
 
-    let txp = await this.createTxProposal(opts)
+    let txp = await this.createTxProposal(opts);
     txp = await this.publishTxProposal({ txp });
     txp = await this.signTxProposal(txp, walletPassword);
     txp = await this.broadcastTxProposal(txp);
@@ -800,12 +822,12 @@ export class API {
    * @fires API#walletCompleted
    */
   openWallet(): Promise<any> {
-    this.log.warn("Opening wallet");
+    this.log.warn('Opening wallet');
     return new Promise((resolve, reject) => {
 
       $.checkState(this.credentials);
       if (this.credentials.isComplete() && this.credentials.hasWalletInfo()) {
-        this.log.warn("WALLET OPEN");
+        this.log.warn('WALLET OPEN');
         return resolve(true); // wallet is already open
       }
 
@@ -845,12 +867,10 @@ export class API {
     });
   };
 
-  _getHeaders(method: string, url: string, args: any): any {
-    let headers = {
-      'x-client-version': 'MWC-' + Package.version,
+  _getHeaders() {
+    return {
+      'x-client-version': 'MWC-' + Package.version
     };
-
-    return headers;
   };
 
 
@@ -861,12 +881,11 @@ export class API {
    * @param {Object} method
    * @param {String} url
    * @param {Object} args
-   * @param {Callback} cb
    */
-  _doRequest(method: string, url: string, args: any, useSession: boolean, secondRun = false): Promise<{ body: any, header: any }> {
+  protected _doRequest(method: string, url: string, args: any, useSession: boolean, secondRun = false): Promise<{ body: any, header: any }> {
     return new Promise((resolve, reject) => {
 
-      let headers = this._getHeaders(method, url, args);
+      let headers = this._getHeaders();
 
       if (this.credentials) {
         headers['x-identity'] = this.credentials.copayerId;
@@ -911,7 +930,7 @@ export class API {
          * if the private static DEBUG_MODE is set to true above.
          */
         if (res.body && this.DEBUG_MODE) {
-          this.log.info("BWS Response: ");
+          this.log.info('BWS Response: ');
           this.log.info(util.inspect(res.body, {
             depth: 10
           }));
@@ -941,7 +960,7 @@ export class API {
           return reject(MWCErrors.ECONNRESET_ERROR);
         }
 
-        if(this.onConnectionRestored) {
+        if (this.onConnectionRestored) {
           this.onConnectionRestored();
         }
 
@@ -950,7 +969,7 @@ export class API {
 
         if (!err.status) {
           return reject(MWCErrors.CONNECTION_ERROR);
-        } else if (err.status == 502 || err.status == 504){
+        } else if (err.status == 502 || err.status == 504) {
           return reject(MWCErrors.SERVER_UNAVAILABLE);
         }
 
@@ -970,12 +989,12 @@ export class API {
             return this._doRequest('post', '/v1/login', {}, null, true).then(() => {
               return this._doRequest(method, url, args, useSession, true);
             }).catch(() => {
-              if(this.onAuthenticationError) {
+              if (this.onAuthenticationError) {
                 return Promise.resolve(this.onAuthenticationError());
               }
-            })
+            });
           } else {
-            if(this.onAuthenticationError) {
+            if (this.onAuthenticationError) {
               return Promise.resolve(this.onAuthenticationError());
             }
           }
@@ -1024,7 +1043,7 @@ export class API {
         }
         return resolve(doLogin());
       });
-    }
+    };
 
 
     return loginIfNeeded().then(() => {
@@ -1043,9 +1062,8 @@ export class API {
    * @param {Callback} cb
    */
   _doPostRequest(url: string, args: any): Promise<any> {
-    return this._doRequest('post', url, args, false).then((res) => {
-      return res.body;
-    });
+    return this._doRequest('post', url, args, false)
+      .then(res => res.body);
   };
 
   _doPutRequest(url: string, args: any): Promise<any> {
@@ -1073,7 +1091,7 @@ export class API {
     url += url.indexOf('?') > 0 ? '&' : '?';
     url += 'r=' + _.random(10000, 99999);
     return this._doRequestWithLogin('get', url, {}).catch((err) => {
-      this.log.warn("Were not able to complete getRequest: ", err);
+      this.log.warn('Were not able to complete getRequest: ', err);
     });
   };
 
@@ -1109,7 +1127,8 @@ export class API {
       while (i < indexes.length) {
         parts.push(str.substring(i == 0 ? 0 : indexes[i - 1], indexes[i]));
         i++;
-      };
+      }
+      ;
       return parts;
     };
 
@@ -1125,7 +1144,7 @@ export class API {
       return {
         walletId: walletId,
         walletPrivKey: walletPrivKey,
-        network: networkChar == 'T' ? 'testnet' : 'livenet',
+        network: networkChar == 'T' ? 'testnet' : 'livenet'
       };
     } catch (ex) {
       throw new Error('Invalid secret');
@@ -1150,7 +1169,7 @@ export class API {
     let xpriv = new Bitcore.HDPrivateKey(derivedXPrivKey);
 
     _.each(txp.inputs, function (i) {
-      $.checkState(i.path, "Input derivation path not available (signing transaction)")
+      $.checkState(i.path, 'Input derivation path not available (signing transaction)');
       if (!derived[i.path]) {
         derived[i.path] = xpriv.deriveChild(i.path).privateKey;
         privs.push(derived[i.path]);
@@ -1183,7 +1202,7 @@ export class API {
     return _.map(acceptedActions, function (x: any) {
       return {
         signatures: x.signatures,
-        xpub: x.xpub,
+        xpub: x.xpub
       };
     });
   };
@@ -1204,11 +1223,13 @@ export class API {
           inputIndex: i,
           signature: signature,
           sigtype: Bitcore.crypto.Signature.SIGHASH_ALL,
-          publicKey: pub,
+          publicKey: pub
         };
         t.inputs[i].addSignature(t, s);
         i++;
-      } catch (e) { };
+      } catch (e) {
+      }
+      ;
     });
 
     if (i != txp.inputs.length)
@@ -1253,7 +1274,7 @@ export class API {
         name: encCopayerName,
         xPubKey: xPubKey,
         requestPubKey: requestPubKey,
-        customData: encCustomData,
+        customData: encCustomData
       };
       if (opts.dryRun) args.dryRun = true;
 
@@ -1332,7 +1353,8 @@ export class API {
       return !!keys.xPrivKey;
     } catch (e) {
       return false;
-    };
+    }
+    ;
   };
 
 
@@ -1381,10 +1403,10 @@ export class API {
    * @param {string} network - 'livenet' (default) or 'testnet'
    * @returns {Callback} cb - Returns error or an object with status information
    */
-  getFeeLevels(network: string): Promise<any> {
-      (!$.checkArgument(network || _.includes(['livenet', 'testnet'], network)));
+  getFeeLevels(network: string = this.network): Promise<any> {
+    (!$.checkArgument(network || _.includes(['livenet', 'testnet'], network)));
 
-      return this._doGetRequest('/v1/feelevels/?network=' + (network || ENV.network));
+    return this._doGetRequest('/v1/feelevels/?network=' + (network || ENV.network));
   };
 
   /**
@@ -1514,24 +1536,21 @@ export class API {
    * @param {string} opts.network          - (optional) network
    * @param {string} opts.alias          - (optional) Address alias
    */
-  async sendReferral(opts: any = {}): Promise<any> {
-    if (opts) {
-      $.shouldBeObject(opts);
-    }
+  async sendReferral(opts?: ISendReferralOptions): Promise<any> {
+    opts.network = opts.network || ENV.network;
 
-    let network = opts.network || ENV.network;;
-    if (!_.includes(['testnet', 'livenet'], network)) {
+    if (!_.includes(['testnet', 'livenet'], opts.network)) {
       throw Error('Invalid network');
     }
 
-    if (network != this.credentials.network) {
+    if (opts.network != this.credentials.network) {
       throw Error('Existing keys were created for a different network');
     }
 
     if (!this.credentials) {
       this.log.info('Generating new keys');
       this.seedFromRandom({
-        network: network
+        network: opts.network
       });
     } else {
       this.log.info('Using existing keys');
@@ -1540,19 +1559,19 @@ export class API {
     let parentAddress = opts.parentAddress;
 
     try {
-      Bitcore.encoding.Base58Check.decode(opts.parentAddress);
+      Bitcore.encoding.Base58Check.decode(parentAddress);
     } catch (e) {
-      if (!Bitcore.Referral.validateAlias(opts.parentAddress)) {
+      if (!Bitcore.Referral.validateAlias(parentAddress)) {
         throw Error('Invalid invite code or alias');
       }
 
-      const parentReferral = await this._doGetRequest(`/v1/referral/${opts.parentAddress}`);
+      const parentReferral = await this._doGetRequest(`/v1/referral/${parentAddress}`);
       parentAddress = parentReferral.parentAddress;
     }
 
     const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-      Bitcore.Address.fromString(parentAddress, network.name).toBufferLean(),
-      Bitcore.Address.fromString(opts.address, network.name).toBufferLean(),
+      Bitcore.Address.fromString(parentAddress, opts.network).toBufferLean(),
+      Bitcore.Address.fromString(opts.address, opts.network).toBufferLean()
     ]));
 
     const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
@@ -1564,10 +1583,11 @@ export class API {
       pubkey: opts.pubkey,
       signature: signature.toString('hex'),
       alias: opts.alias
-    }, network);
+    }, opts.network);
 
     return this._doPostRequest('/v1/referral/', { referral: referral.serialize() });
   };
+
   /**
    * Join an existing wallet
    *
@@ -1590,7 +1610,7 @@ export class API {
       }
       this.credentials.addWalletPrivateKey(secretData.walletPrivKey.toString());
       return this.doJoinWallet(secretData.walletId, secretData.walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, copayerName, {
-        dryRun: !!opts.dryRun,
+        dryRun: !!opts.dryRun
       }).then((wallet) => {
         if (!opts.dryRun) {
           this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.parentAddress);
@@ -1605,7 +1625,7 @@ export class API {
   /**
    * Recreates a wallet, given credentials (with wallet id)
    */
-  recreateWallet(c: any): Promise<any> {
+  recreateWallet(): Promise<any> {
     $.checkState(this.credentials);
     $.checkState(this.credentials.isComplete());
     $.checkState(this.credentials.walletPrivKey);
@@ -1643,11 +1663,11 @@ export class API {
       }).then(() => {
         let i = 1;
         return Promise.all(this.credentials.publicKeyRing.map((item: any) => {
-              let name = item.copayerName || ('copayer ' + i++);
-              return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
-                  supportBIP44AndP2PKH: supportBIP44AndP2PKH
-              });
-          }));
+          let name = item.copayerName || ('copayer ' + i++);
+          return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
+            supportBIP44AndP2PKH: supportBIP44AndP2PKH
+          });
+        }));
       });
     });
   };
@@ -1728,7 +1748,7 @@ export class API {
     ]).then(() => {
       return Promise.resolve();
     });
-  }
+  };
 
 
   /**
@@ -1840,7 +1860,7 @@ export class API {
 
     return PayPro.get({
       url: opts.payProUrl,
-      http: this.payProHttp,
+      http: this.payProHttp
     }).then((paypro) => {
       return Promise.resolve(paypro);
     });
@@ -1860,7 +1880,7 @@ export class API {
     if (opts.addresses) {
       url += '?' + querystring.stringify({
         addresses: [].concat(opts.addresses).join(','),
-        invites: opts.invites,
+        invites: opts.invites
       });
     }
     return this._doGetRequest(url);
@@ -1911,9 +1931,9 @@ export class API {
       console.log('@@@TXP', txp);
 
       if (!txp) {
-        return Promise.reject(new Error("Could not get transaction proposal from server."));
+        return Promise.reject(new Error('Could not get transaction proposal from server.'));
       }
-      if (txp.code && txp.code == "INSUFFICIENT_FUNDS") {
+      if (txp.code && txp.code == 'INSUFFICIENT_FUNDS') {
         return Promise.reject(MWCErrors.INSUFFICIENT_FUNDS);
       }
       return this._processTxps(txp).then(() => {
@@ -1931,27 +1951,22 @@ export class API {
    *
    * @param {Object} opts
    * @param {Object} opts.txp - The transaction proposal object returned by the API#createTxProposal method
-   * @returns {Callback} cb - Return error or null
    */
   publishTxProposal(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete(), 'no authorization data');
-    $.checkArgument(opts)
+    $.checkArgument(opts);
     $.checkArgument(opts.txp, 'txp is required');
-
     $.checkState(parseInt(opts.txp.version) >= Bitcore.Transaction.CURRENT_VERSION);
 
-    let t = Utils.buildTx(opts.txp);
-    let hash = t.uncheckedSerialize();
-    let args = {
+    const hash = Utils.buildTx(opts.txp).uncheckedSerialize();
+    const args = {
       proposalSignature: Utils.signMessage(hash, this.credentials.requestPrivKey)
     };
 
-    let url = '/v1/txproposals/' + opts.txp.id + '/publish/';
-    return this._doPostRequest(url, args).then((txp) => {
-      return txp;
-    }).catch((err) => {
-      return Promise.reject(new Error('error in post /v1/txproposals/' + err));
-    });
+    return this._doPostRequest('/v1/txproposals/' + opts.txp.id + '/publish/', args)
+      .catch((err) =>
+        Promise.reject(new Error('error in post /v1/txproposals/' + err))
+      );
   };
 
   /**
@@ -1986,7 +2001,7 @@ export class API {
       pubkey: address.publicKeys[0],
       addressType: 1,
       signPrivKey,
-      network: address.network,
+      network: address.network
     };
 
     return this.signAddressAndUnlock(unlockOpts);
@@ -2051,7 +2066,7 @@ export class API {
       requestPubKey: requestPubKey,
       signature: sig,
       name: encCopayerName,
-      restrictions: opts.restrictions,
+      restrictions: opts.restrictions
     };
 
     return this._doPutRequest('/v1/copayers/' + copayerId + '/', opts);
@@ -2137,16 +2152,16 @@ export class API {
     return this._doGetRequest('/v1/txproposals/').then((txps) => {
       return this._processTxps(txps).then(() => {
         return Promise.all(txps.map(async (txp) => {
-            if (!opts.doNotVerify) {
-                // TODO: Find a way to run this check in parallel.
-                return this.getPayPro(txp).then((paypro) => {
-                    if (!Verifier.checkTxProposal(this.credentials, txp, {
-                            paypro: paypro,
-                        })) {
-                        Promise.reject(MWCErrors.SERVER_COMPROMISED);
-                    }
-                });
-            }
+          if (!opts.doNotVerify) {
+            // TODO: Find a way to run this check in parallel.
+            return this.getPayPro(txp).then((paypro) => {
+              if (!Verifier.checkTxProposal(this.credentials, txp, {
+                  paypro: paypro
+                })) {
+                Promise.reject(MWCErrors.SERVER_COMPROMISED);
+              }
+            });
+          }
         })).then(() => {
           let result: any;
           if (opts.forAirGapped) {
@@ -2155,7 +2170,7 @@ export class API {
               encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
               unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
               m: this.credentials.m,
-              n: this.credentials.n,
+              n: this.credentials.n
             };
           } else {
             result = txps;
@@ -2173,7 +2188,7 @@ export class API {
 
     return PayPro.get({
       url: txp.payProUrl,
-      http: this.payProHttp,
+      http: this.payProHttp
     }).then((paypro) => {
       if (!paypro) {
         return Promise.reject(new Error('Cannot check paypro transaction now.'));
@@ -2183,11 +2198,11 @@ export class API {
   };
 
   /**
-  * Sign a transaction proposal
-  *
-  * @param {Object} txp
-  * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
-  */
+   * Sign a transaction proposal
+   *
+   * @param {Object} txp
+   * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
+   */
   signTxProposal(txp: any, password: string): Promise<any> {
     return new Promise((resolve, reject) => {
       $.checkState(this.credentials && this.credentials.isComplete());
@@ -2203,7 +2218,7 @@ export class API {
 
       return this.getPayPro(txp).then((paypro) => {
         let isLegit = Verifier.checkTxProposal(this.credentials, txp, {
-          paypro: paypro,
+          paypro: paypro
         });
 
         if (!isLegit)
@@ -2281,7 +2296,7 @@ export class API {
 
     let url = '/v1/txproposals/' + txp.id + '/rejections/';
     let args = {
-      reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || '',
+      reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || ''
     };
     return this._doPostRequest(url, args).then((txp) => {
       return this._processTxps(txp).then(() => {
@@ -2291,14 +2306,14 @@ export class API {
   }
 
   /**
- * Broadcast raw transaction
- *
- * @param {Object} opts
- * @param {String} opts.network
- * @param {String} opts.rawTx
- * @param {Callback} cb
- * @return {Callback} cb - Return error or txid
- */
+   * Broadcast raw transaction
+   *
+   * @param {Object} opts
+   * @param {String} opts.network
+   * @param {String} opts.rawTx
+   * @param {Callback} cb
+   * @return {Callback} cb - Return error or txid
+   */
   broadcastRawTx(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     opts = opts || {};
@@ -2317,21 +2332,21 @@ export class API {
   };
 
   /**
-  * Broadcast a transaction proposal
-  *
-  * @param {Object} txp
-  * @param {Callback} cb
-  * @return {Callback} cb - Return error or object
-  */
+   * Broadcast a transaction proposal
+   *
+   * @param {Object} txp
+   * @param {Callback} cb
+   * @return {Callback} cb - Return error or object
+   */
   broadcastTxProposal(txp): Promise<any> {
-    this.log.warn("Inside broadCastTxProposal");
+    this.log.warn('Inside broadCastTxProposal');
     $.checkState(this.credentials && this.credentials.isComplete());
 
     return this.signAddressAndUnlockWithRoot(txp.changeAddress)
       .then(() => {
         return this.getPayPro(txp).then((paypro) => {
           if (paypro) {
-            this.log.warn("WE ARE PAYPRO");
+            this.log.warn('WE ARE PAYPRO');
             let t = Utils.buildTx(txp);
             this._applyAllSignatures(txp, t);
 
@@ -2345,7 +2360,7 @@ export class API {
                 disableSmallFees: true,
                 disableLargeFees: true,
                 disableDustOutputs: true
-              }),
+              })
             });
           }
           return Promise.resolve();
@@ -2395,10 +2410,10 @@ export class API {
 
     let url = '/v1/txhistory/' + qs;
     return this._doGetRequest(url).then((txs) => {
-     return this._processTxps(txs).then(() => {
+      return this._processTxps(txs).then(() => {
 
-       return Promise.resolve(txs);
-     });
+        return Promise.resolve(txs);
+      });
     });
   };
 
@@ -2406,19 +2421,19 @@ export class API {
    * Get invite requests
    *
    */
-  getInvitesHistory() :Promise<any> {
+  getInvitesHistory(): Promise<any> {
 
     return Promise.resolve([
       {
-        "txid": "b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc",
-        "action": "unlock",
-        "amount": 1,
-        "time": 1516968822,
-        "confirmations": 0,
-        "outputs": [
+        'txid': 'b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc',
+        'action': 'unlock',
+        'amount': 1,
+        'time': 1516968822,
+        'confirmations': 0,
+        'outputs': [
           {
-            "amount": 1,
-            "address": "mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc"
+            'amount': 1,
+            'address': 'mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc'
           }
         ]
       }
@@ -2430,7 +2445,7 @@ export class API {
    *
    * @param address
    */
-  confirmRequest(request:{refid:string, address:string}): Promise<any> {
+  confirmRequest(request: { refid: string, address: string }): Promise<any> {
     return Promise.resolve(true);
   }
 
@@ -2474,7 +2489,7 @@ export class API {
   startScan(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     let args = {
-      includeCopayerBranches: opts.includeCopayerBranches,
+      includeCopayerBranches: opts.includeCopayerBranches
     };
     return this._doPostRequest('/v1/addresses/scan', args);
   };
@@ -2658,15 +2673,15 @@ export class API {
    * @return {undefined}
    */
   validateEasyScript(scriptId): Promise<EasyReceiptResult> {
-    this.log.warn("Validating: " + scriptId);
+    this.log.warn('Validating: ' + scriptId);
 
     let url = '/v1/easyreceive/validate/' + scriptId;
     return this._doGetRequest(url);
   };
 
   /**
-  * Vaulting
-  */
+   * Vaulting
+   */
   getVaults() {
     $.checkState(this.credentials);
 

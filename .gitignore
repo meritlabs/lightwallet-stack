@@ -39,3 +39,7 @@ packages/bitcore-node/bin/meritd
 lerna-debug.log
 node_modules/
 package-lock.json
+
+# Ionic packages
+packages/lightwallet/platforms/ 
+packages/lightwallet/www/

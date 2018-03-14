@@ -21,7 +21,7 @@ import { EasySendService } from '@merit/common/services/easy-send.service';
 import { SendService } from '@merit/common/services/send.service';
 import { AddressService } from '@merit/common/services/address.service';
 import { VaultsService } from '@merit/common/services/vaults.service';
-
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 @NgModule()
 export class CommonProvidersModule {
@@ -42,6 +42,7 @@ export class CommonProvidersModule {
         MnemonicService,
         MWCService,
         PersistenceService,
+        PersistenceService2,
         PlatformService,
         PopupService,
         VaultsService, 

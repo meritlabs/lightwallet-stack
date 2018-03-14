@@ -103,7 +103,7 @@ export class ReceiveView {
     this.error = null;
 
     try {
-      this.address = this.walletService.getRootAddress(this.wallet).toString();
+      this.address = this.wallet.getRootAddress().toString();
       let info = await this.addressService.getAddressInfo(this.address);
       this.alias = info.alias;
       this.addressGenerationInProgress = false;

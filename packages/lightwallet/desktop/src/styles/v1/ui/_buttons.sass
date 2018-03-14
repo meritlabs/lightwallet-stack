@@ -1,7 +1,7 @@
 .ui-button
   display: inline-block
   border: none
-  +font($baseFont--medium, 15px, 15px, initial, normal, none, none)
+  +font($baseFont--medium, 15px, 15px, initial)
   padding: 12px 45px 10px
   border-radius: 4px
   box-sizing: border-box
@@ -47,7 +47,7 @@
       border-left: 0
       border-top: 0
       position: relative
-      top: -4px
+      top: -2px
   &--wallet-icon
     &:before
       content: ""
@@ -81,6 +81,11 @@
     letter-spacing: .3px
     &.ui-button--add
       padding: 6px 15px 6px 11px
+  &--xs
+    font-family: $baseFont--semibold
+    +chageFontSize(12px, 12px)
+    padding: 4px 10px
+    letter-spacing: .3px
 .ui-button
   &--false
     display: none
