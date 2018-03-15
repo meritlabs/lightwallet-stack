@@ -11,6 +11,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ENV } from '@merit/desktop/environments/environment';
 import { Store } from '@ngrx/store';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
 
 @Component({
   selector: 'view-create-wallet',
@@ -123,7 +124,9 @@ export class CreateWalletView {
               private logger: LoggerService,
               private router: Router,
               private store: Store<IRootAppState>,
-              private addressService: AddressService) {
+              private addressService: AddressService,
+              private txFormatService: TxFormatService
+            ) {
   }
 
   async create() {
@@ -188,7 +191,7 @@ export class CreateWalletView {
         this.logger.error(e);
       }
 
-      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService);
+      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService);
       this.store.dispatch(new AddWalletAction(displayWallet));
 
       return this.router.navigateByUrl('/wallets');
