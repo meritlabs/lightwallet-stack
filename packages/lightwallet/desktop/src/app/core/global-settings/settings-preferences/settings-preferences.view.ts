@@ -5,8 +5,8 @@ import { IRootAppState } from '@merit/common/reducers';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { isEmpty } from 'lodash';
 import { filter, tap } from 'rxjs/operators';
-import { PushNotificationsService } from '@merit/common/services/push-notification.service';
-import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
+
+declare const WEBPACK_CONFIG: any;
 
 @Component({
   selector: 'view-settings-preferences',
@@ -22,11 +22,20 @@ export class SettingsPreferencesView {
     email: [''] // TODO(ibby): validate email
   });
 
+  commitHash: string;
+  version: string;
+
   private subscription;
+
 
   constructor(private formBuilder: FormBuilder,
               private state: State<IRootAppState>,
-              private persistenceService: PersistenceService2) {}
+              private persistenceService: PersistenceService2) {
+    if (typeof WEBPACK_CONFIG !== 'undefined') {
+      this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
+      this.version = WEBPACK_CONFIG.VERSION;
+    }
+  }
 
   async ngOnInit() {
     const settings = await this.persistenceService.getNotificationSettings();
@@ -43,6 +52,9 @@ export class SettingsPreferencesView {
   }
 
   ngOnDestroy() {
-    try { this.subscription.unsubscribe(); } catch (e) {}
+    try {
+      this.subscription.unsubscribe();
+    } catch (e) {
+    }
   }
 }
