@@ -35,8 +35,6 @@ export class VaultView {
       result[w.client.getRootAddress().toString()] = w;
       return result;
     }, {});
-
-    console.log(this.vault, 'vault');
   }
 
   async ionViewWillEnter() {
@@ -46,18 +44,18 @@ export class VaultView {
     this.transactions = transactions.map((tx:any) => {
       if (tx.type == 'renewal') {
         tx.label = 'renewed';
-      }      else if (tx.type == 'stored') {
+      }  else if (tx.type == 'stored') {
         tx.label = 'Stored';
       } else {
         tx.label = this.indexedWallets[tx.address]
           ? this.indexedWallets[tx.address].name
           : (tx.alias || tx.address);
+        tx.amount += tx.fee; //showing full spent amount when sending from vault
       }
       return tx;
     });
 
   }
-
 
 
   private async formatWhiteList(whitelist) {
