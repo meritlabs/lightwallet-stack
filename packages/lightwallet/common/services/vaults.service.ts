@@ -124,9 +124,11 @@ export class VaultsService {
 
     vault.coins = [signedTxp];
     vault.name = data.vaultName;
-    await data.wallet.client.createVault(vault);
-    this.profileService.addVault(vault);
-    return vault;
+    let createdVault = await data.wallet.client.createVault(vault);
+    createdVault.walletClient = data.wallet.client;
+    createdVault = await this.getVaultInfo(createdVault);  
+    this.profileService.addVault(createdVault); 
+    return createdVault; 
   }
 
   /**
