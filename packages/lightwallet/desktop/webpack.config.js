@@ -419,6 +419,14 @@ module.exports = {
           glob: 'firebase-messaging-sw.js',
           dot: true
         }
+      },
+      {
+        context: 'src',
+        to: '',
+        from: {
+          glob: 'manifest.json',
+          dot: true
+        }
       }
     ], {
       "ignore": [

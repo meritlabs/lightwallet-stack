@@ -7,7 +7,7 @@
       </div>
       <div class="global-settings__group__item__column global-settings__group__item__column--30">
         <div class="ui-checkbox">
-          <input type="checkbox" name="" value="">
+          <input type="checkbox" name="" formControlName="pushNotifications">
           <span class="ui-checkbox__switcher"></span>
         </div>
       </div>
@@ -18,7 +18,7 @@
       </div>
       <div class="global-settings__group__item__column global-settings__group__item__column--30">
         <div class="ui-checkbox">
-          <input type="checkbox" name="" value="">
+          <input type="checkbox" name="" formControlName="notifyOnConfirmedTx">
           <span class="ui-checkbox__switcher"></span>
         </div>
       </div>
@@ -29,22 +29,29 @@
       </div>
       <div class="global-settings__group__item__column global-settings__group__item__column--30">
         <div class="ui-checkbox">
-          <input type="checkbox" name="" value="">
+          <input type="checkbox" name="" formControlName="emailNotifications">
           <span class="ui-checkbox__switcher"></span>
         </div>
+      </div>
+    </div>
+    <div class="global-settings__group__item">
+      <div class="global-settings__group__item__column">
+        <label class="ui-label global-settings__group__item__title" for="email">Email address</label>
+        <input type="email" name="email" id="email" formControlName="email" placeholder="Enter your email address to receive push notifications">
+        <button (click)="saveEmail()">Save</button>
       </div>
     </div>
   </div>
 </form>
 <div class="global-settings__group">
   <label class="ui-label global-settings__group__title">About</label>
-  <div class="global-settings__group__item">
+  <div class="global-settings__group__item" *ngIf="version">
     <div class="global-settings__group__item__column global-settings__group__item__column--70">
       <label class="ui-label global-settings__group__item__title">Version</label>
     </div>
     <div class="global-settings__group__item__column global-settings__group__item__column--30">
       <label class="ui-label global-settings__group__item__title
-        global-settings__group__item__title--dark">v0.1.6</label>
+        global-settings__group__item__title--dark">v{{ version }}</label>
     </div>
   </div>
   <div class="global-settings__group__item" *ngIf="commitHash">
