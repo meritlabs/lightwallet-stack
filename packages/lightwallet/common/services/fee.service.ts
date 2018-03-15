@@ -20,8 +20,8 @@ export class FeeService {
 
   public static DEFAULT_FEE = 10000;
 
-  private readonly CACHE_TIME = 120000; //2min
-  private cache = {updatedTs: 0, levels: []};
+  private readonly CACHE_TIME = 120000; //2min 
+  private cache = {updatedTs: 0, levels: []}; 
 
   constructor(
     mwcService: MWCService
@@ -33,13 +33,12 @@ export class FeeService {
    * Returns fee rate for selected level and caches it for selected time
    */
   public async getFeeRate(levelName) {
-    if (this.cache.updatedTs + this.CACHE_TIME > Date.now()) {
-      return this.cache.levels[levelName];
-    } else {
+    if (this.cache.updatedTs + this.CACHE_TIME < Date.now()) {
       const levels = await this.mwClient.getFeeLevels(ENV.network);
-      this.cache = {updatedTs: Date.now(), levels};
-      return levels[levelName];
+      this.cache = {updatedTs: Date.now(), levels}; 
     }
+
+    return this.cache.levels.find(l => l.level == levelName).feePerKb; 
   }
 
   /**
