@@ -117,7 +117,7 @@ export class VaultsService {
     await data.wallet.client.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
     vault.scriptPubKey = vault.scriptPubKey.toBuffer().toString('hex');
 
-    const depositData = {amount: data.amount, address: vault.address, scriptPubKey: vault.data};
+    const depositData = {amount: data.amount, address: vault.address, scriptPubKey: vault.scriptPubKey};
     const txp = await this.getDepositTxp(depositData, data.wallet.client);
     const pubTxp = await this.walletService.publishTx(data.wallet.client, txp);
     const signedTxp = await this.walletService.signTx(data.wallet.client, pubTxp, password);
