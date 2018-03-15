@@ -8,7 +8,7 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { Router } from '@angular/router';
 
@@ -33,7 +33,7 @@ export class ImportWithFileView {
               private logger: LoggerService,
               private profileService: ProfileService,
               private walletService: WalletService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private txFormatService: TxFormatService,
               private router: Router) {
   }
@@ -75,7 +75,7 @@ export class ImportWithFileView {
       console.log('Done importing wallet!');
       this.store.dispatch(
         new AddWalletAction(
-          await createDisplayWallet(wallet, this.walletService, this.sendService, this.txFormatService)
+          await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
         )
       );
 
