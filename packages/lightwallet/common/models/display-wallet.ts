@@ -89,6 +89,7 @@ export class DisplayWallet {
   }
 
   importPreferences(preferences: any) {
+    preferences = preferences || {};
     this.name = preferences.name || this.name;
     this.color = preferences.color || this.color;
     this.balanceHidden = Boolean(preferences.balanceHidden);
