@@ -4,10 +4,13 @@ import { HttpClient } from '@angular/common/http';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import firebase from '@firebase/app';
-import { Observable } from 'rxjs/Observable';
-import { fromPromise } from 'rxjs/observable/fromPromise';
-import { retry } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import '@firebase/messaging';
+import { NotificationData } from '@ionic-native/fcm';
+import { Store } from '@ngrx/store';
+import { IRootAppState } from '@merit/common/reducers';
+import { selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 const FirebaseAppConfig = {
   apiKey: 'AIzaSyDsHxVE243LOlN05qBiElm_P65uCMQr-r8',
@@ -20,7 +23,8 @@ const FirebaseAppConfig = {
 export class WebPushNotificationsService extends PushNotificationService {
 
   protected get pushNotificationsEnabled(): boolean {
-    return this._pushNotificationsEnabled;
+    return true;
+    // return true this._pushNotificationsEnabled;
   }
 
   protected get hasPermission(): boolean {
@@ -30,13 +34,25 @@ export class WebPushNotificationsService extends PushNotificationService {
   private _pushNotificationsEnabled: boolean;
   private _hasPermission: boolean;
   private firebaseApp;
+  private firebaseMessaging;
 
   constructor(http: HttpClient,
               logger: LoggerService,
-              private persistenceService: PersistenceService2) {
+              private persistenceService: PersistenceService2,
+              private store: Store<IRootAppState>) {
     super(http, logger);
     this.init();
     this.logger.info('Web PushNotifications service is alive!');
+  }
+
+  getWallets() {
+    return this.store.select(selectWallets)
+      .pipe(
+        filter((wallets: DisplayWallet[]) => wallets && wallets.length > 0),
+        take(1),
+        map((wallets: DisplayWallet[]) => wallets.map(wallet => wallet.client))
+      )
+      .toPromise();
   }
 
   private async init() {
@@ -45,6 +61,7 @@ export class WebPushNotificationsService extends PushNotificationService {
 
     // if (this.pushNotificationsEnabled) {
     this.firebaseApp = firebase.initializeApp(FirebaseAppConfig);
+    this.firebaseMessaging = firebase.messaging(this.firebaseApp);
     try {
       await this.requestPermission();
       this._hasPermission = true;
@@ -54,15 +71,34 @@ export class WebPushNotificationsService extends PushNotificationService {
     }
 
     await this.getToken();
+    this.subscribeToEvents();
+    this.enable();
     // }
   }
 
   requestPermission() {
-    return firebase.messaging().requestPermission();
+    return this.firebaseMessaging.requestPermission();
   }
 
   async getToken() {
     if (!this.hasPermission) return;
-    this.token = await firebase.messaging().getToken();
+    this.token = await this.firebaseMessaging.getToken();
+    this.logger.info('Token is ', this.token);
+  }
+
+  async subscribeToEvents() {
+    console.log('Subscribing to events ...');
+    console.log('FCM is ', this.firebaseMessaging);
+
+
+    this.firebaseMessaging.onMessage((data: NotificationData) => {
+      console.log('~~ Got a new notification: ', data);
+    });
+
+    this.firebaseMessaging.onTokenRefresh((token: string) => {
+      this.logger.info('Push Notifications token was refreshed');
+      this.token = token;
+      this.enable();
+    });
   }
 }
