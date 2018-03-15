@@ -5,6 +5,7 @@ prepare-prereqs:
 	npm install -g lerna
 	npm install -g grunt
 	npm install -g cordova
+	npm install -g ionic
 
 ### lightwallet-app ###
 .PHONY: prepare-lightwallet
