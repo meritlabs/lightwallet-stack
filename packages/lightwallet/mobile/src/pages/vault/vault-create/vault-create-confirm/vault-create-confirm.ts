@@ -44,6 +44,7 @@ export class VaultCreateConfirmView {
       await this.vaultsService.createVault(this.vaultData);
       this.navCtrl.popToRoot();
     } catch (e) {
+      console.log(e);
       this.toastCtrl.create({
         message: e.message || 'Failed to create vault',
         cssClass: ToastConfig.CLASS_ERROR

@@ -32,18 +32,30 @@ export class VaultsService {
   ) {
   }
 
+  /**
+   * Receiving fresh data from MWS db, does not look into blockchain
+   */
   async getVaultInfo(vault: IVault): Promise<IVault> {
     return Object.assign(vault, await vault.walletClient.getVault(vault._id));
   }
 
+  /**
+   * Tx types: 'spent', 'stored', 'renewal'
+   */
   getTxHistory(vault: any): Promise<Array<any>> {
     return vault.walletClient.getVaultTxHistory(vault._id, vault.address.network);
   }
 
+  /**
+   * Changing only name in MWS, no transactions created
+   */
   async editVaultName(vault: IVault, newName: string) {
     return vault.walletClient.updateVaultInfo({_id: vault._id, name: newName});
   }
 
+  /**
+   * Sending from vault to address (should be in vaults whitelist. If not, use renewVault before)
+   */
   async sendFromVault(vault: any, amount: number, toAddress: any) {
     vault = await this.getVaultInfo(vault);
 
@@ -56,7 +68,7 @@ export class VaultsService {
     return vault; 
   }
 
-  /*
+  /**
   * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes 
   * so we take all utxos and send them to the same address but differrent scriptPubkey
   */
@@ -79,7 +91,7 @@ export class VaultsService {
     return vault.walletClient.updateVaultInfo(infoToUpdate);
   }
 
-  /* 
+  /**
   * create and deposit new vault 
   */
   async createVault(data: IVaultCreateData) {
@@ -105,7 +117,7 @@ export class VaultsService {
     await data.wallet.client.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
     vault.scriptPubKey = vault.scriptPubKey.toBuffer().toString('hex');
 
-    const depositData = {amount: data, address: vault.address, scriptPubKey: vault.data};
+    const depositData = {amount: data.amount, address: vault.address, scriptPubKey: vault.scriptPubKey};
     const txp = await this.getDepositTxp(depositData, data.wallet.client);
     const pubTxp = await this.walletService.publishTx(data.wallet.client, txp);
     const signedTxp = await this.walletService.signTx(data.wallet.client, pubTxp, password);
@@ -117,7 +129,7 @@ export class VaultsService {
     return vault;
   }
 
-  /* 
+  /**
   * sending money to existing vault
   */
   async depositVault(vault, amount) {
@@ -132,7 +144,7 @@ export class VaultsService {
     return vault; 
   }
 
-  /* 
+  /**
   * check if we can create vault 
   */
   private async checkCreateData(data) {
@@ -160,7 +172,7 @@ export class VaultsService {
     return true;
   }
 
-  /*
+  /**
   * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes 
   * so we take all utxos and send them to the same address but differrent scriptPubkey
   */
@@ -208,7 +220,7 @@ export class VaultsService {
     return tx;
   }
 
-  /*
+  /**
   * creating transaction to transfer money from vault to one of whitelisted addresses
   */
   private getSendTxp(vault, amount, address, fee = FeeService.DEFAULT_FEE) {
@@ -275,7 +287,7 @@ export class VaultsService {
 
   }  
 
-  /* 
+  /**
   * transfer money to vault
   */ 
   private async getDepositTxp(vault: any, wallet: MeritWalletClient): Promise<any> {
@@ -312,7 +324,7 @@ export class VaultsService {
     return await wallet.createTxProposal(txp);
   }
 
-  /* 
+  /**
   * create vautl object before transfering merit
   */
   private prepareVault(type: number, opts: any = {}) {
@@ -327,7 +339,9 @@ export class VaultsService {
       opts.spendPubKey.toBuffer(),
       opts.masterPubKey.toBuffer(),
     ];
-    const spendLimit = this.rateService.mrtToMicro(Constants.VAULT_SPEND_LIMIT);       
+
+
+    const spendLimit = this.rateService.mrtToMicro(Constants.VAULT_SPEND_LIMIT);
     params.push(crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
     params = params.concat(whitelist);
     params.push(Opcode.smallInt(whitelist.length));
