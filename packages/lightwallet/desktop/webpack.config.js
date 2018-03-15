@@ -411,6 +411,14 @@ module.exports = {
           "glob": "favicon.ico",
           "dot": true
         }
+      },
+      {
+        context: 'src',
+        to: '',
+        from: {
+          glob: 'firebase-messaging-sw.js',
+          dot: true
+        }
       }
     ], {
       "ignore": [
