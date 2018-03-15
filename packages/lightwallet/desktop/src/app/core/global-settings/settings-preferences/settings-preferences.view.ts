@@ -26,9 +26,7 @@ export class SettingsPreferencesView {
 
   constructor(private formBuilder: FormBuilder,
               private state: State<IRootAppState>,
-              private persistenceService: PersistenceService2,
-              private pushService: PushNotificationsService,
-              private emailService: EmailNotificationsService) {}
+              private persistenceService: PersistenceService2) {}
 
   async ngOnInit() {
     const settings = await this.persistenceService.getNotificationSettings();
