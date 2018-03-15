@@ -1,4 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
+import { WebPushNotificationsService } from '@merit/common/services/web-push-notifications.service';
 
 @Component({
   selector: 'merit-lw',
@@ -8,5 +9,6 @@ import { Component, ViewEncapsulation } from '@angular/core';
 })
 export class AppComponent {
 
+  constructor(pushNotifications: WebPushNotificationsService) {}
 
 }

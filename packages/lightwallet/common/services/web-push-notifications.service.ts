@@ -7,12 +7,14 @@ import firebase from '@firebase/app';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { retry } from 'rxjs/operators';
+import '@firebase/messaging';
 
 const FirebaseAppConfig = {
   apiKey: 'APIKEY',
   projectId: 'prime-service-181121',
   messagingSenderId: '1091326413792'
 };
+
 
 @Injectable()
 export class WebPushNotificationsService extends PushNotificationService {
@@ -21,7 +23,12 @@ export class WebPushNotificationsService extends PushNotificationService {
     return this._pushNotificationsEnabled;
   }
 
+  protected get hasPermission(): boolean {
+    return this._hasPermission;
+  }
+
   private _pushNotificationsEnabled: boolean;
+  private _hasPermission: boolean;
   private firebaseApp;
 
   constructor(http: HttpClient,
@@ -29,25 +36,33 @@ export class WebPushNotificationsService extends PushNotificationService {
               private persistenceService: PersistenceService2) {
     super(http, logger);
     this.init();
+    this.logger.info('Web PushNotifications service is alive!');
   }
 
   private async init() {
     const settings = await this.persistenceService.getNotificationSettings() || {};
     this._pushNotificationsEnabled = Boolean(settings.pushNotifications);
 
-    if (this.pushNotificationsEnabled) {
-      firebase.initializeApp(FirebaseAppConfig);
+    // if (this.pushNotificationsEnabled) {
+    this.firebaseApp = firebase.initializeApp(FirebaseAppConfig);
+    try {
+      await this.requestPermission();
+      this._hasPermission = true;
+    } catch (e) {
+      console.log(e);
+      this.logger.info('Push notifications permission was denied');
     }
+
+    await this.getToken();
+    // }
+  }
+
+  requestPermission() {
+    return firebase.messaging().requestPermission();
   }
 
   async getToken() {
-    const sub = Observable.defer(() => fromPromise(this.firebaseApp.messaging().getToken()))
-      .pipe(
-        retry(3)
-      )
-      .subscribe((data: any) => {
-        console.log('Token is ', data);
-        sub.unsubscribe();
-      });
+    if (!this.hasPermission) return;
+    this.token = await firebase.messaging().getToken();
   }
 }

@@ -13,8 +13,15 @@ export class PushNotificationService {
     return false;
   }
 
+  protected get hasPermission(): boolean {
+    return false;
+  }
+
   constructor(protected http: HttpClient,
               protected logger: LoggerService) {}
+
+  // abstract
+  async requestPermission(){}
 
   // abstract
   async getToken() {}
