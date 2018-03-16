@@ -1396,7 +1396,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
       self.getPendingTxs({}, function(err, txps) {
         if (err) return next(err);
 
-        var lockedInputs = _.map(_.flatten(_.map(txps, 'inputs')), utxoKey);
+        const lockedInputs = _.map(_.flatten(_.map(txps, 'inputs')), utxoKey);
         _.each(lockedInputs, function(input) {
           if (utxoIndex[input]) {
             utxoIndex[input].locked = true;
@@ -1406,7 +1406,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
       });
     },
     function(next) {
-      var now = Math.floor(Date.now() / 1000);
+      const now = Math.floor(Date.now() / 1000);
       // Fetch latest broadcasted txs and remove any spent inputs from the
       // list of UTXOs returned by the block explorer. This counteracts any out-of-sync
       // effects between broadcasting a tx and getting the list of UTXOs.
@@ -1416,35 +1416,26 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
         limit: 100
       }, function(err, txs) {
         if (err) return next(err);
-        var spentInputs = _.map(_.flatten(_.map(txs, 'inputs')), utxoKey);
-        _.each(spentInputs, function(input) {
-          if (utxoIndex[input]) {
-            utxoIndex[input].spent = true;
-          }
+
+        const spentInputs = _.map(_.flatten(_.map(txs, 'inputs')), utxoKey);
+
+        allUtxos = _.reject(allUtxos, (utxo) => {
+          return _.includes(spentInputs, utxoKey(utxo));
         });
-        allUtxos = _.reject(allUtxos, {
-          spent: true
-        });
+
         return next();
       });
     },
     function(next) {
       // Let's filter through and classify all outputs.
       // We specifically want to know if they are change or belong to us.
-      var indexedAddresses = _.keyBy(allAddresses, 'address');
+      const indexedAddresses = _.keyBy(allAddresses, 'address');
       _.each(allUtxos, function(utxo){
-        var address = indexedAddresses[utxo.address];
+        const address = indexedAddresses[utxo.address];
         utxo.isMine = !!address;
         utxo.isChange = address ? address.isChange : false;
-      });
-      return next();
-    },
-    function(next) {
-      // Needed for the clients to sign UTXOs
-      var addressToPath = _.keyBy(allAddresses, 'address');
-      _.each(allUtxos, function(utxo) {
-        utxo.path = addressToPath[utxo.address].path;
-        utxo.publicKeys = addressToPath[utxo.address].publicKeys;
+        utxo.path = indexedAddresses[utxo.address].path;
+        utxo.publicKeys = indexedAddresses[utxo.address].publicKeys;
       });
       return next();
     },
