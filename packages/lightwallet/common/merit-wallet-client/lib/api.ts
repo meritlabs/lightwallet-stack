@@ -1833,7 +1833,7 @@ export class API {
         network: network,
         alias: opts.alias
       };
-
+      
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
 
@@ -1906,14 +1906,17 @@ export class API {
     let parentAddress = opts.parentAddress;
 
     try {
+      // Checking if the parent is address (it could be an alias)
       Bitcore.encoding.Base58Check.decode(parentAddress);
     } catch (e) {
+      // It's not an address, so let's check if it's a valid alias.
       if (!Bitcore.Referral.validateAlias(parentAddress)) {
         throw Error('Invalid invite code or alias');
       }
 
+      // It's a valid alias, so let's get the address of that alias.
       const parentReferral = await this._doGetRequest(`/v1/referral/${parentAddress}`);
-      parentAddress = parentReferral.parentAddress;
+      parentAddress = parentReferral.address;
     }
 
     const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
@@ -1923,8 +1926,10 @@ export class API {
 
     const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
 
+    // The referral constructor requires that the parentAddress is in 
+    // full address form (ripe160); it should not be an alias here. 
     const referral = new Bitcore.Referral({
-      parentAddress,
+      parentAddress, 
       address: opts.address,
       addressType: opts.addressType,
       pubkey: opts.pubkey,
