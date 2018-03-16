@@ -63,7 +63,7 @@ export class WebPushNotificationsService extends PushNotificationsService {
     }
   }
 
-  protected async init() {
+  async init() {
     const settings = await this.persistenceService.getNotificationSettings() || {};
     this._pushNotificationsEnabled = Boolean(settings.pushNotifications);
 
