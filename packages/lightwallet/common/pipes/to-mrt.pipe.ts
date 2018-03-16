@@ -9,7 +9,15 @@ export class ToMrtPipe implements PipeTransform {
     private rateService: RateService
   ) {}
 
-  transform(micros: number): string {
-    return this.rateService.microsToMrt(micros)+' MRT';
+  transform(micros: number, digitsLimit?: number): string {
+
+    let mrt = this.rateService.microsToMrt(micros);
+
+    if (!digitsLimit) return mrt+' MRT';
+
+    const intLength = mrt.toFixed(0).length;
+    let floatLength  = (digitsLimit - intLength) >= 0 ? (digitsLimit - intLength) : 0;
+
+    return Number(mrt.toFixed(floatLength))+' MRT'; 
   }
 }
