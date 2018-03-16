@@ -5,11 +5,4 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './lock-screen.component.html',
   styleUrls: ['./lock-screen.component.sass']
 })
-export class LockScreenComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
-}
+export class LockScreenComponent {}
