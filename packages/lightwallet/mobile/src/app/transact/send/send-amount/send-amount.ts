@@ -146,8 +146,8 @@ export class SendAmountView {
     modal.present();
     modal.onDidDismiss(async (wallet) => {
       if (wallet) {
+        this.selectedWallet = wallet; 
         wallet.status = await this.walletService.getStatus(this.selectedWallet, { force: true });
-        this.selectedWallet = wallet;
       }
       this.updateTxData();
     });
