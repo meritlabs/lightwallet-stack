@@ -42,12 +42,15 @@ export class UnlockRequestsView {
     this.hiddenRequests = this.unlockRequestService.hiddenRequests;
     this.activeRequests = this.unlockRequestService.activeRequests;
     this.confirmedRequests = this.unlockRequestService.confirmedRequests.map(r => {
-        vaults.some(v => {
-          if (v.address == r.address) {
-            r.label = v.name || `vault ${v._id}`;
-            return r.isVault = true;
-          }
+        let isVault = vaults.some(v => {
+          return false;
+          // TODO figure out why referrals address does not match vault address and then enable code below 
+          // if (v.address.toString() == r.address) { 
+          //   r.label = v.name || `vault ${v._id}`;
+          //   return r.isVault = true;
+          // }
         });
+        if (!isVault) r.label = r.alias ? '@'+r.alias : r.address;  
         return r;
     })
 
