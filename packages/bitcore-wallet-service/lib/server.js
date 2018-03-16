@@ -708,66 +708,86 @@ WalletService.prototype.sendReferral = function(rawReferral, cb) {
  * @returns {Object} status
  */
 WalletService.prototype.getStatus = function(opts, cb) {
-  var self = this;
+  const self = this;
 
   opts = opts || {};
 
-  var status = {};
-  async.parallel([
-
-    function(next) {
-      self.getWallet({}, function(err, wallet) {
-        if (err) return next(err);
-
-        var walletExtendedKeys = ['publicKeyRing', 'pubKey', 'addressManager'];
-        var copayerExtendedKeys = ['xPubKey', 'requestPubKey', 'signature', 'addressManager', 'customData'];
-
-        wallet.copayers = _.map(wallet.copayers, function(copayer) {
-          if (copayer.id == self.copayerId) return copayer;
-          return _.omit(copayer, 'customData');
-        });
-        if (!opts.includeExtendedInfo) {
-          wallet = _.omit(wallet, walletExtendedKeys);
-          wallet.copayers = _.map(wallet.copayers, function(copayer) {
-            return _.omit(copayer, copayerExtendedKeys);
-          });
-        }
-        status.wallet = wallet;
-
-        next();
-      });
-    },
-    function(next) {
-      self.getBalance(opts, function(err, balance) {
-        if (err) return next(err);
-        status.balance = balance;
-        next();
-      });
-    },
-    function(next) {
-      self.getInvitesBalance(opts, function(err, balance) {
-        if (err) return next(err);
-        status.invitesBalance = balance;
-        next();
-      });
-    },
-    function(next) {
-      self.getPendingTxs({}, function(err, pendingTxps) {
-        if (err) return next(err);
-        status.pendingTxps = pendingTxps;
-        next();
-      });
-    },
-    function(next) {
-      self.getPreferences({}, function(err, preferences) {
-        if (err) return next(err);
-        status.preferences = preferences;
-        next();
-      });
-    },
-  ], function(err) {
+  let status = {};
+  self.storage.fetchAddresses(self.walletId, function(err, addresses) {
     if (err) return cb(err);
-    return cb(null, status);
+
+    async.series([
+      next => self.storage.cleanActiveAddresses(self.walletId, next),
+      next => {
+        async.parallel([
+
+          function(next) {
+            self.getWallet({}, function(err, wallet) {
+              if (err) return next(err);
+
+              const walletExtendedKeys = ['publicKeyRing', 'pubKey', 'addressManager'];
+              const copayerExtendedKeys = ['xPubKey', 'requestPubKey', 'signature', 'addressManager', 'customData'];
+
+              wallet.copayers = _.map(wallet.copayers, function(copayer) {
+                if (copayer.id == self.copayerId) return copayer;
+                return _.omit(copayer, 'customData');
+              });
+              if (!opts.includeExtendedInfo) {
+                wallet = _.omit(wallet, walletExtendedKeys);
+                wallet.copayers = _.map(wallet.copayers, function(copayer) {
+                  return _.omit(copayer, copayerExtendedKeys);
+                });
+              }
+              status.wallet = wallet;
+
+              next();
+            });
+          },
+          function(next) {
+            self.getBalance(addresses, opts, function(err, balance) {
+              if (err) return next(err);
+              status.balance = balance;
+              next();
+            });
+          },
+          function(next) {
+            self.getInvitesBalance(addresses, opts, function(err, balance) {
+              if (err) return next(err);
+              status.invitesBalance = balance;
+              next();
+            });
+          },
+          function(next) {
+            self.getPendingTxs({}, function(err, pendingTxps) {
+              if (err) return next(err);
+              status.pendingTxps = pendingTxps;
+              next();
+            });
+          },
+          function(next) {
+            self.getPreferences({}, function(err, preferences) {
+              if (err) return next(err);
+              status.preferences = preferences;
+              next();
+            });
+          },
+        ], function(err) {
+          if (err) return cb(err);
+
+          const activeCoinAddresses = _.map(status.balance.byAddress, 'address');
+          const activeInviteAddresses = _.map(status.invitesBalance.byAddress, 'address');
+          const active = _.union(activeCoinAddresses, activeInviteAddresses);
+          self.storage.storeActiveAddresses(self.walletId, active);
+          return cb(null, status);
+        });
+      },
+
+    ], err => {
+      if (err) {
+        log.warn('Could not update wallet cache', err);
+      }
+      return cb(err);
+    });
   });
 };
 
@@ -1495,31 +1515,12 @@ WalletService.prototype._getBalanceFromAddresses = function(addresses, invites, 
   });
 };
 
-WalletService.prototype._getBalanceOneStep = function(opts, cb) {
+WalletService.prototype._getBalanceOneStep = function(addresses, opts, cb) {
   var self = this;
 
-  self.storage.fetchAddresses(self.walletId, function(err, addresses) {
+  self._getBalanceFromAddresses(addresses, opts.invites, function(err, balance) {
     if (err) return cb(err);
-    self._getBalanceFromAddresses(addresses, opts.invites, function(err, balance) {
-      if (err) return cb(err);
-
-      // Update cache
-      async.series([
-
-        function(next) {
-          self.storage.cleanActiveAddresses(self.walletId, next);
-        },
-        function(next) {
-          var active = _.map(balance.byAddress, 'address')
-          self.storage.storeActiveAddresses(self.walletId, active, next);
-        },
-      ], function(err) {
-        if (err) {
-          log.warn('Could not update wallet cache', err);
-        }
-        return cb(null, balance);
-      });
-    });
+    return cb(null, balance);
   });
 };
 
@@ -1560,30 +1561,30 @@ WalletService.prototype._getActiveAddresses = function(cb) {
  * @param {Boolean} opts.twoStep[=false] - Optional - Use 2 step balance computation for improved performance
  * @returns {Object} balance - Total amount & locked amount.
  */
-WalletService.prototype.getBalance = function(opts, cb) {
+WalletService.prototype.getBalance = function(addresses, opts, cb) {
   var self = this;
 
   opts = opts || {};
 
   if (!opts.twoStep)
-    return self._getBalanceOneStep(opts, cb);
+    return self._getBalanceOneStep(addresses, opts, cb);
 
   self.storage.countAddresses(self.walletId, function(err, nbAddresses) {
     if (err) return cb(err);
     if (nbAddresses < Defaults.TWO_STEP_BALANCE_THRESHOLD) {
-      return self._getBalanceOneStep(opts, cb);
+      return self._getBalanceOneStep(addresses, opts, cb);
     }
     self._getActiveAddresses(function(err, activeAddresses) {
       if (err) return cb(err);
       if (!_.isArray(activeAddresses)) {
-        return self._getBalanceOneStep(opts, cb);
+        return self._getBalanceOneStep(activeAddresses, opts, cb);
       } else {
         log.debug('Requesting partial balance for ' + activeAddresses.length + ' out of ' + nbAddresses + ' addresses');
         self._getBalanceFromAddresses(activeAddresses, function(err, partialBalance) {
           if (err) return cb(err);
           cb(null, partialBalance);
           setTimeout(function() {
-            self._getBalanceOneStep(opts, function(err, fullBalance) {
+            self._getBalanceOneStep(activeAddresses, opts, function(err, fullBalance) {
               if (err) return;
               if (!_.isEqual(partialBalance, fullBalance)) {
                 log.info('Balance in active addresses differs from final balance');
@@ -1600,26 +1601,10 @@ WalletService.prototype.getBalance = function(opts, cb) {
   });
 };
 
-WalletService.prototype.getInvitesBalance = function(opts, cb) {
-  this.storage.fetchAddresses(this.walletId, (err, addresses) => {
+WalletService.prototype.getInvitesBalance = function(addresses, opts, cb) {
+  this._getBalanceFromAddresses(addresses, true, (err, balance) => {
     if (err) return cb(err);
-    this._getBalanceFromAddresses(addresses, true, (err, balance) => {
-      if (err) return cb(err);
-
-      // Update cache
-      async.series([
-        next => this.storage.cleanActiveAddresses(this.walletId, next),
-        next => {
-          var active = _.map(balance.byAddress, 'address')
-          this.storage.storeActiveAddresses(this.walletId, active, next);
-        },
-      ], err => {
-        if (err) {
-          log.warn('Could not update wallet cache', err);
-        }
-        return cb(null, balance);
-      });
-    });
+    return cb(null, balance);
   });
 }
 
