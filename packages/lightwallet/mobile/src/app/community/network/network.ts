@@ -82,7 +82,8 @@ export class NetworkView {
     try {
       this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
       await this.formatWallets(await this.loadInfo());
-      this.unlockRequestService.loadRequestsData();
+      await this.unlockRequestService.loadRequestsData();
+      this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber; 
     } catch (err) {
       this.logger.warn(err);
       this.toastCtrl
