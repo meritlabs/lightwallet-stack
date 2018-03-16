@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { State } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
@@ -7,6 +7,7 @@ import { isEmpty } from 'lodash';
 import { debounceTime, filter, tap } from 'rxjs/operators';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
+import { merge } from 'rxjs/observable/merge';
 
 declare const WEBPACK_CONFIG: any;
 
@@ -15,11 +16,10 @@ declare const WEBPACK_CONFIG: any;
   templateUrl: './settings-preferences.view.html',
   styleUrls: ['./settings-preferences.view.sass']
 })
-export class SettingsPreferencesView {
+export class SettingsPreferencesView implements OnInit, OnDestroy {
 
   formData: FormGroup = this.formBuilder.group({
     pushNotifications: false,
-    notifyOnConfirmedTx: false,
     emailNotifications: false,
     email: [''] // TODO(ibby): validate email
   });
@@ -72,16 +72,16 @@ export class SettingsPreferencesView {
     );
 
     this.subs.push(
-      this.formData.get('email').valueChanges
+      merge(this.formData.get('email').valueChanges, this.formData.get('emailNotifications').valueChanges)
         .pipe(
           debounceTime(100),
           filter(() => this.formData.valid),
-          tap((email: string) => {
+          tap(() =>
             this.emailNotificationsService.updateEmail({
               enabled: this.formData.get('emailNotifications').value,
-              email: email
-            });
-          })
+              email: this.formData.get('email').value
+            })
+          )
         )
         .subscribe()
     );
