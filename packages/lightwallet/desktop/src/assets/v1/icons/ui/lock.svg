@@ -1,1 +1,6 @@
-<svg aria-hidden="true" data-prefix="fas" data-icon="lock" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-lock fa-w-14 fa-7x"><path fill="#FFF" d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z" class=""></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="15" height="18" viewBox="0 0 15 18">
+    <g fill="none" fill-rule="evenodd" transform="translate(1 1)">
+        <path stroke="#00B0DD" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.074 7.2V4c0-2.21 1.857-4 4.148-4 2.291 0 4.148 1.789 4.148 4v3.2"/>
+        <rect width="12.444" height="8.8" y="7.2" stroke="#5F6C82" stroke-width="1.7" rx="1.35"/>
+    </g>
+</svg>
