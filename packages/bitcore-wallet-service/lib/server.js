@@ -1471,24 +1471,37 @@ WalletService.prototype.getUtxos = function(opts, cb) {
   }
 };
 
+WalletService.prototype._isPendingCoinbaseUtxo = function(utxo) { return utxo.isCoinbase && !utxo.isMature };
+
+WalletService.prototype._isConfirmedAmountUtxo = function(utxo) {
+  return ((utxo.isCoinbase && utxo.isMature) ||
+    (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) ||
+    (utxo.isMine && utxo.isChange && utxo.micros >= 0));
+};
+
 WalletService.prototype._totalizeUtxos = function(utxos) {
-
-    var isPendingCoinbaseUtxo = function(utxo) { return utxo.isCoinbase && !utxo.isMature};
-
-    var balance = {
-        totalAmount: _.sumBy(utxos, 'micros'),
-        lockedAmount: _.sumBy(_.filter(utxos, 'locked'), 'micros'),
-        totalPendingCoinbaseAmount: _.sumBy(_.filter(utxos, isPendingCoinbaseUtxo), 'micros'),
-        // We believe it makes sense to show change as confirmed.  This is sensical because a transaction
-        // will either be rejected or accepted in its entirety.  (Eg. It is not that some Vouts will be
-        // accepted while others will be denied.)
-        totalConfirmedAmount: _.sumBy(
-            _.filter(utxos, function(utxo) {
-                return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) || (utxo.isMine && utxo.isChange && utxo.micros >= 0));
-            }),
-            'micros'),
-        lockedConfirmedAmount: _.sumBy(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
-    };
+    const balance = _.reduce(utxos, (acc, utxo) => {
+      acc.totalAmount += utxo.micros;
+      if (utxo.locked) {
+        acc.lockedAmount = acc.lockedAmount + utxo.micros;
+        acc.lockedConfirmedAmount = acc.confirmations ?
+          acc.lockedConfirmedAmount + utxo.micros :
+          acc.lockedConfirmedAmount;
+      }
+      acc.totalPendingCoinbaseAmount = this._isPendingCoinbaseUtxo(utxo) ?
+        acc.totalPendingCoinbaseAmount + utxo.micros :
+        acc.totalPendingCoinbaseAmount;
+      acc.totalConfirmedAmount = this._isConfirmedAmountUtxo(utxo) ?
+        acc.totalConfirmedAmount + utxo.micros :
+        acc.totalConfirmedAmount;
+      return acc;
+    }, {
+      totalAmount: 0,
+      lockedAmount: 0,
+      totalPendingCoinbaseAmount: 0,
+      totalConfirmedAmount: 0,
+      lockedConfirmedAmount: 0
+    });
     balance.availableAmount = balance.totalAmount - balance.lockedAmount;
     balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
 
