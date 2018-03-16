@@ -117,21 +117,17 @@ export class NetworkView {
 
   private async loadWallets() {
 
-    const wallets: MeritWalletClient[] = await this.profileService.getWallets();
-
-    const displayWallets: DisplayWallet[] = await Promise.all(
-      wallets.map((wallet: MeritWalletClient) =>
-        createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
-      )
-    );
+    const displayWallets: DisplayWallet[] = [];
+    for (let wallet of await this.profileService.getWallets()) {
+      displayWallets.push(await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService));
+    }
 
     this.activeInvites = 0;
     for (let dWallet of displayWallets) {
       this.activeInvites += dWallet.invites;
     }
 
-
-    return displayWallets;
+    return displayWallets; 
   }
 
   private async formatWallets(processedWallets: DisplayWallet[]) {
