@@ -19,7 +19,7 @@ export class EmailNotificationsService {
 
     let wallets = await this.profileService.getWallets();
 
-    this.configService.set({
+    await this.configService.set({
       emailFor: null, // Backward compatibility
       emailNotifications: {
         enabled: opts.enabled,
@@ -27,7 +27,7 @@ export class EmailNotificationsService {
       }
     });
 
-    this.walletService.updateRemotePreferences(wallets);
+    return this.walletService.updateRemotePreferences(wallets);
   };
 
   getEmailIfEnabled(config) {
