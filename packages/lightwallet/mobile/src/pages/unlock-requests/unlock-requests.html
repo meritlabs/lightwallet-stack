@@ -89,29 +89,25 @@ f<ion-header no-border>
 
 
 
-    <ion-item *ngFor="let request of confirmedRequests; trackBy: request?.address" text-wrap>
+    <div *ngFor="let request of confirmedRequests; trackBy: request?.address" text-wrap>
 
-      <div *ngIf="!request.isVault || !request.isWallet">
+      <ion-item *ngIf="!request.isVault"> 
           <contact-avatar item-start [contact]="request.contact" fallback="assets/img/icons/confirm.svg"></contact-avatar>
           <ion-label>
-              <h2 *ngIf="request.contact?.name">
-                  {{request.label}}
+              <h2>
+                  {{request.label}} 
               </h2>
-            <p>
-              <span *ngIf="request.contact?.name && request.alias">@{{ request.alias }}</span>
-              <span *ngIf="request.contact?.name && !request.alias">{{ request.address }}</span>
-            </p>
           </ion-label>
-      </div>
+        </ion-item>
 
-      <div *ngIf="request.isVault">
+      <ion-item *ngIf="request.isVault">
           <ion-avatar item-start img-icon>
               <img src="assets/img/icons/vault-avatar.svg">
           </ion-avatar>
           <h2>{{ request.label }}</h2>
-      </div>
+        </ion-item> 
       
-    </ion-item>
+    </div>
   </ion-list>
 
 </ion-content>
