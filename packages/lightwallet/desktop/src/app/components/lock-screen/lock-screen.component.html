@@ -1,6 +1,13 @@
-<div class="lock-screen">
+<div class="lock-screen" *ngIf='fullScreen == false'>
   <div class="lock-screen__message">
     <img src="/assets/v1/icons/ui/lock.svg" alt="">
     <p>You cannot use this wallet until your invite request is confirmed</p>
+  </div>
+</div>
+<div class="lock-screen lock-screen--full" *ngIf='fullScreen == true'>
+  <div class="lock-screen__message">
+    <img src="/assets/v1/icons/ui/lock.svg" alt="">
+    <p><strong>Before you start</strong></p>
+    <p>Wait until your wallet is unlocked - you cannot do anything until your invite request is approved</p>
   </div>
 </div>
