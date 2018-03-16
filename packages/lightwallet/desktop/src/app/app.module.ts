@@ -32,8 +32,7 @@ export function loadConfigs(appService) {
 export function getProviders() {
   return [
     Events,
-    Platform,
-    WebPushNotificationsService
+    Platform
   ];
 }
 

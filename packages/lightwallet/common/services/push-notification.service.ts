@@ -2,11 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
-
 
 @Injectable()
-export class PushNotificationService {
+export class PushNotificationsService {
   protected token;
 
   protected get pushNotificationsEnabled(): boolean {
@@ -20,15 +18,11 @@ export class PushNotificationService {
   constructor(protected http: HttpClient,
               protected logger: LoggerService) {}
 
-  // abstract
-  protected async requestPermission(){}
-
-  // abstract
-  protected async getToken() {}
-
-  subscribeToEvents() {}
-
-  // abstract
+  // abstract methods
+  protected init(): Promise<void> { return; }
+  protected requestPermission(): Promise<boolean> { return; }
+  protected getToken(): Promise<string> { return; }
+  protected subscribeToEvents() {}
   protected getWallets(): Promise<MeritWalletClient[]> { return; }
 
   async enable() {
