@@ -6,6 +6,7 @@ import { PersistenceService2 } from '@merit/common/services/persistence2.service
 import { isEmpty } from 'lodash';
 import { debounceTime, filter, tap } from 'rxjs/operators';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
 
 declare const WEBPACK_CONFIG: any;
 
@@ -32,6 +33,7 @@ export class SettingsPreferencesView {
   constructor(private formBuilder: FormBuilder,
               private state: State<IRootAppState>,
               private persistenceService: PersistenceService2,
+              // private emailNotificationsService: EmailNotificationsService,
               private pushNotificationsService: PushNotificationsService) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
