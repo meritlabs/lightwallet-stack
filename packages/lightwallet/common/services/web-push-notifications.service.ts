@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PushNotificationService } from '@merit/common/services/push-notification.service';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { HttpClient } from '@angular/common/http';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { LoggerService } from '@merit/common/services/logger.service';
@@ -20,7 +20,7 @@ const FirebaseAppConfig = {
 
 
 @Injectable()
-export class WebPushNotificationsService extends PushNotificationService {
+export class WebPushNotificationsService extends PushNotificationsService {
 
   protected get pushNotificationsEnabled(): boolean {
     return this._pushNotificationsEnabled;
@@ -63,7 +63,7 @@ export class WebPushNotificationsService extends PushNotificationService {
     }
   }
 
-  private async init() {
+  protected async init() {
     const settings = await this.persistenceService.getNotificationSettings() || {};
     this._pushNotificationsEnabled = Boolean(settings.pushNotifications);
 
@@ -93,6 +93,7 @@ export class WebPushNotificationsService extends PushNotificationService {
     if (!this.hasPermission) return;
     this.token = await this.firebaseMessaging.getToken();
     this.logger.info('Token is ', this.token);
+    return this.token;
   }
 
   async subscribeToEvents() {

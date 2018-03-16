@@ -15,10 +15,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, NgZone, Optional } from '@angular/core';
 import { ConfigService } from '@merit/common/services/config.service';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
-import { PushNotificationService } from '@merit/common/services/push-notification.service';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 
 @Injectable()
-export class PushNotificationsServiceMobile extends PushNotificationService {
+export class MobilePushNotificationsService extends PushNotificationsService {
   private isIOS: boolean;
   private isAndroid: boolean;
   private usePushNotifications: boolean;
@@ -115,7 +115,7 @@ export class PushNotificationsServiceMobile extends PushNotificationService {
     });
   }
 
-  public updateSubscription(walletClient: MeritWalletClient): void {
+  updateSubscription(walletClient: MeritWalletClient): void {
     if (!this.token) {
       this.logger.warn('Push notifications disabled for this device. Nothing to do here.');
       return;
@@ -153,7 +153,7 @@ export class PushNotificationsServiceMobile extends PushNotificationService {
     return super.disable();
   }
 
-  public unsubscribe(walletClient: MeritWalletClient): Promise<void> {
+  unsubscribe(walletClient: MeritWalletClient): Promise<void> {
     if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return Promise.resolve();
@@ -163,8 +163,7 @@ export class PushNotificationsServiceMobile extends PushNotificationService {
     return super.unsubscribe(walletClient);
   }
 
-  public subscribe(walletClient: MeritWalletClient): Promise<void> {
-
+  async subscribe(walletClient: MeritWalletClient) {
     if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return;
@@ -177,15 +176,15 @@ export class PushNotificationsServiceMobile extends PushNotificationService {
     if (!this.token && this.retriesRemaining > 0) {
       this.retriesRemaining--;
       this.logger.warn(`Attempted to subscribe without an available token; attempting to acquire. ${this.retriesRemaining} attempts remaining.`);
-      return this.getToken().then(() => {
-        return this.subscribe(walletClient);
-      });
+      await this.getToken();
+      return super.subscribe(walletClient);
     }
     return super.subscribe(walletClient);
   }
 
-  protected async getToken(): Promise<void> {
+  protected async getToken() {
     this.token = await this.FCM.getToken();
     this.logger.info('Got token for push notifications: ' + this.token);
+    return this.token;
   }
 }
