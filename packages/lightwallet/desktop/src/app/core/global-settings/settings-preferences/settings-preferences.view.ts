@@ -4,7 +4,8 @@ import { State } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { isEmpty } from 'lodash';
-import { filter, tap } from 'rxjs/operators';
+import { debounceTime, filter, tap } from 'rxjs/operators';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 
 declare const WEBPACK_CONFIG: any;
 
@@ -25,12 +26,13 @@ export class SettingsPreferencesView {
   commitHash: string;
   version: string;
 
-  private subscription;
+  private subs: any[] = [];
 
 
   constructor(private formBuilder: FormBuilder,
               private state: State<IRootAppState>,
-              private persistenceService: PersistenceService2) {
+              private persistenceService: PersistenceService2,
+              private pushNotificationsService: PushNotificationsService) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
       this.version = WEBPACK_CONFIG.VERSION;
@@ -43,17 +45,34 @@ export class SettingsPreferencesView {
       this.formData.setValue(settings);
     }
 
-    this.subscription = this.formData.valueChanges
-      .pipe(
-        filter(() => !this.formData.invalid),
-        tap((newValue: any) => this.persistenceService.setNotificationSettings(newValue))
-      )
-      .subscribe();
+    this.subs.push(
+      this.formData.valueChanges
+        .pipe(
+          filter(() => !this.formData.invalid),
+          tap((newValue: any) => this.persistenceService.setNotificationSettings(newValue))
+        )
+        .subscribe()
+    );
+
+    this.subs.push(
+      this.formData.get('pushNotifications').valueChanges
+        .pipe(
+          debounceTime(200),
+          tap((enabled: boolean) => {
+            if (enabled) {
+              this.pushNotificationsService.init();
+            } else {
+              this.pushNotificationsService.disable();
+            }
+          })
+        )
+        .subscribe()
+    )
   }
 
   ngOnDestroy() {
     try {
-      this.subscription.unsubscribe();
+      this.subs.forEach(sub => sub.unsubscribe());
     } catch (e) {
     }
   }
