@@ -551,7 +551,7 @@ export class ProfileService {
 
   public async getVaults(reload: boolean = false) {
     if (!this.wallets) return [];
-    if (!this.vaults.length || !reload) {
+    if (!this.vaults.length || reload) {  
         let wallets: MeritWalletClient[] = _.values(this.wallets);  
         for (let wallet of wallets) {
           const vaults = await wallet.getVaults();
