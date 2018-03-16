@@ -14,11 +14,11 @@ export class SendService {
   ) {
   }
 
-  prepareTxp(wallet: MeritWalletClient, amount, toAddress) {
+  async prepareTxp(wallet: MeritWalletClient, amount, toAddress) {
 
     if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
 
-    let txp:any = {
+    let txpData:any = {
       outputs: [{ amount, toAddress }],
       inputs: [], // will be defined on MWS side
       feeLevel: this.feeService.getCurrentFeeLevel(),
@@ -27,12 +27,13 @@ export class SendService {
     };
 
     if (amount == wallet.status.spendableAmount) {
-      delete txp.outputs[0].amount;
-      txp.sendMax = true;
+      delete txpData.outputs[0].amount;
+      txpData.sendMax = true;
     }
 
-    return wallet.createTxProposal(txp);
-
+    let txp = await wallet.createTxProposal(txpData);
+    txp.sendMax = txpData.sendMax;
+    return txp;  
   }
 
   finalizeTxp(wallet, preparedTxp, feeIncluded) {
@@ -46,10 +47,11 @@ export class SendService {
       addressType: preparedTxp.addressType
     };
 
-    if (preparedTxp.sendMax || feeIncluded) {
-      txp.outputs[0].amount = preparedTxp.amount - preparedTxp.fee;
-    } else {
+    if (preparedTxp.sendMax || !feeIncluded) {
       txp.outputs[0].amount = preparedTxp.amount;
+    } else { 
+      txp.outputs[0].amount = preparedTxp.amount - preparedTxp.fee;
+      
     }
 
     return wallet.createTxProposal(txp);
