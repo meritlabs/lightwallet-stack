@@ -58,7 +58,7 @@
       </ion-avatar>
       <p>From</p>
       <h2>{{selectedWallet.name}}</h2>
-      <p>{{selectedWallet.status ? selectedWallet.status.spendableBalanceStr : '0.00'}} MRT</p>
+      <p>{{selectedWallet.status.spendableAmount | toMRT}}</p> 
       <ion-icon name="ios-arrow-down" item-end></ion-icon>
     </button>
 
