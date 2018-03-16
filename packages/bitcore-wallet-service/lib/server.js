@@ -716,6 +716,8 @@ WalletService.prototype.getStatus = function(opts, cb) {
   self.storage.fetchAddresses(self.walletId, function(err, addresses) {
     if (err) return cb(err);
 
+    let start = new Date();
+
     async.parallel([
 
       function(next) {
@@ -737,6 +739,8 @@ WalletService.prototype.getStatus = function(opts, cb) {
           }
           status.wallet = wallet;
 
+          let end = new Date();
+          log.error('Measuring getStatus: getWallet = ' + (end - start));
           next();
         });
       },
@@ -744,6 +748,9 @@ WalletService.prototype.getStatus = function(opts, cb) {
         self.getBalance(addresses, opts, function(err, balance) {
           if (err) return next(err);
           status.balance = balance;
+
+          let end = new Date();
+          log.error('Measuring getStatus: getBalance = ' + (end - start));
           next();
         });
       },
@@ -751,6 +758,9 @@ WalletService.prototype.getStatus = function(opts, cb) {
         self.getInvitesBalance(addresses, opts, function(err, balance) {
           if (err) return next(err);
           status.invitesBalance = balance;
+
+          let end = new Date();
+          log.error('Measuring getStatus: getInvitesBalance = ' + (end - start));
           next();
         });
       },
@@ -758,6 +768,9 @@ WalletService.prototype.getStatus = function(opts, cb) {
         self.getPendingTxs({}, function(err, pendingTxps) {
           if (err) return next(err);
           status.pendingTxps = pendingTxps;
+
+          let end = new Date();
+          log.error('Measuring getStatus: getPendingTxs = ' + (end - start));
           next();
         });
       },
@@ -765,6 +778,9 @@ WalletService.prototype.getStatus = function(opts, cb) {
         self.getPreferences({}, function(err, preferences) {
           if (err) return next(err);
           status.preferences = preferences;
+
+          let end = new Date();
+          log.error('Measuring getStatus: getPreferences = ' + (end - start));
           next();
         });
       },
@@ -777,8 +793,13 @@ WalletService.prototype.getStatus = function(opts, cb) {
           const activeInviteAddresses = _.map(status.invitesBalance.byAddress, 'address');
           const active = _.union(activeCoinAddresses, activeInviteAddresses);
           self.storage.storeActiveAddresses(self.walletId, active);
+          let end = new Date();
+          log.error('Measuring getStatus: refresh cache = ' + (end - start));
         });
       }, 0);
+
+      let end = new Date();
+      log.error('Measuring getStatus: result = ' + (end - start));
       return cb(null, status);
     });
   });
