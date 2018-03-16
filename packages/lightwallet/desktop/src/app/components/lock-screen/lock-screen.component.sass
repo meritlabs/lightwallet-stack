@@ -1,8 +1,20 @@
+@import "~styles/v1/theme"
 .lock-screen
   position: fixed
   z-index: 9999
-  left: 0
+  right: 0
   top: 0
-  width: 100vw
+  width: calc(100vw - 300px)
   height: 100vh
-  background: rgba(0,176,221, .9)
+  background: rgba(44,49,65, .9)
+  display: flex
+  flex-flow: row wrap
+  justify-content: center
+  align-items: center
+  &__message
+    text-align: center
+    +font($baseFont--medium, 24px, 28px, $white)
+    opacity: .7
+    img
+      width: 70px
+      margin-bottom: 20px
