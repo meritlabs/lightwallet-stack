@@ -23,8 +23,7 @@ const FirebaseAppConfig = {
 export class WebPushNotificationsService extends PushNotificationService {
 
   protected get pushNotificationsEnabled(): boolean {
-    return true;
-    // return true this._pushNotificationsEnabled;
+    return this._pushNotificationsEnabled;
   }
 
   protected get hasPermission(): boolean {
@@ -55,25 +54,35 @@ export class WebPushNotificationsService extends PushNotificationService {
       .toPromise();
   }
 
+  private async registerSW() {
+    try {
+      const sw = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      this.firebaseMessaging.useServiceWorker(sw);
+    } catch (e) {
+      this.logger.error('Unable to register FCM Service Worker', e && e.message ? e.message : e);
+    }
+  }
+
   private async init() {
     const settings = await this.persistenceService.getNotificationSettings() || {};
     this._pushNotificationsEnabled = Boolean(settings.pushNotifications);
 
-    // if (this.pushNotificationsEnabled) {
-    this.firebaseApp = firebase.initializeApp(FirebaseAppConfig);
-    this.firebaseMessaging = firebase.messaging(this.firebaseApp);
-    try {
-      await this.requestPermission();
-      this._hasPermission = true;
-    } catch (e) {
-      console.log(e);
-      this.logger.info('Push notifications permission was denied');
-    }
+    if (this.pushNotificationsEnabled) {
+      this.firebaseApp = firebase.initializeApp(FirebaseAppConfig);
+      this.firebaseMessaging = firebase.messaging(this.firebaseApp);
+      await this.registerSW();
+      try {
+        await this.requestPermission();
+        this._hasPermission = true;
+      } catch (e) {
+        console.log(e);
+        this.logger.info('Push notifications permission was denied');
+      }
 
-    await this.getToken();
-    this.subscribeToEvents();
-    this.enable();
-    // }
+      await this.getToken();
+      this.subscribeToEvents();
+      this.enable();
+    }
   }
 
   requestPermission() {
@@ -87,10 +96,6 @@ export class WebPushNotificationsService extends PushNotificationService {
   }
 
   async subscribeToEvents() {
-    console.log('Subscribing to events ...');
-    console.log('FCM is ', this.firebaseMessaging);
-
-
     this.firebaseMessaging.onMessage((data: NotificationData) => {
       console.log('~~ Got a new notification: ', data);
     });
