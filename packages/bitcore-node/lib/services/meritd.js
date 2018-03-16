@@ -189,7 +189,6 @@ Merit.prototype.getAPIMethods = function() {
     ['getAddressTxids', this, this.getAddressTxids, 2],
     ['getAddressBalance', this, this.getAddressBalance, 2],
     ['getAddressUnspentOutputs', this, this.getAddressUnspentOutputs, 2],
-    ['getAddressUnspentOutputsWithInvites', this, this.getAddressUnspentOutputsWithInvites, 1],
     ['getAddressHistory', this, this.getAddressHistory, 2],
     ['getAddressSummary', this, this.getAddressSummary, 1],
     ['generateBlock', this, this.generateBlock, 1],
@@ -1269,83 +1268,6 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
     });
   } else {
     log.warn("Measuting getAddressUnspentOutputs: direct finish");
-    finish();
-  }
-
-};
-
-Merit.prototype.getAddressUnspentOutputsWithInvites = function(addressArg, options, callback) {
-  var self = this;
-  var addresses = self._normalizeAddressArg(addressArg);
-  var cacheKey = (options.invites ? 'i:' : '') + addresses.join('');
-  var utxos = self.utxosCache.get(cacheKey);
-
-  function updateWithMempool(confirmedUtxos, mempoolDeltas) {
-    /* jshint maxstatements: 20 */
-    if (!mempoolDeltas || !mempoolDeltas.length) {
-      return confirmedUtxos;
-    }
-    var isSpentOutputs = false;
-    var mempoolUnspentOutputs = [];
-    var spentOutputs = [];
-
-    for (var i = 0; i < mempoolDeltas.length; i++) {
-      var delta = mempoolDeltas[i];
-      if (delta.prevtxid && delta.satoshis <= 0) {
-        if (!spentOutputs[delta.prevtxid]) {
-          spentOutputs[delta.prevtxid] = [delta.prevout];
-        } else {
-          spentOutputs[delta.prevtxid].push(delta.prevout);
-        }
-        isSpentOutputs = true;
-      } else {
-        mempoolUnspentOutputs.push(delta);
-      }
-    }
-
-    var utxos = mempoolUnspentOutputs.reverse().concat(confirmedUtxos);
-
-    if (isSpentOutputs) {
-      return utxos.filter(function(utxo) {
-        if (!spentOutputs[utxo.txid]) {
-          return true;
-        } else {
-          return (spentOutputs[utxo.txid].indexOf(utxo.outputIndex) === -1);
-        }
-      });
-    }
-
-    return utxos;
-  }
-
-  function finish(mempoolDeltas) {
-    if (utxos) {
-      return setImmediate(function() {
-        callback(null, updateWithMempool(utxos, mempoolDeltas));
-      });
-    } else {
-      self.client.getAddressUtxosWithInvites({ addresses }, function(err, response) {
-        if (err) {
-          return callback(self._wrapRPCError(err));
-        }
-        var utxos = response.result.reverse();
-        self.utxosCache.set(cacheKey, utxos);
-        callback(null, updateWithMempool(utxos, mempoolDeltas));
-      });
-    }
-  }
-
-  if (queryMempool) {
-    self.client.getAddressMempool({ addresses }, function(err, response) {
-      if (err) {
-        return callback(self._wrapRPCError(err));
-      }
-
-      const txs = response.result.filter(tx => tx.isInvite == invites);
-
-      finish(txs);
-    });
-  } else {
     finish();
   }
 

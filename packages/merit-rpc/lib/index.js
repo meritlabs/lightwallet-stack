@@ -150,7 +150,6 @@ RpcClient.callspec = {
   getAddedNodeInfo: '',
   getAddressMempool: 'obj',
   getAddressUtxos: 'obj',
-  getAddressUtxosWithInvites: 'obj',
   getAddressBalance: 'obj',
   getAddressDeltas: 'obj',
   getAddressTxids: 'obj',
