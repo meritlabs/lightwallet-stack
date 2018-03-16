@@ -33,7 +33,7 @@ export class SettingsPreferencesView {
   constructor(private formBuilder: FormBuilder,
               private state: State<IRootAppState>,
               private persistenceService: PersistenceService2,
-              // private emailNotificationsService: EmailNotificationsService,
+              private emailNotificationsService: EmailNotificationsService,
               private pushNotificationsService: PushNotificationsService) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
@@ -50,7 +50,7 @@ export class SettingsPreferencesView {
     this.subs.push(
       this.formData.valueChanges
         .pipe(
-          filter(() => !this.formData.invalid),
+          filter(() => this.formData.valid),
           tap((newValue: any) => this.persistenceService.setNotificationSettings(newValue))
         )
         .subscribe()
@@ -59,7 +59,7 @@ export class SettingsPreferencesView {
     this.subs.push(
       this.formData.get('pushNotifications').valueChanges
         .pipe(
-          debounceTime(200),
+          debounceTime(100),
           tap((enabled: boolean) => {
             if (enabled) {
               this.pushNotificationsService.init();
@@ -69,7 +69,22 @@ export class SettingsPreferencesView {
           })
         )
         .subscribe()
-    )
+    );
+
+    this.subs.push(
+      this.formData.get('email').valueChanges
+        .pipe(
+          debounceTime(100),
+          filter(() => this.formData.valid),
+          tap((email: string) => {
+            this.emailNotificationsService.updateEmail({
+              enabled: this.formData.get('emailNotifications').value,
+              email: email
+            });
+          })
+        )
+        .subscribe()
+    );
   }
 
   ngOnDestroy() {

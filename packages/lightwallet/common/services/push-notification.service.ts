@@ -19,7 +19,7 @@ export class PushNotificationsService {
               protected logger: LoggerService) {}
 
   // abstract methods
-  protected init(): Promise<void> { return; }
+  init(): Promise<void> { return; }
   protected requestPermission(): Promise<boolean> { return; }
   protected getToken(): Promise<string> { return; }
   protected subscribeToEvents() {}
