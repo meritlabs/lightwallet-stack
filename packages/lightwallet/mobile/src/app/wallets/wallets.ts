@@ -34,8 +34,7 @@ const RETRY_TIMEOUT = 1000;
 export class WalletsView {
 
   totalInvites: number;
-  totalWalletsValueMicros: string;
-  totalWalletsValueFiat: string;
+  totalAmount: number;
   allBalancesHidden: boolean;
   wallets: DisplayWallet[];
   vaults: Array<IVault>;
@@ -365,13 +364,7 @@ export class WalletsView {
 
     this.vaults.forEach(v => totalAmount += v.amount );
 
-    const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
-
-    if (!(this.allBalancesHidden = allBalancesHidden)) {
-      this.totalWalletsValueFiat = usdAmount ? new FiatAmount(+usdAmount).amountStr : '';
-      this.totalWalletsValueMicros = this.txFormatService.parseAmount(totalAmount, 'micros').amountUnitStr;
-    }
-
+    this.totalAmount= totalAmount;
     this.totalInvites = totalInvites;
   }
 
