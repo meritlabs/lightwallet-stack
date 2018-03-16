@@ -774,10 +774,12 @@ WalletService.prototype.getStatus = function(opts, cb) {
         ], function(err) {
           if (err) return cb(err);
 
-          const activeCoinAddresses = _.map(status.balance.byAddress, 'address');
-          const activeInviteAddresses = _.map(status.invitesBalance.byAddress, 'address');
-          const active = _.union(activeCoinAddresses, activeInviteAddresses);
-          self.storage.storeActiveAddresses(self.walletId, active);
+          setTimeout(() => {
+            const activeCoinAddresses = _.map(status.balance.byAddress, 'address');
+            const activeInviteAddresses = _.map(status.invitesBalance.byAddress, 'address');
+            const active = _.union(activeCoinAddresses, activeInviteAddresses);
+            self.storage.storeActiveAddresses(self.walletId, active);
+          }, 0);
           return cb(null, status);
         });
       },
