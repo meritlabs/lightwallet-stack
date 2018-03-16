@@ -7,6 +7,9 @@
   box-sizing: border-box
   cursor: pointer
   +transition(.3s, linear)
+  &[disabled]
+    opacity: .5
+    cursor: disabled
   &--blue
     background: $blue-button-bg
     color: $white
