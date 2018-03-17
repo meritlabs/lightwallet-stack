@@ -22,8 +22,8 @@ import 'rxjs/add/operator/take'
 export class FileBackupView {
 
   formData = this.formBuilder.group({
-    password: ['', Validators.minLength(1)],
-    repeatPassword: ['', PasswordValidator.MatchPassword]
+    password: ['', [Validators.required, Validators.minLength(1)]],
+    repeatPassword: ['', [Validators.required, PasswordValidator.MatchPassword]]
   });
 
   get password() {
