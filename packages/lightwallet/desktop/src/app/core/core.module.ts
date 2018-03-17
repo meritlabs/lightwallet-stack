@@ -31,6 +31,8 @@ import { PhraseImportView } from '@merit/desktop/app/core/wallets/import-wallet/
 import { InvitesComponent } from './community/invites/invites.component';
 import { RequestsComponent } from './community/invites/requests/requests.component';
 import { SendInviteComponent } from './community/invites/send-invite/send-invite.component';
+import { QrCodeBackupView } from './backup/qr-code-backup/qr-code-backup.view';
+import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
 
 export function getPages() {
   return [
@@ -53,7 +55,9 @@ export function getPages() {
     ImportWalletView,
     ImportByQrView,
     ImportWithFileView,
-    PhraseImportView
+    PhraseImportView,
+    QrCodeBackupView,
+    FileBackupView
   ];
 }
 

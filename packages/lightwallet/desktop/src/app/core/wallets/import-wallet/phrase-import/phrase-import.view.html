@@ -1,7 +1,7 @@
 <div class="container--inner">
   <div class="backup__mnenmonic__wrap">
 
-    <form [formGroup]="formData" (submit)="importMnemonic()">
+    <form [formGroup]="formData" (ngSubmit)="importMnemonic()">
       <div class="backup__back-navigator">
         <div [routerLink]='"/wallets/import"'>
           <img src="/assets/v1/images/backup/back-icon.svg" alt="">

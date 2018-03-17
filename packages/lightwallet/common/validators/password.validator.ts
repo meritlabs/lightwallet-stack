@@ -1,16 +1,17 @@
 import { AbstractControl } from '@angular/forms';
+import { ValidationErrors } from '@angular/forms/src/directives/validators';
 
 export class PasswordValidator {
-  static MatchPassword(control: AbstractControl) {
+  static MatchPassword(control: AbstractControl): ValidationErrors | null {
     try {
       const password = control.parent.get('password').value,
         repeatPassword = control.value;
 
       if (password != repeatPassword) {
-        control.get('repeatPassword').setErrors({ PasswordMatch: true });
+        return {
+          PasswordMatch: true
+        };
       }
     } catch (e) {}
-
-    return true;
   }
 }
