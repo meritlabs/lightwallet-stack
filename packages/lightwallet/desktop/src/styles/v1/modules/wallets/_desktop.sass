@@ -62,6 +62,19 @@
         .wallets__group__wallet__edit
           opacity: 1
           transform: translateX(0)
+.wallet
+  &__name
+    display: flex
+    align-items: center
+    margin-bottom: 20px
+    display: flex
+    +font($baseFont--regular, 24px, 24px, $white)
+    merit-icon
+      margin-right: 20px
+  &__details
+    justify-content: space-between
+    display: flex
+    +font($baseFont--regular, 18px, 18px, $white)
 .wallet-details
   &__header
     &__wrap
@@ -72,16 +85,7 @@
     .details
       display: flex
       flex-direction: column
-      .name-container
-        display: flex
-        flex-direction: row
-        align-items: center
-        +font($baseFont--semibold, 32px, 32px, $white)
-        .name
-          display: inline-block
-          padding-left: 20px
-      .address, .balance
-        +font($baseFont--regular, 18px, 18px, $white)
+      width: 100%
     &__amount
       display: flex
       justify-content: flex-start
