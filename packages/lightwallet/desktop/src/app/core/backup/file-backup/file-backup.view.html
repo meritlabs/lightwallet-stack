@@ -14,13 +14,19 @@
         <div>
           <input type="password" formControlName="password" id="password" placeholder="Protect your backup file with a password">
         </div>
+        <div class="input-errors" [hidden]="!password.dirty || password.valid">
+          <div [hidden]="!password.hasError('required')">Password is required</div>
+        </div>
       </div>
       <div class="form-group">
         <label for="repeatPassword">Repeat password</label>
         <div>
           <input type="password" formControlName="repeatPassword" id="repeatPassword" placeholder="">
         </div>
-        <div class="form-input-error"></div>
+        <div class="input-errors" [hidden]="!repeatPassword.dirty || repeatPassword.valid">
+          <div [hidden]="!repeatPassword.hasError('required')">Password is required</div>
+          <div [hidden]="repeatPassword.hasError('required') || !repeatPassword.hasError('PasswordMatch')">Passwords do not match</div>
+        </div>
       </div>
       <button role="button" type="submit" [disabled]="formData.invalid">Download file</button>
     </form>
