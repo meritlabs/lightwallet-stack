@@ -19,10 +19,10 @@
         <div class="wallets__group__wallet__icon">
           <img src="/assets/v1/images/wallets/personal.svg" alt="">
         </div>
-        <div class="wallets__group__wallet__details">
+        <div class="wallets__group__wallet__details" >
           <div>
             <p class="large-black-text">{{ wallet.name }}</p>
-            <p class="regular-blue-text">{{ wallet.totalBalanceStr }} MRT <small>({{ wallet.totalBalanceFiat }})</small></p>
+            <p class="regular-blue-text" *ngIf="!balanceHidden">{{ wallet.totalBalanceStr }} MRT <small>({{ wallet.totalBalanceFiat }})</small></p>
           </div>
           <div>
             <p class="regular-blue-text">{{ wallet.invites }} Invites</p>
