@@ -1,0 +1,20 @@
+<div class="sub-page">
+  <div class="back-navigator">
+    <div routerLink="../" class="back-button-container">
+      <div class="back-button"></div>
+    </div>
+    <div class="page-title">
+      <h3>QR Code backup</h3>
+      <div class="description">From the destination device, go to Wallets > Import wallet and scan this QR Code.</div>
+    </div>
+  </div>
+
+  <div class="qr-code-container">
+    <ng-container *ngIf="mnemonic$ | async as mnemonic; else qrLoading">
+      <qr-code [value]="mnemonic" [size]="220" foreground="#334"></qr-code>
+    </ng-container>
+    <ng-template #qrLoading>
+      <loading-spinner></loading-spinner>
+    </ng-template>
+  </div>
+</div>

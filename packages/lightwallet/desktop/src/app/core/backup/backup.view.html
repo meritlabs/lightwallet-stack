@@ -1,7 +1,7 @@
 <div class="container backup">
   <div class="backup__title title--primary container--inner">Backup</div>
   <div class="backup__navigator container--inner">
-    <div class="backup__navigator__item">
+    <div class="backup__navigator__item" routerLink="qr-code">
       <div class="backup__navigator__item__icon">
         <img src="/assets/v1/images/backup/qr-icon.svg" alt="">
       </div>
@@ -9,10 +9,10 @@
         <p>QR Code</p>
       </div>
       <div class="backup__navigator__item__caption">
-        <p>Scan</p>
+        <p>View</p>
       </div>
     </div>
-    <div class="backup__navigator__item" [routerLink]='"mnemonic-phrase"'>
+    <div class="backup__navigator__item" routerLink="mnemonic">
       <div class="backup__navigator__item__icon">
         <img src="/assets/v1/images/backup/mnemonic-icon.svg" alt="">
       </div>
@@ -20,15 +20,15 @@
         <p>Mnemonic Phrase</p>
       </div>
       <div class="backup__navigator__item__caption">
-        <p>Open page</p>
+        <p>View Phrase</p>
       </div>
     </div>
-    <div class="backup__navigator__item">
+    <div class="backup__navigator__item" routerLink="file">
       <div class="backup__navigator__item__icon">
         <img src="/assets/v1/images/backup/dat-file-icon.svg" alt="">
       </div>
       <div class="backup__navigator__item__title">
-        <p>Dat. file</p>
+        <p>Backup File</p>
       </div>
       <div class="backup__navigator__item__caption">
         <p>Download</p>

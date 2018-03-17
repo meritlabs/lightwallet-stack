@@ -5,5 +5,4 @@ import { Component } from '@angular/core';
   templateUrl: './backup.view.html',
   styleUrls: ['./backup.view.sass']
 })
-export class BackupView {
-}
+export class BackupView {}

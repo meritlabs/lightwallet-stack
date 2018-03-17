@@ -107,7 +107,6 @@ export class ExportWalletView {
   async download() {
 
     const addressBook = await this.persistenceService.getAddressbook(this.wallet.credentials.network);
-
     const exportData = this.wallet.export({ addressBook: addressBook });
     const encryptedData = this.sjcl.encrypt(this.formData.password, exportData, { iter: 10000 });
     const walletName = this.wallet.name;

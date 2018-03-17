@@ -1,32 +1,22 @@
-<div class="container--inner">
-  <div class="backup__mnenmonic__wrap">
-    <div class="backup__back-navigator">
-      <div [routerLink]='"/backup"'>
-        <img src="/assets/v1/images/backup/back-icon.svg" alt="">
-      </div>
+<div class="sub-page">
+  <div class="back-navigator">
+    <div routerLink="../" class="back-button-container">
+      <div class="back-button"></div>
     </div>
-    <div class="backup__header">
-      <div>
-        <div class="backup__title title--primary">
-          <p>Mnemonic Phrase</p>
-        </div>
-        <div class="backup__caption">
-          <p>Description — passphrase is used to recover your wallet, record it and
-            keep it in a safe place</p>
-        </div>
-      </div>
-      <div>
-        <img src="/assets/v1/images/backup/protected-icon.svg" alt="">
-      </div>
+    <div class="page-title">
+      <h3>Mnemonic Phrase</h3>
+      <p class="description">
+        This passphrase is used to recover your wallet, record it and keep it in a safe place
+      </p>
     </div>
-    <div class="backup__mnemonic">
-      <button type="button" name="button"
-        class="ui-button ui-button--blue" (click)="show=!show">
-        {{show ? 'Hide' : 'Show'}} mnemonic</button>
-      <div class="backup__mnemonic__container showHidden"
-        [hidden]="!show" [ngClass]="{'showHidden--animated' : show}" >
-        <p>speed transfer already give five silly stone glove cage price lumber tail</p>
-      </div>
-    </div>
+  </div>
+
+  <div class="mnemonic-container">
+    <ng-container *ngIf="mnemonic$ | async as mnemonic; else mnemonicLoading">
+      <p>{{ mnemonic }}</p>
+    </ng-container>
+    <ng-template #mnemonicLoading>
+      <loading-spinner></loading-spinner>
+    </ng-template>
   </div>
 </div>
