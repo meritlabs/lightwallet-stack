@@ -20,8 +20,7 @@
     <div *ngIf="!tx.isInvite" class="history__item__info__details">
       <span class="merit-amount" [class.credit]="isCredit">{{ tx.amountStr }} MRT
         <small>({{ tx.alternativeAmountStr }})</small></span>
-        <!-- <ng-template #notConfirmed> -->
-        <!-- </ng-template> -->
+        <ng-template #notConfirmed>
         <span class="ui-tooltip ui-tooltip--awating">
           <span class="ui-tooltip__text">
             {{ confirmationsExplanation }},
@@ -29,9 +28,7 @@
             Wait some time. Usually 5-10 mins.
           </span>
         </span>
-        <div class="info-box" *ngIf="!isConfirmed">
-
-        </div>
+        </ng-template>
     </div>
   </div>
 </div>
