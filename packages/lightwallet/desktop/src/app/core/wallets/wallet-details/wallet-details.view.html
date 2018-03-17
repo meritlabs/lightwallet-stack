@@ -21,6 +21,14 @@
               {{ wallet.invites }} <small>Invites</small>
             </div>
           </div>
+          <div class="wallet__navigation">
+            <div class="wallet__button" [routerLink]="'/send'">
+              Send
+            </div>
+            <div class="wallet__button"  [routerLink]="'/receive'">
+              Receive
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -28,8 +36,6 @@
       <div class="wallet-details__content__navigation">
         <ul>
           <li><a [routerLink]="['history']" routerLinkActive="active">Wallet transactions</a></li>
-          <li><a [routerLink]="['receive']" [queryParams]="{ injected: true }" routerLinkActive="active">Receive Merit</a></li>
-          <li><a [routerLink]="['send']" [queryParams]="{ amount: 200, injected: true }" routerLinkActive="active">Send Merit</a></li>
           <li><a [routerLink]="['settings']" routerLinkActive="active">Wallet preferences</a></li>
         </ul>
       </div>
