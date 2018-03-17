@@ -29,6 +29,8 @@
       justify-content: space-between
       align-items: center
       letter-spacing: .3px
+      &__details
+        text-align: right
       &__title
         +font($baseFont--medium, 15px, 22px, $gun-metal)
         margin-bottom: 5px
@@ -39,6 +41,9 @@
         +font($baseFont--regular, 14px, 24px, $gun-metal)
         &.credit
           color: $blue
+        small
+          font-size: 13px
+          color: $cool-grey
       .fiat-amount
         +font($baseFont--regular, 14px, 16px, $blue-grey)
     &__details
