@@ -38,9 +38,7 @@ const routes: Routes = [
       { path: 'wallets/:id', component: WalletDetailView, children: [
         { path: '', component: WalletDetailHistoryView },
         { path: 'history', component: WalletDetailHistoryView },
-        { path: 'settings', component: WalletSettingsView },
-        { path: 'send', component: SendView },
-        { path: 'receive', component: ReceiveView }
+        { path: 'settings', component: WalletSettingsView }
       ]},
       { path: 'receive', component: ReceiveView },
       { path: 'send', component: SendView },
