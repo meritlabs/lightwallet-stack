@@ -4,7 +4,7 @@
 </div>
 <div class="global-settings__group session-log">
   <div class="session-log__filter">
-    <div class="session-log__filter__item"  (click)="setLevel(0)">
+    <div class="session-log__filter__item active"  (click)="setLevel(0)">
       <span class="ico ico--check"></span>Error
     </div>
     <div class="session-log__filter__item" [ngClass]="logLevel > 0? 'active' : ''" (click)="setLevel(1)">
