@@ -23,6 +23,7 @@ import { ImportWithFileView } from '@merit/desktop/app/core/wallets/import-walle
 import { PhraseImportView } from '@merit/desktop/app/core/wallets/import-wallet/phrase-import/phrase-import.view';
 import { RequestsComponent } from '@merit/desktop/app/core/community/invites/requests/requests.component';
 import { SendInviteComponent } from '@merit/desktop/app/core/community/invites/send-invite/send-invite.component';
+import { WalletExportComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-export/wallet-export.component';
 
 const routes: Routes = [
   {
@@ -38,7 +39,8 @@ const routes: Routes = [
       { path: 'wallets/:id', component: WalletDetailView, children: [
         { path: '', component: WalletDetailHistoryView },
         { path: 'history', component: WalletDetailHistoryView },
-        { path: 'settings', component: WalletSettingsView }
+        { path: 'settings', component: WalletSettingsView },
+        { path: 'export', component: WalletExportComponent }
       ]},
       { path: 'receive', component: ReceiveView },
       { path: 'send', component: SendView },

@@ -31,6 +31,7 @@ import { PhraseImportView } from '@merit/desktop/app/core/wallets/import-wallet/
 import { InvitesComponent } from './community/invites/invites.component';
 import { RequestsComponent } from './community/invites/requests/requests.component';
 import { SendInviteComponent } from './community/invites/send-invite/send-invite.component';
+import { WalletExportComponent } from './wallets/wallet-details/wallet-export/wallet-export.component';
 
 export function getPages() {
   return [
@@ -79,7 +80,8 @@ export function getPages() {
     ...getPages(),
     InvitesComponent,
     RequestsComponent,
-    SendInviteComponent
+    SendInviteComponent,
+    WalletExportComponent
   ]
 })
 export class CoreModule {
