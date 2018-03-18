@@ -58,13 +58,23 @@ export function getPages() {
     ImportWalletView,
     ImportByQrView,
     ImportWithFileView,
-    PhraseImportView
+    PhraseImportView,
+    InvitesComponent,
+    RequestsComponent,
+    SendInviteComponent,
+    WalletExportComponent,
+    WalletExportMnemonicPhraseComponent
   ];
 }
 
 @NgModule({
   entryComponents: [
     CoreView,
+    InvitesComponent,
+    RequestsComponent,
+    SendInviteComponent,
+    WalletExportComponent,
+    WalletExportMnemonicPhraseComponent,
     ...getPages()
   ],
   imports: [
