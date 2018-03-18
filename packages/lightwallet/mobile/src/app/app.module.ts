@@ -39,18 +39,19 @@ import { AppSettingsService } from '@merit/common/services/app-settings.service'
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { MeritToastController } from '@merit/common/services/toast.controller.service';
 import { SendService } from '@merit/common/services/send.service';
+import { MobilePushNotificationsService } from '../../../common/services/mobile-push-notifications-service';
 
 export function getProviders() {
   return [
     { provide: ContactsService, useClass: MobileContactsProvider },
     { provide: PopupService, useClass: MobilePopupService },
+    { provide: PushNotificationsService, useClass: MobilePushNotificationsService },
     AddressScannerService,
     CreateVaultService,
     DeepLinkService,
     EmailNotificationsService,
     MeritToastController,
     PollingNotificationsService,
-    PushNotificationsService,
     RenewVaultService,
     SendService,
     SpendVaultService,

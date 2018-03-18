@@ -23,16 +23,6 @@
       <ion-item *ngIf="isIOSApp" translate text-wrap>
         Push notifications for {{ appName }} are currently disabled. Enable them in the Settings app.
       </ion-item>
-
-      <ion-item [hidden]="!pushNotifications" text-wrap>
-        <ion-label>
-          <h2 translate>
-            Notify me when transactions are confirmed
-          </h2>
-        </ion-label>
-        <ion-toggle [(ngModel)]="confirmedTxsNotifications"
-                    (ionChange)="confirmedTxsNotificationsChange()"></ion-toggle>
-      </ion-item>
     </ion-item-group>
 
     <ion-item text-wrap>

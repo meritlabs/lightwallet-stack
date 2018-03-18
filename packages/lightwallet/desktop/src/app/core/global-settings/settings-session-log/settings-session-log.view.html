@@ -4,47 +4,27 @@
 <div class="global-settings__group session-log">
   <label class="ui-label global-settings__group__title">Session log</label>
   <div class="session-log__filter">
-    <div class="session-log__filter__item ui-button ui-button--md ui-button--blue">
+    <div class="session-log__filter__item ui-button ui-button--md ui-button--blue"  (click)="setLevel(0)">
       Error
     </div>
-    <div class="session-log__filter__item ui-button ui-button--md ui-button--white">
+    <div class="session-log__filter__item ui-button ui-button--md" [ngClass]="logLevel > 0? 'ui-button--blue' : 'ui-button--white'" (click)="setLevel(1)">
       Warning
     </div>
-    <div class="session-log__filter__item ui-button ui-button--md ui-button--white">
+    <div class="session-log__filter__item ui-button ui-button--md" [ngClass]="logLevel > 1? 'ui-button--blue' : 'ui-button--white'" (click)="setLevel(2)">
       Info
     </div>
-    <div class="session-log__filter__item ui-button ui-button--md ui-button--white">
+    <div class="session-log__filter__item ui-button ui-button--md" [ngClass]="logLevel > 2? 'ui-button--blue' : 'ui-button--white'" (click)="setLevel(3)">
       Debug
     </div>
   </div>
   <div class="ui-wysiwyg ui-wysiwyg--log session-log__window">
-    <p class="error">Welcome to the Merit Core RPC console.</p>
-    <p class="warn">Welcome to the Merit Core RPC console.</p>
-    <p class="info">Welcome to the Merit Core RPC console.</p>
-    <p class="debug">Welcome to the Merit Core RPC console.</p>
-    <p class="error">Welcome to the Merit Core RPC console.</p>
-    <p class="warn">Welcome to the Merit Core RPC console.</p>
-    <p class="info">Welcome to the Merit Core RPC console.</p>
-    <p class="debug">Welcome to the Merit Core RPC console.</p>
-    <p class="error">Welcome to the Merit Core RPC console.</p>
-    <p class="warn">Welcome to the Merit Core RPC console.</p>
-    <p class="info">Welcome to the Merit Core RPC console.</p>
-    <p class="debug">Welcome to the Merit Core RPC console.</p>
-    <p class="error">Welcome to the Merit Core RPC console.</p>
-    <p class="warn">Welcome to the Merit Core RPC console.</p>
-    <p class="info">Welcome to the Merit Core RPC console.</p>
-    <p class="debug">Welcome to the Merit Core RPC console.</p>
-    <p class="error">Welcome to the Merit Core RPC console.</p>
-    <p class="warn">Welcome to the Merit Core RPC console.</p>
-    <p class="info">Welcome to the Merit Core RPC console.</p>
-    <p class="debug">Welcome to the Merit Core RPC console.</p>
-    <p class="error">Welcome to the Merit Core RPC console.</p>
-    <p class="warn">Welcome to the Merit Core RPC console.</p>
-    <p class="info">Welcome to the Merit Core RPC console.</p>
-    <p class="debug">Welcome to the Merit Core RPC console.</p>
-    <p class="error">Welcome to the Merit Core RPC console.</p>
-    <p class="warn">Welcome to the Merit Core RPC console.</p>
-    <p class="info">Welcome to the Merit Core RPC console.</p>
-    <p class="debug">Welcome to the Merit Core RPC console.</p>
+    <p *ngIf="!filteredLogs.length" translate>
+      No logs for selected level
+    </p>
+
+    <p *ngFor="let l of filteredLogs" [ngClass]="getLogLevelName(l.level)">
+      <b>[{{l.timestamp|amDateFormat}}]</b> <b>[{{getLogLevelName(l.level)}}]</b> <span
+      *ngFor="let message of l.arguments">{{message}} </span>
+    </p>
   </div>
 </div>
