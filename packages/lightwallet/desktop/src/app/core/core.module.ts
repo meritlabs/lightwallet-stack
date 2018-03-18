@@ -32,6 +32,7 @@ import { InvitesComponent } from './community/invites/invites.component';
 import { RequestsComponent } from './community/invites/requests/requests.component';
 import { SendInviteComponent } from './community/invites/send-invite/send-invite.component';
 import { WalletExportComponent } from './wallets/wallet-details/wallet-export/wallet-export.component';
+import { WalletExportMnemonicPhraseComponent } from './wallets/wallet-details/wallet-export-mnemonic-phrase/wallet-export-mnemonic-phrase.component';
 
 export function getPages() {
   return [
@@ -81,7 +82,8 @@ export function getPages() {
     InvitesComponent,
     RequestsComponent,
     SendInviteComponent,
-    WalletExportComponent
+    WalletExportComponent,
+    WalletExportMnemonicPhraseComponent
   ]
 })
 export class CoreModule {
