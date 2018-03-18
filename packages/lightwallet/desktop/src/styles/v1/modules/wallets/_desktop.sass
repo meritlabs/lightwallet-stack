@@ -186,7 +186,7 @@
     align-items: center
     margin-bottom: 20px
     display: flex
-    +font($baseFont--regular, 24px, 24px, $white)
+    +font($baseFont--regular, 22px, 22px, $white)
     merit-icon
       margin-right: 20px
   &__details
@@ -195,6 +195,15 @@
     +font($baseFont--regular, 18px, 18px, $white)
     margin-bottom: 20px
     > div
+      margin-right: 20px
+  &__balance
+    display: flex
+    align-items: center
+    +font($baseFont--regular, 22px, 22px, $white)
+    .ico
+      background: $white
+      width: 30px
+      height: 25px
       margin-right: 20px
   &__navigation
     display: flex
