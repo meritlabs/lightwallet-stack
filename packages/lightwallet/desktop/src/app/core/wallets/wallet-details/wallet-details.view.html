@@ -10,7 +10,6 @@
               owner: {{ wallet.alias? '@' + wallet.alias : wallet.referrerAddress }}
             </div>
           </div>
-          <div class="wallet__details">
             <div class="wallet__balance">
               <ng-container *ngIf="!wallet.balanceHidden; else balanceHidden">
                 <span class="ico ico--coins"></span>
@@ -21,9 +20,8 @@
               </ng-template>
             </div>
             <div class="wallet__invites">
-              {{ wallet.invites }} <small>Invites</small>
+              <span class="ico ico--ivites"></span> Avalible invites: {{ wallet.invites }}
             </div>
-          </div>
           <div class="wallet__navigation">
             <div class="wallet__button wallet__button--send" [routerLink]="'/send'">
               Send
