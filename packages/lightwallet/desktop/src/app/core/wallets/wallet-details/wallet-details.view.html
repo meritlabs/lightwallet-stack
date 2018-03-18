@@ -6,8 +6,7 @@
           <div class="name-container">
             <!-- TODO(ibby/fedor): switch icon to vault if we're looking at a vault -->
             <div class="wallet__name">
-              <merit-icon name="wallet"></merit-icon> {{ wallet.name }},
-              owner: {{ wallet.alias? '@' + wallet.alias : wallet.referrerAddress }}
+              <merit-icon name="wallet"></merit-icon> {{ wallet.name }} | {{ wallet.alias? '@' + wallet.alias : wallet.referrerAddress }}
             </div>
           </div>
             <div class="wallet__balance">
