@@ -62,31 +62,6 @@
         .wallets__group__wallet__edit
           opacity: 1
           transform: translateX(0)
-.wallet
-  &__name
-    display: flex
-    align-items: center
-    margin-bottom: 20px
-    display: flex
-    +font($baseFont--regular, 24px, 24px, $white)
-    merit-icon
-      margin-right: 20px
-  &__details
-    justify-content: space-between
-    display: flex
-    +font($baseFont--regular, 18px, 18px, $white)
-    margin-bottom: 20px
-  &__navigation
-    display: flex
-  &__button
-    padding: 20px 30px
-    background: rgba(255,255,255, .05)
-    +font($baseFont--regular, 18px, 18px, $white)
-    text-transform: uppercase
-    min-width: 150px
-    cursor: pointer
-    margin-right: 20px
-    text-align: center
 .wallet-details
   &__header
     &__wrap
@@ -205,3 +180,44 @@
       +chageFontSize(16px, 18px)
       font-family: $baseFont--semibold
       color: $rose-pink
+.wallet
+  &__name
+    display: flex
+    align-items: center
+    margin-bottom: 20px
+    display: flex
+    +font($baseFont--regular, 24px, 24px, $white)
+    merit-icon
+      margin-right: 20px
+  &__details
+    justify-content: flex-start
+    display: flex
+    +font($baseFont--regular, 18px, 18px, $white)
+    margin-bottom: 20px
+    > div
+      margin-right: 20px
+  &__navigation
+    display: flex
+  &__button
+    padding: 20px 30px
+    background: rgba(255,255,255, .05)
+    +font($baseFont--regular, 18px, 18px, $white)
+    text-transform: uppercase
+    min-width: 150px
+    cursor: pointer
+    margin-right: 20px
+    text-align: center
+    +transition(.3s, linear)
+    &:hover
+      background: rgba(255,255,255, .1)
+    &:before
+      display: inline-block
+      content: ""
+      width: 12px
+      height: 15px
+      mask-image: url('/assets/v1/icons/buttons/load.svg')
+      mask-repeat: no-repeat
+      background: $white
+      margin-right: 5px
+    &--send::before
+      transform: rotate(180deg)
