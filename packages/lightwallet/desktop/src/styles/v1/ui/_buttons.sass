@@ -35,6 +35,21 @@
     &:hover
       &:after
         transform: translateX(2px)
+  &--loadWallet
+    &::before
+      content: ""
+      display: inline-block
+      font-weight: 900
+      margin-right: 12px
+      width: 10px
+      height: 12px
+      background: $blue
+      mask-image: url('/assets/v1/icons/buttons/load.svg')
+      mask-repeat: no-repeat
+      +transition(.1s, linear)
+    &:hover
+      &:after
+        transform: translateX(2px)
   &--with-caret
     &.ui-button--md
       padding: 8px 10px
