@@ -5,13 +5,16 @@
         <div class="details">
           <div class="name-container">
             <!-- TODO(ibby/fedor): switch icon to vault if we're looking at a vault -->
-            <div class="wallet__name"><merit-icon name="wallet"></merit-icon> {{ wallet.name }}</div>
+            <div class="wallet__name">
+              <merit-icon name="wallet"></merit-icon> {{ wallet.name }},
+              owner: {{ wallet.alias? '@' + wallet.alias : wallet.referrerAddress }}
+            </div>
           </div>
           <div class="wallet__details">
-            <div class="wallet__address">{{ wallet.alias? '@' + wallet.alias : wallet.referrerAddress }}</div>
             <div class="wallet__balance">
               <ng-container *ngIf="!wallet.balanceHidden; else balanceHidden">
-                {{ wallet.totalBalanceStr }} <small>MRT ({{ wallet.totalBalanceFiat }})</small>
+                <span class="ico ico--coins"></span>
+                <span>{{ wallet.totalBalanceStr }} <small>MRT ({{ wallet.totalBalanceFiat }})</small></span>
               </ng-container>
               <ng-template #balanceHidden>
                 [Balance hidden]
