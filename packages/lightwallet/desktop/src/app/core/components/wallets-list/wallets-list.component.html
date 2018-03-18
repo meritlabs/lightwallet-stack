@@ -17,7 +17,7 @@
     <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: wallet?.id" [routerLink]="['/wallets', wallet.id]">
       <div class="wallets__group__wallet__info">
         <div class="wallets__group__wallet__icon">
-          <img src="/assets/v1/images/wallets/personal.svg" alt="">
+          <wallet-icon [strokeColor]=wallet.color></wallet-icon>
         </div>
         <div class="wallets__group__wallet__details" >
           <div>
