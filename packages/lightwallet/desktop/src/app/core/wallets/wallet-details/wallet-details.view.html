@@ -11,7 +11,7 @@
             <div class="wallet__address">{{ wallet.alias? '@' + wallet.alias : wallet.referrerAddress }}</div>
             <div class="wallet__balance">
               <ng-container *ngIf="!wallet.balanceHidden; else balanceHidden">
-                {{ wallet.totalBalanceStr }} <small>MRT</small>
+                {{ wallet.totalBalanceStr }} <small>MRT ({{ wallet.totalBalanceFiat }})</small>
               </ng-container>
               <ng-template #balanceHidden>
                 [Balance hidden]
@@ -22,7 +22,7 @@
             </div>
           </div>
           <div class="wallet__navigation">
-            <div class="wallet__button" [routerLink]="'/send'">
+            <div class="wallet__button wallet__button--send" [routerLink]="'/send'">
               Send
             </div>
             <div class="wallet__button"  [routerLink]="'/receive'">
