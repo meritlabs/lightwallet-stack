@@ -1,0 +1,106 @@
+.loader
+  padding: 200px 0
+  display: flex
+  width: 200px
+  height: 100px
+  position: relative
+.column
+  width: 50px
+  position: absolute
+  margin: auto
+  width: 20px
+  height: 20px
+  left: 0
+  right: 0
+  top: 0
+  bottom: 0
+  &--first
+    animation: moveToLeft .5s forwards
+  &--last
+    animation: moveToRight .5s forwards
+.dot-1
+  width: 20px
+  height: 20px
+  background: rgb(0,176,221)
+  position: relative
+  border-radius: 20px
+  margin: 0px auto
+  &::after
+    content: ""
+    display: block
+    width: 4px
+    position: absolute
+    top: 42px
+    left: 0
+    right: 0
+    margin: auto
+    animation: showBg .5s forwards
+    animation-delay: 1.4s
+.dot
+  width: 6px
+  height: 50px
+  background: transparent
+  position: absolute
+  border-radius: 20px
+  margin: 0px auto
+  left: 0
+  right: 0
+  top: 0
+  &:before,
+  &:after
+    content: ""
+    display: block
+    width: 10px
+    height: 10px
+    border: 5px solid rgb(0,176,221)
+    background: rgb(0,176,221)
+    border-radius: 10px 10px 10px 10px
+    position: absolute
+    left: -7px
+    animation: drop .7s forwards
+    animation-delay: 1s
+  &:after
+    transform: rotate(135deg)
+    animation: drop2 .5s forwards
+    animation-delay: 1.2s
+@keyframes showBg
+  0%
+    background: transparent
+    height: 0
+  100%
+    background: rgb(0,176,221)
+    height: 40px
+@keyframes moveToLeft
+  0%
+    transform: translate(0px, 0px)
+  50%
+    transform: translate(-50px, 0px)
+  100%
+    transform: translate(-50px, -20px)
+@keyframes moveToRight
+  0%
+    transform: translate(0px, 0px)
+  50%
+    transform: translate(50px, 0px)
+  100%
+    transform: translate(50px, -20px)
+@keyframes drop
+  0%
+    transform: translate(0px, 0px) rotate(-45deg)
+    border-radius: 10px 10px 10px 10px
+  90%
+    transform: translate(0px, 40px) rotate(-45deg)
+    border-radius: 10px 10px 10px 10px
+  100%
+    transform: translate(0px, 40px) rotate(-45deg)
+    border-radius: 10px 10px 10px 0px
+@keyframes drop2
+  0%
+    transform: translate(0px, 00px) rotate(135deg)
+    border-radius: 10px 10px 10px 10px
+  50%
+    transform: translate(0px, 40px) rotate(135deg)
+    border-radius: 10px 10px 10px 10px
+  100%
+    transform: translate(0px, 70px) rotate(135deg)
+    border-radius: 10px 10px 10px 0px
