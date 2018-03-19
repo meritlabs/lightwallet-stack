@@ -55,15 +55,15 @@ export class EasyReceiveService {
     return this.spendEasyReceipt(receipt, wallet, input, destinationAddress);
   }
 
-  rejectEasyReceipt(wallet, receipt: EasyReceipt, input): Promise<any> {
-    const senderAddress = PublicKey.fromString(receipt.senderPublicKey, 'hex')
-      .toAddress(ENV.network)
-      .toString();
-
+  async rejectEasyReceipt(wallet, receipt: EasyReceipt, input): Promise<any> {
     try {
-      return this.spendEasyReceipt(receipt, wallet, input, senderAddress);
+      const senderAddress = PublicKey.fromString(receipt.senderPublicKey, 'hex')
+        .toAddress(ENV.network)
+        .toString();
+
+      await this.spendEasyReceipt(receipt, wallet, input, senderAddress);
     } catch (e) {
-      this.persistanceService.deletePendingEasyReceipt(receipt);
+      await this.persistanceService.deletePendingEasyReceipt(receipt);
       throw e;
     }
   }
@@ -156,13 +156,13 @@ export class EasyReceiveService {
    * @param {toAddress} Address to put the funds into.
    */
   buildEasySendRedeemTransaction(input: any, txn: any, toAddress: string, fee = FeeService.DEFAULT_FEE): Promise<any> {
-    
+
     //TODO: Create and sign a transaction to redeem easy send. Use input as
     //unspent Txo and use script to create scriptSig
-    let inputAddress = input.scriptId; 
+    let inputAddress = input.scriptId;
 
     const totalAmount = txn.invite ? txn.amount : txn.amount;
-    const amount =  txn.invite ? txn.amount : totalAmount - fee; 
+    const amount =  txn.invite ? txn.amount : totalAmount - fee;
 
     if (amount <= 0) throw new Error('Insufficient funds');
 
@@ -187,12 +187,12 @@ export class EasyReceiveService {
     if (!txn.invite) {
       tx.fee(fee);
     }
-    
+
     const sig = Transaction.Sighash.sign(tx, input.privateKey, crypto.Signature.SIGHASH_ALL, 0, input.script);
     const pubKeyId = PublicKey.fromString(input.senderPublicKey)._getID();
     let inputScript = Script.buildEasySendIn(sig, input.script, pubKeyId);
     tx.inputs[0].setScript(inputScript);
-     
+
     return tx;
 
   }
