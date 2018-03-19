@@ -15,6 +15,7 @@ import { MWCService } from '@merit/common/services/mwc.service';
 import { PlatformService } from '@merit/common/services/platform.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { IVault } from "@merit/common/models/vault";
 
 /*
   Historically, this acted as the API-Client
@@ -24,6 +25,7 @@ import { TxFormatService } from '@merit/common/services/tx-format.service';
 @Injectable()
 export class ProfileService {
   public wallets: Map<string, MeritWalletClient> = new Map<string, MeritWalletClient>();
+  public vaults: Array<IVault> = [];
   public profile: Profile = new Profile();
 
   private UPDATE_PERIOD = 3;
@@ -35,14 +37,16 @@ export class ProfileService {
     this.propogateBwsEvent(n, wallet);
   }, 10000);
 
-  constructor(private logger: LoggerService,
-              private persistenceService: PersistenceService,
-              private configService: ConfigService,
-              private bwcService: MWCService,
-              private platformService: PlatformService,
-              private appService: AppSettingsService,
-              private txFormatService: TxFormatService,
-              private events: Events) {
+  constructor(
+    private logger: LoggerService,
+    private persistenceService: PersistenceService,
+    private configService: ConfigService,
+    private bwcService: MWCService,
+    private platformService: PlatformService,
+    private appService: AppSettingsService,
+    private txFormatService: TxFormatService,
+    private events: Events
+  ) {
     this.logger.info('Hello ProfileService!');
   }
 
@@ -532,19 +536,29 @@ export class ProfileService {
     return totalMicros > 0;
   }
 
-  public addVault(vault: any): Promise<void> {
-    this.profile.addVault(vault);
-    return this.persistenceService.storeProfile(this.profile);
+  public addVault(vault: any) {
+    this.vaults.push(vault);
   }
 
-  public updateVault(vault: any): Promise<void> {
-    this.profile.updateVault(vault);
-    return this.persistenceService.storeProfile(this.profile);
+  public updateVault(vault: any) {
+    this.vaults.some((v:any) => {
+      if (vault._id == v._id) {
+        v = vault; 
+        return true;
+      }
+    });
   }
 
-  public getVaults(): Array<any> {
-    this.logger.info('Getting vaults');
-    return this.profile.vaults;
+  public async getVaults(reload: boolean = false) {
+    if (!this.wallets) return [];
+    if (!this.vaults.length || reload) {  
+        let wallets: MeritWalletClient[] = _.values(this.wallets);  
+        for (let wallet of wallets) {
+          const vaults = await wallet.getVaults();
+          this.vaults = this.vaults.concat( vaults.map(v => Object.assign(v, {walletClient: wallet})) );  
+        }
+    }
+    return this.vaults; 
   }
 
   private requiresBackup(wallet: MeritWalletClient): boolean {
@@ -761,4 +775,5 @@ export class ProfileService {
   public getHiddenUnlockRequestsAddresses() {
     return this.persistenceService.getHiddenUnlockRequestsAddresses();
   }
+
 }

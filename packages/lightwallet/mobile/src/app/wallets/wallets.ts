@@ -9,13 +9,15 @@ import { MeritToastController, ToastConfig } from '@merit/common/services/toast.
 import { ProfileService } from '@merit/common/services/profile.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
 import { Observable } from 'rxjs/Observable';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
-import { SendService } from '@merit/common/services/send.service';
+import { IVault } from '@merit/common/models/vault';
+import { FeeService } from '@merit/common/services/fee.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 const RETRY_MAX_ATTEMPTS = 5;
 const RETRY_TIMEOUT = 1000;
@@ -32,13 +34,13 @@ const RETRY_TIMEOUT = 1000;
 export class WalletsView {
 
   totalInvites: number;
-  totalWalletsValueMicros: string;
-  totalWalletsValueFiat: string;
+  totalAmount: number;
   allBalancesHidden: boolean;
   wallets: DisplayWallet[];
-  vaults;
+  vaults: Array<IVault>;
   network: string;
   loading: boolean;
+  hasActiveInvites: boolean;
 
   private get isActivePage(): boolean {
     try {
@@ -60,9 +62,11 @@ export class WalletsView {
               private alertController: AlertController,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private vaultsService: VaultsService,
               private platform: Platform,
-              private sendService: SendService) {
+              private feeService: FeeService,
+              private rateService: RateService, 
+              private addressService: AddressService
+            ) {
     this.logger.debug('WalletsView constructor!');
   }
 
@@ -100,12 +104,13 @@ export class WalletsView {
     this.loading = true;
 
     const fetch = async () => {
-      this.wallets = await this.updateAllWallets();
-      // Now that we have wallets, we will proceed with the following operations in parallel.
+      this.wallets = await this.updateAllWallets(); 
+      await this.updateVaults();
+      // Now that we have wallets and vaults, we will proceed with the following operations in parallel.
+
       await Promise.all([
         this.updateNetworkValue(),
-        this.processPendingEasyReceipts(),
-        this.updateVaults(_.head(this.wallets).client)
+        this.processPendingEasyReceipts()
       ]);
 
       this.logger.info('Done updating all info for wallet.');
@@ -134,6 +139,7 @@ export class WalletsView {
       )
       .toPromise();
 
+    this.hasActiveInvites = this.wallets.some(w => w.invites > 0);
     this.loading = false;
   }
 
@@ -169,21 +175,8 @@ export class WalletsView {
     this.wallets = await this.updateAllWallets();
   }
 
-  async refreshVaultList() {
-    return this.updateVaults(await this.profileService.getHeadWalletClient());
-  }
-
-  private async updateVaults(wallet: MeritWalletClient): Promise<any> {
-    const vaults = await this.vaultsService.getVaults(wallet);
-    this.logger.info('getting vaults', vaults);
-    this.vaults = await Promise.all(vaults.map(async vault => {
-      let coins = await this.vaultsService.getVaultCoins(wallet, vault);
-      vault.amount = _.sumBy(coins, 'micros');
-      await this.txFormatService.toFiat(vault.amount, wallet.cachedStatus.alternativeIsoCode);
-      vault.altAmountStr = new FiatAmount(vault.altAmount).amountStr;
-      vault.amountStr = this.txFormatService.formatAmountStr(vault.amount);
-      return vault;
-    }));
+  private async updateVaults(): Promise<any> {
+    this.vaults = await this.profileService.getVaults(true); 
   }
 
   /**
@@ -198,6 +191,10 @@ export class WalletsView {
   private async processEasyReceipt(receipt: EasyReceipt, isRetry: boolean): Promise<void> {
     const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, '');
     let txs = data.txs;
+
+    if (!txs) {
+      return await this.easyReceiveService.deletePendingReceipt(receipt); 
+    }  
 
     if (!_.isArray(txs)) {
       txs = [txs];
@@ -266,8 +263,9 @@ export class WalletsView {
     }).present();
   }
 
-  private showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
-    const amount = _.get(_.find(data.txs, (tx: any) => !tx.invite), 'amount', 0);
+  private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
+    let amount = _.get(_.find(data.txs, (tx: any) => !tx.invite), 'amount', 0);
+    amount -= this.rateService.microsToMrt( await this.feeService.getEasyReceiveFee() ); 
 
     this.alertController.create({
       title: `You've got ${amount} Merit!`,
@@ -323,8 +321,10 @@ export class WalletsView {
       const address = wallet.getRootAddress();
       const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.toString());
 
+      this.updateAllInfo();
       this.logger.info('accepted easy send', acceptanceTx);
     } catch (err) {
+      console.log(err);
       this.toastCtrl.create({
         message: 'There was an error retrieving your incoming payment.',
         cssClass: ToastConfig.CLASS_ERROR
@@ -362,20 +362,16 @@ export class WalletsView {
       allBalancesHidden = w.client.balanceHidden && allBalancesHidden;
     });
 
-    const usdAmount = await this.txFormatService.formatToUSD(totalAmount);
+    this.vaults.forEach(v => totalAmount += v.amount );
 
-    if (!(this.allBalancesHidden = allBalancesHidden)) {
-      this.totalWalletsValueFiat = usdAmount ? new FiatAmount(+usdAmount).amountStr : '';
-      this.totalWalletsValueMicros = this.txFormatService.parseAmount(totalAmount, 'micros').amountUnitStr;
-    }
-
+    this.totalAmount= totalAmount;
     this.totalInvites = totalInvites;
   }
 
   private async updateAllWallets(): Promise<DisplayWallet[]> {
     const wallets = await this.profileService.getWallets();
     return Promise.all<DisplayWallet>(
-      wallets.map(w => createDisplayWallet(w, this.walletService, this.sendService, this.txFormatService, { skipRewards: true, skipAlias: true }))
+      wallets.map(w => createDisplayWallet(w, this.walletService, this.addressService, this.txFormatService, { skipRewards: true, skipAlias: true }))
     );
   }
 

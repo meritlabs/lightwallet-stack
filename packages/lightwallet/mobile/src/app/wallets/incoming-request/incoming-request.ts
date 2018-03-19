@@ -12,7 +12,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { ContactsService } from '@merit/mobile/services/contacts.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { ToastConfig } from '@merit/common/services/toast.controller.service';
 
 @IonicPage()
@@ -30,7 +30,7 @@ export class IncomingRequestModal {
               private navParams: NavParams,
               private modalCtrl: ModalController,
               private contactsService: ContactsService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private toastCtrl: ToastController,
               private unlockService: UnlockRequestService,
               private loadingCtrl: LoadingController) {
@@ -67,7 +67,7 @@ export class IncomingRequestModal {
   createContact() {
     let meritAddress = {
       address: this.unlockRequest.address,
-      network: this.sendService.getAddressNetwork(this.unlockRequest.address).name
+      network: this.addressService.getAddressNetwork(this.unlockRequest.address).name
     };
     let modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
     modal.onDidDismiss((contact) => {
@@ -79,7 +79,7 @@ export class IncomingRequestModal {
   bindContact() {
     let meritAddress = {
       address: this.unlockRequest.address,
-      network: this.sendService.getAddressNetwork(this.unlockRequest.address).name
+      network: this.addressService.getAddressNetwork(this.unlockRequest.address).name
     };
     let modal = this.modalCtrl.create('SendSelectBindContactView', { contacts: this.contacts, address: meritAddress });
     modal.onDidDismiss(() => {

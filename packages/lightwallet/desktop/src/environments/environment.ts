@@ -7,7 +7,8 @@ export const environment = {
   production: false,
   network: 'livenet',
   mwsUrl: 'https://mws.merit.me/bws/api',
-  rateUrl: 'https://bitpay.com/api/rates'
+  rateUrl: 'https://bitpay.com/api/rates',
+  feeLevel: 'superEconomy'
 };
 
 export { environment as ENV };

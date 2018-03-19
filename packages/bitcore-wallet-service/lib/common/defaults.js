@@ -47,6 +47,9 @@ Defaults.FEE_LEVELS = [{
   defaultValue: 20000
 }];
 
+
+Defaults.EASYRECEIVE_FEE = 20000*1; //super economy * avg easyreceive fee size TODO: calculate tx size
+
 Defaults.DEFAULT_FEE_PER_KB = Defaults.FEE_LEVELS[1].defaultValue;
 
 // How many levels to fallback to if the value returned by the network for a given nbBlocks is -1

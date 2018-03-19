@@ -7,7 +7,7 @@ import { MeritContact } from '@merit/common/models/merit-contact';
 import { ContactsService } from '@merit/mobile/services/contacts.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { SendMethodDestination } from '@merit/common/models/send-method';
 
@@ -36,7 +36,7 @@ export class SendInviteView {
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private contactsService: ContactsService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private modalCtrl: ModalController,
               private addressScanner: AddressScannerService,
               private walletService: WalletService,
@@ -90,7 +90,7 @@ export class SendInviteView {
 
     if (_.isEmpty(result.withMerit)) {
       if (this.isAddress(input)) {
-        let isBeaconed = await this.sendService.isAddressBeaconed(input);
+        let isBeaconed = await this.addressService.isAddressBeaconed(input);
 
         if (isBeaconed) {
           result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
@@ -100,7 +100,7 @@ export class SendInviteView {
         }
       } else if (this.couldBeAlias(input)) {
         const alias = input.slice(1);
-        const addressInfo = await this.sendService.getAddressInfo(alias);
+        const addressInfo = await this.addressService.getAddressInfo(alias);
 
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
@@ -116,11 +116,11 @@ export class SendInviteView {
 
   private couldBeAlias(input) {
     if (!isAlias(input)) return false;
-    return this.sendService.couldBeAlias(input.slice(1));
+    return this.addressService.couldBeAlias(input.slice(1));
   }
 
   private isAddress(input) {
-    return this.sendService.isAddress(input);
+    return this.addressService.isAddress(input);
   }
 
   clearSearch() {
