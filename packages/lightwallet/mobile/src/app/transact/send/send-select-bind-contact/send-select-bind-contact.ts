@@ -13,7 +13,7 @@ export class SendSelectBindContactView {
   public contacts: Array<MeritContact>;
   public foundContacts: Array<MeritContact> = [];
   public searchQuery: string = '';
-  public meritAddress: { address: string, network: string };
+  public meritAddress: { address: string, network: string, alias: string };
 
   constructor(private navParams: NavParams,
               private viewCtrl: ViewController,

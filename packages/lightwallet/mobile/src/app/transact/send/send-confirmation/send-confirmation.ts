@@ -4,7 +4,6 @@ import * as  _ from 'lodash';
 import { EasySend } from '@merit/common/models/easy-send';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { TouchIdService } from '@merit/mobile/services/touch-id.service';
-import { EasySendService } from '@merit/common/services/easy-send.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { RateService } from '@merit/common/services/rate.service';
@@ -53,7 +52,6 @@ export class SendConfirmationView {
               private alertController: AlertController,
               private loadingCtrl: LoadingController,
               private touchIdService: TouchIdService,
-              private easySendService: EasySendService,
               private walletService: WalletService,
               private formatService: TxFormatService,
               private rateService: RateService,
@@ -210,36 +208,16 @@ export class SendConfirmationView {
         }
       }
       await this.approveTx();
+
       if (this.txData.sendMethod.type == SendMethodType.Easy) {
-        await this.easySendService.storeEasySend(this.txData.wallet.id, this.txData.easySend);
-        console.dir(this.txData.easySendUrl);
-        switch (this.txData.sendMethod.destination) {
-          case SendMethodDestination.Sms:
-            await this.easySendService.sendSMS(
-              _.get(this.txData.recipient.phoneNumbers, '[0].value'),
-              this.viewData.amountMrt,
-              this.txData.easySendUrl
-            );
-            break;
-
-          case SendMethodDestination.Email:
-            await this.easySendService.sendEmail(
-              _.get(this.txData.recipient.emails, '[0].value'),
-              this.viewData.amountMrt,
-              this.txData.easySendUrl
-            );
-            break;
-
-          default:
-            throw new Error(`Unsupported sending method: ${this.txData.sendMethod}`);
-        }
+        this.navCtrl.push('EasySendShareView', { txData: this.txData });
+      } else {
+        this.navCtrl.popToRoot();
+        this.toastCtrl.create({
+          message: 'Your transaction is complete',
+          cssClass: ToastConfig.CLASS_SUCCESS
+        }).present();
       }
-
-      this.navCtrl.popToRoot();
-      this.toastCtrl.create({
-        message: 'Your transaction is complete',
-        cssClass: ToastConfig.CLASS_SUCCESS
-      }).present();
     } catch (err) {
       this.logger.warn(err);
       return this.toastCtrl.create({
