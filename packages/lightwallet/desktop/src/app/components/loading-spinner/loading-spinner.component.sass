@@ -1,12 +1,15 @@
 .loader
-  padding: 200px 0
   display: flex
-  width: 200px
-  height: 100px
   position: relative
-  animation: rotate .5s forwards
+  width: 100%
+  height: 50px
+  left: 0
+  right: 0
+  padding: 50px 0
+  margin: auto
+  transform: scale(0.7)
 .column
-  width: 50px
+  width: 40px
   position: absolute
   margin: auto
   width: 20px
@@ -16,9 +19,9 @@
   top: 0
   bottom: 0
   &--first
-    animation: moveToLeft 4s infinite
+    animation: moveToLeft 2s infinite
   &--last
-    animation: moveToRight 4s infinite
+    animation: moveToRight 2s infinite
 .dot-1
   width: 20px
   height: 20px
@@ -47,44 +50,45 @@
     border-radius: 10px 10px 10px 10px
     position: absolute
     left: -7px
-    animation: drop 2s infinite
-    animation-delay: 1.1s
+    animation: drop 1s infinite
+    animation-delay: 1s
   &:after
     transform: rotate(135deg)
-    animation: drop2 2s infinite
-    animation-delay: 1.2s
+    animation: drop2 1s infinite
+    animation-delay: 1.1s
 @keyframes rotate
   0%
     transform: rotate(0deg)
+  90%
+    transform: rotate(0deg)
   100%
     transform: rotate(360deg)
-
 @keyframes moveToLeft
   0%
     transform: translate(0px, 0px)
   5%
-    transform: translate(-50px, 0px)
+    transform: translate(-40px, 0px)
   10%
-    transform: translate(-50px, -20px)
+    transform: translate(-40px, -20px)
   15%
-    transform: translate(-50px, -20px)
+    transform: translate(-40px, -20px)
   89%
-    transform: translate(-50px, -20px)
+    transform: translate(-40px, -20px)
   90%
-    transform: translate(-50px, 0px) rotate(-360deg)
+    transform: translate(-40px, 0px) rotate(-360deg)
 @keyframes moveToRight
   0%
     transform: translate(0px, 0px)
   5%
-    transform: translate(50px, 0px)
+    transform: translate(40px, 0px)
   10%
-    transform: translate(50px, -20px)
+    transform: translate(40px, -20px)
   15%
-    transform: translate(50px, -20px)
+    transform: translate(40px, -20px)
   89%
-    transform: translate(50px, -20px)
+    transform: translate(40px, -20px)
   90%
-    transform: translate(50px, 0px) rotate(360deg)
+    transform: translate(40px, 0px) rotate(360deg)
 @keyframes drop
   0%
     transform: translate(0px, 0px) rotate(-45deg)
