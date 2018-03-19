@@ -59,8 +59,38 @@ export class MeritLightWallet {
     return this.initializeApp();
   }
 
-  private initBranchInBrowser() {
+  private async loadEasySendInBrowser() {
+    let profile = await this.profileService.getProfile();
 
+    let search = window.location.search;
+    if (search && search.length > 2) {
+      try {
+        const data: any = {};
+        search
+          .substr(1)
+          .split('&')
+          .forEach((q: any) => {
+            q = q.split('=');
+            data[q[0]] = q[1];
+          });
+
+        const easyReceipt: EasyReceipt = await this.easyReceiveService.validateAndSaveParams(data);
+        this.logger.info('Returned from validate with: ', easyReceipt);
+
+        // We have an easyReceipt, let's handle the cases of being a new user or an
+        // existing user.
+        if (easyReceipt) {
+          if (!(profile && profile.credentials && profile.credentials.length > 0)) {
+            // User received easySend, but has no wallets yet.
+            // Skip to unlock view.
+            return this.nav.setRoot('UnlockView');
+          }
+
+          // User is a normal user and needs to be thrown an easyReceive modal.
+          return this.nav.setRoot('TransactView');
+        }
+      } catch (e) {}
+    }
   }
 
   /**
@@ -69,7 +99,7 @@ export class MeritLightWallet {
   private async loadProfileAndEasySend() {
     this.logger.info('LoadingProfileAndEasySend');
 
-    if (!this.platform.is('cordova')) return;
+    if (!this.platform.is('cordova')) return this.loadEasySendInBrowser();
 
     try {
       let profile = await this.profileService.getProfile();
