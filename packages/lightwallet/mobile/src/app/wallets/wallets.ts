@@ -344,6 +344,7 @@ export class WalletsView {
       return this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data).then(() => {
         this.logger.info('Easy send returned');
       }).catch((err) => {
+        console.log(err);
         this.toastCtrl.create({
           message: err.text || 'There was an error rejecting the Merit',
           cssClass: ToastConfig.CLASS_ERROR
