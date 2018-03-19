@@ -15,7 +15,7 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 @IonicPage()
 @Component({
@@ -44,7 +44,7 @@ export class NetworkView {
               private logger: LoggerService,
               private platformService: PlatformService,
               private unlockRequestService: UnlockRequestService,
-              private sendService: SendService) {
+              private addressService: AddressService) {
   }
 
   // Ensure that the wallets are loaded into the view on first load.
@@ -52,7 +52,7 @@ export class NetworkView {
     this.loading = true;
     try {
       const wallets: MeritWalletClient[] = await this.profileService.getWallets();
-      this.displayWallets = await Promise.all(wallets.map((wallet: MeritWalletClient) => createDisplayWallet(wallet, this.walletService, this.sendService)));
+      this.displayWallets = await Promise.all(wallets.map((wallet: MeritWalletClient) => createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)));
       this.logger.info('DisplayWallets after ngOnInit: ', this.displayWallets);
     } catch (err) {
       this.logger.warn(err);
@@ -82,7 +82,8 @@ export class NetworkView {
     try {
       this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
       await this.formatWallets(await this.loadInfo());
-      this.unlockRequestService.loadRequestsData();
+      await this.unlockRequestService.loadRequestsData();
+      this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber; 
     } catch (err) {
       this.logger.warn(err);
       this.toastCtrl
@@ -116,21 +117,17 @@ export class NetworkView {
 
   private async loadWallets() {
 
-    const wallets: MeritWalletClient[] = await this.profileService.getWallets();
-
-    const displayWallets: DisplayWallet[] = await Promise.all(
-      wallets.map((wallet: MeritWalletClient) =>
-        createDisplayWallet(wallet, this.walletService, this.sendService)
-      )
-    );
+    const displayWallets: DisplayWallet[] = [];
+    for (let wallet of await this.profileService.getWallets()) {
+      displayWallets.push(await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService));
+    }
 
     this.activeInvites = 0;
     for (let dWallet of displayWallets) {
       this.activeInvites += dWallet.invites;
     }
 
-
-    return displayWallets;
+    return displayWallets; 
   }
 
   private async formatWallets(processedWallets: DisplayWallet[]) {

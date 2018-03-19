@@ -5,7 +5,7 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { Observable } from 'rxjs/Observable';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Store } from '@ngrx/store';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import 'rxjs/add/operator/take';
 import { selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
 import { IRootAppState } from '@merit/common/reducers';
@@ -84,7 +84,7 @@ export class ReceiveView implements OnInit {
   constructor(private configService: ConfigService,
               private store: Store<IRootAppState>,
               private walletService: WalletService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private rateService: RateService) {
     try {
       this.availableUnits = [
@@ -101,7 +101,7 @@ export class ReceiveView implements OnInit {
     try {
       this.selectedWallet = (await this.wallets$.take(1).toPromise())[0];
       this.address = this.selectedWallet.client.getRootAddress().toString();
-      let info = await this.sendService.getAddressInfo(this.address);
+      let info = await this.addressService.getAddressInfo(this.address);
       this.alias = info.alias;
       this.formatAddress();
     } catch (err) {

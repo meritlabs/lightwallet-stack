@@ -3,8 +3,8 @@ import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { ENV } from '@app/env';
 import { IMeritAddress, MeritContact } from '@merit/common/models/merit-contact';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { ContactsService } from '@merit/mobile/services/contacts.service';
-import { SendService } from '@merit/common/services/send.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 
 @IonicPage()
@@ -20,7 +20,7 @@ export class SendCreateContactView {
 
   constructor(navParams: NavParams,
               private contactsService: ContactsService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private toastController: MeritToastController,
               private viewCtrl: ViewController) {
     this.contact = new MeritContact();
@@ -48,7 +48,7 @@ export class SendCreateContactView {
       }).present();
     }
 
-    const info = await this.sendService.getAddressInfoIfValid(address);
+    const info = await this.addressService.getAddressInfoIfValid(address);
 
     if (!info) {
       return this.toastController.create({
