@@ -64,7 +64,7 @@ export class WalletsView {
               private txFormatService: TxFormatService,
               private platform: Platform,
               private feeService: FeeService,
-              private rateService: RateService, 
+              private rateService: RateService,
               private addressService: AddressService
             ) {
     this.logger.debug('WalletsView constructor!');
@@ -95,7 +95,8 @@ export class WalletsView {
     });
   }
 
-  ionViewWillEnter() {
+  ionViewDidEnter() {
+    console.log('Did enter fired!!');
     this.refreshAllInfo()
       .then(() => this.logger.info('Updated info for wallets view'));
   }
@@ -104,7 +105,7 @@ export class WalletsView {
     this.loading = true;
 
     const fetch = async () => {
-      this.wallets = await this.updateAllWallets(); 
+      this.wallets = await this.updateAllWallets();
       await this.updateVaults();
       // Now that we have wallets and vaults, we will proceed with the following operations in parallel.
 
@@ -176,7 +177,7 @@ export class WalletsView {
   }
 
   private async updateVaults(): Promise<any> {
-    this.vaults = await this.profileService.getVaults(true); 
+    this.vaults = await this.profileService.getVaults(true);
   }
 
   /**
@@ -193,8 +194,8 @@ export class WalletsView {
     let txs = data.txs;
 
     if (!txs) {
-      return await this.easyReceiveService.deletePendingReceipt(receipt); 
-    }  
+      return await this.easyReceiveService.deletePendingReceipt(receipt);
+    }
 
     if (!_.isArray(txs)) {
       txs = [txs];
@@ -265,7 +266,7 @@ export class WalletsView {
 
   private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
     let amount = _.get(_.find(data.txs, (tx: any) => !tx.invite), 'amount', 0);
-    amount -= this.rateService.microsToMrt( await this.feeService.getEasyReceiveFee() ); 
+    amount -= this.rateService.microsToMrt( await this.feeService.getEasyReceiveFee() );
 
     this.alertController.create({
       title: `You've got ${amount} Merit!`,
