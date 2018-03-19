@@ -77,7 +77,7 @@ export class SendConfirmationView {
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
       methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'Global Send' : 'Classic Send',
-      destination: this.txData.sendMethod.alias || this.txData.sendMethod.value 
+      destination: this.txData.sendMethod.alias ? '@'+this.txData.sendMethod.alias : this.txData.sendMethod.value
     };
 
     viewData.walletRemainingBalance =  this.txData.wallet.status.totalBalanceMicros - viewData.totalAmount; 

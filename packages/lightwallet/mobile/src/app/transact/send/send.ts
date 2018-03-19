@@ -179,24 +179,6 @@ export class SendView {
         } else {
           result.error = ERROR_ALIAS_NOT_FOUND;
         }
-      //} else if (this.couldBeEmail(input)) {
-      //  result.toNewEntity = { destination: SendMethodDestination.Email, contact: new MeritContact() };
-      //  result.toNewEntity.contact.emails.push({ value: input });
-      //  this.suggestedMethod = {
-      //    type: SendMethodType.Easy,
-      //    destination: SendMethodDestination.Email,
-      //    value: input,
-      //    alias: ''
-      //  };
-      //} else if (this.couldBeSms(input)) {
-      //  result.toNewEntity = { destination: SendMethodDestination.Sms, contact: new MeritContact() };
-      //  result.toNewEntity.contact.phoneNumbers.push({ value: input });
-      //  this.suggestedMethod = {
-      //    type: SendMethodType.Easy,
-      //    destination: SendMethodDestination.Sms,
-      //    value: input,
-      //    alias: ''
-      //  };
       }
     }
 
@@ -258,19 +240,24 @@ export class SendView {
   }
 
   sendToContact(contact) {
+
     this.navCtrl.push('SendViaView', {
       contact: contact,
-      amount: this.amount,
-      isEasyEnabled: this.hasActiveInvites
+      amount: this.amount
     });
+
   }
 
   sendToEntity(entity) {
-    this.navCtrl.push('SendViaView', {
+    this.navCtrl.push('SendAmountView', {
       contact: entity.contact,
       amount: this.amount,
-      isEasyEnabled: this.hasActiveInvites,
-      suggestedMethod: this.suggestedMethod
+      suggestedMethod: {
+        type: SendMethodType.Classic,
+        destination: SendMethodDestination.Address,
+        value: entity.contact.meritAddresses[0].address,
+        alias: entity.contact.meritAddresses[0].alias
+      }
     });
   }
 
