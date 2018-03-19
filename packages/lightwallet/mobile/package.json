@@ -1,72 +1,74 @@
 {
-    "name": "merit-lightwallet-mobile",
-    "description": "Merit LightWallet application",
-    "author": "Merit Foundation",
-    "version": "1.1.0",
-    "keywords": [
-        "merit",
-        "wallet",
-        "lightwallet",
-        "labs",
-        "mrt",
-        "multisignature",
-        "bitcore"
-    ],
-    "dependencies": {
-        "branch-cordova-sdk": "^2.6.21",
-        "cordova-android": "^6.4.0",
-        "cordova-clipboard": "^1.1.1",
-        "cordova-ios": "4.5.4",
-        "cordova-plugin-android-fingerprint-auth": "^1.4.0",
-        "cordova-plugin-app-version": "^0.1.9",
-        "cordova-plugin-compat": "^1.2.0",
-        "cordova-plugin-contacts": "^2.3.1",
-        "cordova-plugin-device": "^1.1.7",
-        "cordova-plugin-fcm": "^2.1.2",
-        "cordova-plugin-file": "^6.0.1",
-        "cordova-plugin-inappbrowser": "^1.7.2",
-        "cordova-plugin-ionic-webview": "^1.1.16",
-        "cordova-plugin-splashscreen": "^5.0.1",
-        "cordova-plugin-statusbar": "^2.4.1",
-        "cordova-plugin-touch-id": "^3.3.1",
-        "cordova-plugin-whitelist": "^1.3.3",
-        "cordova-plugin-x-socialsharing": "^5.2.1",
-        "cordova.plugins.diagnostic": "^3.9.2",
-        "ionic-plugin-keyboard": "^2.2.1",
-        "phonegap-plugin-barcodescanner": "^7.0.0",
-        "sw-toolbox": "3.6.0"
+  "name": "merit-lightwallet-mobile",
+  "description": "Merit LightWallet application",
+  "author": "Merit Foundation",
+  "version": "1.1.0",
+  "keywords": [
+    "merit",
+    "wallet",
+    "lightwallet",
+    "labs",
+    "mrt",
+    "multisignature",
+    "bitcore"
+  ],
+  "dependencies": {
+    "branch-cordova-sdk": "^2.6.24",
+    "cordova-android": "^6.4.0",
+    "cordova-clipboard": "^1.1.1",
+    "cordova-ios": "4.5.4",
+    "cordova-plugin-android-fingerprint-auth": "^1.4.3",
+    "cordova-plugin-app-version": "^0.1.9",
+    "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-contacts": "^2.3.1",
+    "cordova-plugin-device": "^1.1.7",
+    "cordova-plugin-fcm": "^2.1.2",
+    "cordova-plugin-file": "^6.0.1",
+    "cordova-plugin-inappbrowser": "^1.7.2",
+    "cordova-plugin-ionic-webview": "^1.1.16",
+    "cordova-plugin-splashscreen": "^5.0.2",
+    "cordova-plugin-statusbar": "^2.4.1",
+    "cordova-plugin-touch-id": "^3.3.1",
+    "cordova-plugin-whitelist": "^1.3.3",
+    "cordova-plugin-x-socialsharing": "^5.3.2",
+    "cordova.plugins.diagnostic": "^3.9.2",
+    "es6-promise-plugin": "^4.2.2",
+    "ionic-plugin-keyboard": "^2.2.1",
+    "phonegap-plugin-barcodescanner": "^7.1.0",
+    "sw-toolbox": "3.6.0"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-x-socialsharing": {},
+      "cordova-clipboard": {},
+      "ionic-plugin-keyboard": {},
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-touch-id": {
+        "FACEID_USAGE_DESCRIPTION": " "
+      },
+      "cordova-plugin-android-fingerprint-auth": {},
+      "cordova-plugin-contacts": {
+        "CONTACTS_USAGE_DESCRIPTION": " "
+      },
+      "phonegap-plugin-barcodescanner": {
+        "CAMERA_USAGE_DESCRIPTION": " ",
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      },
+      "branch-cordova-sdk": {},
+      "cordova-plugin-fcm": {},
+      "cordova-plugin-compat": {},
+      "cordova.plugins.diagnostic": {},
+      "cordova-plugin-app-version": {}
     },
-    "cordova": {
-        "plugins": {
-            "cordova-plugin-x-socialsharing": {},
-            "cordova-clipboard": {},
-            "ionic-plugin-keyboard": {},
-            "cordova-plugin-whitelist": {},
-            "cordova-plugin-statusbar": {},
-            "cordova-plugin-device": {},
-            "cordova-plugin-splashscreen": {},
-            "cordova-plugin-ionic-webview": {},
-            "cordova-plugin-file": {},
-            "cordova-plugin-inappbrowser": {},
-            "cordova-plugin-touch-id": {
-                "FACEID_USAGE_DESCRIPTION": " "
-            },
-            "cordova-plugin-android-fingerprint-auth": {},
-            "cordova-plugin-contacts": {
-                "CONTACTS_USAGE_DESCRIPTION": " "
-            },
-            "phonegap-plugin-barcodescanner": {
-                "CAMERA_USAGE_DESCRIPTION": " "
-            },
-            "branch-cordova-sdk": {},
-            "cordova-plugin-fcm": {},
-            "cordova-plugin-compat": {},
-            "cordova.plugins.diagnostic": {},
-            "cordova-plugin-app-version": {}
-        },
-        "platforms": [
-            "android",
-            "ios"
-        ]
-    }
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  }
 }
