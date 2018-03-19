@@ -24,7 +24,7 @@
                 </button>
             </ion-col>
             <ion-col>
-                <button ion-button icon-left clear small (click)="share(txData.easySendUrl)">
+                <button ion-button icon-left clear small (click)="share(txData.easySendUrl)" [hidden]="!showShareButton()">
                     <ion-icon name="share"></ion-icon>
                     <div>Share</div>
                 </button>
