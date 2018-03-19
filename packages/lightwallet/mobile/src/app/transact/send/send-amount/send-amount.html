@@ -30,7 +30,7 @@
         <ion-item no-lines>
           <ion-input
             #amount 
-            type="number"
+            type="tel"
             pattern="[0-9\.]"
             [(ngModel)]="formData.amount"
             (ngModelChange)="processAmount(formData.amount)"
@@ -76,7 +76,7 @@
 
       <p *ngIf="feePercent">{{feePercent}}</p>
       <div item-end *ngIf="txData?.txp?.fee">
-        {{ txData?.txp?.fee + txData.easyFee | toMRT}} 
+        {{ txData?.txp?.fee + txData.easyFee | toMRT}}
         <ion-icon name="ios-arrow-down"></ion-icon>
       </div>
     </button>
@@ -111,15 +111,6 @@
                    autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
       </ion-item>
     </ion-list>
-
-    <!--<ion-item *ngIf="sendMethod.type == 'easy'">-->
-    <!--<ion-avatar item-start img-icon>-->
-    <!--<img src="assets/img/icons/timeout.svg">-->
-    <!--</ion-avatar>-->
-    <!--<ion-label stacked>Valid till</ion-label>-->
-    <!--<ion-label>~{{formData.validTill}} ({{formData.nbBlocks}})</ion-label>-->
-    <!--<ion-icon name="arrow-right" item-end></ion-icon>-->
-    <!--</ion-item>-->
 
   </div>
 
