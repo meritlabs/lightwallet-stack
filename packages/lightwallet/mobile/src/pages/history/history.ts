@@ -4,7 +4,7 @@ import { flatten, sortBy } from 'lodash';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { AddressService } from '@merit/common/services/address.service';
 import { ProfileService } from '@merit/common/services/profile.service';
-import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { createDisplayWallet, DisplayWallet } from '@merit/common/models/display-wallet';
 import { formatWalletHistory } from '@merit/common/utils/transactions';

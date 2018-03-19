@@ -3,7 +3,7 @@ import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { ENV } from '@app/env';
 import { IMeritAddress, MeritContact } from '@merit/common/models/merit-contact';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
 import { AddressService } from '@merit/common/services/address.service';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 
