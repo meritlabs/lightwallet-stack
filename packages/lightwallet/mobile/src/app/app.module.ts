@@ -28,6 +28,7 @@ import { PopupService as MobilePopupService } from '@merit/mobile/app/core/popup
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { VaultsService } from '@merit/common/services/vaults.service';
 import { ContactsService } from '@merit/common/services/contacts.service';
+import { ContactsService as MobileContactsService } from '@merit/mobile/services/contacts.service';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { Keyboard } from '@ionic-native/keyboard';
 import { AppVersion } from '@ionic-native/app-version';
@@ -41,7 +42,7 @@ import { AddressService } from '@merit/common/services/address.service';
 export function getProviders() {
   return [
     { provide: PopupService, useClass: MobilePopupService },
-    ContactsService,
+    { provide: ContactsService, useClass: MobileContactsService },
     AddressScannerService,
     DeepLinkService,
     EmailNotificationsService,
