@@ -16,6 +16,7 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
+import * as branch from 'branch-sdk';
 
 @Component({
   templateUrl: 'app.html'
@@ -56,6 +57,10 @@ export class MeritLightWallet {
     this.registerMwcErrorHandler();
 
     return this.initializeApp();
+  }
+
+  private initBranchInBrowser() {
+
   }
 
   /**

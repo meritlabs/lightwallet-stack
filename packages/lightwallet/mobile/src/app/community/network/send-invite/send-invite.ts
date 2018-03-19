@@ -4,7 +4,7 @@ import { AddressScannerService } from '@merit/mobile/app/utilities/import/addres
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { AddressService } from '@merit/common/services/address.service';
