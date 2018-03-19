@@ -21,13 +21,12 @@ export class EasySendShareView {
     private platformService: PlatformService
   ) {
     this.txData = this.navParams.get('txData');
-    console.log(this.txData);
   }
 
 
   copyToClipboard(url) {
     this.toastCtrl.create({
-      message: 'Your transaction is complete',
+      message: 'Copied to clipboard',
       cssClass: ToastConfig.CLASS_SUCCESS
     }).present();
   }
