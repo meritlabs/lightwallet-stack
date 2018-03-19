@@ -5,7 +5,8 @@ view-easy-send-share {
   ion-card-header {
     text-align: center;
     font-size: 14px;
-    color: rgba(45, 60, 80, 0.6) !important;
+    color: rgba(0, 0, 0, 0.6) !important;
+    font-weight: 600;
   }
 
   .send-ready {
@@ -37,6 +38,12 @@ view-easy-send-share {
 
   a {
     font-size: 12px;
+  }
+
+  .row {
+    .button-inner {
+      color: rgba(0,0,0,0.6) !important;
+    }
   }
 
 }

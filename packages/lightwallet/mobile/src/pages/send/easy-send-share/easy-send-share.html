@@ -13,7 +13,7 @@
             Your link
         </ion-card-header>
         <ion-card-content>
-            <a [href]="txData.easySendUrl">{{ txData.easySendUrl }}</a>
+            <a (click)="copyToClipboard(txData.easySendUrl)" [clip]="txData.easySendUrl">{{ txData.easySendUrl }}</a>
         </ion-card-content>
 
         <ion-row>
@@ -23,8 +23,8 @@
                     <div>Copy</div>
                 </button>
             </ion-col>
-            <ion-col>
-                <button ion-button icon-left clear small (click)="share(txData.easySendUrl)" [hidden]="!showShareButton()">
+            <ion-col [hidden]="!showShareButton()">
+                <button ion-button icon-left clear small (click)="share(txData.easySendUrl)">
                     <ion-icon name="share"></ion-icon>
                     <div>Share</div>
                 </button>
