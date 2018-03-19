@@ -1,12 +1,12 @@
 <ion-header>
   <ion-navbar color="light">
-    <ion-title *ngIf="recipient.name?.formatted">
+    <ion-title *ngIf="recipient?.name?.formatted">
       <h2>Recipient: {{recipient.name.formatted}}</h2>
-      <p>via {{ sendMethod.alias? '@' + sendMethod.alias : sendMethod.value }}</p>
+      <p>via {{ sendMethod.alias ? '@' + sendMethod.alias : sendMethod.value }}</p>
     </ion-title>
-    <ion-title *ngIf="!recipient.name?.formatted">
-      <h2>{{ sendMethod.type == 'easy' ? 'Easy Send to' : 'Classic Send to' }}</h2>
-      <p>{{ sendMethod.alias? '@' + sendMethod.alias : sendMethod.value }}</p>
+    <ion-title *ngIf="!recipient?.name?.formatted">
+      <h2>{{ sendMethod.type == 'easy' ? 'Global Send' : 'Send to' }}</h2>
+      <p>{{ sendMethod.alias ? '@' + sendMethod.alias : sendMethod.value }}</p>
     </ion-title>
   </ion-navbar>
 </ion-header>
