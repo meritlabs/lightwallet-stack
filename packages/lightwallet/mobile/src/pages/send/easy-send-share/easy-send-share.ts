@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { PlatformService } from '@merit/common/services/platform.service';
 
 @IonicPage()
 @Component({
@@ -16,7 +17,8 @@ export class EasySendShareView {
     private navCtrl: NavController,
     private navParams: NavParams,
     private socialSharing: SocialSharing,
-    private toastCtrl: MeritToastController
+    private toastCtrl: MeritToastController,
+    private platformService: PlatformService
   ) {
     this.txData = this.navParams.get('txData');
     console.log(this.txData);
@@ -36,6 +38,12 @@ export class EasySendShareView {
 
   toWallets() {
     this.navCtrl.popToRoot();
+  }
+
+  showShareButton() {
+    return (
+      this.platformService.isCordova
+    );
   }
 
 }
