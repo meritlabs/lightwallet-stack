@@ -3,7 +3,7 @@ import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angu
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { IMeritAddress, MeritContact } from '@merit/common/models/merit-contact';
-import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { AddressService } from '@merit/common/services/address.service';

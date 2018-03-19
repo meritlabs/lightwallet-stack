@@ -48,7 +48,10 @@
 
     <div class="no-results" *ngIf="!searchResult.withMerit.length && !searchResult.noMerit.length" padding-top>
 
-      <div class="no-results-label" *ngIf="!searchResult.error">No results</div>
+      <div class="no-results-label" *ngIf="!searchResult.error">
+          No results
+            <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
+      </div>
       <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
         Address is not confirmed yet
       </div>
@@ -62,14 +65,12 @@
                 class="send-button" color="light">
           Create New Contact
         </button>
-        <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="bindAddressToContact()"
+        <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length" (click)="bindAddressToContact()"
                 class="send-button" color="light">
           Bind to existing contact
         </button>
         <button ion-button padding (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
-          <div *ngIf="searchResult.toNewEntity.destination == 'address'">Send To This Address</div>
-          <div *ngIf="searchResult.toNewEntity.destination == 'sms'">Send SMS To This Number</div>
-          <div *ngIf="searchResult.toNewEntity.destination == 'email'">Send Email To This Address</div>
+          <div *ngIf="searchResult.toNewEntity.destination == 'address'">Send To This {{ couldBeAlias(searchQuery) ? 'Alias' : 'Address' }}</div>
         </button>
         <div class="address">{{searchQuery}}</div>
       </div>

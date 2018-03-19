@@ -22,7 +22,9 @@
       </ion-item>
 
       <ion-item text-wrap class="destination" *ngIf="viewData.destination">
-        <ion-avatar item-start></ion-avatar>
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/merit.svg">
+        </ion-avatar>
         <ion-label>
           <p>Destination</p>
           <h2>{{ viewData.destination }}</h2>
@@ -30,7 +32,9 @@
       </ion-item>
 
       <ion-item>
-        <ion-avatar item-start></ion-avatar>
+        <ion-avatar item-start img-icon>
+          <img src="assets/img/icons/merit.svg">
+        </ion-avatar>
         <ion-label>
           <p>Method</p>
           <h2>{{ viewData.methodName }}</h2>
