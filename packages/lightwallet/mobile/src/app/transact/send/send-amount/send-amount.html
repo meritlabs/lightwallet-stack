@@ -89,7 +89,7 @@
           <ion-icon name="ios-information-circle-outline"></ion-icon>
         </button>
       </ion-label>
-      <ion-toggle [(ngModel)]="feeIncluded" [disabled]="!feeTogglerEnabled"></ion-toggle>
+      <ion-toggle [(ngModel)]="feeIncluded" [disabled]="!feeTogglerEnabled" (ngModelChange)="updateTxData()"></ion-toggle>
     </ion-item>
 
     <ion-list *ngIf="sendMethod.type == 'easy'">
