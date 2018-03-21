@@ -327,12 +327,13 @@ view-send-select-bind-contact {
     box-sizing: border-box;
     flex-direction: column;
     height: calc(100vh - 50px);
-    padding-bottom: 100px;
+    padding-bottom: 50px;
     position: relative;
     background: #F7F7FA;
     .sendSlide__content {
       max-width: 295px;
       margin: 0px auto;
+      min-height: 250px;
     }
     .sendSlide_picture {
       max-height: 360px;
