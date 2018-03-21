@@ -25,19 +25,68 @@
 
 
   <div *ngIf="!loadingContacts && hasUnlockedWallets && showSlider">
-      <ion-slides pager="true">
-          <ion-slide>
-              DESCRIPTION 1
-          </ion-slide>
-          <ion-slide>
-              DESCRIPTION 2
-          </ion-slide>
-          <ion-slide>
-              DESCRIPTION 3
-
-              <button ion-button (click)="hideSlider()">Ok cool</button>
-          </ion-slide>
-      </ion-slides>
+    <ion-slides pager="true" class="sendSlides">
+      <ion-slide class="sendSlide">
+        <div class="sendSlide_picture">
+          <img src="/assets/img/logo.svg" alt="">
+        </div>
+        <div class="sendSlide__content">
+          <div class="sendSlide_title">
+            Sending Merit
+          </div>
+          <div class="sendSlide_description">
+            Sending merit is super easy and can be received by virtually anyone!
+            However, Merit is an invite only community and sending funds to a new
+            user will require you to have an extra invite.
+          </div>
+        </div>
+      </ion-slide>
+      <ion-slide class="sendSlide">
+        <div class="sendSlide_picture">
+          <img src="/assets/img/logo.svg" alt="">
+        </div>
+        <div class="sendSlide__content">
+          <div class="sendSlide_title">
+            Your Way
+          </div>
+          <div class="sendSlide_description">
+            You can send merit any way you want! To a contact in your phone book,
+            through your favorite chat or social media messenger, or to an existing
+            Merit user via their alias or address.
+          </div>
+        </div>
+      </ion-slide>
+      <ion-slide class="sendSlide">
+        <div class="sendSlide_picture">
+          <img src="/assets/img/logo.svg" alt="">
+        </div>
+        <div class="sendSlide__content">
+          <div class="sendSlide_title">
+            Worry Free
+          </div>
+          <div class="sendSlide_description">
+            You have full control over your transactions when sending to users
+            outside of the Merit network! Cancellable transactions and password
+            protection at the click of a button.
+          </div>
+        </div>
+      </ion-slide>
+      <ion-slide class="sendSlide">
+        <div class="sendSlide_picture">
+          <img src="/assets/img/logo.svg" alt="">
+        </div>
+        <div class="sendSlide__content">
+          <div class="sendSlide_title">
+            Your Way
+          </div>
+          <div class="sendSlide_description">
+            Now you’re ready to send money with the world’s friendliest digital currency.
+          </div>
+          <button (click)="hideSlider()" class="button button--blue-gradient">
+                Get Started!</button>
+        </div>
+      </ion-slide>
+    </ion-slides>
   </div>
 
   <div *ngIf="!loadingContacts && searchResult && hasUnlockedWallets && !showSlider" class="content">
@@ -53,27 +102,26 @@
       <div class="hr"></div>
     </div>
 
-      <div class="searchbar-wrapper">
-          <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
-                         (ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>
-          <button ion-button clear item-end (click)="openScanner()" class="scan-button">
+    <div class="searchbar-wrapper">
+      <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()" (ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>
+      <button ion-button clear item-end (click)="openScanner()" class="scan-button">
             <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
           </button>
-      </div>
+    </div>
 
     <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
-        <h2>What is Global Send?</h2>
-        <p>Invite your friends by sending them Merit. Just copy URL that you will receive at process end.</p>
-        <p>You need a free invite to do send Global Send.</p>
-        <img src="assets/img/easysend.png" color="primary" item-end>
+      <h2>What is Global Send?</h2>
+      <p>Invite your friends by sending them Merit. Just copy URL that you will receive at process end.</p>
+      <p>You need a free invite to do send Global Send.</p>
+      <img src="assets/img/easysend.png" color="primary" item-end>
     </div>
 
 
     <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
 
       <div class="no-results-label" *ngIf="!searchResult.error">
-          No results
-            <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
+        No results
+        <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
       </div>
       <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
         Address is not confirmed yet
@@ -84,16 +132,17 @@
 
       <div *ngIf="searchResult.toNewEntity" margin-top>
 
-        <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()"
-                class="send-button" color="light">
+        <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'"
+          (click)="createContact()" class="send-button" color="light">
           Create New Contact
         </button>
-        <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length" (click)="bindAddressToContact()"
-                class="send-button" color="light">
+        <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
+          (click)="bindAddressToContact()" class="send-button" color="light">
           Bind to existing contact
         </button>
         <button ion-button padding (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
-          <div *ngIf="searchResult.toNewEntity.destination == 'address'">Send To This {{ couldBeAlias(searchQuery) ? 'Alias' : 'Address' }}</div>
+          <div *ngIf="searchResult.toNewEntity.destination == 'address'">
+            Send To This {{ couldBeAlias(searchQuery) ? 'Alias' : 'Address' }}</div>
         </button>
         <div class="address">{{searchQuery}}</div>
       </div>
@@ -113,33 +162,33 @@
       </ion-list>
 
       <!--<ion-list *ngIf="searchResult.noMerit.length" class="list-no-merit">-->
-        <!--<ion-item-divider>-->
-          <!--Other Friends-->
-          <!--<button ion-button clear item-end (click)="showRecent = true" [hidden]="searchResult.withMerit.length">-->
-            <!--Recent-->
-          <!--</button>-->
-        <!--</ion-item-divider>-->
-        <!--<ion-item *ngFor="let contact of searchResult.noMerit" (click)="sendToContact(contact)" class="contact">-->
-          <!--<contact-avatar [contact]="contact" item-start></contact-avatar>-->
-          <!--{{ contact.name.formatted }}-->
-        <!--</ion-item>-->
+      <!--<ion-item-divider>-->
+      <!--Other Friends-->
+      <!--<button ion-button clear item-end (click)="showRecent = true" [hidden]="searchResult.withMerit.length">-->
+      <!--Recent-->
+      <!--</button>-->
+      <!--</ion-item-divider>-->
+      <!--<ion-item *ngFor="let contact of searchResult.noMerit" (click)="sendToContact(contact)" class="contact">-->
+      <!--<contact-avatar [contact]="contact" item-start></contact-avatar>-->
+      <!--{{ contact.name.formatted }}-->
+      <!--</ion-item>-->
       <!--</ion-list>-->
     </div>
 
     <!--<div [hidden]="!showRecent" class="contacts-list">-->
-      <!--<ion-list class="list-recent">-->
-        <!--<ion-item-divider>Recent Contacts-->
-          <!--<button ion-button clear item-end (click)="showRecent = false">All Contacts</button>-->
-        <!--</ion-item-divider>-->
-        <!--<ion-item *ngFor="let contact of searchResult.recent" (click)="sendToContact(contact)" class="contact">-->
-          <!--<contact-avatar [contact]="contact" item-start></contact-avatar>-->
-          <!--{{contact.name.formatted}}-->
-          <!--<img src="assets/img/icons/merit.svg" color="primary" item-end *ngIf="contact.meritAddresses.length">-->
-        <!--</ion-item>-->
-        <!--<div *ngIf="!searchResult.recent.length" padding>-->
-          <!--No recent transactions. Send Merit to your friends to see how easy it is!-->
-        <!--</div>-->
-      <!--</ion-list>-->
+    <!--<ion-list class="list-recent">-->
+    <!--<ion-item-divider>Recent Contacts-->
+    <!--<button ion-button clear item-end (click)="showRecent = false">All Contacts</button>-->
+    <!--</ion-item-divider>-->
+    <!--<ion-item *ngFor="let contact of searchResult.recent" (click)="sendToContact(contact)" class="contact">-->
+    <!--<contact-avatar [contact]="contact" item-start></contact-avatar>-->
+    <!--{{contact.name.formatted}}-->
+    <!--<img src="assets/img/icons/merit.svg" color="primary" item-end *ngIf="contact.meritAddresses.length">-->
+    <!--</ion-item>-->
+    <!--<div *ngIf="!searchResult.recent.length" padding>-->
+    <!--No recent transactions. Send Merit to your friends to see how easy it is!-->
+    <!--</div>-->
+    <!--</ion-list>-->
     <!--</div>-->
 
   </div>
