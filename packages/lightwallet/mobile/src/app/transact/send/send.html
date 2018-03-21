@@ -82,7 +82,7 @@
           <div class="sendSlide_description">
             Now you’re ready to send money with the world’s friendliest digital currency.
           </div>
-          <button (click)="hideSlider()" class="button button--blue-gradient">
+          <button (click)="hideSlider()" class="button-ui button-ui--blue-gradient">
                 Get Started!</button>
         </div>
       </ion-slide>
@@ -94,19 +94,18 @@
     </div>
   </div>
 
-  <div *ngIf="!loadingContacts && searchResult && hasUnlockedWallets && !showSlider" class="content">
-
-    <button ion-button full primary (click)="easySend()" [disabled]="!hasActiveInvites" class="global-search-button">
-        Global send
-        <img src="assets/img/icons/send.svg">
-    </button>
-
-    <div class="or-line">
-      <div class="hr"></div>
-      <div class="or">or</div>
-      <div class="hr"></div>
+  <div *ngIf="!loadingContacts && searchResult && hasUnlockedWallets && !showSlider" class="sendRoute content">
+    <div class="sendRoute__header">
+      <div class="sendRoute__title">
+        Send Merit
+      </div>
     </div>
-
+    <div class="globalSend">
+      <button (click)="easySend()" [disabled]="!hasActiveInvites"
+        class="globalSend__button">
+          Global send
+      </button>
+    </div>
     <div class="searchbar-wrapper">
       <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
       (ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>
