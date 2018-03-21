@@ -4,7 +4,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { DisplayWallet } from "@merit/common/models/display-wallet";
 import { IVault } from "@merit/common/models/vault";
 import { WalletService } from '@merit/common/services/wallet.service';
-import { ProfileService } from '@merit/common/services/profile.service'; 
+import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from "@merit/common/services/rate.service";
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { Constants } from '@merit/common/merit-wallet-client/lib/common/constants';
@@ -63,13 +63,13 @@ export class VaultsService {
     const fee = await this.feeService.getTxpFee(txp);
     const tx = await this.getSendTxp(vault, amount, toAddress, fee);
     await vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
-    vault = vault.walletClient.updateVaultInfo({_id: vault._id}); 
+    vault = vault.walletClient.updateVaultInfo({_id: vault._id});
     this.profileService.updateVault(vault);
-    return vault; 
+    return vault;
   }
 
   /**
-  * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes 
+  * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes
   * so we take all utxos and send them to the same address but differrent scriptPubkey
   */
   async renewVaultWhitelist(vault: IVault, newWhitelist: Array<any>, masterKey) {
@@ -92,7 +92,7 @@ export class VaultsService {
   }
 
   /**
-  * create and deposit new vault 
+  * create and deposit new vault
   */
   async createVault(data: IVaultCreateData) {
     await this.checkCreateData(data);
@@ -126,9 +126,10 @@ export class VaultsService {
     vault.name = data.vaultName;
     let createdVault = await data.wallet.client.createVault(vault);
     createdVault.walletClient = data.wallet.client;
-    createdVault = await this.getVaultInfo(createdVault);  
-    this.profileService.addVault(createdVault); 
-    return createdVault; 
+
+    createdVault = await this.getVaultInfo(createdVault);
+    this.profileService.addVault(createdVault);
+    return createdVault;
   }
 
   /**
@@ -143,11 +144,11 @@ export class VaultsService {
     await this.walletService.publishAndSign(vault.walletClient, txp);
     vault =  vault.walletClient.updateVaultInfo({_id: vault._id, name: vault.name});
     this.profileService.updateVault(vault);
-    return vault; 
+    return vault;
   }
 
   /**
-  * check if we can create vault 
+  * check if we can create vault
   */
   private async checkCreateData(data) {
     if (
@@ -175,7 +176,7 @@ export class VaultsService {
   }
 
   /**
-  * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes 
+  * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes
   * so we take all utxos and send them to the same address but differrent scriptPubkey
   */
   private getRenewTxp(vault, newWhitelist, masterKey, fee = FeeService.DEFAULT_FEE) {
@@ -184,7 +185,7 @@ export class VaultsService {
     if (vault.type != 0) throw new Error('Vault type is not supported');
 
     let tx = Transaction();
-    
+
     let params = [
       new PublicKey(vault.spendPubKey, { network: ENV.network }).toBuffer(),
       new PublicKey(vault.masterPubKey, { network: ENV.network }).toBuffer()
@@ -226,7 +227,7 @@ export class VaultsService {
   * creating transaction to transfer money from vault to one of whitelisted addresses
   */
   private getSendTxp(vault, amount, address, fee = FeeService.DEFAULT_FEE) {
-    
+
     if (vault.type != 0) throw new Error('Vault type is not supported');
 
     //todo why are we using wallet private key here???
@@ -287,11 +288,11 @@ export class VaultsService {
 
     return tx;
 
-  }  
+  }
 
   /**
   * transfer money to vault
-  */ 
+  */
   private async getDepositTxp(vault: any, wallet: MeritWalletClient): Promise<any> {
     let feeLevel = this.feeService.getCurrentFeeLevel();
 
@@ -330,7 +331,7 @@ export class VaultsService {
   * create vautl object before transfering merit
   */
   private prepareVault(type: number, opts: any = {}) {
-    
+
     if (type != 0) throw new Error('Vault type is not supported');
 
     let tag = opts.masterPubKey.toAddress().hashBuffer;
