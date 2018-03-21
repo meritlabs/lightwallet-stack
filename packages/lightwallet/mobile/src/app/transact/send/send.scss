@@ -394,4 +394,116 @@ view-send-select-bind-contact {
       }
     }
   }
+  .sendRoute {
+    padding-top: 70px;
+    background-color: #fafafa;
+    &__header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #FFF linear-gradient(to top, rgba(116, 128, 155, 0) 0%, rgba(116, 128, 155, 0.08) 100%);
+      box-shadow: 1px 0 2px #ededed;
+    }
+    &__title {
+      color: #303c4e;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 20px;
+    }
+    .searchbar-ios.searchbar-left-aligned .searchbar-input {
+      width: 100%;
+      box-shadow: 0 3px 16px rgba(69, 91, 99, 0.12);
+      background-color: #ffffff;
+      color: #74809b;
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 14px;
+      padding: 24px 35px 24px 50px;
+    }
+    .searchbar-wrapper {
+      display: block;
+      padding: 0px 15px;
+    }
+    .searchbar-ios {
+      background: transparent;
+      border-bottom: 0;
+      padding: 0;
+    }
+    .searchbar-ios .searchbar-search-icon {
+      top: 15px;
+      left: 18px;
+      width: 18px;
+      height: 18px;
+      background-size: 18px;
+    }
+    .searchbar-ios .searchbar-clear-icon {
+      width: 15px;
+      right: 15px;
+    }
+    .globalSend {
+      padding: 25px 20px;
+      background: #FFF;
+      margin-bottom: 20px;
+      border-top: 1px solid #ededed;
+      border-bottom: 1px solid #ededed;
+      position: relative;
+      &:after {
+        content: "OR";
+        display: block;
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+        border: 1px solid #ededed;
+        background-color: #ffffff;
+        color: rgba(116, 128, 155, 0.6);
+        font-size: 10px;
+        font-weight: 500;
+        font-style: italic;
+        line-height: 20px;
+        text-align: center;
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: 0px auto;
+        bottom: -10px;
+      }
+      &__button {
+        background: transparent;
+        display: block;
+        width: 100%;
+        text-align: left;
+        color: #374455;
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 20px;
+        padding: 0;
+        &:after,
+        &:before {
+          content: "";
+          display: inline-block;
+          background-color: #3497fd;
+          mask-size: contain;
+          mask-position: 50% 50%;
+          mask-repeat: no-repeat;
+        }
+        &::before {
+          width: 16px;
+          height: 11px;
+          margin-right: 10px;
+          mask-image: url("../assets/img/sendicon.svg");
+        }
+        &:after {
+          width: 8px;
+          height: 11px;
+          mask-image: url("../assets/img/rightarrowicon.svg");
+          float: right;
+        }
+      }
+    }
+  }
 }
