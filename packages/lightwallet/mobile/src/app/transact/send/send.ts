@@ -10,6 +10,8 @@ import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
 import { AddressService } from '@merit/common/services/address.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
+import { ViewChild } from '@angular/core';
+import { Slides } from 'ionic-angular';
 
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -286,5 +288,15 @@ export class SendView {
       suggestedMethod: {type: SendMethodType.Easy}
     });
   }
-
+  @ViewChild(Slides) slides: Slides;
+  sliderIsFinished: boolean = false;
+  slideNext() {
+    this.slides.slideNext();
+  }
+  slidePrev() {
+    this.slides.slidePrev();
+  }
+  slideChanged() {
+    this.sliderIsFinished = this.slides.isEnd();
+  }
 }
