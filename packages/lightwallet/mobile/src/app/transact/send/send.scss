@@ -397,6 +397,7 @@ view-send-select-bind-contact {
   .sendRoute {
     padding-top: 70px;
     background-color: #fafafa;
+    height: 100%;
     &__header {
       position: fixed;
       top: 0;
@@ -428,6 +429,13 @@ view-send-select-bind-contact {
     .searchbar-wrapper {
       display: block;
       padding: 0px 15px;
+      position: relative;
+      .scan-button {
+        position: absolute;
+        top: 10px;
+        right: 25px;
+        margin: 0;
+      }
     }
     .searchbar-ios {
       background: transparent;
