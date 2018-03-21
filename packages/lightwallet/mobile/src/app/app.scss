@@ -297,12 +297,12 @@ ion-item-divider.item-divider {
 ion-list:not([no-lines]),
 div {
 
-  > ion-item.item:not([no-lines]):not(:last-child), > button[ion-item].item:not([no-lines]):not(:last-child) {
+  > ion-item.item:not([no-lines]), > button[ion-item].item:not([no-lines]) {
     &.item-block .item-inner, .item-inner {
       border-bottom: none;
     }
 
-    &:after {
+    &:not(:last-child):after {
       content: '';
       width: calc(100% - 16px - 19px);
       background: transparentize(#d1d6dc, .5);
