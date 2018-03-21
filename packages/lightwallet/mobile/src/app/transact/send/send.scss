@@ -3,10 +3,10 @@ view-send {
     height: 40px;
     line-height: 40px;
     min-height: 40px;
-    margin: 8px;
-    margin-bottom: 4px;
+    margin: 8px 8px 4px;
     width: calc(100% - 16px);
     border-radius: 4px;
+
     img {
       margin-left: 8px;
       height: 18px;
@@ -17,6 +17,7 @@ view-send {
     height: 20px;
     color: rgba(0, 0, 0, 0.4);
     margin: 0;
+
     .hr {
       border-top: 1px solid rgba(0, 0, 0, 0.1);
       width: calc(50% - 45px);
@@ -25,6 +26,7 @@ view-send {
       vertical-align: bottom;
       display: inline-block;
     }
+
     .or {
       display: inline-block;
       height: 18px;
@@ -38,22 +40,24 @@ view-send {
   .searchbar-wrapper {
     display: flex;
     line-height: 58px;
+
     ion-searchbar {
       display: block;
       vertical-align: middle;
     }
+
     .scan-button {
       width: 30px;
       height: 30px;
       vertical-align: middle;
       padding: 0;
-      margin: 0;
-      margin-top: 15px;
-      margin-right: 8px;
+      margin: 15px 8px 0 0;
+
       .button-inner {
         height: 30px;
         width: 30px;
       }
+
       ion-icon {
         color: color($colors, primary);
         height: 22px;
@@ -65,22 +69,24 @@ view-send {
   .global-illustration {
     text-align: center;
     padding: 0 20px;
+
     h2 {
       font-size: 17px;
       margin-top: 20px;
       color: rgb(45, 60, 80);
     }
+
     p {
       font-size: 13px;
       color: rgba(45, 60, 80, 0.6);
     }
+
     img {
       margin-top: 20px;
       width: 75%;
     }
   }
 }
-
 //.ios view-send {
 //  .content {
 //    .no-results {
@@ -108,7 +114,6 @@ view-send {
 //    }
 //  }
 //}
-
 //view-send {
 //  .scroll-content {
 //    display: flex;
@@ -169,7 +174,8 @@ view-send {
 //  }
 //}
 
-view-send, view-send-select-bind-contact {
+view-send,
+view-send-select-bind-contact {
   .content {
     //height: 100%;
     .no-results {
@@ -178,6 +184,7 @@ view-send, view-send-select-bind-contact {
       flex-direction: column;
       font-size: 17px;
       color: #9da6b7;
+
       .send-button {
         padding: 0;
         text-align: center;
@@ -186,6 +193,7 @@ view-send, view-send-select-bind-contact {
         margin: 8px auto;
         box-shadow: none;
         font-size: 15px;
+
         &.button-md-light {
           color: #293d52;
         }
@@ -197,7 +205,9 @@ view-send, view-send-select-bind-contact {
     }
   }
 
-  ion-item, .item-inner, .item-divider {
+  .item-divider,
+  .item-inner,
+  ion-item {
     border: none;
     padding-top: 5px;
     padding-bottom: 5px;
@@ -226,13 +236,13 @@ view-send, view-send-select-bind-contact {
 
   .loader {
     text-align: center;
+
     ion-spinner {
       height: 100px;
     }
   }
 
   .unlock-screen {
-
     text-align: center;
     overflow-y: hidden;
     height: calc(100% - 60px);
@@ -258,24 +268,27 @@ view-send, view-send-select-bind-contact {
       margin-top: -102px;
       margin-left: -142px;
       background: white;
-      box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
       text-align: center;
       border-radius: 10px;
+
       .top-label {
         font-size: 13px;
         color: rgb(115, 129, 155);
         margin: 25px 0;
       }
+
       img {
         height: 48px;
         width: 38px;
       }
+
       h2 {
         font-size: 17px;
         color: rgb(41, 61, 82);
-        margin: 0;
-        margin-top: 7px;
+        margin: 7px 0 0;
       }
+
       .bottom-label {
         font-size: 13px;
         color: rgb(115, 129, 155);
@@ -287,7 +300,6 @@ view-send, view-send-select-bind-contact {
     }
 
     ion-list {
-
       .contact-stub {
         p {
           width: 152px;
@@ -295,6 +307,7 @@ view-send, view-send-select-bind-contact {
           height: 12px;
           margin: 10px 0;
         }
+
         h2 {
           width: 86px;
           background: rgba(240, 243, 248, 1);
@@ -302,9 +315,45 @@ view-send, view-send-select-bind-contact {
           margin: 10px 0;
         }
       }
-
     }
-
   }
-
+}
+view-send,
+view-send-select-bind-contact {
+  .sendSlide .slide-zoom {
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+    flex-direction: column;
+    height: calc(100vh - 50px);
+    padding-bottom: 100px;
+    .sendSlide__content {
+      max-width: 295px;
+      margin: 0px auto;
+    }
+    .sendSlide_picture {
+      max-height: 360px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      img {
+        max-width: 100%;
+        width: initial;
+      }
+    }
+    .sendSlide_title {
+      font-size: 28px;
+      line-height: 32px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+    .sendSlide_description {
+      font-size: 14px;
+      line-height: 20px;
+      color: #74809B;
+      margin-bottom: 30px;
+    }
+  }
 }
