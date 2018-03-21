@@ -328,6 +328,8 @@ view-send-select-bind-contact {
     flex-direction: column;
     height: calc(100vh - 50px);
     padding-bottom: 100px;
+    position: relative;
+    background: #F7F7FA;
     .sendSlide__content {
       max-width: 295px;
       margin: 0px auto;
@@ -355,6 +357,40 @@ view-send-select-bind-contact {
       line-height: 20px;
       color: #74809B;
       margin-bottom: 30px;
+    }
+  }
+  .swiper-pagination-fraction, .swiper-pagination-custom,
+  .swiper-container-horizontal > .swiper-pagination-bullets {
+    bottom: 0px;
+    height: 55px;
+    background: #FFF;
+    padding-top: 20px;
+  }
+  .swiper-pagination-bullet-active {
+    background: #00B1DE;
+  }
+  .sendSlide__nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 55px;
+    z-index: 99;
+    display: flex;
+    justify-content: space-between;
+    button {
+      font-size: 12px;
+      line-height: 12px;
+      background: transparent;
+      border: 0;
+      max-width: 135px;
+      width: 100%;
+      color: #2D3B50;
+      text-transform: uppercase;
+      text-align: center;
+      &.blue {
+        color: #00B1DE;
+      }
     }
   }
 }

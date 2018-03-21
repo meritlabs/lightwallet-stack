@@ -25,7 +25,7 @@
 
 
   <div *ngIf="!loadingContacts && hasUnlockedWallets && showSlider">
-    <ion-slides pager="true" class="sendSlides">
+    <ion-slides pager="true" class="sendSlides" (ionSlideDidChange)="slideChanged()">
       <ion-slide class="sendSlide">
         <div class="sendSlide_picture">
           <img src="/assets/img/logo.svg" alt="">
@@ -87,6 +87,11 @@
         </div>
       </ion-slide>
     </ion-slides>
+    <div class="sendSlide__nav">
+      <button type="button" name="button" (click)="slidePrev()">Back</button>
+      <button type="button" name="button" (click)="slideNext()" *ngIf="!sliderIsFinished" class="blue">next</button>
+      <button type="button" name="button" (click)="hideSlider()" *ngIf="sliderIsFinished" class="blue">Finish</button>
+    </div>
   </div>
 
   <div *ngIf="!loadingContacts && searchResult && hasUnlockedWallets && !showSlider" class="content">
