@@ -297,7 +297,7 @@ ion-item-divider.item-divider {
 ion-list:not([no-lines]),
 div {
 
-  > ion-item.item:not([no-lines]), > button[ion-item].item:not([no-lines]) {
+  > ion-item.item:not([no-lines]):not(:last-child), > button[ion-item].item:not([no-lines]):not(:last-child) {
     &.item-block .item-inner, .item-inner {
       border-bottom: none;
     }
