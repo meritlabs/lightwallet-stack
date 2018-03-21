@@ -9,6 +9,7 @@ import { AddressScannerService } from '@merit/mobile/app/utilities/import/addres
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
 import { AddressService } from '@merit/common/services/address.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
 
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -36,24 +37,37 @@ export class SendView {
 
   hasUnlockedWallets: boolean;
   hasActiveInvites: boolean;
+  showSlider: boolean;
 
   constructor(private navCtrl: NavController,
               private contactsService: ContactsService,
               private profileService: ProfileService,
               private addressService: AddressService,
               private modalCtrl: ModalController,
-              private addressScanner: AddressScannerService) {
+              private addressScanner: AddressScannerService,
+              private persistenceService: PersistenceService
+  ) {
   }
 
   private async updateHasUnlocked() {
     const wallets = await this.profileService.getWallets();
     this.hasUnlockedWallets = wallets && wallets.some(w => w.confirmed);
     this.hasActiveInvites = wallets && wallets.some(w => w.status && w.status.availableInvites > 0);
+
+    let pagesVisited = await this.persistenceService.getPagesVisited();
+    this.showSlider = (pagesVisited.indexOf('send') == -1);
+  }
+
+  async hideSlider() {
+    this.showSlider = false;
+    let pagesVisited = await this.persistenceService.getPagesVisited();
+    pagesVisited = pagesVisited.filter(p => p != 'send');
+    pagesVisited.push('send');
+    return this.persistenceService.setPagesVisited(pagesVisited);
   }
 
   async ionViewWillEnter() {
     this.loadingContacts = true;
-    //await this.contactsService.requestDevicePermission();
     await this.updateHasUnlocked();
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;

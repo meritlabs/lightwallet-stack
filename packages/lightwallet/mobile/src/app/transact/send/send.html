@@ -24,7 +24,23 @@
   </div>
 
 
-  <div *ngIf="!loadingContacts && searchResult  && hasUnlockedWallets" class="content">
+  <div *ngIf="!loadingContacts && hasUnlockedWallets && showSlider">
+      <ion-slides pager="true">
+          <ion-slide>
+              DESCRIPTION 1
+          </ion-slide>
+          <ion-slide>
+              DESCRIPTION 2
+          </ion-slide>
+          <ion-slide>
+              DESCRIPTION 3
+
+              <button ion-button (click)="hideSlider()">Ok cool</button>
+          </ion-slide>
+      </ion-slides>
+  </div>
+
+  <div *ngIf="!loadingContacts && searchResult && hasUnlockedWallets && !showSlider" class="content">
 
     <button ion-button full primary (click)="easySend()" [disabled]="!hasActiveInvites" class="global-search-button">
         Global send
@@ -44,13 +60,6 @@
             <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
           </button>
       </div>
-
-
-    <!--<ion-item class="searchbar-input">-->
-        <!--<ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"-->
-                       <!--(ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>-->
-
-    <!--</ion-item>-->
 
     <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
         <h2>What is Global Send?</h2>
