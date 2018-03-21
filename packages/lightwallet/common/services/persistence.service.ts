@@ -37,6 +37,7 @@ const Keys = {
   SEND_HISTORY: 'sendHistory',
   HIDDEN_REQUESTS_ADDRESSES: 'hiddenRequestsAddresses',
   ACTIVE_UNLOCK_REQUESTS_NUMBER: 'activeUnlockRequests',
+  PAGES_VISITED: 'pagesVisited'
 };
 
 @Injectable()
@@ -416,6 +417,14 @@ export class PersistenceService {
     return this.storage.set(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER, requests);
   }
 
+  setPagesVisited(pages: Array<string>) {
+    return this.storage.set(Keys.PAGES_VISITED, pages);
+  }
+
+  async getPagesVisited() {
+    let pages = await this.storage.get(Keys.PAGES_VISITED);
+    return pages || [];
+  }
 
   private get(key: any) {
     return this.storage.get(key);
@@ -428,4 +437,6 @@ export class PersistenceService {
   private remove(key: any) {
     return this.storage.remove(key);
   }
+
+
 }
