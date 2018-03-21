@@ -33,6 +33,9 @@ var PUSHNOTIFICATIONS_TYPES = {
   'IncomingInvite': {
     filename: 'incoming_invite'
   },
+  'WalletUnlocked': {
+    filename: 'wallet_unlocked'
+  },
   'IncomingInviteRequest': {
     filename: 'incoming_invite_request'
   },
