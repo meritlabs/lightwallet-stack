@@ -1,11 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { Store } from '@ngrx/store';
-import { IRootAppState } from '@merit/common/reducers';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { debounceTime, switchMap, tap } from 'rxjs/operators';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { IRootAppState } from '@merit/common/reducers';
 import { selectWalletById, UpdateOneWalletAction } from '@merit/common/reducers/wallets.reducer';
-import { FormBuilder } from '@angular/forms';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { PasswordValidator } from '@merit/common/validators/password.validator';
+import { Store } from '@ngrx/store';
+import { debounceTime, filter, switchMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'view-wallet-settings',
@@ -97,21 +101,28 @@ export class WalletSettingsView implements OnInit, OnDestroy {
   wallet: DisplayWallet;
 
   settingsForm = this.formBuilder.group({
-    name: '',
+    name: ['', Validators.required],
     balanceHidden: false
   });
 
   passwordChangeForm = this.formBuilder.group({
-    currentPassword: '',
-    password: '',
-    repeatPassword: ''
+    password: ['', Validators.required],
+    repeatPassword: ['', [Validators.required, PasswordValidator.MatchPassword]]
   });
+
+  get password() { return this.passwordChangeForm.get('password'); }
+  get repeatPassword() { return this.passwordChangeForm.get('repeatPassword'); }
+  get currentPassword() { return this.passwordChangeForm.get('currentPassword'); }
+
+  isWalletEncrypted: boolean;
 
   private subs: any[] = [];
 
   constructor(private store: Store<IRootAppState>,
               private route: ActivatedRoute,
-              private formBuilder: FormBuilder) {}
+              private formBuilder: FormBuilder,
+              private logger: LoggerService,
+              private walletService: WalletService) {}
 
   ngOnInit() {
     this.subs.push(this.route.parent.params.pipe(
@@ -120,16 +131,49 @@ export class WalletSettingsView implements OnInit, OnDestroy {
     ).subscribe((wallet: DisplayWallet) => {
       this.wallet = wallet;
 
+      const isEncrypted: boolean = wallet.client.isPrivKeyEncrypted();
+
+      if (isEncrypted) {
+        // wallet is encrypted and we need a password to decrypt before setting a new password
+        this.passwordChangeForm.addControl('currentPassword', this.formBuilder.control('', [Validators.required, PasswordValidator.VerifyWalletPassword(wallet.client)]));
+        this.isWalletEncrypted = true;
+      }
+
       this.settingsForm.get('name').setValue(wallet.name);
       this.settingsForm.get('balanceHidden').setValue(wallet.balanceHidden);
 
       this.selectedColor = this.availableColors.find(c => wallet.color == c.color);
-      this.subs.push(this.settingsForm.valueChanges.pipe(debounceTime(100)).subscribe(({ name, balanceHidden }) => {
-        this.wallet.name = name;
-        this.wallet.balanceHidden = balanceHidden;
-        this.store.dispatch(new UpdateOneWalletAction(this.wallet));
-      }));
+
+      this.subs.push(
+        this.settingsForm.valueChanges
+          .pipe(
+            debounceTime(100),
+            filter(() => this.settingsForm.valid)
+          )
+          .subscribe(({ name, balanceHidden }) => {
+            this.wallet.name = name;
+            this.wallet.balanceHidden = balanceHidden;
+            this.store.dispatch(new UpdateOneWalletAction(this.wallet));
+          })
+      );
     }));
+  }
+
+  async savePassword() {
+    const { currentPassword, password } = this.passwordChangeForm.getRawValue();
+
+    try {
+      if (this.isWalletEncrypted) {
+        this.wallet.client.decryptPrivateKey(currentPassword);
+      }
+
+      await this.walletService.encrypt(this.wallet.client, password);
+
+      this.logger.info('Encrypted wallet!');
+      // TODO(ibby): show toast/notification informing the user that the passwrod is now set
+    } catch (e) {
+      this.logger.error('Unable to set wallet password', e);
+    }
   }
 
   ngOnDestroy() {
