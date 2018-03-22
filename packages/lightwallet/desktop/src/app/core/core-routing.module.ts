@@ -21,7 +21,8 @@ import { ImportWalletView } from '@merit/desktop/app/core/wallets/import-wallet/
 import { ImportByQrView } from '@merit/desktop/app/core/wallets/import-wallet/import-by-qr/import-by-qr.view';
 import { ImportWithFileView } from '@merit/desktop/app/core/wallets/import-wallet/import-with-file/import-with-file.view';
 import { PhraseImportView } from '@merit/desktop/app/core/wallets/import-wallet/phrase-import/phrase-import.view';
-
+import { RequestsComponent } from '@merit/desktop/app/core/community/invites/requests/requests.component';
+import { SendInviteComponent } from '@merit/desktop/app/core/community/invites/send-invite/send-invite.component';
 
 const routes: Routes = [
   {
@@ -45,6 +46,8 @@ const routes: Routes = [
       { path: 'send', component: SendView },
       { path: 'history', component: HistoryView },
       { path: 'community', component: CommunityView },
+      { path: 'community/invite-requests', component: RequestsComponent },
+      { path: 'community/send-invite', component: SendInviteComponent },
       { path: 'backup', component: BackupView },
       { path: 'backup/mnemonic-phrase', component: MnemonicPhraseView },
       { path: 'settings', component: GlobalSettingsView, children: [
