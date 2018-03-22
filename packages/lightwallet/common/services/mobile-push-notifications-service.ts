@@ -1,7 +1,7 @@
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import * as _ from 'lodash';
 import { FCM } from '@ionic-native/fcm';
@@ -38,7 +38,7 @@ export class MobilePushNotificationsService extends PushNotificationsService {
               private ngZone: NgZone,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private sendService: SendService) {
+              private addressService: AddressService) {
     super(http, logger);
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
@@ -90,7 +90,7 @@ export class MobilePushNotificationsService extends PushNotificationsService {
           const wallet = this.walletService.getWallet(data.walletId);
           if (!wallet) return;
           return this.app.getActiveNav().push('WalletDetailsView', {
-            wallet: await createDisplayWallet(wallet, this.walletService, this.sendService, this.txFormatService, {
+            wallet: await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, {
               skipAnv: true,
               skipRewards: true,
               skipAlias: true
