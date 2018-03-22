@@ -1,5 +1,11 @@
 view-send-amount {
 
+  .label p.feeCalcError {
+    white-space: normal;
+    color: color($colors, danger) !important; 
+    font-weight: normal !important; 
+  }
+
   ion-avatar {
     text-align: center;
     color: color($colors, primary);

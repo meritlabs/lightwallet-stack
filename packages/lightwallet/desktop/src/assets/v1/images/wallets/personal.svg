@@ -12,7 +12,7 @@
                 <g id="Oval-13-Copy">
                     <use fill="#F0F3F8" fill-rule="evenodd" xlink:href="#path-1"></use>
                     <circle stroke="#FFFFFF" stroke-width="2" cx="20" cy="20" r="19"></circle>
-                    <circle stroke-opacity="0.60009058" stroke="#57B679" stroke-width="2" cx="20" cy="20" r="21"></circle>
+                    <circle stroke-opacity="0.60009058" stroke="#57B679" stroke-width="0" cx="20" cy="20" r="21"></circle>
                 </g>
                 <g id="wallet" transform="translate(12.000000, 11.000000)">
                     <rect id="Rectangle" stroke="#5F6C82" stroke-width="1.7" x="0" y="4" width="16" height="13" rx="2.24299065"></rect>

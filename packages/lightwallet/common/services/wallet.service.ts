@@ -83,14 +83,11 @@ export class WalletService {
       wallet.cachedTxps.isValid = false;
   }
 
-  async getStatus(wallet: MeritWalletClient, opts?: any) {
+  async getStatus(wallet: MeritWalletClient, opts?: any): Promise<any> {
     opts = opts || {};
     const walletId = wallet.id;
 
-
     return new Promise((resolve, reject) => {
-
-
       let processPendingTxps = async (status: any): Promise<any> => {
         status = status || {};
         let txps = await status.pendingTxps;
@@ -170,6 +167,7 @@ export class WalletService {
             cache.pendingAmount = status.balance.totalAmount - status.balance.totalConfirmedAmount;
             cache.spendableAmount = status.balance.totalConfirmedAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
           }
+          cache.confirmedAmount = status.balance.totalConfirmedAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
 
           // Selected unit
           cache.unitToMicro = config.settings.unitToMicro;
@@ -455,7 +453,7 @@ export class WalletService {
 
     //prefs.email  (may come from arguments)
     prefs.email = config.emailNotifications.email;
-    prefs.language = 'English'; // This line was hardcoded - TODO: prefs.language = uxLanguage.getCurrentLanguage();
+    prefs.language = 'en'; // This line was hardcoded - TODO: prefs.language = uxLanguage.getCurrentLanguage();
     // prefs.unit = walletSettings.unitCode; // TODO: remove, not used
 
     await this.updateRemotePreferencesFor(_.clone(clients), prefs);

@@ -13,6 +13,8 @@ export interface IUnlockRequest {
   referralId: string;
   wallet: DisplayWallet;
   contact: MeritContact;
+  label: string; 
+  isVault: boolean;
 }
 
 @Injectable()

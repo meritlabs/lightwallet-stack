@@ -4,6 +4,4 @@
 
 All available for quick edit preferences placed:  
 
-`/styles/v1/vendors/_variabless.sass`
-
-`/styles/v1/vendors/_containers.sass`
+`/styles/v1/common/_variables.sass`

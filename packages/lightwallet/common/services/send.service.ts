@@ -1,97 +1,61 @@
 import { Injectable } from '@angular/core';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { RateService } from '@merit/common/services/rate.service';
 import { MWCService } from '@merit/common/services/mwc.service';
-import { ConfigService } from '@merit/common/services/config.service';
-import { PersistenceService } from '@merit/common/services/persistence.service';
-import { LoggerService } from '@merit/common/services/logger.service';
-import { isAlias } from '@merit/common/utils/addresses';
-import { ISendMethod } from '@merit/common/models/send-method';
+import { FeeService } from '@merit/common/services/fee.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { ENV } from '@app/env';
 
 @Injectable()
 export class SendService {
-  private bitcore: any;
-  private readonly ADDRESS_LENGTH = 34;
-  private client: MeritWalletClient;
-
-  constructor(private mwcService: MWCService,
-              private rate: RateService,
-              private config: ConfigService,
-              private persistenceService: PersistenceService,
-              private logger: LoggerService) {
-    this.logger.info('Hello SendService');
-    this.bitcore = this.mwcService.getBitcore();
-    this.client = this.mwcService.getClient();
+  constructor(
+    private feeService: FeeService,
+    private mwcService: MWCService,
+    private rateService: RateService
+  ) {
   }
 
-  isAddress(addr: string): boolean {
-    try {
-      this.bitcore.Address.fromString(addr);
-      return true;
-    } catch (_e) {
-      return false;
-    }
-  }
+  async prepareTxp(wallet: MeritWalletClient, amount, toAddress) {
 
-  couldBeAlias(alias: string): boolean {
-    return this.bitcore.Referral.validateAlias(alias);
-  }
+    if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
 
-  getAddressInfo(addr: string) {
-    if (isAlias(addr)) addr = addr.slice(1);
-    return this.client.validateAddress(addr);
-  }
+    let txpData:any = {
+      outputs: [{ amount, toAddress }],
+      inputs: [], // will be defined on MWS side
+      feeLevel: this.feeService.getCurrentFeeLevel(),
+      excludeUnconfirmedUtxos: false,
+      dryRun: true
+    };
 
-  async getAddressInfoIfValid(addr: string) {
-    const info = await this.getAddressInfo(addr);
-    return info.isValid && info.isBeaconed && info.isConfirmed ? info : null;
-  }
-
-  async isAddressValid(addr: string): Promise<boolean> {
-    if (!this.isAddress(addr)) {
-      return false;
+    if (amount == wallet.status.spendableAmount) {
+      delete txpData.outputs[0].amount;
+      txpData.sendMax = true;
     }
 
-    const info = await this.getAddressInfo(addr);
-
-    return info.isValid && info.isBeaconed && info.isConfirmed;
+    let txp = await wallet.createTxProposal(txpData);
+    txp.sendMax = txpData.sendMax;
+    return txp;  
   }
 
-  async isAddressBeaconed(addr: string): Promise<boolean> {
-    if (!this.isAddress(addr)) {
-      return false;
+  finalizeTxp(wallet, preparedTxp, feeIncluded) {
+
+    let txp:any = {
+      outputs: preparedTxp.outputs,
+      inputs: preparedTxp.inputs,
+      fee: preparedTxp.fee,
+      excludeUnconfirmedUtxos: false,
+      dryRun: false,
+      addressType: preparedTxp.addressType
+    };
+
+    if (preparedTxp.sendMax || !feeIncluded) {
+      txp.outputs[0].amount = preparedTxp.amount;
+    } else { 
+      txp.outputs[0].amount = preparedTxp.amount - preparedTxp.fee;
+      
     }
 
-    const info = await this.getAddressInfo(addr);
-
-    return info.isValid && info.isBeaconed;
+    return wallet.createTxProposal(txp);
 
   }
 
-  async getValidAddress(input: string): Promise<string> {
-    if (!(this.isAddress(input) || this.couldBeAlias(input))) {
-      return null;
-    }
-
-    const info = await this.getAddressInfo(input);
-
-    if (info && info.isConfirmed) {
-      return info.address;
-    }
-
-    return null;
-  }
-
-  getAddressNetwork(addr) {
-    return this.bitcore.Address.fromString(addr).network;
-  }
-
-  async registerSend(method: ISendMethod) {
-    return this.persistenceService.registerSend(method);
-  }
-
-  async getSendHistory() {
-    let history = await this.persistenceService.getSendHistory();
-    return history || [];
-  }
 }
