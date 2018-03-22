@@ -6,5 +6,14 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./lock-screen.component.sass']
 })
 export class LockScreenComponent {
-  @Input() fullScreen: boolean;
+  private _fullScreen: boolean;
+
+  @Input()
+  set fullScreen(val: any) {
+    this._fullScreen = val? Boolean(val) : true;
+  }
+
+  get fullScreen() {
+    return this._fullScreen;
+  }
 }
