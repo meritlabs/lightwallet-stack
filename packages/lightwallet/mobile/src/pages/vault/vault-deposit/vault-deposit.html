@@ -1,0 +1,40 @@
+<ion-header>
+    <ion-navbar color="light">
+        <ion-title>Vault deposit</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+
+    <ion-item>
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/wallet.svg">
+        </ion-avatar>
+        <p>Sending to</p>
+        <h2>{{ vault.name }}</h2>
+        <p>{{ vault.amount | toMRT }}</p>
+    </ion-item>
+
+    <ion-item>
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/wallet.svg">
+        </ion-avatar>
+        <p>Sending from</p>
+        <h2>{{ vault.walletClient.name }}</h2>
+        <p>{{ vault.walletClient.status.confirmedAmount | toMRT }}</p>
+    </ion-item>
+
+    <ion-item>
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/merit.svg">
+        </ion-avatar>
+        <ion-label stacked>Amount (MRT)</ion-label>
+        <ion-input [(ngModel)]="amount" placeholder="Enter amount to send"></ion-input>
+    </ion-item>
+
+    <button ion-button class="action-button" translate (click)="send()" [disabled]="!isSendingAvailable">
+        Send
+    </button>
+
+</ion-content>

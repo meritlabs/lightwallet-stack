@@ -5,7 +5,7 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { Observable } from 'rxjs/Observable';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Store } from '@ngrx/store';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import 'rxjs/add/operator/take';
 import { selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
 import { IRootAppState } from '@merit/common/reducers';
@@ -20,6 +20,8 @@ export class ReceiveView implements OnInit {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
 
+  hasUnlockedWallet: boolean;
+
   protocolHandler: string = 'merit';
   address: string;
   alias: string;
@@ -29,8 +31,6 @@ export class ReceiveView implements OnInit {
   availableUnits: Array<string>;
   amountCurrency: string;
   amountInFiat: any = 0;
-  walletIcon: string = '/assets/v1/icons/ui/wallets/wallet-ico-grey.svg';
-  vaultIcon: string = '/assets/v1/icons/ui/wallets/vault-ico-grey.svg';
 
   availableCurrencies: any = [
     {
@@ -55,22 +55,6 @@ export class ReceiveView implements OnInit {
     }
   ];
 
-  availableFeesVariants: any = [
-    {
-      'name': 'I pay the fee',
-      'value': 10
-    },
-    {
-      'name': 'Recipient will pay the fee',
-      'value': 0
-    }
-  ];
-
-  selectedFee: any = {
-    'name': 'I pay the fee',
-    'value': 10
-  };
-
   // For now, the first wallet in the list of wallets is the default.
   // TODO(AW): Let's add a setting where the user can choose their default wallet.
   selectedWallet: DisplayWallet;
@@ -84,7 +68,7 @@ export class ReceiveView implements OnInit {
   constructor(private configService: ConfigService,
               private store: Store<IRootAppState>,
               private walletService: WalletService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private rateService: RateService) {
     try {
       this.availableUnits = [
@@ -99,9 +83,11 @@ export class ReceiveView implements OnInit {
 
   async ngOnInit() {
     try {
-      this.selectedWallet = (await this.wallets$.take(1).toPromise())[0];
+      const wallets = await this.wallets$.take(1).toPromise();
+      this.hasUnlockedWallet = wallets.some((wallet: DisplayWallet) => wallet.status.confirmed);
+      this.selectedWallet = wallets[0];
       this.address = this.selectedWallet.client.getRootAddress().toString();
-      let info = await this.sendService.getAddressInfo(this.address);
+      let info = await this.addressService.getAddressInfo(this.address);
       this.alias = info.alias;
       this.formatAddress();
     } catch (err) {
@@ -118,10 +104,6 @@ export class ReceiveView implements OnInit {
   selectCurrency($event) {
     this.selectedCurrency = $event;
     this.amountInFiat = `${$event.symbol} ${this.amount * $event.value}`;
-  }
-
-  selectFee($event) {
-    this.selectedFee = $event;
   }
 
   selectWallet($event) {

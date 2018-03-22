@@ -20,8 +20,7 @@
         </h2>
         <p>
           <span *ngIf="!wallet.confirmed">Not unlocked</span>
-          <span *ngIf="wallet.confirmed && !wallet.isComplete()" class="assertive" translate>Incomplete</span>
-          <span *ngIf="wallet.confirmed &&  wallet.isComplete()">
+          <span *ngIf="wallet.confirmed">
             <span *ngIf="wallet.status && !wallet.balanceHidden">
                 {{wallet.status.totalBalanceStr}}
                 <small *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount">({{wallet.status.spendableBalanceStr}} available)</small>

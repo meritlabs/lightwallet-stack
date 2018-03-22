@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { SendAmountView } from './send-amount';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
   declarations: [
@@ -8,7 +9,8 @@ import { SendAmountView } from './send-amount';
   ],
   imports: [
     IonicPageModule.forChild(SendAmountView),
+    CommonPipesModule
   ],
 })
-export class $$moduleName$$Module {
+export class SendAmountModule {
 }

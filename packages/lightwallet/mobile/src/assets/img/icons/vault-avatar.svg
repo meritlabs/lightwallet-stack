@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="17px" viewBox="0 0 19 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>vault</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="V4" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons" transform="translate(-120.000000, -920.000000)">
+            <g id="vault" transform="translate(121.000000, 921.000000)">
+                <g id="Group-2">
+                    <rect id="Rectangle-2" fill="#5F6C82" x="2.93103448" y="13.4827586" width="2.06896552" height="2.06896552" rx="1.03448276"></rect>
+                    <rect id="Rectangle-2-Copy-2" fill="#5F6C82" x="12" y="13.4827586" width="2.06896552" height="2.06896552" rx="1.03448276"></rect>
+                    <rect id="Rectangle" stroke="#5F6C82" stroke-width="1.7" x="0" y="0" width="17" height="13.4827586" rx="2"></rect>
+                    <circle id="Oval" stroke="#00B0DD" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" cx="10.2586207" cy="6.74137931" r="3.62068966"></circle>
+                    <circle id="Oval-Copy" fill="#00B0DD" cx="10.2586207" cy="6.74137931" r="1.18103448"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
