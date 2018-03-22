@@ -55,15 +55,6 @@ export class NotificationsView {
       this.pushService.disable();
   };
 
-  public confirmedTxsNotificationsChange() {
-    let opts = {
-      confirmedTxsNotifications: {
-        enabled: this.confirmedTxsNotifications
-      }
-    };
-    this.configService.set(opts);
-  };
-
   public emailNotificationsChange() {
     let opts = {
       enabled: this.emailNotifications,
