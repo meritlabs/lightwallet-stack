@@ -1,0 +1,69 @@
+<ion-header no-border>
+
+    <ion-navbar color="light" >
+        <ion-title>Create Vault</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+    <ion-list>
+        <ion-item>
+            <ion-avatar item-start img-icon>
+                <img src="assets/img/icons/vault-avatar.svg">
+            </ion-avatar>
+
+            <ion-label stacked>
+                <h2>Vault name</h2>
+            </ion-label>
+            <ion-input placeholder="Enter vault name" [(ngModel)]="vaultName"></ion-input>
+        </ion-item>
+
+        <button ion-item detail-none (click)="selectWhitelist()">
+            <ion-avatar item-start img-icon>
+                <img src="assets/img/icons/unlock.svg">
+            </ion-avatar>
+
+            <ion-label >
+                <h2>Whitelist</h2>
+                <p>
+                     <span *ngFor="let wallet of whiteList; let last = last">
+                        {{wallet.name}}<span *ngIf="!last">, </span>
+                     </span>
+                </p>
+
+            </ion-label>
+            <button ion-button item-end round add-button icon-only>
+                <ion-icon name="add"></ion-icon>
+            </button>
+        </button>
+
+        <button ion-item detail-none (click)="selectWallet()">
+            <ion-avatar item-start img-icon>
+                <img src="assets/img/icons/wallet.svg">
+            </ion-avatar>
+            <p>From</p>
+            <h2>{{wallet.name}}</h2>
+            <p>{{wallet.client.status.spendableBalanceStr}} MRT</p>
+        </button>
+
+        <ion-item>
+            <ion-avatar item-start img-icon>
+                <img src="assets/img/icons/merit.svg">
+            </ion-avatar>
+            <ion-label stacked>Amount (MRT)</ion-label>
+            <ion-input type="number" [(ngModel)]="amount" placeholder="Amount to store"></ion-input>
+        </ion-item>
+
+    </ion-list>
+
+    <div class="error" *ngIf="hasInsufficientConfirmedFunds()" padding>
+        You have {{ this.wallet.client.status.confirmedAmount | toMRT }} confirmed on selected wallet. You can use only confirmed balance to create a wallet.
+    </div>
+
+    <button ion-button class="action-button" (click)="toConfirm()" [disabled]="!isNextStepAvailable">
+        Create Vault
+    </button>
+
+</ion-content>

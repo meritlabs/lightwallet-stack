@@ -6,7 +6,7 @@ import { IRootAppState } from '@merit/common/reducers';
 import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ENV } from '@merit/desktop/environments/environment';
@@ -124,8 +124,9 @@ export class CreateWalletView {
               private logger: LoggerService,
               private router: Router,
               private store: Store<IRootAppState>,
-              private sendService: SendService,
-              private txFormatService: TxFormatService) {
+              private addressService: AddressService,
+              private txFormatService: TxFormatService
+            ) {
   }
 
   async create() {
@@ -190,7 +191,7 @@ export class CreateWalletView {
         this.logger.error(e);
       }
 
-      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.sendService, this.txFormatService);
+      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService);
       this.store.dispatch(new AddWalletAction(displayWallet));
 
       return this.router.navigateByUrl('/wallets');

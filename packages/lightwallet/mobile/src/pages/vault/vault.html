@@ -1,0 +1,78 @@
+<ion-header no-border>
+    <ion-navbar color="primary">
+        <ion-title smaller-title>{{ vault.name || vault.id }}</ion-title>
+
+        <ion-buttons end>
+            <button ion-button icon-only navPush="VaultEditView" [navParams]="{vault: vault, whitelist: whitelist, wallets: wallets}">
+                <ion-icon name="settings" merit-icon></ion-icon>
+            </button>
+        </ion-buttons>
+
+    </ion-navbar>
+</ion-header>
+
+<ion-content no-bounce>
+
+    <div class="big-header" color="primary">
+      <h2 class="amount">
+        {{ vault.amount | toMRT:null:true }}&nbsp;<small>MRT</small>
+      </h2>
+      <h3 class="detail-fiat">{{ vault.amount |toFiat }}</h3>
+
+        <div class="action-buttons">
+            <div class="button-cell">
+                <button ion-button navPush="VaultDepositView" [navParams]="{vault: vault}">
+                  <span class="inner-container">
+                    <ion-icon name="md-add-circle"></ion-icon>
+                    <span>Deposit</span>
+                  </span>
+                </button>
+            </div>
+
+            <div class="button-cell">
+                <button ion-button navPush="VaultSpendView" [navParams]="{vault: vault, whitelist: whitelist}">
+                  <span class="inner-container">
+                    <ion-icon name="ios-send"></ion-icon>
+                    <span>Send to whitelist</span>
+                  </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <ion-list no-lines>
+        <ion-item>
+            <h2>Whitelist</h2>
+            <p>
+              <span *ngFor="let wallet of whitelist; let last = last">
+                {{wallet.label}}<span *ngIf="!last">, </span>
+              </span>
+            </p>
+        </ion-item>
+    </ion-list>
+
+    <ion-item-divider>
+        History
+    </ion-item-divider>
+
+    <ion-list>
+        <button ion-item detail-none *ngFor="let tx of transactions; trackBy: tx?.txid" (click)="viewTxDetails(tx)" class="transaction">
+            <ion-avatar img-icon item-start >
+                <img *ngIf="tx.type == 'stored'" src="assets/img/icons/vault-avatar.svg" alt="" />
+                <img *ngIf="tx.type == 'sent'" src="assets/img/icons/merit.svg" alt="" />
+                <ion-icon name="refresh" *ngIf="tx.type == 'renewal'" color="primary"></ion-icon>
+            </ion-avatar>
+            <ion-label>
+                <h2>{{ tx.label }}</h2>
+                <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
+            </ion-label>
+            <ion-note item-end>
+              <span class="merit-amount" [class]="tx.type" *ngIf="tx.type != 'renewal'">
+                {{ tx.amount | toMRT}}
+              </span>
+            </ion-note>
+        </button>
+    </ion-list>
+
+
+</ion-content>
