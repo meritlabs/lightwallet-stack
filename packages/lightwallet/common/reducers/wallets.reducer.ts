@@ -143,6 +143,7 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
 export const selectWalletsState = createFeatureSelector<IWalletsState>('wallets');
 export const selectWalletsLoading = createSelector(selectWalletsState, state => state.loading);
 export const selectWallets = createSelector(selectWalletsState, state => state.wallets);
+export const selectConfirmedWallets = createSelector(selectWallets, wallets => wallets.filter((w: DisplayWallet) => w.client.confirmed));
 export const selectWalletTotals = createSelector(selectWalletsState, state => state.totals);
 export const selectWalletTotalsLoading = createSelector(selectWalletsState, state => state.totalsLoading);
 export const selectWalletById = (id: string) => createSelector(selectWalletsState, state => state.walletsMap[id]);
