@@ -3,6 +3,8 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { AppEffects } from '@merit/common/effects/app.effects';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
+import { DashboardGuard } from '@merit/desktop/app/guards/dashboard.guard';
+import { OnboardingGuard } from '@merit/desktop/app/guards/onboarding.guard';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -32,7 +34,9 @@ export function loadConfigs(appService) {
 export function getProviders() {
   return [
     Events,
-    Platform
+    Platform,
+    DashboardGuard,
+    OnboardingGuard
   ];
 }
 
