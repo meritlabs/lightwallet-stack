@@ -59,7 +59,6 @@
     "bitcore-lib": "^0.9.9",
     "bitcore-mnemonic": "^1.2.5",
     "bitcore-payment-protocol": "^1.2.2",
-    "branch-sdk": "^2.33.1",
     "buffer-compare": "^1.1.1",
     "core-js": "^2.5.1",
     "elliptic": "^6.4.0",
