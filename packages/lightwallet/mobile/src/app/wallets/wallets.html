@@ -36,7 +36,7 @@
 
   <ion-list class="wallets" *ngIf="wallets">
 
-    <div *ngFor="let wallet of wallets; trackBy: wallet?.id">
+    <ng-container *ngFor="let wallet of wallets; trackBy: wallet?.id">
       <button ion-item *ngIf="wallet.client.confirmed; else notConfirmed" navPush="WalletDetailsView"
               [navParams]="{ wallet: wallet }" class="wallet">
         <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color"
@@ -99,7 +99,7 @@
         </div>
       </ng-template>
 
-    </div>
+    </ng-container>
 
     <button ion-item class="import-wallet-button" (click)="toImportWallet()" detail-none>
       <ion-avatar item-start img-icon>
