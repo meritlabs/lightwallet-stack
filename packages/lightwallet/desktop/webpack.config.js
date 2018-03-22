@@ -9,7 +9,8 @@ const autoprefixer = require('autoprefixer');
 const postcssUrl = require('postcss-url');
 const postcssImports = require('postcss-import');
 
-const { NoEmitOnErrorsPlugin, SourceMapDevToolPlugin, NamedModulesPlugin } = require('webpack');
+const { execSync } = require('child_process');
+const { NoEmitOnErrorsPlugin, SourceMapDevToolPlugin, NamedModulesPlugin, DefinePlugin } = require('webpack');
 const { NamedLazyChunksWebpackPlugin, BaseHrefWebpackPlugin, PostcssCliResources } = require('@angular/cli/plugins/webpack');
 const { CommonsChunkPlugin } = require('webpack').optimize;
 const { AngularCompilerPlugin } = require('@ngtools/webpack');
@@ -387,6 +388,12 @@ module.exports = {
     ]
   },
   "plugins": [
+    new DefinePlugin({
+      WEBPACK_CONFIG: {
+        COMMIT_HASH: JSON.stringify(execSync('git rev-parse --short HEAD').toString().trim()),
+        VERSION: JSON.stringify(require('./package.json').version)
+      }
+    }),
     new NoEmitOnErrorsPlugin(),
     new CopyWebpackPlugin([
       {
@@ -403,6 +410,22 @@ module.exports = {
         "from": {
           "glob": "favicon.ico",
           "dot": true
+        }
+      },
+      {
+        context: 'src',
+        to: '',
+        from: {
+          glob: 'firebase-messaging-sw.js',
+          dot: true
+        }
+      },
+      {
+        context: 'src',
+        to: '',
+        from: {
+          glob: 'manifest.json',
+          dot: true
         }
       }
     ], {

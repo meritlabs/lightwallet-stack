@@ -453,7 +453,7 @@ export class WalletService {
 
     //prefs.email  (may come from arguments)
     prefs.email = config.emailNotifications.email;
-    prefs.language = 'English'; // This line was hardcoded - TODO: prefs.language = uxLanguage.getCurrentLanguage();
+    prefs.language = 'en'; // This line was hardcoded - TODO: prefs.language = uxLanguage.getCurrentLanguage();
     // prefs.unit = walletSettings.unitCode; // TODO: remove, not used
 
     await this.updateRemotePreferencesFor(_.clone(clients), prefs);

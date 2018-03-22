@@ -19,6 +19,7 @@ import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TransactionEffects } from '@merit/common/effects/transaction.effects';
+import { WebPushNotificationsService } from '@merit/common/services/web-push-notifications.service';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
