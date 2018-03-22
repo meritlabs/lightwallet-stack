@@ -114,6 +114,11 @@
             <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
           </button>
     </div>
+    <div class="merit-friends">
+      <div class="merit-friends__groupTitle">
+        Merit Friends
+      </div>
+    </div>
 
     <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
       <h2>What is Global Send?</h2>
@@ -122,9 +127,7 @@
       <img src="assets/img/easysend.png" color="primary" item-end>
     </div>
 
-
     <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
-
       <div class="no-results-label" *ngIf="!searchResult.error">
         No results
         <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
@@ -135,9 +138,7 @@
       <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
         Alias not found
       </div>
-
       <div *ngIf="searchResult.toNewEntity" margin-top>
-
         <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'"
           (click)="createContact()" class="send-button" color="light">
           Create New Contact
