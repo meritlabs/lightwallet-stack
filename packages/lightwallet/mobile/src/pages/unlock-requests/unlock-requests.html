@@ -1,4 +1,4 @@
-f<ion-header no-border>
+<ion-header no-border>
   <ion-navbar color="light">
     <ion-title>Invite Requests</ion-title>
     <ion-buttons end>
@@ -51,22 +51,22 @@ f<ion-header no-border>
     </div>
 
     <ion-list>
-      <ion-item *ngFor="let request of (showHiddenRequests && hiddenRequests); trackBy: request?.address" (click)="processRequest(request)" text-wrap>
+      <button ion-item *ngFor="let request of (showHiddenRequests && hiddenRequests); trackBy: request?.address" (click)="processRequest(request)" text-wrap>
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/incoming_request.svg">
         </ion-avatar>
           <h2 [class.address]="request.alias">{{ request.alias ? '@' + request.alias : request.address }}</h2>
           <p *ngIf="request.alias">{{ request.address }}</p>
-      </ion-item>
+      </button>
 
-      <ion-item *ngFor="let request of activeRequests; trackBy: request?.address" (click)="processRequest(request)"
+      <button ion-item *ngFor="let request of activeRequests; trackBy: request?.address" (click)="processRequest(request)"
                 text-wrap>
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/incoming_request.svg">
         </ion-avatar>
           <h2 [class.address]="request.alias">{{ request.alias ? '@' + request.alias : request.address }}</h2>
           <p *ngIf="request.alias">{{ request.address }}</p>
-      </ion-item>
+      </button>
     </ion-list>
   </div>
 
@@ -91,11 +91,11 @@ f<ion-header no-border>
 
     <div *ngFor="let request of confirmedRequests; trackBy: request?.address" text-wrap>
 
-      <ion-item *ngIf="!request.isVault"> 
+      <ion-item *ngIf="!request.isVault">
           <contact-avatar item-start [contact]="request.contact" fallback="assets/img/icons/confirm.svg"></contact-avatar>
           <ion-label>
               <h2>
-                  {{request.label}} 
+                  {{request.label}}
               </h2>
           </ion-label>
         </ion-item>
@@ -105,8 +105,8 @@ f<ion-header no-border>
               <img src="assets/img/icons/vault-avatar.svg">
           </ion-avatar>
           <h2>{{ request.label }}</h2>
-        </ion-item> 
-      
+        </ion-item>
+
     </div>
   </ion-list>
 
