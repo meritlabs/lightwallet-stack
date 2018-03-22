@@ -119,7 +119,7 @@
         Merit Friends
       </div>
       <div class="merit-friends__wrap">
-        <div class="no-friends" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
+        <!-- <div class="no-friends" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
           <div>
             <p class="no-friends__title">Merit Friends</p>
             <p class="no-friends__description">Quickly send Merit to any alias on
@@ -127,6 +127,25 @@
           </div>
           <div>
             <a href="" class="no-friends__add">Add Merit Friend</a>
+          </div>
+        </div> -->
+        <div class="friends">
+          <div class="friend">
+            <div class="friend__avatar">
+              <img src="/assets/img/avatar.jpg" alt="">
+            </div>
+            <div class="friend__info">
+              <span class="friend__title">Adil Wali</span>
+              <span class="friend__alias">@adil</span>
+            </div>
+          </div>
+          <div class="friend">
+            <div class="friend__avatar">
+            </div>
+            <div class="friend__info">
+              <span class="friend__title">Adil Wali</span>
+              <span class="friend__alias">@adil</span>
+            </div>
           </div>
         </div>
       </div>
@@ -160,7 +179,6 @@
         </button>
         <div class="address">{{searchQuery}}</div>
       </div>
-
     </div>
 
     <div [hidden]="showRecent" class="contacts-list">
