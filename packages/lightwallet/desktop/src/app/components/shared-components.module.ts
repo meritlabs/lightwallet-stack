@@ -4,13 +4,15 @@ import { LoadingSpinnerComponent } from '@merit/desktop/app/components/loading-s
 import { ErrorMessageComponent } from '@merit/desktop/app/components/error-message/error-message.component';
 import { MeritIconComponent } from '@merit/desktop/app/components/merit-icon/merit-icon.component';
 import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-notification/toast-notification.component';
+import { LockScreenComponent } from '@merit/desktop/app/components/lock-screen/lock-screen.component';
 
 export function getComponents() {
   return [
     LoadingSpinnerComponent,
     ErrorMessageComponent,
     MeritIconComponent,
-    ToastNotificationComponent
+    ToastNotificationComponent,
+    LockScreenComponent
   ];
 }
 
