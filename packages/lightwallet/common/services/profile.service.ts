@@ -543,7 +543,7 @@ export class ProfileService {
   public updateVault(vault: any) {
     this.vaults.some((v:any) => {
       if (vault._id == v._id) {
-        v = vault; 
+        v = vault;
         return true;
       }
     });
@@ -551,14 +551,14 @@ export class ProfileService {
 
   public async getVaults(reload: boolean = false) {
     if (!this.wallets) return [];
-    if (!this.vaults.length || reload) {  
-        let wallets: MeritWalletClient[] = _.values(this.wallets);  
+    if (!this.vaults.length || reload) {
+        let wallets: MeritWalletClient[] = _.values(this.wallets);
         for (let wallet of wallets) {
           const vaults = await wallet.getVaults();
-          this.vaults = this.vaults.concat( vaults.map(v => Object.assign(v, {walletClient: wallet})) );  
+          this.vaults = this.vaults.concat( vaults.map(v => Object.assign(v, {walletClient: wallet})) );
         }
     }
-    return this.vaults; 
+    return this.vaults;
   }
 
   private requiresBackup(wallet: MeritWalletClient): boolean {
