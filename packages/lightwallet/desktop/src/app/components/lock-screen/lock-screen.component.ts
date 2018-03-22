@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-lock-screen',
@@ -6,5 +6,5 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./lock-screen.component.sass']
 })
 export class LockScreenComponent {
-  @Input() fullScreen: boolean = false;
+  @Input() fullScreen: boolean;
 }
