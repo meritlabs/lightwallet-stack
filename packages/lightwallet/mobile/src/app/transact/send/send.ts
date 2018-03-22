@@ -58,6 +58,7 @@ export class SendView {
 
     let pagesVisited = await this.persistenceService.getPagesVisited();
     this.showSlider = (pagesVisited.indexOf('send') == -1);
+    this.showSlider = true;
   }
 
   async hideSlider() {
