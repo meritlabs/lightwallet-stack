@@ -7,7 +7,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Store } from '@ngrx/store';
 import { AddressService } from '@merit/common/services/address.service';
 import 'rxjs/add/operator/take';
-import { selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
+import { selectConfirmedWallets, selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
 import { IRootAppState } from '@merit/common/reducers';
 
 @Component({
@@ -17,7 +17,7 @@ import { IRootAppState } from '@merit/common/reducers';
   encapsulation: ViewEncapsulation.None
 })
 export class ReceiveView implements OnInit {
-  wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
 
   hasUnlockedWallet: boolean;
@@ -84,7 +84,7 @@ export class ReceiveView implements OnInit {
   async ngOnInit() {
     try {
       const wallets = await this.wallets$.take(1).toPromise();
-      this.hasUnlockedWallet = wallets.some((wallet: DisplayWallet) => wallet.status.confirmed);
+      this.hasUnlockedWallet = wallets.length > 0;
       this.selectedWallet = wallets[0];
       this.address = this.selectedWallet.client.getRootAddress().toString();
       let info = await this.addressService.getAddressInfo(this.address);
