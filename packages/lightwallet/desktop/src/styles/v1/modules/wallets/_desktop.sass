@@ -23,7 +23,8 @@
       padding: 20px
       background: $white
       box-shadow: 0 2px 4px rgba(46,51,88, .22)
-      cursor: pointer
+      &:not(.locked)
+        cursor: pointer
       user-select: none
       position: relative
       +transition(.3s, linear)
@@ -49,7 +50,7 @@
           +font($baseFont--medium, 15px, 22px, $gun-metal)
         .regular-blue-text
           +font($baseFont--medium, 14px, 24px, $blue)
-      &:hover
+      &:hover:not(.locked)
         opacity: 1
         .wallets__group__wallet__edit
           opacity: 1
