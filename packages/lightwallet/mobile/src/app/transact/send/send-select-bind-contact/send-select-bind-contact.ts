@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
 
 @IonicPage()
 @Component({
@@ -13,7 +13,7 @@ export class SendSelectBindContactView {
   public contacts: Array<MeritContact>;
   public foundContacts: Array<MeritContact> = [];
   public searchQuery: string = '';
-  public meritAddress: { address: string, network: string };
+  public meritAddress: { address: string, network: string, alias: string };
 
   constructor(private navParams: NavParams,
               private viewCtrl: ViewController,
@@ -41,7 +41,7 @@ export class SendSelectBindContactView {
         },
         {
           text: 'Bind', handler: () => {
-          this.contactsService.bindAddressToContact(contact, this.meritAddress.address, this.meritAddress.network)
+          this.contactsService.bindAddressToContact(contact, this.meritAddress.address, this.meritAddress.alias)
             .then(() => {
               this.viewCtrl.dismiss(contact);
             });

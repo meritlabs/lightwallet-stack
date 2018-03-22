@@ -3,15 +3,13 @@ import { IonicPage, ModalController, NavController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 
-const WEAK_PHONE_NUMBER_PATTERN = /^[\(\+]?\d+([\(\)\.-]\d*)*$/;
-const WEAK_EMAIL_PATTERN = /^\S+@\S+/;
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 
@@ -42,7 +40,7 @@ export class SendView {
   constructor(private navCtrl: NavController,
               private contactsService: ContactsService,
               private profileService: ProfileService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private modalCtrl: ModalController,
               private addressScanner: AddressScannerService) {
   }
@@ -55,7 +53,7 @@ export class SendView {
 
   async ionViewWillEnter() {
     this.loadingContacts = true;
-    await this.contactsService.requestDevicePermission();
+    //await this.contactsService.requestDevicePermission();
     await this.updateHasUnlocked();
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
@@ -64,7 +62,7 @@ export class SendView {
   }
 
   async updateRecentContacts() {
-    const sendHistory = await this.sendService.getSendHistory();
+    const sendHistory = await this.addressService.getSendHistory();
     const recentContacts = [];
 
     let results, contact;
@@ -144,7 +142,7 @@ export class SendView {
 
     if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
       if (this.isAddress(input)) {
-        const addressInfo = await this.sendService.getAddressInfo(input);
+        const addressInfo = await this.addressService.getAddressInfo(input);
 
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
@@ -163,7 +161,7 @@ export class SendView {
           result.error = ERROR_ADDRESS_NOT_CONFIRMED;
         }
       } else if (this.couldBeAlias(input)) {
-        const addressInfo = await this.sendService.getAddressInfo(input);
+        const addressInfo = await this.addressService.getAddressInfo(input);
 
         if (addressInfo && addressInfo.isConfirmed) {
           result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
@@ -181,49 +179,24 @@ export class SendView {
         } else {
           result.error = ERROR_ALIAS_NOT_FOUND;
         }
-      } else if (this.couldBeEmail(input)) {
-        result.toNewEntity = { destination: SendMethodDestination.Email, contact: new MeritContact() };
-        result.toNewEntity.contact.emails.push({ value: input });
-        this.suggestedMethod = {
-          type: SendMethodType.Easy,
-          destination: SendMethodDestination.Email,
-          value: input,
-          alias: ''
-        };
-      } else if (this.couldBeSms(input)) {
-        result.toNewEntity = { destination: SendMethodDestination.Sms, contact: new MeritContact() };
-        result.toNewEntity.contact.phoneNumbers.push({ value: input });
-        this.suggestedMethod = {
-          type: SendMethodType.Easy,
-          destination: SendMethodDestination.Sms,
-          value: input,
-          alias: ''
-        };
       }
     }
 
     this.searchResult = result;
   }
 
-  private couldBeEmail(input) {
-    return WEAK_EMAIL_PATTERN.test(input);
-  }
-
-  private couldBeSms(input) {
-    return WEAK_PHONE_NUMBER_PATTERN.test(input);
-  }
 
   private couldBeAlias(input) {
     if (!isAlias(input)) return false;
-    return this.sendService.couldBeAlias(input.slice(1));
+    return this.addressService.couldBeAlias(input.slice(1));
   }
 
   private async isValidAddress(input) {
-    return await this.sendService.isAddressValid(input);
+    return await this.addressService.isAddressValid(input);
   }
 
   private isAddress(input) {
-    return this.sendService.isAddress(input);
+    return this.addressService.isAddress(input);
   }
 
   clearSearch() {
@@ -267,19 +240,24 @@ export class SendView {
   }
 
   sendToContact(contact) {
+
     this.navCtrl.push('SendViaView', {
       contact: contact,
-      amount: this.amount,
-      isEasyEnabled: this.hasActiveInvites
+      amount: this.amount
     });
+
   }
 
   sendToEntity(entity) {
-    this.navCtrl.push('SendViaView', {
+    this.navCtrl.push('SendAmountView', {
       contact: entity.contact,
       amount: this.amount,
-      isEasyEnabled: this.hasActiveInvites,
-      suggestedMethod: this.suggestedMethod
+      suggestedMethod: {
+        type: SendMethodType.Classic,
+        destination: SendMethodDestination.Address,
+        value: entity.contact.meritAddresses[0].address,
+        alias: entity.contact.meritAddresses[0].alias
+      }
     });
   }
 
@@ -287,4 +265,11 @@ export class SendView {
     this.searchQuery = await this.addressScanner.scanAddress();
     this.parseSearch();
   }
+
+  easySend() {
+    this.navCtrl.push('SendAmountView', {
+      suggestedMethod: {type: SendMethodType.Easy}
+    });
+  }
+
 }

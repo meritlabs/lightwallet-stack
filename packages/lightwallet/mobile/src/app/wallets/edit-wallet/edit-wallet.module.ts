@@ -10,5 +10,5 @@ import { EditWalletView } from './edit-wallet';
     IonicPageModule.forChild(EditWalletView),
   ],
 })
-export class $$moduleName$$Module {
+export class EditWalletModule {
 }
