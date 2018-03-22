@@ -409,6 +409,7 @@ view-send-select-bind-contact {
       justify-content: center;
       background: #FFF linear-gradient(to top, rgba(116, 128, 155, 0) 0%, rgba(116, 128, 155, 0.08) 100%);
       box-shadow: 1px 0 2px #ededed;
+      z-index: 99;
     }
     &__title {
       color: #303c4e;
