@@ -1,4 +1,4 @@
-import * as Bitcore from 'bitcore-lib';
+import { Address } from 'bitcore-lib';
 import { IContactField, IContactName, IContactProperties } from '@ionic-native/contacts';
 
 export interface IAddressBook {
@@ -29,7 +29,7 @@ export class MeritContact implements IContactProperties {
       if (!address.network) {
         isValid = false
       } else {
-        if (!Bitcore.Address.isValid(address.address)) isValid = false;
+        if (!Address.isValid(address.address)) isValid = false;
       }
     });
     return isValid;
@@ -39,7 +39,7 @@ export class MeritContact implements IContactProperties {
     this.meritAddresses.forEach((val) => {
       if (val.address.indexOf('merit:') == 0) val.address = val.address.split(':')[1];
       try {
-        val.network = Bitcore.Address.fromString(val.address).network.name;
+        val.network = Address.fromString(val.address).network.name;
         console.log('set network!', val.network);
       } catch (e) {
       }

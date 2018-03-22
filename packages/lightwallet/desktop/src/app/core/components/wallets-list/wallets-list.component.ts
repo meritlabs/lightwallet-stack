@@ -11,4 +11,7 @@ export class WalletsListComponent {
   @Input() showButton: boolean = true;
   @Input() wallets: DisplayWallet[];
   @Input() loading: boolean;
+  log(item) {
+    console.log(item)
+  }
 }

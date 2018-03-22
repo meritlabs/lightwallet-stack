@@ -1,0 +1,9 @@
+{
+  "name": "Merit Lightwallet",
+  "short_name": "Merit",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#4e8ef7",
+  "theme_color": "#4e8ef7",
+  "gcm_sender_id": "1091326413792"
+}

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { ISendMethod, SendMethodDestination } from '@merit/common/models/send-method';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 const searchIn = (method: ISendMethod) => {
   switch (method.destination) {
@@ -34,7 +34,7 @@ export class SendViaView {
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private alertCtrl: AlertController,
-              private sendService: SendService) {
+              private addressService: AddressService) {
     this.contact = this.navParams.get('contact');
     this.amount = this.navParams.get('amount');
     this.suggestedMethod = this.navParams.get('suggestedMethod');
@@ -50,7 +50,7 @@ export class SendViaView {
       }
 
       if (!this.highlightedMethod) {
-        this.sendService.getSendHistory().then((sendHistory) => {
+        this.addressService.getSendHistory().then((sendHistory) => {
           sendHistory
             .sort((a, b) => b.timestamp - a.timestamp)
             .some((record) => {

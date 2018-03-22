@@ -1,0 +1,15 @@
+<div class="lock-screen lock-screen--full" *ngIf="fullScreen; else notFullScreen">
+  <div class="lock-screen__message">
+    <img src="/assets/v1/icons/ui/lock.svg" alt="">
+    <p><strong>Before you start</strong></p>
+    <p>Wait until your wallet is unlocked - you cannot send or receive Merit until your wallet unlock request is confirmed.</p>
+  </div>
+</div>
+<ng-template #notFullScreen>
+  <div class="lock-screen">
+    <div class="lock-screen__message">
+      <img src="/assets/v1/icons/ui/lock.svg" alt="">
+      <p>You cannot use this wallet until your invite request is confirmed.</p>
+    </div>
+  </div>
+</ng-template>

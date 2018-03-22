@@ -9,7 +9,7 @@ import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { Router } from '@angular/router';
@@ -36,7 +36,7 @@ export class PhraseImportView {
               private mnemonicService: MnemonicService,
               private store: Store<IRootAppState>,
               private walletService: WalletService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private txFormatService: TxFormatService,
               private router: Router) {}
 
@@ -78,7 +78,7 @@ export class PhraseImportView {
         console.log('Done importing wallet!');
         this.store.dispatch(
           new AddWalletAction(
-            await createDisplayWallet(wallet, this.walletService, this.sendService, this.txFormatService)
+            await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
           )
         );
 
