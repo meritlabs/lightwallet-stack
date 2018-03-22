@@ -514,4 +514,69 @@ view-send-select-bind-contact {
       }
     }
   }
+  .merit-friends {
+    background: #FFF;
+    height: calc(100% - 142px);
+    &__groupTitle {
+      padding: 15px 15px;
+      color: #74809b;
+      font-size: 12px;
+      font-weight: 300;
+      line-height: 12px;
+      background-color: #fafafa;
+      border-bottom: 1px solid #ededed;
+    }
+    &__wrap {
+      background: #FFF;
+      padding: 30px;
+      height: calc(100% - 60px);
+      position: relative;
+      .no-friends {
+        border: 1px solid #106dda;
+        text-align: center;
+        padding: 20px 20px 30px;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        &::after,
+        &:before {
+          content: "";
+          display: block;
+          width: 56px;
+          height: 56px;
+          position: absolute;
+          top: 1px;
+          left: 0;
+          right: 0;
+          margin: 0 auto;
+          background: #FFF;
+        }
+        &::after {
+          mask-image: url("../assets/img/icons/merit.svg");
+          background-color: #106dda;
+          mask-size: 24px 29px;
+          mask-position: 50% 50%;
+          mask-repeat: no-repeat;
+        }
+        &__title {
+          color: #2d3b50;
+          font-size: 24px;
+          font-weight: 600;
+        }
+        &__description {
+          color: #74809b;
+          font-size: 14px;
+          font-weight: 300;
+          line-height: 20px;
+        }
+        &__add {
+          color: #106dda;
+          font-size: 14px;
+          font-weight: 300;
+          text-decoration: none;
+        }
+      }
+    }
+  }
 }

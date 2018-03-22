@@ -118,14 +118,21 @@
       <div class="merit-friends__groupTitle">
         Merit Friends
       </div>
+      <div class="merit-friends__wrap">
+        <div class="no-friends" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
+          <div>
+            <p class="no-friends__title">Merit Friends</p>
+            <p class="no-friends__description">Quickly send Merit to any alias on
+              the Merit network in seconds.</p>
+          </div>
+          <div>
+            <a href="" class="no-friends__add">Add Merit Friend</a>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
-      <h2>What is Global Send?</h2>
-      <p>Invite your friends by sending them Merit. Just copy URL that you will receive at process end.</p>
-      <p>You need a free invite to do send Global Send.</p>
-      <img src="assets/img/easysend.png" color="primary" item-end>
-    </div>
+
 
     <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
       <div class="no-results-label" *ngIf="!searchResult.error">
