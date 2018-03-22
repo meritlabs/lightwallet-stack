@@ -31,6 +31,9 @@ import { PhraseImportView } from '@merit/desktop/app/core/wallets/import-wallet/
 import { WebPushNotificationsService } from '@merit/common/services/web-push-notifications.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
+import { InvitesComponent } from './community/invites/invites.component';
+import { RequestsComponent } from './community/invites/requests/requests.component';
+import { SendInviteComponent } from './community/invites/send-invite/send-invite.component';
 
 export function getPages() {
   return [
@@ -53,7 +56,10 @@ export function getPages() {
     ImportWalletView,
     ImportByQrView,
     ImportWithFileView,
-    PhraseImportView
+    PhraseImportView,
+    InvitesComponent,
+    RequestsComponent,
+    SendInviteComponent
   ];
 }
 

@@ -1,0 +1,43 @@
+<ion-content>
+
+    <div class="send-ready">
+        <div class="send-ready-inner">
+            <img src="assets/img/invite.svg" alt="">
+        </div>
+    </div>
+
+    <h2>Your GlobalSend is Ready!</h2>
+
+    <ion-card>
+        <ion-card-header>
+            Your link
+        </ion-card-header>
+        <ion-card-content>
+            <a (click)="copyToClipboard(txData.easySendUrl)" [clip]="txData.easySendUrl">{{ txData.easySendUrl }}</a>
+        </ion-card-content>
+
+        <ion-row>
+            <ion-col>
+                <button ion-button icon-left clear small (click)="copyToClipboard(txData.easySendUrl)" [clip]="txData.easySendUrl">
+                    <ion-icon name="clipboard"></ion-icon>
+                    <div>Copy</div>
+                </button>
+            </ion-col>
+            <ion-col [hidden]="!showShareButton()">
+                <button ion-button icon-left clear small (click)="share(txData.easySendUrl)">
+                    <ion-icon name="share"></ion-icon>
+                    <div>Share</div>
+                </button>
+            </ion-col>
+        </ion-row>
+
+    </ion-card>
+
+
+    <ion-footer>
+        <button ion-button icon-end class="action-button" color="primary" (click)="toWallets()">
+            Back to Wallets
+        </button>
+    </ion-footer>
+
+</ion-content>

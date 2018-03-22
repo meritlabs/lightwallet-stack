@@ -26,11 +26,9 @@ import { PushNotificationsService } from '@merit/common/services/push-notificati
 import { PopupService } from '@merit/common/services/popup.service';
 import { PopupService as MobilePopupService } from '@merit/mobile/app/core/popup.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
-import { CreateVaultService } from '@merit/mobile/app/vaults/create-vault/create-vault.service';
-import { RenewVaultService } from '@merit/mobile/app/vaults/renew-vault/renew-vault.service';
-import { SpendVaultService } from '@merit/mobile/app/vaults/spend/vault-spend.service';
-import { VaultsService } from '@merit/mobile/app/vaults/vaults.service';
-import { ContactsService, ContactsService as MobileContactsProvider } from '../services/contacts.service';
+import { VaultsService } from '@merit/common/services/vaults.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
+import { ContactsService as MobileContactsService } from '@merit/mobile/services/contacts.service';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { Keyboard } from '@ionic-native/keyboard';
 import { AppVersion } from '@ionic-native/app-version';
@@ -38,23 +36,20 @@ import { TouchIdService } from '@merit/mobile/services/touch-id.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { MeritToastController } from '@merit/common/services/toast.controller.service';
-import { SendService } from '@merit/common/services/send.service';
-import { MobilePushNotificationsService } from '../../../common/services/mobile-push-notifications-service';
+import { AddressService } from '@merit/common/services/address.service';
+
 
 export function getProviders() {
   return [
-    { provide: ContactsService, useClass: MobileContactsProvider },
     { provide: PopupService, useClass: MobilePopupService },
-    { provide: PushNotificationsService, useClass: MobilePushNotificationsService },
+    { provide: ContactsService, useClass: MobileContactsService },
     AddressScannerService,
-    CreateVaultService,
     DeepLinkService,
     EmailNotificationsService,
     MeritToastController,
     PollingNotificationsService,
-    RenewVaultService,
-    SendService,
-    SpendVaultService,
+    PushNotificationsService,
+    AddressService,
     TouchIdService,
     VaultsService
   ];
