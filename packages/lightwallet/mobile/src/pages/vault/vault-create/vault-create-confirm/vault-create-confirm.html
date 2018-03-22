@@ -1,0 +1,60 @@
+<ion-header>
+    <ion-navbar color="light">
+        <ion-title>Confirm Creation</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+    <ion-item>
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/wallet.svg">
+        </ion-avatar>
+        <p>Send from</p>
+        <h2>{{vaultData.wallet.name}}</h2>
+        <p>{{vaultData.wallet.client.status.spendableAmount | toMRT}}</p>
+    </ion-item>
+
+    <ion-item>
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/vault-avatar.svg">
+        </ion-avatar>
+        <p>Vault name</p>
+        <h2>{{vaultData.vaultName}}</h2>
+    </ion-item>
+
+    <ion-item>
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/merit.svg">
+        </ion-avatar>
+        <p>Amount to Deposit</p>
+        <h2>{{vaultData.amount | toMRT}}</h2>
+    </ion-item>
+
+    <ion-item text-wrap>
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/lock.svg">
+        </ion-avatar>
+        <p>Whitelist</p>
+        <h2>
+            <span *ngFor="let wallet of vaultData.whiteList; let last = last">
+                {{wallet.name}}<span *ngIf="!last">, </span>
+            </span>
+        </h2>
+    </ion-item>
+
+    <ion-item text-wrap>
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/masterkey.svg">
+        </ion-avatar>
+        <ion-label>
+          <p>Master key phrase</p>
+          <h2>{{vaultData.masterKey.phrase}}</h2>
+        </ion-label>
+    </ion-item>
+
+    <button ion-button class="action-button" translate (click)="create()" [disabled]="isSendingEnabled">
+        Create Vault
+    </button>
+
+</ion-content>

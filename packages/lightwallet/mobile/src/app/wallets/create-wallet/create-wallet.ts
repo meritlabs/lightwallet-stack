@@ -14,7 +14,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 
@@ -57,7 +57,7 @@ export class CreateWalletView {
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
               private alertCtrl: AlertController,
-              private sendService: SendService) {
+              private addressService: AddressService) {
   }
 
   ionViewDidEnter() {
@@ -125,12 +125,12 @@ export class CreateWalletView {
     if (!input) {
       this.formData.addressCheckInProgress = false;
       return this.formData.addressCheckError = 'Address cannot be empty';
-    } else if (!this.sendService.isAddress(input)) {
-      if (!this.sendService.couldBeAlias(input)) {
+    } else if (!this.addressService.isAddress(input)) {
+      if (!this.addressService.couldBeAlias(input)) {
         this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Incorrect address or alias format';
       } else {
-        let aliasInfo = await this.sendService.getAddressInfo(input);
+        let aliasInfo = await this.addressService.getAddressInfo(input);
         if (!aliasInfo || !aliasInfo.isValid || !aliasInfo.isBeaconed || !aliasInfo.isConfirmed) {
           this.formData.addressCheckInProgress = false;
           return this.formData.addressCheckError = 'Alias not found';
@@ -141,7 +141,7 @@ export class CreateWalletView {
         }
       }
     } else {
-      let addressInfo = await this.sendService.getAddressInfo(input);
+      let addressInfo = await this.addressService.getAddressInfo(input);
       if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
         this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Address not found';
@@ -172,14 +172,14 @@ export class CreateWalletView {
       return this.formData.aliasValidationError = 'Alias should contain at least 4 symbols';
     }
 
-    if (!this.sendService.couldBeAlias(input)) {
+    if (!this.addressService.couldBeAlias(input)) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
       return this.formData.aliasValidationError = 'Incorrect alias format';
     }
 
 
-    let addressExists = await this.sendService.getValidAddress(input);
+    let addressExists = await this.addressService.getValidAddress(input);
 
     if (addressExists) {
       this.formData.aliasCheckInProgress = false;

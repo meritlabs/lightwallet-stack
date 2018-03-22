@@ -6,24 +6,18 @@
 
   <div class="container">
 
-    <ng-template *ngIf="easyReceipt; else noReceipt">
-      <img src="assets/img/logo-negative.svg" class="logo" />
+    <div *ngIf="easyReceipt; else noReceipt">
 
       <h1 class="title" translate>
-        You've got Merit!!
+        {{easyReceipt.senderName}} sent you Merit!
       </h1>
 
-      <p class="text" translate>
-        {{easyReceipt.senderName ? easyReceipt.senderName : 'Someone'}}
-        sent you
-        <strong *ngIf="easyReceipt.amount">{{ easyReceipt.amount }}</strong>
-        Merit.
-      </p>
+      <img src="assets/img/invite.svg" alt="" class="logo" />
 
       <p class="text">
         Now you need to enter unlock code to setup your account and accept Merit.
-      </p>
-    </ng-template>
+      </p> 
+    </div>
 
     <ng-template #noReceipt>
       <h1 class="title">

@@ -1,0 +1,41 @@
+@import "~styles/v1/theme"
+.lock-screen
+  position: absolute
+  z-index: 9999
+  right: 0
+  top: 0
+  width: 100%
+  height: 100%
+  background: rgba(44,49,65, .7)
+  display: flex
+  flex-flow: row wrap
+  justify-content: center
+  align-items: center
+  padding: 10px
+  &__message
+    text-align: center
+    +font($baseFont--medium, 14px, 16px, $dark)
+    background: $white
+    display: flex
+    align-items: center
+    flex-flow: row wrap
+    justify-content: center
+    max-width: 300px
+    border-radius: 4px
+    padding: 5px
+    user-select: none
+    img
+      width: 15px
+      margin-bottom: 5px
+.lock-screen--full
+  width: calc(100% - 300px)
+  .lock-screen__message
+    +font($baseFont--medium, 18px, 24px, $dark)
+    display: block
+    padding: 20px
+    max-width: 350px
+    strong
+      font-size: 20px
+      line-height: 32px
+    img
+      width: 25px
