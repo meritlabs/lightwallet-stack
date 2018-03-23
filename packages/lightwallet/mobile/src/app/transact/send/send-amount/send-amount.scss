@@ -261,4 +261,7 @@ view-send-amount {
     box-shadow: 0 3px 12px rgba(45, 59, 80, 0.22);
     background-image: linear-gradient(100deg, #106dda 0%, #00b1de 100%);
   }
+  .item-ios [item-right], .item-ios [item-end] {
+    margin: 30px;
+  }
 }
