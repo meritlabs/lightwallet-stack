@@ -13,7 +13,7 @@
     </div>
   </div>
   <div class="wallets__group__content">
-    <loading-spinner ></loading-spinner>
+    <loading-spinner [hidden]="!loading"></loading-spinner>
     <!-- [hidden]="!loading" -->
     <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: wallet?.id" [routerLink]="['/wallets', wallet.id]">
       <div class="wallets__group__wallet__info">
