@@ -10,7 +10,7 @@ import {
 
 export interface IDynamicComponent {
   destroy: Function;
-  dismiss(): void;
+  dismiss?(): void;
   setConfig(config: any): void;
 }
 
