@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header class="globalSendInner">
   <ion-navbar color="light">
     <ion-title *ngIf="recipient?.name?.formatted">
       <h2>Recipient: {{recipient.name.formatted}}</h2>
@@ -29,13 +29,13 @@
       <div class="main-amount">
         <ion-item no-lines>
           <ion-input
-            #amount 
+            #amount
             type="tel"
             pattern="[0-9\.]"
             [(ngModel)]="formData.amount"
             (ngModelChange)="processAmount(formData.amount)"
             [placeholder]="'Enter sending amount'"
-            (keypress)="amountKeypress($event.keyCode)" 
+            (keypress)="amountKeypress($event.keyCode)"
           ></ion-input>
         </ion-item>
       </div>
@@ -43,12 +43,12 @@
         {{selectedCurrency.type == 'mrt' ? amount.fiatStr : amount.mrtStr}}
       </div>
 
-      <div class="suggested-amounts">
+      <!-- <div class="suggested-amounts">
         <button ion-button outline *ngFor="let amount of suggestedAmounts[selectedCurrency.type]"
                 (click)="selectAmount(amount)">
           {{amount}}
         </button>
-      </div>
+      </div> -->
 
     </div>
 
@@ -58,7 +58,7 @@
       </ion-avatar>
       <p>From</p>
       <h2>{{selectedWallet.name}}</h2>
-      <p>{{selectedWallet.status.spendableAmount | toMRT}}</p> 
+      <p>{{selectedWallet.status.spendableAmount | toMRT}}</p>
       <ion-icon name="ios-arrow-down" item-end></ion-icon>
     </button>
 

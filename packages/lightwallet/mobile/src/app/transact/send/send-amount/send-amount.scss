@@ -2,8 +2,8 @@ view-send-amount {
 
   .label p.feeCalcError {
     white-space: normal;
-    color: color($colors, danger) !important; 
-    font-weight: normal !important; 
+    color: color($colors, danger) !important;
+    font-weight: normal !important;
   }
 
   ion-avatar {
@@ -141,5 +141,4 @@ view-send-amount {
       width: 20px;
     }
   }
-
 }
