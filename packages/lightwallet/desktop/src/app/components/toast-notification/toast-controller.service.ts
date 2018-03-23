@@ -1,4 +1,5 @@
-import { ApplicationRef, ComponentFactoryResolver, EmbeddedViewRef, Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { DOMController } from '@merit/desktop/app/components/dom.controller';
 import {
   INotificationMessage,
   ToastNotificationComponent
@@ -6,18 +7,9 @@ import {
 
 @Injectable()
 export class ToastControllerService {
-  constructor(private appRef: ApplicationRef,
-              private cfr: ComponentFactoryResolver,
-              private injector: Injector) {}
+  constructor(private domCtrl: DOMController) {}
 
   create(message: INotificationMessage): ToastNotificationComponent {
-    const componentRef = this.cfr.resolveComponentFactory(ToastNotificationComponent).create(this.injector);
-    this.appRef.attachView(componentRef.hostView);
-    const domElement = (componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
-    document.body.appendChild(domElement);
-    componentRef.instance.message = message;
-    componentRef.instance.show = true;
-    componentRef.instance.destroy = () => this.appRef.detachView(componentRef.hostView);
-    return componentRef.instance;
+    return this.domCtrl.create(ToastNotificationComponent, { message, show: true });
   }
 }
