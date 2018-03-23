@@ -1,0 +1,51 @@
+.regot-loader
+  font-size: 20px
+  position: relative
+  width: 30px
+  height: 30px
+  margin: 20px auto
+.regot
+  width: 30px
+  height: 30px
+  border-radius: 30px
+  background: rgb(0,176,221)
+  position: absolute
+  animation-duration: 0.5s
+  animation-timing-function: ease
+  animation-iteration-count: infinite
+  &::after
+    content: ""
+    display: block
+    position: absolute
+    width: 100%
+    height: 100%
+    mask-size: 20px
+    mask-position: 50% 50%
+    mask-repeat: no-repeat
+    mask-image: url('/assets/v1/icons/logo.ico')
+    background: white
+.regot1, .regot2
+  left: 0
+.regot3
+  left: 2.5em
+.regot4
+  left: 5em
+@keyframes show
+  from
+    transform: scale(0.001)
+  to
+    transform: scale(1)
+@keyframes remove
+  from
+    transform: scale(1)
+  to
+    transform: scale(0.001)
+@keyframes shift
+  to
+    transform: translateX(2.5em)
+.regot1
+  animation-name: show
+.regot2, .regot3
+  animation-name: shift
+.regot4
+  animation-name: remove
