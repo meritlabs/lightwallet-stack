@@ -16,10 +16,11 @@ export interface IDynamicComponent {
 
 @Injectable()
 export class DOMController {
+  rnd: Renderer2;
+
   constructor(private appRef: ApplicationRef,
               private cfr: ComponentFactoryResolver,
-              private injector: Injector,
-              private rnd: Renderer2) {}
+              private injector: Injector) {}
 
   create<T extends IDynamicComponent>(component: Type<T>, config: any, parentElement?: HTMLElement) {
     const componentRef = this.cfr.resolveComponentFactory(component).create(this.injector);
