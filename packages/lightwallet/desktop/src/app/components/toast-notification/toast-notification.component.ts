@@ -1,8 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, ComponentRef, Input, ViewContainerRef } from '@angular/core';
 
 export interface INotificationMessage {
   status?: string;
-  title: string;
+  title?: string;
   text: string;
 }
 
@@ -11,7 +11,7 @@ export interface INotificationMessage {
   templateUrl: './toast-notification.component.html',
   styleUrls: ['./toast-notification.component.sass'],
   host: {
-    '[class]': '\'notification__toast notification__toast--\' + message.status',
+    '[class]': 'message.status',
     '[hidden]': '!show'
   }
 })
@@ -20,10 +20,16 @@ export class ToastNotificationComponent {
   @Input() message: INotificationMessage;
   @Input() duration: number = 3000;
 
+  destroy: Function;
+
   ngOnInit() {
-    console.log('Toast is alive ~~~~~');
-    // setTimeout(() => {
-    //   this.show = false;
-    // }, this.duration);
+    setTimeout(() => {
+      this.dismiss();
+    }, this.duration);
+  }
+
+  dismiss() {
+    this.show = false;
+    this.destroy && this.destroy();
   }
 }

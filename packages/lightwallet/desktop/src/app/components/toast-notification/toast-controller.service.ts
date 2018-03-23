@@ -17,6 +17,7 @@ export class ToastControllerService {
     document.body.appendChild(domElement);
     componentRef.instance.message = message;
     componentRef.instance.show = true;
+    componentRef.instance.destroy = () => this.appRef.detachView(componentRef.hostView);
     return componentRef.instance;
   }
 }
