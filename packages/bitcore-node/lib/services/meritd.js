@@ -1191,7 +1191,6 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
   var addresses = self._normalizeAddressArg(addressArg);
   var cacheKey = (options.invites ? 'i:' : '') + addresses.join('');
   var utxos = self.utxosCache.get(cacheKey);
-  let start = new Date();
 
   function updateWithMempool(confirmedUtxos, mempoolDeltas) {
     /* jshint maxstatements: 20 */
@@ -1228,35 +1227,27 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       });
     }
 
-    let end = new Date();
-    log.warn("Measuting getAddressUnspentOutputs: updateWithMempool " + (end - start));
     return utxos;
   }
 
   function finish(mempoolDeltas) {
     if (utxos) {
       return setImmediate(function() {
-        log.warn("Measuting getAddressUnspentOutputs: exec setImmediate");
         callback(null, updateWithMempool(utxos, mempoolDeltas));
       });
     } else {
-      let before = new Date();
       self.client.getAddressUtxos({ addresses, invites }, function(err, response) {
-        log.warn("Measuting getAddressUnspentOutputs: getAddressUtxos " + ((new Date()) - before));
         if (err) {
           return callback(self._wrapRPCError(err));
         }
         var utxos = response.result.reverse();
         self.utxosCache.set(cacheKey, utxos);
-        let end = new Date();
-        log.warn("Measuting getAddressUnspentOutputs: finish " + (end - start));
         callback(null, updateWithMempool(utxos, mempoolDeltas));
       });
     }
   }
 
   if (queryMempool) {
-    log.warn("Measuting getAddressUnspentOutputs: exec querymempool");
     self.client.getAddressMempool({ addresses }, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
@@ -1267,7 +1258,6 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
       finish(txs);
     });
   } else {
-    log.warn("Measuting getAddressUnspentOutputs: direct finish");
     finish();
   }
 
