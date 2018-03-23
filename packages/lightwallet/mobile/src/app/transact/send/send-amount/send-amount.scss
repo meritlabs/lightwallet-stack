@@ -174,43 +174,45 @@ view-send-amount {
   font-size: 18px;
 }
 
-.back-button.show-back-button {
-  position: relative;
-
-  &::after {
-    content: "";
-    position: absolute;
-    height: 2px;
-    width: 15px;
-    background: #FFF;
-    left: 13px;
-    top: 46%;
-  }
-}
-
-.header-ios .toolbar-ios:last-child .toolbar-background-ios {
-  border-color: rgba(255,255,255, .17);
-}
-
-.view-send-amount .amount-area .main-amount ion-item.item ion-input {
-  width: 100%;
-}
-
-.item-ios.item-block .item-inner {
-  padding-right: 0;
-}
-
 view-send-amount {
+  .header-ios .toolbar-ios:last-child .toolbar-background-ios {
+    border-color: rgba(255,255,255, .17);
+  }
+
+  .view-send-amount .amount-area .main-amount ion-item.item ion-input {
+    width: 100%;
+  }
+
+  .item-ios.item-block .item-inner {
+    padding-right: 0;
+  }
+
+  .back-button.show-back-button {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      height: 2px;
+      width: 15px;
+      background: #FFF;
+      left: 13px;
+      top: 46%;
+    }
+  }
+
   .amount-area .main-amount ion-item.item input.text-input {
     color: #FFF;
     text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
     letter-spacing: 4.8px;
     font-size: 80px;
+
     &::placeholder {
       letter-spacing: normal;
       color: #FFF;
     }
   }
+
   .amount-area {
     padding-top: 50px;
     height: 50vh;
@@ -218,6 +220,7 @@ view-send-amount {
     display: flex;
     align-items: center;
   }
+
   .amount-sm {
     color: #ffffff;
     font-size: 16px;
@@ -226,13 +229,36 @@ view-send-amount {
     line-height: 20px;
     text-transform: uppercase;
   }
+
   .amount-converted {
     opacity: 0.7;
   }
+
   .text-input-ios {
     width: 100%;
   }
+
   ion-header.header-ios ion-navbar button[ion-button].back-button ion-icon.icon {
     font-size: 24px;
+  }
+
+  .send-button {
+    display: block;
+    border-radius: 50px;
+    padding: 0;
+    text-align: center;
+    max-width: 244px;
+    padding: 18px 20px 16px;
+    width: 100%;
+    margin: 30px auto;
+    box-shadow: none;
+    font-size: 15px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.84px;
+    line-height: 14px;
+    box-shadow: 0 3px 12px rgba(45, 59, 80, 0.22);
+    background-image: linear-gradient(100deg, #106dda 0%, #00b1de 100%);
   }
 }
