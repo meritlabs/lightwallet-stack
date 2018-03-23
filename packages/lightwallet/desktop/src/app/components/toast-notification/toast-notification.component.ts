@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { DynamicComponent, IDynamicComponent } from '@merit/desktop/app/components/dom.controller';
+import { IDynamicComponent } from '@merit/desktop/app/components/dom.controller';
 
 export interface INotificationMessage {
   status?: string;
