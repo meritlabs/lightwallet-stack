@@ -3,6 +3,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { AppEffects } from '@merit/common/effects/app.effects';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
+import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -61,7 +62,8 @@ export function getProviders() {
       AppEffects,
       WalletEffects,
       TransactionEffects
-    ])
+    ]),
+    SharedComponentsModule.forRoot()
   ],
   providers: [
     ...getProviders(),
