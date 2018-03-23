@@ -23,6 +23,9 @@
         </div>
       </div>
       <div class="main-amount">
+        <div class="amount-sm amount-converted" *ngIf="formData.amount">
+          {{formData.amount * 0.5}} USD
+        </div>
         <ion-item no-lines>
           <ion-input
             #amount
@@ -34,6 +37,7 @@
             (keypress)="amountKeypress($event.keyCode)"
           ></ion-input>
         </ion-item>
+        <div class="amount-sm">MRT</div>
       </div>
       <div class="alternative-amount">
         {{selectedCurrency.type == 'mrt' ? amount.fiatStr : amount.mrtStr}}

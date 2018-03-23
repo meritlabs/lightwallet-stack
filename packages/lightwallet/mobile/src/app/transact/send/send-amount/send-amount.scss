@@ -1,5 +1,4 @@
 view-send-amount {
-
   .label p.feeCalcError {
     white-space: normal;
     color: color($colors, danger) !important;
@@ -15,7 +14,8 @@ view-send-amount {
     border-radius: 50%;
   }
 
-  ion-item, .item-divider {
+  .item-divider,
+  ion-item {
     border: none;
   }
 
@@ -23,10 +23,12 @@ view-send-amount {
     ion-navbar {
       height: 70px;
     }
+
     h2 {
       margin: 0;
       font-size: 20px;
     }
+
     p {
       margin: 0;
       font-size: 13px;
@@ -42,11 +44,13 @@ view-send-amount {
 
     .currency-bar {
       height: 42px;
+
       .currency {
         display: inline-block;
         font-size: 12px;
         margin: 8px;
         color: rgba(115, 129, 155, 0.5);
+
         &.selected {
           color: rgb(70, 85, 111);
         }
@@ -61,11 +65,11 @@ view-send-amount {
           border-radius: 500rem;
         }
       }
-
     }
 
     .main-amount {
       text-align: center;
+
       ion-item.item {
         padding: 0;
         margin: 0;
@@ -134,6 +138,7 @@ view-send-amount {
     padding: 0;
     margin: 0;
     height: 20px;
+
     ion-icon {
       font-size: 20px;
       color: #9ba6b9;
@@ -141,32 +146,37 @@ view-send-amount {
       width: 20px;
     }
   }
+
   .amount-area,
   .toolbar-background-ios {
     background: transparent;
   }
+
   .toolbar-background-ios {
     border-bottom: 2px solid;
   }
+
   .globalSendHeader {
     background-image: linear-gradient(180deg, #106dda 0%, #00b1de 100%);
+
     * {
       color: #FFF;
     }
   }
+
   .whiteColor {
     color: #FFF !important;
   }
 }
-.ios view-send-via ion-header ion-title.title h2,
-.ios view-send-amount ion-header ion-title.title h2 {
+
+.ios view-send-amount ion-header ion-title.title h2,
+.ios view-send-via ion-header ion-title.title h2 {
   font-size: 18px;
 }
-.amount-area {
-  padding-top: 50px;
-}
+
 .back-button.show-back-button {
   position: relative;
+
   &::after {
     content: "";
     position: absolute;
@@ -177,22 +187,46 @@ view-send-amount {
     top: 46%;
   }
 }
-view-send-amount .amount-area .main-amount ion-item.item input.text-input {
-  color: #FFF;
-  text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
-  letter-spacing: 4.8px;
-  font-size: 80px;
-  &::placeholder {
-    letter-spacing: normal;
-    color: #FFF;
-  }
-}
+
 .header-ios .toolbar-ios:last-child .toolbar-background-ios {
   border-color: rgba(255,255,255, .17);
 }
+
 .view-send-amount .amount-area .main-amount ion-item.item ion-input {
   width: 100%;
 }
+
 .item-ios.item-block .item-inner {
   padding-right: 0;
+}
+
+view-send-amount {
+  .amount-area .main-amount ion-item.item input.text-input {
+    color: #FFF;
+    text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
+    letter-spacing: 4.8px;
+    font-size: 80px;
+    &::placeholder {
+      letter-spacing: normal;
+      color: #FFF;
+    }
+  }
+  .amount-area {
+    padding-top: 50px;
+    height: 50vh;
+    max-height: 300px;
+    display: flex;
+    align-items: center;
+  }
+  .amount-sm {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.96px;
+    line-height: 20px;
+    text-transform: uppercase;
+  }
+  .amount-converted {
+    opacity: 0.7;
+  }
 }
