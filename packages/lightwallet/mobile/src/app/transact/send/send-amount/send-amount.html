@@ -3,8 +3,7 @@
     <ion-header class="globalSendInner">
       <ion-navbar>
         <ion-title *ngIf="recipient?.name?.formatted">
-          <h2 class="whiteColor">Recipient: {{recipient.name.formatted}}</h2>
-          <p class="whiteColor">via {{ sendMethod.alias ? '@' + sendMethod.alias : sendMethod.value }}</p>
+          <h2 class="whiteColor">Sending To: @{{recipient.name.formatted}}</h2>
         </ion-title>
         <ion-title *ngIf="!recipient?.name?.formatted">
           <h2 class="whiteColor">{{ sendMethod.type == 'easy' ? 'Global Send' : 'Send to' }}</h2>
