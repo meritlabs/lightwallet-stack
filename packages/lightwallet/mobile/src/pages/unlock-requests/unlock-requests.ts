@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 import { ToastConfig } from '@merit/common/services/toast.controller.service';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IUnlockRequest, UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { ProfileService } from '@merit/common/services/profile.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @IonicPage()
 @Component({
@@ -19,7 +19,7 @@ export class UnlockRequestsView {
 
   activeTab: 'active' | 'confirmed' = 'active';
 
-  private wallets: Array<DisplayWallet> = [];
+  private wallets: Array<MeritWalletClient> = [];
   private totalInvites: number = 0;
 
   showHiddenRequests: boolean;
@@ -52,9 +52,11 @@ export class UnlockRequestsView {
         });
         if (!isVault) r.label = r.alias ? '@'+r.alias : r.address;  
         return r;
-    })
+    });
 
-    this.totalInvites = this.wallets.reduce((nbInvites, wallet) => nbInvites + wallet.invites, 0);
+    this.totalInvites = this.wallets.reduce((nbInvites, wallet) => {
+      return nbInvites + wallet.status.availableInvites
+    }, 0);
   }
 
   processRequest(request) {

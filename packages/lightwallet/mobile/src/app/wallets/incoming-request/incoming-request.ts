@@ -14,6 +14,7 @@ import { UnlockRequestService } from '@merit/common/services/unlock-request.serv
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { AddressService } from '@merit/common/services/address.service';
 import { ToastConfig } from '@merit/common/services/toast.controller.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @IonicPage()
 @Component({
@@ -24,7 +25,7 @@ export class IncomingRequestModal {
 
   public unlockRequest: any;
   public contacts: Array<MeritContact> = [];
-  public wallets: Array<DisplayWallet> = [];
+  public wallets: Array<MeritWalletClient> = [];
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
