@@ -128,20 +128,21 @@
             <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
           </div>
           <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
-            Address is not confirmed yet
+            Address is not confirmed yeta
           </div>
           <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
             Alias not found
           </div>
           <div *ngIf="searchResult.toNewEntity" margin-top>
-            <div class="friend--add" *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()">
-              <div class="add__icon"></div>
+            <div class="button-contact" *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()">
+              <div class="icon add__icon"></div>
               <div>Create New Contact</div>
             </div>
-            <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
-              (click)="bindAddressToContact()" class="send-button" color="light">
-              Bind to existing contact
-            </button>
+            <div class="button-contact" *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
+              (click)="bindAddressToContact()">
+              <div class="icon bind__icon"></div>
+              <div>Bind to existing contactt</div>
+            </div>
             <button ion-button padding (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
               <div *ngIf="searchResult.toNewEntity.destination == 'address'">
                 Send To This {{ couldBeAlias(searchQuery) ? 'Alias' : 'Address' }}</div>
