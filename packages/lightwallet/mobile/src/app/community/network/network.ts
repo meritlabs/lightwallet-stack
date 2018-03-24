@@ -16,10 +16,12 @@ export class NetworkView {
 
   loading: boolean;
 
+  availableInvites: number;
+
   network:{
     networkValue: number,
     miningRewards: number,
-    ambassadorRewards: number,
+    ambassadorRewards: number
     wallets: Array<{
       name: string,
       referralAddress: string,
@@ -27,7 +29,8 @@ export class NetworkView {
       confirmed: boolean,
       networkValue: number
       miningRewards: number,
-      ambassadorRewards: number
+      ambassadorRewards: number,
+      invites: number
     }>
   };
 
@@ -49,6 +52,7 @@ export class NetworkView {
       networkValue: 0,
       miningRewards: 0,
       ambassadorRewards: 0,
+      invites: 0,
       wallets: []
     };
   }
@@ -63,7 +67,11 @@ export class NetworkView {
   }
 
   async ionViewWillEnter() {
-    if (!this.loading) await this.loadInfo();
+    if (!this.loading) this.loadInfo();
+
+    this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
+    await this.unlockRequestService.loadRequestsData();
+    this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
   }
 
   async doRefresh(refresher) {
@@ -89,7 +97,6 @@ export class NetworkView {
     try {
 
       const wallets = await this.profileService.getWallets();
-      console.log(wallets);
 
       let network = {
         networkValue: 0,
@@ -105,6 +112,10 @@ export class NetworkView {
           ambassadorRewards: 0
         }})
       };
+
+      this.availableInvites = wallets.reduce((number, w) => {
+        return number + w.status.availableInvites;
+      }, 0);
 
       const addresses = network.wallets.map(w => w.referralAddress);
 
