@@ -58,19 +58,20 @@ export class NetworkView {
 
   async ionViewDidLoad() {
     this.loading = true;
-    await this.updateInfo();
+    this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
+    await this.loadCommunityInfo();
     this.loading = false;
   }
 
   async ionViewWillEnter() {
     this.refreshing = true;
-    if (!this.loading) await this.updateInfo();
+    if (!this.loading) await Promise.all([this.loadCommunityInfo(), this.loadRequestsInfo()]);
     this.refreshing = false;
   }
 
   async doRefresh(refresher) {
     this.refreshing = true;
-    await this.updateInfo();
+    await Promise.all([this.loadCommunityInfo(), this.loadRequestsInfo()]);
     this.refreshing = false;
     refresher.complete();
   }
@@ -86,20 +87,9 @@ export class NetworkView {
     }).present();
   }
 
-  private async updateInfo() {
+  private async loadCommunityInfo() {
+
     try {
-      await Promise.all([this.loadInfo(), this.loadRequests()]);
-    } catch (err) {
-      this.logger.warn(err);
-      this.toastCtrl.create({
-        message: err.text || 'Unknown error',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
-    }
-  }
-
-  private async loadInfo() {
-
       this.wallets = await this.profileService.getWallets();
 
       let network = {
@@ -118,7 +108,6 @@ export class NetworkView {
       };
 
       this.availableInvites = this.wallets.reduce((number, w) => {
-        console.log(w);
         return number + w.status.availableInvites;
       }, 0);
 
@@ -148,12 +137,26 @@ export class NetworkView {
       }
 
       this.network = network;
+    } catch (err) {
+      this.logger.warn(err);
+      this.toastCtrl.create({
+        message: err.text || 'Unknown error',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    }
   }
 
-  private async loadRequests() {
-    this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
-    await this.unlockRequestService.loadRequestsData();
-    this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
+  private async loadRequestsInfo() {
+    try {
+      await this.unlockRequestService.loadRequestsData();
+      this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
+    } catch (err) {
+      this.logger.warn(err);
+      this.toastCtrl.create({
+        message: err.text || 'Unknown error',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    }
   }
 
 }
