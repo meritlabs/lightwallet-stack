@@ -425,7 +425,8 @@ view-send-select-bind-contact {
       font-size: 14px;
       font-weight: 300;
       line-height: 14px;
-      padding: 24px 35px 24px 50px;
+      height: inherit;
+      padding: 15px 50px;
     }
     .searchbar-wrapper {
       display: block;
@@ -511,6 +512,8 @@ view-send-select-bind-contact {
           height: 11px;
           mask-image: url("../assets/img/rightarrowicon.svg");
           float: right;
+          position: relative;
+          top: 5px;
         }
       }
     }
