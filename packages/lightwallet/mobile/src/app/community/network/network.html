@@ -11,7 +11,7 @@
         </ion-avatar>
         <ion-spinner [hidden]="!loading"></ion-spinner>
         <span class="merit-amount" [hidden]="loading">
-          {{ totalNetworkValue || '0.00'}}
+          {{ (network?.networkValue || 0)  | toMRT:8:true}}
         </span>
       </ion-col>
       <ion-col col-4>
@@ -21,7 +21,7 @@
         </ion-avatar>
         <ion-spinner [hidden]="!loading"></ion-spinner>
         <span class="merit-amount" [hidden]="loading">
-          {{ totalMiningRewards || '0.00' }}
+          {{ (network?.miningRewards || 0) | toMRT:8:true }}
           <small>MRT</small>
         </span>
       </ion-col>
@@ -32,7 +32,7 @@
         </ion-avatar>
         <ion-spinner [hidden]="!loading"></ion-spinner>
         <span class="merit-amount" [hidden]="loading">
-          {{ totalAmbassadorRewards || '0.00' }}
+          {{ (network?.ambassadorRewards || 0) | toMRT:8:true }}
           <small>MRT</small>
         </span>
       </ion-col>
@@ -69,76 +69,78 @@
       </button>
   </ion-list>
 
-  <ion-list *ngFor="let wallet of displayWallets" no-lines>
+  <div *ngIf="!loading && network">
+      <ion-list *ngFor="let wallet of network.wallets" no-lines>
 
-    <div *ngIf="!wallet.client.confirmed" item-end class="locked-info">
-        <div class="backdrop"></div>
+        <div *ngIf="!wallet.confirmed" item-end class="locked-info">
+            <div class="backdrop"></div>
 
-        <div class="popup">
-            <img src="assets/img/icons/confirm.svg">
-            <h2>Waiting for unlock</h2>
-            <div class="bottom-label">You can ask another person for invite by sharing your address: </div>
-            <div class="address-line">
-                <div class="address">
-                    {{wallet.referrerAddress}}
+            <div class="popup">
+                <img src="assets/img/icons/confirm.svg">
+                <h2>Waiting for unlock</h2>
+                <div class="bottom-label">You can ask another person for invite by sharing your address: </div>
+                <div class="address-line">
+                    <div class="address" [clip]="wallet.referralAddress" (click)="notifyCopy()">
+                        {{wallet.referralAddress}}
+                    </div>
+                    <button ion-button icon-only clear (click)="shareAddress(wallet.referralAddress)">
+                        <ion-icon merit-icon name="share"></ion-icon>
+                    </button>
                 </div>
-                <button ion-button icon-only clear (click)="shareAddress(wallet.referrerAddress)">
-                    <ion-icon merit-icon name="share"></ion-icon>
-                </button>
             </div>
-        </div>
-   </div>
+       </div>
 
-    <ion-item-divider>
-      {{ wallet.name }}
-      <span class="merit-amount">
-        {{ wallet.totalNetworkValueMerit || '00.0' }}
-      </span>
-    </ion-item-divider>
+        <ion-item-divider>
+          {{ wallet.name }}
+          <span class="merit-amount">
+            {{ (wallet.networkValue || 0) | toMRT }}
+          </span>
+        </ion-item-divider>
 
-    <ion-item text-wrap>
-      <ion-avatar item-start img-icon>
-        <img src="assets/img/icons/invite.svg">
-      </ion-avatar>
-      <ion-label>
-        <p>Invite Code</p>
-        <h2>{{ wallet.alias ? '@'+wallet.alias : wallet.referrerAddress }}</h2>
-      </ion-label>
-      <button ion-button icon-only clear item-end *ngIf="shareButtonAvailable()" (click)="shareAddress(wallet.alias? wallet.alias : wallet.referrerAddress)">
-        <ion-icon merit-icon name="share"></ion-icon>
-      </button>
-    </ion-item>
+        <ion-item text-wrap>
+          <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/invite.svg">
+          </ion-avatar>
+          <ion-label>
+            <p>Invite Code</p>
+            <h2>{{ wallet.alias ? '@'+wallet.alias : wallet.referralAddress }}</h2>
+          </ion-label>
+          <button ion-button icon-only clear item-end *ngIf="shareButtonAvailable" (click)="shareAddress(wallet.alias? wallet.alias : wallet.referrerAddress)">
+            <ion-icon merit-icon name="share"></ion-icon>
+          </button>
+        </ion-item>
 
-    <ion-item>
-      <ion-avatar img-icon item-start>
-        <img src="assets/img/icons/mining.svg" alt="">
-      </ion-avatar>
-      <ion-label>
-        <p>Mining Rewards</p>
-        <h2>{{ wallet.miningRewardsMerit || '0.00' }}&nbsp;<small>MRT</small></h2>
-      </ion-label>
-      <ion-note item-end class="balance">
-        <span class="fiat-amount">
-          {{ wallet.miningRewardsFiat }}
-        </span>
-      </ion-note>
-    </ion-item>
+        <ion-item>
+          <ion-avatar img-icon item-start>
+            <img src="assets/img/icons/mining.svg" alt="">
+          </ion-avatar>
+          <ion-label>
+            <p>Mining Rewards</p>
+            <h2>{{ (wallet.miningRewards || 0) | toMRT }}</h2>
+          </ion-label>
+          <ion-note item-end class="balance">
+            <span class="fiat-amount">
+              {{ (wallet.miningRewards || 0) | toFiat }}
+            </span>
+          </ion-note>
+        </ion-item>
 
-    <ion-item>
-      <ion-avatar img-icon item-start>
-        <img src="assets/img/icons/ambassador.svg" alt="">
-      </ion-avatar>
-      <ion-label>
-        <p>Ambassador Rewards</p>
-        <h2>{{ wallet.ambassadorRewardsMerit || '0.00' }}&nbsp;<small>MRT</small></h2>
-      </ion-label>
-      <ion-note item-end class="balance">
-        <span class="fiat-amount">
-          {{ wallet.ambassadorRewardsFiat }}
-        </span>
-      </ion-note>
-    </ion-item>
+        <ion-item>
+          <ion-avatar img-icon item-start>
+            <img src="assets/img/icons/ambassador.svg" alt="">
+          </ion-avatar>
+          <ion-label>
+            <p>Ambassador Rewards</p>
+            <h2>{{ (wallet.ambassadorRewards || 0) | toMRT }}</h2>
+          </ion-label>
+          <ion-note item-end class="balance">
+            <span class="fiat-amount">
+              {{ (wallet.ambassadorRewards || 0) | toFiat }}
+            </span>
+          </ion-note>
+        </ion-item>
 
-  </ion-list>
+      </ion-list>
+  </div>
 
 </ion-content>
