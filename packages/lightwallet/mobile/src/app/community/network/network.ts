@@ -99,8 +99,8 @@ export class NetworkView {
         wallets: this.wallets.map(w => { return {
           name: w.name,
           alias: w.rootAlias,
+          referralAddress: w.rootAddress.toString(),
           confirmed: w.confirmed,
-          referralAddress: w.getRootAddress().toString(),
           networkValue: 0,
           miningRewards: 0,
           ambassadorRewards: 0
