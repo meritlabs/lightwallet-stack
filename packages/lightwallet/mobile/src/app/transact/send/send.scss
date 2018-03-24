@@ -616,37 +616,35 @@ view-send-select-bind-contact {
         display: block;
       }
     }
-    .friend--add {
-      .add__icon {
-        width: 48px;
-        height: 48px;
-        box-shadow: 0 12px 16px rgba(69, 91, 99, 0.1);
-        background-color: #5773ff;
-        border-radius: 50px;
-        position: relative;
-        margin-right: 15px;
-        &:after,
-        &:before {
-          content: "";
-          display: block;
-          width: 15px;
-          height: 2px;
-          background: #FFF;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          top: 0;
-          margin: auto;
-          position: absolute;
-        }
-        &:before {
-          transform: rotate(90deg);
-        }
+  }
+  .friend--add {
+    display: flex;
+    align-items: center;
+    color: #5773ff;
+    .add__icon {
+      width: 48px;
+      height: 48px;
+      box-shadow: 0 12px 16px rgba(69, 91, 99, 0.1);
+      background-color: #5773ff;
+      border-radius: 50px;
+      position: relative;
+      margin-right: 15px;
+      &:after,
+      &:before {
+        content: "";
+        display: block;
+        width: 15px;
+        height: 2px;
+        background: #FFF;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        margin: auto;
+        position: absolute;
       }
-      .friend__info {
-        color: #106dda;
-        font-size: 16px;
-        font-weight: 500;
+      &:before {
+        transform: rotate(90deg);
       }
     }
   }

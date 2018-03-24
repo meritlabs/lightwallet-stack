@@ -134,9 +134,9 @@
             Alias not found
           </div>
           <div *ngIf="searchResult.toNewEntity" margin-top>
-            <div class="friend friend--add" *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()">
+            <div class="friend--add" *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()">
               <div class="add__icon"></div>
-              <div class="friend__info">Create New Contact</div>
+              <div>Create New Contact</div>
             </div>
             <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
               (click)="bindAddressToContact()" class="send-button" color="light">
