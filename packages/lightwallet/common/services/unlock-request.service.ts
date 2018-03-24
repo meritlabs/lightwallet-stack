@@ -39,28 +39,32 @@ export class UnlockRequestService {
     let knownContacts = await this.contactsService.getAllMeritContacts();
 
     //updating it from server
-    let requests = { hidden: [], active: [], confirmed: [] },
-      wallet, request, contact;
-    for (wallet of await this.profileService.getWallets()) {
-      wallet.status = await this.walletService.getStatus(wallet, { force: true });
-      for (request of await wallet.getUnlockRequests()) {
-        request.walletClient = wallet;
-        if (request.isConfirmed) {
-          request.status = 'accepted';
-          const foundContacts = this.contactsService.searchContacts(knownContacts, request.address);
-          if (foundContacts.length) {
-            request.contact = foundContacts[0];
-          }
-          requests.confirmed.push(request);
-        } else if (this.hiddenAddresses.indexOf(request.address) != -1) {
-          request.status = 'hidden';
-          requests.hidden.push(request);
-        } else {
-          request.status = 'pending';
-          requests.active.push(request);
-        }
-      }
-    }
+    let requests = { hidden: [], active: [], confirmed: [] };
+
+    const wallets =  await this.profileService.getWallets();
+    const updateWallets = (requests) => wallets.map(async (w) =>  {
+     const rqs = await w.getUnlockRequests();
+     rqs.forEach(request => {
+       //request.walletClient = wallet;
+       if (request.isConfirmed) {
+         request.status = 'accepted';
+         const foundContacts = this.contactsService.searchContacts(knownContacts, request.address);
+         if (foundContacts.length) {
+           request.contact = foundContacts[0];
+         }
+         requests.confirmed.push(request);
+       } else if (this.hiddenAddresses.indexOf(request.address) != -1) {
+         request.status = 'hidden';
+         requests.hidden.push(request);
+       } else {
+         request.status = 'pending';
+         requests.active.push(request);
+       }
+     })
+    });
+
+    await Promise.all(updateWallets(requests));
+
     this.hiddenRequests = requests.hidden;
     this.activeRequests = requests.active;
     this.confirmedRequests = requests.confirmed;
