@@ -1,19 +1,15 @@
 <ion-content>
-
   <div *ngIf="loadingContacts" class="loader">
     <ion-spinner></ion-spinner>
   </div>
-
   <div *ngIf="!loadingContacts && !hasUnlockedWallets" class="unlock-screen">
     <div class="unlock-backdrop" *ngIf="!hasUnlockedWallets"></div>
-
     <div class="unlock-popup">
       <div class="top-label">Before you start...</div>
       <img src="assets/img/icons/confirm.svg">
       <h2>Waiting for unlock</h2>
       <div class="bottom-label">You cannot send Merit until your wallet unlock request is confirmed</div>
     </div>
-
     <ion-list>
       <ion-item *ngFor="let idx of [0,1,2,3,4,5,6,7,8,9,10]" class="contact-stub">
         <ion-avatar item-start img-icon></ion-avatar>
@@ -22,8 +18,6 @@
       </ion-item>
     </ion-list>
   </div>
-
-
   <div *ngIf="!loadingContacts && hasUnlockedWallets && showSlider">
     <ion-slides pager="true" class="sendSlides" (ionSlideDidChange)="slideChanged()">
       <ion-slide class="sendSlide">
@@ -93,7 +87,6 @@
       <button type="button" name="button" (click)="hideSlider()" *ngIf="sliderIsFinished" class="blue">Finish</button>
     </div>
   </div>
-
   <div *ngIf="!loadingContacts && searchResult && hasUnlockedWallets && !showSlider" class="sendRoute content">
     <div class="sendRoute__header">
       <div class="sendRoute__title">
@@ -119,7 +112,6 @@
         Merit Friends
       </div>
       <div class="merit-friends__wrap">
-
         <div class="no-friends" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
           <div>
             <p class="no-friends__title">Merit Friends</p>
@@ -142,10 +134,10 @@
             Alias not found
           </div>
           <div *ngIf="searchResult.toNewEntity" margin-top>
-            <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'"
-              (click)="createContact()" class="send-button" color="light">
-              Create New Contact
-            </button>
+            <div class="friend friend--add" *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()">
+              <div class="add__icon"></div>
+              <div class="friend__info">Create New Contact</div>
+            </div>
             <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
               (click)="bindAddressToContact()" class="send-button" color="light">
               Bind to existing contact
@@ -158,17 +150,6 @@
           </div>
         </div>
         <div [hidden]="showRecent" class="contacts-list">
-          <!-- <ion-list  class="list-with-merit">
-            <ion-item-divider>Friends with Merit
-
-            </ion-item-divider>
-            <ion-item  class="contact">
-
-
-              <img src="assets/img/icons/merit.svg" color="primary" item-end>
-            </ion-item>
-          </ion-list> -->
-        <!--<button ion-button clear item-end (click)="showRecent = true">Recent</button>-->
         <div class="friends" *ngIf="searchResult.withMerit.length">
           <div class="friend" *ngFor="let contact of searchResult.withMerit" (click)="sendToContact(contact)">
             <contact-avatar [contact]="contact" class="friend__avatar"></contact-avatar>
@@ -181,39 +162,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="friend friend--add">
-      <div class="add__icon"></div>
-      <div class="friend__info">Add Merit Friend</div>
-    </div> -->
-
-      <!--<ion-list *ngIf="searchResult.noMerit.length" class="list-no-merit">-->
-      <!--<ion-item-divider>-->
-      <!--Other Friends-->
-      <!--<button ion-button clear item-end (click)="showRecent = true" [hidden]="searchResult.withMerit.length">-->
-      <!--Recent-->
-      <!--</button>-->
-      <!--</ion-item-divider>-->
-      <!--<ion-item *ngFor="let contact of searchResult.noMerit" (click)="sendToContact(contact)" class="contact">-->
-      <!--<contact-avatar [contact]="contact" item-start></contact-avatar>-->
-      <!--{{ contact.name.formatted }}-->
-      <!--</ion-item>-->
-      <!--</ion-list>-->
     </div>
-    <!--<div [hidden]="!showRecent" class="contacts-list">-->
-    <!--<ion-list class="list-recent">-->
-    <!--<ion-item-divider>Recent Contacts-->
-    <!--<button ion-button clear item-end (click)="showRecent = false">All Contacts</button>-->
-    <!--</ion-item-divider>-->
-    <!--<ion-item *ngFor="let contact of searchResult.recent" (click)="sendToContact(contact)" class="contact">-->
-    <!--<contact-avatar [contact]="contact" item-start></contact-avatar>-->
-    <!--{{contact.name.formatted}}-->
-    <!--<img src="assets/img/icons/merit.svg" color="primary" item-end *ngIf="contact.meritAddresses.length">-->
-    <!--</ion-item>-->
-    <!--<div *ngIf="!searchResult.recent.length" padding>-->
-    <!--No recent transactions. Send Merit to your friends to see how easy it is!-->
-    <!--</div>-->
-    <!--</ion-list>-->
-    <!--</div>-->
   </div>
-
 </ion-content>
