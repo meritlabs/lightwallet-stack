@@ -598,6 +598,9 @@ view-send-select-bind-contact {
         height: 48px;
         border-radius: 50px;
         margin-right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       &__title {
         color: #454f63;
