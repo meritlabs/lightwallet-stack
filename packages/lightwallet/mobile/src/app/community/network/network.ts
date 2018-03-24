@@ -6,6 +6,7 @@ import { PlatformService } from '@merit/common/services/platform.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { LoggerService } from '@merit/common/services/logger.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @IonicPage()
 @Component({
@@ -15,8 +16,9 @@ import { LoggerService } from '@merit/common/services/logger.service';
 export class NetworkView {
 
   loading: boolean;
+  refreshing: boolean;
 
-  availableInvites: number;
+  wallets: Array<MeritWalletClient>;
 
   network:{
     networkValue: number,
@@ -29,14 +31,12 @@ export class NetworkView {
       confirmed: boolean,
       networkValue: number
       miningRewards: number,
-      ambassadorRewards: number,
-      invites: number
+      ambassadorRewards: number
     }>
   };
 
   activeUnlockRequests: number;
-  activeInvites: number;
-
+  availableInvites: number;
   shareButtonAvailable: boolean;
 
   constructor(
@@ -52,34 +52,27 @@ export class NetworkView {
       networkValue: 0,
       miningRewards: 0,
       ambassadorRewards: 0,
-      invites: 0,
       wallets: []
     };
   }
 
-  async ionViewDidEnter() {
+  async ionViewDidLoad() {
     this.loading = true;
-    try {
-      await this.loadInfo();
-    } catch (e) {} finally {
-      this.loading = false;
-    }
+    await this.updateInfo();
+    this.loading = false;
   }
 
   async ionViewWillEnter() {
-    if (!this.loading) this.loadInfo();
-
-    this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
-    await this.unlockRequestService.loadRequestsData();
-    this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
+    this.refreshing = true;
+    if (!this.loading) await this.updateInfo();
+    this.refreshing = false;
   }
 
   async doRefresh(refresher) {
-    try {
-      await this.loadInfo();
-    } catch (e) {} finally {
-      refresher.complete();
-    }
+    this.refreshing = true;
+    await this.updateInfo();
+    this.refreshing = false;
+    refresher.complete();
   }
 
   shareAddress(address) {
@@ -89,20 +82,31 @@ export class NetworkView {
   notifyCopy() {
     this.toastCtrl.create({
       message: 'Copied to clipboard',
-      cssClass: ToastConfig.CLASS_MESSAGE
+      cssClass: ToastConfig.CLASS_SUCCESS
     }).present();
   }
 
-  private async loadInfo() {
+  private async updateInfo() {
     try {
+      await Promise.all([this.loadInfo(), this.loadRequests()]);
+    } catch (err) {
+      this.logger.warn(err);
+      this.toastCtrl.create({
+        message: err.text || 'Unknown error',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    }
+  }
 
-      const wallets = await this.profileService.getWallets();
+  private async loadInfo() {
+
+      this.wallets = await this.profileService.getWallets();
 
       let network = {
         networkValue: 0,
         miningRewards: 0,
         ambassadorRewards: 0,
-        wallets: wallets.map(w => { return {
+        wallets: this.wallets.map(w => { return {
           name: w.name,
           alias: w.rootAlias,
           confirmed: w.confirmed,
@@ -113,43 +117,43 @@ export class NetworkView {
         }})
       };
 
-      this.availableInvites = wallets.reduce((number, w) => {
+      this.availableInvites = this.wallets.reduce((number, w) => {
+        console.log(w);
         return number + w.status.availableInvites;
       }, 0);
 
       const addresses = network.wallets.map(w => w.referralAddress);
 
-      const getAnvMethods = addresses.map(async (a) => {
-        const anv = await wallets[0].getANV(a);
-        let w = network.wallets.find(w => w.referralAddress == a);
-        w.networkValue = anv;
-        network.networkValue += anv;
-      });
+      if (addresses.length) {
 
-      const getRewards = async () => {
-        const rewards = await wallets[0].getRewards(addresses);
-        rewards.forEach(r => {
-          let w = network.wallets.find(w => w.referralAddress == r.address);
-          w.miningRewards = r.rewards.mining;
-          w.ambassadorRewards = r.rewards.ambassador;
-          network.miningRewards += w.miningRewards;
-          network.ambassadorRewards += w.ambassadorRewards;
+        const getAnvMethods = addresses.map(async (a) => {
+          const anv = await this.wallets[0].getANV(a);
+          let w = network.wallets.find(w => w.referralAddress == a);
+          w.networkValue = anv;
+          network.networkValue += anv;
         });
-      };
 
-      await Promise.all([getRewards()].concat(getAnvMethods));
+        const getRewards = async () => {
+          const rewards = await this.wallets[0].getRewards(addresses);
+          rewards.forEach(r => {
+            let w = network.wallets.find(w => w.referralAddress == r.address);
+            w.miningRewards = r.rewards.mining;
+            w.ambassadorRewards = r.rewards.ambassador;
+            network.miningRewards += w.miningRewards;
+            network.ambassadorRewards += w.ambassadorRewards;
+          });
+        };
 
-      console.log(network);
+        await Promise.all([getRewards()].concat(getAnvMethods));
+      }
 
       this.network = network;
+  }
 
-    } catch (err) {
-      this.logger.warn(err);
-      this.toastCtrl.create({
-        message: err.text || 'Unknown error',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
-    }
+  private async loadRequests() {
+    this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
+    await this.unlockRequestService.loadRequestsData();
+    this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
   }
 
 }

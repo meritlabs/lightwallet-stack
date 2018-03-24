@@ -1,6 +1,9 @@
 <ion-header no-border>
   <ion-navbar color="secondary">
     <ion-title>Your Community</ion-title>
+    <ion-buttons end>
+        <ion-spinner class="refreshing" color="light" [hidden]="!refreshing"></ion-spinner>
+    </ion-buttons>
   </ion-navbar>
   <ion-toolbar>
     <ion-row>
@@ -49,7 +52,7 @@
   <ion-spinner [hidden]="!loading"></ion-spinner>
 
   <ion-list no-lines [hidden]="loading">
-    <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: displayWallets }">
+    <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: wallets }">
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/incoming_request.svg">
       </ion-avatar>
@@ -58,7 +61,7 @@
       </ion-label>
       <ion-badge item-end>{{activeUnlockRequests}}</ion-badge>
     </button>
-    <button ion-item class="pending-unlock-requests" navPush="SendInviteView" [navParams]="{wallets: displayWallets }">
+    <button ion-item class="pending-unlock-requests" navPush="SendInviteView" [navParams]="{wallets: wallets }">
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/invite.svg">
         </ion-avatar>
