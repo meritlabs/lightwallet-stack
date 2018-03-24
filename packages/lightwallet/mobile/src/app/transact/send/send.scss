@@ -534,7 +534,7 @@ view-send-select-bind-contact {
     &__wrap {
       background: #FFF;
       padding: 30px;
-      height: calc(100% - 60px);
+      height: calc(100vh - 300px);
       position: relative;
       .no-friends {
         border: 1px solid #106dda;
