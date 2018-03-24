@@ -188,7 +188,8 @@ view-send-select-bind-contact {
       .send-button {
         padding: 0;
         text-align: center;
-        width: 244px;
+        max-width: 244px;
+        width: 100%;
         height: 42px;
         margin: 8px auto;
         box-shadow: none;
@@ -455,72 +456,72 @@ view-send-select-bind-contact {
       width: 15px;
       right: 15px;
     }
-    .globalSend {
-      padding: 25px 20px;
-      background: #FFF;
-      margin-bottom: 20px;
-      border-top: 1px solid #ededed;
-      border-bottom: 1px solid #ededed;
-      position: relative;
-      &:after {
-        content: "OR";
-        display: block;
-        width: 20px;
-        height: 20px;
-        border-radius: 20px;
-        border: 1px solid #ededed;
-        background-color: #ffffff;
-        color: rgba(116, 128, 155, 0.6);
-        font-size: 10px;
-        font-weight: 500;
-        font-style: italic;
-        line-height: 20px;
-        text-align: center;
-        position: absolute;
-        left: 0;
-        right: 0;
-        margin: 0px auto;
-        bottom: -10px;
+  }
+  .globalSend {
+    padding: 25px 20px;
+    background: #FFF;
+    margin-bottom: 20px;
+    border-top: 1px solid #ededed;
+    border-bottom: 1px solid #ededed;
+    position: relative;
+    &:after {
+      content: "OR";
+      display: block;
+      width: 20px;
+      height: 20px;
+      border-radius: 20px;
+      border: 1px solid #ededed;
+      background-color: #ffffff;
+      color: rgba(116, 128, 155, 0.6);
+      font-size: 10px;
+      font-weight: 500;
+      font-style: italic;
+      line-height: 20px;
+      text-align: center;
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin: 0px auto;
+      bottom: -10px;
+    }
+    &__button {
+      background: transparent;
+      display: block;
+      width: 100%;
+      text-align: left;
+      color: #374455;
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 20px;
+      padding: 0;
+      &:after,
+      &:before {
+        content: "";
+        display: inline-block;
+        background-color: #3497fd;
+        mask-size: contain;
+        mask-position: 50% 50%;
+        mask-repeat: no-repeat;
       }
-      &__button {
-        background: transparent;
-        display: block;
-        width: 100%;
-        text-align: left;
-        color: #374455;
-        font-size: 14px;
-        font-weight: 300;
-        line-height: 20px;
-        padding: 0;
-        &:after,
-        &:before {
-          content: "";
-          display: inline-block;
-          background-color: #3497fd;
-          mask-size: contain;
-          mask-position: 50% 50%;
-          mask-repeat: no-repeat;
-        }
-        &::before {
-          width: 16px;
-          height: 11px;
-          margin-right: 10px;
-          mask-image: url("../assets/img/sendicon.svg");
-        }
-        &:after {
-          width: 8px;
-          height: 11px;
-          mask-image: url("../assets/img/rightarrowicon.svg");
-          float: right;
-          position: relative;
-          top: 5px;
-        }
+      &::before {
+        width: 16px;
+        height: 11px;
+        margin-right: 10px;
+        mask-image: url("../assets/img/sendicon.svg");
+      }
+      &:after {
+        width: 8px;
+        height: 11px;
+        mask-image: url("../assets/img/rightarrowicon.svg");
+        float: right;
+        position: relative;
+        top: 5px;
       }
     }
   }
   .merit-friends {
     background: #FFF;
-    height: calc(100% - 142px);
+    min-height: calc(100% - 142px);
     &__groupTitle {
       padding: 15px 15px;
       color: #74809b;
@@ -620,8 +621,13 @@ view-send-select-bind-contact {
   .button-contact {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
-    color: #5773ff;
+    color: #106dda;
+    max-width: 244px;
+    width: 100%;
+    margin: 0px auto 20px;
+    * {
+      text-align: left;
+    }
     .icon {
       width: 48px;
       height: 48px;
@@ -631,7 +637,7 @@ view-send-select-bind-contact {
       margin-right: 15px;
     }
     .add__icon {
-      background-color: #5773ff;
+      background-color: #106dda;
       &:after,
       &:before {
         content: "";
@@ -651,7 +657,7 @@ view-send-select-bind-contact {
       }
     }
     .bind__icon {
-      background-color: #5773ff;
+      background-color: #106dda;
       position: relative;
       &:after {
         content: "";
