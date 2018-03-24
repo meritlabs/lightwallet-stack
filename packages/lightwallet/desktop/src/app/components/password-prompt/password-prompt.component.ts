@@ -14,7 +14,7 @@ export interface IPasswordPromptConfig {
 })
 export class PasswordPromptComponent implements IDynamicComponent {
   destroy: Function;
-  onDismiss: Function;
+  _onDismiss: Function;
   formData: FormGroup;
   ready: boolean;
 
@@ -24,24 +24,33 @@ export class PasswordPromptComponent implements IDynamicComponent {
 
   constructor(private formBuilder: FormBuilder) {}
 
-  private init() {
+  init(config?: IPasswordPromptConfig) {
+    if (config && config.wallet) {
+      this.wallet = config.wallet;
+    }
+
+    const validators = [Validators.required];
+
+    if (this.wallet) {
+      // TODO(ibby): validate wallet password
+    }
+
     this.formData = this.formBuilder.group({
-      password: ['', [Validators.required]] // TODO(ibby): validate wallet password
+      password: ['', validators]
     });
 
     this.ready = true;
   }
 
-  setConfig(config: IPasswordPromptConfig) {
-    this.wallet = config.wallet;
-    this.init();
-  }
-
   submitPassword() {
-    if (typeof this.onDismiss === 'function') {
-      this.onDismiss(this.password.value);
+    if (typeof this._onDismiss === 'function') {
+      this._onDismiss(this.password.value);
     }
 
     this.destroy();
+  }
+
+  onDismiss(callback: (password: string) => any) {
+    this._onDismiss = callback;
   }
 }
