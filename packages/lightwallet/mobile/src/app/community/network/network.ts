@@ -115,7 +115,7 @@ export class NetworkView {
 
       if (addresses.length) {
 
-        const getAnvMethods = addresses.map(async (a) => {
+        const getAnvMethods = () => addresses.map(async (a) => {
           const anv = await this.wallets[0].getANV(a);
           let w = network.wallets.find(w => w.referralAddress == a);
           w.networkValue = anv;
@@ -133,7 +133,7 @@ export class NetworkView {
           });
         };
 
-        await Promise.all([getRewards()].concat(getAnvMethods));
+        await Promise.all([getRewards()].concat(getAnvMethods()));
       }
 
       this.network = network;

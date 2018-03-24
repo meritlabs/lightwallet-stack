@@ -113,7 +113,8 @@ export class API {
   public onConnectionRestored: any;
   locked: boolean;
 
-  private _rootAddress: string;
+  public rootAddress: string;
+  public rootAlias: string;
 
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -471,9 +472,9 @@ export class API {
    * Creates Address from hdPrivKey
    */
   getRootAddress() {
-    if (this._rootAddress) return this._rootAddress;
+    if (this.rootAddress) return this.rootAddress;
     const xpub = new Bitcore.HDPublicKey(this.credentials.xPubKey);
-    return this._rootAddress = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, this.credentials.network);
+    return this.rootAddress = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, this.credentials.network);
   }
 
   getRootAddressPubkey() {
@@ -1743,13 +1744,20 @@ export class API {
     let processConfirmStatus = (status) => {
         this.confirmed = (status.invitesBalance && status.invitesBalance.totalAmount > 0);
     };
+    
+    let validateAddress = () => {
+      this.validateAddress(this.getRootAddress().toString()).then((addressInfo) => {
+        this.rootAlias = addressInfo.alias;
+      })
+    };
 
     // Resolve all our async calls here, then resolve this wrapping promise.
     return Promise.all([
       processCustomData(status),
       this._processWallet(status.wallet),
       this._processTxps(status.pendingTxps),
-      processConfirmStatus(status)
+      processConfirmStatus(status),
+      validateAddress()
     ]).then(() => {
       return Promise.resolve();
     });
