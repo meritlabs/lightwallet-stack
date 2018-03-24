@@ -143,11 +143,10 @@
               <div class="icon bind__icon"></div>
               <div>Bind to existing contactt</div>
             </div>
-            <button ion-button padding (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
+            <button (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
               <div *ngIf="searchResult.toNewEntity.destination == 'address'">
-                Send To This {{ couldBeAlias(searchQuery) ? 'Alias' : 'Address' }}</div>
+                Send To {{searchQuery}}</div>
             </button>
-            <div class="address">{{searchQuery}}</div>
           </div>
         </div>
         <div [hidden]="showRecent" class="contacts-list">
