@@ -7,6 +7,12 @@ export interface INotificationMessage {
   text: string;
 }
 
+export interface IToastNotificationConfig {
+  message: INotificationMessage;
+  show: boolean;
+  duration?: number;
+}
+
 @Component({
   selector: 'toast-notification',
   templateUrl: './toast-notification.component.html',
@@ -34,7 +40,7 @@ export class ToastNotificationComponent implements IDynamicComponent, OnInit, On
     this.timeout = void 0;
   }
 
-  setConfig(config: any) {
+  init(config: any) {
     this.message = config.message;
     this.show = config.show;
   }

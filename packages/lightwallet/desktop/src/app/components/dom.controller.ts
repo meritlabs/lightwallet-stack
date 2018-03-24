@@ -9,9 +9,21 @@ import {
 } from '@angular/core';
 
 export interface IDynamicComponent {
+  /**
+   * Function to call to destroy the component
+   */
   destroy: Function;
-  dismiss?(): void;
-  setConfig(config: any): void;
+
+  /**
+   * @param {Function} callback Function to be called when the component is dismissed
+   */
+  onDismiss?(callback: Function): void;
+
+  /**
+   * Set the components config
+   * @param config
+   */
+  init(config?: any): void;
 }
 
 @Injectable()
@@ -29,7 +41,7 @@ export class DOMController {
     this.rnd.appendChild(parentElement || document.body, domElement);
     const instance: T = componentRef.instance;
 
-    instance.setConfig(config);
+    instance.init(config);
     instance.destroy = () => this.appRef.detachView(componentRef.hostView);
 
     return instance;
