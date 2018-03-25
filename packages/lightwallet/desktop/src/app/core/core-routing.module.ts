@@ -25,7 +25,6 @@ import { RequestsComponent } from '@merit/desktop/app/core/community/invites/req
 import { SendInviteComponent } from '@merit/desktop/app/core/community/invites/send-invite/send-invite.component';
 import { QrCodeBackupView } from '@merit/desktop/app/core/backup/qr-code-backup/qr-code-backup.view';
 import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
-import { WalletExportMnemonicPhraseComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-export-mnemonic-phrase/wallet-export-mnemonic-phrase.component';
 
 const routes: Routes = [
   {
@@ -57,8 +56,6 @@ const routes: Routes = [
       { path: 'community', component: CommunityView },
       { path: 'community/invite-requests', component: RequestsComponent },
       { path: 'community/send-invite', component: SendInviteComponent },
-      { path: 'backup', component: BackupView },
-      { path: 'backup/mnemonic-phrase', component: MnemonicPhraseView },
       {
         path: 'settings', component: GlobalSettingsView, children: [
           { path: '', component: SettingsPreferencesView },
