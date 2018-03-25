@@ -1,6 +1,9 @@
-@import "~styles/v1/theme"
-.notification__toast
+@import "~styles/v1/common/variables"
+@import "~styles/v1/common/mixins"
+
+\:host
   position: fixed
+  z-index: 10000
   right: 30px
   top: 30px
   width: 300px
@@ -8,7 +11,7 @@
   border-radius: 5px
   box-shadow: 0 0 20px rgba(0,0,0, .3)
   +font($baseFont--medium, 16px, 24px, $white)
-  &__close
+  .close
     position: absolute
     right: 10px
     top: 10px
@@ -31,17 +34,17 @@
       transform: rotate(-45deg)
       top: 5px
       right: 0
-  &__title
+  .title
     margin-bottom: 5px
     font-family: $baseFont--heavy
-  &--success
+  &.success
     background: rgba(0,130,18, .8)
-  &--error
+  &.error
     background: rgba(175,62,62, .8)
-  &--regular
+  &.regular
     background: rgba(250,250,250, .8)
     color: $gun-metal
-    .notification__toast__close
+    .close
       &::after,
       &::before
         background: $gun-metal

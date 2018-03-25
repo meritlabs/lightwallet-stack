@@ -30,10 +30,8 @@ packages/bitcore-node/bin/meritd
 
 # Dot Env
 .env
-/packages/lightwallet/mobile/src/environments/environment.ts
-/packages/lightwallet/mobile/src/environments/environment.dev.ts
-/packages/lightwallet/mobile/src/environments/environment.prod.ts
-/packages/lightwallet/src/environments/environment.dev.prod.ts
+/packages/lightwallet/common/environments/environment.ts
+/packages/lightwallet/common/environments/environment.dev.ts
 
 # Node & packages
 lerna-debug.log
@@ -41,5 +39,5 @@ node_modules/
 package-lock.json
 
 # Ionic packages
-packages/lightwallet/platforms/ 
+packages/lightwallet/platforms/
 packages/lightwallet/www/

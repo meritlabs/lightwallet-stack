@@ -9,7 +9,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { AddressService } from '@merit/common/services/address.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
-import { ENV } from '@merit/desktop/environments/environment';
+import { ENV } from '@app/env';
 import { Store } from '@ngrx/store';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 

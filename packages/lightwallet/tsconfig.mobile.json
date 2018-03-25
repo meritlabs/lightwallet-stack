@@ -13,7 +13,7 @@
     "paths": {
       "@merit/mobile/*": ["mobile/src/*"],
       "@merit/common/*": ["common/*"],
-      "@app/env": ["mobile/src/environments/environment"]
+      "@app/env": ["common/environments/environment"]
     },
     "module": "es2015",
     "moduleResolution": "node",
