@@ -578,9 +578,7 @@ export class WalletService {
     return this.profileService.updateCredentials(wallet.credentials);
   };
 
-  // create and store a wallet
-
-  async decrypt(wallet: MeritWalletClient, password: string) {
+  decrypt(wallet: MeritWalletClient, password: string) {
     wallet.decryptPrivateKey(password);
   }
 
