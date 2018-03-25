@@ -21,6 +21,9 @@ export class WalletsView {
               private toastCtrl: ToastControllerService,
               private passwordPromptCtrl: PasswordPromptController) {
     this.toastCtrl.create({ title: 'Hello', text: 'Hello world', status: 'success' })
-    this.passwordPromptCtrl.create();
+    const passwordPrompt = this.passwordPromptCtrl.create();
+    passwordPrompt.onDismiss((password: string) => {
+      console.log('Password prompt dismissed', password);
+    });
   }
 }
