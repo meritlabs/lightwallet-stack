@@ -31,7 +31,7 @@ packages/bitcore-node/bin/meritd
 # Dot Env
 .env
 /packages/lightwallet/common/environments/environment.ts
-/packages/lightwallet/common/environments/environment.prod.ts
+/packages/lightwallet/common/environments/environment.dev.ts
 
 # Node & packages
 lerna-debug.log
