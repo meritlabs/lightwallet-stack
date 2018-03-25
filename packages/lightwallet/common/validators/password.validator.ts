@@ -1,4 +1,5 @@
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, ValidatorFn } from '@angular/forms';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 export class PasswordValidator {
   static MatchPassword(control: AbstractControl) {
@@ -7,10 +8,12 @@ export class PasswordValidator {
         repeatPassword = control.value;
 
       if (password != repeatPassword) {
-        control.get('repeatPassword').setErrors({ PasswordMatch: true });
+        return { PasswordMatch: true };
       }
     } catch (e) {}
+  }
 
-    return true;
+  static VerifyWalletPassword(wallet: MeritWalletClient): ValidatorFn {
+    return (control: AbstractControl) => wallet.checkPassword(control.value)? null : { IncorrectPassword: true };
   }
 }
