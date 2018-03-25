@@ -21,24 +21,45 @@
       </div>
     </div>
   </form>
-  <form>
+  <form [formGroup]="passwordChangeForm" (ngSubmit)="savePassword()">
     <div class="wallet-settings__multi-group">
       <label class="ui-label">Set password</label>
+
+      <ng-container *ngIf="isWalletEncrypted">
+        <div class="wallet-settings__group">
+          <label class="ui-label"><small>Current password</small></label>
+          <input type="password" formControlName="currentPassword" name="" class="ui-input ui-input--form ui-input--text">
+          <div class="input-errors" [hidden]="!currentPassword.dirty || currentPassword.valid">
+            <div [hidden]="!currentPassword.hasError('required')">Current password is required</div>
+            <div [hidden]="currentPassword.hasError('required') || currentPassword.hasError('IncorrectPassword')">Incorrect password</div>
+          </div>
+        </div>
+      </ng-container>
+
       <div class="wallet-settings__group">
         <label class="ui-label"><small>Password</small></label>
-        <input type="password" name="" class="ui-input ui-input--form ui-input--text">
+        <input type="password" formControlName="password" name="" class="ui-input ui-input--form ui-input--text">
+        <div class="input-errors" [hidden]="!password.dirty || password.valid">
+          <div [hidden]="!password.hasError('required')">Password is required</div>
+        </div>
       </div>
+
       <div class="wallet-settings__group">
         <label class="ui-label"><small>Confirm password</small></label>
-        <input type="password" name="" class="ui-input ui-input--form ui-input--text">
+        <input type="password" formControlName="repeatPassword" name="" class="ui-input ui-input--form ui-input--text">
+        <div class="input-errors" [hidden]="!repeatPassword.dirty || repeatPassword.valid">
+          <div [hidden]="!repeatPassword.hasError('required')">Password is required</div>
+          <div [hidden]="repeatPassword.hasError('required') || repeatPassword.hasError('PasswordMatch')">Incorrect password</div>
+        </div>
       </div>
+
       <div class="wallet-settings__group submit__password">
         <div class="submit__password__warning">
           <p><strong>WARNING</strong></p>
           <p>This password cannot be recovered. If the password is lost,
             there is no way could recover your funds!</p>
         </div>
-        <button type="button" name="button" class="ui-button ui-button--blue ui-button--md">SUBMIT</button>
+        <button type="submit" role="button" [disabled]="passwordChangeForm.invalid" class="ui-button ui-button--blue ui-button--md">SUBMIT</button>
       </div>
     </div>
   </form>
