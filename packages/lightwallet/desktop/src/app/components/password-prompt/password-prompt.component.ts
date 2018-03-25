@@ -8,9 +8,9 @@ export interface IPasswordPromptConfig {
 }
 
 @Component({
-  selector: 'app-password-prompt',
+  selector: 'password-prompt',
   templateUrl: './password-prompt.component.html',
-  styleUrls: ['./password-prompt.component.scss']
+  styleUrls: ['./password-prompt.component.sass']
 })
 export class PasswordPromptComponent implements IDynamicComponent {
   destroy: Function;
@@ -43,14 +43,23 @@ export class PasswordPromptComponent implements IDynamicComponent {
   }
 
   submitPassword() {
-    if (typeof this._onDismiss === 'function') {
-      this._onDismiss(this.password.value);
-    }
-
-    this.destroy();
+    this._dismiss(this.password.value);
   }
 
   onDismiss(callback: (password: string) => any) {
     this._onDismiss = callback;
+  }
+
+  onBackdropClick() {
+    console.log('On click fired');
+    this._dismiss();
+  }
+
+  private _dismiss(val?: string) {
+    if (typeof this._onDismiss === 'function') {
+      this._onDismiss(val);
+    }
+
+    this.destroy();
   }
 }
