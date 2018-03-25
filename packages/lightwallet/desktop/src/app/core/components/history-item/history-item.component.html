@@ -18,9 +18,11 @@
       <p class="history__item__info__date">{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </div>
     <div *ngIf="!tx.isInvite" class="history__item__info__details">
-      <span class="merit-amount" [class.credit]="isCredit">{{ tx.amountStr }} MRT
-        <small>({{ tx.alternativeAmountStr }})</small></span>
-        <ng-template #notConfirmed>
+      <span class="merit-amount" [class.credit]="isCredit">
+        {{ tx.amountStr }} MRT
+        <small *ngIf="tx.alternativeAmountStr">({{ tx.alternativeAmountStr }})</small>
+      </span>
+      <ng-template #notConfirmed>
         <span class="ui-tooltip ui-tooltip--awating">
           <span class="ui-tooltip__text">
             {{ confirmationsExplanation }},
@@ -28,7 +30,7 @@
             Wait some time. Usually 5-10 mins.
           </span>
         </span>
-        </ng-template>
+      </ng-template>
     </div>
   </div>
 </div>
