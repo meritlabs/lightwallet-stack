@@ -6,7 +6,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { getEasySendURL } from '@merit/common/models/easy-send';
 import { SendMethodType } from '@merit/common/models/send-method';
 import { IRootAppState } from '@merit/common/reducers';
-import { selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { selectConfirmedWallets, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { ConfigService } from '@merit/common/services/config.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { FeeService } from '@merit/common/services/fee.service';
@@ -81,7 +81,7 @@ export class SendView implements OnInit {
     'value': 10
   };
 
-  wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets);
   hasUnlockedWallet: boolean;
 
   formData: FormGroup = this.formBuilder.group({
@@ -178,7 +178,7 @@ export class SendView implements OnInit {
 
   async ngOnInit() {
     const wallets = await this.wallets$.take(1).toPromise();
-    this.hasUnlockedWallet = wallets.some((wallet: DisplayWallet) => wallet.status.confirmed);
+    this.hasUnlockedWallet = wallets.length > 0;
     this.selectedWallet = (await this.wallets$.take(1).toPromise())[0];
 
     const { wallet: { settings: walletSettings } } = this.configService.get();

@@ -8,11 +8,11 @@ import { selectWalletById } from '@merit/common/reducers/wallets.reducer';
 import { Store } from '@ngrx/store';
 
 @Component({
-  selector: 'app-mnemonic-phrase',
-  templateUrl: './mnemonic-phrase.view.html',
-  styleUrls: ['./mnemonic-phrase.view.sass']
+  selector: 'view-qr-code-backup',
+  templateUrl: './qr-code-backup.view.html',
+  styleUrls: ['./qr-code-backup.view.sass']
 })
-export class MnemonicPhraseView {
+export class QrCodeBackupView {
   mnemonic$: Observable<DisplayWallet> = this.route.parent.params.pipe(
     switchMap((params: any) => this.store.select(selectWalletById(params.id))),
     map((wallet: DisplayWallet) => wallet.client.getMnemonic())
