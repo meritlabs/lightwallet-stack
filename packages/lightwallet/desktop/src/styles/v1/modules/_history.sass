@@ -87,3 +87,43 @@
           &.confirmed
             .status
               color: green
+.history
+  padding: 50px 40px
+  &__header
+    margin-bottom: 30px
+  &__list
+    max-width: 400px
+    width: 100%
+  &__item
+    display: flex
+    flex-flow: row wrap
+    justify-content: space-between
+    text-align: left
+    align-items: center
+    border-bottom: 1px solid $pale-grey-two
+    padding-bottom: 15px
+    margin-bottom: 15px
+    &__icon
+      background: $pale-grey
+      width: 60px
+      height: 60px
+      display: flex
+      justify-content: center
+      align-items: center
+    &__info
+      width: calc(100% - 80px)
+      display: flex
+      justify-content: space-between
+      align-items: center
+      letter-spacing: .3px
+      &__title
+        +font($baseFont--medium, 15px, 22px, $gun-metal)
+        margin-bottom: 5px
+      &__date
+        +font($baseFont--medium, 12px, 16px, $blue-grey)
+      &__amount
+        +font($baseFont--regular, 14px, 24px, initial)
+        &--plus
+          color: $blue
+        &--minus
+          color: $gun-metal
