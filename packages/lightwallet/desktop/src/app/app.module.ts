@@ -3,7 +3,8 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { AppEffects } from '@merit/common/effects/app.effects';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
-import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { DashboardGuard } from '@merit/desktop/app/guards/dashboard.guard';
+import { OnboardingGuard } from '@merit/desktop/app/guards/onboarding.guard';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -20,6 +21,7 @@ import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TransactionEffects } from '@merit/common/effects/transaction.effects';
+import { WebPushNotificationsService } from '@merit/common/services/web-push-notifications.service';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
@@ -32,7 +34,9 @@ export function loadConfigs(appService) {
 export function getProviders() {
   return [
     Events,
-    Platform
+    Platform,
+    DashboardGuard,
+    OnboardingGuard
   ];
 }
 

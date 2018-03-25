@@ -1,17 +1,19 @@
-import { AbstractControl } from '@angular/forms';
-import { ValidationErrors } from '@angular/forms/src/directives/validators';
+import { AbstractControl, ValidatorFn } from '@angular/forms';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 export class PasswordValidator {
-  static MatchPassword(control: AbstractControl): ValidationErrors | null {
+  static MatchPassword(control: AbstractControl) {
     try {
       const password = control.parent.get('password').value,
         repeatPassword = control.value;
 
       if (password != repeatPassword) {
-        return {
-          PasswordMatch: true
-        };
+        return { PasswordMatch: true };
       }
     } catch (e) {}
+  }
+
+  static VerifyWalletPassword(wallet: MeritWalletClient): ValidatorFn {
+    return (control: AbstractControl) => wallet.checkPassword(control.value)? null : { IncorrectPassword: true };
   }
 }
