@@ -8,6 +8,6 @@ export class PasswordPromptController {
   constructor(private domCtrl: DOMController) {}
 
   create(wallet?: DisplayWallet) {
-    this.domCtrl.create(PasswordPromptComponent, { wallet });
+    return this.domCtrl.create(PasswordPromptComponent, { wallet });
   }
 }

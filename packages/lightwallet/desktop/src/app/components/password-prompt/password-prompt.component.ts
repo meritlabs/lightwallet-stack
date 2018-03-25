@@ -51,7 +51,6 @@ export class PasswordPromptComponent implements IDynamicComponent {
   }
 
   onBackdropClick() {
-    console.log('On click fired');
     this._dismiss();
   }
 
