@@ -5,7 +5,7 @@ import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
@@ -37,7 +37,7 @@ export class UnlockView {
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private easyReceiveService: EasyReceiveService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private addressScanner: AddressScannerService) {
   }
 
@@ -48,7 +48,10 @@ export class UnlockView {
     const receipts = await this.easyReceiveService.getPendingReceipts();
     this.easyReceipt = receipts.pop();
     // The unlock code from a pending easyReceipt takes priority.
-    if (this.easyReceipt) this.formData.parentAddress = this.easyReceipt.parentAddress;
+    if (this.easyReceipt) {
+      this.formData.parentAddress = this.easyReceipt.parentAddress;
+      this.validateAddress();
+    }
   }
 
   checkAddress() {
@@ -82,11 +85,11 @@ export class UnlockView {
     if (!input) {
       this.formData.addressCheckInProgress = false;
       return this.formData.addressCheckError = 'Address cannot be empty';
-    } else if (!this.sendService.isAddress(input) && !this.sendService.couldBeAlias(input)) {
+    } else if (!this.addressService.isAddress(input) && !this.addressService.couldBeAlias(input)) {
       this.formData.addressCheckInProgress = false;
       return this.formData.addressCheckError = 'Incorrect address or alias format';
     } else {
-      let addressInfo = await this.sendService.getAddressInfo(input);
+      let addressInfo = await this.addressService.getAddressInfo(input);
       if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
         this.formData.addressCheckInProgress = false;
         return this.formData.addressCheckError = 'Address not found';

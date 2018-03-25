@@ -3,10 +3,10 @@ import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angu
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { IMeritAddress, MeritContact } from '@merit/common/models/merit-contact';
-import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 @IonicPage()
 @Component({
@@ -26,7 +26,7 @@ export class SendEditContactView {
               private navParams: NavParams,
               private contactsService: ContactsService,
               private toastController: MeritToastController,
-              private sendService: SendService,
+              private addressService: AddressService,
               private alertCtrl: AlertController) {
     this.contact = this.navParams.get('contact');
   }
@@ -51,7 +51,7 @@ export class SendEditContactView {
       }).present();
     }
 
-    const info = await this.sendService.getAddressInfoIfValid(address);
+    const info = await this.addressService.getAddressInfoIfValid(address);
 
     if (!info) {
       return this.toastController.create({

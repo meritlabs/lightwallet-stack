@@ -1,0 +1,27 @@
+<ion-header no-border>
+  <ion-navbar>
+    <ion-title>Whitelist</ion-title>
+      <ion-buttons end>
+        <button ion-button (click)="close()" translate>
+          Done
+        </button>
+      </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content no-bounce>
+  <div *ngIf="wallets">
+
+    <button ion-item detail-none *ngFor="let wallet of wallets"
+            [class.selected]="wallet.selected" (click)="wallet.selected = !wallet.selected"
+            [disabled]="!wallet.confirmed">
+      <ion-label>
+         <h2 translate>
+            {{wallet.name || wallet._id}}
+         </h2>
+         <p>{{wallet.client.status.spendableBalanceStr}}</p>
+      </ion-label>
+      <ion-icon name="checkmark" *ngIf="wallet.selected" item-end></ion-icon>
+    </button>
+  </div>
+</ion-content>

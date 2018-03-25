@@ -10,5 +10,5 @@ import { SetWalletPasswordView } from './set-wallet-password';
     IonicPageModule.forChild(SetWalletPasswordView),
   ],
 })
-export class $$moduleName$$Module {
+export class SetWalletPasswordModule {
 }

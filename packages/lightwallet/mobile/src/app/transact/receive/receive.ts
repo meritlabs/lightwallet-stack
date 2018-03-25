@@ -11,7 +11,7 @@ import { PlatformService } from '@merit/common/services/platform.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 @IonicPage()
 @Component({
@@ -50,7 +50,7 @@ export class ReceiveView {
               private rateService: RateService,
               private configService: ConfigService,
               private events: Events,
-              private sendService: SendService,
+              private addressService: AddressService,
               private platformService: PlatformService,
               private navParams: NavParams) {
     this.protocolHandler = 'merit';
@@ -104,7 +104,7 @@ export class ReceiveView {
 
     try {
       this.address = this.wallet.getRootAddress().toString();
-      let info = await this.sendService.getAddressInfo(this.address);
+      let info = await this.addressService.getAddressInfo(this.address);
       this.alias = info.alias;
       this.addressGenerationInProgress = false;
       this.formatAddress();

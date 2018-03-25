@@ -1,0 +1,49 @@
+view-easy-send-share {
+
+  text-align: center;
+
+  ion-card-header {
+    text-align: center;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.6) !important;
+    font-weight: 600;
+  }
+
+  .send-ready {
+    height: 150px;
+    width: 150px;
+    line-height: 150px;
+    border-radius: 50%;
+    margin: 25px auto;
+    border: 3px solid color($colors, primary);
+    .send-ready-inner {
+      img {
+        height: 80px;
+        width: 80px;
+        margin-top: 30px;
+      }
+    }
+
+  }
+
+  h2 {
+    font-size: 16px;
+    color: rgba(0,0,0, 0.6);
+    margin-bottom: 25px;
+  }
+
+  ion-card-content {
+    text-align: left;
+  }
+
+  a {
+    font-size: 12px;
+  }
+
+  .row {
+    .button-inner {
+      color: rgba(0,0,0,0.6) !important;
+    }
+  }
+
+}

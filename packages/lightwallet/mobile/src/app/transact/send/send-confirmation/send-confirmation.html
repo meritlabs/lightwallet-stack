@@ -21,8 +21,10 @@
         </ion-label>
       </ion-item>
 
-      <ion-item text-wrap class="destination">
-        <ion-avatar item-start></ion-avatar>
+      <ion-item text-wrap class="destination" *ngIf="viewData.destination">
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/merit.svg">
+        </ion-avatar>
         <ion-label>
           <p>Destination</p>
           <h2>{{ viewData.destination }}</h2>
@@ -30,7 +32,9 @@
       </ion-item>
 
       <ion-item>
-        <ion-avatar item-start></ion-avatar>
+        <ion-avatar item-start img-icon>
+          <img src="assets/img/icons/merit.svg">
+        </ion-avatar>
         <ion-label>
           <p>Method</p>
           <h2>{{ viewData.methodName }}</h2>
@@ -44,16 +48,16 @@
         <ion-label>
           <p>Send</p>
           <h2>
-            {{ viewData.amountMrt }} MRT
-            <span class="right">{{ viewData.amountFiat }}</span>
+            {{ viewData.amount | toMRT }}
+            <span class="right">{{ viewData.amount | toFiat }}</span>
           </h2>
           <p class="fee">
-            Fee {{ viewData.feeAmountMrt }} MRT
-            <span class="right">{{ viewData.feeAmountFiat }}</span>
+            Fee {{ viewData.fee  | toMRT }}
+            <span class="right">{{ viewData.fee | toFiat }}</span>
           </p>
           <p class="total">
-            Total {{ viewData.totalAmountMrt }} MRT
-            <span class="right">{{ viewData.totalAmountFiat }}</span>
+            Total {{ viewData.totalAmount | toMRT }}
+            <span class="right">{{ viewData.totalAmount | toFiat }}</span>
           </p>
         </ion-label>
       </ion-item>
@@ -67,8 +71,8 @@
           <p>From</p>
           <h2>{{ viewData.walletName }}</h2>
           <p class="before-after">
-            <span class="before">{{ viewData.walletCurrentBalanceMrt }} MRT</span>
-            <span class="after">{{ viewData.walletRemainingBalanceMrt }} MRT</span>
+            <span class="before">{{ viewData.walletCurrentBalance | toMRT }} </span>
+            <span class="after">{{ viewData.walletRemainingBalance | toMRT }}</span>
           </p>
         </ion-label>
       </ion-item>
@@ -86,23 +90,10 @@
         </button>
       </ion-item>
     </ion-list>
-
-    <!--<ion-list>-->
-    <!--<ion-item *ngIf="txData.timeout">-->
-    <!--<ion-avatar item-start>-->
-    <!--<ion-icon name="timer"></ion-icon>-->
-    <!--</ion-avatar>-->
-    <!--<ion-label stacked>Expiration Time</ion-label>-->
-    <!--<h2>{{txData.timeout.nbBlocks}}</h2>-->
-    <!--<p>Until {{txData.timeout.expirationDate}}</p>-->
-
-    <!--<div item-end>{{txData.timeout.hours}}</div>-->
-    <!--</ion-item>-->
-    <!--</ion-list>-->
   </div>
 
 </ion-content>
 
-<ion-footer>
+<ion-footer >
   <slide-to-action text="Slide to Send" (confirm)="send()"></slide-to-action>
 </ion-footer>

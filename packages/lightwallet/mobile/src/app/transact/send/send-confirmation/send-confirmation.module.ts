@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { SendConfirmationView } from './send-confirmation';
 import { ComponentsModule } from '../../../../components/components.module';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
   declarations: [
@@ -9,7 +10,8 @@ import { ComponentsModule } from '../../../../components/components.module';
   ],
   imports: [
     IonicPageModule.forChild(SendConfirmationView),
-    ComponentsModule
+    ComponentsModule,
+    CommonPipesModule
   ],
 })
 export class SendConfirmationModule {

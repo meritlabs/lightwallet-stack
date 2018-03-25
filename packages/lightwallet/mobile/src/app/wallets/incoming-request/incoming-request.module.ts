@@ -13,5 +13,5 @@ import { MomentModule } from 'angular2-moment/moment.module';
     IonicPageModule.forChild(IncomingRequestModal),
   ],
 })
-export class $$moduleName$$Module {
+export class IncomingRequestModule {
 }

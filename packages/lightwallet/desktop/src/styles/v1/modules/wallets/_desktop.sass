@@ -10,6 +10,11 @@
         margin-left: 10px
       &__title
         color: $gun-metal
+    &__content
+      position: relative
+      border-radius: 5px
+      overflow: hidden
+      margin-bottom: 10px
     &__wallet
       display: flex
       flex-flow: row wrap
@@ -20,7 +25,8 @@
       margin-bottom: 10px
       border-radius: 5px
       box-shadow: 0 2px 4px rgba(46,51,88, .22)
-      cursor: pointer
+      &:not(.locked)
+        cursor: pointer
       user-select: none
       position: relative
       +transition(.3s, linear)
@@ -57,7 +63,7 @@
           small
             font-size: 13px
             color: $cool-grey
-      &:hover
+      &:hover:not(.locked)
         box-shadow: 0 2px 10px rgba(46,51,88, .15)
         .wallets__group__wallet__edit
           opacity: 1

@@ -7,7 +7,7 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 
@@ -39,7 +39,7 @@ export class AliasView {
               private config: ConfigService,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
-              private sendService: SendService) {
+              private addressService: AddressService) {
   }
 
   async ionViewDidLoad() {
@@ -73,7 +73,7 @@ export class AliasView {
       return this.formData.aliasValidationError = 'Alias should contain at least 3 symbols';
     }
 
-    if (!this.sendService.couldBeAlias(input)) {
+    if (!this.addressService.couldBeAlias(input)) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
       return this.formData.aliasValidationError = 'Incorrect alias format';
@@ -82,7 +82,7 @@ export class AliasView {
     this.formData.aliasValidationError = null;
 
 
-    let addressExists = await this.sendService.getValidAddress(input);
+    let addressExists = await this.addressService.getValidAddress(input);
 
     if (addressExists) {
       this.formData.aliasValidationError = 'Alias already in use';

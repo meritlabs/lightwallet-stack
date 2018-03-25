@@ -49,8 +49,8 @@ export class ContactsService {
     return this.addressBook;
   };
 
-  async bindAddressToContact(contact: MeritContact, address: string, network: string = ENV.network) {
-    const addressBook: IAddressBook = await this.getAddressbook(network);
+  async bindAddressToContact(contact: MeritContact, address: string, alias?: string) {
+    const addressBook: IAddressBook = await this.getAddressbook(ENV.network);
 
     let existingContact: MeritContact;
     if (!_.isEmpty(contact.meritAddresses)) {
@@ -60,13 +60,13 @@ export class ContactsService {
       });
     }
     if (existingContact) {
-      existingContact.meritAddresses.push({ address: address, network: network });
+      existingContact.meritAddresses.push({ address: address, alias: alias,  network: ENV.network });
     } else {
-      contact.meritAddresses.push({ address: address, network: network });
+      contact.meritAddresses.push({ address: address, network: ENV.network });
       addressBook[address] = contact;
     }
 
-    return this.persistenceService.setAddressbook(network, addressBook);
+    return this.persistenceService.setAddressbook(ENV.network, addressBook);
   }
 
   get(addr: string): MeritContact {

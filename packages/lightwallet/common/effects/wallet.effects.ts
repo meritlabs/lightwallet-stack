@@ -14,7 +14,7 @@ import {
 import { WalletService } from '@merit/common/services/wallet.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { createDisplayWallet, DisplayWallet, updateDisplayWallet } from '@merit/common/models/display-wallet';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Store } from '@ngrx/store';
@@ -65,7 +65,7 @@ export class WalletEffects {
 
   constructor(private actions$: Actions,
               private walletService: WalletService,
-              private sendService: SendService,
+              private addressService: AddressService,
               private profileService: ProfileService,
               private txFormatService: TxFormatService,
               private store: Store<IRootAppState>,
@@ -76,7 +76,7 @@ export class WalletEffects {
     const wallets = await this.profileService.getWallets();
     return Promise.all<DisplayWallet>(
       wallets.map(async w => {
-        const displayWallet = await createDisplayWallet(w, this.walletService, this.sendService, this.txFormatService);
+        const displayWallet = await createDisplayWallet(w, this.walletService, this.addressService, this.txFormatService);
         displayWallet.importPreferences(await this.persistenceService.getWalletPreferences(displayWallet.id));
         return displayWallet;
       })
