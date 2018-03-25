@@ -14,8 +14,8 @@ import { WalletDetailView } from '@merit/desktop/app/core/wallets/wallet-details
 import { WalletDetailHistoryView } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details-history/wallet-details-history.view';
 import { GlobalSettingsView } from '@merit/desktop/app/core/global-settings/global-settings.view';
 import { SettingsPreferencesView } from '@merit/desktop/app/core/global-settings/settings-preferences/settings-preferences.view';
-import { SettingsTermsOfUseView } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.view'
-import { SettingsSessionLogView } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.view'
+import { SettingsTermsOfUseView } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.view';
+import { SettingsSessionLogView } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.view';
 import { WalletSettingsView } from '@merit/desktop/app/core/wallets/wallet-details/wallet-settings/wallet-settings.view';
 import { ImportWalletView } from '@merit/desktop/app/core/wallets/import-wallet/import-wallet.view';
 import { ImportByQrView } from '@merit/desktop/app/core/wallets/import-wallet/import-by-qr/import-by-qr.view';
@@ -23,7 +23,8 @@ import { ImportWithFileView } from '@merit/desktop/app/core/wallets/import-walle
 import { PhraseImportView } from '@merit/desktop/app/core/wallets/import-wallet/phrase-import/phrase-import.view';
 import { RequestsComponent } from '@merit/desktop/app/core/community/invites/requests/requests.component';
 import { SendInviteComponent } from '@merit/desktop/app/core/community/invites/send-invite/send-invite.component';
-// import { WalletExportComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-export/wallet-export.component';
+import { QrCodeBackupView } from '@merit/desktop/app/core/backup/qr-code-backup/qr-code-backup.view';
+import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
 import { WalletExportMnemonicPhraseComponent } from '@merit/desktop/app/core/wallets/wallet-details/wallet-export-mnemonic-phrase/wallet-export-mnemonic-phrase.component';
 
 const routes: Routes = [
@@ -37,13 +38,19 @@ const routes: Routes = [
       { path: 'wallets/import/qr-code', component: ImportByQrView },
       { path: 'wallets/import/file', component: ImportWithFileView },
       { path: 'wallets/import/phrase', component: PhraseImportView },
-      { path: 'wallets/:id', component: WalletDetailView, children: [
-        { path: '', component: WalletDetailHistoryView },
-        { path: 'history', component: WalletDetailHistoryView },
-        { path: 'settings', component: WalletSettingsView },
-        // { path: 'export', component: WalletExportComponent},
-        { path: 'export/mnemonic-phrase', component: WalletExportMnemonicPhraseComponent}
-      ]},
+      {
+        path: 'wallets/:id', component: WalletDetailView, children: [
+          { path: '', component: WalletDetailHistoryView },
+          { path: 'history', component: WalletDetailHistoryView },
+          { path: 'settings', component: WalletSettingsView },
+          { path: 'send', component: SendView },
+          { path: 'receive', component: ReceiveView },
+          { path: 'export', component: BackupView, pathMatch: 'full' },
+          { path: 'export/mnemonic', component: MnemonicPhraseView },
+          { path: 'export/qr-code', component: QrCodeBackupView },
+          { path: 'export/file', component: FileBackupView }
+        ]
+      },
       { path: 'receive', component: ReceiveView },
       { path: 'send', component: SendView },
       { path: 'history', component: HistoryView },
@@ -52,11 +59,13 @@ const routes: Routes = [
       { path: 'community/send-invite', component: SendInviteComponent },
       { path: 'backup', component: BackupView },
       { path: 'backup/mnemonic-phrase', component: MnemonicPhraseView },
-      { path: 'settings', component: GlobalSettingsView, children: [
-        { path: '', component: SettingsPreferencesView },
-        { path: 'terms-of-use', component: SettingsTermsOfUseView },
-        { path: 'session-log', component: SettingsSessionLogView }
-      ]},
+      {
+        path: 'settings', component: GlobalSettingsView, children: [
+          { path: '', component: SettingsPreferencesView },
+          { path: 'terms-of-use', component: SettingsTermsOfUseView },
+          { path: 'session-log', component: SettingsSessionLogView }
+        ]
+      },
       { path: '**', redirectTo: 'dashboard' }
     ]
   }
