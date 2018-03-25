@@ -3,23 +3,23 @@
   <app-invites></app-invites>
   <ng-container *ngIf="wallets$ | async as wallets; else noWallets">
     <ng-container *ngFor="let wallet of wallets">
-      <div class="network__personal-wallet">
-        <div class="network__personal-wallet__title container--inner title--primary">
-          <p>{{wallet.name}}</p>
-        </div>
-        <div class="network__personal-wallet__toolbar container--inner">
-          <div class="network__personal-wallet__toolbar__item
-        network__personal-wallet__toolbar__item--mrt">
-            <p>{{wallet.totalBalanceStr}}
-              <span>MRT</span>
-            </p>
+      <div class="network__personal-wallet container--inner">
+        <div class="network__personal-wallet__panel">
+          <div class="network__personal-wallet__title title--primary">
+            <p>{{wallet.name}}</p>
           </div>
-          <div class="network__personal-wallet__toolbar__item
-        network__personal-wallet__toolbar__item--currency">
-            <p>{{wallet.totalBalanceFiat}}</p>
+          <div class="network__personal-wallet__toolbar">
+            <div class="network__personal-wallet__toolbar__item
+          network__personal-wallet__toolbar__item--mrt">
+              <p>{{wallet.totalBalanceStr}}
+                <span>MRT</span>
+              </p>
+            </div>
+            <div class="network__personal-wallet__toolbar__item
+          network__personal-wallet__toolbar__item--currency">
+              <p>{{wallet.totalBalanceFiat}}</p>
+            </div>
           </div>
-        </div>
-        <div class="network__personal-wallet__panel container--inner">
           <div class="network__personal-wallet__panel__row invite-code">
             <div class="network__personal-wallet__panel__col">
               <div class="network__personal-wallet__panel__icon">
