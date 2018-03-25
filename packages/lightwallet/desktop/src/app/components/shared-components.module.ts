@@ -3,6 +3,7 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BackdropComponent } from '@merit/desktop/app/components/backdrop/backdrop.component';
 import { ErrorMessageComponent } from '@merit/desktop/app/components/error-message/error-message.component';
+import { LoadingSpinnerSmallComponent } from '@merit/desktop/app/components/loading-spinner-small/loading-spinner-small.component';
 import { LoadingSpinnerComponent } from '@merit/desktop/app/components/loading-spinner/loading-spinner.component';
 import { LockScreenComponent } from '@merit/desktop/app/components/lock-screen/lock-screen.component';
 import { MeritIconComponent } from '@merit/desktop/app/components/merit-icon/merit-icon.component';
@@ -15,6 +16,7 @@ import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/w
 export function getComponents() {
   return [
     LoadingSpinnerComponent,
+    LoadingSpinnerSmallComponent,
     ErrorMessageComponent,
     MeritIconComponent,
     ToastNotificationComponent,
