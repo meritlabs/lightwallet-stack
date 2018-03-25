@@ -13,10 +13,10 @@
     </ion-label>
     <ion-note *ngIf="!tx.isInvite" item-end>
       <span class="merit-amount" [class.credit]="isCredit(tx)">
-        {{ tx.amountStr }}&nbsp;<small>MRT</small>
+        {{ tx.amount | toMRT}}
       </span>
       <span class="fiat-amount">
-          {{ tx.alternativeAmountStr }}
+          {{ tx.amount | toFiat }}
       </span>
     </ion-note>
     <ion-note *ngIf="tx.isInvite && !tx.isCoinbase && tx.name !== 'Wallet Unlocked'" item-end class="merit-invite" [class.credit]="isCredit(tx)">

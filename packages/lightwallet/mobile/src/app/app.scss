@@ -302,7 +302,7 @@ div {
       border-bottom: none;
     }
 
-    &:after {
+    &:not(:last-child):after {
       content: '';
       width: calc(100% - 16px - 19px);
       background: transparentize(#d1d6dc, .5);
@@ -363,6 +363,7 @@ button[ion-button][add-button].button {
   ion-icon.icon {
     font-size: 18px;
     line-height: 24px;
+    font-weight: 600;
   }
 }
 

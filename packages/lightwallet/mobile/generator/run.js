@@ -7,7 +7,7 @@ if (!dirName) {
     throw('ERROR: no module name provided')
 }
 
-var dirPath = path.normalize(__dirname+'/../src/app/'+dirName);
+var dirPath = path.normalize(__dirname+'/../src/pages/'+dirName);
 if (fs.existsSync(dirPath)) {
     throw('ERROR: module exists!');
 }
@@ -21,6 +21,7 @@ fileName.split('-').forEach(function(word) {
 var componentName  = moduleName+'View';
 var interpolate = function(content) {
     content = content.replace(/\$\$componentName\$\$/gi, componentName);
+    content = content.replace(/\$\$moduleName\$\$/gi, moduleName);
     content = content.replace(/\$\$fileName\$\$/gi, fileName);
     return content;
 };

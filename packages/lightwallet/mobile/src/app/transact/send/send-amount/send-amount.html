@@ -1,12 +1,12 @@
 <ion-header>
   <ion-navbar color="light">
-    <ion-title *ngIf="recipient.name?.formatted">
+    <ion-title *ngIf="recipient?.name?.formatted">
       <h2>Recipient: {{recipient.name.formatted}}</h2>
-      <p>via {{ sendMethod.alias? '@' + sendMethod.alias : sendMethod.value }}</p>
+      <p>via {{ sendMethod.alias ? '@' + sendMethod.alias : sendMethod.value }}</p>
     </ion-title>
-    <ion-title *ngIf="!recipient.name?.formatted">
-      <h2>{{ sendMethod.type == 'easy' ? 'Easy Send to' : 'Classic Send to' }}</h2>
-      <p>{{ sendMethod.alias? '@' + sendMethod.alias : sendMethod.value }}</p>
+    <ion-title *ngIf="!recipient?.name?.formatted">
+      <h2>{{ sendMethod.type == 'easy' ? 'Global Send' : 'Send to' }}</h2>
+      <p>{{ sendMethod.alias ? '@' + sendMethod.alias : sendMethod.value }}</p>
     </ion-title>
   </ion-navbar>
 </ion-header>
@@ -29,11 +29,13 @@
       <div class="main-amount">
         <ion-item no-lines>
           <ion-input
+            #amount 
             type="tel"
             pattern="[0-9\.]"
             [(ngModel)]="formData.amount"
             (ngModelChange)="processAmount(formData.amount)"
             [placeholder]="'Enter sending amount'"
+            (keypress)="amountKeypress($event.keyCode)" 
           ></ion-input>
         </ion-item>
       </div>
@@ -56,26 +58,25 @@
       </ion-avatar>
       <p>From</p>
       <h2>{{selectedWallet.name}}</h2>
-      <p>{{selectedWallet.status ? selectedWallet.status.spendableBalanceStr : '0.00'}} MRT</p>
+      <p>{{selectedWallet.status.spendableAmount | toMRT}}</p> 
       <ion-icon name="ios-arrow-down" item-end></ion-icon>
     </button>
 
-    <button ion-item no-lines (click)="selectFee()" detail-none>
+    <button ion-item no-lines detail-none>
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/percent.svg">
       </ion-avatar>
       <p>Fee</p>
 
-      <h2 *ngIf="!selectedFee">
+      <h2 *ngIf="!txData?.txp?.fee">
         <span *ngIf="!feeLoading">Not calculated</span>
         <ion-spinner *ngIf="feeLoading"></ion-spinner>
       </h2>
-      <p *ngIf="feeCalcError">{{feeCalcError}}</p>
+      <p *ngIf="feeCalcError" class="feeCalcError">{{feeCalcError}}</p>
 
-      <h2 *ngIf="selectedFee" style="text-transform: capitalize">{{selectedFee.description}}</h2>
-      <p *ngIf="selectedFee">{{selectedFee.percent}} - ~{{selectedFee.minutes}} mins</p>
-      <div item-end *ngIf="selectedFee">
-        {{selectedFee.mrt}} MRT
+      <p *ngIf="feePercent">{{feePercent}}</p>
+      <div item-end *ngIf="txData?.txp?.fee">
+        {{ txData?.txp?.fee + txData.easyFee | toMRT}}
         <ion-icon name="ios-arrow-down"></ion-icon>
       </div>
     </button>
@@ -88,7 +89,7 @@
           <ion-icon name="ios-information-circle-outline"></ion-icon>
         </button>
       </ion-label>
-      <ion-toggle [(ngModel)]="feeIncluded" (ionChange)="toggleFeeIncluded($event)"></ion-toggle>
+      <ion-toggle [(ngModel)]="feeIncluded" [disabled]="!feeTogglerEnabled"></ion-toggle>
     </ion-item>
 
     <ion-list *ngIf="sendMethod.type == 'easy'">
@@ -110,15 +111,6 @@
                    autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
       </ion-item>
     </ion-list>
-
-    <!--<ion-item *ngIf="sendMethod.type == 'easy'">-->
-    <!--<ion-avatar item-start img-icon>-->
-    <!--<img src="assets/img/icons/timeout.svg">-->
-    <!--</ion-avatar>-->
-    <!--<ion-label stacked>Valid till</ion-label>-->
-    <!--<ion-label>~{{formData.validTill}} ({{formData.nbBlocks}})</ion-label>-->
-    <!--<ion-icon name="arrow-right" item-end></ion-icon>-->
-    <!--</ion-item>-->
 
   </div>
 

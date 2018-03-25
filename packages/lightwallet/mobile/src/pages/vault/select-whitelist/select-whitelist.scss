@@ -1,0 +1,11 @@
+view-select-whitelist {
+
+  .selected h2 {
+    color: color($colors, 'primary') !important;
+  }
+
+  ion-icon {
+    margin-top: 8px !important;
+    color: #00b0dd;
+  }
+}

@@ -120,7 +120,6 @@ Point.prototype.validate = function validate() {
   }
 
   if (p2.y.cmp(this.y) !== 0) {
-    console.trace('WE GOT HERE!');
     throw new Error('Invalid y value for curve.');
   }
 

@@ -19,13 +19,13 @@
     </div>
     <div *ngIf="!tx.isInvite">
       <h2 class="amount">
-        {{ isCredit? '' : '-' }}{{tx.amountStr | toUnit : tx.amount}}&nbsp;<small>MRT</small>
+        {{ isCredit? '' : '-' }}{{tx.amount | toMRT }}
       </h2>
       <h3 class="detail-fiat" *ngIf="!tx.isCoinbase">
         {{ isCredit? '' : '-' }}{{tx.alternativeAmountStr || altAmountStr | toFiat : tx.amount | async}}
       </h3>
       <p class="fee" *ngIf="!tx.isCoinbase">
-        Fee {{ tx.feeStr + ' MRT' }}
+        Fee {{ tx.fee | toMRT }}
       </p>
     </div>
   </div>

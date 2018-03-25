@@ -10,5 +10,5 @@ import { SendWalletView } from './send-wallet';
     IonicPageModule.forChild(SendWalletView),
   ],
 })
-export class $$moduleName$$Module {
+export class SensWalletModule {
 }

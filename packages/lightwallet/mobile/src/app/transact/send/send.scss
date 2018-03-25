@@ -1,90 +1,190 @@
+// *** IOS ***
 .ios view-send {
-  .content {
-    .no-results {
-      button[ion-button].button-ios {
-        border-radius: 21px;
-        font-weight: 500;
-        &[color='light'] {
-          color: rgb(41, 61, 82);
-        }
-      }
+  ion-searchbar.searchbar-ios {
+    background: transparent;
+    display: initial;
+    .searchbar-input-container {
+      border: 1px solid rgba(0,0,0,0.2);
+      border-radius: 4px;
+      overflow: hidden;
     }
   }
-}
 
-.md view-send {
-  ion-header.header.header-md {
-    ion-searchbar.searchbar-md {
-      padding: 8px;
-    }
-    ion-buttons.bar-buttons button[ion-button].bar-button {
-      margin-left: 0;
-      ion-icon {
-        color: map_get($colors, primary);
-      }
-    }
+  button[ion-button].scan-button {
+    margin: 2px 8px 0 0;
   }
 }
 
 view-send {
-  .scroll-content {
-    display: flex;
-    flex-direction: column;
-
-    > .loader {
-      align-self: center;
-      justify-self: center;
+  .global-search-button {
+    height: 40px;
+    line-height: 40px;
+    min-height: 40px;
+    margin: 8px;
+    margin-bottom: 4px;
+    width: calc(100% - 16px);
+    border-radius: 4px;
+    img {
+      margin-left: 8px;
+      height: 18px;
     }
+  }
 
-    .content {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-content: center;
-      justify-content: center;
+  .or-line {
+    height: 20px;
+    color: rgba(0, 0, 0, 0.4);
+    margin: 10px 0 0 0;
+    .hr {
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      width: calc(50% - 45px);
+      margin: 0 15px;
+      height: 10px;
+      vertical-align: bottom;
+      display: inline-block;
+    }
+    .or {
+      display: inline-block;
+      height: 18px;
+      line-height: 18px;
+      vertical-align: middle;
+      width: 20px;
+      text-align: center;
+    }
+  }
 
-      .no-results {
-        height: auto;
-        display: block;
+  .searchbar-wrapper {
+    display: flex;
+    line-height: 58px;
+    ion-searchbar {
+      display: block;
+      vertical-align: middle;
+    }
+    .scan-button {
+      width: 30px;
+      height: 30px;
+      vertical-align: middle;
+      padding: 0;
+      margin: 0;
+      margin-top: 15px;
+      margin-right: 8px;
+      .button-inner {
+        height: 30px;
+        width: 30px;
       }
-
-      > :first-child:not(.no-results), .contacts-list {
-        height: 100%;
-
-        ion-item.item {
-          ion-avatar[img-icon] {
-            span {
-              text-align: center;
-              width: 38px;
-            }
-          }
-        }
+      ion-icon {
+        color: color($colors, primary);
+        height: 22px;
+        width: 22px;
       }
     }
   }
 
-  ion-header.header {
-    .toolbar-background {
-      background: white;
+  .global-illustration {
+    text-align: center;
+    padding: 0 20px;
+    h2 {
+      font-size: 17px;
+      margin-top: 20px;
+      color: rgb(45, 60, 80);
     }
-
-    ion-searchbar input::-webkit-input-placeholder {
-      color: #999;
-      font-size: 14px;
+    p {
+      font-size: 13px;
+      color: rgba(45, 60, 80, 0.6);
     }
-
-    ion-buttons[end].bar-buttons {
-      button[ion-button].bar-button {
-        padding: 0;
-        margin: 0 6px;
-        ion-icon {
-          height: 20px;
-          width: 20px;
-        }
-      }
+    img {
+      margin-top: 20px;
+      width: 75%;
     }
   }
 }
+
+//.ios view-send {
+//  .content {
+//    .no-results {
+//      button[ion-button].button-ios {
+//        border-radius: 21px;
+//        font-weight: 500;
+//        &[color='light'] {
+//          color: rgb(41, 61, 82);
+//        }
+//      }
+//    }
+//  }
+//}
+//
+//.md view-send {
+//  ion-header.header.header-md {
+//    ion-searchbar.searchbar-md {
+//      padding: 8px;
+//    }
+//    ion-buttons.bar-buttons button[ion-button].bar-button {
+//      margin-left: 0;
+//      ion-icon {
+//        color: map_get($colors, primary);
+//      }
+//    }
+//  }
+//}
+
+//view-send {
+//  .scroll-content {
+//    display: flex;
+//    flex-direction: column;
+//
+//    > .loader {
+//      align-self: center;
+//      justify-self: center;
+//    }
+//
+//    .content {
+//      height: 100%;
+//      display: flex;
+//      flex-direction: column;
+//      align-content: center;
+//      justify-content: center;
+//
+//      .no-results {
+//        height: auto;
+//        display: block;
+//      }
+//
+//      > :first-child:not(.no-results), .contacts-list {
+//        height: 100%;
+//
+//        ion-item.item {
+//          ion-avatar[img-icon] {
+//            span {
+//              text-align: center;
+//              width: 38px;
+//            }
+//          }
+//        }
+//      }
+//    }
+//  }
+//
+//  ion-header.header {
+//    .toolbar-background {
+//      background: white;
+//    }
+//
+//    ion-searchbar input::-webkit-input-placeholder {
+//      color: #999;
+//      font-size: 14px;
+//    }
+//
+//    ion-buttons[end].bar-buttons {
+//      button[ion-button].bar-button {
+//        padding: 0;
+//        margin: 0 6px;
+//        ion-icon {
+//          height: 20px;
+//          width: 20px;
+//        }
+//      }
+//    }
+//  }
+//}
 
 view-send, view-send-select-bind-contact {
   .content {

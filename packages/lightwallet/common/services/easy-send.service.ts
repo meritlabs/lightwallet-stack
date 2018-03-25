@@ -1,51 +1,49 @@
 import { Injectable, Optional } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { MWCService } from '@merit/common/services/mwc.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { EasySend } from '@merit/common/models/easy-send';
+import { ENV } from '@app/env';
+import { HDPrivateKey, Address, PrivateKey,Script } from 'bitcore-lib';
+import { FeeService } from '@merit/common/services/fee.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 @Injectable()
 export class EasySendService {
-  private bitcore: any = this.mwcService.getBitcore();
 
-  constructor(private persistenceService: PersistenceService,
-              @Optional() private socialSharing: SocialSharing,
-              private mwcService: MWCService) {}
+  private readonly DEFAULT_TIMEOUT = 1008;
+
+  constructor(
+    private feeService: FeeService,
+    private persistenceService: PersistenceService,
+    @Optional() private socialSharing: SocialSharing,
+    private addressService: AddressService
+  ) {}
 
   async createEasySendScriptHash(wallet: MeritWalletClient, password:string = ''): Promise<EasySend> {
-    const rootKey = this.bitcore.HDPrivateKey.fromString(wallet.credentials.xPrivKey);
+    const rootKey = HDPrivateKey.fromString(wallet.credentials.xPrivKey);
     const signPrivKey = rootKey.privateKey;
     const pubkey = signPrivKey.publicKey;
 
-    // TODO: get a passphrase from the user
-    let opts = {
-      network: wallet.network,
+    const easySend = await this.bulidScript(wallet, password);
+    const easySendAddress = Address(easySend.script.getAddressInfo()).toString();
+
+    const scriptReferralOpts = {
       parentAddress: wallet.getRootAddress().toString(),
-      passphrase: password,
+      pubkey: pubkey.toString(), // sign pubkey used to verify signature
+      signPrivKey,
+      address: easySendAddress,
+      addressType: Address.PayToScriptHashType, // script address
+      network: ENV.network,
     };
 
-    try {
-      const easySend = await wallet.buildEasySendScript(opts);
-      const easySendAddress = this.bitcore.Address(easySend.script.getAddressInfo()).toString();
+    // easy send address is a mix of script_id pubkey_id
+    easySend.parentAddress = wallet.getRootAddress().toString();
+    easySend.scriptAddress = easySendAddress;
+    easySend.scriptReferralOpts = scriptReferralOpts;
 
-      const scriptReferralOpts = {
-        parentAddress: wallet.getRootAddress().toString(),
-        pubkey: pubkey.toString(), // sign pubkey used to verify signature
-        signPrivKey,
-        address: easySendAddress,
-        addressType: this.bitcore.Address.PayToScriptHashType, // script address
-        network: opts.network,
-      };
-
-      // easy send address is a mix of script_id pubkey_id
-      easySend.scriptAddress = easySendAddress;
-      easySend.scriptReferralOpts = scriptReferralOpts;
-
-      return easySend;
-    } catch (err) {
-      throw new Error('error building easysend script' + err);
-    }
+    easySend.script.isOutput = true;
+    return easySend; 
   }
 
   async sendSMS(phoneNumber: string, amountMrt: string, url: string): Promise<any> {
@@ -102,4 +100,61 @@ export class EasySendService {
     history.push(easySend);
     return this.persistenceService.setPendingEasySends(walletId, history);
   }
+
+  prepareTxp(wallet: MeritWalletClient, amount: number, easySend: EasySend) {
+
+    if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
+
+    let txp:any = {
+      outputs: [{
+        'script': easySend.script.toHex(),
+        'toAddress': easySend.scriptAddress,
+        'amount': amount
+      }],
+      inputs: [], // will be defined on MWS side
+      feeLevel: this.feeService.getCurrentFeeLevel(),
+      excludeUnconfirmedUtxos: false,
+      dryRun: true,
+      addressType: 'P2SH'
+    };
+
+    if (amount == wallet.status.spendableAmount) {
+      delete txp.outputs[0].amount;
+      txp.sendMax = true;
+    }
+
+    return wallet.createTxProposal(txp);
+
+  }
+
+  /**
+   * Create an easySend script
+   */
+  private async bulidScript(wallet, passphrase = '', timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
+
+    const pubKey  = wallet.getRootAddressPubkey();
+    const rcvPair = PrivateKey.forNewEasySend(passphrase, ENV.network);
+    let pubKeys = [
+      rcvPair.key.publicKey.toBuffer(),
+      pubKey.toBuffer()
+    ];
+    const script = Script.buildEasySendOut(pubKeys, timeout, ENV.network);
+
+    const addressInfo = await this.addressService.getAddressInfo(wallet.getRootAddress().toString());
+
+    return {
+      receiverPubKey: rcvPair.key.publicKey,
+      script: script.toMixedScriptHashOut(pubKey),
+      senderName: addressInfo.alias ? '@'+addressInfo.alias : 'Someone', 
+      senderPubKey: pubKey.toString(),
+      secret: rcvPair.secret.toString('hex'),
+      blockTimeout: timeout,
+      parentAddress: '',
+      scriptAddress: '',
+      scriptReferralOpts: {}
+    };
+  }
+
+  
+
 }

@@ -1215,7 +1215,6 @@ Storage.prototype.fetchVaultById = function(id, cb) {
   this.db.collection(collections.VAULTS).findOne({
     _id: new ObjectID(id),
   }, function(err, result) {
-    console.log('in fetch', err, result);
     if (err) return cb(err);
     if (!result) return cb();
 
@@ -1228,7 +1227,6 @@ Storage.prototype.fetchVaultByCopayerId = function(copayerId, id, cb) {
     copayerId,
     _id: new ObjectID(id),
   }, function(err, result) {
-    console.log('in fetch', err, result);
     if (err) return cb(err);
     if (!result) return cb();
 

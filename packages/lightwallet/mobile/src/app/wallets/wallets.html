@@ -8,7 +8,8 @@
     <ng-template #notLoading>
       <h2 *ngIf="allBalancesHidden; else balancesNotHidden"></h2>
       <ng-template #balancesNotHidden>
-        <h2 class="amount">{{ totalWalletsValueMicros || '0.00' }}&nbsp;<small>MRT</small>
+        <h2 class="amount">
+          {{ (totalAmount || 0) | toMRT:8:true }}&nbsp;<small>MRT</small>
         </h2>
         <h3 class="detail-fiat">{{ totalWalletsValueFiat }}</h3>
         <h3 class="detail-fiat">{{ totalInvites }} Invites</h3>
@@ -28,14 +29,14 @@
     </button>
   </ion-item-divider>
 
-  <ion-item no-lines *ngIf="(!wallets || !wallets.length) && loading">
+  <ion-item no-lines *ngIf="!wallets?.length && loading">
     <ion-spinner item-start></ion-spinner>
     <h2>Loading...</h2>
   </ion-item>
 
   <ion-list class="wallets" *ngIf="wallets">
 
-    <div *ngFor="let wallet of wallets; trackBy: wallet?.id">
+    <ng-container *ngFor="let wallet of wallets; trackBy: wallet?.id">
       <button ion-item *ngIf="wallet.client.confirmed; else notConfirmed" navPush="WalletDetailsView"
               [navParams]="{ wallet: wallet }" class="wallet">
         <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color"
@@ -98,7 +99,7 @@
         </div>
       </ng-template>
 
-    </div>
+    </ng-container>
 
     <button ion-item class="import-wallet-button" (click)="toImportWallet()" detail-none>
       <ion-avatar item-start img-icon>
@@ -110,6 +111,64 @@
     </button>
   </ion-list>
 
-  <view-vaults [vaults]="vaults" [wallets]="wallets" [refreshVaultList]="refreshVaultList"></view-vaults>
+    <ion-list class="vaults-section">
+        <ion-item-divider>
+            Vaults
+            <button ion-button item-end round add-button icon-only
+                    navPush="VaultCreateView" [navParams]="{wallets: wallets}"
+                    [disabled]="!hasActiveInvites">
+                <ion-icon name="add"></ion-icon>
+            </button>
+        </ion-item-divider>
+
+        <ion-list class="vaults" *ngIf="vaults && vaults.length">
+            <button ion-item detail-none *ngFor="let vault of vaults"
+                    navPush="VaultView" [navParams]="{vaultId: vault._id, vault: vault, wallets: wallets}">
+                <ion-avatar item-start img-icon>
+                    <img src="assets/img/icons/vault-avatar.svg">
+                </ion-avatar>
+
+                <ion-label>
+                    <h2 class="vault-name">
+                        {{ vault.name || vault._id }}
+                    </h2>
+                    <p class="merit-amount" *ngIf="vault.amount">
+                        {{ vault.amount | toMRT }}
+                    </p>
+                </ion-label>
+
+                <div class="detail" item-end *ngIf="vault.status == 'pending'" >
+                    Pending
+                </div>
+                <div class="detail" item-end *ngIf="vault.status == 'renewing'" >
+                    Renewing
+                </div>
+            </button>
+        </ion-list>
+
+        <ion-list *ngIf="vaults && !vaults.length">
+            <ion-item class="add-vault-block">
+                <ion-thumbnail item-start>
+                    <img src="assets/img/icons/vault.svg" alt="">
+                </ion-thumbnail>
+                <ion-label>
+                    <h2>Create your vault</h2>
+                    <p>Vaults are a way to keep your Merit safe</p>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+
+        <ion-list *ngIf="!vaults" >
+            <ion-item class="add-vault-block">
+                <ion-thumbnail item-start>
+                    <img src="assets/img/icons/vault.svg" alt="">
+                </ion-thumbnail>
+                <ion-label>
+                    <h2>Loading vaults data...</h2>
+                    <p>Vaults are a way to keep your Merit safe</p>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </ion-list>
 
 </ion-content>

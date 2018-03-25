@@ -2323,11 +2323,9 @@ Merit.prototype.validateAddress = function(address, callback) {
 
   if (typeof easyScript == 'string' || easyScript instanceof String) {
     self.client.getInputForEasySend(easyScript, function(err, response) {
-      log.info("Juicy results: ", response);
       if (err) {
         return callback(self._wrapRPCError(err));
       } else {
-        log.info('getInputForEasySend Response: ', response);
         callback(null, response);
       }
     });
