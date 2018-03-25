@@ -6,6 +6,7 @@ import { EmailNotificationsService } from '@merit/common/services/email-notifica
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { WebPushNotificationsService } from '@merit/common/services/web-push-notifications.service';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
+import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
 import { CoreComponentsModule } from '@merit/desktop/app/core/components/core-components.module';
 import { ImportByQrView } from '@merit/desktop/app/core/wallets/import-wallet/import-by-qr/import-by-qr.view';
 import { ImportWalletView } from '@merit/desktop/app/core/wallets/import-wallet/import-wallet.view';
@@ -15,6 +16,7 @@ import { MomentModule } from 'angular2-moment';
 import { QRCodeModule } from 'angular2-qrcode';
 import { BackupView } from './backup/backup.view';
 import { MnemonicPhraseView } from './backup/mnemonic-phrase/mnemonic-phrase.view';
+import { QrCodeBackupView } from './backup/qr-code-backup/qr-code-backup.view';
 import { CommunityView } from './community/community.view';
 import { InvitesComponent } from './community/invites/invites.component';
 import { RequestsComponent } from './community/invites/requests/requests.component';
@@ -32,8 +34,6 @@ import { SendView } from './send/send.view';
 import { CreateWalletView } from './wallets/create-wallet/create-wallet.view';
 import { WalletDetailHistoryView } from './wallets/wallet-details/wallet-details-history/wallet-details-history.view';
 import { WalletDetailView } from './wallets/wallet-details/wallet-details.view';
-import { WalletExportMnemonicPhraseComponent } from './wallets/wallet-details/wallet-export-mnemonic-phrase/wallet-export-mnemonic-phrase.component';
-import { WalletExportComponent } from './wallets/wallet-details/wallet-export/wallet-export.component';
 import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wallet-settings.view';
 import { WalletsView } from './wallets/wallets.view';
 
@@ -59,11 +59,11 @@ export function getPages() {
     ImportByQrView,
     ImportWithFileView,
     PhraseImportView,
+    QrCodeBackupView,
+    FileBackupView,
     InvitesComponent,
     RequestsComponent,
-    SendInviteComponent,
-    WalletExportComponent,
-    WalletExportMnemonicPhraseComponent
+    SendInviteComponent
   ];
 }
 

@@ -13,6 +13,8 @@ import { reducer } from '@merit/common/reducers';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { DOMController } from '@merit/desktop/app/components/dom.controller';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
+import { DashboardGuard } from '@merit/desktop/app/guards/dashboard.guard';
+import { OnboardingGuard } from '@merit/desktop/app/guards/onboarding.guard';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -34,7 +36,9 @@ export function getProviders() {
   return [
     Events,
     Platform,
-    DOMController
+    DOMController,
+    DashboardGuard,
+    OnboardingGuard
   ];
 }
 
