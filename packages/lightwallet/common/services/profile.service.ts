@@ -327,6 +327,7 @@ export class ProfileService {
   }
 
   async getWallets(opts: any = {}): Promise<MeritWalletClient[]> {
+    await this.getProfile();
     let ret: MeritWalletClient[] = _.values(this.wallets);
 
     ret = ret.filter((x: any) =>
