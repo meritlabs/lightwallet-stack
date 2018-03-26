@@ -20,6 +20,26 @@
     text-transform: $transform
   text-rendering: geometricPrecision
   opacity: 0.99999
+=font($size, $height, $color: default, $weight: default, $style: normal, $decoration: none, $transform: none)
+  font-size: $size
+  line-height: $height
+  @if $color != default
+    color: $color
+  @else if $color == default
+  @if $weight != default
+    color: $weight
+  @else if $weight == default
+  @if $style != normal
+    font-style: $style
+  @else if $style == none
+  @if $decoration != none
+    text-decoration: $decoration
+  @else if $decoration == none
+  @if $transform != none
+    text-transform: $transform
+  @else if $transform == none
+  text-rendering: geometricPrecision
+  opacity: 0.99999
 
 =chageFontSize($size, $height)
   font-size: $size
