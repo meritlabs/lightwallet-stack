@@ -37,7 +37,7 @@
   <ion-list class="wallets" *ngIf="wallets">
 
     <div *ngFor="let wallet of wallets; trackBy: wallet?.id">
-      <button ion-item *ngIf="wallet.client.confirmed; else notConfirmed" navPush="WalletDetailsView"
+      <button ion-item *ngIf="wallet.confirmed; else notConfirmed" navPush="WalletDetailsView"
               [navParams]="{ wallet: wallet }" class="wallet">
         <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color"
                     [style.box-shadow]="'0 0 0 2px ' + wallet.color">
@@ -45,14 +45,14 @@
         </ion-avatar>
 
         <ion-label>
-          <h2>{{ wallet.name || wallet.client._id }}</h2>
+          <h2>{{ wallet.name || wallet._id }}</h2>
           <p *ngIf="wallet.balanceHidden; else notHidden">
             [Balance Hidden]
           </p>
           <ng-template #notHidden>
             <p class="merit-amount" *ngIf="wallet.totalBalanceStr">
               {{ wallet.totalBalanceStr }} {{ wallet.cachedBalance ? (' &middot; ' +
-              wallet.client.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '' }}&nbsp;<span>MRT</span>
+              wallet.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '' }}&nbsp;<span>MRT</span>
             </p>
           </ng-template>
           <p class="invites">
@@ -60,24 +60,24 @@
           </p>
         </ion-label>
 
-        <ion-note *ngIf="!wallet.client.isComplete(); else isComplete" class="assertive">Incomplete</ion-note>
+        <ion-note *ngIf="!wallet.isComplete(); else isComplete" class="assertive">Incomplete</ion-note>
         <ng-template #isComplete>
           <ion-note class="balance" item-end>
-            <span *ngIf="wallet.client.n > 1">
-                {{ wallet.client.m }}-of-{{ wallet.client.n }}
+            <span *ngIf="wallet.n > 1">
+                {{ wallet.m }}-of-{{ wallet.n }}
             </span>
-            <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.client.status.alternativeBalanceAvailable">
-              {{ wallet.client.status.totalBalanceAlternativeStr }}
+            <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.status.alternativeBalanceAvailable">
+              {{ wallet.status.totalBalanceAlternativeStr }}
             </div>
 
-            <span class="error" *ngIf="wallet.client.error">{{ wallet.client.error }}</span>
+            <span class="error" *ngIf="wallet.error">{{ wallet.error }}</span>
           </ion-note>
         </ng-template>
 
       </button>
 
       <ng-template #notConfirmed>
-        <div *ngIf="!wallet.client.confirmed" class="wallet">
+        <div *ngIf="!wallet.confirmed" class="wallet">
           <div class="unlock-backdrop"></div>
 
           <div class="unlock-popup">
