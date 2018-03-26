@@ -16,6 +16,7 @@ import { Injectable, NgZone, Optional } from '@angular/core';
 import { ConfigService } from '@merit/common/services/config.service';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { AddressService } from '@merit/common/services/address.service';
 
 @Injectable()
 export class MobilePushNotificationsService extends PushNotificationsService {
@@ -38,7 +39,8 @@ export class MobilePushNotificationsService extends PushNotificationsService {
               private ngZone: NgZone,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private sendService: SendService) {
+              private sendService: SendService,
+              private addressService: AddressService) {
     super(http, logger);
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
@@ -90,7 +92,7 @@ export class MobilePushNotificationsService extends PushNotificationsService {
           const wallet = this.walletService.getWallet(data.walletId);
           if (!wallet) return;
           return this.app.getActiveNav().push('WalletDetailsView', {
-            wallet: await createDisplayWallet(wallet, this.walletService, this.sendService, this.txFormatService, {
+            wallet: await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, {
               skipAnv: true,
               skipRewards: true,
               skipAlias: true
