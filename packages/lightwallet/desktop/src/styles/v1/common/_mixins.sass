@@ -7,19 +7,6 @@
     height: 1px
     margin-bottom: -1px
 
-=font-old-minix($family, $size, $height, $color, $style: normal, $decoration: none, $transform: none)
-  font-family: $family
-  font-size: $size
-  line-height: $height
-  color: $color
-  @if $style != normal
-    font-style: $style
-  @if $decoration != none
-    text-decoration: $decoration
-  @if $transform != none
-    text-transform: $transform
-  text-rendering: geometricPrecision
-  opacity: 0.99999
 =font($weight: default, $size: 17px, $height: 20px, $color: default, $style: normal, $decoration: none, $transform: none, $family: default)
   font-size: $size
   line-height: $height
