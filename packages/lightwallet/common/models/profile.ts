@@ -7,6 +7,7 @@ export class Profile {
   checked: Object;
   checkedUA?: any;
   dirty: boolean;
+  wallets: Array<any>;
   vaults: Array<any>;
 
   constructor() {

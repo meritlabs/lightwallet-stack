@@ -327,7 +327,7 @@ export class ProfileService {
   }
 
   async getWallets(opts: any = {}): Promise<MeritWalletClient[]> {
-    await this.getProfile();
+    await this.loadProfile();
     let ret: MeritWalletClient[] = _.values(this.wallets);
 
     ret = ret.filter((x: any) =>
@@ -736,6 +736,12 @@ export class ProfileService {
     this.profile = new Profile();
     this.profile = this.profile.fromObj(profile);
     return profile;
+  }
+
+  storeProfile() {
+    this.profile.wallets = this.wallets;
+    this.profile.vaults = this.vaults;
+    this.persistenceService.storeProfile(this.profile);
   }
 
   private shouldSkipValidation(walletId: string): boolean {
