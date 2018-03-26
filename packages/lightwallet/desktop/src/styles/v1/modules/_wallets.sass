@@ -57,9 +57,9 @@
         justify-content: flex-start
         width: 100%
         .large-black-text
-          +font($baseFont--medium, 16px, 22px, $gun-metal)
+          +font-old-minix($baseFont--medium, 16px, 22px, $gun-metal)
         .regular-blue-text
-          +font($baseFont--medium, 14px, 24px, $blue)
+          +font-old-minix($baseFont--medium, 14px, 24px, $blue)
           small
             font-size: 13px
             color: $cool-grey
@@ -83,7 +83,7 @@
       display: flex
       justify-content: flex-start
       align-items: center
-      +font($baseFont--heavy, 32px, 32px, $white)
+      +font-old-minix($baseFont--heavy, 32px, 32px, $white)
       padding-right: 40px
       small
         font-family: $baseFont--semibold
@@ -113,7 +113,7 @@
           &:last-of-type
             border: 0px
           a
-            +font($baseFont--regular, 20px, 20px, $gun-metal)
+            +font-old-minix($baseFont--regular, 20px, 20px, $gun-metal)
             +transition(.3s, linear)
             &::after
               content: ""
@@ -129,7 +129,7 @@
               &::after
                 transform: scaleX(1)
     &__title
-      +font($baseFont--heavy, 28px, 32px, $blue)
+      +font-old-minix($baseFont--heavy, 28px, 32px, $blue)
       margin-bottom: 40px
 .wallet-settings__group
   max-width: 550px
@@ -192,13 +192,13 @@
     align-items: center
     margin-bottom: 20px
     display: flex
-    +font($baseFont--regular, 22px, 22px, $white)
+    +font-old-minix($baseFont--regular, 22px, 22px, $white)
     merit-icon
       margin-right: 20px
   &__balance
     display: flex
     align-items: center
-    +font($baseFont--regular, 22px, 22px, $white)
+    +font-old-minix($baseFont--regular, 22px, 22px, $white)
     margin-bottom: 20px
     .ico
       background: $white
@@ -208,7 +208,7 @@
   &__invites
     display: flex
     align-items: center
-    +font($baseFont--regular, 18px, 22px, $white)
+    +font-old-minix($baseFont--regular, 18px, 22px, $white)
     margin-bottom: 20px
     .ico
       background: $white
@@ -221,7 +221,7 @@
   &__button
     padding: 20px 30px
     background: rgba(255,255,255, .05)
-    +font($baseFont--regular, 18px, 18px, $white)
+    +font-old-minix($baseFont--regular, 18px, 18px, $white)
     text-transform: uppercase
     min-width: 150px
     cursor: pointer

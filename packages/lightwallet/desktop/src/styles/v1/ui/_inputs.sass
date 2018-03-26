@@ -8,7 +8,7 @@
   box-sizing: border-box
   background: $pale-grey
   border-radius: 5px
-  +font($baseFont--medium, 14px, 14px, $input-text-color)
+  +font-old-minix($baseFont--medium, 14px, 14px, $input-text-color)
   letter-spacing: .3px
   border: 1px solid transparent
   margin-bottom: 30px
@@ -54,7 +54,7 @@
       .ui-input
         margin-right: 20px
     &--mrt
-      +font($baseFont--regular, 14px, 24px, $gun-metal, uppercase, none, none)
+      +font-old-minix($baseFont--regular, 14px, 24px, $gun-metal, uppercase, none, none)
       letter-spacing: .3px
     &--currency
       .ui-input__addon
@@ -68,7 +68,7 @@
         top: 16px
         cursor: pointer
         user-select: none
-        +font($baseFont--heavy, 14px, 14px, $blue, uppercase, none, none)
+        +font-old-minix($baseFont--heavy, 14px, 14px, $blue, uppercase, none, none)
   &__addon
     position: absolute
     right: 16px
