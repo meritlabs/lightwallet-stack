@@ -113,7 +113,7 @@
           &:last-of-type
             border: 0px
           a
-            +font-old-minix($baseFont--regular, 20px, 20px, $gun-metal)
+            +font(300, 20px, 20px, $gun-metal)
             +transition(.3s, linear)
             &::after
               content: ""
@@ -192,13 +192,13 @@
     align-items: center
     margin-bottom: 20px
     display: flex
-    +font-old-minix($baseFont--regular, 22px, 22px, $white)
+    +font(300, 22px, 22px, $white)
     merit-icon
       margin-right: 20px
   &__balance
     display: flex
     align-items: center
-    +font-old-minix($baseFont--regular, 22px, 22px, $white)
+    +font(300, 22px, 22px, $white)
     margin-bottom: 20px
     .ico
       background: $white
@@ -208,7 +208,7 @@
   &__invites
     display: flex
     align-items: center
-    +font-old-minix($baseFont--regular, 18px, 22px, $white)
+    +font(300, 18px, 22px, $white)
     margin-bottom: 20px
     .ico
       background: $white
@@ -221,7 +221,7 @@
   &__button
     padding: 20px 30px
     background: rgba(255,255,255, .05)
-    +font-old-minix($baseFont--regular, 18px, 18px, $white)
+    +font(300, 18px, 18px, $white)
     text-transform: uppercase
     min-width: 150px
     cursor: pointer
