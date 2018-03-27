@@ -456,7 +456,8 @@ view-send-select-bind-contact {
       height: 18px;
       background-size: 18px;
     }
-    .searchbar-ios .searchbar-clear-icon {
+    .searchbar-ios .searchbar-clear-icon,
+    .searchbar-clear-icon {
       width: 15px;
       right: 15px;
     }
@@ -594,10 +595,21 @@ view-send-select-bind-contact {
     .friend {
       margin-left: -30px;
       margin-right: -30px;
-      padding: 15px 30px;
+      padding: 24px 30px 24px 20px;
       border-bottom: 1px solid #ededed;
       display: flex;
       align-items: center;
+      position: relative;
+      &:before {
+        content: "";
+        display: block;
+        height: calc(100% + 2px);
+        width: 8px;
+        background: linear-gradient(180deg, #106dda 0%, #00b1de 100%);
+        position: absolute;
+        left: 0;
+        top: -1px;
+      }
       &__avatar {
         background: #ededed;
         width: 48px;
