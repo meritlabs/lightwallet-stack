@@ -74,10 +74,6 @@ export class SendViaView {
     }
   }
 
-  editContact() {
-    return this.navCtrl.push('SendEditContactView', { contact: this.contact, amount: this.amount });
-  }
-
   select(type, destination, value, alias?) {
     return this.navCtrl.push('SendAmountView', {
       contact: this.contact,
