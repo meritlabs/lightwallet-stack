@@ -83,7 +83,7 @@ export class NetworkView {
       this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
       await this.formatWallets(await this.loadInfo());
       await this.unlockRequestService.loadRequestsData();
-      this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber; 
+      this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
     } catch (err) {
       this.logger.warn(err);
       this.toastCtrl
@@ -127,7 +127,7 @@ export class NetworkView {
       this.activeInvites += dWallet.invites;
     }
 
-    return displayWallets; 
+    return displayWallets;
   }
 
   private async formatWallets(processedWallets: DisplayWallet[]) {

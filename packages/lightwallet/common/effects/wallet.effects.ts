@@ -84,7 +84,7 @@ export class WalletEffects {
   }
 
   private calculateTotals(wallets: DisplayWallet[]): IWalletTotals {
-    const totalMicros: any = {
+    const totals: any = {
       totalAmbassadorRewards: 0,
       totalMiningRewards: 0,
       totalNetworkValue: 0,
@@ -94,21 +94,22 @@ export class WalletEffects {
     let allBalancesHidden = true;
 
     wallets.forEach(w => {
-      totalMicros.totalNetworkValue += w.totalNetworkValueMicro;
-      totalMicros.totalMiningRewards += w.miningRewardsMicro;
-      totalMicros.totalAmbassadorRewards += w.ambassadorRewardsMicro;
+      totals.totalNetworkValue += w.totalNetworkValueMicro;
+      totals.totalMiningRewards += w.miningRewardsMicro;
+      totals.totalAmbassadorRewards += w.ambassadorRewardsMicro;
 
       if (!w.balanceHidden) {
         allBalancesHidden = false;
-        totalMicros.totalWalletsBalance += w.totalBalanceMicros;
+        totals.totalWalletsBalance += w.totalBalanceMicros;
       }
     });
 
     return {
-      totalNetworkValue: formatAmount(totalMicros.totalNetworkValue, 'mrt'),
-      totalMiningRewards: formatAmount(totalMicros.totalMiningRewards, 'mrt'),
-      totalAmbassadorRewards: formatAmount(totalMicros.totalAmbassadorRewards, 'mrt'),
-      totalWalletsBalance: formatAmount(totalMicros.totalWalletsBalance, 'mrt'),
+      totalNetworkValue: formatAmount(totals.totalNetworkValue, 'mrt'),
+      totalMiningRewards: formatAmount(totals.totalMiningRewards, 'mrt'),
+      totalAmbassadorRewards: formatAmount(totals.totalAmbassadorRewards, 'mrt'),
+      totalWalletsBalance: formatAmount(totals.totalWalletsBalance, 'mrt'),
+      totalWalletsBalanceFiat: this.txFormatService.formatAlternativeStr(totals.totalWalletsBalance),
       allBalancesHidden
     };
   }
