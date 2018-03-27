@@ -72,6 +72,14 @@ export class EasyReceiveService {
     return this.persistanceService.deletePendingEasyReceipt(receipt);
   }
 
+  /**
+   * Define amount that is shown to recipient (initial amount minus fee)
+   */
+  async getReceiverAmount(txs: Array<any> ) {
+    let amount = txs.find(tx => !tx.invite).amount || 0;
+    return amount - this.rateService.microsToMrt( await this.feeService.getEasyReceiveFee() );
+  }
+
   async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = '', network = ENV.network): Promise<any> {
     const walletClient = this.mwcService.getClient(null, {});
 

@@ -36,11 +36,7 @@ export class WalletsView {
               private toastCtrl: MeritToastController,
               private profileService: ProfileService,
               private alertController: AlertController,
-              private platform: Platform,
-              private feeService: FeeService,
-              private rateService: RateService,
-              private walletService: WalletService,
-              private vaultsService: VaultsService
+              private platform: Platform
   ) {
     this.logger.debug('WalletsView constructor!');
   }
@@ -70,7 +66,6 @@ export class WalletsView {
       this.vaults = await this.profileService.getVaults();
       this.setTotalValues();
       this.loading = false;
-
       this.refreshing = true;
       await this.updateAllInfo();
     } catch (e) {} finally  {
@@ -103,20 +98,7 @@ export class WalletsView {
 
   async updateAllInfo() {
     try {
-
-      let updateWallets = () => this.wallets.map((w) => {
-        w.status = this.walletService.getStatus(w, { force: true });
-      });
-
-      let updateVaults = () => this.vaults.map(async (v) => {
-        v = await this.vaultsService.getVaultInfo(v);
-      });
-
-      await Promise.all(updateWallets().concat(updateVaults()));
-
-      this.profileService.wallets = this.wallets;
-      this.profileService.vaults = this.vaults;
-      this.profileService.storeProfile();
+      await this.profileService.refreshData();
     } catch (err) {
       this.logger.warn(err);
       this.toastCtrl.create({
@@ -235,8 +217,7 @@ export class WalletsView {
    */
   private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
 
-    let amount = data.txs.find((tx:any) => !tx.invite).amount || 0;
-    amount -= this.rateService.microsToMrt( await this.feeService.getEasyReceiveFee() );
+    let amount = await this.easyReceiveService.getReceiverAmount(data.txs);
 
     this.alertController.create({
       title: `You've got ${amount} Merit!`,
