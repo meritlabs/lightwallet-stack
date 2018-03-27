@@ -363,7 +363,7 @@ view-send-select-bind-contact {
   }
   .swiper-pagination-fraction, .swiper-pagination-custom,
   .swiper-container-horizontal > .swiper-pagination-bullets {
-    bottom: 0px;
+    bottom: 10px;
     height: 55px;
     background: #FFF;
     padding-top: 20px;
@@ -418,7 +418,8 @@ view-send-select-bind-contact {
       font-weight: 600;
       line-height: 20px;
     }
-    .searchbar-ios.searchbar-left-aligned .searchbar-input {
+    .searchbar-ios.searchbar-left-aligned .searchbar-input,
+    .searchbar-input{
       width: 100%;
       box-shadow: 0 3px 16px rgba(69, 91, 99, 0.12);
       background-color: #ffffff;
@@ -428,6 +429,8 @@ view-send-select-bind-contact {
       line-height: 14px;
       height: inherit;
       padding: 15px 50px;
+      border-radius: 5px;
+      margin-bottom: 16px;
     }
     .searchbar-wrapper {
       display: block;
@@ -435,7 +438,7 @@ view-send-select-bind-contact {
       position: relative;
       .scan-button {
         position: absolute;
-        top: 10px;
+        top: 16px;
         right: 25px;
         margin: 0;
       }
@@ -445,7 +448,8 @@ view-send-select-bind-contact {
       border-bottom: 0;
       padding: 0;
     }
-    .searchbar-ios .searchbar-search-icon {
+    .searchbar-ios .searchbar-search-icon,
+    .searchbar-search-icon {
       top: 15px;
       left: 18px;
       width: 18px;
@@ -530,11 +534,12 @@ view-send-select-bind-contact {
       line-height: 12px;
       background-color: #fafafa;
       border-bottom: 1px solid #ededed;
+      border-top: 1px solid #ededed;
     }
     &__wrap {
       background: #FFF;
       padding: 30px;
-      height: calc(100vh - 300px);
+      height: calc(100vh - 340px);
       position: relative;
       .no-friends {
         border: 1px solid #106dda;
