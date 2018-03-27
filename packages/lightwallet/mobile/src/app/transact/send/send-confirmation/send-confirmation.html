@@ -1,13 +1,16 @@
-<ion-header>
-
-  <ion-navbar color="light">
-    <ion-title>Confirm send</ion-title>
+<ion-header class="confirmTitle">
+  <ion-navbar>
+    <ion-title>Review Invite & Send</ion-title>
   </ion-navbar>
-
 </ion-header>
-
 <ion-content>
-
+<div class="priceReview">
+  <div class="priceReview_info">
+    <div class="priceReview_icon"></div>
+    <div class="priceReview_mrt">{{ viewData.totalAmount}}</div>
+    <div class="priceReview_currency">$ {{ viewData.totalAmount * 0.13 }}</div>
+  </div>
+</div>
   <div *ngIf="viewData">
     <ion-list>
       <ion-item class="recipient" text-wrap *ngIf="viewData?.recipient?.name?.formatted">
