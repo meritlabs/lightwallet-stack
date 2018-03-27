@@ -1,8 +1,16 @@
 {
+  "name": "merit-lighttwallet-stack",
   "description": "A full Merit node build with Bitcore",
-  "repository": "https://github.com/meritlabs/lightwallet-stack",
   "license": "MIT",
   "readme": "README.md",
+  "authors": [
+    "MeritLabs Inc."
+  ],
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meritlabs/lightwallet-stack"
+  },
   "dependencies": {},
   "devDependencies": {
     "lerna": "^2.7.1",

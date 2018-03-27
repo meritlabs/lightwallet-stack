@@ -2,7 +2,10 @@
   "name": "insight-ui",
   "description": "An open-source frontend for the Insight API. The Insight API provides you with a convenient, powerful and simple way to query and broadcast data on the merit network and build your own services with it.",
   "version": "0.4.0",
-  "repository": "https://github.com/meritlabs/lightwallet-stack",
+  "authors": [
+    "MeritLabs Inc.",
+    "BitPay"
+  ],
   "contributors": [
     {
       "name": "MeritLabs Team",
@@ -34,6 +37,10 @@
   },
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meritlabs/lightwallet-stack"
+  },
   "keywords": [
     "insight",
     "blockchain",
