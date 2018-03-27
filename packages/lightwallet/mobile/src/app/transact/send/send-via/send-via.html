@@ -1,21 +1,15 @@
-<ion-header>
-
-  <ion-navbar color="light">
-    <ion-title>
-      <h2>Send</h2>
-      <p>{{ getDisplayedName() }}</p>
-    </ion-title>
-    <ion-buttons end *ngIf="contact?.name?.formatted">
-      <button ion-button (click)="editContact()" translate color="primary">
-        Edit Contact
+<ion-header no-border>
+  <ion-navbar>
+    <ion-title>Select Wallet</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="cancel()" translate>
+        Cancel
       </button>
     </ion-buttons>
   </ion-navbar>
-
 </ion-header>
 
-<ion-content>
-
+<ion-content no-bounce>
   <div class="classic-send-section" *ngIf="contact?.meritAddresses?.length">
     <ion-list>
       <button ion-item detail-none text-wrap *ngFor="let meritAddress of contact.meritAddresses; let i = index"
@@ -35,5 +29,26 @@
       </button>
     </ion-list>
   </div>
-
 </ion-content>
+
+<!-- <ion-header>
+
+  <ion-navbar color="light">
+    <ion-title>
+      <h2>Send</h2>
+      <p>{{ getDisplayedName() }}</p>
+    </ion-title>
+    <ion-buttons end *ngIf="contact?.name?.formatted">
+      <button ion-button (click)="editContact()" translate color="primary">
+        Edit Contact
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+
+
+</ion-content> -->

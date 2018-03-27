@@ -42,12 +42,12 @@ export class SendView {
   showSlider: boolean;
 
   constructor(private navCtrl: NavController,
-              private contactsService: ContactsService,
-              private profileService: ProfileService,
-              private addressService: AddressService,
-              private modalCtrl: ModalController,
-              private addressScanner: AddressScannerService,
-              private persistenceService: PersistenceService
+    private contactsService: ContactsService,
+    private profileService: ProfileService,
+    private addressService: AddressService,
+    private modalCtrl: ModalController,
+    private addressScanner: AddressScannerService,
+    private persistenceService: PersistenceService
   ) {
   }
 
@@ -256,14 +256,31 @@ export class SendView {
   }
 
   sendToContact(contact) {
-
-    this.navCtrl.push('SendViaView', {
+    const modal = this.modalCtrl.create('SendViaView', {
       contact: contact,
       amount: this.amount
+    }
+    );
+    modal.onDidDismiss((contact) => {
+      if (contact) {
+        this.navCtrl.push('SendViaView', {
+          contact: contact,
+          amount: this.amount,
+          suggestedMethod: this.suggestedMethod,
+          isEasyEnabled: this.hasActiveInvites
+        });
+      }
     });
+    modal.present();
+    // this.navCtrl.push('SendViaView', {
+    //   contact: contact,
+    //   amount: this.amount
+    // });
 
   }
-
+  editContact() {
+    return this.navCtrl.push('SendEditContactView', { contact: this.contact, amount: this.amount });
+  }
   sendToEntity(entity) {
     this.navCtrl.push('SendAmountView', {
       contact: entity.contact,
@@ -284,7 +301,7 @@ export class SendView {
 
   easySend() {
     this.navCtrl.push('SendAmountView', {
-      suggestedMethod: {type: SendMethodType.Easy}
+      suggestedMethod: { type: SendMethodType.Easy }
     });
   }
   @ViewChild(Slides) slides: Slides;
