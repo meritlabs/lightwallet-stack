@@ -6,7 +6,8 @@
     "BitPay"
   ],
   "version": "1.18.0",
-  "licence": "MIT",
+  "license": "MIT",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "keywords": [
     "merit",
     "multisig",

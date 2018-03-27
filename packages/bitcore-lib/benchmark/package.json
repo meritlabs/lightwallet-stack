@@ -1,4 +1,16 @@
 {
+  "name": "bitcore-lib-benchmarks",
+  "description": "Benchmarks for bitcore-lib functions",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
+  "license": "MIT",
+  "authors": [
+    "MeritLabs Inc.",
+    "BitPay"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meritlabs/lightwallet-stack"
+  },
   "devDependencies": {
     "bcoin": "0.15.0",
     "bitcoinjs-lib": "^1.5.7",

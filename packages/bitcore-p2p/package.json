@@ -6,6 +6,7 @@
     "MeritLabs Inc.",
     "BitPay"
   ],
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "main": "index.js",
   "scripts": {
     "lint": "gulp lint",
