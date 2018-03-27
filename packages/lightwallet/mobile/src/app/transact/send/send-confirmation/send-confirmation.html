@@ -12,7 +12,7 @@
   </div>
 </div>
   <div *ngIf="viewData">
-    <ion-list>
+    <ion-list class="priceReview_list">
       <ion-item text-wrap class="destination" *ngIf="viewData.destination">
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/wallet.svg">
@@ -23,16 +23,15 @@
         </ion-label>
       </ion-item>
       <ion-item>
-        <ion-avatar item-start img-icon [class.default]="!viewData.walletColor"
-                    [style.box-shadow]="viewData.walletColor ? '0 0 0 2px ' + viewData.walletColor : ''">
-          <img src="assets/img/icons/wallet.svg">
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/wallet.svg">
         </ion-avatar>
         <ion-label>
           <p>FROM</p>
           <h2>{{ viewData.walletName }}</h2>
         </ion-label>
       </ion-item>
-      <ion-item>
+      <ion-item class="ion-item-halfs">
         <div class="ion-item-half">
           <p>Fee</p>
         </div>
@@ -41,9 +40,9 @@
           <p><small>$ {{ viewData.fee * 0.015 }}</small></p>
         </div>
       </ion-item>
-      <ion-item>
+      <ion-item class="ion-item-halfs">
         <div class="ion-item-half">
-          <p>Fee</p>
+          <p>Total</p>
         </div>
         <div class="ion-item-half">
           <p><strong>{{ viewData.totalAmount  | toMRT }}</strong></p>
