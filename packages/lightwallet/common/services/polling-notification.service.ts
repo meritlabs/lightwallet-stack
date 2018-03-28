@@ -36,31 +36,23 @@ export class PollingNotificationsService {
     });
   }
 
-  public enable(): void {
+  public async enable(): Promise<any> {
     if (!this.usePollingNotifications) {
       this.logger.warn('Attempted to enable polling, even though it is currently disabled in app settings.');
       return;
     }
 
-    this.profileService.getWallets().then((wallets) => {
-      _.forEach(wallets, (walletClient: MeritWalletClient) => {
-        this.enablePolling(walletClient);
-      });
-    });
+    (await this.profileService.getWallets()).forEach(w => this.enablePolling(w));
 
   };
 
-  public disable(): void {
+  public async disable(): Promise<any> {
     if (this.usePollingNotifications) {
       this.logger.warn('Attempted to disable polling while it is enabled in app settings.');
       return;
     }
 
-    this.profileService.getWallets().then((wallets) => {
-      _.forEach(wallets, (walletClient: MeritWalletClient) => {
-        this.disablePolling(walletClient);
-      });
-    });
+    (await this.profileService.getWallets()).forEach(w => this.disablePolling(w));
   }
 
 
