@@ -1,37 +1,20 @@
 import { Injectable } from '@angular/core';
-import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
-import { RefreshWalletsAction } from '@merit/common/reducers/wallets.reducer';
-import { ProfileService } from '@merit/common/services/profile.service';
-import { Effect } from '@ngrx/effects';
-import { Action } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
-import { defer } from 'rxjs/observable/defer';
-import { of } from 'rxjs/observable/of';
-import { switchMap } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { AppReducerActionType, UpdateAppAction } from '@merit/common/reducers/app.reducer';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { filter, tap } from 'rxjs/operators';
 
 @Injectable()
 export class AppEffects {
-  @Effect()
-  init$: Observable<Action> = defer(() => of(null))
-    .pipe(
-      switchMap(() => Observable.fromPromise(this.profileService.loadAndBindProfile())),
-      switchMap((profile: any) => {
-        if (!profile || !profile.credentials || !profile.credentials.length) {
-          return [
-            new UpdateAppAction({ loading: false })
-          ];
-        } else {
-          return [
-            new UpdateAppAction({
-              loading: false,
-              credentialsLength: profile.credentials.length
-            }),
-            new RefreshWalletsAction()
-          ];
-        }
-      })
-    );
 
-  constructor(private profileService: ProfileService) {
+  // Take the user to the onboarding page if they delete all wallets
+  @Effect({ dispatch: false }) update$ = this.actions$.pipe(
+    ofType(AppReducerActionType.UPDATE),
+    filter((action: UpdateAppAction) => action.payload.credentialsLength === 0),
+    tap(() => this.router.navigateByUrl('/onboarding'))
+  );
+
+  constructor(private actions$: Actions,
+              private router: Router) {
   }
 }

@@ -1,5 +1,5 @@
-import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 import { sortBy, uniqBy } from 'lodash';
 
 export interface ITransactionsState {
@@ -65,22 +65,19 @@ export type TransactionsReducerAction =
 const DEFAULT_STATE: ITransactionsState = {
   transactions: [],
   transactionsByWallet: {},
-  loading: false
+  loading: true
 };
 
 export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, action: TransactionsReducerAction) {
   switch (action.type) {
     case TransactionActionType.Refresh:
-      return {loading: true};
+      return DEFAULT_STATE;
 
     case TransactionActionType.Update:
       return {
         transactions: action.transactions,
         transactionsByWallet: action.transactionsByWallet
       };
-
-    case TransactionActionType.RefreshOne:
-      return state;
 
     case TransactionActionType.UpdateOne:
       return {
