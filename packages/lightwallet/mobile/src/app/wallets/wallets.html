@@ -39,7 +39,7 @@
 
     <div *ngFor="let wallet of wallets; trackBy: wallet?.id">
       <button ion-item *ngIf="wallet.confirmed; else notConfirmed" navPush="WalletDetailsView"
-              [navParams]="{ wallet: wallet }" class="wallet">
+              [navParams]="{ wallet: wallet, walletId: wallet.id }" class="wallet">
         <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color"
                     [style.box-shadow]="'0 0 0 2px ' + wallet.color">
           <img src="assets/img/icons/wallet.svg">

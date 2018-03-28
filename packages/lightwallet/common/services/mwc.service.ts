@@ -45,8 +45,9 @@ export class MWCService {
       transports: ['polling'],
     });
 
-    if (walletData)
+    if (walletData) {
       mwc.import(walletData);
+    }
 
     if (!mwc.onAuthenticationError) {
       mwc.setOnAuthenticationError(() => {

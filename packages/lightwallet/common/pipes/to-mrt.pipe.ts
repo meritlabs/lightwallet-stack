@@ -13,7 +13,7 @@ export class ToMrtPipe implements PipeTransform {
 
     const unitStr = (hideUnit? '' : ' MRT');
 
-    let mrt = this.rateService.microsToMrt(micros);
+    let mrt = this.rateService.microsToMrt(micros) || 0;
 
     if (!digitsLimit) return mrt+unitStr;
 
