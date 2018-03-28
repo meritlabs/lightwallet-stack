@@ -19,7 +19,7 @@ export class VaultEditView {
 
   public vaultName: string;
   public whitelist: any;
-  public wallets: Array<IWhitelistWallet>;
+  public wallets: Array<any>;
   public wallet: MeritWalletClient;
   public amount: number;
 
