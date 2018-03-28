@@ -71,7 +71,8 @@ export class WalletsView {
   }
 
   async ionViewWillEnter() {
-    if (this.loading) return;
+    this.wallets = await this.profileService.getWallets();
+    this.vaults = await this.profileService.getVaults();
     this.refreshing = true;
     await this.updateAllInfo();
     this.refreshing = false;
