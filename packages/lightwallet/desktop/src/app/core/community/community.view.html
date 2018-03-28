@@ -11,13 +11,13 @@
           <div class="network__personal-wallet__toolbar">
             <div class="network__personal-wallet__toolbar__item
           network__personal-wallet__toolbar__item--mrt">
-              <p>{{wallet.totalBalanceStr}}
+              <p>{{ wallet.totalBalanceMicros | toMRT:null:true }}
                 <span>MRT</span>
               </p>
             </div>
             <div class="network__personal-wallet__toolbar__item
           network__personal-wallet__toolbar__item--currency">
-              <p>{{wallet.totalBalanceFiat}}</p>
+              <p *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">{{ totalBalanceFiat }}</p>
             </div>
           </div>
           <div class="network__personal-wallet__panel__row invite-code">
@@ -54,13 +54,14 @@
               </div>
               <div class="network__personal-wallet__panel__info">
                 <p class="network__personal-wallet__panel__info__small">Mining Rewards</p>
-                <p class="network__personal-wallet__panel__info__regular">{{wallet.miningRewardsMerit}}
+                <p class="network__personal-wallet__panel__info__regular">
+                  {{ wallet.miningRewardsMicro | toMRT:null:true }}
                   <span>MRT</span>
                 </p>
               </div>
             </div>
             <div class="network__personal-wallet__panel__col">
-              <p>{{wallet.miningRewardsFiat}}</p>
+              <p *ngIf="wallet.miningRewardsMicro | toFiat | async as miningRewardsFiat">{{ miningRewardsFiat }}</p>
             </div>
           </div>
           <div class="network__personal-wallet__panel__row">
@@ -70,13 +71,14 @@
               </div>
               <div class="network__personal-wallet__panel__info">
                 <p class="network__personal-wallet__panel__info__small">Ambassador Rewards</p>
-                <p class="network__personal-wallet__panel__info__regular">{{wallet.ambassadorRewardsMerit}}
+                <p class="network__personal-wallet__panel__info__regular">
+                  {{ wallet.ambassadorRewardsMicro | toMRT:null:true }}
                   <span>MRT</span>
                 </p>
               </div>
             </div>
             <div class="network__personal-wallet__panel__col">
-              <p>{{wallet.ambassadorRewardsFiat}}</p>
+              <p *ngIf="wallet.ambassadorRewardsMicro | toFiat | async as ambassadorRewardsMicro">{{ ambassadorRewardsMicro }}</p>
             </div>
           </div>
         </div>
