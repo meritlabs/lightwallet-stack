@@ -1,8 +1,9 @@
 <ion-header>
   <div class="big-header">
-    <button ion-button clear icon-only class="header-action-button" navPush="SettingsView">
+    <button ion-button clear icon-only class="header-action-button" navPush="SettingsView"> 
       <ion-icon name="settings" merit-icon></ion-icon>
     </button>
+    <ion-spinner *ngIf="refreshing" class="refresh-spinner"></ion-spinner>
     <p>Total Value of Your Wallets</p>
     <ion-spinner *ngIf="loading; else notLoading"></ion-spinner>
     <ng-template #notLoading>
@@ -50,9 +51,8 @@
             [Balance Hidden]
           </p>
           <ng-template #notHidden>
-            <p class="merit-amount" *ngIf="wallet.totalBalanceStr">
-              {{ wallet.totalBalanceStr }} {{ wallet.cachedBalance ? (' &middot; ' +
-              wallet.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '' }}&nbsp;<span>MRT</span>
+            <p class="merit-amount" *ngIf="wallet.spendableAmount">
+              {{ wallet.spendableAmount | toMRT}}
             </p>
           </ng-template>
           <p class="invites">
@@ -63,11 +63,8 @@
         <ion-note *ngIf="!wallet.isComplete(); else isComplete" class="assertive">Incomplete</ion-note>
         <ng-template #isComplete>
           <ion-note class="balance" item-end>
-            <span *ngIf="wallet.n > 1">
-                {{ wallet.m }}-of-{{ wallet.n }}
-            </span>
-            <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.status.alternativeBalanceAvailable">
-              {{ wallet.status.totalBalanceAlternativeStr }}
+              <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.alternativeBalanceAvailable">
+              {{ wallet.spendableAmount | toFiat }}
             </div>
 
             <span class="error" *ngIf="wallet.error">{{ wallet.error }}</span>
