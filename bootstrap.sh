@@ -98,10 +98,10 @@ fi
 
 cleardataprompt;
 
-echo "Starting MeritD..."
+echo "Starting one instance of MeritD..."
 getvariables
 ${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-1/merit.conf -datadir=${lwsdir}/data-and-logs/data-1/ &
-${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-2/merit.conf -datadir=${lwsdir}/data-and-logs/data-2/ &
+# ${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-2/merit.conf -datadir=${lwsdir}/data-and-logs/data-2/ &
 # & ${meritdir}/meritd -conf=${lwsdir}/data-and-logs/data-3/merit.conf -datadir=${lwsdir}/data-and-logs/data-3/ && fg
 echo "Meritd started with following PIDs"
 pgrep -x "meritd"
