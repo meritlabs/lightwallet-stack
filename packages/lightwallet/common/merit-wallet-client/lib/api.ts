@@ -537,14 +537,15 @@ export class API {
     });
 
     wallet.import(obj.credentials);
-    wallet.name = obj.name;
-    wallet.id = obj.id;
-    wallet.confirmed = obj.confirmed;
+    wallet.name = obj.name || '';
+    wallet.id = obj.id || '';
+    wallet.confirmed = obj.confirmed || false;
     wallet.balance = obj.balance || {};
     wallet.invitesBalance = obj.invitesBalance || {};
-    wallet.spendableAmount = obj.spendableAmount;
+    wallet.spendableAmount = obj.spendableAmount || 0;
+    wallet.availableInvites = obj.availableInvites || 0;
     wallet.rootAddress = Bitcore.Address.fromString(obj.rootAddress, ENV.network);
-    wallet.rootAlias = obj.rootAlias;
+    wallet.rootAlias = obj.rootAlias || '';
     return wallet;
   }
 
@@ -557,6 +558,7 @@ export class API {
       balance: this.balance,
       invitesBalance: this.invitesBalance,
       spendableAmount: this.spendableAmount,
+      availableInvites: this.availableInvites,
       rootAddress: this.rootAddress.toString(),
       rootAlias: this.rootAlias
     }
