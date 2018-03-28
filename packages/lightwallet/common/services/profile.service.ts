@@ -141,8 +141,7 @@ export class ProfileService {
 
   async updateWallet(wallet: MeritWalletClient) {
 
-    //todo check if w has .id
-    this.wallets = this.wallets.filter(w => w.id == wallet.id);
+    this.wallets = this.wallets.filter(w => w.id != wallet.id);
 
     this.wallets.push(wallet);
 
@@ -153,7 +152,7 @@ export class ProfileService {
 
     wallet.eventEmitter.removeAllListeners();
 
-    this.wallets = this.wallets.filter(w => w.id == wallet.id);
+    this.wallets = this.wallets.filter(w => (w.id != wallet.id));
 
     return this.storeProfile();
   }
