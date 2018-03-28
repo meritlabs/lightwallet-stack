@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
-import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { WebPushNotificationsService } from '@merit/common/services/web-push-notifications.service';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
@@ -12,6 +11,7 @@ import { ImportByQrView } from '@merit/desktop/app/core/wallets/import-wallet/im
 import { ImportWalletView } from '@merit/desktop/app/core/wallets/import-wallet/import-wallet.view';
 import { ImportWithFileView } from '@merit/desktop/app/core/wallets/import-wallet/import-with-file/import-with-file.view';
 import { PhraseImportView } from '@merit/desktop/app/core/wallets/import-wallet/phrase-import/phrase-import.view';
+import { WalletPasswordGuard } from '@merit/desktop/app/guards/wallet-password.guard';
 import { MomentModule } from 'angular2-moment';
 import { QRCodeModule } from 'angular2-qrcode';
 import { BackupView } from './backup/backup.view';
@@ -89,7 +89,7 @@ export function getPages() {
   ],
   providers: [
     { provide: PushNotificationsService, useClass: WebPushNotificationsService },
-    EmailNotificationsService
+    WalletPasswordGuard
   ]
 })
 export class CoreModule {

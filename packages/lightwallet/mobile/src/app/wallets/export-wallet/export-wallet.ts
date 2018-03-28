@@ -78,12 +78,13 @@ export class ExportWalletView {
               if (!data.password) {
                 showPrompt(true);
               } else {
-                this.walletsService.decrypt(this.wallet, data.password).then(() => {
+                try {
+                  this.walletsService.decrypt(this.wallet, data.password);
                   setQrInfo(data.password);
                   this.accessGranted = true;
-                }).catch((err) => {
+                } catch (err) {
                   showPrompt();
-                });
+                }
               }
             }
             }
