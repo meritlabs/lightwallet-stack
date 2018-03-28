@@ -7,11 +7,6 @@ import { MeritToastController, ToastConfig } from '@merit/common/services/toast.
 import { ProfileService } from '@merit/common/services/profile.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { IVault } from '@merit/common/models/vault';
-import { AddressService } from '@merit/common/services/address.service';
-import { FeeService } from '@merit/common/services/fee.service';
-import { RateService } from '@merit/common/services/rate.service';
-import { WalletService } from '@merit/common/services/wallet.service';
-import { VaultsService } from '@merit/common/services/vaults.service';
 
 @IonicPage()
 @Component({
@@ -46,7 +41,8 @@ export class WalletsView {
     this.platform.resume.subscribe(() => {
       this.logger.info('WalletView is going to refresh data on resume.');
       if (this.isActivePage) {
-        //todo refresh all info
+        this.refreshing = true;
+        this.updateAllInfo().then(() => this.refreshing = false);
       }
     });
   }
@@ -89,11 +85,11 @@ export class WalletsView {
   }
 
   toAddWallet() {
-    let referralAdderss = '';
+    let referralAddress = '';
     this.wallets.some(w => {
-      if (w.status.availableInvites) return referralAdderss = w.rootAddress;
+      if (w.availableInvites) return referralAddress = w.rootAddress;
     });
-    return this.navCtrl.push('CreateWalletView', { parentAddress: referralAdderss });
+    return this.navCtrl.push('CreateWalletView', { parentAddress: referralAddress });
   }
 
   async updateAllInfo() {
