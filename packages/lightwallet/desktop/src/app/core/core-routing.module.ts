@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { WalletPasswordGuard } from '@merit/desktop/app/guards/wallet-password.guard';
 import { WalletsView } from './wallets/wallets.view';
 import { ReceiveView } from './receive/receive.view';
 import { SendView } from './send/send.view';
@@ -44,10 +45,10 @@ const routes: Routes = [
           { path: 'settings', component: WalletSettingsView },
           { path: 'send', component: SendView },
           { path: 'receive', component: ReceiveView },
-          { path: 'export', component: BackupView, pathMatch: 'full' },
-          { path: 'export/mnemonic', component: MnemonicPhraseView },
-          { path: 'export/qr-code', component: QrCodeBackupView },
-          { path: 'export/file', component: FileBackupView }
+          { path: 'export', component: BackupView, pathMatch: 'full', canActivate: [WalletPasswordGuard] },
+          { path: 'export/mnemonic', component: MnemonicPhraseView, canActivate: [WalletPasswordGuard] },
+          { path: 'export/qr-code', component: QrCodeBackupView, canActivate: [WalletPasswordGuard] },
+          { path: 'export/file', component: FileBackupView, canActivate: [WalletPasswordGuard] }
         ]
       },
       { path: 'receive', component: ReceiveView },
