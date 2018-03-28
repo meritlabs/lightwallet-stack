@@ -42,7 +42,7 @@ export class UpdateTransactionsAction implements Action {
 }
 
 export class UpdateOneWalletTransactions implements Action {
-  type: TransactionActionType.UpdateOne;
+  type = TransactionActionType.UpdateOne;
 
   constructor(public walletId: string, public transactions: IDisplayTransaction[]) {
 
@@ -50,7 +50,7 @@ export class UpdateOneWalletTransactions implements Action {
 }
 
 export class RefreshOneWalletTransactions implements Action {
-  type: TransactionActionType.RefreshOne;
+  type = TransactionActionType.RefreshOne;
 
   constructor(public walletId: string) {
   }
