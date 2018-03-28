@@ -478,7 +478,7 @@ export class WalletService {
   // TODO add typings for `opts`
   async createWallet(opts: any) {
     const wallet = await this.doCreateWallet(opts);
-    await this.profileService.addWallet(wallet, { bwsurl: opts.bwsurl });
+    await this.profileService.addWallet(wallet);
     return wallet;
   }
 
@@ -496,7 +496,7 @@ export class WalletService {
     }
 
     let wallets = await this.profileService.getWallets();
-    if (wallets.find(wallet => wallet.walletId == walletData.walletId)) {
+    if (wallets.find(wallet => wallet.id == walletData.walletId)) {
       throw new Error('Cannot join the same wallet more that once'); // TODO getTextCatalog
     }
 
@@ -507,9 +507,7 @@ export class WalletService {
 
     await walletClient.joinWallet(opts.secret, opts.myName || 'me');
 
-    return this.profileService.addWallet(walletClient, {
-      bwsurl: opts.bwsurl
-    });
+    return this.profileService.addWallet(walletClient);
   }
 
   getWallet(walletId: string): any {
@@ -1284,10 +1282,7 @@ export class WalletService {
 
       return this.profileService.addWallet(walletClient);
     } catch (err) {
-      // in HW wallets, req key is always the same. They can't addAccess.
-      if (err instanceof this.errors.NOT_AUTHORIZED)
-        err.name = 'WALLET_DOES_NOT_EXIST';
-
+      this.logger.warn(err);
       throw new Error(err.text || 'Error while importing wallet');
     }
   }
@@ -1302,9 +1297,7 @@ export class WalletService {
       await walletClient.importFromExtendedPrivateKey(xPrivKey, opts);
       return this.profileService.addWallet(walletClient);
     } catch (err) {
-      if (err instanceof this.errors.NOT_AUTHORIZED) {
-        throw err;
-      }
+      this.logger.warn(err);
       throw new Error(err.text || 'Error while importing wallet');
     }
   }

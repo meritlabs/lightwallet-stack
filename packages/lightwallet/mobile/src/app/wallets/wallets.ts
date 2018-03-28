@@ -106,7 +106,7 @@ export class WalletsView {
 
   private setTotalValues() {
     this.totalInvites = this.wallets.reduce((number, w) => {
-      return number + w.status.availableInvites;
+      return number + w.availableInvites;
     }, 0);
 
     let totalAmount = this.wallets.reduce((amount, w) => {

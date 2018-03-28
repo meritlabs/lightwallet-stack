@@ -55,7 +55,7 @@ export class UnlockRequestsView {
     });
 
     this.totalInvites = this.wallets.reduce((nbInvites, wallet) => {
-      return nbInvites + wallet.status.availableInvites
+      return nbInvites + wallet.availableInvites
     }, 0);
   }
 
