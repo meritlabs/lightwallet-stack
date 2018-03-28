@@ -123,7 +123,7 @@ export class ProfileService {
     });
 
     wallet.eventEmitter.on('walletCompleted', () => {
-      //to do we need this
+      //todo do we need this?
       //return this.updateCredentials(JSON.parse(wallet.export())).then(() => {
       //  this.logger.info('Updated the credentials and now publishing this: ', walletId);
       //  this.events.publish('Local:WalletCompleted', walletId);
@@ -172,13 +172,18 @@ export class ProfileService {
 
   async updateVault(vault: IVault) {
 
-    //todo find and update vault
+    this.wallets.some(w => {
+      if (w.id == vault.walletClient.id) {
+        w.vaults = w.vaults.filiter(v => (v._id != vault._id));
+        w.vaults.push(vault);
+        return true;
+      }
+    });
 
     return this.storeProfile();
   }
 
   storeProfile() {
-
     let profile = {
       version: '2.0.0',
       wallets: this.wallets.map(w => w.toObj()),
