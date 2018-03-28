@@ -51,7 +51,15 @@ export class SendView {
     private persistenceService: PersistenceService
   ) {
     this.navCtrl.push('EasySendShareView', {txData: {
-      "easySendUrl": "http://localhost:8100/#/transact/send/send-amounttransact/send/send-amounttransact/send/send-amount"
+      "easySendUrl": "http://localhost:8100/#/transact/send/send-amounttransact/send/send-amounttransact/send/send-amount",
+      "details": {
+        "amountMRT": "3.00",
+        "from": "Personal Wallet",
+        "method": "Invite & Send",
+        "password": "123",
+        "fee": "0.001",
+        "total": "2.999"
+      }
     }});
   }
 

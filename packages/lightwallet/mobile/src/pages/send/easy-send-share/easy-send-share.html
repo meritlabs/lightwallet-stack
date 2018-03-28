@@ -2,7 +2,7 @@
 
     <div class="send-ready">
         <div class="send-ready-inner">
-            <img src="assets/img/invite.svg" alt="">
+            <img src="/assets/img/global-send/easy-send.svg" alt="">
         </div>
     </div>
 
@@ -32,7 +32,55 @@
         </ion-row>
 
     </ion-card>
-
+    <div class="transactionDetails">
+      <div class="transactionDetails_header">
+        <p class="heading">TRANSACTION DETAILS</p>
+        <p class="mrt">{{ txData.details.amountMRT }} MRT</p>
+        <p class="usd">$ {{ txData.details.amountMRT * 0.15 }} USD</p>
+      </div>
+      <div class="transactionDetails_group">
+        <div class="transactionDetails_row">
+          <div class="transactionDetails_column">
+            From
+          </div>
+          <div class="transactionDetails_column">
+            {{ txData.details.from }}
+          </div>
+        </div>
+        <div class="transactionDetails_row">
+          <div class="transactionDetails_column">
+            Method
+          </div>
+          <div class="transactionDetails_column">
+            {{ txData.details.method }}
+          </div>
+        </div>
+        <div class="transactionDetails_row">
+          <div class="transactionDetails_column">
+            Password
+          </div>
+          <div class="transactionDetails_column">
+            <input type="password" name="" value="txData.details.password">
+          </div>
+        </div>
+        <div class="transactionDetails_row">
+          <div class="transactionDetails_column">
+            Fee
+          </div>
+          <div class="transactionDetails_column">
+            {{ txData.details.fee }}
+          </div>
+        </div>
+        <div class="transactionDetails_row">
+          <div class="transactionDetails_column">
+            Total
+          </div>
+          <div class="transactionDetails_column">
+            {{ txData.details.total }}
+          </div>
+        </div>
+      </div>
+    </div>
 
     <ion-footer>
         <button ion-button icon-end class="action-button" color="primary" (click)="toWallets()">
