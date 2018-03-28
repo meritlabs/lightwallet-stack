@@ -91,6 +91,9 @@ export class SendViaView {
     return this.showTooltip('Easy Send',
       'EasySend transactions could be returned, password protected and limited by expiration time. You can send Merit either to existing merit address or share a link via sms/email');
   }
+  cancel() {
+    this.navCtrl.pop();
+  }
 
   private showTooltip(title, message) {
     return this.alertCtrl.create({
