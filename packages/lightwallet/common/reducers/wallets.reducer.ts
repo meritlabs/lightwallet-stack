@@ -15,8 +15,24 @@ export interface IWalletTotals {
   totalMiningRewards: string;
   totalAmbassadorRewards: string;
   totalWalletsBalance: string;
+  totalWalletsBalanceFiat: string;
   allBalancesHidden: boolean;
 }
+
+const DEFAULT_STATE: IWalletsState = {
+  wallets: [],
+  walletsMap: {},
+  totals: {
+    totalNetworkValue: '0.00',
+    totalMiningRewards: '0.00',
+    totalAmbassadorRewards: '0.00',
+    totalWalletsBalance: '0.00',
+    totalWalletsBalanceFiat: '0.00',
+    allBalancesHidden: false
+  },
+  loading: true,
+  totalsLoading: true
+};
 
 export enum WalletsActionType {
   Add = '[Wallets] Add',
@@ -65,20 +81,6 @@ export class UpdateWalletTotalsAction implements Action {
 }
 
 export type WalletsAction = AddWalletAction & UpdateWalletsAction & RefreshWalletsAction & UpdateOneWalletAction & RefreshOneWalletAction & UpdateWalletTotalsAction;
-
-const DEFAULT_STATE: IWalletsState = {
-  wallets: [],
-  walletsMap: {},
-  totals: {
-    totalNetworkValue: '0.00',
-    totalMiningRewards: '0.00',
-    totalAmbassadorRewards: '0.00',
-    totalWalletsBalance: '0.00',
-    allBalancesHidden: false
-  },
-  loading: true,
-  totalsLoading: true
-};
 
 export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
