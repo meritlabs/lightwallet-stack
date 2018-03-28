@@ -95,6 +95,7 @@ export class WalletsView {
   async updateAllInfo() {
     try {
       await this.profileService.refreshData();
+      this.setTotalValues();
     } catch (err) {
       this.logger.warn(err);
       this.toastCtrl.create({
@@ -110,7 +111,7 @@ export class WalletsView {
     }, 0);
 
     let totalAmount = this.wallets.reduce((amount, w) => {
-      return amount + w.status.spendableAmount;
+      return amount + w.spendableAmount;
     }, 0);
 
     totalAmount += this.vaults.reduce((amount, v) => {

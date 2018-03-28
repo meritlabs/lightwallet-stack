@@ -46,12 +46,15 @@
         </ion-avatar>
 
         <ion-label>
-          <h2>{{ wallet.name || wallet._id }}</h2>
+          <h2 *ngIf="wallet.name">{{ wallet.name }}</h2>
+          <h2 *ngIf="!wallet.name && wallet.rootAlias">@{{ wallet.rootAlias}}</h2>
+          <h2 *ngIf="!wallet.name && !wallet.rootAlias">Personal wallet</h2>
+
           <p *ngIf="wallet.balanceHidden; else notHidden">
             [Balance Hidden]
           </p>
           <ng-template #notHidden>
-            <p class="merit-amount" *ngIf="wallet.spendableAmount">
+            <p class="merit-amount">
               {{ wallet.spendableAmount | toMRT}}
             </p>
           </ng-template>
