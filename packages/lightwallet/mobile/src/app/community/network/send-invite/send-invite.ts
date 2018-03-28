@@ -164,7 +164,7 @@ export class SendInviteView {
 
     const toAddress = contact.meritAddresses[0].address;
 
-    let wallet = this.wallets.find(w => w.availableInvites);
+    let wallet = this.wallets.find(w => (w.availableInvites > 0));
     if (!wallet) {
       return this.toastCtrl.create({
         message: 'You have no active invites',
