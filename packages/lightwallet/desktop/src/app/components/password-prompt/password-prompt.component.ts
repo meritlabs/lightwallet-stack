@@ -14,7 +14,7 @@ export interface IPasswordPromptConfig {
 })
 export class PasswordPromptComponent implements IDynamicComponent {
   destroy: Function;
-  _onDismiss: Function;
+  private _onDismiss: Function;
   formData: FormGroup;
   ready: boolean;
 
