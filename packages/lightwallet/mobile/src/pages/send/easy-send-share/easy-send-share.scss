@@ -10,20 +10,8 @@ view-easy-send-share {
   }
 
   .send-ready {
-    height: 150px;
-    width: 150px;
-    line-height: 150px;
-    border-radius: 50%;
-    margin: 25px auto;
-    border: 3px solid color($colors, primary);
-    .send-ready-inner {
-      img {
-        height: 80px;
-        width: 80px;
-        margin-top: 30px;
-      }
-    }
-
+    width: 192px;
+    margin: 0px auto;
   }
 
   h2 {
