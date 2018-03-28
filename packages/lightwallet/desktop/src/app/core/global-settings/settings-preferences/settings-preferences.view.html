@@ -23,13 +23,13 @@
         </div>
       </div>
     </div>
-    <div class="global-settings__group__item sendMerit__form__group">
+    <div class="global-settings__group__item sendMerit__form__group" *ngIf="emailNotificationsEnabled">
       <div class="global-settings__group__item__column ui-input-group">
         <label class="ui-label global-settings__group__item__title" for="email">Email address</label>
         <input type="email" name="email" id="email"
-        class="ui-input ui-input--form ui-input--text"
-        formControlName="email"
-        placeholder="Enter your email address to receive push notifications">
+               class="ui-input ui-input--form ui-input--text"
+               formControlName="email"
+               placeholder="Enter your email address to receive push notifications">
       </div>
     </div>
   </div>
@@ -61,7 +61,7 @@
     <div class="global-settings__group__item__column global-settings__group__item__column--30">
       <label class="ui-label global-settings__group__item__title
         global-settings__group__item__title--link"
-        [routerLink]="['terms-of-use']">details</label>
+             [routerLink]="['terms-of-use']">details</label>
     </div>
   </div>
   <div class="global-settings__group__item">
@@ -71,7 +71,7 @@
     <div class="global-settings__group__item__column global-settings__group__item__column--30">
       <label class="ui-label global-settings__group__item__title
         global-settings__group__item__title--link"
-        [routerLink]="['session-log']">details</label>
+             [routerLink]="['session-log']">details</label>
     </div>
   </div>
 </div>
