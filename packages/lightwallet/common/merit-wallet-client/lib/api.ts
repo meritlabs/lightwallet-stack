@@ -56,7 +56,6 @@ export interface ISendReferralOptions {
 }
 
 export class API {
-  public BASE_URL = 'https://stage.mws.merit.me/bws/api';
   public request: any;
   public baseUrl: string;
   public payProHttp: string;
@@ -119,7 +118,7 @@ export class API {
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
     this.request = opts.request || request;
-    this.baseUrl = opts.baseUrl || this.BASE_URL;
+    this.baseUrl = opts.baseUrl || ENV.mwsUrl;
     this.payProHttp = null; // Only for testing
     this.doNotVerifyPayPro = opts.doNotVerifyPayPro;
     this.timeout = opts.timeout || 50000;
