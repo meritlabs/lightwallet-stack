@@ -118,7 +118,30 @@ view-easy-send-share {
     .transactionDetails_group {
       border-top: 1px solid #ededed;
       padding: 0 23px;
-
+      .w-input {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        text-align: right;
+        input {
+          text-align: right;
+          padding-right: 10px;
+        }
+        .eye {
+          position: relative;
+        }
+        .eye-false:after {
+          content: "";
+          display: block;
+          width: 110%;
+          height: 2px;
+          background: #3497fd;
+          transform: rotate(-45deg);
+          top: 8px;
+          position: absolute;
+          right: -1;
+        }
+      }
       .transactionDetails {
         &_row {
           display: flex;
