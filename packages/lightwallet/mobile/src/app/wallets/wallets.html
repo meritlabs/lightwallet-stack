@@ -116,7 +116,7 @@
             Vaults
             <button ion-button item-end round add-button icon-only
                     navPush="VaultCreateView" [navParams]="{wallets: wallets}"
-                    [disabled]="!hasActiveInvites">
+                    [disabled]="totalInvites == 0">
                 <ion-icon name="add"></ion-icon>
             </button>
         </ion-item-divider>
