@@ -55,7 +55,7 @@
           </p>
           <ng-template #notHidden>
             <p class="merit-amount">
-              {{ wallet.spendableAmount | toMRT}}
+              {{ wallet.balance.spendableAmount | toMRT}}
             </p>
           </ng-template>
           <p class="invites">
@@ -67,7 +67,7 @@
         <ng-template #isComplete>
           <ion-note class="balance" item-end>
               <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.alternativeBalanceAvailable">
-              {{ wallet.spendableAmount | toFiat }}
+              {{ wallet.balance.spendableAmount | toFiat }}
             </div>
 
             <span class="error" *ngIf="wallet.error">{{ wallet.error }}</span>

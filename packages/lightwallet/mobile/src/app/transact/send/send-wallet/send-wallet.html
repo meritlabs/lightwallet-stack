@@ -26,8 +26,8 @@
     <div>
       <div >
         {{wallet.balance.totalAmount | toMRT}}
-        <small *ngIf="wallet.balance.totalAmount != wallet.spendableAmount">
-          ({{wallet.spendableAmount | toMRT}} available)
+        <small *ngIf="wallet.balance.totalAmount != wallet.balance.spendableAmount">
+          ({{wallet.balance.spendableAmount | toMRT}} available)
         </small>
       </div>
       <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>

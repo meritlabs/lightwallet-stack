@@ -118,7 +118,7 @@ export class EasySendService {
       addressType: 'P2SH'
     };
 
-    if (amount == wallet.spendableAmount) {
+    if (amount == wallet.balance.spendableAmount) {
       delete txp.outputs[0].amount;
       txp.sendMax = true;
     }

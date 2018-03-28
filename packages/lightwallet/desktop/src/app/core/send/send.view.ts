@@ -335,7 +335,7 @@ export class SendView implements OnInit {
     const { type, toAddress, amount, feeIncluded } = this.formData.getRawValue();
     const txData: any = {};
 
-    if (this.selectedWallet.client.status.spendableAmount == 0)
+    if (this.selectedWallet.balance.spendableAmount == 0)
       throw 'Insufficient funds';
 
     try {
@@ -348,7 +348,7 @@ export class SendView implements OnInit {
         feeLevel: 'superEconomy'
       };
 
-      const maxAmount = this.selectedWallet.client.status.spendableAmount;
+      const maxAmount = this.selectedWallet.balance.spendableAmount;
 
       console.log(formattedAmount.micros, maxAmount);
 
