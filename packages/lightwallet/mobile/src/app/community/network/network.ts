@@ -65,7 +65,7 @@ export class NetworkView {
 
   async ionViewWillEnter() {
     this.refreshing = true;
-    if (!this.loading) await Promise.all([this.loadCommunityInfo(), this.loadRequestsInfo()]);
+    await Promise.all([this.loadCommunityInfo(), this.loadRequestsInfo()]);
     this.refreshing = false;
   }
 
