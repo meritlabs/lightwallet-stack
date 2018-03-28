@@ -246,57 +246,6 @@ module.exports = (_, config) => {
           ]
         },
         {
-          'exclude': [
-            path.join(process.cwd(), 'src/styles.sass')
-          ],
-          'test': /\.less$/,
-          'use': [
-            {
-              'loader': 'raw-loader'
-            },
-            {
-              'loader': 'postcss-loader',
-              'options': {
-                'ident': 'embedded',
-                'plugins': postcssPlugins,
-                'sourceMap': true
-              }
-            },
-            {
-              'loader': 'less-loader',
-              'options': {
-                'sourceMap': true
-              }
-            }
-          ]
-        },
-        {
-          'exclude': [
-            path.join(process.cwd(), 'src/styles.sass')
-          ],
-          'test': /\.styl$/,
-          'use': [
-            {
-              'loader': 'raw-loader'
-            },
-            {
-              'loader': 'postcss-loader',
-              'options': {
-                'ident': 'embedded',
-                'plugins': postcssPlugins,
-                'sourceMap': true
-              }
-            },
-            {
-              'loader': 'stylus-loader',
-              'options': {
-                'sourceMap': true,
-                'paths': []
-              }
-            }
-          ]
-        },
-        {
           'include': [
             path.join(process.cwd(), 'src/styles.sass')
           ],
@@ -340,59 +289,6 @@ module.exports = (_, config) => {
                 'sourceMap': true,
                 'precision': 8,
                 'includePaths': []
-              }
-            }
-          ]
-        },
-        {
-          'include': [
-            path.join(process.cwd(), 'src/styles.sass')
-          ],
-          'test': /\.less$/,
-          'use': [
-            'style-loader',
-            {
-              'loader': 'raw-loader'
-            },
-            {
-              'loader': 'postcss-loader',
-              'options': {
-                'ident': 'embedded',
-                'plugins': postcssPlugins,
-                'sourceMap': true
-              }
-            },
-            {
-              'loader': 'less-loader',
-              'options': {
-                'sourceMap': true
-              }
-            }
-          ]
-        },
-        {
-          'include': [
-            path.join(process.cwd(), 'src/styles.sass')
-          ],
-          'test': /\.styl$/,
-          'use': [
-            'style-loader',
-            {
-              'loader': 'raw-loader'
-            },
-            {
-              'loader': 'postcss-loader',
-              'options': {
-                'ident': 'embedded',
-                'plugins': postcssPlugins,
-                'sourceMap': true
-              }
-            },
-            {
-              'loader': 'stylus-loader',
-              'options': {
-                'sourceMap': true,
-                'paths': []
               }
             }
           ]
