@@ -50,6 +50,9 @@ export class SendView {
     private addressScanner: AddressScannerService,
     private persistenceService: PersistenceService
   ) {
+    this.navCtrl.push('EasySendShareView', {txData: {
+      "easySendUrl": "http://localhost:8100/#/transact/send/send-amounttransact/send/send-amounttransact/send/send-amount"
+    }});
   }
 
   private async updateHasUnlocked() {
