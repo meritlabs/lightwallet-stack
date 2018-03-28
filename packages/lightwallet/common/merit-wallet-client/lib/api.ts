@@ -539,13 +539,16 @@ export class API {
     wallet.import(obj.credentials);
     wallet.name = obj.name || '';
     wallet.id = obj.id || '';
+    wallet.color = obj.color;
     wallet.confirmed = obj.confirmed || false;
     wallet.balance = obj.balance || {};
     wallet.invitesBalance = obj.invitesBalance || {};
     wallet.spendableAmount = obj.spendableAmount || 0;
     wallet.availableInvites = obj.availableInvites || 0;
-    wallet.rootAddress = Bitcore.Address.fromString(obj.rootAddress, ENV.network);
+    wallet.network = obj.network || ENV.network;
+    wallet.rootAddress = Bitcore.Address.fromString(obj.rootAddress, wallet.network);
     wallet.rootAlias = obj.rootAlias || '';
+    wallet.parentAddress = Bitcore.Address.fromString(obj.rootAddress, wallet.network);
     return wallet;
   }
 
@@ -560,7 +563,10 @@ export class API {
       spendableAmount: this.spendableAmount,
       availableInvites: this.availableInvites,
       rootAddress: this.rootAddress.toString(),
-      rootAlias: this.rootAlias
+      rootAlias: this.rootAlias,
+      parentAddress: this.parentAddress,
+      color: this.color,
+      network: this.network
     }
   }
 
@@ -1751,6 +1757,10 @@ export class API {
 
   private _processStatus = (status): Promise<any> => {
 
+    this.id = status.wallet.id;
+    this.network = status.wallet.network;
+
+    this.parentAddress = Bitcore.Address(status.wallet.parentAddress);
     this.balance = status.balance || {};
     this.invitesBalance = status.invitesBalance || {};
     this.confirmed = (status.invitesBalance && status.invitesBalance.totalAmount > 0);
