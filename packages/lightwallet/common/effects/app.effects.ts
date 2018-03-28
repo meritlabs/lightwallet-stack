@@ -14,9 +14,9 @@ export class AppEffects {
   @Effect()
   init$: Observable<Action> = defer(() => of(null))
     .pipe(
-      switchMap(() => Observable.fromPromise(this.profileService.loadAndBindProfile())),
-      switchMap((profile: any) => {
-        if (!profile || !profile.credentials || !profile.credentials.length) {
+      switchMap(() => Observable.fromPromise(this.profileService.getWallets())),
+      switchMap((wallets: any) => {
+        if (wallets.length == 0) {
           return [
             new UpdateAppAction({ loading: false })
           ];
@@ -24,7 +24,7 @@ export class AppEffects {
           return [
             new UpdateAppAction({
               loading: false,
-              credentialsLength: profile.credentials.length
+              credentialsLength: wallets.length
             }),
             new RefreshWalletsAction()
           ];
