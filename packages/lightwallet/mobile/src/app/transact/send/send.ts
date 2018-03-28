@@ -279,7 +279,7 @@ export class SendView {
 
   }
   editContact() {
-    return this.navCtrl.push('SendEditContactView', { contact: this.contact, amount: this.amount });
+    
   }
   sendToEntity(entity) {
     this.navCtrl.push('SendAmountView', {
