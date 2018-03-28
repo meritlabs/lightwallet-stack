@@ -14,8 +14,8 @@
     <h2 class="amount">
       {{ wallet.balance.totalAmount | toMRT:null:true }}<small>MRT</small>
     </h2>
-    <div *ngIf="wallet.balance.totalAmount != wallet.spendableAmount" class="amount-available">
-      <small>({{ wallet.spendableAmount | toMRT:null:true }} available)</small>
+    <div *ngIf="wallet.balance.totalAmount != wallet.balance.spendableAmount" class="amount-available">
+      <small>({{ wallet.balance.spendableAmount | toMRT:null:true }} available)</small>
     </div>
     <h3 class="detail-fiat">
         {{ wallet.balance.totalAmount | toFiat }}

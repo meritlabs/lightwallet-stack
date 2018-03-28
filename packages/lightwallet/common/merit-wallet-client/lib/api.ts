@@ -119,7 +119,6 @@ export class API {
   public balance: any;
   public invitesBalance: any;
   public availableInvites: number;
-  public spendableAmount: number;
 
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -543,7 +542,6 @@ export class API {
     wallet.confirmed = obj.confirmed || false;
     wallet.balance = obj.balance || {};
     wallet.invitesBalance = obj.invitesBalance || {};
-    wallet.spendableAmount = obj.spendableAmount || 0;
     wallet.availableInvites = obj.availableInvites || 0;
     wallet.network = obj.network || ENV.network;
     wallet.rootAddress = Bitcore.Address.fromString(obj.rootAddress, wallet.network);
@@ -562,7 +560,6 @@ export class API {
       confirmed: this.confirmed,
       balance: this.balance,
       invitesBalance: this.invitesBalance,
-      spendableAmount: this.spendableAmount,
       availableInvites: this.availableInvites,
       rootAddress: this.rootAddress.toString(),
       rootAlias: this.rootAlias,
@@ -1780,7 +1777,7 @@ export class API {
     this.confirmed = (status.invitesBalance && status.invitesBalance.totalAmount > 0);
     this.availableInvites = Math.max(0, status.invitesBalance.totalConfirmedAmount - 1);
     //todo check if we use 'spendunconfirmed' options
-    this.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
+    this.balance.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
 
     let processCustomData = (data): Promise<any> => {
       return new Promise((resolve, reject) => {

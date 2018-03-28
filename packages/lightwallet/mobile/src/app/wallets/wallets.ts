@@ -111,7 +111,7 @@ export class WalletsView {
     }, 0);
 
     let totalAmount = this.wallets.reduce((amount, w) => {
-      return amount + w.spendableAmount;
+      return amount + w.balance.spendableAmount;
     }, 0);
 
     totalAmount += this.vaults.reduce((amount, v) => {
