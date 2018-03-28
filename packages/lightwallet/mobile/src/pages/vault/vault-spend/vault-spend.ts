@@ -52,6 +52,7 @@ export class VaultSpendView {
       await this.vaultsService.sendFromVault(this.vault, amount, address);
       this.navCtrl.pop();
     } catch (e) {
+      console.log(e);
       this.toastCtrl.create({
         message: e.message || 'Send failed ',
         cssClass: ToastConfig.CLASS_ERROR

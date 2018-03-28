@@ -113,7 +113,7 @@ export class API {
   public vaults: Array<any> = [];
   locked: boolean;
 
-  public rootAddress: string;
+  public rootAddress: any;
   public rootAlias: string;
 
   public balance: any;
@@ -549,10 +549,12 @@ export class API {
     wallet.rootAddress = Bitcore.Address.fromString(obj.rootAddress, wallet.network);
     wallet.rootAlias = obj.rootAlias || '';
     wallet.parentAddress = Bitcore.Address.fromString(obj.rootAddress, wallet.network);
+    wallet.vaults = obj.vaults || [];
     return wallet;
   }
 
   toObj() {
+
     return {
       credentials: this.export(),
       name: this.name,
@@ -566,7 +568,19 @@ export class API {
       rootAlias: this.rootAlias,
       parentAddress: this.parentAddress,
       color: this.color,
-      network: this.network
+      network: this.network,
+      vaults: this.vaults.map(v => {
+        return {
+          _id: v._id,
+          name: v.name,
+          amount: v.amount,
+          address: v.address,
+          coins: v.coins,
+          masterPubKey: v.masterPubKey,
+          status: v.status,
+          whitelist: v.whitelist
+        }
+      })
     }
   }
 
@@ -2757,10 +2771,10 @@ export class API {
     return this._doGetRequest(url);
   };
 
-  getVault(address) {
+  getVault(vaultId) {
     $.checkState(this.credentials);
 
-    var url = `/v1/vaults/${address}`;
+    var url = `/v1/vaults/${vaultId}`;
     return this._doGetRequest(url);
   }
 

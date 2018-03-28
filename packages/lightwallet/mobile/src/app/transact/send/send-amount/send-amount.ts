@@ -218,7 +218,7 @@ if (value != this.lastAmount) {
     this.amount.mrtStr = this.txFormatService.formatAmountStr(this.amount.micros) + ' MRT';
     this.amount.fiatStr = await this.txFormatService.formatAlternativeStr(this.amount.micros);
 
-    if (this.selectedWallet && this.selectedWallet.status) {
+    if (this.selectedWallet) {
       if (this.amount.micros == this.selectedWallet.spendableAmount)  {
         this.feeIncluded = true; 
         this.feeTogglerEnabled = false; 

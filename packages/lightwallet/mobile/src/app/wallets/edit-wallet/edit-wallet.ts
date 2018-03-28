@@ -85,7 +85,13 @@ export class EditWalletView {
           text: 'Delete',
           handler: () => {
             this.profileService.deleteWallet(this.wallet).then(() => {
-              this.app.getRootNavs()[0].setRoot('WalletsView');
+              this.profileService.isAuthorized().then((authorized) => {
+                if (authorized) {
+                  this.navCtrl.popToRoot();
+                } else {
+                  this.navCtrl.setRoot('OnboardingView');
+                }
+              })
             }).catch((err) => {
               this.toastCtrl.create({
                 message: JSON.stringify(err),

@@ -45,7 +45,7 @@
             </ion-avatar>
             <p>From</p>
             <h2>{{wallet.name}}</h2>
-            <p>{{wallet.client.status.spendableBalanceStr}} MRT</p>
+            <p>{{wallet.spendableAmount | toMRT}}</p>
         </button>
 
         <ion-item>
@@ -59,7 +59,7 @@
     </ion-list>
 
     <div class="error" *ngIf="hasInsufficientConfirmedFunds()" padding>
-        You have {{ this.wallet.client.status.confirmedAmount | toMRT }} confirmed on selected wallet. You can use only confirmed balance to create a wallet.
+        You have {{ this.wallet.balance.totalConfirmedAmount | toMRT }} confirmed on selected wallet. You can use only confirmed balance to create a wallet.
     </div>
 
     <button ion-button class="action-button" (click)="toConfirm()" [disabled]="!isNextStepAvailable">
