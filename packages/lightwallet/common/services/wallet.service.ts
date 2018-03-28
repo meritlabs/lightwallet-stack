@@ -478,6 +478,7 @@ export class WalletService {
   // TODO add typings for `opts`
   async createWallet(opts: any) {
     const wallet = await this.doCreateWallet(opts);
+    wallet.name = opts.name || 'Personal Wallet';
     await this.profileService.addWallet(wallet);
     return wallet;
   }
