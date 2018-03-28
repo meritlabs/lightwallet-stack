@@ -122,6 +122,10 @@ export class NetworkView {
           network.networkValue += anv;
         });
 
+        const getStatuses = () => this.wallets.map((w) => {
+          return w.getStatus();
+        });
+
         const getRewards = async () => {
           const rewards = await this.wallets[0].getRewards(addresses);
           rewards.forEach(r => {
@@ -133,7 +137,7 @@ export class NetworkView {
           });
         };
 
-        await Promise.all([getRewards()].concat(getAnvMethods()));
+        await Promise.all([getRewards()].concat(getAnvMethods()).concat(getStatuses()));
       }
 
       this.network = network;
