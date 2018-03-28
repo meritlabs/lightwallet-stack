@@ -89,7 +89,12 @@ export class ProfileService {
   async getVaults() {
     if (this.wallets == undefined) await this.loadProfile();
     let vaults = [];
-    this.wallets.forEach(w => vaults.concat(w.vaults));
+    this.wallets.forEach(w => {
+      w.vaults.forEach(v => {
+        v.walletClient = w; 
+        vaults.push(v);
+      });
+    });
     return vaults;
   }
 
@@ -174,7 +179,7 @@ export class ProfileService {
 
     this.wallets.some(w => {
       if (w.id == vault.walletClient.id) {
-        w.vaults = w.vaults.filiter(v => (v._id != vault._id));
+        w.vaults = w.vaults.filter(v => (v._id != vault._id));
         w.vaults.push(vault);
         return true;
       }
@@ -190,6 +195,7 @@ export class ProfileService {
       credentials: this.wallets.map(w => w.export())
     };
 
+    console.log('storing profile', profile, this.wallets);
     this.persistenceService.storeProfile(profile);
   }
 }

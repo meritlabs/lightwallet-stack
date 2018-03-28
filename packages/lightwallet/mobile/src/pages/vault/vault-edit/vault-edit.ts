@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, ModalController, LoadingController } from 'ionic-angular';
 
-import { DisplayWallet } from "@merit/common/models/display-wallet";
 import { IWhitelistWallet } from "@merit/mobile/pages/vault/select-whitelist/select-whitelist";
 import { VaultsService } from "@merit/common/services/vaults.service";
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { ToastConfig, MeritToastController } from '@merit/common/services/toast.controller.service';
-
-
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
 
 @IonicPage()
@@ -22,7 +20,7 @@ export class VaultEditView {
   public vaultName: string;
   public whitelist: any;
   public wallets: Array<IWhitelistWallet>;
-  public wallet: DisplayWallet;
+  public wallet: MeritWalletClient;
   public amount: number;
 
   private previous: any;
@@ -43,7 +41,7 @@ export class VaultEditView {
     this.wallets = this.navParams.get('wallets');
 
     this.wallets.forEach(w => {
-      if (this.vault.whitelist.some(addr => addr == w.client.getRootAddress())) {
+      if (this.vault.whitelist.some(addr => addr == w.rootAddress)) {
         w.selected = true;
       }
     });
@@ -129,7 +127,7 @@ export class VaultEditView {
 
   private checkWhitelistChange() {
     const newWl = this.whitelist.reduce((str, w) => {
-      return str + w.client.getRootAddress().toString()
+      return str + w.rootAddress.toString()
     }, '');
     this.whitelistChanged = (this.previous.whitelist != newWl);
   }

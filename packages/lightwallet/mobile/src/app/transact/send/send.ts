@@ -67,7 +67,7 @@ export class SendView {
   private async updateHasUnlocked() {
     const wallets = await this.profileService.getWallets();
     this.hasUnlockedWallets = wallets.some(w => w.confirmed);
-    this.hasActiveInvites = wallets.some(w => w.status && w.availableInvites > 0);
+    this.hasActiveInvites = wallets.some(w => w.availableInvites > 0);
 
     let pagesVisited = await this.persistenceService.getPagesVisited();
     this.showSlider = (pagesVisited.indexOf('send') == -1);

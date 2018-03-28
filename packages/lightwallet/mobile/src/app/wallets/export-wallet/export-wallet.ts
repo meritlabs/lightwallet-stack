@@ -50,7 +50,6 @@ export class ExportWalletView {
 
     let setQrInfo = (password) => {
       this.walletsService.getEncodedWalletInfo(this.wallet, password).then((info) => {
-        this.logger.info('qr info', info);
         this.qrcode = info;
       });
     };

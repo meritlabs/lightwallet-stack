@@ -24,10 +24,10 @@
     </ion-label>
 
     <div>
-      <div *ngIf="wallet.status">
-        {{wallet.status.totalBalanceStr}}
-        <small *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount">
-          ({{wallet.status.spendableBalanceStr}} available)
+      <div >
+        {{wallet.balance.totalAmount | toMRT}}
+        <small *ngIf="wallet.balance.totalAmount != wallet.spendableAmount">
+          ({{wallet.spendableAmount | toMRT}} available)
         </small>
       </div>
       <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>

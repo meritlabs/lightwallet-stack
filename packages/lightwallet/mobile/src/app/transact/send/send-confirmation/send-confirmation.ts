@@ -71,14 +71,14 @@ export class SendConfirmationView {
       fee: this.txData.txp.fee + this.txData.easyFee, 
       walletName: this.txData.wallet.name || this.txData.wallet.id,
       walletColor: this.txData.wallet.color,
-      walletCurrentBalance: this.txData.wallet.status.totalBalanceMicros,
+      walletCurrentBalance: this.txData.wallet.balance.totalAmount,
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
       methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'Global Send' : 'Classic Send',
       destination: this.txData.sendMethod.alias ? '@'+this.txData.sendMethod.alias : this.txData.sendMethod.value
     };
 
-    viewData.walletRemainingBalance =  this.txData.wallet.status.totalBalanceMicros - viewData.totalAmount; 
+    viewData.walletRemainingBalance =  this.txData.wallet.balance.totalAmount - viewData.totalAmount;
 
     let fiatAvailale = this.rateService.getRate(viewData.fiatCode) > 0;
     const convert = amount => fiatAvailale ? this.formatService.toFiatStr(amount, viewData.fiatCode) : '';

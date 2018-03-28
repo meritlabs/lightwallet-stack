@@ -19,7 +19,7 @@
          <h2 translate>
             {{wallet.name || wallet._id}}
          </h2>
-         <p>{{wallet.client.status.spendableBalanceStr}}</p>
+         <p>{{wallet.spendableAmount | toMRT}}</p>
       </ion-label>
       <ion-icon name="checkmark" *ngIf="wallet.selected" item-end></ion-icon>
     </button>

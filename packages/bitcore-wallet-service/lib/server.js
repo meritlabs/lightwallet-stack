@@ -3829,17 +3829,14 @@ WalletService.prototype.createVault = function(opts, cb) {
 
          self.updateVaultInfo(toStore, function(err, result) {
             if (err) return cb(err);
-            return next();
+            return cb(null, toStore);
           });
         });
       });
-    }, // Enable me later when transaction is constructed successfully
-    function(next) {
-      self.getVaults(opts, cb);
-
-      return next();
     }
   ]);
+
+
 };
 
 WalletService.prototype.getVaultTxHistory = function(opts, cb) {
