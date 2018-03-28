@@ -1,6 +1,6 @@
+@import "common/import-sass"
+
 @import "common/reset"
-@import "common/variables"
-@import "common/mixins"
 @import "common/containers"
 @import "common/animations"
 
@@ -11,15 +11,20 @@
 @import "ui/tooltip"
 @import "ui/icons"
 
-@import "modules/dashboard/desktop"
-@import "modules/wallets/desktop"
-@import "modules/settings/desktop"
-@import "modules/backup/desktop"
-@import "modules/network/desktop"
-@import "modules/invites/desktop"
-@import "modules/sub-page/desktop"
-
+@import "modules/wallets"
+@import "modules/settings"
+@import "modules/backup"
+@import "modules/network"
+@import "modules/invites"
+@import "modules/sub-page"
+@import "modules/history"
+@import "modules/notifications"
+@import "modules/profile-stats"
+@import "modules/select"
+@import "modules/dashboard"
+@import "modules/send-merit"
+@import "modules/receive-merit"
 // Theme global preferences
 html,
 body
-  font-family: $baseFont--regular
+  +font(300, 17px, 20px, $color: $gun-metal, $family: $baseFont, $style: normal, $decoration: none, $transform: none)
