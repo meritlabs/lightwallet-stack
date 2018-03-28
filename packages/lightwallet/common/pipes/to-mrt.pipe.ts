@@ -18,6 +18,6 @@ export class ToMrtPipe implements PipeTransform {
     const intLength = mrt.toFixed(0).length;
     let floatLength  = (digitsLimit - intLength) >= 0 ? (digitsLimit - intLength) : 0;
 
-    return Number(mrt.toFixed(floatLength))+' MRT'; 
+    return Number(mrt.toFixed(floatLength))+' MRT';
   }
 }
