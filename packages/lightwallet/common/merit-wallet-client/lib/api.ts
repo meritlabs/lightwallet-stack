@@ -110,10 +110,14 @@ export class API {
   public onConnectionError: any;
   public onAuthenticationError: any;
   public onConnectionRestored: any;
+  public vaults: Array<any>;
   locked: boolean;
 
   public rootAddress: string;
   public rootAlias: string;
+
+  public balance: any;
+  public invitesBalance: any;
 
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -200,7 +204,6 @@ export class API {
       this.notificationsIntervalId = null;
     }
   };
-
 
   /**
    * Reset notification polling with new interval
@@ -525,6 +528,33 @@ export class API {
   };
 
 
+  static fromObj(obj) {
+    let wallet = new this({
+      baseUrl: obj.baseUrl || ENV.mwsUrl,
+      timeout: 100000,
+      transports: ['polling']
+    });
+
+    wallet.import(obj.credentials);
+    wallet.name = obj.name;
+    wallet.id = obj.id;
+    wallet.confirmed = obj.confirmed;
+    wallet.balance = obj.balance || {};
+    wallet.invitesBalance = obj.invitesBalance || {};
+    return wallet;
+  }
+
+  toObj() {
+    return {
+      credentials: this.export(),
+      name: this.name,
+      id: this.id,
+      confirmed: this.confirmed,
+      balance: this.balance,
+      invitesBalance: this.invitesBalance
+    }
+  }
+
   /**
    * Export wallet
    *
@@ -560,6 +590,8 @@ export class API {
     try {
       let credentials = Credentials.fromObj(JSON.parse(str));
       this.credentials = credentials;
+      this.name = credentials.walletName;
+      this.id = credentials.walletId;
     } catch (ex) {
       throw MWCErrors.INVALID_BACKUP;
     }
