@@ -40,7 +40,7 @@ const routes: Routes = [
       { path: 'wallets/import/phrase', component: PhraseImportView },
       {
         path: 'wallets/:id', component: WalletDetailView, children: [
-          { path: '', component: WalletDetailHistoryView },
+          { path: '', pathMatch: 'full', redirectTo: 'history' },
           { path: 'history', component: WalletDetailHistoryView },
           { path: 'settings', component: WalletSettingsView },
           { path: 'send', component: SendView },
