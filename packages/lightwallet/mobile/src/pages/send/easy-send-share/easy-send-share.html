@@ -59,8 +59,11 @@
           <div class="transactionDetails_column">
             Password
           </div>
-          <div class="transactionDetails_column grey">
-            <input type="password" name="" value="txData.details.password">
+          <div class="transactionDetails_column grey w-input">
+            <input type="{{show ? 'text' : 'password'}}" name="" value="{{txData.details.password}}">
+            <div class="eye eye-{{show}}" (click)="show=!show">
+              <img src="assets/img/icons/visible.svg" alt="">
+            </div>
           </div>
         </div>
         <div class="transactionDetails_row">
