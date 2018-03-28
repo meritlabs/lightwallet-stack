@@ -115,17 +115,8 @@ export class DisplayWallet {
   async updateStatus() {
     this.client.status = await this.walletService.getStatus(this.client, { force: true });
     this.inviteRequests = await this.client.getUnlockRequests();
-    this.invites = this.status.availableInvites;
+    this.invites = this.client.availableInvites;
     this.confirmed = this.client.confirmed;
-    if (this.status.totalBalanceStr) {
-      this.totalBalanceStr = this.client.status.totalBalanceStr;
-      this.totalBalanceMicros = this.client.status.totalBalanceMicros;
-      const usdAmount = await this.txFormatService.formatToUSD(this.totalBalanceMicros);
-      this.totalBalanceFiat = new FiatAmount(+usdAmount).amountStr;
-    } else {
-      this.totalBalanceStr = this.client.cachedBalance;
-      this.cachedBalanceUpdatedOn = this.client.cachedBalanceUpdatedOn;
-    }
   }
 
   async updateRewards() {
