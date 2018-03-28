@@ -257,9 +257,7 @@ export class CreateWalletView {
 
       // We should callback to the wallets list page to let it know that there is a new wallet
       // and that it should updat it's list.
-      const callback = this.navParams.get('updateWalletListCB');
       await loader.dismiss();
-      await callback();
       return this.navCtrl.pop();
     } catch (err) {
       this.logger.error(err);
