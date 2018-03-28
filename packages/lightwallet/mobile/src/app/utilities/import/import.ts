@@ -119,7 +119,8 @@ export class ImportView {
         wallet = await this.walletService.importExtendedPublicKey(opts);
       } else {
         opts.passphrase = this.formData.phrasePassword;
-        wallet = await this.mnemonicService.importMnemonic(this.formData.words, opts);
+        let words = this.formData.words.replace(/\s\s+/g, ' ').trim();
+        wallet = await this.mnemonicService.importMnemonic(words, opts);
       }
 
       if (wallet) {
