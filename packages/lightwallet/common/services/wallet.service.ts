@@ -478,7 +478,7 @@ export class WalletService {
   // TODO add typings for `opts`
   async createWallet(opts: any) {
     const wallet = await this.doCreateWallet(opts);
-    await this.profileService.addAndBindWalletClient(wallet, { bwsurl: opts.bwsurl });
+    await this.profileService.addWallet(wallet, { bwsurl: opts.bwsurl });
     return wallet;
   }
 
@@ -495,7 +495,8 @@ export class WalletService {
       throw new Error('Bad wallet invitation'); // TODO getTextCatalog
     }
 
-    if (this.profileService.profile.credentials.find(wallet => wallet.walletId == walletData.walletId)) {
+    let wallets = await this.profileService.getWallets();
+    if (wallets.find(wallet => wallet.walletId == walletData.walletId)) {
       throw new Error('Cannot join the same wallet more that once'); // TODO getTextCatalog
     }
 
@@ -506,7 +507,7 @@ export class WalletService {
 
     await walletClient.joinWallet(opts.secret, opts.myName || 'me');
 
-    return this.profileService.addAndBindWalletClient(walletClient, {
+    return this.profileService.addWallet(walletClient, {
       bwsurl: opts.bwsurl
     });
   }
@@ -575,7 +576,7 @@ export class WalletService {
 
   encrypt(wallet: MeritWalletClient, password: string): Promise<any> {
     wallet.encryptPrivateKey(password, {});
-    return this.profileService.updateCredentials(wallet.credentials);
+    return this.profileService.updateWallet(wallet);
   };
 
   // create and store a wallet
@@ -1271,4 +1272,67 @@ export class WalletService {
       return tx;
     });
   }
+
+  async importExtendedPublicKey(opts: any): Promise<any> {
+    const walletClient = this.mwcService.getClient(null, opts);
+
+    try {
+      await walletClient.importFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
+        account: opts.account || 0,
+        derivationStrategy: opts.derivationStrategy || 'BIP44',
+      });
+
+      return this.profileService.addWallet(walletClient);
+    } catch (err) {
+      // in HW wallets, req key is always the same. They can't addAccess.
+      if (err instanceof this.errors.NOT_AUTHORIZED)
+        err.name = 'WALLET_DOES_NOT_EXIST';
+
+      throw new Error(err.text || 'Error while importing wallet');
+    }
+  }
+
+
+  async importExtendedPrivateKey(xPrivKey: string, opts: any): Promise<any> {
+
+    const walletClient = this.mwcService.getClient(null, opts);
+    this.logger.debug('Importing Wallet xPrivKey');
+
+    try {
+      await walletClient.importFromExtendedPrivateKey(xPrivKey, opts);
+      return this.profileService.addWallet(walletClient);
+    } catch (err) {
+      if (err instanceof this.errors.NOT_AUTHORIZED) {
+        throw err;
+      }
+      throw new Error(err.text || 'Error while importing wallet');
+    }
+  }
+
+  async importWallet(str: string, opts: any): Promise<MeritWalletClient> {
+    let walletClient = this.mwcService.getClient(null, opts);
+
+    this.logger.debug('Importing Wallet:', opts);
+
+    try {
+      let c = JSON.parse(str);
+
+      if (c.xPrivKey && c.xPrivKeyEncrypted) {
+        this.logger.warn('Found both encrypted and decrypted key. Deleting the encrypted version');
+        delete c.xPrivKeyEncrypted;
+        delete c.mnemonicEncrypted;
+      }
+
+      str = JSON.stringify(c);
+
+      walletClient.import(str);
+
+      return this.profileService.addWallet(walletClient);
+    } catch (err) {
+      throw new Error('Could not import. Check input file and spending password'); // TODO getTextCatalog
+    }
+  }
+
+
+
 }

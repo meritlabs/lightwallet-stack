@@ -5,6 +5,7 @@ import { ENV } from '@app/env';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
+import { WalletService } from '@merit/common/services/wallet.service';
 import { MnemonicService } from '@merit/common/services/mnemonic.service';
 import { DerivationPath } from '@merit/common/utils/derivation-path';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
@@ -111,10 +112,10 @@ export class ImportView {
       let wallet;
 
       if (this.formData.words.indexOf('xprv') == 0 || this.formData.words.indexOf('tprv') == 0) {
-        wallet = await this.profileService.importExtendedPrivateKey(this.formData.words, opts);
+        wallet = await this.walletService.importExtendedPrivateKey(this.formData.words, opts);
       } else if (this.formData.words.indexOf('xpub') == 0 || this.formData.words.indexOf('tpub') == 0) {
         opts.extendedPublicKey = this.formData.words;
-        wallet = await this.profileService.importExtendedPublicKey(opts);
+        wallet = await this.walletService.importExtendedPublicKey(opts);
       } else {
         opts.passphrase = this.formData.phrasePassword;
         wallet = await this.mnemonicService.importMnemonic(this.formData.words, opts);
@@ -191,7 +192,6 @@ export class ImportView {
 
   private async processCreatedWallet(wallet: MeritWalletClient, loader?: Loading) {
     try {
-      this.profileService.setBackupFlag(wallet.credentials.walletId);
       this.pushNotificationsService.subscribe(wallet);
       this.app.getRootNavs()[0].setRoot('TransactView');
     } catch (e) {
