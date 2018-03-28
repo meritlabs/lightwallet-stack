@@ -52,7 +52,7 @@ export class SendInviteView {
     this.parseSearch();
     if (this.wallets) {
       this.availableInvites = this.wallets.reduce((nbInvites, wallet) => {
-        return nbInvites + wallet.status.availableInvites
+        return nbInvites + wallet.availableInvites
       }, 0);
     }
   }
@@ -164,7 +164,7 @@ export class SendInviteView {
 
     const toAddress = contact.meritAddresses[0].address;
 
-    let wallet = this.wallets.find(w => w.status.availableInvites);
+    let wallet = this.wallets.find(w => w.availableInvites);
     if (!wallet) {
       return this.toastCtrl.create({
         message: 'You have no active invites',

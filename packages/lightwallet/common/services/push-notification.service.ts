@@ -67,7 +67,7 @@ export class PushNotificationsService {
   }
 
   // TODO: Chain getting the token as part of a standalone single-wallet subscription.
-  public async subscribeToEvents(): void {
+  public async subscribeToEvents() {
     if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return;
@@ -87,7 +87,7 @@ export class PushNotificationsService {
       this.ngZone.run(async () => {
         if (data.wasTapped) {
           // Notification was received on device tray and tapped by the user.
-          const wallet = (await this.walletService.getWallets(data.walletId)).find(w => w.id == data.walletId);
+          const wallet = (await this.profileService.getWallets()).find(w => w.id == data.walletId);
           if (!wallet) return;
           return this.app.getActiveNav().push('WalletDetailsView', {
             wallet: await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, {
@@ -100,7 +100,7 @@ export class PushNotificationsService {
           // Notification was received in foreground. Let's propogate the event
           // (using Ionic Events) to the relevant view.
           if (data.walletId) {
-            const wallet = (await this.walletService.getWallets(data.walletId)).find(w => w.id == data.walletId);
+            const wallet = (await this.profileService.getWallets()).find(w => w.id == data.walletId);
             if (!_.isEmpty(wallet)) {
               // Let's re-shape the event to match the notificatons stored in BWS
               this.profileService.propogateBwsEvent({
@@ -127,7 +127,7 @@ export class PushNotificationsService {
     this.subscribe(walletClient);
   }
 
-  public async enable(): void {
+  public async enable(): Promise<any> {
     if (!this._token) {
       this.logger.warn('No token available for this device. Cannot set push notifications. Needs registration.');
       return;
@@ -142,7 +142,7 @@ export class PushNotificationsService {
 
   };
 
-  public async disable(): void {
+  public async disable(): Promise<any> {
     if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return;

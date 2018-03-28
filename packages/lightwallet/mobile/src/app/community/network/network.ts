@@ -108,7 +108,7 @@ export class NetworkView {
       };
 
       this.availableInvites = this.wallets.reduce((number, w) => {
-        return number + w.status.availableInvites;
+        return number + w.availableInvites;
       }, 0);
 
       const addresses = network.wallets.map(w => w.referralAddress);

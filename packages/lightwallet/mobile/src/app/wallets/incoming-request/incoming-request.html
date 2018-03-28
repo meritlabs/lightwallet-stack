@@ -16,7 +16,7 @@
     <p>{{ unlockRequest.walletClient.name }}</p>
 
     <span item-end>
-        {{ unlockRequest?.walletClient?.status?.availableInvites || 0 }}
+        {{ unlockRequest?.walletClient?.availableInvites || 0 }}
         <img src="assets/img/icons/invite.svg" alt="" class="invites-icon">
     </span>
   </button>
