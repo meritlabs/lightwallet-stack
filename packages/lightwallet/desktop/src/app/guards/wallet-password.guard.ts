@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, CanActivateChild } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { selectWalletById } from '@merit/common/reducers/wallets.reducer';
@@ -14,7 +14,7 @@ import { switchMap } from 'rxjs/operators';
 
 // TODO: if this isn't used anywhere other than the export pages, let's rename this to "WalletExportGuard"
 @Injectable()
-export class WalletPasswordGuard implements CanActivateChild {
+export class WalletPasswordGuard implements CanActivate {
   wallet$: Observable<DisplayWallet> = this.route.params.pipe(
     switchMap((params: any) =>
       this.store.select(selectWalletById(params.id))
@@ -26,9 +26,11 @@ export class WalletPasswordGuard implements CanActivateChild {
               private store: Store<IRootAppState>,
               private passwordPromptCtrl: PasswordPromptController) {}
 
-  canActivateChild() {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     return new Promise<boolean>(async resolve => {
-      const wallet = await this.wallet$.take(1).toPromise();
+      const wallet = await this.store.select(selectWalletById(route.parent.params.id))
+        .take(1)
+        .toPromise();
 
       if (!isWalletEncrypted(wallet)) return resolve(true);
 
