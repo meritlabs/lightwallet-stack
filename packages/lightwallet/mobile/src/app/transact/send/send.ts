@@ -12,6 +12,7 @@ import { AddressService } from '@merit/common/services/address.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -259,7 +260,7 @@ export class SendView {
     const modal = this.modalCtrl.create('SendViaView', {
       contact: contact,
       amount: this.amount
-    }
+    }, MERIT_MODAL_OPTS
     );
     modal.onDidDismiss((contact) => {
       if (contact) {
@@ -272,14 +273,9 @@ export class SendView {
       }
     });
     modal.present();
-    // this.navCtrl.push('SendViaView', {
-    //   contact: contact,
-    //   amount: this.amount
-    // });
-
   }
   editContact() {
-    
+
   }
   sendToEntity(entity) {
     this.navCtrl.push('SendAmountView', {
