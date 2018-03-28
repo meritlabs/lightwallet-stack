@@ -49,9 +49,7 @@ export function loadConfigs(appService: AppSettingsService, profileService: Prof
 
       await store.select(selectWallets)
         .pipe(
-          tap(wallets => console.log('Wallets are ', wallets, wallets.length, profile.credentials.length)),
           filter((wallets: DisplayWallet[]) => wallets.length === profile.credentials.length),
-          tap(() => console.log('Lengths match!!')),
           take(1)
         )
         .toPromise();
