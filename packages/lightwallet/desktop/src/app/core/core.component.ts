@@ -1,4 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 
 @Component({
   selector: 'view-core',
@@ -52,4 +53,6 @@ export class CoreView {
       link: 'https://www.merit.me/'
     }
   ];
+
+  constructor(pushNotificationsService: PushNotificationsService) {}
 }
