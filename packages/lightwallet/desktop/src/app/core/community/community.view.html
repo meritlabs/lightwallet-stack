@@ -1,7 +1,7 @@
 <div class="network">
   <profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></profile-stats>
   <app-invites></app-invites>
-  <ng-container *ngFor="let wallet of wallets">
+  <ng-container *ngFor="let wallet of wallets$ | async">
     <div class="network__personal-wallet container--inner">
       <div class="network__personal-wallet__panel">
         <div class="network__personal-wallet__title title--primary">
