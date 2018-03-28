@@ -1,4 +1,4 @@
-<ion-header no-border [custom-header-color]="displayWallet.color">
+<ion-header no-border [custom-header-color]="wallet.color">
   <ion-navbar>
     <ion-title smaller-title>{{ wallet.name }}</ion-title>
     <ion-buttons end>
@@ -12,13 +12,14 @@
 <ion-content no-bounce>
   <div class="big-header" [style.background]="wallet.color" [class.default]="!wallet.color">
     <h2 class="amount">
-      {{ wallet.status.totalBalanceStr || 0 }}&nbsp;<small>MRT</small>
+      {{ wallet.balance.totalAmount | toMRT:null:true }}<small>MRT</small>
     </h2>
-    <div *ngIf="wallet.status.totalBalanceMicros != wallet.status.spendableAmount" class="amount-available">
-      <small>({{ wallet.status.spendableBalanceStr || 0 }} available)</small>
+    <div *ngIf="wallet.balance.totalAmount != wallet.spendableAmount" class="amount-available">
+      <small>({{ wallet.spendableAmount | toMRT:null:true }} available)</small>
     </div>
-    <h3 class="detail-fiat" *ngIf="wallet.status.alternativeBalanceAvailable">{{
-      wallet.status.totalBalanceAlternativeStr }}</h3>
+    <h3 class="detail-fiat">
+        {{ wallet.balance.totalAmount | toFiat }}
+    </h3>
     <div class="action-buttons">
       <div class="button-cell">
         <button ion-button (click)="deposit()">
