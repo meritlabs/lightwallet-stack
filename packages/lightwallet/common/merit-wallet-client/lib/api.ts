@@ -110,7 +110,7 @@ export class API {
   public onConnectionError: any;
   public onAuthenticationError: any;
   public onConnectionRestored: any;
-  public vaults: Array<any>;
+  public vaults: Array<any> = [];
   locked: boolean;
 
   public rootAddress: string;
@@ -118,6 +118,8 @@ export class API {
 
   public balance: any;
   public invitesBalance: any;
+  public availableInvites: number;
+  public spendableAmount: number;
 
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -531,8 +533,7 @@ export class API {
   static fromObj(obj) {
     let wallet = new this({
       baseUrl: obj.baseUrl || ENV.mwsUrl,
-      timeout: 100000,
-      transports: ['polling']
+      timeout: 100000
     });
 
     wallet.import(obj.credentials);
@@ -541,6 +542,9 @@ export class API {
     wallet.confirmed = obj.confirmed;
     wallet.balance = obj.balance || {};
     wallet.invitesBalance = obj.invitesBalance || {};
+    wallet.spendableAmount = obj.spendableAmount;
+    wallet.rootAddress = Bitcore.Address.fromString(obj.rootAddress, ENV.network);
+    wallet.rootAlias = obj.rootAlias;
     return wallet;
   }
 
@@ -551,7 +555,10 @@ export class API {
       id: this.id,
       confirmed: this.confirmed,
       balance: this.balance,
-      invitesBalance: this.invitesBalance
+      invitesBalance: this.invitesBalance,
+      spendableAmount: this.spendableAmount,
+      rootAddress: this.rootAddress.toString(),
+      rootAlias: this.rootAlias
     }
   }
 
@@ -1742,6 +1749,13 @@ export class API {
 
   private _processStatus = (status): Promise<any> => {
 
+    this.balance = status.balance || {};
+    this.invitesBalance = status.invitesBalance || {};
+    this.confirmed = (status.invitesBalance && status.invitesBalance.totalAmount > 0);
+    this.availableInvites = Math.max(0, status.invitesBalance.totalConfirmedAmount - 1);
+    //todo check if we use 'spendunconfirmed' options
+    this.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
+
     let processCustomData = (data): Promise<any> => {
       return new Promise((resolve, reject) => {
 
@@ -1772,14 +1786,13 @@ export class API {
       });
     };
 
-    let processConfirmStatus = (status) => {
-        this.confirmed = (status.invitesBalance && status.invitesBalance.totalAmount > 0);
-    };
     
     let validateAddress = () => {
-      this.validateAddress(this.getRootAddress().toString()).then((addressInfo) => {
-        this.rootAlias = addressInfo.alias;
-      })
+      if (!this.rootAlias) {
+        this.validateAddress(this.getRootAddress().toString()).then((addressInfo) => {
+          this.rootAlias = addressInfo.alias;
+        })
+      }
     };
 
     // Resolve all our async calls here, then resolve this wrapping promise.
@@ -1787,7 +1800,6 @@ export class API {
       processCustomData(status),
       this._processWallet(status.wallet),
       this._processTxps(status.pendingTxps),
-      processConfirmStatus(status),
       validateAddress()
     ]).then(() => {
       return Promise.resolve();
