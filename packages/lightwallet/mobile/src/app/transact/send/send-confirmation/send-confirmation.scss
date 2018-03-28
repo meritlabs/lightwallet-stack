@@ -109,7 +109,7 @@ view-send-confirmation {
 
     &_info {
       width: 184px;
-      height: 112px;
+      min-height: 112px;
       box-shadow: 0 2px 8px rgba(48, 60, 78, 0.32);
       background-image: linear-gradient(211deg, #00b1de 0%, #106dda 100%);
       border-radius: 4px;
@@ -118,6 +118,7 @@ view-send-confirmation {
       justify-content: center;
       flex-direction: column;
       align-items: center;
+      padding: 20px;
 
       &:after {
         content: "";
@@ -139,6 +140,7 @@ view-send-confirmation {
       border-radius: 100%;
       border: 2px solid #FFF;
       position: relative;
+      margin-bottom: 5px;
 
       &:after {
         content: "";
@@ -163,6 +165,8 @@ view-send-confirmation {
     }
 
     &_currency {
+      opacity: 0.58;
+      color: #ffffff;
       font-size: 14px;
       font-weight: 300;
       letter-spacing: 0.67px;
@@ -177,6 +181,7 @@ view-send-confirmation {
 
       .ion-item-halfs ion-label {
         display: flex;
+        align-items: center;
         justify-content: space-between;
       }
     }
@@ -224,6 +229,12 @@ view-send-confirmation {
     left: 13px;
   }
 
+  .ion-item-halfs {
+    .ion-item-half {
+      text-align: right;
+    }
+  }
+
   ion-item.item ion-label.label p {
     color: #adb4be;
     font-size: 12px;
@@ -231,12 +242,28 @@ view-send-confirmation {
     letter-spacing: 0.58px;
     text-transform: uppercase;
 
+    small {
+      opacity: 0.52;
+      color: #78849e;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 18px;
+    }
+
     strong {
       font-size: 16px;
       color: #303c4e;
       font-size: 16px;
       font-weight: 500;
       text-transform: none;
+
+      &.amount {
+        opacity: 0.98;
+        color: #78849e;
+      }
+      &.blue {
+        color: #00b1de;
+      }
     }
   }
 }
