@@ -43,6 +43,6 @@
   <ion-item-divider>
     History
   </ion-item-divider>
-  <ion-spinner [hidden]="wallet.completeHistory && wallet.completeHistory.length"></ion-spinner>
+  <ion-spinner [hidden]="wallet.completeHistory"></ion-spinner>
   <transaction-history [transactions]="wallet.completeHistory"></transaction-history>
 </ion-content>
