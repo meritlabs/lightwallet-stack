@@ -26,7 +26,7 @@ export class SendService {
       dryRun: true
     };
 
-    if (amount == wallet.status.spendableAmount) {
+    if (amount == wallet.spendableAmount) {
       delete txpData.outputs[0].amount;
       txpData.sendMax = true;
     }

@@ -123,17 +123,11 @@ export class SendAmountView {
 
       this.wallets.some((wallet) => {
         let amount = this.navParams.get('amount') || 0;
-        if (wallet.status && wallet.status.spendableAmount > amount) {
+        if (wallet.spendableAmount > amount) {
           this.selectedWallet = wallet;
           return true;
         }
       });
-
-      if (!this.selectedWallet.status) {
-        this.walletService.getStatus(this.selectedWallet, { force: true }).then((status) => {
-          this.selectedWallet.status = status;
-        });
-      }
     }
   }
 
@@ -147,8 +141,8 @@ export class SendAmountView {
     modal.onDidDismiss(async (wallet) => {
       if (wallet) {
         this.selectedWallet = wallet; 
-        if (wallet.status.spendableAmount < this.amount.micros) {
-          this.formData.amount = this.rateService.microsToMrt(wallet.status.spendableAmount).toString();
+        if (wallet.spendableAmount < this.amount.micros) {
+          this.formData.amount = this.rateService.microsToMrt(wallet.spendableAmount).toString();
           this.updateAmount(); 
         }
       }
@@ -182,8 +176,8 @@ export class SendAmountView {
       micros = this.rateService.fromFiatToMicros(parseFloat(amount), this.availableUnits[1].name);
     }
 
-    if (micros > this.selectedWallet.status.spendableAmount) {
-      micros = this.selectedWallet.status.spendableAmount;
+    if (micros > this.selectedWallet.spendableAmount) {
+      micros = this.selectedWallet.spendableAmount;
       if (this.selectedCurrency.type == this.CURRENCY_TYPE_MRT) {
         this.formData.amount = String(this.rateService.microsToMrt(micros));
       } else {
@@ -225,7 +219,7 @@ if (value != this.lastAmount) {
     this.amount.fiatStr = await this.txFormatService.formatAlternativeStr(this.amount.micros);
 
     if (this.selectedWallet && this.selectedWallet.status) {
-      if (this.amount.micros == this.selectedWallet.status.spendableAmount)  {
+      if (this.amount.micros == this.selectedWallet.spendableAmount)  {
         this.feeIncluded = true; 
         this.feeTogglerEnabled = false; 
       } else {
@@ -290,7 +284,7 @@ if (value != this.lastAmount) {
       this.txData = null;
       this.feeLoading = false;
       return this.createTxpDebounce.cancel();
-    } else if (this.amount.micros > this.selectedWallet.status.spendableAmount) {
+    } else if (this.amount.micros > this.selectedWallet.spendableAmount) {
       this.feeCalcError = 'Amount is too big';
       this.txData = null;
       this.feeLoading = false;
@@ -321,7 +315,7 @@ if (value != this.lastAmount) {
 
   private async createTxp() { 
 
-    if (this.amount.micros == this.selectedWallet.status.spendableAmount) this.feeIncluded = true;
+    if (this.amount.micros == this.selectedWallet.spendableAmount) this.feeIncluded = true;
 
     try {
 

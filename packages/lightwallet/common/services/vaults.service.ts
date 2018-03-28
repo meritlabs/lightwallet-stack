@@ -310,7 +310,7 @@ export class VaultsService {
       excludeUnconfirmedUtxos: true,
       dryRun: true
     };
-    if (vault.amount == wallet.status.confirmedAmount) {
+    if (vault.amount == wallet.balance.confirmedAmount) {
       delete txp.outputs[0].amount;
       txp.sendMax = true;
     }
