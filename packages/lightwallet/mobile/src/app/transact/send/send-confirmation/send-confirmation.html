@@ -8,7 +8,7 @@
   <div class="priceReview_info">
     <div class="priceReview_icon"></div>
     <div class="priceReview_mrt">{{ viewData.totalAmount}}</div>
-    <div class="priceReview_currency">$ {{ viewData.totalAmount * 0.00000000013 }}</div>
+    <!--<div class="priceReview_currency">$ {{ viewData.totalAmount * 0.00000000013 }}</div>-->
   </div>
 </div>
   <div *ngIf="viewData">
@@ -37,7 +37,7 @@
         </div>
         <div class="ion-item-half">
           <p><strong class="amount">{{ viewData.fee  | toMRT }}</strong></p>
-          <p><small>$ {{ viewData.fee * 0.015 }}</small></p>
+          <!--<p><small>$ {{ viewData.fee * 0.015 }}</small></p>-->
         </div>
       </ion-item>
       <ion-item class="ion-item-halfs">
@@ -46,7 +46,7 @@
         </div>
         <div class="ion-item-half">
           <p><strong class="amount blue">{{ viewData.totalAmount  | toMRT }}</strong></p>
-          <p><small>$ {{ viewData.totalAmount * 0.015 }}</small></p>
+          <!--<p><small>$ {{ viewData.totalAmount * 0.015 }}</small></p>-->
         </div>
       </ion-item>
 
