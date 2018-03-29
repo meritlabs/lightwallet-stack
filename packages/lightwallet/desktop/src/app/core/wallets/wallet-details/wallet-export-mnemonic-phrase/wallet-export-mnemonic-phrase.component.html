@@ -1,0 +1,25 @@
+<div class="navigator-back" [routerLink]="'../'">
+  <div>
+    <img src="/assets/v1/images/backup/back-icon.svg" alt="">
+  </div>
+  <div class="title--primary">
+    <p>Mnemonic Phrase</p>
+  </div>
+</div>
+<div class="backup__header">
+  <div>
+    <div class="backup__caption">
+      <p>Description — passphrase is used to recover your wallet, record it and keep it in a safe place</p>
+    </div>
+  </div>
+  <div>
+    <img src="/assets/v1/images/backup/protected-icon.svg" alt="">
+  </div>
+</div>
+<div class="backup__mnemonic">
+  <button type="button" name="button" class="ui-button ui-button--blue" (click)="show=!show">
+        {{show ? 'Hide' : 'Show'}} mnemonic</button>
+  <div class="backup__mnemonic__container showHidden" [hidden]="!show" [ngClass]="{'showHidden--animated' : show}">
+    <p>speed transfer already give five silly stone glove cage price lumber tail</p>
+  </div>
+</div>

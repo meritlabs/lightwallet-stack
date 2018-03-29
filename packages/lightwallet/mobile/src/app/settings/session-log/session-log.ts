@@ -33,11 +33,13 @@ export class SessionLogView {
   filterLogs() {
     this.filteredLogs = this.logger.getLogs(this.logLevel);
 
-    this.logsString = '';
-    this.filteredLogs.forEach((log) => {
-      this.logsString += `${(new Date(log.timestamp)).toString()}: ${this.getLogLevelName(log.level)} ${log.arguments.join('\n')}`;
-    });
+    let logsString = '';
 
+    this.filteredLogs.forEach(log =>
+      logsString += `${(new Date(log.timestamp)).toString()}: ${this.getLogLevelName(log.level)} ${log.arguments.join('\n')}`
+    );
+
+    this.logsString = logsString;
   }
 
   getLogLevelName(level: number) {

@@ -1,4 +1,4 @@
-<ion-header no-border >
+<ion-header no-border>
     <ion-navbar color="primary">
         <ion-title smaller-title>{{ vault.name || vault.id }}</ion-title>
 
@@ -14,6 +14,11 @@
 <ion-content no-bounce>
 
     <div class="big-header" color="primary">
+      <h2 class="amount">
+        {{ vault.amount | toMRT:null:true }}&nbsp;<small>MRT</small>
+      </h2>
+      <h3 class="detail-fiat">{{ vault.amount |toFiat }}</h3>
+
         <div class="action-buttons">
             <div class="button-cell">
                 <button ion-button navPush="VaultDepositView" [navParams]="{vault: vault}">
@@ -35,12 +40,7 @@
         </div>
     </div>
 
-    <ion-list>
-        <ion-item>
-            <h2>Amount</h2>
-            <p class="amount">{{ vault.amount  | toMRT }} </p>
-            <p class="detail-fiat" item-end>{{ vault.amount |toFiat  }}</p>
-        </ion-item>
+    <ion-list no-lines>
         <ion-item>
             <h2>Whitelist</h2>
             <p>

@@ -3,11 +3,10 @@ import { RateService } from '@merit/common/services/rate.service';
 
 @Pipe({ name: 'toMRT' })
 export class ToMrtPipe implements PipeTransform {
-  private unitCode: string;
+  constructor(private rateService: RateService) {}
 
-  constructor(
-    private rateService: RateService
-  ) {}
+  transform(micros: number, digitsLimit?: number, hideUnit?: boolean): string {
+    let text: string = '';
 
   transform(micros: number, digitsLimit?: number, hideUnit? : boolean): string {
 
@@ -21,5 +20,6 @@ export class ToMrtPipe implements PipeTransform {
     let floatLength  = (digitsLimit - intLength) >= 0 ? (digitsLimit - intLength) : 0;
 
     return Number(mrt.toFixed(floatLength))+unitStr;
+
   }
 }

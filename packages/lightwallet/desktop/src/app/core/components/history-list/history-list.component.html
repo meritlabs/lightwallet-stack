@@ -1,3 +1,4 @@
+<loading-spinner-small [hidden]="!transactions"></loading-spinner-small>
 <history-item *ngFor="let tx of transactions; let i=index" [tx]="tx"
               [class.active]="activeIndex === i"
               (click)="toggleClass(i)"

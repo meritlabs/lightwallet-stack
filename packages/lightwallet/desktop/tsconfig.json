@@ -15,7 +15,9 @@
       "@merit/desktop/*": ["./src/*"]
     },
     "typeRoots": [
-      "../node_modules/@types"
+      "../node_modules/@types",
+      "../node_modules/@firebase/app-types",
+      "../node_modules/@firebase/messaging-types"
     ],
     "lib": [
       "es2017",

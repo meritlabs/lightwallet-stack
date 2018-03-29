@@ -6,12 +6,11 @@
         <div class="dashboard-panel__quick-sending">
           <div class="title--primary">Send merit</div>
           <div class="ui-input__wrapper ui-input__wrapper--mrt">
-            <input type="text" name="" [value]="amount" (input)="amount = $event.target.value"
-            (keypress)="sendSubmit($event)"
+            <input type="text" name="" [(ngModel)]="amount" (keypress)="sendSubmit($event)"
             class="ui-input ui-input--form ui-input--text">
             <div class="ui-input__addon">MRT</div>
-            <div *ngIf="amount > 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }"
-              class="ui-button ui-button--blue ui-button--sm" id="sendMrt">SEND</div>
+            <button [disabled]="!amount || amount == 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }"
+              class="ui-button ui-button--blue ui-button--sm" id="sendMrt">SEND</button>
           </div>
         </div>
         <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async" [showButton]=false></wallets-list>

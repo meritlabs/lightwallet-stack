@@ -13,13 +13,13 @@ export class EmailNotificationsService {
     console.log('Hello EmailNotificationsService Service');
   }
 
-  public async updateEmail(opts: any) {
+  async updateEmail(opts: any) {
     opts = opts || {};
     if (!opts.email) return;
 
     let wallets = await this.profileService.getWallets();
 
-    this.configService.set({
+    await this.configService.set({
       emailFor: null, // Backward compatibility
       emailNotifications: {
         enabled: opts.enabled,
@@ -27,10 +27,10 @@ export class EmailNotificationsService {
       }
     });
 
-    this.walletService.updateRemotePreferences(wallets);
+    return this.walletService.updateRemotePreferences(wallets);
   };
 
-  public getEmailIfEnabled(config) {
+  getEmailIfEnabled(config) {
     config = config || this.configService.get();
 
     if (config.emailNotifications) {
@@ -44,28 +44,24 @@ export class EmailNotificationsService {
 
     // Backward compatibility
     let emails = _.values(config.emailFor);
-    for (var i = 0; i < emails.length; i++) {
+    for (let i = 0; i < emails.length; i++) {
       if (emails[i] !== null && typeof emails[i] !== 'undefined') {
         return emails[i];
       }
     }
-  };
+  }
 
-  public init() {
-    let config = this.configService.get();
-
-    if (config.emailNotifications && config.emailNotifications.enabled) {
-
+  init() {
+    const { emailNotifications } = this.configService.get();
+    if (emailNotifications && emailNotifications.enabled) {
       // If email already set
-      if (config.emailNotifications.emailAddress) return;
-
-      var currentEmail = this.getEmailIfEnabled(config);
-
-      this.updateEmail({
+      if (emailNotifications.emailAddress) return;
+      let currentEmail = emailNotifications.emailAddress;
+      return this.updateEmail({
         enabled: currentEmail ? true : false,
         email: currentEmail
       });
     }
-  };
+  }
 
 }

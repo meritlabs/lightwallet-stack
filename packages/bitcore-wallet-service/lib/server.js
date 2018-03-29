@@ -3812,10 +3812,10 @@ WalletService.prototype.createVault = function(opts, cb) {
     },
     function(next) {
       //TODO: Loop
-      var txp = Model.TxProposal.fromObj(opts.coins[0]);
-      var bc = self._getBlockchainExplorer(txp.network);
+      const txp = Model.TxProposal.fromObj(opts.coins[0]);
+      const bc = self._getBlockchainExplorer(txp.network);
 
-      var rawTx = txp.getRawTx();
+      const rawTx = txp.getRawTx();
       bc.broadcast(rawTx, function(err, txid) {
         if (err) return cb(err);
 

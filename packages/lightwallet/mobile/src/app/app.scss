@@ -307,7 +307,7 @@ ion-list:not([no-lines]) {
       border-bottom: none;
     }
 
-    &:after {
+    &:not(:last-child):after {
       content: '';
       width: calc(100% - 16px - 19px);
       background: transparentize(#d1d6dc, .5);

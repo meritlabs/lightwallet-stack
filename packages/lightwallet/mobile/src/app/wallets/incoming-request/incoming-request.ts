@@ -9,7 +9,7 @@ import {
 } from 'ionic-angular';
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { ContactsService } from '@merit/mobile/services/contacts.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { AddressService } from '@merit/common/services/address.service';
@@ -66,12 +66,12 @@ export class IncomingRequestModal {
   }
 
   createContact() {
-    let meritAddress = {
+    const meritAddress = {
       address: this.unlockRequest.address,
       network: this.addressService.getAddressNetwork(this.unlockRequest.address).name
     };
-    let modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
-    modal.onDidDismiss((contact) => {
+    const modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
+    modal.onDidDismiss(() => {
       this.navCtrl.pop();
     });
     modal.present();
@@ -97,7 +97,7 @@ export class IncomingRequestModal {
   selectWallet() {
     const modal = this.modalCtrl.create('SelectInviteWalletModal', {
       selectedWallet: this.unlockRequest.walletClient,
-      availableWallets: this.wallets
+      availableWallets: this.wallets.filter((wallet: DisplayWallet) => wallet.invites > 0)
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
