@@ -138,20 +138,17 @@
                 <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
                   Alias not found
                 </div>
-                <div *ngIf="searchResult.toNewEntity" margin-top>
+                <div [hidden]="searchResult?.toNewEntity?.destination !== 'address'" margin-top>
                   <button (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
-                    <div *ngIf="searchResult.toNewEntity.destination == 'address'">
                       Send To {{searchQuery}}
-                    </div>
                   </button>
                   or
-                  <div class="button-contact" *ngIf="searchResult.toNewEntity.destination == 'address'"
-                       (click)="createContact()">
+                  <div class="button-contact" (click)="createContact()">
                     <div class="icon add__icon"></div>
                     <div>Create New Contact</div>
                   </div>
                   <div class="button-contact"
-                       *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
+                       [hidden]="!contacts?.length"
                        (click)="bindAddressToContact()">
                     <div class="icon bind__icon"></div>
                     <div>Bind to existing contact</div>
