@@ -39,7 +39,7 @@
       <div class="stats__item__picture">
         <img src="/assets/v1/images/stats/ambassadorIcon.png" alt="">
       </div>
-      <ng-container *ngIf="!loading; else ambassadorLoading">      
+      <ng-container *ngIf="!loading; else ambassadorLoading">
         <div class="stats__item__info">
           {{totals?.totalAmbassadorRewards || '0.00'}} <span>MRT</span>
         </div>
@@ -51,7 +51,7 @@
       <div class="stats__item__picture">
         <img src="/assets/v1/images/stats/miningIcon.png" alt="">
       </div>
-      <ng-container *ngIf="!loading; else miningLoading">            
+      <ng-container *ngIf="!loading; else miningLoading">
         <div class="stats__item__info">
           {{totals?.totalMiningRewards || '0.00'}} <span>MRT</span>
         </div>

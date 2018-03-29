@@ -1,7 +1,9 @@
-@import "~styles/v1/theme"
+@import "~styles/v1/common/variables"
+@import "~styles/v1/common/mixins"
+
 .lock-screen
   position: absolute
-  z-index: 9999
+  z-index: 100
   right: 0
   top: 0
   width: 100%
@@ -14,7 +16,7 @@
   padding: 10px
   &__message
     text-align: center
-    +font($baseFont--medium, 14px, 16px, $dark)
+    +font(400, 14px, 16px, $dark)
     background: $white
     display: flex
     align-items: center
@@ -30,7 +32,7 @@
 .lock-screen--full
   width: calc(100% - 300px)
   .lock-screen__message
-    +font($baseFont--medium, 18px, 24px, $dark)
+    +font(400, 18px, 24px, $dark)
     display: block
     padding: 20px
     max-width: 350px

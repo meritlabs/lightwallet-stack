@@ -45,15 +45,12 @@
     <div class="receiveMerit__totals">
       <div class="receiveMerit__totals__qr">
         <div class="receiveMerit__totals__qr__box">
-            <ng-container  *ngIf="qrAddress">
-              <ng-template [ngIf]="address" [ngIfElse]="qrLoading">
-                <qr-code [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'">
-                </qr-code>
-              </ng-template>
-              <ng-template #qrLoading>
-                <img src="/assets/v1/images/receive-merit/qr-example.png" alt="">
-              </ng-template>
-            </ng-container >
+          <ng-container  *ngIf="qrAddress && address; else qrLoading">
+            <qr-code [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
+          </ng-container>
+          <ng-template #qrLoading>
+            <loading-spinner></loading-spinner>
+          </ng-template>
         </div>
         <h3>or</h3>
         <button class="receiveMerit__totals__qr__copy">Copy Link</button>
