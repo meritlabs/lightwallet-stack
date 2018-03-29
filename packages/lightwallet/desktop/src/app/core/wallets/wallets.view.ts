@@ -15,6 +15,5 @@ export class WalletsView {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
 
-  constructor(private store: Store<IRootAppState>) {
-  }
+  constructor(private store: Store<IRootAppState>) {}
 }

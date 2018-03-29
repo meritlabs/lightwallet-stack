@@ -50,7 +50,7 @@ export class AppSettingsService {
     this.logger.info('AppService initialized.');
   }
 
-  async getInfo() {
+  async getInfo(): Promise<AppSettings> {
     if (this.info) {
       return this.info;
     } else {
@@ -58,12 +58,13 @@ export class AppSettingsService {
     }
   }
 
-  private async load() {
+  private async load(): Promise<AppSettings> {
     try {
       await this.config.load();
       await this.language.load();
       // TODO: Load TouchID here?
       this.info = await this.loadInfo();
+      return this.info;
     } catch (e) {
       this.logger.error(e);
       throw new Error(e);

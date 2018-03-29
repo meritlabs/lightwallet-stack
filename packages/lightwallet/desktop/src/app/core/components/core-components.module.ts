@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
 import { NotificationsComponent } from '@merit/desktop/app/core/components/notifications/notifications.component';
@@ -32,7 +33,8 @@ export function getComponents() {
     CommonModule,
     SharedComponentsModule,
     RouterModule,
-    MomentModule
+    MomentModule,
+    CommonPipesModule
   ],
   declarations: getComponents(),
   exports: getComponents()

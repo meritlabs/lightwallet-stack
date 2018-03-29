@@ -5,6 +5,4 @@ import { Component } from '@angular/core';
   templateUrl: './import-wallet.view.html',
   styleUrls: ['./import-wallet.view.sass']
 })
-export class ImportWalletView {
-  showPass: boolean = false;
-}
+export class ImportWalletView {}

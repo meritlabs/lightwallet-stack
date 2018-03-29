@@ -1,4 +1,5 @@
-import { Action } from '@ngrx/store';
+import { IWalletsState } from '@merit/common/reducers/wallets.reducer';
+import { Action, createFeatureSelector } from '@ngrx/store';
 
 export interface IAppState {
   loading: boolean;
@@ -32,3 +33,5 @@ export function appReducer(state: IAppState = INITIAL_STATE, action: AppReducerA
     default: return state;
   }
 }
+
+export const selectAppState = createFeatureSelector<IAppState>('app');

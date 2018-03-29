@@ -167,7 +167,7 @@ export class ProfileService {
     this.wallets.some(w => {
       if (w.id == vault.walletClient.id) {
         if (!w.vaults) w.vaults = [];
-        w.vaults.push(vault); //todo remove client from vault
+        w.vaults.push(vault); 
         return true;
       }
     });

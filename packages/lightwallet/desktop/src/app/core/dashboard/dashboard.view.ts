@@ -21,7 +21,7 @@ export class DashboardView {
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   totals$: Observable<any> = this.store.select(selectWalletTotals);
   transactions$: Observable<IDisplayTransaction[]> = this.store.select(selectTransactions).pipe(
-    map((transactions: IDisplayTransaction[]) => isArray(transactions)? transactions.splice(0, 5) : [])
+    map((transactions: IDisplayTransaction[]) => isArray(transactions)? transactions.slice(0, 5) : [])
   );
   transactionsLoading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
 

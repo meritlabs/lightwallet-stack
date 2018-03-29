@@ -1,0 +1,30 @@
+<div class="sub-page">
+  <div class="back-navigator">
+    <div routerLink="../" class="back-button-container">
+      <div class="back-button"></div>
+    </div>
+    <div class="page-title">
+      <h3>File backup</h3>
+    </div>
+  </div>
+  <div class="container--inner">
+    <form [formGroup]="formData" (ngSubmit)="downloadFileBackup()">
+      <div class="form-group">
+        <label for="password" class="ui-label">Set up password</label>
+        <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password" id="password" placeholder="Protect your backup file with a password">
+        <div class="input-errors" [hidden]="!password.dirty || password.valid">
+          <div [hidden]="!password.hasError('required')">Password is required</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="repeatPassword" class="ui-label">Repeat password</label>
+        <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="repeatPassword" id="repeatPassword" placeholder="">
+        <div class="input-errors" [hidden]="!repeatPassword.dirty || repeatPassword.valid">
+          <div [hidden]="!repeatPassword.hasError('required')">Password is required</div>
+          <div [hidden]="repeatPassword.hasError('required') || !repeatPassword.hasError('PasswordMatch')">Passwords do not match</div>
+        </div>
+      </div>
+      <button role="button" type="submit" class="ui-button ui-button--blue" [disabled]="formData.invalid">Download file</button>
+    </form>
+  </div>
+</div>
