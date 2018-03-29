@@ -4,14 +4,13 @@
     background: transparent;
     display: initial;
     .searchbar-input-container {
-      border: 1px solid rgba(0,0,0,0.2);
       border-radius: 4px;
       overflow: hidden;
     }
   }
 
   button[ion-button].scan-button {
-    margin: 2px 8px 0 0;
+    margin: -6px -6px 0 0;
   }
 }
 
