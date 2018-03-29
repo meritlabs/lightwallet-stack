@@ -1,8 +1,5 @@
 <ion-content>
-  <div *ngIf="loadingContacts" class="loader">
-    <ion-spinner></ion-spinner>
-  </div>
-  <div *ngIf="!loadingContacts && !hasUnlockedWallets" class="unlock-screen">
+  <div *ngIf="!hasUnlockedWallets; else canSend" class="unlock-screen">
     <div class="unlock-backdrop" *ngIf="!hasUnlockedWallets"></div>
     <div class="unlock-popup">
       <div class="top-label">Before you start...</div>
@@ -19,144 +16,155 @@
       </ion-item>
     </ion-list>
   </div>
-  <div *ngIf="!loadingContacts && hasUnlockedWallets && showSlider">
-    <ion-slides pager="true" class="sendSlides" (ionSlideDidChange)="slideChanged()">
-      <ion-slide class="sendSlide">
-        <div class="sendSlide_picture">
-          <img src="/assets/img/icon.png" alt="">
-        </div>
-        <div class="sendSlide__content">
-          <div class="sendSlide_title">
-            Sending Merit
-          </div>
-          <div class="sendSlide_description">
-            Sending merit is super easy and can be received by virtually anyone!
-            However, Merit is an invite only community and sending funds to a new
-            user will require you to have an extra invite.
-          </div>
-        </div>
-      </ion-slide>
-      <ion-slide class="sendSlide">
-        <div class="sendSlide_picture">
-          <img src="/assets/img/logo.svg" alt="">
-        </div>
-        <div class="sendSlide__content">
-          <div class="sendSlide_title">
-            Your Way
-          </div>
-          <div class="sendSlide_description">
-            You can send merit any way you want! To a contact in your phone book,
-            through your favorite chat or social media messenger, or to an
-            existing Merit user via their alias or address.
-          </div>
-        </div>
-      </ion-slide>
-      <ion-slide class="sendSlide">
-        <div class="sendSlide_picture">
-          <img src="/assets/img/logo.svg" alt="">
-        </div>
-        <div class="sendSlide__content">
-          <div class="sendSlide_title">
-            Worry Free
-          </div>
-          <div class="sendSlide_description">
-            You have full control over your transactions when sending to users
-            outside of the Merit network! Cancellable transactions and password
-            protection at the click of a button.
-          </div>
-        </div>
-      </ion-slide>
-      <ion-slide class="sendSlide">
-        <div class="sendSlide_picture">
-          <img src="/assets/img/logo.svg" alt="">
-        </div>
-        <div class="sendSlide__content">
-          <div class="sendSlide_title">
-            Your Way
-          </div>
-          <div class="sendSlide_description">
-            Now you’re ready to send money with the world’s friendliest
-            digital currency.
-          </div>
-          <button (click)="hideSlider()" class="button-ui button-ui--blue-gradient">
-                Get Started!</button>
-        </div>
-      </ion-slide>
-    </ion-slides>
-    <div class="sendSlide__nav">
-      <button type="button" name="button" (click)="slidePrev()">Back</button>
-      <button type="button" name="button" (click)="slideNext()" *ngIf="!sliderIsFinished" class="blue">next</button>
-      <button type="button" name="button" (click)="hideSlider()" *ngIf="sliderIsFinished" class="blue">Finish</button>
+
+  <ng-template #canSend>
+    <div *ngIf="loadingContacts; else contactsLoaded" class="loader">
+      <ion-spinner></ion-spinner>
     </div>
-  </div>
-  <div *ngIf="!loadingContacts && searchResult && hasUnlockedWallets && !showSlider" class="sendRoute content">
-    <div class="sendRoute__header">
-      <div class="sendRoute__title">
-        Send Merit
-      </div>
-    </div>
-    <div class="globalSend">
-      <button (click)="easySend()" [disabled]="!hasActiveInvites" class="globalSend__button">
-          Global send
-      </button>
-    </div>
-    <div class="searchbar-wrapper">
-      <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
-        (ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>
-      <button ion-button clear item-end (click)="openScanner()" class="scan-button" *ngIf="!searchQuery">
-            <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
-          </button>
-    </div>
-    <div class="merit-friends">
-      <div class="merit-friends__groupTitle">
-        Merit Friends
-      </div>
-      <div class="merit-friends__wrap">
-        <div class="no-friends" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
-          <div>
-            <p class="no-friends__title">Merit Friends</p>
-            <p class="no-friends__description">Quickly send Merit to any alias on the Merit network in seconds.</p>
+
+    <ng-template #contactsLoaded>
+      <ng-container *ngIf="showSlider; else sendPage">
+          <ion-slides pager="true" class="sendSlides" (ionSlideDidChange)="slideChanged()">
+            <ion-slide class="sendSlide">
+              <div class="sendSlide_picture">
+                <img src="/assets/img/icon.png" alt="">
+              </div>
+              <div class="sendSlide__content">
+                <div class="sendSlide_title">
+                  Sending Merit
+                </div>
+                <div class="sendSlide_description">
+                  Sending merit is super easy and can be received by virtually anyone!
+                  However, Merit is an invite only community and sending funds to a new
+                  user will require you to have an extra invite.
+                </div>
+              </div>
+            </ion-slide>
+            <ion-slide class="sendSlide">
+              <div class="sendSlide_picture">
+                <img src="/assets/img/logo.svg" alt="">
+              </div>
+              <div class="sendSlide__content">
+                <div class="sendSlide_title">
+                  Your Way
+                </div>
+                <div class="sendSlide_description">
+                  You can send merit any way you want! To a contact in your phone book,
+                  through your favorite chat or social media messenger, or to an
+                  existing Merit user via their alias or address.
+                </div>
+              </div>
+            </ion-slide>
+            <ion-slide class="sendSlide">
+              <div class="sendSlide_picture">
+                <img src="/assets/img/logo.svg" alt="">
+              </div>
+              <div class="sendSlide__content">
+                <div class="sendSlide_title">
+                  Worry Free
+                </div>
+                <div class="sendSlide_description">
+                  You have full control over your transactions when sending to users
+                  outside of the Merit network! Cancellable transactions and password
+                  protection at the click of a button.
+                </div>
+              </div>
+            </ion-slide>
+            <ion-slide class="sendSlide">
+              <div class="sendSlide_picture">
+                <img src="/assets/img/logo.svg" alt="">
+              </div>
+              <div class="sendSlide__content">
+                <div class="sendSlide_title">
+                  Your Way
+                </div>
+                <div class="sendSlide_description">
+                  Now you’re ready to send money with the world’s friendliest
+                  digital currency.
+                </div>
+                <button (click)="hideSlider()" class="button-ui button-ui--blue-gradient">
+                  Get Started!</button>
+              </div>
+            </ion-slide>
+          </ion-slides>
+          <div class="sendSlide__nav">
+            <button type="button" name="button" (click)="slidePrev()">Back</button>
+            <button type="button" name="button" (click)="slideNext()" *ngIf="!sliderIsFinished" class="blue">next</button>
+            <button type="button" name="button" (click)="hideSlider()" *ngIf="sliderIsFinished" class="blue">Finish</button>
           </div>
-          <div>
-            <a href="" class="no-friends__add" (click)="bindAddressToContact()">Add Merit Friend</a>
-          </div>
-        </div>
-        <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
-          <div class="no-results-label" *ngIf="!searchResult.error">
-            <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
-          </div>
-          <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
-            Address is not confirmed yeta
-          </div>
-          <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
-            Alias not found
-          </div>
-          <div *ngIf="searchResult.toNewEntity" margin-top>
-            <button (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
-              <div *ngIf="searchResult.toNewEntity.destination == 'address'">
-                Send To {{searchQuery}}</div>
-            </button> or
-            <div class="button-contact" *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()">
-              <div class="icon add__icon"></div>
-              <div>Create New Contact</div>
-            </div>
-            <div class="button-contact" *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length" (click)="bindAddressToContact()">
-              <div class="icon bind__icon"></div>
-              <div>Bind to existing contactt</div>
+      </ng-container>
+      <ng-template #sendPage>
+        <div class="sendRoute content">
+          <div class="sendRoute__header">
+            <div class="sendRoute__title">
+              Send Merit
             </div>
           </div>
-        </div>
-        <div *ngIf="searchResult.withMerit.length" [hidden]="showRecent" class="friends">
-          <div class="friend" *ngFor="let contact of searchResult.withMerit" (click)="sendToContact(contact)">
-            <contact-avatar [contact]="contact" class="friend__avatar"></contact-avatar>
-            <div class="friend__info">
-              <span class="friend__title">{{ contact.name.formatted }}</span>
-              <span class="friend__alias" *ngFor="let address of contact.meritAddresses">
+          <div class="globalSend">
+            <button (click)="easySend()" [disabled]="!hasActiveInvites" class="globalSend__button">
+              Global send
+            </button>
+          </div>
+          <div class="searchbar-wrapper">
+            <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
+                           (ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>
+            <button ion-button clear item-end (click)="openScanner()" class="scan-button" *ngIf="!searchQuery">
+              <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
+            </button>
+          </div>
+          <div class="merit-friends">
+            <div class="merit-friends__groupTitle">
+              Merit Friends
+            </div>
+            <div class="merit-friends__wrap">
+              <div class="no-friends" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
+                <div>
+                  <p class="no-friends__title">Merit Friends</p>
+                  <p class="no-friends__description">Quickly send Merit to any alias on the Merit network in seconds.</p>
+                </div>
+                <div>
+                  <a href="" class="no-friends__add" (click)="bindAddressToContact()">Add Merit Friend</a>
+                </div>
+              </div>
+              <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
+                <div class="no-results-label" *ngIf="!searchResult.error">
+                  <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
+                </div>
+                <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
+                  Address is not confirmed yeta
+                </div>
+                <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
+                  Alias not found
+                </div>
+                <div *ngIf="searchResult.toNewEntity" margin-top>
+                  <button (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
+                    <div *ngIf="searchResult.toNewEntity.destination == 'address'">
+                      Send To {{searchQuery}}</div>
+                  </button> or
+                  <div class="button-contact" *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()">
+                    <div class="icon add__icon"></div>
+                    <div>Create New Contact</div>
+                  </div>
+                  <div class="button-contact" *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length" (click)="bindAddressToContact()">
+                    <div class="icon bind__icon"></div>
+                    <div>Bind to existing contactt</div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="searchResult.withMerit.length" [hidden]="showRecent" class="friends">
+                <div class="friend" *ngFor="let contact of searchResult.withMerit" (click)="sendToContact(contact)">
+                  <contact-avatar [contact]="contact" class="friend__avatar"></contact-avatar>
+                  <div class="friend__info">
+                    <span class="friend__title">{{ contact.name.formatted }}</span>
+                    <span class="friend__alias" *ngFor="let address of contact.meritAddresses">
                 @{{ address.alias }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+      </ng-template>
+    </ng-template>
+  </ng-template>
 </ion-content>
