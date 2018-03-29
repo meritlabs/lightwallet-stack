@@ -5,7 +5,7 @@
       <p>Send Merit</p>
     </div>
 
-    <error-message *ngIf="error">{{ error }}</error-message>
+    <error-message *ngIf="error">{{ error }</error-message>
 
     <div class="sendMerit__content">
 
@@ -87,7 +87,7 @@
       <div class="sendMerit__totals">
         <div class="sendMerit__form__group">
           <div class="sendMerit__totals__table" *ngIf="receipt$ | async as receipt">
-            <loading-spinner *ngIf="receipt.loading; else hasData"></loading-spinner>
+            <loading-spinner-small *ngIf="receipt.loading; else hasData"></loading-spinner-small>
             <ng-template #hasData>
               <div class="sendMerit__totals__table--top">
                 <label for="" class="ui-label">Receipt</label>
