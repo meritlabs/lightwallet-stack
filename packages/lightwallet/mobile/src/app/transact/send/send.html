@@ -6,7 +6,8 @@
       <img src="assets/img/icons/confirm.svg">
       <h2>Waiting for unlock</h2>
       <div class="bottom-label">You cannot send Merit until your wallet unlock
-        request is confirmed</div>
+        request is confirmed
+      </div>
     </div>
     <ion-list>
       <ion-item *ngFor="let idx of [0,1,2,3,4,5,6,7,8,9,10]" class="contact-stub">
@@ -24,74 +25,76 @@
 
     <ng-template #contactsLoaded>
       <ng-container *ngIf="showSlider; else sendPage">
-          <ion-slides pager="true" class="sendSlides" (ionSlideDidChange)="slideChanged()">
-            <ion-slide class="sendSlide">
-              <div class="sendSlide_picture">
-                <img src="/assets/img/icon.png" alt="">
+        <ion-slides pager="true" class="sendSlides" (ionSlideDidChange)="slideChanged()">
+          <ion-slide class="sendSlide">
+            <div class="sendSlide_picture">
+              <img src="/assets/img/icon.png" alt="">
+            </div>
+            <div class="sendSlide__content">
+              <div class="sendSlide_title">
+                Sending Merit
               </div>
-              <div class="sendSlide__content">
-                <div class="sendSlide_title">
-                  Sending Merit
-                </div>
-                <div class="sendSlide_description">
-                  Sending merit is super easy and can be received by virtually anyone!
-                  However, Merit is an invite only community and sending funds to a new
-                  user will require you to have an extra invite.
-                </div>
+              <div class="sendSlide_description">
+                Sending merit is super easy and can be received by virtually anyone!
+                However, Merit is an invite only community and sending funds to a new
+                user will require you to have an extra invite.
               </div>
-            </ion-slide>
-            <ion-slide class="sendSlide">
-              <div class="sendSlide_picture">
-                <img src="/assets/img/logo.svg" alt="">
+            </div>
+          </ion-slide>
+          <ion-slide class="sendSlide">
+            <div class="sendSlide_picture">
+              <img src="/assets/img/logo.svg" alt="">
+            </div>
+            <div class="sendSlide__content">
+              <div class="sendSlide_title">
+                Your Way
               </div>
-              <div class="sendSlide__content">
-                <div class="sendSlide_title">
-                  Your Way
-                </div>
-                <div class="sendSlide_description">
-                  You can send merit any way you want! To a contact in your phone book,
-                  through your favorite chat or social media messenger, or to an
-                  existing Merit user via their alias or address.
-                </div>
+              <div class="sendSlide_description">
+                You can send merit any way you want! To a contact in your phone book,
+                through your favorite chat or social media messenger, or to an
+                existing Merit user via their alias or address.
               </div>
-            </ion-slide>
-            <ion-slide class="sendSlide">
-              <div class="sendSlide_picture">
-                <img src="/assets/img/logo.svg" alt="">
+            </div>
+          </ion-slide>
+          <ion-slide class="sendSlide">
+            <div class="sendSlide_picture">
+              <img src="/assets/img/logo.svg" alt="">
+            </div>
+            <div class="sendSlide__content">
+              <div class="sendSlide_title">
+                Worry Free
               </div>
-              <div class="sendSlide__content">
-                <div class="sendSlide_title">
-                  Worry Free
-                </div>
-                <div class="sendSlide_description">
-                  You have full control over your transactions when sending to users
-                  outside of the Merit network! Cancellable transactions and password
-                  protection at the click of a button.
-                </div>
+              <div class="sendSlide_description">
+                You have full control over your transactions when sending to users
+                outside of the Merit network! Cancellable transactions and password
+                protection at the click of a button.
               </div>
-            </ion-slide>
-            <ion-slide class="sendSlide">
-              <div class="sendSlide_picture">
-                <img src="/assets/img/logo.svg" alt="">
+            </div>
+          </ion-slide>
+          <ion-slide class="sendSlide">
+            <div class="sendSlide_picture">
+              <img src="/assets/img/logo.svg" alt="">
+            </div>
+            <div class="sendSlide__content">
+              <div class="sendSlide_title">
+                Your Way
               </div>
-              <div class="sendSlide__content">
-                <div class="sendSlide_title">
-                  Your Way
-                </div>
-                <div class="sendSlide_description">
-                  Now you’re ready to send money with the world’s friendliest
-                  digital currency.
-                </div>
-                <button (click)="hideSlider()" class="button-ui button-ui--blue-gradient">
-                  Get Started!</button>
+              <div class="sendSlide_description">
+                Now you’re ready to send money with the world’s friendliest
+                digital currency.
               </div>
-            </ion-slide>
-          </ion-slides>
-          <div class="sendSlide__nav">
-            <button type="button" name="button" (click)="slidePrev()">Back</button>
-            <button type="button" name="button" (click)="slideNext()" *ngIf="!sliderIsFinished" class="blue">next</button>
-            <button type="button" name="button" (click)="hideSlider()" *ngIf="sliderIsFinished" class="blue">Finish</button>
-          </div>
+              <button (click)="hideSlider()" class="button-ui button-ui--blue-gradient">
+                Get Started!
+              </button>
+            </div>
+          </ion-slide>
+        </ion-slides>
+        <div class="sendSlide__nav">
+          <button type="button" name="button" (click)="slidePrev()">Back</button>
+          <button type="button" name="button" (click)="slideNext()" *ngIf="!sliderIsFinished" class="blue">next</button>
+          <button type="button" name="button" (click)="hideSlider()" *ngIf="sliderIsFinished" class="blue">Finish
+          </button>
+        </div>
       </ng-container>
       <ng-template #sendPage>
         <div class="sendRoute content">
@@ -120,7 +123,8 @@
               <div class="no-friends" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
                 <div>
                   <p class="no-friends__title">Merit Friends</p>
-                  <p class="no-friends__description">Quickly send Merit to any alias on the Merit network in seconds.</p>
+                  <p class="no-friends__description">Quickly send Merit to any alias on the Merit network in
+                    seconds.</p>
                 </div>
                 <div>
                   <a href="" class="no-friends__add" (click)="bindAddressToContact()">Add Merit Friend</a>
@@ -139,15 +143,20 @@
                 <div *ngIf="searchResult.toNewEntity" margin-top>
                   <button (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
                     <div *ngIf="searchResult.toNewEntity.destination == 'address'">
-                      Send To {{searchQuery}}</div>
-                  </button> or
-                  <div class="button-contact" *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()">
+                      Send To {{searchQuery}}
+                    </div>
+                  </button>
+                  or
+                  <div class="button-contact" *ngIf="searchResult.toNewEntity.destination == 'address'"
+                       (click)="createContact()">
                     <div class="icon add__icon"></div>
                     <div>Create New Contact</div>
                   </div>
-                  <div class="button-contact" *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length" (click)="bindAddressToContact()">
+                  <div class="button-contact"
+                       *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
+                       (click)="bindAddressToContact()">
                     <div class="icon bind__icon"></div>
-                    <div>Bind to existing contactt</div>
+                    <div>Bind to existing contact</div>
                   </div>
                 </div>
               </div>
