@@ -54,9 +54,9 @@ export class TransactView {
     }
   }
 
-  ionViewCanEnter() {
-    const profile = this.profileService.profile;
-    return (profile && profile.credentials && profile.credentials.length > 0);
+  async ionViewCanEnter() {
+    const wallets = await this.profileService.wallets;
+    return wallets && wallets.length > 0;
   }
 
   countUnlockRequests() {

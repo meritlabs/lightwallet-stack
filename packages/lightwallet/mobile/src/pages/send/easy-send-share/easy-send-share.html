@@ -2,7 +2,7 @@
 
     <div class="send-ready">
         <div class="send-ready-inner">
-            <img src="assets/img/invite.svg" alt="">
+            <img src="/assets/img/global-send/easy-send.svg" alt="">
         </div>
     </div>
 
@@ -32,12 +32,63 @@
         </ion-row>
 
     </ion-card>
-
-
-    <ion-footer>
-        <button ion-button icon-end class="action-button" color="primary" (click)="toWallets()">
-            Back to Wallets
-        </button>
-    </ion-footer>
-
+    <div class="transactionDetails" *ngIf="txData.details">
+      <div class="transactionDetails_header">
+        <p class="heading">TRANSACTION DETAILS</p>
+        <p class="mrt">{{ txData.details.amountMRT }} MRT</p>
+        <p class="usd">$ {{ txData.details.amountMRT * 0.15 }} USD</p>
+      </div>
+      <div class="transactionDetails_group">
+        <div class="transactionDetails_row">
+          <div class="transactionDetails_column">
+            From
+          </div>
+          <div class="transactionDetails_column grey">
+            {{ txData.details.from }}
+          </div>
+        </div>
+        <div class="transactionDetails_row">
+          <div class="transactionDetails_column">
+            Method
+          </div>
+          <div class="transactionDetails_column grey">
+            {{ txData.details.method }}
+          </div>
+        </div>
+        <div class="transactionDetails_row">
+          <div class="transactionDetails_column">
+            Password
+          </div>
+          <div class="transactionDetails_column grey w-input">
+            <input type="{{show ? 'text' : 'password'}}" name="" value="{{txData.details.password}}">
+            <div class="eye eye-{{show}}" (click)="show=!show">
+              <img src="assets/img/icons/visible.svg" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="transactionDetails_row">
+          <div class="transactionDetails_column">
+            Fee
+          </div>
+          <div class="transactionDetails_column grey">
+            <p>{{ txData.details.fee }} MRT</p>
+            <p><small>$ {{ txData.details.fee }} USD</small></p>
+          </div>
+        </div>
+        <div class="transactionDetails_row">
+          <div class="transactionDetails_column">
+            Total
+          </div>
+          <div class="transactionDetails_column">
+            <p class="blue">{{ txData.details.total }} MRT</p>
+            <p class="grey"><small>$ {{ txData.details.total }} USD</small></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <button class="back-button" color="primary" (click)="toWallets()">
+          Back to Wallets
+      </button>
+    </div>
 </ion-content>

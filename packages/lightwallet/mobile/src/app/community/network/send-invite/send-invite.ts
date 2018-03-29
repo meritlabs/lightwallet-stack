@@ -10,6 +10,7 @@ import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { AddressService } from '@merit/common/services/address.service';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { SendMethodDestination } from '@merit/common/models/send-method';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 const ERROR_ADDRESS_NOT_FOUND = 'ADDRESS_NOT_FOUND';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -31,7 +32,7 @@ export class SendInviteView {
     error: string
   } = { withMerit: [], toNewEntity: null, error: null };
 
-  private wallets: Array<any>;
+  private wallets: Array<MeritWalletClient>;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -50,7 +51,9 @@ export class SendInviteView {
     this.loadingContacts = false;
     this.parseSearch();
     if (this.wallets) {
-      this.availableInvites = this.wallets.reduce((invites, wallet) => invites + wallet.invites, 0);
+      this.availableInvites = this.wallets.reduce((nbInvites, wallet) => {
+        return nbInvites + wallet.availableInvites
+      }, 0);
     }
   }
 
@@ -161,12 +164,7 @@ export class SendInviteView {
 
     const toAddress = contact.meritAddresses[0].address;
 
-    let wallet = null;
-    this.wallets.some(w => {
-      if (w.invites) {
-        return wallet = w;
-      }
-    });
+    let wallet = this.wallets.find(w => (w.availableInvites > 0));
     if (!wallet) {
       return this.toastCtrl.create({
         message: 'You have no active invites',
@@ -175,7 +173,7 @@ export class SendInviteView {
     }
 
     try {
-      await this.walletService.sendInvite(wallet.client, toAddress);
+      await this.walletService.sendInvite(wallet, toAddress);
       return this.navCtrl.pop();
     } catch (e) {
       console.log(e);

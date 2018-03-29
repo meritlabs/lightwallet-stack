@@ -21,13 +21,13 @@ export class VaultDepositView {
     private vaultsService: VaultsService
   ) {
     this.vault = this.navParams.get('vault');
-    console.log(this.vault);
   }
 
   get isSendingAvailable() {
       return (
         this.amount
-        && this.rateService.mrtToMicro(this.amount) <= this.vault.walletClient.status.confirmedAmount
+        && this.amount > 0
+        && this.rateService.mrtToMicro(this.amount) <= this.vault.walletClient.balance.totalConfirmedAmount
       )
   }
 

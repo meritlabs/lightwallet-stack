@@ -9,6 +9,10 @@ import { AddressScannerService } from '@merit/mobile/app/utilities/import/addres
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
 import { AddressService } from '@merit/common/services/address.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
+import { ViewChild } from '@angular/core';
+import { Slides } from 'ionic-angular';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -19,10 +23,16 @@ const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
   templateUrl: 'send.html'
 })
 export class SendView {
+
+  @ViewChild(Slides) slides: Slides;
+  get sliderIsFinished(): boolean {
+    return this.slides.isEnd();
+  }
+
   private recentContacts: Array<MeritContact> = [];
   private suggestedMethod: ISendMethod;
   searchQuery: string = '';
-  loadingContacts: boolean = false;
+  loadingContacts: boolean;
   contacts: Array<MeritContact> = [];
   amount: number;
   searchResult: {
@@ -36,24 +46,49 @@ export class SendView {
 
   hasUnlockedWallets: boolean;
   hasActiveInvites: boolean;
+  showSlider: boolean;
 
   constructor(private navCtrl: NavController,
-              private contactsService: ContactsService,
-              private profileService: ProfileService,
-              private addressService: AddressService,
-              private modalCtrl: ModalController,
-              private addressScanner: AddressScannerService) {
+    private contactsService: ContactsService,
+    private profileService: ProfileService,
+    private addressService: AddressService,
+    private modalCtrl: ModalController,
+    private addressScanner: AddressScannerService,
+    private persistenceService: PersistenceService
+  ) {
+    // WARNING: EXAMPLE OF THE DATA OBJECT
+    // this.navCtrl.push('EasySendShareView', {txData: {
+    //   "easySendUrl": "http://localhost:8100/#/transact/send/send-amounttransact/send/send-amounttransact/send/send-amount",
+    //   "details": {
+    //     "amountMRT": "3.00",
+    //     "from": "Personal Wallet",
+    //     "method": "Invite & Send",
+    //     "password": "123",
+    //     "fee": "0.001",
+    //     "total": "2.999"
+    //   }
+    // }});
   }
 
   private async updateHasUnlocked() {
     const wallets = await this.profileService.getWallets();
-    this.hasUnlockedWallets = wallets && wallets.some(w => w.confirmed);
-    this.hasActiveInvites = wallets && wallets.some(w => w.status && w.status.availableInvites > 0);
+    this.hasUnlockedWallets = wallets.some(w => w.confirmed);
+    this.hasActiveInvites = wallets.some(w => w.availableInvites > 0);
+
+    let pagesVisited = await this.persistenceService.getPagesVisited();
+    this.showSlider = (pagesVisited.indexOf('send') == -1);
+  }
+
+  async hideSlider() {
+    this.showSlider = false;
+    let pagesVisited = await this.persistenceService.getPagesVisited();
+    pagesVisited = pagesVisited.filter(p => p != 'send');
+    pagesVisited.push('send');
+    return this.persistenceService.setPagesVisited(pagesVisited);
   }
 
   async ionViewWillEnter() {
     this.loadingContacts = true;
-    //await this.contactsService.requestDevicePermission();
     await this.updateHasUnlocked();
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
@@ -207,6 +242,17 @@ export class SendView {
     }
   }
 
+  addContact() {
+    let meritAddress = {
+      address: null,
+      network: null
+    };
+    let modal = this.modalCtrl.create('SendCreateContactView');
+    modal.onDidDismiss((contact) => {
+      this.navCtrl.pop();
+    });
+    modal.present();
+  }
   createContact() {
     let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
     let modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
@@ -240,14 +286,26 @@ export class SendView {
   }
 
   sendToContact(contact) {
-
-    this.navCtrl.push('SendViaView', {
+    const modal = this.modalCtrl.create('SendViaView', {
       contact: contact,
       amount: this.amount
+    }, MERIT_MODAL_OPTS
+    );
+    modal.onDidDismiss((contact) => {
+      if (contact) {
+        this.navCtrl.push('SendViaView', {
+          contact: contact,
+          amount: this.amount,
+          suggestedMethod: this.suggestedMethod,
+          isEasyEnabled: this.hasActiveInvites
+        });
+      }
     });
+    modal.present();
+  }
+  editContact() {
 
   }
-
   sendToEntity(entity) {
     this.navCtrl.push('SendAmountView', {
       contact: entity.contact,
@@ -266,10 +324,18 @@ export class SendView {
     this.parseSearch();
   }
 
+
   easySend() {
     this.navCtrl.push('SendAmountView', {
-      suggestedMethod: {type: SendMethodType.Easy}
+      suggestedMethod: { type: SendMethodType.Easy }
     });
   }
 
+  slideNext() {
+    this.sliderIsFinished ? this.slides.slideNext() : this.hideSlider();
+  }
+
+  slidePrev() {
+    this.slides.slidePrev();
+  }
 }

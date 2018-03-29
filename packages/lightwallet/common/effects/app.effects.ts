@@ -6,7 +6,6 @@ import { filter, tap } from 'rxjs/operators';
 
 @Injectable()
 export class AppEffects {
-
   // Take the user to the onboarding page if they delete all wallets
   @Effect({ dispatch: false }) update$ = this.actions$.pipe(
     ofType(AppReducerActionType.UPDATE),

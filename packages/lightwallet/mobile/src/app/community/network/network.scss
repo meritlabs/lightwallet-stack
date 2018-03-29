@@ -75,6 +75,10 @@ view-network {
     }
   }
 
+  .address {
+    font-size: 12px !important;
+  }
+
   ion-list.list {
     $border-color: transparentize(#d1d6dc, 0.5);
     border-bottom: 1px solid $border-color;

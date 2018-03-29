@@ -4,6 +4,8 @@ import { IonicPageModule } from 'ionic-angular';
 import { WalletDetailsView } from '@merit/mobile/app/wallets/wallet-details/wallet-details';
 import { ComponentsModule } from '../../../components/components.module';
 import { DirectivesModule } from '../../../directives/directives.module';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
+
 
 @NgModule({
   declarations: [
@@ -13,7 +15,8 @@ import { DirectivesModule } from '../../../directives/directives.module';
     IonicPageModule.forChild(WalletDetailsView),
     MomentModule,
     ComponentsModule,
-    DirectivesModule
+    DirectivesModule,
+    CommonPipesModule
   ]
 })
 export class WalletDetailsModule {

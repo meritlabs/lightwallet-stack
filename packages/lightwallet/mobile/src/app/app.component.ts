@@ -59,7 +59,6 @@ export class MeritLightWallet {
   }
 
   private async loadEasySendInBrowser() {
-    let profile = await this.profileService.getProfile();
 
     let search = window.location.search;
     if (search && search.length > 2) {
@@ -79,7 +78,7 @@ export class MeritLightWallet {
         // We have an easyReceipt, let's handle the cases of being a new user or an
         // existing user.
         if (easyReceipt) {
-          if (!(profile && profile.credentials && profile.credentials.length > 0)) {
+          if (!await this.profileService.isAuthorized()) {
             // User received easySend, but has no wallets yet.
             // Skip to unlock view.
             await this.nav.setRoot('UnlockView');
@@ -103,11 +102,11 @@ export class MeritLightWallet {
     if (!this.platform.is('cordova')) return this.loadEasySendInBrowser();
 
     try {
-      let profile = await this.profileService.getProfile();
       this.logger.info('Got Profile....');
       // If the user has credentials and a profile, then let's send them to the transact
       // view
-
+      
+      const isAuthorized = await this.profileService.isAuthorized();
       return new Promise<boolean>((resolve) => {
         this.deepLinkService.initBranch(async (data) => {
           this.logger.info('Branch Data: ', data);
@@ -123,7 +122,8 @@ export class MeritLightWallet {
               // We have an easyReceipt, let's handle the cases of being a new user or an
               // existing user.
               if (easyReceipt) {
-                if (!(profile && profile.credentials && profile.credentials.length > 0)) {
+                
+                if (!isAuthorized) {
                   // User received easySend, but has no wallets yet.
                   // Skip to unlock view.
                   await this.nav.setRoot('UnlockView');
@@ -164,10 +164,8 @@ export class MeritLightWallet {
 
     const receivedEasySend: boolean = await this.loadProfileAndEasySend();
 
-    if (!receivedEasySend) {
-      let profile = await this.profileService.getProfile();
-      await this.nav.setRoot((profile && profile.credentials && profile.credentials.length > 0) ? 'TransactView' : 'OnboardingView');
-    }
+    const authorized = await this.profileService.isAuthorized();
+    this.nav.setRoot( authorized ? 'TransactView' : 'OnboardingView');
 
     // wait until we have a root view before hiding splash screen
     this.splashScreen.hide();

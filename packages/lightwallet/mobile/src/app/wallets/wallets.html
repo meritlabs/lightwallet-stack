@@ -1,15 +1,16 @@
 <ion-header>
   <div class="big-header">
-    <button ion-button clear icon-only class="header-action-button" navPush="SettingsView">
+    <button ion-button clear icon-only class="header-action-button" navPush="SettingsView"> 
       <ion-icon name="settings" merit-icon></ion-icon>
     </button>
+    <ion-spinner *ngIf="refreshing" class="refresh-spinner"></ion-spinner>
     <p>Total Value of Your Wallets</p>
     <ion-spinner *ngIf="loading; else notLoading"></ion-spinner>
     <ng-template #notLoading>
       <h2 *ngIf="allBalancesHidden; else balancesNotHidden"></h2>
       <ng-template #balancesNotHidden>
         <h2 class="amount">
-          {{ (totalAmount || 0) | toMRT:8:true }}&nbsp;<small>MRT</small>
+          {{ ( totalAmount || '0.00') | toMRT:8 }} 
         </h2>
         <h3 class="detail-fiat">{{ totalWalletsValueFiat }}</h3>
         <h3 class="detail-fiat">{{ totalInvites }} Invites</h3>
@@ -36,48 +37,47 @@
 
   <ion-list class="wallets" *ngIf="wallets">
 
-    <ng-container *ngFor="let wallet of wallets; trackBy: wallet?.id">
-      <button ion-item *ngIf="wallet.client.confirmed; else notConfirmed" navPush="WalletDetailsView"
-              [navParams]="{ wallet: wallet }" class="wallet">
+    <div *ngFor="let wallet of wallets; trackBy: wallet?.id">
+      <button ion-item *ngIf="wallet.confirmed; else notConfirmed" navPush="WalletDetailsView"
+              [navParams]="{ wallet: wallet, walletId: wallet.id }" class="wallet">
         <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color"
                     [style.box-shadow]="'0 0 0 2px ' + wallet.color">
           <img src="assets/img/icons/wallet.svg">
         </ion-avatar>
 
         <ion-label>
-          <h2>{{ wallet.name || wallet.client._id }}</h2>
+          <h2 *ngIf="wallet.name">{{ wallet.name }}</h2>
+          <h2 *ngIf="!wallet.name && wallet.rootAlias">@{{ wallet.rootAlias}}</h2>
+          <h2 *ngIf="!wallet.name && !wallet.rootAlias">Personal wallet</h2>
+
           <p *ngIf="wallet.balanceHidden; else notHidden">
             [Balance Hidden]
           </p>
           <ng-template #notHidden>
-            <p class="merit-amount" *ngIf="wallet.totalBalanceStr">
-              {{ wallet.totalBalanceStr }} {{ wallet.cachedBalance ? (' &middot; ' +
-              wallet.client.cachedBalanceUpdatedOn * 1000 | amTimeAgo) : '' }}&nbsp;<span>MRT</span>
+            <p class="merit-amount">
+              {{ wallet.balance.spendableAmount | toMRT}}
             </p>
           </ng-template>
           <p class="invites">
-            Invites: {{ wallet.invites || 0}}
+            Invites: {{ wallet.availableInvites || 0}}
           </p>
         </ion-label>
 
-        <ion-note *ngIf="!wallet.client.isComplete(); else isComplete" class="assertive">Incomplete</ion-note>
+        <ion-note *ngIf="!wallet.isComplete(); else isComplete" class="assertive">Incomplete</ion-note>
         <ng-template #isComplete>
           <ion-note class="balance" item-end>
-            <span *ngIf="wallet.client.n > 1">
-                {{ wallet.client.m }}-of-{{ wallet.client.n }}
-            </span>
-            <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.client.status.alternativeBalanceAvailable">
-              {{ wallet.client.status.totalBalanceAlternativeStr }}
+              <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.alternativeBalanceAvailable">
+              {{ wallet.balance.spendableAmount | toFiat }}
             </div>
 
-            <span class="error" *ngIf="wallet.client.error">{{ wallet.client.error }}</span>
+            <span class="error" *ngIf="wallet.error">{{ wallet.error }}</span>
           </ion-note>
         </ng-template>
 
       </button>
 
       <ng-template #notConfirmed>
-        <div *ngIf="!wallet.client.confirmed" class="wallet">
+        <div *ngIf="!wallet.confirmed" class="wallet">
           <div class="unlock-backdrop"></div>
 
           <div class="unlock-popup">
@@ -99,9 +99,9 @@
         </div>
       </ng-template>
 
-    </ng-container>
+    </div>
 
-    <button ion-item class="import-wallet-button" (click)="toImportWallet()" detail-none>
+    <button ion-item class="import-wallet-button" navPush="ImportView" detail-none>
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/export.svg">
       </ion-avatar>
@@ -116,7 +116,7 @@
             Vaults
             <button ion-button item-end round add-button icon-only
                     navPush="VaultCreateView" [navParams]="{wallets: wallets}"
-                    [disabled]="!hasActiveInvites">
+                    [disabled]="totalInvites == 0">
                 <ion-icon name="add"></ion-icon>
             </button>
         </ion-item-divider>

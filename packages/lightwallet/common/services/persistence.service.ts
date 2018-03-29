@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
-import { Profile } from '@merit/common/models/profile';
 import * as _ from 'lodash';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
@@ -38,6 +37,7 @@ const Keys = {
   SEND_HISTORY: 'sendHistory',
   HIDDEN_REQUESTS_ADDRESSES: 'hiddenRequestsAddresses',
   ACTIVE_UNLOCK_REQUESTS_NUMBER: 'activeUnlockRequests',
+  PAGES_VISITED: 'pagesVisited'
 };
 
 @Injectable()
@@ -47,12 +47,14 @@ export class PersistenceService {
               private log: LoggerService) {
   }
 
-  storeNewProfile(profile: Profile): Promise<void> {
-    return this.set(Keys.PROFILE, JSON.parse(profile.toObj()));
+  storeNewProfile(profile: any): Promise<void> {
+    if (profile.toObj) profile = JSON.parse(profile.toObj()); //todo temporary workaround
+    return this.set(Keys.PROFILE, profile);
   }
 
-  storeProfile(profile: Profile): Promise<void> {
-    return this.set(Keys.PROFILE, JSON.parse(profile.toObj()));
+  storeProfile(profile: any): Promise<void> {
+    if (profile.toObj) profile = JSON.parse(profile.toObj()); //todo temporary workaround
+    return this.set(Keys.PROFILE, profile);
   }
 
   getProfile() {
@@ -417,6 +419,14 @@ export class PersistenceService {
     return this.storage.set(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER, requests);
   }
 
+  setPagesVisited(pages: Array<string>) {
+    return this.storage.set(Keys.PAGES_VISITED, pages);
+  }
+
+  async getPagesVisited() {
+    let pages = await this.storage.get(Keys.PAGES_VISITED);
+    return pages || [];
+  }
 
   private get(key: any) {
     return this.storage.get(key);
@@ -429,4 +439,6 @@ export class PersistenceService {
   private remove(key: any) {
     return this.storage.remove(key);
   }
+
+
 }

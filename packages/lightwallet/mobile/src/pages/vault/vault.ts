@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage,  NavParams } from 'ionic-angular';
 import { IVault } from '@merit/common/models/vault';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { VaultsService }from '@merit/common/services/vaults.service';
 import { AddressService } from "@merit/common/services/address.service";
 import { ModalController } from 'ionic-angular';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+
 
 @IonicPage()
 @Component({
@@ -16,9 +17,9 @@ export class VaultView {
 
   public vault: IVault;
   public vaultId: string;
-  public wallets: Array<DisplayWallet>;
+  public wallets: Array<MeritWalletClient>;
   public transactions: Array<any>;
-  public indexedWallets: { [rootAddress: string]: DisplayWallet };
+  public indexedWallets: { [rootAddress: string]: MeritWalletClient };
 
   public whitelist: Array<{label: string, address: string, alias: string}>;
 
@@ -32,7 +33,7 @@ export class VaultView {
     this.vaultId = this.navParams.get('vaultId');
     this.wallets = this.navParams.get('wallets');
     this.indexedWallets = this.wallets.reduce((result, w) => {
-      result[w.client.getRootAddress().toString()] = w;
+      result[w.rootAddress.toString()] = w;
       return result;
     }, {});
   }

@@ -7,6 +7,11 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 export class PushNotificationsService {
   protected token;
 
+  constructor(
+    public http: HttpClient,
+    public logger: LoggerService
+  ) {}
+
   protected get pushNotificationsEnabled(): boolean {
     return false;
   }
@@ -14,9 +19,6 @@ export class PushNotificationsService {
   protected get hasPermission(): boolean {
     return false;
   }
-
-  constructor(protected http: HttpClient,
-              protected logger: LoggerService) {}
 
   // abstract methods
   init(): Promise<void> { return; }

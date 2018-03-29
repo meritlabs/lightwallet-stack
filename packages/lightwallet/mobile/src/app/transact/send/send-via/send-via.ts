@@ -74,10 +74,6 @@ export class SendViaView {
     }
   }
 
-  editContact() {
-    return this.navCtrl.push('SendEditContactView', { contact: this.contact, amount: this.amount });
-  }
-
   select(type, destination, value, alias?) {
     return this.navCtrl.push('SendAmountView', {
       contact: this.contact,
@@ -94,6 +90,9 @@ export class SendViaView {
   showEasyTooltip() {
     return this.showTooltip('Easy Send',
       'EasySend transactions could be returned, password protected and limited by expiration time. You can send Merit either to existing merit address or share a link via sms/email');
+  }
+  cancel() {
+    this.navCtrl.pop();
   }
 
   private showTooltip(title, message) {

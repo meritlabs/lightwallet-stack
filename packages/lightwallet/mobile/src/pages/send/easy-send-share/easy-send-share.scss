@@ -1,6 +1,20 @@
 view-easy-send-share {
-
+  background-color: #f7f7fa;
   text-align: center;
+
+  p {
+    display: block;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+    -webkit-margin-start: 0;
+    -webkit-margin-end: 0;
+    margin-bottom: 12px;
+  }
+
+  .content,
+  .scroll-content {
+    background-color: #f7f7fa;
+  }
 
   ion-card-header {
     text-align: center;
@@ -10,40 +24,184 @@ view-easy-send-share {
   }
 
   .send-ready {
-    height: 150px;
-    width: 150px;
-    line-height: 150px;
-    border-radius: 50%;
-    margin: 25px auto;
-    border: 3px solid color($colors, primary);
-    .send-ready-inner {
-      img {
-        height: 80px;
-        width: 80px;
-        margin-top: 30px;
-      }
-    }
-
+    width: 192px;
+    margin: 0 auto;
+    padding-top: 40px;
+    padding-bottom: 20px;
   }
 
   h2 {
-    font-size: 16px;
-    color: rgba(0,0,0, 0.6);
-    margin-bottom: 25px;
+    color: #2d3b50;
+    font-size: 18px;
+    font-weight: 300;
+    margin-bottom: 20px;
+    display: block;
   }
 
   ion-card-content {
     text-align: left;
   }
 
-  a {
-    font-size: 12px;
-  }
+  .card {
+    width: 312px;
+    box-shadow: 0 4px 16px rgba(69, 91, 99, 0.08);
+    background-color: #ffffff;
+    margin: 0 auto 33px;
+    border-radius: 20px;
+    padding: 10px 30px 0;
 
-  .row {
-    .button-inner {
-      color: rgba(0,0,0,0.6) !important;
+    a {
+      color: #3497fd;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.14px;
+      line-height: 16px;
+      padding-bottom: 10px;
+      display: block;
+    }
+
+    .card-header {
+      color: #adb4be;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.58px;
+      text-transform: uppercase;
+    }
+
+    .row {
+      margin: 0 -30px;
+      width: calc(100% + 60px);
+      border-top: 1px solid #ededed;
+
+      .button-inner {
+        color: #3497fd;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.84px;
+        line-height: 20px;
+      }
     }
   }
 
+  .transactionDetails {
+    background: #FFF;
+    padding-top: 40px;
+
+    &_header {
+      text-transform: uppercase;
+      padding-bottom: 35px;
+
+      p {
+        margin-bottom: 12px;
+      }
+
+      .heading {
+        color: #adb4be;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.58px;
+      }
+
+      .mrt {
+        color: #2d3b50;
+        font-size: 32px;
+        font-weight: 300;
+      }
+
+      .usd {
+        color: #adb4be;
+        font-size: 16px;
+        font-weight: 300;
+      }
+    }
+
+    .transactionDetails_group {
+      border-top: 1px solid #ededed;
+      padding: 0 23px;
+      .w-input {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        text-align: right;
+        input {
+          text-align: right;
+          padding-right: 10px;
+        }
+        .eye {
+          position: relative;
+        }
+        .eye-false:after {
+          content: "";
+          display: block;
+          width: 110%;
+          height: 2px;
+          background: #3497fd;
+          transform: rotate(-45deg);
+          top: 8px;
+          position: absolute;
+          right: -1;
+        }
+      }
+      .transactionDetails {
+        &_row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: #303c4e;
+          font-size: 16px;
+          font-weight: 500;
+          line-height: 20px;
+          border-bottom: 1px solid #ededed;
+          min-height: 56px;
+          padding: 10px 0;
+          &:last-of-type {
+            border-bottom: 0;
+          }
+
+          p {
+            margin-bottom: 0;
+          }
+
+          small {
+            color: #adb4be;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 18px;
+            text-transform: uppercase;
+          }
+
+          .grey {
+            color: #78849e;
+          }
+
+          .blue {
+            color: #3497fd;
+          }
+        }
+      }
+    }
+  }
+
+  .footer {
+    background-color: #f7f7fa;
+    padding: 40px 20px 50px;
+
+    .back-button {
+      width: 224px;
+      margin: 0 auto;
+      display: block;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+      border: 1px solid #3497fd;
+      background-color: #ffffff;
+      color: #3497fd;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.84px;
+      line-height: 20px;
+      border-radius: 48px;
+      padding: 13px 20px;
+      box-sizing: border-box;
+    }
+  }
 }

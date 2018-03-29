@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import { IDisplayTransaction, ITransactionIO, TransactionAction } from '@merit/common/models/transaction';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { ContactsService } from '@merit/common/services/contacts.service';
+import { MeritWalletClient } from "@merit/common/merit-wallet-client";
 
-export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: DisplayWallet, contactsProvider?: ContactsService): Promise<IDisplayTransaction[]> {
+export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, contactsProvider?: ContactsService): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];
 
   walletHistory = _.sortBy(walletHistory, 'time');
@@ -78,7 +78,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
       if (wallet && !tx.walletId) {
         tx.walletId = wallet.id;
-        tx.displayWallet = wallet;
+        tx.wallet = wallet;
       }
 
       if (tx.isCoinbase) {
