@@ -38,7 +38,8 @@ export class MobilePushNotificationsService extends PushNotificationsService {
               private ngZone: NgZone,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private addressService: AddressService) {
+              private addressService: AddressService
+  ) {
     super(http, logger);
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
@@ -55,6 +56,9 @@ export class MobilePushNotificationsService extends PushNotificationsService {
     }
   }
 
+  getWallets() {
+    return this.profileService.getWallets();
+  }
 
   async init() {
     if (!this.usePushNotifications || this.token) return;
@@ -67,7 +71,7 @@ export class MobilePushNotificationsService extends PushNotificationsService {
   }
 
   // TODO: Chain getting the token as part of a standalone single-wallet subscription.
-  public subscribeToEvents(): void {
+  public async subscribeToEvents(): Promise<any> {
     if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return;
@@ -87,20 +91,14 @@ export class MobilePushNotificationsService extends PushNotificationsService {
       this.ngZone.run(async () => {
         if (data.wasTapped) {
           // Notification was received on device tray and tapped by the user.
-          const wallet = this.walletService.getWallet(data.walletId);
+          const wallet = (await this.profileService.getWallets()).find(w => w.id == data.walletId);
           if (!wallet) return;
-          return this.app.getActiveNav().push('WalletDetailsView', {
-            wallet: await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, {
-              skipAnv: true,
-              skipRewards: true,
-              skipAlias: true
-            })
-          });
+          return this.app.getActiveNav().push('WalletDetailsView', { wallet });
         } else {
           // Notification was received in foreground. Let's propogate the event
           // (using Ionic Events) to the relevant view.
           if (data.walletId) {
-            const wallet: MeritWalletClient = this.profileService.getWallet(data.walletId);
+            const wallet = (await this.profileService.getWallets()).find(w => w.id == data.walletId);
             if (!_.isEmpty(wallet)) {
               // Let's re-shape the event to match the notificatons stored in BWS
               this.profileService.propogateBwsEvent({
@@ -127,9 +125,6 @@ export class MobilePushNotificationsService extends PushNotificationsService {
     this.subscribe(walletClient);
   }
 
-  protected getWallets() {
-    return this.profileService.getWallets();
-  }
 
   enable() {
     if (!this.token) {
