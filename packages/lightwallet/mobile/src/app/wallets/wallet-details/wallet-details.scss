@@ -8,6 +8,10 @@ wallet-details-view {
     background: #4bb0dd;
   }
 
+  .big-header {
+    background: #4bb0dd !important;
+  }
+
   .content-ios {
     .big-header {
       text-align: center;
@@ -50,13 +54,6 @@ wallet-details-view {
   }
 
   ion-header.header {
-    //background: #00a6d1;
-
-    ion-navbar,
-    .toolbar-background {
-      //background: transparent;
-      //border: none !important;
-    }
 
     button[ion-button], .toolbar-title {
       color: white;

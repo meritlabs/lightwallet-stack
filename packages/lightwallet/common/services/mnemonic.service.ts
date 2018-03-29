@@ -28,9 +28,7 @@ export class MnemonicService {
       account: opts.account || 0
     });
 
-    return this.profileService.addAndBindWalletClient(walletClient, {
-      bwsurl: opts.bwsurl
-    });
+    return this.profileService.addWallet(walletClient); 
   }
 
   // TODO: Create an interface for BWC, and use it to type

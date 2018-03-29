@@ -1,81 +1,55 @@
-<ion-header>
-
-  <ion-navbar color="light">
-    <ion-title>Confirm send</ion-title>
+<ion-header class="confirmTitle">
+  <ion-navbar>
+    <ion-title>Review Invite & Send</ion-title>
   </ion-navbar>
-
 </ion-header>
-
 <ion-content>
-
+<div class="priceReview">
+  <div class="priceReview_info">
+    <div class="priceReview_icon"></div>
+    <div class="priceReview_mrt">{{ viewData.totalAmount}}</div>
+    <!--<div class="priceReview_currency">$ {{ viewData.totalAmount * 0.00000000013 }}</div>-->
+  </div>
+</div>
   <div *ngIf="viewData">
-    <ion-list>
-      <ion-item class="recipient" text-wrap *ngIf="viewData?.recipient?.name?.formatted">
-        <ion-avatar item-start img-icon>
-          <img [src]="sanitizePhotoUrl(viewData.recipient.photos[0]?.value)" *ngIf="viewData.recipient?.photos?.length">
-          <span color="primary">{{getContactInitials(viewData.recipient)}}</span>
-        </ion-avatar>
-        <ion-label>
-          <p>Recipient</p>
-          <h2>{{ viewData.recipient?.name?.formatted }}</h2>
-        </ion-label>
-      </ion-item>
-
+    <ion-list class="priceReview_list">
       <ion-item text-wrap class="destination" *ngIf="viewData.destination">
         <ion-avatar item-start img-icon>
-            <img src="assets/img/icons/merit.svg">
+            <img src="assets/img/icons/wallet.svg">
         </ion-avatar>
         <ion-label>
-          <p>Destination</p>
-          <h2>{{ viewData.destination }}</h2>
+          <p>SENDING TO</p>
+          <p><strong>{{ viewData.destination }}</strong></p>
         </ion-label>
       </ion-item>
-
       <ion-item>
         <ion-avatar item-start img-icon>
-          <img src="assets/img/icons/merit.svg">
+            <img src="assets/img/icons/wallet.svg">
         </ion-avatar>
         <ion-label>
-          <p>Method</p>
-          <h2>{{ viewData.methodName }}</h2>
+          <p>FROM</p>
+          <p><strong>{{ viewData.walletName }}</strong></p>
         </ion-label>
+      </ion-item>
+      <ion-item class="ion-item-halfs">
+        <div class="ion-item-half">
+          <p><strong>Fee</strong></p>
+        </div>
+        <div class="ion-item-half">
+          <p><strong class="amount">{{ viewData.fee  | toMRT }}</strong></p>
+          <!--<p><small>$ {{ viewData.fee * 0.015 }}</small></p>-->
+        </div>
+      </ion-item>
+      <ion-item class="ion-item-halfs">
+        <div class="ion-item-half">
+          <p><strong>Total</strong></p>
+        </div>
+        <div class="ion-item-half">
+          <p><strong class="amount blue">{{ viewData.totalAmount  | toMRT }}</strong></p>
+          <!--<p><small>$ {{ viewData.totalAmount * 0.015 }}</small></p>-->
+        </div>
       </ion-item>
 
-      <ion-item>
-        <ion-avatar item-start img-icon>
-          <img src="assets/img/icons/merit.svg">
-        </ion-avatar>
-        <ion-label>
-          <p>Send</p>
-          <h2>
-            {{ viewData.amount | toMRT }}
-            <span class="right">{{ viewData.amount | toFiat }}</span>
-          </h2>
-          <p class="fee">
-            Fee {{ viewData.fee  | toMRT }}
-            <span class="right">{{ viewData.fee | toFiat }}</span>
-          </p>
-          <p class="total">
-            Total {{ viewData.totalAmount | toMRT }}
-            <span class="right">{{ viewData.totalAmount | toFiat }}</span>
-          </p>
-        </ion-label>
-      </ion-item>
-
-      <ion-item>
-        <ion-avatar item-start img-icon [class.default]="!viewData.walletColor"
-                    [style.box-shadow]="viewData.walletColor ? '0 0 0 2px ' + viewData.walletColor : ''">
-          <img src="assets/img/icons/wallet.svg">
-        </ion-avatar>
-        <ion-label>
-          <p>From</p>
-          <h2>{{ viewData.walletName }}</h2>
-          <p class="before-after">
-            <span class="before">{{ viewData.walletCurrentBalance | toMRT }} </span>
-            <span class="after">{{ viewData.walletRemainingBalance | toMRT }}</span>
-          </p>
-        </ion-label>
-      </ion-item>
     </ion-list>
 
     <ion-list>

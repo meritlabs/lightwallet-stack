@@ -17,7 +17,6 @@ import { formatWalletHistory } from '@merit/common/utils/transactions';
 export class WalletDetailsView {
 
   wallet: MeritWalletClient;
-  displayWallet: DisplayWallet;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -31,8 +30,7 @@ export class WalletDetailsView {
   }
 
   async ngOnInit() {
-    this.displayWallet = this.navParams.get('wallet');
-    this.wallet = this.displayWallet.client;
+    this.wallet = this.navParams.get('wallet');
     await this.getWalletHistory();
   }
 
@@ -40,7 +38,7 @@ export class WalletDetailsView {
     this.navCtrl.popToRoot();
     try {
       const nav: Tab = this.tabsCtrl._tabs[1];
-      await nav.setRoot('ReceiveView', { wallet: this.displayWallet.client });
+      await nav.setRoot('ReceiveView', { wallet: this.wallet });
       await nav.popToRoot();
       await this.tabsCtrl.select(1);
     } catch (e) {
@@ -62,7 +60,7 @@ export class WalletDetailsView {
   private async getWalletHistory(force: boolean = false) {
     try {
       const txs = await this.walletService.getTxHistory(this.wallet, { force });
-      this.wallet.completeHistory = await formatWalletHistory(txs, this.displayWallet);
+      this.wallet.completeHistory = await formatWalletHistory(txs, this.wallet);
     } catch (err) {
       this.logger.info(err);
     }

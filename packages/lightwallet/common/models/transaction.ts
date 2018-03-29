@@ -1,5 +1,6 @@
 import { MeritContact } from './merit-contact';
 import { DisplayWallet } from './display-wallet';
+import { MeritWalletClient } from "@merit/common/merit-wallet-client/index";
 
 export enum TransactionAction {
   RECEIVED = 'received',
@@ -62,6 +63,7 @@ export interface IDisplayTransaction extends ITransaction {
   to: { alias: string; address: string; };
   from: { alias: string; address: string; };
   displayWallet?: DisplayWallet;
+  wallet: MeritWalletClient;
   isMiningReward: boolean;
   isAmbassadorReward: boolean;
   isWalletUnlock: boolean;

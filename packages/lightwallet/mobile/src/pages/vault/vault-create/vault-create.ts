@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, NavController, ModalController } from 'ionic-angular';
-import { DisplayWallet } from "@merit/common/models/display-wallet";
 import { RateService } from "@merit/common/services/rate.service";
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
-import { IWhitelistWallet } from "@merit/mobile/pages/vault/select-whitelist/select-whitelist";
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
 
 
@@ -17,11 +16,9 @@ import { ENV } from '@app/env';
 export class VaultCreateView {
 
   public vaultName: string;
-  public wallets: Array<IWhitelistWallet>;
-  public wallet: DisplayWallet;
+  public wallets: Array<any>;
+  public wallet: MeritWalletClient;
   public amount: number;
-  public spendaleConfirmAmount: number;
-  public insufficientConfirmedAmountError: boolean;
 
   constructor(
     private navCtrl: NavController,
@@ -30,17 +27,17 @@ export class VaultCreateView {
     private modalCtrl: ModalController
   ) {
     this.wallets = this.navParams.get('wallets')
-      .filter(w => w.confirmed)
-      .map(w => Object.assign({ selected: false, name: w.name }, w));
+      .filter(w => w.confirmed);
     this.wallet = this.wallets[0];
-
   }
 
   get isNextStepAvailable() {
+
     return (
       this.vaultName
       && this.amount
-      && this.rateService.mrtToMicro(this.amount) <= this.wallet.client.status.confirmedAmount
+      && this.amount > 0
+      && this.rateService.mrtToMicro(this.amount) <= this.wallet.balance.totalConfirmedAmount
       && this.wallets.filter(w => w.selected).length
     )
   }
@@ -52,7 +49,7 @@ export class VaultCreateView {
   hasInsufficientConfirmedFunds() {
     if (!this.wallet) return false;
     const micros = this.rateService.mrtToMicro(this.amount);
-    return (this.wallet.client.status.confirmedAmount <  micros) && (micros <= this.wallet.client.status.spendableAmount);
+    return (this.wallet.balance.totalConfirmedAmount <  micros) && (micros <= this.wallet.balance.spendableAmount);
   }
 
   selectWhitelist() {
@@ -67,20 +64,22 @@ export class VaultCreateView {
   selectWallet() {
     const modal = this.modalCtrl.create('SelectWalletModal', {
       selectedWallet: this.wallet,
-      availableWallets: this.wallets.map(w => w.client)
+      availableWallets: this.wallets
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
-        this.wallet = this.wallets.find(w => w.client.id == wallet.id);
+        this.wallet = wallet;
       }
     });
     return modal.present();
   }
 
   toConfirm() {
-    let network = this.wallet.client.credentials.network || ENV.network;
+    let network = this.wallet.credentials.network || ENV.network;
 
-    let phrase = this.wallet.client.getNewMnemonic(null);
+    console.log(this.wallet);
+
+    let phrase = this.wallet.getNewMnemonic(null);
     let key = phrase.toHDPrivateKey('', network);
 
     this.navCtrl.push('VaultCreateConfirmView', {vaultData: {

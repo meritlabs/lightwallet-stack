@@ -5,21 +5,18 @@ import { RateService } from '@merit/common/services/rate.service';
 export class ToMrtPipe implements PipeTransform {
   constructor(private rateService: RateService) {}
 
-  transform(micros: number, digitsLimit?: number, hideUnit?: boolean): string {
-    let text: string = '';
+  transform(micros: number, digitsLimit?: number, hideUnit? : boolean): string {
 
-    if (!micros) {
-      text = '0.00';
-    } else {
-      const mrt: number = this.rateService.microsToMrt(micros);
+    const unitStr = (hideUnit? '' : ' MRT');
 
-      if (digitsLimit) {
-        text = mrt.toString().slice(0, digitsLimit);
-      } else {
-        text = mrt.toString();
-      }
-    }
+    let mrt = this.rateService.microsToMrt(micros) || 0;
 
-    return text + (hideUnit ? '' : ' MRT');
+    if (!digitsLimit) return mrt+unitStr;
+
+    const intLength = mrt.toFixed(0).length;
+    let floatLength  = (digitsLimit - intLength) >= 0 ? (digitsLimit - intLength) : 0;
+
+    return Number(mrt.toFixed(floatLength))+unitStr;
+
   }
 }

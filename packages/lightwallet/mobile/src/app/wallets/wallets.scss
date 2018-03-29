@@ -30,8 +30,16 @@
 view-wallets {
   .big-header {
     ion-spinner.spinner {
-      margin-top: 25px;
+        position: absolute;
+        top: 24px;
+        right: 10px;
+        color: white;
+        &.spinner-ios {
+          top: 28px; 
+          right: 13px;
+        }
     }
+
   }
 
   ion-list.list {

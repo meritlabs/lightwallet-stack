@@ -94,16 +94,6 @@
       </ion-item>
     </ion-item-group>
 
-    <ion-item-group>
-      <ion-item-divider>Advanced</ion-item-divider>
-      <ion-item>
-        <ion-label stacked>
-          <h2>Wallet Service URL</h2>
-        </ion-label>
-        <ion-input [(ngModel)]="formData.bwsurl" [placeholder]=""></ion-input>
-      </ion-item>
-    </ion-item-group>
-
   </ion-list>
 
   <button ion-button [disabled]="!isCreationEnabled()" (click)="createWallet()" class="action-button">

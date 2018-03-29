@@ -1,5 +1,4 @@
 // http://ionicframework.com/docs/theming/
-
 // App Global Sass
 // --------------------------------------------------
 // Put style rules here that you want to apply globally. These
@@ -25,6 +24,7 @@ ion-content.content[fullscreen] {
   ion-toolbar.toolbar.toolbar-md {
     padding: 0;
   }
+
   &:after {
     display: none;
   }
@@ -33,7 +33,8 @@ ion-content.content[fullscreen] {
 .ios ion-header.header-ios {
   ion-navbar.toolbar-ios {
     ion-title.title {
-      .toolbar-title, h2 {
+      .toolbar-title,
+      h2 {
         letter-spacing: -0.4px;
         font-weight: 500;
       }
@@ -43,7 +44,8 @@ ion-content.content[fullscreen] {
   ion-navbar.toolbar-ios:not([color]),
   ion-navbar.toolbar-ios[color='light'] {
     ion-title.title {
-      .toolbar-title, h2 {
+      .toolbar-title,
+      h2 {
         color: rgb(45, 60, 80);
       }
     }
@@ -62,7 +64,6 @@ ion-avatar > ion-icon {
   text-align: center;
   width: 100%;
 }
-
 // Core App Layout
 .scroll-content {
   background: rgb(255, 255, 255);
@@ -77,9 +78,11 @@ ion-label {
   font-size: 14px;
 }
 
-textarea, ion-input input {
+ion-input input,
+textarea {
   font-size: 14px;
   color: $input-text-color;
+
   &::-webkit-input-placeholder {
     color: rgba(0, 0, 0, 0.4);
     font-size: 12px;
@@ -92,6 +95,7 @@ ion-card {
 
 .control-buttons {
   text-align: center;
+
   button {
     width: 85%;
     max-width: 300px;
@@ -160,7 +164,6 @@ ion-item textarea {
     }
   }
 }
-
 // *** iOS ***
 .ios {
   ion-header.header-ios .big-header {
@@ -171,9 +174,8 @@ ion-item textarea {
 
   .big-header {
     padding-top: 20px;
-    button[ion-button].button.header-action-button {
 
-    }
+    button[ion-button].button.header-action-button {}
   }
 }
 
@@ -184,7 +186,9 @@ ion-item textarea {
   position: relative;
   min-height: 172px;
 
-  p, h2, h3 {
+  h2,
+  h3,
+  p {
     margin: 0;
     padding: 0;
   }
@@ -196,6 +200,7 @@ ion-item textarea {
 
   h2 {
     font-size: 40px;
+
     small {
       font-size: 24px;
       font-weight: 400;
@@ -204,7 +209,6 @@ ion-item textarea {
 
   h3 {
     font-size: 17px;
-
     color: rgba(255, 255, 255, .6);
   }
 
@@ -234,7 +238,8 @@ ion-list.list {
   }
 }
 
-ion-item.item, button[ion-item].item {
+button[ion-item].item,
+ion-item.item {
   &.item-ios {
     ion-label.label {
       h2 {
@@ -242,7 +247,6 @@ ion-item.item, button[ion-item].item {
       }
     }
   }
-
   // *** iOS ***
   ion-label.label[stacked].label-ios {
     font-weight: 400;
@@ -255,7 +259,8 @@ ion-item.item, button[ion-item].item {
     margin-bottom: 0;
   }
 
-  ion-label.label, ion-label.label[stacked] {
+  ion-label.label,
+  ion-label.label[stacked] {
     h2 {
       font-size: 17px;
       font-weight: 500;
@@ -268,14 +273,13 @@ ion-item.item, button[ion-item].item {
       font-weight: 500;
     }
   }
-
   padding-top: 10px;
   padding-bottom: 12px;
 }
 
-ion-item.item,
 button[ion-item].item,
-ion-item-divider.item-divider {
+ion-item-divider.item-divider,
+ion-item.item {
   ion-label {
     p.merit-amount {
       color: #00aad6;
@@ -294,11 +298,12 @@ ion-item-divider.item-divider {
   }
 }
 
-ion-list:not([no-lines]),
-div {
-
-  > ion-item.item:not([no-lines]), > button[ion-item].item:not([no-lines]) {
-    &.item-block .item-inner, .item-inner {
+div,
+ion-list:not([no-lines]) {
+  > button[ion-item].item:not([no-lines]),
+  > ion-item.item:not([no-lines]) {
+    &.item-block .item-inner,
+    .item-inner {
       border-bottom: none;
     }
 
@@ -312,7 +317,6 @@ div {
       left: 19px;
     }
   }
-
 }
 
 ion-item-divider.item.item-divider {
@@ -322,7 +326,8 @@ ion-item-divider.item.item-divider {
   padding-left: 18.5px;
   padding-bottom: 8px;
 
-  ion-label.label, ion-label.label h2 {
+  ion-label.label,
+  ion-label.label h2 {
     font-size: 16px;
     font-weight: 600;
   }
@@ -373,7 +378,6 @@ ion-header.header {
     line-height: 28px;
   }
 }
-
 //
 // Toggle
 //
@@ -381,6 +385,7 @@ ion-header.header {
 .toggle-md .toggle-icon {
   background: #e9edf2;
   border: 1px solid #b7bcc8;
+
   .toggle-inner {
     background: white;
     border: 1px solid #b7bcc8;
@@ -392,15 +397,16 @@ ion-header.header {
 .toggle-md.toggle-checked .toggle-icon {
   background: map_get($colors, primary);
   border: 1px solid transparent;
+
   .toggle-inner {
     margin-left: 0;
   }
 }
-
 // *** iOS ***
 .toggle-ios {
   .toggle-icon {
     width: 46px;
+
     .toggle-inner {
       box-shadow: none;
       border: 1px solid rgb(183, 188, 200);
@@ -440,6 +446,7 @@ button[ion-button].button.action-button {
 ion-note.note.wallet-color-indicator {
   width: 10px;
   height: 10px;
+
   > span {
     width: 10px;
     height: 10px;
@@ -454,8 +461,10 @@ ion-note.note.wallet-color-indicator {
 
 ion-toolbar.toolbar.toolbar-md {
   padding: 0;
+
   .toolbar-content {
     align-self: flex-end;
+
     ion-segment.segment {
       ion-segment-button.segment-button {
         letter-spacing: -0.31px;
@@ -468,7 +477,6 @@ ion-toolbar.toolbar.toolbar-md {
     }
   }
 }
-
 // *** iOS ***
 .header-ios {
   ion-toolbar.toolbar {
@@ -477,7 +485,8 @@ ion-toolbar.toolbar.toolbar-md {
         border: none;
         font-size: 13px;
         font-weight: 600;
-        letter-spacing: .3px;
+        letter-spacing: 0.3px;
+
         &:after {
           max-height: 2px;
           height: 2px;
@@ -492,20 +501,20 @@ ion-toolbar.toolbar.toolbar-md {
 
         &.segment-activated {
           &:after {
-            background: map_get($colors, primary)
+            background: map_get($colors, primary);
           }
         }
       }
     }
   }
 }
-
 // *** iOS ***
 ion-header.header-ios {
   ion-navbar[color='light'] {
     button[ion-button].back-button {
       color: map_get($colors, primary);
     }
+
     ion-title.title.title-ios .toolbar-title {
       font-weight: 500;
     }
@@ -514,6 +523,7 @@ ion-header.header-ios {
   ion-navbar {
     button[ion-button].back-button {
       padding-left: 10px;
+
       ion-icon.icon {
         font-size: 25px;
       }
@@ -584,9 +594,11 @@ ion-modal.merit-modal {
 
       ion-navbar:not([color]) {
         background: transparent;
+
         .toolbar-background {
           background: transparent;
         }
+
         ion-title.title {
           .toolbar-title {
             font-size: 15px;
@@ -607,15 +619,12 @@ ion-modal.merit-modal {
         }
       }
     }
-
   }
 }
-
 // *** iOS ***
 .ios ion-modal.merit-modal {
   .ion-page {
     ion-header.header.header-ios {
-
       ion-navbar.toolbar.toolbar-ios:not([color]) {
         .toolbar-background-ios {
           background: rgb(233, 237, 242);
@@ -639,10 +648,12 @@ ion-modal.merit-modal {
           order: 1;
           margin: 0;
           padding: 0;
+
           button.bar-button span.button-inner {
             visibility: hidden;
             width: 0;
             position: relative;
+
             &:after {
               content: '\f2c0';
               font-family: 'Ionicons';
@@ -666,7 +677,6 @@ ion-modal.merit-modal {
             font-weight: 600;
           }
         }
-
       }
     }
   }
@@ -692,7 +702,6 @@ ion-modal.merit-modal {
   padding: 16px;
   background: rgba(170, 175, 209, 0.28);
 }
-
 // merit icons
 ion-avatar[img-icon] {
   background: #f0f3f8;
@@ -712,7 +721,8 @@ ion-avatar[img-icon] {
   }
 }
 
-[class^="merit-icon"], [merit-icon] {
+[class^="merit-icon"],
+[merit-icon] {
   mask-size: contain;
   mask-position: 50% 50%;
   mask-repeat: no-repeat;
@@ -720,72 +730,86 @@ ion-avatar[img-icon] {
   display: inline-block;
 
   &[name="settings"] {
-    mask-image: url('../assets/img/icons/settings.svg');
+    mask-image: url("../assets/img/icons/settings.svg");
   }
 
   &[name="share"] {
-    mask-image: url('../assets/img/icons/share.svg');
+    mask-image: url("../assets/img/icons/share.svg");
   }
 
   &[name="qr-code"] {
-    mask-image: url('../assets/img/icons/qr-code.svg');
+    mask-image: url("../assets/img/icons/qr-code.svg");
   }
+
   &[name="phone"] {
-    mask-image: url('../assets/img/icons/mem.svg');
+    mask-image: url("../assets/img/icons/mem.svg");
   }
 
   &[name="email"] {
-    mask-image: url('../assets/img/icons/email.svg');
+    mask-image: url("../assets/img/icons/email.svg");
   }
 }
 
 .merit-icon-merit {
-  mask-image: url(../assets/img/icons/merit.svg);
+  mask-image: url("../assets/img/icons/merit.svg");
 }
 
 .merit-icon-merit-2 {
-  mask-image: url(../assets/img/merit.svg);
+  mask-image: url("../assets/img/merit.svg");
 }
 
 .merit-icon-qr-code {
-  mask-image: url(../assets/img/icons/qr-code.svg);
+  mask-image: url("../assets/img/icons/qr-code.svg");
 }
 
 .merit-icon-wallet {
-  mask-image: url(../assets/img/icon-wallet.svg);
+  mask-image: url("../assets/img/icon-wallet.svg");
 }
 
 .merit-icon-wallet-add {
-  mask-image: url(../assets/img/icons/wallet-add.svg);
+  mask-image: url("../assets/img/icons/wallet-add.svg");
 }
 
 .merit-icon-wallet-import {
-  mask-image: url(../assets/img/icons/wallet-import.svg);
+  mask-image: url("../assets/img/icons/wallet-import.svg");
 }
 
 .merit-icon-wallet-lock {
-  mask-image: url(../assets/img/icons/wallet-lock.svg);
+  mask-image: url("../assets/img/icons/wallet-lock.svg");
 }
 
 .merit-icon-vault {
-  mask-image: url(../assets/img/icon-lock-white.svg);
+  mask-image: url("../assets/img/icon-lock-white.svg");
 }
 
 .merit-icon-sent {
-  mask-image: url(../assets/img/icon-icon-tx-sent-outline.svg);
+  mask-image: url("../assets/img/icon-icon-tx-sent-outline.svg");
 }
-
 // Variables
 $v-dark-gray: #445 !default;
-$v-tab-send-icon: url('../img/tab-icons/ico-send.svg') !default;
-$v-tab-send-selected-icon: url('../img/tab-icons/ico-send-selected.svg') !default;
+$v-tab-send-icon: url("../img/tab-icons/ico-send.svg") !default;
+$v-tab-send-selected-icon: url("../img/tab-icons/ico-send-selected.svg") !default;
 
 .md ion-item .item-inner {
   border: none !important;
 }
 
-.toolbar-md-light, .toolbar-ios-light {
+.toolbar-ios-light,
+.toolbar-md-light {
   .toolbar-title {
     color: #2d3c50;
+  }
+}
+.button-ui {
+  display: inline-block;
+  text-align: center;
+  min-width: 232px;
+  padding: 18px 20px;
+  border-radius: 50px;
+  &--blue-gradient {
+    color: #FFFFFF;
+    font-size: 14px;
+    line-height: 14px;
+    background: linear-gradient(135deg, #106DDA 50%, #00B1DE 100%);
   }
 }

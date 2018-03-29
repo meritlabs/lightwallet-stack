@@ -1,18 +1,20 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ENV } from '@app/env';
-import { DerivationPath } from '@merit/common/utils/derivation-path';
-import { ProfileService } from '@merit/common/services/profile.service';
-import { MnemonicService } from '@merit/common/services/mnemonic.service';
-import { startsWith } from 'lodash';
-import { IRootAppState } from '@merit/common/reducers';
-import { Store } from '@ngrx/store';
-import { createDisplayWallet } from '@merit/common/models/display-wallet';
-import { WalletService } from '@merit/common/services/wallet.service';
-import { AddressService } from '@merit/common/services/address.service';
-import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { Router } from '@angular/router';
+import { ENV } from '@app/env';
+import { createDisplayWallet } from '@merit/common/models/display-wallet';
+import { IRootAppState } from '@merit/common/reducers';
+import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
+import { AddressService } from '@merit/common/services/address.service';
+import { MnemonicService } from '@merit/common/services/mnemonic.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { DerivationPath } from '@merit/common/utils/derivation-path';
+import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { Store } from '@ngrx/store';
+import { startsWith } from 'lodash';
 
 @Component({
   selector: 'view-phrase-import',
@@ -38,7 +40,9 @@ export class PhraseImportView {
               private walletService: WalletService,
               private addressService: AddressService,
               private txFormatService: TxFormatService,
-              private router: Router) {}
+              private router: Router,
+              private pushNotificationsService: PushNotificationsService,
+              private toastCtrl: ToastControllerService) {}
 
 
   async importMnemonic() {
@@ -62,18 +66,17 @@ export class PhraseImportView {
       let wallet;
 
       if (words.indexOf('xprv') == 0 || words.indexOf('tprv') == 0) {
-        wallet = await this.profileService.importExtendedPrivateKey(words, opts);
+        wallet = await this.walletService.importExtendedPrivateKey(words, opts);
       } else if (words.indexOf('xpub') == 0 || words.indexOf('tpub') == 0) {
         opts.extendedPublicKey = words;
-        wallet = await this.profileService.importExtendedPublicKey(opts);
+        wallet = await this.walletService.importExtendedPublicKey(opts);
       } else {
         opts.passphrase = password;
         wallet = await this.mnemonicService.importMnemonic(words, opts);
       }
 
       if (wallet) {
-        this.profileService.setBackupFlag(wallet.credentials.walletId);
-        // this.pushNotificationsService.subscribe(wallet);
+        this.pushNotificationsService.subscribe(wallet);
 
         console.log('Done importing wallet!');
         this.store.dispatch(
@@ -96,10 +99,12 @@ export class PhraseImportView {
         errorMsg = err;
       }
 
-      // this.toastCtrl.create({
-      //   message: errorMsg,
-      //   cssClass: ToastConfig.CLASS_ERROR
-      // }).present();
+
+      return this.toastCtrl.create({
+        title: 'Error',
+        status: 'error',
+        text: errorMsg
+      });
     }
   }
 

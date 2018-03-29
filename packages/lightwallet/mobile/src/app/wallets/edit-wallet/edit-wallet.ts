@@ -15,7 +15,8 @@ import { MeritToastController, ToastConfig } from '@merit/common/services/toast.
 export class EditWalletView {
   wallet: MeritWalletClient;
 
-  constructor(private navCtrl: NavController,
+  constructor(
+    private navCtrl: NavController,
               private navParams: NavParams,
               private modalCtrl: ModalController,
               private alertCtrl: AlertController,
@@ -24,7 +25,8 @@ export class EditWalletView {
               private toastCtrl: MeritToastController,
               private configService: ConfigService,
               private walletService: WalletService,
-              private logger: LoggerService) {
+              private logger: LoggerService
+  ) {
     this.wallet = this.navParams.get('wallet');
     this.logger.info(this.wallet);
   }
@@ -82,8 +84,14 @@ export class EditWalletView {
         {
           text: 'Delete',
           handler: () => {
-            this.profileService.deleteWalletClient(this.wallet).then(() => {
-              this.app.getRootNavs()[0].setRoot('WalletsView');
+            this.profileService.deleteWallet(this.wallet).then(() => {
+              this.profileService.isAuthorized().then((authorized) => {
+                if (authorized) {
+                  this.navCtrl.popToRoot();
+                } else {
+                  this.navCtrl.setRoot('OnboardingView');
+                }
+              })
             }).catch((err) => {
               this.toastCtrl.create({
                 message: JSON.stringify(err),

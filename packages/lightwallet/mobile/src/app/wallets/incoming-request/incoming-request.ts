@@ -8,12 +8,12 @@ import {
   ToastController
 } from 'ionic-angular';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { AddressService } from '@merit/common/services/address.service';
 import { ToastConfig } from '@merit/common/services/toast.controller.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @IonicPage()
 @Component({
@@ -24,7 +24,7 @@ export class IncomingRequestModal {
 
   public unlockRequest: any;
   public contacts: Array<MeritContact> = [];
-  public wallets: Array<DisplayWallet> = [];
+  public wallets: Array<MeritWalletClient> = [];
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -96,7 +96,7 @@ export class IncomingRequestModal {
   selectWallet() {
     const modal = this.modalCtrl.create('SelectInviteWalletModal', {
       selectedWallet: this.unlockRequest.walletClient,
-      availableWallets: this.wallets.filter((wallet: DisplayWallet) => wallet.invites > 0)
+      availableWallets: this.wallets.filter((wallet) => wallet.availableInvites> 0)
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
