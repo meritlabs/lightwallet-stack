@@ -91,7 +91,7 @@ export class ProfileService {
     let vaults = [];
     this.wallets.forEach(w => {
       w.vaults.forEach(v => {
-        v.walletClient = w; 
+        v.walletClient = w;
         vaults.push(v);
       });
     });
@@ -115,7 +115,7 @@ export class ProfileService {
 
     if (this.wallets.find(w => w.id == wallet.credentials.walletId)) throw new Error('Wallet already added');
 
-    await wallet.initialize({ notificationIncludeOwn: true });
+    wallet.initialize(true);
 
     wallet.eventEmitter.on('report', (n: any) => { this.logger.info('NWC Report:' + n); });
 
@@ -167,7 +167,7 @@ export class ProfileService {
     this.wallets.some(w => {
       if (w.id == vault.walletClient.id) {
         if (!w.vaults) w.vaults = [];
-        w.vaults.push(vault); 
+        w.vaults.push(vault);
         return true;
       }
     });

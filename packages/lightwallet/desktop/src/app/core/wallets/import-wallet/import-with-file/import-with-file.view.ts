@@ -1,16 +1,19 @@
 import { Component } from '@angular/core';
-import { MWCService } from '@merit/common/services/mwc.service';
-import { IRootAppState } from '@merit/common/reducers';
-import { Store } from '@ngrx/store';
-import { LoggerService } from '@merit/common/services/logger.service';
-import { ENV } from '@app/env';
-import { ProfileService } from '@merit/common/services/profile.service';
-import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
-import { createDisplayWallet } from '@merit/common/models/display-wallet';
-import { WalletService } from '@merit/common/services/wallet.service';
-import { AddressService } from '@merit/common/services/address.service';
-import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { Router } from '@angular/router';
+import { ENV } from '@app/env';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { createDisplayWallet } from '@merit/common/models/display-wallet';
+import { IRootAppState } from '@merit/common/reducers';
+import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
+import { AddressService } from '@merit/common/services/address.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'view-import-with-file',
@@ -35,7 +38,9 @@ export class ImportWithFileView {
               private walletService: WalletService,
               private addressService: AddressService,
               private txFormatService: TxFormatService,
-              private router: Router) {
+              private router: Router,
+              private toastCtrl: ToastControllerService,
+              private pushNotificationsService: PushNotificationsService) {
   }
 
   fileChangeListener($event) {
@@ -58,19 +63,19 @@ export class ImportWithFileView {
     } catch (e) {
 
       this.logger.warn(e);
-      // return this.toastCtrl.create({
-      //   message: 'Could not decrypt file, check your password',
-      //   cssClass: ToastConfig.CLASS_ERROR
-      // }).present();
+      return this.toastCtrl.create({
+        title: 'Error',
+        status: 'error',
+        text: 'Could not decrypt file, check your password.'
+      });
     }
 
     // const loader = this.loadingCtrl.create({ content: 'importingWallet' });
     // loader.present();
 
     try {
-      const wallet = await this.profileService.importWallet(decrypted, { bwsurl: this.formData.mwsUrl });
-      this.profileService.setBackupFlag(wallet.credentials.walletId);
-      // this.pushNotificationsService.subscribe(wallet);
+      const wallet: MeritWalletClient = await this.walletService.importWallet(decrypted, { bwsurl: this.formData.mwsUrl });
+      this.pushNotificationsService.subscribe(wallet);
 
       console.log('Done importing wallet!');
       this.store.dispatch(
@@ -84,10 +89,11 @@ export class ImportWithFileView {
     } catch (err) {
       // loader.dismiss();
       this.logger.warn(err);
-      // this.toastCtrl.create({
-      //   message: err,
-      //   cssClass: ToastConfig.CLASS_ERROR
-      // }).present();
+      return this.toastCtrl.create({
+        title: 'Error',
+        status: 'error',
+        text: err
+      });
     }
   }
 

@@ -26,7 +26,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { Platform } from 'ionic-angular/platform/platform';
 import { Events } from 'ionic-angular/util/events';
 import 'rxjs/add/operator/toPromise';
-import { filter, take, tap } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -37,19 +37,18 @@ export function createTranslateLoader(http: HttpClient) {
 export function loadConfigs(appService: AppSettingsService, profileService: ProfileService, store: Store<IRootAppState>) {
   return async () => {
     await appService.getInfo();
-    const profile = await profileService.getProfile();
-    if (!profile || !profile.credentials || !profile.credentials.length) {
-      store.dispatch(new UpdateAppAction({ loading: false }));
-    } else {
-      store.dispatch(new UpdateAppAction({
-        loading: false,
-        credentialsLength: profile.credentials.length
-      }));
+
+    store.dispatch(new UpdateAppAction({
+      loading: false,
+      credentialsLength: profileService.wallets.length
+    }));
+
+    if (await profileService.isAuthorized()) {
       store.dispatch(new RefreshWalletsAction());
 
       await store.select(selectWallets)
         .pipe(
-          filter((wallets: DisplayWallet[]) => wallets.length === profile.credentials.length),
+          filter((wallets: DisplayWallet[]) => wallets.length === profileService.wallets.length),
           take(1)
         )
         .toPromise();

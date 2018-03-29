@@ -1,18 +1,20 @@
-import * as _ from 'lodash';
-import * as util from 'util';
-import { PayPro } from './paypro';
-import { Verifier } from './verifier';
-import { Common } from './common';
-import { Logger } from './log';
-import { Credentials } from './credentials';
-import { MWCErrors } from './errors';
-import * as preconditions from 'preconditions';
-import * as EventEmitter from 'eventemitter3';
+import { ENV } from '@app/env';
+import * as Bip38 from 'bip38';
 import * as Bitcore from 'bitcore-lib';
 import * as Mnemonic from 'bitcore-mnemonic';
+import * as EventEmitter from 'eventemitter3';
+import * as _ from 'lodash';
+import * as preconditions from 'preconditions';
 import * as querystring from 'querystring';
-import * as Bip38 from 'bip38';
 import * as request from 'superagent';
+import * as util from 'util';
+import { EasyReceiptResult } from '../../models/easy-receipt';
+import { Common } from './common';
+import { Credentials } from './credentials';
+import { MWCErrors } from './errors';
+import { Logger } from './log';
+import { PayPro } from './paypro';
+import { Verifier } from './verifier';
 
 const $ = preconditions.singleton();
 const { Constants, Utils } = Common;
@@ -20,9 +22,6 @@ const { Constants, Utils } = Common;
 const Package = require('../../../package.json');
 
 const DEFAULT_FEE = 10000;
-
-import { ENV } from '@app/env';
-import { EasyReceiptResult } from '../../models/easy-receipt';
 
 /**
  * Merit Wallet Client; (re-)written in typescript.
@@ -135,19 +134,15 @@ export class API {
 
 
   // Do we need an initialize now?  Constructor should be able to handle.
-  initialize(opts): Promise<any> {
-    return new Promise((resolve, reject) => {
-      $.checkState(this.credentials);
-      this.notificationIncludeOwn = !!opts.notificationIncludeOwn;
-      //this._initNotifications(opts);
-      return resolve();
-    });
-  };
+  initialize(notificationIncludeOwn?: boolean) {
+    $.checkState(this.credentials);
+    this.notificationIncludeOwn = notificationIncludeOwn;
+  }
 
   dispose(): any {
     this._disposeNotifications();
     this._logout();
-  };
+  }
 
   setOnConnectionError(cb: any) {
     this.onConnectionError = cb;
@@ -185,7 +180,8 @@ export class API {
   }
 
   _initNotifications(opts: any = {}): any {
-    const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode; pollutes request stream..
+    const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode;
+                                                             // pollutes request stream..
     this.notificationsIntervalId = setInterval(() => {
       this._fetchLatestNotifications(interval).then(() => {
         this.log.warn('Init Notifications done');
@@ -486,7 +482,6 @@ export class API {
   }
 
 
-
   /**
    * Seed from extended private key
    *
@@ -519,7 +514,8 @@ export class API {
    *
    * @param {String} xPubKey
    * @param {String} source - A name identifying the source of the xPrivKey (e.g. ledger, TREZOR, ...)
-   * @param {String} entropySourceHex - A HEX string containing pseudo-random data, that can be deterministically derived from the xPrivKey, and should not be derived from xPubKey.
+   * @param {String} entropySourceHex - A HEX string containing pseudo-random data, that can be deterministically
+   *   derived from the xPrivKey, and should not be derived from xPubKey.
    * @param {Object} opts
    * @param {Number} opts.account - default 0
    * @param {String} opts.derivationStrategy - default 'BIP44'
@@ -561,7 +557,7 @@ export class API {
       balance: this.balance,
       invitesBalance: this.invitesBalance,
       availableInvites: this.availableInvites,
-      rootAddress: this.rootAddress.toString(),
+      rootAddress: this.getRootAddress().toString(),
       rootAlias: this.rootAlias,
       parentAddress: this.parentAddress,
       color: this.color,
@@ -576,9 +572,9 @@ export class API {
           masterPubKey: v.masterPubKey,
           status: v.status,
           whitelist: v.whitelist
-        }
+        };
       })
-    }
+    };
   }
 
   /**
@@ -687,7 +683,8 @@ export class API {
    * @param {String} opts.passphrase
    * @param {Number} opts.account - default 0
    * @param {String} opts.derivationStrategy - default 'BIP44'
-   * @param {String} opts.entropySourcePath - Only used if the wallet was created on a HW wallet, in which that private keys was not available for all the needed derivations
+   * @param {String} opts.entropySourcePath - Only used if the wallet was created on a HW wallet, in which that private
+   *   keys was not available for all the needed derivations
    */
   importFromMnemonic(words: string, opts: any = {}): Promise<any> {
     this.log.debug('Importing from 12 Words');
@@ -721,13 +718,13 @@ export class API {
   };
 
   /*
-  * Import from extended private key
-  *
-  * @param {String} xPrivKey
-  * @param {Number} opts.account - default 0
-  * @param {String} opts.derivationStrategy - default 'BIP44'
-  * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is imported.
-  */
+   * Import from extended private key
+   *
+   * @param {String} xPrivKey
+   * @param {Number} opts.account - default 0
+   * @param {String} opts.derivationStrategy - default 'BIP44'
+   * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is imported.
+   */
   importFromExtendedPrivateKey(xPrivKey: any, opts: any = {}): Promise<any> {
     this.log.debug('Importing from Extended Private Key');
 
@@ -749,7 +746,8 @@ export class API {
    *
    * @param {String} xPubKey
    * @param {String} source - A name identifying the source of the xPrivKey
-   * @param {String} entropySourceHex - A HEX string containing pseudo-random data, that can be deterministically derived from the xPrivKey, and should not be derived from xPubKey.
+   * @param {String} entropySourceHex - A HEX string containing pseudo-random data, that can be deterministically
+   *   derived from the xPrivKey, and should not be derived from xPubKey.
    * @param {Object} opts
    * @param {Number} opts.account - default 0
    * @param {String} opts.derivationStrategy - default 'BIP44'
@@ -876,7 +874,8 @@ export class API {
   /**
    * Open a wallet and try to complete the public key ring.
    *
-   * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is complete.
+   * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is
+   *   complete.
    * @fires API#walletCompleted
    */
   openWallet(): Promise<any> {
@@ -1472,7 +1471,7 @@ export class API {
    * fees for easy receive transactions are fixed and received from MWS side
    */
   getEasyReceiveFee(): Promise<any> {
-      return this._doGetRequest('/v1/easy_fee/');
+    return this._doGetRequest('/v1/easy_fee/');
   };
 
   /**
@@ -1544,7 +1543,7 @@ export class API {
         network: network,
         alias: opts.alias
       };
-      
+
       // Create wallet
       return this.sendReferral(referralOpts).then(refid => {
 
@@ -1640,7 +1639,7 @@ export class API {
     // The referral constructor requires that the parentAddress is in 
     // full address form (ripe160); it should not be an alias here. 
     const referral = new Bitcore.Referral({
-      parentAddress, 
+      parentAddress,
       address: opts.address,
       addressType: opts.addressType,
       pubkey: opts.pubkey,
@@ -1767,11 +1766,9 @@ export class API {
   };
 
   private _processStatus = (status): Promise<any> => {
-
     this.id = status.wallet.id;
     this.network = status.wallet.network;
 
-    this.parentAddress = Bitcore.Address(status.wallet.parentAddress);
     this.balance = status.balance || {};
     this.invitesBalance = status.invitesBalance || {};
     this.confirmed = (status.invitesBalance && status.invitesBalance.totalAmount > 0);
@@ -1809,12 +1806,12 @@ export class API {
       });
     };
 
-    
+
     let validateAddress = () => {
       if (!this.rootAlias) {
         this.validateAddress(this.getRootAddress().toString()).then((addressInfo) => {
           this.rootAlias = addressInfo.alias;
-        })
+        });
       }
     };
 
@@ -1980,18 +1977,23 @@ export class API {
    * Create a transaction proposal
    *
    * @param {Object} opts
-   * @param {string} opts.txProposalId - Optional. If provided it will be used as this TX proposal ID. Should be unique in the scope of the wallet.
+   * @param {string} opts.txProposalId - Optional. If provided it will be used as this TX proposal ID. Should be unique
+   *   in the scope of the wallet.
    * @param {Array} opts.outputs - List of outputs.
    * @param {string} opts.outputs[].toAddress - Destination address.
    * @param {number} opts.outputs[].amount - Amount to transfer in micro.
    * @param {string} opts.outputs[].message - A message to attach to this output.
    * @param {string} opts.message - A message to attach to this transaction.
-   * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level for this TX ('priority', 'normal', 'economy', 'superEconomy').
+   * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level for this TX ('priority', 'normal',
+   *   'economy', 'superEconomy').
    * @param {number} opts.feePerKb - Optional. Specify the fee per KB for this TX (in micro).
-   * @param {string} opts.changeAddress - Optional. Use this address as the change address for the tx. The address should belong to the wallet. In the case of singleAddress wallets, the first main address will be used.
-   * @param {Boolean} opts.sendMax - Optional. Send maximum amount of funds that make sense under the specified fee/feePerKb conditions. (defaults to false).
+   * @param {string} opts.changeAddress - Optional. Use this address as the change address for the tx. The address
+   *   should belong to the wallet. In the case of singleAddress wallets, the first main address will be used.
+   * @param {Boolean} opts.sendMax - Optional. Send maximum amount of funds that make sense under the specified
+   *   fee/feePerKb conditions. (defaults to false).
    * @param {string} opts.payProUrl - Optional. Paypro URL for peers to verify TX
-   * @param {Boolean} opts.excludeUnconfirmedUtxos[=false] - Optional. Do not use UTXOs of unconfirmed transactions as inputs
+   * @param {Boolean} opts.excludeUnconfirmedUtxos[=false] - Optional. Do not use UTXOs of unconfirmed transactions as
+   *   inputs
    * @param {Boolean} opts.validateOutputs[=true] - Optional. Perform validation on outputs.
    * @param {Boolean} opts.dryRun[=false] - Optional. Simulate the action but do not change server state.
    * @param {Array} opts.inputs - Optional. Inputs for this TX
@@ -2074,7 +2076,8 @@ export class API {
     const signPrivKey = this.credentials.getDerivedXPrivKey('').deriveChild(address.path).privateKey;
 
     const unlockOpts = {
-      // privKey.toPublicKey().toAddress() and privKey.toAddress() gives two different strings, but daemon treats them as same string ???
+      // privKey.toPublicKey().toAddress() and privKey.toAddress() gives two different strings, but daemon treats them
+      // as same string ???
       parentAddress: Bitcore.PrivateKey(this.credentials.walletPrivKey, this.credentials.network).toPublicKey().toAddress().toString(),
       address: address.address,
       pubkey: address.publicKeys[0],
@@ -2691,7 +2694,8 @@ export class API {
   /**
    * Returns send max information.
    * @param {String} opts
-   * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level ('priority', 'normal', 'economy', 'superEconomy').
+   * @param {number} opts.feeLevel[='normal'] - Optional. Specify the fee level ('priority', 'normal', 'economy',
+   *   'superEconomy').
    * @param {number} opts.feePerKb - Optional. Specify the fee per KB (in micro).
    * @param {Boolean} opts.excludeUnconfirmedUtxos - Indicates it if should use (or not) the unconfirmed utxos
    * @param {Boolean} opts.returnInputs - Indicates it if should return (or not) the inputs
@@ -2781,7 +2785,7 @@ export class API {
   updateVaultInfo(vault) {
     $.checkState(this.credentials);
 
-     return this._doPostRequest(`/v1/vaults/${vault._id}/update_info`, vault);
+    return this._doPostRequest(`/v1/vaults/${vault._id}/update_info`, vault);
   }
 
   createVault(vault: any) {
@@ -2793,7 +2797,7 @@ export class API {
 
   renewVault(vault: any) {
     $.checkState(this.credentials);
-    delete vault.walletClient; 
+    delete vault.walletClient;
 
     var url = `/v1/vaults/${vault._id}`;
     return this._doPostRequest(url, vault);

@@ -29,7 +29,7 @@ export class UpdateTransactionsAction implements Action {
     let walletId: string;
 
     transactions.forEach((transaction: IDisplayTransaction) => {
-      walletId = transaction.displayWallet.id;
+      walletId = transaction.wallet.id;
 
       if (!this.transactionsByWallet[walletId])
         this.transactionsByWallet[walletId] = [];
