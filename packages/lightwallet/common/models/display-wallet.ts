@@ -1,10 +1,10 @@
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { FiatAmount } from '@merit/common/models/fiat-amount';
+import { AddressService } from '@merit/common/services/address.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { WalletService } from '@merit/common/services/wallet.service';
 import { isNil, sumBy } from 'lodash';
 import { DEFAULT_WALLET_COLOR } from '../utils/constants';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { WalletService } from '@merit/common/services/wallet.service';
-import { AddressService } from '@merit/common/services/address.service';
-import { FiatAmount } from '@merit/common/models/fiat-amount';
-import { TxFormatService } from '@merit/common/services/tx-format.service';
 
 export interface IDisplayWalletOptions {
   skipStatus?: boolean;
@@ -36,6 +36,7 @@ export class DisplayWallet {
   @ClientProperty network: string;
   @ClientProperty status: any;
   @ClientProperty balanceHidden: boolean;
+  @ClientProperty balance: any;
 
   referrerAddress: string;
   alias: string;

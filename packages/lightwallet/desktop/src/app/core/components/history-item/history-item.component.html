@@ -4,16 +4,12 @@
   </div>
   <div class="history__item__info">
     <div>
-      <div *ngIf="tx.displayWallet">
-        <div class="history__item__info__title">
-          <strong>{{ tx.name }}</strong>
-        </div>
+      <div class="history__item__info__title">
+        <strong>{{ tx.name }}</strong>
       </div>
-      <div *ngIf="tx.displayWallet">
-        <div class="history__item__info__title">
-          {{ isCredit? 'Received to:' : 'Sent from:' }}
-          <span class="source">{{ tx.displayWallet.name }}</span>
-        </div>
+      <div class="history__item__info__title">
+        {{ isCredit? 'Received to:' : 'Sent from:' }}
+        <span class="source">{{ tx.wallet.name }}</span>
       </div>
       <p class="history__item__info__date">{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </div>

@@ -31,6 +31,8 @@ export class HistoryItemComponent implements OnInit {
   ngOnInit() {
     const { tx } = this;
 
+    console.log('TX IS ', tx);
+
     this.isConfirmed = tx.isCoinbase ? tx.isMature : true;
     this.isUnlockRequest = tx && tx.action === TransactionAction.UNLOCK;
     this.isCredit = tx.isCoinbase || tx.action === TransactionAction.RECEIVED;
@@ -46,33 +48,4 @@ export class HistoryItemComponent implements OnInit {
     else if (tx.isInvite) this.image = 'invite';
     else this.image = 'merit';
   }
-
-  // isUnlockRequest(transaction: IDisplayTransaction) {
-  //   return transaction.action === TransactionAction.UNLOCK;
-  // }
-  //
-  // isCredit(transaction: IDisplayTransaction) {
-  //   return transaction.isCoinbase || transaction.action === TransactionAction.RECEIVED;
-  // }
-  //
-  // isInvite(transaction: IDisplayTransaction) {
-  //   return transaction.isInvite === true;
-  // }
-  //
-  // isDebit(transaction: IDisplayTransaction) {
-  //   return transaction.action === TransactionAction.SENT;
-  // }
-  //
-  // isMiningReward(transaction: IDisplayTransaction) {
-  //   return this.isReward(transaction) && transaction.outputs[0].index === 0;
-  // }
-  //
-  // isEasySend(transaction: IDisplayTransaction) {
-  //   return !transaction.isCoinbase && !transaction.isInvite;
-  // }
-  //
-  // isAmbassadorReward(transaction: IDisplayTransaction) {
-  //   return transaction.isAmbassadorReward;
-  // }
-
 }
