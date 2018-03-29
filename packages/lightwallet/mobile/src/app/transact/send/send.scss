@@ -337,16 +337,18 @@ view-send-select-bind-contact {
 }
 view-send,
 view-send-select-bind-contact {
-  .sendSlide .slide-zoom {
+  ion-slides.sendSlides, ion-slides.sendSlides .slide-zoom {
+    background: #F7F7FA;
     height: 100%;
+  }
+
+  .sendSlide .slide-zoom {
     display: flex;
     justify-content: space-between;
     box-sizing: border-box;
     flex-direction: column;
-    height: calc(100vh - 50px);
     padding-bottom: 50px;
     position: relative;
-    background: #F7F7FA;
     .sendSlide__content {
       max-width: 295px;
       margin: 0px auto;
@@ -379,9 +381,9 @@ view-send-select-bind-contact {
   }
   .swiper-pagination-fraction, .swiper-pagination-custom,
   .swiper-container-horizontal > .swiper-pagination-bullets {
-    bottom: 10px;
+    bottom: 0;
     height: 55px;
-    background: #FFF;
+    background: white;
     padding-top: 20px;
   }
   .swiper-pagination-bullet-active {
@@ -541,8 +543,7 @@ view-send-select-bind-contact {
     }
   }
   .merit-friends {
-    background: #FFF;
-    min-height: calc(100% - 142px);
+    background: white;
     &__groupTitle {
       padding: 15px 15px;
       color: #74809b;
@@ -554,11 +555,13 @@ view-send-select-bind-contact {
       border-top: 1px solid #ededed;
     }
     &__wrap {
-      background: #FFF;
+      background: white;
       padding: 30px;
       height: calc(100vh - 340px);
+      max-height: 400px;
       position: relative;
       .no-friends {
+        border-radius: 5px;
         border: 1px solid #106dda;
         text-align: center;
         padding: 20px 20px 30px;

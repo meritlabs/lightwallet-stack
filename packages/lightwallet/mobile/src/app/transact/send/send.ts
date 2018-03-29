@@ -26,7 +26,7 @@ export class SendView {
   private recentContacts: Array<MeritContact> = [];
   private suggestedMethod: ISendMethod;
   searchQuery: string = '';
-  loadingContacts: boolean = false;
+  loadingContacts: boolean;
   contacts: Array<MeritContact> = [];
   amount: number;
   searchResult: {
