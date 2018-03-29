@@ -151,8 +151,11 @@
             <contact-avatar [contact]="contact" class="friend__avatar"></contact-avatar>
             <div class="friend__info" (click)="sendToContact(contact)">
               <span class="friend__title">{{ contact.name.formatted }}</span>
-              <span class="friend__alias" *ngFor="let address of contact.meritAddresses">
-                @{{ address.alias }}</span>
+              <span class="friend__alias blue" *ngIf="contact.meritAddresses.length > 1">
+                Select address
+              </span>
+              <span class="friend__alias" *ngIf="contact.meritAddresses.length < 2">
+                @{{contact.meritAddresses[0].alias }}</span>
               <div class="friend__info__edit" (click)="editContact(contact)"></div>
             </div>
           </div>
