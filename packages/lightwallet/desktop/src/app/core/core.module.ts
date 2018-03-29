@@ -88,7 +88,6 @@ export function getPages() {
     ...getPages()
   ],
   providers: [
-    { provide: PushNotificationsService, useClass: WebPushNotificationsService },
     WalletPasswordGuard
   ]
 })

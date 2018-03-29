@@ -8,17 +8,23 @@
         <h1>Merit is invite-only network</h1>
       </div>
     </div>
-    <div class="unlock__form">
+    <form class="unlock__form" [formGroup]="formData" (ngSubmit)="onSubmit()">
       <div class="unlock__form__group">
         <label for="" class="ui-label">
           Invite code or username
           <span class="ui-tooltip">
             <span class="ui-tooltip__text">
-              Please enter your invite code, which you recieved from your recipient.
+              Please enter your invite code, which you received from your recipient.
             </span>
           </span>
         </label>
-        <input type="text" class="ui-input ui-input--text">
+        <input type="text" class="ui-input ui-input--text" formControlName="inviteCode">
+        <div class="input-errors" [hidden]="!inviteCode.dirty || inviteCode.valid">
+          <div [hidden]="!inviteCode.hasError('required')">Invite code is required</div>
+          <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('minlength')">Invite code must be at least 3 characters long</div>
+          <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('InvalidFormat')">Invalid address or alias format</div>
+          <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('AddressNotFound')">Address not found</div>
+        </div>
       </div>
       <div class="unlock__form__group">
         <label for="" class="ui-label">
@@ -29,11 +35,16 @@
               </span>
             </span>
         </label>
-        <input type="text" class="ui-input ui-input--text">
+        <input type="text" class="ui-input ui-input--text" formControlName="alias">
+        <div class="input-errors" [hidden]="!alias.dirty || alias.valid">
+          <div [hidden]="!alias.hasError('minlength')">Your alias must be at least 3 characters long</div>
+          <div [hidden]="!alias.hasError('InvalidFormat')">Invalid alias format</div>
+          <div [hidden]="!alias.hasError('AliasInUse')">Alias is already in use</div>
+        </div>
       </div>
       <div class="unlock__form__group">
-        <button class="ui-button ui-button--blue ui-button--with-arrow">Let’s get started</button>
-      </div>  
-    </div>
+        <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="formData.invalid">Let's get started</button>
+      </div>
+    </form>
   </div>
 </div>
