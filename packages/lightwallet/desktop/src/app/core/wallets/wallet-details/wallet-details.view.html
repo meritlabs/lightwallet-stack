@@ -10,16 +10,16 @@
             </div>
           </div>
             <div class="wallet__balance">
+              <span class="ico ico--coins"></span>
               <ng-container *ngIf="!wallet.balanceHidden; else balanceHidden">
-                <span class="ico ico--coins"></span>
-                <span>{{ wallet.totalBalanceStr }} <small>MRT ({{ wallet.totalBalanceFiat }})</small></span>
+                <span>{{ wallet.totalBalanceMicros | toMRT:null:true }} <small>MRT</small> <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})</small></span>
               </ng-container>
               <ng-template #balanceHidden>
                 [Balance hidden]
               </ng-template>
             </div>
             <div class="wallet__invites">
-              <span class="ico ico--ivites"></span> Avalible invites: {{ wallet.invites }}
+              <span class="ico ico--ivites"></span> Available invites: {{ wallet.invites }}
             </div>
           <div class="wallet__navigation">
             <div class="wallet__button wallet__button--send" [routerLink]="'/send'">

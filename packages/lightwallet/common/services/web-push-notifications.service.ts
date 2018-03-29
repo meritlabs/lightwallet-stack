@@ -57,6 +57,9 @@ export class WebPushNotificationsService extends PushNotificationsService {
   private async registerSW() {
     try {
       const sw = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      sw.addEventListener('message', event => {
+        console.log('Got a message from our SW =]', event);
+      });
       this.firebaseMessaging.useServiceWorker(sw);
     } catch (e) {
       this.logger.error('Unable to register FCM Service Worker', e && e.message ? e.message : e);

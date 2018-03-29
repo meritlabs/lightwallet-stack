@@ -6,7 +6,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { getEasySendURL } from '@merit/common/models/easy-send';
 import { SendMethodType } from '@merit/common/models/send-method';
 import { IRootAppState } from '@merit/common/reducers';
-import { selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { selectConfirmedWallets } from '@merit/common/reducers/wallets.reducer';
 import { ConfigService } from '@merit/common/services/config.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { FeeService } from '@merit/common/services/fee.service';
@@ -14,16 +14,18 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { isWalletEncrypted } from '@merit/common/utils/wallet';
+import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/take';
+import { Observable } from 'rxjs/Observable';
 import { defer } from 'rxjs/observable/defer';
+import { fromPromise } from 'rxjs/observable/fromPromise';
 import { merge } from 'rxjs/observable/merge';
 import { of } from 'rxjs/observable/of';
 import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
-import { fromPromise } from 'rxjs/observable/fromPromise';
-import 'rxjs/add/operator/debounceTime';
 
 const CURRENCY_TYPE_MRT = 'mrt';
 const CURRENCY_TYPE_FIAT = 'fiat';
@@ -81,7 +83,7 @@ export class SendView implements OnInit {
     'value': 10
   };
 
-  wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets);
   hasUnlockedWallet: boolean;
 
   formData: FormGroup = this.formBuilder.group({
@@ -173,12 +175,13 @@ export class SendView implements OnInit {
               private easySendService: EasySendService,
               private txFormatService: TxFormatService,
               private configService: ConfigService,
-              private walletService: WalletService) {
+              private walletService: WalletService,
+              private passwordPromptCtrl: PasswordPromptController) {
   }
 
   async ngOnInit() {
     const wallets = await this.wallets$.take(1).toPromise();
-    this.hasUnlockedWallet = wallets.some((wallet: DisplayWallet) => wallet.status.confirmed);
+    this.hasUnlockedWallet = wallets.length > 0;
     this.selectedWallet = (await this.wallets$.take(1).toPromise())[0];
 
     const { wallet: { settings: walletSettings } } = this.configService.get();
@@ -232,6 +235,22 @@ export class SendView implements OnInit {
   }
 
   async send() {
+    if (isWalletEncrypted(this.txData.wallet)) {
+      // wallet is encrypted, we need to decrypt it before sending
+      if (!await new Promise<boolean>((resolve) => {
+          const passwordPrompt = this.passwordPromptCtrl.create(this.txData.wallet);
+          passwordPrompt.onDismiss((password: string) => {
+            if (password) {
+              this.walletService.decrypt(this.txData.wallet.client, password);
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          });
+        }))
+        return;
+    }
+
     console.log('Sending...');
     // TODO: show loading popup
     try {

@@ -148,6 +148,7 @@ export class NetworkView {
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
     }
+
   }
 
   private async loadRequestsInfo() {

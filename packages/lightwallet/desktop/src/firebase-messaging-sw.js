@@ -13,9 +13,23 @@ firebase.initializeApp({
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.
 const messaging = firebase.messaging();
+const clients = [];
+
+function dispatchMessage(message) {
+  console.log('Dispatching message to clients ', message);
+  clients.forEach(client =>
+    client.postMessage(message)
+  );
+}
 
 messaging.setBackgroundMessageHandler(function(payload) {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
+
+  dispatchMessage({
+    type: 'background_notification',
+    data: payload
+  });
+
   // Customize notification here
   var notificationTitle = 'Background Message Title';
   var notificationOptions = {

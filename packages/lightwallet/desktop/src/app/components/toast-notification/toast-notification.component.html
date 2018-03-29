@@ -1,9 +1,7 @@
-<div class="notification__toast notification__toast--{{message.status}}" [hidden]="!show">
-  <div class="notification__toast__close" (click)="show=!show"></div>
-  <div class="notification__toast__title">
-    <p>{{message.title}}</p>
-  </div>
-  <div class="notification__toast__content">
-    <p>{{message.text}}</p>
-  </div>
+<div class="close" (click)="show = !show"></div>
+<div class="title" *ngIf="message.title">
+  <p>{{message?.title}}</p>
+</div>
+<div class="content">
+  <p>{{message?.text}}</p>
 </div>

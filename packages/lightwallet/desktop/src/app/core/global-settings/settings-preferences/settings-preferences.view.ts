@@ -24,6 +24,10 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     email: [''] // TODO(ibby): validate email
   });
 
+  get emailNotificationsEnabled() {
+    return this.formData.get('emailNotifications').value == true;
+  }
+
   commitHash: string;
   version: string;
 

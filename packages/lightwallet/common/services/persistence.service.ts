@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
+import { Profile } from '@merit/common/models/profile';
 import * as _ from 'lodash';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
@@ -47,12 +48,12 @@ export class PersistenceService {
               private log: LoggerService) {
   }
 
-  storeNewProfile(profile): Promise<void> {
-    return this.set(Keys.PROFILE, profile);
+  storeNewProfile(profile: Profile): Promise<void> {
+    return this.set(Keys.PROFILE, JSON.parse(profile.toObj()));
   }
 
-  storeProfile(profile): Promise<void> {
-    return this.set(Keys.PROFILE, profile);
+  storeProfile(profile: Profile): Promise<void> {
+    return this.set(Keys.PROFILE, JSON.parse(profile.toObj()));
   }
 
   getProfile() {

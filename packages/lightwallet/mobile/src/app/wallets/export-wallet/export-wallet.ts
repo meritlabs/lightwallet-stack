@@ -77,12 +77,13 @@ export class ExportWalletView {
               if (!data.password) {
                 showPrompt(true);
               } else {
-                this.walletsService.decrypt(this.wallet, data.password).then(() => {
+                try {
+                  this.walletsService.decrypt(this.wallet, data.password);
                   setQrInfo(data.password);
                   this.accessGranted = true;
-                }).catch((err) => {
+                } catch (err) {
                   showPrompt();
-                });
+                }
               }
             }
             }
@@ -106,7 +107,6 @@ export class ExportWalletView {
   async download() {
 
     const addressBook = await this.persistenceService.getAddressbook(this.wallet.credentials.network);
-
     const exportData = this.wallet.export({ addressBook: addressBook });
     const encryptedData = this.sjcl.encrypt(this.formData.password, exportData, { iter: 10000 });
     const walletName = this.wallet.name;
