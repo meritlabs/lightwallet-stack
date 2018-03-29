@@ -25,7 +25,7 @@
 
     <ng-template #contactsLoaded>
       <ng-container *ngIf="showSlider; else sendPage">
-        <ion-slides pager="true" class="sendSlides" (ionSlideDidChange)="slideChanged()">
+        <ion-slides [pager]="true" class="sendSlides" #sendSlides>
           <ion-slide class="sendSlide">
             <div class="sendSlide_picture">
               <img src="/assets/img/icon.png" alt="">
@@ -91,9 +91,7 @@
         </ion-slides>
         <div class="sendSlide__nav">
           <button type="button" name="button" (click)="slidePrev()">Back</button>
-          <button type="button" name="button" (click)="slideNext()" *ngIf="!sliderIsFinished" class="blue">next</button>
-          <button type="button" name="button" (click)="hideSlider()" *ngIf="sliderIsFinished" class="blue">Finish
-          </button>
+          <button type="button" name="button" (click)="slideNext()" class="blue">{{ sendSlides.isEnd()? 'Finish' : 'Next' }}</button>
         </div>
       </ng-container>
       <ng-template #sendPage>
