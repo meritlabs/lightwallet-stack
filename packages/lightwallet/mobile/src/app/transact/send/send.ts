@@ -23,6 +23,12 @@ const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
   templateUrl: 'send.html'
 })
 export class SendView {
+
+  @ViewChild(Slides) slides: Slides;
+  get sliderIsFinished(): boolean {
+    return this.slides.isEnd();
+  }
+
   private recentContacts: Array<MeritContact> = [];
   private suggestedMethod: ISendMethod;
   searchQuery: string = '';
@@ -312,15 +318,12 @@ export class SendView {
       suggestedMethod: { type: SendMethodType.Easy }
     });
   }
-  @ViewChild(Slides) slides: Slides;
-  sliderIsFinished: boolean = false;
+
   slideNext() {
-    this.slides.slideNext();
+    this.sliderIsFinished ? this.slides.slideNext() : this.hideSlider();
   }
+
   slidePrev() {
     this.slides.slidePrev();
-  }
-  slideChanged() {
-    this.sliderIsFinished = this.slides.isEnd();
   }
 }
