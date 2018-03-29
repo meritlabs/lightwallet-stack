@@ -32,7 +32,7 @@
         </ion-row>
 
     </ion-card>
-    <div class="transactionDetails">
+    <div class="transactionDetails" *ngIf="txData.details">
       <div class="transactionDetails_header">
         <p class="heading">TRANSACTION DETAILS</p>
         <p class="mrt">{{ txData.details.amountMRT }} MRT</p>
