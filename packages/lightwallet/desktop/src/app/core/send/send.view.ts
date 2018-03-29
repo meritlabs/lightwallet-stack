@@ -26,6 +26,8 @@ import { fromPromise } from 'rxjs/observable/fromPromise';
 import { merge } from 'rxjs/observable/merge';
 import { of } from 'rxjs/observable/of';
 import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { AddressService } from '@merit/common/services/address.service';
+import { debounce } from 'lodash';
 
 const CURRENCY_TYPE_MRT = 'mrt';
 const CURRENCY_TYPE_FIAT = 'fiat';
@@ -166,6 +168,8 @@ export class SendView implements OnInit {
   private referralsToSign: any[];
   private txData: any;
 
+  private fiatAmountAvailable: boolean;
+
   constructor(private route: ActivatedRoute,
               private store: Store<IRootAppState>,
               private formBuilder: FormBuilder,
@@ -176,13 +180,17 @@ export class SendView implements OnInit {
               private txFormatService: TxFormatService,
               private configService: ConfigService,
               private walletService: WalletService,
-              private passwordPromptCtrl: PasswordPromptController) {
+              private passwordPromptCtrl: PasswordPromptController,
+              private addressService: AddressService
+  ) {
   }
 
   async ngOnInit() {
     const wallets = await this.wallets$.take(1).toPromise();
+
     this.hasUnlockedWallet = wallets.length > 0;
     this.selectedWallet = (await this.wallets$.take(1).toPromise())[0];
+
 
     const { wallet: { settings: walletSettings } } = this.configService.get();
 
@@ -190,6 +198,7 @@ export class SendView implements OnInit {
       { type: CURRENCY_TYPE_MRT, name: walletSettings.unitCode.toUpperCase() }
     ];
     if (this.rateService.getRate(walletSettings.alternativeIsoCode) > 0) {
+      this.fiatAmountAvailable = true;
       this.availableUnits.push({
         type: CURRENCY_TYPE_FIAT,
         name: walletSettings.alternativeIsoCode.toUpperCase()
@@ -225,6 +234,30 @@ export class SendView implements OnInit {
     this.meritAmount = amount;
     this.updateFiatAmount();
   }
+
+  onAddressChange(input: string) {
+    input =  input.replace(/\s+/g, '');
+    if (input.charAt(0) == '@') input = input.slice(1);
+
+    if (!input) {
+      return this.debounceValidateInput.cancel();
+    }
+
+    this.error = '';
+    this.debounceValidateInput(input);
+  }
+
+  private debounceValidateInput = _.debounce((input) => this.validateInput(input), 300);
+
+  async validateInput(input) {
+    if (this.addressService.couldBeAlias(input) || this.addressService.isAddress(input)) {
+      let addressInfo = await this.addressService.getAddressInfo(input);
+      if (!addressInfo.isConfirmed) this.error = 'Address not confirmed';
+    } else {
+      this.error = 'Alias/address not found';
+    }
+  }
+
 
   setType(type: SendMethodType) {
     this.formData.get('type').setValue(type);
@@ -286,34 +319,6 @@ export class SendView implements OnInit {
     }
   }
 
-  private approveTx() {
-    if (!this.txData.wallet.canSign() && !this.txData.wallet.isPrivKeyExternal()) {
-      this.logger.info('No signing proposal: No private key');
-      return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp);
-    } else {
-      return this.walletService.publishAndSign(this.txData.wallet, this.txData.txp);
-    }
-  }
-
-  private async getEasyData() {
-    const { type, password } = this.formData.getRawValue();
-
-    if (type != SendMethodType.Easy) {
-      return {};
-    } else {
-      const easySend = await this.easySendService.createEasySendScriptHash(this.selectedWallet.client, password);
-
-      easySend.script.isOutput = true;
-
-      return {
-        script: easySend.script,
-        scriptAddress: easySend.scriptAddress,
-        scriptReferralOpts: easySend.scriptReferralOpts,
-        url: getEasySendURL(easySend)
-      };
-    }
-  }
-
   private async updateAmount(formData: any) {
     const amount: any = {};
 
@@ -330,165 +335,5 @@ export class SendView implements OnInit {
     return amount;
   }
 
-  private async createTxp(formattedAmount: any, dryRun?: boolean) {
-
-    const { type, toAddress, amount, feeIncluded } = this.formData.getRawValue();
-    const txData: any = {};
-
-    if (this.selectedWallet.balance.spendableAmount == 0)
-      throw 'Insufficient funds';
-
-    try {
-
-      let data: any = {
-        toAddress: type === 'classic' ? toAddress : '',
-        toName: '',
-        toAmount: parseInt(formattedAmount.micros),
-        allowSpendUnconfirmed: true,
-        feeLevel: 'superEconomy'
-      };
-
-      const maxAmount = this.selectedWallet.balance.spendableAmount;
-
-      console.log(formattedAmount.micros, maxAmount);
-
-      if (formattedAmount.micros > maxAmount) {
-        this.formData.get('amount').setValue(this.txFormatService.satToUnit(maxAmount));
-        this.formData.get('feeIncluded').setValue(true);
-        return void 0;
-      } else if (formattedAmount.micros == maxAmount) {
-        if (feeIncluded) {
-          console.log('Sending max');
-          data.sendMax = true;
-          data.toAmount = null;
-        } else {
-          console.log('Sending max but fee isnt included, lets update form data');
-          this.formData.get('feeIncluded').setValue(true);
-          return void 0;
-        }
-      }
-
-      const easyData: any = await this.getEasyData();
-
-      data = data || {};
-      data = {
-        ...data,
-        ..._.pick(easyData, 'script', 'toAddress'),
-        toAddress: easyData.scriptAddress || data.toAddress || this.selectedWallet.referrerAddress
-      };
-
-      const txpOut = await this.getTxp(_.clone(data), this.selectedWallet.client, dryRun);
-
-
-      txData.txp = txpOut;
-      txData.easySend = easyData;
-      txData.easySendUrl = easyData.url;
-      this.referralsToSign = _.filter([easyData.scriptReferralOpts]);
-
-      const level = {
-        level: 'superEconomy',
-        feePerKb: 20000,
-        nbBlocks: 24
-      };
-
-      let micros = Math.round(txpOut.estimatedSize * level.feePerKb / 1000);
-      let mrt = Math.round(this.rateService.microsToMrt(micros) * 1000000000) / 1000000000;
-      let percent = this.formData.get('feeIncluded') ? (micros / (amount.micros) * 100) : (micros / (amount.micros + micros) * 100);
-      let precision = 1;
-      if (percent > 0) {
-        while (percent * Math.pow(10, precision) < 1) {
-          precision++;
-        }
-      }
-      precision++; //showing two valued digits
-
-      let fee = {
-        description: level.level,
-        name: level.level,
-        minutes: level.nbBlocks * MINUTE_PER_BLOCK,
-        micros: micros,
-        mrt: mrt,
-        feePerKb: level.feePerKb,
-        percent: percent.toFixed(precision) + '%'
-      };
-
-      txData.txp.availableFeeLevels = [fee];
-
-      // todo IF EASY ADD  easySend.size*feeLevel.feePerKb !!!!!!
-      txData.txp.fee = txData.feeAmount = fee.micros;
-
-      txData.wallet = this.selectedWallet.client;
-
-      return txData;
-    } catch (err) {
-      txData.txp = null;
-      this.logger.warn(err);
-
-      if (err.message) {
-        throw new Error(err.message);
-      }
-
-      this.selectedFee = null;
-      // TODO display error to user
-    }
-  }
-
-  private async getTxp(tx: any, wallet: MeritWalletClient, dryRun?: boolean) {
-    // ToDo: use a credential's (or fc's) function for this
-    if (tx.description && !wallet.credentials.sharedEncryptingKey) {
-      throw new Error('Need a shared encryption key to add message!');
-    }
-
-    if (tx.toAmount > Number.MAX_SAFE_INTEGER) {
-      throw new Error('The amount is too big');
-    }
-
-    let txp: any = {};
-
-    if (tx.script) {
-      txp.outputs = [{
-        'script': tx.script.toHex(),
-        'toAddress': tx.toAddress,
-        'amount': tx.toAmount,
-        'message': tx.description
-      }];
-      txp.addressType = 'P2SH';
-    } else {
-      txp.outputs = [{
-        'toAddress': tx.toAddress,
-        'amount': tx.toAmount,
-        'message': tx.description
-      }];
-    }
-
-    txp.sendMax = tx.sendMax;
-
-    if (tx.sendMaxInfo) {
-      txp.inputs = tx.sendMaxInfo.inputs;
-      txp.fee = tx.sendMaxInfo.fee;
-    } else {
-      txp.feeLevel = 'superEconomy';
-    }
-
-    txp.message = tx.description;
-
-    if (tx.paypro) {
-      txp.payProUrl = tx.paypro.url;
-    }
-    txp.excludeUnconfirmedUtxos = !tx.allowSpendUnconfirmed;
-    if (!dryRun) {
-      txp.dryRun = dryRun;
-      txp.fee = tx.feeAmount;
-      txp.inputs = tx.txp.inputs;
-      if (txp.sendMax || this.formData.get('feeIncluded').value) {
-        txp.sendMax = false; // removing senmax options because we are setting fee and amount values manually
-        txp.outputs[0].amount = this.txData.amount - this.txData.feeAmount;
-      } else {
-        txp.outputs[0].amount = this.txData.amount;
-      }
-    }
-
-    return wallet.createTxProposal(txp);
-  }
 
 }

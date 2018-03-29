@@ -5,7 +5,7 @@
       <p>Send Merit</p>
     </div>
 
-    <error-message *ngIf="error">{{ error }</error-message>
+    <error-message *ngIf="error">{{ error }}</error-message>
 
     <div class="sendMerit__content">
 
@@ -17,7 +17,7 @@
                      class="ui-input ui-input--form ui-input--text">
               <div class="ui-input__addon">MRT</div>
             </div>
-            <div class="ui-input__wrapper ui-input__wrapper--currency">
+            <div class="ui-input__wrapper ui-input__wrapper--currency" [hidden]="!fiatAmountAvailable">
               <input type="text" name="" value="{{fiatAmount}}" disabled
                      class="ui-input ui-input--form ui-input--text">
               <div class="ui-input__addon">
@@ -52,7 +52,8 @@
             <div class="sendMerit__form__group">
               <label for="" class="ui-label">Send to address / alias</label>
               <input type="text" name="" value="" placeholder="Paste address / alias here"
-                     class="ui-input ui-input--form ui-input--text" formControlName="toAddress">
+                     class="ui-input ui-input--form ui-input--text" formControlName="toAddress" (ngModelChange)="onAddressChange($event)">
+
             </div>
             <div class="sendMerit__form__group">
               <div class="switch-type">
