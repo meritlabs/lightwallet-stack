@@ -44,9 +44,7 @@ export class UpdateTransactionsAction implements Action {
 export class UpdateOneWalletTransactions implements Action {
   type = TransactionActionType.UpdateOne;
 
-  constructor(public walletId: string, public transactions: IDisplayTransaction[]) {
-
-  }
+  constructor(public walletId: string, public transactions: IDisplayTransaction[]) {}
 }
 
 export class RefreshOneWalletTransactions implements Action {
