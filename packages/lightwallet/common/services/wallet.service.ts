@@ -579,7 +579,7 @@ export class WalletService {
   };
 
   decrypt(wallet: MeritWalletClient, password: string) {
-    wallet.decryptPrivateKey(password);
+    return wallet.decryptPrivateKey(password);
   }
 
   async handleEncryptedWallet(wallet: MeritWalletClient): Promise<any> {
