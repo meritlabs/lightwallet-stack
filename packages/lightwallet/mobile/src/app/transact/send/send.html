@@ -91,7 +91,9 @@
         </ion-slides>
         <div class="sendSlide__nav">
           <button type="button" name="button" (click)="slidePrev()">Back</button>
-          <button type="button" name="button" (click)="slideNext()" class="blue">{{ sendSlides.isEnd()? 'Finish' : 'Next' }}</button>
+          <button type="button" name="button" (click)="slideNext()" class="blue">{{ sendSlides.isEnd()? 'Finish' :
+            'Next' }}
+          </button>
         </div>
       </ng-container>
       <ng-template #sendPage>
@@ -125,7 +127,7 @@
                     seconds.</p>
                 </div>
                 <div>
-                  <a href="" class="no-friends__add" (click)="bindAddressToContact()">Add Merit Friend</a>
+                  <a href="" class="no-friends__add" (click)="addContact()">Add Merit Friend</a>
                 </div>
               </div>
               <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
@@ -140,7 +142,7 @@
                 </div>
                 <div [hidden]="searchResult?.toNewEntity?.destination !== 'address'" margin-top>
                   <button (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
-                      Send To {{searchQuery}}
+                    Send To {{searchQuery}}
                   </button>
                   or
                   <div class="button-contact" (click)="createContact()">
@@ -162,8 +164,12 @@
                     <span class="friend__title">{{ contact.name.formatted }}</span>
                     <span class="friend__alias" *ngFor="let address of contact.meritAddresses">
                 @{{ address.alias }}</span>
+                    <div class="friend__info__edit" (click)="editContact(contact)"></div>
                   </div>
                 </div>
+              </div>
+              <div class="friends_add" *ngIf="searchResult.withMerit.length" (click)="addContact()">
+                + Add New Friend
               </div>
             </div>
           </div>

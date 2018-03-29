@@ -242,6 +242,17 @@ export class SendView {
     }
   }
 
+  addContact() {
+    let meritAddress = {
+      address: null,
+      network: null
+    };
+    let modal = this.modalCtrl.create('SendCreateContactView');
+    modal.onDidDismiss((contact) => {
+      this.navCtrl.pop();
+    });
+    modal.present();
+  }
   createContact() {
     let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
     let modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
@@ -312,6 +323,7 @@ export class SendView {
     this.searchQuery = await this.addressScanner.scanAddress();
     this.parseSearch();
   }
+
 
   easySend() {
     this.navCtrl.push('SendAmountView', {
