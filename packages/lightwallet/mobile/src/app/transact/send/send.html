@@ -118,7 +118,7 @@
             <p class="no-friends__description">Quickly send Merit to any alias on the Merit network in seconds.</p>
           </div>
           <div>
-            <a href="" class="no-friends__add" (click)="bindAddressToContact()">Add Merit Friend</a>
+            <a href="" class="no-friends__add" (click)="addContact()">Add Merit Friend</a>
           </div>
         </div>
         <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
@@ -147,14 +147,18 @@
           </div>
         </div>
         <div *ngIf="searchResult.withMerit.length" [hidden]="showRecent" class="friends">
-          <div class="friend" *ngFor="let contact of searchResult.withMerit" (click)="sendToContact(contact)">
+          <div class="friend" *ngFor="let contact of searchResult.withMerit" >
             <contact-avatar [contact]="contact" class="friend__avatar"></contact-avatar>
-            <div class="friend__info">
+            <div class="friend__info" (click)="sendToContact(contact)">
               <span class="friend__title">{{ contact.name.formatted }}</span>
               <span class="friend__alias" *ngFor="let address of contact.meritAddresses">
                 @{{ address.alias }}</span>
+              <div class="friend__info__edit" (click)="editContact(contact)"></div>
             </div>
           </div>
+        </div>
+        <div class="friends_add" *ngIf="searchResult.withMerit.length" (click)="addContact()">
+          + Add New Friend
         </div>
       </div>
     </div>
