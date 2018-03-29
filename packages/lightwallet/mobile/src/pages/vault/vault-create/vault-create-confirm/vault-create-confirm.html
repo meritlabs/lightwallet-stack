@@ -31,7 +31,7 @@
         <h2>{{vaultData.amount | toMRT}}</h2>
     </ion-item>
 
-    <ion-item>
+    <ion-item text-wrap>
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/lock.svg">
         </ion-avatar>
@@ -43,12 +43,14 @@
         </h2>
     </ion-item>
 
-    <ion-item>
+    <ion-item text-wrap>
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/masterkey.svg">
         </ion-avatar>
-        <p>Master key phrase</p>
-        <h2 class="phrase">{{vaultData.masterKey.phrase}}</h2>
+        <ion-label>
+          <p>Master key phrase</p>
+          <h2>{{vaultData.masterKey.phrase}}</h2>
+        </ion-label>
     </ion-item>
 
     <button ion-button class="action-button" translate (click)="create()" [disabled]="isSendingEnabled">

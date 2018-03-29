@@ -1,15 +1,10 @@
-.ios view-vault ion-header.header-ios ion-title.title.title-ios .toolbar-title.toolbar-title-ios {
-  color: white;
-}
-
-view-vault {
-
-  ion-header.header ion-title[smaller-title] .toolbar-title {
-    font-size: 24px;
-  }
-
-  ion-header .toolbar-background {
-    background: #4bb0dd !important;
+.ios view-vault {
+  ion-header.header-ios {
+    ion-title.title.title-ios {
+      .toolbar-title.toolbar-title-ios {
+        color: white;
+      }
+    }
   }
 
   .content-ios {
@@ -28,13 +23,23 @@ view-vault {
         font-weight: 400;
         font-size: 17px;
       }
-
     }
   }
+}
+
+view-vault {
 
   ion-header.header {
+    ion-title[smaller-title] .toolbar-title {
+      font-size: 24px;
+    }
+
     button[ion-button], .toolbar-title {
       color: white;
+    }
+
+    .toolbar-background {
+      background: color($colors, primary);
     }
   }
   .big-header {
@@ -51,11 +56,7 @@ view-vault {
     }
 
     .action-buttons {
-      //margin: 21px -18px -18px -18px;
-      margin-top: 0;
-      margin-bottom: -18px;
-      margin-left: -18px;
-      margin-right: -18px;
+      margin: 21px -18px -18px -18px;
       height: 85px;
       background: rgba(0, 0, 0, 0.08);
       display: flex;

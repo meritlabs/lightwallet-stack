@@ -1,3 +1,20 @@
+// *** IOS ***
+.ios view-send {
+  ion-searchbar.searchbar-ios {
+    background: transparent;
+    display: initial;
+    .searchbar-input-container {
+      border: 1px solid rgba(0,0,0,0.2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+  }
+
+  button[ion-button].scan-button {
+    margin: 2px 8px 0 0;
+  }
+}
+
 view-send {
   .global-search-button {
     height: 40px;
@@ -16,8 +33,7 @@ view-send {
   .or-line {
     height: 20px;
     color: rgba(0, 0, 0, 0.4);
-    margin: 0;
-
+    margin: 10px 0 0 0;
     .hr {
       border-top: 1px solid rgba(0, 0, 0, 0.1);
       width: calc(50% - 45px);

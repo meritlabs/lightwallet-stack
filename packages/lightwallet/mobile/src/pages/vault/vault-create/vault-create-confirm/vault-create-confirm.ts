@@ -28,7 +28,7 @@ export class VaultCreateConfirmView {
     //todo change text
     this.alertCtrl.create({
       title: 'Did you write your master key phrase down?',
-      message: 'It is necessary to keep your money save ',
+      message: 'It is necessary to keep your money safe.',
       buttons: [
         { text: 'Cancel', role: 'cancel' },
         { text: 'Yes', handler: () => { this.createVault(); }}
@@ -38,7 +38,7 @@ export class VaultCreateConfirmView {
 
   private async createVault() {
 
-    const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
+    const loader = this.loadingCtrl.create({ content: 'Creating vault' });
     loader.present();
     try {
       await this.vaultsService.createVault(this.vaultData);

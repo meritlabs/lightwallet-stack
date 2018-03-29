@@ -36,3 +36,44 @@
         width: 70%
       &--30
         width: 30%
+.session-log
+  &__filter
+    display: flex
+    flex-flow: row wrap
+    justify-content: flex-start
+    margin-bottom: 30px
+    &__item
+      +font($baseFont--medium, 15px, 15px, $light-blue-grey)
+      text-align: center
+      cursor: pointer
+      padding: 10px 20px
+      border: 1px solid $light-blue-grey
+      border-right: 0px
+      margin-left: -2px
+      display: flex
+      align-items: center
+      .ico
+        background: $light-blue-grey
+        width: 10px
+        margin-right: 5px
+      &:last-of-type
+        border-right: 1px solid $light-blue-grey
+      &.active
+        color: $blue
+        .ico
+          background: $blue
+  &__window
+    width: calc(100 - 40%)
+    margin: 0 auto
+    border: 1px solid $light-blue-grey
+    box-sizing: border-box
+    padding: 20px
+    overflow-y: auto
+    max-height: 500px
+.global-settings__back
+  display: flex
+  align-items: center
+  .global-settings__group__title
+    margin-bottom: 0px
+  img
+    margin-right: 20px

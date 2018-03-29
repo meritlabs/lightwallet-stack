@@ -2,11 +2,10 @@
   <div class="wallets__group__header">
     <div class="wallets__group__header__title title--primary">
       <p>Wallets</p>
-      <loading-spinner [hidden]="!loading"></loading-spinner>
     </div>
     <div>
-      <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--blue
-        ui-button--sm ui-button--{{showButton}}"
+      <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--white
+        ui-button--loadWallet ui-button--sm ui-button--{{showButton}}"
         routerLink="/wallets/import">Import wallet</button>
       <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm
         ui-button--add ui-button--white ui-button--{{showButton}}"
@@ -14,17 +13,23 @@
     </div>
   </div>
   <div class="wallets__group__content">
-    <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: wallet?.id" [routerLink]="['/wallets', wallet.id]">
+    <loading-spinner [hidden]="!loading"></loading-spinner>
+    <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: wallet?.id" [class.locked]="!wallet.client.confirmed" [routerLink]="wallet.client.confirmed? ['/wallets', wallet.id] : null">
       <div class="wallets__group__wallet__info">
         <div class="wallets__group__wallet__icon">
-          <img src="/assets/v1/images/wallets/personal.svg" alt="">
+          <wallet-icon [strokeColor]=wallet.color></wallet-icon>
         </div>
-        <div>
-          <p class="large-black-text">{{ wallet.name }}</p>
-          <p class="regular-blue-text">{{ wallet.totalBalanceStr }} MRT ({{ wallet.totalBalanceFiat }})</p>
-          <p class="regular-blue-text">{{ wallet.invites }} Invites</p>
+        <div class="wallets__group__wallet__details" >
+          <div>
+            <p class="large-black-text">{{ wallet.name }}</p>
+            <p class="regular-blue-text" *ngIf="!balanceHidden">{{ wallet.totalBalanceStr }} MRT <small>({{ wallet.totalBalanceFiat }})</small></p>
+          </div>
+          <div>
+            <p class="regular-blue-text">{{ wallet.invites }} Invites</p>
+          </div>
         </div>
       </div>
+      <app-lock-screen *ngIf="!wallet.client.confirmed"></app-lock-screen>
     </div>
   </div>
 </div>

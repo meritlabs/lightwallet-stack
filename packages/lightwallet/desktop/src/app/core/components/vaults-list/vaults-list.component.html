@@ -4,25 +4,26 @@
       <p>Vaults</p>
     </div>
     <div>
-      <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--blue
-        ui-button--sm ui-button--{{showButton}}"
-        routerLink="/wallets/import">Import wallet</button>
+      <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--white
+        ui-button--loadWallet ui-button--sm ui-button--{{showButton}}"
+        routerLink="/wallets/import">Import Vault</button>
       <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm ui-button--{{showButton}}
         ui-button--add ui-button--white">
         Create new vault</button>
     </div>
   </div>
-  <div class="wallets__group__content" routerLink="/wallets/test/history">
-    <div class="wallets__group__wallet">
+  <div class="wallets__group__content">
+    <div class="wallets__group__wallet" routerLink="/wallets/test/history">
       <div class="wallets__group__wallet__info">
         <div class="wallets__group__wallet__icon">
           <img src="/assets/v1/images/wallets/savings.svg" alt="">
         </div>
         <div>
           <p class="large-black-text">Pension Savings</p>
-          <p class="regular-blue-text">500.00 MRT ($1924.88)</p>
+          <p class="regular-blue-text">500.00 MRT <small>($1924.88)</small></p>
         </div>
       </div>
     </div>
+    <app-lock-screen></app-lock-screen>
   </div>
 </div>

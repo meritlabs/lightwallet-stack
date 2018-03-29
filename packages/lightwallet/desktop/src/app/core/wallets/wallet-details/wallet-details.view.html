@@ -5,19 +5,29 @@
         <div class="details">
           <div class="name-container">
             <!-- TODO(ibby/fedor): switch icon to vault if we're looking at a vault -->
-            <merit-icon name="wallet"></merit-icon>
-            <div class="name">{{ wallet.name }}</div>
+            <div class="wallet__name">
+              <merit-icon name="wallet"></merit-icon> {{ wallet.name }} | {{ wallet.alias? '@' + wallet.alias : wallet.referrerAddress }}
+            </div>
           </div>
-          <div class="address">{{ wallet.alias? '@' + wallet.alias : wallet.referrerAddress }}</div>
-          <div class="balance">
-            <ng-container *ngIf="!wallet.balanceHidden; else balanceHidden">
-              {{ wallet.totalBalanceStr }} <small>MRT</small>
-              <br>
-              {{ wallet.invites }} <small>Invites</small>
-            </ng-container>
-            <ng-template #balanceHidden>
-              [Balance hidden]
-            </ng-template>
+            <div class="wallet__balance">
+              <ng-container *ngIf="!wallet.balanceHidden; else balanceHidden">
+                <span class="ico ico--coins"></span>
+                <span>{{ wallet.totalBalanceStr }} <small>MRT ({{ wallet.totalBalanceFiat }})</small></span>
+              </ng-container>
+              <ng-template #balanceHidden>
+                [Balance hidden]
+              </ng-template>
+            </div>
+            <div class="wallet__invites">
+              <span class="ico ico--ivites"></span> Avalible invites: {{ wallet.invites }}
+            </div>
+          <div class="wallet__navigation">
+            <div class="wallet__button wallet__button--send" [routerLink]="'/send'">
+              Send
+            </div>
+            <div class="wallet__button"  [routerLink]="'/receive'">
+              Receive
+            </div>
           </div>
         </div>
       </div>
@@ -26,9 +36,8 @@
       <div class="wallet-details__content__navigation">
         <ul>
           <li><a [routerLink]="['history']" routerLinkActive="active">Wallet transactions</a></li>
-          <li><a [routerLink]="['receive']" [queryParams]="{ injected: true }" routerLinkActive="active">Receive Merit</a></li>
-          <li><a [routerLink]="['send']" [queryParams]="{ amount: 200, injected: true }" routerLinkActive="active">Send Merit</a></li>
           <li><a [routerLink]="['settings']" routerLinkActive="active">Wallet preferences</a></li>
+          <li><a [routerLink]="['export']" routerLinkActive="active">Export wallet</a></li>
         </ul>
       </div>
       <div class="wallet-details__content__wrap container--inner">
@@ -38,6 +47,5 @@
   </div>
 </ng-container>
 <ng-template #walletLoading>
-  Wallet loading...
-  <!-- TODO(Vova) show a big loading spinner w/ merit logo -->
+  <loading-spinner></loading-spinner>
 </ng-template>

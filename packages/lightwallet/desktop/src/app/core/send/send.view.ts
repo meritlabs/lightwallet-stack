@@ -69,23 +69,8 @@ export class SendView implements OnInit {
     }
   ];
 
-  availableFeesVariants: any = [
-    {
-      name: 'I pay the fee',
-      value: false
-    },
-    {
-      name: 'Recipient will pay the fee',
-      value: true
-    }
-  ];
-
-  selectedFee = {
-    name: 'I pay the fee',
-    value: false
-  };
-
   selectedWallet: DisplayWallet;
+  selectedFee: any;
 
   fiatAmount: any = 0;
   meritAmount: number = 0;
@@ -97,6 +82,7 @@ export class SendView implements OnInit {
   };
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
+  hasUnlockedWallet: boolean;
 
   formData: FormGroup = this.formBuilder.group({
     amount: [0],
@@ -177,7 +163,6 @@ export class SendView implements OnInit {
 
   private referralsToSign: any[];
   private txData: any;
-  private amount: any;
 
   constructor(private route: ActivatedRoute,
               private store: Store<IRootAppState>,
@@ -192,6 +177,10 @@ export class SendView implements OnInit {
   }
 
   async ngOnInit() {
+    const wallets = await this.wallets$.take(1).toPromise();
+    this.hasUnlockedWallet = wallets.some((wallet: DisplayWallet) => wallet.status.confirmed);
+    this.selectedWallet = (await this.wallets$.take(1).toPromise())[0];
+
     const { wallet: { settings: walletSettings } } = this.configService.get();
 
     this.availableUnits = [
@@ -214,9 +203,6 @@ export class SendView implements OnInit {
       this.meritAmount = amount;
       this.updateFiatAmount();
     }
-
-    this.selectedWallet = (await this.wallets$.take(1).toPromise())[0];
-    console.log(this.selectedWallet);
   }
 
   selectCurrency($event) {
@@ -226,11 +212,6 @@ export class SendView implements OnInit {
 
   updateFiatAmount() {
     this.fiatAmount = `${this.selectedCurrency.symbol} ${this.meritAmount * this.selectedCurrency.value}`;
-  }
-
-  selectFee($event) {
-    this.selectedFee = $event;
-    this.formData.get('feeIncluded').setValue($event.value);
   }
 
   selectWallet(wallet: DisplayWallet) {

@@ -12,8 +12,7 @@ import { isArray } from 'lodash';
 @Component({
   selector: 'view-dashboard',
   templateUrl: './dashboard.view.html',
-  styleUrls: ['./dashboard.view.sass'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./dashboard.view.sass']
 })
 export class DashboardView {
   amount: number = null;

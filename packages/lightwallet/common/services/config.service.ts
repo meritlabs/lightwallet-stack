@@ -184,7 +184,6 @@ export class ConfigService {
   private configCache: IAppConfig;
 
   constructor(private logger: LoggerService,
-              private events: Events,
               private persistence: PersistenceService) {
     this.load()
       .then(() => {
@@ -213,7 +212,6 @@ export class ConfigService {
     }
     _.merge(config, this.configCache, newOpts);
     this.configCache = config;
-    this.events.publish('config:updated', this.configCache);
 
     await this.persistence.storeConfig(this.configCache);
 
