@@ -45,7 +45,7 @@ export class UnlockRequestService {
     const updateWallets = (requests) => wallets.map(async (w) =>  {
      const rqs = await w.getUnlockRequests();
      rqs.forEach(request => {
-       //request.walletClient = wallet;
+       request.walletClient = w;
        if (request.isConfirmed) {
          request.status = 'accepted';
          const foundContacts = this.contactsService.searchContacts(knownContacts, request.address);
