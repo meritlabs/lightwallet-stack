@@ -1,7 +1,7 @@
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
-import { SendService } from '@merit/common/services/send.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import * as _ from 'lodash';
 import { FCM } from '@ionic-native/fcm';
@@ -16,7 +16,6 @@ import { Injectable, NgZone, Optional } from '@angular/core';
 import { ConfigService } from '@merit/common/services/config.service';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
-import { AddressService } from '@merit/common/services/address.service';
 
 @Injectable()
 export class MobilePushNotificationsService extends PushNotificationsService {
@@ -39,7 +38,6 @@ export class MobilePushNotificationsService extends PushNotificationsService {
               private ngZone: NgZone,
               private walletService: WalletService,
               private txFormatService: TxFormatService,
-              private sendService: SendService,
               private addressService: AddressService) {
     super(http, logger);
     this.logger.info('Hello PushNotificationsService Service');

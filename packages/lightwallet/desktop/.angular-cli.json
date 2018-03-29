@@ -23,10 +23,10 @@
         "styles.scss"
       ],
       "scripts": [],
-      "environmentSource": "environments/environment.ts",
+      "environmentSource": "../../common/environments/environment.ts",
       "environments": {
-        "dev": "environments/environment.ts",
-        "prod": "environments/environment.prod.ts"
+        "dev": "../../common/environments/environment.dev.ts",
+        "prod": "../../common/environments/environment.ts"
       }
     }
   ],
@@ -55,7 +55,7 @@
     }
   },
   "defaults": {
-    "styleExt": "scss",
+    "styleExt": "sass",
     "class": {
       "spec": false
     },

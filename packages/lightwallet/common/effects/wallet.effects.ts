@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import { distinctUntilChanged, map, skip, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { Observable } from 'rxjs/Observable';
+import { createDisplayWallet, DisplayWallet, updateDisplayWallet } from '@merit/common/models/display-wallet';
+import { IRootAppState } from '@merit/common/reducers';
 import {
   IWalletTotals,
   RefreshOneWalletAction,
@@ -11,18 +10,18 @@ import {
   UpdateWalletTotalsAction,
   WalletsActionType
 } from '@merit/common/reducers/wallets.reducer';
-import { WalletService } from '@merit/common/services/wallet.service';
-import { ProfileService } from '@merit/common/services/profile.service';
-import { createDisplayWallet, DisplayWallet, updateDisplayWallet } from '@merit/common/models/display-wallet';
 import { AddressService } from '@merit/common/services/address.service';
-import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { fromPromise } from 'rxjs/observable/fromPromise';
-import { Store } from '@ngrx/store';
-import { IRootAppState } from '@merit/common/reducers';
-import { formatAmount } from '@merit/common/utils/format';
-import 'rxjs/add/observable/fromPromise';
-import { PersistenceService } from '@merit/common/services/persistence.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { formatAmount } from '@merit/common/utils/format';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import 'rxjs/add/observable/fromPromise';
+import { Observable } from 'rxjs/Observable';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { distinctUntilChanged, map, skip, switchMap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class WalletEffects {
@@ -41,7 +40,8 @@ export class WalletEffects {
   );
 
   // TODO(ibby): update totals only if the numbers we depend on changed --> use distinct/distinctUntilChanged operators
-  // TODO(ibby): investigate why Typescript doesn't like [action: Action, wallets: DisplayWallets[]] as args in map function
+  // TODO(ibby): investigate why Typescript doesn't like [action: Action, wallets: DisplayWallets[]] as args in map
+  // function
   @Effect()
   updateTotals$: Observable<UpdateWalletTotalsAction> = this.actions$.pipe(
     ofType(WalletsActionType.Update, WalletsActionType.UpdateOne),
@@ -84,7 +84,7 @@ export class WalletEffects {
   }
 
   private calculateTotals(wallets: DisplayWallet[]): IWalletTotals {
-    const totalMicros: any = {
+    const totals: any = {
       totalAmbassadorRewards: 0,
       totalMiningRewards: 0,
       totalNetworkValue: 0,
@@ -94,21 +94,22 @@ export class WalletEffects {
     let allBalancesHidden = true;
 
     wallets.forEach(w => {
-      totalMicros.totalNetworkValue += w.totalNetworkValueMicro;
-      totalMicros.totalMiningRewards += w.miningRewardsMicro;
-      totalMicros.totalAmbassadorRewards += w.ambassadorRewardsMicro;
+      totals.totalNetworkValue += w.totalNetworkValueMicro;
+      totals.totalMiningRewards += w.miningRewardsMicro;
+      totals.totalAmbassadorRewards += w.ambassadorRewardsMicro;
 
       if (!w.balanceHidden) {
         allBalancesHidden = false;
-        totalMicros.totalWalletsBalance += w.totalBalanceMicros;
+        totals.totalWalletsBalance += w.totalBalanceMicros;
       }
     });
 
     return {
-      totalNetworkValue: formatAmount(totalMicros.totalNetworkValue, 'mrt'),
-      totalMiningRewards: formatAmount(totalMicros.totalMiningRewards, 'mrt'),
-      totalAmbassadorRewards: formatAmount(totalMicros.totalAmbassadorRewards, 'mrt'),
-      totalWalletsBalance: formatAmount(totalMicros.totalWalletsBalance, 'mrt'),
+      totalNetworkValue: formatAmount(totals.totalNetworkValue, 'mrt'),
+      totalMiningRewards: formatAmount(totals.totalMiningRewards, 'mrt'),
+      totalAmbassadorRewards: formatAmount(totals.totalAmbassadorRewards, 'mrt'),
+      totalWalletsBalance: formatAmount(totals.totalWalletsBalance, 'mrt'),
+      totalWalletsBalanceFiat: this.txFormatService.formatAlternativeStr(totals.totalWalletsBalance),
       allBalancesHidden
     };
   }

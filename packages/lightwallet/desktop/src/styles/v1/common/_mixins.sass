@@ -7,17 +7,28 @@
     height: 1px
     margin-bottom: -1px
 
-=font($family, $size, $height, $color, $style: normal, $decoration: none, $transform: none)
-  font-family: $family
+=font($weight: default, $size: 17px, $height: 20px, $color: default, $style: normal, $decoration: none, $transform: none, $family: default)
   font-size: $size
   line-height: $height
-  color: $color
+  @if $color != default
+    color: $color
+  @else if $color == default
+  @if $family != default
+    font-family: $family
+  @else if $family == default
+  @if $weight != default
+    font-weight: $weight
+  @else if $weight == default
+  @else if $weight == 300
   @if $style != normal
     font-style: $style
+  @else if $style == none
   @if $decoration != none
     text-decoration: $decoration
+  @else if $decoration == none
   @if $transform != none
     text-transform: $transform
+  @else if $transform == none
   text-rendering: geometricPrecision
   opacity: 0.99999
 
