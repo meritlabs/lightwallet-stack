@@ -2,7 +2,7 @@
   "name": "bitcore-wallet-service",
   "description": "A service for Mutisig HD Merit Wallets",
   "authors": [
-    "MeritLabs Inc.",
+    "Merit Foundation",
     "BitPay"
   ],
   "version": "1.18.0",

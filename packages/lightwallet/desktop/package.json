@@ -4,7 +4,7 @@
   "description": "Lightwallet implementation for desktops",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "authors": [
-    "MeritLabs Inc."
+    "Merit Foundation"
   ],
   "license": "MIT",
   "scripts": {

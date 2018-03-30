@@ -4,7 +4,7 @@
   "version": "1.0.3",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "authors": [
-    "MeritLabs Inc.",
+    "Merit Foundation",
     "BitPay"
   ],
   "description": "Merit Message Verification and Signing for Merit Lightwallet Stack",
