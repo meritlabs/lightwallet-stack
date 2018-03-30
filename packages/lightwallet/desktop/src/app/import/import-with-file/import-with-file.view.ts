@@ -12,8 +12,8 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
+import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 
 @Component({
   selector: 'view-import-with-file',
