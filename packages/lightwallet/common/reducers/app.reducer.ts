@@ -3,12 +3,12 @@ import { Action, createFeatureSelector } from '@ngrx/store';
 
 export interface IAppState {
   loading: boolean;
-  credentialsLength: number;
+  authorized: boolean;
 }
 
 const INITIAL_STATE: IAppState = {
   loading: true,
-  credentialsLength: 0
+  authorized: false
 };
 
 export enum AppReducerActionType {

@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <button type="button" name="button" class="ui-button ui-button--blue" [disabled]="!canSubmit">
+    <button type="button" name="button" class="ui-button ui-button--blue" [disabled]="!canSubmit" (click)="importBlob()">
       Import wallet
     </button>
 

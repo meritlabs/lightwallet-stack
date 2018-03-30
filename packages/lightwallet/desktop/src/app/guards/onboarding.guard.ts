@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { IRootAppState } from '@merit/common/reducers';
 import { IAppState, selectAppState } from '@merit/common/reducers/app.reducer';
 import { ProfileService } from '@merit/common/services/profile.service';
@@ -18,7 +18,7 @@ export class OnboardingGuard implements CanActivate {
     return this.store.select(selectAppState)
       .pipe(
         map((state: IAppState) => {
-          if (state.credentialsLength === 0) {
+          if (!state.authorized) {
             return true;
           } else {
             this.router.navigateByUrl('/dashboard');

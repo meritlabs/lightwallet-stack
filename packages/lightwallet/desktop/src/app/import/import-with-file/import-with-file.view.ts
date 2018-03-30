@@ -4,6 +4,7 @@ import { ENV } from '@app/env';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
+import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
 import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { AddressService } from '@merit/common/services/address.service';
 import { LoggerService } from '@merit/common/services/logger.service';
@@ -87,6 +88,12 @@ export class ImportWithFileView {
           await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
         )
       );
+
+      // update state so we're allowed to access the dashboard, in case this is done via onboarding import
+      this.store.dispatch(new UpdateAppAction({
+        loading: false,
+        authorized: true
+      }));
 
       return this.router.navigateByUrl('/wallets');
 

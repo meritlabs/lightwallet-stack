@@ -54,7 +54,7 @@ export class UnlockComponent {
       // update state so we're allowed to access the dashboard
       this.store.dispatch(new UpdateAppAction({
         loading: false,
-        credentialsLength: 1
+        authorized: true
       }));
 
       // good to go

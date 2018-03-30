@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { IRootAppState } from '@merit/common/reducers';
 import { IAppState, selectAppState } from '@merit/common/reducers/app.reducer';
-import { Store } from '@ngrx/store';
-import { isEmpty } from 'lodash';
-import { Observable } from 'rxjs/Observable';
 import { ProfileService } from '@merit/common/services/profile.service';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
 
 @Injectable()
@@ -19,7 +18,7 @@ export class DashboardGuard implements CanActivate {
     return this.store.select(selectAppState)
       .pipe(
         map((state: IAppState) => {
-          if (state.credentialsLength > 0) {
+          if (state.authorized) {
             return true;
           } else {
             this.router.navigateByUrl('/onboarding/unlock');
