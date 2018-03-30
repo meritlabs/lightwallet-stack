@@ -121,11 +121,11 @@ cd merit-labs/lightwallet-stack/
 ```
 ## GIT Flow
 
-For beautifying and improving semantic value of the branches team decided to use next list of the branch prefixes:
+For beautifying and improving semantic value of the branches, we decided to use the following list of the branch prefixes:
 
 -  `feature/name-of-the-feature`
 -  `fix/name-of-the-fix`
 -  `hotfix/name-of-the-hotfix`
 -  `chore/name-of-the-job`
 
-*All new prefixes could be created and used, but should be before approved by team.*
+*All new prefixes should be discussed with the community before being added to the ecosystem.*
