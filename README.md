@@ -119,3 +119,13 @@ make start-bitcore-node
 cd merit-labs/lightwallet-stack/
 ./bitcore-node/bitcore-node/bin/bitcore-node call {bitcore-node/lib/services/bitcoind.js rpc_command_here}
 ```
+## GIT Flow
+
+For beautifying and improving semantic value of the branches, we decided to use the following list of the branch prefixes:
+
+-  `feature/name-of-the-feature`
+-  `fix/name-of-the-fix`
+-  `hotfix/name-of-the-hotfix`
+-  `chore/name-of-the-job`
+
+*All new prefixes should be discussed with the community before being added to the ecosystem.*
