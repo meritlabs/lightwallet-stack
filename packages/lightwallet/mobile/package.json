@@ -1,8 +1,12 @@
 {
   "name": "merit-lightwallet-mobile",
   "description": "Merit LightWallet application",
-  "author": "Merit Foundation",
+  "authors": [
+    "Merit Foundation"
+  ],
   "version": "1.1.0",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
+  "license": "MIT",
   "keywords": [
     "merit",
     "wallet",
@@ -12,6 +16,10 @@
     "multisignature",
     "bitcore"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meritlabs/lightwallet-stack"
+  },
   "dependencies": {
     "branch-cordova-sdk": "^2.6.24",
     "cordova-android": "^6.4.0",

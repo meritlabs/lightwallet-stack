@@ -2,7 +2,7 @@
 <widget id="me.merit.wallet" version="0.1.7" xmlns="http://www.w3.org/ns/widgets">
     <name>Merit</name>
     <description>Merit Wallet</description>
-    <author email="support@merit.me" href="">MeritLabs Inc.</author>
+    <author email="support@merit.me" href="">Merit Foundation</author>
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

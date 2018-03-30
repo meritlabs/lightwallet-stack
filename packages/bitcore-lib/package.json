@@ -2,7 +2,11 @@
   "name": "bitcore-lib",
   "version": "0.9.9",
   "description": "A pure and powerful JavaScript Merit library.",
-  "author": "MeritLabs Inc.",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
+  "authors": [
+    "Merit Foundation",
+    "BitPay"
+  ],
   "main": "index.js",
   "scripts": {
     "lint": "gulp lint",
@@ -25,6 +29,15 @@
     "bip69",
     "bip70",
     "multisig"
+  ],
+  "contributors": [
+    {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    },
+    {
+      "name": "Bitpay Team"
+    }
   ],
   "repository": {
     "type": "git",

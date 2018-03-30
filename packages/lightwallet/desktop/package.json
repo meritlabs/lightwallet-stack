@@ -1,6 +1,11 @@
 {
   "name": "lightwallet-desktop",
   "version": "0.0.0",
+  "description": "Lightwallet implementation for desktops",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
+  "authors": [
+    "Merit Foundation"
+  ],
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -8,7 +13,10 @@
     "build": "webpack",
     "postinstall": "rm -rf ./node_modules/rxjs"
   },
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meritlabs/lightwallet-stack"
+  },
   "dependencies": {
     "hammerjs": "^2.0.8",
     "normalize-scss": "^7.0.1"

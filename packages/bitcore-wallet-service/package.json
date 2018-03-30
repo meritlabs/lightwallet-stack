@@ -1,16 +1,18 @@
 {
   "name": "bitcore-wallet-service",
   "description": "A service for Mutisig HD Merit Wallets",
-  "author": "MeritLabs Inc.",
+  "authors": [
+    "Merit Foundation",
+    "BitPay"
+  ],
   "version": "1.18.0",
-  "licence": "MIT",
+  "license": "MIT",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "keywords": [
     "merit",
-    "copay",
     "multisig",
     "wallet",
-    "bitcore",
-    "BWS"
+    "MWS"
   ],
   "repository": {
     "url": "https://github.com/meritlabs/lightwallet-stack",
@@ -71,6 +73,10 @@
   },
   "bitcoreNode": "./bitcorenode",
   "contributors": [
+    {
+      "name": "Merit Foundation",
+      "email": "support@merit.me"
+    },
     {
       "name": "Braydon Fuller",
       "email": "braydon@bitpay.com"

@@ -2,9 +2,10 @@
   "name": "bitcore-lib",
   "main": "./bitcore-lib.min.js",
   "version": "0.13.19",
-  "homepage": "http://bitcore.io",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "authors": [
-    "BitPay, Inc."
+    "Merit Foundation",
+    "BitPay"
   ],
   "description": "A pure, powerful core for your merit project.",
   "moduleType": [
@@ -12,7 +13,6 @@
   ],
   "keywords": [
     "merit",
-    "bitcore",
     "mrt",
     "satoshi"
   ],
