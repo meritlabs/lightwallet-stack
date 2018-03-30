@@ -15,6 +15,8 @@ import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
 import { RefreshWalletsAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { ProfileService } from '@merit/common/services/profile.service';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { WebPushNotificationsService } from '@merit/common/services/web-push-notifications.service';
 import { DOMController } from '@merit/desktop/app/components/dom.controller';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { DashboardGuard } from '@merit/desktop/app/guards/dashboard.guard';
@@ -58,6 +60,7 @@ export function loadConfigs(appService: AppSettingsService, profileService: Prof
 
 export function getProviders() {
   return [
+    { provide: PushNotificationsService, useClass: WebPushNotificationsService },
     Events,
     Platform,
     DOMController,
