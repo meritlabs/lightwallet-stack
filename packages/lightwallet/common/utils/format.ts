@@ -21,6 +21,7 @@ function addSeparators(nStr: string, thousands: string, decimal: string, minDeci
 }
 
 export const formatAmount = (micros: number, unit: string, opts: any = {}): string => {
+  if (isNaN(micros)) micros = 0;
   const u = UNITS[unit],
     precision: string = opts.fullPrecision ? 'full' : 'short',
     amount: string = clipDecimals((micros / u.toMicros), u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
