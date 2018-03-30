@@ -5,7 +5,7 @@ import { MWCService } from '@merit/common/services/mwc.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { isAlias } from '@merit/common/utils/addresses';
+import { isAddress, isAlias } from '@merit/common/utils/addresses';
 import { ISendMethod } from '@merit/common/models/send-method';
 import { Address, Referral } from 'bitcore-lib';
 
@@ -25,12 +25,7 @@ export class AddressService {
   }
 
   isAddress(addr: string): boolean {
-    try {
-      Address.fromString(addr);
-      return true;
-    } catch (_e) {
-      return false;
-    }
+    return isAddress(addr);
   }
 
   couldBeAlias(alias: string): boolean {

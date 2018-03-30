@@ -1,15 +1,27 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { OnboardComponent } from './onboard/onboard.component';
+import { RouterModule, Routes } from '@angular/router';
+import { OnboardingRootComponent } from '@merit/desktop/app/onboarding/onboarding-root/onboarding-root.component';
 import { UnlockComponent } from './unlock/unlock.component';
 
 const routes: Routes = [
-  { path: '', component: OnboardComponent, pathMatch: 'full' },
-  { path: 'unlock', component: UnlockComponent }
+  {
+    path: '',
+    component: OnboardingRootComponent,
+    children: [
+      { path: '', redirectTo: 'unlock', pathMatch: 'full' }, // temporary until the onboarding page is done
+      { path: 'unlock', component: UnlockComponent },
+      { path: 'import', loadChildren: '../import/import.module#ImportModule' },
+      { path: 'import/qr-code', loadChildren: '../import/import-by-qr/import-by-qr.module#ImportByQrModule' },
+      { path: 'import/file', loadChildren: '../import/import-with-file/import-with-file.module#ImportWithFileModule' },
+      { path: 'import/phrase', loadChildren: '../import/phrase-import/phrase-import.module#PhraseImportModule' }
+    ]
+  }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [
+    RouterModule.forChild(routes)
+  ],
   exports: [RouterModule]
 })
-export class OnboardingRoutingModule { }
+export class OnboardingRoutingModule {}

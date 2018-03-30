@@ -13,7 +13,7 @@
           <loading-spinner></loading-spinner>
         </ng-container>
         <ng-container *ngIf="totals$ | async as totals">
-          <div class="dashboard__toolbar__balance__item dashboard__toolbar__balance__item--large-blue">{{ totals.totalWalletsBalance }}MRT</div>
+          <div class="dashboard__toolbar__balance__item dashboard__toolbar__balance__item--large-blue">{{ totals.totalWalletsBalance }} MRT</div>
           <div class="dashboard__toolbar__balance__item dashboard__toolbar__balance__item--regular-grey" *ngIf="totalWalletsBalanceFiat">$ {{ totals.totalWalletsBalanceFiat }}</div>
         </ng-container>
       </div>
