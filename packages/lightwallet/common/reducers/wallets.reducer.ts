@@ -30,8 +30,8 @@ const DEFAULT_STATE: IWalletsState = {
     totalWalletsBalanceFiat: '0.00',
     allBalancesHidden: false
   },
-  loading: true,
-  totalsLoading: true
+  loading: false,
+  totalsLoading: false
 };
 
 export enum WalletsActionType {
@@ -118,6 +118,7 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
       state.wallets[index] = action.wallet;
       return {
         ...state,
+        loading: false,
         walletsMap: {
           ...state.walletsMap,
           [action.wallet.id]: action.wallet
