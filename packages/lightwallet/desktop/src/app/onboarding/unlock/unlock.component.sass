@@ -1,24 +1,29 @@
 @import "~styles/v1/common/variables"
 
-\:host
-  .unlock
-    background: $gun-metal
-    width: 100vw
-    min-height: 100vh
-    display: flex
-    justify-content: center
-    align-items: center
-    flex-flow: row wrap
-    &__content
-      display: block
-      max-width: 460px
-      text-align: center
-    &__heading
+.unlock
+  width: 100vw
+  min-height: 100vh
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-flow: row wrap
+  &__content
+    display: block
+    max-width: 460px
+    text-align: center
+  &__heading
+    margin-bottom: 50px
+    &__title
+      color: $white
+    &__picture
       margin-bottom: 50px
-      &__title
-        color: $white
-      &__picture
-        margin-bottom: 50px
-    &__form
-      .ui-label
-        color: $white
+  &__form
+    .ui-label
+      color: $white
+
+.already-member
+  color: white
+  padding-top: 20px
+  a
+    color: $blue
+
