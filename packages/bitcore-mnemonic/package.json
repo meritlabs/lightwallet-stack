@@ -4,7 +4,7 @@
   "description": "BIP39 Mnemonics implemented for Bitcore.",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "authors": [
-    "MeritLabs Inc.",
+    "Merit Foundation",
     "BitPay"
   ],
   "main": "index.js",

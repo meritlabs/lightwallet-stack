@@ -4,7 +4,7 @@
   "version": "1.1.2",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "authors": [
-    "MeritLabs Inc.",
+    "Merit Foundation",
     "BitPay"
   ],
   "description": "BIP70 Payment Protocol support for Merit Lightwallet Stack",
