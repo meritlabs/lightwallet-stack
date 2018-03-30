@@ -2,7 +2,11 @@
   "name": "bitcore-mnemonic",
   "version": "1.2.5",
   "description": "BIP39 Mnemonics implemented for Bitcore.",
-  "author": "MeritLabs Inc.",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
+  "authors": [
+    "Merit Foundation",
+    "BitPay"
+  ],
   "main": "index.js",
   "scripts": {
     "lint": "gulp lint",
@@ -11,6 +15,13 @@
     "build": "gulp"
   },
   "contributors": [
+    {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    },
+    {
+      "name": "Bitpay Team"
+    },
     {
       "name": "Yemel Jardi",
       "email": "angel.jardi@gmail.com"
@@ -22,7 +33,6 @@
   },
   "keywords": [
     "merit",
-    "bitcore",
     "mnemonic",
     "crypto",
     "cryptography",

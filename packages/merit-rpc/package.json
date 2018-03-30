@@ -2,10 +2,13 @@
   "name": "meritd-rpc",
   "description": "Merit Client Library to connect to Merit Core via RPC",
   "version": "0.7.0",
-  "author": "MeritLabs Inc.",
+  "authors": [
+    "Merit Foundation",
+    "BitPay"
+  ],
   "contributors": [
     {
-      "name": "MeritLabs Team",
+      "name": "Merit Foundation",
       "email": "support@merit.me"
     },
     {

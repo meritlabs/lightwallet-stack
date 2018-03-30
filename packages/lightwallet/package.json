@@ -1,8 +1,12 @@
 {
   "name": "merit-lightwallet",
   "description": "Merit LightWallet application",
-  "author": "Merit Foundation",
+  "authors": [
+    "Merit Foundation"
+  ],
   "version": "1.1.0",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
+  "license": "MIT",
   "keywords": [
     "merit",
     "wallet",
@@ -12,6 +16,16 @@
     "multisignature",
     "bitcore"
   ],
+  "contributors": [
+    {
+      "name": "Merit Foundation",
+      "email": "support@merit.me"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meritlabs/lightwallet-stack"
+  },
   "scripts": {
     "clean": "ionic-app-scripts clean",
     "build": "ionic-app-scripts build",
