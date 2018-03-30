@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ENV } from '@app/env';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
@@ -24,7 +24,7 @@ import { ToastControllerService } from '@merit/desktop/app/components/toast-noti
 export class PhraseImportView {
 
   formData: FormGroup = this.formBuilder.group({
-    words: '',
+    words: ['', Validators.required],
     password: '',
     mwsUrl: ENV.mwsUrl
   });

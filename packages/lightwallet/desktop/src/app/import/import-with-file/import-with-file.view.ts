@@ -29,6 +29,10 @@ export class ImportWithFileView {
     mwsUrl: ENV.mwsUrl
   };
 
+  get canSubmit(): boolean {
+    return Boolean(this.formData.backupFile) && Boolean(this.formData.filePassword);
+  }
+
   private sjcl = this.mwcService.getSJCL();
 
   constructor(private mwcService: MWCService,
