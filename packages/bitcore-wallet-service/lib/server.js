@@ -708,66 +708,100 @@ WalletService.prototype.sendReferral = function(rawReferral, cb) {
  * @returns {Object} status
  */
 WalletService.prototype.getStatus = function(opts, cb) {
-  var self = this;
+  const self = this;
 
   opts = opts || {};
 
-  var status = {};
-  async.parallel([
-
-    function(next) {
-      self.getWallet({}, function(err, wallet) {
-        if (err) return next(err);
-
-        var walletExtendedKeys = ['publicKeyRing', 'pubKey', 'addressManager'];
-        var copayerExtendedKeys = ['xPubKey', 'requestPubKey', 'signature', 'addressManager', 'customData'];
-
-        wallet.copayers = _.map(wallet.copayers, function(copayer) {
-          if (copayer.id == self.copayerId) return copayer;
-          return _.omit(copayer, 'customData');
-        });
-        if (!opts.includeExtendedInfo) {
-          wallet = _.omit(wallet, walletExtendedKeys);
-          wallet.copayers = _.map(wallet.copayers, function(copayer) {
-            return _.omit(copayer, copayerExtendedKeys);
-          });
-        }
-        status.wallet = wallet;
-
-        next();
-      });
-    },
-    function(next) {
-      self.getBalance(opts, function(err, balance) {
-        if (err) return next(err);
-        status.balance = balance;
-        next();
-      });
-    },
-    function(next) {
-      self.getInvitesBalance(opts, function(err, balance) {
-        if (err) return next(err);
-        status.invitesBalance = balance;
-        next();
-      });
-    },
-    function(next) {
-      self.getPendingTxs({}, function(err, pendingTxps) {
-        if (err) return next(err);
-        status.pendingTxps = pendingTxps;
-        next();
-      });
-    },
-    function(next) {
-      self.getPreferences({}, function(err, preferences) {
-        if (err) return next(err);
-        status.preferences = preferences;
-        next();
-      });
-    },
-  ], function(err) {
+  let status = {};
+  self.storage.fetchAddresses(self.walletId, function(err, addresses) {
     if (err) return cb(err);
-    return cb(null, status);
+
+    let start = new Date();
+
+    async.parallel([
+
+      function(next) {
+        self.getWallet({}, function(err, wallet) {
+          if (err) return next(err);
+
+          const walletExtendedKeys = ['publicKeyRing', 'pubKey', 'addressManager'];
+          const copayerExtendedKeys = ['xPubKey', 'requestPubKey', 'signature', 'addressManager', 'customData'];
+
+          wallet.copayers = _.map(wallet.copayers, function(copayer) {
+            if (copayer.id == self.copayerId) return copayer;
+            return _.omit(copayer, 'customData');
+          });
+          if (!opts.includeExtendedInfo) {
+            wallet = _.omit(wallet, walletExtendedKeys);
+            wallet.copayers = _.map(wallet.copayers, function(copayer) {
+              return _.omit(copayer, copayerExtendedKeys);
+            });
+          }
+          status.wallet = wallet;
+
+          let end = new Date();
+          log.error('Measuring getStatus: getWallet = ' + (end - start));
+          next();
+        });
+      },
+      function(next) {
+        self.getBalance(addresses, opts, function(err, balance) {
+          if (err) return next(err);
+          status.balance = balance;
+
+          let end = new Date();
+          log.error('Measuring getStatus: getBalance = ' + (end - start));
+          next();
+        });
+      },
+      function(next) {
+        self.getInvitesBalance(addresses, opts, function(err, balance) {
+          if (err) return next(err);
+          status.invitesBalance = balance;
+
+          let end = new Date();
+          log.error('Measuring getStatus: getInvitesBalance = ' + (end - start));
+          next();
+        });
+      },
+      function(next) {
+        self.getPendingTxs({}, function(err, pendingTxps) {
+          if (err) return next(err);
+          status.pendingTxps = pendingTxps;
+
+          let end = new Date();
+          log.error('Measuring getStatus: getPendingTxs = ' + (end - start));
+          next();
+        });
+      },
+      function(next) {
+        self.getPreferences({}, function(err, preferences) {
+          if (err) return next(err);
+          status.preferences = preferences;
+
+          let end = new Date();
+          log.error('Measuring getStatus: getPreferences = ' + (end - start));
+          next();
+        });
+      },
+    ], function(err) {
+      if (err) return cb(err);
+
+      setTimeout(() => {
+        self.storage.cleanActiveAddresses(self.walletId, () => {
+          const activeCoinAddresses = _.map(status.balance.byAddress, 'address');
+          const activeInviteAddresses = _.map(status.invitesBalance.byAddress, 'address');
+          const active = _.union(activeCoinAddresses, activeInviteAddresses);
+          self.storage.storeActiveAddresses(self.walletId, active);
+          let end = new Date();
+          log.error('Measuring getStatus: refresh cache = ' + (end - start));
+        });
+      }, 0);
+
+      let end = new Date();
+      log.error('Measuring getStatus: result = ' + (end - start));
+      return cb(null, status);
+    });
   });
 };
 
@@ -1362,7 +1396,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
       self.getPendingTxs({}, function(err, txps) {
         if (err) return next(err);
 
-        var lockedInputs = _.map(_.flatten(_.map(txps, 'inputs')), utxoKey);
+        const lockedInputs = _.map(_.flatten(_.map(txps, 'inputs')), utxoKey);
         _.each(lockedInputs, function(input) {
           if (utxoIndex[input]) {
             utxoIndex[input].locked = true;
@@ -1372,7 +1406,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
       });
     },
     function(next) {
-      var now = Math.floor(Date.now() / 1000);
+      const now = Math.floor(Date.now() / 1000);
       // Fetch latest broadcasted txs and remove any spent inputs from the
       // list of UTXOs returned by the block explorer. This counteracts any out-of-sync
       // effects between broadcasting a tx and getting the list of UTXOs.
@@ -1382,35 +1416,26 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
         limit: 100
       }, function(err, txs) {
         if (err) return next(err);
-        var spentInputs = _.map(_.flatten(_.map(txs, 'inputs')), utxoKey);
-        _.each(spentInputs, function(input) {
-          if (utxoIndex[input]) {
-            utxoIndex[input].spent = true;
-          }
+
+        const spentInputs = _.map(_.flatten(_.map(txs, 'inputs')), utxoKey);
+
+        allUtxos = _.reject(allUtxos, (utxo) => {
+          return _.includes(spentInputs, utxoKey(utxo));
         });
-        allUtxos = _.reject(allUtxos, {
-          spent: true
-        });
+
         return next();
       });
     },
     function(next) {
       // Let's filter through and classify all outputs.
       // We specifically want to know if they are change or belong to us.
-      var indexedAddresses = _.keyBy(allAddresses, 'address');
+      const indexedAddresses = _.keyBy(allAddresses, 'address');
       _.each(allUtxos, function(utxo){
-        var address = indexedAddresses[utxo.address];
+        const address = indexedAddresses[utxo.address];
         utxo.isMine = !!address;
         utxo.isChange = address ? address.isChange : false;
-      });
-      return next();
-    },
-    function(next) {
-      // Needed for the clients to sign UTXOs
-      var addressToPath = _.keyBy(allAddresses, 'address');
-      _.each(allUtxos, function(utxo) {
-        utxo.path = addressToPath[utxo.address].path;
-        utxo.publicKeys = addressToPath[utxo.address].publicKeys;
+        utxo.path = indexedAddresses[utxo.address].path;
+        utxo.publicKeys = indexedAddresses[utxo.address].publicKeys;
       });
       return next();
     },
@@ -1437,24 +1462,37 @@ WalletService.prototype.getUtxos = function(opts, cb) {
   }
 };
 
+WalletService.prototype._isPendingCoinbaseUtxo = function(utxo) { return utxo.isCoinbase && !utxo.isMature };
+
+WalletService.prototype._isConfirmedAmountUtxo = function(utxo) {
+  return ((utxo.isCoinbase && utxo.isMature) ||
+    (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) ||
+    (utxo.isMine && utxo.isChange && utxo.micros >= 0));
+};
+
 WalletService.prototype._totalizeUtxos = function(utxos) {
-
-    var isPendingCoinbaseUtxo = function(utxo) { return utxo.isCoinbase && !utxo.isMature};
-
-    var balance = {
-        totalAmount: _.sumBy(utxos, 'micros'),
-        lockedAmount: _.sumBy(_.filter(utxos, 'locked'), 'micros'),
-        totalPendingCoinbaseAmount: _.sumBy(_.filter(utxos, isPendingCoinbaseUtxo), 'micros'),
-        // We believe it makes sense to show change as confirmed.  This is sensical because a transaction
-        // will either be rejected or accepted in its entirety.  (Eg. It is not that some Vouts will be
-        // accepted while others will be denied.)
-        totalConfirmedAmount: _.sumBy(
-            _.filter(utxos, function(utxo) {
-                return ((utxo.isCoinbase && utxo.isMature) || (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) || (utxo.isMine && utxo.isChange && utxo.micros >= 0));
-            }),
-            'micros'),
-        lockedConfirmedAmount: _.sumBy(_.filter(_.filter(utxos, 'locked'), 'confirmations'), 'micros'),
-    };
+    const balance = _.reduce(utxos, (acc, utxo) => {
+      acc.totalAmount += utxo.micros;
+      if (utxo.locked) {
+        acc.lockedAmount = acc.lockedAmount + utxo.micros;
+        acc.lockedConfirmedAmount = acc.confirmations ?
+          acc.lockedConfirmedAmount + utxo.micros :
+          acc.lockedConfirmedAmount;
+      }
+      acc.totalPendingCoinbaseAmount = this._isPendingCoinbaseUtxo(utxo) ?
+        acc.totalPendingCoinbaseAmount + utxo.micros :
+        acc.totalPendingCoinbaseAmount;
+      acc.totalConfirmedAmount = this._isConfirmedAmountUtxo(utxo) ?
+        acc.totalConfirmedAmount + utxo.micros :
+        acc.totalConfirmedAmount;
+      return acc;
+    }, {
+      totalAmount: 0,
+      lockedAmount: 0,
+      totalPendingCoinbaseAmount: 0,
+      totalConfirmedAmount: 0,
+      lockedConfirmedAmount: 0
+    });
     balance.availableAmount = balance.totalAmount - balance.lockedAmount;
     balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
 
@@ -1495,31 +1533,12 @@ WalletService.prototype._getBalanceFromAddresses = function(addresses, invites, 
   });
 };
 
-WalletService.prototype._getBalanceOneStep = function(opts, cb) {
+WalletService.prototype._getBalanceOneStep = function(addresses, opts, cb) {
   var self = this;
 
-  self.storage.fetchAddresses(self.walletId, function(err, addresses) {
+  self._getBalanceFromAddresses(addresses, opts.invites, function(err, balance) {
     if (err) return cb(err);
-    self._getBalanceFromAddresses(addresses, opts.invites, function(err, balance) {
-      if (err) return cb(err);
-
-      // Update cache
-      async.series([
-
-        function(next) {
-          self.storage.cleanActiveAddresses(self.walletId, next);
-        },
-        function(next) {
-          var active = _.map(balance.byAddress, 'address')
-          self.storage.storeActiveAddresses(self.walletId, active, next);
-        },
-      ], function(err) {
-        if (err) {
-          log.warn('Could not update wallet cache', err);
-        }
-        return cb(null, balance);
-      });
-    });
+    return cb(null, balance);
   });
 };
 
@@ -1560,30 +1579,30 @@ WalletService.prototype._getActiveAddresses = function(cb) {
  * @param {Boolean} opts.twoStep[=false] - Optional - Use 2 step balance computation for improved performance
  * @returns {Object} balance - Total amount & locked amount.
  */
-WalletService.prototype.getBalance = function(opts, cb) {
+WalletService.prototype.getBalance = function(addresses, opts, cb) {
   var self = this;
 
   opts = opts || {};
 
   if (!opts.twoStep)
-    return self._getBalanceOneStep(opts, cb);
+    return self._getBalanceOneStep(addresses, opts, cb);
 
   self.storage.countAddresses(self.walletId, function(err, nbAddresses) {
     if (err) return cb(err);
     if (nbAddresses < Defaults.TWO_STEP_BALANCE_THRESHOLD) {
-      return self._getBalanceOneStep(opts, cb);
+      return self._getBalanceOneStep(addresses, opts, cb);
     }
     self._getActiveAddresses(function(err, activeAddresses) {
       if (err) return cb(err);
       if (!_.isArray(activeAddresses)) {
-        return self._getBalanceOneStep(opts, cb);
+        return self._getBalanceOneStep(activeAddresses, opts, cb);
       } else {
         log.debug('Requesting partial balance for ' + activeAddresses.length + ' out of ' + nbAddresses + ' addresses');
         self._getBalanceFromAddresses(activeAddresses, function(err, partialBalance) {
           if (err) return cb(err);
           cb(null, partialBalance);
           setTimeout(function() {
-            self._getBalanceOneStep(opts, function(err, fullBalance) {
+            self._getBalanceOneStep(activeAddresses, opts, function(err, fullBalance) {
               if (err) return;
               if (!_.isEqual(partialBalance, fullBalance)) {
                 log.info('Balance in active addresses differs from final balance');
@@ -1600,26 +1619,10 @@ WalletService.prototype.getBalance = function(opts, cb) {
   });
 };
 
-WalletService.prototype.getInvitesBalance = function(opts, cb) {
-  this.storage.fetchAddresses(this.walletId, (err, addresses) => {
+WalletService.prototype.getInvitesBalance = function(addresses, opts, cb) {
+  this._getBalanceFromAddresses(addresses, true, (err, balance) => {
     if (err) return cb(err);
-    this._getBalanceFromAddresses(addresses, true, (err, balance) => {
-      if (err) return cb(err);
-
-      // Update cache
-      async.series([
-        next => this.storage.cleanActiveAddresses(this.walletId, next),
-        next => {
-          var active = _.map(balance.byAddress, 'address')
-          this.storage.storeActiveAddresses(this.walletId, active, next);
-        },
-      ], err => {
-        if (err) {
-          log.warn('Could not update wallet cache', err);
-        }
-        return cb(null, balance);
-      });
-    });
+    return cb(null, balance);
   });
 }
 
