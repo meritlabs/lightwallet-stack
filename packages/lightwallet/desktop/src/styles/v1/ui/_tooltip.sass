@@ -14,7 +14,7 @@
   &--awating
     &::before
       content: "Awaiting confirmation"
-      background: url('/assets/v1/icons/timeout.svg') no-repeat 0% 50%
+      background: url('/assets/v1/icons/timeout.svg') no-repeat 0 50%
       background-size: 16px
       height: 17px
       padding-left: 25px
@@ -26,10 +26,11 @@
       bottom: inherit
       top: calc(100% + 15px)
       text-align: left
+      transform: translate3d(0,0,0)
       &:after
         content: ""
         display: block
-        background: $pale-grey
+        background: black
         transform: rotate(-45deg)
         position: absolute
         height: 10px
@@ -39,20 +40,21 @@
     position: absolute
     z-index: 2
     bottom: calc(100% + 5px)
-    +font(400, 10px, 10px, $gun-metal)
-    width: 200px
-    background: $pale-grey
+    +font(300, 15px, 16px, white)
+    letter-spacing: .47px
+    width: 220px
+    background: transparentize(black, .05)
     border-radius: 4px
     left: -6px
-    padding: 8px
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, .3)
+    padding: 8px 12px
+    box-shadow: 0 0 15px rgba(0, 0, 0, .3)
     +transition(.3s, linear)
-    display: none
     opacity: 0
+    display: none
     &:after
       content: ""
       display: block
-      background: $pale-grey
+      background: transparentize(black, .05)
       transform: rotate(45deg)
       position: absolute
       height: 10px
@@ -60,11 +62,12 @@
 .ui-tooltip:hover
   .ui-tooltip__text
     display: block
+    will-change: opacity, transform
     animation: showToolTip .3s cubic-bezier(1.000, 0.008, 0.565, 1.650) .1s 1 forwards
 @keyframes showToolTip
   from
     opacity: 0
-    transform: translateY(-2px)
+    transform: translate3d(0, -2px, 0)
   to
     opacity: 1
-    transform: translateY(0px)
+    transform: translate3d(0, 0, 0)
