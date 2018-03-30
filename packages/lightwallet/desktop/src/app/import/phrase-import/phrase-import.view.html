@@ -3,7 +3,7 @@
 
     <form [formGroup]="formData" (ngSubmit)="importMnemonic()">
       <div class="backup__back-navigator">
-        <div [routerLink]='"/wallets/import"'>
+        <div routerLink="../../">
           <img src="/assets/v1/images/backup/back-icon.svg" alt="">
         </div>
       </div>
@@ -16,14 +16,17 @@
             <div class="sendMerit__form__group">
               <label for="" class="ui-label">Recovery phrase (12 words)</label>
               <div class="ui-input__wrapper">
-                <textarea type="text" formControlName="words" name="" class="ui-input ui-input--form ui-input--textarea"></textarea>
+                <textarea type="text" formControlName="words" name=""
+                          class="ui-input ui-input--form ui-input--textarea"></textarea>
               </div>
             </div>
             <div class="sendMerit__form__group">
               <label for="" class="ui-label">Phrase password (optional)</label>
               <div class="ui-input__wrapper ui-input__wrapper--password">
-                <input formControlName="password" [type]="showPass == true ? 'text' : 'password'" name="" class="ui-input ui-input--form ui-input--text">
-                <div class="show-hide-password" (click)="showPass=!showPass">{{ showPass == true ? 'Hide' : 'Show' }}</div>
+                <input formControlName="password" [type]="showPass == true ? 'text' : 'password'" name=""
+                       class="ui-input ui-input--form ui-input--text">
+                <div class="show-hide-password" (click)="showPass=!showPass">{{ showPass == true ? 'Hide' : 'Show' }}
+                </div>
               </div>
             </div>
           </div>

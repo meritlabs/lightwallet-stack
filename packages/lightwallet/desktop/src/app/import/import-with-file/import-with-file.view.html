@@ -1,27 +1,30 @@
 <div class="container--inner">
   <div class="backup__mnenmonic__wrap">
     <div class="backup__back-navigator">
-      <div [routerLink]='"/wallets/import"'>
+      <div routerLink="../../">
         <img src="/assets/v1/images/backup/back-icon.svg" alt="">
       </div>
     </div>
     <div class="backup__header">
       <div>
         <div class="backup__title title--primary">
-          <p>Restore your wallet with uploading .dat file</p>
+          <p>Restore your wallet with a backup file</p>
         </div>
         <div class="backup__caption">
           <div class="sendMerit__form__group">
             <label for="" class="ui-label">Select a backup file from your device</label>
             <div class="ui-input__wrapper ui-input__wrapper--password">
-              <input type="file" (change)="fileChangeListener($event)" name="" class="ui-input ui-input--form ui-input--text">
+              <input type="file" (change)="fileChangeListener($event)" name=""
+                     class="ui-input ui-input--form ui-input--text">
             </div>
           </div>
           <div class="sendMerit__form__group">
             <label for="" class="ui-label">Password</label>
             <div class="ui-input__wrapper ui-input__wrapper--password">
-              <input type="{{ showPass == true ? 'text' : 'password' }}" [(ngModel)]="filePassword" name="" class="ui-input ui-input--form ui-input--text">
-              <div class="show-hide-password" (click)="showPass=!showPass">{{ showPass == true ? 'Hide' : 'Show' }}</div>
+              <input type="{{ showPass == true ? 'text' : 'password' }}" [(ngModel)]="filePassword" name=""
+                     class="ui-input ui-input--form ui-input--text">
+              <div class="show-hide-password" (click)="showPass=!showPass">{{ showPass == true ? 'Hide' : 'Show' }}
+              </div>
             </div>
           </div>
         </div>
