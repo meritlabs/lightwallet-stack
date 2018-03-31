@@ -13,8 +13,8 @@ import { MnemonicPhraseView } from './backup/mnemonic-phrase/mnemonic-phrase.vie
 import { QrCodeBackupView } from './backup/qr-code-backup/qr-code-backup.view';
 import { CommunityView } from './community/community.view';
 import { InvitesComponent } from './community/invites/invites.component';
-import { RequestsComponent } from './community/invites/requests/requests.component';
-import { SendInviteComponent } from './community/invites/send-invite/send-invite.component';
+import { InviteRequestsView } from './community/invites/invite-requests/invite-requests.view';
+import { SendInviteView } from './community/invites/send-invite/send-invite.view';
 import { CoreRoutingModule } from './core-routing.module';
 import { CoreView } from './core.component';
 import { DashboardView } from './dashboard/dashboard.view';
@@ -53,8 +53,8 @@ export function getPages() {
     QrCodeBackupView,
     FileBackupView,
     InvitesComponent,
-    RequestsComponent,
-    SendInviteComponent
+    InviteRequestsView,
+    SendInviteView
   ];
 }
 

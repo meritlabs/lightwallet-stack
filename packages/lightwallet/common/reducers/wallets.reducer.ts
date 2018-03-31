@@ -7,6 +7,7 @@ export interface IWalletsState {
   loading: boolean;
   totals: IWalletTotals;
   totalsLoading: boolean;
+  inviteRequests: any[];
 }
 
 export interface IWalletTotals {
@@ -16,6 +17,7 @@ export interface IWalletTotals {
   totalWalletsBalance: string;
   totalWalletsBalanceFiat: string;
   allBalancesHidden: boolean;
+  invites: number;
 }
 
 const DEFAULT_STATE: IWalletsState = {
@@ -27,10 +29,12 @@ const DEFAULT_STATE: IWalletsState = {
     totalAmbassadorRewards: '0.00',
     totalWalletsBalance: '0.00',
     totalWalletsBalanceFiat: '0.00',
-    allBalancesHidden: false
+    allBalancesHidden: false,
+    invites: 0
   },
   loading: true,
-  totalsLoading: true
+  totalsLoading: true,
+  inviteRequests: []
 };
 
 export enum WalletsActionType {
@@ -40,7 +44,8 @@ export enum WalletsActionType {
   Refresh = '[Wallets] Refresh',
   RefreshOne = '[Wallets] Refresh one',
   RefreshTotals = '[Wallets] Refresh totals',
-  UpdateTotals = '[UpdateTotals] Update totals'
+  UpdateTotals = '[Wallets] Update totals',
+  UpdateInviteRequests = '[Wallets] Update Invite Requests'
 }
 
 export class AddWalletAction implements Action {
@@ -63,7 +68,7 @@ export class UpdateWalletsAction implements Action {
 export class UpdateOneWalletAction implements Action {
   type = WalletsActionType.UpdateOne;
 
-  constructor(public wallet: DisplayWallet) {}
+  constructor(public wallet: DisplayWallet, public opts: IDisplayWalletOptions = {}) {}
 }
 
 export class RefreshWalletsAction implements Action {
@@ -73,7 +78,7 @@ export class RefreshWalletsAction implements Action {
 export class RefreshOneWalletAction implements Action {
   type = WalletsActionType.RefreshOne;
 
-  constructor(public wallet: DisplayWallet, public opts: IDisplayWalletOptions = {}) {}
+  constructor(public walletId: string, public opts: IDisplayWalletOptions = {}) {}
 }
 
 export class UpdateWalletTotalsAction implements Action {
@@ -82,13 +87,20 @@ export class UpdateWalletTotalsAction implements Action {
   constructor(public totals: IWalletTotals) {}
 }
 
+export class UpdateInviteRequetsAction implements Action {
+  type = WalletsActionType.UpdateInviteRequests;
+
+  constructor(public inviteRequests: any[]) {}
+}
+
 export type WalletsAction =
   AddWalletAction
   & UpdateWalletsAction
   & RefreshWalletsAction
   & UpdateOneWalletAction
   & RefreshOneWalletAction
-  & UpdateWalletTotalsAction;
+  & UpdateWalletTotalsAction
+  & UpdateInviteRequetsAction;
 
 export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
@@ -145,6 +157,12 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
         totals: action.totals
       };
 
+    case WalletsActionType.UpdateInviteRequests:
+      return {
+        ...state,
+        inviteRequests: action.inviteRequests
+      };
+
     default:
       return state;
   }
@@ -157,5 +175,6 @@ export const selectConfirmedWallets = createSelector(selectWallets, wallets => w
 export const selectWalletTotals = createSelector(selectWalletsState, state => state.totals);
 export const selectWalletTotalsLoading = createSelector(selectWalletsState, state => state.totalsLoading);
 export const selectWalletById = (id: string) => createSelector(selectWalletsState, state => state.walletsMap[id]);
-export const selectInvites = createSelector(selectWallets, (wallets: DisplayWallet[]) => wallets.reduce((total: number, wallet) => wallet.invites + total, 0));
-export const selectInviteRequests = createSelector(selectWallets, (wallets: DisplayWallet[]) => wallets.reduce((total: number, wallet) => wallet.inviteRequests.length + total, 0));
+export const selectWalletsWithInvites = createSelector(selectWallets, (wallets: DisplayWallet[]) => wallets.filter(wallet => wallet.availableInvites > 0));
+export const selectInvites = createSelector(selectWalletTotals, totals => totals.invites);
+export const selectInviteRequests = createSelector(selectWalletsState, state => state.inviteRequests);

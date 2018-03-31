@@ -37,6 +37,8 @@ export class DisplayWallet {
   @ClientProperty status: any;
   @ClientProperty balanceHidden: boolean;
   @ClientProperty balance: any;
+  @ClientProperty availableInvites: number;
+  @ClientProperty confirmed: boolean;
 
   referrerAddress: string;
   alias: string;
@@ -61,9 +63,7 @@ export class DisplayWallet {
   ambassadorRewardsMerit: string;
   ambassadorRewardsFiat: string;
 
-  confirmed: boolean;
   inviteRequests: any[];
-  invites: number;
 
   constructor(public client: MeritWalletClient,
               private walletService: WalletService,
@@ -116,8 +116,6 @@ export class DisplayWallet {
   async updateStatus() {
     this.client.status = await this.walletService.getStatus(this.client, { force: true });
     this.inviteRequests = await this.client.getUnlockRequests();
-    this.invites = this.client.availableInvites;
-    this.confirmed = this.client.confirmed;
   }
 
   async updateRewards() {
