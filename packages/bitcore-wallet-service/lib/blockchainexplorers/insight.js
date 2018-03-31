@@ -303,7 +303,7 @@ Insight.prototype.getCommunityInfo = function(address, cb) {
     if (err || res.statusCode !== 200) {
       return cb(_parseErr(err, res));
     }
-    return cb(null, body);
+    return cb(null, JSON.parse(body));
   });
 };
 
