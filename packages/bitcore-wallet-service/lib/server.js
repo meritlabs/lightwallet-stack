@@ -514,6 +514,19 @@ WalletService.prototype.getANV = function(opts, cb) {
   });
 };
 
+WalletService.prototype.getCommunityInfo = function(opts, cb) {
+  opts.network = opts.network || 'livenet';
+  const addresses = opts.keys;
+
+  if (_.isEmpty(addresses)) {
+    return cb(null, {});
+  }
+
+  const bc = this._getBlockchainExplorer(opts.network);
+
+  bc.getCommunityInfo(addresses, (err, result) => cb(err, result));
+};
+
 /**
  * Get Rewards for addresses
  * @param {array} addresses - Array of addresses to get Rewards for.

@@ -97,6 +97,8 @@ export class DisplayWallet {
   }
 
   async updateAlias() {
+    this.client.getCommunityInfo(this.client.getRootAddress())
+      .then((info) => console.log('INFO IS ', info));
     const { alias } = await this.addressService.getAddressInfo(this.referrerAddress);
     if (alias) {
       this.alias = alias;

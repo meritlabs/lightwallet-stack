@@ -200,7 +200,8 @@ Merit.prototype.getAPIMethods = function() {
     ['getrewards',     this, this.getRewards, 1],
     ['sendReferral', this, this.sendReferral, 1],
     ['getReferral', this, this.getReferral, 1],
-    ['getAddressReferrals', this, this.getAddressReferrals, 1]
+    ['getAddressReferrals', this, this.getAddressReferrals, 1],
+    ['getcommunityinfo', this, this.getCommunityInfo, 1]
   ];
   return methods;
 };
@@ -2362,6 +2363,18 @@ Merit.prototype.getANV = function(addressArg, callback) {
     callback(null, response.result);
   });
 }
+
+Merit.prototype.getCommunityInfo = function(addressArg, callback) {
+  const address = this._normalizeAddressArg(addressArg);
+
+  this.client.getcommunityinfo(address, (err, res) => {
+    if (err) {
+      return callback(this._wrapRPCError(err));
+    }
+
+    callback(null, res.result);
+  });
+};
 
 /**
  * Get Rewards for array of addresses
