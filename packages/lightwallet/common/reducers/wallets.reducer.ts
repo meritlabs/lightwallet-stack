@@ -17,6 +17,7 @@ export interface IWalletTotals {
   totalWalletsBalance: string;
   totalWalletsBalanceFiat: string;
   allBalancesHidden: boolean;
+  totalCommunitySize: number;
 }
 
 const DEFAULT_STATE: IWalletsState = {
@@ -28,7 +29,8 @@ const DEFAULT_STATE: IWalletsState = {
     totalAmbassadorRewards: '0.00',
     totalWalletsBalance: '0.00',
     totalWalletsBalanceFiat: '0.00',
-    allBalancesHidden: false
+    allBalancesHidden: false,
+    totalCommunitySize: 0
   },
   loading: true,
   totalsLoading: true

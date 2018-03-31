@@ -88,7 +88,8 @@ export class WalletEffects {
       totalAmbassadorRewards: 0,
       totalMiningRewards: 0,
       totalNetworkValue: 0,
-      totalWalletsBalance: 0
+      totalWalletsBalance: 0,
+      totalCommunitySize: 0
     };
 
     let allBalancesHidden = true;
@@ -97,6 +98,7 @@ export class WalletEffects {
       totals.totalNetworkValue += w.totalNetworkValueMicro;
       totals.totalMiningRewards += w.miningRewardsMicro;
       totals.totalAmbassadorRewards += w.ambassadorRewardsMicro;
+      totals.totalCommunitySize += w.communitySize;
 
       if (!w.balanceHidden) {
         allBalancesHidden = false;
@@ -110,6 +112,7 @@ export class WalletEffects {
       totalAmbassadorRewards: formatAmount(totals.totalAmbassadorRewards, 'mrt'),
       totalWalletsBalance: formatAmount(totals.totalWalletsBalance, 'mrt'),
       totalWalletsBalanceFiat: this.txFormatService.formatAlternativeStr(totals.totalWalletsBalance),
+      totalCommunitySize: totals.totalCommunitySize,
       allBalancesHidden
     };
   }
