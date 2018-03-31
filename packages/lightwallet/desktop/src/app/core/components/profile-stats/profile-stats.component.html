@@ -25,12 +25,12 @@
       </div>
       <ng-container *ngIf="!loading; else peopleLoading">
         <div class="stats__item__info">
-          25 <span>People</span>
+          {{ totals?.communitySize }} <span>People</span>
         </div>
 
-        <div class="stats__item__grows">
-          <p>+5</p>
-        </div>
+        <!--<div class="stats__item__grows">-->
+          <!--<p>+5</p>-->
+        <!--</div>-->
       </ng-container>
       <ng-template #peopleLoading>Spinner</ng-template>
     </div>
