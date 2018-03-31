@@ -65,6 +65,8 @@ export class DisplayWallet {
   inviteRequests: any[];
   invites: number;
 
+  communitySize: number = 0;
+
   constructor(public client: MeritWalletClient,
               private walletService: WalletService,
               private addressService: AddressService,
@@ -97,8 +99,6 @@ export class DisplayWallet {
   }
 
   async updateAlias() {
-    this.client.getCommunityInfo(this.client.getRootAddress())
-      .then((info) => console.log('INFO IS ', info));
     const { alias } = await this.addressService.getAddressInfo(this.referrerAddress);
     if (alias) {
       this.alias = alias;
@@ -132,6 +132,8 @@ export class DisplayWallet {
       this.ambassadorRewardsMicro = sumBy(rewardsData, 'rewards.ambassador');
       this.formatNetworkInfo();
     }
+
+    this.communitySize = (await this.client.getCommunityInfo(this.client.getRootAddress())).referralcount;
   }
 
   private formatNetworkInfo() {
