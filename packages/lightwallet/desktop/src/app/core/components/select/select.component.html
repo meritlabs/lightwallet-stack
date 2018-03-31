@@ -1,6 +1,6 @@
 <div class="selectbox">
   <button (click)="show=!show" (blur)="onBlur()"
-    class="{{style}} selectbox__selected">
+    class="{{style}} selectbox__selected"  role="button" type="button">
     <img src="{{selected?.iconUrl}}" alt="" *ngIf="selected?.iconUrl" class="selectbox__dropdown__icon">
     <span *ngIf="selected?.color" [style.background]="selected?.color" class="selectbox__color"></span>
     <span>{{ selected?.name }}</span>
@@ -9,7 +9,7 @@
     [hidden]="!show"
     [ngClass]="{'showHidden--animated' : show}">
     <button *ngFor="let item of input"
-      (click)="select(item)" class="selectbox__dropdown__item">
+      (click)="select(item)" class="selectbox__dropdown__item" role="button" type="button">
       <img src="{{item?.iconUrl}}" alt="" *ngIf="item?.iconUrl" class="selectbox__dropdown__icon">
       <span *ngIf="item?.color" [style.background]="item?.color" class="selectbox__color"></span>
       <span>{{ item?.name }}</span></button>
