@@ -1,4 +1,8 @@
 import { Component } from '@angular/core';
+import { IRootAppState } from '@merit/common/reducers';
+import { selectInviteRequests, selectInvites } from '@merit/common/reducers/wallets.reducer';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'app-invites',
@@ -6,4 +10,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./invites.component.sass']
 })
 export class InvitesComponent {
+  invites$: Observable<number> = this.store.select(selectInvites);
+  inviteRequests$: Observable<number> = this.store.select(selectInviteRequests);
+  constructor(private store: Store<IRootAppState>) {}
 }

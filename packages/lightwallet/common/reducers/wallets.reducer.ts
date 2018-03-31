@@ -1,6 +1,5 @@
-import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 import { DisplayWallet, IDisplayWalletOptions } from '@merit/common/models/display-wallet';
-import { formatAmount } from '@merit/common/utils/format';
+import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 
 export interface IWalletsState {
   wallets: DisplayWallet[];
@@ -63,6 +62,7 @@ export class UpdateWalletsAction implements Action {
 
 export class UpdateOneWalletAction implements Action {
   type = WalletsActionType.UpdateOne;
+
   constructor(public wallet: DisplayWallet) {}
 }
 
@@ -72,15 +72,23 @@ export class RefreshWalletsAction implements Action {
 
 export class RefreshOneWalletAction implements Action {
   type = WalletsActionType.RefreshOne;
+
   constructor(public wallet: DisplayWallet, public opts: IDisplayWalletOptions = {}) {}
 }
 
 export class UpdateWalletTotalsAction implements Action {
   type = WalletsActionType.UpdateTotals;
+
   constructor(public totals: IWalletTotals) {}
 }
 
-export type WalletsAction = AddWalletAction & UpdateWalletsAction & RefreshWalletsAction & UpdateOneWalletAction & RefreshOneWalletAction & UpdateWalletTotalsAction;
+export type WalletsAction =
+  AddWalletAction
+  & UpdateWalletsAction
+  & RefreshWalletsAction
+  & UpdateOneWalletAction
+  & RefreshOneWalletAction
+  & UpdateWalletTotalsAction;
 
 export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
@@ -149,3 +157,5 @@ export const selectConfirmedWallets = createSelector(selectWallets, wallets => w
 export const selectWalletTotals = createSelector(selectWalletsState, state => state.totals);
 export const selectWalletTotalsLoading = createSelector(selectWalletsState, state => state.totalsLoading);
 export const selectWalletById = (id: string) => createSelector(selectWalletsState, state => state.walletsMap[id]);
+export const selectInvites = createSelector(selectWallets, (wallets: DisplayWallet[]) => wallets.reduce((total: number, wallet) => wallet.invites + total, 0));
+export const selectInviteRequests = createSelector(selectWallets, (wallets: DisplayWallet[]) => wallets.reduce((total: number, wallet) => wallet.inviteRequests.length + total, 0));
