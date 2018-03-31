@@ -296,7 +296,7 @@ Insight.prototype.getANV = function(addresses, cb) {
 Insight.prototype.getCommunityInfo = function(address, cb) {
   const args = {
     method: 'GET',
-    path: `${this.apiPrefix}/getcommunityinfo/${address}`
+    path: `${this.apiPrefix}/communityinfo/${address}`
   };
 
   this._doRequest(args, (err, res, body) => {
