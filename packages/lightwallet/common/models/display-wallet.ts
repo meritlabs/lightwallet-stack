@@ -2,6 +2,7 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { AddressService } from '@merit/common/services/address.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { IUnlockRequest } from '@merit/common/services/unlock-request.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { isNil, sumBy } from 'lodash';
 import { DEFAULT_WALLET_COLOR } from '../utils/constants';
@@ -115,7 +116,12 @@ export class DisplayWallet {
 
   async updateStatus() {
     this.client.status = await this.walletService.getStatus(this.client, { force: true });
-    this.inviteRequests = await this.client.getUnlockRequests();
+    this.inviteRequests = (await this.client.getUnlockRequests())
+      .filter((request: IUnlockRequest) => !request.isConfirmed)
+      .map((request: IUnlockRequest) => {
+        request.walletClient = this.client;
+        return request;
+      });
   }
 
   async updateRewards() {

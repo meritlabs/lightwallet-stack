@@ -1,4 +1,5 @@
 import { DisplayWallet, IDisplayWalletOptions } from '@merit/common/models/display-wallet';
+import { IUnlockRequest } from '@merit/common/services/unlock-request.service';
 import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 
 export interface IWalletsState {
@@ -7,7 +8,7 @@ export interface IWalletsState {
   loading: boolean;
   totals: IWalletTotals;
   totalsLoading: boolean;
-  inviteRequests: any[];
+  inviteRequests: IUnlockRequest[];
 }
 
 export interface IWalletTotals {
@@ -87,10 +88,10 @@ export class UpdateWalletTotalsAction implements Action {
   constructor(public totals: IWalletTotals) {}
 }
 
-export class UpdateInviteRequetsAction implements Action {
+export class UpdateInviteRequestsAction implements Action {
   type = WalletsActionType.UpdateInviteRequests;
 
-  constructor(public inviteRequests: any[]) {}
+  constructor(public inviteRequests: IUnlockRequest[]) {}
 }
 
 export type WalletsAction =
@@ -100,7 +101,7 @@ export type WalletsAction =
   & UpdateOneWalletAction
   & RefreshOneWalletAction
   & UpdateWalletTotalsAction
-  & UpdateInviteRequetsAction;
+  & UpdateInviteRequestsAction;
 
 export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {

@@ -4,7 +4,7 @@ import { IRootAppState } from '@merit/common/reducers';
 import {
   IWalletTotals,
   RefreshOneWalletAction, selectWalletById,
-  selectWallets, UpdateInviteRequetsAction,
+  selectWallets, UpdateInviteRequestsAction,
   UpdateOneWalletAction,
   UpdateWalletsAction,
   UpdateWalletTotalsAction,
@@ -14,6 +14,7 @@ import { AddressService } from '@merit/common/services/address.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { formatAmount } from '@merit/common/utils/format';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -55,11 +56,11 @@ export class WalletEffects {
   );
 
   @Effect()
-  updateInviteRequests$: Observable<UpdateInviteRequetsAction> = this.actions$.pipe(
+  updateInviteRequests$: Observable<UpdateInviteRequestsAction> = this.actions$.pipe(
     ofType(WalletsActionType.UpdateOne, WalletsActionType.Update),
     withLatestFrom(this.store.select(selectWallets)),
     map(([action, wallets]) => wallets.reduce((requests, wallet) => requests.concat(wallet.inviteRequests), [])),
-    map((inviteRequests: any[]) => new UpdateInviteRequetsAction(inviteRequests))
+    map((inviteRequests: any[]) => new UpdateInviteRequestsAction(inviteRequests))
   );
 
   // TODO(ibby): only update preferences for the wallet that had a change, not all wallets
@@ -81,7 +82,8 @@ export class WalletEffects {
               private profileService: ProfileService,
               private txFormatService: TxFormatService,
               private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService2) {
+              private persistenceService: PersistenceService2,
+              private unlockRequestsService: UnlockRequestService) {
   }
 
   private async updateAllWallets(): Promise<DisplayWallet[]> {
