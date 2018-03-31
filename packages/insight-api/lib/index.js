@@ -246,9 +246,9 @@ InsightAPI.prototype.setupRoutes = function(app) {
   // Wallet
   var wallet = new WalletController(this.node);
 
-  app.get('/anv/:addr', wallet.getANV.bind(wallet));
+  app.get('/anv', wallet.getANV.bind(wallet));
   app.get('/communityinfo/:addr', wallet.getCommunityInfo.bind(wallet));
-  app.get('/rewards/:addr', wallet.getRewards.bind(wallet));
+  app.get('/rewards', wallet.getRewards.bind(wallet));
 
   // Not Found
   app.use(function(req, res) {
