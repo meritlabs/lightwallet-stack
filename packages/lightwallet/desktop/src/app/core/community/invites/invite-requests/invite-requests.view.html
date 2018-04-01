@@ -1,0 +1,41 @@
+<div class="sub-page container--inner">
+  <div class="back-navigator">
+    <div routerLink="../" class="back-button-container">
+      <div class="back-button"></div>
+    </div>
+    <div class="page-title">
+      <h3>Invite requests</h3>
+    </div>
+  </div>
+
+  <ng-container *ngIf="inviteRequests$ | async as inviteRequests; else loading">
+
+    <ng-container *ngIf="inviteRequests.length; else noRequests">
+      <div *ngFor="let request of inviteRequests" class="invite-request" (click)="approveRequest(request)">
+        <div class="address">{{ request.alias? '@' + request.alias : request.address }}</div>
+      </div>
+    </ng-container>
+    <ng-template #noRequests>
+      <div class="backup__title title--primary">
+        No New Requests Yet
+      </div>
+      <div class="backup__caption">
+        <p>
+          <img src="/assets/v1/icons/invites/invite-spread.svg" alt="">
+        </p>
+        <p>You can spread the word by telling friends,
+          colleagues, and loved ones about Merit.</p>
+        <p>Once they use your alias as their <i>unlock code</i> when signing up,
+          you will receive an "invite request" here. With a simple click, you
+          can send them an invite, and they're in!</p>
+        <p>The more people you invite, the higher your chances of winning
+          <strong>ambassador rewards!</strong></p>
+      </div>
+    </ng-template>
+
+  </ng-container>
+  <ng-template #loading>
+    <loading-spinner></loading-spinner>
+  </ng-template>
+
+</div>

@@ -1,32 +1,22 @@
-<div class="dashboard__toolbar">
-  <div class="container--inner dashboard__toolbar__wrap">
-    <div class="dashboard__toolbar__col dashboard__toolbar__col--left">
-      <div class="dashboard__toolbar__currency-selector">
-        <app-select
-          (selectionEvent)="receiveSelection($event)"
-          [selected]="selectedCurrency"
-          [input]="availableCurrencies"
-          style="ui-button ui-button--white ui-button--md ui-button--with-caret ui-button--wallet-icon"></app-select>
-      </div>
-      <div class="dashboard__toolbar__balance">
-        <ng-container *ngIf="loading$ | async">
-          <loading-spinner></loading-spinner>
-        </ng-container>
-        <ng-container *ngIf="totals$ | async as totals">
-          <div class="dashboard__toolbar__balance__item dashboard__toolbar__balance__item--large-blue">{{ totals.totalWalletsBalance }} MRT</div>
-          <div class="dashboard__toolbar__balance__item dashboard__toolbar__balance__item--regular-grey" *ngIf="totalWalletsBalanceFiat">$ {{ totals.totalWalletsBalanceFiat }}</div>
-        </ng-container>
-      </div>
-      <div class="dashboard__toolbar__divider"></div>
-      <div class="buy-merit">
-        <button class="ui-button ui-button--blue ui-button--md">
-          Buy Merit
-        </button>
-      </div>
-    </div>
-    <div class="dashboard__toolbar__col dashboard__toolbar__col--right">
-      <app-notifications></app-notifications>
-      <div class="profile"></div>
-    </div>
-  </div>
+<div class="dashboard__toolbar__currency-selector">
+  <app-select
+    (selectionEvent)="receiveSelection($event)"
+    [selected]="selectedCurrency"
+    [input]="availableCurrencies"
+    style="ui-button ui-button--white ui-button--md ui-button--with-caret ui-button--wallet-icon"></app-select>
+</div>
+<div class="balance">
+  <ng-container *ngIf="loading$ | async">
+    <loading-spinner></loading-spinner>
+  </ng-container>
+  <ng-container *ngIf="totals$ | async as totals">
+    <div class="amount-merit">{{ totals.totalWalletsBalance }} MRT</div>
+    <div class="amount-fiat" *ngIf="totalWalletsBalanceFiat">$ {{ totals.totalWalletsBalanceFiat }}</div>
+  </ng-container>
+</div>
+<div class="divider"></div>
+<div class="buy-merit">
+  <button class="ui-button ui-button--blue ui-button--md">
+    Buy Merit
+  </button>
 </div>

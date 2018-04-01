@@ -25,7 +25,7 @@
             <p class="regular-blue-text" *ngIf="!balanceHidden">{{ wallet.totalBalanceMicros | toMRT }} <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})</small></p>
           </div>
           <div>
-            <p class="regular-blue-text">{{ wallet.invites }} Invites</p>
+            <p class="regular-blue-text">{{ wallet.availableInvites }} Invites</p>
           </div>
         </div>
       </div>

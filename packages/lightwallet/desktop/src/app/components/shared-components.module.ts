@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BackdropComponent } from '@merit/desktop/app/components/backdrop/backdrop.component';
+import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
+import { ConfirmDialogComponent } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog.component';
 import { ErrorMessageComponent } from '@merit/desktop/app/components/error-message/error-message.component';
 import { LoadingSpinnerSmallComponent } from '@merit/desktop/app/components/loading-spinner-small/loading-spinner-small.component';
 import { LoadingSpinnerComponent } from '@merit/desktop/app/components/loading-spinner/loading-spinner.component';
@@ -23,14 +25,16 @@ export function getComponents() {
     LockScreenComponent,
     WalletIconComponent,
     PasswordPromptComponent,
-    BackdropComponent
+    BackdropComponent,
+    ConfirmDialogComponent
   ];
 }
 
 @NgModule({
   entryComponents: [
     ToastNotificationComponent,
-    PasswordPromptComponent
+    PasswordPromptComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     CommonModule,
@@ -46,7 +50,8 @@ export class SharedComponentsModule {
       ngModule: SharedComponentsModule,
       providers: [
         ToastControllerService,
-        PasswordPromptController
+        PasswordPromptController,
+        ConfirmDialogControllerService
       ]
     };
   }

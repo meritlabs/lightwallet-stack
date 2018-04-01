@@ -1,4 +1,4 @@
-import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 import { sortBy, uniqBy } from 'lodash';
 
@@ -94,4 +94,5 @@ export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, a
 export const selectTransactionsState = createFeatureSelector<ITransactionsState>('transactions');
 export const selectTransactionsLoading = createSelector(selectTransactionsState, state => state.loading);
 export const selectTransactions = createSelector(selectTransactionsState, state => state.transactions);
+export const selectSentInvites = createSelector(selectTransactions, (transactions: IDisplayTransaction[]) => transactions.filter(transaction => transaction.action === TransactionAction.SENT && transaction.isInvite));
 export const selectTransactionsByWalletId = (id: string) => createSelector(selectTransactionsState, state => state.transactionsByWallet[id]);
