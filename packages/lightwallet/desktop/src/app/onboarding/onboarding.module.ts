@@ -8,7 +8,6 @@ import { OnboardComponent } from './onboard/onboard.component';
 import { UnlockComponent } from './unlock/unlock.component';
 import { OnboardingRootComponent } from './onboarding-root/onboarding-root.component';
 import { NgxCarouselModule } from 'ngx-carousel';
-import { GuideComponent } from './unlock/guide/guide.component';
 
 @NgModule({
   imports: [
@@ -19,6 +18,6 @@ import { GuideComponent } from './unlock/guide/guide.component';
     RouterModule,
     NgxCarouselModule
   ],
-  declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent, GuideComponent]
+  declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent]
 })
 export class OnboardingModule { }
