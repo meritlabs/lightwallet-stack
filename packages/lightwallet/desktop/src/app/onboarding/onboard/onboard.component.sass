@@ -1,6 +1,9 @@
 @import "~styles/v1/common/import-sass"
 \:host
   color: $white
+  a
+    +font(400, 16px, 18px, $color: $white)
+    user-select: none
 .guide
   height: 100vh
   padding: 60px 40px 0
@@ -8,17 +11,22 @@
   flex-direction: column
   justify-content: space-between
   box-sizing: border-box
+  position: relative
   &_title
     text-align: right
     margin-bottom: 40px
     span
       opacity: .8
-      &.link
-        opacity: 1
-        padding-left: 10px
-        cursor: pointer
-        &:hover
-          text-decoration: underline
+    .link
+      opacity: 1
+      padding-left: 10px
+      cursor: pointer
+      &:hover
+        text-decoration: underline
+  .skipTutorial
+    position: fixed
+    bottom: 20px
+    right: 40px
 .guide_slider
   padding-bottom: 65px
   height: 100%
@@ -52,3 +60,4 @@
     margin-bottom: 30px
   .description_caption
     +font(300, 16px, 30px)
+    margin-bottom: 30px
