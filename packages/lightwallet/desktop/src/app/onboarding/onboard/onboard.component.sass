@@ -22,6 +22,7 @@
 .guide_slider
   padding-bottom: 65px
   height: 100%
+  position: relative
   .navArrow
     background: transparent
     display: block !important
@@ -29,13 +30,25 @@
     height: 40px
     width: 40px
     border: 0
+    position: fixed
+    top: 50vh
     background: url('/assets/v1/images/onboard/arrow.png') no-repeat 50% 50%
     &[style*=display]:not([style*=block])
       opacity: .5
       cursor: none
   .rightRs
-    position: fixed
     right: 40px
-    top: 50vh
   .leftRs
+    left: 40px
     transform: rotate(180deg)
+  .slide_image
+    margin-bottom: 45px
+  .slide_description
+    max-width: 530px
+    width: 100%
+    margin: 0px auto
+  .description_title
+    +font(700, 30px, 40px)
+    margin-bottom: 30px
+  .description_caption
+    +font(300, 16px, 30px)
