@@ -7,8 +7,7 @@ import { Observable } from 'rxjs/Observable';
 @Component({
   selector: 'app-toolbar',
   templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.sass'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./toolbar.component.sass']
 })
 export class ToolbarComponent {
 

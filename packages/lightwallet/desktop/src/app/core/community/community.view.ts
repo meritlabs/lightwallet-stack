@@ -2,7 +2,11 @@ import { Component } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Observable } from 'rxjs/Observable';
 import { Store } from '@ngrx/store';
-import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
+import {
+  selectInviteRequests,
+  selectInvites, selectWallets, selectWalletsLoading,
+  selectWalletTotals
+} from '@merit/common/reducers/wallets.reducer';
 import { IRootAppState } from '@merit/common/reducers';
 
 @Component({
