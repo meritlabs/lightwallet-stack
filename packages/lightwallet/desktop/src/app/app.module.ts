@@ -40,12 +40,14 @@ export function loadConfigs(appService: AppSettingsService, profileService: Prof
   return async () => {
     await appService.getInfo();
 
+    const authorized = await profileService.isAuthorized();
+
     store.dispatch(new UpdateAppAction({
       loading: false,
-      credentialsLength: profileService.wallets.length
+      authorized
     }));
 
-    if (await profileService.isAuthorized()) {
+    if (authorized) {
       store.dispatch(new RefreshWalletsAction());
 
       await store.select(selectWallets)

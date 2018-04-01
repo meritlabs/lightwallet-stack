@@ -141,6 +141,7 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
       state.wallets[index] = action.wallet;
       return {
         ...state,
+        loading: false,
         walletsMap: {
           ...state.walletsMap,
           [action.wallet.id]: action.wallet

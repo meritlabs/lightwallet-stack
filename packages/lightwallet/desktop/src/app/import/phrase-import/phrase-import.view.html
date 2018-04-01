@@ -1,40 +1,37 @@
-<div class="container--inner">
-  <div class="backup__mnenmonic__wrap">
+<div class="sub-page">
+  <div class="back-navigator">
+    <div routerLink="../../" class="back-button-container">
+      <div class="back-button"></div>
+    </div>
+    <div class="page-title">
+      <h3>Import your wallet with your recovery phrase</h3>
+    </div>
+  </div>
+  <div class="container--inner">
 
     <form [formGroup]="formData" (ngSubmit)="importMnemonic()">
-      <div class="backup__back-navigator">
-        <div [routerLink]='"/wallets/import"'>
-          <img src="/assets/v1/images/backup/back-icon.svg" alt="">
-        </div>
-      </div>
-      <div class="backup__header">
-        <div>
-          <div class="backup__title title--primary">
-            <p>Import your wallet with your recovery phrase</p>
-          </div>
-          <div class="backup__caption">
-            <div class="sendMerit__form__group">
-              <label for="" class="ui-label">Recovery phrase (12 words)</label>
-              <div class="ui-input__wrapper">
-                <textarea type="text" formControlName="words" name="" class="ui-input ui-input--form ui-input--textarea"></textarea>
-              </div>
-            </div>
-            <div class="sendMerit__form__group">
-              <label for="" class="ui-label">Phrase password (optional)</label>
-              <div class="ui-input__wrapper ui-input__wrapper--password">
-                <input formControlName="password" [type]="showPass == true ? 'text' : 'password'" name="" class="ui-input ui-input--form ui-input--text">
-                <div class="show-hide-password" (click)="showPass=!showPass">{{ showPass == true ? 'Hide' : 'Show' }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="backup__mnemonic">
-        <button role="button" type="submit" name="button" class="ui-button ui-button--blue">
-          Import wallet
-        </button>
-      </div>
-    </form>
 
+      <div class="sendMerit__form__group">
+        <label for="" class="ui-label">Recovery phrase (12 words)</label>
+        <div class="ui-input__wrapper">
+                <textarea type="text" formControlName="words" name=""
+                          class="ui-input ui-input--form ui-input--textarea"></textarea>
+        </div>
+      </div>
+      <div class="sendMerit__form__group">
+        <label for="" class="ui-label">Phrase password (optional)</label>
+        <div class="ui-input__wrapper ui-input__wrapper--password">
+          <input formControlName="password" [type]="showPass == true ? 'text' : 'password'" name=""
+                 class="ui-input ui-input--form ui-input--text">
+          <div class="show-hide-password" (click)="showPass=!showPass">{{ showPass == true ? 'Hide' : 'Show' }}
+          </div>
+        </div>
+      </div>
+
+      <button role="button" type="submit" name="button" class="ui-button ui-button--blue" [disabled]="formData.invalid">
+        Import wallet
+      </button>
+
+    </form>
   </div>
 </div>

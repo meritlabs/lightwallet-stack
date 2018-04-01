@@ -9,7 +9,7 @@ export class AppEffects {
   // Take the user to the onboarding page if they delete all wallets
   @Effect({ dispatch: false }) update$ = this.actions$.pipe(
     ofType(AppReducerActionType.UPDATE),
-    filter((action: UpdateAppAction) => action.payload.credentialsLength === 0),
+    filter((action: UpdateAppAction) => !action.payload.authorized),
     tap(() => this.router.navigateByUrl('/onboarding'))
   );
 
