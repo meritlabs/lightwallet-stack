@@ -1,5 +1,4 @@
-@import "~styles/v1/common/variables"
-@import "~styles/v1/common/mixins"
+@import "~styles/v1/common/import-sass"
 
 .lock-screen
   position: absolute
@@ -30,7 +29,7 @@
       width: 15px
       margin-bottom: 5px
 .lock-screen--full
-  width: calc(100% - 300px)
+  width: calc(100%)
   .lock-screen__message
     +font(400, 18px, 24px, $dark)
     display: block
