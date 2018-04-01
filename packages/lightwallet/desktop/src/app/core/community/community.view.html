@@ -19,7 +19,7 @@
             <p *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">{{ totalBalanceFiat }}</p>
           </div>
         </div>
-        <div class="network__personal-wallet__panel__row invite-code">
+        <div class="network__personal-wallet__panel__row invite-code" [clip]="wallet.shareCode">
           <div class="network__personal-wallet__panel__col">
             <div class="network__personal-wallet__panel__icon">
               <img src="/assets/v1/icons/ui/network/invite-code.svg" alt="">
