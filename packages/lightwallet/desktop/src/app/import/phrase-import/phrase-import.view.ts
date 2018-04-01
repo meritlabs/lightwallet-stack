@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ENV } from '@app/env';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
+import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
 import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { AddressService } from '@merit/common/services/address.service';
 import { MnemonicService } from '@merit/common/services/mnemonic.service';
@@ -24,7 +25,7 @@ import { ToastControllerService } from '@merit/desktop/app/components/toast-noti
 export class PhraseImportView {
 
   formData: FormGroup = this.formBuilder.group({
-    words: '',
+    words: ['', Validators.required],
     password: '',
     mwsUrl: ENV.mwsUrl
   });
@@ -84,6 +85,12 @@ export class PhraseImportView {
             await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
           )
         );
+
+        // update state so we're allowed to access the dashboard, in case this is done via onboarding import
+        this.store.dispatch(new UpdateAppAction({
+          loading: false,
+          authorized: true
+        }));
 
         return this.router.navigateByUrl('/wallets');
       }

@@ -9,12 +9,12 @@
   +transition(.3s, linear)
   &[disabled]
     opacity: .5
-    cursor: disabled
+    cursor: default
   &--blue
     background: $blue-button-bg
     color: $white
     border: 1px solid transparent
-    &:hover
+    &:hover:not([disabled])
       background: $blue-button-bg-hover
       border: 1px solid transparent
   &--white
@@ -31,10 +31,11 @@
       display: inline-block
       font-weight: 900
       margin-left: 16px
+      transform: translate3d(0,0,0)
       +transition(.1s, linear)
-    &:hover
+    &:hover:not([disabled])
       &:after
-        transform: translateX(2px)
+        transform: translate3d(2px, 0, 0)
   &--loadWallet
     min-width: 150px
     &::before
@@ -48,9 +49,11 @@
       mask-image: url('/assets/v1/icons/buttons/load.svg')
       mask-repeat: no-repeat
       +transition(.1s, linear)
-    &:hover
+    &:after
+      transform: translate3d(0,0,0)
+    &:hover:not([disabled])
       &:after
-        transform: translateX(2px)
+        transform: translate3d(2px, 0, 0)
   &--with-caret
     &.ui-button--md
       padding: 8px 10px

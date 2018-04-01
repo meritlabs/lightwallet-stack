@@ -31,8 +31,6 @@ export class HistoryItemComponent implements OnInit {
   ngOnInit() {
     const { tx } = this;
 
-    console.log('TX IS ', tx);
-
     this.isConfirmed = tx.isCoinbase ? tx.isMature : true;
     this.isUnlockRequest = tx && tx.action === TransactionAction.UNLOCK;
     this.isCredit = tx.isCoinbase || tx.action === TransactionAction.RECEIVED;
