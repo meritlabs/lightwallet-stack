@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
 import { QrCodeBackupView } from '@merit/desktop/app/core/backup/qr-code-backup/qr-code-backup.view';
-import { RequestsComponent } from '@merit/desktop/app/core/community/invites/requests/requests.component';
-import { SendInviteComponent } from '@merit/desktop/app/core/community/invites/send-invite/send-invite.component';
+import { InviteRequestsView } from '@merit/desktop/app/core/community/invites/invite-requests/invite-requests.view';
+import { SendInviteView } from '@merit/desktop/app/core/community/invites/send-invite/send-invite.view';
 import { GlobalSettingsView } from '@merit/desktop/app/core/global-settings/global-settings.view';
 import { SettingsPreferencesView } from '@merit/desktop/app/core/global-settings/settings-preferences/settings-preferences.view';
 import { SettingsSessionLogView } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.view';
@@ -57,8 +57,8 @@ const routes: Routes = [
       { path: 'send', component: SendView },
       { path: 'history', component: HistoryView },
       { path: 'community', component: CommunityView },
-      { path: 'community/invite-requests', component: RequestsComponent },
-      { path: 'community/send-invite', component: SendInviteComponent },
+      { path: 'community/invite-requests', component: InviteRequestsView },
+      { path: 'community/send-invite', component: SendInviteView },
       {
         path: 'settings', component: GlobalSettingsView, children: [
           { path: '', component: SettingsPreferencesView },

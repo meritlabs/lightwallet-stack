@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { WalletService } from '@merit/common/services/wallet.service';
@@ -12,8 +13,9 @@ export interface IUnlockRequest {
   isConfirmed: boolean;
   referralId: string;
   wallet: DisplayWallet;
+  walletClient: MeritWalletClient;
   contact: MeritContact;
-  label: string; 
+  label: string;
   isVault: boolean;
 }
 

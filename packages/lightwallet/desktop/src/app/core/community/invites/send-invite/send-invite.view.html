@@ -1,0 +1,40 @@
+<div class="sub-page container--inner">
+  <div class="back-navigator">
+    <div routerLink="../" class="back-button-container">
+      <div class="back-button"></div>
+    </div>
+    <div class="page-title">
+      <h3>Send invite</h3>
+      <p class="description">
+        ({{ availableInvites$ | async }} available)
+      </p>
+    </div>
+  </div>
+
+  <form [formGroup]="formData" (ngSubmit)="sendInvite()">
+    <div class="sendMerit__form__group">
+      <label for="" class="ui-label">Send from</label>
+      <app-select
+        (selectionEvent)="selectWallet($event)"
+        [selected]="selectedWallet"
+        [input]="wallets$ | async"
+        style="ui-input ui-input--select ui-input--form"></app-select>
+    </div>
+
+      <div class="ui-input__wrapper ui-input__wrapper">
+        <input type="text" name="" id="receiveAmount" placeholder="Enter recipient address or alias"
+               class="ui-input ui-input--form ui-input--text" formControlName="address">
+      </div>
+      <div class="input-errors" [hidden]="!address.dirty || address.valid">
+        <div [hidden]="!address.hasError('required')">Recipient address is required</div>
+        <div [hidden]="address.hasError('required') || !address.hasError('minlength')">Address must be at least 3 characters long</div>
+        <div [hidden]="address.hasError('required') || !address.hasError('InvalidFormat')">Invalid address or alias format</div>
+        <div [hidden]="address.hasError('required') || !address.hasError('AddressNotFound')">Address not found</div>
+      </div>
+      <button class="ui-button ui-button--blue" type="submit" role="button" [disabled]="formData.invalid">SEND</button>
+  </form>
+
+
+  <history-list [loading]="historyLoading$ | async" [transactions]="history$ | async"></history-list>
+
+</div>
