@@ -2,17 +2,18 @@
   <div class="guide_title">
     <span>Already a  member?</span> <span class="link" routerLink="import">Restore</span>
   </div>
-<ngx-carousel [inputs]="carouselOne">
+<ngx-carousel [inputs]="carouselOne" class="guide_slider">
   <ngx-item NgxCarouselItem>
-    ..1..
+    <img src="/assets/v1/images/onboard/slider-1.png" alt="">
   </ngx-item>
   <ngx-item NgxCarouselItem>
-    ..2..
+    <img src="/assets/v1/images/onboard/slider-2.png" alt="">
   </ngx-item>
   <ngx-item NgxCarouselItem>
-    ..3..
+
+    <img src="/assets/v1/images/onboard/slider-3.png" alt="">
   </ngx-item>
-  <button NgxCarouselPrev class='leftRs'>&lt;</button>
-  <button NgxCarouselNext class='rightRs'>&gt;</button>
+  <button NgxCarouselPrev class='leftRs navArrow'></button>
+  <button NgxCarouselNext class='rightRs navArrow'></button>
 </ngx-carousel>
 </div>
