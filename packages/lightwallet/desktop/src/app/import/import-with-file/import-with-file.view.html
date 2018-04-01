@@ -1,13 +1,11 @@
-<div class="sub-page">
-  <div class="back-navigator">
-    <div routerLink="../../" class="back-button-container">
-      <div class="back-button"></div>
+<div class="import">
+  <div class="import__title title--primary">
+    <div class="import_back" routerLink="../../">
+      <img src="/assets/v1/images/backup/back-icon.svg" alt="">
     </div>
-    <div class="page-title">
-      <h3>Restore your wallet with a backup file</h3>
-    </div>
+    <p>Restore your wallet with a backup file</p>
   </div>
-  <div class="container--inner">
+  <div class="import_form">
     <div class="sendMerit__form__group">
       <label for="" class="ui-label">Select a backup file from your device</label>
       <div class="ui-input__wrapper ui-input__wrapper--password">
@@ -24,10 +22,8 @@
         </div>
       </div>
     </div>
-
     <button type="button" name="button" class="ui-button ui-button--blue" [disabled]="!canSubmit" (click)="importBlob()">
       Import wallet
     </button>
-
   </div>
 </div>

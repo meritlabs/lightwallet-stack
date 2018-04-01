@@ -1,30 +1,26 @@
-<div class="backup__title title--primary container--inner">Import wallet from:</div>
-<div class="backup__navigator container--inner">
-  <!--<div class="backup__navigator__item" [routerLink]='"qr-code"'>-->
-  <!--<div class="backup__navigator__item__icon">-->
-  <!--<img src="/assets/v1/images/backup/qr-icon.svg" alt="">-->
-  <!--</div>-->
-  <!--<div class="backup__navigator__item__title">-->
-  <!--<p>QR Code</p>-->
-  <!--</div>-->
-  <!--<div class="backup__navigator__item__caption">-->
-  <!--<p>Scan</p>-->
-  <!--</div>-->
-  <!--</div>-->
-  <div class="backup__navigator__item" [routerLink]='"file"'>
-    <div class="backup__navigator__item__icon">
-      <img src="/assets/v1/images/backup/dat-file-icon.svg" alt="">
+<div class="import">
+  <div class="import__title title--primary">
+    <div class="import_back" routerLink="unlock">
+      <img src="/assets/v1/images/backup/back-icon.svg" alt="">
     </div>
-    <div class="backup__navigator__item__title">
-      <p>Backup File</p>
-    </div>
+    <p>Import wallet from:</p>
   </div>
-  <div class="backup__navigator__item" [routerLink]='"phrase"'>
-    <div class="backup__navigator__item__icon">
-      <img src="/assets/v1/images/backup/mnemonic-icon.svg" alt="">
+  <div class="backup__navigator">
+    <div class="backup__navigator__item" [routerLink]='"file"'>
+      <div class="backup__navigator__item__icon">
+        <img src="/assets/v1/images/backup/dat-file-icon.svg" alt="">
+      </div>
+      <div class="backup__navigator__item__title">
+        <p>Backup File</p>
+      </div>
     </div>
-    <div class="backup__navigator__item__title">
-      <p>Mnemonic Phrase</p>
+    <div class="backup__navigator__item" [routerLink]='"phrase"'>
+      <div class="backup__navigator__item__icon">
+        <img src="/assets/v1/images/backup/mnemonic-icon.svg" alt="">
+      </div>
+      <div class="backup__navigator__item__title">
+        <p>Mnemonic Phrase</p>
+      </div>
     </div>
   </div>
 </div>
