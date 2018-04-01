@@ -103,7 +103,7 @@ export class WalletEffects {
       totalMiningRewards: 0,
       totalNetworkValue: 0,
       totalWalletsBalance: 0,
-      totalCommunitySize: 0
+      totalCommunitySize: 0,
       invites: 0
     };
 
