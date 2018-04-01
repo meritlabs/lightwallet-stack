@@ -37,8 +37,9 @@
   flex-flow: row wrap
   height: 100vh
   overflow: hidden
+  position: relative
   &__aside
-    width: 300px
+    width: $dashboard-aside-width
     background: $dashboard-aside-bg
     box-sizing: border-box
     padding: 45px 0 25px
@@ -78,50 +79,12 @@
         margin-right: 16px
 .dashboard
   &__main
-    padding-top: 74px
-    width: calc(100% - 300px)
-    height: 100vh
-    overflow-y: auto
-.dashboard
-  &__toolbar
-    box-sizing: border-box
-    padding: 17px 40px
-    width: calc(100% - 300px)
-    background: $white
-    box-shadow: 0px 2px 2px rgba(46,53,59, .05)
-    position: fixed
-    top: 0
+    width: calc(100% - #{$dashboard-aside-width})
+    height: calc(100vh - #{$toolbar-height})
+    bottom: 0
     right: 0
-    z-index: 99
-    &__wrap
-      display: flex
-      justify-content: space-between
-    &__col
-      display: flex
-      align-content: center
-      flex-flow: row wrap
-      &--left
-        padding-right: 20px
-    &__divider
-      width: 3px
-      height: 36px
-      background: $steel
-      margin: 0 20px
-      opacity: .2
-.dashboard__toolbar__balance
-  display: flex
-  flex-flow: row wrap
-  align-content: center
-  margin: 0 0 0 20px
-  width: auto
-  align-items: center
-  &__item
-    width: 100%
-    height: 15px
-    &--large-blue
-      +font(500, 15px, 15px, $blue)
-    &--regular-grey
-      +font(500, 14px, 24px, $gun-metal)
+    position: absolute
+    overflow: hidden
 .navigator-back
   display: flex
   align-items: center
