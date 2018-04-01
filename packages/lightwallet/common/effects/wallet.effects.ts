@@ -3,8 +3,8 @@ import { createDisplayWallet, DisplayWallet, updateDisplayWallet } from '@merit/
 import { IRootAppState } from '@merit/common/reducers';
 import {
   IWalletTotals,
-  RefreshOneWalletAction,
-  selectWallets,
+  RefreshOneWalletAction, selectWalletById,
+  selectWallets, UpdateInviteRequestsAction,
   UpdateOneWalletAction,
   UpdateWalletsAction,
   UpdateWalletTotalsAction,
@@ -14,6 +14,7 @@ import { AddressService } from '@merit/common/services/address.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { formatAmount } from '@merit/common/utils/format';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -21,7 +22,7 @@ import { Store } from '@ngrx/store';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { distinctUntilChanged, map, skip, switchMap, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, skip, switchMap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class WalletEffects {
@@ -35,7 +36,12 @@ export class WalletEffects {
   @Effect()
   refreshOne$: Observable<UpdateOneWalletAction> = this.actions$.pipe(
     ofType(WalletsActionType.RefreshOne),
-    switchMap((action: RefreshOneWalletAction) => fromPromise(updateDisplayWallet(action.wallet, action.opts))),
+    switchMap((action: RefreshOneWalletAction) =>
+      this.store.select(selectWalletById(action.walletId))
+        .pipe(
+          switchMap((wallet: DisplayWallet) => fromPromise(updateDisplayWallet(wallet, action.opts)))
+        )
+    ),
     map((wallet: DisplayWallet) => new UpdateOneWalletAction(wallet))
   );
 
@@ -49,6 +55,13 @@ export class WalletEffects {
     map((args: any[]) => new UpdateWalletTotalsAction(this.calculateTotals(args[1])))
   );
 
+  @Effect()
+  updateInviteRequests$: Observable<UpdateInviteRequestsAction> = this.actions$.pipe(
+    ofType(WalletsActionType.UpdateOne, WalletsActionType.Update),
+    withLatestFrom(this.store.select(selectWallets)),
+    map(([action, wallets]) => wallets.reduce((requests, wallet) => requests.concat(wallet.inviteRequests), [])),
+    map((inviteRequests: any[]) => new UpdateInviteRequestsAction(inviteRequests))
+  );
 
   // TODO(ibby): only update preferences for the wallet that had a change, not all wallets
   @Effect({ dispatch: false })
@@ -69,7 +82,8 @@ export class WalletEffects {
               private profileService: ProfileService,
               private txFormatService: TxFormatService,
               private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService2) {
+              private persistenceService: PersistenceService2,
+              private unlockRequestsService: UnlockRequestService) {
   }
 
   private async updateAllWallets(): Promise<DisplayWallet[]> {
@@ -88,7 +102,8 @@ export class WalletEffects {
       totalAmbassadorRewards: 0,
       totalMiningRewards: 0,
       totalNetworkValue: 0,
-      totalWalletsBalance: 0
+      totalWalletsBalance: 0,
+      invites: 0
     };
 
     let allBalancesHidden = true;
@@ -97,6 +112,7 @@ export class WalletEffects {
       totals.totalNetworkValue += w.totalNetworkValueMicro;
       totals.totalMiningRewards += w.miningRewardsMicro;
       totals.totalAmbassadorRewards += w.ambassadorRewardsMicro;
+      totals.invites += w.availableInvites;
 
       if (!w.balanceHidden) {
         allBalancesHidden = false;
@@ -110,7 +126,8 @@ export class WalletEffects {
       totalAmbassadorRewards: formatAmount(totals.totalAmbassadorRewards, 'mrt'),
       totalWalletsBalance: formatAmount(totals.totalWalletsBalance, 'mrt'),
       totalWalletsBalanceFiat: this.txFormatService.formatAlternativeStr(totals.totalWalletsBalance),
-      allBalancesHidden
+      allBalancesHidden,
+      invites: totals.invites
     };
   }
 }
