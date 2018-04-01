@@ -2,9 +2,15 @@
 \:host
   color: $white
 .guide
+  height: 100vh
   padding: 60px 40px 0
+  display: flex
+  flex-direction: column
+  justify-content: space-between
+  box-sizing: border-box
   &_title
     text-align: right
+    margin-bottom: 40px
     span
       opacity: .8
       &.link
@@ -13,3 +19,23 @@
         cursor: pointer
         &:hover
           text-decoration: underline
+.guide_slider
+  padding-bottom: 65px
+  height: 100%
+  .navArrow
+    background: transparent
+    display: block !important
+    border-radius: 100%
+    height: 40px
+    width: 40px
+    border: 0
+    background: url('/assets/v1/images/onboard/arrow.png') no-repeat 50% 50%
+    &[style*=display]:not([style*=block])
+      opacity: .5
+      cursor: none
+  .rightRs
+    position: fixed
+    right: 40px
+    top: 50vh
+  .leftRs
+    transform: rotate(180deg)
