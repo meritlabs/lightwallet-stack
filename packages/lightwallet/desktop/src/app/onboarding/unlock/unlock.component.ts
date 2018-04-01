@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IRootAppState } from '@merit/common/reducers';
@@ -12,14 +12,13 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { isAlias } from '@merit/common/utils/addresses';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { Store } from '@ngrx/store';
-import { NgxCarousel } from 'ngx-carousel';
 
 @Component({
   selector: 'view-unlock',
   templateUrl: './unlock.component.html',
   styleUrls: ['./unlock.component.sass']
 })
-export class UnlockComponent implements OnInit {
+export class UnlockComponent {
   formData: FormGroup = this.formBuilder.group({
     inviteCode: ['', [Validators.required, Validators.minLength(3)], [AddressValidator.validateAddress(this.mwcService)]],
     alias: ['', Validators.minLength(3), [AddressValidator.validateAliasAvailability(this.mwcService)]]
@@ -64,22 +63,6 @@ export class UnlockComponent implements OnInit {
     } catch (err) {
       this.logger.debug('Could not unlock wallet: ', err);
       // TODO show  error to user
-    }
-  }
-  public carouselOne: NgxCarousel;
-  ngOnInit() {
-    this.carouselOne = {
-      grid: {xs: 1, sm: 1, md: 1, lg: 1, all: 0},
-      slide: 1,
-      speed: 400,
-      interval: 4000,
-      point: {
-        visible: true
-      },
-      load: 2,
-      touch: true,
-      loop: true,
-      custom: 'banner'
     }
   }
 }

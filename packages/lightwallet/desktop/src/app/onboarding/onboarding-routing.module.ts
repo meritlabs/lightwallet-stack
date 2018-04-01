@@ -2,14 +2,16 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { OnboardingRootComponent } from '@merit/desktop/app/onboarding/onboarding-root/onboarding-root.component';
 import { UnlockComponent } from './unlock/unlock.component';
+import { GuideComponent } from './unlock/guide/guide.component';
 
 const routes: Routes = [
   {
     path: '',
     component: OnboardingRootComponent,
     children: [
-      { path: '', redirectTo: 'unlock', pathMatch: 'full' }, // temporary until the onboarding page is done
+      { path: '', redirectTo: 'guide', pathMatch: 'full' }, // temporary until the onboarding page is done
       { path: 'unlock', component: UnlockComponent },
+      { path: 'guide', component: GuideComponent },
       { path: 'import', loadChildren: '../import/import.module#ImportModule' },
       { path: 'import/qr-code', loadChildren: '../import/import-by-qr/import-by-qr.module#ImportByQrModule' },
       { path: 'import/file', loadChildren: '../import/import-with-file/import-with-file.module#ImportWithFileModule' },
