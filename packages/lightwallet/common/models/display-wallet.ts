@@ -2,6 +2,7 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { AddressService } from '@merit/common/services/address.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { IUnlockRequest } from '@merit/common/services/unlock-request.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { isNil, sumBy } from 'lodash';
 import { DEFAULT_WALLET_COLOR } from '../utils/constants';
@@ -37,6 +38,8 @@ export class DisplayWallet {
   @ClientProperty status: any;
   @ClientProperty balanceHidden: boolean;
   @ClientProperty balance: any;
+  @ClientProperty availableInvites: number;
+  @ClientProperty confirmed: boolean;
 
   referrerAddress: string;
   alias: string;
@@ -61,9 +64,9 @@ export class DisplayWallet {
   ambassadorRewardsMerit: string;
   ambassadorRewardsFiat: string;
 
-  confirmed: boolean;
   inviteRequests: any[];
-  invites: number;
+
+  communitySize: number = 0;
 
   constructor(public client: MeritWalletClient,
               private walletService: WalletService,
@@ -115,9 +118,12 @@ export class DisplayWallet {
 
   async updateStatus() {
     this.client.status = await this.walletService.getStatus(this.client, { force: true });
-    this.inviteRequests = await this.client.getUnlockRequests();
-    this.invites = this.client.availableInvites;
-    this.confirmed = this.client.confirmed;
+    this.inviteRequests = (await this.client.getUnlockRequests())
+      .filter((request: IUnlockRequest) => !request.isConfirmed)
+      .map((request: IUnlockRequest) => {
+        request.walletClient = this.client;
+        return request;
+      });
   }
 
   async updateRewards() {
@@ -130,6 +136,8 @@ export class DisplayWallet {
       this.ambassadorRewardsMicro = sumBy(rewardsData, 'rewards.ambassador');
       this.formatNetworkInfo();
     }
+
+    this.communitySize = (await this.client.getCommunityInfo(this.client.getRootAddress())).referralcount;
   }
 
   private formatNetworkInfo() {

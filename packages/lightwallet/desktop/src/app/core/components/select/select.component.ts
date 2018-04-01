@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-select',
@@ -15,12 +15,12 @@ export class SelectComponent {
 
   select(item) {
     this.show = false;
-    this.selectionEvent.emit(item)
+    this.selectionEvent.emit(item);
   }
 
   onBlur() {
     setTimeout(() => {
       this.show = false;
-    },200)
+    }, 200);
   }
 }

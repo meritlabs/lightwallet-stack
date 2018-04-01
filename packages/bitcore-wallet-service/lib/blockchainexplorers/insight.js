@@ -293,6 +293,20 @@ Insight.prototype.getANV = function(addresses, cb) {
   });
 };
 
+Insight.prototype.getCommunityInfo = function(address, cb) {
+  const args = {
+    method: 'GET',
+    path: `${this.apiPrefix}/communityinfo/${address}`
+  };
+
+  this._doRequest(args, (err, res, body) => {
+    if (err || res.statusCode !== 200) {
+      return cb(_parseErr(err, res));
+    }
+    return cb(null, JSON.parse(body));
+  });
+};
+
 Insight.prototype.getRewards = function(addresses, cb) {
   var self = this;
 
