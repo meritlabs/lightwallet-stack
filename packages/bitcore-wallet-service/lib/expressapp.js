@@ -239,7 +239,7 @@ ExpressApp.prototype.start = function(opts, cb) {
 
     server.recreateWallet(req.body, function(err, walletId, parentAddress) {
       if (err) return returnError(err, res, req);
-      res.json({walletId, parentAddress}); 
+      res.json({walletId, parentAddress});
     });
   });
 
@@ -776,6 +776,20 @@ ExpressApp.prototype.start = function(opts, cb) {
 
         res.json(response);
       });
+    });
+  });
+
+  router.get('/v1/communityinfo', (req, res) => {
+    const opts = {
+      network: req.query.network || 'testnet',
+      keys: req.query.keys.split(',')
+    };
+
+    getServerWithAuth(req, req, server => {
+      server.getCommunityInfo(opts, (err, response) => {
+        if (err) return returnError(err, res, req);
+        res.json(response);
+      })
     });
   });
 

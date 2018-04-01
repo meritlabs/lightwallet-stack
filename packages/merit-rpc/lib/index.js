@@ -221,6 +221,7 @@ RpcClient.callspec = {
   // Merit RPC
   getInputForEasySend: 'str',
   getanv: 'str',
+  getcommunityinfo: 'str',
   getrewards: 'str',
   getaddressrewards: 'obj',
   getaddressanv: 'obj',

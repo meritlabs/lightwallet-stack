@@ -18,6 +18,7 @@ export interface IWalletTotals {
   totalWalletsBalance: string;
   totalWalletsBalanceFiat: string;
   allBalancesHidden: boolean;
+  totalCommunitySize: number;
   invites: number;
 }
 
@@ -31,6 +32,7 @@ const DEFAULT_STATE: IWalletsState = {
     totalWalletsBalance: '0.00',
     totalWalletsBalanceFiat: '0.00',
     allBalancesHidden: false,
+    totalCommunitySize: 0,
     invites: 0
   },
   loading: true,

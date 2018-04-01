@@ -66,6 +66,8 @@ export class DisplayWallet {
 
   inviteRequests: any[];
 
+  communitySize: number = 0;
+
   constructor(public client: MeritWalletClient,
               private walletService: WalletService,
               private addressService: AddressService,
@@ -134,6 +136,8 @@ export class DisplayWallet {
       this.ambassadorRewardsMicro = sumBy(rewardsData, 'rewards.ambassador');
       this.formatNetworkInfo();
     }
+
+    this.communitySize = (await this.client.getCommunityInfo(this.client.getRootAddress())).referralcount;
   }
 
   private formatNetworkInfo() {

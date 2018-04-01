@@ -1891,6 +1891,15 @@ export class API {
     return this._doGetRequest('/v1/anv/?network=' + network + '&keys=' + keys.join(','));
   }
 
+  getCommunityInfo(addr: string) {
+    $.checkState(this.credentials);
+
+    let keys = [addr],
+      network = this.credentials.network;
+
+    return this._doGetRequest('/v1/communityinfo/?network=' + network + '&keys=' + keys.join(','));
+  }
+
   getRewards(address: any): Promise<any> {
     $.checkState(this.credentials);
     let addresses = [address];

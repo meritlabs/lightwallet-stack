@@ -103,6 +103,7 @@ export class WalletEffects {
       totalMiningRewards: 0,
       totalNetworkValue: 0,
       totalWalletsBalance: 0,
+      totalCommunitySize: 0
       invites: 0
     };
 
@@ -112,6 +113,7 @@ export class WalletEffects {
       totals.totalNetworkValue += w.totalNetworkValueMicro;
       totals.totalMiningRewards += w.miningRewardsMicro;
       totals.totalAmbassadorRewards += w.ambassadorRewardsMicro;
+      totals.totalCommunitySize += w.communitySize;
       totals.invites += w.availableInvites;
 
       if (!w.balanceHidden) {
@@ -126,6 +128,7 @@ export class WalletEffects {
       totalAmbassadorRewards: formatAmount(totals.totalAmbassadorRewards, 'mrt'),
       totalWalletsBalance: formatAmount(totals.totalWalletsBalance, 'mrt'),
       totalWalletsBalanceFiat: this.txFormatService.formatAlternativeStr(totals.totalWalletsBalance),
+      totalCommunitySize: totals.totalCommunitySize,
       allBalancesHidden,
       invites: totals.invites
     };
