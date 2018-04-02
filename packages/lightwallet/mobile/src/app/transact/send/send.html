@@ -103,11 +103,11 @@
           </button>
         </div>
       </ng-container>
+
       <ng-template #sendPage>
         <div class="sendRoute content">
           <div class="globalSend">
-            <!--<button (click)="easySend()" ion-item detail-none class="globalsend-button" [disabled]="!hasActiveInvites">-->
-            <button (click)="easySend()" ion-item detail-none class="globalsend-button">
+            <button (click)="easySend()" ion-item detail-none class="globalsend-button" [disabled]="!hasActiveInvites">
               <ion-icon name="money" merit-icon item-start></ion-icon>
               <ion-label>
                 <h2>Global send</h2>
@@ -122,63 +122,69 @@
               <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
             </button>
           </div>
+          <ion-item-divider>
+            Merit Friends
+          </ion-item-divider>
           <div class="merit-friends">
-            <div class="merit-friends__groupTitle">
-              Merit Friends
+
+            <div class="no-friends" text-center padding *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
+
+              <img src="assets/img/icons/merit.svg" class="merit-logo" alt="">
+
+              <p class="description">Quickly send Merit to any alias on the Merit network in
+                seconds.</p>
+
+              <button ion-button block icon-start clear (click)="addContact()">
+                <ion-icon name="add"></ion-icon>
+                Add a Merit Friend
+              </button>
             </div>
-            <div class="merit-friends__wrap">
-              <div class="no-friends" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
-                <div>
-                  <p class="no-friends__title">Merit Friends</p>
-                  <p class="no-friends__description">Quickly send Merit to any alias on the Merit network in
-                    seconds.</p>
+
+            <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
+              <div class="no-results-label" *ngIf="!searchResult.error">
+                <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
+              </div>
+              <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
+                Address is not confirmed yeta
+              </div>
+              <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
+                Alias not found
+              </div>
+              <div [hidden]="searchResult?.toNewEntity?.destination !== 'address'" margin-top>
+                <button (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
+                  Send To {{searchQuery}}
+                </button>
+                or
+                <div class="button-contact" (click)="createContact()">
+                  <div class="icon add__icon"></div>
+                  <div>Create New Contact</div>
                 </div>
-                <div>
-                  <a href="" class="no-friends__add" (click)="addContact()">Add Merit Friend</a>
+                <div class="button-contact"
+                     [hidden]="!contacts?.length"
+                     (click)="bindAddressToContact()">
+                  <div class="icon bind__icon"></div>
+                  <div>Bind to existing contact</div>
                 </div>
               </div>
-              <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
-                <div class="no-results-label" *ngIf="!searchResult.error">
-                  <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
-                </div>
-                <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
-                  Address is not confirmed yeta
-                </div>
-                <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
-                  Alias not found
-                </div>
-                <div [hidden]="searchResult?.toNewEntity?.destination !== 'address'" margin-top>
-                  <button (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
-                    Send To {{searchQuery}}
-                  </button>
-                  or
-                  <div class="button-contact" (click)="createContact()">
-                    <div class="icon add__icon"></div>
-                    <div>Create New Contact</div>
-                  </div>
-                  <div class="button-contact"
-                       [hidden]="!contacts?.length"
-                       (click)="bindAddressToContact()">
-                    <div class="icon bind__icon"></div>
-                    <div>Bind to existing contact</div>
-                  </div>
-                </div>
-              </div>
-              <div *ngIf="searchResult.withMerit.length" [hidden]="showRecent" class="friends">
-                <div class="friend" *ngFor="let contact of searchResult.withMerit" (click)="sendToContact(contact)">
-                  <contact-avatar [contact]="contact" class="friend__avatar"></contact-avatar>
-                  <div class="friend__info">
-                    <span class="friend__title">{{ contact.name.formatted }}</span>
-                    <span class="friend__alias" *ngFor="let address of contact.meritAddresses">
-                @{{ address.alias }}</span>
-                    <div class="friend__info__edit" (click)="editContact(contact)"></div>
-                  </div>
-                </div>
-              </div>
-              <!--<div class="friends_add" *ngIf="searchResult.withMerit.length" (click)="addContact()">-->
-                <!--+ Add New Friend-->
-              <!--</div>-->
             </div>
+
+            <ion-list *ngIf="searchResult.withMerit.length" [hidden]="showRecent">
+              <button ion-item *ngFor="let contact of searchResult.withMerit" (click)="sendToContact(contact)">
+                <contact-avatar item-start [contact]="contact"></contact-avatar>
+                <ion-label>
+                  <h2>{{ contact.name.formatted }}</h2>
+                  <p>
+                      <span *ngFor="let address of contact.meritAddresses">
+                        @{{ address.alias }}
+                      </span>
+                  </p>
+                </ion-label>
+              </button>
+            </ion-list>
+
+            <!--<div class="friends_add" *ngIf="searchResult.withMerit.length" (click)="addContact()">-->
+            <!--+ Add New Friend-->
+            <!--</div>-->
           </div>
         </div>
       </ng-template>
