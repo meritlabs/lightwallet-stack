@@ -1,2 +1,8 @@
 <loading-spinner-small [hidden]="!loading"></loading-spinner-small>
 <history-item *ngFor="let tx of transactions" [tx]="tx"></history-item>
+<div class="noItems" *ngIf="transactions.length === 0">
+  <div class="noItems_title">Oooops...</div>
+  <div class="noItems_description">
+    Looks like your transactions history is empty (
+  </div>
+</div>
