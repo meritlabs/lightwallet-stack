@@ -1,3 +1,4 @@
+@import '~styles/v1/common/import-sass'
 \:host
   position: fixed
   height: 100%
@@ -16,3 +17,12 @@
     z-index: 1001
     top: calc(50% - 180px / 2)
     left: calc(50% - 450px / 2)
+    .title
+      +font(400, 24px, 28px, $blue)
+      margin-bottom: 24px
+    .message
+      +font(400, 18px, 24px, $gun-metal)
+      margin-bottom: 24px
+    .controls
+      .ui-button, button
+        margin-right: 15px
