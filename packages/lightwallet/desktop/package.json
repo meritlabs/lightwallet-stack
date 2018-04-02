@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "hammerjs": "^2.0.8",
+    "ngx-carousel": "^1.3.5",
     "normalize-scss": "^7.0.1"
   },
   "devDependencies": {

@@ -1,19 +1,8 @@
-@import "~styles/v1/common/variables"
+@import "~styles/v1/common/import-sass"
 \:host
-  padding: 50px 40px
-  display: block
-
-.wallet__import
-  padding: 50px 40px
-  &__title
-    margin-bottom: 40px
-  &__navigation
-    .global-settings__group__title
-      display: inline-block
-      width: inherit
-      margin-right: 20px
-      cursor: pointer
-  .global-settings__group__title
-    color: $gun-metal
-    &.active
-      color: $blue
+  .backup__navigator
+    width: calc(100% + 30px)
+    margin-left: -15px
+    justify-content: flex-start
+    &__item
+      margin: 0px 15px

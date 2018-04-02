@@ -1,0 +1,37 @@
+.ngxcarouselPointDefault
+  position: absolute
+  bottom: 0
+  width: 100vw
+  left: -40px
+  padding: 20px 40px
+  border-top: 1px solid rgba(255,255,255, .1)
+  .ngxcarouselPoint
+    padding: 0 !important
+  li
+    background: rgba(255,255,255, .5) !important
+  li.active
+    transform: scale(1) !important
+    background: $white !important
+.ngxcarousel
+  height: 100%
+  position: absolute
+  width: calc(100vw - 60px)
+  padding-bottom: 90px
+  .ngxcarousel-inner,
+  .ngxcarousel-items,
+    height: 100%
+    width: calc(100vw - 60px)
+    margin: 0px auto
+    position: relative
+    .item
+      height: 100%
+      .inner
+        height: 100%
+        width: calc(100vh - 60px)
+        margin: 0px auto
+        width: 100vw
+        display: flex
+        flex-direction: column
+        justify-content: center
+        align-items: center
+        text-align: center
