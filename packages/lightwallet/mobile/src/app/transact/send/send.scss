@@ -55,6 +55,15 @@ view-send {
   .searchbar-wrapper {
     display: flex;
     line-height: 58px;
+    background-color: #fafafa;
+    padding: 16px 15px 0;
+    position: relative;
+    .scan-button {
+      position: absolute;
+      top: 16px;
+      right: 25px;
+      margin: 0;
+    }
 
     ion-searchbar {
       display: block;
@@ -102,92 +111,6 @@ view-send {
     }
   }
 }
-//.ios view-send {
-//  .content {
-//    .no-results {
-//      button[ion-button].button-ios {
-//        border-radius: 21px;
-//        font-weight: 500;
-//        &[color='light'] {
-//          color: rgb(41, 61, 82);
-//        }
-//      }
-//    }
-//  }
-//}
-//
-//.md view-send {
-//  ion-header.header.header-md {
-//    ion-searchbar.searchbar-md {
-//      padding: 8px;
-//    }
-//    ion-buttons.bar-buttons button[ion-button].bar-button {
-//      margin-left: 0;
-//      ion-icon {
-//        color: map_get($colors, primary);
-//      }
-//    }
-//  }
-//}
-//view-send {
-//  .scroll-content {
-//    display: flex;
-//    flex-direction: column;
-//
-//    > .loader {
-//      align-self: center;
-//      justify-self: center;
-//    }
-//
-//    .content {
-//      height: 100%;
-//      display: flex;
-//      flex-direction: column;
-//      align-content: center;
-//      justify-content: center;
-//
-//      .no-results {
-//        height: auto;
-//        display: block;
-//      }
-//
-//      > :first-child:not(.no-results), .contacts-list {
-//        height: 100%;
-//
-//        ion-item.item {
-//          ion-avatar[img-icon] {
-//            span {
-//              text-align: center;
-//              width: 38px;
-//            }
-//          }
-//        }
-//      }
-//    }
-//  }
-//
-//  ion-header.header {
-//    .toolbar-background {
-//      background: white;
-//    }
-//
-//    ion-searchbar input::-webkit-input-placeholder {
-//      color: #999;
-//      font-size: 14px;
-//    }
-//
-//    ion-buttons[end].bar-buttons {
-//      button[ion-button].bar-button {
-//        padding: 0;
-//        margin: 0 6px;
-//        ion-icon {
-//          height: 20px;
-//          width: 20px;
-//        }
-//      }
-//    }
-//  }
-//}
 
 view-send,
 view-send-select-bind-contact {
@@ -418,8 +341,6 @@ view-send-select-bind-contact {
     }
   }
   .sendRoute {
-    padding-top: 70px;
-    background-color: #fafafa;
     height: 100%;
     &__header {
       position: fixed;
@@ -455,17 +376,7 @@ view-send-select-bind-contact {
       border-radius: 5px;
       margin-bottom: 16px;
     }
-    .searchbar-wrapper {
-      display: block;
-      padding: 0 15px;
-      position: relative;
-      .scan-button {
-        position: absolute;
-        top: 16px;
-        right: 25px;
-        margin: 0;
-      }
-    }
+
     .searchbar-ios {
       background: transparent;
       border-bottom: 0;
@@ -486,13 +397,33 @@ view-send-select-bind-contact {
       right: 15px;
     }
   }
+
+  button[ion-item].globalsend-button {
+    position: relative;
+
+    ion-icon[item-start] {
+      color: #3497fd;
+    }
+
+    ion-label {
+      h2 {
+        color: #374455;
+      }
+    }
+
+    ion-icon[item-end] {
+      color: map_get($colors, primary);
+      font-size: 22px;
+      line-height: 28px;
+    }
+  }
+
   .globalSend {
-    padding: 25px 20px;
     background: #FFF;
-    margin-bottom: 20px;
     border-top: 1px solid #ededed;
     border-bottom: 1px solid #ededed;
     position: relative;
+
     &:after {
       content: "OR";
       display: block;
@@ -501,13 +432,14 @@ view-send-select-bind-contact {
       border-radius: 20px;
       border: 1px solid #ededed;
       background-color: #ffffff;
-      color: rgba(116, 128, 155, 0.6);
+      color: rgba(29, 33, 43, 0.7);
       font-size: 10px;
-      font-weight: 500;
-      font-style: italic;
+      font-weight: 400;
       line-height: 20px;
+      letter-spacing: .27px;
       text-align: center;
       position: absolute;
+      z-index: 5;
       left: 0;
       right: 0;
       margin: 0 auto;

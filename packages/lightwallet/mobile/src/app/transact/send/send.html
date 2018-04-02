@@ -1,3 +1,10 @@
+<ion-header no-border>
+  <ion-navbar color="light">
+    <ion-title>
+      Send Merit
+    </ion-title>
+  </ion-navbar>
+</ion-header>
 <ion-content>
   <div *ngIf="!hasUnlockedWallets; else canSend" class="unlock-screen">
     <div class="unlock-backdrop" *ngIf="!hasUnlockedWallets"></div>
@@ -98,14 +105,14 @@
       </ng-container>
       <ng-template #sendPage>
         <div class="sendRoute content">
-          <div class="sendRoute__header">
-            <div class="sendRoute__title">
-              Send Merit
-            </div>
-          </div>
           <div class="globalSend">
-            <button (click)="easySend()" [disabled]="!hasActiveInvites" class="globalSend__button">
-              Global send
+            <!--<button (click)="easySend()" ion-item detail-none class="globalsend-button" [disabled]="!hasActiveInvites">-->
+            <button (click)="easySend()" ion-item detail-none class="globalsend-button">
+              <ion-icon name="money" merit-icon item-start></ion-icon>
+              <ion-label>
+                <h2>Global send</h2>
+              </ion-label>
+              <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </button>
           </div>
           <div class="searchbar-wrapper">
