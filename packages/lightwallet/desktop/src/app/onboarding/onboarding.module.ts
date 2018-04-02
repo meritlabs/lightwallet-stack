@@ -7,6 +7,7 @@ import { OnboardingRoutingModule } from './onboarding-routing.module';
 import { OnboardComponent } from './onboard/onboard.component';
 import { UnlockComponent } from './unlock/unlock.component';
 import { OnboardingRootComponent } from './onboarding-root/onboarding-root.component';
+import { NgxCarouselModule } from 'ngx-carousel';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { OnboardingRootComponent } from './onboarding-root/onboarding-root.compo
     OnboardingRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    NgxCarouselModule
   ],
   declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent]
 })
