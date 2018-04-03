@@ -184,6 +184,9 @@ view-send-amount {
   .header-ios .toolbar-ios:last-child .toolbar-background-ios {
     border-color: rgba(255,255,255, .17);
   }
+  ion-list {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
 
   .view-send-amount .amount-area .main-amount ion-item.item ion-input {
     width: 100%;
@@ -277,4 +280,8 @@ view-send-amount {
   line-height: 14px;
   box-shadow: 0 3px 12px rgba(45, 59, 80, 0.22);
   background-image: linear-gradient(100deg, #106dda 0%, #00b1de 100%);
+  div {
+    height: 30px;
+    line-height: 30px;
+  }
 }
