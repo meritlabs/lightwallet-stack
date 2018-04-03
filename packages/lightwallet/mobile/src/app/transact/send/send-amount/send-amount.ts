@@ -42,8 +42,8 @@ export class SendAmountView {
   public feeCalcError: string;
   public feeLoading: boolean;
 
-  public amount = { micros: 0, mrt: 0, mrtStr: '0.00', fiat: 0, fiatStr: '0.00' };
-  public formData = { amount: '0.00', password: '', confirmPassword: '', nbBlocks: 1008, validTill: '' };
+  public amount: { micros: number, mrt: number, fiat: number};
+  public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 1008, validTill: '' };
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
   public readonly CURRENCY_TYPE_FIAT = 'fiat';
@@ -89,6 +89,7 @@ export class SendAmountView {
             ) {
     this.recipient = this.navParams.get('contact');
     this.sendMethod = this.navParams.get('suggestedMethod');
+    this.amount = {};
     this.loading = true;
   }
 
@@ -103,8 +104,8 @@ export class SendAmountView {
       });
     }
     this.selectedCurrency = this.availableUnits[0];
-    let passedAmount = this.navParams.get('amount') || 0;
-    this.formData.amount = String(this.rateService.microsToMrt(passedAmount));
+    let passedAmount = this.navParams.get('amount');
+    if (passedAmount) this.formData.amount = String(this.rateService.microsToMrt(passedAmount));
     await this.updateAmount();
 
     // todo add smart common amounts receive

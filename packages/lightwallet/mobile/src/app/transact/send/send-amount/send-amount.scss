@@ -89,7 +89,12 @@ view-send-amount {
           display: inline-block;
 
           &::placeholder {
-            font-size: 18px;
+            text-align: center;
+            font-size: 40px;
+            color: rgb(70, 85, 111);
+            letter-spacing: -1.3px;
+            font-weight: normal;
+            display: inline-block;
           }
         }
       }
@@ -211,8 +216,11 @@ view-send-amount {
     width: 100%;
 
     &::placeholder {
-      letter-spacing: normal;
       color: #FFF;
+      text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
+      letter-spacing: 4.8px;
+      font-size: 80px;
+      width: 100%;
     }
   }
 
