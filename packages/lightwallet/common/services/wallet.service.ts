@@ -193,7 +193,7 @@ export class WalletService {
               });
             }
           }).then(() => {
-            return this.rateService.whenAvailable().then(() => {
+            return this.rateService.loadRates().then(() => {
 
               let totalBalanceAlternative = this.rateService.fromMicrosToFiat(cache.totalBalanceMicros, cache.alternativeIsoCode);
               let totalBalanceAlternativeStr = this.rateService.fromMicrosToFiat(cache.totalBalanceMicros, cache.alternativeIsoCode);
