@@ -56,7 +56,7 @@ view-send {
     display: flex;
     line-height: 58px;
     background-color: #fafafa;
-    padding: 16px 15px;
+    padding: 16px 5px;
     position: relative;
     .scan-button {
       position: absolute;
@@ -452,6 +452,11 @@ view-send-select-bind-contact {
   }
   .merit-friends {
     background: white;
+
+    button[ion-item].item {
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
 
     .no-friends {
       padding-top: 50px;
