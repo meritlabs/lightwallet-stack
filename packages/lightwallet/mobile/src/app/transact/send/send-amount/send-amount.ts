@@ -217,9 +217,9 @@ if (value != this.lastAmount) {
       }
     } else {
       this.amount.fiat = parseFloat(this.formData.amount) || 0;
-      this.amount.micros = this.rateService.fiatToMicros(this.amount.fiat, this.availableUnits[1].name);
+      this.amount.micros = await this.rateService.fiatToMicros(this.amount.fiat, this.availableUnits[1].name);
       this.amount.mrt = this.rateService.microsToMrt(
-        this.rateService.fiatToMicros(this.amount.fiat, this.availableUnits[1].name)
+        await this.rateService.fiatToMicros(this.amount.fiat, this.availableUnits[1].name)
       );
     }
 
