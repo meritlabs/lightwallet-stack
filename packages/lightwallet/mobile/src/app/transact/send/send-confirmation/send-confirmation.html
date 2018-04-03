@@ -7,8 +7,7 @@
 <div class="priceReview">
   <div class="priceReview_info">
     <div class="priceReview_icon"></div>
-    <div class="priceReview_mrt">{{ viewData.totalAmount}}</div>
-    <!--<div class="priceReview_currency">$ {{ viewData.totalAmount * 0.00000000013 }}</div>-->
+    <div class="priceReview_mrt">{{ viewData.amount | toMRT}}</div>
   </div>
 </div>
   <div *ngIf="viewData">
