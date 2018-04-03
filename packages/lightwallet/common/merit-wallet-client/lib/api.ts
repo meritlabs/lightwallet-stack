@@ -2650,6 +2650,14 @@ export class API {
   }
 
   /**
+   * Get all rates
+   * @returns {Promise<any>}
+   */
+  getRates():Promise<any> {
+    return this._doGetRequest('/v1/rates/');
+  }
+
+  /**
    * Subscribe to push notifications.
    * @param {Object} opts
    * @param {String} opts.type - Device type (ios or android).
