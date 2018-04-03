@@ -3,11 +3,11 @@
     <ion-title>Review Invite & Send</ion-title>
   </ion-navbar>
 </ion-header>
-<ion-content>
+<ion-content *ngIf="viewData">
 <div class="priceReview">
   <div class="priceReview_info">
     <div class="priceReview_icon"></div>
-    <div class="priceReview_mrt">{{ viewData.amount | toMRT}}</div>
+    <div class="priceReview_mrt" [class]="viewData?.priceReviewClass">{{ viewData.amount | toMRT}}</div>
   </div>
 </div>
   <div *ngIf="viewData">
@@ -36,7 +36,6 @@
         </div>
         <div class="ion-item-half">
           <p><strong class="amount">{{ viewData.fee  | toMRT }}</strong></p>
-          <!--<p><small>$ {{ viewData.fee * 0.015 }}</small></p>-->
         </div>
       </ion-item>
       <ion-item class="ion-item-halfs">
@@ -45,7 +44,6 @@
         </div>
         <div class="ion-item-half">
           <p><strong class="amount blue">{{ viewData.totalAmount  | toMRT }}</strong></p>
-          <!--<p><small>$ {{ viewData.totalAmount * 0.015 }}</small></p>-->
         </div>
       </ion-item>
 
