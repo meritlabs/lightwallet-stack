@@ -239,6 +239,14 @@ if (value != this.lastAmount) {
     );
   }
 
+  public getAmountClass() {
+    let length = this.formData.amount.length;
+    if (length < 6) return 'amount-big';
+    if (length < 8) return 'amount-medium';
+    if (length < 11) return 'amount-small';
+    return 'amount-tiny';
+  }
+
   public async toConfirm() {
 
     if (this.formData.password != this.formData.confirmPassword) {
