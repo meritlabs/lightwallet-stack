@@ -42,7 +42,7 @@ export class SendAmountView {
   public feeCalcError: string;
   public feeLoading: boolean;
 
-  public amount: { micros: number, mrt: number, fiat: number};
+  public amount =  { micros: 0, mrt: 0, fiat: 0};
   public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 1008, validTill: '' };
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
@@ -89,7 +89,6 @@ export class SendAmountView {
             ) {
     this.recipient = this.navParams.get('contact');
     this.sendMethod = this.navParams.get('suggestedMethod');
-    this.amount = {};
     this.loading = true;
   }
 
@@ -220,8 +219,8 @@ if (value != this.lastAmount) {
       this.amount.micros = this.rateService.fromFiatToMicros(this.amount.fiat, this.availableUnits[1].name);
       this.amount.mrt = this.rateService.fromFiatToMerit(this.amount.fiat, this.availableUnits[1].name);
     }
-    this.amount.mrtStr = this.txFormatService.formatAmountStr(this.amount.micros) + ' MRT';
-    this.amount.fiatStr = await this.txFormatService.formatAlternativeStr(this.amount.micros);
+    //this.amount.mrtStr = this.txFormatService.formatAmountStr(this.amount.micros) + ' MRT';
+    //this.amount.fiatStr = await this.txFormatService.formatAlternativeStr(this.amount.micros);
 
     if (this.selectedWallet) {
       if (this.amount.micros == this.selectedWallet.balance.spendableAmount)  {
