@@ -165,7 +165,7 @@ export class SendView implements OnInit {
     this.wallets$ = this.store.select(selectConfirmedWallets);
     this.wallets$.subscribe(wallets => {
       this.hasUnlockedWallet = wallets.length > 0;
-      this.hasAvailableInvites = wallets.some(w => w.invites > 0);
+      this.hasAvailableInvites = wallets.some(w => w.availableInvites > 0);
 
       if (wallets && wallets[0]) {
         this.formData.wallet = wallets[0];
