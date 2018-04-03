@@ -729,25 +729,14 @@ ion-avatar[img-icon] {
   background: currentColor;
   display: inline-block;
 
-  &[name="settings"] {
-    mask-image: url("../assets/img/icons/settings.svg");
+  $icons: settings share qr-code phone email money pencil;
+
+  @each $name in $icons {
+    &[name='#{$name}'], &[ng-reflect-name='#{$name}'] {
+      mask-image: url('../assets/img/icons/#{$name}.svg');
+    }
   }
 
-  &[name="share"] {
-    mask-image: url("../assets/img/icons/share.svg");
-  }
-
-  &[name="qr-code"] {
-    mask-image: url("../assets/img/icons/qr-code.svg");
-  }
-
-  &[name="phone"] {
-    mask-image: url("../assets/img/icons/mem.svg");
-  }
-
-  &[name="email"] {
-    mask-image: url("../assets/img/icons/email.svg");
-  }
 }
 
 .merit-icon-merit {
