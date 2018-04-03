@@ -74,25 +74,25 @@
       <ion-toggle [(ngModel)]="feeIncluded" [disabled]="!feeTogglerEnabled" (ngModelChange)="updateTxData()"></ion-toggle>
     </ion-item>
 
-    <ion-list *ngIf="sendMethod.type == 'easy'">
-      <ion-item>
-        <ion-avatar item-start img-icon>
-          <img src="assets/img/icons/unlock.svg">
-        </ion-avatar>
-        <ion-label stacked>Add Password (Optional)</ion-label>
-        <ion-input type="password" [(ngModel)]="formData.password" placeholder="Type it here"
-                   autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
-      </ion-item>
-    </ion-list>
+    <!--<ion-list *ngIf="sendMethod.type == 'easy'">-->
+      <!--<ion-item>-->
+        <!--<ion-avatar item-start img-icon>-->
+          <!--<img src="assets/img/icons/unlock.svg">-->
+        <!--</ion-avatar>-->
+        <!--<ion-label stacked>Add Password (Optional)</ion-label>-->
+        <!--<ion-input type="password" [(ngModel)]="formData.password" placeholder="Type it here"-->
+                   <!--autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>-->
+      <!--</ion-item>-->
+    <!--</ion-list>-->
 
-    <ion-list *ngIf="formData.password">
-      <ion-item>
-        <ion-avatar item-start></ion-avatar>
-        <ion-label stacked>Confirm Password</ion-label>
-        <ion-input type="password" [(ngModel)]="formData.confirmPassword" placeholder="Repeat password"
-                   autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
-      </ion-item>
-    </ion-list>
+    <!--<ion-list *ngIf="formData.password">-->
+      <!--<ion-item>-->
+        <!--<ion-avatar item-start></ion-avatar>-->
+        <!--<ion-label stacked>Confirm Password</ion-label>-->
+        <!--<ion-input type="password" [(ngModel)]="formData.confirmPassword" placeholder="Repeat password"-->
+                   <!--autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>-->
+      <!--</ion-item>-->
+    <!--</ion-list>-->
 
   </ion-list>
 
