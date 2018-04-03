@@ -214,9 +214,9 @@ view-send-amount {
   .amount-area .main-amount ion-item.item input.text-input {
     color: #FFF;
     text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
-    letter-spacing: 4.8px;
-    font-size: 80px;
     width: 100%;
+    font-size: 80px;
+    letter-spacing: 4.8px;
 
     &::placeholder {
       color: #FFF;
@@ -225,6 +225,25 @@ view-send-amount {
       font-size: 80px;
       width: 100%;
     }
+  }
+
+  .amount-area .main-amount {
+    .amount-big input.text-input  {
+    font-size: 80px !important;
+    letter-spacing: 4.8px !important;
+  }
+  .amount-medium input.text-input {
+    font-size: 70px !important;
+    letter-spacing: 2px !important;
+  }
+  .amount-small input.text-input {
+    font-size: 60px !important;
+    letter-spacing: 1px !important;
+  }
+  .amount-tiny input.text-input {
+    font-size: 40px !important;
+    letter-spacing: 1px !important;
+  }
   }
 
   .amount-area {
