@@ -173,8 +173,9 @@ export class ReceiveView {
     this.navCtrl.push('CopayersView', { walletId: this.wallet.id, wallet: this.wallet });
   }
 
-  toggleCurrency() {
-    if (this.rateService.getRate(this.availableUnits[1]) > 0) {
+  async toggleCurrency() {
+    const rate = await this.rateService.getRate(this.availableUnits[1]);
+    if (rate > 0) {
       this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
       this.changeAmount();
     }

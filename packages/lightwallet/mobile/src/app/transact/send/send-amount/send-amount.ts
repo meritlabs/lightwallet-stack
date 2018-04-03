@@ -96,7 +96,8 @@ export class SendAmountView {
     this.availableUnits = [
       { type: this.CURRENCY_TYPE_MRT, name: this.configService.get().wallet.settings.unitCode.toUpperCase() }
     ];
-    if (this.rateService.getRate(this.configService.get().wallet.settings.alternativeIsoCode) > 0) {
+    const rate = await this.rateService.getRate(this.configService.get().wallet.settings.alternativeIsoCode);
+    if (rate > 0) {
       this.availableUnits.push({
         type: this.CURRENCY_TYPE_FIAT,
         name: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
@@ -212,15 +213,15 @@ if (value != this.lastAmount) {
       this.amount.mrt = parseFloat(this.formData.amount) || 0;
       this.amount.micros = this.rateService.mrtToMicro(this.amount.mrt);
       if (this.availableUnits[1]) {
-        this.amount.fiat = this.rateService.fromMicrosToFiat(this.amount.micros, this.availableUnits[1].name);
+        this.amount.fiat = await this.rateService.microsToFiat(this.amount.micros, this.availableUnits[1].name);
       }
     } else {
       this.amount.fiat = parseFloat(this.formData.amount) || 0;
-      this.amount.micros = this.rateService.fromFiatToMicros(this.amount.fiat, this.availableUnits[1].name);
-      this.amount.mrt = this.rateService.fromFiatToMerit(this.amount.fiat, this.availableUnits[1].name);
+      this.amount.micros = this.rateService.fiatToMicros(this.amount.fiat, this.availableUnits[1].name);
+      this.amount.mrt = this.rateService.microsToMrt(
+        this.rateService.fiatToMicros(this.amount.fiat, this.availableUnits[1].name)
+      );
     }
-    //this.amount.mrtStr = this.txFormatService.formatAmountStr(this.amount.micros) + ' MRT';
-    //this.amount.fiatStr = await this.txFormatService.formatAlternativeStr(this.amount.micros);
 
     if (this.selectedWallet) {
       if (this.amount.micros == this.selectedWallet.balance.spendableAmount)  {

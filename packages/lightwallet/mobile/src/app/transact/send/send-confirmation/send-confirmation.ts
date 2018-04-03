@@ -80,7 +80,8 @@ export class SendConfirmationView {
 
     viewData.walletRemainingBalance =  this.txData.wallet.balance.totalAmount - viewData.totalAmount;
 
-    let fiatAvailale = this.rateService.getRate(viewData.fiatCode) > 0;
+    const rate = await this.rateService.getRate(viewData.fiatCode);
+    let fiatAvailale = rate > 0;
     const convert = amount => fiatAvailale ? this.formatService.toFiatStr(amount, viewData.fiatCode) : '';
 
     const amountMrtLength = (this.rateService.microsToMrt(viewData.amount)+'').length;
