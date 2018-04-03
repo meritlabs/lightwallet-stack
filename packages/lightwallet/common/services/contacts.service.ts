@@ -56,7 +56,7 @@ export class ContactsService {
     if (!_.isEmpty(contact.meritAddresses)) {
       contact.meritAddresses.some(mAddress => {
         existingContact = addressBook[mAddress.address];
-        return existingContact;
+        return !!existingContact;
       });
     }
     if (existingContact) {
