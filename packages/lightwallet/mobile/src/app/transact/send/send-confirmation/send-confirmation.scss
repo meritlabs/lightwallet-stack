@@ -134,6 +134,19 @@ view-send-confirmation {
       }
     }
 
+    .big {
+      font-size: 32px;
+    }
+    .medium {
+      font-size: 24px;
+    }
+    .small {
+      font-size: 17px;
+    }
+    .tiny {
+      font-size: 14px;
+    }
+
     &_icon {
       width: 27px;
       height: 27px;
@@ -159,7 +172,6 @@ view-send-confirmation {
     }
 
     &_mrt {
-      font-size: 32px;
       font-weight: 600;
       letter-spacing: 1.54px;
     }
