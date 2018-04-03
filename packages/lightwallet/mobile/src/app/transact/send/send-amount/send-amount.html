@@ -10,7 +10,7 @@
         </ion-title>
       </ion-navbar>
     </ion-header>
-    <div class="amount-area" *ngIf="!loading">
+    <div class="amount-area" *ngIf="!loading" (click)="focusInput()">
       <div class="currency-bar">
         <div *ngIf="availableUnits?.length > 1">
           <div *ngFor="let currency of availableUnits" (click)="selectCurrency(currency)"

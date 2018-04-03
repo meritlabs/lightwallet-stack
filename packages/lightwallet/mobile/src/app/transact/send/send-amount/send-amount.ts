@@ -193,7 +193,11 @@ export class SendAmountView {
   }
 
   amountKeypress(key) {
-    if (key == 13) return this.amountInput['_native']['_elementRef']['nativeElement'].blur();
+    if (key == 13) return this.amountInput['_native']['nativeElement'].blur();
+  }
+
+  focusInput() {
+    this.amountInput['_native']['nativeElement'].focus();
   }
 
   async processAmount(value) {
