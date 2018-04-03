@@ -92,7 +92,9 @@
                 <ion-item *ngFor="let contact of searchResult.withMerit" (click)="sendToContact(contact)" class="contact">
                     <contact-avatar [contact]="contact" item-start></contact-avatar>
                     {{ contact.name.formatted }}
-                    <img src="assets/img/icons/merit.svg" color="primary" item-end>
+                    <button ion-button icon-only clear item-end (click)="editContact(contact, $event)">
+                        <ion-icon name="settings"></ion-icon>
+                    </button>
                 </ion-item>
             </ion-list>
 
